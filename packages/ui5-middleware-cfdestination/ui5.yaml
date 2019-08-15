@@ -1,0 +1,8 @@
+# https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
+specVersion: '1.0'
+metadata:
+  name: ui5-middleware-cfdestination
+kind: extension
+type: server-middleware
+middleware:
+  path: lib/cfdestination.js

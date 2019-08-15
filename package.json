@@ -1,0 +1,18 @@
+{
+  "name": "ui5-ecosystem-showcase",
+  "version": "1.0.0",
+  "description": "A repository showcasing the UI5 tooling extensibility to combine OSS tools for UI5 application development.",
+  "private": true,
+  "scripts": {
+    "start": "cd packages/ui5-app && yarn start",
+    "dev": "cd packages/ui5-app && yarn dev",
+    "watch": "cd packages/ui5-app && yarn watch"
+  },
+  "devDependencies": {
+    "lerna": "^3.16.4",
+    "npm-run-all": "^4.1.5"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}

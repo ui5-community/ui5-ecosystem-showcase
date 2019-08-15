@@ -1,0 +1,9 @@
+{
+  "name": "ui5-middleware-proxy",
+  "version": "1.0.0",
+  "description": "A generic proxy middleware",
+  "private": true,
+  "dependencies": {
+    "express-http-proxy": "^1.5.1"
+  }
+}

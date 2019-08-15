@@ -1,0 +1,9 @@
+{
+  "name": "ui5-middleware-cfdestination",
+  "version": "1.0.0",
+  "description": "A CloudFoundry proxy middleware",
+  "private": true,
+  "dependencies": {
+    "express-http-proxy": "^1.5.1"
+  }
+}

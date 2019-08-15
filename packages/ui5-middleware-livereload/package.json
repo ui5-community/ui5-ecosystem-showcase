@@ -1,0 +1,10 @@
+{
+  "name": "ui5-middleware-livereload",
+  "version": "1.0.0",
+  "description": "A livereload middleware",
+  "private": true,
+  "dependencies": {
+    "connect-livereload": "^0.6.1",
+    "livereload": "^0.8.0"
+  }
+}
