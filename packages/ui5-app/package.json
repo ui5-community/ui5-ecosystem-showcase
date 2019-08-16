@@ -32,6 +32,7 @@
     "@ui5/cli": "^1.7.0",
     "npm-run-all": "^4.1.5",
     "npm-watch": "^0.6.0",
+    "ui5-middleware-cfdestination": "^1.0.0",
     "ui5-middleware-livereload": "^1.0.0",
     "ui5-middleware-proxy": "^1.0.0",
     "ui5-task-transpile": "^1.0.0",
@@ -44,6 +45,7 @@
       "@openui5/sap.m",
       "@openui5/sap.ui.layout",
       "@openui5/themelib_sap_fiori_3",
+      "ui5-middleware-cfdestination",
       "ui5-middleware-livereload",
       "ui5-middleware-proxy",
       "ui5-task-transpile"

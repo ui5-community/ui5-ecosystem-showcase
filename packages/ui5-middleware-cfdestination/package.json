@@ -5,5 +5,8 @@
   "private": true,
   "dependencies": {
     "express-http-proxy": "^1.5.1"
+  },
+  "devDependencies": {
+    "@sap/approuter": "^6.1.0"
   }
 }
