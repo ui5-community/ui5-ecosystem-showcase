@@ -28,11 +28,11 @@ path to the cf configuration file `xs-app.json`
 1. Define the dependency in `$yourapp/package.json`:
 
 ```json
-  "devDependencies": {
+"devDependencies": {
     // ...
     "ui5-middleware-cfdestination": "*"
     // ...
-  }
+}
 ```
 
 2. configure it in `$yourapp/ui5.yaml`:
@@ -52,7 +52,7 @@ server:
             url: 'https://services.odata.org/V4/(S(fdng4tbvlxgzpdtpfap2rqss))/TripPinServiceRW/'
 ```
 
-3. put the cf routing config file `xs-app.json` in the location of `$yourapp` you specified above
+3. put the cf routing config file `xs-app.json` in the location of `$yourapp` you specified above (`xsappJson`)
 
 ## How it works
 
