@@ -1,6 +1,6 @@
 const approuter = require('@sap/approuter')();
 const fs = require('fs');
-const proxy = require('express-http-proxy');
+const request = require('request');
 
 /**
  * Custom UI5 Server middleware example
@@ -18,13 +18,44 @@ const proxy = require('express-http-proxy');
  * @returns {function} Middleware function to use
  */
 module.exports = function ({resources, options}) {
+    request.debug = options.configuration.debug; // pass debug flag on to underying request lib
+    // read in the cf config file
     const xsappConfig = JSON.parse(fs.readFileSync(options.configuration.xsappJson, 'utf8'));
+
+    let regExes = [];
+    xsappConfig.routes.forEach(route => {
+        // ignore /-redirects (e.g. "^/(.*)"
+        // a source declaration such as "^/backend/(.*)$" is needed
+        if (route.source.match(/.*\/.*\/.*/)) {
+            regExes.push(new RegExp(route.source));
+            options.configuration.debug ? console.info(`adding cf-like destination ${route.destination}`) : null;
+        }
+    });
+
+    // req-use app-router with config file to run in "shadow" mode
     process.env.destinations = JSON.stringify(options.configuration.destinations);
     approuter.start({
         port: options.configuration.port,
         xsappConfig: xsappConfig
     });
-    return function (req, res, next) {
-        next();
+    return (req, res, next) => {
+        // check req.path for match with each route.source
+        // and proxy to localhost:${options.configuration.port}
+        let match = false;
+        let url = "";
+        for (let [index, regEx] of regExes.entries()) {
+            if (regEx.test(req.path)) {
+                match = true;
+                url = `${req.protocol}://localhost:${options.configuration.port}${req.originalUrl}`;
+
+                break;
+            }
+        }
+        if (match) {
+            options.configuration.debug ? console.info(`proxying ${req.method} ${req.originalUrl} to ${url}...`) : null;
+            req.pipe(request(url)).pipe(res);
+        } else {
+            next();
+        }
     };
 };

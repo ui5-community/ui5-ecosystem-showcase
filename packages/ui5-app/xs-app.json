@@ -8,6 +8,15 @@
       "target": "$1"
     },
     {
+      "source": "^/odatav2/(.*)$",
+      "destination": "odatav2",
+      "target": "$1"
+    },{
+      "source": "^/todos/(.*)$",
+      "destination": "todos",
+      "target": "$1"
+    },
+    {
       "source": "^/(.*)",
       "localDir": "./webapp",
       "cacheControl": "no-cache, no-store, must-revalidate"

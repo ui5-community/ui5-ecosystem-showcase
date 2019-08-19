@@ -3,10 +3,8 @@
   "version": "1.0.0",
   "description": "A CloudFoundry proxy middleware",
   "private": true,
-  "dependencies": {
-    "express-http-proxy": "^1.5.1"
-  },
   "devDependencies": {
-    "@sap/approuter": "^6.1.0"
+    "@sap/approuter": "^6.1.0",
+    "request": "^2.88.0"
   }
 }
