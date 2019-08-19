@@ -20,6 +20,9 @@ yarn
 yarn dev
 
 # 2) Run the Component-preload build + transpile steps
+# which in addition to the above
+# - transpiles all ui5-app/webapp/**/* to ui5-app/dist
+# - live reload of ui5-app/dist/**/*
 yarn watch
 
 # 3) Run the dist folder (but build manually)
