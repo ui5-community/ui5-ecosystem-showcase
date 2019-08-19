@@ -18,6 +18,10 @@
         "settings": {
           "odataVersion": "4.0"
         }
+      },
+      "LatestUI5Datasource": {
+        "uri": "",
+        "type": "JSON"
       }
     }
   },
@@ -71,7 +75,12 @@
           "groupId": "$direct",
           "synchronizationMode": "None"
         }
+      },
+      "LatestUI5": {
+        "type": "sap.ui.model.json.JSONModel",
+        "dataSource": "LatestUI5Datasource"
       }
+
     },
     "routing": {
       "config": {

@@ -6,6 +6,7 @@
 					alignItems="Center"
 					justifyContent="Center"
 					height="100%">
+			<Text text="{i18n>startPage.currentUI5.text}: {LatestUI5>/latest}" />
 			<Button icon="sap-icon://forward"
 					text="{i18n>startPage.navButton.text}"
 					press="navFwd"/>
