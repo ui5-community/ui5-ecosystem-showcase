@@ -10,7 +10,16 @@
     "title": "{{appTitle}}",
     "description": "{{appDescription}}",
     "resources": "resources.json",
-    "ach": "ach"
+    "ach": "ach",
+    "dataSources": {
+      "BackendDataSource": {
+        "uri": "/backend/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0"
+        }
+      }
+    }
   },
   "sap.ui": {
     "technology": "UI5",
@@ -52,6 +61,15 @@
         "type": "sap.ui.model.resource.ResourceModel",
         "settings": {
           "bundleName": "test.Sample.i18n.i18n"
+        }
+      },
+      "Backend": {
+        "dataSource": "BackendDataSource",
+        "settings": {
+          "autoExpandSelect": true,
+          "operationMode": "Server",
+          "groupId": "$direct",
+          "synchronizationMode": "None"
         }
       }
     },
