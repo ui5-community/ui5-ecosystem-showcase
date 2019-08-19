@@ -1,0 +1,13 @@
+<mvc:View controllerName="test.Sample.controller.Other" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
+
+    <Page title="{i18n>otherPage.title}"
+		  showNavButton="true"
+		  navButtonPress="onNavBack">
+        <content>
+			<List headerText="{i18n>otherPage.listHeader}"
+					items="{Backend>/People}">
+				<StandardListItem title="{Backend>FirstName} {Backend>LastName}"/>
+			</List>
+        </content>
+    </Page>
+</mvc:View>

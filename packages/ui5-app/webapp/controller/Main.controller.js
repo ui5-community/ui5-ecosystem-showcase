@@ -4,9 +4,13 @@ sap.ui.define([
 	"use strict";
 
 	return Controller.extend("test.Sample.controller.Main", {
-		onInit: () => {
+		onInit() {
 			let text = "Hello World";
 			console.error(`Peter says: ${text} `);
+		},
+
+		navFwd(oEvent) {
+			this.getOwnerComponent().getRouter().navTo("RouteOther");
 		}
 	});
 });

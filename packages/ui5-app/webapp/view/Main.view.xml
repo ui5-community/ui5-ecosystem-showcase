@@ -1,13 +1,16 @@
 <mvc:View controllerName="test.Sample.controller.Main" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
-	<Shell id="shell">
-		<App id="app">
-			<pages>
-				<Page id="page" title="{i18n>appTitle}">
-					<content>
-						<Button text="Hello World"></Button>
-					</content>
-				</Page>
-			</pages>
-		</App>
-	</Shell>
+
+    <Page id="page" title="{i18n>appTitle}">
+        <content>
+			<VBox
+					alignItems="Center"
+					justifyContent="Center"
+					height="100%">
+			<Button icon="sap-icon://forward"
+					text="{i18n>startPage.navButton.text}"
+					press="navFwd"/>
+			</VBox>
+        </content>
+    </Page>
+
 </mvc:View>
