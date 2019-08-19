@@ -4,7 +4,7 @@ sap.ui.define([
 	"use strict";
 
 	return Controller.extend("test.Sample.controller.Other", {
-		onInit: () => {
+		onInit() {
 		}
 	});
 });
