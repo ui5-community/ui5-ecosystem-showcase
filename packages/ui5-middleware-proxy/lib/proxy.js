@@ -21,7 +21,5 @@ module.exports = function({resources, options}) {
         // [...]
     }
     */
-   return proxy(options.configuration.baseUri, {
-        proxyReqPathResolver: req => `/${req.url}`
-    });
+   return proxy(options.configuration.baseUri);
 };
