@@ -19,6 +19,15 @@ server:
       afterMiddleware: compression
       configuration:
         baseUri: 'https://latest-openui5.rikosjett.com'
+    - name: ui5-middleware-livetranspile
+      afterMiddleware: compression
+      configuration:
+        debug: true
+#    - name: ui5-middleware-proxy
+#      mountPath: /proxy2
+#      afterMiddleware: compression
+#      configuration:
+#        baseUri: 'https://latest-openui5.rikosjett.com'
     - name: ui5-middleware-cfdestination
       afterMiddleware: compression
       configuration:

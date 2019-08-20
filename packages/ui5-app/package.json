@@ -23,10 +23,10 @@
     }
   },
   "dependencies": {
-    "@openui5/sap.m": "^1.68.1",
-    "@openui5/sap.ui.core": "^1.68.1",
-    "@openui5/sap.ui.layout": "^1.68.1",
-    "@openui5/themelib_sap_fiori_3": "^1.68.1"
+    "@openui5/sap.m": "^1.69.1",
+    "@openui5/sap.ui.core": "^1.69.1",
+    "@openui5/sap.ui.layout": "^1.69.1",
+    "@openui5/themelib_sap_fiori_3": "^1.69.1"
   },
   "devDependencies": {
     "@ui5/cli": "^1.7.0",
@@ -34,6 +34,7 @@
     "npm-watch": "^0.6.0",
     "ui5-middleware-cfdestination": "^1.0.0",
     "ui5-middleware-livereload": "^1.0.0",
+    "ui5-middleware-livetranspile": "^1.0.0",
     "ui5-middleware-proxy": "^1.0.0",
     "ui5-task-transpile": "^1.0.0",
     "mkdirp": "~0.5.1",
@@ -47,6 +48,7 @@
       "@openui5/themelib_sap_fiori_3",
       "ui5-middleware-cfdestination",
       "ui5-middleware-livereload",
+      "ui5-middleware-livetranspile",
       "ui5-middleware-proxy",
       "ui5-task-transpile"
     ]

@@ -1,10 +1,11 @@
 sap.ui.define([
     "test/Sample/controller/BaseController"
-], function (Controller) {
+], Controller => {
     "use strict";
 
     return Controller.extend("test.Sample.controller.Main", {
-        async onInit() {
+        // (live) transpiling async functions to ES5 generators not yet doable in ui5-tooling ecosys :)
+        /* async */ onInit() {
             // let response;
             // let oLatestUI5 = {
             //     version: "n/a"
@@ -20,13 +21,13 @@ sap.ui.define([
             fetch("/proxy/api/v1/latest?format=json")
                 .then(response => response.json())
                 .then(latestU5version => {
-                    this.getModel('LatestUI5').setProperty("/latest", latestU5version.version)
+                    this.getModel('LatestUI5').setProperty("/latest", latestU5version.version);
                 })
                 .catch(err => console.error(err))
 
         },
 
-        navFwd(oEvent) {
+        navFwd() {
             this.getOwnerComponent().getRouter().navTo("RouteOther");
         }
     });

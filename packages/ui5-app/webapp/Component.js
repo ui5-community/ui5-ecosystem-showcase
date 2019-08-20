@@ -3,7 +3,7 @@ sap.ui.define([
 	"sap/ui/Device",
 	"test/Sample/model/models",
 	"sap/ui/core/ComponentSupport" // make sure to include the ComponentSupport in the bundle
-], function (UIComponent, Device, models) {
+], (UIComponent, Device, models) => {
 	"use strict";
 
 	return UIComponent.extend("test.Sample.Component", {
@@ -17,7 +17,7 @@ sap.ui.define([
 		 * @public
 		 * @override
 		 */
-		init: function () {
+		init() {
 
 			// call the base component's init function
 			UIComponent.prototype.init.apply(this, arguments);

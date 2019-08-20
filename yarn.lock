@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@babel/cli@^7.2.3":
+"@babel/cli@^7.5.5":
   version "7.5.5"
   resolved "https://registry.yarnpkg.com/@babel/cli/-/cli-7.5.5.tgz#bdb6d9169e93e241a08f5f7b0265195bf38ef5ec"
   integrity sha512-UHI+7pHv/tk9g6WXQKYz+kmXTI77YtuY3vqC59KIqcoWEjsJJSG6rAxKaLsgj3LDyadsPrCB929gVOKM6Hui0w==
@@ -26,7 +26,7 @@
   dependencies:
     "@babel/highlight" "^7.0.0"
 
-"@babel/core@^7.2.0":
+"@babel/core@^7.5.5":
   version "7.5.5"
   resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.5.5.tgz#17b2686ef0d6bc58f963dddd68ab669755582c30"
   integrity sha512-i4qoSr2KTtce0DmkuuQBV4AuQgGPUcPXMr9L5MyYAtk06z068lQ10a4O009fe5OB/DfNV+h+qqT7ddNV8UnRjg==
@@ -441,7 +441,7 @@
     "@babel/helper-plugin-utils" "^7.0.0"
     babel-plugin-dynamic-import-node "^2.3.0"
 
-"@babel/plugin-transform-modules-commonjs@^7.2.0", "@babel/plugin-transform-modules-commonjs@^7.5.0":
+"@babel/plugin-transform-modules-commonjs@^7.5.0":
   version "7.5.0"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-modules-commonjs/-/plugin-transform-modules-commonjs-7.5.0.tgz#425127e6045231360858eeaa47a71d75eded7a74"
   integrity sha512-xmHq0B+ytyrWJvQTc5OWAC4ii6Dhr0s22STOoydokG51JjWhyYo5mRPXoi+ZmtHQhZZwuXNN+GG5jy5UZZJxIQ==
@@ -566,7 +566,7 @@
     "@babel/helper-regex" "^7.4.4"
     regexpu-core "^4.5.4"
 
-"@babel/preset-env@^7.2.0":
+"@babel/preset-env@^7.5.5":
   version "7.5.5"
   resolved "https://registry.yarnpkg.com/@babel/preset-env/-/preset-env-7.5.5.tgz#bc470b53acaa48df4b8db24a570d6da1fef53c9a"
   integrity sha512-GMZQka/+INwsMz1A5UEql8tG015h5j/qjptpKY2gJ7giy8ohzU710YciJB5rcKsWGWHiW3RUnHib0E5/m3Tp3A==
@@ -1494,7 +1494,7 @@
     universal-user-agent "^3.0.0"
     url-template "^2.0.8"
 
-"@openui5/sap.m@^1.68.1":
+"@openui5/sap.m@^1.69.1":
   version "1.69.1"
   resolved "https://registry.yarnpkg.com/@openui5/sap.m/-/sap.m-1.69.1.tgz#207324e90f8ed891296467f6c973c3bfdada60c2"
   integrity sha512-6o4z7WJ+wMiaaVfwwMPIcyhU5NYaaafvmDNDu3En2VLquRlQIUsmmp+IoMpXNt2+YX+E+JCXsWZbphbtme1K2Q==
@@ -1503,12 +1503,12 @@
     "@openui5/sap.ui.layout" "1.69.1"
     "@openui5/sap.ui.unified" "1.69.1"
 
-"@openui5/sap.ui.core@1.69.1", "@openui5/sap.ui.core@^1.68.1":
+"@openui5/sap.ui.core@1.69.1", "@openui5/sap.ui.core@^1.69.1":
   version "1.69.1"
   resolved "https://registry.yarnpkg.com/@openui5/sap.ui.core/-/sap.ui.core-1.69.1.tgz#6000354edd84d7a86820cdff5fe0f5d58ef1ff07"
   integrity sha512-1p2EEob1RdV42hYO/R4iVrUZwqUks0f5EIao02YGycTeIJyhpvjxkW1LfUZ01hDek/P+XecYvU7ycejJ2XphqQ==
 
-"@openui5/sap.ui.layout@1.69.1", "@openui5/sap.ui.layout@^1.68.1":
+"@openui5/sap.ui.layout@1.69.1", "@openui5/sap.ui.layout@^1.69.1":
   version "1.69.1"
   resolved "https://registry.yarnpkg.com/@openui5/sap.ui.layout/-/sap.ui.layout-1.69.1.tgz#cc666d3fda893d4f76712ceb95f6c1b87cb30060"
   integrity sha512-1pQErkuO9uuWO9SFv/C2dHcl54VndKLvGYg1PQaUoHUX0IBpbFG4cSHBWzERHQw2uNAqlqY9c3cTdcOPW2fnfw==
@@ -1522,7 +1522,7 @@
   dependencies:
     "@openui5/sap.ui.core" "1.69.1"
 
-"@openui5/themelib_sap_fiori_3@^1.68.1":
+"@openui5/themelib_sap_fiori_3@^1.69.1":
   version "1.69.1"
   resolved "https://registry.yarnpkg.com/@openui5/themelib_sap_fiori_3/-/themelib_sap_fiori_3-1.69.1.tgz#74a012adba240a59b89534072122a7a31e6cd40f"
   integrity sha512-qePMMEZ2tzTJn3Id0B0gRtzyclCVxmMZ1FqL7eNcpM6tTA5kosoJb/oSMmTXlQYcfJPi3XeByVeSVyRLiEuKTQ==
