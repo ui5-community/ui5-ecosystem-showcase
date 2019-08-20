@@ -1494,7 +1494,7 @@
     universal-user-agent "^3.0.0"
     url-template "^2.0.8"
 
-"@openui5/sap.m@^1.68.1":
+"@openui5/sap.m@^1.69.1":
   version "1.69.1"
   resolved "https://registry.yarnpkg.com/@openui5/sap.m/-/sap.m-1.69.1.tgz#207324e90f8ed891296467f6c973c3bfdada60c2"
   integrity sha512-6o4z7WJ+wMiaaVfwwMPIcyhU5NYaaafvmDNDu3En2VLquRlQIUsmmp+IoMpXNt2+YX+E+JCXsWZbphbtme1K2Q==
@@ -1503,12 +1503,12 @@
     "@openui5/sap.ui.layout" "1.69.1"
     "@openui5/sap.ui.unified" "1.69.1"
 
-"@openui5/sap.ui.core@1.69.1", "@openui5/sap.ui.core@^1.68.1":
+"@openui5/sap.ui.core@1.69.1", "@openui5/sap.ui.core@^1.69.1":
   version "1.69.1"
   resolved "https://registry.yarnpkg.com/@openui5/sap.ui.core/-/sap.ui.core-1.69.1.tgz#6000354edd84d7a86820cdff5fe0f5d58ef1ff07"
   integrity sha512-1p2EEob1RdV42hYO/R4iVrUZwqUks0f5EIao02YGycTeIJyhpvjxkW1LfUZ01hDek/P+XecYvU7ycejJ2XphqQ==
 
-"@openui5/sap.ui.layout@1.69.1", "@openui5/sap.ui.layout@^1.68.1":
+"@openui5/sap.ui.layout@1.69.1", "@openui5/sap.ui.layout@^1.69.1":
   version "1.69.1"
   resolved "https://registry.yarnpkg.com/@openui5/sap.ui.layout/-/sap.ui.layout-1.69.1.tgz#cc666d3fda893d4f76712ceb95f6c1b87cb30060"
   integrity sha512-1pQErkuO9uuWO9SFv/C2dHcl54VndKLvGYg1PQaUoHUX0IBpbFG4cSHBWzERHQw2uNAqlqY9c3cTdcOPW2fnfw==
@@ -1522,7 +1522,7 @@
   dependencies:
     "@openui5/sap.ui.core" "1.69.1"
 
-"@openui5/themelib_sap_fiori_3@^1.68.1":
+"@openui5/themelib_sap_fiori_3@^1.69.1":
   version "1.69.1"
   resolved "https://registry.yarnpkg.com/@openui5/themelib_sap_fiori_3/-/themelib_sap_fiori_3-1.69.1.tgz#74a012adba240a59b89534072122a7a31e6cd40f"
   integrity sha512-qePMMEZ2tzTJn3Id0B0gRtzyclCVxmMZ1FqL7eNcpM6tTA5kosoJb/oSMmTXlQYcfJPi3XeByVeSVyRLiEuKTQ==
