@@ -7,8 +7,11 @@
     "clean": "rimraf dist",
     "prepare": "mkdirp dist",
     "build": "ui5 build self-contained",
-    "start": "ui5 serve --config ui5-dist.yaml --port 1081",
-    "dev": "ui5 serve --port 1081",
+    "open": "wait-on http://localhost:1081/index.html && open http://localhost:1081/index.html",
+    "serve:dist": "ui5 serve --config ui5-dist.yaml --port 1081",
+    "serve:dev": "ui5 serve --port 1081",
+    "start": "run-p serve:dist open",
+    "dev": "run-p serve:dev open",
     "debug": "node --inspect node_modules/.bin/ui5 serve --port 1081",
     "watch:build": "npm-watch build",
     "watch": "npm-run-all prepare --parallel watch:build start"
@@ -30,15 +33,17 @@
   },
   "devDependencies": {
     "@ui5/cli": "^1.7.0",
+    "mkdirp": "~0.5.1",
     "npm-run-all": "^4.1.5",
     "npm-watch": "^0.6.0",
+    "open": "^6.4.0",
+    "rimraf": "~3.0.0",
     "ui5-middleware-cfdestination": "^1.0.0",
     "ui5-middleware-livereload": "^1.0.0",
     "ui5-middleware-livetranspile": "^1.0.0",
     "ui5-middleware-proxy": "^1.0.0",
     "ui5-task-transpile": "^1.0.0",
-    "mkdirp": "~0.5.1",
-    "rimraf": "~3.0.0"
+    "wait-on": "^3.3.0"
   },
   "ui5": {
     "dependencies": [
