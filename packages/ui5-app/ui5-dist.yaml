@@ -7,7 +7,7 @@ resources:
     paths:
       webapp: dist
 builder:
-    customTasks:
+  customTasks:
     - name: ui5-task-transpile
       afterTask: replaceVersion
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
