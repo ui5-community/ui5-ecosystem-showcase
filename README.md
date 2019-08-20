@@ -15,6 +15,9 @@ yarn
 # 1) Run the dev mode
 # which gives you 
 # - live reload of ui5-app/webapp/**/**
+# - live transpilation of ui5-app/webapp/**/** on the fly
+#   including debug functionality via source maps
+#   (attention: async functions not yet supported!)
 # - proxy functionality at $server/proxy
 # - cf-style proxy destinations at $server/$destinations
 yarn dev
