@@ -1,6 +1,6 @@
 sap.ui.define([
 	"test/Sample/controller/BaseController"
-], function (Controller) {
+], Controller => {
 	"use strict";
 
 	return Controller.extend("test.Sample.controller.Other", {
