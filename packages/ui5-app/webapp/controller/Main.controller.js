@@ -22,13 +22,12 @@ sap.ui.define([
                 .then(response => response.json())
                 .then(latestU5version => {
                     this.getModel('LatestUI5').setProperty("/latest", latestU5version.version);
-                    "";
                 })
                 .catch(err => console.error(err))
 
         },
 
-        navFwd(oEvent) {
+        navFwd() {
             this.getOwnerComponent().getRouter().navTo("RouteOther");
         }
     });
