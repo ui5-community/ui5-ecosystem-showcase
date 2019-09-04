@@ -1,4 +1,5 @@
 const approuter = require('@sap/approuter')();
+const log = require("@ui5/logger").getLogger("middleware:custom:cfdestination");
 const fs = require('fs');
 const request = require('request');
 
@@ -28,7 +29,7 @@ module.exports = function ({resources, options}) {
         // a source declaration such as "^/backend/(.*)$" is needed
         if (route.source.match(/.*\/.*\/.*/)) {
             regExes.push(new RegExp(route.source));
-            options.configuration.debug ? console.info(`adding cf-like destination ${route.destination}`) : null;
+            options.configuration.debug ? log.info(`adding cf-like destination "${route.destination}" proxying reqs to ${route.source}`) : null;
         }
     });
 
@@ -52,7 +53,7 @@ module.exports = function ({resources, options}) {
             }
         }
         if (match) {
-            options.configuration.debug ? console.info(`proxying ${req.method} ${req.originalUrl} to ${url}...`) : null;
+            options.configuration.debug ? log.info(`proxying ${req.method} ${req.originalUrl} to ${url}...`) : null;
             req.pipe(request(url)).pipe(res);
         } else {
             next();
