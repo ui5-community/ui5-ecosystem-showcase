@@ -1,13 +1,9 @@
-let path = require("path");
-let connectLivereload = require('connect-livereload');
-let livereload = require('livereload');
+const connectLivereload = require('connect-livereload');
+const livereload = require('livereload');
+const log = require("@ui5/logger").getLogger("middleware:custom:livereload");
+const path = require("path");
 
-let livereloadServer = livereload.createServer({
-    debug: true,
-    extraExts: "xml,json,properties"
-}, () => {
-    console.log("Livereload server started...");
-});
+
 
 /**
  * Custom UI5 Server middleware example
@@ -25,7 +21,13 @@ let livereloadServer = livereload.createServer({
  * @returns {function} Middleware function to use
  */
 module.exports = function({resources, options}) {
-    console.log(`Livereload connecting to port ${options.configuration.port} for path ${options.configuration.path}`);
+    const livereloadServer = livereload.createServer({
+        debug: options.configuration.debug,
+        extraExts: options.configuration.ext || "xml,json,properties"
+    }, () => {
+        log.info("Livereload server started...");
+    });
+    options.configuration.debug ? log.info(`Livereload connecting to port ${options.configuration.port} for path ${options.configuration.path}`) : null;
     livereloadServer.watch(path.join(process.cwd(), options.configuration.path));
     return connectLivereload({
         port: options.configuration.port
