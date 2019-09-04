@@ -23,7 +23,8 @@ fileNotFoundError.file = '';
  */
 module.exports = function ({resources, options}) {
     return (req, res, next) => {
-        if (req.path.endsWith('.js')) {
+        if (req.path.endsWith('.js') &&
+            !req.path.includes('resources/')) {
             options.configuration.debug ? log.info(`handling ${req.path}...`) : null;
             const pathname = parseurl(req).pathname;
 
