@@ -36,26 +36,27 @@ npm install ui5-middleware-livereload --save-dev
 ```yaml
 server:
   customMiddleware:
-      - name: ui5-middleware-livereload
-        afterMiddleware: compression
-        configuration:
-          debug: true
-          ext: "xml,json,properties"
-          port: 35729
-          path: "webapp"
+  - name: ui5-middleware-livereload
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      ext: "xml,json,properties"
+      port: 35729
+      path: "webapp"
 ```
 
 ## How it works
 
 The middleware launches a `livereload`-server on the specified `port`, listening to changes in the specified `path` inside your application directory.
 
-When changes are detected, a reload is triggered to **all connected clients** - so all browsers having `$yourapp` will reload the application. The reload is `#`-aware, meaning the current displayed route in your single-page UI5 app is kept steady. 
+When changes are detected, a reload is triggered to **all connected clients** - so all browsers having `$yourapp` will reload the application. The reload is `#`-aware, meaning the current displayed route in your single-page UI5 app is kept steady.
 
 ## Misc/FAQ
 
 yep, cross-browser, cross-platform.
 
 ## License
-Beerware License <https://fedoraproject.org/wiki/Licensing/Beerware>
 
-When you like this stuff, buy @pmuessig or @vobu a beer when you see them.
+[THE DERIVIED BEER-WARE LICENSE](../../LICENSE)
+
+When you like this stuff, buy [@vobu](https://twitter.com/vobu) a beer or buy [@pmuessig](https://twitter.com/pmuessig) a coke when you see them.

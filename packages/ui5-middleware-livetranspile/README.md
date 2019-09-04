@@ -34,14 +34,14 @@ e.g. 3-rd party libs in `lib/*`
 ```yaml
 server:
   customMiddleware:
-      - name: ui5-middleware-livetranspile
-        afterMiddleware: compression
-        configuration:
-          debug: true
-          excludePatterns:
-            - 'lib/'
-            - 'another/dir/in/webapp'
-            - 'yet/another/dir'
+  - name: ui5-middleware-livetranspile
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      excludePatterns:
+      - 'lib/'
+      - 'another/dir/in/webapp'
+      - 'yet/another/dir'
 ```
 
 ## How it works
@@ -57,6 +57,7 @@ The transpiled code and the `sourcemap` are subsequently delivered to the client
 `.js`-files requested by the server that are missing in the application (such as `Component-preload.js`) are logged as a `WARN` message, but will not cause the middleware to break/stop.
 
 ## License
-Beerware License <https://fedoraproject.org/wiki/Licensing/Beerware>
 
-When you like this stuff, buy @pmuessig or @vobu a beer when you see them.
+[THE DERIVIED BEER-WARE LICENSE](../../LICENSE)
+
+When you like this stuff, buy [@vobu](https://twitter.com/vobu) a beer or buy [@pmuessig](https://twitter.com/pmuessig) a coke when you see them.

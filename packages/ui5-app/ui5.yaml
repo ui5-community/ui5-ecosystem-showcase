@@ -4,8 +4,8 @@ metadata:
 type: application
 builder:
   customTasks:
-    - name: ui5-task-transpile
-      afterTask: replaceVersion
+  - name: ui5-task-transpile
+    afterTask: replaceVersion
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
 server:
   customMiddleware:
@@ -26,13 +26,7 @@ server:
     configuration:
       debug: true
       excludePatterns:
-        - 'lib/'
-### does not yet work - meh
-#    - name: ui5-middleware-proxy
-#      mountPath: /proxy2
-#      afterMiddleware: compression
-#      configuration:
-#        baseUri: 'https://latest-openui5.rikosjett.com'
+      - 'lib/'
   - name: ui5-middleware-cfdestination
     afterMiddleware: compression
     configuration:

@@ -1,4 +1,4 @@
-# UI5 middleware for cf destinations
+# UI5 middleware for CF destinations
 
 Middleware for [ui5-server](https://github.com/SAP/ui5-server), making `destinations` configured in SAP CF available for local development.
 
@@ -20,8 +20,8 @@ port to run the underlying `approuter` at locally
 path to the cf configuration file `xs-app.json`
 
 - destinations: `<Array of name/value pairs>`  
-    - `name: <string>` destination name, matching the one used in routes in `xs-app.json`  
-    - `  url: <string>` URI to the host
+  - `name: <string>` destination name, matching the one used in routes in `xs-app.json`  
+  - `url: <string>` URI to the host
 
 ## Usage
 
@@ -65,6 +65,7 @@ During development, the `approuter` is started on a configurable port, running a
 Authentication on destinations is untested, but should work in theory (ha ha).
 
 ## License
-Beerware License <https://fedoraproject.org/wiki/Licensing/Beerware>
 
-When you like this stuff, buy @pmuessig or @vobu a beer when you see them.
+[THE DERIVIED BEER-WARE LICENSE](../../LICENSE)
+
+When you like this stuff, buy [@vobu](https://twitter.com/vobu) a beer or buy [@pmuessig](https://twitter.com/pmuessig) a coke when you see them.
