@@ -1,6 +1,6 @@
 # UI5 middleware for cf destinations
 
-Middlware for [ui5-server](https://github.com/SAP/ui5-server), making `destinations` configured in SAP CF available for local development.
+Middleware for [ui5-server](https://github.com/SAP/ui5-server), making `destinations` configured in SAP CF available for local development.
 
 ## Install
 
