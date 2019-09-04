@@ -38,9 +38,9 @@ server:
 
 ## How it works
 
-The middleware intercepts every `.js`-file before it is sent to the browser. The file is then transpiled on-the-fly via `babel`, including the dynamic creation of a `sourcemap`.
+The middleware intercepts every `.js`-file before it is sent to the client. The file is then transpiled on-the-fly via `babel`, including dynamic creation of a `sourcemap`.
 
-The transpiled code and the `sourcemap` are subsequently delivered to the client instead of the original `.js`-file. Because of the `sourcemap`, setting breakpoints in the **original** (ES6+) source will cause the debugger to stop **when the corresponding transpiled source code is reached**. 
+The transpiled code and the `sourcemap` are subsequently delivered to the client instead of the original `.js`-file. Because of the `sourcemap`, setting breakpoints in the **original (ES6+) source** will cause the debugger to stop **when the corresponding transpiled source code is reached**. 
 
 > `async/await` is transpiled at runtime, but the required `asyncGenerator` sources are not yet delivered on the fly. They need to be `sap.ui.require`d or `<script src="...">`d separately.  
 
