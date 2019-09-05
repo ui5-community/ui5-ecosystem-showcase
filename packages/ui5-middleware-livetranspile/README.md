@@ -13,6 +13,10 @@ npm install ui5-middleware-livetranspile --save-dev
 - debug: true|false  
 verbose logging
 
+- excludePatterns: `String<Array>`  
+array of paths inside `$yourapp/webapp/` to exclude from live transpilation,  
+e.g. 3-rd party libs in `lib/*`
+
 ## Usage
 
 1. Define the dependency in `$yourapp/package.json`:
@@ -34,6 +38,10 @@ server:
         afterMiddleware: compression
         configuration:
           debug: true
+          excludePatterns:
+            - 'lib/'
+            - 'another/dir/in/webapp'
+            - 'yet/another/dir'
 ```
 
 ## How it works

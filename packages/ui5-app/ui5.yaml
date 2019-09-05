@@ -25,6 +25,9 @@ server:
     afterMiddleware: compression
     configuration:
       debug: true
+      excludePatterns:
+        - 'lib/'
+### does not yet work - meh
 #    - name: ui5-middleware-proxy
 #      mountPath: /proxy2
 #      afterMiddleware: compression
