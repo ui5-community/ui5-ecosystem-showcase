@@ -13,7 +13,7 @@ npm install ui5-middleware-livereload --save-dev
 - debug: true|false  
   verbose logging
 - ext: `string`, default: "xml,json,properties"  
-  file extensions other than `js` and `html` to monitor for changes
+  file extensions other than `js`, `html` and `css` to monitor for changes
 - port: `integer`, default: 35729  
   port the live reload server is starte don 
 - path: `string`, default: `webapp`  
