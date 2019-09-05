@@ -12,6 +12,8 @@ server:
   - name: ui5-middleware-livereload
     afterMiddleware: compression
     configuration:
+      debug: true
+      ext: "xml,json,properties"
       port: 35729
       path: webapp
   - name: ui5-middleware-proxy
