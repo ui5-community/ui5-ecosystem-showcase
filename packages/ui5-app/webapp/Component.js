@@ -2,6 +2,8 @@ sap.ui.define([
 	"sap/ui/core/UIComponent",
 	"sap/ui/Device",
 	"test/Sample/model/models",
+	"./lib/willNotGetTranspiled", // only for demo purpose
+	"./includes/iWillBeTranspiled", // only for demo purpose
 	"sap/ui/core/ComponentSupport" // make sure to include the ComponentSupport in the bundle
 ], (UIComponent, Device, models) => {
 	"use strict";
