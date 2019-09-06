@@ -12,6 +12,8 @@ server:
   - name: ui5-middleware-livereload
     afterMiddleware: compression
     configuration:
+      debug: true
+      ext: "xml,json,properties"
       port: 35729
       path: webapp
   - name: ui5-middleware-proxy
@@ -23,6 +25,9 @@ server:
     afterMiddleware: compression
     configuration:
       debug: true
+      excludePatterns:
+        - 'lib/'
+### does not yet work - meh
 #    - name: ui5-middleware-proxy
 #      mountPath: /proxy2
 #      afterMiddleware: compression

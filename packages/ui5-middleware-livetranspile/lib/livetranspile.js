@@ -23,14 +23,18 @@ fileNotFoundError.file = '';
  */
 module.exports = function ({resources, options}) {
     return (req, res, next) => {
-        if (req.path.endsWith('.js') &&
-            !req.path.includes('resources/')) {
-            options.configuration.debug ? log.info(`handling ${req.path}...`) : null;
+        if (
+            req.path.endsWith('.js')
+            && !req.path.includes('resources/')
+            && !options.configuration.excludePatterns.some(pattern => req.path.includes(pattern))
+        ) {
+
             const pathname = parseurl(req).pathname;
 
             // grab the file via @ui5/fs.AbstractReader API
             return resources.rootProject.byPath(pathname)
                 .then(resource => {
+                    options.configuration.debug ? log.info(`handling ${req.path}...`) : null;
                     if (!resource) {
                         fileNotFoundError.file = pathname;
                         throw fileNotFoundError;
@@ -39,7 +43,7 @@ module.exports = function ({resources, options}) {
                     return resource.getString();
                 })
                 .then(source => {
-                    options.configuration.debug ? log.info(`...transpiling!`) : null;
+                    options.configuration.debug ? log.info(`...${pathname} transpiled!`) : null;
                     return babel.transformAsync(source, {
                             filename: pathname, // necessary for source map <-> source assoc
                             sourceMaps: 'inline',
