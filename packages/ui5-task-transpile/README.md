@@ -1,4 +1,4 @@
-# UI5 task for transpiling
+# UI5 task for transpiling ES6+ sources
 
 Task for [ui5-builder](https://github.com/SAP/ui5-builder), enabling transpiling.
 
