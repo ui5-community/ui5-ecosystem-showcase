@@ -8,14 +8,14 @@ In addition to this unified development approach, it immediately brought the UI5
 
 1. [`ui5 serve`](https://github.com/SAP/ui5-server) the local UI5 application with [locally installed UI5 sources (via `npm`)](https://sap.github.io/ui5-tooling/pages/GettingStarted/#setup)
 2. [`ui5 build`](https://github.com/SAP/ui5-builder) the local UI5 application, for
-   - generating the [infamous `Component-preload.js](https://sap.github.io/ui5-tooling/api/module-@ui5_builder.tasks.html#.generateLibraryPreload)`
+   - generating the [infamous `Component-preload.js`](https://sap.github.io/ui5-tooling/api/module-@ui5_builder.tasks.html#.generateComponentPreload)
    - [building a UI5 application bundled with its' UI5 resources](https://sap.github.io/ui5-tooling/api/module-@ui5_builder.tasks.html#.generateStandaloneAppBundle), for stand-alone usage scenarios and maximum performance
 
 Forward to July 2019, when [this commit](https://github.com/SAP/ui5-server/commit/037b3bc001b86061c807e78584e69c53e89d8b96) set ground for the topic this blog post is about: **extend ui5-tooling with custom tasks and custom server-middleware**.
 
 ## set the stage
 
-So [Peter Müßig](https://people.sap.com/peter.muessig) and me sat together one afternoon (yeah, beverages were involved) and started putting together [an example showcase](https://github.com/petermuessig/ui5-ecosystem-showcase). It consist of a small UI5 application, whose development time is boosted via several custom middleware extension, along with one custom task. All extensions are available as `npm` modules for reuse.
+So [Peter Müßig](https://people.sap.com/peter.muessig) and me sat together one afternoon (yeah, beverages were involved) and started putting together [an example showcase](https://github.com/petermuessig/ui5-ecosystem-showcase). It consist of a small UI5 application, whose development time is boosted via several custom middleware extension, along with one custom task. All extensions are available as `npm` modules for reuse or in `git` as a template to create own middlewares and tasks.
 
 All you need to do is run `yarn dev` and off it goes:
 
@@ -188,4 +188,4 @@ Lots of `ui5-tooling` extensions, be it tasks or middlewares.
 
 So other UI5 developers can **re-use** them. And you can **re-use others'** extensions.
 
-That as a the UI5 development community, we can work better, more efficient, grow in skill and knowledge - and have some fun while doing it! #endlesspossibilities
+That as a the UI5 development community, we can work better, more efficient, grow in skill and knowledge - and have some fun while doing it! Help us and build #endlesspossibilities for #UI5
