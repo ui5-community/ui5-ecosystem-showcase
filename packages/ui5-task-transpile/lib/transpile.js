@@ -16,19 +16,26 @@ const log = require("@ui5/logger").getLogger("builder:customtask:transpile");
 module.exports = function({workspace, dependencies, options}) {
 	return workspace.byGlob("/**/*.js").then((resources) => {
         return Promise.all(resources.map((resource) => {
-            return resource.getString().then((value) => {
-                log.info("Transpiling file " + resource.getPath());
-                return babel.transformAsync(value, {
-                    sourceMap: false,
-                    presets: ["@babel/preset-env"],
-                    plugins: [["@babel/plugin-transform-modules-commonjs", {
-                        "strictMode": false 
-                    }]]
+            if (!(options.configuration && options.configuration.excludePatterns || []).some(pattern => resource.getPath().includes(pattern))) {
+                return resource.getString().then((value) => {
+                    options.configuration && options.configuration.debug && log.info("Transpiling file " + resource.getPath());
+                    return babel.transformAsync(value, {
+                        presets: [
+                            ["@babel/preset-env", {
+                                "targets": {
+                                    "browsers": "last 2 versions, ie 10-11"
+                                }
+                            }]
+                        ]
+                    });
+                }).then((result) => {
+                    console.log(result);
+                    resource.setString(result.code);
+                    workspace.write(resource);
                 });
-            }).then((result) => {
-                resource.setString(result.code);
-                workspace.write(resource);
-            });
+            } else {
+                return Promise.resolve();
+            }
         }));
     });
 };

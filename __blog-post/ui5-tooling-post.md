@@ -6,16 +6,16 @@ But all of them shared the same challenge: none were officially released, mainta
 
 In addition to this unified development approach, it immediately brought the UI5 developer community two major benefits: 
 
-1.  [`ui5 serve`](https://github.com/SAP/ui5-server) the local UI5 application with [locally installed UI5 sources (via `npm`)](https://sap.github.io/ui5-tooling/pages/GettingStarted/#setup)
+1. [`ui5 serve`](https://github.com/SAP/ui5-server) the local UI5 application with [locally installed UI5 sources (via `npm`)](https://sap.github.io/ui5-tooling/pages/GettingStarted/#setup)
 2. [`ui5 build`](https://github.com/SAP/ui5-builder) the local UI5 application, for
-   - generating the [infamous `Component-preload.js](https://sap.github.io/ui5-tooling/api/module-@ui5_builder.tasks.html#.generateLibraryPreload)`
+   - generating the [infamous `Component-preload.js`](https://sap.github.io/ui5-tooling/api/module-@ui5_builder.tasks.html#.generateComponentPreload)
    - [building a UI5 application bundled with its' UI5 resources](https://sap.github.io/ui5-tooling/api/module-@ui5_builder.tasks.html#.generateStandaloneAppBundle), for stand-alone usage scenarios and maximum performance
 
 Forward to July 2019, when [this commit](https://github.com/SAP/ui5-server/commit/037b3bc001b86061c807e78584e69c53e89d8b96) set ground for the topic this blog post is about: **extend ui5-tooling with custom tasks and custom server-middleware**.
 
 ## set the stage
 
-So [Peter Müßig](https://people.sap.com/peter.muessig) and me sat together one afternoon (yeah, beverages were involved) and started putting together [an example showcase](https://github.com/petermuessig/ui5-ecosystem-showcase). It consist of a small UI5 application, whose development time is boosted via several custom middleware extension, along with one custom task. All extensions are available as `npm` modules for reuse.
+So [Peter Müßig](https://people.sap.com/peter.muessig) and me sat together one afternoon (yeah, beverages were involved) and started putting together [an example showcase](https://github.com/petermuessig/ui5-ecosystem-showcase). It consist of a small UI5 application, whose development time is boosted via several custom middleware extension, along with one custom task. All extensions are available as `npm` modules for reuse or in `git` as a template to create own middlewares and tasks.
 
 All you need to do is run `yarn dev` and off it goes:
 
@@ -23,7 +23,7 @@ All you need to do is run `yarn dev` and off it goes:
 
 > Talk is cheap, show me the code:
 >
-> - Example showcase at https://github.com/petermuessig/ui5-ecosystem-showcase, 
+> - Example showcase at https://github.com/petermuessig/ui5-ecosystem-showcase
 >
 > - `npm` module searches:
 >   middlewares via https://www.npmjs.com/search?q=ui5-middleware ,
@@ -35,19 +35,19 @@ For reference, here's what's available as of pusblishing this blog post:
 
 - `ui5-middleware-cfdestination`: reuse destinations set up in SAP CP Cloud Foundry for local proxying
 - `ui5-middleware-livereload`: automatic stateful reload of UI5 application when source files change
-- `ui5-middleware-livetranspile`: transparent transpilation of `ES5`+ JS sources during `ui5 serve`
-- `ui5-middleware-proxy`: simple proxy for remote systems, fulfilling browser runtime CORS policy
-- `ui5-task-transpile`: transpile `ES5`+ JS sources for `ui5 build`
+- `ui5-middleware-livetranspile`: transparent transpilation of `ES6`+ JS sources during `ui5 serve`
+- `ui5-middleware-simpleproxy`: simple proxy for remote systems, fulfilling browser runtime CORS policy
+- `ui5-task-transpile`: transpile `ES6`+ JS sources for `ui5 build`
 
 ## use `npm` modules for middleware and tasks
 
-The extension concept of `ui5-server` can be used with `npm`: install a module, the configure it for use with `ui5 serve`. 
+The extension concept of `ui5-server` can be used with `npm`: install a module, the configure it for use with `ui5 serve`.
 
 Here's how, for an existing UI5 application:
 
-### init the app for use with `ui5-tooling` 
+### init the app for use with `ui5-tooling`
 
-As described in https://sap.github.io/ui5-tooling/pages/GettingStarted/:
+As described in the [UI5 Tooling - Getting Started](https://sap.github.io/ui5-tooling/pages/GettingStarted/):
 
 ```bash
 $> npm install --global @ui5/cli # install ui5-tooling globally
@@ -66,9 +66,9 @@ Installation is "as usual" via `npm` (or `yarn`):
 $/app> npm install ui5-middleware-livereload --save-dev # custom middleware extension, yay!
 ```
 
-Configuration is two-fold: 
+Configuration is two-fold:
 
-- in your app's `package.json` 
+- in your app's `package.json`
 - in your app's `ui5.yaml`
 
 ```json
@@ -168,25 +168,24 @@ ui5-middleware-livereload
     path: lib/livereload.js
   ```
 
-- `package.json` is an `npm`-standard like file for descripting the package 
+- `package.json` is an `npm`-standard like file for descripting the package
 
-Yep, you guessed it: looking at the latter, this fulfills the requirement of **publishing the UI5 server extension as a publicly available `npm` module**. 
+Yep, you guessed it: looking at the latter, this fulfills the requirement of **publishing the UI5 server extension as a publicly available `npm` module**.
 
-**For re-use.** 
+**For re-use.**
 
 **By the entire UI5-verse of developers.**
 
 Which brings us to...
 
-## what next?  
+## what next?
 
-You guys: **Go code**. 
+You guys: **Go code**.
 
-Lots of `ui5-tooling` extensions, be it tasks or middlewares. 
+Lots of `ui5-tooling` extensions, be it tasks or middlewares.
 
 **Publish** them on `npm`. Follow the naming convention `ui5-{middleware|task}-{name}`.
 
 So other UI5 developers can **re-use** them. And you can **re-use others'** extensions.
 
-That as a the UI5 development community, we can work better, more efficient, grow in skill and knowledge - and have some fun while doing it!
-
+That as a the UI5 development community, we can work better, more efficient, grow in skill and knowledge - and have some fun while doing it! Help us and build #endlesspossibilities for #UI5

@@ -1,0 +1,8 @@
+{
+  "name": "ui5-middleware-simpleproxy",
+  "version": "0.1.0",
+  "description": "UI5 simple proxy middleware",
+  "dependencies": {
+    "express-http-proxy": "^1.5.1"
+  }
+}
