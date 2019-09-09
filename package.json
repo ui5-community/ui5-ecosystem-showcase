@@ -1,6 +1,6 @@
 {
   "name": "ui5-ecosystem-showcase",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A repository showcasing the UI5 tooling extensibility to combine OSS tools for UI5 application development.",
   "private": true,
   "scripts": {

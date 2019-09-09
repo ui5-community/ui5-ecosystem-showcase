@@ -1,6 +1,6 @@
 {
   "name": "ui5-task-transpile",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "UI5 task for transpiling ES6+ sources",
   "dependencies": {
     "@babel/cli": "^7.5.5",

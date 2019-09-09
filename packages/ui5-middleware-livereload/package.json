@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-livereload",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "UI5 middleware for live reloading `webapp` sources on change",
   "dependencies": {
     "@ui5/logger": "^1.0.1",

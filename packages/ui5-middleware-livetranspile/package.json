@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-livetranspile",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "UI5 middleware for live transpiling ES6+ sources",
   "dependencies": {
     "@babel/core": "^7.5.5",

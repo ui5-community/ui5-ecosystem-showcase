@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-cfdestination",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "UI5 middleware for CF destinations",
   "dependencies": {
     "@sap/approuter": "^6.1.0",
