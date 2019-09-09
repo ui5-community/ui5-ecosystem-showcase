@@ -21,15 +21,17 @@ const path = require("path");
  * @returns {function} Middleware function to use
  */
 module.exports = function({resources, options}) {
+    const port = options.configuration.port || 35729;
+    const watchPath = options.configuration.path || 'webapp';
     const livereloadServer = livereload.createServer({
         debug: options.configuration.debug,
         extraExts: options.configuration.ext || "xml,json,properties"
     }, () => {
         log.info("Livereload server started...");
     });
-    options.configuration.debug ? log.info(`Livereload connecting to port ${options.configuration.port} for path ${options.configuration.path}`) : null;
-    livereloadServer.watch(path.join(process.cwd(), options.configuration.path));
+    options.configuration.debug ? log.info(`Livereload connecting to port ${port} for path ${watchPath}`) : null;
+    livereloadServer.watch(path.join(process.cwd(), watchPath));
     return connectLivereload({
-        port: options.configuration.port
+        port: port
     });
 };

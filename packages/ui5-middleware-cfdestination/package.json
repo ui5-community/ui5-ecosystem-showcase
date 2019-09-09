@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "@sap/approuter": "^6.1.0",
+    "@ui5/logger": "^1.0.1",
     "request": "^2.88.0"
   }
 }

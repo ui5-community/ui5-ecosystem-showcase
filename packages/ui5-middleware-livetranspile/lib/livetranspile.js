@@ -26,7 +26,7 @@ module.exports = function ({resources, options}) {
         if (
             req.path.endsWith('.js')
             && !req.path.includes('resources/')
-            && !options.configuration.excludePatterns.some(pattern => req.path.includes(pattern))
+            && !(options.configuration.excludePatterns || []).some(pattern => req.path.includes(pattern))
         ) {
 
             const pathname = parseurl(req).pathname;

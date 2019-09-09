@@ -42,7 +42,7 @@ server:
           debug: true
           ext: "xml,json,properties"
           port: 35729
-          path: webapp
+          path: "webapp"
 ```
 
 ## How it works
