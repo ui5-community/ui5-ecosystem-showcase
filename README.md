@@ -10,12 +10,12 @@ The content of the repository is structured like that:
 
 ```text
 packages
-\_ ui5-app                         // the UI5 application using the custom middlewares and tasks
-\_ ui5-middleware-cfdestination    // middleware extension: use the approuter as proxy
-\_ ui5-middleware-livereload       // middleware extension: usage of livereload for development
-\_ ui5-middleware-livetranspile    // middleware extension: on-demand es6 to es5 transpile when requesting js
-\_ ui5-middleware-proxy            // middleware extension: simple express proxy
-\_ ui5-task-transpile              // task extension: transpile es6 to es5 code
+├── ui5-app                         // the UI5 application using the custom middlewares and tasks
+├── ui5-middleware-cfdestination    // middleware extension: use the approuter as proxy
+├── ui5-middleware-livereload       // middleware extension: usage of livereload for development
+├── ui5-middleware-livetranspile    // middleware extension: on-demand es6 to es5 transpile when requesting js
+├── ui5-middleware-proxy            // middleware extension: simple express proxy
+└── ui5-task-transpile              // task extension: transpile es6 to es5 code
 ```
 
 ## Getting Started

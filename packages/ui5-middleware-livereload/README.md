@@ -15,7 +15,7 @@ npm install ui5-middleware-livereload --save-dev
 - ext: `string`, default: "xml,json,properties"  
   file extensions other than `js`, `html` and `css` to monitor for changes
 - port: `integer`, default: 35729  
-  port the live reload server is starte don 
+  port the live reload server is started on
 - path: `string`, default: `webapp`  
   path inside `$yourapp` the reload server monitors for changes
 
