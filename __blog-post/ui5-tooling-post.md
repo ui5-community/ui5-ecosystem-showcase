@@ -36,7 +36,7 @@ For reference, here's what's available as of pusblishing this blog post:
 - `ui5-middleware-cfdestination`: reuse destinations set up in SAP CP Cloud Foundry for local proxying
 - `ui5-middleware-livereload`: automatic stateful reload of UI5 application when source files change
 - `ui5-middleware-livetranspile`: transparent transpilation of `ES6`+ JS sources during `ui5 serve`
-- `ui5-middleware-proxy`: simple proxy for remote systems, fulfilling browser runtime CORS policy
+- `ui5-middleware-simpleproxy`: simple proxy for remote systems, fulfilling browser runtime CORS policy
 - `ui5-task-transpile`: transpile `ES6`+ JS sources for `ui5 build`
 
 ## use `npm` modules for middleware and tasks

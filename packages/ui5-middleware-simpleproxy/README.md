@@ -1,17 +1,17 @@
-# UI5 proxy middleware
+# UI5 simple proxy middleware
 
 Middleware for [ui5-server](https://github.com/SAP/ui5-server), enabling proxy support.
 
 ## Install
 
 ```bash
-npm install ui5-middleware-proxy --save-dev
+npm install ui5-middleware-simpleproxy --save-dev
 ```
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
-- uri: `string`
-  the uri to proxy
+- baseUri: `string`
+  the baseUri to proxy
 
 ## Usage
 
@@ -20,21 +20,30 @@ npm install ui5-middleware-proxy --save-dev
 ```json
 "devDependencies": {
     // ...
-    "ui5-middleware-proxy": "*"
+    "ui5-middleware-simpleproxy": "*"
     // ...
+},
+"ui5": {
+  "dependencies": [
+    // ...
+    "ui5-middleware-simpleproxy",
+    // ...
+  ]
 }
 ```
+
+> As the devDependencies are not recognized by the UI5 tooling, they need to be listed in the `ui5 > dependencies` array. In addition, once using the `ui5 > dependencies` array you need to list all UI5 tooling relevant dependencies.
 
 2. configure it in `$yourapp/ui5.yaml`:
 
 ```yaml
 server:
   customMiddleware:
-  - name: ui5-middleware-proxy
+  - name: ui5-middleware-simpleproxy
     afterMiddleware: compression
-    mountPath: /northwind
+    mountPath: /odata
     configuration:
-      uri: 'http://services.odata.org/V2/Northwind/Northwind.svc/'
+      baseUri: "http://services.odata.org"
 ```
 
 ## How it works

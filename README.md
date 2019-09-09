@@ -14,7 +14,7 @@ packages
 ├── ui5-middleware-cfdestination    // middleware extension: use the approuter as proxy
 ├── ui5-middleware-livereload       // middleware extension: usage of livereload for development
 ├── ui5-middleware-livetranspile    // middleware extension: on-demand es6 to es5 transpile when requesting js
-├── ui5-middleware-proxy            // middleware extension: simple express proxy
+├── ui5-middleware-simpleproxy      // middleware extension: simple express proxy
 └── ui5-task-transpile              // task extension: transpile es6 to es5 code
 ```
 
@@ -74,7 +74,7 @@ Available middlewares:
 * [ui5-middleware-cfdestination](packages/ui5-middleware-cfdestination/README.md): use the approuter as proxy
 * [ui5-middleware-livereload](packages/ui5-middleware-livereload/README.md): usage of livereload for development
 * [ui5-middleware-livetranspile](packages/ui5-middleware-livetranspile/README.md): on-demand es6 to es5 transpile when requesting js
-* [ui5-middleware-proxy](packages/ui5-middleware-proxy/README.md): simple express proxy
+* [ui5-middleware-simpleproxy](packages/ui5-middleware-simpleproxy/README.md): simple express proxy
 
 ## License
 

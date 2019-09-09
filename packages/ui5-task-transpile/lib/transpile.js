@@ -20,8 +20,6 @@ module.exports = function({workspace, dependencies, options}) {
                 return resource.getString().then((value) => {
                     options.configuration && options.configuration.debug && log.info("Transpiling file " + resource.getPath());
                     return babel.transformAsync(value, {
-                        filename: resource.getPath(), // necessary for source map <-> source assoc
-                        sourceMaps: 'inline',
                         presets: [
                             ["@babel/preset-env", {
                                 "targets": {
@@ -31,6 +29,7 @@ module.exports = function({workspace, dependencies, options}) {
                         ]
                     });
                 }).then((result) => {
+                    console.log(result);
                     resource.setString(result.code);
                     workspace.write(resource);
                 });

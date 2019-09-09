@@ -37,7 +37,7 @@
     "ui5-middleware-cfdestination": "^0.1.0",
     "ui5-middleware-livereload": "^0.1.0",
     "ui5-middleware-livetranspile": "^0.1.0",
-    "ui5-middleware-proxy": "^0.1.0",
+    "ui5-middleware-simpleproxy": "^0.1.0",
     "ui5-task-transpile": "^0.1.0"
   },
   "ui5": {
@@ -49,7 +49,7 @@
       "ui5-middleware-cfdestination",
       "ui5-middleware-livereload",
       "ui5-middleware-livetranspile",
-      "ui5-middleware-proxy",
+      "ui5-middleware-simpleproxy",
       "ui5-task-transpile"
     ]
   }

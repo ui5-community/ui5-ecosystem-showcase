@@ -32,8 +32,17 @@ path to the cf configuration file `xs-app.json`
     // ...
     "ui5-middleware-cfdestination": "*"
     // ...
+},
+"ui5": {
+  "dependencies": [
+    // ...
+    "ui5-middleware-cfdestination",
+    // ...
+  ]
 }
 ```
+
+> As the devDependencies are not recognized by the UI5 tooling, they need to be listed in the `ui5 > dependencies` array. In addition, once using the `ui5 > dependencies` array you need to list all UI5 tooling relevant dependencies.
 
 2. configure it in `$yourapp/ui5.yaml`:
 
@@ -45,11 +54,11 @@ server:
       configuration:
         debug: true
         port: 1091
-        xsappJson: 'xs-app.json'
+        xsappJson: "xs-app.json"
         destinations:
           # check that the destination name (here: "backend") matches your router in xssppJson
-          - name: 'backend'
-            url: 'https://services.odata.org/V4/(S(fdng4tbvlxgzpdtpfap2rqss))/TripPinServiceRW/'
+          - name: "backend"
+            url: "https://services.odata.org/V4/(S(fdng4tbvlxgzpdtpfap2rqss))/TripPinServiceRW/"
 ```
 
 3. put the cf routing config file `xs-app.json` in the location of `$yourapp` you specified above (`xsappJson`)

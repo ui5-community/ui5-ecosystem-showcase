@@ -26,8 +26,17 @@ e.g. 3-rd party libs in `lib/*`
     // ...
     "ui5-middleware-livetranspile": "*"
     // ...
+},
+"ui5": {
+  "dependencies": [
+    // ...
+    "ui5-middleware-livetranspile",
+    // ...
+  ]
 }
 ```
+
+> As the devDependencies are not recognized by the UI5 tooling, they need to be listed in the `ui5 > dependencies` array. In addition, once using the `ui5 > dependencies` array you need to list all UI5 tooling relevant dependencies.
 
 2. configure it in `$yourapp/ui5.yaml`:
 
@@ -39,9 +48,9 @@ server:
     configuration:
       debug: true
       excludePatterns:
-      - 'lib/'
-      - 'another/dir/in/webapp'
-      - 'yet/another/dir'
+      - "lib/"
+      - "another/dir/in/webapp"
+      - "yet/another/dir"
 ```
 
 ## How it works

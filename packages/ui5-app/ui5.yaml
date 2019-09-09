@@ -1,4 +1,4 @@
-specVersion: '1.0'
+specVersion: "1.0"
 metadata:
   name: ui5-app
 type: application
@@ -6,6 +6,10 @@ builder:
   customTasks:
   - name: ui5-task-transpile
     afterTask: replaceVersion
+    configuration:
+      debug: true
+      excludePatterns:
+      - "lib/"
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
 server:
   customMiddleware:
@@ -15,30 +19,30 @@ server:
       debug: true
       ext: "xml,json,properties"
       port: 35729
-      path: webapp
-  - name: ui5-middleware-proxy
+      path: "webapp"
+  - name: ui5-middleware-simpleproxy
     mountPath: /proxy
     afterMiddleware: compression
     configuration:
-      baseUri: 'https://latest-openui5.rikosjett.com'
+      baseUri: "https://latest-openui5.rikosjett.com"
   - name: ui5-middleware-livetranspile
     afterMiddleware: compression
     configuration:
       debug: true
       excludePatterns:
-      - 'lib/'
+      - "lib/"
   - name: ui5-middleware-cfdestination
     afterMiddleware: compression
     configuration:
       debug: true
       port: 1091
-      xsappJson: 'xs-app.json'
+      xsappJson: "xs-app.json"
       destinations:
       # check that the destination name (here: "backend") matches your router in xssppJson
-      - name: 'backend'
-        url: 'https://services.odata.org/V4/(S(fdng4tbvlxgzpdtpfap2rqss))/TripPinServiceRW/'
-      - name: 'odatav2'
-        url: 'https://services.odata.org/V2/Northwind/Northwind.svc/'
-      - name: 'todos'
-        url: 'https://jsonplaceholder.typicode.com/todos/'
+      - name: "backend"
+        url: "https://services.odata.org/V4/(S(fdng4tbvlxgzpdtpfap2rqss))/TripPinServiceRW/"
+      - name: "odatav2"
+        url: "https://services.odata.org/V2/Northwind/Northwind.svc/"
+      - name: "todos"
+        url: "https://jsonplaceholder.typicode.com/todos/"
 
