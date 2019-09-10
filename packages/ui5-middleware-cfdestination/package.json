@@ -1,12 +1,12 @@
 {
   "name": "ui5-middleware-cfdestination",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "UI5 middleware for CF destinations",
   "author": "Volker Buzek, Peter Muessig",
   "license": "THE DERIVIED BEER-WARE LICENSE",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
+    "type": "git",
+    "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
   },
   "dependencies": {
     "@sap/approuter": "^6.1.0",
