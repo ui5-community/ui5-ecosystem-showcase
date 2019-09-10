@@ -61,7 +61,13 @@ yarn start
 
 ## Using tasks and middlewares in your project
 
-The tasks and middlewares developed in this project are also publically available on NPM *soon*. Right now, you can use them by either linking or also use the yarn workspaces across repositories.
+The tasks and middlewares developed in this project are also publicly available on NPM right here:
+ 
+* https://www.npmjs.com/package/ui5-middleware-simpleproxy
+* https://www.npmjs.com/package/ui5-middleware-livetranspile
+* https://www.npmjs.com/package/ui5-middleware-livereload
+* https://www.npmjs.com/package/ui5-middleware-cfdestination
+* https://www.npmjs.com/package/ui5-task-transpile
 
 The consumption of the individual tasks and middlewares can be seen inside their local `README.md`.
 
@@ -78,6 +84,6 @@ Available middlewares:
 
 ## License
 
-[THE DERIVIED BEER-WARE LICENSE](LICENSE)
+[THE DERIVED BEER-WARE LICENSE](LICENSE)
 
 When you like this stuff, buy [@vobu](https://twitter.com/vobu) a beer or buy [@pmuessig](https://twitter.com/pmuessig) a coke when you see them.
