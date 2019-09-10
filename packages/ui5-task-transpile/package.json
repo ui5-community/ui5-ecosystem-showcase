@@ -2,6 +2,12 @@
   "name": "ui5-task-transpile",
   "version": "0.1.0",
   "description": "UI5 task for transpiling ES6+ sources",
+  "author": "Volker Buzek, Peter Muessig",
+  "license": "THE DERIVIED BEER-WARE LICENSE",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
+  },
   "dependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",

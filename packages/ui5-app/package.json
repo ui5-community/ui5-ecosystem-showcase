@@ -3,6 +3,12 @@
   "version": "0.1.0",
   "description": "UI5 application using custom middlewares and tasks",
   "private": true,
+  "author": "Volker Buzek, Peter Muessig",
+  "license": "THE DERIVIED BEER-WARE LICENSE",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
+  },
   "scripts": {
     "clean": "rimraf dist",
     "prepare": "mkdirp dist",
