@@ -19,7 +19,8 @@ const request = require('request');
  * @returns {function} Middleware function to use
  */
 module.exports = function ({resources, options}) {
-    request.debug = options.configuration.debug; // pass debug flag on to underying request lib
+    request.debug = options.configuration.debug; // pass debug flag on to underlying request lib
+    process.env.XS_APP_LOG_LEVEL = options.configuration.debug ? 'DEBUG' : 'ERROR';
     // read in the cf config file
     const xsappConfig = JSON.parse(fs.readFileSync(options.configuration.xsappJson, 'utf8'));
 

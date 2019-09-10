@@ -1,7 +1,7 @@
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
 specVersion: '1.0'
 metadata:
-  name: ui5-middleware-proxy
+  name: ui5-middleware-simpleproxy
 kind: extension
 type: server-middleware
 middleware:

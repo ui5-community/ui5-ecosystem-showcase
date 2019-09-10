@@ -26,7 +26,7 @@ module.exports = function ({resources, options}) {
         if (
             req.path.endsWith('.js')
             && !req.path.includes('resources/')
-            && !options.configuration.excludePatterns.some(pattern => req.path.includes(pattern))
+            && !(options.configuration && options.configuration.excludePatterns || []).some(pattern => req.path.includes(pattern))
         ) {
 
             const pathname = parseurl(req).pathname;
@@ -34,7 +34,7 @@ module.exports = function ({resources, options}) {
             // grab the file via @ui5/fs.AbstractReader API
             return resources.rootProject.byPath(pathname)
                 .then(resource => {
-                    options.configuration.debug ? log.info(`handling ${req.path}...`) : null;
+                    options.configuration && options.configuration.debug && log.info(`handling ${req.path}...`);
                     if (!resource) {
                         fileNotFoundError.file = pathname;
                         throw fileNotFoundError;
