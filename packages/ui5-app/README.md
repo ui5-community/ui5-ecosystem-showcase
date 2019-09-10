@@ -4,6 +4,6 @@ This sample application shows the consumption of the custom middlewares and the 
 
 ## License
 
-[THE DERIVIED BEER-WARE LICENSE](../../LICENSE)
+[THE DERIVED BEER-WARE LICENSE](../../LICENSE)
 
 When you like this stuff, buy [@vobu](https://twitter.com/vobu) a beer or buy [@pmuessig](https://twitter.com/pmuessig) a coke when you see them.

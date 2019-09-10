@@ -3,7 +3,7 @@
   "version": "0.1.1",
   "description": "UI5 middleware for live reloading `webapp` sources on change",
   "author": "Volker Buzek, Peter Muessig",
-  "license": "THE DERIVIED BEER-WARE LICENSE",
+  "license": "THE DERIVED BEER-WARE LICENSE",
   "repository": {
     "type": "git",
     "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"

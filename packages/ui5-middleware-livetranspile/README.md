@@ -67,6 +67,6 @@ The transpiled code and the `sourcemap` are subsequently delivered to the client
 
 ## License
 
-[THE DERIVIED BEER-WARE LICENSE](../../LICENSE)
+[THE DERIVED BEER-WARE LICENSE](../../LICENSE)
 
 When you like this stuff, buy [@vobu](https://twitter.com/vobu) a beer or buy [@pmuessig](https://twitter.com/pmuessig) a coke when you see them.
