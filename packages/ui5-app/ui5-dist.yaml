@@ -26,6 +26,12 @@ server:
     afterMiddleware: compression
     configuration:
       baseUri: "https://latest-openui5.rikosjett.com"
+    # PoC: reuse the same middleware at a different "mountPath"
+  - name: ui5-middleware-simpleproxy
+    mountPath: /proxy2
+    afterMiddleware: compression
+    configuration:
+      baseUri: "https://latest-openui5.rikosjett.com"
   - name: ui5-middleware-cfdestination
     afterMiddleware: compression
     configuration:

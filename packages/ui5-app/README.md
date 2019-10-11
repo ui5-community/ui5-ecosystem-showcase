@@ -2,6 +2,8 @@
 
 This sample application shows the consumption of the custom middlewares and the custom tasks.
 
+Peek at both [`ui5.yaml`](ui5.yaml) and [`package.json`](package.json) in order to learn about the `ui5-tooling` configuration and its' `npm` package dependencies and configuration options.
+
 ## License
 
 [THE DERIVED BEER-WARE LICENSE](../../LICENSE)
