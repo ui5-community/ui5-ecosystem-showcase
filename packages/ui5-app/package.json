@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@ui5/cli": "1.9.0",
+    "@ui5/server": "https://github.com/SAP/ui5-server.git#2ec8dafce964e8e15ebc85ae8d032489681debf7",
     "mkdirp": "~0.5.1",
     "npm-run-all": "^4.1.5",
     "npm-watch": "^0.6.0",
@@ -45,6 +46,8 @@
     "ui5-middleware-livetranspile": "^0.1.1",
     "ui5-middleware-simpleproxy": "^0.1.1",
     "ui5-task-transpile": "^0.1.1"
+  },
+  "resolutions": {
   },
   "ui5": {
     "dependencies": [
