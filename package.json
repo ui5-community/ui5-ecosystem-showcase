@@ -4,10 +4,10 @@
   "description": "A repository showcasing the UI5 tooling extensibility to combine OSS tools for UI5 application development.",
   "private": true,
   "author": "Volker Buzek, Peter Muessig",
-  "license": "THE DERIVED BEER-WARE LICENSE",
+  "license": "Apache-2.0",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
+    "type": "git",
+    "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
   },
   "scripts": {
     "clean": "cd packages/ui5-app && yarn clean",
@@ -17,7 +17,7 @@
     "watch": "cd packages/ui5-app && yarn watch"
   },
   "devDependencies": {
-    "lerna": "^3.16.4"
+    "lerna": "^3.17.0"
   },
   "workspaces": [
     "packages/*"
