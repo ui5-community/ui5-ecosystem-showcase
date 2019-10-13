@@ -25,6 +25,7 @@ server:
     afterMiddleware: compression
     configuration:
       baseUri: "https://latest-openui5.rikosjett.com"
+#      baseUri: "https://services.odata.org/V2/Northwind/Northwind.svc/"
   - name: ui5-middleware-livetranspile
     afterMiddleware: compression
     configuration:
