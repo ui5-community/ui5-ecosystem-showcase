@@ -1,9 +1,7 @@
 const connectLivereload = require('connect-livereload');
 const livereload = require('livereload');
-const log = require("@ui5/logger").getLogger("middleware:custom:livereload");
 const path = require("path");
-
-
+const log = require("@ui5/logger").getLogger("server:custommiddleware:livereload");
 
 /**
  * Custom UI5 Server middleware example
