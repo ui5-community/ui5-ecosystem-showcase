@@ -3,7 +3,7 @@
   "version": "0.1.2",
   "description": "UI5 middleware for live transpiling ES6+ sources",
   "author": "Volker Buzek, Peter Muessig",
-  "license": "THE DERIVED BEER-WARE LICENSE",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
