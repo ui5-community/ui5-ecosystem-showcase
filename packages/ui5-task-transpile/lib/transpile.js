@@ -29,7 +29,6 @@ module.exports = function({workspace, dependencies, options}) {
                         ]
                     });
                 }).then((result) => {
-                    console.log(result);
                     resource.setString(result.code);
                     workspace.write(resource);
                 });

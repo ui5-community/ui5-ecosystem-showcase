@@ -15,6 +15,7 @@ packages
 ├── ui5-middleware-livereload       // middleware extension: usage of livereload for development
 ├── ui5-middleware-livetranspile    // middleware extension: on-demand es6 to es5 transpile when requesting js
 ├── ui5-middleware-simpleproxy      // middleware extension: simple express proxy
+├── ui5-middleware-servestatic      // middleware extension: serve static resources
 └── ui5-task-transpile              // task extension: transpile es6 to es5 code
 ```
 
@@ -63,11 +64,12 @@ yarn start
 
 The tasks and middlewares developed in this project are also publicly available on NPM right here:
  
-* https://www.npmjs.com/package/ui5-middleware-simpleproxy
-* https://www.npmjs.com/package/ui5-middleware-livetranspile
-* https://www.npmjs.com/package/ui5-middleware-livereload
-* https://www.npmjs.com/package/ui5-middleware-cfdestination
 * https://www.npmjs.com/package/ui5-task-transpile
+* https://www.npmjs.com/package/ui5-middleware-cfdestination
+* https://www.npmjs.com/package/ui5-middleware-livereload
+* https://www.npmjs.com/package/ui5-middleware-livetranspile
+* https://www.npmjs.com/package/ui5-middleware-simpleproxy
+* https://www.npmjs.com/package/ui5-middleware-servestatic
 
 The consumption of the individual tasks and middlewares can be seen inside their local `README.md`.
 
@@ -81,9 +83,10 @@ Available middlewares:
 * [ui5-middleware-livereload](packages/ui5-middleware-livereload/README.md): usage of livereload for development
 * [ui5-middleware-livetranspile](packages/ui5-middleware-livetranspile/README.md): on-demand es6 to es5 transpile when requesting js
 * [ui5-middleware-simpleproxy](packages/ui5-middleware-simpleproxy/README.md): simple express proxy
+* [ui5-middleware-servestatic](packages/ui5-middleware-servestatic/README.md): serve static resources
 
 ## License
 
-[THE DERIVED BEER-WARE LICENSE](LICENSE)
+This work is [dual-licensed](LICENSE) under Apache 2.0 and the Derived Beer-ware License. The official license will be Apache 2.0 but finally you can choose between one of them if you use this work.
 
 When you like this stuff, buy [@vobu](https://twitter.com/vobu) a beer or buy [@pmuessig](https://twitter.com/pmuessig) a coke when you see them.
