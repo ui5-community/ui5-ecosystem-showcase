@@ -1524,10 +1524,15 @@
     "@openui5/sap.ui.layout" "1.71.0"
     "@openui5/sap.ui.unified" "1.71.0"
 
-"@openui5/sap.ui.core@1.71.0", "@openui5/sap.ui.core@^1.71.0":
+"@openui5/sap.ui.core@1.71.0":
   version "1.71.0"
   resolved "https://registry.yarnpkg.com/@openui5/sap.ui.core/-/sap.ui.core-1.71.0.tgz#392257354f7377aecca8971591112cc24e80de18"
   integrity sha512-X/Vb6u58liMuLS2f45tGT4qkIARIepocpIboJ+aq6JMQ355kofy9asbZVvQhsbrMrq7wOfuBl0EogVBIUvOKjg==
+
+"@openui5/sap.ui.core@^1.71.0":
+  version "1.71.1"
+  resolved "https://registry.yarnpkg.com/@openui5/sap.ui.core/-/sap.ui.core-1.71.1.tgz#617f242bf0f351e32d1ecea750ea362d0c24b6c2"
+  integrity sha512-goIujz3WBEPjoQuI21oqAHLHlG5QjVfg1KVUPUJgK51i1DAYtjzwyg818vSZsMUxEISSOW447vqy0nnNC+SDEw==
 
 "@openui5/sap.ui.layout@1.71.0", "@openui5/sap.ui.layout@^1.71.0":
   version "1.71.0"
