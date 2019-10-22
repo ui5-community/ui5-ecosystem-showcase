@@ -1796,9 +1796,9 @@
     slash "^3.0.0"
 
 "@ui5/logger@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@ui5/logger/-/logger-1.0.1.tgz#81f36ea82a13a90126f84834fe2d93a008887eec"
-  integrity sha512-GxOuiKLjGLNVOJLvE50Mp8NVS6eUuVB1r2MC9u8bqOyUGpRK5P3ULvK2HlR6IjCMNsblbgsOi3VM0JbakPlAVA==
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@ui5/logger/-/logger-1.0.2.tgz#140571df7feb090b03b38e8895c2283ba0a6f656"
+  integrity sha512-k49q5D7EBk4vGzpM81KDNyGL4YaB12v8qYNqR7/5f4xoAksotf7h3VeAjCmJFSttEOnC9LNb9GYTzJAWJoCv7w==
   dependencies:
     npmlog "^4.1.2"
 
