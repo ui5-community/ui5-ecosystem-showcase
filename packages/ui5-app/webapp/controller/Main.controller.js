@@ -28,7 +28,7 @@ sap.ui.define([
         },
 
         navFwd() {
-            this.getOwnerComponent().getRouter().navTo("RouteOther");
+            return this.getOwnerComponent().getRouter().navTo("RouteOther");
         }
     });
 });
