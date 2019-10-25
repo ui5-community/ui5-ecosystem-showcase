@@ -15,10 +15,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - uses: dcodeIO/setup-node-nvm@master # to setup node as specified in .nvmrc
-    - uses: borales/actions-yarn@v2.0.0
-      with:
-        cmd: install # will run `yarn install` command
-    - uses: borales/actions-yarn@v2.0.0
-      with:
-        cmd: test:ci # will run `yarn test` command
+    - name: yarn install + test:ci
+      run: |
+        yarn install
+        yarn test:ci  
