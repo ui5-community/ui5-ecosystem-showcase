@@ -1,6 +1,6 @@
 const babel = require('@babel/core');
 const parseurl = require('parseurl');
-const log = require("@ui5/logger").getLogger("middleware:customtask:livetranspile");
+const log = require("@ui5/logger").getLogger("server:custommiddleware:livetranspile");
 
 let fileNotFoundError = new Error('file not found!');
 fileNotFoundError.code = 404;

@@ -1,7 +1,5 @@
-const connectLivereload = require('connect-livereload');
-const livereload = require('livereload');
-const path = require("path");
-const log = require("@ui5/logger").getLogger("server:custommiddleware:livereload");
+let serveStatic = require('serve-static');
+const log = require("@ui5/logger").getLogger("server:custommiddleware:servestatic");
 
 /**
  * Custom UI5 Server middleware example
@@ -19,17 +17,6 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:livereload
  * @returns {function} Middleware function to use
  */
 module.exports = function({resources, options}) {
-    const port = options.configuration.port || 35729;
-    const watchPath = options.configuration.path || 'webapp';
-    const livereloadServer = livereload.createServer({
-        debug: options.configuration.debug,
-        extraExts: options.configuration.ext || "xml,json,properties"
-    }, () => {
-        log.info("Livereload server started...");
-    });
-    options.configuration.debug ? log.info(`Livereload connecting to port ${port} for path ${watchPath}`) : null;
-    livereloadServer.watch(path.join(process.cwd(), watchPath));
-    return connectLivereload({
-        port: port
-    });
+   options.configuration.debug ? log.info(`Starting static serve from ${options.configuration.rootPath}`) : null;
+   return serveStatic(options.configuration.rootPath);
 };
