@@ -5,6 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Debug with Chrome",
+            "url": "http://localhost:1081",
+            "webRoot": "${workspaceFolder}/packages/ui5-app/webapp",
+            "sourceMaps": true,
+            "disableNetworkCache": true,
+            "showAsyncStacks": true,
+            "preLaunchTask": "yarn-debug",
+            "postDebugTask": "postdebug-kill"
+        },
+        {
             "type": "node",
             "request": "launch",
             "name": "Debug Middlewares",
