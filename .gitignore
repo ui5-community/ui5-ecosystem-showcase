@@ -58,3 +58,6 @@ typings/
 
 # UI5 tooling dist folder
 dist
+
+# WebStorm/IntelliJ IDE
+.idea
