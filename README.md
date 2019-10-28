@@ -47,6 +47,7 @@ To get started just run one of the following commands:
 #   including debug functionality via source maps
 #   (attention: async functions not yet supported!)
 # - proxy functionality at $server/proxy
+# - POC: same proxy middleware reused at $server/proxy2
 # - cf-style proxy destinations at $server/$destinations
 yarn dev
 
