@@ -59,6 +59,14 @@ yarn watch
 
 # 3) Run the dist folder (but build manually)
 yarn start
+
+# 4) Run Unit-(QUnit-)Tests and Integration-(OPA5-)Tests
+# against "as-is" sources in /webapp/* (of /packages/ui5-app)
+# with Chrome
+# note: no transpiling, no bundling/building
+yarn test
+# run w/ Headless Chrome and provide coverage report in console
+yarn test:ci
 ```
 
 ## Using tasks and middlewares in your project
