@@ -1699,10 +1699,10 @@
     xml2js "^0.4.22"
     yazl "^2.5.1"
 
-"@ui5/cli@1.11.0":
-  version "1.11.0"
-  resolved "https://registry.yarnpkg.com/@ui5/cli/-/cli-1.11.0.tgz#2a8e8f2685b08bdfa19d1d2b8c0920c9e1b1cbe6"
-  integrity sha512-vLGU2GXNjRM+sXrOWwOnr0v+1TtSpm3o+ohYw/zFqY6/9M7rGswhSUw5iyyd03g+BQzkGaEnv9q5XiYI3boAnA==
+"@ui5/cli@1.11.1":
+  version "1.11.1"
+  resolved "https://registry.yarnpkg.com/@ui5/cli/-/cli-1.11.1.tgz#7ab3cdef89fffce76d865c06543643e4fc6cde1d"
+  integrity sha512-3Upuddule6uGeNjIJhLrfeUhXhQa/j0Pucw6bq1ABFEkSj3Gf/mqysu6nHK4cstO91bli4cEBPfZvXP5dfbOBA==
   dependencies:
     "@ui5/builder" "^1.6.1"
     "@ui5/fs" "^1.1.2"
