@@ -1497,17 +1497,29 @@
     "@openui5/sap.ui.layout" "1.71.1"
     "@openui5/sap.ui.unified" "1.71.1"
 
-"@openui5/sap.ui.core@1.71.1", "@openui5/sap.ui.core@^1.71.0":
+"@openui5/sap.ui.core@1.71.1":
   version "1.71.1"
   resolved "https://registry.yarnpkg.com/@openui5/sap.ui.core/-/sap.ui.core-1.71.1.tgz#617f242bf0f351e32d1ecea750ea362d0c24b6c2"
   integrity sha512-goIujz3WBEPjoQuI21oqAHLHlG5QjVfg1KVUPUJgK51i1DAYtjzwyg818vSZsMUxEISSOW447vqy0nnNC+SDEw==
 
-"@openui5/sap.ui.layout@1.71.1", "@openui5/sap.ui.layout@^1.71.0":
+"@openui5/sap.ui.core@1.71.3", "@openui5/sap.ui.core@^1.71.0":
+  version "1.71.3"
+  resolved "https://registry.yarnpkg.com/@openui5/sap.ui.core/-/sap.ui.core-1.71.3.tgz#9f785488226ccdf92313fb0c20115a7687a89ed2"
+  integrity sha512-8IPO4rDvXFJNxkwpoMMV2UI+r0Hft9jb2DzWIpPch63yz6xE/PkFtSCd5cJiDzpAikwJ0+Mt3e9Vb5nuUwqatA==
+
+"@openui5/sap.ui.layout@1.71.1":
   version "1.71.1"
   resolved "https://registry.yarnpkg.com/@openui5/sap.ui.layout/-/sap.ui.layout-1.71.1.tgz#1391f134a649e7cb4812480f3901d593986a922e"
   integrity sha512-CcW18z2apEkcK46/FeoLlW7+3E3nxl/l/YOsf0GNJXTwaeUtZ08fQwqU4Pi1+6Jhoy407tKxIbWvZbndjmPLwg==
   dependencies:
     "@openui5/sap.ui.core" "1.71.1"
+
+"@openui5/sap.ui.layout@^1.71.0":
+  version "1.71.3"
+  resolved "https://registry.yarnpkg.com/@openui5/sap.ui.layout/-/sap.ui.layout-1.71.3.tgz#9a992b732b342a9e67c1014005cf64083d67bbbe"
+  integrity sha512-Z52DSAd08H+ACI8rtaWnwxxRSJ6QKbh5xPy2gP21F8Urs4e1baxZm2sbLn5IWgys5yaQUK0D6SS9LNCoudEFHg==
+  dependencies:
+    "@openui5/sap.ui.core" "1.71.3"
 
 "@openui5/sap.ui.unified@1.71.1":
   version "1.71.1"
