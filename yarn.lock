@@ -1522,14 +1522,14 @@
   integrity sha512-vV9bSMB58CsyiSJ3+iPcmpSiq4y/dYTvNsbMiDyu494i41FdAsh5t2CG0RPyqJWKj9GkC17/PdZBvutch1BryQ==
 
 "@sap/approuter@^6.5.1":
-  version "6.5.1"
-  resolved "https://npm.sap.com/@sap/approuter/-/approuter-6.5.1.tgz#d0f9689d34914271afd2bdf3c9aab03d675880df"
-  integrity sha512-NetqsKCv7bEIBywHX6jfRBdhmL+jX4oOB4SKwbn/0PO2SR5v4Im4RsAIBIpoITBM6kv7f7ZuU7+9goyBf6n9yg==
+  version "6.6.0"
+  resolved "https://npm.sap.com/@sap/approuter/-/approuter-6.6.0.tgz#5ddbab7d4793e365cc370a70dc554827e896c7e2"
+  integrity sha512-QmxOlcV/iIS+95Hlpwx5UhN9tt1qn782Wmjcpbnnd3gZzK0Jgr2UioUbgkhXmbID7FNNoWhPLeIF4FyPQ0t1Nw==
   dependencies:
     "@sap/audit-logging" "2.3.0"
     "@sap/e2e-trace" "1.4.1"
     "@sap/logging" "5.0.2"
-    "@sap/xsenv" "1.3.0"
+    "@sap/xsenv" "2.1.0"
     "@sap/xssec" "2.2.2"
     agentkeepalive "2.0.5"
     async "2.0.1"
@@ -1547,7 +1547,7 @@
     encodeurl "1.0.2"
     express-session "1.15.6"
     http-proxy-agent "2.1.0"
-    https-proxy-agent "2.2.0"
+    https-proxy-agent "2.2.4"
     jwt-decode "2.0.1"
     lodash "4.17.13"
     lru-cache "4.0.0"
@@ -1607,15 +1607,7 @@
   resolved "https://npm.sap.com/@sap/node-jwt/-/node-jwt-1.6.5.tgz#e2a1b2834375d219af7b774b375c1492e2f69dba"
   integrity sha512-vIdoDDKvgbvaJ6c7rRmCGBC5kf0Ps6F9xhCZZ+3YQrV9t2juEob8O6hBPOn7uMslO85+1l6i5hDLGClocU4PBA==
 
-"@sap/xsenv@1.3.0":
-  version "1.3.0"
-  resolved "https://npm.sap.com/@sap/xsenv/-/xsenv-1.3.0.tgz#828d93b5c750a7e95204c3a8838bf7c3c2ca438a"
-  integrity sha512-Q6XJ9ibbZ2L0A7AvjD5tFhB5ltiSp3JB2m9UD+gz4cJjVlAum025G4GIv/5+Kl4SUXRfFA35OprPQlslNhNyIA==
-  dependencies:
-    debug "3.1.0"
-    verror "1.10.0"
-
-"@sap/xsenv@^2.0.0":
+"@sap/xsenv@2.1.0", "@sap/xsenv@^2.0.0":
   version "2.1.0"
   resolved "https://npm.sap.com/@sap/xsenv/-/xsenv-2.1.0.tgz#cf0a7ce40e0782c6e98be3bebd6ac5af929d22ce"
   integrity sha512-TOxw52ovB+fa0fyvliR6x/ZKrJFKtoHlNayPOfVQKoc85+vxvgapJn1IcuOMzvcmR12uAeCkxULzkC4mv7xCAg==
@@ -1823,7 +1815,7 @@ after@0.8.2:
   resolved "https://registry.yarnpkg.com/after/-/after-0.8.2.tgz#fedb394f9f0e02aa9768e702bda23b505fae7e1f"
   integrity sha1-/ts5T58OAqqXaOcCvaI7UF+ufh8=
 
-agent-base@4, agent-base@^4.1.0, agent-base@^4.3.0:
+agent-base@4, agent-base@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-4.3.0.tgz#8165f01c436009bccad0b1d122f05ed770efc6ee"
   integrity sha512-salcGninV0nPrwpGNn4VTXBb1SOuXQBiqbrNXoeizJsHrsL6ERFM2Ne3JUSBWRE6aeNJI2ROP/WEEIDUiDe3cg==
@@ -4702,15 +4694,7 @@ http-signature@~1.2.0:
     jsprim "^1.2.2"
     sshpk "^1.7.0"
 
-https-proxy-agent@2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-2.2.0.tgz#7fbba856be8cd677986f42ebd3664f6317257887"
-  integrity sha512-uUWcfXHvy/dwfM9bqa6AozvAjS32dZSTUYd/4SEpYKRg6LEcPLshksnQYRudM9AyNvUARMfAg5TLjUDyX/K4vA==
-  dependencies:
-    agent-base "^4.1.0"
-    debug "^3.1.0"
-
-https-proxy-agent@^2.2.3:
+https-proxy-agent@2.2.4, https-proxy-agent@^2.2.3:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-2.2.4.tgz#4ee7a737abd92678a293d9b34a1af4d0d08c787b"
   integrity sha512-OmvfoQ53WLjtA9HeYP9RNrWMJzzAz1JGaSFr1nijg0PVR1JaD/xbJq1mdEIIlxGpXp9eSe/O2LgU9DJmTPd0Eg==
