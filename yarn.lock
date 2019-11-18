@@ -1573,9 +1573,9 @@
     "@openui5/sap.ui.core" "1.71.3"
 
 "@openui5/themelib_sap_fiori_3@^1.71.0":
-  version "1.71.3"
-  resolved "https://registry.yarnpkg.com/@openui5/themelib_sap_fiori_3/-/themelib_sap_fiori_3-1.71.3.tgz#be3de932569f0f68efb3aa7d45fc2727aff70c21"
-  integrity sha512-vV9bSMB58CsyiSJ3+iPcmpSiq4y/dYTvNsbMiDyu494i41FdAsh5t2CG0RPyqJWKj9GkC17/PdZBvutch1BryQ==
+  version "1.72.0"
+  resolved "https://registry.yarnpkg.com/@openui5/themelib_sap_fiori_3/-/themelib_sap_fiori_3-1.72.0.tgz#825c810bfca9752a30c4ca00567f9f64d5f20923"
+  integrity sha512-Wbq4yl6VtcKLAixpOJs3sjFxFwFYhFZOpRukcW1xaiZDCx+I2gdRA6LrQrkvwn3hKIN4xqc5CwpYkpf+e1NzdQ==
 
 "@sap/approuter@^6.5.1":
   version "6.6.0"
