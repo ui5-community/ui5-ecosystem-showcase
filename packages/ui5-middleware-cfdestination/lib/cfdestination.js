@@ -1,7 +1,7 @@
 const approuter = require('@sap/approuter')();
-const log = require("@ui5/logger").getLogger("middleware:custom:cfdestination");
 const fs = require('fs');
 const request = require('request');
+const log = require("@ui5/logger").getLogger("server:custommiddleware:cfdestination");
 
 /**
  * Custom UI5 Server middleware example

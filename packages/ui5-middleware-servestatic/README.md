@@ -1,21 +1,17 @@
-# UI5 task for transpiling ES6+ sources
+# UI5 serve static middleware
 
-Task for [ui5-builder](https://github.com/SAP/ui5-builder), enabling transpiling.
+Middleware for [ui5-server](https://github.com/SAP/ui5-server), enabling to serve static resources.
 
 ## Install
 
 ```bash
-npm install ui5-task-transpile --save-dev
+npm install ui5-middleware-servestatic --save-dev
 ```
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
-- debug: true|false  
-verbose logging
-
-- excludePatterns: `String<Array>`  
-array of paths inside `$yourapp/webapp/` to exclude from live transpilation,  
-e.g. 3-rd party libs in `lib/*`
+- rootPath: `string`
+  the root path to the static resources on your system
 
 ## Usage
 
@@ -24,13 +20,13 @@ e.g. 3-rd party libs in `lib/*`
 ```json
 "devDependencies": {
     // ...
-    "ui5-task-transpile": "*"
+    "ui5-middleware-servestatic": "*"
     // ...
 },
 "ui5": {
   "dependencies": [
     // ...
-    "ui5-task-transpile",
+    "ui5-middleware-servestatic",
     // ...
   ]
 }
@@ -41,21 +37,18 @@ e.g. 3-rd party libs in `lib/*`
 2. configure it in `$yourapp/ui5.yaml`:
 
 ```yaml
-builder:
-  customTasks:
-  - name: ui5-task-transpile
-    afterTask: replaceVersion
+server:
+  customMiddleware:
+  - name: ui5-middleware-servestatic
+    afterMiddleware: compression
+    mountPath: /resources
     configuration:
-      debug: true
-      excludePatterns:
-      - "lib/"
-      - "another/dir/in/webapp"
-      - "yet/another/dir"
+      rootPath: "/Users/Me/upkg/sapui5-runtime-1.70/resources"
 ```
 
 ## How it works
 
-The task can be used to transpile ES6+ JavaScript code to ES5 by using `babel`.
+The middleware integrates [serve-static](https://github.com/expressjs/serve-static) to serve static resources from a specified `rootPath`.
 
 ## License
 

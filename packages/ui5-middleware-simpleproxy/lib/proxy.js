@@ -1,4 +1,5 @@
 let proxy = require('express-http-proxy');
+const log = require("@ui5/logger").getLogger("server:custommiddleware:proxy");
 
 /**
  * Custom UI5 Server middleware example
@@ -20,6 +21,26 @@ module.exports = function({resources, options}) {
     return function (req, res, next) {
         // [...]
     }
+    return proxy(options.configuration.baseUri);
     */
-   return proxy(options.configuration.baseUri);
+    options.configuration.debug ? log.info(`Starting proxy for baseUri ${options.configuration.baseUri}`) : null;
+    // determine the uri parts (protocol, baseUri, path)
+    let baseUriParts = options.configuration.baseUri.match(/(https|http)\:\/\/([^/]*)(\/.*)?/i);
+    if (!baseUriParts) {
+      throw new Error(`The baseUri ${options.configuration.baseUri} is not valid!`);
+    }
+    let protocol = baseUriParts[1];
+    let baseUri = baseUriParts[2];
+    let path = baseUriParts[3];
+    if (path && path.endsWith("/")) {
+      path = path.slice(0, -1);
+    }
+    // run the proxy middleware based on the baseUri configuration
+    return proxy(baseUri, {
+      https: protocol === "https",
+      preserveHostHdr: false,
+      proxyReqPathResolver: function (req) {
+        return (path ? path : "") + req.url;
+      }
+    });    
 };
