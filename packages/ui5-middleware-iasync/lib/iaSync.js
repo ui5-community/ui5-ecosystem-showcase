@@ -18,22 +18,33 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:iasync");
  * @returns {function} Middleware function to use
  */
 module.exports = function({ resources, options }) {
+
+    let port = options.configuration && options.configuration.port ? options.configuration.port : 3000;
     const bs = browserSync.create().init(
         {
             logSnippet: false,
-            https: (options.configuration && options.configuration.https ? options.configuration.https : false),
+            https: options.configuration && options.configuration.https ? options.configuration.https : false,
             // http2 here, e.g. from ui5-tooling
-            httpModule: (options.configuration && options.configuration.httpModule ? options.configuration.httpModule : undefined),
-            logLevel: (options.configuration && options.configuration.debug ? options.configuration.debug : 'info'),
+            httpModule:
+                options.configuration && options.configuration.httpModule
+                    ? options.configuration.httpModule
+                    : undefined,
+            logLevel: options.configuration && options.configuration.debug ? "debug" : "info",
             // per default, log connections
-            logConnections: (options.configuration && options.configuration.logConnections ? options.configuration.logConnections : true),
+            logConnections:
+                options.configuration && options.configuration.logConnections
+                    ? options.configuration.logConnections
+                    : true,
             notify: false,
             open: false,
-            port: (options.configuration && options.configuration.port ? options.configuration.port : 3000),
+            port: port,
+            socket: {
+                port: port
+            },
             ui: false
         },
         (err, instance) => {
-            log.info(`started`);
+            log.info(`started on port ${port}`);
         }
     );
     return inject(bs);
