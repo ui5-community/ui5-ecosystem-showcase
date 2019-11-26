@@ -14,7 +14,7 @@
     "prepare": "mkdirp dist",
     "build": "ui5 build self-contained",
     "start": "ui5 serve --config ui5-dist.yaml --port 1081 --open index.html",
-    "dev": "ui5 serve --port 1081 --open index.html",
+    "dev": "ui5 serve --port 1081 --accept-remote-connections true --open index.html",
     "debug": "node --inspect node_modules/.bin/ui5 serve --port 1081",
     "watch:build": "npm-watch build",
     "watch": "npm-run-all prepare --parallel watch:build start"
