@@ -1,4 +1,3 @@
-
 const browserSync = require("browser-sync");
 const inject = require("./inject");
 const log = require("@ui5/logger").getLogger("server:custommiddleware:iasync");
@@ -21,12 +20,17 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:iasync");
 module.exports = function({ resources, options }) {
     const bs = browserSync.create().init(
         {
-            socket: {
-                domain: "localhost:3000"
-            },
-            host: "localhost:3000",
             logSnippet: false,
-            notify: false
+            https: (options.configuration && options.configuration.https ? options.configuration.https : false),
+            // http2 here, e.g. from ui5-tooling
+            httpModule: (options.configuration && options.configuration.httpModule ? options.configuration.httpModule : undefined),
+            logLevel: (options.configuration && options.configuration.debug ? options.configuration.debug : 'info'),
+            // per default, log connections
+            logConnections: (options.configuration && options.configuration.logConnections ? options.configuration.logConnections : true),
+            notify: false,
+            open: false,
+            port: (options.configuration && options.configuration.port ? options.configuration.port : 3000),
+            ui: false
         },
         (err, instance) => {
             log.info(`started`);
