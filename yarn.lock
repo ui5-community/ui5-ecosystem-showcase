@@ -1533,6 +1533,11 @@
   resolved "https://registry.yarnpkg.com/@openui5/themelib_sap_fiori_3/-/themelib_sap_fiori_3-1.72.1.tgz#7b9485091e7d3453791a40a57a3a165288440812"
   integrity sha512-BxCaVSg9MaRU/wNOLDwHV7medT4l7oOeqpl1sO76q+CnMBPJOl9eaSp6S4/hnPhcqN+hE9NomMqr+6HdAqkYQw==
 
+"@openui5/ts-types@^1.60.5":
+  version "1.60.5"
+  resolved "https://registry.yarnpkg.com/@openui5/ts-types/-/ts-types-1.60.5.tgz#cf0bdf70f91d4a145e16c92fbc95ba990c8f0400"
+  integrity sha512-syzrhxH1JNfYS+FccnPUjxsGwQhW3mvwJpx1oQhZhh7VM7matWstLH9ObPtI3oPj3SO+IMgjpyBjzSUHZo5r4A==
+
 "@sap/approuter@^6.5.1":
   version "6.6.0"
   resolved "https://npm.sap.com/@sap/approuter/-/approuter-6.6.0.tgz#5ddbab7d4793e365cc370a70dc554827e896c7e2"
