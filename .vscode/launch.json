@@ -10,7 +10,7 @@
             "name": "Debug with Chrome",
             "url": "http://localhost:1081",
             "webRoot": "${workspaceFolder}/packages/ui5-app/webapp",
-            "sourceMaps": true,
+            // "sourceMaps": true,
             "disableNetworkCache": true,
             "showAsyncStacks": true,
             "preLaunchTask": "yarn-debug",
