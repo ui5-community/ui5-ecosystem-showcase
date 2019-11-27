@@ -34,6 +34,10 @@ sap.ui.define([
 
         onPress(oEvent) {
             MessageToast.show(`${oEvent.getSource().getId()} pressed`);
+        },
+        onBoo(oEvent) {
+            MessageToast.show(`👻`);
+
         }
     });
 });

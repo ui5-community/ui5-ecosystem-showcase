@@ -19,6 +19,7 @@
 					</content>
 				</Panel>
 				<DateTimePicker placeholder="Enter Date ..." />
+				<Button text="Don't press me!" press="onBoo" />
 			</VBox>
 		</content>
 	</Page>
