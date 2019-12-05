@@ -12,6 +12,7 @@ The content of the repository is structured like that:
 packages
 ├── ui5-app                         // the UI5 application using the custom middlewares and tasks
 ├── ui5-middleware-cfdestination    // middleware extension: use the approuter as proxy
+├── ui5-middleware-iasync           // middleware extension: sync UI interaction across browsers (alpha! careful!)
 ├── ui5-middleware-livereload       // middleware extension: usage of livereload for development
 ├── ui5-middleware-livetranspile    // middleware extension: on-demand es6 to es5 transpile when requesting js
 ├── ui5-middleware-simpleproxy      // middleware extension: simple express proxy
@@ -49,6 +50,7 @@ To get started just run one of the following commands:
 # - proxy functionality at $server/proxy
 # - POC: same proxy middleware reused at $server/proxy2
 # - cf-style proxy destinations at $server/$destinations
+# - ability to execute the same UI actions across all browsers pointed to http://localhost:1081/index.html
 yarn dev
 
 # 2) Run the Component-preload build + transpile steps
@@ -75,6 +77,7 @@ The tasks and middlewares developed in this project are also publicly available 
  
 * https://www.npmjs.com/package/ui5-task-transpile
 * https://www.npmjs.com/package/ui5-middleware-cfdestination
+* https://www.npmjs.com/package/ui5-middleware-iasync (alpha! careful!)
 * https://www.npmjs.com/package/ui5-middleware-livereload
 * https://www.npmjs.com/package/ui5-middleware-livetranspile
 * https://www.npmjs.com/package/ui5-middleware-simpleproxy
@@ -89,6 +92,7 @@ Available tasks:
 Available middlewares:
 
 * [ui5-middleware-cfdestination](packages/ui5-middleware-cfdestination/README.md): use the approuter as proxy
+* [ui5-middleware-iasync](packages/ui5-middleware-iasync/README.md): sync UI interactions across connected browsers (alpha! careful!)
 * [ui5-middleware-livereload](packages/ui5-middleware-livereload/README.md): usage of livereload for development
 * [ui5-middleware-livetranspile](packages/ui5-middleware-livetranspile/README.md): on-demand es6 to es5 transpile when requesting js
 * [ui5-middleware-simpleproxy](packages/ui5-middleware-simpleproxy/README.md): simple express proxy

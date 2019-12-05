@@ -1,6 +1,7 @@
 sap.ui.define([
-    "test/Sample/controller/BaseController"
-], Controller => {
+    "test/Sample/controller/BaseController",
+    "sap/m/MessageToast"
+], (Controller, MessageToast) => {
     "use strict";
 
     return Controller.extend("test.Sample.controller.Main", {
@@ -29,6 +30,14 @@ sap.ui.define([
 
         navFwd() {
             return this.getOwnerComponent().getRouter().navTo("RouteOther");
+        },
+
+        onPress(oEvent) {
+            MessageToast.show(`${oEvent.getSource().getId()} pressed`);
+        },
+        onBoo(oEvent) {
+            MessageToast.show(`👻`);
+
         }
     });
 });

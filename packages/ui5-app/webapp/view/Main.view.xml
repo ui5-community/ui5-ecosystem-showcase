@@ -1,17 +1,27 @@
-<mvc:View controllerName="test.Sample.controller.Main" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
+<mvc:View controllerName="test.Sample.controller.Main" 
+	xmlns:mvc="sap.ui.core.mvc" displayBlock="true" 
+	xmlns="sap.m">
 
-    <Page id="page" title="{i18n>appTitle}">
-        <content>
-			<VBox
-					alignItems="Center"
-					justifyContent="Center"
-					height="100%">
-			<Text text="{i18n>startPage.currentUI5.text}: {LatestUI5>/latest}" />
-			<Button icon="sap-icon://forward"
-					text="{i18n>startPage.navButton.text}"
-					press="navFwd"/>
+	<Page id="page" title="{i18n>appTitle}">
+		<content>
+			<VBox alignItems="Center" justifyContent="Center" height="100%">
+				<Text text="{i18n>startPage.currentUI5.text}: {LatestUI5>/latest}" />
+				<Button icon="sap-icon://forward" text="{i18n>startPage.navButton.text}" press="navFwd"/>
+				<Button text="IA Sync" press="onPress" />
+				<Panel expandable="true">
+					<headerToolbar>
+						<OverflowToolbar>
+							<Title text="Custom Toolbar with a header text" />
+						</OverflowToolbar>
+					</headerToolbar>
+					<content>
+						<Text text="Lorem ipsum dolor st amet" />
+					</content>
+				</Panel>
+				<DateTimePicker placeholder="Enter Date ..." />
+				<Button text="Don't press me!" press="onBoo" />
 			</VBox>
-        </content>
-    </Page>
+		</content>
+	</Page>
 
 </mvc:View>

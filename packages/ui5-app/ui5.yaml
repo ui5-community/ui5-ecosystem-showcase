@@ -51,4 +51,10 @@ server:
         url: "https://services.odata.org/V2/Northwind/Northwind.svc/"
       - name: "todos"
         url: "https://jsonplaceholder.typicode.com/todos/"
-
+  - name: ui5-middleware-iasync
+    beforeMiddleware: serveResources
+    configuration:
+      https: false
+      debug: false
+      logConnections: true
+      port: 4711
