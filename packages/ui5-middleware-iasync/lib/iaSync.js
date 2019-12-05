@@ -1,6 +1,6 @@
-const browserSync = require("browser-sync");
-const inject = require("./inject");
-const log = require("@ui5/logger").getLogger("server:custommiddleware:iasync");
+const browserSync = require("browser-sync")
+const inject = require("./inject")
+const log = require("@ui5/logger").getLogger("server:custommiddleware:iasync")
 
 /**
  * Custom UI5 Server middleware example
@@ -18,8 +18,7 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:iasync");
  * @returns {function} Middleware function to use
  */
 module.exports = function({ resources, options }) {
-
-    let port = options.configuration && options.configuration.port ? options.configuration.port : 3000;
+    let port = options.configuration && options.configuration.port ? options.configuration.port : 3000
     const bs = browserSync.create().init(
         {
             logSnippet: false,
@@ -44,8 +43,8 @@ module.exports = function({ resources, options }) {
             ui: false
         },
         (err, instance) => {
-            log.info(`started on port ${port}`);
+            log.info(`started on port ${port}`)
         }
-    );
-    return inject(bs);
-};
+    )
+    return inject(bs)
+}
