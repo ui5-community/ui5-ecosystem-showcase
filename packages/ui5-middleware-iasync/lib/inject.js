@@ -1,7 +1,7 @@
 const injector = require("connect-injector")
 
 // mostly directly taken from https://github.com/schmich/connect-browser-sync/blob/master/index.js
-module.exports = function injectBrowserSyncAndCustomUI5(browserSync, options = {}, customUI5Html) {
+module.exports = (browserSync, options = {}, customUI5Html) => {
     let snippet = ""
     let injectedHtml = customUI5Html + "</body>"
     let find = /<\/body>(?!(.|\n)*<\/body>)/gi

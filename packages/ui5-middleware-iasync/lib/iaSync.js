@@ -23,8 +23,8 @@ const customUI5Html = fs.readFileSync(path.join(`${__dirname}`, "ui5mangler.html
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @returns {function} Middleware function to use
  */
-module.exports = function({ resources, options }) {
-    let port = options.configuration && options.configuration.port ? options.configuration.port : 3000
+module.exports = ({ resources, options }) => {
+    const port = options.configuration && options.configuration.port ? options.configuration.port : 3000
     const bs = browserSync.create().init(
         {
             logSnippet: false,
