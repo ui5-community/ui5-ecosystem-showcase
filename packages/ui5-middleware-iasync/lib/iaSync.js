@@ -1,6 +1,12 @@
 const browserSync = require("browser-sync")
+const fs = require("fs")
 const inject = require("./inject")
 const log = require("@ui5/logger").getLogger("server:custommiddleware:iasync")
+const path = require("path")
+
+// read in UI5 "enhancements" that enable syncing click actions
+// browsersync only syncs "clicks", but e.g. no "taps"
+const customUI5Html = fs.readFileSync(path.join(`${__dirname}`, "ui5mangler.html"), { encoding: "utf-8" })
 
 /**
  * Custom UI5 Server middleware example
@@ -46,5 +52,5 @@ module.exports = function({ resources, options }) {
             log.info(`started on port ${port}`)
         }
     )
-    return inject(bs)
+    return inject(bs, {}, customUI5Html)
 }

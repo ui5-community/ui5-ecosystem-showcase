@@ -1,13 +1,7 @@
-const fs = require("fs")
 const injector = require("connect-injector")
-const path = require("path")
-
-// read in UI5 "enhancements" that enable syncing click actions
-// browsersync only syncs "clicks", but e.g. no "taps"
-const customUI5Html = fs.readFileSync(path.join(`${__dirname}`, "ui5mangler.html"), { encoding: "utf-8" })
 
 // mostly directly taken from https://github.com/schmich/connect-browser-sync/blob/master/index.js
-module.exports = function injectBrowserSyncAndCustomUI5(browserSync, options = {}) {
+module.exports = function injectBrowserSyncAndCustomUI5(browserSync, options = {}, customUI5Html) {
     let snippet = ""
     let injectedHtml = customUI5Html + "</body>"
     let find = /<\/body>(?!(.|\n)*<\/body>)/gi
