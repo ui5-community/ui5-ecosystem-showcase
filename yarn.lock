@@ -141,10 +141,10 @@
   dependencies:
     "@babel/types" "^7.7.4"
 
-"@babel/helper-module-transforms@^7.7.4":
-  version "7.7.4"
-  resolved "https://registry.yarnpkg.com/@babel/helper-module-transforms/-/helper-module-transforms-7.7.4.tgz#8d7cdb1e1f8ea3d8c38b067345924ac4f8e0879a"
-  integrity sha512-ehGBu4mXrhs0FxAqN8tWkzF8GSIGAiEumu4ONZ/hD9M88uHcD+Yu2ttKfOCgwzoesJOJrtQh7trI5YPbRtMmnA==
+"@babel/helper-module-transforms@^7.7.4", "@babel/helper-module-transforms@^7.7.5":
+  version "7.7.5"
+  resolved "https://registry.yarnpkg.com/@babel/helper-module-transforms/-/helper-module-transforms-7.7.5.tgz#d044da7ffd91ec967db25cd6748f704b6b244835"
+  integrity sha512-A7pSxyJf1gN5qXVcidwLWydjftUN878VkalhXX5iQDuGyiGK3sOrrKKHF4/A4fwHtnsotv/NipwAeLzY4KQPvw==
   dependencies:
     "@babel/helper-module-imports" "^7.7.4"
     "@babel/helper-simple-access" "^7.7.4"
@@ -453,11 +453,11 @@
     babel-plugin-dynamic-import-node "^2.3.0"
 
 "@babel/plugin-transform-modules-commonjs@^7.5.0", "@babel/plugin-transform-modules-commonjs@^7.7.4":
-  version "7.7.4"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-modules-commonjs/-/plugin-transform-modules-commonjs-7.7.4.tgz#bee4386e550446343dd52a571eda47851ff857a3"
-  integrity sha512-k8iVS7Jhc367IcNF53KCwIXtKAH7czev866ThsTgy8CwlXjnKZna2VHwChglzLleYrcHz1eQEIJlGRQxB53nqA==
+  version "7.7.5"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-modules-commonjs/-/plugin-transform-modules-commonjs-7.7.5.tgz#1d27f5eb0bcf7543e774950e5b2fa782e637b345"
+  integrity sha512-9Cq4zTFExwFhQI6MT1aFxgqhIsMWQWDVwOgLzl7PTWJHsNaqFvklAU+Oz6AQLAS0dJKTwZSOCo20INwktxpi3Q==
   dependencies:
-    "@babel/helper-module-transforms" "^7.7.4"
+    "@babel/helper-module-transforms" "^7.7.5"
     "@babel/helper-plugin-utils" "^7.0.0"
     "@babel/helper-simple-access" "^7.7.4"
     babel-plugin-dynamic-import-node "^2.3.0"
@@ -1500,7 +1500,7 @@
   dependencies:
     "@types/node" ">= 8"
 
-"@openui5/sap.m@^1.71.0":
+"@openui5/sap.m@^1.72.1":
   version "1.73.1"
   resolved "https://registry.yarnpkg.com/@openui5/sap.m/-/sap.m-1.73.1.tgz#27f2ae2b0810d33615007c041149ffa177733187"
   integrity sha512-jDCsVLkTNh9lriUarsZmVXRTUkYKpenYe/5U6C7TI7CxyFcElByj9Xq3Tns7R/n5YUM9oXmH9WxTGsQClDJTwQ==
@@ -1509,12 +1509,12 @@
     "@openui5/sap.ui.layout" "1.73.1"
     "@openui5/sap.ui.unified" "1.73.1"
 
-"@openui5/sap.ui.core@1.73.1", "@openui5/sap.ui.core@^1.71.0":
+"@openui5/sap.ui.core@1.73.1", "@openui5/sap.ui.core@^1.72.1":
   version "1.73.1"
   resolved "https://registry.yarnpkg.com/@openui5/sap.ui.core/-/sap.ui.core-1.73.1.tgz#4852cae28ffdfaf319a2f00f61496b8f3fd63394"
   integrity sha512-wLRghdcrq/BNz0cSmpxzAyZgblqxDWm3eXVN2wz41MzSBJr30Ca9Tp74oA5JpTw+Z+VHFt/71djr85vc6wqnkw==
 
-"@openui5/sap.ui.layout@1.73.1", "@openui5/sap.ui.layout@^1.71.0":
+"@openui5/sap.ui.layout@1.73.1", "@openui5/sap.ui.layout@^1.72.1":
   version "1.73.1"
   resolved "https://registry.yarnpkg.com/@openui5/sap.ui.layout/-/sap.ui.layout-1.73.1.tgz#6dad9a7a96b2f2d6248aadfeff93efadce6b8a8d"
   integrity sha512-0hb/i/+mMMIuTRlegxenUkj7F2bIrPY/JLGG/DOutDkmZ22yw3WSc+jzQBRv3KQDtkJFWRcqX2tkLCf9UDNqJg==
@@ -1528,7 +1528,7 @@
   dependencies:
     "@openui5/sap.ui.core" "1.73.1"
 
-"@openui5/themelib_sap_fiori_3@^1.71.0":
+"@openui5/themelib_sap_fiori_3@^1.72.1":
   version "1.73.1"
   resolved "https://registry.yarnpkg.com/@openui5/themelib_sap_fiori_3/-/themelib_sap_fiori_3-1.73.1.tgz#5eccf7d64656fa1b9cad34d26b91f3278e846bc0"
   integrity sha512-MxvJ1QADIMAkaARPKNca/6hOL0H134HlVwpiq2O39Ai2jBxzR7+Z3KXD5L52D+Wy2utzAJtgFlGskWtmHUIqhA==
