@@ -11,6 +11,6 @@
   "dependencies": {
     "@ui5/logger": "^1.0.1",
     "connect-livereload": "^0.6.1",
-    "livereload": "^0.8.2"
+    "livereload": "^0.9.1"
   }
 }
