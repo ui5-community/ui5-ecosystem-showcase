@@ -44,7 +44,7 @@ Default value: `<app-id.zip>`
 builder:
   customTasks:
   - name: ui5-task-zipper
-    afterTask: generateCachebusterInfo
+    afterTask: uglify
     configuration:
       archiveName: "webapp"
 ```
