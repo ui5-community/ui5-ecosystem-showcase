@@ -1,0 +1,8 @@
+# https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
+specVersion: "1.0"
+metadata:
+  name: ui5-task-zipper
+kind: extension
+type: task
+task:
+  path: lib/zipper.js
