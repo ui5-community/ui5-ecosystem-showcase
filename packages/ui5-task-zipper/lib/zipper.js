@@ -25,8 +25,10 @@ module.exports = async function ({ workspace, dependencies, options }) {
         ));
     } catch (e) {
         log.error(`Couldn't add all resources to the archive: ${e}`);
+        throw e;
+    } finally {
+        zip.end();
     }
-    zip.end();
 
     // Blocked: Add an option to output only the zip.
     // Wait for https://github.com/SAP/ui5-fs/issues/155
