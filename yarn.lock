@@ -1618,13 +1618,13 @@
   integrity sha512-syzrhxH1JNfYS+FccnPUjxsGwQhW3mvwJpx1oQhZhh7VM7matWstLH9ObPtI3oPj3SO+IMgjpyBjzSUHZo5r4A==
 
 "@sap/approuter@^6.5.1":
-  version "6.7.1"
-  resolved "https://npm.sap.com/@sap/approuter/-/approuter-6.7.1.tgz#7320effd015ad1cec59347ca96c483ba8263ade3"
-  integrity sha512-PwAMupJxjvFwy7iBU7f8T1ACl0RPComjrO4AJKzxiHderDzf1d4Af2J0D4t6Xa++bZF4Sv+gS9LzR6Y7qfAfdQ==
+  version "6.7.2"
+  resolved "https://npm.sap.com/@sap/approuter/-/approuter-6.7.2.tgz#a489bb1f011650a8a8fc8da138bbd7d8af88a945"
+  integrity sha512-7wzpyKLvmVHGubBOuhyr7pDl4kIWtB+AkYkj0ju6Rqdt9oK3kmghjaAmzSgEutrHuKrV1SJ/j9/UK/4XZGQqiQ==
   dependencies:
     "@sap/audit-logging" "2.3.0"
     "@sap/e2e-trace" "1.4.1"
-    "@sap/logging" "5.0.2"
+    "@sap/logging" "5.2.0"
     "@sap/xsenv" "2.1.0"
     "@sap/xssec" "2.2.2"
     agentkeepalive "2.0.5"
@@ -1641,7 +1641,7 @@
     debug "3.1.0"
     deepmerge "2.1.1"
     encodeurl "1.0.2"
-    express-session "1.15.6"
+    express-session "1.17.0"
     http-proxy-agent "2.1.0"
     https-proxy-agent "2.2.4"
     jwt-decode "2.0.1"
@@ -1659,6 +1659,7 @@
     scmp "1.0.0"
     send "0.16.2"
     serve-static "1.13.2"
+    should-send-same-site-none "2.0.4"
     tough-cookie "2.3.3"
     tv4 "1.2.7"
     uid-safe "2.1.5"
@@ -1689,10 +1690,10 @@
   dependencies:
     request-stats "3.0.0"
 
-"@sap/logging@5.0.2":
-  version "5.0.2"
-  resolved "https://npm.sap.com/@sap/logging/-/logging-5.0.2.tgz#601847764790e18d36ed8be6b2c5aef5883f741a"
-  integrity sha512-d95Fvi91hyuw18W71AgACTqk1swIYw9sbTIgGKfInyBxk79sIPGQwawU9SERykRzzoPnzXJKDqMFL8o55F4DXQ==
+"@sap/logging@5.2.0":
+  version "5.2.0"
+  resolved "https://npm.sap.com/@sap/logging/-/logging-5.2.0.tgz#53f97afe74d23d39d0e0d2d5c2eb65cb3d9f52ca"
+  integrity sha512-1BnVerP1062g4oOvpvtQ6pSKXVGelcwJiuizLrTOpYBX6Zc/wW29FWeRTNEKvY2YKs659QNf11Tt9/vTxnPtsg==
   dependencies:
     "@sap/e2e-trace" "^2.0.0"
     lodash "4.17.13"
@@ -3331,11 +3332,6 @@ cosmiconfig@^5.1.0:
     js-yaml "^3.13.1"
     parse-json "^4.0.0"
 
-crc@3.4.4:
-  version "3.4.4"
-  resolved "https://registry.yarnpkg.com/crc/-/crc-3.4.4.tgz#9da1e980e3bd44fc5c93bf5ab3da3378d85e466b"
-  integrity sha1-naHpgOO9RPxck79as9ozeNheRms=
-
 create-error-class@^3.0.0:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/create-error-class/-/create-error-class-3.0.2.tgz#06be7abef947a3f14a30fd610671d401bca8b7b6"
@@ -3584,10 +3580,15 @@ delegates@^1.0.0:
   resolved "https://registry.yarnpkg.com/delegates/-/delegates-1.0.0.tgz#84c6e159b81904fdca59a0ef44cd870d31250f9a"
   integrity sha1-hMbhWbgZBP3KWaDvRM2HDTElD5o=
 
-depd@~1.1.1, depd@~1.1.2:
+depd@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/depd/-/depd-1.1.2.tgz#9bcd52e14c097763e749b274c4346ed2e560b5a9"
   integrity sha1-m81S4UwJd2PnSbJ0xDRu0uVgtak=
+
+depd@~2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/depd/-/depd-2.0.0.tgz#b696163cc757560d09cf22cc8fad1571b79e76df"
+  integrity sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==
 
 deprecation@^2.0.0:
   version "2.3.1"
@@ -4194,20 +4195,19 @@ express-http-proxy@^1.6.0:
     es6-promise "^4.1.1"
     raw-body "^2.3.0"
 
-express-session@1.15.6:
-  version "1.15.6"
-  resolved "https://registry.yarnpkg.com/express-session/-/express-session-1.15.6.tgz#47b4160c88f42ab70fe8a508e31cbff76757ab0a"
-  integrity sha512-r0nrHTCYtAMrFwZ0kBzZEXa1vtPVrw0dKvGSrKP4dahwBQ1BJpF2/y1Pp4sCD/0kvxV4zZeclyvfmw0B4RMJQA==
+express-session@1.17.0:
+  version "1.17.0"
+  resolved "https://registry.yarnpkg.com/express-session/-/express-session-1.17.0.tgz#9b50dbb5e8a03c3537368138f072736150b7f9b3"
+  integrity sha512-t4oX2z7uoSqATbMfsxWMbNjAL0T5zpvcJCk3Z9wnPPN7ibddhnmDZXHfEcoBMG2ojKXZoCyPMc5FbtK+G7SoDg==
   dependencies:
-    cookie "0.3.1"
+    cookie "0.4.0"
     cookie-signature "1.0.6"
-    crc "3.4.4"
     debug "2.6.9"
-    depd "~1.1.1"
-    on-headers "~1.0.1"
-    parseurl "~1.3.2"
+    depd "~2.0.0"
+    on-headers "~1.0.2"
+    parseurl "~1.3.3"
+    safe-buffer "5.2.0"
     uid-safe "~2.1.5"
-    utils-merge "1.0.1"
 
 express@^4.17.1:
   version "4.17.1"
@@ -8298,7 +8298,7 @@ safe-buffer@5.1.2, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
   integrity sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==
 
-safe-buffer@^5.0.1, safe-buffer@^5.1.1, safe-buffer@^5.1.2, safe-buffer@^5.2.0, safe-buffer@~5.2.0:
+safe-buffer@5.2.0, safe-buffer@^5.0.1, safe-buffer@^5.1.1, safe-buffer@^5.1.2, safe-buffer@^5.2.0, safe-buffer@~5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.2.0.tgz#b74daec49b1148f88c64b68d49b1e815c1f2f519"
   integrity sha512-fZEwUGbVl7kouZs1jCdMLdt95hdIv0ZeHg6L7qPeciMZhZ+/gdesW4wgTARkrFWEpspjEATAzUGPG8N2jJiwbg==
@@ -8493,6 +8493,11 @@ shell-quote@^1.6.1:
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/shell-quote/-/shell-quote-1.7.2.tgz#67a7d02c76c9da24f99d20808fcaded0e0e04be2"
   integrity sha512-mRz/m/JVscCrkMyPqHc/bczi3OQHkLTqXHEFu0zDhK/qfv3UcOA4SVmRCLmos4bhjr9ekVQubj/R7waKapmiQg==
+
+should-send-same-site-none@2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/should-send-same-site-none/-/should-send-same-site-none-2.0.4.tgz#0cf947b0659af8df65e1ba414676a0a511710ccf"
+  integrity sha512-7ywS2JXBJY+rAR+yjeQdjXKe2vSEFEtI8Qn0w4JevkKH59mpKShSfaE7VCxhs1UJGUMjVAF8HSUZxDL8ANJtwQ==
 
 signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"
