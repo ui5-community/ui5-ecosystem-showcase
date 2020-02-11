@@ -7,19 +7,29 @@ module.exports = async function ({ workspace, dependencies, options }) {
 
     const zipName = `${options.configuration.archiveName || options.projectNamespace.replace(/\//g, '')}.zip`;
     const prefixPath = `/resources/${options.projectNamespace}/`
-    const allResources = await workspace.byGlob(`${prefixPath}/**`);
+    let allResources;
+    try {
+        allResources = await workspace.byGlob(`${prefixPath}/**`);
+    } catch (e) {
+        log.error(`Couldn't read resources: ${e}`);
+    }
 
     const zip = new yazl.ZipFile();
-    await Promise.all(allResources.map((resource) =>
-        resource.getBuffer().then((buffer) => {
-            options.configuration && options.configuration.debug && log.info("Transpiling file " + resource.getPath());
-            zip.addBuffer(buffer, resource.getPath().replace(prefixPath, ''));
-        })
-    ));
+    try {
+        await Promise.all(allResources.map((resource) =>
+            resource.getBuffer()
+                .then((buffer) => {
+                    options.configuration && options.configuration.debug && log.info(`Adding ${resource.getPath()} to archive.`);
+                    zip.addBuffer(buffer, resource.getPath().replace(prefixPath, ''));
+                })
+        ));
+    } catch (e) {
+        log.error(`Couldn't add all resources to the archive: ${e}`);
+    }
     zip.end();
 
-     // Blocked: Add an option to output only the zip.
-     // Wait for https://github.com/SAP/ui5-fs/issues/155
+    // Blocked: Add an option to output only the zip.
+    // Wait for https://github.com/SAP/ui5-fs/issues/155
 
     const res = resourceFactory.createResource({
         path: `/${zipName}`,

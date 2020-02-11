@@ -1,6 +1,6 @@
-# UI5 task for transpiling ES6+ sources
+# UI5 task for zipping all project resources
 
-Task for [ui5-builder](https://github.com/SAP/ui5-builder), enabling transpiling.
+Task for [ui5-builder](https://github.com/SAP/ui5-builder), enabling zipping.
 
 ## Install
 
@@ -51,7 +51,7 @@ builder:
 
 ## How it works
 
-The task can be used to zip all resources in an archive.
+The task can be used to zip all project resources in an archive.
 
 ## License
 
