@@ -36,6 +36,11 @@ module.exports = async function ({ workspace, dependencies, options }) {
         stream: zip.outputStream
     });
 
-    await workspace.write(res);
-    log.verbose(`Created ${zipName} file.`);
+    try {
+        await workspace.write(res);
+        log.verbose(`Created ${zipName} file.`);
+    } catch (e) {
+        log.error(`Couldn't write archive to destination: ${e}`);
+    }
+
 };
