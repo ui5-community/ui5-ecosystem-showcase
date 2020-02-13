@@ -5,7 +5,8 @@ const log = require("@ui5/logger").getLogger("builder:customtask:zipper");
 
 module.exports = async function ({ workspace, dependencies, options }) {
 
-    const zipName = `${options.configuration.archiveName || options.projectNamespace.replace(/\//g, '')}.zip`;
+    const defaultName = options && options.configuration && options.configuration.archiveName;
+    const zipName = `${defaultName || options.projectNamespace.replace(/\//g, '')}.zip`;
     const prefixPath = `/resources/${options.projectNamespace}/`
     let allResources;
     try {
