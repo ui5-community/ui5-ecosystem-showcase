@@ -9,16 +9,8 @@
     "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
   },
   "dependencies": {
-<<<<<<< HEAD
-    "@ui5/logger": "^1.0.2",
-    "@ui5/fs": "^1.1.2",
-    "yazl": "^2.5.1"
-  }
-}
-=======
     "@ui5/fs": "^1.1.2",
     "@ui5/logger": "^1.0.2",
     "yazl": "^2.5.1"
   }
 }
->>>>>>> upstream/master
