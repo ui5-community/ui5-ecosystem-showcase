@@ -18,6 +18,7 @@ packages
 ├── ui5-middleware-simpleproxy      // middleware extension: simple express proxy
 ├── ui5-middleware-servestatic      // middleware extension: serve static resources
 └── ui5-task-transpile              // task extension: transpile es6 to es5 code
+└── ui5-task-zipper                 // task extension: bundle the entire webapp in a zip-archive
 ```
 
 ## Getting Started
@@ -76,6 +77,7 @@ yarn test:ci
 The tasks and middlewares developed in this project are also publicly available on NPM right here:
  
 * https://www.npmjs.com/package/ui5-task-transpile
+* https://www.npmjs.com/package/ui5-task-zipper
 * https://www.npmjs.com/package/ui5-middleware-cfdestination
 * https://www.npmjs.com/package/ui5-middleware-iasync (alpha! careful!)
 * https://www.npmjs.com/package/ui5-middleware-livereload
@@ -88,6 +90,7 @@ The consumption of the individual tasks and middlewares can be seen inside their
 Available tasks:
 
 * [ui5-task-transpile](packages/ui5-task-transpile/README.md): transpile es6 to es5 code
+* [ui5-task-zipper](packages/ui5-task-zipper/README.md): bundle the entire webapp in a zip-archive
 
 Available middlewares:
 
