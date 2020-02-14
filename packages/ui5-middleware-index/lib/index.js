@@ -1,5 +1,4 @@
-const path = require("path")
-const log = require("@ui5/logger").getLogger("server:custommiddleware:livereload")
+const log = require("@ui5/logger").getLogger("server:custommiddleware:index")
 
 /**
  * Custom UI5 Server middleware example
@@ -18,9 +17,10 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:livereload
  */
 module.exports = function createMiddleware({ resources, options }) {
     return (req, res, next) => {
-        const sIndexFile = options && options.index ? `${options.index}` : "index.html"
+        const sIndexFile =
+            options && options.configuration && options.configuration.index ? `${options.configuration.index}` : "index.html"
         if (req.path === "/") {
-            options && options.debug ? log.info(`serving ${sIndexFile}!`) : null
+            options && options.configuration && options.configuration.debug ? log.info(`serving ${sIndexFile}!`) : null
             return resources.rootProject
                 .byPath(`/${sIndexFile}`)
                 .then(indexFile => {
