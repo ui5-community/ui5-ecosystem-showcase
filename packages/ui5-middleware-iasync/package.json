@@ -1,6 +1,6 @@
 {
     "name": "ui5-middleware-iasync",
-    "version": "0.0.1-alpha",
+    "version": "0.0.2-alpha",
     "description": "ui5 tooling middlware to sync browser interactions",
     "author": "Volker Buzek, Peter Muessig",
     "license": "Apache-2.0",
