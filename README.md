@@ -17,7 +17,7 @@ packages
 ├── ui5-middleware-livetranspile    // middleware extension: on-demand es6 to es5 transpile when requesting js
 ├── ui5-middleware-simpleproxy      // middleware extension: simple express proxy
 ├── ui5-middleware-servestatic      // middleware extension: serve static resources
-└── ui5-task-transpile              // task extension: transpile es6 to es5 code
+├── ui5-task-transpile              // task extension: transpile es6 to es5 code
 └── ui5-task-zipper                 // task extension: bundle the entire webapp in a zip-archive
 ```
 
