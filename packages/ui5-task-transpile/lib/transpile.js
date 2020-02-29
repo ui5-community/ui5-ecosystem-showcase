@@ -20,7 +20,14 @@ module.exports = function({workspace, dependencies, options}) {
             if (!(options.configuration && options.configuration.excludePatterns || []).some(pattern => resource.getPath().includes(pattern))) {
                 return resource.getString().then((value) => {
                     options.configuration && options.configuration.debug && log.info("Transpiling file " + resource.getPath());
+                    
+                    let plugins = [];
+                    if(options.configuration && options.configuration.removeConsoleStatements){
+                        plugins = ["transform-remove-console"];
+                    }
+
                     return babel.transformAsync(value, {
+                        plugins: plugins,
                         presets: [
                             ["@babel/preset-env", {
                                 "targets": {
