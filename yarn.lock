@@ -1645,9 +1645,9 @@
   integrity sha512-syzrhxH1JNfYS+FccnPUjxsGwQhW3mvwJpx1oQhZhh7VM7matWstLH9ObPtI3oPj3SO+IMgjpyBjzSUHZo5r4A==
 
 "@sap/approuter@^6.8.1":
-  version "6.8.1"
-  resolved "https://npm.sap.com/@sap/approuter/-/approuter-6.8.1.tgz#a11d0be5c24c947a81e6f0ae6a6cb8cd742b9035"
-  integrity sha512-c5w5NAloZuHHjkmvuNvm23gY8/GTzSpi1OM1BjpIArhYbw2r0obYQ8HAFHaHrGsR6y1xTlREm72love1l9+/OA==
+  version "6.8.2"
+  resolved "https://npm.sap.com/@sap/approuter/-/approuter-6.8.2.tgz#23b972c4448022794519053866efbf622c2b6d94"
+  integrity sha512-BFUUdTrLZLqkRgSEu6fO9tkrP7r31C5Ada24PcNI68Meozct1fP3Z02iFJwgda/4oB2nHnTEa5+yh0ejKsT4Bg==
   dependencies:
     "@sap/audit-logging" "2.3.0"
     "@sap/e2e-trace" "1.4.1"
