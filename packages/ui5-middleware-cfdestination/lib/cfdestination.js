@@ -23,6 +23,7 @@ module.exports = function ({resources, options}) {
     process.env.XS_APP_LOG_LEVEL = options.configuration.debug ? 'DEBUG' : 'ERROR';
     // read in the cf config file
     const xsappConfig = JSON.parse(fs.readFileSync(options.configuration.xsappJson, 'utf8'));
+    const xsappPath = options.configuration.xsappJson.replace("xs-app.json", "");
 
     let regExes = [];
     xsappConfig.routes.forEach(route => {
@@ -38,7 +39,8 @@ module.exports = function ({resources, options}) {
     process.env.destinations = JSON.stringify(options.configuration.destinations);
     approuter.start({
         port: options.configuration.port,
-        xsappConfig: xsappConfig
+        xsappConfig: xsappConfig,
+        workingDir: xsappPath || "."
     });
     return (req, res, next) => {
         // check req.path for match with each route.source
