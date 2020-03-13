@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-simpleproxy",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "UI5 simple proxy middleware",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
@@ -9,7 +9,7 @@
     "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
   },
   "dependencies": {
-    "@ui5/logger": "^1.0.1",
+    "@ui5/logger": "^1.0.2",
     "express-http-proxy": "^1.6.0"
   }
 }
