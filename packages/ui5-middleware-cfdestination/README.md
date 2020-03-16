@@ -56,7 +56,7 @@ server:
         port: 1091
         xsappJson: "xs-app.json"
         destinations:
-          # check that the destination name (here: "backend") matches your router in xssppJson
+          # check that the destination name (here: "backend") matches your router in xs-app.json
           - name: "backend"
             url: "https://services.odata.org/V4/(S(fdng4tbvlxgzpdtpfap2rqss))/TripPinServiceRW/"
 ```
