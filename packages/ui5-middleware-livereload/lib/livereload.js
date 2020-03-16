@@ -47,6 +47,8 @@ module.exports = ({ resources, options }) => {
     );
     debug ? log.info(`Livereload connecting to port ${port} for path ${watchPath}`) : null;
     livereloadServer.watch(path.join(process.cwd(), watchPath));
+    // connect-livereload already holds the 
+    // method sig (req, res, next)
     return connectLivereload({
         port: port
     });
