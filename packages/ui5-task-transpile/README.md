@@ -10,14 +10,14 @@ npm install ui5-task-transpile --save-dev
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
-- debug: true|false  
+- debug: `true|false`
 verbose logging
 
-- removeConsoleStatements: true|false  
+- removeConsoleStatements: `true|false`
 remove console statements while transpiling using [Babel plugin](https://babeljs.io/docs/en/babel-plugin-transform-remove-console)
 
-- excludePatterns: `String<Array>`  
-array of paths inside `$yourapp/webapp/` to exclude from live transpilation,  
+- excludePatterns: `String<Array>`
+array of paths inside `$yourapp/webapp/` to exclude from live transpilation,
 e.g. 3-rd party libs in `lib/*`
 
 ## Usage

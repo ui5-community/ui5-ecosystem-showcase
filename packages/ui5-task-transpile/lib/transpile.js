@@ -22,7 +22,7 @@ module.exports = function({workspace, dependencies, options}) {
                     options.configuration && options.configuration.debug && log.info("Transpiling file " + resource.getPath());
                     
                     let plugins = [];
-                    if(options.configuration && options.configuration.removeConsoleStatements){
+                    if (options.configuration && options.configuration.removeConsoleStatements) {
                         plugins = ["transform-remove-console"];
                     }
 
