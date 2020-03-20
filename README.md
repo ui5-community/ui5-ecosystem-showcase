@@ -33,15 +33,15 @@ npm i -g yarn
 To get started with the project, please ensure to run `yarn` once to install all required dependencies in your node_modules folder.
 
 ```bash
+# use yarn --ignore-engines if you're on node != 8 or 10
+
 # Install the node modules via yarn
-yarn
+yarn --ignore-engines
 ```
 
 To get started just run one of the following commands:
 
 ```bash
-# use yarn --ignore-engines if you're on node != 8 or 10
-
 # 1) Run the dev mode
 # which gives you 
 # - live reload of ui5-app/webapp/**/**
