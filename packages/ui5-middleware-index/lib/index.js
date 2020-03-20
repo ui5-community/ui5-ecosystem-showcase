@@ -15,10 +15,10 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:index")
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @returns {function} Middleware function to use
  */
-module.exports = function createMiddleware({ resources, options }) {
+module.exports = ({ resources, options }) => {
     return (req, res, next) => {
         const sIndexFile =
-            options && options.configuration && options.configuration.index ? `${options.configuration.index}` : "index.html"
+            options.configuration && options.configuration.index ? options.configuration.index : "index.html"
         if (req.path === "/") {
             options && options.configuration && options.configuration.debug ? log.info(`serving ${sIndexFile}!`) : null
             return resources.rootProject
