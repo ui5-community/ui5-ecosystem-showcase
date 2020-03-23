@@ -6,6 +6,10 @@ This repository is showcasing the [UI5 Tooling](https://sap.github.io/ui5-toolin
 
 This repository is open to anyone who wants to share his task or middleware with the UI5 community. By integrating an extension in this repository you can benefit from automated releases of the tasks and middlewares to the public npm registry. In addition, you will get a review before your task or middleware is merged. But if you prefer to manage your repository and release on your own, you can also do so. But in this case, please create a PR for this page to list your task or middleware here and share it with the UI5 community!
 
+## Available Tasks and Middlewares
+
+Below you can find the list of available tasks and middlewares. Please share your own tasks and middlewares here by extending the list of available extensions [here](https://github.com/petermuessig/ui5-ecosystem-showcase/edit/master/docs/index.md).
+
 ## Available Tasks
 
 The following tasks (know to this page) have been created and are available in the public NPM registry:
