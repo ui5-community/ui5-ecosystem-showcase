@@ -1631,10 +1631,10 @@
   dependencies:
     "@openui5/sap.ui.core" "1.75.0"
 
-"@openui5/themelib_sap_fiori_3@1.75.0":
-  version "1.75.0"
-  resolved "https://registry.yarnpkg.com/@openui5/themelib_sap_fiori_3/-/themelib_sap_fiori_3-1.75.0.tgz#472a55aaf512005f59e717ebd1a8782cee0437db"
-  integrity sha512-abym8uXxO9lWmvvCPuxnPgoDbHrwzNzU1FbZi6aAH+yvbYLxUngwJVdGccIe3IMJ6bnW0zQaVImRwzEWjR43vw==
+"@openui5/themelib_sap_fiori_3@1.76.0":
+  version "1.76.0"
+  resolved "https://registry.yarnpkg.com/@openui5/themelib_sap_fiori_3/-/themelib_sap_fiori_3-1.76.0.tgz#6a0c2213170b98b1c4daf044e987a36f48017a0e"
+  integrity sha512-jP9NwZnXfRzfVGDXDfs0ZNeIwfNRlR0gKYqGUGznK1xyOLN8RCNu74jL3YTvka/LUy2CoqXFmbq7x+sDSKMHfQ==
 
 "@openui5/ts-types@^1.60.5":
   version "1.60.5"
