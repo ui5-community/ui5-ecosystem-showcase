@@ -39,6 +39,12 @@ module.exports = function({resources, options}) {
     return proxy(baseUri, {
       https: protocol === "https",
       preserveHostHdr: false,
+      proxyReqOptDecorator: function(proxyReqOpts) {
+        if (options.configuration && options.configuration.strictSSL === false) {
+          proxyReqOpts.rejectUnauthorized = false;
+        }
+        return proxyReqOpts;
+      },
       proxyReqPathResolver: function (req) {
         return (path ? path : "") + req.url;
       }
