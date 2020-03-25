@@ -15,5 +15,9 @@ lerna run ncu-upgrade --stream
 To release the packages `lerna` is used to tag and release the packages in the mono repository properly. To run the release just use the following command:
 
 ```bash
-lerna publish
+# change the version of the NPM packages based on the conventional commits
+lerna version --conventional-commits
+
+# publish the new packages to NPM
+lerna publish from-git
 ```
