@@ -17,7 +17,8 @@
     "dev": "ui5 serve --port 1081 --open index.html",
     "debug": "node --inspect node_modules/.bin/ui5 serve --port 1081",
     "watch:build": "npm-watch build",
-    "watch": "npm-run-all prepare --parallel watch:build start"
+    "watch": "npm-run-all prepare --parallel watch:build start",
+    "ncu-upgrade": "ncu -u"
   },
   "watch": {
     "build": {
@@ -29,10 +30,10 @@
     }
   },
   "dependencies": {
-    "@openui5/sap.m": "1.75.0",
-    "@openui5/sap.ui.core": "1.75.0",
-    "@openui5/sap.ui.layout": "1.75.0",
-    "@openui5/themelib_sap_fiori_3": "1.75.0"
+    "@openui5/sap.m": "1.76.0",
+    "@openui5/sap.ui.core": "1.76.0",
+    "@openui5/sap.ui.layout": "1.76.0",
+    "@openui5/themelib_sap_fiori_3": "1.76.0"
   },
   "devDependencies": {
     "@openui5/ts-types": "^1.60.5",
@@ -42,6 +43,7 @@
     "karma-coverage": "^2.0.1",
     "karma-ui5": "^1.1.0",
     "mkdirp": "~1.0.3",
+    "npm-check-updates": "^4.0.5",
     "npm-run-all": "^4.1.5",
     "npm-watch": "^0.6.0",
     "rimraf": "~3.0.2",

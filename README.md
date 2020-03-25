@@ -4,7 +4,7 @@ A repository showcasing the UI5 Tooling ecosystem idea.
 
 ## Overview
 
-This repository will showcase the endless possibilities of the UI5 Tooling. The UI5 Tooling extensibility (tasks and middleware) can be used to combine various OSS tools for UI5 application development. This increases the development experience and efficiency and also allows to use well-known tools.
+This repository showcases the endless possibilities of the UI5 Tooling. The UI5 Tooling extensibility (tasks and middleware) can be used to combine various OSS tools for UI5 application development. This increases the development experience and efficiency and also allows to use well-known tools.
 
 The content of the repository is structured like that:
 

@@ -8,9 +8,15 @@
         "type": "git",
         "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
     },
+    "scripts": {
+      "ncu-upgrade": "ncu -u"
+    },
     "dependencies": {
         "@ui5/logger": "^1.0.2",
         "browser-sync": "^2.26.7",
         "connect-injector": "^0.4.4"
+    },
+    "devDependencies": {
+      "npm-check-updates": "^4.0.5"
     }
 }
