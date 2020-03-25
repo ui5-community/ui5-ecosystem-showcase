@@ -1,5 +1,7 @@
 # UI5 Tooling - Ecosystem Showcase
 
+[![OpenUI5 Community Slack (#tooling channel)](https://img.shields.io/badge/slack-join-44cc11.svg)](https://join-ui5-slack.herokuapp.com)
+
 This repository is showcasing the [UI5 Tooling](https://sap.github.io/ui5-tooling/) extensibility capabilities. You can easily extend the UI5 Tooling with your own [tasks](https://sap.github.io/ui5-tooling/pages/extensibility/CustomTasks/) or [middlewares](https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/). This doesn't necessarily need to happen in this repository and everyone can develop and share his own tasks and middleware via [npm](https://www.npmjs.com/). Regarding npm, please prefix the name of all tasks with `ui5-task-` and all middlewares with `ui5-middleware-`. This will help UI5 developers to easily find tasks and middlewares created and shared by the UI5 community.
 
 ## Contributing vs. Self-managed
