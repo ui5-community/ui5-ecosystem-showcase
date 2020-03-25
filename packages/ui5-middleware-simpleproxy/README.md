@@ -50,6 +50,31 @@ server:
 
 The middleware launches a simple `proxy`-server which proxies the requests to the given uri. Internally, it uses the express proxy middleware.
 
+## How to ignore self-signed certificates?
+
+In case you are using HTTPS and self-signed certificates, you may see an error as displayed below:
+
+```bash
+Error: unable to verify the first certificate
+    at TLSSocket.onConnectSecure (_tls_wrap.js:1321:34)
+    at TLSSocket.emit (events.js:210:5)
+    at TLSSocket._finishInit (_tls_wrap.js:794:8)
+    at TLSWrap.ssl.onhandshakedone (_tls_wrap.js:608:12)
+```
+
+To avoid it, you can set the `strictSSL` value in proxy request to be `false`. Its default value is `true`.
+
+```yaml
+server:
+  customMiddleware:
+  - name: ui5-middleware-simpleproxy
+    afterMiddleware: compression
+    mountPath: /odata
+    configuration:
+      baseUri: "http://services.odata.org"
+      strictSSL: false
+```
+
 ## License
 
 This work is [dual-licensed](../../LICENSE) under Apache 2.0 and the Derived Beer-ware License. The official license will be Apache 2.0 but finally you can choose between one of them if you use this work.
