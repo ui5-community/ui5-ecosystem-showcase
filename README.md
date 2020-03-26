@@ -2,9 +2,11 @@
 
 A repository showcasing the UI5 Tooling ecosystem idea.
 
+[![OpenUI5 Community Slack (#tooling channel)](https://img.shields.io/badge/slack-join-44cc11.svg)](https://join-ui5-slack.herokuapp.com)
+
 ## Overview
 
-This repository will showcase the endless possibilities of the UI5 Tooling. The UI5 Tooling extensibility (tasks and middleware) can be used to combine various OSS tools for UI5 application development. This increases the development experience and efficiency and also allows to use well-known tools.
+This repository showcases the endless possibilities of the UI5 Tooling. The UI5 Tooling extensibility (tasks and middleware) can be used to combine various OSS tools for UI5 application development. This increases the development experience and efficiency and also allows to use well-known tools.
 
 The content of the repository is structured like that:
 
@@ -33,15 +35,15 @@ npm i -g yarn
 To get started with the project, please ensure to run `yarn` once to install all required dependencies in your node_modules folder.
 
 ```bash
+# use yarn --ignore-engines if you're on node != 8 or 10
+
 # Install the node modules via yarn
-yarn
+yarn --ignore-engines
 ```
 
 To get started just run one of the following commands:
 
 ```bash
-# use yarn --ignore-engines if you're on node != 8 or 10
-
 # 1) Run the dev mode
 # which gives you 
 # - live reload of ui5-app/webapp/**/**
@@ -76,7 +78,7 @@ yarn test:ci
 
 The tasks and middlewares developed in this project are also publicly available on NPM right here:
  
-* https://www.npmjs.com/package/ui5-task-transpile
+* https://www.npmjs.com/package/ui5-task-transpile 
 * https://www.npmjs.com/package/ui5-task-zipper
 * https://www.npmjs.com/package/ui5-middleware-cfdestination
 * https://www.npmjs.com/package/ui5-middleware-iasync (alpha! careful!)
@@ -89,17 +91,21 @@ The consumption of the individual tasks and middlewares can be seen inside their
 
 Available tasks:
 
-* [ui5-task-transpile](packages/ui5-task-transpile/README.md): transpile es6 to es5 code
-* [ui5-task-zipper](packages/ui5-task-zipper/README.md): bundle the entire webapp in a zip-archive
+| NPM package | Description | Badge |
+| ----------- | ----------- | ----- |
+| [ui5-task-transpile](packages/ui5-task-transpile/README.md) | transpile es6 to es5 code | [![npm version](https://badge.fury.io/js/ui5-task-transpile.svg)](https://badge.fury.io/js/ui5-task-transpile) |
+| [ui5-task-zipper](packages/ui5-task-zipper/README.md) | bundle the entire webapp in a zip-archive | [![npm version](https://badge.fury.io/js/ui5-task-zipper.svg)](https://badge.fury.io/js/ui5-task-zipper) |
 
 Available middlewares:
 
-* [ui5-middleware-cfdestination](packages/ui5-middleware-cfdestination/README.md): use the approuter as proxy
-* [ui5-middleware-iasync](packages/ui5-middleware-iasync/README.md): sync UI interactions across connected browsers (alpha! careful!)
-* [ui5-middleware-livereload](packages/ui5-middleware-livereload/README.md): usage of livereload for development
-* [ui5-middleware-livetranspile](packages/ui5-middleware-livetranspile/README.md): on-demand es6 to es5 transpile when requesting js
-* [ui5-middleware-simpleproxy](packages/ui5-middleware-simpleproxy/README.md): simple express proxy
-* [ui5-middleware-servestatic](packages/ui5-middleware-servestatic/README.md): serve static resources
+| NPM package | Description | Badge |
+| ----------- | ----------- | ----- |
+| [ui5-middleware-cfdestination](packages/ui5-middleware-cfdestination/README.md) | use the approuter as proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-cfdestination.svg)](https://badge.fury.io/js/ui5-middleware-cfdestination) |
+| [ui5-middleware-iasync](packages/ui5-middleware-iasync/README.md) | sync UI interactions across connected browsers (alpha! careful!) | [![npm version](https://badge.fury.io/js/ui5-middleware-iasync.svg)](https://badge.fury.io/js/ui5-middleware-iasync) |
+| [ui5-middleware-livereload](packages/ui5-middleware-livereload/README.md) | usage of livereload for development | [![npm version](https://badge.fury.io/js/ui5-middleware-livereload.svg)](https://badge.fury.io/js/ui5-middleware-livereload) |
+| [ui5-middleware-livetranspile](packages/ui5-middleware-livetranspile/README.md) | on-demand es6 to es5 transpile when requesting js | [![npm version](https://badge.fury.io/js/ui5-middleware-livetranspile.svg)](https://badge.fury.io/js/ui5-middleware-livetranspile) |
+| [ui5-middleware-simpleproxy](packages/ui5-middleware-simpleproxy/README.md) | simple express proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-simpleproxy.svg)](https://badge.fury.io/js/ui5-middleware-simpleproxy) |
+| [ui5-middleware-servestatic](packages/ui5-middleware-servestatic/README.md) | serve static resources | [![npm version](https://badge.fury.io/js/ui5-middleware-servestatic.svg)](https://badge.fury.io/js/ui5-middleware-servestatic) |
 
 ## License
 

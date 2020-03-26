@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-cfdestination",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "description": "UI5 middleware for CF destinations",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
@@ -8,9 +8,15 @@
     "type": "git",
     "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
   },
+  "scripts": {
+    "ncu-upgrade": "ncu -u"
+  },
   "dependencies": {
-    "@sap/approuter": "^6.8.1",
+    "@sap/approuter": "^6.8.2",
     "@ui5/logger": "^1.0.2",
     "request": "^2.88.2"
+  },
+  "devDependencies": {
+    "npm-check-updates": "^4.0.5"
   }
 }
