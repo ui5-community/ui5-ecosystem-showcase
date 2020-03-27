@@ -21,7 +21,6 @@ packages
 ├── ui5-middleware-servestatic      // middleware extension: serve static resources
 ├── ui5-task-transpile              // task extension: transpile es6 to es5 code
 └── ui5-task-zipper                 // task extension: bundle the entire webapp in a zip-archive
-└── ui5-task-minifier               // task extension: minify HTML/CSS/JSON files as ui5-builder doesn't do it
 ```
 
 ## Getting Started
@@ -81,7 +80,6 @@ The tasks and middlewares developed in this project are also publicly available 
  
 * https://www.npmjs.com/package/ui5-task-transpile 
 * https://www.npmjs.com/package/ui5-task-zipper
-* https://www.npmjs.com/package/ui5-task-minifier
 * https://www.npmjs.com/package/ui5-middleware-cfdestination
 * https://www.npmjs.com/package/ui5-middleware-iasync (alpha! careful!)
 * https://www.npmjs.com/package/ui5-middleware-livereload
@@ -97,7 +95,6 @@ Available tasks:
 | ----------- | ----------- | ----- |
 | [ui5-task-transpile](packages/ui5-task-transpile/README.md) | transpile es6 to es5 code | [![npm version](https://badge.fury.io/js/ui5-task-transpile.svg)](https://badge.fury.io/js/ui5-task-transpile) |
 | [ui5-task-zipper](packages/ui5-task-zipper/README.md) | bundle the entire webapp in a zip-archive | [![npm version](https://badge.fury.io/js/ui5-task-zipper.svg)](https://badge.fury.io/js/ui5-task-zipper) |
-| [ui5-task-minifier](https://github.com/mauriciolauffer/ui5-task-minifier) | minify HTML/CSS/JSON files | [![npm version](https://badge.fury.io/js/ui5-task-minifier.svg)](https://badge.fury.io/js/ui5-task-minifier) |
 
 Available middlewares:
 
