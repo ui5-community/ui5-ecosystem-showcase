@@ -24,8 +24,9 @@ module.exports = ({ resources, options }) => {
         port = options.configuration.port;
     }
     let watchPath = "webapp";
-    if (options.configuration && options.configuration.watchPath) {
-        watchPath = options.configuration.watchPath;
+    // due to compatibility reasons we keep the path as watchPath (watchPath has higher precedence than path)
+    if (options.configuration && (options.configuration.watchPath || options.configuration.path)) {
+        watchPath = options.configuration.watchPath || options.configuration.path;
     }
     let extraExts = "xml,json,properties";
     if (options.configuration && options.configuration.extraExts) {
