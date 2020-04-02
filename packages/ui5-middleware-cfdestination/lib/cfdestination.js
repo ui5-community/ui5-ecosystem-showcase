@@ -18,15 +18,19 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:cfdestinat
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @returns {function} Middleware function to use
  */
-module.exports = function ({resources, options}) {
+module.exports = function ({ resources, options }) {
     request.debug = options.configuration.debug; // pass debug flag on to underlying request lib
     process.env.XS_APP_LOG_LEVEL = options.configuration.debug ? 'DEBUG' : 'ERROR';
     // read in the cf config file
     const xsappConfig = JSON.parse(fs.readFileSync(options.configuration.xsappJson, 'utf8'));
     const xsappPath = options.configuration.xsappJson.replace("xs-app.json", "");
 
+    xsappConfig.authenticationMethod = "none";
+
     let regExes = [];
     xsappConfig.routes.forEach(route => {
+
+        route.authenticationType = "none";
         // ignore /-redirects (e.g. "^/(.*)"
         // a source declaration such as "^/backend/(.*)$" is needed
         if (route.source.match(/.*\/.*\/.*/)) {
