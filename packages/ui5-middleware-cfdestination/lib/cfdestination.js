@@ -25,6 +25,9 @@ module.exports = function ({ resources, options }) {
     const xsappConfig = JSON.parse(fs.readFileSync(options.configuration.xsappJson, 'utf8'));
     const xsappPath = options.configuration.xsappJson.replace("xs-app.json", "");
 
+    // the embedded approuter (the one that runs locally) will ignore all auth mechanisms. 
+    // Even when xsappConfig.authenticationMethod = "route" and only define the routes, 
+    // the approuter will try to read the env var during startup - and fail if they are missing
     xsappConfig.authenticationMethod = "none";
 
     let regExes = [];
