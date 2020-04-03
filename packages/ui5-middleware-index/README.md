@@ -1,6 +1,6 @@
 # UI5 middleware for delivering a welcome/start/'index' page to the client
 
-Middleware for [ui5-server](https://github.com/SAP/ui5-server), delivering your `index.html`.
+Middleware for [ui5-server](https://github.com/SAP/ui5-server), delivering the `$index.html` of choice (instead of the directory listing).
 
 ## Install
 
