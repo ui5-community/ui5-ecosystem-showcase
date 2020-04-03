@@ -22,7 +22,11 @@ module.exports = ({ resources, options }) => {
             options.configuration && options.configuration.index ? options.configuration.index : "index.html"
         if (req.path === "/") {
             options && options.configuration && options.configuration.debug ? log.info(`serving ${sIndexFile}!`) : null
+            // "redirect" the request
             req.url = `/${sIndexFile}`
+            // FTR
+            req.path = `/${sIndexFile}`
+            req.originalUrl = `/${sIndexFile}`
         }
         next()
     }
