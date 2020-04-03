@@ -1992,6 +1992,13 @@
   dependencies:
     npmlog "^4.1.2"
 
+"@ui5/logger@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@ui5/logger/-/logger-2.0.0.tgz#13e40b518259973e98525720366dc089d940d1d6"
+  integrity sha512-uBkUCqenF5IpUN+y//7FUHHiVN/AVzYwMleUcV27q1SRjD7Y3E84/fpOABPekEd1cgmJcPvOPRAd0X0btfPQVA==
+  dependencies:
+    npmlog "^4.1.2"
+
 "@ui5/project@^1.1.0", "@ui5/project@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@ui5/project/-/project-1.2.0.tgz#a767898bb085dbbd57a814bdb68f1e3924ff99b3"
