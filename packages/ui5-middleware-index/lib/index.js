@@ -1,7 +1,8 @@
 const log = require("@ui5/logger").getLogger("server:custommiddleware:index")
 
 /**
- * Custom UI5 Server middleware example
+ * serving an html file when "/" is called in the browser,
+ * similar to what Apache httpd calls "DirectoryIndex <file>"
  *
  * @param {Object} parameters Parameters
  * @param {Object} parameters.resources Resource collections
@@ -21,16 +22,7 @@ module.exports = ({ resources, options }) => {
             options.configuration && options.configuration.index ? options.configuration.index : "index.html"
         if (req.path === "/") {
             options && options.configuration && options.configuration.debug ? log.info(`serving ${sIndexFile}!`) : null
-            return resources.rootProject
-                .byPath(`/${sIndexFile}`)
-                .then(indexFile => {
-                    // read file into string
-                    return indexFile.getString()
-                })
-                .then(source => {
-                    res.type(".html")
-                    res.end(source)
-                })
+            req.url = `/${sIndexFile}`
         }
         next()
     }
