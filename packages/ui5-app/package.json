@@ -1,6 +1,6 @@
 {
   "name": "ui5-app",
-  "version": "0.1.6",
+  "version": "0.1.10",
   "description": "UI5 application using custom middlewares and tasks",
   "private": true,
   "author": "Volker Buzek, Peter Muessig",
@@ -17,7 +17,8 @@
     "dev": "ui5 serve --port 1081 --open index.html",
     "debug": "node --inspect node_modules/.bin/ui5 serve --port 1081",
     "watch:build": "npm-watch build",
-    "watch": "npm-run-all prepare --parallel watch:build start"
+    "watch": "npm-run-all prepare --parallel watch:build start",
+    "ncu-upgrade": "ncu -u"
   },
   "watch": {
     "build": {
@@ -29,31 +30,32 @@
     }
   },
   "dependencies": {
-    "@openui5/sap.m": "1.73.2",
-    "@openui5/sap.ui.core": "1.73.2",
-    "@openui5/sap.ui.layout": "1.73.2",
-    "@openui5/themelib_sap_fiori_3": "1.73.2"
+    "@openui5/sap.m": "1.76.0",
+    "@openui5/sap.ui.core": "1.76.0",
+    "@openui5/sap.ui.layout": "1.76.0",
+    "@openui5/themelib_sap_fiori_3": "1.76.0"
   },
   "devDependencies": {
     "@openui5/ts-types": "^1.60.5",
-    "@ui5/cli": "1.13.1",
+    "@ui5/cli": "1.14.0",
     "karma": "^4.4.1",
     "karma-chrome-launcher": "^3.1.0",
     "karma-coverage": "^2.0.1",
     "karma-ui5": "^1.1.0",
     "mkdirp": "~1.0.3",
+    "npm-check-updates": "^4.0.5",
     "npm-run-all": "^4.1.5",
     "npm-watch": "^0.6.0",
     "rimraf": "~3.0.2",
-    "ui5-middleware-cfdestination": "^0.1.3",
-    "ui5-middleware-iasync": "^0.0.1-alpha",
+    "ui5-middleware-cfdestination": "^0.1.6",
+    "ui5-middleware-iasync": "^0.0.2-alpha.0",
     "ui5-middleware-index": "^0.0.1",
-    "ui5-middleware-livereload": "^0.1.5",
-    "ui5-middleware-livetranspile": "^0.1.4",
-    "ui5-middleware-servestatic": "^0.1.3",
-    "ui5-middleware-simpleproxy": "^0.1.4",
-    "ui5-task-transpile": "^0.1.2",
-    "ui5-task-zipper": "^0.1.0"
+    "ui5-middleware-livereload": "^0.1.9",
+    "ui5-middleware-livetranspile": "^0.1.7",
+    "ui5-middleware-servestatic": "^0.1.5",
+    "ui5-middleware-simpleproxy": "^0.2.0",
+    "ui5-task-transpile": "^0.1.5",
+    "ui5-task-zipper": "^0.1.3"
   },
   "ui5": {
     "dependencies": [

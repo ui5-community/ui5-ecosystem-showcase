@@ -16,7 +16,7 @@ npm install ui5-middleware-livereload --save-dev
   file extensions other than `js`, `html` and `css` to monitor for changes
 - port: `integer`, default: 35729  
   port the live reload server is started on
-- path: `string`, default: `webapp`  
+- watchPath|path: `string`, default: `webapp`  
   path inside `$yourapp` the reload server monitors for changes
 
 ## Usage
@@ -51,12 +51,26 @@ server:
       debug: true
       ext: "xml,json,properties"
       port: 35729
+      watchPath: "webapp"
+```
+
+or with `path` instead of `watchPath`:
+
+```yaml
+server:
+  customMiddleware:
+  - name: ui5-middleware-livereload
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      ext: "xml,json,properties"
+      port: 35729
       path: "webapp"
 ```
 
 ## How it works
 
-The middleware launches a `livereload`-server on the specified `port`, listening to changes in the specified `path` inside your application directory.
+The middleware launches a `livereload`-server on the specified `port`, listening to changes in the specified `path` or `watchPath` inside your application directory.
 
 When changes are detected, a reload is triggered to **all connected clients** - so all browsers having `$yourapp` will reload the application. The reload is `#`-aware, meaning the current displayed route in your single-page UI5 app is kept steady.
 

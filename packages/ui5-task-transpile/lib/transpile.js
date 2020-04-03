@@ -1,4 +1,5 @@
 const path = require("path");
+const os = require("os");
 const babel = require("@babel/core");
 const log = require("@ui5/logger").getLogger("builder:customtask:transpile");
 
@@ -19,7 +20,14 @@ module.exports = function({workspace, dependencies, options}) {
             if (!(options.configuration && options.configuration.excludePatterns || []).some(pattern => resource.getPath().includes(pattern))) {
                 return resource.getString().then((value) => {
                     options.configuration && options.configuration.debug && log.info("Transpiling file " + resource.getPath());
+                    
+                    let plugins = [];
+                    if (options.configuration && options.configuration.removeConsoleStatements) {
+                        plugins = ["transform-remove-console"];
+                    }
+
                     return babel.transformAsync(value, {
+                        plugins: plugins,
                         presets: [
                             ["@babel/preset-env", {
                                 "targets": {
@@ -29,7 +37,11 @@ module.exports = function({workspace, dependencies, options}) {
                         ]
                     });
                 }).then((result) => {
-                    resource.setString(result.code);
+                    // since Babel does not care about linefeeds (https://github.com/babel/babel/issues/8921#issuecomment-492429934)
+                    // we have to search for any EOL character and replace it with correct EOL for this OS
+                    // otherwise we might get mixed linefeed error when deploying to NW ABAP (https://github.com/petermuessig/ui5-ecosystem-showcase/issues/115)
+                    let correctLinefeed = result.code.replace(/\r\n|\r|\n/g, os.EOL);
+                    resource.setString(correctLinefeed);
                     workspace.write(resource);
                 });
             } else {

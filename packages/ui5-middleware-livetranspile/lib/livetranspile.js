@@ -1,4 +1,5 @@
 const babel = require('@babel/core');
+const os = require("os");
 const parseurl = require('parseurl');
 const log = require("@ui5/logger").getLogger("server:custommiddleware:livetranspile");
 
@@ -60,7 +61,10 @@ module.exports = function ({resources, options}) {
                 .then(result => {
                     // send out transpiled source + source map
                     res.type('.js');
-                    res.end(result.code);
+                    // since Babel does not care about linefeeds (https://github.com/babel/babel/issues/8921#issuecomment-492429934)
+                    // we have to search for any EOL character and replace it with correct EOL for this OS
+                    let correctLinefeed = result.code.replace(/\r\n|\r|\n/g, os.EOL);
+                    res.end(correctLinefeed);
                 })
                 .catch(err => {
                     if (err.code === 404) {

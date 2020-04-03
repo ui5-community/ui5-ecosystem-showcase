@@ -1,5 +1,5 @@
-const connectLivereload = require('connect-livereload');
-const livereload = require('livereload');
+const connectLivereload = require("connect-livereload");
+const livereload = require("livereload");
 const path = require("path");
 const log = require("@ui5/logger").getLogger("server:custommiddleware:livereload");
 
@@ -18,17 +18,38 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:livereload
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @returns {function} Middleware function to use
  */
-module.exports = function({resources, options}) {
-    const port = options.configuration.port || 35729;
-    const watchPath = options.configuration.path || 'webapp';
-    const livereloadServer = livereload.createServer({
-        debug: options.configuration.debug,
-        extraExts: options.configuration.ext || "xml,json,properties"
-    }, () => {
-        log.info("Livereload server started...");
-    });
-    options.configuration.debug ? log.info(`Livereload connecting to port ${port} for path ${watchPath}`) : null;
+module.exports = ({ resources, options }) => {
+    let port = 35729;
+    if (options.configuration && options.configuration.port) {
+        port = options.configuration.port;
+    }
+    let watchPath = "webapp";
+    // due to compatibility reasons we keep the path as watchPath (watchPath has higher precedence than path)
+    if (options.configuration && (options.configuration.watchPath || options.configuration.path)) {
+        watchPath = options.configuration.watchPath || options.configuration.path;
+    }
+    let extraExts = "xml,json,properties";
+    if (options.configuration && options.configuration.extraExts) {
+        extraExts = options.configuration.extraExts;
+    }
+    let debug = true;
+    if (options.configuration && options.configuration.debug) {
+        debug = options.configuration.debug;
+    }
+    const livereloadServer = livereload.createServer(
+        {
+            debug: debug,
+            extraExts: extraExts,
+            port: port
+        },
+        () => {
+            log.info("Livereload server started!");
+        }
+    );
+    debug ? log.info(`Livereload connecting to port ${port} for path ${watchPath}`) : null;
     livereloadServer.watch(path.join(process.cwd(), watchPath));
+    // connect-livereload already holds the 
+    // method sig (req, res, next)
     return connectLivereload({
         port: port
     });
