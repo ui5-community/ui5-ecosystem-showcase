@@ -48,7 +48,7 @@ server:
 
 ## How it works
 
-The middleware delivers the configiured `index` HTML-file to the client if the FQDN + trailing slash `/` is requested in the browser.
+The middleware delivers the configured `index` HTML-file to the client if the FQDN + trailing slash `/` is requested in the browser.
 
 ## License
 
