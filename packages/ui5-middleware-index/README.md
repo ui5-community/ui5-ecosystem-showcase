@@ -50,6 +50,11 @@ server:
 
 The middleware delivers the configured `index` HTML-file to the client if the FQDN + trailing slash `/` is requested in the browser.
 
+## Development
+
+If you want to contribute to `ui5-middleware-index`, please use [`Prettier`](https://prettier.io) for code formatting/style and apply the rules from `./.prettierrc`. Thanks 🙏!
+
+
 ## License
 
 This work is [dual-licensed](../../LICENSE) under Apache 2.0 and the Derived Beer-ware License. The official license will be Apache 2.0 but finally you can choose between one of them if you use this work.
