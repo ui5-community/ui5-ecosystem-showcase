@@ -15,6 +15,7 @@ packages
 ├── ui5-app                         // the UI5 application using the custom middlewares and tasks
 ├── ui5-middleware-cfdestination    // middleware extension: use the approuter as proxy
 ├── ui5-middleware-iasync           // middleware extension: sync UI interaction across browsers (alpha! careful!)
+├── ui5-middleware-index            // middleware extension: serve an HTML file for / (root)
 ├── ui5-middleware-livereload       // middleware extension: usage of livereload for development
 ├── ui5-middleware-livetranspile    // middleware extension: on-demand es6 to es5 transpile when requesting js
 ├── ui5-middleware-simpleproxy      // middleware extension: simple express proxy
@@ -82,6 +83,7 @@ The tasks and middlewares developed in this project are also publicly available 
 * https://www.npmjs.com/package/ui5-task-zipper
 * https://www.npmjs.com/package/ui5-middleware-cfdestination
 * https://www.npmjs.com/package/ui5-middleware-iasync (alpha! careful!)
+* https://www.npmjs.com/package/ui5-middleware-index
 * https://www.npmjs.com/package/ui5-middleware-livereload
 * https://www.npmjs.com/package/ui5-middleware-livetranspile
 * https://www.npmjs.com/package/ui5-middleware-simpleproxy
@@ -102,6 +104,7 @@ Available middlewares:
 | ----------- | ----------- | ----- |
 | [ui5-middleware-cfdestination](packages/ui5-middleware-cfdestination/README.md) | use the approuter as proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-cfdestination.svg)](https://badge.fury.io/js/ui5-middleware-cfdestination) |
 | [ui5-middleware-iasync](packages/ui5-middleware-iasync/README.md) | sync UI interactions across connected browsers (alpha! careful!) | [![npm version](https://badge.fury.io/js/ui5-middleware-iasync.svg)](https://badge.fury.io/js/ui5-middleware-iasync) |
+| [ui5-middleware-index](packages/ui5-middleware-index/README.md) | serve an HTML file for / (root) | [![npm version](https://badge.fury.io/js/ui5-middleware-index.svg)](https://badge.fury.io/js/ui5-middleware-index) |
 | [ui5-middleware-livereload](packages/ui5-middleware-livereload/README.md) | usage of livereload for development | [![npm version](https://badge.fury.io/js/ui5-middleware-livereload.svg)](https://badge.fury.io/js/ui5-middleware-livereload) |
 | [ui5-middleware-livetranspile](packages/ui5-middleware-livetranspile/README.md) | on-demand es6 to es5 transpile when requesting js | [![npm version](https://badge.fury.io/js/ui5-middleware-livetranspile.svg)](https://badge.fury.io/js/ui5-middleware-livetranspile) |
 | [ui5-middleware-simpleproxy](packages/ui5-middleware-simpleproxy/README.md) | simple express proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-simpleproxy.svg)](https://badge.fury.io/js/ui5-middleware-simpleproxy) |

@@ -63,3 +63,7 @@ server:
       debug: false
       logConnections: true
       port: 4711
+  - name: ui5-middleware-index
+    afterMiddleware: compression
+    configuration:
+      debug: true
