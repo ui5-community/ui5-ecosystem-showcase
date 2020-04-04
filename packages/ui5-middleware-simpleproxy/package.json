@@ -16,6 +16,6 @@
     "express-http-proxy": "^1.6.0"
   },
   "devDependencies": {
-    "npm-check-updates": "^4.0.5"
+    "npm-check-updates": "^4.1.1"
   }
 }

@@ -19,6 +19,6 @@
     "babel-plugin-transform-remove-console": "^6.9.4"
   },
   "devDependencies": {
-    "npm-check-updates": "^4.0.5"
+    "npm-check-updates": "^4.1.1"
   }
 }

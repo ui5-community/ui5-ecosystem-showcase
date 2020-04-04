@@ -17,6 +17,6 @@
     "yazl": "^2.5.1"
   },
   "devDependencies": {
-    "npm-check-updates": "^4.0.5"
+    "npm-check-updates": "^4.1.1"
   }
 }

@@ -17,6 +17,6 @@
     "request": "^2.88.2"
   },
   "devDependencies": {
-    "npm-check-updates": "^4.0.5"
+    "npm-check-updates": "^4.1.1"
   }
 }

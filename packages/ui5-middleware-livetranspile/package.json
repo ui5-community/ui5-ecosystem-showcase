@@ -18,6 +18,6 @@
     "parseurl": "^1.3.3"
   },
   "devDependencies": {
-    "npm-check-updates": "^4.0.5"
+    "npm-check-updates": "^4.1.1"
   }
 }
