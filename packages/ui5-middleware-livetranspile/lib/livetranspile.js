@@ -25,7 +25,8 @@ fileNotFoundError.file = '';
 module.exports = function ({resources, options}) {
     return (req, res, next) => {
         if (
-            req.path.endsWith('.js')
+            req.path
+            && req.path.endsWith('.js')
             && !req.path.includes('resources/')
             && !(options.configuration && options.configuration.excludePatterns || []).some(pattern => req.path.includes(pattern))
         ) {
