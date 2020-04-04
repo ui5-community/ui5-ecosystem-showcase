@@ -12,7 +12,7 @@
     "ncu-upgrade": "ncu -u"
   },
   "dependencies": {
-    "@ui5/fs": "^1.1.2",
+    "@ui5/fs": "^2.0.0",
     "@ui5/logger": "^1.0.2",
     "yazl": "^2.5.1"
   },
