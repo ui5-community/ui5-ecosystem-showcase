@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.1](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.2.0...ui5-middleware-simpleproxy@0.2.1) (2020-04-04)
+
+**Note:** Version bump only for package ui5-middleware-simpleproxy
+
+
+
+
+
 # [0.2.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.1.5...ui5-middleware-simpleproxy@0.2.0) (2020-03-25)
 
 

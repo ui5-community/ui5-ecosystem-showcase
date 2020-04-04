@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.1.10...ui5-app@0.2.0) (2020-04-04)
+
+
+### Features
+
+* **middleware:** default index document ([#166](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/166)) ([afc27c2](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/afc27c2d8793440b517bbd90803d75ebf10d33ce))
+
+
+
+
+
 ## [0.1.10](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.1.9...ui5-app@0.1.10) (2020-03-27)
 
 **Note:** Version bump only for package ui5-app
