@@ -91,15 +91,14 @@ The tasks and middlewares developed in this project are also publicly available 
 
 The consumption of the individual tasks and middlewares can be seen inside their local `README.md`.
 
-Available tasks:
+Available tasks in this project:
 
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
 | [ui5-task-transpile](packages/ui5-task-transpile/README.md) | transpile es6 to es5 code | [![npm version](https://badge.fury.io/js/ui5-task-transpile.svg)](https://badge.fury.io/js/ui5-task-transpile) |
 | [ui5-task-zipper](packages/ui5-task-zipper/README.md) | bundle the entire webapp in a zip-archive | [![npm version](https://badge.fury.io/js/ui5-task-zipper.svg)](https://badge.fury.io/js/ui5-task-zipper) |
-| [ui5-task-babel](https://github.com/pwasem/ui5-task-babel#readme) | configurable transpiling using babel | [![npm version](https://badge.fury.io/js/ui5-task-babel.svg)](https://badge.fury.io/js/ui5-task-babel) |
 
-Available middlewares:
+Available middlewares in this project:
 
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
@@ -110,8 +109,6 @@ Available middlewares:
 | [ui5-middleware-livetranspile](packages/ui5-middleware-livetranspile/README.md) | on-demand es6 to es5 transpile when requesting js | [![npm version](https://badge.fury.io/js/ui5-middleware-livetranspile.svg)](https://badge.fury.io/js/ui5-middleware-livetranspile) |
 | [ui5-middleware-simpleproxy](packages/ui5-middleware-simpleproxy/README.md) | simple express proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-simpleproxy.svg)](https://badge.fury.io/js/ui5-middleware-simpleproxy) |
 | [ui5-middleware-servestatic](packages/ui5-middleware-servestatic/README.md) | serve static resources | [![npm version](https://badge.fury.io/js/ui5-middleware-servestatic.svg)](https://badge.fury.io/js/ui5-middleware-servestatic) |
-| [ui5-middleware-http-proxy](https://github.com/pwasem/ui5-middleware-http-proxy#readme) | http proxy using streaming and basic auth. support | [![npm version](https://badge.fury.io/js/ui5-middleware-http-proxy.svg)](https://badge.fury.io/js/ui5-middleware-http-proxy) |
-| [ui5-middleware-babel](https://github.com/pwasem/ui5-middleware-babel#readme) | configurable transpiling using babel incl. caching | [![npm version](https://badge.fury.io/js/ui5-middleware-babel.svg)](https://badge.fury.io/js/ui5-middleware-babel) |
 
 
 ## License
