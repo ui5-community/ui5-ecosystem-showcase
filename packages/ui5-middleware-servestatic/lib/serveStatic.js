@@ -1,5 +1,6 @@
 let serveStatic = require('serve-static');
 const log = require("@ui5/logger").getLogger("server:custommiddleware:servestatic");
+require("dotenv").config();
 
 /**
  * Custom UI5 Server middleware example
@@ -17,6 +18,11 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:servestati
  * @returns {function} Middleware function to use
  */
 module.exports = function({resources, options}) {
-   options.configuration.debug ? log.info(`Starting static serve from ${options.configuration.rootPath}`) : null;
-   return serveStatic(options.configuration.rootPath);
+   const pathIsEnvVariable = options.configuration && options.configuration.pathIsEnvVar;
+   let rootPath = options.configuration.rootPath;
+   if (pathIsEnvVariable) {
+       rootPath = process.env[rootPath];
+   }
+   options.configuration.debug ? log.info(`Starting static serve from ${rootPath}`) : null;
+   return serveStatic(rootPath);
 };
