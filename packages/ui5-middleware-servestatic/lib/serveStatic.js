@@ -20,7 +20,13 @@ require("dotenv").config();
 module.exports = function({resources, options}) {
    const pathIsEnvVariable = options.configuration && options.configuration.pathIsEnvVar;
    let rootPath = options.configuration.rootPath;
+   if (!rootPath) {
+       throw new Error(`No Value for 'rootPath' supplied`);
+   }
    if (pathIsEnvVariable) {
+       if (!process.env.hasOwnProperty(rootPath)) {
+           throw new Error(`Environment Variable ${rootPath} was not found in .env file`);
+       }
        rootPath = process.env[rootPath];
    }
    options.configuration.debug ? log.info(`Starting static serve from ${rootPath}`) : null;
