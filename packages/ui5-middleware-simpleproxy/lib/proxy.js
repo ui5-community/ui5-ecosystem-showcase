@@ -1,5 +1,13 @@
 let proxy = require('express-http-proxy');
 const log = require("@ui5/logger").getLogger("server:custommiddleware:proxy");
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+const env = {
+  baseUri: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI,
+  strictSSL: !(process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL === "false")
+}
 
 /**
  * Custom UI5 Server middleware example
@@ -17,17 +25,20 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:proxy");
  * @returns {function} Middleware function to use
  */
 module.exports = function({resources, options}) {
+    const providedBaseUri = (options.configuration && options.configuration.baseUri) || env.baseUri;
+    const providedStrictSSL = (options.configuration && options.configuration.strictSSL) || env.strictSSL;
+
     /*
     return function (req, res, next) {
         // [...]
     }
     return proxy(options.configuration.baseUri);
     */
-    options.configuration.debug ? log.info(`Starting proxy for baseUri ${options.configuration.baseUri}`) : null;
+    options.configuration && options.configuration.debug ? log.info(`Starting proxy for baseUri ${providedBaseUri}`) : null;
     // determine the uri parts (protocol, baseUri, path)
-    let baseUriParts = options.configuration.baseUri.match(/(https|http)\:\/\/([^/]*)(\/.*)?/i);
+    let baseUriParts = providedBaseUri.match(/(https|http)\:\/\/([^/]*)(\/.*)?/i);
     if (!baseUriParts) {
-      throw new Error(`The baseUri ${options.configuration.baseUri} is not valid!`);
+      throw new Error(`The baseUri ${providedBaseUri} is not valid!`);
     }
     let protocol = baseUriParts[1];
     let baseUri = baseUriParts[2];
@@ -40,7 +51,7 @@ module.exports = function({resources, options}) {
       https: protocol === "https",
       preserveHostHdr: false,
       proxyReqOptDecorator: function(proxyReqOpts) {
-        if (options.configuration && options.configuration.strictSSL === false) {
+        if (providedStrictSSL === false) {
           proxyReqOpts.rejectUnauthorized = false;
         }
         return proxyReqOpts;
