@@ -54,8 +54,7 @@ server:
     afterMiddleware: compression
     mountPath: /resources
     configuration:
-      rootPath: SAPUI5_SDK_1_60__RESOURCES
-      pathIsEnvVar: true
+      rootPath: ${env.SAPUI5_SDK_1_60__RESOURCES}
 ```
 ## How it works
 
