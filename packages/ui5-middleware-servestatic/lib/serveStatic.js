@@ -1,7 +1,26 @@
-let serveStatic = require('serve-static');
+let serveStatic = require("serve-static");
 const log = require("@ui5/logger").getLogger("server:custommiddleware:servestatic");
 require("dotenv").config();
 
+const envOptionRegEx = /^\${env\.(.*)}$/;
+/**
+ * Parses the configuration option. If a ${env.<PARAM>} pattern is detected,
+ * the corresponding .env-file value will be retrieved. Otherwise the
+ * original value will be returned
+ * @param {String} optionValue the entered config option
+ * @return {string|*}
+ */
+const parseConfigOption = (optionValue) => {
+  if (!optionValue) {
+    return undefined;
+  }
+  if (envOptionRegEx.test(optionValue)) {
+    const envVariable = optionValue.match(envOptionRegEx)[1];
+    return process.env[envVariable];
+  } else {
+    return optionValue;
+  }
+};
 /**
  * Custom UI5 Server middleware example
  *
@@ -17,18 +36,11 @@ require("dotenv").config();
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @returns {function} Middleware function to use
  */
-module.exports = function({resources, options}) {
-   const pathIsEnvVariable = options.configuration && options.configuration.pathIsEnvVar;
-   let rootPath = options.configuration.rootPath;
-   if (!rootPath) {
-       throw new Error(`No Value for 'rootPath' supplied`);
-   }
-   if (pathIsEnvVariable) {
-       if (!process.env.hasOwnProperty(rootPath)) {
-           throw new Error(`Environment Variable ${rootPath} was not found in .env file`);
-       }
-       rootPath = process.env[rootPath];
-   }
-   options.configuration.debug ? log.info(`Starting static serve from ${rootPath}`) : null;
-   return serveStatic(rootPath);
+module.exports = function ({ resources, options }) {
+  let rootPath = parseConfigOption(options.configuration.rootPath);
+  if (!rootPath) {
+    throw new Error(`No Value for 'rootPath' supplied`);
+  }
+  options.configuration.debug ? log.info(`Starting static serve from ${rootPath}`) : null;
+  return serveStatic(rootPath);
 };
