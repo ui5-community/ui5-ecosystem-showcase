@@ -12,7 +12,7 @@
     "ncu-upgrade": "ncu -u"
   },
   "dependencies": {
-    "@sap/approuter": "^6.8.2",
+    "@sap/approuter": "^7.1.0",
     "@ui5/logger": "^1.0.2",
     "request": "^2.88.2"
   },
