@@ -17,5 +17,8 @@
   },
   "devDependencies": {
     "npm-check-updates": "^4.1.1"
+  },
+  "ui5": {
+    "dependencies": []
   }
 }
