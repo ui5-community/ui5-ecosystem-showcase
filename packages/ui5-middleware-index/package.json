@@ -10,5 +10,8 @@
   },
   "dependencies": {
     "@ui5/logger": "^1.0.2"
+  },
+  "ui5": {
+    "dependencies": []
   }
 }
