@@ -18,16 +18,22 @@ module.exports = async function ({ workspace, dependencies, options }) {
 
     //: PromiseLike<any>[]
     let xmlviewFileContentsP = []
-    xmlviewFiles.forEach(resource => {
+    for (resource of xmlviewFiles) {
         let asyncWorkForContent = async () => {
             options.configuration && options.configuration.debug && log.info(`Reading XML view: ${resource.getPath()} .`);
             let fileContent = await resource.getString();
             return utils.readI18nUsageFromXML(fileContent, resource.getPath());
         }
         xmlviewFileContentsP.push(asyncWorkForContent());
-    });
+    }
 
-    let xmlReadingResultArr = await Promise.all(xmlviewFileContentsP);
+    let xmlReadingResultArr;
+    try {
+        xmlReadingResultArr = await Promise.all(xmlviewFileContentsP);
+    } catch (e) {
+        log.error(`Error while reading content of XML view files: ${e}`);
+    }
+
     let i18nUsageXMLArr = Array.prototype.concat.apply([], xmlReadingResultArr);
 
 
@@ -45,26 +51,25 @@ module.exports = async function ({ workspace, dependencies, options }) {
     //: PromiseLike<any>[]
     let propertyFileContentsP = []
 
-    propertyFiles.forEach(resource => {
+    for (resource of propertyFiles) {
         let asyncWorkForContent = async () => {
             options.configuration && options.configuration.debug && log.info(`Reading i18n.properties file: ${resource.getPath()} .`);
             let fileContent = await resource.getString();
             let properties = utils.readProperties(fileContent);
 
-            var notFoundProperties = [];
-            // var notUsedProperties = [];
+            let notFoundProperties = [];
+            // let notUsedProperties = [];
             //Look for undefined properties
-            Object.keys(i18nAll).forEach(function (i18nKey) {
-                //var i18n = i18nAll[i18nKey];
+            Object.keys(i18nAll).forEach((i18nKey) => {
+                //let i18n = i18nAll[i18nKey];
                 if (!properties.hasOwnProperty(i18nKey)) {
                     notFoundProperties.push(i18nAll[i18nKey]);
                 }
             });
-            var prop_file_path = resource.getPath();
 
-            notFoundProperties.forEach(function (i18nUsage) {
+            notFoundProperties.forEach((i18nUsage) => {
                 log.warn(`🌍 Missing translation key ${i18nUsage.key} in: ${resource.getPath()}`);
-                i18nUsage.usedIn.forEach(function (usedIn) {
+                i18nUsage.usedIn.forEach((usedIn) => {
                     log.warn(`---☝️ Used in view: ${usedIn} `);
                 });
 
@@ -73,8 +78,14 @@ module.exports = async function ({ workspace, dependencies, options }) {
             return
         }
         propertyFileContentsP.push(asyncWorkForContent());
-    });
-    
-    await Promise.all(propertyFileContentsP);
+    }
+
+
+    try {
+        await Promise.all(propertyFileContentsP);
+    } catch (e) {
+        log.error(`Error while reading content of i18n property files: ${e}`);
+    }
+
 
 };
