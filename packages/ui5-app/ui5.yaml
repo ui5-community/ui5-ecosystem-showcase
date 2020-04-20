@@ -19,6 +19,8 @@ builder:
       removeConsoleStatements: true
       excludePatterns:
       - "lib/"
+  - name: ui5-task-i18ncheck
+    afterTask: replaceVersion
   - name: ui5-task-zipper
     afterTask: uglify 
     configuration:
