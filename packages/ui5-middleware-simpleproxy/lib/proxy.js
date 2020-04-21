@@ -27,7 +27,16 @@ const env = {
 module.exports = function({resources, options}) {
     // Environment wins over YAML configuration when loading settings
     const providedBaseUri = env.baseUri || (options.configuration && options.configuration.baseUri);
-    const providedStrictSSL = env.strictSSL || (options.configuration && options.configuration.strictSSL);
+    // Handle fact that `strictSSL` is a boolean so we have to do existence checks
+    const falseyStrictSSL = 
+      (
+        env.strictSSL === undefined 
+        && options.configuration 
+        && options.configuration.strictSSL !== undefined 
+      )
+      ? options.configuration.strictSSL 
+      : env.strictSSL;
+    const providedStrictSSL = !!falseyStrictSSL;
 
     /*
     return function (req, res, next) {
