@@ -25,8 +25,9 @@ const env = {
  * @returns {function} Middleware function to use
  */
 module.exports = function({resources, options}) {
-    const providedBaseUri = (options.configuration && options.configuration.baseUri) || env.baseUri;
-    const providedStrictSSL = (options.configuration && options.configuration.strictSSL) || env.strictSSL;
+    // Environment wins over YAML configuration when loading settings
+    const providedBaseUri = env.baseUri || (options.configuration && options.configuration.baseUri);
+    const providedStrictSSL = env.strictSSL || (options.configuration && options.configuration.strictSSL);
 
     /*
     return function (req, res, next) {
