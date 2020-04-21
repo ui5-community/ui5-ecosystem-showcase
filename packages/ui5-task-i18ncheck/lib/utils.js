@@ -81,7 +81,7 @@ let getI18nUsageInXMLRecursive = (arr, file, el) => {
     for (let i = 0; i < el.attributes.length; i++) {
         let attr = el.attributes[i];
         let results = getUsageFromXMLAttribute(file, attr.value);
-        Array.prototype.push.apply(arr, results);
+        arr.push(...results);
 
     }
     //search children

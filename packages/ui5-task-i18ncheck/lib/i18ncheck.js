@@ -18,7 +18,7 @@ module.exports = async function ({ workspace, dependencies, options }) {
 
     //: PromiseLike<any>[]
     let xmlviewFileContentsP = []
-    for (resource of xmlviewFiles) {
+    for (let resource of xmlviewFiles) {
         let asyncWorkForContent = async () => {
             options.configuration && options.configuration.debug && log.info(`Reading XML view: ${resource.getPath()} .`);
             let fileContent = await resource.getString();
@@ -51,7 +51,7 @@ module.exports = async function ({ workspace, dependencies, options }) {
     //: PromiseLike<any>[]
     let propertyFileContentsP = []
 
-    for (resource of propertyFiles) {
+    for (let resource of propertyFiles) {
         let asyncWorkForContent = async () => {
             options.configuration && options.configuration.debug && log.info(`Reading i18n.properties file: ${resource.getPath()} .`);
             let fileContent = await resource.getString();
