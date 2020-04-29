@@ -1708,16 +1708,16 @@
   resolved "https://registry.yarnpkg.com/@openui5/ts-types/-/ts-types-1.60.5.tgz#cf0bdf70f91d4a145e16c92fbc95ba990c8f0400"
   integrity sha512-syzrhxH1JNfYS+FccnPUjxsGwQhW3mvwJpx1oQhZhh7VM7matWstLH9ObPtI3oPj3SO+IMgjpyBjzSUHZo5r4A==
 
-"@sap/approuter@^6.8.2":
-  version "6.8.2"
-  resolved "https://npm.sap.com/@sap/approuter/-/approuter-6.8.2.tgz#23b972c4448022794519053866efbf622c2b6d94"
-  integrity sha512-BFUUdTrLZLqkRgSEu6fO9tkrP7r31C5Ada24PcNI68Meozct1fP3Z02iFJwgda/4oB2nHnTEa5+yh0ejKsT4Bg==
+"@sap/approuter@^7.1.0":
+  version "7.1.0"
+  resolved "https://npm.sap.com/@sap/approuter/-/approuter-7.1.0.tgz#036e621313e47709b743cb885aa9eb8865adc14d"
+  integrity sha512-MsAnZ+3NvZGh04lCpotj340dvQEY3dHPn+E3r4XcPPEIMs1Yt2SzBPbJ0FZylSx5vDmttu0qn5hU416I3El00A==
   dependencies:
-    "@sap/audit-logging" "2.3.0"
-    "@sap/e2e-trace" "1.4.1"
+    "@sap/audit-logging" "3.1.0"
+    "@sap/e2e-trace" "2.1.0"
     "@sap/logging" "5.2.0"
-    "@sap/xsenv" "2.1.0"
-    "@sap/xssec" "2.2.2"
+    "@sap/xsenv" "2.2.0"
+    "@sap/xssec" "2.2.5"
     agentkeepalive "2.0.5"
     async "2.0.1"
     base64-url "2.0.0"
@@ -1759,22 +1759,16 @@
     verror "1.10.0"
     ws "1.1.5"
 
-"@sap/audit-logging@2.3.0":
-  version "2.3.0"
-  resolved "https://npm.sap.com/@sap/audit-logging/-/audit-logging-2.3.0.tgz#005cc8e68b6e5a0bda2ab0564d21578c5b275567"
-  integrity sha512-C9Jd/xSx70OxzbDBByExYEynIo+LYBIIjDHMPTkazSnIgwgWOp6oPdObBBQ01V8bDOPXai5SeVjWrnmNgot+jQ==
+"@sap/audit-logging@3.1.0":
+  version "3.1.0"
+  resolved "https://npm.sap.com/@sap/audit-logging/-/audit-logging-3.1.0.tgz#887a4a911bba225050d27de8b65f8ecd7e804a55"
+  integrity sha512-ekTto7T40xNZhZUW4OpY4+MUgjK7QZn3PYKDnGmrz8an8U6YcIcGwPbcXbJVHQgqYVocIMyO57m9IVen5kjPpA==
   dependencies:
     debug "3.1.0"
     request "2.88.0"
+    requestretry "4.0.2"
 
-"@sap/e2e-trace@1.4.1":
-  version "1.4.1"
-  resolved "https://npm.sap.com/@sap/e2e-trace/-/e2e-trace-1.4.1.tgz#4358137628ceb7a053e7f881d8d0460284bf4cb9"
-  integrity sha512-No5sJSpq5xvEY6P7a4AI7cexl71p02TsASNYAn0ArgvDGIpv9Sm3iwogEoLFboIGEC9qOVWaPiHY68rC408n9A==
-  dependencies:
-    request-stats "3.0.0"
-
-"@sap/e2e-trace@^2.0.0":
+"@sap/e2e-trace@2.1.0", "@sap/e2e-trace@^2.0.0":
   version "2.1.0"
   resolved "https://npm.sap.com/@sap/e2e-trace/-/e2e-trace-2.1.0.tgz#c722c96c8f8e5f5e801969b544a907145c088e57"
   integrity sha512-kP4RTFx4ACw1WWYTbePH+lKHiZD7gfOoOTzDAgAHujYOwPmKed63W+gLn79C9dGY7VTb3TeLMoNB8J3Xrhyyfg==
@@ -1790,20 +1784,12 @@
     lodash "4.17.13"
     moment "2.19.3"
 
-"@sap/node-jwt@^1.5.0":
-  version "1.6.7"
-  resolved "https://npm.sap.com/@sap/node-jwt/-/node-jwt-1.6.7.tgz#f6523b8c1055780328fed5a8543ad33479b10437"
-  integrity sha512-JR0Qz6YG0Vuq2Ja2F4kC9sSfTrxvrmvdv37+9sw15+oRwo7LilrcUf2XIJglR0r642SYXFwO33SwtI3gM6ju9A==
+"@sap/node-jwt@^1.6.6":
+  version "1.6.8"
+  resolved "https://npm.sap.com/@sap/node-jwt/-/node-jwt-1.6.8.tgz#787e99f3de85e22a9442ea5f3bbbd0010173a773"
+  integrity sha512-FG+4c7ZbdYqt6t6K1e1D5zecB/t7dMQZUod8iw2GFccTLPAiRhTwJUTW5+MMKR9C4ymgZD612H5/gXQKkt9WpQ==
 
-"@sap/xsenv@2.1.0":
-  version "2.1.0"
-  resolved "https://npm.sap.com/@sap/xsenv/-/xsenv-2.1.0.tgz#cf0a7ce40e0782c6e98be3bebd6ac5af929d22ce"
-  integrity sha512-TOxw52ovB+fa0fyvliR6x/ZKrJFKtoHlNayPOfVQKoc85+vxvgapJn1IcuOMzvcmR12uAeCkxULzkC4mv7xCAg==
-  dependencies:
-    debug "3.1.0"
-    verror "1.10.0"
-
-"@sap/xsenv@^2.0.0":
+"@sap/xsenv@2.2.0":
   version "2.2.0"
   resolved "https://npm.sap.com/@sap/xsenv/-/xsenv-2.2.0.tgz#37ff82f403ff4b756ae8c85add8288c81ff51c6a"
   integrity sha512-NtxbAZ2I957OWRVdlT16C3qan1TZ9Cfs9ephEDH03gPwbTm8nRtd1uZ8tqOMj/p1CVt0IAoUnkt985btYhhzkg==
@@ -1811,16 +1797,16 @@
     debug "3.1.0"
     verror "1.10.0"
 
-"@sap/xssec@2.2.2":
-  version "2.2.2"
-  resolved "https://npm.sap.com/@sap/xssec/-/xssec-2.2.2.tgz#597b33ec3ab68de48cddc42338042bc8f1a45255"
-  integrity sha512-nZz+cVJQYTK3nqdvn/JSKwtDCcOmak1x/T1IsRQmWx/vf+siypYSBQl6WEmNyLA/FCY7VA3TuqznWR80h8fATQ==
+"@sap/xssec@2.2.5":
+  version "2.2.5"
+  resolved "https://npm.sap.com/@sap/xssec/-/xssec-2.2.5.tgz#e605da853147f05b44254c12018b2f41ad43c1be"
+  integrity sha512-P6CWC9Lz6Gy9iqpKOAeUa3b03T/+L9I7FvadFVKEYzl/eod/D2a+HemXWM/81U/cnEHMpOn3iVFycq8o3MHM4Q==
   dependencies:
-    "@sap/node-jwt" "^1.5.0"
-    "@sap/xsenv" "^2.0.0"
+    "@sap/node-jwt" "^1.6.6"
     debug "4.1.1"
     lru-cache "5.1.1"
     request "2.88.0"
+    requestretry "4.0.0"
     valid-url "1.0.9"
 
 "@sindresorhus/is@^0.14.0":
@@ -4559,7 +4545,7 @@ extend-shallow@^3.0.0, extend-shallow@^3.0.2:
     assign-symbols "^1.0.0"
     is-extendable "^1.0.1"
 
-extend@^3.0.0, extend@~3.0.1, extend@~3.0.2:
+extend@^3.0.0, extend@^3.0.2, extend@~3.0.1, extend@~3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/extend/-/extend-3.0.2.tgz#f8b1136b4071fbd8eb140aff858b1019ec2915fa"
   integrity sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==
@@ -8844,6 +8830,24 @@ request@^2.88.0, request@^2.88.2:
     tunnel-agent "^0.6.0"
     uuid "^3.3.2"
 
+requestretry@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/requestretry/-/requestretry-4.0.0.tgz#4e9e7280a7d8561bf33e9925264cf026e2be3e89"
+  integrity sha512-ST8m0+5FQH2FA+gbzUQyOQjUwHf22kbPQnd6TexveR0p+2UV1YYBg+Roe7BnKQ1Bb/+LtJwwm0QzxK2NA20Cug==
+  dependencies:
+    extend "^3.0.2"
+    lodash "^4.17.10"
+    when "^3.7.7"
+
+requestretry@4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/requestretry/-/requestretry-4.0.2.tgz#38213a65393a25b012d2208d6d20073a7db6b30b"
+  integrity sha512-ZGdO1ZXUQAeCB9xOS2keSN501y7T1t0zPOD58jTAOwamt6qkcBMaGdRBHEOMQRnDtT5fn7S99F0dwADUqCmYqg==
+  dependencies:
+    extend "^3.0.2"
+    lodash "^4.17.10"
+    when "^3.7.7"
+
 require-directory@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/require-directory/-/require-directory-2.1.1.tgz#8c64ad5fd30dab1c976e2344ffe7f792a6a6df42"
@@ -10477,6 +10481,11 @@ whatwg-url@^7.0.0:
     lodash.sortby "^4.7.0"
     tr46 "^1.0.1"
     webidl-conversions "^4.0.2"
+
+when@^3.7.7:
+  version "3.7.8"
+  resolved "https://registry.yarnpkg.com/when/-/when-3.7.8.tgz#c7130b6a7ea04693e842cdc9e7a1f2aa39a39f82"
+  integrity sha1-xxMLan6gRpPoQs3J56Hyqjmjn4I=
 
 which-module@^1.0.0:
   version "1.0.0"
