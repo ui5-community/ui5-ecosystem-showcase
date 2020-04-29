@@ -31,8 +31,9 @@ module.exports = function ({ resources, options }) {
     xsappConfig.authenticationMethod = "none";
 
     let regExes = [];
-    xsappConfig.routes.forEach(route => {
+    xsappConfig.routes = xsappConfig.routes.filter((route) => !route.localDir); //ignore local routes as they are already hosted by the ui5 tooling
 
+    xsappConfig.routes.forEach(route => {
         route.authenticationType = "none";
         // ignore /-redirects (e.g. "^/(.*)"
         // a source declaration such as "^/backend/(.*)$" is needed
