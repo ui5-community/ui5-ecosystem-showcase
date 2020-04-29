@@ -1958,7 +1958,7 @@
   dependencies:
     npmlog "^4.1.2"
 
-"@ui5/project@^2.0.2", "@ui5/project@^2.0.3":
+"@ui5/project@^2.0.3":
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@ui5/project/-/project-2.0.3.tgz#5c7b3c27e5d29063afd302075125dd2785814303"
   integrity sha512-k1sm9rqts8WsgZsHkYeXOtdyeXFEsrujqaMonv4XfFs0s9LwRdM7PMbLE5ubORmUH59Udjyx8uX/ZNVWOGjfkQ==
@@ -6242,12 +6242,12 @@ karma-coverage@^2.0.1:
     source-map "^0.5.1"
 
 karma-ui5@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/karma-ui5/-/karma-ui5-2.0.0.tgz#1f7120457ac64ff3925cfa15c129f3b971abae50"
-  integrity sha512-knJ7LYILtS34mRoOt5u6Z32mFQGpcB3auXw3uijRXKqvMQODmu0jSSeC9KdQWS7BmMJVIH1yHnKxuZmy8qhq5A==
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/karma-ui5/-/karma-ui5-2.1.0.tgz#9da198c574a54cb4981a5d24d5277abb1500e992"
+  integrity sha512-ZpfBmO/TdhU5ByRfMJHeJ1K0VfZ0v1i2VOlVY118FjKX794WFJSKJjvRmW95cE+NUO12Pr0CS+hsooWsDbTQWw==
   dependencies:
     "@ui5/fs" "^2.0.0"
-    "@ui5/project" "^2.0.2"
+    "@ui5/project" "^2.0.3"
     "@ui5/server" "^2.0.0"
     express "^4.17.1"
     http-proxy "^1.18.0"
