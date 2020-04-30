@@ -15,6 +15,8 @@ npm install ui5-middleware-simpleproxy --save-dev
 - strictSSL: `boolean`
   Ignore strict SSL checks. Default value `true`. Can also be set using the `UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL` environment variable.
 
+In general, use of environment variables or values set in a `.env` file will override configuration values in the `ui5.yaml`.
+
 ## Usage
 
 1. Define the dependency in `$yourapp/package.json`:
