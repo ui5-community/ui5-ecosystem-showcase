@@ -2,6 +2,26 @@ const connectLivereload = require("connect-livereload");
 const livereload = require("livereload");
 const path = require("path");
 const log = require("@ui5/logger").getLogger("server:custommiddleware:livereload");
+const portfinder = require("portfinder"); 
+
+/**
+ * Parses the configuration option. If the port passed then it returns with it.
+ * If not passed it returns with the following free port after the deafult port.
+ * @param {Object} options the entered config option
+ * @param {number} defaultPort the port which is defaulted
+ * @returns {number}
+ */
+const getPortForLivereload = async (options, defaultPort) => {
+    if (options.configuration && options.configuration.port) {
+        return options.configuration.port;
+    }
+    try {
+        portfinder.basePort = defaultPort;
+        return await portfinder.getPortPromise();
+    } catch {
+        return defaultPort;
+    }
+}
 
 /**
  * Custom UI5 Server middleware example
@@ -18,8 +38,8 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:livereload
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @returns {function} Middleware function to use
  */
-module.exports = ({ resources, options }) => {
-    let port = 35729;
+module.exports = async ({ resources, options }) => {
+    let port = await getPortForLivereload(options, 35729);
     if (options.configuration && options.configuration.port) {
         port = options.configuration.port;
     }
