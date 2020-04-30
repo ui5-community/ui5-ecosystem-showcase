@@ -61,8 +61,6 @@ module.exports = function ({ resources, options }) {
     options.configuration ? options.configuration.strictSSL : undefined
   );
 
-  log.info(providedStrictSSL);
-
   /*
   return function (req, res, next) {
       // [...]
