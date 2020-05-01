@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "dotenv": "^8.2.0",
-    "npm-check-updates": "^4.1.1"
+    "npm-check-updates": "^4.1.2"
   },
   "ui5": {
     "dependencies": []
