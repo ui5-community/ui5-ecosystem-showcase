@@ -14,7 +14,8 @@
   "dependencies": {
     "@ui5/logger": "^1.0.2",
     "connect-livereload": "^0.6.1",
-    "livereload": "^0.9.1"
+    "livereload": "^0.9.1",
+    "portfinder": "^1.0.26"
   },
   "devDependencies": {
     "npm-check-updates": "^4.1.2"
