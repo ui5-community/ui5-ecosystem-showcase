@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.1.10...ui5-middleware-livereload@0.2.0) (2020-05-01)
+
+
+### Features
+
+* Automatically set a non-taken port for livereload server ([#195](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/195)) ([9ca6037](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/9ca6037a8977e3ed5279d834bb7347a6cc6f0eed))
+
+
+
+
+
 ## [0.1.10](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.1.9...ui5-middleware-livereload@0.1.10) (2020-04-04)
 
 **Note:** Version bump only for package ui5-middleware-livereload

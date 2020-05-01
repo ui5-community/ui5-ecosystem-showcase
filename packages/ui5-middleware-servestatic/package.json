@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-servestatic",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "UI5 simple proxy middleware",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@ui5/logger": "^1.0.2",
-    "serve-static": "^1.14.1",
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "serve-static": "^1.14.1"
   },
   "devDependencies": {
     "npm-check-updates": "^4.1.2"
