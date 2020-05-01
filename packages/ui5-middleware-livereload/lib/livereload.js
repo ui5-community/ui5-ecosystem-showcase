@@ -40,9 +40,6 @@ const getPortForLivereload = async (options, defaultPort) => {
  */
 module.exports = async ({ resources, options }) => {
     let port = await getPortForLivereload(options, 35729);
-    if (options.configuration && options.configuration.port) {
-        port = options.configuration.port;
-    }
     let watchPath = "webapp";
     // due to compatibility reasons we keep the path as watchPath (watchPath has higher precedence than path)
     if (options.configuration && (options.configuration.watchPath || options.configuration.path)) {
