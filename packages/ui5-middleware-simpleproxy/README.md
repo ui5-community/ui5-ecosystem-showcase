@@ -11,7 +11,11 @@ npm install ui5-middleware-simpleproxy --save-dev
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
 - baseUri: `string`
-  the baseUri to proxy
+  The baseUri to proxy. Can also be set using the `UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI` environment variable.
+- strictSSL: `boolean`
+  Ignore strict SSL checks. Default value `true`. Can also be set using the `UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL` environment variable.
+
+In general, use of environment variables or values set in a `.env` file will override configuration values in the `ui5.yaml`.
 
 ## Usage
 
@@ -73,6 +77,15 @@ server:
     configuration:
       baseUri: "http://services.odata.org"
       strictSSL: false
+```
+
+## .env support
+
+This plugin supports use of a `.env` file to declare environment variable values for configuration as described above. The file should be put in the same directory where you run `ui5 build`, `ui5 serve`, etc. The file might have contents like:
+
+```shell
+UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI=https://host.tld:1234/sap
+UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL=false
 ```
 
 ## License
