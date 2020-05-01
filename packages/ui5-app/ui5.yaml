@@ -4,7 +4,7 @@ metadata:
 type: application
 framework:
   name: OpenUI5
-  version: "1.76.0"
+  version: "1.77.1"
   libraries:
     - name: sap.m
     - name: sap.ui.core
@@ -33,7 +33,6 @@ server:
     configuration:
       debug: true
       ext: "xml,json,properties"
-      port: 35729
       path: "webapp"
   - name: ui5-middleware-simpleproxy
     mountPath: /proxy
