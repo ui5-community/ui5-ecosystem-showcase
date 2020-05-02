@@ -14,7 +14,7 @@ module.exports = async function ({ workspace, dependencies, options }) {
         log.error(`Couldn't read files: ${e}`);
     }
 
-    //Start all the async work concurrently
+    // Start all the async work concurrently
 
     //: PromiseLike<any>[]
     let xmlviewFileContentsP = []
