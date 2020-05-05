@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.2-alpha.4](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-iasync@0.0.2-alpha.3...ui5-middleware-iasync@0.0.2-alpha.4) (2020-05-05)
+
+**Note:** Version bump only for package ui5-middleware-iasync
+
+
+
+
+
 ## [0.0.2-alpha.3](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-iasync@0.0.2-alpha.2...ui5-middleware-iasync@0.0.2-alpha.3) (2020-05-02)
 
 

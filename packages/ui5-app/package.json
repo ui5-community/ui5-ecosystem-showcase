@@ -1,6 +1,6 @@
 {
   "name": "ui5-app",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "UI5 application using custom middlewares and tasks",
   "private": true,
   "author": "Volker Buzek, Peter Muessig",
@@ -43,12 +43,12 @@
     "npm-watch": "^0.6.0",
     "rimraf": "~3.0.2",
     "ui5-middleware-cfdestination": "^0.1.8",
-    "ui5-middleware-iasync": "^0.0.2-alpha.3",
+    "ui5-middleware-iasync": "^0.0.2-alpha.4",
     "ui5-middleware-index": "^0.1.1",
     "ui5-middleware-livereload": "^0.2.0",
     "ui5-middleware-livetranspile": "^0.1.9",
     "ui5-middleware-servestatic": "^0.2.0",
-    "ui5-middleware-simpleproxy": "^0.2.2",
+    "ui5-middleware-simpleproxy": "^0.2.3",
     "ui5-task-i18ncheck": "^0.2.1",
     "ui5-task-transpile": "^0.1.7",
     "ui5-task-zipper": "^0.1.5"
