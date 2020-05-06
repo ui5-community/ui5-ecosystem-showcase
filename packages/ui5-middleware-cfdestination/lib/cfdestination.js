@@ -44,7 +44,7 @@ module.exports = function ({ resources, options }) {
     });
 
     // req-use app-router with config file to run in "shadow" mode
-    process.env.destinations = JSON.stringify(options.configuration.destinations);
+    process.env.destinations = JSON.stringify(options.configuration.destinations || []);
     approuter.start({
         port: options.configuration.port,
         xsappConfig: xsappConfig,
