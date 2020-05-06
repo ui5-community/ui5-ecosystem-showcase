@@ -45,6 +45,10 @@ module.exports = function ({ resources, options }) {
 
     // req-use app-router with config file to run in "shadow" mode
     process.env.destinations = JSON.stringify(options.configuration.destinations || []);
+    if (options.configuration.debug && process.env.destinations.length == 0) {
+        log.info(`Provided destinations are empty`);
+    }
+    
     approuter.start({
         port: options.configuration.port,
         xsappConfig: xsappConfig,
