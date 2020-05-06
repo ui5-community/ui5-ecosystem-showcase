@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.3.2...ui5-app@0.4.0) (2020-05-06)
+
+
+### Features
+
+* **zipper:** allow to include additional files ([#198](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/198)) ([abf6d01](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/abf6d016d955a49763c59ac508b6267a760052e9))
+
+
+
+
+
 ## [0.3.2](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.3.1...ui5-app@0.3.2) (2020-05-05)
 
 **Note:** Version bump only for package ui5-app
