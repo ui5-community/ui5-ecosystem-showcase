@@ -25,6 +25,8 @@ builder:
     afterTask: uglify 
     configuration:
       archiveName: "webapp"
+      additionalFiles:
+      - "xs-app.json"
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
 server:
   customMiddleware:

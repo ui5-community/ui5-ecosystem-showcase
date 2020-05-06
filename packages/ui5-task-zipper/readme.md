@@ -10,12 +10,15 @@ npm install ui5-task-zipper --save-dev
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
-- debug: true|false  
+- debug: `true|false`
 Verbose logging
 
-- archiveName: `String`  
-Desired name for the `.zip` archive. 
+- archiveName: `String`
+Desired name for the `.zip` archive.
 Default value: `<app-id.zip>`
+
+- additionalFiles: `String<Array>`  
+List of files to be included in the ZIP archive relative to the project root.
 
 ## Usage
 
@@ -47,6 +50,8 @@ builder:
     afterTask: uglify
     configuration:
       archiveName: "webapp"
+      additionalFiles:
+      - xs-app.json
 ```
 
 ## How it works
