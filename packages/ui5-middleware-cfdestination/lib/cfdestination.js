@@ -48,7 +48,7 @@ module.exports = function ({ resources, options }) {
     if (options.configuration.debug && process.env.destinations.length === 0) {
         log.info(`Provided destinations are empty`);
     }
-    
+
     approuter.start({
         port: options.configuration.port,
         xsappConfig: xsappConfig,
