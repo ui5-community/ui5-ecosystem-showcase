@@ -1,7 +1,6 @@
 {
   "name": "ui5-pwa-enabler",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "0.1.0",
   "author": "Mona Kaczun und Maximilian Moehl",
   "license": "Apache-2.0",
   "dependencies": {
@@ -10,5 +9,8 @@
     "jsdom": "^16.2.0",
     "mustache": "^4.0.0",
     "parse5": "^5.1.1"
+  },
+  "ui5": {
+    "dependencies": []
   }
 }

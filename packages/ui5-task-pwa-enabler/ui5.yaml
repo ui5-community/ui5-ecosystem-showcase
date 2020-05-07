@@ -4,4 +4,4 @@ type: task
 metadata:
   name: pwaEnabler
 task:
-  path: libs/pwaEnabler.js
+  path: lib/pwaEnabler.js
