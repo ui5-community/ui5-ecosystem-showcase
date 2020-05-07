@@ -4,13 +4,7 @@
 
 ## Install
 
-tbd
-# TODO 
-- readme
-- github pages
-- license
-- installation guide
-- folder naming
+`npm install ui5-task-i18ncheck --save-dev`
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
