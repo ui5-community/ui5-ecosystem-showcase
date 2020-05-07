@@ -108,3 +108,9 @@ Under the hood we are using the examples from the [pwabuilder](https://github.co
 but we replaced the configuration part with templating and generate those values from the provided configuration.
 Additionally we have to inject a few lines into the `index.html` to make sure everything is linked and tadaa, you have
 your own fancy PWA.
+
+## License
+
+This work is [dual-licensed](../../LICENSE) under Apache 2.0 and the Derived Beer-ware License. The official license will be Apache 2.0 but finally you can choose between one of them if you use this work.
+
+When you like this stuff, buy [@vobu](https://twitter.com/vobu), [@maxmoehl](https://github.com/maxmoehl) or [@monakac](https://github.com/monakac) a beer or buy [@pmuessig](https://twitter.com/pmuessig) a coke when you see them.
