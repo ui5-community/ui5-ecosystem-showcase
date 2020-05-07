@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "definitions": {
+    "configuration": {
+      "type": "object",
+      "properties": {
+        "serviceWorker": {
+          "$ref": "#/definitions/serviceWorker"
+        },
+        "manifest": {
+          "type": "object",
+          "description": "web app manifest according to https://web.dev/add-manifest/"
+        }
+      },
+      "required": ["serviceWorker"]
+    },
+    "serviceWorker": {
+      "type": "object",
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "enum": [
+            "Offline-Page",
+            "Offline-Copy",
+            "Offline-Copy-With-Backup-Page",
+            "Advanced-Caching",
+            "Cache-First"
+          ]
+        },
+        "offlinePage": {
+          "description": "required for Offline-Page, Offline-Copy-With-backup-Page, Advanced-Caching",
+          "type": "string"
+        },
+        "preCache": {
+          "description": "required for Cache-First, Advanced-Caching; all files that should be pre-cached, accepts glob file matchers",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "networkFirst": {
+          "description": "required for Advanced Caching; all files that should be served from the network first, accepts regex",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "avoidCaching": {
+          "description": "required for Advanced Caching; all files that should never be cached, accepts regex",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["strategy"]
+    },
+    "file": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "type": {
+          "description": "only required if strategy is caching",
+          "type": "string",
+          "enum": ["network", "cache"]
+        }
+      }
+    }
+  }
+}
