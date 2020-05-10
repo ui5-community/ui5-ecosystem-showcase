@@ -54,19 +54,6 @@
         }
       },
       "required": ["strategy"]
-    },
-    "file": {
-      "type": "object",
-      "properties": {
-        "path": {
-          "type": "string"
-        },
-        "type": {
-          "description": "only required if strategy is caching",
-          "type": "string",
-          "enum": ["network", "cache"]
-        }
-      }
     }
   }
 }
