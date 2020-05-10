@@ -77,7 +77,6 @@ module.exports = async function ({workspace, dependencies, options: {projectName
     }
     await addServiceworkerRegistration();
     await addManifest(configuration.manifest);
-    return undefined;
 };
 
 /**
@@ -89,7 +88,6 @@ module.exports = async function ({workspace, dependencies, options: {projectName
 async function addServiceworkerRegistration() {
     let fileContent = fs.readFileSync(path.join(__dirname, "../templates/register-sw.js"));
     await appendToIndexHtmlHead("<script>" + fileContent.toString() + "</script>");
-    return undefined;
 }
 
 /**
@@ -113,7 +111,6 @@ function writeFile({path, content}) {
  */
 async function addOfflinePageSw(parameters) {
     await renderServiceWorker(path.join(__dirname, "../templates/offlineCopy.js"), parameters);
-    return undefined;
 }
 
 /**
@@ -123,7 +120,6 @@ async function addOfflinePageSw(parameters) {
  */
 async function addOfflineCopySw() {
     await renderServiceWorker(path.join(__dirname, "../templates/offlineCopy.js"), {});
-    return undefined;
 }
 
 /**
@@ -135,7 +131,6 @@ async function addOfflineCopySw() {
  */
 async function addOfflineCopyBackupSw(parameters) {
     await renderServiceWorker(path.join("../templates/offlineCopyWithBackup.js"), parameters);
-    return undefined;
 }
 
 /**
@@ -168,7 +163,6 @@ async function addCacheFirstSw(parameters) {
     }
     // Write the service worker
     await renderServiceWorker(path.join(__dirname, "../templates/cacheFirst.js"), {preCache: fileList});
-    return undefined;
 }
 
 /**
@@ -220,7 +214,6 @@ async function addAdvancedCachingSw(parameters) {
         networkFirst: networkFirst,
         avoidCaching: avoidCaching
     });
-    return undefined;
 }
 
 /**
@@ -236,7 +229,6 @@ async function renderServiceWorker(serviceWorkerTemplate, view) {
     view.timestamp = new Date().getTime().toString();
     swCode = mustache.render(swCode.toString(), view);
     await writeFile({path: path, content: swCode});
-    return undefined;
 }
 
 /**
@@ -256,7 +248,6 @@ async function appendToIndexHtmlHead(element) {
     indexHtmlContent = doc.serialize();
     resource.setString(indexHtmlContent);
     await ws.write(resource);
-    return undefined;
 }
 
 /**
