@@ -2,6 +2,6 @@ specVersion: "1.1"
 kind: extension
 type: task
 metadata:
-  name: pwaEnabler
+  name: ui5-task-pwa-enabler
 task:
   path: lib/pwaEnabler.js

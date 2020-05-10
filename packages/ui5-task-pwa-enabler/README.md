@@ -4,7 +4,7 @@
 
 ## Install
 
-`npm install ui5-task-i18ncheck --save-dev`
+`npm install ui5-task-pwa-enabler --save-dev`
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
@@ -70,10 +70,10 @@ builder:
           strategy: Advanced-Caching
           offlinePage: offline.html
           preCache:
-            - controller/*
+            - "controller/*"
             - "*.html"
-            - view/*
-            - images/*
+            - "view/*"
+            - "images/*"
           networkFirst:
             - /\/api\/.*/
           avoidCaching:

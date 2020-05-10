@@ -1,7 +1,7 @@
 {
-  "name": "ui5-pwa-enabler",
+  "name": "ui5-task-pwa-enabler",
   "version": "0.1.0",
-  "author": "Mona Kaczun und Maximilian Moehl",
+  "author": "Mona Kaczun, Maximilian Moehl",
   "license": "Apache-2.0",
   "dependencies": {
     "@ui5/fs": "^1.1.2",
