@@ -110,7 +110,7 @@ function writeFile({path, content}) {
  * @returns {Promise<undefined>}
  */
 async function addOfflinePageSw(parameters) {
-    await renderServiceWorker(path.join(__dirname, "../templates/offlineCopy.js"), parameters);
+    await renderServiceWorker(path.join(__dirname, "../templates/offlinePage.js"), parameters);
 }
 
 /**
