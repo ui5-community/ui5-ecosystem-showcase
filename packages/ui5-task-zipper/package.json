@@ -17,7 +17,7 @@
     "yazl": "^2.5.1"
   },
   "devDependencies": {
-    "npm-check-updates": "^4.1.2"
+    "npm-check-updates": "^5.0.0"
   },
   "ui5": {
     "dependencies": []

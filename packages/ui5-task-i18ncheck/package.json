@@ -16,7 +16,7 @@
     "xmldom": "^0.3.0"
   },
   "devDependencies": {
-    "npm-check-updates": "^4.1.2"
+    "npm-check-updates": "^5.0.0"
   },
   "ui5": {
     "dependencies": []
