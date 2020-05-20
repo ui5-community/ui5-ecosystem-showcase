@@ -17,7 +17,7 @@
         "connect-injector": "^0.4.4"
     },
     "devDependencies": {
-        "npm-check-updates": "^4.1.2"
+        "npm-check-updates": "^6.0.1"
     },
     "ui5": {
         "dependencies": []
