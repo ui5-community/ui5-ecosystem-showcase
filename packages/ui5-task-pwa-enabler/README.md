@@ -63,7 +63,7 @@ resources:
     propertiesFileSourceEncoding: "UTF-8"
 builder:
   customTasks:
-    - name: pwaEnabler
+    - name: ui5-task-pwa-enabler
       afterTask: generateVersionInfo
       configuration:
         serviceWorker:

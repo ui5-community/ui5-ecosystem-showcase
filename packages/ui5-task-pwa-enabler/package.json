@@ -1,14 +1,25 @@
 {
   "name": "ui5-task-pwa-enabler",
   "version": "0.1.0",
+  "description": "UI5 task to make a PWA out of the UI5 application.",
   "author": "Mona Kaczun, Maximilian Moehl",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
+  },
+  "scripts": {
+    "ncu-upgrade": "ncu -u"
+  },
   "dependencies": {
     "@ui5/fs": "^1.1.2",
     "graceful-fs": "latest",
-    "jsdom": "^16.2.0",
-    "mustache": "^4.0.0",
-    "parse5": "^5.1.1"
+    "jsdom": "^16.2.2",
+    "mustache": "^4.0.1",
+    "parse5": "^6.0.0"
+  },
+  "devDependencies": {
+    "npm-check-updates": "^6.0.1"
   },
   "ui5": {
     "dependencies": []
