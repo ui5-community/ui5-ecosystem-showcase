@@ -1852,10 +1852,10 @@
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz#e486d0d97396d79beedd0a6e33f4534ff6b4973e"
   integrity sha512-f5j5b/Gf71L+dbqxIpQ4Z2WlmI/mPJ0fOkGGmFgtb6sAu97EPczzbS3/tJKxmcYDj55OX6ssqwDAWOHIYDRDGA==
 
-"@ui5/builder@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@ui5/builder/-/builder-2.0.1.tgz#a18e718f4207f538421f80f7db673200affedddc"
-  integrity sha512-+Xdbj2Ev3jJSSMHc0KZMZU3mb/kV5roZQ/R9tW8PTYVFp8U8vlvqSaLB2eoErAUfTQiZvB9Pa/2lhhnn22t6LA==
+"@ui5/builder@^2.0.2", "@ui5/builder@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@ui5/builder/-/builder-2.0.3.tgz#68ee2dd1831fd811702db65e53037cdb0aea9dba"
+  integrity sha512-EfUEFr6OPF/Oz1+kLgxLGbtSqcuKE0oewEbMyj0t9LvRfMhevqFoW2GzB5PN0iXXeeDGLiACyzJX5TEyzEQjeA==
   dependencies:
     "@ui5/fs" "^2.0.1"
     "@ui5/logger" "^2.0.0"
@@ -1866,7 +1866,7 @@
     esprima "^4.0.1"
     estraverse "^5.1.0"
     globby "^11.0.0"
-    graceful-fs "^4.2.3"
+    graceful-fs "^4.2.4"
     jsdoc "^3.6.4"
     less-openui5 "^0.8.6"
     make-dir "^3.1.0"
@@ -1876,25 +1876,25 @@
     rimraf "^3.0.2"
     semver "^7.3.2"
     slash "^3.0.0"
-    terser "^4.6.12"
+    terser "^4.6.13"
     xml2js "^0.4.23"
     yazl "^2.5.1"
 
 "@ui5/cli@^2.1.0":
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/@ui5/cli/-/cli-2.2.2.tgz#4fa8af5fc38831cf7926eda088f1086090f31cfb"
-  integrity sha512-RZYrSr8EcgI58QORM9vMGunh/jKC9+DPzsLjF7JBMh+2Xl+fbCVvNvEkt2PSRsdDd7JxpFMMauuZroe10FIzfw==
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@ui5/cli/-/cli-2.2.4.tgz#2a6868d95b95d00e03cb0dba8827ec1d86a8bb94"
+  integrity sha512-QNYMLUFjXgXv/fKMSnXHbYeykgJstFp/zI/sH2cjUqYtFA71nKowtJTuGMyN/YmqpcQoEkJUw4iltr5zma1pPg==
   dependencies:
-    "@ui5/builder" "^2.0.1"
+    "@ui5/builder" "^2.0.3"
     "@ui5/fs" "^2.0.1"
     "@ui5/logger" "^2.0.0"
-    "@ui5/project" "^2.1.2"
-    "@ui5/server" "^2.0.2"
+    "@ui5/project" "^2.1.3"
+    "@ui5/server" "^2.0.3"
     chalk "^4.0.0"
     data-with-position "^0.4.0"
     import-local "^3.0.2"
     js-yaml "^3.13.1"
-    open "^7.0.3"
+    open "^7.0.4"
     semver "^7.3.2"
     string.prototype.matchall "^4.0.2"
     supports-color "^7.1.0"
@@ -1950,14 +1950,14 @@
   dependencies:
     npmlog "^4.1.2"
 
-"@ui5/project@^2.0.3", "@ui5/project@^2.1.2":
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/@ui5/project/-/project-2.1.2.tgz#f3b6d7fc771eecd13989d472271afd0975c1a948"
-  integrity sha512-FUCyf8lQu8IbMg9lG5Sh+3R7Y0g2XdwYnV8fP+LXDy1WPmsbUXvk9ts8Z4lga8sfNffVd1htXHBQ6uERVFAA2g==
+"@ui5/project@^2.0.3", "@ui5/project@^2.1.3":
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/@ui5/project/-/project-2.1.3.tgz#64ced4b0cf06559b87cea072cc3a539dc21e062f"
+  integrity sha512-Y+U68kew6RTSgFEznrdLAYD2wft/7K57U8jRre16TswSEw4XY5OTZO7tEhHXU9DP8f/5+wXY6+wMtBizvLvs3A==
   dependencies:
-    "@ui5/builder" "^2.0.1"
+    "@ui5/builder" "^2.0.2"
     "@ui5/logger" "^2.0.0"
-    "@ui5/server" "^2.0.2"
+    "@ui5/server" "^2.0.3"
     ajv "^6.12.2"
     ajv-errors "^1.0.1"
     chalk "^4.0.0"
@@ -1975,12 +1975,12 @@
     semver "^7.3.2"
     string.prototype.matchall "^4.0.2"
 
-"@ui5/server@^2.0.0", "@ui5/server@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@ui5/server/-/server-2.0.2.tgz#6bc43a3c2383b424971c4bec4d3dd41b063d40b9"
-  integrity sha512-6Vh1siee4rYqagcAfnDhO0dRk+ir3Ui5dsT4ePaPUnWzL1fvSdExNLueoYrY4B8raky8AUWnYD6wZCWa0qE/8w==
+"@ui5/server@^2.0.0", "@ui5/server@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@ui5/server/-/server-2.0.3.tgz#71900ae7a9f434dd413fbcedf4f4fb5192b52040"
+  integrity sha512-dgYuyTwa5WF7dGuicxvRs/r1/k3fWhu4KOXs975HYT4qETRxkUCECZJecD/kpvFQJn1R3IaJFoCQezweMaCyxQ==
   dependencies:
-    "@ui5/builder" "^2.0.1"
+    "@ui5/builder" "^2.0.2"
     "@ui5/fs" "^2.0.1"
     "@ui5/logger" "^2.0.0"
     compression "^1.7.4"
@@ -1991,7 +1991,7 @@
     etag "^1.8.1"
     express "^4.17.1"
     fresh "^0.5.2"
-    graceful-fs "^4.2.3"
+    graceful-fs "^4.2.4"
     make-dir "^3.1.0"
     mime-types "^2.1.27"
     parseurl "^1.3.3"
@@ -7607,10 +7607,10 @@ onetime@^2.0.0:
   dependencies:
     mimic-fn "^1.0.0"
 
-open@^7.0.3:
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/open/-/open-7.0.3.tgz#db551a1af9c7ab4c7af664139930826138531c48"
-  integrity sha512-sP2ru2v0P290WFfv49Ap8MF6PkzGNnGlAwHweB4WR4mr5d2d0woiCluUeJ218w7/+PmoBy9JmYgD5A4mLcWOFA==
+open@^7.0.4:
+  version "7.0.4"
+  resolved "https://registry.yarnpkg.com/open/-/open-7.0.4.tgz#c28a9d315e5c98340bf979fdcb2e58664aa10d83"
+  integrity sha512-brSA+/yq+b08Hsr4c8fsEW2CRzk1BmfN3SAK/5VCHQ9bdoZJ4qa/+AfR0xHjlbbZUyPkUHs1b8x1RqdyZdkVqQ==
   dependencies:
     is-docker "^2.0.0"
     is-wsl "^2.1.1"
@@ -9816,10 +9816,10 @@ term-size@^2.1.0:
   resolved "https://registry.yarnpkg.com/term-size/-/term-size-2.2.0.tgz#1f16adedfe9bdc18800e1776821734086fcc6753"
   integrity sha512-a6sumDlzyHVJWb8+YofY4TW112G6p2FCPEAFk+59gIYHv3XHRhm9ltVQ9kli4hNWeQBwSpe8cRN25x0ROunMOw==
 
-terser@^4.6.12:
-  version "4.6.13"
-  resolved "https://registry.yarnpkg.com/terser/-/terser-4.6.13.tgz#e879a7364a5e0db52ba4891ecde007422c56a916"
-  integrity sha512-wMvqukYgVpQlymbnNbabVZbtM6PN63AzqexpwJL8tbh/mRT9LE5o+ruVduAGL7D6Fpjl+Q+06U5I9Ul82odAhw==
+terser@^4.6.13:
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/terser/-/terser-4.7.0.tgz#15852cf1a08e3256a80428e865a2fa893ffba006"
+  integrity sha512-Lfb0RiZcjRDXCC3OSHJpEkxJ9Qeqs6mp2v4jf2MHfy8vGERmVDuvjXdd/EnP5Deme5F2yBRBymKmKHCBg2echw==
   dependencies:
     commander "^2.20.0"
     source-map "~0.6.1"
