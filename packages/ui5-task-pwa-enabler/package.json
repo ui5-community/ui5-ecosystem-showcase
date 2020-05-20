@@ -9,7 +9,7 @@
     "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
   },
   "scripts": {
-    "ncu-upgrade": "ncu -u"
+    "ncu-upgrade": "ncu -u -x @ui5/fs"
   },
   "dependencies": {
     "@ui5/fs": "^1.1.2",

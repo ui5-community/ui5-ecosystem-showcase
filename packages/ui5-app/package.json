@@ -12,14 +12,15 @@
   "scripts": {
     "clean": "rimraf dist",
     "prepare": "mkdirp dist",
-    "build": "ui5 build self-contained",
+    "build": "ui5 build self-contained --clean-dest",
+    "build:pwa": "ui5 build self-contained --clean-dest --config ui5-pwa.yaml --verbose",
     "start": "ui5 serve --config ui5-dist.yaml --port 1081 --open index.html",
     "dev": "ui5 serve --port 1081 --open index.html",
     "debug": "node --inspect node_modules/.bin/ui5 serve --port 1081",
     "test": "karma start",
     "watch:build": "npm-watch build",
     "watch": "npm-run-all prepare --parallel watch:build start",
-    "ncu-upgrade": "ncu -u"
+    "ncu-upgrade": "ncu -u -x @ui5/cli"
   },
   "watch": {
     "build": {
@@ -32,13 +33,13 @@
   },
   "devDependencies": {
     "@openui5/ts-types": "^1.60.5",
-    "@ui5/cli": "^2.1.0",
-    "karma": "^5.0.4",
+    "@ui5/cli": "^2.2.4",
+    "karma": "^5.0.9",
     "karma-chrome-launcher": "^3.1.0",
     "karma-coverage": "^2.0.2",
-    "karma-ui5": "^2.1.0",
+    "karma-ui5": "^2.1.1",
     "mkdirp": "~1.0.4",
-    "npm-check-updates": "^4.1.2",
+    "npm-check-updates": "^6.0.1",
     "npm-run-all": "^4.1.5",
     "npm-watch": "^0.6.0",
     "rimraf": "~3.0.2",
@@ -50,6 +51,7 @@
     "ui5-middleware-servestatic": "^0.2.0",
     "ui5-middleware-simpleproxy": "^0.2.3",
     "ui5-task-i18ncheck": "^0.2.1",
+    "ui5-task-pwa-enabler": "^0.1.0",
     "ui5-task-transpile": "^0.1.7",
     "ui5-task-zipper": "^0.2.0"
   },
@@ -62,9 +64,10 @@
       "ui5-middleware-livetranspile",
       "ui5-middleware-simpleproxy",
       "ui5-middleware-servestatic",
+      "ui5-task-i18ncheck",
+      "ui5-task-pwa-enabler",
       "ui5-task-transpile",
-      "ui5-task-zipper",
-      "ui5-task-i18ncheck"
+      "ui5-task-zipper"
     ]
   }
 }

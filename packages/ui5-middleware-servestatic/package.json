@@ -9,7 +9,7 @@
     "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
   },
   "scripts": {
-    "ncu-upgrade": "ncu -u"
+    "ncu-upgrade": "ncu -u -x @ui5/logger"
   },
   "dependencies": {
     "@ui5/logger": "^1.0.2",
@@ -17,7 +17,7 @@
     "serve-static": "^1.14.1"
   },
   "devDependencies": {
-    "npm-check-updates": "^4.1.2"
+    "npm-check-updates": "^6.0.1"
   },
   "ui5": {
     "dependencies": []
