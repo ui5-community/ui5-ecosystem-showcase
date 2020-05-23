@@ -18,7 +18,15 @@ builder:
       debug: true
       removeConsoleStatements: true
       excludePatterns:
-      - "lib/"
+        - "lib/"
+  - name: ui5-task-stringreplacer
+    afterTask: replaceVersion
+    configuration:
+      files: ["**/*.js", "**/*.xml"]
+      strings:
+        [
+          { placeholder: $PLACEHOLDER1$, value: localhost:2000 }
+        ]
   - name: ui5-task-i18ncheck
     afterTask: replaceVersion
   - name: ui5-task-zipper
