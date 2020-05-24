@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.2.0...ui5-middleware-livereload@0.3.0) (2020-05-24)
+
+
+### Bug Fixes
+
+* **docu:** extra extensions config for livereload ([1f6149a](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/1f6149a97354a3360c608ab2027086f174cd908e))
+
+
+### Features
+
+* **pwa:** added pwa build for sample application ([c36baf2](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/c36baf24ed93e4e3634374c7ddcd426b8818876f))
+
+
+
+
+
 # [0.2.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.1.10...ui5-middleware-livereload@0.2.0) (2020-05-01)
 
 
