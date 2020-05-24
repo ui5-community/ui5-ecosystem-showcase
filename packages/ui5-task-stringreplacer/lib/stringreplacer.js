@@ -1,7 +1,33 @@
 const replaceStream = require("replacestream");
+const dotenv = require("dotenv");
 const log = require("@ui5/logger").getLogger(
   "builder:customtask:stringreplacer"
 );
+
+dotenv.config();
+
+// get all environment variables
+const envVariables = process.env;
+let placeholderStrings = [];
+
+// loop through env variables to find keys which are having prefix 'stringreplacer'
+if (typeof envVariables === "object") {
+  for (key in envVariables) {
+    // env variable should start with 'stringreplacer' and should in format 'stringreplacer.placeholder'
+    if (key.startsWith("stringreplacer")) {
+      if (!key.split(".")[1]) {
+        log.error(
+          "Failed to replace strings. Expected format is stringreplacer.placeholder=value"
+        );
+      }
+      let placeholderString = key.split(".")[1];
+      placeholderStrings.push({
+        placeholder: placeholderString,
+        value: envVariables[key],
+      });
+    }
+  }
+}
 
 /**
  * Task to replace strings from files
@@ -21,7 +47,7 @@ module.exports = function ({ workspace, options }) {
       // replaces all files placeholder strings with replacement text values
       return replaceStrings({
         resources: allResources,
-        strings: options.configuration.strings,
+        strings: placeholderStrings,
       });
     })
     .then((processedResources) => {

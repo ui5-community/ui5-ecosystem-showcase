@@ -10,6 +10,7 @@
     },
     "scripts": {},
     "dependencies": {
+        "dotenv": "^8.2.0",
         "replacestream": "^4.0.3"
     },
     "devDependencies": {},
