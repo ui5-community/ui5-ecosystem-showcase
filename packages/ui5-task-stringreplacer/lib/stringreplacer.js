@@ -20,7 +20,7 @@ if (typeof envVariables === "object") {
           "Failed to replace strings. Expected format is stringreplacer.placeholder=value"
         );
       }
-      let placeholderString = key.split(".")[1];
+      let placeholderString = key.split(".")[key.split(".").length - 1];
       placeholderStrings.push({
         placeholder: placeholderString,
         value: envVariables[key],
@@ -56,6 +56,11 @@ module.exports = function ({ workspace, options }) {
           return workspace.write(resource);
         })
       );
+    })
+    .catch((err) => {
+      log.error(
+        "Failed to replace strings. Please check file patterns and string placeholders."
+      );
     });
 };
 /**
@@ -64,17 +69,15 @@ module.exports = function ({ workspace, options }) {
  * @param {Array} parameters.strings Array of objects containing placeholder and replacment text value
  */
 replaceStrings = function ({ resources, strings }) {
-  return Promise.all(
-    resources.map((resource) => {
-      let stream = resource.getStream();
-      stream.setEncoding("utf8");
+  return resources.map((resource) => {
+    let stream = resource.getStream();
+    stream.setEncoding("utf8");
 
-      strings.forEach((string) => {
-        stream = stream.pipe(replaceStream(string.placeholder, string.value));
-      });
+    strings.forEach((string) => {
+      stream = stream.pipe(replaceStream(string.placeholder, string.value));
+    });
 
-      resource.setStream(stream);
-      return resource;
-    })
-  );
+    resource.setStream(stream);
+    return resource;
+  });
 };

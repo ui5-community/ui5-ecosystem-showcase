@@ -52,7 +52,7 @@
     "ui5-middleware-simpleproxy": "^0.2.3",
     "ui5-task-i18ncheck": "^0.2.1",
     "ui5-task-pwa-enabler": "^0.1.0",
-    "ui5-task-stringreplacer": "^0.1.0",
+    "ui5-task-stringreplacer": "^0.3.0",
     "ui5-task-transpile": "^0.1.7",
     "ui5-task-zipper": "^0.2.0"
   },

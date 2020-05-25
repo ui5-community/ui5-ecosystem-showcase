@@ -51,14 +51,14 @@ builder:
       configuration:
         files: ["**/*.js", "**/*.xml"]
 ```
-3. Maintain all string placeholders and values in .env file
+3. Maintain all string placeholders and values in `.env` file
 ```env
 stringreplacer.BASE_URL_PLACEHOLDER = http://localhost:2000
-stringreplacer.ANOTHER_PLACEHOLDER = Replace with this text
+stringreplacer.some.deeply.nested.ANOTHER_PLACEHOLDER = Replace with this text
 ```
 ## How it works
 
-The task reads all files based on configuration patterns and replaces all string placeholders with values for all files. All the string placeholders which are maintained in .env with prefix 'stringreplacer.' will be taken into account.
+The task reads all files based on configuration patterns and replaces all string placeholders with values for all files. All the string placeholders which are maintained in `.env` with prefix 'stringreplacer.' will be taken into account.
 
 ## License
 
