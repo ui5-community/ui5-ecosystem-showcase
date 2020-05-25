@@ -47,7 +47,7 @@ module.exports = function ({ resources, options }) {
                     return resource.getString()
                 })
                 .then((source) => {
-                    options.configuration.debug ? log.info(`...${pathname} transpiled!`) : null
+                    options.configuration && options.configuration.debug ? log.info(`...${pathname} transpiled!`) : null
                     return babel.transformAsync(source, {
                         filename: pathname, // necessary for source map <-> source assoc
                         sourceMaps: "inline",
