@@ -14,12 +14,7 @@ let placeholderStrings = [];
 if (typeof envVariables === "object") {
   for (key in envVariables) {
     // env variable should start with 'stringreplacer' and should in format 'stringreplacer.placeholder'
-    if (key.startsWith("stringreplacer")) {
-      if (!key.split(".")[1]) {
-        log.error(
-          "Failed to replace strings. Expected format is stringreplacer.placeholder=value"
-        );
-      }
+    if (/^stringreplacer\.(.+)$/i.test(key)) {
       let placeholderString = key.split(".")[key.split(".").length - 1];
       placeholderStrings.push({
         placeholder: placeholderString,
