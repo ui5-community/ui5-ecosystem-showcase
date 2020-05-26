@@ -67,9 +67,9 @@
       "ui5-middleware-servestatic",
       "ui5-task-i18ncheck",
       "ui5-task-pwa-enabler",
+      "ui5-task-stringreplacer",
       "ui5-task-transpile",
-      "ui5-task-zipper",
-      "ui5-task-stringreplacer"
+      "ui5-task-zipper"
     ]
   }
 }

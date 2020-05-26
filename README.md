@@ -21,7 +21,8 @@ packages
 ├── ui5-middleware-simpleproxy      // middleware extension: simple express proxy
 ├── ui5-middleware-servestatic      // middleware extension: serve static resources
 ├── ui5-task-i18ncheck              // task extension: checks for missing i18n texts
-├── ui5-task-pwa-enabler            // task extension: enables ui5 app with pwa functionalities 
+├── ui5-task-pwa-enabler            // task extension: enables ui5 app with pwa functionalities
+├── ui5-task-stringplaceholde       // task extension: replaces placeholder strings
 ├── ui5-task-transpile              // task extension: transpile es6 to es5 code
 └── ui5-task-zipper                 // task extension: bundle the entire webapp in a zip-archive
 ```
@@ -83,6 +84,7 @@ The tasks and middlewares developed in this project are also publicly available 
  
 * https://www.npmjs.com/package/ui5-task-i18ncheck 
 * https://www.npmjs.com/package/ui5-task-pwa-enabler
+* https://www.npmjs.com/package/ui5-task-stringplaceholder
 * https://www.npmjs.com/package/ui5-task-transpile 
 * https://www.npmjs.com/package/ui5-task-zipper
 * https://www.npmjs.com/package/ui5-middleware-cfdestination
@@ -101,6 +103,7 @@ Available tasks in this project:
 | ----------- | ----------- | ----- |
 | [ui5-task-i18ncheck](packages/ui5-task-i18ncheck/README.md) | checks for missing i18n texts | [![npm version](https://badge.fury.io/js/ui5-task-i18ncheck.svg)](https://badge.fury.io/js/ui5-task-i18ncheck) |
 | [ui5-task-pwa-enabler](packages/ui5-task-pwa-enabler/README.md) | enables ui5 app with pwa functionalities | [![npm version](https://badge.fury.io/js/ui5-task-pwa-enabler.svg)](https://badge.fury.io/js/ui5-task-pwa-enabler) |
+| [ui5-task-stringreplacer](packages/ui5-task-stringreplacer/README.md) | replaces placeholder strings | [![npm version](https://badge.fury.io/js/ui5-task-stringreplacer.svg)](https://badge.fury.io/js/ui5-task-stringreplacer) |
 | [ui5-task-transpile](packages/ui5-task-transpile/README.md) | transpile es6 to es5 code | [![npm version](https://badge.fury.io/js/ui5-task-transpile.svg)](https://badge.fury.io/js/ui5-task-transpile) |
 | [ui5-task-zipper](packages/ui5-task-zipper/README.md) | bundle the entire webapp in a zip-archive | [![npm version](https://badge.fury.io/js/ui5-task-zipper.svg)](https://badge.fury.io/js/ui5-task-zipper) |
 
