@@ -38,7 +38,7 @@ server:
     afterMiddleware: compression
     configuration:
       debug: true
-      ext: "xml,json,properties"
+      extraExts: "xml,json,properties"
       path: "webapp"
   - name: ui5-middleware-simpleproxy
     mountPath: /proxy

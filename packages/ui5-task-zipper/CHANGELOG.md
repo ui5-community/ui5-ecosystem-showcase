@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.2.0...ui5-task-zipper@0.3.0) (2020-05-24)
+
+
+### Features
+
+* **pwa:** added pwa build for sample application ([c36baf2](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/c36baf24ed93e4e3634374c7ddcd426b8818876f))
+
+
+
+
+
 # [0.2.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.1.5...ui5-task-zipper@0.2.0) (2020-05-06)
 
 
