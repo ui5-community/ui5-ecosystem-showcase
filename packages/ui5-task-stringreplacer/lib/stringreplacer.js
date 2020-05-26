@@ -15,7 +15,7 @@ if (typeof envVariables === "object") {
   for (key in envVariables) {
     // env variable should start with 'stringreplacer' and should in format 'stringreplacer.placeholder'
     if (/^stringreplacer\.(.+)$/i.test(key)) {
-      let placeholderString = key.split(".")[key.split(".").length - 1];
+      let placeholderString = /^stringreplacer\.(.+)$/i.exec(key)[1];
       placeholderStrings.push({
         placeholder: placeholderString,
         value: envVariables[key],
