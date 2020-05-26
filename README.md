@@ -22,7 +22,7 @@ packages
 ├── ui5-middleware-servestatic      // middleware extension: serve static resources
 ├── ui5-task-i18ncheck              // task extension: checks for missing i18n texts
 ├── ui5-task-pwa-enabler            // task extension: enables ui5 app with pwa functionalities
-├── ui5-task-stringplaceholde       // task extension: replaces placeholder strings
+├── ui5-task-stringreplacer         // task extension: replaces placeholder strings
 ├── ui5-task-transpile              // task extension: transpile es6 to es5 code
 └── ui5-task-zipper                 // task extension: bundle the entire webapp in a zip-archive
 ```
