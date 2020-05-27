@@ -1,6 +1,6 @@
 {
     "name": "ui5-task-stringreplacer",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "description": "Task for the UI5 tooling to replace string placeholders.",
     "author": "TheVivekGowda",
     "license": "Apache-2.0",
@@ -13,7 +13,6 @@
         "dotenv": "^8.2.0",
         "replacestream": "^4.0.3"
     },
-    "devDependencies": {},
     "ui5": {
         "dependencies": []
     }

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.1](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livetranspile@0.2.0...ui5-middleware-livetranspile@0.2.1) (2020-05-27)
+
+
+### Bug Fixes
+
+* safeguard options (closes [#217](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/217)) ([#218](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/218)) ([bcea7c9](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/bcea7c933a65764aa374397fdb1366cec3ed208f))
+
+
+
+
+
 # [0.2.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livetranspile@0.1.9...ui5-middleware-livetranspile@0.2.0) (2020-05-24)
 
 

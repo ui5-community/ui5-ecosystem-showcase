@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-livetranspile",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "UI5 middleware for live transpiling ES6+ sources",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
