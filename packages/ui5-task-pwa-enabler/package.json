@@ -1,7 +1,7 @@
 {
   "name": "ui5-task-pwa-enabler",
   "version": "0.2.0",
-  "description": "UI5 task to make a PWA out of the UI5 application.",
+  "description": "UI5 task to make a PWA out of a UI5 application.",
   "author": "Mona Kaczun, Maximilian Moehl",
   "license": "Apache-2.0",
   "repository": {
