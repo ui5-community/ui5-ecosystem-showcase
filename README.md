@@ -84,7 +84,7 @@ The tasks and middlewares developed in this project are also publicly available 
  
 * https://www.npmjs.com/package/ui5-task-i18ncheck 
 * https://www.npmjs.com/package/ui5-task-pwa-enabler
-* https://www.npmjs.com/package/ui5-task-stringplaceholder
+* https://www.npmjs.com/package/ui5-task-stringreplacer
 * https://www.npmjs.com/package/ui5-task-transpile 
 * https://www.npmjs.com/package/ui5-task-zipper
 * https://www.npmjs.com/package/ui5-middleware-cfdestination
