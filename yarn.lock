@@ -1881,19 +1881,19 @@
     yazl "^2.5.1"
 
 "@ui5/cli@^2.2.4":
-  version "2.2.4"
-  resolved "https://registry.yarnpkg.com/@ui5/cli/-/cli-2.2.4.tgz#2a6868d95b95d00e03cb0dba8827ec1d86a8bb94"
-  integrity sha512-QNYMLUFjXgXv/fKMSnXHbYeykgJstFp/zI/sH2cjUqYtFA71nKowtJTuGMyN/YmqpcQoEkJUw4iltr5zma1pPg==
+  version "2.2.6"
+  resolved "https://registry.yarnpkg.com/@ui5/cli/-/cli-2.2.6.tgz#14b73810e5a3bc3c1901e31fe5a59e26d5570357"
+  integrity sha512-7BevpNky9Hmo2KogSa0LRIuBCO/zy1qoIHqaE5VUpzQWUnmcWA+gSdPnpDn8/WWHWdXEdKva2rlo99jZmtQdzw==
   dependencies:
     "@ui5/builder" "^2.0.3"
     "@ui5/fs" "^2.0.1"
     "@ui5/logger" "^2.0.0"
-    "@ui5/project" "^2.1.3"
+    "@ui5/project" "^2.1.4"
     "@ui5/server" "^2.0.3"
     chalk "^4.0.0"
     data-with-position "^0.4.0"
     import-local "^3.0.2"
-    js-yaml "^3.13.1"
+    js-yaml "^3.14.0"
     open "^7.0.4"
     semver "^7.3.2"
     string.prototype.matchall "^4.0.2"
@@ -1950,12 +1950,12 @@
   dependencies:
     npmlog "^4.1.2"
 
-"@ui5/project@^2.1.3":
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/@ui5/project/-/project-2.1.3.tgz#64ced4b0cf06559b87cea072cc3a539dc21e062f"
-  integrity sha512-Y+U68kew6RTSgFEznrdLAYD2wft/7K57U8jRre16TswSEw4XY5OTZO7tEhHXU9DP8f/5+wXY6+wMtBizvLvs3A==
+"@ui5/project@^2.1.3", "@ui5/project@^2.1.4":
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/@ui5/project/-/project-2.1.4.tgz#945d803336b6c41d22cb5fe6901a3e351848eb40"
+  integrity sha512-BGdIlaVqiBf3l9YAklhtTDlz9KnwCPwQQIKPqNIFwMMspjo0eRCgADuMIWtZLuDWWfFPuSGJuuncyPHLnsut4g==
   dependencies:
-    "@ui5/builder" "^2.0.2"
+    "@ui5/builder" "^2.0.3"
     "@ui5/logger" "^2.0.0"
     "@ui5/server" "^2.0.3"
     ajv "^6.12.2"
@@ -1963,7 +1963,7 @@
     chalk "^4.0.0"
     escape-string-regexp "^4.0.0"
     graceful-fs "^4.2.4"
-    js-yaml "^3.13.1"
+    js-yaml "^3.14.0"
     libnpmconfig "^1.2.1"
     lockfile "^1.0.4"
     mkdirp "^1.0.4"
@@ -6090,10 +6090,10 @@ jju@^1.1.0:
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
 
-js-yaml@^3.12.0, js-yaml@^3.13.1:
-  version "3.13.1"
-  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.13.1.tgz#aff151b30bfdfa8e49e05da22e7415e9dfa37847"
-  integrity sha512-YfbcO7jXDdyj0DGxYVSlSeQNHbD7XPWvrVWeVUujrQEoZzWJIRrCPoyk6kL6IAjAG2IolMK4T0hNUe0HOUs5Jw==
+js-yaml@^3.12.0, js-yaml@^3.13.1, js-yaml@^3.14.0:
+  version "3.14.0"
+  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.14.0.tgz#a7a34170f26a21bb162424d8adacb4113a69e482"
+  integrity sha512-/4IbIeHcD9VMHFqDR/gQ7EdZdLimOvW2DdcxFjdyyZ9NsbS+ccrXqVWDtab/lRl5AlUqmpBx8EhPaWR+OtY17A==
   dependencies:
     argparse "^1.0.7"
     esprima "^4.0.0"
