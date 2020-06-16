@@ -1950,12 +1950,12 @@
   dependencies:
     npmlog "^4.1.2"
 
-"@ui5/project@^2.1.3":
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/@ui5/project/-/project-2.1.3.tgz#64ced4b0cf06559b87cea072cc3a539dc21e062f"
-  integrity sha512-Y+U68kew6RTSgFEznrdLAYD2wft/7K57U8jRre16TswSEw4XY5OTZO7tEhHXU9DP8f/5+wXY6+wMtBizvLvs3A==
+"@ui5/project@^2.1.3", "@ui5/project@^2.1.4":
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/@ui5/project/-/project-2.1.4.tgz#945d803336b6c41d22cb5fe6901a3e351848eb40"
+  integrity sha512-BGdIlaVqiBf3l9YAklhtTDlz9KnwCPwQQIKPqNIFwMMspjo0eRCgADuMIWtZLuDWWfFPuSGJuuncyPHLnsut4g==
   dependencies:
-    "@ui5/builder" "^2.0.2"
+    "@ui5/builder" "^2.0.3"
     "@ui5/logger" "^2.0.0"
     "@ui5/server" "^2.0.3"
     ajv "^6.12.2"
@@ -1963,7 +1963,7 @@
     chalk "^4.0.0"
     escape-string-regexp "^4.0.0"
     graceful-fs "^4.2.4"
-    js-yaml "^3.13.1"
+    js-yaml "^3.14.0"
     libnpmconfig "^1.2.1"
     lockfile "^1.0.4"
     mkdirp "^1.0.4"
@@ -6090,10 +6090,10 @@ jju@^1.1.0:
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
 
-js-yaml@^3.12.0, js-yaml@^3.13.1:
-  version "3.13.1"
-  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.13.1.tgz#aff151b30bfdfa8e49e05da22e7415e9dfa37847"
-  integrity sha512-YfbcO7jXDdyj0DGxYVSlSeQNHbD7XPWvrVWeVUujrQEoZzWJIRrCPoyk6kL6IAjAG2IolMK4T0hNUe0HOUs5Jw==
+js-yaml@^3.12.0, js-yaml@^3.13.1, js-yaml@^3.14.0:
+  version "3.14.0"
+  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-3.14.0.tgz#a7a34170f26a21bb162424d8adacb4113a69e482"
+  integrity sha512-/4IbIeHcD9VMHFqDR/gQ7EdZdLimOvW2DdcxFjdyyZ9NsbS+ccrXqVWDtab/lRl5AlUqmpBx8EhPaWR+OtY17A==
   dependencies:
     argparse "^1.0.7"
     esprima "^4.0.0"
@@ -6275,16 +6275,16 @@ karma-coverage@^2.0.2:
     minimatch "^3.0.4"
 
 karma-ui5@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/karma-ui5/-/karma-ui5-2.1.1.tgz#7436d2ba7ffdb2d09a7ae0f4ec317713d0527a83"
-  integrity sha512-6lZR+Sw2eZfephyU792NkOr+sVYKoImEvk8rYZwMnlKTLwdDLSOgQiRvWSeOcnOANMu2lh0I9S09trZ+NOPbdA==
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/karma-ui5/-/karma-ui5-2.2.0.tgz#8edf23ea70153c247078beae47da970ba77791b6"
+  integrity sha512-4w4IADBCNh0Z+uIEenXMTgauzzgYIMhFCKbWB3g8MGbAu40mde3vmkd2VnNNsDHhV6fXhA6kHq+GOZfrkZ5nTw==
   dependencies:
     "@ui5/fs" "^2.0.1"
-    "@ui5/project" "^2.1.3"
+    "@ui5/project" "^2.1.4"
     "@ui5/server" "^2.0.3"
     express "^4.17.1"
-    http-proxy "^1.18.0"
-    js-yaml "^3.13.1"
+    http-proxy "^1.18.1"
+    js-yaml "^3.14.0"
 
 karma@^5.0.9:
   version "5.0.9"
