@@ -7,7 +7,7 @@ dotenv.config();
 const env = {
   baseUri: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI,
   strictSSL: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL
-}
+};
 
 /**
  * Handle decision between configuration and environment value while processing
@@ -55,19 +55,13 @@ function deriveStrictSSL(environmentValue, configurationValue) {
 module.exports = function ({ resources, options }) {
   // Environment wins over YAML configuration when loading settings
   const providedBaseUri = env.baseUri || (options.configuration && options.configuration.baseUri);
-  // const providedStrictSSL = env.strictSSL !== undefined ? env.strictSSL : (options.configuration && options.configuration.strictSSL);
   const providedStrictSSL = deriveStrictSSL(
     env.strictSSL,
     options.configuration ? options.configuration.strictSSL : undefined
   );
 
-  /*
-  return function (req, res, next) {
-      // [...]
-  }
-  return proxy(options.configuration.baseUri);
-  */
   options.configuration && options.configuration.debug ? log.info(`Starting proxy for baseUri ${providedBaseUri}`) : null;
+
   // determine the uri parts (protocol, baseUri, path)
   let baseUriParts = providedBaseUri.match(/(https|http)\:\/\/([^/]*)(\/.*)?/i);
   if (!baseUriParts) {
@@ -79,6 +73,7 @@ module.exports = function ({ resources, options }) {
   if (path && path.endsWith("/")) {
     path = path.slice(0, -1);
   }
+
   // run the proxy middleware based on the baseUri configuration
   return proxy(baseUri, {
     https: protocol === "https",
@@ -91,6 +86,22 @@ module.exports = function ({ resources, options }) {
     },
     proxyReqPathResolver: function (req) {
       return (path ? path : "") + req.url;
-    }
+    },
+    userResHeaderDecorator: function(headers, userReq, userRes, proxyRes, proxyResData) {
+      if (protocol === "https") {
+        Object.keys(headers).forEach((headerName) => {
+          if (/set-cookie/i.test(headerName)) {
+            // remove the secure flag of the cookies
+            if (Array.isArray(headers[headerName])) {
+              headers[headerName] = headers[headerName].map(function(cookieValue) {
+                console.log(cookieValue);
+                return cookieValue.replace(/;\s*secure\s*(?:;|$)/g, "");
+              });
+            }
+          }
+        });
+      }
+      return headers;
+    },
   });
 };
