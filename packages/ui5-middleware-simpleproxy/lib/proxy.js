@@ -95,7 +95,7 @@ module.exports = function ({ resources, options }) {
             if (Array.isArray(headers[headerName])) {
               headers[headerName] = headers[headerName].map(function(cookieValue) {
                 console.log(cookieValue);
-                return cookieValue.replace(/;\s*secure\s*(?:;|$)/g, "");
+                return cookieValue.replace(/;\s*secure\s*(?:;|$)/gi, ";");
               });
             }
           }
