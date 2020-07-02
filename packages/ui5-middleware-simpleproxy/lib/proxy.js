@@ -93,10 +93,16 @@ module.exports = function ({ resources, options }) {
           if (/set-cookie/i.test(headerName)) {
             // remove the secure flag of the cookies
             if (Array.isArray(headers[headerName])) {
-              headers[headerName] = headers[headerName].map(function(cookieValue) {
-                console.log(cookieValue);
-                return cookieValue.replace(/;\s*secure\s*(?:;|$)/gi, ";");
-              });
+              headers[headerName] = headers[headerName]
+                .map(function(cookieValue) {
+                  return cookieValue.replace(/;\s*secure\s*(?:;|$)/gi, ";");
+                })
+                .map(function (cookieValue) {
+                  return cookieValue.replace(/;\s*domain=[^;]+\s*(?:;|$)/gi, ";");
+                })
+                .map(function (cookieValue) {
+                  return cookieValue.replace(/;\s*path=[^;]+\s*(?:;|$)/gi, ";");
+                });
             }
           }
         });
