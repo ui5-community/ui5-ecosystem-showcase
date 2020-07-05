@@ -94,14 +94,23 @@ module.exports = function ({ resources, options }) {
             // remove the secure flag of the cookies
             if (Array.isArray(headers[headerName])) {
               headers[headerName] = headers[headerName]
+                // remove flag 'Secure'
                 .map(function(cookieValue) {
                   return cookieValue.replace(/;\s*secure\s*(?:;|$)/gi, ";");
                 })
+                // remove attribute 'Domain'
                 .map(function (cookieValue) {
                   return cookieValue.replace(/;\s*domain=[^;]+\s*(?:;|$)/gi, ";");
                 })
+                // remove attribute 'Path'
                 .map(function (cookieValue) {
                   return cookieValue.replace(/;\s*path=[^;]+\s*(?:;|$)/gi, ";");
+                })
+                // remove attribute 'SameSite'
+                .map(function (cookieValue) {
+                  return cookieValue.replace(/;\s*samesite=[^;]+\s*(?:;|$)/gi, ";");
+                  // alternatively replace the value with 'Lax':
+                  // return cookieValue.replace(/;\s*samesite=[^;]+\s*(?:;|$)/gi, "; SameSite=Lax;");
                 });
             }
           }
