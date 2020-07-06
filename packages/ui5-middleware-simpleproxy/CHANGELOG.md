@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.2](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.3.1...ui5-middleware-simpleproxy@0.3.2) (2020-07-06)
+
+
+### Bug Fixes
+
+* Removing domain, path, samesite flags from cookie while proxying ([#247](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/247)) ([bb1fdcd](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/bb1fdcd31c23d84113acfbcbf014f5b0ac1a0642)), closes [#236](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/236) [#236](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/236) [#236](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/236)
+
+
+
+
+
 ## [0.3.1](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.3.0...ui5-middleware-simpleproxy@0.3.1) (2020-06-23)
 
 
