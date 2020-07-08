@@ -6,7 +6,8 @@ dotenv.config();
 
 const env = {
   baseUri: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI,
-  strictSSL: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL
+  strictSSL: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL,
+  httpHeaders: process.env.UI5_MIDDLEWARE_HTTP_HEADERS
 };
 
 /**
@@ -38,6 +39,25 @@ function deriveStrictSSL(environmentValue, configurationValue) {
 }
 
 /**
+ * Get the HTTP headers from environment variable if exists, otherwise get from the configuration
+ * 
+ * @param {string} environmentValue The value coming from the enviroment variable 'UI5_MIDDLEWARE_HTTP_HEADERS'
+ * @param {Object} configuration The configuration object
+ * 
+ * @returns {Object} http headers
+ */
+function getHttpHeaders(environmentValue, configuration) {
+  let httpHeaders;
+  if (environmentValue) {
+    httpHeaders = JSON.parse(environmentValue);
+  } else if (configuration) {
+    httpHeaders = configuration.httpHeaders;
+  }
+  httpHeaders && configuration && configuration.debug && log.info(`HTTP headers will be injected: ${Object.keys(httpHeaders).join(", ")} `);
+  return httpHeaders;
+}
+
+/**
  * Custom UI5 Server middleware example
  *
  * @param {Object} parameters Parameters
@@ -59,9 +79,8 @@ module.exports = function ({ resources, options }) {
     env.strictSSL,
     options.configuration ? options.configuration.strictSSL : undefined
   );
-
-  options.configuration && options.configuration.debug ? log.info(`Starting proxy for baseUri ${providedBaseUri}`) : null;
-
+  const providedHttpHeaders = getHttpHeaders(env.httpHeaders, options.configuration);
+  options.configuration && options.configuration.debug && log.info(`Starting proxy for baseUri ${providedBaseUri}`);
   // determine the uri parts (protocol, baseUri, path)
   let baseUriParts = providedBaseUri.match(/(https|http)\:\/\/([^/]*)(\/.*)?/i);
   if (!baseUriParts) {
@@ -81,6 +100,9 @@ module.exports = function ({ resources, options }) {
     proxyReqOptDecorator: function (proxyReqOpts) {
       if (providedStrictSSL === false) {
         proxyReqOpts.rejectUnauthorized = false;
+      }
+      if (providedHttpHeaders) {
+        proxyReqOpts.headers = Object.assign(proxyReqOpts.headers, providedHttpHeaders); 
       }
       return proxyReqOpts;
     },
