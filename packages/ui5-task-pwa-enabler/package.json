@@ -19,7 +19,7 @@
     "parse5": "^6.0.0"
   },
   "devDependencies": {
-    "npm-check-updates": "^6.0.1"
+    "npm-check-updates": "^7.0.1"
   },
   "ui5": {
     "dependencies": []

@@ -17,7 +17,7 @@
     "request": "^2.88.2"
   },
   "devDependencies": {
-    "npm-check-updates": "^6.0.1"
+    "npm-check-updates": "^7.0.1"
   },
   "ui5": {
     "dependencies": []
