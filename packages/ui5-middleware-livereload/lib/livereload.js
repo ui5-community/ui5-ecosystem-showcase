@@ -49,7 +49,7 @@ module.exports = async ({ resources, options }) => {
     if (options.configuration && options.configuration.extraExts) {
         extraExts = options.configuration.extraExts;
     }
-    let debug = true;
+    let debug = false;
     if (options.configuration && options.configuration.debug) {
         debug = options.configuration.debug;
     }
