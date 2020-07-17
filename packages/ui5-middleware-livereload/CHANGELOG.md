@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.3.0...ui5-middleware-livereload@0.4.0) (2020-07-17)
+
+
+### Bug Fixes
+
+* default to debug false ([#253](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/253)) ([0926ae4](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/0926ae4e2235766ef744333d13064e9e948f28b6))
+
+
+### Features
+
+* ui5-middleware-livereload - watch multiple paths ([#259](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/259)) ([16005f6](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/16005f6373db4ed2ead127fb4cf009465c738cc4))
+
+
+
+
+
 # [0.3.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.2.0...ui5-middleware-livereload@0.3.0) (2020-05-24)
 
 
