@@ -68,8 +68,8 @@ module.exports = async ({ resources, options }) => {
 		let watchPaths = [];
 		for (let i = 0; i < watchPath.length; i++) {
 			watchPaths.push(path.join(process.cwd(), watchPath[i]));
-			debug ? log.info(`Livereload connecting to port ${port} for path ${watchPath[i]}`) : null;
 		}
+		debug ? log.info(`Livereload connecting to port ${port} for paths ${watchPaths}`) : null;
 		livereloadServer.watch(watchPaths);
 	} else {
 		debug ? log.info(`Livereload connecting to port ${port} for path ${watchPath}`) : null;
