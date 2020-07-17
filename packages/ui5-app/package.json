@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@openui5/ts-types": "^1.60.5",
-    "@ui5/cli": "^2.2.4",
+    "@ui5/cli": "^2.3.0",
     "karma": "^5.0.9",
     "karma-chrome-launcher": "^3.1.0",
     "karma-coverage": "^2.0.2",
