@@ -102,7 +102,7 @@ module.exports = function ({ resources, options }) {
         proxyReqOpts.rejectUnauthorized = false;
       }
       if (providedHttpHeaders) {
-        proxyReqOpts.headers = Object.assign(proxyReqOpts.headers, providedHttpHeaders); 
+        Object.assign(proxyReqOpts.headers, providedHttpHeaders); 
       }
       return proxyReqOpts;
     },
