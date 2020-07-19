@@ -13,7 +13,8 @@
     "@babel/plugin-transform-modules-commonjs": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
     "@ui5/logger": "^1.0.2",
-    "babel-plugin-transform-remove-console": "^6.9.4"
+    "babel-plugin-transform-remove-console": "^6.9.4",
+    "babel-plugin-transform-async-to-promises": "^0.8.15"
   },
   "ui5": {
     "dependencies": []
