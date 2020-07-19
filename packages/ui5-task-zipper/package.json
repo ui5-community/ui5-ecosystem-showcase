@@ -1,6 +1,6 @@
 {
   "name": "ui5-task-zipper",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Task for the UI5 tooling to zip the webapp.",
   "author": "Marius Obert",
   "license": "Apache-2.0",
@@ -8,16 +8,10 @@
     "type": "git",
     "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
   },
-  "scripts": {
-    "ncu-upgrade": "ncu -u -x @ui5/fs,@ui5/logger"
-  },
   "dependencies": {
     "@ui5/fs": "^1.1.2",
     "@ui5/logger": "^1.0.2",
     "yazl": "^2.5.1"
-  },
-  "devDependencies": {
-    "npm-check-updates": "^6.0.1"
   },
   "ui5": {
     "dependencies": []

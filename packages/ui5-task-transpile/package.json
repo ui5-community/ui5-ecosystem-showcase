@@ -1,6 +1,6 @@
 {
   "name": "ui5-task-transpile",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "UI5 task for transpiling ES6+ sources",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
@@ -8,18 +8,12 @@
     "type": "git",
     "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
   },
-  "scripts": {
-    "ncu-upgrade": "ncu -u -x @ui5/logger"
-  },
   "dependencies": {
     "@babel/core": "^7.9.6",
     "@babel/plugin-transform-modules-commonjs": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
     "@ui5/logger": "^1.0.2",
     "babel-plugin-transform-remove-console": "^6.9.4"
-  },
-  "devDependencies": {
-    "npm-check-updates": "^6.0.1"
   },
   "ui5": {
     "dependencies": []

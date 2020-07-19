@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.6.2...ui5-app@0.7.0) (2020-07-17)
+
+
+### Features
+
+* Enhance simpleproxy with adding configuration option for http headers ([#250](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/250)) ([8cfd528](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/8cfd528db846e40d940f854adc215a18c6b002ae))
+
+
+
+
+
 ## [0.6.2](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.6.1...ui5-app@0.6.2) (2020-07-06)
 
 **Note:** Version bump only for package ui5-app

@@ -4,11 +4,13 @@ This page contains information around maintaining and releasing the packages in 
 
 ## Upgrading the version of the dependencies
 
-To upgrade the version of the dependencies `npm-check-updates` is used. To execute the command in all packages you need to run the following command:
+To upgrade the version of the dependencies `yarn upgrade-interactive` is used. To execute the command in all packages you need to run the following command:
 
 ```bash
-lerna run ncu-upgrade --stream
+yarn upgrade-interactive --latest
 ```
+
+*Attention: for now we keep the dependencies of the UI5 tooling dependencies on 1.x!*
 
 ## Releasing the packages
 

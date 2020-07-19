@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-servestatic",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "UI5 simple proxy middleware",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
@@ -8,16 +8,10 @@
     "type": "git",
     "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
   },
-  "scripts": {
-    "ncu-upgrade": "ncu -u -x @ui5/logger"
-  },
   "dependencies": {
     "@ui5/logger": "^1.0.2",
     "dotenv": "^8.2.0",
     "serve-static": "^1.14.1"
-  },
-  "devDependencies": {
-    "npm-check-updates": "^6.0.1"
   },
   "ui5": {
     "dependencies": []
