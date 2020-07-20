@@ -4482,9 +4482,9 @@ expand-brackets@^2.1.4:
     to-regex "^3.0.1"
 
 express-http-proxy@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/express-http-proxy/-/express-http-proxy-1.6.0.tgz#8672b1093cc96b8a93e8e3da948dd111a668ef22"
-  integrity sha512-7Re6Lepg96NA2wiv7DC5csChAScn4K76/UgYnC71XiITCT1cgGTJUGK6GS0pIixudg3Fbx3Q6mmEW3mZv5tHFQ==
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/express-http-proxy/-/express-http-proxy-1.6.1.tgz#8ed6a269a0e7eba4ce669db1c2e7aa358837c0f3"
+  integrity sha512-wUDBus3KGX6C2aVyEyYm6WYN/LoFYimphO4QY4qsUycqZlPUDxClrCRCi1k7n+BAWi27i/t7vD6CWhknP5HTbA==
   dependencies:
     debug "^3.0.1"
     es6-promise "^4.1.1"
