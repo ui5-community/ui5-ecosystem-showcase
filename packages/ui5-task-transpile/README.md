@@ -20,9 +20,11 @@ npm install ui5-task-transpile --save-dev
   array of paths inside `$yourapp/webapp/` to exclude from live transpilation,  
 array of paths inside `$yourapp/webapp/` to exclude from live transpilation,
   array of paths inside `$yourapp/webapp/` to exclude from live transpilation,  
-array of paths inside `$yourapp/webapp/` to exclude from live transpilation,
-  array of paths inside `$yourapp/webapp/` to exclude from live transpilation,  
   e.g. 3-rd party libs in `lib/*`
+
+- babelConfig: `Object`
+  object to use as configuration for babel instead of the default configuration  
+  defined in this middleware
 
 ## Usage
 
@@ -64,6 +66,61 @@ builder:
 ## How it works
 
 The task can be used to transpile ES6+ JavaScript code to ES5 by using `babel`.
+
+## Override babel configuration (in `$yourapp/ui5.yaml`)
+
+You can override the default babel configuration from this package by including an object `babelConfig` in this task's configuration. If such an object is given the default configuration from this task will not be considered, but only the configuration given in `ui5.yaml` will be used.
+
+### Example
+
+```yaml
+builder:
+  customTasks:
+    - name: ui5-task-transpile
+      afterTask: replaceVersion
+      configuration:
+        excludePatterns:
+          - "lib/"
+        babelConfig: &babelConfig
+          plugins:
+            - - "@babel/plugin-transform-computed-properties"
+              - loose: true
+            - - "@babel/plugin-transform-for-of"
+              - assumeArray: true
+          presets:
+            - - "@babel/preset-env"
+              - targets:
+                  browsers: "last 2 versions, ie 10-11"
+```
+
+> Hint: if you also use use `ui5-middleware-livetranspile` you probably do not want to duplicate the babel configuration in your `ui5.yaml`. Use YAML anchors in order to reference the babel configuration across the `ui5.yaml` file.
+> In the example above the anchor `&babelConfig` defines the babel configuration of `ui5-task-transpile` and may be re-used in other parts of `ui5.yaml` by using the alias `*babelConfig`:
+>
+> ```yaml
+> server:
+>   customMiddleware:
+>   - name: ui5-middleware-livetranspile
+>     afterMiddleware: compression
+>     configuration:
+>       babelConfig:
+>         <<: *babelConfig
+>         sourceMaps: "inline"
+> ```
+
+### Additional dependencies
+
+If you need dependencies not included in this task you have to install them in your project in order to use them.
+
+For example, in order to transpile `async`/`await` to Promises you can install `babel-plugin-transform-async-to-promises` as development dependency to your project and add it to the babel configuration's plugins section:
+
+```yaml
+babelConfig:
+  plugins:
+    # ...
+    - - "babel-plugin-transform-async-to-promises"
+      - inlineHelpers: true
+    # ...
+```
 
 ## License
 
