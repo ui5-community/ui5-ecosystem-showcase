@@ -59,7 +59,11 @@ The middleware intercepts every `.js`-file before it is sent to the client. The 
 
 The transpiled code and the `sourcemap` are subsequently delivered to the client instead of the original `.js`-file. Because of the `sourcemap`, setting breakpoints in the **original (ES6+) source** will cause the debugger to stop **when the corresponding transpiled source code is reached**.
 
-> `async/await` is transpiled at runtime, but the required `asyncGenerator` sources are not yet delivered on the fly. They need to be `sap.ui.require`d or `<script src="...">`d separately.  
+> `async/await` is transpiled at runtime, but the required `asyncGenerator` sources are not yet delivered on the fly. They need to be `sap.ui.require`d or `<script src="...">`d separately. Alternatively you can use the babel plugin `babel-plugin-transform-async-to-promises` as described [here](../ui5-task-transpile/README.md).
+
+## Extended configuration (in `$yourapp/babel.config.json`)
+
+If you want to further customize the transpiling options you can do so by creating a babel config file `babel.config.json` in your project directory. The behavior is identical to that of `ui5-task-transpile`. For more details and examples consult the [documentation of `ui5-task-transpile`](../ui5-task-transpile/README.md).
 
 ## Misc/FAQ
 

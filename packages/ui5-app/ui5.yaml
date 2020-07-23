@@ -44,7 +44,10 @@ server:
     mountPath: /proxy
     afterMiddleware: compression
     configuration:
+      debug: true
       baseUri: "https://latest-openui5.rikosjett.com"
+      httpHeaders:
+        Any-Header: AnyHeader
     # PoC: reuse the same middleware at a different "mountPath"
   - name: ui5-middleware-simpleproxy
     mountPath: /proxy2

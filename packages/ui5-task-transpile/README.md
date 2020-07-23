@@ -61,6 +61,41 @@ builder:
 
 The task can be used to transpile ES6+ JavaScript code to ES5 by using `babel`.
 
+## Extended configuration (in `$yourapp/babel.config.json`)
+
+If you want to further customize the transpiling options you can do so by creating a babel config file `babel.config.json` in your project directory. Babel will automatically pick up the configuration and apply it. The default configuration from this task will still be applied.
+
+### Example
+
+An example configuration is as follows:
+
+```json
+{
+  "plugins": [
+    ["@babel/plugin-transform-for-of", { "assumeArray": true }],
+    ["@babel/plugin-transform-computed-properties", { "loose": true }],
+    ["@babel/plugin-transform-destructuring", { "loose": true }]
+  ]
+}
+```
+
+### Additional dependencies
+
+If you need dependencies not included in this task you have to install them in your project in order to use them.
+
+For example, in order to transpile `async`/`await` to `Promise`s you can install
+`babel-plugin-transform-async-to-promises` as development dependency to your project and add it to the babel configuration's `plugins` section:
+
+```json
+{
+  "plugins": [
+    // ...
+    ["babel-plugin-transform-async-to-promises", { "inlineHelpers": true }]
+    // ...
+  ]
+}
+```
+
 ## License
 
 This work is [dual-licensed](../../LICENSE) under Apache 2.0 and the Derived Beer-ware License. The official license will be Apache 2.0 but finally you can choose between one of them if you use this work.
