@@ -16,6 +16,9 @@ verbose logging
 - removeConsoleStatements: `true|false`
 remove console statements while transpiling using [Babel plugin](https://babeljs.io/docs/en/babel-plugin-transform-remove-console)
 
+- transpileAsync: `true|false`
+transpiling `async/await` using [this Babel plugin](https://www.npmjs.com/package/babel-plugin-transform-async-to-promises), which doesn't require the regenerator runtime ([Issue #242](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/242))
+
 - excludePatterns: `String<Array>`
 array of paths inside `$yourapp/webapp/` to exclude from live transpilation,
 e.g. 3-rd party libs in `lib/*`
@@ -51,6 +54,7 @@ builder:
     configuration:
       debug: true
       removeConsoleStatements: true
+      transpileAsync: true
       excludePatterns:
       - "lib/"
       - "another/dir/in/webapp"

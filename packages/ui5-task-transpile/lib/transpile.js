@@ -14,16 +14,20 @@ const log = require("@ui5/logger").getLogger("builder:customtask:transpile");
  * @param {string} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @returns {Promise<undefined>} Promise resolving with undefined once data has been written
  */
-module.exports = function({workspace, dependencies, options}) {
-	return workspace.byGlob("/**/*.js").then((resources) => {
+module.exports = function ({ workspace, dependencies, options }) {
+    return workspace.byGlob("/**/*.js").then((resources) => {
         return Promise.all(resources.map((resource) => {
             if (!(options.configuration && options.configuration.excludePatterns || []).some(pattern => resource.getPath().includes(pattern))) {
                 return resource.getString().then((value) => {
                     options.configuration && options.configuration.debug && log.info("Transpiling file " + resource.getPath());
-                    
+
                     let plugins = [];
                     if (options.configuration && options.configuration.removeConsoleStatements) {
-                        plugins = ["transform-remove-console"];
+                        plugins.push("transform-remove-console");
+                    } else if (options.configuration && options.configuration.transpileAsync) {
+                        plugins.push(["babel-plugin-transform-async-to-promises", {
+                            "inlineHelpers": true
+                        }]);
                     }
 
                     return babel.transformAsync(value, {
