@@ -17,6 +17,9 @@ verbose logging
 array of paths inside `$yourapp/webapp/` to exclude from live transpilation,  
 e.g. 3-rd party libs in `lib/*`
 
+- transpileAsync: `true|false`
+transpiling `async/await` using [this Babel plugin](https://www.npmjs.com/package/babel-plugin-transform-async-to-promises), which doesn't require the regenerator runtime ([Issue #242](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/242))
+
 - babelConfig: `Object`  
 object to use as configuration for babel instead of the default configuration  
 defined in this middleware
@@ -51,6 +54,7 @@ server:
     afterMiddleware: compression
     configuration:
       debug: true
+      transpileAsync: true
       excludePatterns:
       - "lib/"
       - "another/dir/in/webapp"

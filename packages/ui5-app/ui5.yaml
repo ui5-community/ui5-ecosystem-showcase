@@ -75,6 +75,7 @@ server:
     afterMiddleware: compression
     configuration:
       debug: true
+      transpileAsync: true
       excludePatterns:
       - "lib/"
       babelConfig:

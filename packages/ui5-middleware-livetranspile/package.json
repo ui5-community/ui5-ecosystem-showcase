@@ -12,6 +12,7 @@
     "@babel/core": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
     "@ui5/logger": "^1.0.2",
+    "babel-plugin-transform-async-to-promises": "^0.8.15",
     "lodash.merge": "^4.6.2",
     "parseurl": "^1.3.3"
   },

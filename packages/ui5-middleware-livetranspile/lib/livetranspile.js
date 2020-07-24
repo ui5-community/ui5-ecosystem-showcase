@@ -24,12 +24,21 @@ fileNotFoundError.file = ""
  * @returns {function} Middleware function to use
  */
 module.exports = function ({ resources, options }) {
+    const plugins =
+        options.configuration && options.configuration.transpileAsync
+            ? [
+                  "babel-plugin-transform-async-to-promises",
+                  {
+                      inlineHelpers: true
+                  }
+              ]
+            : []
     const babelConfig =
         options.configuration && options.configuration.babelConfig
             ? options.configuration.babelConfig
             : {
                   sourceMaps: "inline",
-                  plugins: [],
+                  plugins,
                   presets: [
                       [
                           "@babel/preset-env",
