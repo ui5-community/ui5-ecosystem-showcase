@@ -68,6 +68,22 @@ server:
       path: "webapp"
 ```
 
+Reload from multiple paths:
+
+```yaml
+server:
+  customMiddleware:
+  - name: ui5-middleware-livereload
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      extraExts: "xml,json,properties"
+      port: 35729
+      path: 
+            - "webapp"
+            - "../my.reuse.library/src/my/reuse/library"
+```
+
 ## How it works
 
 The middleware launches a `livereload`-server on the specified `port`, listening to changes in the specified `path` or `watchPath` inside your application directory.
