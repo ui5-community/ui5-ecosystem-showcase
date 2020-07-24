@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.3.2...ui5-middleware-simpleproxy@0.4.0) (2020-07-17)
+
+
+### Features
+
+* Enhance simpleproxy with adding configuration option for http headers ([#250](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/250)) ([8cfd528](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/8cfd528db846e40d940f854adc215a18c6b002ae))
+
+
+
+
+
 ## [0.3.2](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.3.1...ui5-middleware-simpleproxy@0.3.2) (2020-07-06)
 
 

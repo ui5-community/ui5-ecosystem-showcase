@@ -1,6 +1,6 @@
 {
   "name": "ui5-app",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "UI5 application using custom middlewares and tasks",
   "private": true,
   "author": "Volker Buzek, Peter Muessig",
@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@openui5/ts-types": "^1.60.5",
-    "@ui5/cli": "^2.2.4",
+    "@ui5/cli": "^2.3.0",
     "babel-plugin-transform-async-to-promises": "^0.8.15",
     "karma": "^5.0.9",
     "karma-chrome-launcher": "^3.1.0",
@@ -42,18 +42,18 @@
     "npm-run-all": "^4.1.5",
     "npm-watch": "^0.6.0",
     "rimraf": "~3.0.2",
-    "ui5-middleware-cfdestination": "^0.2.0",
-    "ui5-middleware-iasync": "^0.1.0-alpha.0",
-    "ui5-middleware-index": "^0.2.0",
-    "ui5-middleware-livereload": "^0.3.0",
-    "ui5-middleware-livetranspile": "^0.2.1",
-    "ui5-middleware-servestatic": "^0.3.0",
-    "ui5-middleware-simpleproxy": "^0.3.2",
-    "ui5-task-i18ncheck": "^0.3.0",
-    "ui5-task-pwa-enabler": "^0.2.1",
-    "ui5-task-stringreplacer": "^0.4.0",
-    "ui5-task-transpile": "^0.2.0",
-    "ui5-task-zipper": "^0.3.0"
+    "ui5-middleware-cfdestination": "^0.2.1",
+    "ui5-middleware-iasync": "^0.1.0-alpha.1",
+    "ui5-middleware-index": "^0.2.1",
+    "ui5-middleware-livereload": "^0.4.0",
+    "ui5-middleware-livetranspile": "^0.2.2",
+    "ui5-middleware-servestatic": "^0.3.1",
+    "ui5-middleware-simpleproxy": "^0.4.0",
+    "ui5-task-i18ncheck": "^0.3.1",
+    "ui5-task-pwa-enabler": "^0.2.2",
+    "ui5-task-stringreplacer": "^0.4.1",
+    "ui5-task-transpile": "^0.2.1",
+    "ui5-task-zipper": "^0.3.1"
   },
   "ui5": {
     "dependencies": [

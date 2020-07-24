@@ -15,16 +15,28 @@ const log = require("@ui5/logger").getLogger("builder:customtask:transpile");
  * @returns {Promise<undefined>} Promise resolving with undefined once data has been written
  */
 module.exports = function({workspace, dependencies, options}) {
+    const plugins = []
+      .concat(
+        options.configuration && options.configuration.removeConsoleStatements
+          ? "transform-remove-console"
+          : []
+      )
+      .concat(
+        options.configuration && options.configuration.transpileAsync
+          ? [
+              "babel-plugin-transform-async-to-promises",
+              {
+                inlineHelpers: true,
+              },
+            ]
+          : []
+      );
 
     const babelConfig =
       options.configuration && options.configuration.babelConfig
         ? options.configuration.babelConfig
         : {
-            plugins:
-              options.configuration &&
-              options.configuration.removeConsoleStatements
-                ? ["transform-remove-console"]
-                : [],
+            plugins,
             presets: [
               [
                 "@babel/preset-env",
@@ -37,7 +49,7 @@ module.exports = function({workspace, dependencies, options}) {
             ],
           };
     
-	return workspace.byGlob("/**/*.js").then((resources) => {
+    return workspace.byGlob("/**/*.js").then((resources) => {
         return Promise.all(resources.map((resource) => {
             if (!(options.configuration && options.configuration.excludePatterns || []).some(pattern => resource.getPath().includes(pattern))) {
                 return resource.getString().then((value) => {

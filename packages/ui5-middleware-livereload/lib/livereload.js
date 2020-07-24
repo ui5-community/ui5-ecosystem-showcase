@@ -49,7 +49,7 @@ module.exports = async ({ resources, options }) => {
     if (options.configuration && options.configuration.extraExts) {
         extraExts = options.configuration.extraExts;
     }
-    let debug = true;
+    let debug = false;
     if (options.configuration && options.configuration.debug) {
         debug = options.configuration.debug;
     }
@@ -63,8 +63,19 @@ module.exports = async ({ resources, options }) => {
             log.info("Livereload server started!");
         }
     );
-    debug ? log.info(`Livereload connecting to port ${port} for path ${watchPath}`) : null;
-    livereloadServer.watch(path.join(process.cwd(), watchPath));
+    
+	if (Array.isArray(watchPath)) {
+		let watchPaths = [];
+		for (let i = 0; i < watchPath.length; i++) {
+			watchPaths.push(path.join(process.cwd(), watchPath[i]));
+		}
+		debug ? log.info(`Livereload connecting to port ${port} for paths ${watchPaths}`) : null;
+		livereloadServer.watch(watchPaths);
+	} else {
+		debug ? log.info(`Livereload connecting to port ${port} for path ${watchPath}`) : null;
+		livereloadServer.watch(path.join(process.cwd(), watchPath));
+	}
+	
     // connect-livereload already holds the 
     // method sig (req, res, next)
     return connectLivereload({
