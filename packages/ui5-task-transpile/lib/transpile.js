@@ -18,16 +18,18 @@ module.exports = function({workspace, dependencies, options}) {
     const plugins = []
       .concat(
         options.configuration && options.configuration.removeConsoleStatements
-          ? [[ "transform-remove-console" ]]
+          ? [["transform-remove-console"]]
           : []
       )
       .concat(
         options.configuration && options.configuration.transpileAsync
           ? [
-              "babel-plugin-transform-async-to-promises",
-              {
-                inlineHelpers: true,
-              },
+              [
+                "babel-plugin-transform-async-to-promises",
+                {
+                  inlineHelpers: true,
+                },
+              ],
             ]
           : []
       );

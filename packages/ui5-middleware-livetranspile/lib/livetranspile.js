@@ -27,10 +27,12 @@ module.exports = function ({ resources, options }) {
     const plugins =
         options.configuration && options.configuration.transpileAsync
             ? [
-                  "babel-plugin-transform-async-to-promises",
-                  {
-                      inlineHelpers: true
-                  }
+                  [
+                      "babel-plugin-transform-async-to-promises",
+                      {
+                          inlineHelpers: true
+                      }
+                  ]
               ]
             : []
     const babelConfig =
