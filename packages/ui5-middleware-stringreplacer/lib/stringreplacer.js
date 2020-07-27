@@ -16,8 +16,8 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:ui5-middle
  * @returns {function} Middleware function to use
  */
 module.exports = function ({ resources, options }) {
-    return (req, res, next) => {
-		
+	return (req, res, next) => {
+
 		let includePatterns = [];
 		if (options.configuration && options.configuration.includePatterns) {
 			if (Array.isArray(options.configuration.includePatterns)) {
@@ -26,10 +26,10 @@ module.exports = function ({ resources, options }) {
 				includePatterns.push(options.configuration.includePatterns);
 			}
 		}
-		
+
 		if (!(includePatterns).some((pattern) =>
 			req.path.includes(pattern)
-        )) {
+		)) {
 			next();
 			return;
 		}
@@ -44,15 +44,15 @@ module.exports = function ({ resources, options }) {
 			}
 			const buffer = await resource.getBuffer();
 			let text = buffer.toString();
-						
+
 			const replace = options.configuration.replace;
 			for (let i = 0; i < replace.length; i++) {
 				text = text.replace(replace[i].placeholder, replace[i].value);
 			}
 			res.end(text);
 		}).catch((err) => {
-            next(err);
-        });
+			next(err);
+		});
 
-    }
+	}
 }
