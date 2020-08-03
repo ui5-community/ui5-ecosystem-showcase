@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.1](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.7.0...ui5-app@0.7.1) (2020-08-03)
+
+
+### Bug Fixes
+
+* use absolute path for servestatic middleware ([c6086ec](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/c6086ec057411188b240e722e751a0341c70647a)), closes [#278](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/278)
+
+
+
+
+
 # [0.7.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.6.2...ui5-app@0.7.0) (2020-07-17)
 
 
