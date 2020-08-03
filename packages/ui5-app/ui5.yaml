@@ -41,6 +41,12 @@ server:
       debug: true
       extraExts: "xml,json,properties"
       path: "webapp"
+  - name: ui5-middleware-servestatic
+    mountPath: /docs
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      rootPath: ../../docs
   - name: ui5-middleware-simpleproxy
     mountPath: /proxy
     afterMiddleware: compression

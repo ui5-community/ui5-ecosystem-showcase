@@ -36,6 +36,16 @@
 						<Text text="Lorem ipsum dolor st amet" />
 					</content>
 				</Panel>
+				<Panel expandable="true">
+					<headerToolbar>
+						<OverflowToolbar>
+							<Title text="Content of docs/index.md" />
+						</OverflowToolbar>
+					</headerToolbar>
+					<content>
+						<TextArea id="doc" rows="10" cols="40"/>
+					</content>
+				</Panel>
 				<DateTimePicker placeholder="Enter Date ..." />
 				<Button text="Don't press me!" 
 					press="onBoo" />
