@@ -1884,22 +1884,22 @@
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz#e486d0d97396d79beedd0a6e33f4534ff6b4973e"
   integrity sha512-f5j5b/Gf71L+dbqxIpQ4Z2WlmI/mPJ0fOkGGmFgtb6sAu97EPczzbS3/tJKxmcYDj55OX6ssqwDAWOHIYDRDGA==
 
-"@ui5/builder@^2.0.5", "@ui5/builder@^2.0.6":
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/@ui5/builder/-/builder-2.0.6.tgz#1cc56182ca3b3ffa30cda2485b8afdec00c4d12d"
-  integrity sha512-1YpfjKz3kHl3Wrq8Qorfw9wXCECebNhXiLMS4/vAmlbZUH73fwqzzGRW+X/Bs14wpcEMjMczN9NS+D6YUsVKGQ==
+"@ui5/builder@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@ui5/builder/-/builder-2.1.0.tgz#13680cd9fb4eb9871206cf452e11fef9399e99cf"
+  integrity sha512-eOXYhL7BmhtEFU/mLKJWGGBxiy/0amJ5+lMjZN7yXdMc20aY5GtrJpYq2EDTZrp6xrj0b0E2yD34yxBaKYAbqg==
   dependencies:
-    "@ui5/fs" "^2.0.1"
+    "@ui5/fs" "^2.0.2"
     "@ui5/logger" "^2.0.0"
     cheerio "^0.22.0"
     escape-unicode "^0.2.0"
     escodegen "^1.14.3"
     escope "^3.6.0"
     esprima "^4.0.1"
-    estraverse "^5.1.0"
+    estraverse "5.1.0"
     globby "^11.0.1"
     graceful-fs "^4.2.4"
-    jsdoc "^3.6.4"
+    jsdoc "^3.6.5"
     less-openui5 "^0.8.7"
     make-dir "^3.1.0"
     pretty-data "^0.40.0"
@@ -1913,20 +1913,20 @@
     yazl "^2.5.1"
 
 "@ui5/cli@^2.3.0":
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/@ui5/cli/-/cli-2.3.1.tgz#2aa6a9b910659cf9d8004830101bbb9c861b9c00"
-  integrity sha512-lO2j22xs4JwOgMHl2FS9uPfuKpegzQKjOz/1wVa8haSwiqYOQg7KBIo2OWGEtQh7y56nD2vFWovlU8LeXfm2kQ==
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@ui5/cli/-/cli-2.4.0.tgz#71eda888a9b848fff1951cb773168c0a76ca1e11"
+  integrity sha512-c9DyhlhWdtExVLSGbHNXwZDhSorcXjxxN2zNH39/gawxf/VGfR7KwGF7EWYYDh1Wwt22K+LH9SABcz7JAa3iXw==
   dependencies:
-    "@ui5/builder" "^2.0.6"
-    "@ui5/fs" "^2.0.1"
+    "@ui5/builder" "^2.1.0"
+    "@ui5/fs" "^2.0.2"
     "@ui5/logger" "^2.0.0"
-    "@ui5/project" "^2.1.5"
-    "@ui5/server" "^2.2.1"
+    "@ui5/project" "^2.2.0"
+    "@ui5/server" "^2.2.2"
     chalk "^4.1.0"
     data-with-position "^0.4.0"
     import-local "^3.0.2"
     js-yaml "^3.14.0"
-    open "^7.0.4"
+    open "^7.1.0"
     semver "^7.3.2"
     string.prototype.matchall "^4.0.2"
     supports-color "^7.1.0"
@@ -1951,7 +1951,7 @@
     random-int "^2.0.0"
     slash "^3.0.0"
 
-"@ui5/fs@^2.0.1":
+"@ui5/fs@^2.0.1", "@ui5/fs@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@ui5/fs/-/fs-2.0.2.tgz#0b547467b2b7e417ed4d40c1cad97ec9a5e6ebb3"
   integrity sha512-C0Z/tGi7S1NziveyQZdgKKwy/OacFhq9HKfZ051Oi8idWVQdLbK6vvL1J6stdkVFaSAMuKhCIun7gjpGMZnp6w==
@@ -1982,14 +1982,14 @@
   dependencies:
     npmlog "^4.1.2"
 
-"@ui5/project@^2.1.4", "@ui5/project@^2.1.5":
-  version "2.1.5"
-  resolved "https://registry.yarnpkg.com/@ui5/project/-/project-2.1.5.tgz#4d10e734927efafe08f7b9514e6afa0face25f31"
-  integrity sha512-GEJUSCjD4Z1B4ub7aq5Ge5xkzHbE5jzkfz+ClwQA+Yr3pwS0Teilpq3zHZj17dWrXT0qYykukOlOkcqNmsZaoQ==
+"@ui5/project@^2.1.4", "@ui5/project@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@ui5/project/-/project-2.2.0.tgz#bae6bae3f48a1fe1c405df1a78528ae6c14769f1"
+  integrity sha512-2nlGLb4KySU7yAx2nUUODBpb1fgCsEYweSXpxS013SaFDGWL89X7SPIOqqRbtZeRALd6AC4fcEdy77oMDXytww==
   dependencies:
-    "@ui5/builder" "^2.0.5"
+    "@ui5/builder" "^2.1.0"
     "@ui5/logger" "^2.0.0"
-    "@ui5/server" "^2.2.1"
+    "@ui5/server" "^2.2.2"
     ajv "^6.12.3"
     ajv-errors "^1.0.1"
     chalk "^4.1.0"
@@ -2007,13 +2007,13 @@
     semver "^7.3.2"
     string.prototype.matchall "^4.0.2"
 
-"@ui5/server@^2.0.3", "@ui5/server@^2.2.1":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@ui5/server/-/server-2.2.1.tgz#71e19ee00f0253e276bb8b11f533659c042a97f9"
-  integrity sha512-DJyxc8Ccp2NDL1z9Jw27gnzL64DzqbRPUJHeUIK+bos9KWiV6+TDlqEJcYomNznhL9TgkUZweQD7WXiKrUiTfw==
+"@ui5/server@^2.0.3", "@ui5/server@^2.2.2":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@ui5/server/-/server-2.2.2.tgz#3ae04237778783e5dc7c4c8a5246d941833674c0"
+  integrity sha512-cBvxdlSOIaHAfwAbSS6nCk+u21rVNFgkz+LteQkTN0r8ZByXVW3qE2rspC4eALpbiTHc7EuvRs5v+eEA3PksgQ==
   dependencies:
-    "@ui5/builder" "^2.0.5"
-    "@ui5/fs" "^2.0.1"
+    "@ui5/builder" "^2.1.0"
+    "@ui5/fs" "^2.0.2"
     "@ui5/logger" "^2.0.0"
     body-parser "^1.19.0"
     compression "^1.7.4"
@@ -4380,15 +4380,15 @@ esrecurse@^4.1.0:
   dependencies:
     estraverse "^4.1.0"
 
+estraverse@5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/estraverse/-/estraverse-5.1.0.tgz#374309d39fd935ae500e7b92e8a6b4c720e59642"
+  integrity sha512-FyohXK+R0vE+y1nHLoBM7ZTyqRpqAlhdZHCWIWEviFLiGB8b04H6bQs8G+XTthacvT8VuwvteiP7RJSxMs8UEw==
+
 estraverse@^4.1.0, estraverse@^4.1.1, estraverse@^4.2.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/estraverse/-/estraverse-4.3.0.tgz#398ad3f3c5a24948be7725e83d11a7de28cdbd1d"
   integrity sha512-39nnKffWz8xN1BU/2c79n9nB9HDzo0niYUqx6xyqUnyoAnQyyWpOTdZEeiCch8BBu515t4wp9ZmgVfVhn9EBpw==
-
-estraverse@^5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/estraverse/-/estraverse-5.1.0.tgz#374309d39fd935ae500e7b92e8a6b4c720e59642"
-  integrity sha512-FyohXK+R0vE+y1nHLoBM7ZTyqRpqAlhdZHCWIWEviFLiGB8b04H6bQs8G+XTthacvT8VuwvteiP7RJSxMs8UEw==
 
 esutils@^2.0.2:
   version "2.0.3"
@@ -6021,7 +6021,7 @@ jsbn@~0.1.0:
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
   integrity sha1-peZUwuWi3rXyAdls77yoDA7y9RM=
 
-jsdoc@^3.6.4:
+jsdoc@^3.6.5:
   version "3.6.5"
   resolved "https://registry.yarnpkg.com/jsdoc/-/jsdoc-3.6.5.tgz#e004372ca6f2dcdf19b3d2ebcd7c725528485502"
   integrity sha512-SbY+i9ONuxSK35cgVHaI8O9senTE4CDYAmGSDJ5l3+sfe62Ff4gy96osy6OW84t4K4A8iGnMrlRrsSItSNp3RQ==
@@ -7499,7 +7499,7 @@ onetime@^2.0.0:
   dependencies:
     mimic-fn "^1.0.0"
 
-open@^7.0.4:
+open@^7.1.0:
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/open/-/open-7.1.0.tgz#68865f7d3cb238520fa1225a63cf28bcf8368a1c"
   integrity sha512-lLPI5KgOwEYCDKXf4np7y1PBEkj7HYIyP2DY8mVDRnx0VIIu6bNrRB0R66TuO7Mack6EnTNLm4uvcl1UoklTpA==
