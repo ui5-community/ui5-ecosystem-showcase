@@ -1884,34 +1884,6 @@
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz#e486d0d97396d79beedd0a6e33f4534ff6b4973e"
   integrity sha512-f5j5b/Gf71L+dbqxIpQ4Z2WlmI/mPJ0fOkGGmFgtb6sAu97EPczzbS3/tJKxmcYDj55OX6ssqwDAWOHIYDRDGA==
 
-"@ui5/builder@^2.0.6":
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/@ui5/builder/-/builder-2.0.6.tgz#1cc56182ca3b3ffa30cda2485b8afdec00c4d12d"
-  integrity sha512-1YpfjKz3kHl3Wrq8Qorfw9wXCECebNhXiLMS4/vAmlbZUH73fwqzzGRW+X/Bs14wpcEMjMczN9NS+D6YUsVKGQ==
-  dependencies:
-    "@ui5/fs" "^2.0.1"
-    "@ui5/logger" "^2.0.0"
-    cheerio "^0.22.0"
-    escape-unicode "^0.2.0"
-    escodegen "^1.14.3"
-    escope "^3.6.0"
-    esprima "^4.0.1"
-    estraverse "^5.1.0"
-    globby "^11.0.1"
-    graceful-fs "^4.2.4"
-    jsdoc "^3.6.4"
-    less-openui5 "^0.8.7"
-    make-dir "^3.1.0"
-    pretty-data "^0.40.0"
-    pretty-hrtime "^1.0.3"
-    replacestream "^4.0.3"
-    rimraf "^3.0.2"
-    semver "^7.3.2"
-    slash "^3.0.0"
-    terser "^4.8.0"
-    xml2js "^0.4.23"
-    yazl "^2.5.1"
-
 "@ui5/builder@^2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@ui5/builder/-/builder-2.2.0.tgz#75431ee59fa96e86a9759977869517c3e16e26ff"
@@ -1941,25 +1913,25 @@
     yazl "^2.5.1"
 
 "@ui5/cli@^2.3.0":
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/@ui5/cli/-/cli-2.3.1.tgz#2aa6a9b910659cf9d8004830101bbb9c861b9c00"
-  integrity sha512-lO2j22xs4JwOgMHl2FS9uPfuKpegzQKjOz/1wVa8haSwiqYOQg7KBIo2OWGEtQh7y56nD2vFWovlU8LeXfm2kQ==
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/@ui5/cli/-/cli-2.4.2.tgz#566848840768006e26962e2aa773d1b8b4d850ed"
+  integrity sha512-w9VAuLst1b5byDrRave2GiaPiL9bd2LSOEPhhhVJBai6r+oGmEO0RNKc85OPnWhzZWSBsD3WxOW4O+1HdnyznQ==
   dependencies:
-    "@ui5/builder" "^2.0.6"
-    "@ui5/fs" "^2.0.1"
+    "@ui5/builder" "^2.2.0"
+    "@ui5/fs" "^2.0.3"
     "@ui5/logger" "^2.0.0"
-    "@ui5/project" "^2.1.5"
-    "@ui5/server" "^2.2.1"
+    "@ui5/project" "^2.2.1"
+    "@ui5/server" "^2.2.3"
     chalk "^4.1.0"
     data-with-position "^0.4.0"
     import-local "^3.0.2"
     js-yaml "^3.14.0"
-    open "^7.0.4"
+    open "^7.2.1"
     semver "^7.3.2"
     string.prototype.matchall "^4.0.2"
-    supports-color "^7.1.0"
+    supports-color "^7.2.0"
     treeify "^1.0.1"
-    update-notifier "^4.1.0"
+    update-notifier "^4.1.1"
     yargs "^15.4.1"
 
 "@ui5/fs@^1.1.2":
@@ -1979,7 +1951,7 @@
     random-int "^2.0.0"
     slash "^3.0.0"
 
-"@ui5/fs@^2.0.1", "@ui5/fs@^2.0.3":
+"@ui5/fs@^2.0.3":
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@ui5/fs/-/fs-2.0.3.tgz#fa80b68fc6077504b5b2f0341ab0380c718146f4"
   integrity sha512-rrkqGiNI1+RaIIa472dBx+6dAh6G27k0VaXM43kTkyYUXTyotpWxXJR9Vbl8U+H4rqtqsVTFaU4eHmDbYHQxJw==
@@ -2010,7 +1982,7 @@
   dependencies:
     npmlog "^4.1.2"
 
-"@ui5/project@^2.1.5", "@ui5/project@^2.2.0":
+"@ui5/project@^2.2.0", "@ui5/project@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@ui5/project/-/project-2.2.1.tgz#bbe3338e8bc3c385db6f7f5770d8ace90ad89822"
   integrity sha512-VmWuaLqH7aO5E5b5Z30s+lt7UeyJf+HkhYqqzgD/tFcIr72h1Hi2yiTCjzjFVmJb5Sd13O52+eobo93wyl2uZQ==
@@ -2035,7 +2007,7 @@
     semver "^7.3.2"
     string.prototype.matchall "^4.0.2"
 
-"@ui5/server@^2.2.1", "@ui5/server@^2.2.2", "@ui5/server@^2.2.3":
+"@ui5/server@^2.2.2", "@ui5/server@^2.2.3":
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/@ui5/server/-/server-2.2.3.tgz#5dd24fc08682ab419fae14c617f84e4904989ebf"
   integrity sha512-itQamqrPWvwynQGGQWJNszC20YMwGAvQMxoWSGkUu8VvnQiKSRBCCPDVfY5nEAzQnUIdy2Czh3z6bcjIYt+n7Q==
@@ -4418,7 +4390,7 @@ esrecurse@^4.1.0:
   dependencies:
     estraverse "^4.1.0"
 
-estraverse@5.1.0, estraverse@^5.1.0:
+estraverse@5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/estraverse/-/estraverse-5.1.0.tgz#374309d39fd935ae500e7b92e8a6b4c720e59642"
   integrity sha512-FyohXK+R0vE+y1nHLoBM7ZTyqRpqAlhdZHCWIWEviFLiGB8b04H6bQs8G+XTthacvT8VuwvteiP7RJSxMs8UEw==
@@ -6059,7 +6031,7 @@ jsbn@~0.1.0:
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
   integrity sha1-peZUwuWi3rXyAdls77yoDA7y9RM=
 
-jsdoc@^3.6.4, jsdoc@^3.6.5:
+jsdoc@^3.6.5:
   version "3.6.5"
   resolved "https://registry.yarnpkg.com/jsdoc/-/jsdoc-3.6.5.tgz#e004372ca6f2dcdf19b3d2ebcd7c725528485502"
   integrity sha512-SbY+i9ONuxSK35cgVHaI8O9senTE4CDYAmGSDJ5l3+sfe62Ff4gy96osy6OW84t4K4A8iGnMrlRrsSItSNp3RQ==
@@ -7536,10 +7508,10 @@ onetime@^2.0.0:
   dependencies:
     mimic-fn "^1.0.0"
 
-open@^7.0.4:
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/open/-/open-7.1.0.tgz#68865f7d3cb238520fa1225a63cf28bcf8368a1c"
-  integrity sha512-lLPI5KgOwEYCDKXf4np7y1PBEkj7HYIyP2DY8mVDRnx0VIIu6bNrRB0R66TuO7Mack6EnTNLm4uvcl1UoklTpA==
+open@^7.2.1:
+  version "7.2.1"
+  resolved "https://registry.yarnpkg.com/open/-/open-7.2.1.tgz#07b0ade11a43f2a8ce718480bdf3d7563a095195"
+  integrity sha512-xbYCJib4spUdmcs0g/2mK1nKo/jO2T7INClWd/beL7PFkXRWgr8B23ssDHX/USPn2M2IjDR5UdpYs6I67SnTSA==
   dependencies:
     is-docker "^2.0.0"
     is-wsl "^2.1.1"
@@ -9596,10 +9568,10 @@ supports-color@^5.3.0, supports-color@^5.5.0:
   dependencies:
     has-flag "^3.0.0"
 
-supports-color@^7.1.0:
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-7.1.0.tgz#68e32591df73e25ad1c4b49108a2ec507962bfd1"
-  integrity sha512-oRSIpR8pxT1Wr2FquTNnGet79b3BWljqOuoW/h4oBhxJ/HUbX5nX6JSruTkvXDCFMwDPvsaTTbvMLKZWSy0R5g==
+supports-color@^7.1.0, supports-color@^7.2.0:
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-7.2.0.tgz#1b7dcdcb32b8138801b3e478ba6a51caa89648da"
+  integrity sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==
   dependencies:
     has-flag "^4.0.0"
 
@@ -10128,10 +10100,10 @@ update-notifier@^2.5.0:
     semver-diff "^2.0.0"
     xdg-basedir "^3.0.0"
 
-update-notifier@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/update-notifier/-/update-notifier-4.1.0.tgz#4866b98c3bc5b5473c020b1250583628f9a328f3"
-  integrity sha512-w3doE1qtI0/ZmgeoDoARmI5fjDoT93IfKgEGqm26dGUOh8oNpaSTsGNdYRN/SjOuo10jcJGwkEL3mroKzktkew==
+update-notifier@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/update-notifier/-/update-notifier-4.1.1.tgz#895fc8562bbe666179500f9f2cebac4f26323746"
+  integrity sha512-9y+Kds0+LoLG6yN802wVXoIfxYEwh3FlZwzMwpCZp62S2i1/Jzeqb9Eeeju3NSHccGGasfGlK5/vEHbAifYRDg==
   dependencies:
     boxen "^4.2.0"
     chalk "^3.0.0"
