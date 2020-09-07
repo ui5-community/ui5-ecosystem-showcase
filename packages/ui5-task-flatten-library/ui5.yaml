@@ -1,0 +1,8 @@
+# https://sap.github.io/ui5-tooling/pages/extensibility/CustomTasks/
+specVersion: "2.2"
+metadata:
+  name: ui5-task-flatten-library
+kind: extension
+type: task
+task:
+  path: lib/flatten-library.js
