@@ -23,7 +23,13 @@ builder:
   - name: ui5-task-stringreplacer
     afterTask: replaceVersion
     configuration:
-      files: ["**/*.js", "**/*.xml"]
+      debug: true
+      files:
+        - "**/*.js"
+        - "**/*.xml"
+      replace:
+        - placeholder: "${project.version}"
+          value: "1.0.0-SNAPSHOT"
   - name: ui5-task-i18ncheck
     afterTask: replaceVersion
   - name: ui5-task-zipper
@@ -68,6 +74,16 @@ server:
       transpileAsync: true
       excludePatterns:
       - "lib/"
+  - name: ui5-middleware-stringreplacer
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      files:
+        - "**/*.js"
+        - "**/*.xml"
+      replace:
+        - placeholder: "${project.version}"
+          value: "1.0.0-SNAPSHOT"
   - name: ui5-middleware-cfdestination
     afterMiddleware: compression
     configuration:
