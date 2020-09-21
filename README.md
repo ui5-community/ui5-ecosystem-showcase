@@ -20,6 +20,7 @@ packages
 ├── ui5-middleware-livetranspile    // middleware extension: on-demand es6 to es5 transpile when requesting js
 ├── ui5-middleware-simpleproxy      // middleware extension: simple express proxy
 ├── ui5-middleware-servestatic      // middleware extension: serve static resources
+├── ui5-middleware-stringreplacer   // middleware extension: replaces placeholder strings
 ├── ui5-task-flatten-library        // task extension: prepares build result for deployment to SAP NetWeaver
 ├── ui5-task-i18ncheck              // task extension: checks for missing i18n texts
 ├── ui5-task-pwa-enabler            // task extension: enables ui5 app with pwa functionalities
@@ -96,6 +97,7 @@ The tasks and middlewares developed in this project are also publicly available 
 * https://www.npmjs.com/package/ui5-middleware-livetranspile
 * https://www.npmjs.com/package/ui5-middleware-simpleproxy
 * https://www.npmjs.com/package/ui5-middleware-servestatic
+* https://www.npmjs.com/package/ui5-middleware-stringreplacer
 
 The consumption of the individual tasks and middlewares can be seen inside their local `README.md`.
 
@@ -121,6 +123,7 @@ Available middlewares in this project:
 | [ui5-middleware-livetranspile](packages/ui5-middleware-livetranspile/README.md) | on-demand es6 to es5 transpile when requesting js | [![npm version](https://badge.fury.io/js/ui5-middleware-livetranspile.svg)](https://badge.fury.io/js/ui5-middleware-livetranspile) |
 | [ui5-middleware-simpleproxy](packages/ui5-middleware-simpleproxy/README.md) | simple express proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-simpleproxy.svg)](https://badge.fury.io/js/ui5-middleware-simpleproxy) |
 | [ui5-middleware-servestatic](packages/ui5-middleware-servestatic/README.md) | serve static resources | [![npm version](https://badge.fury.io/js/ui5-middleware-servestatic.svg)](https://badge.fury.io/js/ui5-middleware-servestatic) |
+| [ui5-middleware-stringreplacer](packages/ui5-middleware-stringreplacer/README.md) | replaces placeholder strings | [![npm version](https://badge.fury.io/js/ui5-middleware-stringreplacer.svg)](https://badge.fury.io/js/ui5-middleware-stringreplacer) |
 
 
 ## License

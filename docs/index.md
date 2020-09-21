@@ -50,5 +50,6 @@ The following middlewares (known to this page) have been created and are availab
 | [ui5-middleware-route-proxy](https://www.npmjs.com/package/ui5-middleware-route-proxy) | Proxy to forward request for a specific route | [![npm version](https://badge.fury.io/js/ui5-middleware-route-proxy.svg)](https://badge.fury.io/js/ui5-middleware-route-proxy) |
 | [ui5-middleware-simpleproxy](https://www.npmjs.com/package/ui5-middleware-simpleproxy) | simple express proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-simpleproxy.svg)](https://badge.fury.io/js/ui5-middleware-simpleproxy) |
 | [ui5-middleware-servestatic](https://www.npmjs.com/package/ui5-middleware-servestatic) | serve static resources | [![npm version](https://badge.fury.io/js/ui5-middleware-servestatic.svg)](https://badge.fury.io/js/ui5-middleware-servestatic) |
+| [ui5-middleware-stringreplacer](https://www.npmjs.com/package/ui5-middleware-stringreplacer) | replaces placeholder strings | [![npm version](https://badge.fury.io/js/ui5-middleware-stringreplacer.svg)](https://badge.fury.io/js/ui5-middleware-stringreplacer) |
 
 There might be more middlewares in the public NPM registry. You can find all middlewares which applied the suggested naming convention at [https://www.npmjs.com/search?q=ui5-middleware-](https://www.npmjs.com/search?q=ui5-middleware-).
