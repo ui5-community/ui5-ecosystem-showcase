@@ -56,7 +56,7 @@ module.exports = async ({ resources, options }) => {
     const livereloadServer = livereload.createServer(
         {
             debug: debug,
-            extraExts: extraExts,
+            extraExts: extraExts ? extraExts.split(",") : undefined,
             port: port
         },
         () => {
