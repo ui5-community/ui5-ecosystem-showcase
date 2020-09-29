@@ -14,6 +14,10 @@ npm install ui5-middleware-simpleproxy --save-dev
   The baseUri to proxy. Can also be set using the `UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI` environment variable.
 - strictSSL: `boolean`
   Ignore strict SSL checks. Default value `true`. Can also be set using the `UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL` environment variable.
+- limit: `string`
+  This sets the body size limit (default: `1mb`). If the body size is larger than the specified (or default) limit,
+  a `413 Request Entity Too Large`  error will be returned. See [bytes.js](https://www.npmjs.com/package/bytes) for
+  a list of supported formats.
 
 In general, use of environment variables or values set in a `.env` file will override configuration values in the `ui5.yaml`.
 

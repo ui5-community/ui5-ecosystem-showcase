@@ -67,6 +67,12 @@ server:
     afterMiddleware: compression
     configuration:
       baseUri: "https://latest-openui5.rikosjett.com"
+  - name: ui5-middleware-simpleproxy
+    mountPath: /ui5
+    afterMiddleware: compression
+    configuration:
+      baseUri: "https://sapui5.hana.ondemand.com/"
+      limit: "5mb"
   - name: ui5-middleware-livetranspile
     afterMiddleware: compression
     configuration:

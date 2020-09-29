@@ -7,7 +7,8 @@ dotenv.config();
 const env = {
   baseUri: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI,
   strictSSL: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL,
-  httpHeaders: process.env.UI5_MIDDLEWARE_HTTP_HEADERS
+  httpHeaders: process.env.UI5_MIDDLEWARE_HTTP_HEADERS,
+  limit: process.env.UI5_MIDDLEWARE_LIMIT
 };
 
 /**
@@ -92,10 +93,12 @@ module.exports = function ({ resources, options }) {
   if (path && path.endsWith("/")) {
     path = path.slice(0, -1);
   }
+  const limit = env.limit || (options.configuration && options.configuration.limit);
 
   // run the proxy middleware based on the baseUri configuration
   return proxy(baseUri, {
     https: protocol === "https",
+    limit: limit,
     preserveHostHdr: false,
     proxyReqOptDecorator: function (proxyReqOpts) {
       if (providedStrictSSL === false) {
