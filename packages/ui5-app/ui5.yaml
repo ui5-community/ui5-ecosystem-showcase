@@ -73,6 +73,7 @@ server:
     configuration:
       baseUri: "https://sapui5.hana.ondemand.com/"
       limit: "5mb"
+      removeETag: true
   - name: ui5-middleware-livetranspile
     afterMiddleware: compression
     configuration:
