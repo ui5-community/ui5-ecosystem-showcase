@@ -1740,10 +1740,10 @@
   resolved "https://registry.yarnpkg.com/@openui5/ts-types/-/ts-types-1.60.5.tgz#cf0bdf70f91d4a145e16c92fbc95ba990c8f0400"
   integrity sha512-syzrhxH1JNfYS+FccnPUjxsGwQhW3mvwJpx1oQhZhh7VM7matWstLH9ObPtI3oPj3SO+IMgjpyBjzSUHZo5r4A==
 
-"@sap/approuter@^8.2.1":
-  version "8.5.1"
-  resolved "https://npm.sap.com/@sap/approuter/-/approuter-8.5.1.tgz#4d5ccb4881b757ccd40759b77a6dcef249c00c19"
-  integrity sha512-dmXdApGfp+npiMvquYlN8DDPBhhEGb3VMbsXNkb3bITscSTxXTkkhfDfRWASuq7gct8I5RLBeo+1ee/poRHJ+A==
+"@sap/approuter@^8.5.2":
+  version "8.5.2"
+  resolved "https://npm.sap.com/@sap/approuter/-/approuter-8.5.2.tgz#10f75ce3b1a2c16efabbe727ae9d626ec94f9ea4"
+  integrity sha512-bZqdsTItcYF4lpi5MVt8KmioK5JxNHPCl8ijrFtJ8/jf5vxSkWsP29IOp/gjdYIwzISfMZGWwoE/RTqv/XX2nQ==
   dependencies:
     "@sap/audit-logging" "3.1.1"
     "@sap/e2e-trace" "2.1.0"
@@ -6002,10 +6002,10 @@ karma-ui5@^2.1.1:
     http-proxy "^1.18.1"
     js-yaml "^3.14.0"
 
-karma@^5.0.9:
-  version "5.2.2"
-  resolved "https://registry.yarnpkg.com/karma/-/karma-5.2.2.tgz#2e51d877635a8c3e4d07e83f1271ec2b1ab75cc0"
-  integrity sha512-rB3Ua5yDxmIupTj67r3Q8itz7TxJzRE6DmVcOfV20D509Uu9AoBKlVwbZhND4kcm6BqLfbHtv4DZC9QJfrUY+w==
+karma@^5.2.3:
+  version "5.2.3"
+  resolved "https://registry.yarnpkg.com/karma/-/karma-5.2.3.tgz#3264024219bad2728e92542e0058a2492d7a46e4"
+  integrity sha512-tHdyFADhVVPBorIKCX8A37iLHxc6RBRphkSoQ+MLKdAtFn1k97tD8WUGi1KlEtDZKL3hui0qhsY9HXUfSNDYPQ==
   dependencies:
     body-parser "^1.19.0"
     braces "^3.0.2"
@@ -6028,7 +6028,7 @@ karma@^5.0.9:
     socket.io "^2.3.0"
     source-map "^0.6.1"
     tmp "0.2.1"
-    ua-parser-js "0.7.21"
+    ua-parser-js "0.7.22"
     yargs "^15.3.1"
 
 keyv@^3.0.0:
@@ -9539,12 +9539,7 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-ua-parser-js@0.7.21:
-  version "0.7.21"
-  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.21.tgz#853cf9ce93f642f67174273cc34565ae6f308777"
-  integrity sha512-+O8/qh/Qj8CgC6eYBVBykMrNtp5Gebn4dlGD/kKXVkJNDwyrAwSIqwz8CDf+tsAIWVycKcku6gIXJ0qwx/ZXaQ==
-
-ua-parser-js@^0.7.18:
+ua-parser-js@0.7.22, ua-parser-js@^0.7.18:
   version "0.7.22"
   resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.22.tgz#960df60a5f911ea8f1c818f3747b99c6e177eae3"
   integrity sha512-YUxzMjJ5T71w6a8WWVcMGM6YWOTX27rCoIQgLXiWaxqXSx9D7DNjiGWn1aJIRSQ5qr0xuhra77bSIh6voR/46Q==

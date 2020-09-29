@@ -9,7 +9,7 @@
     "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
   },
   "dependencies": {
-    "@sap/approuter": "^8.2.1",
+    "@sap/approuter": "^8.5.2",
     "@ui5/logger": "^2.0.0",
     "request": "^2.88.2"
   },

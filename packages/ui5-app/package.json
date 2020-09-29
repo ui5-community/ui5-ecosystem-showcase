@@ -34,7 +34,7 @@
     "@openui5/ts-types": "^1.60.5",
     "@ui5/cli": "^2.3.0",
     "babel-plugin-transform-async-to-promises": "^0.8.15",
-    "karma": "^5.0.9",
+    "karma": "^5.2.3",
     "karma-chrome-launcher": "^3.1.0",
     "karma-coverage": "^2.0.2",
     "karma-ui5": "^2.1.1",
