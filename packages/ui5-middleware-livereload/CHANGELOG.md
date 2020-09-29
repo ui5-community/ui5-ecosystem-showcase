@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.3](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.4.2...ui5-middleware-livereload@0.4.3) (2020-09-29)
+
+
+### Bug Fixes
+
+* **livereload:** ensure proper concat for extra exts ([#311](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/311)) ([cdf4b63](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/cdf4b633d9b4ad30e209038e08dcfe24277712cc))
+
+
+
+
+
 ## [0.4.2](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.4.1...ui5-middleware-livereload@0.4.2) (2020-09-20)
 
 **Note:** Version bump only for package ui5-middleware-livereload

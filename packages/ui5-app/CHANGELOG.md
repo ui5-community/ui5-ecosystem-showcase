@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.7.2...ui5-app@0.8.0) (2020-09-29)
+
+
+### Features
+
+* **simpleproxy:** allow to increase payload limit ([7c5bbfb](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/7c5bbfb72d2196b02bc14e7bd7313de0584b5e7e))
+* **stringreplacer:** new middleware and alignment of task ([40dcb4d](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/40dcb4d4442b0262699a779a13b565d8bba07a87))
+
+
+
+
+
 ## [0.7.2](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.7.1...ui5-app@0.7.2) (2020-09-20)
 
 **Note:** Version bump only for package ui5-app
