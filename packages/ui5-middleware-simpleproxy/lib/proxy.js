@@ -7,9 +7,9 @@ dotenv.config();
 const env = {
   baseUri: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI,
   strictSSL: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL,
-  httpHeaders: process.env.UI5_MIDDLEWARE_HTTP_HEADERS,
-  limit: process.env.UI5_MIDDLEWARE_LIMIT,
-  removeETag: process.env.UI5_MIDDLEWARE_REMOVEETAG
+  httpHeaders: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_HTTP_HEADERS || process.env.UI5_MIDDLEWARE_HTTP_HEADERS /* compat */,
+  limit: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_LIMIT,
+  removeETag: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_REMOVEETAG
 };
 
 /**
