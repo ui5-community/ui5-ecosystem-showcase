@@ -8,7 +8,8 @@ const env = {
   baseUri: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI,
   strictSSL: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL,
   httpHeaders: process.env.UI5_MIDDLEWARE_HTTP_HEADERS,
-  limit: process.env.UI5_MIDDLEWARE_LIMIT
+  limit: process.env.UI5_MIDDLEWARE_LIMIT,
+  removeETag: process.env.UI5_MIDDLEWARE_REMOVEETAG
 };
 
 /**
@@ -94,6 +95,7 @@ module.exports = function ({ resources, options }) {
     path = path.slice(0, -1);
   }
   const limit = env.limit || (options.configuration && options.configuration.limit);
+  const removeETag = env.removeETag || (options.configuration && options.configuration.removeETag);
 
   // run the proxy middleware based on the baseUri configuration
   return proxy(baseUri, {
@@ -142,6 +144,16 @@ module.exports = function ({ resources, options }) {
         });
       }
       return headers;
+    },
+    userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
+      if (removeETag) {
+        const fnEnd = userRes.end;
+        userRes.end = function() {
+          this.removeHeader("ETag");
+          return fnEnd.apply(this, arguments);
+        }  
+      }
+      return proxyResData;
     },
   });
 };
