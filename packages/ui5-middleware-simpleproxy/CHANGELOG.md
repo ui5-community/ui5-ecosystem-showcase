@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.5.1...ui5-middleware-simpleproxy@0.6.0) (2020-11-03)
+
+
+### Features
+
+* Add basic authentication ([4299350](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/4299350fb45fc1700d64f8bbee80f44b6f0e46e4))
+
+
+
+
+
 ## [0.5.1](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.5.0...ui5-middleware-simpleproxy@0.5.1) (2020-09-29)
 
 **Note:** Version bump only for package ui5-middleware-simpleproxy
