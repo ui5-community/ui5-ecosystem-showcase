@@ -9,7 +9,9 @@ const env = {
   strictSSL: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL,
   httpHeaders: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_HTTP_HEADERS || process.env.UI5_MIDDLEWARE_HTTP_HEADERS /* compat */,
   limit: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_LIMIT,
-  removeETag: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_REMOVEETAG
+  removeETag: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_REMOVEETAG,
+  username: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_USERNAME,
+  password: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_PASSWORD
 };
 
 /**
@@ -57,6 +59,22 @@ function getHttpHeaders(environmentValue, configuration) {
   }
   httpHeaders && configuration && configuration.debug && log.info(`HTTP headers will be injected: ${Object.keys(httpHeaders).join(", ")} `);
   return httpHeaders;
+}
+
+/**
+ * Get the authentication token, to be used send via Basic Authentication HTTP header, from environment variable if exists, otherwise get from the configuration
+ *
+ * @param {object} environmentValue The enviroment variable object UI5_MIDDLEWARE_SIMPLE_PROXY_*
+ * @param {object} configuration The configuration object
+ *
+ * @returns {string} Basic Authentication token username:password format
+ */
+function getBasicAuthenticationToken(environmentValue = {}, configuration = {}) {
+  const username = environmentValue.username || configuration.username;
+  const password = environmentValue.password || configuration.password;
+  if (username && password) {
+    return `${username}:${password}`;
+  }
 }
 
 /**
@@ -108,6 +126,10 @@ module.exports = function ({ resources, options }) {
       }
       if (providedHttpHeaders) {
         Object.assign(proxyReqOpts.headers, providedHttpHeaders); 
+      }
+      const authorizationToken = getBasicAuthenticationToken(env, options.configuration);
+      if (authorizationToken) {
+        proxyReqOpts.auth = authorizationToken;
       }
       return proxyReqOpts;
     },

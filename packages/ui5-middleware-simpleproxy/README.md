@@ -20,6 +20,10 @@ npm install ui5-middleware-simpleproxy --save-dev
   a list of supported formats.
 - removeETag:  `boolean`
   Removes the ETag header from the response to avoid conditional requests.
+- username:  `string`
+  Username used for Basic Authentication.
+- password:  `string`
+  Password used for Basic Authentication.
 
 In general, use of environment variables or values set in a `.env` file will override configuration values in the `ui5.yaml`.
 
@@ -54,6 +58,8 @@ server:
     mountPath: /odata
     configuration:
       baseUri: "http://services.odata.org"
+      username: myUsername
+      password: myPassword
 ```
 
 ## How it works
@@ -92,6 +98,8 @@ This plugin supports use of a `.env` file to declare environment variable values
 ```shell
 UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI=https://host.tld:1234/sap
 UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL=false
+UI5_MIDDLEWARE_SIMPLE_PROXY_USERNAME=myUsername
+UI5_MIDDLEWARE_SIMPLE_PROXY_PASSWORD=myPassword
 ```
 
 ## License
