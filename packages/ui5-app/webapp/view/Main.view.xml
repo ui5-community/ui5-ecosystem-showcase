@@ -21,7 +21,9 @@
 							text="{i18n>startPage.title.text}" 
 							width="100%" 
 							textAlign="Center" />
-				<Button icon="sap-icon://forward" 
+				<Button 
+					id="NavButton"
+					icon="sap-icon://forward" 
 					text="{i18n>startPage.navButton.text}" 
 					press="navFwd" />
 				<Button text="IA Sync" 
