@@ -1,5 +1,5 @@
 describe("navigation", function () {
-    it("should display the details screen", function () {
+    it("should see the initial page of the app", function () {
         const title = element(
             by.control({
                 viewName: "test.Sample.view.Main",
