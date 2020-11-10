@@ -2,7 +2,8 @@ sap.ui.define([
 	"sap/ui/test/Opa5",
 	"./arrangements/Startup",
 	"./NavigationJourney",
-	"./BindingJourney"
+	"./BindingJourney",
+	"./InteractionJourney"
 ], function (Opa5, Startup) {
 	"use strict";
 
