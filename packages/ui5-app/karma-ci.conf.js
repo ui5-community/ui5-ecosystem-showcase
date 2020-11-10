@@ -3,31 +3,42 @@ module.exports = function (config) {
 
     require("./karma.conf")(config);
     config.set({
-
+        ui5: {
+            configPath: "ui5-min.yaml",
+        },
+        proxies: {
+            "/backend": {
+                target: "https://services.odata.org/V4/(S(fdng4tbvlxgzpdtpfap2rqss))/TripPinServiceRW",
+                changeOrigin: true,
+            },
+        },
+        proxyValidateSSL: false,
         preprocessors: {
-            "{webapp,webapp/!(test)}/*.js": ["coverage"]
+            "{webapp,webapp/!(test)}/*.js": ["coverage"],
         },
 
-        coverageReporter: {
-            includeAllSources: true,
-            reporters: [{
-                type: "text"
-            }],
-            check: {
-                each: {
-                    statements: 100,
-                    branches: 100,
-                    functions: 100,
-                    lines: 100
-                }
-            }
-        },
+        // coverageReporter: {
+        //     includeAllSources: true,
+        //     reporters: [
+        //         {
+        //             type: "text",
+        //         },
+        //     ],
+        //     check: {
+        //         each: {
+        //             statements: 100,
+        //             branches: 100,
+        //             functions: 100,
+        //             lines: 100,
+        //         },
+        //     },
+        // },
 
-        reporters: ["progress", "coverage"],
+        // reporters: ["progress", "coverage"],
+        reporters: ["progress"],
 
         browsers: ["ChromeHeadless"],
 
-        singleRun: true
-
+        singleRun: true,
     });
 };
