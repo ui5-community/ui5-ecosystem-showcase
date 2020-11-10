@@ -15,9 +15,9 @@
     "clean": "cd packages/ui5-app && yarn clean",
     "dev": "cd packages/ui5-app && yarn dev",
     "start": "cd packages/ui5-app && yarn start",
-    "test": "cd packages/ui5-app && karma start",
-    "test:ci": "cd packages/ui5-app && karma start karma-ci.conf.js",
-    "test:e2e": "cd packages/ui5-app/webapp/test/e2e && uiveri5 --debug conf.js",
+    "test:opa5": "cd packages/ui5-app && karma start",
+    "test:opa5-ci": "cd packages/ui5-app && karma start karma-ci.conf.js",
+    "test:uiveri5": "cd packages/ui5-app/webapp/test/e2e && uiveri5 --debug conf.js",
     "test:wdi5": "cd packages/ui5-app && wdio",
     "watch": "cd packages/ui5-app && yarn watch"
   },
