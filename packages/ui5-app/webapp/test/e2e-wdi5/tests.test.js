@@ -61,11 +61,9 @@ describe("binding", () => {
     it("Other view: PeopleList: items aggregation + amount of items", () => {
         browser.asControl(navFwdButton).firePress()
 
-        // const oList = browser.asControl(list)
-        // const aListItems = oList.getAggregation("items")
-        // expect(aListItems.length).toBeGreaterThanOrEqual(1)
-
-        expect(true).toBeTruthy()
+        const oList = browser.asControl(list)
+        const aListItems = oList.getAggregation("items")
+        expect(aListItems.length).toBeGreaterThanOrEqual(1)
     })
 })
 
