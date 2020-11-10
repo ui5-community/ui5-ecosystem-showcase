@@ -14,14 +14,12 @@ describe("navigation", function () {
     });
 
     it("should navigate to the list page and back", function() {
-        const navFwdButton = element(
+        element(
             by.control({
                 viewName: "test.Sample.view.Main",
                 id: "NavButton"
             })
-        )
-
-        navFwdButton.click();
+        ).click();
 
         const list = element(
             by.control({

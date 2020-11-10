@@ -1,13 +1,11 @@
 describe("binding", function () {
     it("Other view: PeopleList: items aggregation", function () {
-        const navFwdButton = element(
+        element(
             by.control({
                 viewName: "test.Sample.view.Main",
                 id: "NavButton",
             })
-        );
-
-        navFwdButton.click();
+        ).click();
 
         const list = element(
             by.control({
