@@ -13,10 +13,11 @@ module.exports = function (config) {
             },
         },
         proxyValidateSSL: false,
-        preprocessors: {
-            "{webapp,webapp/!(test)}/*.js": ["coverage"],
-        },
-
+        
+        // -- leaving this as a reference
+        // preprocessors: {
+        //     "{webapp,webapp/!(test)}/*.js": ["coverage"],
+        // },
         // coverageReporter: {
         //     includeAllSources: true,
         //     reporters: [
@@ -33,8 +34,9 @@ module.exports = function (config) {
         //         },
         //     },
         // },
-
         // reporters: ["progress", "coverage"],
+        // -- end coverage reference
+
         reporters: ["progress"],
 
         browsers: ["ChromeHeadless"],
