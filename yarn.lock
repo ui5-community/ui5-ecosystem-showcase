@@ -11663,10 +11663,10 @@ wdio-chromedriver-service@^6.0.4:
   dependencies:
     fs-extra "^9.0.0"
 
-wdio-ui5-service@^0.1.3:
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/wdio-ui5-service/-/wdio-ui5-service-0.1.3.tgz#7970050075707ac5d5b9bc31a03d9b028facd818"
-  integrity sha512-nFLtvwmxWWAL2Uk7crhykVuNjV2vT/fb9z2F/hVwVCESnO+GL29+NAYpNCZeFG1towtDN/G67NSzkJT4eJSM7Q==
+wdio-ui5-service@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/wdio-ui5-service/-/wdio-ui5-service-0.1.4.tgz#f4b7bcb179616d8a226bd183434679998dfd07a2"
+  integrity sha512-4pXvOR7CXZFWhzd/QyCAUzfEfb0KzwBBfFmBohIsMROIblZET9Z0xnmWYq6Y2ThpeAABxy2ExGonXk/asr9iVw==
 
 webdriver-js-extender@^1.0.0:
   version "1.0.0"
