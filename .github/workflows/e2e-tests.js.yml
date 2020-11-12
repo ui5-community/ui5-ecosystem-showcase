@@ -22,7 +22,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: yarn install --frozen-lockfile
+    - run: yarn install --frozen-lockfile --ignore-engines
     # runs opa5 (+ qunit) tests
     - run: yarn test:opa5-ci
     # runs wdi5 + uiveri5 tests
