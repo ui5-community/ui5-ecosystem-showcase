@@ -41,8 +41,10 @@ npm i -g yarn
 To get started with the project, please ensure to run `yarn` once to install all required dependencies in your node_modules folder.
 
 ```bash
-# use yarn --ignore-engines if you're on node != 8 or 10
+# optional: use dedicated node version via nvm
+nvm use
 
+# use yarn --ignore-engines if you're on an (officially) unsupported node version
 # Install the node modules via yarn
 yarn --ignore-engines
 ```
@@ -68,22 +70,32 @@ yarn dev
 # - live reload of ui5-app/dist/**/*
 yarn watch
 
-# 3) Run the dist folder (but build manually)
+# 3) Run the dist folder (needs manual build via `yarn build`)
 yarn start
 
 # 4) Run Unit-(QUnit-)Tests and Integration-(OPA5-)Tests
 # against "as-is" sources in /webapp/* (of /packages/ui5-app)
 # with Chrome
 # note: no transpiling, no bundling/building
-yarn test
-# run w/ Headless Chrome and provide coverage report in console
-yarn test:ci
+yarn test:opa5
+
+# 5) Run end-to-end tests
+# in dedicated terminal: 
+yarn dev # > start the local ui5 server tooling
+# in another terminal:
+# (uses Chrome)
+yarn test:wdi5 # > run e2e tests via wdi5 from /packages/ui5-app/webapp/test/e2e-wdi5/*
+yarn test:uiveri5 # > run e2e tests via UIveri5 from /packages/ui5-app/webapp/test/e2e/*
+
+# 6) Utilize CI for end-to-end tests
+# using Chrome headless
+yarn test:ci # > start ui5 server in bg, runs wdi5- + UIveri5-tests, shuts down the ui5 server
 ```
 
 ## Using tasks and middlewares in your project
 
 The tasks and middlewares developed in this project are also publicly available on NPM right here:
- 
+
 * https://www.npmjs.com/package/ui5-task-flatten-library
 * https://www.npmjs.com/package/ui5-task-i18ncheck 
 * https://www.npmjs.com/package/ui5-task-pwa-enabler
