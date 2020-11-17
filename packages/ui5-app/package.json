@@ -32,7 +32,6 @@
     }
   },
   "devDependencies": {
-    "@openui5/ts-types": "^1.60.5",
     "@sapui5/ts-types": "^1.82.0",
     "@ui5/cli": "^2.6.4",
     "@ui5/uiveri5": "^1.45.1",
