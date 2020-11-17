@@ -26,7 +26,7 @@ const list = {
 
 const backButton = {
     selector: {
-        id: "__page0-navButton"
+        id: /.*navButton$/
     }
 }
 
