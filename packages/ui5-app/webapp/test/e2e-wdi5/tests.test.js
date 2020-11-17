@@ -11,6 +11,7 @@ const title = {
 }
 
 const navFwdButton = {
+    forceSelect: true,
     selector: {
         viewName: "test.Sample.view.Main",
         id: "NavButton"
@@ -38,7 +39,7 @@ const dateTimePicker = {
     }
 }
 
-describe("navigation", () => {
+describe.only("navigation", () => {
     it("should see the initial page of the app", () => {
         const oTitle = browser.asControl(title)
         expect(oTitle.getText()).toBe("#UI5 demo")
@@ -52,8 +53,8 @@ describe("navigation", () => {
 
         browser.asControl(backButton).firePress()
 
-        const oTitle = browser.asControl(title)
-        expect(oTitle.getVisible()).toBeTruthy()
+        const oNavButton = browser.asControl(navFwdButton)
+        expect(oNavButton.getText()).toBe("to Other view")
     })
 })
 
