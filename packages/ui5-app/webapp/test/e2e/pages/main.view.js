@@ -23,8 +23,8 @@ module.exports = createPageObjects({
                         viewName: "test.Sample.view.Main",
                         controlType: "sap.m.Title",
                         properties: {
-                            text: "#UI5 demo",
-                        },
+                            text: "#UI5 demo"
+                        }
                     })
                 );
                 // don't know why this isn't title.asControl() ... :(

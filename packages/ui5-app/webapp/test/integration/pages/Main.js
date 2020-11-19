@@ -9,9 +9,9 @@ sap.ui.define(["sap/ui/test/Opa5", "sap/ui/test/actions/Press"], function (Opa5,
                     return this.waitFor({
                         viewName: sViewName,
                         id: "NavButton",
-                        actions: new Press(),
+                        actions: new Press()
                     });
-                },
+                }
             },
 
             assertions: {
@@ -21,7 +21,7 @@ sap.ui.define(["sap/ui/test/Opa5", "sap/ui/test/actions/Press"], function (Opa5,
                         success: function () {
                             Opa5.assert.ok(true, "The Main view is displayed");
                         },
-                        errorMessage: "Did not find the Main view",
+                        errorMessage: "Did not find the Main view"
                     });
                 },
                 iShouldSeeTheNavButton: function () {
@@ -31,10 +31,10 @@ sap.ui.define(["sap/ui/test/Opa5", "sap/ui/test/actions/Press"], function (Opa5,
                         success: function () {
                             Opa5.assert.ok(true, "The Main view contains the nav button!");
                         },
-                        errorMessage: "Did not find the nav button on the Main view!",
+                        errorMessage: "Did not find the nav button on the Main view!"
                     });
-                },
-            },
-        },
+                }
+            }
+        }
     });
 });

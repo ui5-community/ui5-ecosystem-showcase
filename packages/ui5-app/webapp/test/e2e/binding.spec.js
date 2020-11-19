@@ -3,7 +3,7 @@ describe("binding", function () {
         element(
             by.control({
                 viewName: "test.Sample.view.Main",
-                id: "NavButton",
+                id: "NavButton"
             })
         ).click();
 
@@ -11,7 +11,7 @@ describe("binding", function () {
             by.control({
                 viewName: "test.Sample.view.Other",
                 id: "PeopleList",
-                aggregationFilled: [{ name: "items" }],
+                aggregationFilled: [{ name: "items" }]
             })
         );
 
@@ -22,7 +22,7 @@ describe("binding", function () {
         const listItems = element.all(
             by.control({
                 viewName: "test.Sample.view.Other",
-                controlType: "sap.m.StandardListItem",
+                controlType: "sap.m.StandardListItem"
             })
         );
         expect(listItems.count()).toBeGreaterThan(2);

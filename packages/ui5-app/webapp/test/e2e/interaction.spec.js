@@ -1,7 +1,7 @@
 const input = element(
     by.control({
         viewName: "test.Sample.view.Main",
-        id: "DateTimePicker",
+        id: "DateTimePicker"
     })
 );
 describe("interaction", function () {
@@ -29,7 +29,7 @@ describe("interaction", function () {
         element(
             by.control({
                 viewName: "test.Sample.view.Main",
-                id: /.*DateTimePicker-icon/,
+                id: /.*DateTimePicker-icon/
                 // interaction: "press" // didn't work
             })
         ).click();
@@ -37,7 +37,7 @@ describe("interaction", function () {
         const cal = element(
             by.control({
                 viewName: "test.Sample.view.Main",
-                id: /.*DateTimePicker-cal$/,
+                id: /.*DateTimePicker-cal$/
             })
         );
         expect(cal.asControl().getProperty("visible")).toBe(true);
@@ -66,7 +66,7 @@ describe("interaction", function () {
             by.control({
                 viewName: "test.Sample.view.Main",
                 id: /.*DateTimePicker-OK/,
-                controlType: "sap.m.Button",
+                controlType: "sap.m.Button"
                 // interaction: "press", // didn't work
             })
         ).click();

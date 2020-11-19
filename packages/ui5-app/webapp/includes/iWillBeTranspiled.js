@@ -25,8 +25,8 @@ const o = {
   computedProperty() {
     const propertyName = "name";
     const person = {
-      [propertyName]: "John",
+      [propertyName]: "John"
     };
     return person;
-  },
+  }
 };

@@ -50,7 +50,7 @@ sap.ui.define(
              */
             onNavBack() {
                 this.getRouter().navTo("RouteMain", {}, true);
-            },
+            }
         });
     }
 );
