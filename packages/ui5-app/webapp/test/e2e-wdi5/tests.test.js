@@ -13,12 +13,6 @@ const list = {
     }
 }
 
-const backButton = {
-    selector: {
-        id: /.*navButton$/
-    }
-}
-
 const dateTimePicker = {
     forceSelect: true,
     selector: {
@@ -71,10 +65,15 @@ describe("interaction", () => {
     })
 
     it("should input date via popup + click", () => {
-        // no partial regex for ids in wdi5 yet :)
-        const popupIcon = $('//*[contains(@id, "DateTimePicker-icon")]') // wdio-native
-        popupIcon.click()
+        // wdi5
+        const popupIcon = {
+            selector: {
+                id: /.*DateTimePicker-icon$/
+            }
+        }
+        browser.asControl(popupIcon).firePress()
 
+        // use wdio + wdi5 mixed up in same test
         const cal = $('//*[contains(@id, "DateTimePicker-cal")]') // wdio-native
         expect(cal).toBeVisible()
 
