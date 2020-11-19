@@ -57,7 +57,7 @@ server:
     afterMiddleware: compression
     mountPath: /odata
     configuration:
-      baseUri: "http://services.odata.org"
+      baseUri: "https://services.odata.org"
       username: myUsername
       password: myPassword
 ```
@@ -101,6 +101,10 @@ UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL=false
 UI5_MIDDLEWARE_SIMPLE_PROXY_USERNAME=myUsername
 UI5_MIDDLEWARE_SIMPLE_PROXY_PASSWORD=myPassword
 ```
+
+## Hints
+
+If you are using the Microsoft OData services for testing purposes, like Northwind, please ensure to use the `https` URLs instead of the `http` URLs. The `http` URL will redirect to `https` but instead of the proxy it will try to directly connect to the Microsoft OData services.
 
 ## License
 
