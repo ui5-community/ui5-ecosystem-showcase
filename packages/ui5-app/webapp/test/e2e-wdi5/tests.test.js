@@ -1,15 +1,3 @@
-const title = {
-    wdio_ui5_key: "MainViewTitle",
-    forceSelect: true,
-    selector: {
-        viewName: "test.Sample.view.Main",
-        controlType: "sap.m.Title",
-        properties: {
-            text: "#UI5 demo"
-        }
-    }
-}
-
 const navFwdButton = {
     forceSelect: true,
     selector: {
@@ -39,25 +27,28 @@ const dateTimePicker = {
     }
 }
 
-describe.only("navigation", () => {
+const MainPage = require("./pages/Main")
+const onTheOtherPage = require("./pages/Other")
+
+// this suite implemented w/ page object pattern
+describe("navigation", () => {
     it("should see the initial page of the app", () => {
-        const oTitle = browser.asControl(title)
-        expect(oTitle.getText()).toBe("#UI5 demo")
+        MainPage.open()
+        expect(MainPage.iShouldSeeTheApp()).toBeTruthy()
     })
 
     it("should navigate to the list page and back", () => {
-        browser.asControl(navFwdButton).firePress()
+        MainPage.iPressTheNavButton()
 
-        const oList = browser.asControl(list)
-        expect(oList.getVisible()).toBeTruthy()
+        expect(onTheOtherPage.iShouldSeeTheList()).toBeTruthy()
 
-        browser.asControl(backButton).firePress()
+        onTheOtherPage.iNavigateBack()
 
-        const oNavButton = browser.asControl(navFwdButton)
-        expect(oNavButton.getText()).toBe("to Other view")
+        expect(MainPage.iShouldSeeTheNavButton()).toBeTruthy()
     })
 })
 
+// this suite implemented straigh-fwd, no page objects
 describe("binding", () => {
     it("Other view: PeopleList: items aggregation + amount of items", () => {
         browser.asControl(navFwdButton).firePress()
@@ -68,9 +59,10 @@ describe("binding", () => {
     })
 })
 
+// this suite implemented straigh-fwd, no page objects
 describe("interaction", () => {
     it("should manually allow date input", () => {
-        browser.goTo({sHash: "index.html#/"})
+        browser.goTo({ sHash: "index.html#/" })
 
         const oDateTimePicker = browser.asControl(dateTimePicker)
         oDateTimePicker.setValue("2020-11-11")
