@@ -19,12 +19,12 @@ describe("binding", function () {
     });
 
     it("amount of items", function () {
-        const list = element.all(
+        const listItems = element.all(
             by.control({
                 viewName: "test.Sample.view.Other",
                 controlType: "sap.m.StandardListItem",
             })
         );
-        expect(list.count()).toBeGreaterThan(2);
+        expect(listItems.count()).toBeGreaterThan(2);
     });
 });
