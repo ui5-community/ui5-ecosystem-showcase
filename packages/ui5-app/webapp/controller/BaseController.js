@@ -1,7 +1,5 @@
-sap.ui.define([
-        "sap/ui/core/mvc/Controller",
-        "sap/ui/core/routing/History"
-    ],
+sap.ui.define(
+    ["sap/ui/core/mvc/Controller", "sap/ui/core/routing/History"],
     /**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      * @param {typeof sap.ui.core.routing.History} History
@@ -11,12 +9,10 @@ sap.ui.define([
         "use strict";
 
         return Controller.extend("test.Sample.controller.BaseController", {
-
             /**
              * inits on controller instantiation
              */
-            onInit() {
-            },
+            onInit() {},
 
             /**
              * Convenience method for accessing the router in every controller of the application.
@@ -53,16 +49,8 @@ sap.ui.define([
              * @public
              */
             onNavBack() {
-                const sPreviousHash = History.getInstance().getPreviousHash();
-
-                if (sPreviousHash !== undefined) {
-                    // eslint-disable-next-line
-                    history.go(-1);
-                } else {
-                    this.getRouter().navTo("RouteMain", {}, true);
-                }
-            }
-
+                this.getRouter().navTo("RouteMain", {}, true);
+            },
         });
-
-    });
+    }
+);
