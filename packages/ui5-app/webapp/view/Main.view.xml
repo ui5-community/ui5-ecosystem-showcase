@@ -16,6 +16,7 @@
 			<VBox alignItems="Center"
 				justifyContent="Center"
 				height="100%">
+
 				<Title level="H1"
 					titleStyle="H1"
 					text="{i18n>startPage.title.text}"
