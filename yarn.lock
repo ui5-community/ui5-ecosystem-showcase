@@ -1742,11 +1742,6 @@
   dependencies:
     "@types/node" ">= 8"
 
-"@openui5/ts-types@^1.60.5":
-  version "1.60.5"
-  resolved "https://registry.yarnpkg.com/@openui5/ts-types/-/ts-types-1.60.5.tgz#cf0bdf70f91d4a145e16c92fbc95ba990c8f0400"
-  integrity sha512-syzrhxH1JNfYS+FccnPUjxsGwQhW3mvwJpx1oQhZhh7VM7matWstLH9ObPtI3oPj3SO+IMgjpyBjzSUHZo5r4A==
-
 "@sap/approuter@^8.5.2":
   version "8.5.5"
   resolved "https://registry.yarnpkg.com/@sap/approuter/-/approuter-8.5.5.tgz#20e6ee495d1688c732cca7ae7b17538e8d886353"
@@ -1845,9 +1840,9 @@
     valid-url "1.0.9"
 
 "@sapui5/ts-types@^1.82.0":
-  version "1.82.0"
-  resolved "https://registry.yarnpkg.com/@sapui5/ts-types/-/ts-types-1.82.0.tgz#88f1f9854214081b3e25c39f182ff80cdcafebda"
-  integrity sha512-GSk7jVqY41QWIRtlU1mVdl/ookQ2RXlmTxbHKgDnWs7uDkvSKY6NcK9se+mRCzI1nIEP17aXZUDzNDi2t6cdDA==
+  version "1.82.5"
+  resolved "https://registry.yarnpkg.com/@sapui5/ts-types/-/ts-types-1.82.5.tgz#ca335983926e6e73ac45750ad76562ef423f1ee3"
+  integrity sha512-dBx23xhk0lXUkvsU20sm84FwEvI3CPEC1gKIAS1be4pLBmGakMVIUaRe6diYraWAdqnwKvdKeYQpGvqA7wg34A==
 
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
@@ -11338,16 +11333,6 @@ uglify-js@^3.1.4:
   version "3.11.5"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.11.5.tgz#d6788bc83cf35ff18ea78a65763e480803409bc6"
   integrity sha512-btvv/baMqe7HxP7zJSF7Uc16h1mSfuuSplT0/qdjxseesDU+yYzH33eHBH+eMdeRXwujXspaCTooWHQVVBh09w==
-
-ui5-task-stringreplacer@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/ui5-task-stringreplacer/-/ui5-task-stringreplacer-0.5.1.tgz#ac8bd138a6e9075ef1ce91f6e54fe7066ce2439e"
-  integrity sha512-994KVCAek433OyDhv7ewQiQycb/GmijMClr69WAQZdFFWj++WO9qNCDhJWnRA+AvAsTlaXo9j3nDIVDSVI6mRA==
-  dependencies:
-    "@ui5/logger" "^1.0.2"
-    dotenv "^8.2.0"
-    lodash.escaperegexp "^4.1.2"
-    replacestream "^4.0.3"
 
 uid-number@0.0.6:
   version "0.0.6"
