@@ -1742,11 +1742,6 @@
   dependencies:
     "@types/node" ">= 8"
 
-"@openui5/ts-types@^1.60.5":
-  version "1.60.5"
-  resolved "https://registry.yarnpkg.com/@openui5/ts-types/-/ts-types-1.60.5.tgz#cf0bdf70f91d4a145e16c92fbc95ba990c8f0400"
-  integrity sha512-syzrhxH1JNfYS+FccnPUjxsGwQhW3mvwJpx1oQhZhh7VM7matWstLH9ObPtI3oPj3SO+IMgjpyBjzSUHZo5r4A==
-
 "@sap/approuter@^8.5.2":
   version "8.5.5"
   resolved "https://registry.yarnpkg.com/@sap/approuter/-/approuter-8.5.5.tgz#20e6ee495d1688c732cca7ae7b17538e8d886353"
@@ -2139,7 +2134,7 @@
     random-int "^2.0.0"
     slash "^3.0.0"
 
-"@ui5/fs@^2.0.3", "@ui5/fs@^2.0.5":
+"@ui5/fs@^2.0.5":
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/@ui5/fs/-/fs-2.0.5.tgz#9059d1b3b3017c4817a049d7696bba11fc4fe92f"
   integrity sha512-jLkECzETgqUiRx9UBiJInaPQts7k+4tw9XUYVmvlXDGyY5kKJwA0RX0gqzVzAJeYgW+EvnwU1qHy9L0J0i1vTg==
@@ -2169,7 +2164,7 @@
   dependencies:
     npmlog "^4.1.2"
 
-"@ui5/project@^2.2.2", "@ui5/project@^2.2.4":
+"@ui5/project@^2.2.4":
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/@ui5/project/-/project-2.2.4.tgz#ec4638cf7fd06e28e7f81f939ce1218fbaa86502"
   integrity sha512-ormY1JnDMdme0l1Y8o6wPSkuiYV3i5hBng/whQsXejfBAZ4kXuKNK8XVp4LQf6ConFYpCb3eea+dfChL2vnNKw==
@@ -2193,7 +2188,7 @@
     resolve "^1.18.1"
     semver "^7.3.2"
 
-"@ui5/server@^2.2.5", "@ui5/server@^2.2.6", "@ui5/server@^2.2.7":
+"@ui5/server@^2.2.6", "@ui5/server@^2.2.7":
   version "2.2.7"
   resolved "https://registry.yarnpkg.com/@ui5/server/-/server-2.2.7.tgz#8c1ef75c428c9a036562b0a4ef8bef375c1899ca"
   integrity sha512-cnn09YuUEy0bddkDRiZ4Yw5xlNZdSylx/wlRqXq+rI1hNZfkUJRBv2KzK+ZIOYQHkWy9j12XNH6n/SAsyUvMUg==
@@ -7160,13 +7155,13 @@ karma-coverage@^2.0.3:
     minimatch "^3.0.4"
 
 karma-ui5@^2.3.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/karma-ui5/-/karma-ui5-2.3.1.tgz#401b91ac925503df4f986e28b18c2f0e3591a4fc"
-  integrity sha512-3kPPEEKxvSVsU5tyHumGzGEjV3Dt0W71GZcIQmdpbFrqd+cEBXWkwSBJr7p7IhEzw05chfPunDcuK7hJdD7nhw==
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/karma-ui5/-/karma-ui5-2.3.2.tgz#78a2523dc1732b870da885b6462e1b4109ce8d41"
+  integrity sha512-6hBqqDtnFt78lmRD3CxCdiA8/KXvrAlcS/w4CrY15sXU3nHaMlHKOm1hU2lgJPpeaBpCQKbE4tRkKMU2TFtdUg==
   dependencies:
-    "@ui5/fs" "^2.0.3"
-    "@ui5/project" "^2.2.2"
-    "@ui5/server" "^2.2.5"
+    "@ui5/fs" "^2.0.5"
+    "@ui5/project" "^2.2.4"
+    "@ui5/server" "^2.2.7"
     express "^4.17.1"
     http-proxy "^1.18.1"
     js-yaml "^3.14.0"
@@ -11338,16 +11333,6 @@ uglify-js@^3.1.4:
   version "3.11.5"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.11.5.tgz#d6788bc83cf35ff18ea78a65763e480803409bc6"
   integrity sha512-btvv/baMqe7HxP7zJSF7Uc16h1mSfuuSplT0/qdjxseesDU+yYzH33eHBH+eMdeRXwujXspaCTooWHQVVBh09w==
-
-ui5-task-stringreplacer@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/ui5-task-stringreplacer/-/ui5-task-stringreplacer-0.5.1.tgz#ac8bd138a6e9075ef1ce91f6e54fe7066ce2439e"
-  integrity sha512-994KVCAek433OyDhv7ewQiQycb/GmijMClr69WAQZdFFWj++WO9qNCDhJWnRA+AvAsTlaXo9j3nDIVDSVI6mRA==
-  dependencies:
-    "@ui5/logger" "^1.0.2"
-    dotenv "^8.2.0"
-    lodash.escaperegexp "^4.1.2"
-    replacestream "^4.0.3"
 
 uid-number@0.0.6:
   version "0.0.6"
