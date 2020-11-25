@@ -1840,9 +1840,9 @@
     valid-url "1.0.9"
 
 "@sapui5/ts-types@^1.82.0":
-  version "1.82.0"
-  resolved "https://registry.yarnpkg.com/@sapui5/ts-types/-/ts-types-1.82.0.tgz#88f1f9854214081b3e25c39f182ff80cdcafebda"
-  integrity sha512-GSk7jVqY41QWIRtlU1mVdl/ookQ2RXlmTxbHKgDnWs7uDkvSKY6NcK9se+mRCzI1nIEP17aXZUDzNDi2t6cdDA==
+  version "1.84.0"
+  resolved "https://registry.yarnpkg.com/@sapui5/ts-types/-/ts-types-1.84.0.tgz#8cdf2e1fbd698767a6abaa597f33c1b98047142f"
+  integrity sha512-fZEfDT2wS+ZRoS6aDXiVgMMZ910MiG2hzUV9vntrHU/9JbcI+WTo2VaVgdYgawxdpAsPwiZbSWAF1e+kWIJvgw==
 
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
