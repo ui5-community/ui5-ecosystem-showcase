@@ -15,14 +15,15 @@ const log = require("@ui5/logger").getLogger("builder:customtask:transpile");
  * @returns {Promise<undefined>} Promise resolving with undefined once data has been written
  */
 module.exports = function({workspace, dependencies, options}) {
+    const config = options.configuration || {};
     const plugins = []
       .concat(
-        options.configuration && options.configuration.removeConsoleStatements
+        config.removeConsoleStatements
           ? [["transform-remove-console"]]
           : []
       )
       .concat(
-        options.configuration && options.configuration.transpileAsync
+        config.transpileAsync
           ? [
               [
                 "babel-plugin-transform-async-to-promises",
@@ -35,8 +36,8 @@ module.exports = function({workspace, dependencies, options}) {
       );
 
     const babelConfig =
-      options.configuration && options.configuration.babelConfig
-        ? options.configuration.babelConfig
+      config.babelConfig
+        ? config.babelConfig
         : {
             plugins,
             presets: [
@@ -50,13 +51,20 @@ module.exports = function({workspace, dependencies, options}) {
               ],
             ],
           };
-    
-    return workspace.byGlob("/**/*.js").then((resources) => {
+
+    const filePatternConfig = config.filePattern || ".js"
+
+    return workspace.byGlob("/**/*" + filePatternConfig).then((resources) => {
         return Promise.all(resources.map((resource) => {
-            if (!(options.configuration && options.configuration.excludePatterns || []).some(pattern => resource.getPath().includes(pattern))) {
+            const filePath = resource.getPath().replace(new RegExp("\\.[^.]+$"), ".js");
+
+            if (!(config.excludePatterns || []).some(pattern => resource.getPath().includes(pattern))) {
                 return resource.getString().then((value) => {
-                    options.configuration && options.configuration.debug && log.info("Transpiling file " + resource.getPath());
-                    
+                    config.debug && log.info("Transpiling file " + resource.getPath());
+
+                    // add file name
+                    babelConfig.filename = filePath;
+
                     return babel.transformAsync(value, babelConfig);
                 }).then((result) => {
                     // since Babel does not care about linefeeds (https://github.com/babel/babel/issues/8921#issuecomment-492429934)
@@ -64,6 +72,7 @@ module.exports = function({workspace, dependencies, options}) {
                     // otherwise we might get mixed linefeed error when deploying to NW ABAP (https://github.com/petermuessig/ui5-ecosystem-showcase/issues/115)
                     let correctLinefeed = result.code.replace(/\r\n|\r|\n/g, os.EOL);
                     resource.setString(correctLinefeed);
+                    resource.setPath(filePath);
                     workspace.write(resource);
                 });
             } else {
