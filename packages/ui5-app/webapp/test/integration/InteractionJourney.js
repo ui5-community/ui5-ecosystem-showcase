@@ -7,7 +7,7 @@ sap.ui.define(
         "sap/ui/test/actions/Press",
         "sap/ui/test/Opa5",
         "./pages/Main",
-        "./pages/Other",
+        "./pages/Other"
     ],
     function (opaTest, EnterText, Press, Opa5) {
         "use strict";
@@ -24,8 +24,8 @@ sap.ui.define(
                 id: "DateTimePicker",
                 actions: new EnterText({
                     text: "2020-11-11",
-                    pressEnterKey: true,
-                }),
+                    pressEnterKey: true
+                })
             });
 
             // Assertion
@@ -35,7 +35,7 @@ sap.ui.define(
                 success: function (oDateTimePicker) {
                     Opa5.assert.ok(true, oDateTimePicker.getValue().match(/2020/));
                     Opa5.assert.ok(true, oDateTimePicker.getValue().match(/11/));
-                },
+                }
             });
         });
 
@@ -44,7 +44,7 @@ sap.ui.define(
             When.waitFor({
                 viewName: "Main",
                 id: /.*DateTimePicker-icon/,
-                actions: new Press(),
+                actions: new Press()
             });
 
             // this should be a hard FAIL
