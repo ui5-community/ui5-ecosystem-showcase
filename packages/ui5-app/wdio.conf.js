@@ -16,7 +16,7 @@ exports.config = {
     // NPM script (see https://docs.npmjs.com/cli/run-script) then the current working
     // directory is where your package.json resides, so `wdio` will be called from there.
     //
-    specs: ["./webapp/test/e2e-wdi5/**/*.js"],
+    specs: ["./webapp/test/e2e-wdi5/**/*.test.js"],
     // Patterns to exclude.
     exclude: [
         // 'path/to/excluded/files'
@@ -69,7 +69,7 @@ exports.config = {
     // Define all options that are relevant for the WebdriverIO instance here
     //
     // Level of logging verbosity: trace | debug | info | warn | error | silent
-    logLevel: "error",
+    logLevel: process.env.HEADLESS ? "silent" : "info",
     //
     // Set specific log levels per logger
     // loggers:
@@ -141,12 +141,12 @@ exports.config = {
     // See the full list at http://mochajs.org/
     mochaOpts: {
         ui: "bdd",
-        timeout: 60000,
+        timeout: process.env.DEBUG ? (24 * 60 * 60 * 1000) : 60000,
     },
 
     wdi5: {
         screenshotPath: require("path").join("test", "e2e-wdi5", "report", "screenshots"),
-        logLevel: "error", // error | verbose | silent
+        logLevel: process.env.HEADLESS ? "silent" : "error", // error | verbose | silent
         platform: "browser", // browser | android | ios | electron
         url: "index.html", // path to your bootstrap html file
         deviceType: "web", // native | web

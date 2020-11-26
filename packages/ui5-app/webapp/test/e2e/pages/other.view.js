@@ -14,12 +14,12 @@ module.exports = createPageObjects({
                 const list = element(
                     by.control({
                         viewName: "test.Sample.view.Other",
-                        id: "PeopleList",
+                        id: "PeopleList"
                     })
                 );
 
                 expect(list.asControl().getProperty("visible")).toBe(true);
-            },
-        },
-    },
+            }
+        }
+    }
 });
