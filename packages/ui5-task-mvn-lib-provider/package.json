@@ -13,7 +13,8 @@
     "@ui5/logger": "^2.0.0",
     "extract-zip": "^2.0.1",
     "fs-extra": "^9.0.1",
-    "got": "^11.8.0"
+    "got": "^11.8.0",
+    "pom-parser": "^1.2.0"
   },
   "ui5": {
     "dependencies": []

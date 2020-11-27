@@ -2,6 +2,10 @@
 
 Task for [ui5-builder](https://github.com/SAP/ui5-builder), enabling zipping.
 
+## Mandatory Requirements
+- pom.xml: you need a valid pom.xml file in the directory of your choice. see included `pom-exmaple.xml` for an example
+- settings.xml: default: ~/.m2/settings.xml
+
 ## Install
 
 ```bash
@@ -17,6 +21,9 @@ npm install ui5-task-mvn-lib-provider --save-dev
   path to .jar containing the ui5 library
 
 - (optional) mvnPath: `String`
+  path to local maven binary, otherwise relied on to be present in the environment (aka `PATH`)
+
+- (optional) groupId: ``
   path to local maven binary, otherwise relied on to be present in the environment (aka `PATH`)
 
 ## Usage

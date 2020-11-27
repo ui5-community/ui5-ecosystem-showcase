@@ -1,17 +1,10 @@
-const extract = require("extract-zip")
 const fs = require("fs-extra")
-const got = require("got")
 const path = require("path")
-const os = require("os")
 const log = require("@ui5/logger").getLogger("builder:customtask:mvn-lib-provider")
+const util = require("util")
+const exec = util.promisify(require("child_process").exec)
+const os = require("os")
 
-async function download(url, to) {
-    return new Promise((resolve, reject) => {
-        const jarStream = fs.createWriteStream(to)
-        got.stream(url).pipe(jarStream)
-        jarStream.on("finish", resolve)
-    })
-}
 /**
  * downloads a ui5 library packed as a .jar and provides it to the ui5 serve runtime
  *
@@ -26,45 +19,51 @@ async function download(url, to) {
  * @returns {Promise<undefined>} Promise resolving with undefined once data has been written
  */
 module.exports = async function ({ workspace, dependencies, options }) {
-    // debug mode?
+    // set defaults
     const isDebug = options?.configuration?.debug || true
+    const pomPath = options?.configuration?.pom || "./pom.xml"
+    const outputDir = options?.configuration?.targetDir || fs.mkdirpSync("./unpacked-mvn-dependencies")
+    const tmpDir = await fs.mkdtemp(path.resolve(`${os.tmpdir()}/mvn-dependency-provider-download`))
+    const srcDir = path.resolve(tmpDir, options?.configuration?.mvnSrcDir || "")
 
-    // safeguard params
-    if (!options?.configuration?.jar || !options?.configuration?.targetDir) {
-        log.error("no input jar or no output dir configured -> exiting!")
-        return
+    isDebug ? log.info("outputDir", outputDir) : null
+    isDebug ? log.info("tmpDir", tmpDir) : null
+    isDebug ? log.info("srcDir", srcDir) : null
+
+
+    // note: mvn creates the dreaded ./target as a ref, so away with it!
+    await fs.remove(path.resolve("./target"))
+
+    // download and unpack mvn dependecies to a tmp folder
+    try {
+        isDebug ? log.info(`unpacking dependencies ${options?.configuration?.groupId.join(",")}...`) : null
+        const optionalGroupIds = options?.configuration?.groupId
+            ? `-DincludeGroupIds=${options.configuration.groupId.join(",")}`
+            : ""
+        const stdout = await exec(
+            `mvn dependency:unpack-dependencies ${optionalGroupIds} -DoutputDirectory=${tmpDir} -DoverWriteIfNewer=true -f ${pomPath}`
+        )
+        isDebug ? log.info("stdout", stdout) : null
+        isDebug ? log.info(`unpacking dependencies: done!`) : null
+    } catch (err) {
+        log.error(err)
+    }
+   
+    // move unpacked sources (or $config.mvnSrcDir within) to $config.targetDir
+    try {
+        await fs.copy(srcDir, outputDir, { overwrite: true })
+        isDebug ? log.info(`successfully unpacked ${srcDir} to ${outputDir}`) : null
+    } catch (err) {
+        log.error(err)
     }
 
-    // download file via got
-    const _tmpDownloadDir = await fs.mkdtemp("mvn-lib-provider-download")
-    const tmpDownloadDir = path.resolve(os.tmpdir(), _tmpDownloadDir)
-    await fs.mkdir(tmpDownloadDir)
-    const _jar = `${tmpDownloadDir}/jar.jar`
-    await download(options.configuration.jar, _jar)
-
-    isDebug ? log.info(`downloaded jar to ${_jar}`) : null
-
-    // extract jar to tmp location
-    const _tmpDir = await fs.mkdtemp("mvn-lib-provider")
-    const tmpDir = path.resolve(os.tmpdir(), _tmpDir)
-    await extract(_jar, { dir: tmpDir })
-
-    isDebug ? log.info(`extracted jar to ${tmpDir}`) : null
-
-    // either the entire unjar'ed content or subfolders within into target dir
-    let dirsToMove = []
-    if (options.configuration?.subDirs) {
-        dirsToMove = options.configuration?.subDirs.map((dir) => path.resolve(`${tmpDir}`, dir))
-    } else {
-        dirsToMove.push(tmpDir)
+    // cleanup
+    try {
+        await Promise.all([fs.remove(tmpDir), 
+        // note: mvn creates the dreaded ./target as a ref, so away with it!
+        fs.remove(path.resolve("./target"))])
+        isDebug ? log.info(`successfully removed ${tmpDir}`) : null
+    } catch (error) {
+        log.error(error)
     }
-
-    const targetDir = path.resolve(options.configuration.targetDir)
-    isDebug ? log.info(`received these dirs:\n${dirsToMove.join(", ")}\nto move into\n${targetDir}`) : null
-
-    // actual async move
-    for (const dir of dirsToMove) {
-        await fs.move(dir, targetDir, { overwrite: true })
-    }
-    isDebug ? log.info(`done moving ${dirsToMove.length} dirs!`) : null
 }

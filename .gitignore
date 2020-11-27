@@ -65,3 +65,8 @@ dist
 
 # WebStorm/IntelliJ IDE
 .idea
+
+# Output of mvn custom task
+packages/ui5-app/target
+packages/ui5-app/webapp/resources
+packages/ui5-app/unpacked-mvn-dependencies

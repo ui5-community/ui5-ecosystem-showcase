@@ -24,7 +24,8 @@
     "test:opa5-ci": "cd packages/ui5-app && karma start karma-ci.conf.js",
     "test:uiveri5": "cd packages/ui5-app/webapp/test/e2e && uiveri5 --debug conf.js",
     "test:wdi5": "cd packages/ui5-app && wdio",
-    "watch": "cd packages/ui5-app && yarn watch"
+    "watch": "cd packages/ui5-app && yarn watch",
+    "mvn": "cd packages/ui5-app && ui5 build --config ui5-mvn.yaml --exclude-task=* --include-task=ui5-task-mvn-lib-provider"
   },
   "devDependencies": {
     "lerna": "^3.22.1"

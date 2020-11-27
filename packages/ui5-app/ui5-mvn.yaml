@@ -13,8 +13,8 @@ builder:
     afterTask: uglify 
     configuration:
       debug: true
-      jar: "http://localhost:1081/s4.jar"
-      subDirs:
-        - META-INF/resources/sap
+      groupId:
+        - com.sap.fiori
+      mvnSrcDir: META-INF/resources/sap
       targetDir: ./webapp/resources/sap
- 
+  
