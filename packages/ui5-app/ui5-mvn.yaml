@@ -14,7 +14,7 @@ builder:
     configuration:
       debug: true
       groupId:
-        - com.sap.fiori
+        - com.jssoft.groupId
       mvnSrcDir: META-INF/resources/sap
       targetDir: ./webapp/resources/sap
   

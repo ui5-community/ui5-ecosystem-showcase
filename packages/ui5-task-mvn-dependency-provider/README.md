@@ -3,8 +3,13 @@
 Task for [ui5-builder](https://github.com/SAP/ui5-builder), enabling zipping.
 
 ## Mandatory Requirements
-- pom.xml: you need a valid pom.xml file in the directory of your choice. see included `pom-exmaple.xml` for an example
-- settings.xml: default: ~/.m2/settings.xml
+
+-   [maven](https://maven.apache.org) installed
+-   `pom.xml`: you need a valid pom.xml file in the directory of your choice.   
+  see included `pom-exmaple.xml` for an example
+-   `settings.xml` 
+    - within your maven-repository location, you need a `settings.xml` pointing to the `jar`-remote repository location
+    - default: `~/.m2/settings.xml` 
 
 ## Install
 
@@ -14,17 +19,20 @@ npm install ui5-task-mvn-lib-provider --save-dev
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
-- debug: `{boolean}`; default: `true`  
-  Verbose logging
+-   debug: `{boolean}`; default: `true`  
+    Verbose logging
 
-- path: `{String}`  
-  path to .jar containing the ui5 library
+-   (optional) pom: `{String}`  
+    path to your pom.xml file, otherwise it will look at the root directory for the pom file
 
-- (optional) mvnPath: `String`
-  path to local maven binary, otherwise relied on to be present in the environment (aka `PATH`)
+-   (optional) mvnSrcDir: `{String}`
+    if you want to unpack only specific subdirectories of the dependencies, otherwise it will unpack all directories of the dependencies
 
-- (optional) groupId: ``
-  path to local maven binary, otherwise relied on to be present in the environment (aka `PATH`)
+-   (optional) targetDir: `{String}`
+    path where the dependencies should be unpacked, otherwise it will create a directory(`unpacked-mvn-dependencies`) on the root directory
+
+-   (optional) groupId: `{Array}`
+    only unpack dependencies with a specific groupId, otherwise it will unpack all dependencies defined in the pom.xml
 
 ## Usage
 
@@ -33,13 +41,13 @@ npm install ui5-task-mvn-lib-provider --save-dev
 ```json
 "devDependencies": {
     // ...
-    "ui5-task-mvn-lib-provider": "*"
+    "ui5-task-mvn-dependency-provider": "*"
     // ...
 },
 "ui5": {
   "dependencies": [
     // ...
-    "ui5-task-mvn-lib-provider",
+    "ui5-task-mvn-dependency-provider",
     // ...
   ]
 }
@@ -52,13 +60,23 @@ npm install ui5-task-mvn-lib-provider --save-dev
 ```yaml
 builder:
   customTasks:
-  - name: ui5-task-mvn-lib-provider
-    afterTask: uglify
+  - name: ui5-task-mvn-dependency-provider
+    afterTask: uglify 
     configuration:
-      
+      debug: true
+      groupId:
+        - com.jssoft.groupId
+      mvnSrcDir: META-INF/resources/sap
+      targetDir: ./webapp/resources/sap
 ```
 
 ## How it works
+
+this task downloads ui5 sources (think: libraries) masked as maven `.jar` dependencies and unpacks them to a location of your choice. 
+
+It spawns a locally installed `mvn` process and fires off the depencendy plugin à la `mvn depencedy:unpack-dependencies` with optionally scoped `groupId`s.
+
+
 
 
 ## License
