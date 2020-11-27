@@ -53,8 +53,7 @@
       "libs": {
         "sap.m": {},
         "sap.ui.core": {},
-        "sap.ui.layout": {},
-        "sap.s4h.cfnd.featuretoggle": {}
+        "sap.ui.layout": {}
       }
     },
     "contentDensities": {

@@ -7,8 +7,6 @@ sap.ui.define([
     return Controller.extend("test.Sample.controller.Main", {
         // (live) transpiling async functions to ES5 generators not yet doable in ui5-tooling ecosys :)
         /* async */ onInit() {
-            console.info("******************************")
-            console.log(`[ft lib] ${JSON.stringify(sap.s4h.cfnd.featuretoggle)}`)
             // let response;
             // let oLatestUI5 = {
             //     version: "n/a"
