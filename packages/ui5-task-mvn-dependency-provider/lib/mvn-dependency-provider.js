@@ -30,7 +30,6 @@ module.exports = async function ({ workspace, dependencies, options }) {
     isDebug ? log.info("tmpDir", tmpDir) : null
     isDebug ? log.info("srcDir", srcDir) : null
 
-
     // note: mvn creates the dreaded ./target as a ref, so away with it!
     await fs.remove(path.resolve("./target"))
 
@@ -48,7 +47,7 @@ module.exports = async function ({ workspace, dependencies, options }) {
     } catch (err) {
         log.error(err)
     }
-   
+
     // move unpacked sources (or $config.mvnSrcDir within) to $config.targetDir
     try {
         await fs.copy(srcDir, outputDir, { overwrite: true })
@@ -59,9 +58,11 @@ module.exports = async function ({ workspace, dependencies, options }) {
 
     // cleanup
     try {
-        await Promise.all([fs.remove(tmpDir), 
-        // note: mvn creates the dreaded ./target as a ref, so away with it!
-        fs.remove(path.resolve("./target"))])
+        await Promise.all([
+            fs.remove(tmpDir),
+            // note: mvn creates the dreaded ./target as a ref, so away with it!
+            fs.remove(path.resolve("./target"))
+        ])
         isDebug ? log.info(`successfully removed ${tmpDir}`) : null
     } catch (error) {
         log.error(error)
