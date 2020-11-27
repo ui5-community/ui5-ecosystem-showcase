@@ -1,6 +1,6 @@
 const fs = require("fs-extra")
 const path = require("path")
-const log = require("@ui5/logger").getLogger("builder:customtask:mvn-lib-provider")
+const log = require("@ui5/logger").getLogger("builder:customtask:mvn-dependency-provider")
 const util = require("util")
 const exec = util.promisify(require("child_process").exec)
 const os = require("os")

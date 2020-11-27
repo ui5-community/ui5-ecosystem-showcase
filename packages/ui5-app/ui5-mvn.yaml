@@ -9,7 +9,7 @@ framework:
     - name: sap.m
 builder:
   customTasks:
-  - name: ui5-task-mvn-lib-provider
+  - name: ui5-task-mvn-dependency-provider
     afterTask: uglify 
     configuration:
       debug: true
