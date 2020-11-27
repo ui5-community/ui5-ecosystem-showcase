@@ -1,6 +1,6 @@
 sap.ui.define([
     "test/Sample/controller/BaseController",
-    "sap/m/MessageToast",
+    "sap/m/MessageToast"
 ], (Controller, MessageToast) => {
     "use strict";
 
