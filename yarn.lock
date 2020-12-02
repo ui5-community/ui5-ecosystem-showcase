@@ -3459,10 +3459,10 @@ chrome-launcher@^0.13.1:
     mkdirp "^0.5.3"
     rimraf "^3.0.2"
 
-chromedriver@^86.0.0:
-  version "86.0.0"
-  resolved "https://registry.yarnpkg.com/chromedriver/-/chromedriver-86.0.0.tgz#4b9504d5bbbcd4c6bd6d6fd1dd8247ab8cdeca67"
-  integrity sha512-byLJWhAfuYOmzRYPDf4asJgGDbI4gJGHa+i8dnQZGuv+6WW1nW1Fg+8zbBMOfLvGn7sKL41kVdmCEVpQHn9oyg==
+chromedriver@^87.0.1:
+  version "87.0.1"
+  resolved "https://registry.yarnpkg.com/chromedriver/-/chromedriver-87.0.1.tgz#d05d2763d9e238398036eabfc455cd117591faef"
+  integrity sha512-tSvCV0pj47Sv2xTudV5IffLE50y7D4T1TWHzAAvN362rcetqJk0GipMO79kwZ5/muvIePRjQ1zXjOwS/8qzfFA==
   dependencies:
     "@testim/chrome-version" "^1.0.7"
     axios "^0.19.2"
