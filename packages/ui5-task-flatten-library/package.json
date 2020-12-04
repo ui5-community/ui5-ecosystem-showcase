@@ -1,0 +1,17 @@
+{
+    "name": "ui5-task-flatten-library",
+    "version": "0.2.0",
+    "description": "Task for the UI5 tooling to flatten the library folder structure. This is required for deployments to SAP NetWeaver.",
+    "author": "Matthias Osswald",
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
+    },
+    "dependencies": {
+        "@ui5/logger": "^2.0.0"
+    },
+    "ui5": {
+        "dependencies": []
+    }
+}

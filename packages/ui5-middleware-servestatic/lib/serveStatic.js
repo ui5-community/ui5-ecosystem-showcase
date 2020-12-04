@@ -1,8 +1,12 @@
-let serveStatic = require("serve-static");
 const log = require("@ui5/logger").getLogger("server:custommiddleware:servestatic");
+
+const path = require("path");
+const serveStatic = require("serve-static");
+
 require("dotenv").config();
 
 const envOptionRegEx = /^\${env\.(.*)}$/;
+
 /**
  * Parses the configuration option. If a ${env.<PARAM>} pattern is detected,
  * the corresponding .env-file value will be retrieved. Otherwise the
@@ -21,6 +25,7 @@ const parseConfigOption = (optionValue) => {
     return optionValue;
   }
 };
+
 /**
  * Custom UI5 Server middleware example
  *
@@ -41,6 +46,9 @@ module.exports = function ({ resources, options }) {
   if (!rootPath) {
     throw new Error(`No Value for 'rootPath' supplied`);
   }
+  // resolve the rootPath to be absolute (should happen in serveStatic already, but used for logging)
+  rootPath = path.resolve(rootPath);
+  // some logging to see the root path in case of issues
   options.configuration.debug ? log.info(`Starting static serve from ${rootPath}`) : null;
   return serveStatic(rootPath);
 };

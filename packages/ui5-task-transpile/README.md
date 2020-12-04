@@ -10,15 +10,23 @@ npm install ui5-task-transpile --save-dev
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
-- debug: `true|false`
-verbose logging
+- debug: `true|false`  
+  verbose logging
 
-- removeConsoleStatements: `true|false`
-remove console statements while transpiling using [Babel plugin](https://babeljs.io/docs/en/babel-plugin-transform-remove-console)
+- removeConsoleStatements: `true|false`  
+  remove console statements while transpiling using [Babel plugin](https://babeljs.io/docs/en/babel-plugin-transform-remove-console)
 
-- excludePatterns: `String<Array>`
-array of paths inside `$yourapp/webapp/` to exclude from live transpilation,
-e.g. 3-rd party libs in `lib/*`
+- excludePatterns: `String<Array>`  
+  array of paths inside `$yourapp/webapp/` to exclude from live transpilation,  
+  e.g. 3-rd party libs in `lib/*`
+
+- transpileAsync: `true|false`  
+  transpiling `async/await` using [this Babel plugin](https://www.npmjs.com/package/babel-plugin-transform-async-to-promises), which doesn't require  
+  the regenerator runtime ([Issue #242](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/242))
+
+- babelConfig: `Object`
+  object to use as configuration for babel instead of the  
+  default configuration defined in this middleware
 
 ## Usage
 
@@ -51,6 +59,7 @@ builder:
     configuration:
       debug: true
       removeConsoleStatements: true
+      transpileAsync: true
       excludePatterns:
       - "lib/"
       - "another/dir/in/webapp"
@@ -60,6 +69,72 @@ builder:
 ## How it works
 
 The task can be used to transpile ES6+ JavaScript code to ES5 by using `babel`.
+
+## Extending the default configuration (in `$yourapp/babel.config.json`)
+
+If you want to further customize the transpiling options you can do so by creating a babel config file `babel.config.json` in your project directory. Babel will automatically pick up the configuration and apply it. The default configuration from this task will still be applied.
+
+### Example
+
+An example configuration is as follows:
+
+```json
+{
+  "plugins": [
+    ["@babel/plugin-transform-for-of", { "assumeArray": true }],
+    ["@babel/plugin-transform-computed-properties", { "loose": true }],
+    ["@babel/plugin-transform-destructuring", { "loose": true }]
+  ]
+}
+```
+
+### Additional dependencies
+
+If you need dependencies not included in this task you have to install them in your project in order to be able to use them.
+
+## Override babel configuration (in `$yourapp/ui5.yaml`)
+
+You can override the default babel configuration from this package by including an object `babelConfig` in this task's configuration. If such an object is given the default configuration from this task will not be considered, but only the configuration given in `ui5.yaml` will be used.
+
+### Example
+
+```yaml
+builder:
+  customTasks:
+    - name: ui5-task-transpile
+      afterTask: replaceVersion
+      configuration:
+        excludePatterns:
+          - "lib/"
+        babelConfig: &babelConfig
+          plugins:
+            - - "@babel/plugin-transform-computed-properties"
+              - loose: true
+            - - "@babel/plugin-transform-for-of"
+              - assumeArray: true
+          presets:
+            - - "@babel/preset-env"
+              - targets:
+                  browsers: "last 2 versions, ie 10-11"
+```
+
+> Hint: if you also use use `ui5-middleware-livetranspile` you probably do not want to duplicate the babel configuration in your `ui5.yaml`. Use YAML anchors in order to reference the babel configuration across the `ui5.yaml` file.
+> In the example above the anchor `&babelConfig` defines the babel configuration of `ui5-task-transpile` and may be re-used in other parts of `ui5.yaml` by using the alias `*babelConfig`:
+>
+> ```yaml
+> server:
+>   customMiddleware:
+>   - name: ui5-middleware-livetranspile
+>     afterMiddleware: compression
+>     configuration:
+>       babelConfig:
+>         <<: *babelConfig
+>         sourceMaps: "inline"
+> ```
+
+### Additional dependencies
+
+If you need dependencies not included in this task you have to install them in your project in order to be able to use them.
 
 ## License
 

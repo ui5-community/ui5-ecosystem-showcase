@@ -1,23 +1,17 @@
 {
     "name": "ui5-middleware-iasync",
-    "version": "0.0.2-alpha.1",
-    "description": "ui5 tooling middlware to sync browser interactions",
+    "version": "0.1.0-alpha.2",
+    "description": "UI5 Tooling middleware to sync browser interactions",
     "author": "Volker Buzek, Peter Muessig",
     "license": "Apache-2.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
     },
-    "scripts": {
-        "ncu-upgrade": "ncu -u"
-    },
     "dependencies": {
-        "@ui5/logger": "^1.0.2",
+        "@ui5/logger": "^2.0.0",
         "browser-sync": "^2.26.7",
         "connect-injector": "^0.4.4"
-    },
-    "devDependencies": {
-        "npm-check-updates": "^4.1.1"
     },
     "ui5": {
         "dependencies": []

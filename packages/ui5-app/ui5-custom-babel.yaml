@@ -1,0 +1,105 @@
+specVersion: "2.0"
+metadata:
+  name: ui5-app
+type: application
+framework:
+  name: OpenUI5
+  version: "1.77.1"
+  libraries:
+    - name: sap.m
+    - name: sap.ui.core
+    - name: sap.ui.layout
+    - name: themelib_sap_fiori_3
+builder:
+  customTasks:
+  - name: ui5-task-transpile
+    afterTask: replaceVersion
+    configuration:
+      debug: true
+      excludePatterns:
+        - "lib/"
+      babelConfig: &babelConfig
+        plugins:
+          -
+            - "@babel/plugin-transform-computed-properties"
+            - loose: true
+          -
+            - "@babel/plugin-transform-for-of"
+            - assumeArray: true
+          -
+            - "babel-plugin-transform-async-to-promises"
+            - inlineHelpers: true
+        presets:
+          - 
+            - "@babel/preset-env"
+            - targets:
+                browsers: "last 2 versions, ie 10-11"
+  - name: ui5-task-stringreplacer
+    afterTask: replaceVersion
+    configuration:
+      files: ["**/*.js", "**/*.xml"]
+  - name: ui5-task-i18ncheck
+    afterTask: replaceVersion
+  - name: ui5-task-zipper
+    afterTask: uglify 
+    configuration:
+      archiveName: "webapp"
+      additionalFiles:
+      - "xs-app.json"
+# https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
+server:
+  customMiddleware:
+  - name: ui5-middleware-livereload
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      extraExts: "xml,json,properties"
+      path: "webapp"
+  - name: ui5-middleware-simpleproxy
+    mountPath: /proxy
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      baseUri: "https://latest-openui5.rikosjett.com"
+      httpHeaders:
+        Any-Header: AnyHeader
+    # PoC: reuse the same middleware at a different "mountPath"
+  - name: ui5-middleware-simpleproxy
+    mountPath: /proxy2
+    afterMiddleware: compression
+    configuration:
+      baseUri: "https://latest-openui5.rikosjett.com"
+  - name: ui5-middleware-livetranspile
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      excludePatterns:
+      - "lib/"
+      babelConfig:
+        <<: *babelConfig
+        sourceMaps: "inline"
+  - name: ui5-middleware-cfdestination
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      port: 1091
+      xsappJson: "xs-app.json"
+      destinations:
+      # check that the destination name (here: "backend") matches your router in xssppJson
+      - name: "backend"
+        url: "https://services.odata.org/V4/(S(fdng4tbvlxgzpdtpfap2rqss))/TripPinServiceRW/"
+      - name: "odatav2"
+        url: "https://services.odata.org/V2/Northwind/Northwind.svc/"
+      - name: "todos"
+        url: "https://jsonplaceholder.typicode.com/todos/"
+  - name: ui5-middleware-iasync
+    beforeMiddleware: serveResources
+    configuration:
+      https: false
+      debug: false
+      logConnections: true
+      port: 4711
+  - name: ui5-middleware-index
+    afterMiddleware: compression
+    configuration:
+      debug: true

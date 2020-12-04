@@ -12,9 +12,9 @@ npm install ui5-middleware-livereload --save-dev
 
 - debug: true|false  
   verbose logging
-- ext: `string`, default: "xml,json,properties"  
+- extraExts: `string`, default: "xml,json,properties"  
   file extensions other than `js`, `html` and `css` to monitor for changes
-- port: `integer`, default: 35729  
+- port: `integer`, default: an open port choosen from _35729_  
   port the live reload server is started on
 - watchPath|path: `string`, default: `webapp`  
   path inside `$yourapp` the reload server monitors for changes
@@ -49,7 +49,7 @@ server:
     afterMiddleware: compression
     configuration:
       debug: true
-      ext: "xml,json,properties"
+      extraExts: "xml,json,properties"
       port: 35729
       watchPath: "webapp"
 ```
@@ -63,9 +63,25 @@ server:
     afterMiddleware: compression
     configuration:
       debug: true
-      ext: "xml,json,properties"
+      extraExts: "xml,json,properties"
       port: 35729
       path: "webapp"
+```
+
+Reload from multiple paths:
+
+```yaml
+server:
+  customMiddleware:
+  - name: ui5-middleware-livereload
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      extraExts: "xml,json,properties"
+      port: 35729
+      path: 
+            - "webapp"
+            - "../my.reuse.library/src/my/reuse/library"
 ```
 
 ## How it works
