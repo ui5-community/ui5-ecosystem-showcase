@@ -35,7 +35,8 @@ builder:
   - name: ui5-task-zipper
     afterTask: uglify 
     configuration:
-      archiveName: "webapp"
+      archiveName: webapp
+      keepResources: true
       additionalFiles:
       - "xs-app.json"
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
