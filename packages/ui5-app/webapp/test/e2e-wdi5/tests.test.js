@@ -59,7 +59,11 @@ describe("interaction", () => {
         browser.goTo({ sHash: "index.html#/" })
 
         const oDateTimePicker = browser.asControl(dateTimePicker)
+        oDateTimePicker.focus()
         oDateTimePicker.setValue("2020-11-11")
+        // tmp change focus to different control in order to 
+        // trigger ui5 framework events (e.g. date formatting)
+        browser.asControl(navFwdButton).focus() 
         expect(oDateTimePicker.getValue()).toMatch(/2020/)
         expect(oDateTimePicker.getValue()).toMatch(/11/)
     })
