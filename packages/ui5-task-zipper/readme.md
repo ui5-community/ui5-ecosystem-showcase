@@ -20,6 +20,9 @@ Default value: `<app-id.zip>`
 - additionalFiles: `String<Array>`  
 List of files to be included in the ZIP archive relative to the project root.
 
+- keepResources: `true|false` 
+Set this to true if you also want to generate the resources files. Othewise, it will only create the zipped archive. 
+
 ## Usage
 
 1. Define the dependency in `$yourapp/package.json`:
