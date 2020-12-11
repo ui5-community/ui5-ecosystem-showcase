@@ -1981,6 +1981,11 @@
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.0.tgz#69a23a3ad29caf0097f06eda59b361ee2f0639f6"
   integrity sha1-aaI6OtKcrwCX8G7aWbNh7i8GOfY=
 
+"@types/mocha@^8.0.0":
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-8.2.0.tgz#3eb56d13a1de1d347ecb1957c6860c911704bc44"
+  integrity sha512-/Sge3BymXo4lKc31C8OINJgXLaw+7vL1/L1pGiBNpGrBiT8FQiaFpSYV0uhTaG4y78vcMBTMFsWaHDvuD+xGzQ==
+
 "@types/node@*", "@types/node@>= 8":
   version "14.14.6"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.6.tgz#146d3da57b3c636cc0d1769396ce1cfa8991147f"
@@ -2287,6 +2292,16 @@
     async-exit-hook "^2.0.1"
     stream-buffers "^3.0.2"
 
+"@wdio/logger@6.10.4":
+  version "6.10.4"
+  resolved "https://registry.yarnpkg.com/@wdio/logger/-/logger-6.10.4.tgz#f821c01996d15faa6b5a399be2aea02a2661b61f"
+  integrity sha512-I+1I/5CtQigy59QJen56PHuwV0yiQdnZaOxmXIP6FzpWkeXLjcoUNaCRDuKwJx5GKrUSDqmGlMWSH53scwwzHg==
+  dependencies:
+    chalk "^4.0.0"
+    loglevel "^1.6.0"
+    loglevel-plugin-prefix "^0.8.4"
+    strip-ansi "^6.0.0"
+
 "@wdio/logger@6.8.0":
   version "6.8.0"
   resolved "https://registry.yarnpkg.com/@wdio/logger/-/logger-6.8.0.tgz#9b41f0538d1f178fd8f115e385fe457992cf8e8c"
@@ -2298,12 +2313,13 @@
     strip-ansi "^6.0.0"
 
 "@wdio/mocha-framework@^6.8.0":
-  version "6.8.0"
-  resolved "https://registry.yarnpkg.com/@wdio/mocha-framework/-/mocha-framework-6.8.0.tgz#9e5760d2ea720c81529ccef3926ae1100fc3e269"
-  integrity sha512-CFCC+REknCOiHwcmN/0buI2nnIAxLtltEU3ZVqesgCq7SyFzF0VrgY1HTlxnkQvQq9v9tCY4E9mt3l1iVaIy5Q==
+  version "6.10.6"
+  resolved "https://registry.yarnpkg.com/@wdio/mocha-framework/-/mocha-framework-6.10.6.tgz#016a3b35309c39d5675f963d028bb30c0143b83c"
+  integrity sha512-YO39K25zjNq/xTQ23Hiv+Qsr1ZZNtBzMIxmYO9xZjYpFQOdbnSWUwH2v3/Ybn6QxguRUR4+M6AytrMyqb8hN4A==
   dependencies:
-    "@wdio/logger" "6.8.0"
-    "@wdio/utils" "6.8.0"
+    "@types/mocha" "^8.0.0"
+    "@wdio/logger" "6.10.4"
+    "@wdio/utils" "6.10.6"
     expect-webdriverio "^1.1.5"
     mocha "^8.0.1"
 
@@ -2359,6 +2375,13 @@
     "@types/puppeteer" "^5.4.0"
     "@wdio/logger" "6.8.0"
     fibers "^4.0.1"
+
+"@wdio/utils@6.10.6":
+  version "6.10.6"
+  resolved "https://registry.yarnpkg.com/@wdio/utils/-/utils-6.10.6.tgz#f5b171757e2d22bc99b09f5ee6523e63afe5f6b0"
+  integrity sha512-hoVVShCGtJ8x/O2vatVrabgTNtBBuoZeVW/tPDKTZhY50eDFOxsSr/HSJKcAj0cPtRmeGIye3BTriRVPoS/R0A==
+  dependencies:
+    "@wdio/logger" "6.10.4"
 
 "@wdio/utils@6.8.0":
   version "6.8.0"
