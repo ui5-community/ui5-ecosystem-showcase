@@ -2287,6 +2287,16 @@
     async-exit-hook "^2.0.1"
     stream-buffers "^3.0.2"
 
+"@wdio/logger@6.10.10":
+  version "6.10.10"
+  resolved "https://registry.yarnpkg.com/@wdio/logger/-/logger-6.10.10.tgz#1e07cf32a69606ddb94fa9fd4b0171cb839a5980"
+  integrity sha512-2nh0hJz9HeZE0VIEMI+oPgjr/Q37ohrR9iqsl7f7GW5ik+PnKYCT9Eab5mR1GNMG60askwbskgGC1S9ygtvrSw==
+  dependencies:
+    chalk "^4.0.0"
+    loglevel "^1.6.0"
+    loglevel-plugin-prefix "^0.8.4"
+    strip-ansi "^6.0.0"
+
 "@wdio/logger@6.8.0":
   version "6.8.0"
   resolved "https://registry.yarnpkg.com/@wdio/logger/-/logger-6.8.0.tgz#9b41f0538d1f178fd8f115e385fe457992cf8e8c"
@@ -2352,12 +2362,12 @@
     pretty-ms "^7.0.0"
 
 "@wdio/sync@^6.8.0":
-  version "6.8.0"
-  resolved "https://registry.yarnpkg.com/@wdio/sync/-/sync-6.8.0.tgz#7b194a2afb57bb4a6600046529854d502743e884"
-  integrity sha512-PiMZsqmgJI4GzkZB9j4WrYCx0S5IUatCgDZ7LlRQYLlfOKSB1tPzQ7b9fveehlAIGCdbNxOIi40boWMdV28FFA==
+  version "6.10.10"
+  resolved "https://registry.yarnpkg.com/@wdio/sync/-/sync-6.10.10.tgz#15cf31389fa4efc159dbf2b57df681e91d0dd7d1"
+  integrity sha512-Ax/6Mh2EBSZ9b47Eu7e8bD0gFlmKoSkVXpohC7mkDmdAPUQrzqL0UmXeGGGAPs9H2UFCO5jzZVQEHtfdsZeiGw==
   dependencies:
     "@types/puppeteer" "^5.4.0"
-    "@wdio/logger" "6.8.0"
+    "@wdio/logger" "6.10.10"
     fibers "^4.0.1"
 
 "@wdio/utils@6.8.0":
