@@ -1840,9 +1840,9 @@
     valid-url "1.0.9"
 
 "@sapui5/ts-types@^1.82.0":
-  version "1.85.0"
-  resolved "https://registry.yarnpkg.com/@sapui5/ts-types/-/ts-types-1.85.0.tgz#be86d1fa21864476c5858d81254f1faefeb42cda"
-  integrity sha512-zpyShvkliVtVkLTTEJUZST6Hq2n09/rMoKLefX7IPcKdThvQTw+zfdF8T1NmcHS+fSunVamKOTy5FZMVZvlcGg==
+  version "1.85.1"
+  resolved "https://registry.yarnpkg.com/@sapui5/ts-types/-/ts-types-1.85.1.tgz#b1e8fa42dce826fdf75fff34ed643f2017b3ed10"
+  integrity sha512-JSOuIDnFZwvs6lDeT5ztDji86s+SJ6BV5kBzlpY3UFWqhi+vNf14Ba/Hc9mjAr80k3ETeDN8cd1nmlhkIoGVQQ==
 
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
@@ -2372,16 +2372,6 @@
     loglevel-plugin-prefix "^0.8.4"
     strip-ansi "^6.0.0"
 
-"@wdio/logger@6.8.0":
-  version "6.8.0"
-  resolved "https://registry.yarnpkg.com/@wdio/logger/-/logger-6.8.0.tgz#9b41f0538d1f178fd8f115e385fe457992cf8e8c"
-  integrity sha512-IvRnp2gTU1z6L+snMrKLrRDqYFq9yzcqXp7i6+Q/bxewxkgcpitm4hSs+13KS4fmbeBmhT5UeUeumnTZBYkhBQ==
-  dependencies:
-    chalk "^4.0.0"
-    loglevel "^1.6.0"
-    loglevel-plugin-prefix "^0.8.4"
-    strip-ansi "^6.0.0"
-
 "@wdio/mocha-framework@^6.8.0":
   version "6.10.10"
   resolved "https://registry.yarnpkg.com/@wdio/mocha-framework/-/mocha-framework-6.10.10.tgz#55f356dbdd3046c472c6853a655e6b09daed11e4"
@@ -2452,13 +2442,6 @@
   integrity sha512-NBClvoJOYBF/d6g6Y4364sNTQYv4+CeAt29uYkyTQk+ux+ouH7AQ4bxzpbXz5q6V8SRIeiwdqUMr7PrRPP/Z1w==
   dependencies:
     "@wdio/logger" "6.10.10"
-
-"@wdio/utils@6.8.0":
-  version "6.8.0"
-  resolved "https://registry.yarnpkg.com/@wdio/utils/-/utils-6.8.0.tgz#1df85ee28bb7a42d62f96ed291ca8b721ca9f30d"
-  integrity sha512-2vGwkaqP2e876o3NDTWz021aLTBrbZfCLHETuS+e/J0IXMR3FQ8et01BY/bjwyz6EP1I3vVtP2ZVC1dV2yIIVQ==
-  dependencies:
-    "@wdio/logger" "6.8.0"
 
 "@zkochan/cmd-shim@^3.1.0":
   version "3.1.0"
