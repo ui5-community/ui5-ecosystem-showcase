@@ -41,7 +41,7 @@
     "@wdio/spec-reporter": "^6.8.1",
     "@wdio/sync": "^6.8.0",
     "babel-plugin-transform-async-to-promises": "^0.8.15",
-    "chromedriver": "^86.0.0",
+    "chromedriver": "^87.0.4",
     "karma": "^5.2.3",
     "karma-chrome-launcher": "^3.1.0",
     "karma-coverage": "^2.0.3",
