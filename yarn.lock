@@ -2411,12 +2411,12 @@
     pretty-ms "^7.0.0"
 
 "@wdio/sync@^6.8.0":
-  version "6.8.0"
-  resolved "https://registry.yarnpkg.com/@wdio/sync/-/sync-6.8.0.tgz#7b194a2afb57bb4a6600046529854d502743e884"
-  integrity sha512-PiMZsqmgJI4GzkZB9j4WrYCx0S5IUatCgDZ7LlRQYLlfOKSB1tPzQ7b9fveehlAIGCdbNxOIi40boWMdV28FFA==
+  version "6.10.10"
+  resolved "https://registry.yarnpkg.com/@wdio/sync/-/sync-6.10.10.tgz#15cf31389fa4efc159dbf2b57df681e91d0dd7d1"
+  integrity sha512-Ax/6Mh2EBSZ9b47Eu7e8bD0gFlmKoSkVXpohC7mkDmdAPUQrzqL0UmXeGGGAPs9H2UFCO5jzZVQEHtfdsZeiGw==
   dependencies:
     "@types/puppeteer" "^5.4.0"
-    "@wdio/logger" "6.8.0"
+    "@wdio/logger" "6.10.10"
     fibers "^4.0.1"
 
 "@wdio/utils@6.10.10":
