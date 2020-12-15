@@ -31,7 +31,7 @@ module.exports = function ({ resources, options }) {
     xsappConfig.authenticationMethod = "none";
 
     let regExes = [];
-    xsappConfig.routes = xsappConfig.routes.filter((route) => !route.localDir); //ignore local routes as they are already hosted by the ui5 tooling
+    xsappConfig.routes = xsappConfig.routes.filter((route) => !route.localDir && !route.service); //ignore routes that point to web apps as they are already hosted by the ui5 tooling
 
     xsappConfig.routes.forEach(route => {
         route.authenticationType = "none";
