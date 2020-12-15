@@ -18,6 +18,7 @@ npm install ui5-middleware-livereload --save-dev
   port the live reload server is started on
 - watchPath|path: `string`, default: `webapp`  
   path inside `$yourapp` the reload server monitors for changes
+- exclusions: one or many `regex`. By default, this includes `.git/`, `.svn/`, and `.hg/`
 
 ## Usage
 
@@ -82,6 +83,39 @@ server:
       path: 
             - "webapp"
             - "../my.reuse.library/src/my/reuse/library"
+```
+
+Exclude single subpath from `path`s/ `watchPath`s:
+
+```yaml
+server:
+  customMiddleware:
+  - name: ui5-middleware-livereload
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      extraExts: "xml,json,properties"
+      port: 35729
+      watchPath: "webapp"
+      exclusions:
+            - wdi5\/
+```
+
+Exclude multiple subpaths from  `path`s/ `watchPath`s:
+
+```yaml
+server:
+  customMiddleware:
+  - name: ui5-middleware-livereload
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      extraExts: "xml,json,properties"
+      port: 35729
+      watchPath: "webapp"
+      exclusions:
+          - wdi5\/
+          - inegration\/
 ```
 
 ## How it works

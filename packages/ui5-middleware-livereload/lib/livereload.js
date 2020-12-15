@@ -45,6 +45,17 @@ module.exports = async ({ resources, options }) => {
     if (options.configuration && (options.configuration.watchPath || options.configuration.path)) {
         watchPath = options.configuration.watchPath || options.configuration.path;
     }
+    let exclusions = [];
+    const aOptExclusions = options.configuration.exclusions;
+    if (options.configuration && aOptExclusions && Array.isArray(aOptExclusions)) {
+        // multilpe exclusions
+        aOptExclusions.forEach((exclusion) => {
+            exclusions.push(new RegExp(exclusion));
+        })
+    } else if (options.configuration && aOptExclusions) {
+        // single exclusion
+        exclusions.push(new RegExp(aOptExclusions));
+    }
     let extraExts = "xml,json,properties";
     if (options.configuration && options.configuration.extraExts) {
         extraExts = options.configuration.extraExts;
@@ -57,7 +68,8 @@ module.exports = async ({ resources, options }) => {
         {
             debug: debug,
             extraExts: extraExts ? extraExts.split(",") : undefined,
-            port: port
+            port: port,
+            exclusions: exclusions
         },
         () => {
             log.info("Livereload server started!");
