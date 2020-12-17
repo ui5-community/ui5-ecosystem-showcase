@@ -98,7 +98,7 @@ server:
       port: 35729
       watchPath: "webapp"
       exclusions:
-            - wdi5\/
+            - "wdi5/"
 ```
 
 Exclude multiple subpaths from  `path`s/ `watchPath`s:
@@ -114,8 +114,8 @@ server:
       port: 35729
       watchPath: "webapp"
       exclusions:
-          - wdi5\/
-          - inegration\/
+          - "wdi5/"
+          - "integration/"
 ```
 
 ## How it works
