@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livetranspile@0.2.4...ui5-middleware-livetranspile@0.3.0) (2020-12-17)
+
+
+### Features
+
+* allow for file patterns as JS input source ([#364](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/364)) ([fe41414](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/fe41414a2375d0954d48c870c6b65686b6b32029))
+
+
+
+
+
 ## [0.2.4](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livetranspile@0.2.3...ui5-middleware-livetranspile@0.2.4) (2020-09-20)
 
 **Note:** Version bump only for package ui5-middleware-livetranspile

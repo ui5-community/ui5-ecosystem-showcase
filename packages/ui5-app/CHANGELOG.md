@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.9.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.8.3...ui5-app@0.9.0) (2020-12-17)
+
+
+### Features
+
+* add "keepResources" config flag + fix bug with missing dependencies ([#385](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/385)) ([aaaab50](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/aaaab508a5a64068b91207178b08a24dfe8f65a3))
+* testing galore ([#338](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/338)) ([d4eddf7](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/d4eddf7fc1b64f832da5059d3d414f8ae454f1c7))
+
+
+
+
+
 ## [0.8.3](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.8.2...ui5-app@0.8.3) (2020-11-12)
 
 **Note:** Version bump only for package ui5-app

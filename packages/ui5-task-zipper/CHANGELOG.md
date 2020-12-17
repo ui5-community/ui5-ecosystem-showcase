@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.3.2...ui5-task-zipper@0.4.0) (2020-12-17)
+
+
+### Features
+
+* add "keepResources" config flag + fix bug with missing dependencies ([#385](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/385)) ([aaaab50](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/aaaab508a5a64068b91207178b08a24dfe8f65a3))
+
+
+
+
+
 ## [0.3.2](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.3.1...ui5-task-zipper@0.3.2) (2020-09-20)
 
 **Note:** Version bump only for package ui5-task-zipper
