@@ -1839,9 +1839,9 @@
     valid-url "1.0.9"
 
 "@sapui5/ts-types@^1.82.0":
-  version "1.85.1"
-  resolved "https://registry.yarnpkg.com/@sapui5/ts-types/-/ts-types-1.85.1.tgz#b1e8fa42dce826fdf75fff34ed643f2017b3ed10"
-  integrity sha512-JSOuIDnFZwvs6lDeT5ztDji86s+SJ6BV5kBzlpY3UFWqhi+vNf14Ba/Hc9mjAr80k3ETeDN8cd1nmlhkIoGVQQ==
+  version "1.85.2"
+  resolved "https://registry.yarnpkg.com/@sapui5/ts-types/-/ts-types-1.85.2.tgz#8c00f535ad194a4ba165ee631d3cb9f2ef112f8b"
+  integrity sha512-6HGiF+E3VZ9J9OnXoCN6MfjnXH8CJoRi8OX51gqal4HQWVSyEV9lT0GuAuYQzHjbVuu+jKyRG5r7pz8ZgybvQg==
 
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
