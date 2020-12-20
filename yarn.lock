@@ -1741,13 +1741,13 @@
     "@types/node" ">= 8"
 
 "@sap/approuter@^9.0.0":
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/@sap/approuter/-/approuter-9.0.0.tgz#eda188916f0dc5f9d47b30c7328eba289c2fe0be"
-  integrity sha512-3n0HYMhu+2DuLsodtOF6PIryfrLluoZuEKrJE/7hq10j9gwnLrwn2mMfFz7RfOBExzxz4FULKw3HD4SYSEmEMA==
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/@sap/approuter/-/approuter-9.0.1.tgz#836c2a8047bd86fd187b5dbc3df785e9e91f6d8f"
+  integrity sha512-F4lcnkABYJF14zvx+NPDkP19PyMR/UV6HBPvynoerglpgY3m9CcPQ+YMKn7Ns0ljfF38bfzPBZkAL48UFSnROg==
   dependencies:
     "@sap/audit-logging" "3.1.1"
     "@sap/e2e-trace" "2.1.0"
-    "@sap/logging" "5.3.1"
+    "@sap/logging" "6.0.2"
     "@sap/xsenv" "2.2.0"
     "@sap/xssec" "3.0.10"
     agentkeepalive "2.0.5"
@@ -1790,6 +1790,7 @@
     uid-safe "2.1.5"
     urijs "1.16.1"
     uuid "3.2.1"
+    validator "13.5.2"
     verror "1.10.0"
     ws "7.3.1"
 
@@ -1802,21 +1803,28 @@
     request "2.88.2"
     requestretry "4.0.2"
 
-"@sap/e2e-trace@2.1.0", "@sap/e2e-trace@^2.0.0":
+"@sap/e2e-trace@2.1.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@sap/e2e-trace/-/e2e-trace-2.1.0.tgz#c722c96c8f8e5f5e801969b544a907145c088e57"
   integrity sha512-kP4RTFx4ACw1WWYTbePH+lKHiZD7gfOoOTzDAgAHujYOwPmKed63W+gLn79C9dGY7VTb3TeLMoNB8J3Xrhyyfg==
   dependencies:
     request-stats "3.0.0"
 
-"@sap/logging@5.3.1":
-  version "5.3.1"
-  resolved "https://registry.yarnpkg.com/@sap/logging/-/logging-5.3.1.tgz#71d67abb8b1657dcbeeeef6495ed4be0ec5943ba"
-  integrity sha512-O7ZOu9FwjUaFyskU1SK52zog6y5G7Aa6sJ7OeuC2cP99ycW/ZtwFd4zDTV3JZ3/i/GFIO7QuwcN+XiWvlrwkrw==
+"@sap/e2e-trace@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@sap/e2e-trace/-/e2e-trace-3.0.0.tgz#8ae2ad6cceb545db14d15dcf45e6020dd74a0ea1"
+  integrity sha512-0dwG0Ifai/CJjEAGuY4B9gnjjhNez5zX+FCmuhYkgLxNxeMX+rI4p36ferup+WUum8vnvyRwNz4UJ9LDnUPQgw==
   dependencies:
-    "@sap/e2e-trace" "^2.0.0"
-    lodash "4.17.19"
-    moment "2.19.3"
+    request-stats "3.0.0"
+
+"@sap/logging@6.0.2":
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/@sap/logging/-/logging-6.0.2.tgz#899a5e4e0b71b53afd419ba4eed4448aeccd1f0d"
+  integrity sha512-5fp6hMQIja78+H7McAwF6DFaW2pgclqoEiFS0rK2o3jBsORub3HcZR+XWUskta7uYktyt5n+nxmZHM1vOKmiJg==
+  dependencies:
+    "@sap/e2e-trace" "^3.0.0"
+    lodash "4.17.20"
+    moment "2.29.0"
 
 "@sap/xsenv@2.2.0":
   version "2.2.0"
@@ -7728,11 +7736,6 @@ lodash.zip@^4.2.0:
   resolved "https://registry.yarnpkg.com/lodash.zip/-/lodash.zip-4.2.0.tgz#ec6662e4896408ed4ab6c542a3990b72cc080020"
   integrity sha1-7GZi5IlkCO1KtsVCo5kLcswIACA=
 
-lodash@4.17.19:
-  version "4.17.19"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.19.tgz#e48ddedbe30b3321783c5b4301fbd353bc1e4a4b"
-  integrity sha512-JNvd8XER9GQX0v2qJgsaN/mzFCNA5BRe/j8JN9d+tWyGLSodKQHKFicdwNYzWwI3wjRnaKPsGj1XkBjx/F96DQ==
-
 lodash@4.17.20, lodash@4.x, lodash@^4.17.10, lodash@^4.17.12, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.2, lodash@^4.2.1, lodash@^4.8.0, lodash@~4.17.10:
   version "4.17.20"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
@@ -8230,6 +8233,11 @@ moment@2.19.3:
   version "2.19.3"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.19.3.tgz#bdb99d270d6d7fda78cc0fbace855e27fe7da69f"
   integrity sha1-vbmdJw1tf9p4zA+6zoVeJ/59pp8=
+
+moment@2.29.0:
+  version "2.29.0"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.0.tgz#fcbef955844d91deb55438613ddcec56e86a3425"
+  integrity sha512-z6IJ5HXYiuxvFTI6eiQ9dm77uE0gyy1yXNApVHqTcnIKfY9tIwEjlzsZ6u1LQXvVgKeTnv9Xm7NDvJ7lso3MtA==
 
 move-concurrently@^1.0.1:
   version "1.0.1"
@@ -11715,6 +11723,11 @@ validate-npm-package-name@^3.0.0:
   integrity sha1-X6kS2B630MdK/BQN5zF/DKffQ34=
   dependencies:
     builtins "^1.0.3"
+
+validator@13.5.2:
+  version "13.5.2"
+  resolved "https://registry.yarnpkg.com/validator/-/validator-13.5.2.tgz#c97ae63ed4224999fb6f42c91eaca9567fe69a46"
+  integrity sha512-mD45p0rvHVBlY2Zuy3F3ESIe1h5X58GPfAtslBjY7EtTqGquZTj+VX/J4RnHWN8FKq0C9WRVt1oWAcytWRuYLQ==
 
 vary@^1, vary@~1.1.2:
   version "1.1.2"
