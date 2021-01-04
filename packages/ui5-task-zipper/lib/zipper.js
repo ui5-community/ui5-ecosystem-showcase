@@ -49,9 +49,8 @@ module.exports = async function ({ workspace, dependencies, options, taskUtil })
         taskUtil.setTag(resource, OmitFromBuildResult, true);
       }
       return resource.getBuffer().then((buffer) => {
-        debugger;
         isDebug && log.info(`Adding ${resource.getPath()} to archive.`);
-        zip.addBuffer(buffer, resource.getPath().replace(prefixPath, '').replace("/resources", 'resources'));
+        zip.addBuffer(buffer, resource.getPath().replace(prefixPath, '').replace("/resources", 'resources').replace("/test-resources", 'test-resources'));
       })
     }));
     // include the additional files from the project
