@@ -16,7 +16,7 @@ builder:
     afterTask: replaceVersion
     configuration:
       debug: true
-      removeConsoleStatements: true 
+      removeConsoleStatements: true
       transpileAsync: true
       excludePatterns:
         - "lib/"
