@@ -170,7 +170,7 @@ module.exports = function ({ resources, options }) {
         }
         return reqPath;
       }
-      return (path ? path : "") + req.url;;
+      return (path ? path : "") + req.url;
     },
     userResHeaderDecorator: function(headers) {
       if (protocol === "https") {
