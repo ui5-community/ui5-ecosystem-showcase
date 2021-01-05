@@ -1,6 +1,6 @@
 {
   "name": "ui5-task-i18ncheck",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "description": "Task for the UI5 tooling to check missing translations in i18n properties used in XML views.",
   "author": "Fatih Pense",
   "license": "Apache-2.0",
@@ -9,8 +9,8 @@
     "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
   },
   "dependencies": {
-    "@ui5/logger": "^1.0.2",
-    "xmldom": "^0.3.0"
+    "@ui5/logger": "^2.0.0",
+    "xmldom": "^0.4.0"
   },
   "ui5": {
     "dependencies": []

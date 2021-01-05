@@ -3,6 +3,92 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.2](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.9.1...ui5-app@0.9.2) (2021-01-05)
+
+**Note:** Version bump only for package ui5-app
+
+
+
+
+
+## [0.9.1](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.9.0...ui5-app@0.9.1) (2020-12-17)
+
+
+### Bug Fixes
+
+* **livereload:** adopted docu of exclusion patterns ([047188d](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/047188d2269300aff712c8bdecb6a3bb8bfbba5c))
+
+
+
+
+
+# [0.9.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.8.3...ui5-app@0.9.0) (2020-12-17)
+
+
+### Features
+
+* add "keepResources" config flag + fix bug with missing dependencies ([#385](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/385)) ([aaaab50](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/aaaab508a5a64068b91207178b08a24dfe8f65a3))
+* testing galore ([#338](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/338)) ([d4eddf7](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/d4eddf7fc1b64f832da5059d3d414f8ae454f1c7))
+
+
+
+
+
+## [0.8.3](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.8.2...ui5-app@0.8.3) (2020-11-12)
+
+**Note:** Version bump only for package ui5-app
+
+
+
+
+
+## [0.8.2](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.8.1...ui5-app@0.8.2) (2020-11-03)
+
+**Note:** Version bump only for package ui5-app
+
+
+
+
+
+## [0.8.1](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.8.0...ui5-app@0.8.1) (2020-09-29)
+
+**Note:** Version bump only for package ui5-app
+
+
+
+
+
+# [0.8.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.7.2...ui5-app@0.8.0) (2020-09-29)
+
+
+### Features
+
+* **simpleproxy:** allow to increase payload limit ([7c5bbfb](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/7c5bbfb72d2196b02bc14e7bd7313de0584b5e7e))
+* **stringreplacer:** new middleware and alignment of task ([40dcb4d](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/40dcb4d4442b0262699a779a13b565d8bba07a87))
+
+
+
+
+
+## [0.7.2](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.7.1...ui5-app@0.7.2) (2020-09-20)
+
+**Note:** Version bump only for package ui5-app
+
+
+
+
+
+## [0.7.1](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.7.0...ui5-app@0.7.1) (2020-08-03)
+
+
+### Bug Fixes
+
+* use absolute path for servestatic middleware ([c6086ec](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/c6086ec057411188b240e722e751a0341c70647a)), closes [#278](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/278)
+
+
+
+
+
 # [0.7.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.6.2...ui5-app@0.7.0) (2020-07-17)
 
 

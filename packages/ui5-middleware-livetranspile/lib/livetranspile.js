@@ -2,6 +2,7 @@ const babel = require("@babel/core")
 const os = require("os")
 const parseurl = require("parseurl")
 const log = require("@ui5/logger").getLogger("server:custommiddleware:livetranspile")
+const merge = require("lodash.merge")
 
 let fileNotFoundError = new Error("file not found!")
 fileNotFoundError.code = 404
@@ -23,45 +24,75 @@ fileNotFoundError.file = ""
  * @returns {function} Middleware function to use
  */
 module.exports = function ({ resources, options }) {
+    const config = options.configuration || {}
+    const plugins = config.transpileAsync
+        ? [
+              [
+                  "babel-plugin-transform-async-to-promises",
+                  {
+                      inlineHelpers: true
+                  }
+              ]
+          ]
+        : []
+    const babelConfig = config.babelConfig
+        ? config.babelConfig
+        : {
+              sourceMaps: "inline",
+              plugins,
+              presets: [
+                  [
+                      "@babel/preset-env",
+                      {
+                          targets: {
+                              browsers: "last 2 versions, ie 10-11"
+                          }
+                      }
+                  ]
+              ]
+          }
+    const filePatternConfig = config.filePattern || ".js"
     return (req, res, next) => {
         if (
             req.path &&
             req.path.endsWith(".js") &&
             !req.path.includes("resources/") &&
-            !((options.configuration && options.configuration.excludePatterns) || []).some((pattern) =>
-                req.path.includes(pattern)
-            )
+            !(config.excludePatterns || []).some((pattern) => req.path.includes(pattern))
         ) {
             const pathname = parseurl(req).pathname
+            const pathWithPattern = pathname.replace(".js", filePatternConfig)
 
             // grab the file via @ui5/fs.AbstractReader API
             return resources.rootProject
-                .byPath(pathname)
-                .then((resource) => {
-                    options.configuration && options.configuration.debug && log.info(`handling ${req.path}...`)
-                    if (!resource) {
-                        fileNotFoundError.file = pathname
+                .byGlob(pathWithPattern)
+                .then((resources) => {
+                    config.debug && log.info(`handling ${req.path}...`)
+
+                    if (!resources || !resources.length) {
+                        fileNotFoundError.file = pathWithPattern
                         throw fileNotFoundError
                     }
+
+                    // prefer js over other extensions, otherwise grab first possible path
+                    const resource = resources.find((r) => r.getPath() === pathname) || resources[0]
+                    if (resources.length > 1) {
+                        log.warn(
+                            `found more than 1 file for given pattern (${filePatternConfig}): ${resources
+                                .map((r) => r.getPath())
+                                .join(", ")} `
+                        )
+                        log.info(`using: ${resource.getPath()}`)
+                    }
+
                     // read file into string
                     return resource.getString()
                 })
                 .then((source) => {
-                    options.configuration && options.configuration.debug ? log.info(`...${pathname} transpiled!`) : null
-                    return babel.transformAsync(source, {
-                        filename: pathname, // necessary for source map <-> source assoc
-                        sourceMaps: "inline",
-                        presets: [
-                            [
-                                "@babel/preset-env",
-                                {
-                                    targets: {
-                                        browsers: "last 2 versions, ie 10-11"
-                                    }
-                                }
-                            ]
-                        ]
+                    config.debug ? log.info(`...${pathname} transpiled!`) : null
+                    const babelConfigForFile = merge({}, babelConfig, {
+                        filename: pathname // necessary for source map <-> source assoc
                     })
+                    return babel.transformAsync(source, babelConfigForFile)
                 })
                 .then((result) => {
                     // send out transpiled source + source map

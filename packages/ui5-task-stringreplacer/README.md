@@ -16,9 +16,12 @@ yarn install --dev ui5-task-stringreplacer
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
-```bash
-files: ["**/*.js", "**/*.xml"]
-```
+- debug: true|false  
+  verbose logging
+- files: `string`|`array`  
+  Placeholders will be replaced with their values in files matched by this glob pattern
+- replace: `array`  
+  List of placeholder, value pairs
 
 ## Usage
 
@@ -49,13 +52,25 @@ builder:
     - name: ui5-task-stringreplacer
       afterTask: replaceVersion
       configuration:
-        files: ["**/*.js", "**/*.xml"]
+        files:
+          - "**/*.js"
+          - "**/*.xml"
+      replace:
+        - placeholder: ${project.artifactId}
+          value: my.sample.app
+        - placeholder: ${project.version}
+          value: 1.0.0-SNAPSHOT
+        - placeholder: '{{app.AppTitle}}'
+          value: My Sample App
 ```
+
 3. Maintain all string placeholders and values in `.env` file
+
 ```env
 stringreplacer.BASE_URL_PLACEHOLDER = http://localhost:2000
 stringreplacer.some.deeply.nested.ANOTHER_PLACEHOLDER = Replace with this text
 ```
+
 ## How it works
 
 The task reads all files based on configuration patterns and replaces all string placeholders with values for all files. All the string placeholders which are maintained in `.env` with prefix 'stringreplacer.' will be taken into account.

@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.1](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.6.0...ui5-middleware-simpleproxy@0.6.1) (2020-12-17)
+
+**Note:** Version bump only for package ui5-middleware-simpleproxy
+
+
+
+
+
+# [0.6.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.5.1...ui5-middleware-simpleproxy@0.6.0) (2020-11-03)
+
+
+### Features
+
+* Add basic authentication ([4299350](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/4299350fb45fc1700d64f8bbee80f44b6f0e46e4))
+
+
+
+
+
+## [0.5.1](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.5.0...ui5-middleware-simpleproxy@0.5.1) (2020-09-29)
+
+**Note:** Version bump only for package ui5-middleware-simpleproxy
+
+
+
+
+
+# [0.5.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.4.1...ui5-middleware-simpleproxy@0.5.0) (2020-09-29)
+
+
+### Features
+
+* **simpleproxy:** allow to increase payload limit ([7c5bbfb](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/7c5bbfb72d2196b02bc14e7bd7313de0584b5e7e))
+
+
+
+
+
+## [0.4.1](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.4.0...ui5-middleware-simpleproxy@0.4.1) (2020-09-20)
+
+**Note:** Version bump only for package ui5-middleware-simpleproxy
+
+
+
+
+
 # [0.4.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.3.2...ui5-middleware-simpleproxy@0.4.0) (2020-07-17)
 
 

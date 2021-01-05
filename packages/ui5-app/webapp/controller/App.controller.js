@@ -11,6 +11,7 @@ sap.ui.define([
 			// replaced from ui5.yaml file with UI5 task ui5-task-stringreplacer
 			var baseUrl = "BASE_URL_PLACEHOLDER";
 			var randomTextToReplace = "some.deeply.nested.ANOTHER_PLACEHOLDER";
+			var version = "${project.version}"
 		}
 	});
 });

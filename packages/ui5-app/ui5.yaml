@@ -17,18 +17,27 @@ builder:
     configuration:
       debug: true
       removeConsoleStatements: true
+      transpileAsync: true
       excludePatterns:
         - "lib/"
+        - "test/"
   - name: ui5-task-stringreplacer
     afterTask: replaceVersion
     configuration:
-      files: ["**/*.js", "**/*.xml"]
+      debug: true
+      files:
+        - "**/*.js"
+        - "**/*.xml"
+      replace:
+        - placeholder: "${project.version}"
+          value: "1.0.0-SNAPSHOT"
   - name: ui5-task-i18ncheck
     afterTask: replaceVersion
   - name: ui5-task-zipper
     afterTask: uglify 
     configuration:
-      archiveName: "webapp"
+      archiveName: webapp
+      keepResources: true
       additionalFiles:
       - "xs-app.json"
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
@@ -40,6 +49,14 @@ server:
       debug: true
       extraExts: "xml,json,properties"
       path: "webapp"
+      exclusions:
+        - "lib/nolivereload/"
+  - name: ui5-middleware-servestatic
+    mountPath: /docs
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      rootPath: ../../docs
   - name: ui5-middleware-simpleproxy
     mountPath: /proxy
     afterMiddleware: compression
@@ -54,12 +71,30 @@ server:
     afterMiddleware: compression
     configuration:
       baseUri: "https://latest-openui5.rikosjett.com"
+  - name: ui5-middleware-simpleproxy
+    mountPath: /ui5
+    afterMiddleware: compression
+    configuration:
+      baseUri: "https://sapui5.hana.ondemand.com/"
+      limit: "5mb"
+      removeETag: true
   - name: ui5-middleware-livetranspile
     afterMiddleware: compression
     configuration:
       debug: true
+      transpileAsync: true
       excludePatterns:
       - "lib/"
+  - name: ui5-middleware-stringreplacer
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      files:
+        - "**/*.js"
+        - "**/*.xml"
+      replace:
+        - placeholder: "${project.version}"
+          value: "1.0.0-SNAPSHOT"
   - name: ui5-middleware-cfdestination
     afterMiddleware: compression
     configuration:

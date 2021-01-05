@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.1](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.5.0...ui5-middleware-livereload@0.5.1) (2020-12-17)
+
+
+### Bug Fixes
+
+* **livereload:** adopted docu of exclusion patterns ([047188d](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/047188d2269300aff712c8bdecb6a3bb8bfbba5c))
+
+
+
+
+
+# [0.5.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.4.3...ui5-middleware-livereload@0.5.0) (2020-12-17)
+
+
+### Features
+
+* **livereload:** add exclusions option ([d65646c](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/d65646c1b1bffdda4a32be03d4d719a92daab96b))
+
+
+
+
+
+## [0.4.3](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.4.2...ui5-middleware-livereload@0.4.3) (2020-09-29)
+
+
+### Bug Fixes
+
+* **livereload:** ensure proper concat for extra exts ([#311](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/311)) ([cdf4b63](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/cdf4b633d9b4ad30e209038e08dcfe24277712cc))
+
+
+
+
+
+## [0.4.2](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.4.1...ui5-middleware-livereload@0.4.2) (2020-09-20)
+
+**Note:** Version bump only for package ui5-middleware-livereload
+
+
+
+
+
+## [0.4.1](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.4.0...ui5-middleware-livereload@0.4.1) (2020-08-03)
+
+**Note:** Version bump only for package ui5-middleware-livereload
+
+
+
+
+
 # [0.4.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.3.0...ui5-middleware-livereload@0.4.0) (2020-07-17)
 
 

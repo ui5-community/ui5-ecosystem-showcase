@@ -1,6 +1,10 @@
 # Ignore Mac files
 .DS_Store
 
+# uiveri5 screenshots
+packages/ui5-app/webapp/test/e2e/target/*
+packages/ui5-app/webapp/test/e2e-wdi5/report/*
+
 # Logs
 logs
 *.log

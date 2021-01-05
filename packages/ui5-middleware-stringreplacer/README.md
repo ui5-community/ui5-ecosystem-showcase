@@ -1,6 +1,6 @@
 # UI5 middleware for live string replace in files
 
-Middleware for [ui5-server](https://github.com/SAP/ui5-server), doing a live sring replace on files matched by the includePatterns configuration option.
+Middleware for [ui5-server](https://github.com/SAP/ui5-server), doing a live string replace on files matched by the includePatterns `files` array configuration option.
 
 ## Install
 
@@ -12,8 +12,8 @@ npm install ui5-middleware-stringreplacer --save-dev
 
 - debug: true|false  
   verbose logging
-- includePatterns: `string`|`array`  
-  Placeholders will be replaced with their values in files matched by this pattern
+- files: `string`|`array`  
+  Placeholders will be replaced with their values in files matched by this glob pattern
 - replace: `array`  
   List of placeholder, value pairs
 
@@ -47,7 +47,9 @@ server:
     afterMiddleware: compression
     configuration:
       debug: true
-      includePatterns: manifest.json
+      files:
+        - "**/*.js"
+        - "**/*.xml"
       replace:
         - placeholder: ${project.artifactId}
           value: my.sample.app
@@ -55,6 +57,13 @@ server:
           value: 1.0.0-SNAPSHOT
         - placeholder: '{{app.AppTitle}}'
           value: My Sample App
+```
+
+3. Maintain all string placeholders and values in `.env` file
+
+```env
+stringreplacer.BASE_URL_PLACEHOLDER = http://localhost:2000
+stringreplacer.some.deeply.nested.ANOTHER_PLACEHOLDER = Replace with this text
 ```
 
 ## How it works

@@ -26,6 +26,13 @@ sap.ui.define([
                 })
                 .catch(err => console.error(err))
 
+            fetch("docs/index.md")
+                .then(response => response.text())
+                .then(content => {
+                    this.byId("doc").setValue(content);
+                })
+                .catch(err => console.error(err));
+
         },
 
         navFwd() {

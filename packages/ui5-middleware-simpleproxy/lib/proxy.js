@@ -7,7 +7,11 @@ dotenv.config();
 const env = {
   baseUri: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI,
   strictSSL: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL,
-  httpHeaders: process.env.UI5_MIDDLEWARE_HTTP_HEADERS
+  httpHeaders: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_HTTP_HEADERS || process.env.UI5_MIDDLEWARE_HTTP_HEADERS /* compat */,
+  limit: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_LIMIT,
+  removeETag: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_REMOVEETAG,
+  username: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_USERNAME,
+  password: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_PASSWORD
 };
 
 /**
@@ -58,6 +62,22 @@ function getHttpHeaders(environmentValue, configuration) {
 }
 
 /**
+ * Get the authentication token, to be used send via Basic Authentication HTTP header, from environment variable if exists, otherwise get from the configuration
+ *
+ * @param {object} environmentValue The enviroment variable object UI5_MIDDLEWARE_SIMPLE_PROXY_*
+ * @param {object} configuration The configuration object
+ *
+ * @returns {string} Basic Authentication token username:password format
+ */
+function getBasicAuthenticationToken(environmentValue = {}, configuration = {}) {
+  const username = environmentValue.username || configuration.username;
+  const password = environmentValue.password || configuration.password;
+  if (username && password) {
+    return `${username}:${password}`;
+  }
+}
+
+/**
  * Custom UI5 Server middleware example
  *
  * @param {Object} parameters Parameters
@@ -92,10 +112,13 @@ module.exports = function ({ resources, options }) {
   if (path && path.endsWith("/")) {
     path = path.slice(0, -1);
   }
+  const limit = env.limit || (options.configuration && options.configuration.limit);
+  const removeETag = env.removeETag || (options.configuration && options.configuration.removeETag);
 
   // run the proxy middleware based on the baseUri configuration
   return proxy(baseUri, {
     https: protocol === "https",
+    limit: limit,
     preserveHostHdr: false,
     proxyReqOptDecorator: function (proxyReqOpts) {
       if (providedStrictSSL === false) {
@@ -103,6 +126,10 @@ module.exports = function ({ resources, options }) {
       }
       if (providedHttpHeaders) {
         Object.assign(proxyReqOpts.headers, providedHttpHeaders); 
+      }
+      const authorizationToken = getBasicAuthenticationToken(env, options.configuration);
+      if (authorizationToken) {
+        proxyReqOpts.auth = authorizationToken;
       }
       return proxyReqOpts;
     },
@@ -139,6 +166,16 @@ module.exports = function ({ resources, options }) {
         });
       }
       return headers;
+    },
+    userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
+      if (removeETag) {
+        const fnEnd = userRes.end;
+        userRes.end = function() {
+          this.removeHeader("ETag");
+          return fnEnd.apply(this, arguments);
+        }  
+      }
+      return proxyResData;
     },
   });
 };
