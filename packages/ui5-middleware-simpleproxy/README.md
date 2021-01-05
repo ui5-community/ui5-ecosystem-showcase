@@ -24,6 +24,10 @@ npm install ui5-middleware-simpleproxy --save-dev
   Username used for Basic Authentication.
 - password:  `string`
   Password used for Basic Authentication.
+- httpHeaders: `map`
+  Http headers set for the proxied request. Will overwrite the http headers from the request. 
+- query: `map`
+  Query parameters set for the proxied request. Will overwrite the parameters from the request. 
 
 In general, use of environment variables or values set in a `.env` file will override configuration values in the `ui5.yaml`.
 
@@ -60,6 +64,10 @@ server:
       baseUri: "https://services.odata.org"
       username: myUsername
       password: myPassword
+      httpHeaders:
+        Any-Header: AnyHeader
+      query:
+        sap-client: 206
 ```
 
 ## How it works

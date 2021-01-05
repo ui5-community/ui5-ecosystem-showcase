@@ -16,7 +16,7 @@ builder:
     afterTask: replaceVersion
     configuration:
       debug: true
-      removeConsoleStatements: true
+      removeConsoleStatements: true      
       transpileAsync: true
       excludePatterns:
         - "lib/"
@@ -65,6 +65,8 @@ server:
       baseUri: "https://latest-openui5.rikosjett.com"
       httpHeaders:
         Any-Header: AnyHeader
+      query:
+        type: sdk #other types: runtime, runtimeMobile
     # PoC: reuse the same middleware at a different "mountPath"
   - name: ui5-middleware-simpleproxy
     mountPath: /proxy2
