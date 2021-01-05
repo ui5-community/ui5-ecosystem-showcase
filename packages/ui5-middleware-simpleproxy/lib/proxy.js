@@ -11,7 +11,8 @@ const env = {
   limit: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_LIMIT,
   removeETag: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_REMOVEETAG,
   username: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_USERNAME,
-  password: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_PASSWORD
+  password: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_PASSWORD,
+  query: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_QUERY
 };
 
 /**
@@ -78,6 +79,25 @@ function getBasicAuthenticationToken(environmentValue = {}, configuration = {}) 
 }
 
 /**
+ * Get query parameters from environment variable if exists, otherwise get from the configuration
+ * 
+ * @param {string} environmentValue The value coming from the enviroment variable 'UI5_MIDDLEWARE_SIMPLE_PROXY_QUERY_PARAMETERS'
+ * @param {Object} configuration The configuration object
+ * 
+ * @returns {Object} Query parameters
+ */
+function getQueryParameters(environmentValue, configuration) {
+  let queryParameters;
+  if(environmentValue) {
+    queryParameters = JSON.parse(environmentValue);
+  } else if(configuration) {
+    queryParameters = configuration.query
+  }
+  queryParameters && configuration && configuration.debug && log.info(`Query parameters will be attached: ${Object.keys(queryParameters).join(", ")} `);
+  return queryParameters;
+}
+
+/**
  * Custom UI5 Server middleware example
  *
  * @param {Object} parameters Parameters
@@ -100,6 +120,7 @@ module.exports = function ({ resources, options }) {
     options.configuration ? options.configuration.strictSSL : undefined
   );
   const providedHttpHeaders = getHttpHeaders(env.httpHeaders, options.configuration);
+  const providedQueryParameters = getQueryParameters(env.query, options.configuration);
   options.configuration && options.configuration.debug && log.info(`Starting proxy for baseUri ${providedBaseUri}`);
   // determine the uri parts (protocol, baseUri, path)
   let baseUriParts = providedBaseUri.match(/(https|http)\:\/\/([^/]*)(\/.*)?/i);
@@ -134,6 +155,21 @@ module.exports = function ({ resources, options }) {
       return proxyReqOpts;
     },
     proxyReqPathResolver: function (req) {
+      if(providedQueryParameters) {
+        const queryParameters = {};
+        let reqPath = "";
+        // provided query parameters will overwrite the request one's
+        Object.assign(queryParameters, req.query, providedQueryParameters);
+        for (const [key, value] of Object.entries(queryParameters)) {
+          if(reqPath) {
+            reqPath = reqPath.concat(`&${key}=${value}`);
+          } else {
+            // first query parameter
+            reqPath = `${(path ? path : "")}${req.path}?${key}=${value}`;
+          }
+        }
+        return reqPath;
+      }
       return (path ? path : "") + req.url;
     },
     userResHeaderDecorator: function(headers) {

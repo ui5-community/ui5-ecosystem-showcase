@@ -22,7 +22,9 @@ sap.ui.define([
             fetch("/proxy/api/v1/latest?format=json")
                 .then(response => response.json())
                 .then(latestU5version => {
-                    this.getModel('LatestUI5').setProperty("/latest", latestU5version.version);
+                    const latestUI5Model = this.getModel('LatestUI5');
+                    latestUI5Model.setProperty("/latest", latestU5version.version);
+                    latestUI5Model.setProperty("/type", latestU5version.type);
                 })
                 .catch(err => console.error(err))
 
