@@ -21,6 +21,7 @@ builder:
     configuration:
       excludePatterns:
       - "lib/"
+      - "test/"
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
 server:
   customMiddleware:

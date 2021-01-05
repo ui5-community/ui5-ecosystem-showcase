@@ -16,10 +16,11 @@ builder:
     afterTask: replaceVersion
     configuration:
       debug: true
-      removeConsoleStatements: true      
+      removeConsoleStatements: true
       transpileAsync: true
       excludePatterns:
         - "lib/"
+        - "test/"
   - name: ui5-task-stringreplacer
     afterTask: replaceVersion
     configuration:
