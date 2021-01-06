@@ -1,6 +1,6 @@
 {
   "name": "ui5-app",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "UI5 application using custom middlewares and tasks",
   "private": true,
   "author": "Volker Buzek, Peter Muessig",
@@ -57,7 +57,7 @@
     "ui5-middleware-livetranspile": "^0.3.0",
     "ui5-middleware-servestatic": "^0.3.3",
     "ui5-middleware-simpleproxy": "^0.6.1",
-    "ui5-middleware-stringreplacer": "^0.2.0",
+    "ui5-middleware-stringreplacer": "^0.2.1",
     "ui5-task-i18ncheck": "^0.3.3",
     "ui5-task-pwa-enabler": "^0.2.2",
     "ui5-task-stringreplacer": "^0.5.1",
