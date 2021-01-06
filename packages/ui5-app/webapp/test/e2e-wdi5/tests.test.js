@@ -56,7 +56,7 @@ describe("binding", () => {
 // this suite implemented straigh-fwd, no page objects
 describe("interaction", () => {
     it("should manually allow date input", () => {
-        browser.goTo({ sHash: "index.html#/" })
+        browser.goTo({ sHash: "#/" })
 
         const oDateTimePicker = browser.asControl(dateTimePicker)
         oDateTimePicker.focus()
