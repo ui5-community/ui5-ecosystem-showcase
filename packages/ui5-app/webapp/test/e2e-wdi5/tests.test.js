@@ -48,7 +48,7 @@ describe("binding", () => {
         browser.asControl(navFwdButton).firePress()
 
         const oList = browser.asControl(list)
-        const aListItems = oList.getAggregation("items")
+        const aListItems = oList.getItems() // ui5 api
         expect(aListItems.length).toBeGreaterThanOrEqual(1)
     })
 })
@@ -63,7 +63,8 @@ describe("interaction", () => {
         oDateTimePicker.setValue("2020-11-11")
         // tmp change focus to different control in order to 
         // trigger ui5 framework events (e.g. date formatting)
-        browser.asControl(navFwdButton).focus() 
+        browser.keys("Tab")
+        browser.asControl(navFwdButton).focus() // ui5 api
         expect(oDateTimePicker.getValue()).toMatch(/2020/)
         expect(oDateTimePicker.getValue()).toMatch(/11/)
     })
