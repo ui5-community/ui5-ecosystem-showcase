@@ -64,7 +64,7 @@
     "ui5-task-transpile": "^0.3.0",
     "ui5-task-zipper": "^0.4.1",
     "wdio-chromedriver-service": "^6.0.4",
-    "wdio-ui5-service": "^0.1.5"
+    "wdio-ui5-service": "^0.1.9"
   },
   "ui5": {
     "dependencies": [
