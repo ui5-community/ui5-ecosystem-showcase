@@ -2,7 +2,7 @@ const Page = require("./Page")
 
 class Main extends Page {
     open() {
-        super.open(`#/`)
+        super.open("#/")
     }
 
     _viewName = "test.Sample.view.Main"
