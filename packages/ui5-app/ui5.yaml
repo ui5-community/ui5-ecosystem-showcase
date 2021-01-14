@@ -1,4 +1,4 @@
-specVersion: "2.0"
+specVersion: "2.2"
 metadata:
   name: ui5-app
 type: application
@@ -37,7 +37,8 @@ builder:
     afterTask: uglify 
     configuration:
       archiveName: webapp
-      keepResources: true
+      includeDependencies: true
+      onlyZip: false
       additionalFiles:
       - "xs-app.json"
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/

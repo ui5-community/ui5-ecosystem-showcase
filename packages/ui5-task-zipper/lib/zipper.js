@@ -24,7 +24,8 @@ module.exports = async function ({ workspace, dependencies, options, taskUtil })
 
   // determine the name of the ZIP archive (either from config or from project namespace)
   const defaultName = options && options.configuration && options.configuration.archiveName;
-  const keepResources = options && options.configuration && options.configuration.keepResources;
+  const includeDependencies = options && options.configuration && options.configuration.includeDependencies;
+  const onlyZip = options && options.configuration && options.configuration.onlyZip;
   const zipName = `${defaultName || options.projectNamespace.replace(/\//g, '')}.zip`;
 
   // retrieve the resource path prefix (to get all application resources)
@@ -34,8 +35,11 @@ module.exports = async function ({ workspace, dependencies, options, taskUtil })
   let allResources;
   try {
     const ws = await workspace.byGlob(`${prefixPath}/**`);
-    const dep = await dependencies.byGlob(`**`);
-    allResources = [...ws, ...dep];
+    allResources = ws;
+    if (includeDependencies) {
+      const dep = await dependencies.byGlob(`**`);
+      allResources = [...ws, ...dep];
+    }
   } catch (e) {
     log.error(`Couldn't read resources: ${e}`);
   }
@@ -45,7 +49,7 @@ module.exports = async function ({ workspace, dependencies, options, taskUtil })
   try {
     // include the application related resources
     await Promise.all(allResources.map((resource) => {
-      if (!keepResources) {
+      if (onlyZip) {
         taskUtil.setTag(resource, OmitFromBuildResult, true);
       }
       return resource.getBuffer().then((buffer) => {
