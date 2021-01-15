@@ -1738,10 +1738,10 @@
     "@octokit/openapi-types" "^2.0.1"
     "@types/node" ">= 8"
 
-"@sap/approuter@^9.0.0":
-  version "9.0.1"
-  resolved "https://registry.yarnpkg.com/@sap/approuter/-/approuter-9.0.1.tgz#836c2a8047bd86fd187b5dbc3df785e9e91f6d8f"
-  integrity sha512-F4lcnkABYJF14zvx+NPDkP19PyMR/UV6HBPvynoerglpgY3m9CcPQ+YMKn7Ns0ljfF38bfzPBZkAL48UFSnROg==
+"@sap/approuter@^9.0.1":
+  version "9.0.2"
+  resolved "https://registry.yarnpkg.com/@sap/approuter/-/approuter-9.0.2.tgz#95e7753bf805f3a83dff42e7189d8c13f9982416"
+  integrity sha512-J/NxhrY+od3hHTEIwF9l/rxA4FPIAEVrk2D/Z75+UhKDxpFKEGtYuvz36TtGvR+vIPSyFm7kIti82erdqa/ybQ==
   dependencies:
     "@sap/audit-logging" "3.1.1"
     "@sap/e2e-trace" "2.1.0"
@@ -1786,7 +1786,7 @@
     tough-cookie "2.3.3"
     tv4 "1.2.7"
     uid-safe "2.1.5"
-    urijs "1.16.1"
+    urijs "1.19.5"
     uuid "3.2.1"
     validator "13.5.2"
     verror "1.10.0"
@@ -11649,10 +11649,10 @@ uri-js@^4.2.2:
   dependencies:
     punycode "^2.1.0"
 
-urijs@1.16.1:
-  version "1.16.1"
-  resolved "https://registry.yarnpkg.com/urijs/-/urijs-1.16.1.tgz#859ad31890f5f9528727be89f1932c94fb4731e2"
-  integrity sha1-hZrTGJD1+VKHJ76J8ZMslPtHMeI=
+urijs@1.19.5:
+  version "1.19.5"
+  resolved "https://registry.yarnpkg.com/urijs/-/urijs-1.19.5.tgz#119683ab4b2fb0bd637e5ea6dd9117bcac68d3e4"
+  integrity sha512-48z9VGWwdCV5KfizHsE05DWS5fhK6gFlx5MjO7xu0Krc5FGPWzjlXEVV0nPMrdVuP7xmMHiPZ2HoYZwKOFTZOg==
 
 urix@^0.1.0:
   version "0.1.0"
