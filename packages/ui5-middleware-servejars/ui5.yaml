@@ -1,0 +1,8 @@
+# https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
+specVersion: '2.0'
+metadata:
+  name: ui5-middleware-servejars
+kind: extension
+type: server-middleware
+middleware:
+  path: lib/index.js

@@ -1,0 +1,19 @@
+{
+  "name": "ui5-middleware-servejars",
+  "version": "0.1.0",
+  "description": "UI5 middleware for delivering content from JAR files",
+  "author": "Volker Buzek, Peter Muessig",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
+  },
+  "dependencies": {
+    "@ui5/logger": "^2.0.0",
+    "@ui5/server": "^2.2.7",
+    "jszip": "^3.5.0"
+  },
+  "ui5": {
+    "dependencies": []
+  }
+}
