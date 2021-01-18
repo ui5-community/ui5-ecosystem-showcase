@@ -5,7 +5,7 @@ Middleware for [ui5-server](https://github.com/SAP/ui5-server), delivering the c
 ## Install
 
 ```bash
-npm install ui5-middleware-servejars --save-dev
+npm install ui5-middleware-webjars --save-dev
 ```
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
@@ -23,13 +23,13 @@ npm install ui5-middleware-servejars --save-dev
 ```json
 "devDependencies": {
     // ...
-    "ui5-middleware-serverjars": "*"
+    "ui5-middleware-webjars": "*"
     // ...
 },
 "ui5": {
   "dependencies": [
     // ...
-    "ui5-middleware-serverjars",
+    "ui5-middleware-webjars",
     // ...
   ]
 }
@@ -42,7 +42,7 @@ npm install ui5-middleware-servejars --save-dev
 ```yaml
 server:
   customMiddleware:
-  - name: ui5-middleware-serverjars
+  - name: ui5-middleware-webjars
     afterMiddleware: compression
     configuration:
       rootPath: "jars"
@@ -51,7 +51,7 @@ server:
 
 ## How it works
 
-The middleware searches for JAR files in the `rootPath`, loads them and serves the content from JAR files following the web static resources concept of Servlet 3.0. By default, this allows to consume static resources from the JAR files from within the `META-INF/resources/` path. When using JAR files following a derived web static resourcs concept it is possible to override the JAR root path with the configuration `jarRootPath`.
+The middleware searches for JAR files in the `rootPath`, loads them and serves the content from JAR files following the web static resources concept of Servlet 3.0 (WebJARs). By default, this allows to consume static resources from the JAR files from within the `META-INF/resources/` path. When using JAR files following a derived web static resourcs concept it is possible to override the JAR root path with the configuration `jarRootPath`.
 
 ```text
 jarRootPath: "META-INF/resources/"
@@ -66,7 +66,7 @@ META-INF/resources/my/resource/path/Resource.js => http://localhost:8080/resourc
 
 ## Development
 
-If you want to contribute to `ui5-middleware-servejars`, please use [`Prettier`](https://prettier.io) for code formatting/style and apply the rules from `./.prettierrc`. Thanks 🙏!
+If you want to contribute to `ui5-middleware-webjars`, please use [`Prettier`](https://prettier.io) for code formatting/style and apply the rules from `./.prettierrc`. Thanks 🙏!
 
 ## License
 

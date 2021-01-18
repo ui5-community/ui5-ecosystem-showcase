@@ -1,5 +1,5 @@
 {
-  "name": "ui5-middleware-servejars",
+  "name": "ui5-middleware-webjars",
   "version": "0.1.0",
   "description": "UI5 middleware for delivering content from JAR files",
   "author": "Volker Buzek, Peter Muessig",

@@ -123,7 +123,7 @@ server:
     afterMiddleware: compression
     configuration:
       debug: true
-  - name: ui5-middleware-servejars
+  - name: ui5-middleware-webjars
     afterMiddleware: compression
     configuration:
       debug: true

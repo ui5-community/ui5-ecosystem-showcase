@@ -1,4 +1,4 @@
-const log = require("@ui5/logger").getLogger("server:custommiddleware:servejars")
+const log = require("@ui5/logger").getLogger("server:custommiddleware:webjars")
 
 const JSZip = require("jszip");
 
@@ -33,18 +33,23 @@ const readFileAsync = promisify(fs.readFile);
  */
 module.exports = async ({ resources, options, middlewareUtil }) => {
 
+    const isDebug = options && options.configuration && options.configuration.debug;
     const rootPath = options && options.configuration && options.configuration.rootPath || "jars";
     const jarRootPath = options && options.configuration && options.configuration.jarRootPath || "META-INF/resources/";
 
     const basePath = path.join(process.cwd(), rootPath);
-    log.info(`Scanning directory ${basePath} for JAR files...`);
+    if (isDebug) {
+        log.info(`Scanning directory ${basePath} for JAR files...`);
+    }
 
     // list all JAR files
     const files = await readdirAsync(basePath);
     const jars = await Promise.all(files.filter(file => {
         return file.endsWith(".jar");
     }).map(async file => {
-        log.info(`  - Found JAR file ${file}`);
+        if (isDebug) {
+            log.info(`  - Found JAR file ${file}`);
+        }
         const data = await readFileAsync(path.join(basePath, file));
         return JSZip.loadAsync(data);
     }));
@@ -59,14 +64,16 @@ module.exports = async ({ resources, options, middlewareUtil }) => {
         }));
     }));
 
-    return async function servejars(req, res, next) {
+    return async function serveWebJARs(req, res, next) {
 
         const pathname = middlewareUtil.getPathname(req);
         const jarPath = jarRootPath + pathname.substr(1);
 
         const jarResource = jarResources[jarPath];
         if (jarResource) {
-            options && options.configuration && options.configuration.debug ? log.info(`Serving ${pathname} from JAR!`) : null;
+            if (isDebug) {
+                log.info(`Serving ${pathname} from JAR!`);
+            }
 
             // determine charset and content-type
             let {contentType, charset} = middlewareUtil.getMimeInfo(pathname);
@@ -84,5 +91,6 @@ module.exports = async ({ resources, options, middlewareUtil }) => {
             next();
         }
 
-    }
-}
+    };
+
+};
