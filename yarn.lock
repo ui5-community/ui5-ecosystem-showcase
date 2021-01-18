@@ -2148,10 +2148,10 @@
   dependencies:
     "@types/node" "*"
 
-"@ui5/builder@^2.4.3", "@ui5/builder@^2.5.1":
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/@ui5/builder/-/builder-2.5.1.tgz#5eccbdbd9c00701c5b8ffe1f45d0c780833528a8"
-  integrity sha512-uDYhmTD4AhBSBwe2DXFKKE74oAJ51ybHTJ80klyomhuXFYaccHwyxo+dGLRuVs2FvGmTCeyIinD30XfNLmIMKw==
+"@ui5/builder@^2.4.3", "@ui5/builder@^2.6.0":
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/@ui5/builder/-/builder-2.6.0.tgz#2d76a7b9a515bb3d510daffb381cea36ae33faa8"
+  integrity sha512-PJGl+E0ip3Ndl1viM0XFq4R5qycMonbtTfzg+x9RKyRJO/B6NYXn+oWCBVZU8HR1GtQzIEjK+inFhFr36ydz0A==
   dependencies:
     "@ui5/fs" "^2.0.6"
     "@ui5/logger" "^2.0.1"
@@ -2161,7 +2161,7 @@
     escope "^3.6.0"
     esprima "^4.0.1"
     estraverse "5.1.0"
-    globby "^11.0.1"
+    globby "^11.0.2"
     graceful-fs "^4.2.4"
     jsdoc "^3.6.6"
     less-openui5 "^0.9.0"
@@ -2176,11 +2176,11 @@
     yazl "^2.5.1"
 
 "@ui5/cli@^2.6.4":
-  version "2.7.1"
-  resolved "https://registry.yarnpkg.com/@ui5/cli/-/cli-2.7.1.tgz#bb9024c6c323a68e9c26f88ba5d3cc8d4869d00c"
-  integrity sha512-NrItHsLpSqC5XEiLagpnNlXoSH6g+poqVBbLhR9a3dfPVYfE+jDVDcRjicox3Jzei8eHQmHc9bkbprPLAS+KIA==
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/@ui5/cli/-/cli-2.8.0.tgz#02ed9272fa53438b2254ca3209ce233f9dd1a3d0"
+  integrity sha512-PbnZ8Nr/Tnzcc1h1YJ0p6l1UeGv1GHbS7sqUDjSImNP+I4s68edAtj82r+fYDEIgMyjewc36fWFhQ2YDydORyg==
   dependencies:
-    "@ui5/builder" "^2.5.1"
+    "@ui5/builder" "^2.6.0"
     "@ui5/fs" "^2.0.6"
     "@ui5/logger" "^2.0.1"
     "@ui5/project" "^2.2.4"
@@ -2189,7 +2189,7 @@
     data-with-position "^0.4.1"
     import-local "^3.0.2"
     js-yaml "^3.14.1"
-    open "^7.3.0"
+    open "^7.3.1"
     semver "^7.3.4"
     treeify "^1.0.1"
     update-notifier "^5.0.1"
@@ -5917,6 +5917,18 @@ globby@^11.0.1:
     merge2 "^1.3.0"
     slash "^3.0.0"
 
+globby@^11.0.2:
+  version "11.0.2"
+  resolved "https://registry.yarnpkg.com/globby/-/globby-11.0.2.tgz#1af538b766a3b540ebfb58a32b2e2d5897321d83"
+  integrity sha512-2ZThXDvvV8fYFRVIxnrMQBipZQDr7MxKAmQK1vujaj9/7eF0efG7BPUKJ7jP7G5SLF37xKDXvO4S/KKLj/Z0og==
+  dependencies:
+    array-union "^2.1.0"
+    dir-glob "^3.0.1"
+    fast-glob "^3.1.1"
+    ignore "^5.1.4"
+    merge2 "^1.3.0"
+    slash "^3.0.0"
+
 globby@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/globby/-/globby-5.0.0.tgz#ebd84667ca0dbb330b99bcfc68eac2bc54370e0d"
@@ -8698,10 +8710,10 @@ onetime@^5.1.0:
   dependencies:
     mimic-fn "^2.1.0"
 
-open@^7.3.0:
-  version "7.3.0"
-  resolved "https://registry.yarnpkg.com/open/-/open-7.3.0.tgz#45461fdee46444f3645b6e14eb3ca94b82e1be69"
-  integrity sha512-mgLwQIx2F/ye9SmbrUkurZCnkoXyXyu9EbHtJZrICjVAJfyMArdHp3KkixGdZx1ZHFPNIwl0DDM1dFFqXbTLZw==
+open@^7.3.1:
+  version "7.3.1"
+  resolved "https://registry.yarnpkg.com/open/-/open-7.3.1.tgz#111119cb919ca1acd988f49685c4fdd0f4755356"
+  integrity sha512-f2wt9DCBKKjlFbjzGb8MOAW8LH8F0mrs1zc7KTjAJ9PZNQbfenzWbNP1VZJvw6ICMG9r14Ah6yfwPn7T7i646A==
   dependencies:
     is-docker "^2.0.0"
     is-wsl "^2.1.1"
