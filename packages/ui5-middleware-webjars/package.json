@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-webjars",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "UI5 middleware for delivering content from JAR files",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",

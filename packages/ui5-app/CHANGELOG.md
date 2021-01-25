@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.9.3...ui5-app@0.10.0) (2021-01-25)
+
+
+### Features
+
+* **simpleproxy:** Support configuration of proxied url parameters via .env and ui5.yaml  ([#440](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/440)) ([dafd66c](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/dafd66cd63d93553e7cf6dc797ef84c48e8575b6))
+* **webjars:** support to serve content from JAR files ([#456](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/456)) ([b4ce282](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/b4ce282dde94b230175c02539c3e3c2d0487d478))
+
+
+
+
+
 ## [0.9.3](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-app@0.9.2...ui5-app@0.9.3) (2021-01-06)
 
 **Note:** Version bump only for package ui5-app

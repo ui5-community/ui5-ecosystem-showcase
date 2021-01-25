@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.6.1...ui5-middleware-simpleproxy@0.7.0) (2021-01-25)
+
+
+### Features
+
+* **simpleproxy:** Support configuration of proxied url parameters via .env and ui5.yaml  ([#440](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/440)) ([dafd66c](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/dafd66cd63d93553e7cf6dc797ef84c48e8575b6))
+
+
+
+
+
 ## [0.6.1](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.6.0...ui5-middleware-simpleproxy@0.6.1) (2020-12-17)
 
 **Note:** Version bump only for package ui5-middleware-simpleproxy
