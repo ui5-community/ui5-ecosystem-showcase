@@ -1,13 +1,9 @@
 const log = require("@ui5/logger").getLogger("server:custommiddleware:webjars")
 
-const JSZip = require("jszip");
-
 const path = require("path");
+const { readdir: readdirAsync, readFile: readFileAsync } = require("fs").promises;
 
-const fs = require('fs');
-const { promisify } = require('util');
-const readdirAsync = promisify(fs.readdir);
-const readFileAsync = promisify(fs.readFile);
+const JSZip = require("jszip");
 
 
 /**

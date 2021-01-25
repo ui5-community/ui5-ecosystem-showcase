@@ -51,7 +51,7 @@ server:
 
 ## How it works
 
-The middleware searches for JAR files in the `rootPath`, loads them and serves the content from JAR files following the web static resources concept of Servlet 3.0 (WebJARs). By default, this allows to consume static resources from the JAR files from within the `META-INF/resources/` path. When using JAR files following a derived web static resourcs concept it is possible to override the JAR root path with the configuration `jarRootPath`.
+The middleware searches for JAR files in the `rootPath`, loads them and serves the content from JAR files following the web static resources concept of Servlet 3.0 (WebJARs). By default, this allows to consume static resources from the JAR files from within the `META-INF/resources/` path. When using JAR files following a derived web static resources concept it is possible to override the JAR root path with the configuration `jarRootPath`.
 
 ```text
 jarRootPath: "META-INF/resources/"
