@@ -2089,10 +2089,10 @@
   dependencies:
     "@types/node" "*"
 
-"@ui5/builder@^2.4.3", "@ui5/builder@^2.6.0":
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/@ui5/builder/-/builder-2.6.0.tgz#2d76a7b9a515bb3d510daffb381cea36ae33faa8"
-  integrity sha512-PJGl+E0ip3Ndl1viM0XFq4R5qycMonbtTfzg+x9RKyRJO/B6NYXn+oWCBVZU8HR1GtQzIEjK+inFhFr36ydz0A==
+"@ui5/builder@^2.4.3", "@ui5/builder@^2.6.1":
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/@ui5/builder/-/builder-2.6.1.tgz#67a6ebfcffa06699f3a5fa0dadb544c7eaa5f3f4"
+  integrity sha512-4cILVl+KtOlnbcfe6aaUSd08tFWKCDhdSxkbLK+P3eD+CLzW83fJvz7Oi58t3dR65IeqMVvic+APmyK5HhpX1g==
   dependencies:
     "@ui5/fs" "^2.0.6"
     "@ui5/logger" "^2.0.1"
@@ -2117,11 +2117,11 @@
     yazl "^2.5.1"
 
 "@ui5/cli@^2.6.4":
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/@ui5/cli/-/cli-2.8.0.tgz#02ed9272fa53438b2254ca3209ce233f9dd1a3d0"
-  integrity sha512-PbnZ8Nr/Tnzcc1h1YJ0p6l1UeGv1GHbS7sqUDjSImNP+I4s68edAtj82r+fYDEIgMyjewc36fWFhQ2YDydORyg==
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/@ui5/cli/-/cli-2.8.1.tgz#33c1ef90c5526f2fad00503b2242f6ec111e857d"
+  integrity sha512-TYJHWlEVBtWuiYyMKUGRxBOgyFIU8qhDGwwZ9f8b4MwZp3+hKXrU3A516b4kSC4zfTlduHIr2LlSI3oqueYq+A==
   dependencies:
-    "@ui5/builder" "^2.6.0"
+    "@ui5/builder" "^2.6.1"
     "@ui5/fs" "^2.0.6"
     "@ui5/logger" "^2.0.1"
     "@ui5/project" "^2.2.4"
