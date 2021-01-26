@@ -1739,11 +1739,11 @@
     "@types/node" ">= 8"
 
 "@sap/approuter@^9.0.1":
-  version "9.0.2"
-  resolved "https://registry.yarnpkg.com/@sap/approuter/-/approuter-9.0.2.tgz#95e7753bf805f3a83dff42e7189d8c13f9982416"
-  integrity sha512-J/NxhrY+od3hHTEIwF9l/rxA4FPIAEVrk2D/Z75+UhKDxpFKEGtYuvz36TtGvR+vIPSyFm7kIti82erdqa/ybQ==
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/@sap/approuter/-/approuter-9.1.0.tgz#7933a791e1d097ed9c06b554bab2e879869bd1f0"
+  integrity sha512-ojJbDbVTIDSe/qU08b0JTIBI4GNrO6fQaT2KcD10HCpu7xPATBhRsvrQSmBm9V0lNZIMZy0mIDbfLG+k1A85Bw==
   dependencies:
-    "@sap/audit-logging" "3.1.1"
+    "@sap/audit-logging" "3.2.0"
     "@sap/e2e-trace" "2.1.0"
     "@sap/logging" "6.0.2"
     "@sap/xsenv" "2.2.0"
@@ -1792,10 +1792,10 @@
     verror "1.10.0"
     ws "7.3.1"
 
-"@sap/audit-logging@3.1.1":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@sap/audit-logging/-/audit-logging-3.1.1.tgz#c9f5fc18f5781c5fb5c86092d8ff3c728f4f776f"
-  integrity sha512-4egfs7xZGh/X9xDpomOcMO7e3lh3+fMm0LbdIX2sUAuDraB5vvz/4TMiQ3c0i9YmzJgXGSeANn1pfSew3rkpdg==
+"@sap/audit-logging@3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@sap/audit-logging/-/audit-logging-3.2.0.tgz#15d10fff049e17fd6d616230ba58b09719179ebc"
+  integrity sha512-LNSJK62qBE9xJAlFj9Lj8pqFHSapwVdmtibuzrQvtFizUyehOMoSLq4e04KF9FL/OQOZW7vM1URZPdKC9SHAOw==
   dependencies:
     debug "3.1.0"
     request "2.88.2"
