@@ -9,7 +9,7 @@
     "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
   },
   "dependencies": {
-    "@ui5/fs": "^1.1.2",
+    "@ui5/fs": "^2.0.6",
     "graceful-fs": "latest",
     "jsdom": "^16.2.2",
     "mustache": "^4.0.1",
