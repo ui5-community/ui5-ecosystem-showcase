@@ -10,11 +10,21 @@ npm install ui5-middleware-webjars --save-dev
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
-- rootPath: `string`, default: `jars`
+- classpathFile: `string`
+
+  the file containing the classpath (list of files, separated with the path delimiter) which can be created via:
+
+  > `mvn clean dependency:build-classpath -Dmdep.cpFile=target/classpath`
+
+- rootPath: `string`
+
   the root path to the static resources on your system
+
 - jarRootPath: `string`, default: `META-INF/resources/`
+
   the root path in the JAR file containing the static resources
-- debug: `bool`, default: `false`
+
+- debug: `boolean`, default: `false`
 
 ## Usage
 
