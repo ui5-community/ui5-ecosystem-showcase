@@ -2,12 +2,24 @@
  * ${copyright}
  */
 
+sap.ui.loader.config({
+	shim: {
+		'missed/controls/lib/zxing/index': {
+			amd: true, // important: disable amd loaders if present to access the dep via the global export
+			exports: "ZXing"
+		}
+	}
+});
+
 sap.ui.define([
 	'./library',
 	'sap/ui/core/Control',
-	'./BarcodeScannerRenderer'
-], (library, Control, BarcodeScannerRenderer) => {
+	'./BarcodeScannerRenderer',
+    './lib/zxing/index'
+], (library, Control, BarcodeScannerRenderer, zxing) => {
 	// const { MyEnum } = library;
+
+    console.log(zxing);
 
     /**
      * Constructor for a new BarcodeScanner.

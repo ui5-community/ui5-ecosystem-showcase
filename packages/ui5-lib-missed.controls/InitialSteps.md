@@ -71,6 +71,7 @@ https://ui5.sap.com/test-resources/sap/m/demokit/theming/webapp/index.html
 
 ```bash
 # (in / of lib)
+$> ui5 add themelib_sap_fiori_3
 $> mkdir -p src/themes/base
 $> touch src/themes/base/BarcodeScanner.less
 $> touch src/themes/base/library.source.less
@@ -89,3 +90,38 @@ $> touch src/themes/sap_fiori_3_dark/library.source.less
 # @import "../base/library.source.less";
 
 ```
+
+
+add 3rd party libs used in library controls
+
+Options:
+
+1. Include OSS in library namespace + lib (classic libs)
+1. NPM packages providing browserified OSS can be embedded via shimming
+1. NPM packages which are not browserified can be repackaged via rollup or other tools (e.g. [Apollo Lib](https://github.com/petermuessig/ui5-sample-apollo/tree/master/packages/ui5-apollo-lib))
+
+
+Runtime shim of modules: see [OpenUI5 CodeEditor](https://github.com/SAP/openui5/blob/master/src/sap.ui.codeeditor/src/sap/ui/codeeditor/CodeEditor.js#L5-L23) - module shim for packaged OSS.
+
+Tooling shim: see [UI5con 2020 demo lib](https://github.com/matz3/ui5con20-ui5-tooling/blob/master/demo-project/packages/library/ui5.yaml#L13-L28)
+
+
+
+```bash
+$> yarn add @zxing/library
+# also add to package.json ui5.dependencies!
+```
+
+add shim config to `ui5.yaml`
+-> `ui5 build --all` will then include `@zxing/library`, but also all other defined libraries in `ui5.yaml` 
+
+use `sap.ui.loader.config()` for loading the 3rd party lib at dev-time for using inside control
+(in order not to pollute global scope)
+
+* `amd: true`
+* `exports: "ZXing"`
+
+when used in app, the test-page of the library is available at
+note: http://localhost:1081/test-resources/missed/controls/BarcodeScanner.html
+at dev-time (via `ui5 serve`)
+

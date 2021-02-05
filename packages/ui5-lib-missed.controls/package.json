@@ -1,5 +1,5 @@
 {
-    "name": "ui5-lib-missedcontrols",
+    "name": "ui5-lib-missed.controls",
     "version": "0.1.0",
     "scripts": {
         "start": "ui5 serve -o test-resources/missed/controls/BarcodeScanner.html"
@@ -9,7 +9,11 @@
     },
     "ui5": {
         "dependencies": [
-            "ui5-middleware-livereload"
+            "ui5-middleware-livereload",
+            "@zxing/library"
         ]
+    },
+    "dependencies": {
+        "@zxing/library": "^0.18.3"
     }
 }

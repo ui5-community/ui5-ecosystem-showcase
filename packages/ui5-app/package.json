@@ -31,6 +31,9 @@
       "quiet": false
     }
   },
+  "dependencies": {
+    "ui5-lib-missed.controls": "0.1.0"
+  },
   "devDependencies": {
     "@sapui5/ts-types": "^1.82.0",
     "@ui5/cli": "^2.6.4",
@@ -69,6 +72,7 @@
   },
   "ui5": {
     "dependencies": [
+      "ui5-lib-missed.controls",
       "ui5-middleware-cfdestination",
       "ui5-middleware-livereload",
       "ui5-middleware-iasync",

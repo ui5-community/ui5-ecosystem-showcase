@@ -2,7 +2,8 @@
 	xmlns:core="sap.ui.core"
 	xmlns:mvc="sap.ui.core.mvc"
 	displayBlock="true"
-	xmlns="sap.m">
+	xmlns="sap.m"
+	xmlns:mc="missed.controls">
 
 	<Page id="page"
 		title="{i18n>appTitle}">
@@ -21,6 +22,7 @@
 					text="{i18n>startPage.title.text}"
 					width="100%"
 					textAlign="Center" />
+				<mc:BarcodeScanner text="'allo world!" />
 				<Button id="NavButton"
 					icon="sap-icon://forward"
 					text="{i18n>startPage.navButton.text}"
