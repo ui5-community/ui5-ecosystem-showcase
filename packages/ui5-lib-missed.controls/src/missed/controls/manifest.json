@@ -1,0 +1,15 @@
+{
+    "sap.app": {
+        "id": "missed.controls",
+        "type": "library",
+        "applicationVersion": {
+            "version": "${version}"
+        },
+        "title": "The Definitely Missed Controls Most Wanted Library!"
+    },
+    "sap.ui5": {
+        "library": {
+            "css": false
+        }
+    }
+}
