@@ -9,7 +9,7 @@
     },
     "sap.ui5": {
         "library": {
-            "css": false
+            "css": true
         }
     }
 }

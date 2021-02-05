@@ -31,6 +31,6 @@ sap.ui.define([
 			"missed.controls.BarcodeScanner"
 		],
 		elements: [],
-		noLibraryCSS: true // if no CSS is provided, you can disable the library.css load here
+		noLibraryCSS: false // if no CSS is provided, you can disable the library.css load here
 	});
 });

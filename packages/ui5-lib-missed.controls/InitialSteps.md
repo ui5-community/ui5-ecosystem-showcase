@@ -53,16 +53,39 @@ $> touch test/missed/controls/BarcodeScanner.html
 Add dependencies
 
 ```bash
-ui5 use openui5@latest
-
-ui5 add sap.ui.core
+$> ui5 use openui5@latest
+$> ui5 add sap.ui.core
 ```
 
 Start the test server:
 
-```sh
-ui5 serve -o test-resources/missed/controls/BarcodeScanner.html
+```bash
+$> ui5 serve -o test-resources/missed/controls/BarcodeScanner.html
 ```
 
 Add live reload!
 
+add support for theming
+here's an overview of all theme parameters:
+https://ui5.sap.com/test-resources/sap/m/demokit/theming/webapp/index.html
+
+```bash
+# (in / of lib)
+$> mkdir -p src/themes/base
+$> touch src/themes/base/BarcodeScanner.less
+$> touch src/themes/base/library.source.less
+# ... import base global.less'es
+# @import "BarcodeScanner.less";
+```
+
+check for "sap.ui5".library.css = true
+
+support for specific theme
+```bash
+# (in / of lib)
+$> mkdir -p src/themes/base
+$> touch src/themes/sap_fiori_3_dark/library.source.less
+# ... import sap_fiori_3_dark global.less'es
+# @import "../base/library.source.less";
+
+```

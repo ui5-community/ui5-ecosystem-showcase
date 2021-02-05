@@ -17,7 +17,8 @@ sap.ui.define([], () => {
 	 * @param {missed.controls.BarcodeScanner} oBarcodeScanner an object representation of the control that should be rendered
 	 */
 	BarcodeScannerRenderer.render = (oRm, oBarcodeScanner) => {
-		oRm.openStart("div", oBarcodeScanner);
+        oRm.openStart("div", oBarcodeScanner);
+        oRm.class("missedControlsBarcodeScanner");
 		oRm.openEnd();
 		oRm.text(oBarcodeScanner.getText())
 		oRm.close("div");
