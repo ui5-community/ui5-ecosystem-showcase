@@ -46,7 +46,10 @@ module.exports = async ({ resources, options }) => {
         watchPath = options.configuration.watchPath || options.configuration.path;
     }
     let exclusions = [];
-    const aOptExclusions = options.configuration.exclusions;
+    let aOptExclusions;
+    if (options.configuration && options.configuration.exclusions) {
+        aOptExclusions = options.configuration.exclusions;
+    }
     if (options.configuration && aOptExclusions && Array.isArray(aOptExclusions)) {
         // multilpe exclusions
         aOptExclusions.forEach((exclusion) => {
