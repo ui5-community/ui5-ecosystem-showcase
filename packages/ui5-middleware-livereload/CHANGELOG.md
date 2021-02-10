@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.2](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.5.1...ui5-middleware-livereload@0.5.2) (2021-02-10)
+
+
+### Bug Fixes
+
+* non-specified exclusions crash the server ([d76efb5](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/d76efb51b8b47f82af9d3474e9555fc6901808eb))
+
+
+
+
+
 ## [0.5.1](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.5.0...ui5-middleware-livereload@0.5.1) (2020-12-17)
 
 
