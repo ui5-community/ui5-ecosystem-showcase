@@ -25,16 +25,15 @@ module.exports = function ({ resources, options }) {
     const xsappConfig = JSON.parse(fs.readFileSync(options.configuration.xsappJson, 'utf8'));
     const xsappPath = options.configuration.xsappJson.replace("xs-app.json", "");
 
-    // the embedded approuter (the one that runs locally) will ignore all auth mechanisms. 
-    // Even when xsappConfig.authenticationMethod = "route" and only define the routes, 
-    // the approuter will try to read the env var during startup - and fail if they are missing
-    xsappConfig.authenticationMethod = "none";
+    // the default auth mechanism is set to none but the user can pass an auth method using the options
+    xsappConfig.authenticationMethod = options.configuration.authenticationMethod || "none";
 
     let regExes = [];
     xsappConfig.routes = xsappConfig.routes.filter((route) => !route.localDir && !route.service); //ignore routes that point to web apps as they are already hosted by the ui5 tooling
 
     xsappConfig.routes.forEach(route => {
-        route.authenticationType = "none";
+        /* Authentication type should come from route or be set to none as default */
+        route.authenticationType = route.authenticationType || "none";
         // ignore /-redirects (e.g. "^/(.*)"
         // a source declaration such as "^/backend/(.*)$" is needed
         if (route.source.match(/.*\/.*\/.*/)) {
