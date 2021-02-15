@@ -52,7 +52,7 @@ server:
     - name: ui5-middleware-cfdestination
       afterMiddleware: compression
       configuration:
-        authenticationMethod: none # none or route
+        authenticationMethod: none # none or route default is none
         debug: true
         port: 1091
         xsappJson: "xs-app.json"
