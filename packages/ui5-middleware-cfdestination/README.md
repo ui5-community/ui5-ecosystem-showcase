@@ -52,6 +52,8 @@ server:
     - name: ui5-middleware-cfdestination
       afterMiddleware: compression
       configuration:
+        authenticationMethod: "none" # "none" || "route", default: "none"
+        allowServices: false # allows sap services like SAP IoT to be used 
         debug: true
         port: 1091
         xsappJson: "xs-app.json"
