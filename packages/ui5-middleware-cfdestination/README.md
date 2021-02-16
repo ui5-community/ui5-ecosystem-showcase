@@ -53,6 +53,7 @@ server:
       afterMiddleware: compression
       configuration:
         authenticationMethod: none # none or route default is none
+        allowServices: false # allows sap services like SAP iot to be used 
         debug: true
         port: 1091
         xsappJson: "xs-app.json"
