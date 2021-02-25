@@ -25,13 +25,14 @@ The following tasks (known to this page) have been created and are available in 
 | [ui5-task-babel](https://github.com/pwasem/ui5-task-babel#readme) | configurable transpiling using babel | [![npm version](https://badge.fury.io/js/ui5-task-babel.svg)](https://badge.fury.io/js/ui5-task-babel) |
 | [ui5-task-flatten-library](https://www.npmjs.com/package/ui5-task-flatten-library) | prepares build result for deployment to SAP NetWeaver | [![npm version](https://badge.fury.io/js/ui5-task-flatten-library.svg)](https://badge.fury.io/js/ui5-task-flatten-library) |
 | [ui5-task-i18ncheck](https://www.npmjs.com/package/ui5-task-i18ncheck) | checks for missing i18n texts | [![npm version](https://badge.fury.io/js/ui5-task-i18ncheck.svg)](https://badge.fury.io/js/ui5-task-i18ncheck) |
+| [ui5-task-librarian](https://www.npmjs.com/package/ui5-task-librarian) | checks for redundant libraries | [![npm version](https://badge.fury.io/js/ui5-task-librarian.svg)](https://badge.fury.io/js/ui5-task-librarian) |
+| [ui5-task-minifier](https://github.com/mauriciolauffer/ui5-task-minifier) | minify HTML/CSS/JSON files | [![npm version](https://badge.fury.io/js/ui5-task-minifier.svg)](https://badge.fury.io/js/ui5-task-minifier) |
 | [ui5-task-mvn-dependency-provider](https://www.npmjs.com/package/ui5-task-mvn-dependency-provider) | provides ui5 sources packed in .jars to the ui5 runtime | [![npm version](https://badge.fury.io/js/ui5-task-mvn-dependency-provider.svg)](https://badge.fury.io/js/ui5-task-mvn-dependency-provider) |
 | [ui5-task-pwa-enabler](https://www.npmjs.com/package/ui5-task-pwa-enabler) | enables ui5 app with pwa functionalities | [![npm version](https://badge.fury.io/js/ui5-task-pwa-enabler.svg)](https://badge.fury.io/js/ui5-task-pwa-enabler) |
-| [ui5-task-transpile](https://www.npmjs.com/package/ui5-task-transpile) | transpile es6 to es5 code | [![npm version](https://badge.fury.io/js/ui5-task-transpile.svg)](https://badge.fury.io/js/ui5-task-transpile) |
 | [ui5-task-stringreplacer](https://www.npmjs.com/package/ui5-task-stringreplacer) | replaces placeholder strings | [![npm version](https://badge.fury.io/js/ui5-task-stringreplacer.svg)](https://badge.fury.io/js/ui5-task-stringreplacer) |
 | [ui5-task-transpile-gen](https://www.npmjs.com/package/ui5-task-transpile-gen) | transpile es6 to es5 code including Async Await syntax | [![npm version](https://badge.fury.io/js/ui5-task-transpile-gen.svg)](https://badge.fury.io/js/ui5-task-transpile-gen) |
+| [ui5-task-transpile](https://www.npmjs.com/package/ui5-task-transpile) | transpile es6 to es5 code | [![npm version](https://badge.fury.io/js/ui5-task-transpile.svg)](https://badge.fury.io/js/ui5-task-transpile) |
 | [ui5-task-zipper](https://www.npmjs.com/package/ui5-task-zipper) | bundle the entire webapp in a zip-archive | [![npm version](https://badge.fury.io/js/ui5-task-zipper.svg)](https://badge.fury.io/js/ui5-task-zipper) |
-| [ui5-task-minifier](https://github.com/mauriciolauffer/ui5-task-minifier) | minify HTML/CSS/JSON files | [![npm version](https://badge.fury.io/js/ui5-task-minifier.svg)](https://badge.fury.io/js/ui5-task-minifier) |
 
 There might be more tasks in the public NPM registry. You can find all tasks which applied the suggested naming convention via [https://www.npmjs.com/search?q=ui5-task-](https://www.npmjs.com/search?q=ui5-task-).
 
