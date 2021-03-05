@@ -34,7 +34,7 @@ builder:
   - name: ui5-task-i18ncheck
     afterTask: replaceVersion
   - name: ui5-task-zipper
-    afterTask: uglify 
+    afterTask: uglify
     configuration:
       archiveName: webapp
       includeDependencies: true
@@ -68,6 +68,8 @@ server:
         Any-Header: AnyHeader
       query:
         type: sdk #other types: runtime, runtimeMobile
+      excludePatterns:
+      - "/local/**"
     # PoC: reuse the same middleware at a different "mountPath"
   - name: ui5-middleware-simpleproxy
     mountPath: /proxy2

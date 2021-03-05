@@ -1,5 +1,6 @@
 let proxy = require('express-http-proxy');
 const log = require("@ui5/logger").getLogger("server:custommiddleware:proxy");
+const minimatch = require("minimatch");
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -21,7 +22,7 @@ const env = {
  * passed to environment variable except `"false"` will default to `true`. If both
  * values are undefined or null, return `true` as well.
  *
- * @param {?boolean} environmentValue Value of the environment variable 
+ * @param {?boolean} environmentValue Value of the environment variable
  *                                  UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL
  * @param {?boolean} configurationValue Value from the ui5.yaml configuration
  * @returns {boolean} Indicator whether to require strict SSL checking
@@ -45,10 +46,10 @@ function deriveStrictSSL(environmentValue, configurationValue) {
 
 /**
  * Get the HTTP headers from environment variable if exists, otherwise get from the configuration
- * 
+ *
  * @param {string} environmentValue The value coming from the enviroment variable 'UI5_MIDDLEWARE_HTTP_HEADERS'
  * @param {Object} configuration The configuration object
- * 
+ *
  * @returns {Object} http headers
  */
 function getHttpHeaders(environmentValue, configuration) {
@@ -80,10 +81,10 @@ function getBasicAuthenticationToken(environmentValue = {}, configuration = {}) 
 
 /**
  * Get query parameters from environment variable if exists, otherwise get from the configuration
- * 
+ *
  * @param {string} environmentValue The value coming from the enviroment variable 'UI5_MIDDLEWARE_SIMPLE_PROXY_QUERY_PARAMETERS'
  * @param {Object} configuration The configuration object
- * 
+ *
  * @returns {Object} Query parameters
  */
 function getQueryParameters(environmentValue, configuration) {
@@ -113,6 +114,7 @@ function getQueryParameters(environmentValue, configuration) {
  * @returns {function} Middleware function to use
  */
 module.exports = function ({ resources, options }) {
+  const isDebug = options.configuration && options.configuration.debug;
   // Environment wins over YAML configuration when loading settings
   const providedBaseUri = env.baseUri || (options.configuration && options.configuration.baseUri);
   const providedStrictSSL = deriveStrictSSL(
@@ -121,7 +123,7 @@ module.exports = function ({ resources, options }) {
   );
   const providedHttpHeaders = getHttpHeaders(env.httpHeaders, options.configuration);
   const providedQueryParameters = getQueryParameters(env.query, options.configuration);
-  options.configuration && options.configuration.debug && log.info(`Starting proxy for baseUri ${providedBaseUri}`);
+  isDebug && log.info(`Starting proxy for baseUri ${providedBaseUri}`);
   // determine the uri parts (protocol, baseUri, path)
   let baseUriParts = providedBaseUri.match(/(https|http)\:\/\/([^/]*)(\/.*)?/i);
   if (!baseUriParts) {
@@ -135,18 +137,26 @@ module.exports = function ({ resources, options }) {
   }
   const limit = env.limit || (options.configuration && options.configuration.limit);
   const removeETag = env.removeETag || (options.configuration && options.configuration.removeETag);
+  const excludePatterns = options.configuration && options.configuration.excludePatterns;
+  isDebug && log.info(`excludePatterns: ${excludePatterns}`);
 
   // run the proxy middleware based on the baseUri configuration
   return proxy(baseUri, {
     https: protocol === "https",
     limit: limit,
+    filter: excludePatterns && Array.isArray(excludePatterns) && function(req, res) {
+      return excludePatterns.some(glob => {
+        isDebug && log.info(`Proxy request ${req.url} is matched to glob "${glob}": ${minimatch(req.url, glob)} ${providedBaseUri}`);
+        return !minimatch(req.url, glob);
+      });
+    },
     preserveHostHdr: false,
     proxyReqOptDecorator: function (proxyReqOpts) {
       if (providedStrictSSL === false) {
         proxyReqOpts.rejectUnauthorized = false;
       }
       if (providedHttpHeaders) {
-        Object.assign(proxyReqOpts.headers, providedHttpHeaders); 
+        Object.assign(proxyReqOpts.headers, providedHttpHeaders);
       }
       const authorizationToken = getBasicAuthenticationToken(env, options.configuration);
       if (authorizationToken) {
@@ -209,7 +219,7 @@ module.exports = function ({ resources, options }) {
         userRes.end = function() {
           this.removeHeader("ETag");
           return fnEnd.apply(this, arguments);
-        }  
+        }
       }
       return proxyResData;
     },
