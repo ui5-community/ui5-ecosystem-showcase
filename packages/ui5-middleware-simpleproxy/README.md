@@ -28,6 +28,8 @@ npm install ui5-middleware-simpleproxy --save-dev
   Http headers set for the proxied request. Will overwrite the http headers from the request. 
 - query: `map`
   Query parameters set for the proxied request. Will overwrite the parameters from the request. 
+- excludePatterns: `string[]`
+  Array of exclude patterns using glob syntax
 
 In general, use of environment variables or values set in a `.env` file will override configuration values in the `ui5.yaml`.
 
@@ -68,6 +70,8 @@ server:
         Any-Header: AnyHeader
       query:
         sap-client: 206
+      excludePatterns:
+      - "/local/**"
 ```
 
 ## How it works
