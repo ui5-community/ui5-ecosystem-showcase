@@ -30,6 +30,11 @@ module.exports = async function ({ workspace, taskUtil, options }) {
 
   await Promise.all(allWorkspaceResources.map(async (resource) => {
 
+    if (taskUtil.getTag(resource, taskUtil.STANDARD_TAGS.OmitFromBuildResult)) {
+      // Resource should not be part of the build result
+      // Therefore no need to flatten it
+      return;
+    }
     // Tag all resources to be omitted from the build result (based on current resource path)
     taskUtil.setTag(resource, taskUtil.STANDARD_TAGS.OmitFromBuildResult);
 
