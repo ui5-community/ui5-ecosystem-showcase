@@ -33,8 +33,9 @@ module.exports = function ({ resources, options }) {
         .filter((route) => !route.localDir && (options.configuration.allowServices || !route.service)); //ignore routes that point to web apps as they are already hosted by the ui5 tooling
 
     xsappConfig.routes.forEach(route => {
-        /* Authentication type should come from route or be set to none as default */
-        route.authenticationType = route.authenticationType || "none";
+        /* Authentication type should come from route if authenticationMethod is set to "route", otherwise set to "none" */
+        route.authenticationType = (xsappConfig.authenticationMethod == "route") ? route.authenticationType : "none";
+
         // ignore /-redirects (e.g. "^/(.*)"
         // a source declaration such as "^/backend/(.*)$" is needed
         if (route.source.match(/.*\/.*\/.*/)) {
