@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.1](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.4.0...ui5-middleware-cfdestination@0.4.1) (2021-03-10)
+
+
+### Bug Fixes
+
+* auth routes config (fixes [#506](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/506)) ([f9ae45c](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/f9ae45c53625334845df968f2771646295ebf04a))
+
+
+
+
+
 # [0.4.0](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.3.1...ui5-middleware-cfdestination@0.4.0) (2021-02-16)
 
 
