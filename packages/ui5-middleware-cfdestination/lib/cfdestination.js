@@ -34,7 +34,7 @@ module.exports = function ({ resources, options }) {
 
     xsappConfig.routes.forEach(route => {
         /* Authentication type should come from route if authenticationMethod is set to "route", otherwise set to "none" */
-        route.authenticationType = (xsappConfig.authenticationMethod == "route") ? route.authenticationType : "none";
+        route.authenticationType = (xsappConfig.authenticationMethod.toLowerCase() === "route") ? route.authenticationType : "none";
 
         // ignore /-redirects (e.g. "^/(.*)"
         // a source declaration such as "^/backend/(.*)$" is needed
