@@ -67,13 +67,31 @@ module.exports = async ({ resources, options }) => {
     if (options.configuration && options.configuration.debug) {
         debug = options.configuration.debug;
     }
+        
+    let serverOptions = {
+        debug: debug,
+        extraExts: extraExts ? extraExts.split(",") : undefined,
+        port: port,
+        exclusions: exclusions
+    };
+    
+    const cli = require("yargs");
+    if (cli.argv.h2) {
+        const path = require("path");
+        const os = require("os");
+        const fs = require("fs");
+        
+        sslKeyPath = cli.argv.key ? cli.argv.key : path.join(os.homedir(), ".ui5", "server", "server.key");
+        sslCertPath = cli.argv.cert ? cli.argv.cert : path.join(os.homedir(), ".ui5", "server", "server.crt");
+        
+        serverOptions.https = {
+            key: fs.readFileSync(sslKeyPath),
+            cert: fs.readFileSync(sslCertPath)
+        };
+    }
+    
     const livereloadServer = livereload.createServer(
-        {
-            debug: debug,
-            extraExts: extraExts ? extraExts.split(",") : undefined,
-            port: port,
-            exclusions: exclusions
-        },
+        serverOptions,
         () => {
             log.info("Livereload server started!");
         }
