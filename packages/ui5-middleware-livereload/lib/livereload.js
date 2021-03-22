@@ -77,13 +77,14 @@ module.exports = async ({ resources, options }) => {
     
     const cli = require("yargs");
     if (cli.argv.h2) {
-        const path = require("path");
         const os = require("os");
         const fs = require("fs");
         
         sslKeyPath = cli.argv.key ? cli.argv.key : path.join(os.homedir(), ".ui5", "server", "server.key");
         sslCertPath = cli.argv.cert ? cli.argv.cert : path.join(os.homedir(), ".ui5", "server", "server.crt");
-        
+		debug ? log.info(`Livereload using SSL key ${sslKeyPath}`) : null;
+		debug ? log.info(`Livereload using SSL certificate ${sslCertPath}`) : null;
+		
         serverOptions.https = {
             key: fs.readFileSync(sslKeyPath),
             cert: fs.readFileSync(sslCertPath)
