@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.3](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.5.2...ui5-middleware-livereload@0.5.3) (2021-03-22)
+
+
+### Bug Fixes
+
+* **livereload:** support HTTP/2 --h2 option ([#511](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/511)) ([6d28f06](https://github.com/petermuessig/ui5-ecosystem-showcase/commit/6d28f06de2c9572f82a979a44b6e3b7d5b80c2bd))
+
+
+
+
+
 ## [0.5.2](https://github.com/petermuessig/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.5.1...ui5-middleware-livereload@0.5.2) (2021-02-10)
 
 
