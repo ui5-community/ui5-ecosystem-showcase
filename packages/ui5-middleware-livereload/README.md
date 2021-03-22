@@ -124,6 +124,10 @@ The middleware launches a `livereload`-server on the specified `port`, listening
 
 When changes are detected, a reload is triggered to **all connected clients** - so all browsers having `$yourapp` will reload the application. The reload is `#`-aware, meaning the current displayed route in your single-page UI5 app is kept steady.
 
+## HTTP/2 support
+
+The middleware supports HTTP/2 automatically, when the UI5 server is started with the --h2 option. It uses the same SSL key and certificate, either set using the --key and --cert options, or using the default ~/.ui5/server/server.key and ~/.ui5/server/server.crt.
+
 ## Misc/FAQ
 
 yep, cross-browser, cross-platform.
