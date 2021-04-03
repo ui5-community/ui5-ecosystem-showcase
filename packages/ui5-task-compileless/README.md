@@ -48,6 +48,7 @@ builder:
   - name: ui5-task-compileless
     afterTask: replaceVersion
     configuration:
+      debug: true
       appFolderPath: myWebappFolder
       lessToCompile: 
         - "css/style.less"
