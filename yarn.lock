@@ -1738,15 +1738,15 @@
     "@octokit/openapi-types" "^3.3.0"
     "@types/node" ">= 8"
 
-"@sap/approuter@^9.0.1":
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/@sap/approuter/-/approuter-9.1.0.tgz#7933a791e1d097ed9c06b554bab2e879869bd1f0"
-  integrity sha512-ojJbDbVTIDSe/qU08b0JTIBI4GNrO6fQaT2KcD10HCpu7xPATBhRsvrQSmBm9V0lNZIMZy0mIDbfLG+k1A85Bw==
+"@sap/approuter@^9.3.0":
+  version "9.4.0"
+  resolved "https://registry.yarnpkg.com/@sap/approuter/-/approuter-9.4.0.tgz#a7f1a13745a1ca10399e451fcf2a9e1259b90c20"
+  integrity sha512-hu9SpqQ/RPayRWYgPYx5cXvxElfXvIpYKJ9nqRT5X6haEOb/+9dxjZj5gBq1vVK5lGFzwKmdPhpHXhwLCob2HA==
   dependencies:
-    "@sap/audit-logging" "3.2.0"
-    "@sap/e2e-trace" "2.1.0"
-    "@sap/logging" "6.0.2"
-    "@sap/xsenv" "2.2.0"
+    "@sap/audit-logging" "4.2.0"
+    "@sap/e2e-trace" "3.0.0"
+    "@sap/logging" "6.0.3"
+    "@sap/xsenv" "3.1.0"
     "@sap/xssec" "3.0.10"
     agentkeepalive "2.0.5"
     async "2.0.1"
@@ -1767,7 +1767,7 @@
     http-proxy-agent "2.1.0"
     https-proxy-agent "2.2.4"
     jwt-decode "2.0.1"
-    lodash "4.17.20"
+    lodash "4.17.21"
     lru-cache "4.0.0"
     mime "1.4.1"
     moment "2.19.3"
@@ -1786,48 +1786,41 @@
     tough-cookie "2.3.3"
     tv4 "1.2.7"
     uid-safe "2.1.5"
-    urijs "1.19.5"
+    urijs "1.19.6"
     uuid "3.2.1"
     validator "13.5.2"
     verror "1.10.0"
     ws "7.3.1"
 
-"@sap/audit-logging@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@sap/audit-logging/-/audit-logging-3.2.0.tgz#15d10fff049e17fd6d616230ba58b09719179ebc"
-  integrity sha512-LNSJK62qBE9xJAlFj9Lj8pqFHSapwVdmtibuzrQvtFizUyehOMoSLq4e04KF9FL/OQOZW7vM1URZPdKC9SHAOw==
+"@sap/audit-logging@4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@sap/audit-logging/-/audit-logging-4.2.0.tgz#3f151fd9293babc2ac966818e0ce0d2ccca4e78c"
+  integrity sha512-BdOELIL4ElZL19/+R7EIJNAqhxJA+KnnYBSKr/0ann+g+f070unPqdRkf+L99micfL4gpsAqhej2e9QkT2h0pQ==
   dependencies:
-    debug "3.1.0"
+    debug "4.2.0"
     request "2.88.2"
-    requestretry "4.0.2"
+    requestretry "4.1.1"
 
-"@sap/e2e-trace@2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@sap/e2e-trace/-/e2e-trace-2.1.0.tgz#c722c96c8f8e5f5e801969b544a907145c088e57"
-  integrity sha512-kP4RTFx4ACw1WWYTbePH+lKHiZD7gfOoOTzDAgAHujYOwPmKed63W+gLn79C9dGY7VTb3TeLMoNB8J3Xrhyyfg==
-  dependencies:
-    request-stats "3.0.0"
-
-"@sap/e2e-trace@^3.0.0":
+"@sap/e2e-trace@3.0.0", "@sap/e2e-trace@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@sap/e2e-trace/-/e2e-trace-3.0.0.tgz#8ae2ad6cceb545db14d15dcf45e6020dd74a0ea1"
   integrity sha512-0dwG0Ifai/CJjEAGuY4B9gnjjhNez5zX+FCmuhYkgLxNxeMX+rI4p36ferup+WUum8vnvyRwNz4UJ9LDnUPQgw==
   dependencies:
     request-stats "3.0.0"
 
-"@sap/logging@6.0.2":
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/@sap/logging/-/logging-6.0.2.tgz#899a5e4e0b71b53afd419ba4eed4448aeccd1f0d"
-  integrity sha512-5fp6hMQIja78+H7McAwF6DFaW2pgclqoEiFS0rK2o3jBsORub3HcZR+XWUskta7uYktyt5n+nxmZHM1vOKmiJg==
+"@sap/logging@6.0.3":
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/@sap/logging/-/logging-6.0.3.tgz#a478f24f8ec46967307f2bdf9a07021f061973fb"
+  integrity sha512-as2XRHnR20r8NihXGVmNwV+JdEc4+F8eyAf43t8940me0aVbJln9MjN920X6PshKyz7R7DbCKFBQADSSq1KGnQ==
   dependencies:
     "@sap/e2e-trace" "^3.0.0"
-    lodash "4.17.20"
-    moment "2.29.0"
+    lodash "4.17.21"
+    moment "2.29.1"
 
-"@sap/xsenv@2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@sap/xsenv/-/xsenv-2.2.0.tgz#37ff82f403ff4b756ae8c85add8288c81ff51c6a"
-  integrity sha512-NtxbAZ2I957OWRVdlT16C3qan1TZ9Cfs9ephEDH03gPwbTm8nRtd1uZ8tqOMj/p1CVt0IAoUnkt985btYhhzkg==
+"@sap/xsenv@3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@sap/xsenv/-/xsenv-3.1.0.tgz#86cf4a5229c7f3d3b4425aa1fab674cf8505051e"
+  integrity sha512-Z+fwO13tcad+eoe8iTrbR471OacU754puabhRn8OI1MU2pPebDQu8rcHN7sR9JQinh4dSs953WkbDneOmvCWuA==
   dependencies:
     debug "3.1.0"
     verror "1.10.0"
@@ -7271,6 +7264,15 @@ lerna@^3.22.1:
     import-local "^2.0.0"
     npmlog "^4.1.2"
 
+less-openui5@^0.11.1:
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/less-openui5/-/less-openui5-0.11.1.tgz#0b687530b66f440dc2ebf5cb64a1a0b9c14692db"
+  integrity sha512-jzEWIAV5F3VlsNifHNkAB5pBBVy643Mw9UGZIpAPbQ56RO04BSHcVW05TlZyNnGnrfUF11RmTjvhZxiWs0Ovag==
+  dependencies:
+    clone "^2.1.0"
+    css "^3.0.0"
+    mime "^1.6.0"
+
 less-openui5@^0.9.0:
   version "0.9.0"
   resolved "https://registry.yarnpkg.com/less-openui5/-/less-openui5-0.9.0.tgz#2b35bbf66d29d95b308805e6612de743612ebe5d"
@@ -7608,7 +7610,12 @@ lodash.zip@^4.2.0:
   resolved "https://registry.yarnpkg.com/lodash.zip/-/lodash.zip-4.2.0.tgz#ec6662e4896408ed4ab6c542a3990b72cc080020"
   integrity sha1-7GZi5IlkCO1KtsVCo5kLcswIACA=
 
-lodash@4.17.20, lodash@4.x, lodash@^4.17.10, lodash@^4.17.12, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.2, lodash@^4.2.1, lodash@^4.8.0, lodash@~4.17.10:
+lodash@4.17.21:
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
+  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
+
+lodash@4.x, lodash@^4.17.10, lodash@^4.17.12, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.2, lodash@^4.2.1, lodash@^4.8.0, lodash@~4.17.10:
   version "4.17.20"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
   integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
@@ -8101,10 +8108,10 @@ moment@2.19.3:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.19.3.tgz#bdb99d270d6d7fda78cc0fbace855e27fe7da69f"
   integrity sha1-vbmdJw1tf9p4zA+6zoVeJ/59pp8=
 
-moment@2.29.0:
-  version "2.29.0"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.0.tgz#fcbef955844d91deb55438613ddcec56e86a3425"
-  integrity sha512-z6IJ5HXYiuxvFTI6eiQ9dm77uE0gyy1yXNApVHqTcnIKfY9tIwEjlzsZ6u1LQXvVgKeTnv9Xm7NDvJ7lso3MtA==
+moment@2.29.1:
+  version "2.29.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
+  integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
 
 move-concurrently@^1.0.1:
   version "1.0.1"
@@ -9770,13 +9777,13 @@ requestretry@4.0.0:
     lodash "^4.17.10"
     when "^3.7.7"
 
-requestretry@4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/requestretry/-/requestretry-4.0.2.tgz#38213a65393a25b012d2208d6d20073a7db6b30b"
-  integrity sha512-ZGdO1ZXUQAeCB9xOS2keSN501y7T1t0zPOD58jTAOwamt6qkcBMaGdRBHEOMQRnDtT5fn7S99F0dwADUqCmYqg==
+requestretry@4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/requestretry/-/requestretry-4.1.1.tgz#cff81cf9cacc98bdee1ae8bcf8b542afcbc1938d"
+  integrity sha512-sV2lkWitASDXpIK+m0scC7dHBkW42EKj5iao6Cp8GCXsXY7qS4Q/min6PP5YBuqgV9W38lsA7LUhEkOezl1/Og==
   dependencies:
     extend "^3.0.2"
-    lodash "^4.17.10"
+    lodash "^4.17.15"
     when "^3.7.7"
 
 require-directory@^2.1.1:
@@ -11474,10 +11481,10 @@ uri-js@^4.2.2:
   dependencies:
     punycode "^2.1.0"
 
-urijs@1.19.5:
-  version "1.19.5"
-  resolved "https://registry.yarnpkg.com/urijs/-/urijs-1.19.5.tgz#119683ab4b2fb0bd637e5ea6dd9117bcac68d3e4"
-  integrity sha512-48z9VGWwdCV5KfizHsE05DWS5fhK6gFlx5MjO7xu0Krc5FGPWzjlXEVV0nPMrdVuP7xmMHiPZ2HoYZwKOFTZOg==
+urijs@1.19.6:
+  version "1.19.6"
+  resolved "https://registry.yarnpkg.com/urijs/-/urijs-1.19.6.tgz#51f8cb17ca16faefb20b9a31ac60f84aa2b7c870"
+  integrity sha512-eSXsXZ2jLvGWeLYlQA3Gh36BcjF+0amo92+wHPyN1mdR8Nxf75fuEuYTd9c0a+m/vhCjRK0ESlE9YNLW+E1VEw==
 
 urix@^0.1.0:
   version "0.1.0"

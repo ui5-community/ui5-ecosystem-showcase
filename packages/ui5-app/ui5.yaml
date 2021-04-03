@@ -10,6 +10,10 @@ framework:
     - name: sap.ui.core
     - name: sap.ui.layout
     - name: themelib_sap_fiori_3
+resources:
+  configuration:
+    paths:
+      webapp: webapp
 builder:
   customTasks:
   - name: ui5-task-transpile
@@ -41,6 +45,14 @@ builder:
       onlyZip: false
       additionalFiles:
       - "xs-app.json"
+  - name: ui5-task-compileless
+    afterTask: replaceVersion
+    configuration:
+      debug: true
+      appFolderPath: webapp
+      lessToCompile: 
+        - "css/style.less"
+  
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
 server:
   customMiddleware:
