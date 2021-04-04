@@ -10,10 +10,6 @@ framework:
     - name: sap.ui.core
     - name: sap.ui.layout
     - name: themelib_sap_fiori_3
-resources:
-  configuration:
-    paths:
-      webapp: webapp
 builder:
   customTasks:
   - name: ui5-task-transpile
