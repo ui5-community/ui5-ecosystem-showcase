@@ -10,7 +10,7 @@ const minimatch = require("minimatch");
  * Custom task to compile less files in the app folder
  *
  * @param {Array} lessResources Array of objects containing the less resource and the corresponding project resource path
- * @param {module:@ui5/fs.fsInterface} fs Node.js styled file system interface
+ * @param {fsInterface} fs Node.js styled file system interface
  * @param {boolean} isDebug Flag indicating debug mode
  * @returns {Promise<Array>} Promise resolving with the created css resources
  * @private
@@ -33,7 +33,7 @@ function compileLess(lessResources, fs, isDebug) {
                 ).catch(error => log.error(error));
         })
     );
-};
+}
 
 /**
  * Custom task to compile less files in the app folder

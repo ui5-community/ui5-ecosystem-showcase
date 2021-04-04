@@ -46,9 +46,8 @@ builder:
     configuration:
       debug: true
       appFolderPath: webapp
-      lessToCompile: 
+      lessToCompile:
         - "css/style.less"
-  
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
 server:
   customMiddleware:
@@ -138,3 +137,13 @@ server:
     configuration:
       debug: true
       jarRootPath: "META-INF/"
+  - name: ui5-middleware-livecompileless
+    beforeMiddleware: serveResources
+    configuration:
+      debug: true
+      appFolderPath: webapp
+      lessToCompile:
+        - "css/style.less"
+      htmlFilesPatterns:
+        - "index.html"
+        - "unit/**/*.html"

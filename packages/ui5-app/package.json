@@ -58,6 +58,7 @@
     "ui5-middleware-servestatic": "^0.3.3",
     "ui5-middleware-simpleproxy": "^0.7.1",
     "ui5-middleware-stringreplacer": "^0.2.1",
+    "ui5-middleware-livecompileless": "^0.1.0",
     "ui5-middleware-webjars": "^0.3.0",
     "ui5-task-compileless": "^0.1.0",
     "ui5-task-i18ncheck": "^0.3.3",
@@ -70,6 +71,7 @@
   },
   "ui5": {
     "dependencies": [
+      "ui5-middleware-livecompileless",
       "ui5-middleware-cfdestination",
       "ui5-middleware-livereload",
       "ui5-middleware-iasync",
