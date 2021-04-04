@@ -58,6 +58,12 @@ builder:
 
 The task can be used to compile less files in your app folder by using [less-openui5](https://github.com/SAP/less-openui5).
 
+It can also include less file from the ui5 dependencies for example
+```less
+@import "/resources/sap/ui/core/themes/base/base.less";
+```
+To get all the less variable that are defined in the sap ui theme core.
+
 ## License
 
 This work is [dual-licensed](../../LICENSE) under Apache 2.0 and the Derived Beer-ware License. The official license will be Apache 2.0 but finally you can choose between one of them if you use this work.

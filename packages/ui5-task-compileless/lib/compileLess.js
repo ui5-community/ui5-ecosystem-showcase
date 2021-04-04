@@ -30,7 +30,7 @@ function compileLess(lessResources, fs, isDebug) {
                         path: lessResource.projectResourcePath.replace(/(.*).less/, "$1.css"),
                         string: output.css
                     })
-                );
+                ).catch(error => log.error(error));
         })
     );
 };
@@ -50,8 +50,12 @@ module.exports = async function({workspace, dependencies, options}) {
     const appFolderPath = options.configuration && options.configuration.appFolderPath || 'webapp';
     const lessToCompile = options.configuration && options.configuration.lessToCompile|| [] ;
     const isDebug = options.configuration && options.configuration.debug;
-    
-    
+
+
+
+    //create custom duplex collection where the webapp is in the "/" folder
+    //By default when building the workspace reader is in the vir dir "/resources/{namespace}
+    //This needs to be done so that the less in the serve version and the build version can use the same paths to external resources
     let appFolderWorkspace = new DuplexCollection({
         reader: new FileSystem({
             virBasePath: "/",
@@ -67,7 +71,7 @@ module.exports = async function({workspace, dependencies, options}) {
         readers: [appFolderWorkspace, dependencies]
     });
 
-    
+
     const lessResourcesProjectWorkspace = await workspace.byGlobSource("**/*.less");
     let lessResourcesAppFolderWorkspace = await appFolderWorkspace.byGlobSource("**/*.less");
 
