@@ -55,7 +55,7 @@ server:
     afterMiddleware: compression
     configuration:
       debug: true
-      extraExts: "xml,json,properties"
+      extraExts: "xml,json,properties,less"
       path: "webapp"
       exclusions:
         - "lib/nolivereload/"
@@ -141,9 +141,3 @@ server:
     beforeMiddleware: serveResources
     configuration:
       debug: true
-      appFolderPath: webapp
-      lessToCompile:
-        - "css/style.less"
-      htmlFilesPatterns:
-        - "index.html"
-        - "unit/**/*.html"

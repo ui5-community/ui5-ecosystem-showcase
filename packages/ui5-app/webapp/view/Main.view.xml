@@ -53,7 +53,7 @@
 					placeholder="Enter Date ..." />
 				<Button text="Don't press me!"
 					press="onBoo" />
-                <Text text="styled with less" class="styledWithLess"/>
+                <Text text="Styled with less" class="styledWithLess"/>
 			</VBox>
 		</content>
 	</Page>
