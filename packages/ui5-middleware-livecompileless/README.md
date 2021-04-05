@@ -1,6 +1,6 @@
-# UI5 middleware for delivering content from JAR files
+# UI5 middleware for live compiling less files
 
-Middleware for [ui5-server](https://github.com/SAP/ui5-server), delivering the content of JAR files.
+Middleware for [ui5-server](https://github.com/SAP/ui5-server), live compiling less files.
 
 ## Install
 
@@ -38,21 +38,17 @@ npm install ui5-middleware-livecompileless --save-dev
 
 ```yaml
 builder:
-    customMiddleware:
-        - name: ui5-middleware-livecompileless
-          afterTask: replaceVersion
-          configuration:
-              debug: true
+  customMiddleware:
+    - name: ui5-middleware-livecompileless
+      afterTask: replaceVersion
+      configuration:
+        debug: true
 ```
 
 ## How it works
 
-The css file corresponding to you less file needs to be maintained in the manifest as described [here](https://sapui5.hana.ondemand.com/#/topic/723f4b2334e344c08269159797f6f796).
-The middleware will watch for those css files and searches for the corresponding less file, compile it and serve it back.
-
-## Development
-
-If you want to contribute to `ui5-middleware-livecompileless`, please use [`Prettier`](https://prettier.io) for code formatting/style and apply the rules from `./.prettierrc`. Thanks 🙏!
+The css file corresponding to your less file needs to be maintained in the manifest as described [here](https://sapui5.hana.ondemand.com/#/topic/723f4b2334e344c08269159797f6f796).
+The middleware will watch for those css files and searches for the corresponding less file, compiles it and serves it back.
 
 ## License
 

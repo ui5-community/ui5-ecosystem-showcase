@@ -15,8 +15,7 @@ const {fsInterface} = require("@ui5/fs");
  *                                        the projects dependencies
  * @param {Object} parameters.options Options
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
- * @param {object} parameters.middlewareUtil Specification version dependent interface to a
- *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
+ * 
  * @returns {function} Middleware function to use
  */
 module.exports = async ({resources, options}) => {
@@ -27,7 +26,7 @@ module.exports = async ({resources, options}) => {
         if (url.includes(".css") && !url.includes("resources/")) {
             let possibleLessFile = await resources.rootProject.byPath(url.replace(".css", ".less"));
             if (possibleLessFile) {
-                isDebug && log.info(`compiling ${possibleLessFile.getPath()}`)
+                isDebug && log.info(`Compiling ${possibleLessFile.getPath()}...`)
                 const lessBuilder = new less.Builder({fs: fsInterface(resources.all)});
                 try {
                     const output = await lessBuilder.build({
