@@ -9,9 +9,9 @@
     "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
   },
   "dependencies": {
-    "@ui5/logger": "^2.0.0",
-    "@ui5/server": "^2.2.7",
-    "jszip": "^3.5.0"
+    "@ui5/logger": "^2.0.1",
+    "@ui5/server": "^2.2.9",
+    "jszip": "^3.6.0"
   },
   "ui5": {
     "dependencies": []

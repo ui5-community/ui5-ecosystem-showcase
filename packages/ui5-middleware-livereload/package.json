@@ -9,10 +9,10 @@
     "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
   },
   "dependencies": {
-    "@ui5/logger": "^2.0.0",
+    "@ui5/logger": "^2.0.1",
     "connect-livereload": "^0.6.1",
-    "livereload": "^0.9.1",
-    "portfinder": "^1.0.26",
+    "livereload": "^0.9.3",
+    "portfinder": "^1.0.28",
     "yargs": "^16.2.0"
   },
   "ui5": {
