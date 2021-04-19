@@ -17,6 +17,12 @@ jobs:
         node-version: [14.x]
 
     steps:
+    - name: update chrome
+      run: |
+        sudo apt-get update
+        sudo apt-get --only-upgrade install google-chrome-stable
+        # check chrom version
+        google-chrome --version
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
