@@ -1,22 +1,21 @@
 {
   "name": "ui5-middleware-livereload",
-  "version": "0.1.10",
+  "version": "0.5.3",
   "description": "UI5 middleware for live reloading `webapp` sources on change",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
-  },
-  "scripts": {
-    "ncu-upgrade": "ncu -u"
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git"
   },
   "dependencies": {
-    "@ui5/logger": "^1.0.2",
+    "@ui5/logger": "^2.0.1",
     "connect-livereload": "^0.6.1",
-    "livereload": "^0.9.1"
+    "livereload": "^0.9.3",
+    "portfinder": "^1.0.28",
+    "yargs": "^16.2.0"
   },
-  "devDependencies": {
-    "npm-check-updates": "^4.1.1"
+  "ui5": {
+    "dependencies": []
   }
 }

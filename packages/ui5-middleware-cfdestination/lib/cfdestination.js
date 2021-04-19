@@ -25,15 +25,17 @@ module.exports = function ({ resources, options }) {
     const xsappConfig = JSON.parse(fs.readFileSync(options.configuration.xsappJson, 'utf8'));
     const xsappPath = options.configuration.xsappJson.replace("xs-app.json", "");
 
-    // the embedded approuter (the one that runs locally) will ignore all auth mechanisms. 
-    // Even when xsappConfig.authenticationMethod = "route" and only define the routes, 
-    // the approuter will try to read the env var during startup - and fail if they are missing
-    xsappConfig.authenticationMethod = "none";
+    // the default auth mechanism is set to none but the user can pass an auth method using the options
+    xsappConfig.authenticationMethod = options.configuration.authenticationMethod || "none";
 
     let regExes = [];
-    xsappConfig.routes.forEach(route => {
+    xsappConfig.routes = xsappConfig.routes
+        .filter((route) => !route.localDir && (options.configuration.allowServices || !route.service)); //ignore routes that point to web apps as they are already hosted by the ui5 tooling
 
-        route.authenticationType = "none";
+    xsappConfig.routes.forEach(route => {
+        /* Authentication type should come from route if authenticationMethod is set to "route", otherwise set to "none" */
+        route.authenticationType = (xsappConfig.authenticationMethod.toLowerCase() === "route") ? route.authenticationType : "none";
+
         // ignore /-redirects (e.g. "^/(.*)"
         // a source declaration such as "^/backend/(.*)$" is needed
         if (route.source.match(/.*\/.*\/.*/)) {
@@ -43,7 +45,11 @@ module.exports = function ({ resources, options }) {
     });
 
     // req-use app-router with config file to run in "shadow" mode
-    process.env.destinations = JSON.stringify(options.configuration.destinations);
+    process.env.destinations = JSON.stringify(options.configuration.destinations || []);
+    if (options.configuration.debug && process.env.destinations.length === 0) {
+        log.info(`Provided destinations are empty`);
+    }
+
     approuter.start({
         port: options.configuration.port,
         xsappConfig: xsappConfig,

@@ -12,12 +12,13 @@ npm install ui5-middleware-livereload --save-dev
 
 - debug: true|false  
   verbose logging
-- ext: `string`, default: "xml,json,properties"  
+- extraExts: `string`, default: "xml,json,properties"  
   file extensions other than `js`, `html` and `css` to monitor for changes
-- port: `integer`, default: 35729  
+- port: `integer`, default: an open port choosen from _35729_  
   port the live reload server is started on
 - watchPath|path: `string`, default: `webapp`  
   path inside `$yourapp` the reload server monitors for changes
+- exclusions: one or many `regex`. By default, this includes `.git/`, `.svn/`, and `.hg/`
 
 ## Usage
 
@@ -49,7 +50,7 @@ server:
     afterMiddleware: compression
     configuration:
       debug: true
-      ext: "xml,json,properties"
+      extraExts: "xml,json,properties"
       port: 35729
       watchPath: "webapp"
 ```
@@ -63,9 +64,58 @@ server:
     afterMiddleware: compression
     configuration:
       debug: true
-      ext: "xml,json,properties"
+      extraExts: "xml,json,properties"
       port: 35729
       path: "webapp"
+```
+
+Reload from multiple paths:
+
+```yaml
+server:
+  customMiddleware:
+  - name: ui5-middleware-livereload
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      extraExts: "xml,json,properties"
+      port: 35729
+      path: 
+            - "webapp"
+            - "../my.reuse.library/src/my/reuse/library"
+```
+
+Exclude single subpath from `path`s/ `watchPath`s:
+
+```yaml
+server:
+  customMiddleware:
+  - name: ui5-middleware-livereload
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      extraExts: "xml,json,properties"
+      port: 35729
+      watchPath: "webapp"
+      exclusions:
+            - "wdi5/"
+```
+
+Exclude multiple subpaths from  `path`s/ `watchPath`s:
+
+```yaml
+server:
+  customMiddleware:
+  - name: ui5-middleware-livereload
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      extraExts: "xml,json,properties"
+      port: 35729
+      watchPath: "webapp"
+      exclusions:
+          - "wdi5/"
+          - "integration/"
 ```
 
 ## How it works
@@ -73,6 +123,10 @@ server:
 The middleware launches a `livereload`-server on the specified `port`, listening to changes in the specified `path` or `watchPath` inside your application directory.
 
 When changes are detected, a reload is triggered to **all connected clients** - so all browsers having `$yourapp` will reload the application. The reload is `#`-aware, meaning the current displayed route in your single-page UI5 app is kept steady.
+
+## HTTP/2 support
+
+The middleware supports HTTP/2 automatically, when the UI5 server is started with the --h2 option. It uses the same SSL key and certificate, either set using the --key and --cert options, or using the default ~/.ui5/server/server.key and ~/.ui5/server/server.crt.
 
 ## Misc/FAQ
 

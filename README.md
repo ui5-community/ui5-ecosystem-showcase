@@ -20,6 +20,11 @@ packages
 ├── ui5-middleware-livetranspile    // middleware extension: on-demand es6 to es5 transpile when requesting js
 ├── ui5-middleware-simpleproxy      // middleware extension: simple express proxy
 ├── ui5-middleware-servestatic      // middleware extension: serve static resources
+├── ui5-middleware-stringreplacer   // middleware extension: replaces placeholder strings
+├── ui5-task-flatten-library        // task extension: prepares build result for deployment to SAP NetWeaver
+├── ui5-task-i18ncheck              // task extension: checks for missing i18n texts
+├── ui5-task-pwa-enabler            // task extension: enables ui5 app with pwa functionalities
+├── ui5-task-stringreplacer         // task extension: replaces placeholder strings
 ├── ui5-task-transpile              // task extension: transpile es6 to es5 code
 └── ui5-task-zipper                 // task extension: bundle the entire webapp in a zip-archive
 ```
@@ -36,8 +41,10 @@ npm i -g yarn
 To get started with the project, please ensure to run `yarn` once to install all required dependencies in your node_modules folder.
 
 ```bash
-# use yarn --ignore-engines if you're on node != 8 or 10
+# optional: use dedicated node version via nvm
+nvm use
 
+# use yarn --ignore-engines if you're on an (officially) unsupported node version
 # Install the node modules via yarn
 yarn --ignore-engines
 ```
@@ -63,22 +70,36 @@ yarn dev
 # - live reload of ui5-app/dist/**/*
 yarn watch
 
-# 3) Run the dist folder (but build manually)
+# 3) Run the dist folder (needs manual build via `yarn build`)
 yarn start
 
 # 4) Run Unit-(QUnit-)Tests and Integration-(OPA5-)Tests
 # against "as-is" sources in /webapp/* (of /packages/ui5-app)
 # with Chrome
 # note: no transpiling, no bundling/building
-yarn test
-# run w/ Headless Chrome and provide coverage report in console
-yarn test:ci
+yarn test:opa5
+
+# 5) Run end-to-end tests
+# in dedicated terminal: 
+yarn dev # > start the local ui5 server tooling
+# in another terminal:
+# (uses Chrome)
+yarn test:wdi5 # > run e2e tests via wdi5 from /packages/ui5-app/webapp/test/e2e-wdi5/*
+yarn test:uiveri5 # > run e2e tests via UIveri5 from /packages/ui5-app/webapp/test/e2e/*
+
+# 6) Utilize CI for end-to-end tests
+# using Chrome headless
+yarn test:ci # > start ui5 server in bg, runs wdi5- + UIveri5-tests, shuts down the ui5 server
 ```
 
 ## Using tasks and middlewares in your project
 
 The tasks and middlewares developed in this project are also publicly available on NPM right here:
- 
+
+* https://www.npmjs.com/package/ui5-task-flatten-library
+* https://www.npmjs.com/package/ui5-task-i18ncheck 
+* https://www.npmjs.com/package/ui5-task-pwa-enabler
+* https://www.npmjs.com/package/ui5-task-stringreplacer
 * https://www.npmjs.com/package/ui5-task-transpile 
 * https://www.npmjs.com/package/ui5-task-zipper
 * https://www.npmjs.com/package/ui5-middleware-cfdestination
@@ -88,17 +109,22 @@ The tasks and middlewares developed in this project are also publicly available 
 * https://www.npmjs.com/package/ui5-middleware-livetranspile
 * https://www.npmjs.com/package/ui5-middleware-simpleproxy
 * https://www.npmjs.com/package/ui5-middleware-servestatic
+* https://www.npmjs.com/package/ui5-middleware-stringreplacer
 
 The consumption of the individual tasks and middlewares can be seen inside their local `README.md`.
 
-Available tasks:
+Available tasks in this project:
 
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
+| [ui5-task-flatten-library](https://www.npmjs.com/package/ui5-task-flatten-library) | prepares build result for deployment to SAP NetWeaver | [![npm version](https://badge.fury.io/js/ui5-task-flatten-library.svg)](https://badge.fury.io/js/ui5-task-flatten-library) |
+| [ui5-task-i18ncheck](packages/ui5-task-i18ncheck/README.md) | checks for missing i18n texts | [![npm version](https://badge.fury.io/js/ui5-task-i18ncheck.svg)](https://badge.fury.io/js/ui5-task-i18ncheck) |
+| [ui5-task-pwa-enabler](packages/ui5-task-pwa-enabler/README.md) | enables ui5 app with pwa functionalities | [![npm version](https://badge.fury.io/js/ui5-task-pwa-enabler.svg)](https://badge.fury.io/js/ui5-task-pwa-enabler) |
+| [ui5-task-stringreplacer](packages/ui5-task-stringreplacer/README.md) | replaces placeholder strings | [![npm version](https://badge.fury.io/js/ui5-task-stringreplacer.svg)](https://badge.fury.io/js/ui5-task-stringreplacer) |
 | [ui5-task-transpile](packages/ui5-task-transpile/README.md) | transpile es6 to es5 code | [![npm version](https://badge.fury.io/js/ui5-task-transpile.svg)](https://badge.fury.io/js/ui5-task-transpile) |
 | [ui5-task-zipper](packages/ui5-task-zipper/README.md) | bundle the entire webapp in a zip-archive | [![npm version](https://badge.fury.io/js/ui5-task-zipper.svg)](https://badge.fury.io/js/ui5-task-zipper) |
 
-Available middlewares:
+Available middlewares in this project:
 
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
@@ -109,6 +135,8 @@ Available middlewares:
 | [ui5-middleware-livetranspile](packages/ui5-middleware-livetranspile/README.md) | on-demand es6 to es5 transpile when requesting js | [![npm version](https://badge.fury.io/js/ui5-middleware-livetranspile.svg)](https://badge.fury.io/js/ui5-middleware-livetranspile) |
 | [ui5-middleware-simpleproxy](packages/ui5-middleware-simpleproxy/README.md) | simple express proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-simpleproxy.svg)](https://badge.fury.io/js/ui5-middleware-simpleproxy) |
 | [ui5-middleware-servestatic](packages/ui5-middleware-servestatic/README.md) | serve static resources | [![npm version](https://badge.fury.io/js/ui5-middleware-servestatic.svg)](https://badge.fury.io/js/ui5-middleware-servestatic) |
+| [ui5-middleware-stringreplacer](packages/ui5-middleware-stringreplacer/README.md) | replaces placeholder strings | [![npm version](https://badge.fury.io/js/ui5-middleware-stringreplacer.svg)](https://badge.fury.io/js/ui5-middleware-stringreplacer) |
+
 
 ## License
 

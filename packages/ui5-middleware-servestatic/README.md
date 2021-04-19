@@ -34,7 +34,7 @@ npm install ui5-middleware-servestatic --save-dev
 
 > As the devDependencies are not recognized by the UI5 tooling, they need to be listed in the `ui5 > dependencies` array. In addition, once using the `ui5 > dependencies` array you need to list all UI5 tooling relevant dependencies.
 
-2. configure it in `$yourapp/ui5.yaml`:
+2. configure it in `$yourapp/ui5.yaml`:  
 
 ```yaml
 server:
@@ -46,6 +46,16 @@ server:
       rootPath: "/Users/Me/upkg/sapui5-runtime-1.70/resources"
 ```
 
+Example which uses Environment Variables from `.env` file
+```yaml
+server:
+  customMiddleware:
+  - name: ui5-middleware-servestatic
+    afterMiddleware: compression
+    mountPath: /resources
+    configuration:
+      rootPath: ${env.SAPUI5_SDK_1_60__RESOURCES}
+```
 ## How it works
 
 The middleware integrates [serve-static](https://github.com/expressjs/serve-static) to serve static resources from a specified `rootPath`.

@@ -1,10 +1,10 @@
-specVersion: "2.0"
+specVersion: "2.2"
 metadata:
   name: ui5-app
 type: application
 framework:
   name: OpenUI5
-  version: "1.76.0"
+  version: "1.77.1"
   libraries:
     - name: sap.m
     - name: sap.ui.core
@@ -17,12 +17,30 @@ builder:
     configuration:
       debug: true
       removeConsoleStatements: true
+      transpileAsync: true
       excludePatterns:
-      - "lib/"
-  - name: ui5-task-zipper
-    afterTask: uglify 
+        - "lib/"
+        - "test/"
+  - name: ui5-task-stringreplacer
+    afterTask: replaceVersion
     configuration:
-      archiveName: "webapp"
+      debug: true
+      files:
+        - "**/*.js"
+        - "**/*.xml"
+      replace:
+        - placeholder: "${project.version}"
+          value: "1.0.0-SNAPSHOT"
+  - name: ui5-task-i18ncheck
+    afterTask: replaceVersion
+  - name: ui5-task-zipper
+    afterTask: uglify
+    configuration:
+      archiveName: webapp
+      includeDependencies: true
+      onlyZip: false
+      additionalFiles:
+      - "xs-app.json"
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
 server:
   customMiddleware:
@@ -30,26 +48,58 @@ server:
     afterMiddleware: compression
     configuration:
       debug: true
-      ext: "xml,json,properties"
-      port: 35729
+      extraExts: "xml,json,properties"
       path: "webapp"
+      exclusions:
+        - "lib/nolivereload/"
+  - name: ui5-middleware-servestatic
+    mountPath: /docs
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      rootPath: ../../docs
   - name: ui5-middleware-simpleproxy
     mountPath: /proxy
     afterMiddleware: compression
     configuration:
+      debug: true
       baseUri: "https://latest-openui5.rikosjett.com"
+      httpHeaders:
+        Any-Header: AnyHeader
+      query:
+        type: sdk #other types: runtime, runtimeMobile
+      excludePatterns:
+      - "/local/**"
     # PoC: reuse the same middleware at a different "mountPath"
   - name: ui5-middleware-simpleproxy
     mountPath: /proxy2
     afterMiddleware: compression
     configuration:
       baseUri: "https://latest-openui5.rikosjett.com"
+  - name: ui5-middleware-simpleproxy
+    mountPath: /ui5
+    afterMiddleware: compression
+    configuration:
+      baseUri: "https://sapui5.hana.ondemand.com/"
+      limit: "5mb"
+      removeETag: true
   - name: ui5-middleware-livetranspile
     afterMiddleware: compression
     configuration:
       debug: true
+      transpileAsync: true
       excludePatterns:
       - "lib/"
+  - name: ui5-middleware-stringreplacer
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      files:
+        - "**/*.js"
+        - "**/*.xml"
+      replace:
+        - placeholder: "${project.version}"
+          value: "1.0.0-SNAPSHOT"
   - name: ui5-middleware-cfdestination
     afterMiddleware: compression
     configuration:
@@ -75,3 +125,8 @@ server:
     afterMiddleware: compression
     configuration:
       debug: true
+  - name: ui5-middleware-webjars
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      jarRootPath: "META-INF/"

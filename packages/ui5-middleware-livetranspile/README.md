@@ -17,6 +17,14 @@ verbose logging
 array of paths inside `$yourapp/webapp/` to exclude from live transpilation,  
 e.g. 3-rd party libs in `lib/*`
 
+- transpileAsync: `true|false`  
+transpiling `async/await`  using [this Babel plugin](https://www.npmjs.com/package/babel-plugin-transform-async-to-promises), which doesn't require  
+the regenerator runtime ([Issue #242](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/242))
+
+- babelConfig: `Object`  
+object to use as configuration for babel instead of the default configuration  
+defined in this middleware
+
 ## Usage
 
 1. Define the dependency in `$yourapp/package.json`:
@@ -47,6 +55,7 @@ server:
     afterMiddleware: compression
     configuration:
       debug: true
+      transpileAsync: true
       excludePatterns:
       - "lib/"
       - "another/dir/in/webapp"
@@ -59,7 +68,15 @@ The middleware intercepts every `.js`-file before it is sent to the client. The 
 
 The transpiled code and the `sourcemap` are subsequently delivered to the client instead of the original `.js`-file. Because of the `sourcemap`, setting breakpoints in the **original (ES6+) source** will cause the debugger to stop **when the corresponding transpiled source code is reached**.
 
-> `async/await` is transpiled at runtime, but the required `asyncGenerator` sources are not yet delivered on the fly. They need to be `sap.ui.require`d or `<script src="...">`d separately.  
+> `async/await` is transpiled at runtime, but the required `asyncGenerator` sources are not yet delivered on the fly. They need to be `sap.ui.require`d or `<script src="...">`d separately. Alternatively you can use the babel plugin `babel-plugin-transform-async-to-promises` as described [here](../ui5-task-transpile/README.md).
+
+## Extending the default configuration (in `$yourapp/babel.config.json`)
+
+If you want to further customize the transpiling options you can do so by creating a babel config file `babel.config.json` in your project directory. The behavior is identical to that of `ui5-task-transpile`. For more details and examples consult the [documentation of `ui5-task-transpile`](../ui5-task-transpile/README.md).
+
+## Override babel configuration (in `$yourapp/ui5.yaml`)
+
+You can override the default babel configuration from this package by including an object `babelConfig` in this task's configuration. The behavior is identical to that of `ui5-task-transpile`. For more details and examples consult the [documentation of `ui5-task-transpile`](../ui5-task-transpile/README.md).
 
 ## Misc/FAQ
 
