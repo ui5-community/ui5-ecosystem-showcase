@@ -48,7 +48,7 @@ describe("binding", () => {
         browser.asControl(navFwdButton).firePress()
 
         const oList = browser.asControl(list)
-        const aListItems = oList.getItems() // ui5 api
+        const aListItems = oList.getItems(true) // ui5 api + high-speed aggregation retrieval https://github.com/js-soft/wdi5#getshorthand-conveniences
         expect(aListItems.length).toBeGreaterThanOrEqual(1)
     })
 })

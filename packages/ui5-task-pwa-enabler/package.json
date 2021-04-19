@@ -6,14 +6,14 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/petermuessig/ui5-ecosystem-showcase.git"
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git"
   },
   "dependencies": {
-    "@ui5/fs": "^1.1.2",
+    "@ui5/fs": "^2.0.6",
     "graceful-fs": "latest",
-    "jsdom": "^16.2.2",
-    "mustache": "^4.0.1",
-    "parse5": "^6.0.0"
+    "jsdom": "^16.5.3",
+    "mustache": "^4.2.0",
+    "parse5": "^6.0.1"
   },
   "ui5": {
     "dependencies": []
