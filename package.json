@@ -18,7 +18,7 @@
     "start:ci": "cd packages/ui5-app && npm run start:ci &",
     "//*test:ci": "1. start ui5 serve and bg it - 2. run the e2e tests in parallel - 3. kill the bg'ed ui5 serve",
     "pretest:ci": "npm run start:ci",
-    "test:ci": "HEADLESS=true npm-run-all --parallel test:uiveri5 test:wdi5",
+    "test:ci": "wait-on tcp:1091 && HEADLESS=true npm-run-all --parallel test:uiveri5 test:wdi5",
     "posttest:ci": "kill $(lsof -t -i:1081)",
     "test:opa5": "cd packages/ui5-app && karma start",
     "test:opa5-ci": "cd packages/ui5-app && karma start karma-ci.conf.js",
