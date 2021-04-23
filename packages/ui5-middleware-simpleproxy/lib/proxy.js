@@ -178,7 +178,7 @@ module.exports = function ({ resources, options }) {
             reqPath = `${(path ? path : "")}${req.path}?${key}=${value}`;
           }
         }
-        return reqPath;
+        return encodeURI(reqPath);
       }
       return (path ? path : "") + req.url;
     },
