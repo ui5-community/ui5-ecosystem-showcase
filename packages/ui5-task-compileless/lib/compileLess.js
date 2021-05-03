@@ -15,7 +15,7 @@ const minimatch = require("minimatch");
  * @returns {Promise<Array>} Promise resolving with the created css resources
  * @private
  */
-function compileLess(lessResources, fs, isDebug) {
+async function compileLess(lessResources, fs, isDebug) {
     const lessBuilder = new less.Builder({fs});
 
     return Promise.all(
