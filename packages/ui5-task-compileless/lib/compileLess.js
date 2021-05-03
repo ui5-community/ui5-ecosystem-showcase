@@ -48,10 +48,15 @@ function compileLess(lessResources, fs, isDebug) {
  */
 module.exports = async function({workspace, dependencies, options}) {
     const appFolderPath = options.configuration && options.configuration.appFolderPath || 'webapp';
-    const lessToCompile = options.configuration && options.configuration.lessToCompile|| [] ;
+
     const isDebug = options.configuration && options.configuration.debug;
 
+    let manifest = await (await workspace.byPath(`/resources/${options.projectNamespace}/manifest.json`)).getString();
+    manifest = JSON.parse(manifest)
 
+
+    let lessToCompile = options.configuration && options.configuration.lessToCompile|| [] ;
+    lessToCompile = lessToCompile.length ? lessToCompile : manifest["sap.ui5"]?.resources?.css?.map(style => style?.uri?.replace(".css",".less"));
 
     //create custom duplex collection where the webapp is in the "/" folder
     //By default when building the workspace reader is in the vir dir "/resources/{namespace}

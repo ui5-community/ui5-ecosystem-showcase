@@ -45,13 +45,13 @@ npm install ui5-task-compileless --save-dev
 ```yaml
 builder:
   customTasks:
-  - name: ui5-task-compileless
-    afterTask: replaceVersion
-    configuration:
-      debug: true
-      appFolderPath: myWebappFolder
-      lessToCompile: 
-        - "css/style.less"
+   - name: ui5-task-compileless
+     afterTask: replaceVersion
+     configuration:
+         debug: true
+         appFolderPath: webapp
+#    lessToCompile: (Optional by default css from manifest will be used)
+#      - "css/style.less"
 ```
 
 ## How it works
