@@ -55,8 +55,12 @@ module.exports = async function({workspace, dependencies, options}) {
     manifest = JSON.parse(manifest)
 
 
-    let lessToCompile = options.configuration && options.configuration.lessToCompile|| [] ;
-    lessToCompile = lessToCompile.length ? lessToCompile : manifest["sap.ui5"]?.resources?.css?.map(style => style?.uri?.replace(".css",".less"));
+    let lessToCompile = options.configuration && options.configuration.lessToCompile || [] ;
+    if(lessToCompile.length === 0 && manifest && manifest["sap.ui5"] && manifest["sap.ui5"].resources && manifest["sap.ui5"].resources.css){
+        lessToCompile = manifest["sap.ui5"].resources.css
+            .map(style => style.uri ? style.uri.replace(".css",".less") : null)
+            .filter(lessfiles => !!lessfile);
+    }
 
     //create custom duplex collection where the webapp is in the "/" folder
     //By default when building the workspace reader is in the vir dir "/resources/{namespace}
