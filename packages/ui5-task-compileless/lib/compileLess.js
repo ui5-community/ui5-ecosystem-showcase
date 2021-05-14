@@ -59,7 +59,7 @@ module.exports = async function({workspace, dependencies, options}) {
     if(lessToCompile.length === 0 && manifest && manifest["sap.ui5"] && manifest["sap.ui5"].resources && manifest["sap.ui5"].resources.css){
         lessToCompile = manifest["sap.ui5"].resources.css
             .map(style => style.uri ? style.uri.replace(".css",".less") : null)
-            .filter(lessfiles => !!lessfile);
+            .filter(lessfile => !!lessfile);
     }
 
     //create custom duplex collection where the webapp is in the "/" folder
