@@ -27,6 +27,16 @@
             ],
             "cwd": "${workspaceFolder}/packages/ui5-app",
             "port": 9229
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Tasks",
+            "args": [ "build"],
+            "program": "${workspaceRoot}/node_modules/@ui5/cli/bin/ui5.js",
+            "cwd": "${workspaceFolder}/packages/ui5-app",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
         }
     ]
 }

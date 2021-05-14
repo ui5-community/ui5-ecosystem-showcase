@@ -1,8 +1,8 @@
 {
-  "name": "ui5-middleware-webjars",
-  "version": "0.3.1",
-  "description": "UI5 middleware for delivering content from JAR files",
-  "author": "Volker Buzek, Peter Muessig",
+  "name": "ui5-middleware-livecompileless",
+  "version": "0.1.0",
+  "description": "UI5 middleware for live compiling less files",
+  "author": "Sebastian Mahr, Marcel Schork",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -10,8 +10,7 @@
   },
   "dependencies": {
     "@ui5/logger": "^2.0.1",
-    "@ui5/server": "^2.2.9",
-    "jszip": "^3.6.0"
+    "less-openui5": "^0.11.1"
   },
   "ui5": {
     "dependencies": []
