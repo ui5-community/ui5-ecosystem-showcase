@@ -57,7 +57,7 @@
     "ui5-middleware-livetranspile": "^0.3.1",
     "ui5-middleware-servestatic": "^0.3.4",
     "ui5-middleware-simpleproxy": "^0.7.2",
-    "ui5-middleware-stringreplacer": "^0.2.2",,
+    "ui5-middleware-stringreplacer": "^0.2.2",
     "ui5-middleware-livecompileless": "^0.1.0",
     "ui5-middleware-webjars": "^0.3.1",",
     "ui5-task-compileless": "^0.1.0",
