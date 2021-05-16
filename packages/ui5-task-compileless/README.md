@@ -48,10 +48,10 @@ builder:
    - name: ui5-task-compileless
      afterTask: replaceVersion
      configuration:
-         debug: true
-         appFolderPath: webapp
-#    lessToCompile: (Optional by default css from manifest will be used)
-#      - "css/style.less"
+        debug: true
+        appFolderPath: webapp
+        # lessToCompile: (Optional by default css from manifest will be used)
+        #   - "css/style.less"
 ```
 
 ## How it works
