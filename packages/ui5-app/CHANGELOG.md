@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.10.7...ui5-app@0.11.0) (2021-05-15)
+
+
+### Bug Fixes
+
+* rm another comma ([38e4b59](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/38e4b599c6f80ea62be07e3f8597d751b3830f7e))
+
+
+### Features
+
+* Less support for app development ([#512](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/512)) ([d0b381f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d0b381f74213fd75942cc887adc66874982f2fbc))
+
+
+
+
+
 ## [0.10.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.10.6...ui5-app@0.10.7) (2021-05-05)
 
 **Note:** Version bump only for package ui5-app
