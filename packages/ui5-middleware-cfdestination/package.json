@@ -13,9 +13,9 @@
   },
   "ava": {
     "files": [
-			"test/**/*",
-			"!test/_ui5-app"
-		]
+      "test/**/*",
+      "!test/_ui5-app"
+    ]
   },
   "dependencies": {
     "@sap/approuter": "^10.2.0",
@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "ava": "^3.15.0",
+    "prettier": "^2.3.0",
     "supertest": "^6.1.3"
   }
 }
