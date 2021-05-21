@@ -11,6 +11,12 @@
   "scripts": {
     "test": "ava"
   },
+  "ava": {
+    "files": [
+			"test/**/*",
+			"!test/_ui5-app"
+		]
+  },
   "dependencies": {
     "@sap/approuter": "^10.2.0",
     "@ui5/logger": "^2.0.1",
