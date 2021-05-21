@@ -1,5 +1,6 @@
 const crypto = require("crypto")
 const fs = require("fs-extra")
+const getPort = require('get-port')
 const path = require("path")
 const request = require("supertest")
 const { spawn } = require("child_process")
@@ -29,9 +30,12 @@ test.beforeEach(async (t) => {
     // copy ui5 app to a temp dir in test folder scope
     t.context.tmpDir = path.resolve(`./test/_ui5-app/${crypto.randomBytes(5).toString("hex")}`)
     await copyUI5app(t.context.tmpDir)
+
+    // dynamic port allocation for ui5 serve
+    t.context.port = await getPort()
 })
 
-test.afterEach(async t => {
+test.afterEach.always(async t => {
     // cleanup
     await fs.remove(t.context.tmpDir)
 })
@@ -48,16 +52,16 @@ test('auth in yaml, xsuaa auth in route', async t => {
     await fs.copy(defaultEnv.json, path.resolve(t.context.tmpDir, "default-env.json"))
 
     // start ui5-app with modified route(s) and config
-    const child = spawn(`ui5 serve --port 1081 --config ${ui5.yaml}`, {
+    const child = spawn(`ui5 serve --port ${t.context.port} --config ${ui5.yaml}`, {
         // stdio: 'inherit', // > don't include stdout in test output
         shell: true,
         cwd: t.context.tmpDir
     })
 
     // wait for ui5 server and app router to boot
-    await waitOn({ resources: ["tcp:1081", "tcp:1091"] })
+    await waitOn({ resources: [`tcp:${t.context.port}`, "tcp:1091"] })
 
-    const app = request("http://localhost:1081")
+    const app = request(`http://localhost:${t.context.port}`)
     // test for the app being started correctly
     const responseIndex = await app.get("/index.html")
     t.is(responseIndex.status, 200, "http 200 on index")
