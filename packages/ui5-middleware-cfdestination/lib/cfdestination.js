@@ -30,7 +30,7 @@ module.exports = function ({ resources, options }) {
 
     let regExes = []
     xsappConfig.routes = xsappConfig.routes
-        .filter((route) => !route.localDir && (options.configuration.allowServices || !route.service)) //ignore routes that point to web apps as they are already hosted by the ui5 tooling
+        .filter((route) => (options.configuration.allowLocalDir || !route.localDir) && (options.configuration.allowServices || !route.service)) //ignore routes that point to web apps as they are already hosted by the ui5 tooling
 
     xsappConfig.routes.forEach(route => {
         /* Authentication type should come from route if authenticationMethod is set to "route", otherwise set to "none" */
@@ -40,9 +40,9 @@ module.exports = function ({ resources, options }) {
 
         // ignore /-redirects (e.g. "^/(.*)"
         // a source declaration such as "^/backend/(.*)$" is needed
-        if (route.source.match(/.*\/.*\/.*/)) {
+        if (route.source.match(/.*\/.*\/?.*/)) {
             regExes.push(new RegExp(route.source))
-            options.configuration.debug ? log.info(`adding cf-like destination "${route.destination}" proxying reqs to ${route.source}`) : null
+            options.configuration.debug ? log.info(`adding cf-like destination "${route.destination || '(xs-app.json specific setting)'}" proxying reqs to ${route.source}`) : null
         }
     })
 
