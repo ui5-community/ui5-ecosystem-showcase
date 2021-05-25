@@ -11,20 +11,19 @@ const waitOn = require("wait-on")
 
 /**
  * copy showcase ui5 app for test purposes
- * and rm included xs-app.json
+ * and rm included ui5.yaml and xs-app.json
  * 
  * @param {string} tmpDir path to copy ui5 app (that acts as the test app to)
  */
 async function copyUI5app(tmpDir) {
     await fs.mkdir(tmpDir)
     const filterFn = (src, _) => {
-        const yo = ["node_modules", "dist", "ui5.yaml"].find(node => src.endsWith(node))
+        const yo = ["node_modules", "dist", "ui5.yaml", "xs-app.json"].find(node => src.endsWith(node))
         return yo === undefined ? true : false
     }
     await fs.copy(path.resolve(__dirname, "../../ui5-app"), tmpDir, {
         filter: filterFn
     })
-    await fs.remove(path.resolve(tmpDir, "xs-app.json"))
 }
 
 test.beforeEach(async (t) => {
