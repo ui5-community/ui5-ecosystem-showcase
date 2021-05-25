@@ -90,8 +90,10 @@ async function prepUi5ServerConfig({ ui5Yaml, appRouterPort, xsAppJson, defaultE
     }
 }
 
-
-test('auth in yaml, xsuaa auth in route', async t => {
+/**
+ * expected result: redirect to idp for route /backend
+ */
+test('auth in yaml, xsuaa auth in route -> route is protected', async t => {
     const { ui5 } = await prepUi5ServerConfig({
         ui5Yaml: "./test/auth/ui5-auth-in-yaml.yaml",
         appRouterPort: t.context.port.appRouter,
@@ -124,3 +126,40 @@ test('auth in yaml, xsuaa auth in route', async t => {
     child.kill() // don't take it literally
 })
 
+/**
+ * even though "authenticationMethod": "route" is set in xs-app.json
+ * the missing config option "authenticationMethod": "route" in ui5.yaml takes precedence
+ * and does not require any route protection on /backend
+ */
+test("no auth in yaml, xsuaa auth in route -> route is unprotected", async t=> {
+    const { ui5 } = await prepUi5ServerConfig({
+        ui5Yaml: "./test/auth/ui5-no-auth-in-yaml.yaml",
+        appRouterPort: t.context.port.appRouter,
+        xsAppJson: "./test/auth/xs-app.json",
+        defaultEnvJson: "./test/auth/default-env.json",
+        tmpDir: t.context.tmpDir
+    })
+
+    // start ui5-app with modified route(s) and config
+    const child = spawn(`ui5 serve --port ${t.context.port.ui5Sserver} --config ${ui5.yaml}`, {
+        // stdio: 'inherit', // > don't include stdout in test output
+        shell: true,
+        cwd: t.context.tmpDir
+    })
+
+    // wait for ui5 server and app router to boot
+    await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:${t.context.port.appRouter}`] })
+
+    const app = request(`http://localhost:${t.context.port.ui5Sserver}`)
+    // test for the app being started correctly
+    const responseIndex = await app.get("/index.html")
+    t.is(responseIndex.status, 200, "http 200 on index")
+
+    // test for the redirect reponse to
+    // include code for client-side redirect to idp
+    const responseNoAuth = await app.get("/backend/")
+    t.is(responseNoAuth.status, 200)
+    t.true(responseNoAuth.body.value.length >= 1, "one or more odata entities received")
+
+    child.kill() // don't take it literally
+})
