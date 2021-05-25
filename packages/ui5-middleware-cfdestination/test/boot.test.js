@@ -70,30 +70,64 @@ async function prepUi5ServerConfig({ ui5Yaml, appRouterPort, xsAppJson, defaultE
     const ui5 = { yaml: _ui5Yaml[0].file }
 
     const _xsapp = { json: path.resolve(xsAppJson) }
-    const _defaultEnv = { json: path.resolve(defaultEnvJson) }
-
     const xsapp = { json: path.resolve(tmpDir, "xs-app.json") }
-    const defaultEnv = { json: path.resolve(tmpDir, "default-env.json") }
-
     // we always need the routes
     const _promises = [fs.copy(_xsapp.json, xsapp.json)]
+
     // auth info only on-demand
-    if (defaultEnvJson) { _promises.push(fs.copy(_defaultEnv.json, defaultEnv.json)) }
+    let defaultEnv = {}
+    if (defaultEnvJson) {
+        const _defaultEnv = { json: path.resolve(defaultEnvJson) }
+        defaultEnv = { json: path.resolve(tmpDir, "default-env.json") }
+        _promises.push(fs.copy(_defaultEnv.json, defaultEnv.json))
+    }
 
     // prep routes (+ authentication) config
     await Promise.all(_promises)
 
+    // return resolved path to config files for re-use in tests
     return {
         ui5,
         xsapp,
-        defaultEnv: defaultEnvJson ? defaultEnv : {}
+        defaultEnv // this return the empty object in case no input defaultEnvJson was provided
     }
 }
+
+test("no auth in yaml, no xsuaa auth in route -> route is unprotected", async t => {
+    const { ui5 } = await prepUi5ServerConfig({
+        ui5Yaml: "./test/no-auth/ui5.yaml",
+        appRouterPort: t.context.port.appRouter,
+        xsAppJson: "./test/no-auth/xs-app.json",
+        tmpDir: t.context.tmpDir
+    })
+
+    // start ui5-app with modified route(s) and config
+    const child = spawn(`ui5 serve --port ${t.context.port.ui5Sserver} --config ${ui5.yaml}`, {
+        // stdio: 'inherit', // > don't include stdout in test output
+        shell: true,
+        cwd: t.context.tmpDir
+    })
+
+    // wait for ui5 server and app router to boot
+    await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:${t.context.port.appRouter}`] })
+
+    const app = request(`http://localhost:${t.context.port.ui5Sserver}`)
+    // test for the app being started correctly
+    const responseIndex = await app.get("/index.html")
+    t.is(responseIndex.status, 200, "http 200 on index")
+
+    // backend resource is accessible w/o authentication
+    const responseNoAuth = await app.get("/backend/")
+    t.is(responseNoAuth.status, 200)
+    t.true(responseNoAuth.body.value.length >= 1, "one or more odata entities received")
+
+    child.kill() // don't take it literally
+})
 
 /**
  * expected result: redirect to idp for route /backend
  */
-test('auth in yaml, xsuaa auth in route -> route is protected', async t => {
+test("auth in yaml, xsuaa auth in route -> route is protected", async t => {
     const { ui5 } = await prepUi5ServerConfig({
         ui5Yaml: "./test/auth/ui5-auth-in-yaml.yaml",
         appRouterPort: t.context.port.appRouter,
@@ -131,7 +165,7 @@ test('auth in yaml, xsuaa auth in route -> route is protected', async t => {
  * the missing config option "authenticationMethod": "route" in ui5.yaml takes precedence
  * and does not require any route protection on /backend
  */
-test("no auth in yaml, xsuaa auth in route -> route is unprotected", async t=> {
+test("no auth in yaml, xsuaa auth in route -> route is unprotected", async t => {
     const { ui5 } = await prepUi5ServerConfig({
         ui5Yaml: "./test/no-auth/ui5-no-auth-in-yaml.yaml",
         appRouterPort: t.context.port.appRouter,
@@ -155,8 +189,7 @@ test("no auth in yaml, xsuaa auth in route -> route is unprotected", async t=> {
     const responseIndex = await app.get("/index.html")
     t.is(responseIndex.status, 200, "http 200 on index")
 
-    // test for the redirect reponse to
-    // include code for client-side redirect to idp
+    // backend resource is accessible w/o authentication
     const responseNoAuth = await app.get("/backend/")
     t.is(responseNoAuth.status, 200)
     t.true(responseNoAuth.body.value.length >= 1, "one or more odata entities received")
