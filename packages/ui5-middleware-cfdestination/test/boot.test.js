@@ -196,3 +196,48 @@ test("no auth in yaml, xsuaa auth in route -> route is unprotected", async t => 
 
     child.kill() // don't take it literally
 })
+
+/**
+ * protect a local html file with app router, so accessing it "proxied" via
+ * ui5 serve results in a redirect to the idp
+ */
+ test("allow localDir usage in app router for auth-protected static files", async t => {
+    const { ui5 } = await prepUi5ServerConfig({
+        ui5Yaml: "./test/auth/ui5-with-localDir.yaml",
+        appRouterPort: t.context.port.appRouter,
+        xsAppJson: "./test/auth/xs-app-with-localDir.json",
+        defaultEnvJson: "./test/auth/default-env.json",
+        tmpDir: t.context.tmpDir
+    })
+
+    // provide the static asset that is protected via app router
+    await fs.copy(path.resolve("./test/auth/index1.html"), `${t.context.tmpDir}/webapp/index1.html`)
+
+    // start ui5-app with modified route(s) and config
+    const child = spawn(`ui5 serve --port ${t.context.port.ui5Sserver} --config ${ui5.yaml}`, {
+        // stdio: 'inherit', // > don't include stdout in test output
+        shell: true,
+        cwd: t.context.tmpDir
+    })
+
+    // wait for ui5 server and app router to boot
+    await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:${t.context.port.appRouter}`] })
+
+    const app = request(`http://localhost:${t.context.port.ui5Sserver}`)
+    // test for the app being started correctly
+    const responseIndex = await app.get("/index.html")
+    t.is(responseIndex.status, 200, "http 200 on index")
+
+    // test for the redirect reponse to /index1.html
+    // include code for client-side redirect to idp
+    const responseIdpRedirect = await app.get("/index1.html")
+    t.is(responseIdpRedirect.status, 200)
+    t.true(responseIdpRedirect.text.includes("https://authentication.eu10.hana.ondemand.com/oauth/authorize"), "oauth endpoint redirect injected")
+
+    // access /index2.html as an unprotected route to the physical index1.html
+    const responseNoAuth = await app.get("/index2.html")
+    t.is(responseNoAuth.status, 200)
+    t.true(responseNoAuth.text.includes("placeholder"))
+
+    child.kill() // don't take it literally
+})
