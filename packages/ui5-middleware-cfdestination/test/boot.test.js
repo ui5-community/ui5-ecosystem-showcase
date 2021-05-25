@@ -133,7 +133,7 @@ test('auth in yaml, xsuaa auth in route -> route is protected', async t => {
  */
 test("no auth in yaml, xsuaa auth in route -> route is unprotected", async t=> {
     const { ui5 } = await prepUi5ServerConfig({
-        ui5Yaml: "./test/auth/ui5-no-auth-in-yaml.yaml",
+        ui5Yaml: "./test/no-auth/ui5-no-auth-in-yaml.yaml",
         appRouterPort: t.context.port.appRouter,
         xsAppJson: "./test/auth/xs-app.json",
         defaultEnvJson: "./test/auth/default-env.json",
