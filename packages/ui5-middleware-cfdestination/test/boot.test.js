@@ -44,19 +44,62 @@ test.afterEach.always(async t => {
     await fs.remove(t.context.tmpDir)
 })
 
+/**
+ * @typedef UI5ServerConfig
+ * @property {object} ui5
+ * @property {string} ui5.yaml full path to the prepped ui5.yaml
+ * @property {object} xsapp
+ * @property {string} xsapp.json full path to the prepped xs-app.json
+ * @property {object} defaultEnv
+ * @property {string} [defaultEnv.json] full path to the prepped default-env.json
+ */
+/**
+ * prep the ui5 server runtime for test case - ui5.yaml, xs-app.json, default-env.json
+ * 
+ * @param {object} config
+ * @param {string} config.ui5Yaml path to the ui5.yaml that should be used in the test case
+ * @param {number} config.appRouterPort port the app router should be started on
+ * @param {string} config.xsAppJson path to the xs-app.json that should be used in the test case
+ * @param {string} [config.defaultEnvJson] path to the default-env.json that should be used in the test case
+ * @param {string} config.tmpDir temporary directory all of the config files should be copied to
+ * @returns {UI5ServerConfig} full path to the test fixtures of ui5.yaml, xsapp.json and defaultEnv.json (the latter is an empty object if not provided as an input parameter)
+ */
+async function prepUi5ServerConfig({ ui5Yaml, appRouterPort, xsAppJson, defaultEnvJson, tmpDir }) {
+    // replace default port 1091 for app router w/ random port
+    await fs.copyFile(path.resolve(ui5Yaml), `${tmpDir}/ui5.yaml`) // copy orig ui5.yaml test fixture
+    const _ui5Yaml = await replace({ files: path.resolve(`${tmpDir}/ui5.yaml`), from: "1091", to: appRouterPort }) // replace port config in file
+    const ui5 = { yaml: _ui5Yaml[0].file }
+
+    const _xsapp = { json: path.resolve(xsAppJson) }
+    const _defaultEnv = { json: path.resolve(defaultEnvJson) }
+
+    const xsapp = { json: path.resolve(tmpDir, "xs-app.json") }
+    const defaultEnv = { json: path.resolve(tmpDir, "default-env.json") }
+
+    // we always need the routes
+    const _promises = [fs.copy(_xsapp.json, xsapp.json)]
+    // auth info only on-demand
+    if (defaultEnvJson) { _promises.push(fs.copy(_defaultEnv.json, defaultEnv.json)) }
+
+    // prep routes (+ authentication) config
+    await Promise.all(_promises)
+
+    return {
+        ui5,
+        xsapp,
+        defaultEnv: defaultEnvJson ? defaultEnv : {}
+    }
+}
+
 
 test('auth in yaml, xsuaa auth in route', async t => {
-    //// prep ui5 server runtime config/env files
-    // replace default port 1091 for app router w/ random port
-    await fs.copyFile(path.resolve("./test/auth/ui5-auth-in-yaml.yaml"), `${t.context.tmpDir}/ui5-auth-in-yaml.yaml`) // copy orig ui5.yaml test fixture
-    const _ui5Yaml = await replace({ files: path.resolve(`${t.context.tmpDir}/ui5-auth-in-yaml.yaml`), from: "1091", to: t.context.port.appRouter }) // replace port config in file
-    const ui5 = { yaml: _ui5Yaml[0].file }
-    const xsapp = { json: path.resolve("./test/auth/xs-app.json") }
-    const defaultEnv = { json: path.resolve("./test/auth/default-env.json") }
-
-    // prep authenticated routes + authentication config
-    await fs.copy(xsapp.json, path.resolve(t.context.tmpDir, "xs-app.json"))
-    await fs.copy(defaultEnv.json, path.resolve(t.context.tmpDir, "default-env.json"))
+    const { ui5 } = await prepUi5ServerConfig({
+        ui5Yaml: "./test/auth/ui5-auth-in-yaml.yaml",
+        appRouterPort: t.context.port.appRouter,
+        xsAppJson: "./test/auth/xs-app.json",
+        defaultEnvJson: "./test/auth/default-env.json",
+        tmpDir: t.context.tmpDir
+    })
 
     // start ui5-app with modified route(s) and config
     const child = spawn(`ui5 serve --port ${t.context.port.ui5Sserver} --config ${ui5.yaml}`, {
