@@ -7,11 +7,6 @@
       "destination": "backend",
       "target": "$1",
       "authenticationType": "xsuaa"
-    },
-    {
-      "source": "^/(.*)",
-      "localDir": "./webapp",
-      "cacheControl": "no-cache, no-store, must-revalidate"
     }
   ]
 }

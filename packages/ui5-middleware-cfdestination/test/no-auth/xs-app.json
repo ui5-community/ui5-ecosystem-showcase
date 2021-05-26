@@ -6,11 +6,6 @@
       "source": "^/backend/(.*)$",
       "destination": "backend",
       "target": "$1"
-    },
-    {
-      "source": "^/(.*)",
-      "localDir": "./webapp",
-      "cacheControl": "no-cache, no-store, must-revalidate"
     }
   ]
 }
