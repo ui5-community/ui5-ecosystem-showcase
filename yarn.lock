@@ -1815,10 +1815,10 @@
   dependencies:
     "@octokit/openapi-types" "^7.0.0"
 
-"@sap/approuter@^10.2.0":
-  version "10.2.0"
-  resolved "https://registry.yarnpkg.com/@sap/approuter/-/approuter-10.2.0.tgz#b7d787543d6ee5f24de32942f3159ed975bf4274"
-  integrity sha512-TjQrS5w99f5wOtfsG/1Jxj8ogvekIkeijPuZH7n9SoyhB/RiUQ9EgU0GP0Yz828SHqcHyVx4qzhLZ577WznN+g==
+"@sap/approuter@^10.4.0":
+  version "10.4.0"
+  resolved "https://registry.yarnpkg.com/@sap/approuter/-/approuter-10.4.0.tgz#dc3ecc40adb2b163184e8501d270828ddd4ca583"
+  integrity sha512-7vjy5GOAKWRQVKjQdhkHydAUAU71WgiOk8bEbAWLN2JWgop4RghwNm9zBjUtF0Vfe/Cgp/lTw3PoJg7e4rZjbA==
   dependencies:
     "@sap/audit-logging" "4.2.0"
     "@sap/e2e-trace" "3.0.0"
@@ -1829,8 +1829,9 @@
     async "2.0.1"
     base64-url "2.3.3"
     basic-auth "1.0.3"
+    bluebird "3.7.2"
     body-parser "1.18.3"
-    cf-nodejs-logging-support "6.4.3"
+    cf-nodejs-logging-support "6.7.0"
     commander "2.9.0"
     compression "1.7.3"
     connect "3.6.5"
@@ -1843,6 +1844,7 @@
     express-session "1.17.0"
     http-proxy-agent "2.1.0"
     https-proxy-agent "2.2.4"
+    ioredis "4.24.2"
     jwt-decode "2.0.1"
     lodash "4.17.21"
     lru-cache "4.0.0"
@@ -3155,7 +3157,7 @@ blocking-proxy@^1.0.0:
   dependencies:
     minimist "^1.2.0"
 
-bluebird@^3.5.1, bluebird@^3.5.3, bluebird@^3.5.5, bluebird@^3.7.2:
+bluebird@3.7.2, bluebird@^3.5.1, bluebird@^3.5.3, bluebird@^3.5.5, bluebird@^3.7.2:
   version "3.7.2"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.7.2.tgz#9f229c15be272454ffa973ace0dbee79a1b0c36f"
   integrity sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==
@@ -3596,10 +3598,10 @@ catharsis@^0.8.11:
   dependencies:
     lodash "^4.17.14"
 
-cf-nodejs-logging-support@6.4.3:
-  version "6.4.3"
-  resolved "https://registry.yarnpkg.com/cf-nodejs-logging-support/-/cf-nodejs-logging-support-6.4.3.tgz#96f86bb673f7147c104a36b8bdbe99ae61ad99f3"
-  integrity sha512-MukRJMQl2XgrAYvEVTQ7StICQJ0xSCQmRhFeIokYZNS9ruhZcLf3aGbArGVkN/ONTlNnbQ2Sw3lDVjP/vxmvYQ==
+cf-nodejs-logging-support@6.7.0:
+  version "6.7.0"
+  resolved "https://registry.yarnpkg.com/cf-nodejs-logging-support/-/cf-nodejs-logging-support-6.7.0.tgz#dc571525b2b92ec1c430cceb7e6e3cf4f0252870"
+  integrity sha512-pWsG89iD+RUIRklS8dDWNtLRVqLfJjfMJYsj+3U+RCP9VoyDfZ+4sABN7Ifmfwh3dsbUkqkl0Dv+aNJc+AD9jg==
   dependencies:
     json-stringify-safe "^5.0.1"
     jsonwebtoken "^8.5.1"
@@ -3852,6 +3854,11 @@ clone@^1.0.2:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/clone/-/clone-1.0.4.tgz#da309cc263df15994c688ca902179ca3c7cd7c7e"
   integrity sha1-2jCcwmPfFZlMaIypAheco8fNfH4=
+
+cluster-key-slot@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/cluster-key-slot/-/cluster-key-slot-1.1.0.tgz#30474b2a981fb12172695833052bc0d01336d10d"
+  integrity sha512-2Nii8p3RwAPiFwsnZvukotvow2rIHM+yQ6ZcBXGHdniadkYGZYiGmkHJIbZPIV9nfv7m/U1IPMVVcAhoWFeklw==
 
 code-excerpt@^3.0.0:
   version "3.0.0"
@@ -4709,6 +4716,11 @@ delegates@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/delegates/-/delegates-1.0.0.tgz#84c6e159b81904fdca59a0ef44cd870d31250f9a"
   integrity sha1-hMbhWbgZBP3KWaDvRM2HDTElD5o=
+
+denque@^1.1.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/denque/-/denque-1.5.0.tgz#773de0686ff2d8ec2ff92914316a47b73b1c73de"
+  integrity sha512-CYiCSgIF1p6EUByQPlGkKnP1M9g0ZV3qMIrqMqZqdwazygIA/YP2vrbcyl1h/WppKJTdl1F85cXIle+394iDAQ==
 
 depd@~1.1.2:
   version "1.1.2"
@@ -6739,6 +6751,22 @@ invert-kv@^1.0.0:
   resolved "https://registry.yarnpkg.com/invert-kv/-/invert-kv-1.0.0.tgz#104a8e4aaca6d3d8cd157a8ef8bfab2d7a3ffdb6"
   integrity sha1-EEqOSqym09jNFXqO+L+rLXo//bY=
 
+ioredis@4.24.2:
+  version "4.24.2"
+  resolved "https://registry.yarnpkg.com/ioredis/-/ioredis-4.24.2.tgz#ca827cb22b579827ac2999c8d5950d7605f286ed"
+  integrity sha512-SSuVXwoG747sZetxxs9gyAno5kfUfvo4s5mSZp4dh8vzuTnrtA5mTf2OjL6sPfIfNbVTROg2c+VbXceGlpucPQ==
+  dependencies:
+    cluster-key-slot "^1.1.0"
+    debug "^4.3.1"
+    denque "^1.1.0"
+    lodash.defaults "^4.2.0"
+    lodash.flatten "^4.4.0"
+    p-map "^2.1.0"
+    redis-commands "1.7.0"
+    redis-errors "^1.2.0"
+    redis-parser "^3.0.0"
+    standard-as-callback "^2.1.0"
+
 ip-regex@^4.1.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/ip-regex/-/ip-regex-4.3.0.tgz#687275ab0f57fa76978ff8f4dddc8a23d5990db5"
@@ -8449,15 +8477,10 @@ minimist-options@^3.0.1:
     arrify "^1.0.1"
     is-plain-obj "^1.1.0"
 
-minimist@^1.1.3, minimist@^1.2.0, minimist@^1.2.5:
+minimist@^1.1.3, minimist@^1.2.0, minimist@^1.2.5, minimist@~0.0.1:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.5.tgz#67d66014b66a6a8aaa0c083c5fd58df4e4e97602"
   integrity sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==
-
-minimist@~0.0.1:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/minimist/-/minimist-0.0.10.tgz#de3f98543dbf96082be48ad1a0c7cda836301dcf"
-  integrity sha1-3j+YVD2/lggr5IrRoMfNqDYwHc8=
 
 minipass@^2.3.5, minipass@^2.6.0, minipass@^2.8.6, minipass@^2.9.0:
   version "2.9.0"
@@ -10124,6 +10147,23 @@ redent@^3.0.0:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
 
+redis-commands@1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/redis-commands/-/redis-commands-1.7.0.tgz#15a6fea2d58281e27b1cd1acfb4b293e278c3a89"
+  integrity sha512-nJWqw3bTFy21hX/CPKHth6sfhZbdiHP6bTawSgQBlKOVRG7EZkfHbbHwQJnrE4vsQf0CMNE+3gJ4Fmm16vdVlQ==
+
+redis-errors@^1.0.0, redis-errors@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/redis-errors/-/redis-errors-1.2.0.tgz#eb62d2adb15e4eaf4610c04afe1529384250abad"
+  integrity sha1-62LSrbFeTq9GEMBK/hUpOEJQq60=
+
+redis-parser@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/redis-parser/-/redis-parser-3.0.0.tgz#b66d828cdcafe6b4b8a428a7def4c6bcac31c8b4"
+  integrity sha1-tm2CjNyv5rS4pCin3vTGvKwxyLQ=
+  dependencies:
+    redis-errors "^1.0.0"
+
 regenerate-unicode-properties@^8.2.0:
   version "8.2.0"
   resolved "https://registry.yarnpkg.com/regenerate-unicode-properties/-/regenerate-unicode-properties-8.2.0.tgz#e5de7111d655e7ba60c057dbe9ff37c87e65cdec"
@@ -11183,6 +11223,11 @@ stack-utils@^2.0.2, stack-utils@^2.0.3:
   integrity sha512-gL//fkxfWUsIlFL2Tl42Cl6+HFALEaB1FU76I/Fy+oZjRreP7OPMXFlGbxM7NQsI0ZpUfw76sHnv0WNYuTb7Iw==
   dependencies:
     escape-string-regexp "^2.0.0"
+
+standard-as-callback@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/standard-as-callback/-/standard-as-callback-2.1.0.tgz#8953fc05359868a77b5b9739a665c5977bb7df45"
+  integrity sha512-qoRRSyROncaz1z0mvYqIE4lCd9p2R90i6GxW3uZv5ucSu8tU7B5HXUP1gG8pVZsYNVaXjk8ClXHPttLyxAL48A==
 
 static-extend@^0.1.1:
   version "0.1.2"

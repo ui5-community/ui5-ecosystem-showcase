@@ -19,7 +19,7 @@
     "verbose": true
   },
   "dependencies": {
-    "@sap/approuter": "^10.2.0",
+    "@sap/approuter": "^10.4.0",
     "@ui5/logger": "^2.0.1",
     "request": "^2.88.2"
   },
