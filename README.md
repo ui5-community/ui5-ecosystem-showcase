@@ -16,11 +16,13 @@ packages
 ├── ui5-middleware-cfdestination    // middleware extension: use the approuter as proxy
 ├── ui5-middleware-iasync           // middleware extension: sync UI interaction across browsers (alpha! careful!)
 ├── ui5-middleware-index            // middleware extension: serve an HTML file for / (root)
+├── ui5-middleware-livecompileless  // middleware extension: livecompiling of less files in the app folder
 ├── ui5-middleware-livereload       // middleware extension: usage of livereload for development
 ├── ui5-middleware-livetranspile    // middleware extension: on-demand es6 to es5 transpile when requesting js
 ├── ui5-middleware-simpleproxy      // middleware extension: simple express proxy
 ├── ui5-middleware-servestatic      // middleware extension: serve static resources
 ├── ui5-middleware-stringreplacer   // middleware extension: replaces placeholder strings
+├── ui5-task-compileless            // task extension: compile less files in the app folder
 ├── ui5-task-flatten-library        // task extension: prepares build result for deployment to SAP NetWeaver
 ├── ui5-task-i18ncheck              // task extension: checks for missing i18n texts
 ├── ui5-task-pwa-enabler            // task extension: enables ui5 app with pwa functionalities
@@ -96,6 +98,7 @@ yarn test:ci # > start ui5 server in bg, runs wdi5- + UIveri5-tests, shuts down 
 
 The tasks and middlewares developed in this project are also publicly available on NPM right here:
 
+* https://www.npmjs.com/package/ui5-task-compileless
 * https://www.npmjs.com/package/ui5-task-flatten-library
 * https://www.npmjs.com/package/ui5-task-i18ncheck 
 * https://www.npmjs.com/package/ui5-task-pwa-enabler
@@ -105,6 +108,7 @@ The tasks and middlewares developed in this project are also publicly available 
 * https://www.npmjs.com/package/ui5-middleware-cfdestination
 * https://www.npmjs.com/package/ui5-middleware-iasync (alpha! careful!)
 * https://www.npmjs.com/package/ui5-middleware-index
+* https://www.npmjs.com/package/ui5-middleware-livecompileless
 * https://www.npmjs.com/package/ui5-middleware-livereload
 * https://www.npmjs.com/package/ui5-middleware-livetranspile
 * https://www.npmjs.com/package/ui5-middleware-simpleproxy
@@ -117,6 +121,7 @@ Available tasks in this project:
 
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
+| [ui5-task-compileless](https://www.npmjs.com/package/ui5-task-compileless) | compile less files in the app folder | [![npm version](https://badge.fury.io/js/ui5-task-compileless.svg)](https://badge.fury.io/js/ui5-task-compileless) |
 | [ui5-task-flatten-library](https://www.npmjs.com/package/ui5-task-flatten-library) | prepares build result for deployment to SAP NetWeaver | [![npm version](https://badge.fury.io/js/ui5-task-flatten-library.svg)](https://badge.fury.io/js/ui5-task-flatten-library) |
 | [ui5-task-i18ncheck](packages/ui5-task-i18ncheck/README.md) | checks for missing i18n texts | [![npm version](https://badge.fury.io/js/ui5-task-i18ncheck.svg)](https://badge.fury.io/js/ui5-task-i18ncheck) |
 | [ui5-task-pwa-enabler](packages/ui5-task-pwa-enabler/README.md) | enables ui5 app with pwa functionalities | [![npm version](https://badge.fury.io/js/ui5-task-pwa-enabler.svg)](https://badge.fury.io/js/ui5-task-pwa-enabler) |
@@ -131,6 +136,7 @@ Available middlewares in this project:
 | [ui5-middleware-cfdestination](packages/ui5-middleware-cfdestination/README.md) | use the approuter as proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-cfdestination.svg)](https://badge.fury.io/js/ui5-middleware-cfdestination) |
 | [ui5-middleware-iasync](packages/ui5-middleware-iasync/README.md) | sync UI interactions across connected browsers (alpha! careful!) | [![npm version](https://badge.fury.io/js/ui5-middleware-iasync.svg)](https://badge.fury.io/js/ui5-middleware-iasync) |
 | [ui5-middleware-index](packages/ui5-middleware-index/README.md) | serve an HTML file for / (root) | [![npm version](https://badge.fury.io/js/ui5-middleware-index.svg)](https://badge.fury.io/js/ui5-middleware-index) |
+| [ui5-middleware-livecompileless](https://www.npmjs.com/package/ui5-middleware-livecompileless) | livecompiling of less files in the app folder | [![npm version](https://badge.fury.io/js/ui5-middleware-livecompileless.svg)](https://badge.fury.io/js/ui5-middleware-livecompileless) |
 | [ui5-middleware-livereload](packages/ui5-middleware-livereload/README.md) | usage of livereload for development | [![npm version](https://badge.fury.io/js/ui5-middleware-livereload.svg)](https://badge.fury.io/js/ui5-middleware-livereload) |
 | [ui5-middleware-livetranspile](packages/ui5-middleware-livetranspile/README.md) | on-demand es6 to es5 transpile when requesting js | [![npm version](https://badge.fury.io/js/ui5-middleware-livetranspile.svg)](https://badge.fury.io/js/ui5-middleware-livetranspile) |
 | [ui5-middleware-simpleproxy](packages/ui5-middleware-simpleproxy/README.md) | simple express proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-simpleproxy.svg)](https://badge.fury.io/js/ui5-middleware-simpleproxy) |
