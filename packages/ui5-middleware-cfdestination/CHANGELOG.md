@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.4.3...ui5-middleware-cfdestination@0.5.0) (2021-06-06)
+
+
+### Features
+
+* **testing,localDir:** middleware cf-destination ([#526](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/526)) ([24127c5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/24127c58b9369a0c230d129da856ad8635100759))
+
+
+
+
+
 ## [0.4.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.4.2...ui5-middleware-cfdestination@0.4.3) (2021-05-15)
 
 **Note:** Version bump only for package ui5-middleware-cfdestination
