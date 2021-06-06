@@ -4,7 +4,7 @@ const request = require("request")
 const log = require("@ui5/logger").getLogger("server:custommiddleware:cfdestination")
 
 /**
- * Custom UI5 Server middleware example
+ * Custom UI5 Server middleware "cfdestination"
  *
  * @param {Object} parameters Parameters
  * @param {Object} parameters.resources Resource collections
@@ -18,7 +18,7 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:cfdestinat
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @returns {function} Middleware function to use
  */
-module.exports = function _cfdestination({ resources, options }) {
+module.exports = ({ resources, options }) => {
     // provide a set of default runtime options
     const effectiveOptions = {
         debug: false,
