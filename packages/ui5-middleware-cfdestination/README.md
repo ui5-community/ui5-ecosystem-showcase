@@ -10,7 +10,7 @@ npm install ui5-middleware-cfdestination --save-dev
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
-- `debug`: `<bool>`, default: `false`  
+- `debug`: `<boolean>`, default: `false`  
 verbose logging
 
 - `port`: `<int>`  
