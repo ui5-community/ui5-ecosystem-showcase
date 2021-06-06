@@ -1,0 +1,15 @@
+{
+  "VCAP_SERVICES": {
+    "xsuaa": [
+      {
+        "credentials": {
+          "clientid": "clientid",
+          "clientsecret": "clientsecret",
+          "url": "https://authentication.eu10.hana.ondemand.com"
+        },
+        "label": "xsuaa",
+        "tags": ["xsuaa"]
+      }
+    ]
+  }
+}
