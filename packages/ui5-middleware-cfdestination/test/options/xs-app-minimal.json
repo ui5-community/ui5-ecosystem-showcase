@@ -1,0 +1,5 @@
+{
+  "authenticationMethod": "none",
+  "welcomeFile": "/index.html",
+  "routes": []
+}
