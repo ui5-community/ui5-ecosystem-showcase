@@ -1,24 +1,25 @@
 const crypto = require("crypto")
 const fs = require("fs-extra")
-const getPort = require('get-port')
+const getPort = require("get-port")
 const path = require("path")
-const replace = require('replace-in-file')
+const replace = require("replace-in-file")
 const request = require("supertest")
 const { spawn } = require("child_process")
-const test = require('ava')
-const waitOn = require("wait-on")
 
+const test = require("ava")
+
+const waitOn = require("wait-on")
 
 /**
  * copy showcase ui5 app for test purposes
  * and rm included ui5.yaml and xs-app.json
- * 
+ *
  * @param {string} tmpDir path to copy ui5 app (that acts as the test app to)
  */
 async function copyUI5app(tmpDir) {
     await fs.mkdir(tmpDir)
     const filterFn = (src, _) => {
-        const yo = ["node_modules", "dist", "ui5.yaml", "xs-app.json"].find(node => src.endsWith(node))
+        const yo = ["node_modules", "dist", "ui5.yaml", "xs-app.json"].find((node) => src.endsWith(node))
         return yo === undefined ? true : false
     }
     await fs.copy(path.resolve(__dirname, "../../ui5-app"), tmpDir, {
@@ -38,7 +39,7 @@ test.beforeEach(async (t) => {
     }
 })
 
-test.afterEach.always(async t => {
+test.afterEach.always(async (t) => {
     // cleanup
     await fs.remove(t.context.tmpDir)
 })
@@ -54,7 +55,7 @@ test.afterEach.always(async t => {
  */
 /**
  * prep the ui5 server runtime for test case - ui5.yaml, xs-app.json, default-env.json
- * 
+ *
  * @param {object} config
  * @param {string} config.ui5Yaml path to the ui5.yaml that should be used in the test case
  * @param {number} config.appRouterPort port the app router should be started on
@@ -93,7 +94,7 @@ async function prepUi5ServerConfig({ ui5Yaml, appRouterPort, xsAppJson, defaultE
     }
 }
 
-test("no auth in yaml, no xsuaa auth in route -> route is unprotected", async t => {
+test("no auth in yaml, no xsuaa auth in route -> route is unprotected", async (t) => {
     const { ui5 } = await prepUi5ServerConfig({
         ui5Yaml: "./test/no-auth/ui5.yaml",
         appRouterPort: t.context.port.appRouter,
@@ -127,7 +128,7 @@ test("no auth in yaml, no xsuaa auth in route -> route is unprotected", async t 
 /**
  * expected result: redirect to idp for route /backend
  */
-test("auth in yaml, xsuaa auth in route -> route is protected", async t => {
+test("auth in yaml, xsuaa auth in route -> route is protected", async (t) => {
     const { ui5 } = await prepUi5ServerConfig({
         ui5Yaml: "./test/auth/ui5-auth-in-yaml.yaml",
         appRouterPort: t.context.port.appRouter,
@@ -155,7 +156,10 @@ test("auth in yaml, xsuaa auth in route -> route is protected", async t => {
     // include code for client-side redirect to idp
     const responseIdpRedirect = await app.get("/backend/")
     t.is(responseIdpRedirect.status, 200)
-    t.true(responseIdpRedirect.text.includes("https://authentication.eu10.hana.ondemand.com/oauth/authorize"), "oauth endpoint redirect injected")
+    t.true(
+        responseIdpRedirect.text.includes("https://authentication.eu10.hana.ondemand.com/oauth/authorize"),
+        "oauth endpoint redirect injected"
+    )
 
     child.kill() // don't take it literally
 })
@@ -165,7 +169,7 @@ test("auth in yaml, xsuaa auth in route -> route is protected", async t => {
  * the missing config option "authenticationMethod": "route" in ui5.yaml takes precedence
  * and does not require any route protection on /backend
  */
-test("no auth in yaml, xsuaa auth in route -> route is unprotected", async t => {
+test("no auth in yaml, xsuaa auth in route -> route is unprotected", async (t) => {
     const { ui5 } = await prepUi5ServerConfig({
         ui5Yaml: "./test/no-auth/ui5-no-auth-in-yaml.yaml",
         appRouterPort: t.context.port.appRouter,
@@ -201,7 +205,7 @@ test("no auth in yaml, xsuaa auth in route -> route is unprotected", async t => 
  * protect a local html file with app router, so accessing it "proxied" via
  * ui5 serve results in a redirect to the idp
  */
- test("allow localDir usage in app router for auth-protected static files", async t => {
+test("allow localDir usage in app router for auth-protected static files", async (t) => {
     const { ui5 } = await prepUi5ServerConfig({
         ui5Yaml: "./test/auth/ui5-with-localDir.yaml",
         appRouterPort: t.context.port.appRouter,
@@ -232,7 +236,10 @@ test("no auth in yaml, xsuaa auth in route -> route is unprotected", async t => 
     // include code for client-side redirect to idp
     const responseIdpRedirect = await app.get("/index1.html")
     t.is(responseIdpRedirect.status, 200)
-    t.true(responseIdpRedirect.text.includes("https://authentication.eu10.hana.ondemand.com/oauth/authorize"), "oauth endpoint redirect injected")
+    t.true(
+        responseIdpRedirect.text.includes("https://authentication.eu10.hana.ondemand.com/oauth/authorize"),
+        "oauth endpoint redirect injected"
+    )
 
     // access /index2.html as an unprotected route to the physical index1.html
     const responseNoAuth = await app.get("/index2.html")

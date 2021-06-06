@@ -1,6 +1,6 @@
-const approuter = require('@sap/approuter')()
-const fs = require('fs')
-const request = require('request')
+const approuter = require("@sap/approuter")()
+const fs = require("fs")
+const request = require("request")
 const log = require("@ui5/logger").getLogger("server:custommiddleware:cfdestination")
 
 /**
@@ -20,19 +20,22 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:cfdestinat
  */
 module.exports = function ({ resources, options }) {
     request.debug = options.configuration.debug // pass debug flag on to underlying request lib
-    process.env.XS_APP_LOG_LEVEL = options.configuration.debug ? 'DEBUG' : 'ERROR'
+    process.env.XS_APP_LOG_LEVEL = options.configuration.debug ? "DEBUG" : "ERROR"
     // read in the cf config file
-    const xsappConfig = JSON.parse(fs.readFileSync(options.configuration.xsappJson, 'utf8'))
+    const xsappConfig = JSON.parse(fs.readFileSync(options.configuration.xsappJson, "utf8"))
     const xsappPath = options.configuration.xsappJson.replace("xs-app.json", "")
 
     // the default auth mechanism is set to none but the user can pass an auth method using the options
     xsappConfig.authenticationMethod = options.configuration.authenticationMethod || "none"
 
     let regExes = []
-    xsappConfig.routes = xsappConfig.routes
-        .filter((route) => (options.configuration.allowLocalDir || !route.localDir) && (options.configuration.allowServices || !route.service)) //ignore routes that point to web apps as they are already hosted by the ui5 tooling
+    xsappConfig.routes = xsappConfig.routes.filter(
+        (route) =>
+            (options.configuration.allowLocalDir || !route.localDir) &&
+            (options.configuration.allowServices || !route.service)
+    ) //ignore routes that point to web apps as they are already hosted by the ui5 tooling
 
-    xsappConfig.routes.forEach(route => {
+    xsappConfig.routes.forEach((route) => {
         /* Authentication type should come from route if authenticationMethod is set to "route", otherwise set to "none" */
         if (xsappConfig.authenticationMethod.toLowerCase() === "none") {
             route.authenticationType = "none"
@@ -42,7 +45,13 @@ module.exports = function ({ resources, options }) {
         // a source declaration such as "^/backend/(.*)$" is needed
         if (route.source.match(/.*\/.*\/?.*/)) {
             regExes.push(new RegExp(route.source))
-            options.configuration.debug ? log.info(`adding cf-like destination "${route.destination || '(xs-app.json specific setting)'}" proxying reqs to ${route.source}`) : null
+            options.configuration.debug
+                ? log.info(
+                      `adding cf-like destination "${
+                          route.destination || "(xs-app.json specific setting)"
+                      }" proxying reqs to ${route.source}`
+                  )
+                : null
         }
     })
 
