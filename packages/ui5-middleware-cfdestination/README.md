@@ -13,10 +13,10 @@ npm install ui5-middleware-cfdestination --save-dev
 - `debug`: `<boolean>`, default: `false`  
 verbose logging
 
-- `port`: `<int>`  
+- `port`: `<int>`, default: `5000`  
 port to run the underlying `approuter` on
 
-- `xsappJson`: `<string path>`  
+- `xsappJson`: `<string path>`  , default: `.xs-app.json`
 path to the cf-style approuter configuration file `xs-app.json`
 
 - `destinations`: `<Array of name/value pairs>`  
