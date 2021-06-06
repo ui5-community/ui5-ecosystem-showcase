@@ -65,3 +65,6 @@ dist
 
 # WebStorm/IntelliJ IDE
 .idea
+
+# vscode settings - to each her/his own
+.vscode/settings.json
