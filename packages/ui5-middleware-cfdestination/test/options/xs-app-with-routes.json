@@ -1,0 +1,11 @@
+{
+  "authenticationMethod": "none",
+  "welcomeFile": "/index.html",
+  "routes": [
+    {
+      "source": "^/backend/(.*)$",
+      "destination": "backend",
+      "target": "$1"
+    }
+  ]
+}

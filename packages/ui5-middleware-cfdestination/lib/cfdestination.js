@@ -1,10 +1,10 @@
-const approuter = require('@sap/approuter')()
-const fs = require('fs')
-const request = require('request')
+const approuter = require("@sap/approuter")()
+const fs = require("fs")
+const request = require("request")
 const log = require("@ui5/logger").getLogger("server:custommiddleware:cfdestination")
 
 /**
- * Custom UI5 Server middleware example
+ * Custom UI5 Server middleware "cfdestination"
  *
  * @param {Object} parameters Parameters
  * @param {Object} parameters.resources Resource collections
@@ -18,21 +18,40 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:cfdestinat
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @returns {function} Middleware function to use
  */
-module.exports = function ({ resources, options }) {
-    request.debug = options.configuration.debug // pass debug flag on to underlying request lib
-    process.env.XS_APP_LOG_LEVEL = options.configuration.debug ? 'DEBUG' : 'ERROR'
+module.exports = ({ resources, options }) => {
+    // provide a set of default runtime options
+    const effectiveOptions = {
+        debug: false,
+        port: 5000,
+        xsappJson: "./xs-app.json",
+        destinations: [],
+        allowServices: false,
+        authenticationMethod: "none",
+        allowLocalDir: false
+    }
+    // config-time options from ui5.yaml for cfdestination take precedence
+    if (options.configuration) {
+        Object.assign(effectiveOptions, options.configuration)
+    }
+
+    request.debug = effectiveOptions.debug // pass debug flag on to underlying request lib
+    process.env.XS_APP_LOG_LEVEL = effectiveOptions.debug ? "DEBUG" : "ERROR"
     // read in the cf config file
-    const xsappConfig = JSON.parse(fs.readFileSync(options.configuration.xsappJson, 'utf8'))
-    const xsappPath = options.configuration.xsappJson.replace("xs-app.json", "")
+    const xsappConfig = JSON.parse(fs.readFileSync(effectiveOptions.xsappJson, "utf8"))
+    const xsappPath = effectiveOptions.xsappJson.replace("xs-app.json", "")
 
     // the default auth mechanism is set to none but the user can pass an auth method using the options
-    xsappConfig.authenticationMethod = options.configuration.authenticationMethod || "none"
+    xsappConfig.authenticationMethod = effectiveOptions.authenticationMethod
 
     let regExes = []
-    xsappConfig.routes = xsappConfig.routes
-        .filter((route) => (options.configuration.allowLocalDir || !route.localDir) && (options.configuration.allowServices || !route.service)) //ignore routes that point to web apps as they are already hosted by the ui5 tooling
+    // default: ignore routes that point to web apps as they are already hosted by the ui5 tooling,
+    // but allow overwriting this behavior via "allowLocalDir"
+    xsappConfig.routes = xsappConfig.routes.filter(
+        (route) =>
+            (effectiveOptions.allowLocalDir || !route.localDir) && (effectiveOptions.allowServices || !route.service)
+    )
 
-    xsappConfig.routes.forEach(route => {
+    xsappConfig.routes.forEach((route) => {
         /* Authentication type should come from route if authenticationMethod is set to "route", otherwise set to "none" */
         if (xsappConfig.authenticationMethod.toLowerCase() === "none") {
             route.authenticationType = "none"
@@ -42,36 +61,41 @@ module.exports = function ({ resources, options }) {
         // a source declaration such as "^/backend/(.*)$" is needed
         if (route.source.match(/.*\/.*\/?.*/)) {
             regExes.push(new RegExp(route.source))
-            options.configuration.debug ? log.info(`adding cf-like destination "${route.destination || '(xs-app.json specific setting)'}" proxying reqs to ${route.source}`) : null
+            effectiveOptions.debug
+                ? log.info(
+                      `adding cf-like destination "${
+                          route.destination || "(xs-app.json specific setting)"
+                      }" proxying reqs to ${route.source}`
+                  )
+                : null
         }
     })
 
     // req-use app-router with config file to run in "shadow" mode
-    process.env.destinations = JSON.stringify(options.configuration.destinations || [])
-    if (options.configuration.debug && process.env.destinations.length === 0) {
+    process.env.destinations = JSON.stringify(effectiveOptions.destinations || [])
+    if (effectiveOptions.debug && process.env.destinations.length === 0) {
         log.info(`Provided destinations are empty`)
     }
 
     approuter.start({
-        port: options.configuration.port,
+        port: effectiveOptions.port,
         xsappConfig: xsappConfig,
         workingDir: xsappPath || "."
     })
     return (req, res, next) => {
         // check req.path for match with each route.source
-        // and proxy to localhost:${options.configuration.port}
+        // and proxy to localhost:${effectiveOptions.port}
         let match = false
         let url = ""
         for (let [index, regEx] of regExes.entries()) {
             if (regEx.test(req.path)) {
                 match = true
-                url = `${req.protocol}://localhost:${options.configuration.port}${req.originalUrl}`
-
+                url = `${req.protocol}://localhost:${effectiveOptions.port}${req.originalUrl}`
                 break
             }
         }
         if (match) {
-            options.configuration.debug ? log.info(`proxying ${req.method} ${req.originalUrl} to ${url}...`) : null
+            effectiveOptions.debug ? log.info(`proxying ${req.method} ${req.originalUrl} to ${url}...`) : null
             req.pipe(request(url)).pipe(res)
         } else {
             next()
