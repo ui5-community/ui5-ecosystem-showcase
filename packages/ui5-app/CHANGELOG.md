@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.11.1...ui5-app@0.11.2) (2021-06-07)
+
+**Note:** Version bump only for package ui5-app
+
+
+
+
+
 ## [0.11.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.11.0...ui5-app@0.11.1) (2021-06-06)
 
 **Note:** Version bump only for package ui5-app

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.5.0...ui5-middleware-cfdestination@0.6.0) (2021-06-07)
+
+
+### Features
+
+* add default options for cfdestination ([#527](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/527)) ([1a29c83](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1a29c83d659002bb6dbe3f7f7da0ecbfdb3afa2a))
+
+
+
+
+
 # [0.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.4.3...ui5-middleware-cfdestination@0.5.0) (2021-06-06)
 
 
