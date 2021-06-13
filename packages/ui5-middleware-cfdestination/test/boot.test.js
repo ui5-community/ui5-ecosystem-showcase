@@ -248,3 +248,43 @@ test("allow localDir usage in app router for auth-protected static files", async
 
     child.kill() // don't take it literally
 })
+
+/**
+ * multitenant context
+ * expected result: redirect to subscribed subaccount idp for route /backend
+ */
+ test("(multitenant) auth in yaml, xsuaa auth in route -> route is protected", async (t) => {
+    const { ui5 } = await prepUi5ServerConfig({
+        ui5Yaml: "./test/multitenant/ui5-auth-multitenant.yaml",
+        appRouterPort: t.context.port.appRouter,
+        xsAppJson: "./test/auth/xs-app.json",
+        defaultEnvJson: "./test/multitenant/default-env.json",
+        tmpDir: t.context.tmpDir
+    })
+
+    // start ui5-app with modified route(s) and config
+    const child = spawn(`ui5 serve --port ${t.context.port.ui5Sserver} --config ${ui5.ui5Yaml}`, {
+        // stdio: 'inherit', // > don't include stdout in test output
+        shell: true,
+        cwd: t.context.tmpDir
+    })
+
+    // wait for ui5 server and app router to boot
+    await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:${t.context.port.appRouter}`] })
+
+    const app = request(`http://localhost:${t.context.port.ui5Sserver}`)
+    // test for the app being started correctly
+    const responseIndex = await app.get("/index.html")
+    t.is(responseIndex.status, 200, "http 200 on index")
+
+    // test for the redirect reponse to
+    // include code for client-side redirect to idp
+    const responseIdpRedirect = await app.get("/backend/")
+    t.is(responseIdpRedirect.status, 200)
+    t.true(
+        responseIdpRedirect.text.includes("https://test.authentication.eu10.hana.ondemand.com/oauth/authorize"),
+        "oauth endpoint redirect injected"
+    )
+
+    child.kill() // don't take it literally
+})
