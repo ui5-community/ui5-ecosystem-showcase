@@ -91,7 +91,7 @@ module.exports = ({ resources, options }) => {
         for (let [index, regEx] of regExes.entries()) {
             if (regEx.test(req.path)) {
                 match = true
-                if (customHost) {
+                if (effectiveOptions.customHost) {
                     // customHost is the subdomain of the subscribed tenant in multitenancy context
                     url = `${req.protocol}://${customHost}.localhost:${effectiveOptions.port}${req.originalUrl}`
                 } else {
