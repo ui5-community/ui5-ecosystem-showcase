@@ -28,7 +28,7 @@ module.exports = ({ resources, options }) => {
         allowServices: false,
         authenticationMethod: "none",
         allowLocalDir: false,
-        customHost: null
+        subdomain: null
     }
     // config-time options from ui5.yaml for cfdestination take precedence
     if (options.configuration) {
@@ -91,9 +91,9 @@ module.exports = ({ resources, options }) => {
         for (let [index, regEx] of regExes.entries()) {
             if (regEx.test(req.path)) {
                 match = true
-                if (effectiveOptions.customHost) {
-                    // customHost is the subdomain of the subscribed tenant in multitenancy context
-                    url = `${req.protocol}://${customHost}.localhost:${effectiveOptions.port}${req.originalUrl}`
+                if (effectiveOptions.subdomain) {
+                    // subdomain of the subscribed tenant in multitenancy context
+                    url = `${req.protocol}://${subdomain}.localhost:${effectiveOptions.port}${req.originalUrl}`
                 } else {
                     url = `${req.protocol}://localhost:${effectiveOptions.port}${req.originalUrl}`
                 }
