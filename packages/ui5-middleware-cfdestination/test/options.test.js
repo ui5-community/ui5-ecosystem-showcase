@@ -92,7 +92,7 @@ async function prepUi5ServerConfig({ ui5Yaml, appRouterPort, xsAppJson, defaultE
     }
 }
 
-test.serial("ui5.yaml: no config -> default options apply", async (t) => {
+test("ui5.yaml: no config -> default options apply", async (t) => {
     const { ui5 } = await prepUi5ServerConfig({
         ui5Yaml: "./test/options/ui5-no-config.yaml",
         appRouterPort: 5000,
@@ -108,7 +108,7 @@ test.serial("ui5.yaml: no config -> default options apply", async (t) => {
     })
 
     // wait for ui5 server and app router to boot
-    await waitOn({ timeout: 10000, resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:5000`] })
+    await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:5000`] })
 
     const app = request(`http://localhost:${t.context.port.ui5Sserver}`)
     // test for the app being started correctly
@@ -122,7 +122,7 @@ test.serial("ui5.yaml: no config -> default options apply", async (t) => {
  * app router port, xs app json + 1 destination is set in ui5.yaml
  * -> respective default options (port 5000, 0 destinations) should be overriden
  */
-test.serial("ui5.yaml: some config -> default options are overwritten", async (t) => {
+test("ui5.yaml: some config -> default options are overwritten", async (t) => {
     const { ui5 } = await prepUi5ServerConfig({
         ui5Yaml: "./test/options/ui5-some-config.yaml",
         appRouterPort: t.context.port.appRouter,
