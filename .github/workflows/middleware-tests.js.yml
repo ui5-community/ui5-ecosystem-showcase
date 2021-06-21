@@ -40,4 +40,4 @@ jobs:
         run: yarn install --frozen-lockfile --ignore-engines
 
       # runs tests on middleware(s)
-      - run: yarn workspace ui5-middleware-cfdestination test --serial
+      - run: yarn workspace ui5-middleware-cfdestination test
