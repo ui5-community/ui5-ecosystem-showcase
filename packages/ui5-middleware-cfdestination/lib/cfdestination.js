@@ -93,7 +93,7 @@ module.exports = ({ resources, options }) => {
                 match = true
                 if (effectiveOptions.subdomain) {
                     // subdomain of the subscribed tenant in multitenancy context
-                    url = `${req.protocol}://${subdomain}.localhost:${effectiveOptions.port}${req.originalUrl}`
+                    url = `${req.protocol}://${effectiveOptions.subdomain}.localhost:${effectiveOptions.port}${req.originalUrl}`
                 } else {
                     url = `${req.protocol}://localhost:${effectiveOptions.port}${req.originalUrl}`
                 }
