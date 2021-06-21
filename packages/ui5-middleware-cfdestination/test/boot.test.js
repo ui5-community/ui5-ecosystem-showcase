@@ -280,7 +280,8 @@ test("(multitenant) auth in yaml, xsuaa auth in route -> route is protected", as
     let serve = await server.serve(tree, { port: t.context.port.ui5Sserver })
 
     // wait for ui5 server and app router to boot
-    await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:${t.context.port.appRouter}`] })
+    // -- probably don't need this as we're `await`ing server.serve() above?
+    // await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:${t.context.port.appRouter}`] })
 
     const app = request(`http://localhost:${t.context.port.ui5Sserver}`)
     // test for the app being started correctly
