@@ -295,4 +295,6 @@ test("(multitenant) auth in yaml, xsuaa auth in route -> route is protected", as
         responseIdpRedirect.text.includes("https://foo.authentication.eu10.hana.ondemand.com/oauth/authorize"),
         "multi-tenant oauth endpoint redirect injected"
     )
+    nock.cleanAll()
+    nock.restore()
 })
