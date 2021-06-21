@@ -301,13 +301,16 @@ test("(multitenant) auth in yaml, xsuaa auth in route -> route is protected", as
     nock.restore()
 
     // clean up programmatic ui5 server
-    return new Promise((resolve, reject) => {
-        serve.close((error) => {
-            if (error) {
-                reject(error)
-            } else {
-                resolve()
-            }
+    const _close = () =>
+        new Promise((resolve, reject) => {
+            serve.close((error) => {
+                if (error) {
+                    reject(error)
+                } else {
+                    resolve()
+                }
+            })
         })
-    })
+
+    await _close()
 })
