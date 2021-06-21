@@ -92,7 +92,7 @@ async function prepUi5ServerConfig({ ui5Yaml, appRouterPort, xsAppJson, defaultE
     }
 }
 
-test("ui5.yaml: no config -> default options apply", async (t) => {
+test.only("ui5.yaml: no config -> default options apply", async (t) => {
     const { ui5 } = await prepUi5ServerConfig({
         ui5Yaml: "./test/options/ui5-no-config.yaml",
         appRouterPort: 5000,
@@ -102,7 +102,7 @@ test("ui5.yaml: no config -> default options apply", async (t) => {
 
     // start ui5-app with modified route(s) and config
     const child = spawn(`ui5 serve --port ${t.context.port.ui5Sserver} --config ${ui5.yaml}`, {
-        // stdio: "inherit", // > don't include stdout in test output
+        stdio: "inherit", // > don't include stdout in test output
         shell: true,
         cwd: t.context.tmpDir
     })
