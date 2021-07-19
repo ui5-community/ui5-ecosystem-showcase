@@ -8325,7 +8325,7 @@ meow@^4.0.0:
     redent "^2.0.0"
     trim-newlines "^2.0.0"
 
-meow@^8.0.0:
+meow@^8.0.0, meow@^8.1.0:
   version "8.1.2"
   resolved "https://registry.yarnpkg.com/meow/-/meow-8.1.2.tgz#bcbe45bda0ee1729d350c03cffc8395a36c4e897"
   integrity sha512-r85E3NdZ+mpYk1C6RjPFEMSE+s1iZMuHtsHAqY0DT3jZczl0diWUZ8g6oU7h0M9cD2EL+PzaYghhCLzR0ZNn5Q==
@@ -8440,6 +8440,13 @@ min-indent@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/min-indent/-/min-indent-1.0.1.tgz#a63f681673b30571fbe8bc25686ae746eefa9869"
   integrity sha512-I9jwMn07Sy/IwOj3zVkVik2JTvgpaykDZEigL6Rx6N9LbMywwUSMtxET+7lVoDLLd3O3IXwJwvuuns8UB/HeAg==
+
+minify-xml@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/minify-xml/-/minify-xml-2.5.0.tgz#7780549bbb4ee28d2097f31c61f8ba241bb895ac"
+  integrity sha512-0BaGYKxfkhRrM4eKEch0X9NJ2S8o5LaOMHn209XOY8ww5Ah3chfec5xdLrEyCDXhQMxF2ZyQRQVLhq5YyNLZpQ==
+  dependencies:
+    meow "^8.1.0"
 
 minimalistic-assert@^1.0.0:
   version "1.0.1"
