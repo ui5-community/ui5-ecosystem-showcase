@@ -31,6 +31,21 @@ builder:
       replace:
         - placeholder: "${project.version}"
           value: "1.0.0-SNAPSHOT"
+  - name: ui5-task-minify-xml
+    afterTask: replaceVersion
+    configuration:
+      minifyOptions:
+        removeComments: true
+        collapseEmptyElements: true
+        collapseWhitespaceInAttributeValues: true
+        # ... further minify-xml attributes
+      fileExtensions:
+      - "xml"
+      - "edmx"
+      excludePatterns:
+      - "lib/"
+      - "another/dir/in/webapp"
+      - "yet/another/dir"
   - name: ui5-task-i18ncheck
     afterTask: replaceVersion
   - name: ui5-task-zipper

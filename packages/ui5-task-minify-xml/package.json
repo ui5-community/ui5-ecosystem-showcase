@@ -1,0 +1,18 @@
+{
+  "name": "ui5-task-minify-xml",
+  "version": "0.1.0",
+  "description": "UI5 task for minifying XML resources (like views, fragments, etc.)",
+  "author": "Kristian Kraljic",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git"
+  },
+  "dependencies": {
+    "@ui5/logger": "^2.0.1",
+    "minify-xml": "^2.5.0"
+  },
+  "ui5": {
+    "dependencies": []
+  }
+}

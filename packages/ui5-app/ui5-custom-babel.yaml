@@ -30,7 +30,7 @@ builder:
             - "babel-plugin-transform-async-to-promises"
             - inlineHelpers: true
         presets:
-          - 
+          -
             - "@babel/preset-env"
             - targets:
                 browsers: "last 2 versions, ie 10-11"
@@ -38,10 +38,25 @@ builder:
     afterTask: replaceVersion
     configuration:
       files: ["**/*.js", "**/*.xml"]
+  - name: ui5-task-minify-xml
+    afterTask: replaceVersion
+    configuration:
+      minifyOptions:
+        removeComments: true
+        collapseEmptyElements: true
+        collapseWhitespaceInAttributeValues: true
+        # ... further minify-xml attributes
+      fileExtensions:
+      - "xml"
+      - "edmx"
+      excludePatterns:
+      - "lib/"
+      - "another/dir/in/webapp"
+      - "yet/another/dir"
   - name: ui5-task-i18ncheck
     afterTask: replaceVersion
   - name: ui5-task-zipper
-    afterTask: uglify 
+    afterTask: uglify
     configuration:
       archiveName: "webapp"
       additionalFiles:
