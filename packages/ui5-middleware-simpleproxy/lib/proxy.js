@@ -172,13 +172,13 @@ module.exports = function ({ resources, options }) {
         Object.assign(queryParameters, req.query, providedQueryParameters);
         for (const [key, value] of Object.entries(queryParameters)) {
           if(reqPath) {
-            reqPath = reqPath.concat(`&${key}=${value}`);
+            reqPath = reqPath.concat(`&${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
           } else {
             // first query parameter
-            reqPath = `${(path ? path : "")}${req.path}?${key}=${value}`;
+            reqPath = `${(path ? path : "")}${req.path}?${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
           }
         }
-        return encodeURI(reqPath);
+        return reqPath;
       }
       return (path ? path : "") + req.url;
     },
@@ -225,3 +225,4 @@ module.exports = function ({ resources, options }) {
     },
   });
 };
+
