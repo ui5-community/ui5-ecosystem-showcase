@@ -99,24 +99,6 @@ function getQueryParameters(environmentValue, configuration) {
 }
 
 /**
- * Checks if the URI already contains encoded URI parts
- * @param {string} Uri the Uri to check
- * @returns {boolean}
- */
-function isUriEncoded(Uri) {
-    return Uri === decodeURI(Uri);
-}
-
-/**
- * Checks if the Uri already contains encoded Uri Component parts
- * @param {string} Uri the Uri to check
- * @returns {boolean}
- */
-function isUriComponentEncoded(Uri) {
-    return Uri === decodeURIComponent(Uri);
-}
-
-/**
  * Custom UI5 Server middleware example
  *
  * @param {Object} parameters Parameters
