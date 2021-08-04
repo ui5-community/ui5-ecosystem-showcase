@@ -104,7 +104,8 @@ test("ui5.yaml: no config -> default options apply", async (t) => {
     const child = spawn(`ui5 serve --port ${t.context.port.ui5Sserver} --config ${ui5.yaml}`, {
         // stdio: "inherit", // > don't include stdout in test output
         shell: true,
-        cwd: t.context.tmpDir
+        cwd: t.context.tmpDir,
+        detached: true // this for being able to kill all subprocesses of above `ui5 serve` later
     })
 
     // wait for ui5 server and app router to boot
@@ -115,7 +116,8 @@ test("ui5.yaml: no config -> default options apply", async (t) => {
     const responseIndex = await app.get("/index.html")
     t.is(responseIndex.status, 200, "http 200 on index")
 
-    child.kill()
+    // kill all processes that are in the same pid group (see detached: true)
+    process.kill(-child.pid)
 })
 
 /**
@@ -134,7 +136,8 @@ test("ui5.yaml: some config -> default options are overwritten", async (t) => {
     const child = spawn(`ui5 serve --port ${t.context.port.ui5Sserver} --config ${ui5.yaml}`, {
         // stdio: 'inherit', // > don't include stdout in test output
         shell: true,
-        cwd: t.context.tmpDir
+        cwd: t.context.tmpDir,
+        detached: true // this for being able to kill all subprocesses of above `ui5 serve` later
     })
 
     // wait for ui5 server and app router to boot
@@ -150,5 +153,6 @@ test("ui5.yaml: some config -> default options are overwritten", async (t) => {
     t.is(responseNoAuth.status, 200)
     t.true(responseNoAuth.body.value.length >= 1, "one or more odata entities received")
 
-    child.kill() // don't take it literally
+    // kill all processes that are in the same pid group (see detached: true)
+    process.kill(-child.pid)
 })
