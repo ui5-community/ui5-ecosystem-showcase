@@ -285,10 +285,11 @@ test("(multitenant) auth in yaml, xsuaa auth in route -> route is protected", as
     // with the ui5 server api instead of spawning sub-processes
     // reason: above DNS mock; nock needs to attach to the current running process and can't attach to a sub-process
     const tree = await normalizer.generateProjectTree({ cwd: t.context.tmpDir })
-    await server.serve(tree, { port: t.context.port.ui5Sserver })
+    let serve = await server.serve(tree, { port: t.context.port.ui5Sserver })
 
     // wait for ui5 server and app router to boot
-    await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:${t.context.port.appRouter}`] })
+    // -- probably don't need this as we're `await`ing server.serve() above?
+    // await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:${t.context.port.appRouter}`] })
 
     const app = request(`http://localhost:${t.context.port.ui5Sserver}`)
     // test for the app being started correctly
@@ -303,4 +304,22 @@ test("(multitenant) auth in yaml, xsuaa auth in route -> route is protected", as
         responseIdpRedirect.text.includes("https://foo.authentication.eu10.hana.ondemand.com/oauth/authorize"),
         "multi-tenant oauth endpoint redirect injected"
     )
+
+    // clean up DNS mock
+    nock.cleanAll()
+    nock.restore()
+
+    // clean up programmatic ui5 server
+    const _close = () =>
+        new Promise((resolve, reject) => {
+            serve.close((error) => {
+                if (error) {
+                    reject(error)
+                } else {
+                    resolve()
+                }
+            })
+        })
+
+    await _close()
 })
