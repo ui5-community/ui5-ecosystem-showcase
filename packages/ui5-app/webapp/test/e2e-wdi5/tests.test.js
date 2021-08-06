@@ -61,7 +61,7 @@ describe("interaction", () => {
         const oDateTimePicker = browser.asControl(dateTimePicker)
         oDateTimePicker.focus()
         oDateTimePicker.setValue("2020-11-11")
-        // tmp change focus to different control in order to 
+        // tmp change focus to different control in order to
         // trigger ui5 framework events (e.g. date formatting)
         browser.keys("Tab")
         browser.asControl(navFwdButton).focus() // ui5 api
@@ -80,7 +80,7 @@ describe("interaction", () => {
 
         // use wdio + wdi5 mixed up in same test
         const cal = $('//*[contains(@id, "DateTimePicker-cal")]') // wdio-native
-        expect(cal).toBeVisible()
+        expect(cal).toBeDisplayed()
 
         const next = $('//*[contains(@id, "DateTimePicker-cal--Head-next")]') // wdio-native
         next.click()
