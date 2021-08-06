@@ -5,7 +5,7 @@ module.exports = async function ({ workspace, dependencies, options }) {
 
 
     let propertyFilesP = workspace.byGlob(['**/i18n*.properties', '!**/node_modules/**'])
-    let xmlviewFilesP = workspace.byGlob(['**/*.view.xml', '!**/node_modules/**']);
+    let xmlviewFilesP = workspace.byGlob(['**/*.view.xml', '**/*.fragment.xml', '!**/node_modules/**']);
 
     let propertyFiles, xmlviewFiles
     try {
