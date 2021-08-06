@@ -13,24 +13,24 @@ npm install ui5-middleware-cfdestination --save-dev
 - `debug`: `<boolean>`, default: `false`  
 verbose logging
 
-- `port`: `<int>`  
+- `port`: `<int>`, default: `5000`  
 port to run the underlying `approuter` on
 
-- `xsappJson`: `<string path>`  
+- `xsappJson`: `<string path>`, default: `"./xs-app.json"`  
 path to the cf-style approuter configuration file `xs-app.json`
 
-- `destinations`: `<Array of name/value pairs>`  
+- `destinations`: `<Array of name/value pairs>`, default: `[]`
   - `name: <string>` destination name, matching the one used in routes in `xs-app.json`  
   - `url: <string>` URI to the host to "proxy" to
 
-- `allowServices`: `<bool>`, default: `false`  
+- `allowServices`: `<boolean>`, default: `false`  
 allow [BTP services](https://discovery-center.cloud.sap/serviceCatalog?) to be used at runtime that are configured in `xs-app.json`  
 (requires an authenticated BTP session!)
 
 - `authenticationMethod`: `"none"` || `"route"`, default: `"none"`  
 whether to equip routes with authentication
 
-- `allowLocalDir`: `<bool>`, default: `false`  
+- `allowLocalDir`: `<boolean>`, default: `false`  
 allow static assets to be picked up by the included `approuter`  
 defaults to `false` as usually all local files/assets are supposedly served by `ui5-server`
 

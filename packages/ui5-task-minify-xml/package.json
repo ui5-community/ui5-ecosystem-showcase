@@ -1,8 +1,8 @@
 {
-  "name": "ui5-task-compileless",
-  "version": "0.2.1",
-  "description": "UI5 task for compiling less files",
-  "author": "Sebastian Mahr, Marcel Schork",
+  "name": "ui5-task-minify-xml",
+  "version": "0.1.0",
+  "description": "UI5 task for minifying XML resources (like views, fragments, etc.)",
+  "author": "Kristian Kraljic",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -10,8 +10,7 @@
   },
   "dependencies": {
     "@ui5/logger": "^2.0.1",
-    "less-openui5": "^0.11.1",
-    "minimatch": "^3.0.4"
+    "minify-xml": "^2.5.0"
   },
   "ui5": {
     "dependencies": []
