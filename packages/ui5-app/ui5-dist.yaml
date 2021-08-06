@@ -22,6 +22,21 @@ builder:
       excludePatterns:
       - "lib/"
       - "test/"
+  - name: ui5-task-minify-xml
+    afterTask: replaceVersion
+    configuration:
+      minifyOptions:
+        removeComments: true
+        collapseEmptyElements: true
+        collapseWhitespaceInAttributeValues: true
+        # ... further minify-xml attributes
+      fileExtensions:
+      - "xml"
+      - "edmx"
+      excludePatterns:
+      - "lib/"
+      - "another/dir/in/webapp"
+      - "yet/another/dir"
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
 server:
   customMiddleware:
