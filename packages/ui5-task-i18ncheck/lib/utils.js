@@ -57,7 +57,7 @@ let readI18nUsageFromXML = (file_content, file_path) => {
 
 
 let getUsageFromXMLAttribute = (file, attributeString) => {
-    let regex = RegExp('(\{i18n>[^}]*\})', 'g');
+    let regex = RegExp('({i18n>[^}]*})', 'g');
     //let str1 = 'table {i18n>test}football, {i18n>test2}foosball';
     let arrayTemp = [];
     let resultArr = [];
