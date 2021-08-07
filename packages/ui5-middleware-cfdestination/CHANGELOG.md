@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.6.0...ui5-middleware-cfdestination@0.7.0) (2021-08-07)
+
+
+### Features
+
+* multitenancy config and routing ([#528](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/528)) ([83160c5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/83160c5cd72d07061557fad9a643e7e5d0a0de26))
+
+
+
+
+
 # [0.6.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.5.0...ui5-middleware-cfdestination@0.6.0) (2021-06-07)
 
 
