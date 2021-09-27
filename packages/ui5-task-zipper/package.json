@@ -17,7 +17,8 @@
       "!test/_ui5-app",
       "!__assets__"
     ],
-    "verbose": true
+    "verbose": true,
+    "timeout": "20s"
   },
   "dependencies": {
     "@ui5/fs": "^2.0.6",
