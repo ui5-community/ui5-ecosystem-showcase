@@ -124,5 +124,20 @@ test("additional files are included in the zip", async (t) => {
   t.true(await promisifiedNeedleInHaystack(targetZip, _addtlFile));
 });
 
-test.todo("onlyZip");
+test("onlyZip only procudes $file.zip + resources folder", async (t) => {
+  const ui5 = {
+    yaml: path.resolve("./test/__assets__/ui5.onlyZip.yaml"),
+  };
+  spawnSync(`ui5 build --config ${ui5.yaml}`, {
+    // stdio: "inherit", // > don't include stdout in test output,
+    shell: true,
+    cwd: t.context.tmpDir,
+  });
+
+  const files = await fs.readdir(path.join(t.context.tmpDir, "dist"));
+  t.true(
+    files.length > 0 && files.length <= 2,
+    `${files.length} in zip: ${files.join(", ")}`
+  );
+});
 test.todo("include dependencies");
