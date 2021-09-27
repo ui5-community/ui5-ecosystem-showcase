@@ -72,7 +72,7 @@ test.beforeEach(async (t) => {
 
 test.afterEach.always(async (t) => {
   // cleanup
-  //   await fs.remove(t.context.tmpDir);
+  await fs.remove(t.context.tmpDir);
 });
 
 test("archive creation w/ defaults", async (t) => {
@@ -110,7 +110,7 @@ test("additional files are included in the zip", async (t) => {
   const additionalFile = path.resolve(t.context.tmpDir, _addtlFile);
   await fs.ensureFile(additionalFile);
   spawnSync(`ui5 build --config ${ui5.yaml}`, {
-    stdio: "inherit", // > don't include stdout in test output,
+    // stdio: "inherit", // > don't include stdout in test output,
     shell: true,
     cwd: t.context.tmpDir,
   });
@@ -140,4 +140,26 @@ test("onlyZip only procudes $file.zip + resources folder", async (t) => {
     `${files.length} in zip: ${files.join(", ")}`
   );
 });
-test.todo("include dependencies");
+
+test("UI5 lib dependencies are optionally included", async (t) => {
+  const ui5 = {
+    yaml: path.resolve("./test/__assets__/ui5.includeDeps.yaml"),
+  };
+  spawnSync(`ui5 build --config ${ui5.yaml}`, {
+    // stdio: "inherit", // > don't include stdout in test output,
+    shell: true,
+    cwd: t.context.tmpDir,
+  });
+
+  const zip = path.join(t.context.tmpDir, "dist", "testSample.zip");
+  // see libraries deps in ui5.includeDepy.yaml
+  const allDepsFound = await Promise.all([
+    promisifiedNeedleInHaystack(zip, "resources/sap/m/"),
+    promisifiedNeedleInHaystack(zip, "resources/sap/ui/core"),
+    promisifiedNeedleInHaystack(
+      zip,
+      "resources/sap/ui/commons/themes/sap_fiori_3"
+    ),
+  ]);
+  t.true(allDepsFound.every((dep) => dep === true));
+});
