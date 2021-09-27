@@ -1,7 +1,7 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: middleware tests
+name: middleware(s) + task(s) tests
 
 on:
   pull_request:
@@ -39,6 +39,6 @@ jobs:
         # if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile --ignore-engines
 
-      # runs tests on middleware(s) + tasks
+      # runs tests on middlewares + tasks
       - run: yarn workspace ui5-middleware-cfdestination test
       - run: yarn workspace ui5-task-zipper test
