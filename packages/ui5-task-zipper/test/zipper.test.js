@@ -38,18 +38,33 @@ test.beforeEach(async (t) => {
 
 test.afterEach.always(async (t) => {
   // cleanup
-  await fs.remove(t.context.tmpDir);
+  //   await fs.remove(t.context.tmpDir);
 });
 
-test("archive creation w/ default", async (t) => {
+test("archive creation w/ defaults", async (t) => {
   const ui5 = { yaml: path.resolve("./test/__assets__/ui5.basic.yaml") };
   spawnSync(`ui5 build --config ${ui5.yaml}`, {
-    stdio: "inherit", // > don't include stdout in test output,
+    // stdio: "inherit", // > don't include stdout in test output,
     shell: true,
     cwd: t.context.tmpDir,
   });
+  // default options packs to $app-id.zip
+  const targetZip = path.resolve(t.context.tmpDir, "dist", "testSample.zip");
+  t.true(await fs.pathExists(targetZip));
 });
-test.todo("archive creation with custom archive name");
+test("archive creation with custom archive name", async (t) => {
+  const ui5 = {
+    yaml: path.resolve("./test/__assets__/ui5.customZipName.yaml"),
+  };
+  spawnSync(`ui5 build --config ${ui5.yaml}`, {
+    // stdio: "inherit", // > don't include stdout in test output,
+    shell: true,
+    cwd: t.context.tmpDir,
+  });
+  // default options packs to $app-id.zip
+  const targetZip = path.resolve(t.context.tmpDir, "dist", "customZipName.zip");
+  t.true(await fs.pathExists(targetZip));
+});
 test.todo("additional files");
 test.todo("onlyZip");
 test.todo("include dependencies");
