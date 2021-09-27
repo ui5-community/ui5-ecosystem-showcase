@@ -39,5 +39,6 @@ jobs:
         # if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile --ignore-engines
 
-      # runs tests on middleware(s)
+      # runs tests on middleware(s) + tasks
       - run: yarn workspace ui5-middleware-cfdestination test
+      - run: yarn workspace ui5-task-zipper test
