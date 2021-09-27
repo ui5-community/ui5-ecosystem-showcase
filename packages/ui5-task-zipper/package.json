@@ -15,5 +15,8 @@
   },
   "ui5": {
     "dependencies": []
+  },
+  "devDependencies": {
+    "ava": "^3.15.0"
   }
 }
