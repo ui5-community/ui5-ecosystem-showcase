@@ -13,7 +13,7 @@ const test = require("ava");
  * @param {string} needle path/file to find in the zip
  * @returns {Promise<true|false>} true when needle is found in zip, false otherwise
  */
-function promisifiedNeedleInHaystack(zip, needle) {
+async function promisifiedNeedleInHaystack(zip, needle) {
   return new Promise((resolve, reject) => {
     let additionalFileFound = false;
     yauzl.open(zip, { lazyEntries: true }, (err, zipfile) => {
@@ -72,13 +72,13 @@ test.beforeEach(async (t) => {
 
 test.afterEach.always(async (t) => {
   // cleanup
-  await fs.remove(t.context.tmpDir);
+  // await fs.remove(t.context.tmpDir);
 });
 
 test("archive creation w/ defaults", async (t) => {
   const ui5 = { yaml: path.resolve("./test/__assets__/ui5.basic.yaml") };
   spawnSync(`ui5 build --config ${ui5.yaml}`, {
-    // stdio: "inherit", // > don't include stdout in test output,
+    stdio: "inherit", // > don't include stdout in test output,
     shell: true,
     cwd: t.context.tmpDir,
   });
