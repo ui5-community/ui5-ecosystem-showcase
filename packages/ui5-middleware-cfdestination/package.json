@@ -16,7 +16,8 @@
       "test/**/*",
       "!test/_ui5-app"
     ],
-    "verbose": true
+    "verbose": true,
+    "timeout": "20s"
   },
   "dependencies": {
     "@sap/approuter": "^10.6.1",
