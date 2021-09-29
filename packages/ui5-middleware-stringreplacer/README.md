@@ -8,6 +8,12 @@ Middleware for [ui5-server](https://github.com/SAP/ui5-server), doing a live str
 npm install ui5-middleware-stringreplacer --save-dev
 ```
 
+or
+
+```bash
+yarn add --dev ui5-middleware-stringreplacer
+```
+
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
 - debug: true|false  
