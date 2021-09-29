@@ -11,7 +11,7 @@ npm install ui5-task-stringreplacer --save-dev
 or
 
 ```bash
-yarn install --dev ui5-task-stringreplacer
+yarn add --dev ui5-task-stringreplacer
 ```
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
@@ -55,13 +55,13 @@ builder:
         files:
           - "**/*.js"
           - "**/*.xml"
-      replace:
-        - placeholder: ${project.artifactId}
-          value: my.sample.app
-        - placeholder: ${project.version}
-          value: 1.0.0-SNAPSHOT
-        - placeholder: '{{app.AppTitle}}'
-          value: My Sample App
+        replace:
+          - placeholder: ${project.artifactId}
+            value: my.sample.app
+          - placeholder: ${project.version}
+            value: 1.0.0-SNAPSHOT
+          - placeholder: '{{app.AppTitle}}'
+            value: My Sample App
 ```
 
 3. Maintain all string placeholders and values in `.env` file
