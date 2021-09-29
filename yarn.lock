@@ -3163,6 +3163,13 @@ axios@0.21.1, axios@^0.21.1:
   dependencies:
     follow-redirects "^1.10.0"
 
+axios@^0.21.2:
+  version "0.21.4"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.4.tgz#c67b90dc0568e5c1cf2b0b858c43ba28e2eda575"
+  integrity sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==
+  dependencies:
+    follow-redirects "^1.14.0"
+
 babel-plugin-dynamic-import-node@^2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/babel-plugin-dynamic-import-node/-/babel-plugin-dynamic-import-node-2.3.3.tgz#84fda19c976ec5c6defef57f9427b3def66e17a3"
@@ -3788,13 +3795,13 @@ chrome-launcher@^0.14.0:
     is-wsl "^2.2.0"
     lighthouse-logger "^1.0.0"
 
-chromedriver@^92.0.1:
-  version "92.0.1"
-  resolved "https://registry.yarnpkg.com/chromedriver/-/chromedriver-92.0.1.tgz#3e28b7e0c9fb94d693cf74d51af0c29d57f18dca"
-  integrity sha512-LptlDVCs1GgyFNVbRoHzzy948JDVzTgGiVPXjNj385qXKQP3hjAVBIgyvb/Hco0xSEW8fjwJfsm1eQRmu6t4pQ==
+chromedriver@^93.0.1:
+  version "93.0.1"
+  resolved "https://registry.yarnpkg.com/chromedriver/-/chromedriver-93.0.1.tgz#3ed1f7baa98a754fc1788c42ac8e4bb1ab27db32"
+  integrity sha512-KDzbW34CvQLF5aTkm3b5VdlTrvdIt4wEpCzT2p4XJIQWQZEPco5pNce7Lu9UqZQGkhQ4mpZt4Ky6NKVyIS2N8A==
   dependencies:
     "@testim/chrome-version" "^1.0.7"
-    axios "^0.21.1"
+    axios "^0.21.2"
     del "^6.0.0"
     extract-zip "^2.0.1"
     https-proxy-agent "^5.0.0"
@@ -5738,6 +5745,11 @@ follow-redirects@^1.0.0, follow-redirects@^1.10.0:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.1.tgz#d9114ded0a1cfdd334e164e6662ad02bfd91ff43"
   integrity sha512-HWqDgT7ZEkqRzBvc2s64vSZ/hfOceEol3ac/7tKwzuvEyWx3/4UegXh5oBOIotkGsObyk3xznnSRVADBgWSQVg==
+
+follow-redirects@^1.14.0:
+  version "1.14.4"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.4.tgz#838fdf48a8bbdd79e52ee51fb1c94e3ed98b9379"
+  integrity sha512-zwGkiSXC1MUJG/qmeIFH2HBJx9u0V46QGUe3YR1fXG8bXQxq7fLj0RjLZQ5nubr9qNJUZrH+xUcwXEoXNpfS+g==
 
 forever-agent@~0.6.1:
   version "0.6.1"
@@ -11983,10 +11995,10 @@ wcwidth@>=1.0.1, wcwidth@^1.0.0, wcwidth@^1.0.1:
   dependencies:
     defaults "^1.0.3"
 
-wdio-chromedriver-service@^7.2.0:
-  version "7.2.0"
-  resolved "https://registry.yarnpkg.com/wdio-chromedriver-service/-/wdio-chromedriver-service-7.2.0.tgz#748e2a8e1143d2bb4db48ff0dcbc43cd67b36428"
-  integrity sha512-0N/mEE0Bk/aoc7YZNwS5sbzzGrPWb7Lo4nA+t/bF9BwQRAokeHl/70vD2JKe/D4Wo05J2X0C1RxRS7e4iwW6KQ==
+wdio-chromedriver-service@^7.2.2:
+  version "7.2.2"
+  resolved "https://registry.yarnpkg.com/wdio-chromedriver-service/-/wdio-chromedriver-service-7.2.2.tgz#5e56cdd0b71e7030e782057c81bc7f90354736c8"
+  integrity sha512-fj1R6yTgcr52g1wANdBc1KH+aXjazN81WhweAc1Y6Cfm1KVehSDbrVj2BJImU+6R/7sQKRX6fqtuA4Nsc0HUXQ==
   dependencies:
     "@wdio/logger" "^7.5.3"
     fs-extra "^9.1.0"

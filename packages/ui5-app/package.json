@@ -41,7 +41,7 @@
     "@wdio/spec-reporter": "^7.9.0",
     "@wdio/sync": "^7.9.0",
     "babel-plugin-transform-async-to-promises": "^0.8.15",
-    "chromedriver": "^92.0.1",
+    "chromedriver": "^93.0.1",
     "karma": "^6.3.4",
     "karma-chrome-launcher": "^3.1.0",
     "karma-coverage": "^2.0.3",
@@ -68,7 +68,7 @@
     "ui5-task-transpile": "^0.3.2",
     "ui5-task-zipper": "^0.4.3",
     "wait-on": "^6.0.0",
-    "wdio-chromedriver-service": "^7.2.0",
+    "wdio-chromedriver-service": "^7.2.2",
     "wdio-ui5-service": "^0.6.1"
   },
   "ui5": {
