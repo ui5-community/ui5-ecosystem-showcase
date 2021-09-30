@@ -19,6 +19,7 @@ const log = require("@ui5/logger").getLogger("builder:customtask:zipper");
 module.exports = async function ({ workspace, dependencies, options, taskUtil }) {
   const { OmitFromBuildResult } = taskUtil.STANDARD_TAGS;
 
+  
   // debug mode?
   const isDebug = options && options.configuration && options.configuration.debug;
 
@@ -54,7 +55,7 @@ module.exports = async function ({ workspace, dependencies, options, taskUtil })
       }
       return resource.getBuffer().then((buffer) => {
         isDebug && log.info(`Adding ${resource.getPath()} to archive.`);
-        zip.addBuffer(buffer, resource.getPath().replace(prefixPath, '').replace("/resources", 'resources').replace("/test-resources", 'test-resources'));
+        zip.addBuffer(buffer, resource.getPath().replace(prefixPath, '').replace(/^\//, '')); // Replace first forward slash at the start of the path
       })
     }));
     // include the additional files from the project

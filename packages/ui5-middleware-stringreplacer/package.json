@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-stringreplacer",
-  "version": "0.2.2",
+  "version": "0.2.4",
   "description": "UI5 middleware for live string replace",
   "author": "Attila Boros",
   "license": "Apache-2.0",
@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@ui5/logger": "^2.0.1",
-    "dotenv": "^8.2.0",
+    "dotenv": "^10.0.0",
     "etag": "^1.8.1",
     "fresh": "^0.5.2",
     "lodash.escaperegexp": "^4.1.2",

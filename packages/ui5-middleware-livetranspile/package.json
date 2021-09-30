@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-livetranspile",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "UI5 middleware for live transpiling ES6+ sources",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
@@ -9,8 +9,8 @@
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git"
   },
   "dependencies": {
-    "@babel/core": "^7.13.15",
-    "@babel/preset-env": "^7.13.15",
+    "@babel/core": "^7.15.0",
+    "@babel/preset-env": "^7.15.0",
     "@ui5/logger": "^2.0.1",
     "babel-plugin-transform-async-to-promises": "^0.8.15",
     "lodash.merge": "^4.6.2",
