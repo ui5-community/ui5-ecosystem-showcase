@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@ui5/logger": "^2.0.1",
-    "minify-xml": "^2.5.0"
+    "minify-xml": "^3.2.0"
   },
   "ui5": {
     "dependencies": []
