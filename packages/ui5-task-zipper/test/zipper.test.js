@@ -72,7 +72,7 @@ test.beforeEach(async (t) => {
 
 test.afterEach.always(async (t) => {
   // cleanup
-  // await fs.remove(t.context.tmpDir);
+  await fs.remove(t.context.tmpDir);
 });
 
 test("archive creation w/ defaults", async (t) => {
