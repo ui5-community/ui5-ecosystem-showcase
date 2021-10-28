@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-servestatic@0.3.5...ui5-middleware-servestatic@0.3.6) (2021-10-28)
+
+
+### Bug Fixes
+
+* **servestatic:** fixed docu ([e38aef1](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e38aef160b08a25579ee28a7e9e86e8cf1758065))
+
+
+
+
+
 ## [0.3.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-servestatic@0.3.4...ui5-middleware-servestatic@0.3.5) (2021-08-07)
 
 **Note:** Version bump only for package ui5-middleware-servestatic
