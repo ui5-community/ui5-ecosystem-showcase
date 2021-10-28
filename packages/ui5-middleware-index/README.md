@@ -12,7 +12,7 @@ npm install ui5-middleware-index --save-dev
 
 - index: `string`, default: `index.html`  
   file inside `$yourapp` to deliver for `http://<host>:<port>/`
-- debug: `bool`, default: `false`
+- debug: `boolean`, default: `false`
 
 ## Usage
 
