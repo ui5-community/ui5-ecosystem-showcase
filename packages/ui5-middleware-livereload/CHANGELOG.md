@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.5.6...ui5-middleware-livereload@0.5.7) (2021-10-28)
+
+
+### Bug Fixes
+
+* **livereload:** correction of indentation ([39fe59a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/39fe59adbaaa522d99bb2bf624ebb239020bb1de))
+
+
+
+
+
 ## [0.5.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.5.5...ui5-middleware-livereload@0.5.6) (2021-10-28)
 
 **Note:** Version bump only for package ui5-middleware-livereload
