@@ -1,9 +1,6 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - '**'
   workflow_dispatch:
 
 jobs:
@@ -20,8 +17,8 @@ jobs:
 
       - name: Publish to NPM
         run: |
-          npm config set '//registry.npmjs.org/:_authToken' "${NPM_RELEASE_AUTH_TOKEN}"
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           echo ":::: Publishing as $(npm whoami)"
-          npm run release:publish
+          npm run release:publish-manual
         env:
-          NPM_RELEASE_AUTH_TOKEN: ${{ secrets.NPM_RELEASE_AUTH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_RELEASE_AUTH_TOKEN }}

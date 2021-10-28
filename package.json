@@ -26,7 +26,8 @@
     "test:wdi5": "cd packages/ui5-app && wdio",
     "watch": "yarn workspace ui5-app watch",
     "release:version": "lerna version",
-    "release:publish": "lerna publish from-git --yes"
+    "release:publish": "lerna publish from-git --yes",
+    "release:publish-manual": "lerna publish from-package --yes"
   },
   "devDependencies": {
     "@commitlint/cli": "11.0.0",
