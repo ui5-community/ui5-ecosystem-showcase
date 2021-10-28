@@ -20,7 +20,6 @@ jobs:
 
       - name: Publish to NPM
         run: |
-          npm logout
           npm config set '//registry.npmjs.org/:_authToken' "${NPM_RELEASE_AUTH_TOKEN}"
           echo ":::: Publishing as $(npm whoami)"
           npm run release:publish
