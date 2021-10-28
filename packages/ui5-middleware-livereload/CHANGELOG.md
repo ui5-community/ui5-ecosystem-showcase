@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.5.5...ui5-middleware-livereload@0.5.6) (2021-10-28)
+
+**Note:** Version bump only for package ui5-middleware-livereload
+
+
+
+
+
 ## [0.5.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.5.4...ui5-middleware-livereload@0.5.5) (2021-08-07)
 
 **Note:** Version bump only for package ui5-middleware-livereload

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.7.3...ui5-middleware-simpleproxy@0.7.4) (2021-10-28)
+
+
+### Bug Fixes
+
+* **deps:** update dependencies version ([2444781](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2444781b4b2b7215b8e891dfe65c42167a668f66))
+
+
+
+
+
 ## [0.7.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.7.2...ui5-middleware-simpleproxy@0.7.3) (2021-08-07)
 
 
