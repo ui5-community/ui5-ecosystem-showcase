@@ -18,13 +18,11 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - name: npm auth setup
+      - name: Publish to NPM
         run: |
-          yarn logout
-          echo "//registry.npmjs.org/:_authToken=$NPM_RELEASE_AUTH_TOKEN" >> .npmrc
-          npm whoami
+          npm logout
+          npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
+          echo ":::: Publishing as $(npm whoami)"
+          npm run release:publish
         env:
           NPM_RELEASE_AUTH_TOKEN: ${{ secrets.NPM_RELEASE_AUTH_TOKEN }}
-
-      - name: Publish to NPM
-        run: yarn release:publish
