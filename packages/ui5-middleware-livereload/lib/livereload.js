@@ -2,7 +2,7 @@ const connectLivereload = require("connect-livereload");
 const livereload = require("livereload");
 const path = require("path");
 const log = require("@ui5/logger").getLogger("server:custommiddleware:livereload");
-const portfinder = require("portfinder"); 
+const portfinder = require("portfinder");
 
 /**
  * Parses the configuration option. If the port passed then it returns with it.
@@ -67,50 +67,50 @@ module.exports = async ({ resources, options }) => {
     if (options.configuration && options.configuration.debug) {
         debug = options.configuration.debug;
     }
-        
+
     let serverOptions = {
         debug: debug,
         extraExts: extraExts ? extraExts.split(",") : undefined,
         port: port,
         exclusions: exclusions
     };
-    
+
     const cli = require("yargs");
     if (cli.argv.h2) {
         const os = require("os");
         const fs = require("fs");
-        
+
         sslKeyPath = cli.argv.key ? cli.argv.key : path.join(os.homedir(), ".ui5", "server", "server.key");
         sslCertPath = cli.argv.cert ? cli.argv.cert : path.join(os.homedir(), ".ui5", "server", "server.crt");
-		debug ? log.info(`Livereload using SSL key ${sslKeyPath}`) : null;
-		debug ? log.info(`Livereload using SSL certificate ${sslCertPath}`) : null;
-		
+        debug ? log.info(`Livereload using SSL key ${sslKeyPath}`) : null;
+        debug ? log.info(`Livereload using SSL certificate ${sslCertPath}`) : null;
+
         serverOptions.https = {
             key: fs.readFileSync(sslKeyPath),
             cert: fs.readFileSync(sslCertPath)
         };
     }
-    
+
     const livereloadServer = livereload.createServer(
         serverOptions,
         () => {
             log.info("Livereload server started!");
         }
     );
-    
-	if (Array.isArray(watchPath)) {
-		let watchPaths = [];
-		for (let i = 0; i < watchPath.length; i++) {
-			watchPaths.push(path.join(process.cwd(), watchPath[i]));
-		}
-		debug ? log.info(`Livereload connecting to port ${port} for paths ${watchPaths}`) : null;
-		livereloadServer.watch(watchPaths);
-	} else {
-		debug ? log.info(`Livereload connecting to port ${port} for path ${watchPath}`) : null;
-		livereloadServer.watch(path.join(process.cwd(), watchPath));
-	}
-	
-    // connect-livereload already holds the 
+
+    if (Array.isArray(watchPath)) {
+        let watchPaths = [];
+        for (let i = 0; i < watchPath.length; i++) {
+            watchPaths.push(path.join(process.cwd(), watchPath[i]));
+        }
+        debug ? log.info(`Livereload connecting to port ${port} for paths ${watchPaths}`) : null;
+        livereloadServer.watch(watchPaths);
+    } else {
+        debug ? log.info(`Livereload connecting to port ${port} for path ${watchPath}`) : null;
+        livereloadServer.watch(path.join(process.cwd(), watchPath));
+    }
+
+    // connect-livereload already holds the
     // method sig (req, res, next)
     return connectLivereload({
         port: port
