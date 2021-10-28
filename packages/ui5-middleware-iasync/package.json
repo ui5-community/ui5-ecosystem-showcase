@@ -10,7 +10,7 @@
     },
     "dependencies": {
         "@ui5/logger": "^2.0.1",
-        "browser-sync": "^2.27.5",
+        "browser-sync": "^2.27.7",
         "connect-injector": "^0.4.4"
     },
     "ui5": {

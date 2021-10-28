@@ -11,7 +11,7 @@
   "dependencies": {
     "@ui5/fs": "^2.0.6",
     "graceful-fs": "4.2.8",
-    "jsdom": "^17.0.0",
+    "jsdom": "^18.0.0",
     "mustache": "^4.2.0",
     "parse5": "^6.0.1"
   },
