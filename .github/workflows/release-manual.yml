@@ -1,0 +1,24 @@
+name: Release (manually)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Publish to NPM
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          echo ":::: Publishing as $(npm whoami)"
+          npm run release:publish-manual
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_RELEASE_AUTH_TOKEN }}
