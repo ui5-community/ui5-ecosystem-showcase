@@ -17,14 +17,14 @@ Verbose logging
 Desired name for the `.zip` archive.
 Default value: `<app-id.zip>`
 
-- additionalFiles: `String<Array>`  
+- additionalFiles: `String<Array>`
 List of files to be included in the ZIP archive relative to the project root.
 
-- onlyZip: `true|false` 
-Set this to true if you also want to generate the unzipped resources in the `dist` folder. Otherwise, it will only create the zipped archive. 
+- onlyZip: `true|false`
+Set this to true if you also want to generate the unzipped resources in the `dist` folder. Otherwise, it will only create the zipped archive.
 
-- includeDependencies: `true|false` 
-Set this to true if you also want to include the dependencies (UI5 libraries) in the zip archive. Otherwise, it will only include the workspace files (controller, views, etc). 
+- includeDependencies: `true|false`
+Set this to true if you also want to include the dependencies (UI5 libraries) in the zip archive. Otherwise, it will only include the workspace files (controller, views, etc).
 
 ## Usage
 
