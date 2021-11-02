@@ -1,7 +1,7 @@
 {
   "name": "ui5-ecosystem-showcase",
   "version": "0.1.0",
-  "description": "A repository showcasing the UI5 tooling extensibility to combine OSS tools for UI5 application development.",
+  "description": "A repository show-casing the UI5 tooling extensibility to combine OSS tools for UI5 application development.",
   "private": true,
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
