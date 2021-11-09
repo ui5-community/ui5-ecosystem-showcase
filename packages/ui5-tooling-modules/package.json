@@ -1,0 +1,18 @@
+{
+  "name": "ui5-tooling-modules",
+  "version": "0.0.0",
+  "description": "UI5 tooling extensions to load and convert node modules as UI5 AMD-like modules",
+  "author": "Peter Muessig",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@rollup/plugin-commonjs": "^21.0.0",
+    "@rollup/plugin-node-resolve": "^13.0.5",
+    "@ui5/logger": "^2.0.1",
+    "espree": "^9.0.0",
+    "estraverse": "^5.2.0",
+    "rollup": "^2.58.0"
+  },
+  "ui5": {
+    "dependencies": []
+  }
+}
