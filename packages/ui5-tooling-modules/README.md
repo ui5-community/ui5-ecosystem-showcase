@@ -56,7 +56,7 @@ npm install ui5-tooling-modules --save-dev
 
 2. Configure it in `$yourapp/ui5.yaml`:
 
-The configuration for the custom middlware:
+The configuration for the custom task:
 
 ```yaml
 builder:
@@ -65,7 +65,7 @@ builder:
     afterTask: replaceVersion
 ```
 
-The configuration for the custom task:
+The configuration for the custom middleware:
 
 ```yaml
 server:
