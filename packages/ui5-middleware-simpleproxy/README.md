@@ -69,7 +69,7 @@ server:
       httpHeaders:
         Any-Header: AnyHeader
       query:
-        sap-client: 206
+        sap-client: '206'
       excludePatterns:
       - "/local/**"
 ```
