@@ -60,7 +60,7 @@ builder:
             value: my.sample.app
           - placeholder: ${project.version}
             value: 1.0.0-SNAPSHOT
-          - placeholder: '{{app.AppTitle}}'
+          - placeholder: "{{app.AppTitle}}"
             value: My Sample App
 ```
 
@@ -71,9 +71,30 @@ stringreplacer.BASE_URL_PLACEHOLDER = http://localhost:2000
 stringreplacer.some.deeply.nested.ANOTHER_PLACEHOLDER = Replace with this text
 ```
 
+## Multiple environments
+
+You can keep multiple `.env` files and load a specific environment at build or serve time.
+
+```
+- dev.env
+- staging.env
+- prod.env
+- package.json
+```
+
+```json
+ "scripts": {
+    "build:dev": "UI5_ENV=dev ui5 build",
+    "build:staging": "UI5_ENV=staging ui5 build",
+    "build:prod": "UI5_ENV=prod ui5 build",
+ }
+```
+
+With `UI5_ENV` set, the strings will be loaded from the `<UI5_ENV>.env` file.
+
 ## How it works
 
-The task reads all files based on configuration patterns and replaces all string placeholders with values for all files. All the string placeholders which are maintained in `.env` with prefix 'stringreplacer.' will be taken into account.
+The task reads all files based on configuration patterns and replaces all string placeholders with values for all files. All the string placeholders which are maintained in the process environment with prefix 'stringreplacer.' will be taken into account. If no environment name is set through the process environment variable UI5_ENV, then by default the file`./.env` is loaded.
 
 ## License
 

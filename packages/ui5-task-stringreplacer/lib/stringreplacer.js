@@ -1,12 +1,15 @@
 const log = require("@ui5/logger").getLogger("builder:customtask:stringreplacer");
 
 // BEGIN: copy of code from ui5-middleware-stringreplacer
-
-const dotenv = require("dotenv");
 const escapeRegExp = require('lodash.escaperegexp');
 const replaceStream = require("replacestream");
 
-dotenv.config();
+if(process.env.UI5_ENV){
+  console.log(`UI5_ENV set to ${process.env.UI5_ENV}: loading ./${process.env.UI5_ENV}.env`);
+  require("dotenv").config({ path:`./${process.env.UI5_ENV}.env`});
+}else {
+  require("dotenv").config(); //loads './.env'
+}
 
 // get all environment variables
 const envVariables = process.env;
