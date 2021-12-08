@@ -5,7 +5,7 @@ const escapeRegExp = require('lodash.escaperegexp');
 const replaceStream = require("replacestream");
 
 if(process.env.UI5_ENV){
-  console.log(`UI5_ENV set to ${process.env.UI5_ENV}: loading ./${process.env.UI5_ENV}.env`);
+  log.info(`UI5_ENV set to ${process.env.UI5_ENV}: loading ./${process.env.UI5_ENV}.env`);
   require("dotenv").config({ path:`./${process.env.UI5_ENV}.env`});
 }else {
   require("dotenv").config(); //loads './.env'
