@@ -20,6 +20,9 @@
     "dev": "ui5 serve --port 1081 --open index.html",
     "debug": "node --inspect node_modules/.bin/ui5 serve --port 1081",
     "test": "karma start",
+    "test:ci": "karma start karma-ci.conf.js",
+    "test:uiveri5": "cd webapp/test/e2e && uiveri5 --debug conf.js",
+    "test:wdi5": "wdio",
     "watch:build": "npm-watch build",
     "watch": "npm-run-all prepare build --parallel watch:build start"
   },
@@ -33,20 +36,20 @@
     }
   },
   "devDependencies": {
-    "@openui5/ts-types": "^1.93.2",
-    "@ui5/cli": "^2.14.0",
-    "@ui5/uiveri5": "^1.47.1",
-    "@wdio/cli": "^7.16.3",
-    "@wdio/local-runner": "^7.16.3",
-    "@wdio/mocha-framework": "^7.16.3",
-    "@wdio/spec-reporter": "^7.16.3",
-    "@wdio/sync": "^7.16.3",
-    "babel-plugin-transform-async-to-promises": "^0.8.15",
-    "chromedriver": "^95.0.0",
-    "karma": "^6.3.6",
+    "@openui5/ts-types": "^1.97.0",
+    "@ui5/cli": "^2.14.2",
+    "@ui5/uiveri5": "^1.47.4",
+    "@wdio/cli": "^7.16.12",
+    "@wdio/local-runner": "^7.16.12",
+    "@wdio/mocha-framework": "^7.16.11",
+    "@wdio/spec-reporter": "^7.16.11",
+    "@wdio/sync": "^7.16.12",
+    "babel-plugin-transform-async-to-promises": "^0.8.17",
+    "chromedriver": "^96.0.0",
+    "karma": "^6.3.9",
     "karma-chrome-launcher": "^3.1.0",
-    "karma-coverage": "^2.0.3",
-    "karma-ui5": "^2.3.4",
+    "karma-coverage": "^2.1.0",
+    "karma-ui5": "^2.4.0",
     "mkdirp": "~1.0.4",
     "npm-run-all": "^4.1.5",
     "npm-watch": "^0.11.0",
@@ -70,7 +73,7 @@
     "ui5-task-zipper": "^0.4.7",
     "wait-on": "^6.0.0",
     "wdio-chromedriver-service": "^7.2.2",
-    "wdio-ui5-service": "^0.6.1"
+    "wdio-ui5-service": "^0.7.0"
   },
   "ui5": {
     "dependencies": [

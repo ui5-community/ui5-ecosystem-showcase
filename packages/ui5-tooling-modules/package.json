@@ -10,13 +10,13 @@
     "directory": "packages/ui5-tooling-modules"
   },
   "dependencies": {
-    "@rollup/plugin-commonjs": "^21.0.0",
-    "@rollup/plugin-node-resolve": "^13.0.5",
+    "@rollup/plugin-commonjs": "^21.0.1",
+    "@rollup/plugin-node-resolve": "^13.1.1",
     "@ui5/fs": "^2.0.6",
     "@ui5/logger": "^2.0.1",
-    "espree": "^9.0.0",
-    "estraverse": "^5.2.0",
-    "rollup": "^2.58.0"
+    "espree": "^9.2.0",
+    "estraverse": "^5.3.0",
+    "rollup": "^2.62.0"
   },
   "ui5": {
     "dependencies": []
