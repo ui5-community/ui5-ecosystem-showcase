@@ -52,6 +52,8 @@
     "packages/*"
   ],
   "resolutions": {
-    "minimist": "^1.2.5"
+    "minimist": "^1.2.5",
+    "@ui5/builder": "2.11.2",
+    "@ui5/server": "2.3.1"
   }
 }
