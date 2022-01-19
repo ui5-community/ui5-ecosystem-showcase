@@ -63,7 +63,7 @@ module.exports = {
 
         } catch (err) {
             if (bundling) {
-                console.error(`Couldn't bundle ${match[1]}: ${err}`);
+                console.error(`Couldn't bundle ${moduleName}: ${err}`);
             }
         }
 
