@@ -1,0 +1,21 @@
+# build results
+dist
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+node_modules/
+
+.DS_Store
+
+.vscode/diff
+.vscode/settings.json
+
+# do not add dependency lock files to this repo because it should remain independent from specific dependency managers
+package-lock.json
+yarn.lock
