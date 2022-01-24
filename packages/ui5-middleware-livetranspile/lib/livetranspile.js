@@ -1,3 +1,4 @@
+/*
 const babel = require("@babel/core")
 const os = require("os")
 const parseurl = require("parseurl")
@@ -7,6 +8,7 @@ const merge = require("lodash.merge")
 let fileNotFoundError = new Error("file not found!")
 fileNotFoundError.code = 404
 fileNotFoundError.file = ""
+*/
 
 /**
  * Custom UI5 Server middleware example
@@ -23,8 +25,12 @@ fileNotFoundError.file = ""
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @returns {function} Middleware function to use
  */
-module.exports = function ({ resources, options }) {
+module.exports = require("ui5-tooling-transpile/lib/middleware");
+
+/*
+function ({ resources, options }) {
     const config = options.configuration || {}
+
     const plugins = config.transpileAsync
         ? [
               [
@@ -51,6 +57,12 @@ module.exports = function ({ resources, options }) {
                   ]
               ]
           }
+
+    => require("my/app/MyController.controller");
+    => /resources/my/app/MyController.controller.js (not existing)
+    => /resources/my/app/MyController.controller.ts
+
+
     const filePatternConfig = config.filePattern || ".js"
     return (req, res, next) => {
         if (
@@ -115,3 +127,4 @@ module.exports = function ({ resources, options }) {
         }
     }
 }
+*/

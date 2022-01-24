@@ -10,12 +10,7 @@
     "directory": "packages/ui5-task-transpile"
   },
   "dependencies": {
-    "@babel/core": "^7.16.5",
-    "@babel/plugin-transform-modules-commonjs": "^7.16.5",
-    "@babel/preset-env": "^7.16.5",
-    "@ui5/logger": "^2.0.1",
-    "babel-plugin-transform-async-to-promises": "^0.8.17",
-    "babel-plugin-transform-remove-console": "^6.9.4"
+    "ui5-tooling-transpile": "0.1.0"
   },
   "ui5": {
     "dependencies": []

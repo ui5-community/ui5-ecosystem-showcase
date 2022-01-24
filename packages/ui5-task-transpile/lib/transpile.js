@@ -1,7 +1,11 @@
+/*
 const path = require("path");
 const os = require("os");
 const babel = require("@babel/core");
 const log = require("@ui5/logger").getLogger("builder:customtask:transpile");
+
+const
+*/
 
 /**
  * Task to transpiles ES6 code into ES5 code.
@@ -14,7 +18,12 @@ const log = require("@ui5/logger").getLogger("builder:customtask:transpile");
  * @param {string} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @returns {Promise<undefined>} Promise resolving with undefined once data has been written
  */
-module.exports = function({workspace, dependencies, options}) {
+module.exports = require("ui5-tooling-transpile/lib/task");
+
+/*
+
+
+function({workspace, dependencies, options}) {
     const config = options.configuration || {};
     const plugins = []
       .concat(
@@ -54,7 +63,7 @@ module.exports = function({workspace, dependencies, options}) {
 
     const filePatternConfig = config.filePattern || ".js"
 
-    return workspace.byGlob("/**/*" + filePatternConfig).then((resources) => {
+    return workspace.byGlob("/ ** /*" + filePatternConfig).then((resources) => {
         return Promise.all(resources.map((resource) => {
             const filePath = resource.getPath().replace(new RegExp("\\.[^.]+$"), ".js");
 
@@ -81,3 +90,4 @@ module.exports = function({workspace, dependencies, options}) {
         }));
     });
 };
+*/
