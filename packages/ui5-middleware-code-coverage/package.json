@@ -1,0 +1,39 @@
+{
+  "name": "ui5-middleware-code-coverage",
+  "version": "2.0.6",
+  "description": "A code coverage instrumenter for UI5-tooling using NYC ",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run-script lint",
+    "lint": "eslint lib/**/*.js"
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com/uxkjaer/ui5-middleware-code-coverage.git"
+  },
+  "keywords": [
+    "UI5-tooling",
+    "code-coverage",
+    "sapui5",
+    "openui5",
+    "ui5"
+  ],
+  "author": "Jakob Kjaer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kovboyjder/ui5-middleware-code-coverage/issues"
+  },
+  "homepage": "https://github.com/kovboyjder/ui5-middleware-code-coverage#readme",
+  "dependencies": {
+    "@ui5/logger": "*",
+    "cors": "*",
+    "express": "*",
+    "nyc": "15.1.0",
+    "nyc-middleware": "^1.0.4"
+  },
+  "devDependencies": {
+    "eslint": "^8.8.0",
+    "eslint-plugin-import": "^2.9.0"
+  }
+}

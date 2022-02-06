@@ -1,0 +1,19 @@
+{
+    "env": {
+        "node": true,
+        "es6": true
+    },
+    "rules": {
+        "semi": [
+            "error",
+            "never"
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "no-console": "off",
+        "global-require": "off",
+        "import/no-dynamic-require": "off"
+    }
+}
