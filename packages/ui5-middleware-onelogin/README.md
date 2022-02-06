@@ -18,15 +18,19 @@ npm install ui5-middleware-onelogin --save-dev
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
-Currently you cna define the properties in the configuration (see below) or the following environment variables are used.
+Currently you can define the properties in the configuration (see below) or the following environment variables are used.
 
-It is strongly recommended to use the .env file and add that to your .gitignore file.
+You can either add the following properties to your .env file, remember to add that to your .gitignore
 
 - UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL
 - UI5_MIDDLEWARE_ONELOGIN_USERNAME
 - UI5_MIDDLEWARE_ONELOGIN_PASSWORD
 
 Use of environment variables or values set in a `.env` file will be used.
+
+Other options is to either set it in the yaml file or if left blank it will prompt you for the details. 
+
+You can choose to just add the url and let the rest be prompts.
 
 ## Usage
 
