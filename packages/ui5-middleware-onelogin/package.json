@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-onelogin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A universal login provider for UI5 tooling",
   "main": "/lib/index.js",
   "scripts": {
@@ -19,11 +19,11 @@
   "license": "MIT",
   "dependencies": {
     "@ui5/logger": "^2.0.1",
+    "async-prompt": "*",
     "cookie": "^0.4.1",
     "dotenv": "^12.0.3",
     "playwright-chromium": "^1.18.0",
     "playwright-core": "^1.18.0",
-    "async-prompt": "*",
     "sleep-promise": "^9.1.0"
   },
   "devDependencies": {
