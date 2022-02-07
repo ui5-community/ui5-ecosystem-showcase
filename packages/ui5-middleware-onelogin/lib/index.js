@@ -17,6 +17,9 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const cookieGetter_1 = __importDefault(require("./cookieGetter"));
 const log = require('@ui5/logger').getLogger('server:custommiddleware:onelogin');
 dotenv_1.default.config();
+var cookie;
+//First time to make sure we only output the parsed cookie once
+var firstTime = true;
 // interface cookieFace {
 // name: string,
 // key: string
@@ -48,14 +51,14 @@ module.exports = function ({ options }) {
             if (!process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL) {
                 next();
             }
-            else if (!process.env.cookie) {
+            else if (!cookie) {
                 log.info('Fetching cookie, hang on!');
                 const cookieObj = yield new cookieGetter_1.default().getCookie(options);
                 cookies = JSON.parse(cookieObj);
-                process.env.cookie = cookieObj;
+                cookie = cookieObj;
             }
             else {
-                cookies = JSON.parse(process.env.cookie);
+                cookies = JSON.parse(cookie);
             }
             let cookieStr = '';
             cookies
@@ -70,8 +73,9 @@ module.exports = function ({ options }) {
                 });
                 cookieStr = cookieStr.concat((0, cookie_1.serialize)(cookie.name, cookie.value, Object.assign(Object.assign({}, cookie), { encode: (value) => value })), '; ');
             });
-            if (options.configuration.debug) {
+            if (options.configuration.debug && firstTime) {
                 log.info(`Parsed cookie is ${cookieStr}`);
+                firstTime = false;
             }
             req.headers.cookie = cookieStr;
             next();

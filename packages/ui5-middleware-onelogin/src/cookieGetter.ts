@@ -1,4 +1,3 @@
-;
 import sleep from 'sleep-promise';
 import {Options} from "./types";
 const prompt = require("async-prompt");

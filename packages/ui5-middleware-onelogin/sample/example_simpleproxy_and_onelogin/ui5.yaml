@@ -9,7 +9,7 @@ resources:
 
 framework:
   name: OpenUI5
-  version: "1.95.0"
+  version: "1.97.0"
   libraries:
     - name: sap.m
     - name: sap.ui.core
@@ -21,7 +21,7 @@ server:
     - name: ui5-middleware-onelogin
       afterMiddleware: compression
       configuration:
-        debug: false
+        debug: true
     # - name: ui5-middleware-servestatic
     #   afterMiddleware: ui5-middleware-onelogin
     #   mountPath: /sap/bc/ui5_ui5/sap/zparentapp

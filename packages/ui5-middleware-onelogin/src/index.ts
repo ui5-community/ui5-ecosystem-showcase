@@ -5,6 +5,11 @@ import {Options} from "./types";
 const log = require('@ui5/logger').getLogger('server:custommiddleware:onelogin');
 dotenv.config();
 
+var cookie: string
+
+//First time to make sure we only output the parsed cookie once
+var firstTime: boolean = true
+
 // interface cookieFace {
 // name: string,
 // key: string
@@ -34,13 +39,13 @@ module.exports = function ({ options }: {options: Options}) {
     let cookies = [];
     if (!process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL) {
       next();
-    } else if (!process.env.cookie) {
+    } else if (!cookie) {
       log.info('Fetching cookie, hang on!');
       const cookieObj = await new cookieGetter().getCookie(options);
       cookies = JSON.parse(cookieObj);
-      process.env.cookie = cookieObj;
+      cookie = cookieObj;
     } else {
-      cookies = JSON.parse(process.env.cookie);
+      cookies = JSON.parse(cookie);
     }
 
     let cookieStr: string = '';
@@ -60,8 +65,9 @@ module.exports = function ({ options }: {options: Options}) {
           '; '
         );
       });
-    if (options.configuration.debug) {
+    if (options.configuration.debug && firstTime) {
       log.info(`Parsed cookie is ${cookieStr}`);
+      firstTime = false;
     }
     req.headers.cookie = cookieStr;
 

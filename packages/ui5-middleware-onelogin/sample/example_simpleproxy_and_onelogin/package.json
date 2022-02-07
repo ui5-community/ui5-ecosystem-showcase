@@ -42,7 +42,7 @@
     "npm-watch": "^0.11.0",
     "rimraf": "~3.0.2",
     "ui5-middleware-simpleproxy": "^0.7.6",
-    "ui5-middleware-onelogin": "^0.0.5"
+    "ui5-middleware-onelogin": "file:../.."
   },
   "ui5": {
     "dependencies": [
