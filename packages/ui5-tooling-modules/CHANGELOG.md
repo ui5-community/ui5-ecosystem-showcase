@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.1.1...ui5-tooling-modules@0.1.2) (2022-02-07)
+
+
+### Bug Fixes
+
+* build task error message  ([#559](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/559)) ([a488791](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/a4887914f0aa8ac30e00448dc65d1ff8466d1ff5))
+* **ui5-tooling-modules:** include json, polyfill node.js modules ([9054961](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9054961f252dcdd7557cb21c63095ab5c436114d)), closes [#564](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/564)
+
+
+
+
+
 ## [0.1.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.1.0...ui5-tooling-modules@0.1.1) (2021-12-26)
 
 
