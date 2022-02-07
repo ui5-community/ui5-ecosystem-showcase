@@ -1,6 +1,8 @@
 const rollup = require("rollup");
 const { nodeResolve } = require("@rollup/plugin-node-resolve");
 const commonjs = require('@rollup/plugin-commonjs');
+const json = require('@rollup/plugin-json');
+const nodePolyfills = require('rollup-plugin-polyfill-node');
 
 // local bundle cache
 const bundleCache = {};
@@ -9,7 +11,7 @@ module.exports = {
 
     /**
      * Generates a UI5 AMD-like bundle for a module out of the node_modules
-     * 
+     *
      * @param {string} moduleName the module name
      * @returns the content of the bundle or undefined
      */
@@ -21,6 +23,14 @@ module.exports = {
 
             // try to resolve the module name from node modules (bare module)
             const modulePath = require.resolve(moduleName);
+            // DEBUG: when linking the middleware, you need to use custom paths
+            /*
+            const modulePath = require.resolve(moduleName, {
+                paths: [
+                    require("path").join(process.cwd())
+                ]
+            });
+            */
 
             let cachedBundle = bundleCache[moduleName];
             if (!cachedBundle) {
@@ -32,10 +42,12 @@ module.exports = {
                     input: modulePath,
                     plugins: [
                         //typescript(),
+                        nodePolyfills(),
                         nodeResolve({
                             browser: true,
                             mainFields: ["module", "main"]
                         }),
+                        json(),
                         commonjs()
                     ]
                 });
