@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-transpile@0.3.4...ui5-task-transpile@0.3.5) (2022-02-07)
+
+**Note:** Version bump only for package ui5-task-transpile
+
+
+
+
+
 ## [0.3.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-transpile@0.3.3...ui5-task-transpile@0.3.4) (2021-10-29)
 
 **Note:** Version bump only for package ui5-task-transpile
