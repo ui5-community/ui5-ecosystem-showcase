@@ -41,6 +41,10 @@ describe("interaction", () => {
         month = (month < 10 ? "0" + month : month).toString()
         const year = today.getFullYear().toString()
 
+        // first, input current date to clear value from previous test
+        await browser.asControl(dateTimePicker).focus().setValue("")
+        await browser.keys("Tab") // this triggers ui5 framework event when navigating away from the input element of the datetime picker
+
         // wdi5
         const popupIcon = {
             selector: {
