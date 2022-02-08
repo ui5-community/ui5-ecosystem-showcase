@@ -1,12 +1,13 @@
 {
     "name": "ui5-task-stringreplacer",
-    "version": "0.5.4",
+    "version": "0.6.0",
     "description": "Task for the UI5 tooling to replace string placeholders.",
     "author": "TheVivekGowda",
     "license": "Apache-2.0",
     "repository": {
         "type": "git",
-        "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git"
+        "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
+        "directory": "packages/ui5-task-stringreplacer"
     },
     "dependencies": {
         "@ui5/logger": "^2.0.1",

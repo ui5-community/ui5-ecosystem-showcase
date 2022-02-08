@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.8.0...ui5-middleware-cfdestination@0.8.1) (2022-02-07)
+
+**Note:** Version bump only for package ui5-middleware-cfdestination
+
+
+
+
+
+# [0.8.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.7.3...ui5-middleware-cfdestination@0.8.0) (2021-12-26)
+
+
+### Features
+
+* **ui5-task-stringreplacer,ui5-middleware-stringreplacer:** support for multiple .env files ([29e246a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/29e246abba7b82f0f42a6f16316e5029de638d26)), closes [#545](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/545)
+
+
+
+
+
+## [0.7.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.7.2...ui5-middleware-cfdestination@0.7.3) (2021-10-29)
+
+**Note:** Version bump only for package ui5-middleware-cfdestination
+
+
+
+
+
+## [0.7.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.7.1...ui5-middleware-cfdestination@0.7.2) (2021-10-28)
+
+
+### Bug Fixes
+
+* **deps:** update dependencies version ([2444781](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2444781b4b2b7215b8e891dfe65c42167a668f66))
+
+
+
+
+
 ## [0.7.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.7.0...ui5-middleware-cfdestination@0.7.1) (2021-09-29)
 
 

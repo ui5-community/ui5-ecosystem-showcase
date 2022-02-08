@@ -47,6 +47,7 @@ server:
 ```
 
 Example which uses Environment Variables from `.env` file
+
 ```yaml
 server:
   customMiddleware:
@@ -56,6 +57,7 @@ server:
     configuration:
       rootPath: ${env.SAPUI5_SDK_1_60__RESOURCES}
 ```
+
 ## How it works
 
 The middleware integrates [serve-static](https://github.com/expressjs/serve-static) to serve static resources from a specified `rootPath`.

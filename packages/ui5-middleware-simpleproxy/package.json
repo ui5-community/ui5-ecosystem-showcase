@@ -1,17 +1,18 @@
 {
   "name": "ui5-middleware-simpleproxy",
-  "version": "0.7.3",
+  "version": "0.7.6",
   "description": "UI5 simple proxy middleware",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git"
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
+    "directory": "packages/ui5-middleware-simpleproxy"
   },
   "dependencies": {
     "@ui5/logger": "^2.0.1",
     "dotenv": "^10.0.0",
-    "express-http-proxy": "^1.6.2",
+    "express-http-proxy": "^1.6.3",
     "minimatch": "^3.0.4"
   },
   "ui5": {

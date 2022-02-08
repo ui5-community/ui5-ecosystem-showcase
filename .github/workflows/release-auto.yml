@@ -1,0 +1,28 @@
+name: Release (automatic)
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: "contains(github.event.head_commit.message, 'chore(release): publish')"
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Publish to NPM
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          echo ":::: Publishing as $(npm whoami)"
+          npm run release:publish
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_RELEASE_AUTH_TOKEN }}

@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-stringreplacer@0.2.5...ui5-middleware-stringreplacer@0.3.0) (2021-12-26)
+
+
+### Features
+
+* **ui5-task-stringreplacer,ui5-middleware-stringreplacer:** support for multiple .env files ([29e246a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/29e246abba7b82f0f42a6f16316e5029de638d26)), closes [#545](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/545)
+
+
+
+
+
+## [0.2.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-stringreplacer@0.2.4...ui5-middleware-stringreplacer@0.2.5) (2021-10-29)
+
+**Note:** Version bump only for package ui5-middleware-stringreplacer
+
+
+
+
+
 ## [0.2.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-stringreplacer@0.2.3...ui5-middleware-stringreplacer@0.2.4) (2021-09-29)
 
 

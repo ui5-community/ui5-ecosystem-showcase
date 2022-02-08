@@ -1,12 +1,13 @@
 {
   "name": "ui5-middleware-stringreplacer",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "UI5 middleware for live string replace",
   "author": "Attila Boros",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git"
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
+    "directory": "packages/ui5-middleware-stringreplacer"
   },
   "dependencies": {
     "@ui5/logger": "^2.0.1",

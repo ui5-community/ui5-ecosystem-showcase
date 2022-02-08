@@ -1,6 +1,5 @@
 const crypto = require("crypto")
 const fs = require("fs-extra")
-const getPort = require("get-port")
 const path = require("path")
 const replace = require("replace-in-file")
 const request = require("supertest")
@@ -31,6 +30,7 @@ test.beforeEach(async (t) => {
     await copyUI5app(t.context.tmpDir)
 
     // dynamic port allocation for ui5 serve
+    const getPort = (await import("get-port")).default;
     t.context.port = {
         ui5Sserver: await getPort(),
         appRouter: await getPort()

@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-index@0.2.5...ui5-middleware-index@0.2.6) (2021-10-29)
+
+**Note:** Version bump only for package ui5-middleware-index
+
+
+
+
+
+## [0.2.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-index@0.2.4...ui5-middleware-index@0.2.5) (2021-10-28)
+
+
+### Bug Fixes
+
+* **index:** improved docu ([6bfd98b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6bfd98bd6cff10a9cc1a5f26d9933cd654216666))
+
+
+
+
+
+## [0.2.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-index@0.2.3...ui5-middleware-index@0.2.4) (2021-10-28)
+
+
+### Bug Fixes
+
+* **index:** improved docu ([d69755d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d69755d36a5d1604e37bf71fa60bc9295ce639a1))
+
+
+
+
+
 ## [0.2.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-index@0.2.2...ui5-middleware-index@0.2.3) (2021-05-05)
 
 **Note:** Version bump only for package ui5-middleware-index

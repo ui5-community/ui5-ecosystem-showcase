@@ -1,7 +1,7 @@
 {
   "name": "ui5-ecosystem-showcase",
   "version": "0.1.0",
-  "description": "A repository showcasing the UI5 tooling extensibility to combine OSS tools for UI5 application development.",
+  "description": "A repository show-casing the UI5 tooling extensibility to combine OSS tools for UI5 application development.",
   "private": true,
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
@@ -15,24 +15,48 @@
     "clean": "yarn workspace ui5-app clean",
     "dev": "yarn workspace ui5-app dev",
     "start": "yarn workspace ui5-app start",
-    "start:ci": "cd packages/ui5-app && npm run start:ci &",
+    "start:ci": "yarn workspace ui5-app start:ci",
     "//*test:ci": "1. start ui5 serve and bg it - 2. run the e2e tests in parallel - 3. kill the bg'ed ui5 serve",
-    "pretest:ci": "npm run start:ci",
+    "pretest:ci": "yarn start:ci",
     "test:ci": "wait-on tcp:1081 && HEADLESS=true npm run test:wdi5",
     "posttest:ci": "kill $(lsof -t -i:1081)",
-    "test:opa5": "cd packages/ui5-app && karma start",
-    "test:opa5-ci": "cd packages/ui5-app && karma start karma-ci.conf.js",
-    "//deprecated! test:uiveri5": "cd packages/ui5-app/webapp/test/e2e && uiveri5 --debug conf.js",
-    "test:wdi5": "cd packages/ui5-app && wdio",
-    "watch": "yarn workspace ui5-app watch"
+    "test:opa5": "yarn workspace ui5-app test",
+    "test:opa5-ci": "yarn workspace ui5-app test:ci",
+    "//deprecated! test:uiveri5": "yarn workspace ui5-app test:uiveri5",
+    "test:wdi5": "yarn workspace ui5-app test:wdi5",
+    "test:ui5-middleware-cfdestination": "yarn workspace ui5-middleware-cfdestination test",
+    "test:ui5-task-zipper": "yarn workspace ui5-task-zipper test",
+    "test:all": " npm-run-all test:opa5-ci test:ui5-middleware-cfdestination test:ui5-task-zipper",
+    "watch": "yarn workspace ui5-app watch",
+    "release:version": "lerna version",
+    "release:publish": "lerna publish from-git --yes --no-verify-access",
+    "release:publish-manual": "lerna publish from-package --yes --no-verify-access",
+    "prepare": "husky install",
+    "hooks:commit-msg": "commitlint -e"
   },
   "devDependencies": {
+    "@commitlint/cli": "16.0.0",
+    "@commitlint/config-conventional": "16.0.0",
+    "cz-conventional-changelog": "3.3.0",
+    "husky": "^7.0.4",
     "lerna": "^4.0.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   },
   "workspaces": [
     "packages/*"
   ],
   "resolutions": {
-    "minimist": "^1.2.5"
+    "minimist": "^1.2.5",
+    "@ui5/builder": "2.11.2",
+    "@ui5/server": "2.3.1"
   }
 }

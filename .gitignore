@@ -5,6 +5,9 @@
 packages/ui5-app/webapp/test/e2e/target/*
 packages/ui5-app/webapp/test/e2e-wdi5/report/*
 
+# test resources
+packages/ui5-middleware-cfdestination/test/_ui5-app
+
 # Logs
 logs
 *.log
