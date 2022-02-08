@@ -3,21 +3,27 @@ const Page = require("./Page")
 class Other extends Page {
     _viewName = "test.Sample.view.Other"
 
-    iShouldSeeTheList() {
-        return browser.asControl({
-            selector: {
-                viewName: "test.Sample.view.Other",
-                id: "PeopleList"
-            }
-        }).getVisible() === true
+    async iShouldSeeTheList() {
+        return (
+            (await browser
+                .asControl({
+                    selector: {
+                        viewName: "test.Sample.view.Other",
+                        id: "PeopleList"
+                    }
+                })
+                .getVisible()) === true
+        )
     }
 
-    iNavigateBack() {
-        browser.asControl({
-            selector: {
-                id: /.*navButton$/
-            }
-        }).firePress()
+    async iNavigateBack() {
+        await browser
+            .asControl({
+                selector: {
+                    id: /.*navButton$/
+                }
+            })
+            .firePress()
     }
 }
 
