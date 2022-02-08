@@ -1984,7 +1984,7 @@
   dependencies:
     "@octokit/openapi-types" "^11.2.0"
 
-"@openui5/ts-types@^1.97.0":
+"@openui5/ts-types@^1.98.0":
   version "1.98.0"
   resolved "https://registry.yarnpkg.com/@openui5/ts-types/-/ts-types-1.98.0.tgz#812767fd1dc3b97f1cfdf008389e21b5857f9306"
   integrity sha512-yinvasl/pzp56PvD9QCXNywyW3ITOG2F2P28YAzSCxW0/5fdeT4ZZTQX9kOXD0Egd6sjrz8vMBxn2Dj2HrioSg==
@@ -2199,7 +2199,7 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
-"@testim/chrome-version@^1.0.7":
+"@testim/chrome-version@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@testim/chrome-version/-/chrome-version-1.1.2.tgz#092005c5b77bd3bb6576a4677110a11485e11864"
   integrity sha512-1c4ZOETSRpI0iBfIFUqU4KqwBAB2lHUAlBjZz/YqOHqwM9dTTzjV6Km0ZkiEiSCx/tLr1BtESIKyWWMww+RUqw==
@@ -2530,7 +2530,7 @@
     xml2js "^0.4.23"
     yazl "^2.5.1"
 
-"@ui5/cli@^2.14.2":
+"@ui5/cli@^2.14.4":
   version "2.14.4"
   resolved "https://registry.yarnpkg.com/@ui5/cli/-/cli-2.14.4.tgz#0217afe6c8e58b8207d8abb9ebbb8568c9abe961"
   integrity sha512-nhggtKrqhmRzBDwZyssRLxPATWa+hDYl7XQpk7kVfPqbj0cE0+Iv1Zd0E9q5cj4x/zQpStruUEIMrSeXWPK7cA==
@@ -2630,7 +2630,7 @@
   resolved "https://registry.yarnpkg.com/@ungap/promise-all-settled/-/promise-all-settled-1.1.2.tgz#aa58042711d6e3275dd37dc597e5d31e8c290a44"
   integrity sha512-sL/cEvJWAnClXw0wHk85/2L0G6Sj8UB0Ctc1TEMbKSsmpRosqhwj9gWgFRZSrBr2f9tiXISwNhCPmlfqUqyb9Q==
 
-"@wdio/cli@^7.16.12":
+"@wdio/cli@^7.16.14":
   version "7.16.14"
   resolved "https://registry.yarnpkg.com/@wdio/cli/-/cli-7.16.14.tgz#ace7e89a75537cd62b6435c072e020a396059a6d"
   integrity sha512-eWo+/QCFqBHjFdbKEnywSDZk98XIyaYXV8fYfjBpr4aS752I+tV9KpaM1dHFIiafuWzwE614ifJTMa4iZ6pDNA==
@@ -2673,7 +2673,7 @@
     deepmerge "^4.0.0"
     glob "^7.1.2"
 
-"@wdio/local-runner@^7.16.12":
+"@wdio/local-runner@^7.16.14":
   version "7.16.14"
   resolved "https://registry.yarnpkg.com/@wdio/local-runner/-/local-runner-7.16.14.tgz#11f71dce1a1ecea3a48336062615700cf829cf38"
   integrity sha512-kEJjQHV5Avdv0fra6KvWUgCa5aLDUhgxWZP6y/tj2okCAJtD4AKmsfCHZ3+YId11vn2hgDnn1RN7ie//IxAGmA==
@@ -2697,7 +2697,7 @@
     loglevel-plugin-prefix "^0.8.4"
     strip-ansi "^6.0.0"
 
-"@wdio/mocha-framework@^7.16.11":
+"@wdio/mocha-framework@^7.16.14":
   version "7.16.14"
   resolved "https://registry.yarnpkg.com/@wdio/mocha-framework/-/mocha-framework-7.16.14.tgz#a7e406b58a73be2cd1ad7f02d4982113c6ff6687"
   integrity sha512-NvhdOe8xliNq988ex/fT5jyMJOwibE4VA/7bUKcT+nUQPkQVtoLRiXXncUYvKi755qEY3Q+12GnGGDuIUMOY+w==
@@ -2751,7 +2751,7 @@
     webdriver "7.16.14"
     webdriverio "7.16.14"
 
-"@wdio/spec-reporter@^7.16.11":
+"@wdio/spec-reporter@^7.16.14":
   version "7.16.14"
   resolved "https://registry.yarnpkg.com/@wdio/spec-reporter/-/spec-reporter-7.16.14.tgz#7748318ec0ec6875936809d01024b9521fbfcb13"
   integrity sha512-hpS2rLXo91lfrit5/pjDSbff2lqQe+k07/JPOJ48W+ZPSI+ib7rSldI4JFYU4YuKN1TnhkbhxRBMib3bF3Fs+Q==
@@ -2763,7 +2763,7 @@
     easy-table "^1.1.1"
     pretty-ms "^7.0.0"
 
-"@wdio/sync@^7.16.12", "@wdio/sync@^7.16.8":
+"@wdio/sync@^7.16.14":
   version "7.16.14"
   resolved "https://registry.yarnpkg.com/@wdio/sync/-/sync-7.16.14.tgz#3be858ef7d65c91f738ccdfd17bf431a5d21ceb0"
   integrity sha512-zQgw6Mkh6gZ6uNS+Ai4/L0TNZ6t3uqbmXCJpgAb7QdSxzEyEI9cACSSUA80qbjqJS39xHnCNukiTohLlLgCmBw==
@@ -3276,12 +3276,19 @@ axios-cookiejar-support@^2.0.3:
   dependencies:
     http-cookie-agent "^1.0.2"
 
-axios@0.21.4, axios@^0.21.1, axios@^0.21.2:
+axios@0.21.4, axios@^0.21.1:
   version "0.21.4"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.4.tgz#c67b90dc0568e5c1cf2b0b858c43ba28e2eda575"
   integrity sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==
   dependencies:
     follow-redirects "^1.14.0"
+
+axios@^0.24.0:
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.24.0.tgz#804e6fa1e4b9c5288501dd9dff56a7a0940d20d6"
+  integrity sha512-Q6cWsys88HoPgAaFAVUb0WpPk0O8iTeisR9IMqy9G8AbO4NlpVknrnQS03zzF9PGAWgO3cgletO3VjV/P7VztA==
+  dependencies:
+    follow-redirects "^1.14.4"
 
 axios@^0.25.0:
   version "0.25.0"
@@ -3321,7 +3328,7 @@ babel-plugin-polyfill-regenerator@^0.3.0:
   dependencies:
     "@babel/helper-define-polyfill-provider" "^0.3.1"
 
-babel-plugin-transform-async-to-promises@^0.8.17:
+babel-plugin-transform-async-to-promises@^0.8.17, babel-plugin-transform-async-to-promises@^0.8.18:
   version "0.8.18"
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-async-to-promises/-/babel-plugin-transform-async-to-promises-0.8.18.tgz#f4dc5980b8afa0fc9c784b8d931afde913413e39"
   integrity sha512-WpOrF76nUHijnNn10eBGOHZmXQC8JYRME9rOLxStOga7Av2VO53ehVFvVNImMksVtQuL2/7ZNxEgxnx7oo/3Hw==
@@ -3877,13 +3884,13 @@ chrome-launcher@^0.15.0:
     is-wsl "^2.2.0"
     lighthouse-logger "^1.0.0"
 
-chromedriver@^96.0.0:
-  version "96.0.0"
-  resolved "https://registry.yarnpkg.com/chromedriver/-/chromedriver-96.0.0.tgz#c8473498e4c94950fa168187b112019cce9e5c6c"
-  integrity sha512-4g6Hn5RHGsbaBmOrJbDlz/hdVPOc22eRsbvoAAMqkZxR2NJCcddHzCw2FAQeW8lX/C7xWVz3nyDsKX3fE9lIIw==
+chromedriver@^97.0.4:
+  version "97.0.4"
+  resolved "https://registry.yarnpkg.com/chromedriver/-/chromedriver-97.0.4.tgz#69dbfae6194d32c64e34f88d60897835d86f7a99"
+  integrity sha512-mAOH1QSCaeYgniNOqceAzC8BVORQtWxsmgSOBuy8TV/CyyDTllLmKtNNORsxdqrDtefVlxRVQkEzYrlKiJsfFw==
   dependencies:
-    "@testim/chrome-version" "^1.0.7"
-    axios "^0.21.2"
+    "@testim/chrome-version" "^1.1.2"
+    axios "^0.24.0"
     del "^6.0.0"
     extract-zip "^2.0.1"
     https-proxy-agent "^5.0.0"
@@ -5980,7 +5987,7 @@ flush-write-stream@^1.0.0:
     inherits "^2.0.3"
     readable-stream "^2.3.6"
 
-follow-redirects@^1.0.0, follow-redirects@^1.14.0, follow-redirects@^1.14.7:
+follow-redirects@^1.0.0, follow-redirects@^1.14.0, follow-redirects@^1.14.4, follow-redirects@^1.14.7:
   version "1.14.7"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.7.tgz#2004c02eb9436eee9a21446a6477debf17e81685"
   integrity sha512-+hbxoLbFMbRKDwohX8GkTataGqO6Jb7jGwpAlwgy2bIz25XtRm7KEzJM76R1WiNT5SwZkX4Y75SwBolkpmE7iQ==
@@ -7649,7 +7656,7 @@ karma-chrome-launcher@^3.1.0:
   dependencies:
     which "^1.2.1"
 
-karma-coverage@^2.1.0:
+karma-coverage@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/karma-coverage/-/karma-coverage-2.1.1.tgz#7434f8736841e08de3e6c302632e8d239634f388"
   integrity sha512-oxeOSBVK/jdZsiX03LhHQkO4eISSQb5GbHi6Nsw3Mw7G4u6yUgacBAftnO7q+emPBLMsrNbz1pGIrj+Jb3z17A==
@@ -7674,7 +7681,7 @@ karma-ui5@^2.4.0:
     js-yaml "^4.1.0"
     mkdirp "^1.0.4"
 
-karma@^6.3.9:
+karma@^6.3.15:
   version "6.3.15"
   resolved "https://registry.yarnpkg.com/karma/-/karma-6.3.15.tgz#6c3beedb2440b05589a502462140afed724481e7"
   integrity sha512-4O5X6zVFdmwo/fgjRN84fPG3IvaiOxOjIeZBwBrQYz4nIyGqlF8Wm7C1Hr7idQ9NHgnvJM+LSjZwS1C+qALMGw==
@@ -12147,7 +12154,7 @@ wcwidth@^1.0.0, wcwidth@^1.0.1:
   dependencies:
     defaults "^1.0.3"
 
-wdio-chromedriver-service@^7.2.2:
+wdio-chromedriver-service@^7.2.6:
   version "7.2.6"
   resolved "https://registry.yarnpkg.com/wdio-chromedriver-service/-/wdio-chromedriver-service-7.2.6.tgz#a06e8bb50d4d90ef396ee8d15da5f114de8ac9a9"
   integrity sha512-nepyo50jXfkLjRPdVmnZ55+YcPI6xSzYJ6ReAfHEGbwQcIqx6G+8zyynvBM7BIjWGdCwEpX6dbyVTTnt1xh/Kw==
@@ -12157,12 +12164,10 @@ wdio-chromedriver-service@^7.2.2:
     split2 "^3.2.2"
     tcp-port-used "^1.0.1"
 
-wdio-ui5-service@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/wdio-ui5-service/-/wdio-ui5-service-0.7.0.tgz#4652b92c60b4b82aa1b862c43a7c8dbc8204f52b"
-  integrity sha512-SM8NaO4gq868s/qm9tTdGQahA6eXJhstG3KRBzvSWxHIjZaraXkR5ylG1XOMLBFr9fPn+V/ZzuNJaxq0/p826w==
-  dependencies:
-    "@wdio/sync" "^7.16.8"
+wdio-ui5-service@^0.8.2:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/wdio-ui5-service/-/wdio-ui5-service-0.8.2.tgz#9d5b2ee9cd1ccda7a431ef12d2e52113e1364309"
+  integrity sha512-TjWarHkUnbRosr49sXKa607G0bzbBI4i5Me9lffc4iijXE4tmO6ESCCu/WZM90hwgyP8yREhuliMFzrYiUqWdw==
 
 webdriver@7.16.14:
   version "7.16.14"
