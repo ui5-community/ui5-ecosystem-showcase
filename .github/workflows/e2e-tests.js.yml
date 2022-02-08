@@ -51,5 +51,5 @@ jobs:
       # runs opa5 (+ qunit) tests
       - run: yarn test:opa5-ci
 
-      # runs wdi5 + uiveri5 tests
+      # runs wdi5 tests
       - run: yarn test:ci
