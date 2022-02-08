@@ -10,7 +10,8 @@ const dateTimePicker = {
     forceSelect: true,
     selector: {
         viewName: "test.Sample.view.Main",
-        id: "DateTimePicker"
+        id: "DateTimePicker",
+        interaction: "root"
     }
 }
 
@@ -19,14 +20,19 @@ describe("interaction", () => {
     it("should manually allow date input", async () => {
         await browser.goTo({ sHash: "#/" })
 
-        const oDateTimePicker = await browser.asControl(dateTimePicker)
-        await oDateTimePicker.focus().setValue("2020-11-11")
-        // tmp change focus to different control in order to
-        // trigger ui5 framework events (e.g. date formatting)
+        // wdi5 fluent async api to
+        // - focus on the input element of the date picker
+        // - type in the date
+        await browser.asControl(dateTimePicker).focus().setValue("2020-11-11")
+
+        // change focus to different control in order to
+        // trigger ui5 framework event for date formatting
         await browser.keys("Tab")
-        await browser.asControl(navFwdButton).focus() // ui5 api
-        expect(await oDateTimePicker.getValue()).toMatch(/2020/)
-        expect(await oDateTimePicker.getValue()).toMatch(/11/)
+        await browser.asControl(navFwdButton).focus() // wdi5 fluent async api
+
+        const newValue = await browser.asControl(dateTimePicker).getValue() // ui5 api
+        expect(newValue).toMatch(/2020/)
+        expect(newValue).toMatch(/11/)
     })
 
     it("should input date via popup + click", async () => {
