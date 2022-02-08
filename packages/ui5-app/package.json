@@ -38,7 +38,6 @@
   "devDependencies": {
     "@openui5/ts-types": "^1.97.0",
     "@ui5/cli": "^2.14.2",
-    "@ui5/uiveri5": "^1.47.4",
     "@wdio/cli": "^7.16.12",
     "@wdio/local-runner": "^7.16.12",
     "@wdio/mocha-framework": "^7.16.11",

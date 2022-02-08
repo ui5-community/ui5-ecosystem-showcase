@@ -23,7 +23,7 @@
     "posttest:ci": "kill -KILL $(lsof -t -i:1081)",
     "test:opa5": "yarn workspace ui5-app test",
     "test:opa5-ci": "yarn workspace ui5-app test:ci",
-    "test:uiveri5": "yarn workspace ui5-app test:uiveri5",
+    "//deprecated! test:uiveri5": "yarn workspace ui5-app test:uiveri5",
     "test:wdi5": "yarn workspace ui5-app test:wdi5",
     "test:ui5-middleware-cfdestination": "yarn workspace ui5-middleware-cfdestination test",
     "test:ui5-task-zipper": "yarn workspace ui5-task-zipper test",
