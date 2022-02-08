@@ -6,13 +6,6 @@ const navFwdButton = {
     }
 }
 
-const list = {
-    selector: {
-        viewName: "test.Sample.view.Other",
-        id: "PeopleList"
-    }
-}
-
 const dateTimePicker = {
     forceSelect: true,
     selector: {
@@ -20,38 +13,6 @@ const dateTimePicker = {
         id: "DateTimePicker"
     }
 }
-
-const MainPage = require("./pages/Main")
-const onTheOtherPage = require("./pages/Other")
-
-// this suite implemented w/ page object pattern
-describe("navigation", () => {
-    it("should see the initial page of the app", async () => {
-        await MainPage.open()
-        expect(MainPage.iShouldSeeTheApp()).toBeTruthy()
-    })
-
-    it("should navigate to the list page and back", async () => {
-        await MainPage.iPressTheNavButton()
-
-        expect(await onTheOtherPage.iShouldSeeTheList()).toBeTruthy()
-
-        await onTheOtherPage.iNavigateBack()
-
-        expect(await MainPage.iShouldSeeTheNavButton()).toBeTruthy()
-    })
-})
-
-// this suite implemented straigh-fwd, no page objects
-describe("binding", () => {
-    it("Other view: PeopleList: items aggregation + amount of items", async () => {
-        await browser.asControl(navFwdButton).firePress()
-
-        const oList = await browser.asControl(list)
-        const aListItems = await oList.getItems(true) // ui5 api + high-speed aggregation retrieval https://github.com/js-soft/wdi5#getshorthand-conveniences
-        expect(aListItems.length).toBeGreaterThanOrEqual(1)
-    })
-})
 
 // this suite implemented straigh-fwd, no page objects
 describe("interaction", () => {
