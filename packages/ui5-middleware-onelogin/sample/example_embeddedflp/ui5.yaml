@@ -1,0 +1,37 @@
+specVersion: "2.2"
+metadata:
+  name: ui5-app
+type: application
+resources:
+  configuration:
+    paths:
+      webapp: ../../../ui5-app/webapp
+
+framework:
+  name: OpenUI5
+  version: "1.97.0"
+  libraries:
+    - name: sap.m
+    - name: sap.ui.core
+    - name: sap.ui.layout
+    - name: themelib_sap_fiori_3
+# https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
+server:
+  customMiddleware:
+    - name: ui5-middleware-onelogin
+      afterMiddleware: compression
+      configuration:
+        debug: true
+    - name: ui5-middleware-servestatic
+      afterMiddleware: ui5-middleware-onelogin
+      mountPath: /sap/bc/ui5_ui5/sap/zsample_po_apv
+      configuration:
+        rootPath: "../../../ui5-app/webapp"
+    - name: ui5-middleware-simpleproxy
+      afterMiddleware: ui5-middleware-onelogin
+      mountPath: /sap
+      configuration:
+        baseUri: "https://sapes5.sapdevcenter.com/sap"
+        excludePatterns:
+        - "/bc/ui5_ui5/sap/zsample_po_apv/**"
+

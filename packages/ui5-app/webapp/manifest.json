@@ -105,6 +105,13 @@
           "target": [
             "TargetOther"
           ]
+        },
+        {
+          "name": "RouteES5",
+          "pattern": "sapes5",
+          "target": [
+            "TargetES5"
+          ]
         }
       ],
       "targets": {
@@ -121,6 +128,13 @@
           "clearControlAggregation": false,
           "viewId": "Other",
           "viewName": "Other"
+        },
+        "TargetES5": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewId": "ModelView",
+          "viewName": "ModelView"
         }
       }
     },
