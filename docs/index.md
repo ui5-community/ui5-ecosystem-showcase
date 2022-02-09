@@ -6,7 +6,7 @@ This repository is showcasing the [UI5 Tooling](https://sap.github.io/ui5-toolin
 
 ![UI5 Tooling Ecosystem](ui5eco.jpg "UI5 Tooling Ecosystem")
 
-This doesn't necessarily need to happen in this repository and everyone can develop and share his own tasks and middleware via [npm](https://www.npmjs.com/). Regarding npm, please prefix the name of all tasks with `ui5-task-` and all middlewares with `ui5-middleware-`. This will help UI5 developers to easily find tasks and middlewares created and shared by the UI5 community.
+This doesn't necessarily need to happen in this repository and everyone can develop and share his own tasks and middleware via [npm](https://www.npmjs.com/). Regarding npm, please prefix the name of all tasks with `ui5-task-` and all middlewares with `ui5-middleware-`. In case you create NPM packages having both: custom tasks and middlewares, the prefix should be `ui5-tooling-`. This will help UI5 developers to easily find tasks and middlewares created and shared by the UI5 community.
 
 ## Contributing vs. Self-managed
 
@@ -52,6 +52,7 @@ The following middlewares (known to this page) have been created and are availab
 | [ui5-middleware-livecompileless](https://www.npmjs.com/package/ui5-middleware-livecompileless) | livecompiling of less files in the app folder | [![npm version](https://badge.fury.io/js/ui5-middleware-livecompileless.svg)](https://badge.fury.io/js/ui5-middleware-livecompileless) |
 | [ui5-middleware-livereload](https://www.npmjs.com/package/ui5-middleware-livereload) | usage of livereload for development | [![npm version](https://badge.fury.io/js/ui5-middleware-livereload.svg)](https://badge.fury.io/js/ui5-middleware-livereload) |
 | [ui5-middleware-livetranspile](https://www.npmjs.com/package/ui5-middleware-livetranspile) | on-demand es6 to es5 transpile when requesting js | [![npm version](https://badge.fury.io/js/ui5-middleware-livetranspile.svg)](https://badge.fury.io/js/ui5-middleware-livetranspile) |
+| [ui5-middleware-onelogin](https://www.npmjs.com/package/ui5-middleware-onelogin) | enable a generic login support | [![npm version](https://badge.fury.io/js/ui5-middleware-onelogin.svg)](https://badge.fury.io/js/ui5-middleware-onelogin) |
 | [ui5-middleware-route-proxy](https://www.npmjs.com/package/ui5-middleware-route-proxy) | Proxy to forward request for a specific route | [![npm version](https://badge.fury.io/js/ui5-middleware-route-proxy.svg)](https://badge.fury.io/js/ui5-middleware-route-proxy) |
 | [ui5-middleware-servestatic](https://www.npmjs.com/package/ui5-middleware-servestatic) | serve static resources | [![npm version](https://badge.fury.io/js/ui5-middleware-servestatic.svg)](https://badge.fury.io/js/ui5-middleware-servestatic) |
 | [ui5-middleware-simpleproxy](https://www.npmjs.com/package/ui5-middleware-simpleproxy) | simple express proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-simpleproxy.svg)](https://badge.fury.io/js/ui5-middleware-simpleproxy) |
@@ -59,3 +60,13 @@ The following middlewares (known to this page) have been created and are availab
 | [ui5-middleware-webjars](packages/ui5-middleware-webjars/README.md) | deliver content from JAR files | [![npm version](https://badge.fury.io/js/ui5-middleware-webjars.svg)](https://badge.fury.io/js/ui5-middleware-webjars) |
 
 There might be more middlewares in the public NPM registry. You can find all middlewares which applied the suggested naming convention at [https://www.npmjs.com/search?q=ui5-middleware-](https://www.npmjs.com/search?q=ui5-middleware-).
+
+## Available Tooling Extensions
+
+The following tooling extensions (known to this page) have been created and are available in the public NPM registry:
+
+| NPM package | Description | Badge |
+| ----------- | ----------- | ----- |
+| [ui5-tooling-modules](https://www.npmjs.com/package/ui5-tooling-modules) | direct consumption of NPM packages | [![npm version](https://badge.fury.io/js/ui5-tooling-modules.svg)](https://badge.fury.io/js/ui5-tooling-modules) |
+
+There might be more tooling extensions in the public NPM registry. You can find all middlewares which applied the suggested naming convention at [https://www.npmjs.com/search?q=ui5-tooling-](https://www.npmjs.com/search?q=ui5-tooling-).

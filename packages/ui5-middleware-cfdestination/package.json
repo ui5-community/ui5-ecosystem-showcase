@@ -21,19 +21,19 @@
     "timeout": "20s"
   },
   "dependencies": {
-    "@sap/approuter": "^10.10.4",
+    "@sap/approuter": "^10.12.0",
     "@ui5/logger": "^2.0.1",
     "request": "^2.88.2"
   },
-  "ui5": {
-    "dependencies": []
-  },
   "devDependencies": {
-    "ava": "^3.15.0",
+    "ava": "^4.0.1",
     "get-port": "^6.0.0",
-    "nock": "^13.2.1",
+    "nock": "^13.2.4",
     "prettier": "^2.5.1",
     "replace-in-file": "^6.3.2",
-    "supertest": "^6.1.6"
+    "supertest": "^6.2.2"
+  },
+  "ui5": {
+    "dependencies": []
   }
 }
