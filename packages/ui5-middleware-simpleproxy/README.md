@@ -30,6 +30,8 @@ npm install ui5-middleware-simpleproxy --save-dev
   Query parameters set for the proxied request. Will overwrite the parameters from the request. 
 - excludePatterns: `string[]`
   Array of exclude patterns using glob syntax
+- skipCache: `boolean`
+  Remove the cache guid when serving from the FLP launchpad if it matches an excludePattern
 
 In general, use of environment variables or values set in a `.env` file will override configuration values in the `ui5.yaml`.
 
