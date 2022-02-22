@@ -155,7 +155,7 @@ module.exports = function ({ resources, options }) {
         isDebug && log.info(`Removing cache from ${req.url}, resolving to ${newUrl}`);
         req.url = newUrl;
       }
-      return pattern
+      return pattern;
     },
     preserveHostHdr: false,
     proxyReqOptDecorator: function (proxyReqOpts) {
