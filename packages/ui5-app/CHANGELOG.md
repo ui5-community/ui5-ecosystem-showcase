@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.13.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.12.10...ui5-app@0.13.0) (2022-02-22)
+
+
+### Bug Fixes
+
+* e2e tests ([#571](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/571)) ([007287e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/007287e9b60dfb5ca66382bae05914942f60a686))
+
+
+### Features
+
+* **ui5-middleware-onelogin:** auth support for arbitrary services ([edfb188](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/edfb1886706a58c503b15ab7ce04745c32765828))
+
+
+
+
+
 ## [0.12.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.12.9...ui5-app@0.12.10) (2022-02-07)
 
 **Note:** Version bump only for package ui5-app

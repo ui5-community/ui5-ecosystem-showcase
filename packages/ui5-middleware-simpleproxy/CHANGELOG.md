@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.7.6...ui5-middleware-simpleproxy@0.8.0) (2022-02-22)
+
+
+### Features
+
+* **SimpleProxy:**  added a feature to skip the server cache  ([#579](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/579)) ([e9e0785](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e9e0785c6a1eae3b475c586eb25f6ae8610a76ce))
+
+
+
+
+
 ## [0.7.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.7.5...ui5-middleware-simpleproxy@0.7.6) (2021-12-26)
 
 **Note:** Version bump only for package ui5-middleware-simpleproxy
