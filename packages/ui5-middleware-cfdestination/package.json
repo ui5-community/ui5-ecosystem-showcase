@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "ava": "^4.0.1",
-    "get-port": "^6.0.0",
+    "get-port": "^6.1.1",
     "nock": "^13.2.4",
     "prettier": "^2.5.1",
     "replace-in-file": "^6.3.2",

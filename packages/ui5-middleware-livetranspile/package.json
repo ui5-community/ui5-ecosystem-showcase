@@ -10,7 +10,7 @@
     "directory": "packages/ui5-middleware-livetranspile"
   },
   "dependencies": {
-    "@babel/core": "^7.17.0",
+    "@babel/core": "^7.17.5",
     "@babel/preset-env": "^7.16.11",
     "@ui5/logger": "^2.0.1",
     "babel-plugin-transform-async-to-promises": "^0.8.18",
