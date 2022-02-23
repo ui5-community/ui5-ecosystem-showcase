@@ -16,7 +16,8 @@ const { generateBundle } = require("./util");
  * @param {object} parameters.middlewareUtil Specification version dependent interface to a
  *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
  * @param {object} parameters.options Options
- * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
+ * @param {object} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
+ * @param {boolean} [parameters.options.configuration.skipCache] Flag whether the module cache for the bundles should be skipped
  * @returns {function} Middleware function to use
  */
 module.exports = function ({
@@ -32,7 +33,7 @@ module.exports = function ({
         const match = /^\/resources\/(.*)\.js$/.exec(req.path);
         if (match) {
 
-            const bundle = await generateBundle(match[1]);
+            const bundle = await generateBundle(match[1], config.skipCache);
             if (bundle) {
                 try {
 
@@ -42,17 +43,17 @@ module.exports = function ({
                         charset
                     } = middlewareUtil.getMimeInfo(req.path);
                     res.setHeader("Content-Type", contentType);
-    
+
                     res.send(bundle);
-    
+
                     res.end();
-    
+
                     log.verbose(`Created bundle for ${req.path}`);
-    
+
                     log.info(`Bundling took ${(Date.now() - time)} millis`);
-    
+
                     return;
-    
+
                 } catch (err) {
                     log.error(`Couldn't write bundle ${match[1]}: ${err}`);
                 }

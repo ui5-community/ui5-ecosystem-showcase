@@ -1,0 +1,16 @@
+{
+  "name": "ui5-app-module",
+  "version": "0.0.0",
+  "description": "UI5 module",
+  "private": true,
+  "author": "Peter Muessig",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
+    "directory": "packages/ui5-app-module"
+  },
+  "dependencies": {
+    "chart.js": "^3.7.1"
+  }
+}

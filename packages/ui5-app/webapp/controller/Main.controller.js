@@ -1,7 +1,9 @@
 sap.ui.define([
     "test/Sample/controller/BaseController",
-    "sap/m/MessageToast"
-], (Controller, MessageToast) => {
+    "sap/m/MessageToast",
+    "ui5-app-module/Chart",
+    "ui5-app-module/ChartRecord"
+], (Controller, MessageToast, Chart) => {
     "use strict";
 
     return Controller.extend("test.Sample.controller.Main", {

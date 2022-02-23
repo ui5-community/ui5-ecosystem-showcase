@@ -1,6 +1,7 @@
 <mvc:View controllerName="test.Sample.controller.Main"
 	xmlns:core="sap.ui.core"
 	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:am="ui5-app-module"
 	displayBlock="true"
 	xmlns="sap.m">
 
@@ -53,7 +54,14 @@
 					placeholder="Enter Date ..." />
 				<Button text="Don't press me!"
 					press="onBoo" />
-                <Text text="Styled with less" class="styledWithLess"/>
+				<Text text="Styled with less" class="styledWithLess"/>
+				<am:Chart title="Some Chart" color="green">
+					<am:ChartRecord label="Day 1" value="100"></am:ChartRecord>
+					<am:ChartRecord label="Day 2" value="50"></am:ChartRecord>
+					<am:ChartRecord label="Day 3" value="200"></am:ChartRecord>
+					<am:ChartRecord label="Day 4" value="150"></am:ChartRecord>
+					<am:ChartRecord label="Day 5" value="125"></am:ChartRecord>
+				</am:Chart>
 			</VBox>
 		</content>
 	</Page>
