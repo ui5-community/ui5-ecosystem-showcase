@@ -54,3 +54,5 @@ server:
         url: "https://services.odata.org/V2/Northwind/Northwind.svc/"
       - name: "todos"
         url: "https://jsonplaceholder.typicode.com/todos/"
+  - name: ui5-tooling-modules-middleware
+    afterMiddleware: compression
