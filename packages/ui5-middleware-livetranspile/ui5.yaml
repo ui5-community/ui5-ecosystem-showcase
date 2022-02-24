@@ -1,5 +1,5 @@
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
-specVersion: '1.0'
+specVersion: '2.0'
 metadata:
   name: ui5-middleware-livetranspile
 kind: extension

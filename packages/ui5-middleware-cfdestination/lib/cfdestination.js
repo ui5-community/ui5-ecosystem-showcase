@@ -1,8 +1,10 @@
-const approuter = require("@sap/approuter")()
+const log = require("@ui5/logger").getLogger("server:custommiddleware:cfdestination")
+
 const fs = require("fs")
 const path = require("path")
 const request = require("request")
-const log = require("@ui5/logger").getLogger("server:custommiddleware:cfdestination")
+
+const approuter = require("@sap/approuter")()
 
 /**
  * Custom UI5 Server middleware "cfdestination"
@@ -17,9 +19,11 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:cfdestinat
  *                                        the projects dependencies
  * @param {Object} parameters.options Options
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
+ * @param {object} parameters.middlewareUtil Specification version dependent interface to a
+ *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
  * @returns {function} Middleware function to use
  */
-module.exports = ({ resources, options }) => {
+module.exports = ({ resources, options, middlewareUtil }) => {
     // provide a set of default runtime options
     const effectiveOptions = {
         debug: false,
@@ -86,12 +90,13 @@ module.exports = ({ resources, options }) => {
         workingDir: xsappPath || "."
     })
     return (req, res, next) => {
-        // check req.path for match with each route.source
+        // check request path for match with each route.source
         // and proxy to localhost:${effectiveOptions.port}
+        const reqPath = middlewareUtil.getPathname(req)
         let match = false
         let url = ""
         for (let [index, regEx] of regExes.entries()) {
-            if (regEx.test(req.path)) {
+            if (regEx.test(reqPath)) {
                 match = true
                 if (effectiveOptions.subdomain) {
                     // subdomain of the subscribed tenant in multitenancy context

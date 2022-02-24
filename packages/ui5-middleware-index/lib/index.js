@@ -14,13 +14,16 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:index")
  *                                        the projects dependencies
  * @param {Object} parameters.options Options
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
+ * @param {object} parameters.middlewareUtil Specification version dependent interface to a
+ *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
  * @returns {function} Middleware function to use
  */
-module.exports = ({ resources, options }) => {
+module.exports = ({ resources, options, middlewareUtil }) => {
     return (req, res, next) => {
         const sIndexFile =
             options.configuration && options.configuration.index ? options.configuration.index : "index.html"
-        if (req.path === "/") {
+        const reqPath = middlewareUtil.getPathname(req)
+        if (reqPath === "/") {
             options && options.configuration && options.configuration.debug ? log.info(`serving ${sIndexFile}!`) : null
             // "redirect" the request
             req.url = `/${sIndexFile}`
