@@ -17,6 +17,7 @@
     "@ui5/logger": "^2.0.1",
     "espree": "^9.3.1",
     "estraverse": "^5.3.0",
+    "fast-xml-parser": "^4.0.3",
     "rollup": "^2.68.0",
     "rollup-plugin-polyfill-node": "^0.8.0"
   },

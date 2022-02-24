@@ -25,15 +25,19 @@ module.exports = function ({
 }) {
 
     const config = options.configuration || {}
+    log.verbose(`Starting ui5-tooling-modules-middleware`);
 
     return async (req, res, next) => {
 
+        const reqPath = middlewareUtil.getPathname(req);
+
         const time = Date.now();
 
-        const match = /^\/resources\/(.*)\.js$/.exec(req.path);
+        const match = /^\/resources\/(.*)\.js$/.exec(reqPath);
         if (match) {
 
-            const bundle = await generateBundle(match[1], config.skipCache);
+            const bundleName = match[1];
+            const bundle = await generateBundle(bundleName, config.skipCache);
             if (bundle) {
                 try {
 
@@ -41,21 +45,19 @@ module.exports = function ({
                     let {
                         contentType,
                         charset
-                    } = middlewareUtil.getMimeInfo(req.path);
+                    } = middlewareUtil.getMimeInfo(reqPath);
                     res.setHeader("Content-Type", contentType);
 
-                    res.send(bundle);
+                    res.end(bundle);
 
-                    res.end();
+                    log.verbose(`Process resource ${bundleName}`);
 
-                    log.verbose(`Created bundle for ${req.path}`);
-
-                    log.info(`Bundling took ${(Date.now() - time)} millis`);
+                    log.info(`Processing took ${(Date.now() - time)} millis`);
 
                     return;
 
                 } catch (err) {
-                    log.error(`Couldn't write bundle ${match[1]}: ${err}`);
+                    log.error(`Couldn't process resource ${bundleName}: ${err}`);
                 }
             }
 
