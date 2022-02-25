@@ -3,6 +3,7 @@ const { nodeResolve } = require("@rollup/plugin-node-resolve");
 const commonjs = require('@rollup/plugin-commonjs');
 const json = require('@rollup/plugin-json');
 const nodePolyfills = require('rollup-plugin-polyfill-node');
+const injectProcessEnv = require('rollup-plugin-inject-process-env');
 
 const { readFile } = require("fs").promises;
 const espree = require('espree');
@@ -72,7 +73,11 @@ module.exports = {
                                 mainFields: ["module", "main"]
                             }),
                             json(),
-                            commonjs()
+                            require("./rollup-skip-assets")(),
+                            commonjs(),
+                            injectProcessEnv({
+                                NODE_ENV: "production"
+                            })
                         ]
                     });
 
