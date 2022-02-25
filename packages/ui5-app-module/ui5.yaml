@@ -1,0 +1,9 @@
+specVersion: "2.2"
+type: module
+metadata:
+  name: ui5-app-module
+
+resources:
+  configuration:
+    paths:
+      "/resources/ui5/cc/chart/": "./"

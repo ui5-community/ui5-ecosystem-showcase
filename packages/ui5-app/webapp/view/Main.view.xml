@@ -1,7 +1,7 @@
 <mvc:View controllerName="test.Sample.controller.Main"
 	xmlns:core="sap.ui.core"
 	xmlns:mvc="sap.ui.core.mvc"
-	xmlns:am="ui5-app-module"
+	xmlns:am="ui5.cc.chart"
 	displayBlock="true"
 	xmlns="sap.m">
 
