@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TUI Image Editor</title>
+    <script id="sap-ui-bootstrap"
+            src="resources/sap-ui-core.js"
+            data-sap-ui-theme="sap_fiori_3"
+            data-sap-ui-compatVersion="edge"
+            data-sap-ui-async="true"
+            data-sap-ui-frameOptions="trusted"
+            data-sap-ui-language="en"
+            data-sap-ui-oninit="onInit()">
+    </script>
+    <script>
+        function onInit() {
+            let editor;
+            sap.ui.require(["sap/ui/dom/includeStylesheet", "tui-image-editor"], function(includeStylesheet, TuiImageEditor) {
+                includeStylesheet(sap.ui.require.toUrl("tui-image-editor/dist/tui-image-editor.css"));
+                editor = new TuiImageEditor(document.getElementById("editor"), {
+                    includeUI: {
+                        loadImage: {
+                            path: 'ui5logo.png',
+                            name: 'ui5logo',
+                        },
+                        initMenu: 'shape',
+                        uiSize: {
+                            height: '100%',
+                            width: '100%',
+                        },
+                    },
+                    cssMaxWidth: 700,
+                    cssMaxHeight: 500,
+                });
+            })
+        }
+    </script>
+    <style>
+        html, body, div#editor {
+            height: 100%;
+        }
+    </style>
+</head>
+<body class="sapUiBody">
+    <div id="editor" class="tui-image-editor-container"></div>
+</body>
+</html>
