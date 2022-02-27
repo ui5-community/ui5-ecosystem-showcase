@@ -1,4 +1,4 @@
-sap.ui.define(["sap/ui/core/Control", "chart.js/auto", "sap/ui/dom/includeStyleSheet"], function(Control, Chart, includeStyleSheet) {
+sap.ui.define(["sap/ui/core/Control", "chart.js/auto", "sap/ui/dom/includeStylesheet"], function(Control, Chart, includeStylesheet) {
 
     return Control.extend("ui5-app-module.Chart", {
         metadata: {
@@ -45,7 +45,7 @@ sap.ui.define(["sap/ui/core/Control", "chart.js/auto", "sap/ui/dom/includeStyleS
             };
         },
         init: function() {
-            includeStyleSheet(sap.ui.require.toUrl("ui5-app-module/Chart.css"));
+            includeStylesheet(sap.ui.require.toUrl("ui5-app-module/Chart.css"));
         },
         onAfterRendering: function() {
             if (!this._chart) {
