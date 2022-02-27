@@ -20,19 +20,17 @@
             "type": "node",
             "request": "launch",
             "name": "Debug Middlewares",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": [
-                "run-script",
-                "debug"
-            ],
+            "args": [ "serve" ],
+            "program": "${workspaceRoot}/node_modules/@ui5/cli/bin/ui5.js",
             "cwd": "${workspaceFolder}/packages/ui5-app",
-            "port": 9229
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
         },
         {
             "type": "node",
             "request": "launch",
             "name": "Debug Tasks",
-            "args": [ "build"],
+            "args": [ "build" ],
             "program": "${workspaceRoot}/node_modules/@ui5/cli/bin/ui5.js",
             "cwd": "${workspaceFolder}/packages/ui5-app",
             "console": "integratedTerminal",

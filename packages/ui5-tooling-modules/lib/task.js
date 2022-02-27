@@ -1,7 +1,7 @@
 const log = require("@ui5/logger").getLogger("builder:customtask:ui5-tooling-modules");
 const resourceFactory = require("@ui5/fs").resourceFactory;
 
-const { generateBundle } = require("./util");
+const { getResource } = require("./util");
 
 const { readFileSync } = require("fs");
 const espree = require('espree');
@@ -36,8 +36,9 @@ module.exports = async function ({
         return;
     }
 
-    // collector for unique dependencies
+    // collector for unique dependencies and resources
     const uniqueDeps = new Set();
+    const uniqueResources = new Set();
 
     // utility to lookup unique JS dependencies
     function findUniqueJSDeps(content) {
@@ -45,7 +46,18 @@ module.exports = async function ({
         const program = espree.parse(content, { range: true, comment: true, tokens: true, ecmaVersion: "latest" });
         estraverse.traverse(program, {
             enter(node, parent) {
-                if (node?.type === "CallExpression" &&
+                if (/* sap.ui.require.toUrl */
+                    node?.type === "CallExpression" &&
+                    node?.callee?.property?.name == "toUrl" &&
+                    node?.callee?.object?.property?.name == "require" &&
+                    node?.callee?.object?.object?.property?.name == "ui" &&
+                    node?.callee?.object?.object?.object?.name == "sap") {
+                    const elDep = node.arguments[0];
+                    if (elDep?.type === "Literal") {
+                        uniqueResources.add(elDep.value);
+                    }
+                } else if (/* sap.ui.(require|define) */
+                    node?.type === "CallExpression" &&
                     /require|define/.test(node?.callee?.property?.name) &&
                     node?.callee?.object?.property?.name == "ui" &&
                     node?.callee?.object?.object?.name == "sap") {
@@ -152,7 +164,7 @@ module.exports = async function ({
     await Promise.all(Array.from(uniqueDeps).map(async (dep) => {
 
         log.verbose(`Trying to process dependency: ${dep}`);
-        const bundle = await generateBundle(dep);
+        const bundle = await getResource(dep);
         if (bundle) {
             log.info(`Processing dependency: ${dep}`);
             const bundleResource = resourceFactory.createResource({
@@ -160,6 +172,22 @@ module.exports = async function ({
                 string: bundle
             });
             await workspace.write(bundleResource);
+        }
+
+    }));
+
+    // every unique resource will be copied
+    await Promise.all(Array.from(uniqueResources).map(async (resource) => {
+
+        log.verbose(`Trying to process resource: ${resource}`);
+        const content = await getResource(resource);
+        if (content) {
+            log.info(`Processing resource: ${resource}`);
+            const newResource = resourceFactory.createResource({
+                path: `/resources/${resource}`,
+                string: content
+            });
+            await workspace.write(newResource);
         }
 
     }));
