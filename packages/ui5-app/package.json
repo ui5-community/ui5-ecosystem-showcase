@@ -1,6 +1,6 @@
 {
   "name": "ui5-app",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "UI5 application using custom middlewares and tasks",
   "private": true,
   "author": "Volker Buzek, Peter Muessig",
@@ -36,7 +36,7 @@
     }
   },
   "dependencies": {
-    "ui5-app-module": "^0.1.0"
+    "ui5-app-module": "^0.1.1"
   },
   "devDependencies": {
     "@openui5/ts-types": "^1.99.0",
@@ -73,7 +73,7 @@
     "ui5-task-stringreplacer": "^0.6.1",
     "ui5-task-transpile": "^0.3.6",
     "ui5-task-zipper": "^0.4.9",
-    "ui5-tooling-modules": "^0.2.0",
+    "ui5-tooling-modules": "^0.2.1",
     "wait-on": "^6.0.1",
     "wdio-chromedriver-service": "^7.2.8",
     "wdio-ui5-service": "^0.8.2"
