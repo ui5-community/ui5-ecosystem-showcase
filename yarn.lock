@@ -11319,6 +11319,13 @@ rimraf@^2.5.4, rimraf@^2.6.2, rimraf@^2.6.3:
   dependencies:
     glob "^7.1.3"
 
+rollup-plugin-inject-process-env@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-inject-process-env/-/rollup-plugin-inject-process-env-1.3.1.tgz#2d7660fe76f2b221b976cb35597763ffcaad3db3"
+  integrity sha512-kKDoL30IZr0wxbNVJjq+OS92RJSKRbKV6B5eNW4q3mZTFqoWDh6lHy+mPDYuuGuERFNKXkG+AKxvYqC9+DRpKQ==
+  dependencies:
+    magic-string "^0.25.7"
+
 rollup-plugin-polyfill-node@^0.8.0:
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/rollup-plugin-polyfill-node/-/rollup-plugin-polyfill-node-0.8.0.tgz#859c070822f5e38d221e5b4238cb34aa894c2b19"

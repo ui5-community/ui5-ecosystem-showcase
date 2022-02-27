@@ -1,10 +1,13 @@
+const path = require("path");
+const { readFile } = require("fs").promises;
+
 const rollup = require("rollup");
 const { nodeResolve } = require("@rollup/plugin-node-resolve");
 const commonjs = require('@rollup/plugin-commonjs');
 const json = require('@rollup/plugin-json');
 const nodePolyfills = require('rollup-plugin-polyfill-node');
+const injectProcessEnv = require('rollup-plugin-inject-process-env');
 
-const { readFile } = require("fs").promises;
 const espree = require('espree');
 const estraverse = require('estraverse');
 
@@ -12,16 +15,41 @@ const estraverse = require('estraverse');
 // local bundle cache
 const bundleCache = {};
 
+/**
+ * Checks whether the given content is a UI5 module or not
+ *
+ * @param {string} content the content of a JS module
+ * @returns {boolean} true, if the JS module is a UI5 module
+ */
+function isUI5Module(content) {
+    const program = espree.parse(content, { range: true, comment: true, tokens: true, ecmaVersion: "latest" });
+    let isUI5Module = false;
+    estraverse.traverse(program, {
+        enter(node, parent) {
+            if (node?.type === "CallExpression" &&
+                /require|define/.test(node?.callee?.property?.name) &&
+                node?.callee?.object?.property?.name == "ui" &&
+                node?.callee?.object?.object?.name == "sap") {
+                    isUI5Module = true;
+            }
+        }
+    });
+    return isUI5Module;
+};
+
 module.exports = {
 
     /**
-     * Generates a UI5 AMD-like bundle for a module out of the node_modules
+     * Lookup and returns a resource from the node_modules. In case
+     * of JS modules an UI5 AMD-like bundle is being created. For
+     * UI5 modules or any other asset, just the content is being
+     * returned.
      *
      * @param {string} moduleName the module name
      * @param {boolean} skipCache skip the module cache
-     * @returns the content of the bundle or undefined
+     * @returns the content of the resource or undefined
      */
-    generateBundle: async function generateBundle(moduleName, skipCache) {
+    getResource: async function getResource(moduleName, skipCache) {
 
         let bundling = false;
 
@@ -29,6 +57,7 @@ module.exports = {
 
             // try to resolve the module name from node modules (bare module)
             const modulePath = require.resolve(moduleName);
+            const moduleExt = path.extname(modulePath).toLowerCase();
             // DEBUG: when linking the middleware, you need to use custom paths
             /*
             const modulePath = require.resolve(moduleName, {
@@ -41,38 +70,29 @@ module.exports = {
             let cachedBundle = bundleCache[moduleName];
             if (skipCache || !cachedBundle) {
 
-                bundling = true;
-
                 // is the bundle a UI5 module?
                 const moduleContent = await readFile(modulePath, { encoding: "utf8" });
-                const program = espree.parse(moduleContent, { range: true, comment: true, tokens: true, ecmaVersion: "latest" });
-                let isUI5Module = false;
-                estraverse.traverse(program, {
-                    enter(node, parent) {
-                        if (node?.type === "CallExpression" &&
-                            /require|define/.test(node?.callee?.property?.name) &&
-                            node?.callee?.object?.property?.name == "ui" &&
-                            node?.callee?.object?.object?.name == "sap") {
-                                isUI5Module = true;
-                        }
-                    }
-                });
 
                 // only transform non-UI5 modules
-                if (!isUI5Module) {
+                if (moduleExt === ".js" && !isUI5Module(moduleContent)) {
+
+                    bundling = true;
 
                     // create a bundle (maybe in future we should again load the )
                     const bundle = await rollup.rollup({
                         input: moduleName,
                         plugins: [
-                            //typescript(),
                             nodePolyfills(),
                             nodeResolve({
                                 browser: true,
                                 mainFields: ["module", "main"]
                             }),
                             json(),
-                            commonjs()
+                            require("./rollup-skip-assets")(),
+                            commonjs(),
+                            injectProcessEnv({
+                                NODE_ENV: "production"
+                            })
                         ]
                     });
 
