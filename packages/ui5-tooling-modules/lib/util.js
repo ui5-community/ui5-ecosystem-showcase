@@ -89,7 +89,9 @@ module.exports = {
                             }),
                             json(),
                             require("./rollup-skip-assets")(),
-                            commonjs(),
+                            commonjs({
+                                defaultIsModuleExports: true
+                            }),
                             injectProcessEnv({
                                 NODE_ENV: "production"
                             })
