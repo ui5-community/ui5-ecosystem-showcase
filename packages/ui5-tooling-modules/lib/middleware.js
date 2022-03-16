@@ -1,6 +1,7 @@
 const log = require("@ui5/logger").getLogger("server:custommiddleware:ui5-tooling-modules");
 
-const { generateBundle } = require("./util");
+const path = require("path");
+const { getResource } = require("./util");
 
 /**
  * Custom middleware to create the UI5 AMD-like bundles for used ES imports from node_modules.
@@ -16,7 +17,8 @@ const { generateBundle } = require("./util");
  * @param {object} parameters.middlewareUtil Specification version dependent interface to a
  *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
  * @param {object} parameters.options Options
- * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
+ * @param {object} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
+ * @param {boolean} [parameters.options.configuration.skipCache] Flag whether the module cache for the bundles should be skipped
  * @returns {function} Middleware function to use
  */
 module.exports = function ({
@@ -24,42 +26,58 @@ module.exports = function ({
 }) {
 
     const config = options.configuration || {}
+    log.verbose(`Starting ui5-tooling-modules-middleware`);
 
+    // return the middleware
     return async (req, res, next) => {
 
+        // determine the request path
+        const reqPath = middlewareUtil.getPathname(req);
+
+        // perf
         const time = Date.now();
 
-        const match = /^\/resources\/(.*)\.js$/.exec(req.path);
+        // check for resources requests
+        const match = /^\/resources\/(.*)$/.exec(reqPath);
         if (match) {
 
-            const bundle = await generateBundle(match[1]);
-            if (bundle) {
+            // determine the module name (for JS resources we strip the extension)
+            let moduleName = match[1];
+            const ext = path.extname(moduleName);
+            if (ext === ".js") {
+                moduleName = moduleName.substring(0, moduleName.length - 3);
+            }
+
+            // try to resolve the resource from node_modules
+            const resource = await getResource(moduleName, config.skipCache);
+            if (resource) {
                 try {
+
+                    log.verbose(`Processing resource ${moduleName}...`);
 
                     // determine charset and content-type
                     let {
                         contentType,
                         charset
-                    } = middlewareUtil.getMimeInfo(req.path);
+                    } = middlewareUtil.getMimeInfo(reqPath);
                     res.setHeader("Content-Type", contentType);
-    
-                    res.send(bundle);
-    
-                    res.end();
-    
-                    log.verbose(`Created bundle for ${req.path}`);
-    
-                    log.info(`Bundling took ${(Date.now() - time)} millis`);
-    
+
+                    // respond the content
+                    res.end(resource);
+
+                    log.verbose(`Processing resource ${moduleName} took ${(Date.now() - time)} millis`);
+
+                    // resource processed, stop the forwarding to next middleware
                     return;
-    
+
                 } catch (err) {
-                    log.error(`Couldn't write bundle ${match[1]}: ${err}`);
+                    log.error(`Couldn't process resource ${moduleName}: ${err}`);
                 }
             }
 
         }
 
+        // forward to the next middlware
         next();
 
     }

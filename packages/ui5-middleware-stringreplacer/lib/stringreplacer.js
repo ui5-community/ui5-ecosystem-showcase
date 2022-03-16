@@ -113,8 +113,8 @@ module.exports = function createMiddleware({ resources, options, middlewareUtil 
       return;
     }
 
-    if (handleRequest(req.path)) {
-      //isDebug && log.info(`handling ${req.path}`);
+    if (handleRequest(pathname)) {
+      //isDebug && log.info(`handling ${pathname}`);
 
       // enable ETag caching
       res.setHeader("ETag", etag(resource.getStatInfo()));
@@ -138,7 +138,7 @@ module.exports = function createMiddleware({ resources, options, middlewareUtil 
         stream.setEncoding("utf8");
         stream = stream.pipe(createReplacePlaceholdersDestination({resource, isDebug}));
       } else {
-        isDebug && log.warn(`skipping placeholder replacement for non-UTF-8 resource ${req.path}`);
+        isDebug && log.warn(`skipping placeholder replacement for non-UTF-8 resource ${pathname}`);
       }
       stream.pipe(res);
 

@@ -145,10 +145,17 @@ module.exports = function ({ resources, options }) {
     https: protocol === "https",
     limit: limit,
     filter: excludePatterns && Array.isArray(excludePatterns) && function(req, res) {
-      return excludePatterns.some(glob => {
+      const pattern = !excludePatterns.some(glob => {
         isDebug && log.info(`Proxy request ${req.url} is matched to glob "${glob}": ${minimatch(req.url, glob)} ${providedBaseUri}`);
-        return !minimatch(req.url, glob);
+
+        return minimatch(req.url, glob);
       });
+      if (!pattern && req.url.includes("~") && (options.configuration && options.configuration.skipCache)) {
+        const newUrl = req.url.replaceAll(/\/~.*~.\//g, "/");
+        isDebug && log.info(`Removing cache from ${req.url}, resolving to ${newUrl}`);
+        req.url = newUrl;
+      }
+      return pattern;
     },
     preserveHostHdr: false,
     proxyReqOptDecorator: function (proxyReqOpts) {

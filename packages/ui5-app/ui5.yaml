@@ -4,7 +4,7 @@ metadata:
 type: application
 framework:
   name: OpenUI5
-  version: "1.95.0"
+  version: "1.99.0"
   libraries:
     - name: sap.m
     - name: sap.ui.core
@@ -19,6 +19,7 @@ builder:
       removeConsoleStatements: true
       transpileAsync: true
       excludePatterns:
+        - "resources/"
         - "lib/"
         - "test/"
   - name: ui5-task-stringreplacer
@@ -47,6 +48,8 @@ builder:
       - "another/dir/in/webapp"
       - "yet/another/dir"
   - name: ui5-task-i18ncheck
+    afterTask: replaceVersion
+  - name: ui5-tooling-modules-task
     afterTask: replaceVersion
   - name: ui5-task-zipper
     afterTask: uglify
@@ -152,6 +155,10 @@ server:
     configuration:
       debug: true
       jarRootPath: "META-INF/"
+  - name: ui5-tooling-modules-middleware
+    afterMiddleware: compression
+    configuration:
+      skipCache: true
   - name: ui5-middleware-livecompileless
     beforeMiddleware: serveResources
     configuration:

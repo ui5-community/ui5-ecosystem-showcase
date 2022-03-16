@@ -19,6 +19,7 @@ packages
 ├── ui5-middleware-livecompileless  // middleware extension: livecompiling of less files in the app folder
 ├── ui5-middleware-livereload       // middleware extension: usage of livereload for development
 ├── ui5-middleware-livetranspile    // middleware extension: on-demand es6 to es5 transpile when requesting js
+├── ui5-middleware-onelogin         // middleware extension: enable a generic login support
 ├── ui5-middleware-servestatic      // middleware extension: serve static resources
 ├── ui5-middleware-simpleproxy      // middleware extension: simple express proxy
 ├── ui5-middleware-stringreplacer   // middleware extension: replaces placeholder strings
@@ -30,7 +31,8 @@ packages
 ├── ui5-task-pwa-enabler            // task extension: enables ui5 app with pwa functionalities
 ├── ui5-task-stringreplacer         // task extension: replaces placeholder strings
 ├── ui5-task-transpile              // task extension: transpile es6 to es5 code
-└── ui5-task-zipper                 // task extension: bundle the entire webapp in a zip-archive
+├── ui5-task-zipper                 // task extension: bundle the entire webapp in a zip-archive
+└── ui5-tooling-modules             // tooling extensions: direct consumption of NPM packages in UI5 apps
 ```
 
 ## Getting Started
@@ -89,7 +91,6 @@ yarn dev # > start the local ui5 server tooling
 # in another terminal:
 # (uses Chrome)
 yarn test:wdi5 # > run e2e tests via wdi5 from /packages/ui5-app/webapp/test/e2e-wdi5/*
-yarn test:uiveri5 # > run e2e tests via UIveri5 from /packages/ui5-app/webapp/test/e2e/*
 
 # 6) Utilize CI for end-to-end tests
 # using Chrome headless
@@ -117,10 +118,15 @@ The middlewares developed in this monorepo are also publicly available on NPM ri
 * https://www.npmjs.com/package/ui5-middleware-livecompileless
 * https://www.npmjs.com/package/ui5-middleware-livereload
 * https://www.npmjs.com/package/ui5-middleware-livetranspile
+* https://www.npmjs.com/package/ui5-middleware-onelogin
 * https://www.npmjs.com/package/ui5-middleware-servestatic
 * https://www.npmjs.com/package/ui5-middleware-simpleproxy
 * https://www.npmjs.com/package/ui5-middleware-stringreplacer
 * https://www.npmjs.com/package/ui5-middleware-webjars
+
+The tooling extensions (contains tasks and middlewares) developed in this monorepo are available on NPM right here:
+
+* https://www.npmjs.com/package/ui5-tooling-modules
 
 The consumption of the individual tasks and middlewares can be seen inside their local `README.md`.
 
@@ -148,9 +154,16 @@ Available middlewares in this project:
 | [ui5-middleware-livereload](packages/ui5-middleware-livereload/README.md) | usage of livereload for development | [![npm version](https://badge.fury.io/js/ui5-middleware-livereload.svg)](https://badge.fury.io/js/ui5-middleware-livereload) |
 | [ui5-middleware-livetranspile](packages/ui5-middleware-livetranspile/README.md) | on-demand es6 to es5 transpile when requesting js | [![npm version](https://badge.fury.io/js/ui5-middleware-livetranspile.svg)](https://badge.fury.io/js/ui5-middleware-livetranspile) |
 | [ui5-middleware-servestatic](packages/ui5-middleware-servestatic/README.md) | serve static resources | [![npm version](https://badge.fury.io/js/ui5-middleware-servestatic.svg)](https://badge.fury.io/js/ui5-middleware-servestatic) |
+| [ui5-middleware-onelogin](packages/ui5-middleware-onelogin/README.md) | enable a generic login support | [![npm version](https://badge.fury.io/js/ui5-middleware-onelogin.svg)](https://badge.fury.io/js/ui5-middleware-onelogin) |
 | [ui5-middleware-simpleproxy](packages/ui5-middleware-simpleproxy/README.md) | simple express proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-simpleproxy.svg)](https://badge.fury.io/js/ui5-middleware-simpleproxy) |
 | [ui5-middleware-stringreplacer](packages/ui5-middleware-stringreplacer/README.md) | replaces placeholder strings | [![npm version](https://badge.fury.io/js/ui5-middleware-stringreplacer.svg)](https://badge.fury.io/js/ui5-middleware-stringreplacer) |
 | [ui5-middleware-webjars](packages/ui5-middleware-webjars/README.md) | deliver content from JAR files | [![npm version](https://badge.fury.io/js/ui5-middleware-webjars.svg)](https://badge.fury.io/js/ui5-middleware-webjars) |
+
+Available tooling extensions in this project:
+
+| NPM package | Description | Badge |
+| ----------- | ----------- | ----- |
+| [ui5-tooling-modules](packages/ui5-tooling-modules/README.md) | direct consumption of NPM packages | [![npm version](https://badge.fury.io/js/ui5-tooling-modules.svg)](https://badge.fury.io/js/ui5-tooling-modules) |
 
 ## License
 

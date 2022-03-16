@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-index@0.2.6...ui5-middleware-index@0.2.7) (2022-02-24)
+
+
+### Bug Fixes
+
+* ensure middlewares work with Karma connect middleware ([#584](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/584)) ([c0ae49f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c0ae49fbcf49c6f667c86bfca291beefe6b74f27))
+
+
+
+
+
 ## [0.2.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-index@0.2.5...ui5-middleware-index@0.2.6) (2021-10-29)
 
 **Note:** Version bump only for package ui5-middleware-index
