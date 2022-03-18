@@ -98,22 +98,26 @@ module.exports = async function ({
                 children.forEach(child => {
                     const nodeParts = /(?:([^:]*):)?(.*)/.exec(key);
                     if (nodeParts) {
-                        // only add those dependencies whose namespace is known
-                        let namespace = ns[nodeParts[1] || ""];
-                        if (namespace) {
-                            namespace = namespace.replaceAll(/\./g, "/");
-                            const dep = `${namespace}/${nodeParts[2]}`;
-                            uniqueDeps.add(dep);
-                            // each dependency which can be resolved via the NPM package name
-                            // should also be checked for its dependencies to finally handle them
-                            // here if they also require to be transpiled by the task
-                            try {
-                                const depPath = require.resolve(dep);
-                                const depContent = readFileSync(depPath, {encoding: "utf8"});
-                                findUniqueJSDeps(depContent);
-                            } catch (err) {}
+                        // skip #text nodes
+                        let module = nodeParts[2];
+                        if (module !== "#text") {
+                            // only add those dependencies whose namespace is known
+                            let namespace = ns[nodeParts[1] || ""];
+                            if (typeof (namespace) === "string") {
+                                namespace = namespace.replaceAll(/\./g, "/");
+                                const dep = `${namespace}/${module}`;
+                                uniqueDeps.add(dep);
+                                // each dependency which can be resolved via the NPM package name
+                                // should also be checked for its dependencies to finally handle them
+                                // here if they also require to be transpiled by the task
+                                try {
+                                    const depPath = require.resolve(dep);
+                                    const depContent = readFileSync(depPath, {encoding: "utf8"});
+                                    findUniqueJSDeps(depContent);
+                                } catch (err) {}
+                            }
+                            findUniqueXMLDeps(child, ns);
                         }
-                        findUniqueXMLDeps(child, ns);
                     }
                 });
             });
