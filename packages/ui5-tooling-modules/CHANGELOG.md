@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.2.2...ui5-tooling-modules@0.2.3) (2022-03-18)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** ignore #text nodes in XMLViews ([e884428](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e8844287e46a894d3b6ad9b65907782043b755ac))
+
+
+
+
+
 ## [0.2.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.2.1...ui5-tooling-modules@0.2.2) (2022-03-04)
 
 
