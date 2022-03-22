@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.8.2...ui5-middleware-cfdestination@0.8.3) (2022-02-24)
+
+
+### Bug Fixes
+
+* ensure middlewares work with Karma connect middleware ([#584](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/584)) ([c0ae49f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c0ae49fbcf49c6f667c86bfca291beefe6b74f27))
+
+
+
+
+
+## [0.8.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.8.1...ui5-middleware-cfdestination@0.8.2) (2022-02-22)
+
+**Note:** Version bump only for package ui5-middleware-cfdestination
+
+
+
+
+
+## [0.8.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.8.0...ui5-middleware-cfdestination@0.8.1) (2022-02-07)
+
+**Note:** Version bump only for package ui5-middleware-cfdestination
+
+
+
+
+
 # [0.8.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.7.3...ui5-middleware-cfdestination@0.8.0) (2021-12-26)
 
 

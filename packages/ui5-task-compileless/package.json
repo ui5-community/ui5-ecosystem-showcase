@@ -1,6 +1,6 @@
 {
   "name": "ui5-task-compileless",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "UI5 task for compiling less files",
   "author": "Sebastian Mahr, Marcel Schork",
   "license": "Apache-2.0",
@@ -12,7 +12,7 @@
   "dependencies": {
     "@ui5/logger": "^2.0.1",
     "less-openui5": "^0.11.2",
-    "minimatch": "^3.0.4"
+    "minimatch": "^5.0.0"
   },
   "ui5": {
     "dependencies": []

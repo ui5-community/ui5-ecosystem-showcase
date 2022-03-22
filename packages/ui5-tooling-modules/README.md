@@ -5,22 +5,22 @@
 The UI5 tooling extensions include a custom middleware and a custom task which allow to use NPM package names for AMD-like dependencies, e.g.:
 
 ```bash
-# Install a dev dependency to D3
-npm install d3 --save-dev
+# Install a dev dependency to Chart.js (https://www.chartjs.org/)
+npm install chart.js --save-dev
 ```
 
 ```js
-// use D3 as a AMD-like dependency
+// use Chart.js as a AMD-like dependency
 sap.ui.define([
-  "d3"
-], function(d3) {
+  "chart.js"
+], function(chartjs) {
   [...]
-  alert(d3.version);
+  alert(chartjs.version);
   [...]
 })
 ```
 
-Once the UI5 application is finally built, the D3 dependency will be copied into the `dist/resources` folder with the proper namespace. In case of D3 above, there is no namespace and thus the location will be `dist/resources/d3.js`.
+Once the UI5 application is finally built, the Chart.js dependency will be copied into the `dist/resources` folder with the proper namespace. In case of Chart.js above, there is no namespace and thus the location will be `dist/resources/chart.js.js`.
 
 ## Install
 
@@ -73,10 +73,10 @@ server:
   - name: ui5-tooling-modules-middleware
     afterMiddleware: compression
 ```
-
+> Hint: In case your application is using a proxy such `fiori-tools-proxy`, the proxy must run after `ui5-tooling-modules-middleware` middleware. Otherwise proxy will try to serve the resources for your installed npm package instead of `ui5-tooling-modules-middleware`. You can achieve this by setting `afterMiddleware: ui5-tooling-modules-middleware` in `fiori-tools-proxy` middleware.
 ## How it works
 
-The custom middleware is listening to incoming requests and checks those requests to match npm packages. E.g. a dependency to `d3` will cause a request to `resource/d3.js`. The middleware now derives the module name which is `"d3"` and uses `require.resolve("d3")` to lookup the npm package for it. If an npm package exists, the middleware is using `rollup` to create a custom AMD bundle for the npm package which uses `sap.ui.define` instead of `define`.
+The custom middleware is listening to incoming requests and checks those requests to match npm packages. E.g. a dependency to `chart.js` will cause a request to `resource/chart.js.js`. The middleware now derives the module name which is `"chart.js"` and uses `require.resolve("chart.js")` to lookup the npm package for it. If an npm package exists, the middleware is using `rollup` to create a custom AMD bundle for the npm package which uses `sap.ui.define` instead of `define`.
 
 The custom task is scanning all AMD dependencies of all modules and tries to resolve the module names. If a module has been found a custom bundle will be created in the proper namespace of the module, e.g. `@apollo/client/core` will create a custom bundle at `dist/resources/@apollo/client/core.js`.
 

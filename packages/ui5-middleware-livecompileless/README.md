@@ -40,7 +40,7 @@ npm install ui5-middleware-livecompileless --save-dev
 builder:
   customMiddleware:
     - name: ui5-middleware-livecompileless
-      afterTask: replaceVersion
+      beforeMiddleware: serveResources
       configuration:
         debug: true
 ```

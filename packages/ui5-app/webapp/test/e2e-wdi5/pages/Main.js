@@ -1,8 +1,8 @@
 const Page = require("./Page")
 
 class Main extends Page {
-    open() {
-        super.open("#/")
+    async open() {
+        await super.open("#/")
     }
 
     _viewName = "test.Sample.view.Main"
@@ -15,9 +15,9 @@ class Main extends Page {
         }
     }
 
-    iShouldSeeTheApp() {
+    async iShouldSeeTheApp() {
         return (
-            browser
+            (await browser
                 .asControl({
                     forceSelect: true,
                     selector: {
@@ -28,16 +28,16 @@ class Main extends Page {
                         }
                     }
                 })
-                .getText() === "#UI5 demo"
+                .getText()) === "#UI5 demo"
         )
     }
 
-    iPressTheNavButton() {
-        browser.asControl(this._navFwdButton).firePress()
+    async iPressTheNavButton() {
+        await browser.asControl(this._navFwdButton).firePress()
     }
 
-    iShouldSeeTheNavButton() {
-        return browser.asControl(this._navFwdButton).getText() === "to Other view"
+    async iShouldSeeTheNavButton() {
+        return (await browser.asControl(this._navFwdButton).getText()) === "to Other view"
     }
 }
 

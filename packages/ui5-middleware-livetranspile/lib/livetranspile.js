@@ -1,6 +1,5 @@
 const babel = require("@babel/core")
 const os = require("os")
-const parseurl = require("parseurl")
 const log = require("@ui5/logger").getLogger("server:custommiddleware:livetranspile")
 const merge = require("lodash.merge")
 
@@ -21,9 +20,11 @@ fileNotFoundError.file = ""
  *                                        the projects dependencies
  * @param {Object} parameters.options Options
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
+ * @param {object} parameters.middlewareUtil Specification version dependent interface to a
+ *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
  * @returns {function} Middleware function to use
  */
-module.exports = function ({ resources, options }) {
+module.exports = function ({ resources, options, middlewareUtil }) {
     const config = options.configuration || {}
     const plugins = config.transpileAsync
         ? [
@@ -53,20 +54,20 @@ module.exports = function ({ resources, options }) {
           }
     const filePatternConfig = config.filePattern || ".js"
     return (req, res, next) => {
+        const reqPath = middlewareUtil.getPathname(req)
         if (
-            req.path &&
-            req.path.endsWith(".js") &&
-            !req.path.includes("resources/") &&
-            !(config.excludePatterns || []).some((pattern) => req.path.includes(pattern))
+            reqPath &&
+            reqPath.endsWith(".js") &&
+            !reqPath.includes("resources/") &&
+            !(config.excludePatterns || []).some((pattern) => reqPath.includes(pattern))
         ) {
-            const pathname = parseurl(req).pathname
-            const pathWithPattern = pathname.replace(".js", filePatternConfig)
+            const pathWithPattern = reqPath.replace(".js", filePatternConfig)
 
             // grab the file via @ui5/fs.AbstractReader API
             return resources.rootProject
                 .byGlob(pathWithPattern)
                 .then((resources) => {
-                    config.debug && log.info(`handling ${req.path}...`)
+                    config.debug && log.info(`handling ${reqPath}...`)
 
                     if (!resources || !resources.length) {
                         fileNotFoundError.file = pathWithPattern
@@ -74,7 +75,7 @@ module.exports = function ({ resources, options }) {
                     }
 
                     // prefer js over other extensions, otherwise grab first possible path
-                    const resource = resources.find((r) => r.getPath() === pathname) || resources[0]
+                    const resource = resources.find((r) => r.getPath() === reqPath) || resources[0]
                     if (resources.length > 1) {
                         log.warn(
                             `found more than 1 file for given pattern (${filePatternConfig}): ${resources
@@ -88,9 +89,9 @@ module.exports = function ({ resources, options }) {
                     return resource.getString()
                 })
                 .then((source) => {
-                    config.debug ? log.info(`...${pathname} transpiled!`) : null
+                    config.debug ? log.info(`...${reqPath} transpiled!`) : null
                     const babelConfigForFile = merge({}, babelConfig, {
-                        filename: pathname // necessary for source map <-> source assoc
+                        filename: reqPath // necessary for source map <-> source assoc
                     })
                     return babel.transformAsync(source, babelConfigForFile)
                 })
