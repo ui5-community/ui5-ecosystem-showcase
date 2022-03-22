@@ -104,7 +104,7 @@ module.exports = async function ({
                             // only add those dependencies whose namespace is known
                             let namespace = ns[nodeParts[1] || ""];
                             if (typeof (namespace) === "string") {
-                                namespace = namespace.replaceAll(/\./g, "/");
+                                namespace = namespace.replace(/\./g, "/");
                                 const dep = `${namespace}/${module}`;
                                 uniqueDeps.add(dep);
                                 // each dependency which can be resolved via the NPM package name
