@@ -2,8 +2,9 @@ let proxy = require('express-http-proxy');
 const log = require("@ui5/logger").getLogger("server:custommiddleware:proxy");
 const minimatch = require("minimatch");
 const dotenv = require('dotenv');
+const findConfig = require("find-config");
 
-dotenv.config();
+dotenv.config({path: findConfig(".env")});
 
 const env = {
   baseUri: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI,
