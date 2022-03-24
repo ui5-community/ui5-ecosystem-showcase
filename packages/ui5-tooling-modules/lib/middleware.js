@@ -25,7 +25,7 @@ module.exports = function ({
     resources, options, middlewareUtil
 }) {
 
-    const config = options.configuration || {}
+    const config = options.configuration || {};
     log.verbose(`Starting ui5-tooling-modules-middleware`);
 
     // return the middleware
@@ -49,7 +49,7 @@ module.exports = function ({
             }
 
             // try to resolve the resource from node_modules
-            const resource = await getResource(moduleName, config.skipCache);
+            const resource = await getResource(moduleName, config);
             if (resource) {
                 try {
 

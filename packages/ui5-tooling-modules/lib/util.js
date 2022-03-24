@@ -22,19 +22,23 @@ const bundleCache = {};
  * @returns {boolean} true, if the JS module is a UI5 module
  */
 function isUI5Module(content) {
-    const program = espree.parse(content, { range: true, comment: true, tokens: true, ecmaVersion: "latest" });
-    let isUI5Module = false;
-    estraverse.traverse(program, {
-        enter(node, parent) {
-            if (node?.type === "CallExpression" &&
-                /require|define/.test(node?.callee?.property?.name) &&
-                node?.callee?.object?.property?.name == "ui" &&
-                node?.callee?.object?.object?.name == "sap") {
-                    isUI5Module = true;
+    try {
+        const program = espree.parse(content, { range: true, comment: true, tokens: true, ecmaVersion: "latest" });
+        let isUI5Module = false;
+        estraverse.traverse(program, {
+            enter(node, parent) {
+                if (node?.type === "CallExpression" &&
+                    /require|define/.test(node?.callee?.property?.name) &&
+                    node?.callee?.object?.property?.name == "ui" &&
+                    node?.callee?.object?.object?.name == "sap") {
+                        isUI5Module = true;
+                }
             }
-        }
-    });
-    return isUI5Module;
+        });
+        return isUI5Module;
+    } catch (err) {
+        return false;
+    }
 };
 
 module.exports = {
@@ -46,10 +50,11 @@ module.exports = {
      * returned.
      *
      * @param {string} moduleName the module name
-     * @param {boolean} skipCache skip the module cache
+     * @param {object} [options] additional options
+     * @param {boolean} [options.skipCache] skip the module cache
      * @returns the content of the resource or undefined
      */
-    getResource: async function getResource(moduleName, skipCache) {
+    getResource: async function getResource(moduleName, {skipCache}) {
 
         let bundling = false;
 
@@ -102,7 +107,7 @@ module.exports = {
                     // you can call this function multiple times on the same bundle object
                     const { output } = await bundle.generate({
                         output: {
-                            format: 'amd',
+                            format: "amd",
                             amd: {
                                 define: "sap.ui.define"
                             }
