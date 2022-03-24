@@ -36,6 +36,8 @@ module.exports = async function ({
         return;
     }
 
+    const config = options.configuration || {};
+
     // collector for unique dependencies and resources
     const uniqueDeps = new Set();
     const uniqueResources = new Set();
@@ -168,7 +170,7 @@ module.exports = async function ({
     await Promise.all(Array.from(uniqueDeps).map(async (dep) => {
 
         log.verbose(`Trying to process dependency: ${dep}`);
-        const bundle = await getResource(dep);
+        const bundle = await getResource(dep, config);
         if (bundle) {
             log.info(`Processing dependency: ${dep}`);
             const bundleResource = resourceFactory.createResource({
@@ -184,7 +186,7 @@ module.exports = async function ({
     await Promise.all(Array.from(uniqueResources).map(async (resource) => {
 
         log.verbose(`Trying to process resource: ${resource}`);
-        const content = await getResource(resource);
+        const content = await getResource(resource, config);
         if (content) {
             log.info(`Processing resource: ${resource}`);
             const newResource = resourceFactory.createResource({
