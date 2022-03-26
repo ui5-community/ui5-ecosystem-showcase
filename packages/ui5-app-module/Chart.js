@@ -1,6 +1,6 @@
 sap.ui.define(["sap/ui/core/Control", "chart.js/auto", "sap/ui/dom/includeStylesheet"], function(Control, Chart, includeStylesheet) {
 
-    return Control.extend("ui5-app-module.Chart", {
+    return Control.extend("ui5.cc.chart.Chart", {
         metadata: {
             properties: {
                 "title": "string",
@@ -8,7 +8,7 @@ sap.ui.define(["sap/ui/core/Control", "chart.js/auto", "sap/ui/dom/includeStyles
             },
             aggregations: {
                 "records": {
-                    type: "ui5-app-module.ChartRecord"
+                    type: "ui5.cc.chart.ChartRecord"
                 }
             },
             defaultAggregation: "records"

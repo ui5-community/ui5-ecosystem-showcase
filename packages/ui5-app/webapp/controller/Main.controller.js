@@ -1,7 +1,7 @@
 sap.ui.define([
     "test/Sample/controller/BaseController",
     "sap/m/MessageToast"
-], (Controller, MessageToast, Chart) => {
+], (Controller, MessageToast) => {
     "use strict";
 
     return Controller.extend("test.Sample.controller.Main", {

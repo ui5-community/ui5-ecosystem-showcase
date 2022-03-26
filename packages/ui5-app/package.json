@@ -97,7 +97,8 @@
       "ui5-task-stringreplacer",
       "ui5-task-transpile",
       "ui5-task-zipper",
-      "ui5-tooling-modules"
+      "ui5-tooling-modules",
+      "ui5-app-module"
     ]
   }
 }
