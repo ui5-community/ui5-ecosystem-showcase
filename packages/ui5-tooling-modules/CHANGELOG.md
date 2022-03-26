@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.2.4...ui5-tooling-modules@0.2.5) (2022-03-26)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** usage of replaceAll produces error while building ([#591](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/591)) ([f07c0a5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f07c0a5ff08963a232c873bd195ecda949cf9719))
+
+
+
+
+
 ## [0.2.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.2.3...ui5-tooling-modules@0.2.4) (2022-03-24)
 
 
