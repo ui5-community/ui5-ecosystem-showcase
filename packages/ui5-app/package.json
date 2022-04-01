@@ -76,7 +76,8 @@
     "ui5-tooling-modules": "^0.2.5",
     "wait-on": "^6.0.1",
     "wdio-chromedriver-service": "^7.2.8",
-    "wdio-ui5-service": "^0.8.2"
+    "wdio-ui5-service": "^0.8.2",
+    "ui5-cc-md": "^0.0.4"
   },
   "ui5": {
     "dependencies": [
@@ -97,7 +98,8 @@
       "ui5-task-stringreplacer",
       "ui5-task-transpile",
       "ui5-task-zipper",
-      "ui5-tooling-modules"
+      "ui5-tooling-modules",
+      "ui5-cc-md"
     ]
   }
 }

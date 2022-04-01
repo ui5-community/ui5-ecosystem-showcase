@@ -2,6 +2,7 @@
 	xmlns:core="sap.ui.core"
 	xmlns:mvc="sap.ui.core.mvc"
 	xmlns:am="ui5-app-module"
+    xmlns:md="cc.md"
 	displayBlock="true"
 	xmlns="sap.m">
 
@@ -62,6 +63,7 @@
 					<am:ChartRecord label="Day 4" value="150"></am:ChartRecord>
 					<am:ChartRecord label="Day 5" value="125"></am:ChartRecord>
 				</am:Chart>
+                <md:Markdown content="I'm the custom control [ui5-cc-mdç](https://www.npmjs.com/package/ui5-cc-md) published on **npm** and included via my `namespace`" />
 			</VBox>
 		</content>
 	</Page>

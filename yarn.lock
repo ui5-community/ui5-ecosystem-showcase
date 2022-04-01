@@ -8855,6 +8855,11 @@ markdown-it@^12.3.2:
     mdurl "^1.0.1"
     uc.micro "^1.0.5"
 
+marked@^2.0.0:
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-2.1.3.tgz#bd017cef6431724fd4b27e0657f5ceb14bff3753"
+  integrity sha512-/Q+7MGzaETqifOMWYEA7HVMaZb4XbcRfaOzcSsHZEith83KGlvaSG33u0SKu89Mj5h+T8V2hM+8O45Qc5XTgwA==
+
 marked@^4.0.10:
   version "4.0.12"
   resolved "https://registry.yarnpkg.com/marked/-/marked-4.0.12.tgz#2262a4e6fd1afd2f13557726238b69a48b982f7d"
@@ -12677,6 +12682,13 @@ uglify-js@^3.1.4:
   version "3.15.1"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.15.1.tgz#9403dc6fa5695a6172a91bc983ea39f0f7c9086d"
   integrity sha512-FAGKF12fWdkpvNJZENacOH0e/83eG6JyVQyanIJaBXCN1J11TUQv1T1/z8S+Z0CG0ZPk1nPcreF/c7lrTd0TEQ==
+
+ui5-cc-md@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/ui5-cc-md/-/ui5-cc-md-0.0.4.tgz#53da46a52e475c836c87c3155a16df35bac3c86f"
+  integrity sha512-gZ6EU8n2smq1WYg1iNIywtX80ug5M6M63bjehX00GnL8SlyEU4JHTTeqQ9vHXgh1coGmhxsKeOxWSF5ST6tubQ==
+  dependencies:
+    marked "^2.0.0"
 
 uid-number@0.0.6:
   version "0.0.6"
