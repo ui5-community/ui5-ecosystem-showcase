@@ -79,7 +79,7 @@ module.exports = {
                 const moduleContent = await readFile(modulePath, { encoding: "utf8" });
 
                 // only transform non-UI5 modules
-                if (moduleExt === ".js" && !isUI5Module(moduleContent)) {
+                if (( moduleExt === ".js" || moduleExt === ".cjs" ) && !isUI5Module(moduleContent)) {
 
                     bundling = true;
 
