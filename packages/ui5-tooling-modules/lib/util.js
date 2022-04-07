@@ -87,7 +87,6 @@ module.exports = {
                     const bundle = await rollup.rollup({
                         input: moduleName,
                         plugins: [
-                            nodePolyfills(),
                             nodeResolve({
                                 browser: true,
                                 mainFields: ["module", "main"]
@@ -97,6 +96,7 @@ module.exports = {
                             commonjs({
                                 defaultIsModuleExports: true
                             }),
+                            nodePolyfills(),
                             injectProcessEnv({
                                 NODE_ENV: "production"
                             })
