@@ -23,8 +23,8 @@ Currently you can define the properties in the configuration (see below) or the 
 - path: `string` the url to the fiori launchpad or just hostname and port of the SAP system, /sap/bc/ui2/flp will then be automatically added
 - username`(optional)`: `string` Username to be used to login to the launchpad
 - password`(optional)`: `string`Password used to login
-  useCertificate`(optional)`: `boolean` use a certificate to login instead of username and password
-  debug`(optional)`: `boolean` true will open up the playwright browser so you can see what's going on
+- useCertificate`(optional)`: `boolean` use a certificate to login instead of username and password
+- debug`(optional)`: `boolean` true will open up the playwright browser so you can see what's going on
 
 **NB:** If you choose to use the certificate login then check the property AutoSelectCertificateForUrls in chrome://policy if it holds the url pattern for your system. [Playwright](https://github.com/microsoft/playwright/issues/1799) has an issue to handle the certificate prompt. Another workaround is to set debug and useCertificate to true in the configuration and press ok when the prompt opens
 
