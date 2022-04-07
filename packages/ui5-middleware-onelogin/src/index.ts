@@ -37,13 +37,21 @@ module.exports = function ({ options }: {options: Options}) {
   // eslint-disable-next-line func-names
   return async function (req: any, res: any, next: any) {
     let cookies = [];
-    if (!process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL) {
+    if (!process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL && !process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI && !options.configuration.path) {
+      log.error('No login url provided');
       next();
+      return;
     } else if (!cookie) {
       log.info('Fetching cookie, hang on!');
-      const cookieObj = await new cookieGetter().getCookie(options);
-      cookies = JSON.parse(cookieObj);
-      cookie = cookieObj;
+      try {
+        const cookieObj = await new cookieGetter().getCookie(options);
+        cookies = JSON.parse(cookieObj);
+        cookie = cookieObj;
+      } catch (error) {
+        log.error('Could not get cookie');
+        return
+      }
+
     } else {
       cookies = JSON.parse(cookie);
     }

@@ -20,17 +20,26 @@ npm install ui5-middleware-onelogin --save-dev
 
 Currently you can define the properties in the configuration (see below) or the following environment variables are used.
 
+- path: `string` the url to the fiori launchpad or just hostname and port of the SAP system, /sap/bc/ui2/flp will then be automatically added
+- username`(optional)`: `string` Username to be used to login to the launchpad
+- password`(optional)`: `string`Password used to login
+  useCertificate`(optional)`: `boolean` use a certificate to login instead of username and password
+  debug`(optional)`: `boolean` true will open up the playwright browser so you can see what's going on
+
+**NB:** If you choose to use the certificate login then check the property AutoSelectCertificateForUrls in chrome://policy if it holds the url pattern for your system. [Playwright](https://github.com/microsoft/playwright/issues/1799) has an issue to handle the certificate prompt. Another workaround is to set debug and useCertificate to true in the configuration and press ok when the prompt opens
+
 You can either add the following properties to your .env file, remember to add that to your .gitignore
 
-- UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL
+- UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL or UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI
 - UI5_MIDDLEWARE_ONELOGIN_USERNAME
 - UI5_MIDDLEWARE_ONELOGIN_PASSWORD
 
 Use of environment variables or values set in a `.env` file will be used.
 
-Other options is to either set it in the yaml file or if left blank it will prompt you for the details. 
+Other options is to either set it in the yaml file or if left blank it will prompt you for the details.
 
-You can choose to just add the url and let the rest be prompts.
+You can choose to just add the url and let the rest be prompted in the terminal
+![Login prompt](./assets/prompt.png)
 
 ## Usage
 
@@ -64,6 +73,7 @@ server:
         path: <Login URL>
         username: <Login User>
         password: <Login Password>
+        useCertificate: true / false (use a certificate to login instead of username and password)
         debug: true / false (true will open up the playwright browser so you can see what's going on)
 ```
 

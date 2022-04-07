@@ -48,14 +48,22 @@ module.exports = function ({ options }) {
     return function (req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             let cookies = [];
-            if (!process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL) {
+            if (!process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL && !process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI && !options.configuration.path) {
+                log.error('No login url provided');
                 next();
+                return;
             }
             else if (!cookie) {
                 log.info('Fetching cookie, hang on!');
-                const cookieObj = yield new cookieGetter_1.default().getCookie(options);
-                cookies = JSON.parse(cookieObj);
-                cookie = cookieObj;
+                try {
+                    const cookieObj = yield new cookieGetter_1.default().getCookie(options);
+                    cookies = JSON.parse(cookieObj);
+                    cookie = cookieObj;
+                }
+                catch (error) {
+                    log.error('Could not get cookie');
+                    return;
+                }
             }
             else {
                 cookies = JSON.parse(cookie);
