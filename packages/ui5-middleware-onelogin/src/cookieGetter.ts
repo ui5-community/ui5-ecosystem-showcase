@@ -9,20 +9,22 @@ interface Attributes {
   username: string,
   password: string
 }
+
+interface PlaywrightOpt {
+  headless: boolean,
+  args: string[],
+  channel?: 'chrome'
+}
 export default class CookieGetter {
   async getCookie(options: Options): Promise<string> {
     let attr : Attributes = {
-      url: (options.configuration && options.configuration.path) ? options.configuration.path : process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL!,
+      url: (options.configuration && options.configuration.path) ? options.configuration.path : (process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL) ? process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL : process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI!,
       username: (options.configuration && options.configuration.username) ? options.configuration.username : process.env.UI5_MIDDLEWARE_ONELOGIN_USERNAME!,
       password: (options.configuration && options.configuration.password) ? options.configuration.password : process.env.UI5_MIDDLEWARE_ONELOGIN_PASSWORD!,
     }
 
-    if (!attr.url || !attr.username || !attr.password) {
+    if ((!attr.username || !attr.password) && !options.configuration.useCertificate) {
       log.warn("No credentials provided. Please answer the following prompts");
-
-      if (!attr.url){
-        attr.url = await prompt('Url for the Fiori Launchpad: ')
-      }
       if (!attr.username){
         attr.username = await prompt('Username: ')
 
@@ -31,15 +33,27 @@ export default class CookieGetter {
         attr.password = await prompt.password('Password: ')
       }
     }
-    const browser = await chromium.launch({
+
+    if ((attr.url.match(new RegExp("/", "g")) || []).length === 2 || attr.url.lastIndexOf("/") === attr.url.length - 1) {
+      attr.url = `${(attr.url.lastIndexOf("/") === attr.url.length - 1) ? attr.url  : attr.url + "/"}sap/bc/ui2/flp`
+
+    }
+
+    const playwrightOpt : PlaywrightOpt = {
       headless: (options) ? !options.configuration.debug : true,
-      args: ['--disable-dev-shm-usage']
-    });
+      args: ['--disable-dev-shm-usage'],
+      channel : 'chrome'
+    }
+
+    try {
+    const browser = await chromium.launch(playwrightOpt);
     const context = await browser.newContext({ ignoreHTTPSErrors: true });
 
     const page = await context.newPage();
+    if (!options.configuration.useCertificate) {
 
     await page.goto(attr.url, { waitUntil: 'domcontentloaded' });
+
     let elem;
     try{
        elem = await Promise.race([
@@ -104,9 +118,19 @@ export default class CookieGetter {
     } catch (oError) {
       //This error is fine, it's not locating the No button specifically for Azure
     }
+  } else {
+    await page.goto(attr.url, { waitUntil: 'networkidle' });
+
+  }
+
+
 
     const cookies = await context.cookies();
     browser.close();
     return JSON.stringify(cookies);
+  } catch (oError) {
+    log.error(oError);
+    throw oError;
+  }
   }
 }
