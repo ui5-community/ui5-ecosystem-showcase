@@ -24,5 +24,14 @@
   },
   "ui5": {
     "dependencies": []
+  },
+  "ui5-community": {
+    "types": [
+      "middleware",
+      "task"
+    ],
+    "tags": [
+      "tooling"
+    ]
   }
 }
