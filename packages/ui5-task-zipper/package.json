@@ -32,5 +32,13 @@
   },
   "ui5": {
     "dependencies": []
+  },
+  "ui5-community": {
+    "types": [
+      "task"
+    ],
+    "tags": [
+      "zip"
+    ]
   }
 }

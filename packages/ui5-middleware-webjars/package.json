@@ -16,5 +16,13 @@
   },
   "ui5": {
     "dependencies": []
+  },
+  "ui5-community": {
+    "types": [
+      "middleware"
+    ],
+    "tags": [
+      "webjars"
+    ]
   }
 }
