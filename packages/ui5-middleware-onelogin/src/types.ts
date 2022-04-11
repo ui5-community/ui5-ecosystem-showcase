@@ -3,6 +3,7 @@ export interface Options {
         path?: string
         username?: string,
         password?: string,
+        useCertificate: boolean,
         debug?: boolean
     }
 }
