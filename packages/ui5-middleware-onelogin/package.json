@@ -3,6 +3,7 @@
   "version": "1.2.2",
   "description": "A universal login provider for UI5 tooling",
   "author": "Jakob Kjaer",
+  "main": "lib/index.js",
   "license": "Apache-2.0",
   "scripts": {
     "test": "npx playwright test"

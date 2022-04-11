@@ -1,19 +1,28 @@
 import { serialize } from 'cookie';
 import dotenv from 'dotenv';
 import cookieGetter from './cookieGetter';
-import {Options} from "./types";
+import { Options } from './types';
 const log = require('@ui5/logger').getLogger('server:custommiddleware:onelogin');
 dotenv.config();
 
-var cookie: string
+var cookie: string;
 
 //First time to make sure we only output the parsed cookie once
-var firstTime: boolean = true
+var firstTime: boolean = true;
 
 // interface cookieFace {
 // name: string,
 // key: string
 // }
+
+/**
+ * @typedef {Object} [configuration] configuration
+ * @property {string} path - The path to use
+ * @property {string} [username] the username
+ * @property {string} [password] the password
+ * @property {boolean} [useCertificate] use certificate login instead of username/password
+ * @property {boolean} [debug] see output
+ */
 /**
  * Custom UI5 Server middleware example
  *
@@ -33,11 +42,15 @@ var firstTime: boolean = true
  *                                                      if given in ui5.yaml
  * @returns {function} Middleware function to use
  */
-module.exports = function ({ options }: {options: Options}) {
+module.exports = function ({ options }: { options: Options }) {
   // eslint-disable-next-line func-names
   return async function (req: any, res: any, next: any) {
     let cookies = [];
-    if (!process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL && !process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI && !options.configuration.path) {
+    if (
+      !process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL &&
+      !process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI &&
+      !options.configuration.path
+    ) {
       log.error('No login url provided');
       next();
       return;
@@ -49,9 +62,8 @@ module.exports = function ({ options }: {options: Options}) {
         cookie = cookieObj;
       } catch (error) {
         log.error('Could not get cookie');
-        return
+        return;
       }
-
     } else {
       cookies = JSON.parse(cookie);
     }
