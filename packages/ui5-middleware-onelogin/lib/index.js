@@ -25,6 +25,14 @@ var firstTime = true;
 // key: string
 // }
 /**
+ * @typedef {Object} [configuration] configuration
+ * @property {string} path - The path to use
+ * @property {string} [username] the username
+ * @property {string} [password] the password
+ * @property {boolean} [useCertificate] use certificate login instead of username/password
+ * @property {boolean} [debug] see output
+ */
+/**
  * Custom UI5 Server middleware example
  *
  * @param {Object} parameters Parameters
@@ -48,7 +56,9 @@ module.exports = function ({ options }) {
     return function (req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             let cookies = [];
-            if (!process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL && !process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI && !options.configuration.path) {
+            if (!process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL &&
+                !process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI &&
+                !options.configuration.path) {
                 log.error('No login url provided');
                 next();
                 return;
