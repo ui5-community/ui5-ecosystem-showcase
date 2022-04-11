@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-pwa-enabler@0.2.8...ui5-task-pwa-enabler@0.2.9) (2022-04-11)
+
+**Note:** Version bump only for package ui5-task-pwa-enabler
+
+
+
+
+
 ## [0.2.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-pwa-enabler@0.2.7...ui5-task-pwa-enabler@0.2.8) (2022-02-22)
 
 **Note:** Version bump only for package ui5-task-pwa-enabler
