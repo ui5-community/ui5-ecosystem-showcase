@@ -12,13 +12,16 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 
 # Change these settings to your own preference
-indent_style = space
+indent_style = tab
 
 [*.md]
 trim_trailing_whitespace = false
+indent_style = space
 
 [{package.json}]
 indent_size = 2
+indent_style = space
 
 [{ui5.yaml}]
 indent_size = 2
+indent_style = space
