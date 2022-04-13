@@ -18,10 +18,10 @@ indent_style = tab
 trim_trailing_whitespace = false
 indent_style = space
 
-[{package.json}]
+[*.json]
 indent_size = 2
 indent_style = space
 
-[{ui5.yaml}]
+[ui5*.yaml]
 indent_size = 2
 indent_style = space
