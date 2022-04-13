@@ -1,0 +1,16 @@
+{
+	"singleQuote": false,
+	"printWidth": 200,
+	"endOfLine": "lf",
+	"tabWidth": 4,
+	"useTabs": true,
+	"overrides": [
+		{
+			"files": ["*.yaml", "*.md", "*.json", "*.xml"],
+			"options": {
+				"useTabs": false,
+				"tabWidth": 2
+			}
+		}
+	]
+}
