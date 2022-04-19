@@ -61,8 +61,8 @@ The configuration for the custom task:
 ```yaml
 builder:
   customTasks:
-  - name: ui5-tooling-modules-task
-    afterTask: replaceVersion
+    - name: ui5-tooling-modules-task
+      afterTask: replaceVersion
 ```
 
 The configuration for the custom middleware:
@@ -70,10 +70,12 @@ The configuration for the custom middleware:
 ```yaml
 server:
   customMiddleware:
-  - name: ui5-tooling-modules-middleware
-    afterMiddleware: compression
+    - name: ui5-tooling-modules-middleware
+      afterMiddleware: compression
 ```
+
 > Hint: In case your application is using a proxy such `fiori-tools-proxy`, the proxy must run after `ui5-tooling-modules-middleware` middleware. Otherwise proxy will try to serve the resources for your installed npm package instead of `ui5-tooling-modules-middleware`. You can achieve this by setting `afterMiddleware: ui5-tooling-modules-middleware` in `fiori-tools-proxy` middleware.
+
 ## How it works
 
 The custom middleware is listening to incoming requests and checks those requests to match npm packages. E.g. a dependency to `chart.js` will cause a request to `resource/chart.js.js`. The middleware now derives the module name which is `"chart.js"` and uses `require.resolve("chart.js")` to lookup the npm package for it. If an npm package exists, the middleware is using `rollup` to create a custom AMD bundle for the npm package which uses `sap.ui.define` instead of `define`.
