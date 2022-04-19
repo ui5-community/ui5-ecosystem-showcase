@@ -117,9 +117,11 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 									// each dependency which can be resolved via the NPM package name
 									// should also be checked for its dependencies to finally handle them
 									// here if they also require to be transpiled by the task
-									const depPath = require.resolve(dep);
-									const depContent = readFileSync(depPath, { encoding: "utf8" });
-									findUniqueJSDeps(depContent, depPath);
+									try {
+										const depPath = require.resolve(dep);
+										const depContent = readFileSync(depPath, { encoding: "utf8" });
+										findUniqueJSDeps(depContent, depPath);
+									} catch (ex) {}
 								}
 								findUniqueXMLDeps(child, ns);
 							}
