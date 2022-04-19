@@ -21,65 +21,52 @@ const { getResource } = require("./util");
  * @param {boolean} [parameters.options.configuration.skipCache] Flag whether the module cache for the bundles should be skipped
  * @returns {function} Middleware function to use
  */
-module.exports = function ({
-    resources, options, middlewareUtil
-}) {
+module.exports = function ({ resources, options, middlewareUtil }) {
+	const config = options.configuration || {};
+	log.verbose(`Starting ui5-tooling-modules-middleware`);
 
-    const config = options.configuration || {};
-    log.verbose(`Starting ui5-tooling-modules-middleware`);
+	// return the middleware
+	return async (req, res, next) => {
+		// determine the request path
+		const reqPath = middlewareUtil.getPathname(req);
 
-    // return the middleware
-    return async (req, res, next) => {
+		// perf
+		const time = Date.now();
 
-        // determine the request path
-        const reqPath = middlewareUtil.getPathname(req);
+		// check for resources requests
+		const match = /^\/resources\/(.*)$/.exec(reqPath);
+		if (match) {
+			// determine the module name (for JS resources we strip the extension)
+			let moduleName = match[1];
+			const ext = path.extname(moduleName);
+			if (ext === ".js") {
+				moduleName = moduleName.substring(0, moduleName.length - 3);
+			}
 
-        // perf
-        const time = Date.now();
+			// try to resolve the resource from node_modules
+			const resource = await getResource(moduleName, config);
+			if (resource) {
+				try {
+					log.verbose(`Processing resource ${moduleName}...`);
 
-        // check for resources requests
-        const match = /^\/resources\/(.*)$/.exec(reqPath);
-        if (match) {
+					// determine charset and content-type
+					let { contentType, charset } = middlewareUtil.getMimeInfo(reqPath);
+					res.setHeader("Content-Type", contentType);
 
-            // determine the module name (for JS resources we strip the extension)
-            let moduleName = match[1];
-            const ext = path.extname(moduleName);
-            if (ext === ".js") {
-                moduleName = moduleName.substring(0, moduleName.length - 3);
-            }
+					// respond the content
+					res.end(resource);
 
-            // try to resolve the resource from node_modules
-            const resource = await getResource(moduleName, config);
-            if (resource) {
-                try {
+					log.verbose(`Processing resource ${moduleName} took ${Date.now() - time} millis`);
 
-                    log.verbose(`Processing resource ${moduleName}...`);
+					// resource processed, stop the forwarding to next middleware
+					return;
+				} catch (err) {
+					log.error(`Couldn't process resource ${moduleName}: ${err}`);
+				}
+			}
+		}
 
-                    // determine charset and content-type
-                    let {
-                        contentType,
-                        charset
-                    } = middlewareUtil.getMimeInfo(reqPath);
-                    res.setHeader("Content-Type", contentType);
-
-                    // respond the content
-                    res.end(resource);
-
-                    log.verbose(`Processing resource ${moduleName} took ${(Date.now() - time)} millis`);
-
-                    // resource processed, stop the forwarding to next middleware
-                    return;
-
-                } catch (err) {
-                    log.error(`Couldn't process resource ${moduleName}: ${err}`);
-                }
-            }
-
-        }
-
-        // forward to the next middlware
-        next();
-
-    }
-
-}
+		// forward to the next middlware
+		next();
+	};
+};

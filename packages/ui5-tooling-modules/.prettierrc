@@ -4,6 +4,7 @@
 	"endOfLine": "lf",
 	"tabWidth": 4,
 	"useTabs": true,
+	"proseWrap": "preserve",
 	"overrides": [
 		{
 			"files": ["*.yaml", "*.md", "*.json", "*.xml"],
