@@ -1,6 +1,6 @@
 {
   "name": "ui5-task-compileless",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "UI5 task for compiling less files",
   "author": "Sebastian Mahr, Marcel Schork",
   "license": "Apache-2.0",

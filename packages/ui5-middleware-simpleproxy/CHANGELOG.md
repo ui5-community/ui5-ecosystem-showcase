@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.8.1...ui5-middleware-simpleproxy@0.8.2) (2022-04-19)
+
+
+### Reverts
+
+* Revert "chore: add metadata to `package.json` for all packages for ui5-community website (#600)" (#601) ([b6037d4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b6037d4d397275ad2d83e7f18415c45a878c76bf)), closes [#600](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/600) [#601](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/601)
+
+
+
+
+
 ## [0.8.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.8.0...ui5-middleware-simpleproxy@0.8.1) (2022-04-11)
 
 **Note:** Version bump only for package ui5-middleware-simpleproxy

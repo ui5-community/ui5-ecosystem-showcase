@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-index@0.2.8...ui5-middleware-index@0.2.9) (2022-04-19)
+
+
+### Reverts
+
+* Revert "chore: add metadata to `package.json` for all packages for ui5-community website (#600)" (#601) ([b6037d4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b6037d4d397275ad2d83e7f18415c45a878c76bf)), closes [#600](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/600) [#601](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/601)
+
+
+
+
+
 ## [0.2.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-index@0.2.7...ui5-middleware-index@0.2.8) (2022-04-11)
 
 **Note:** Version bump only for package ui5-middleware-index

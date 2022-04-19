@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.2.7...ui5-tooling-modules@0.3.0) (2022-04-19)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** fix espree issues, add prettier ([#603](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/603)) ([b9f0f58](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b9f0f5818ffd67fc2ad4722841bb227b1141766a))
+* **ui5-tooling-modules:** try/catch require.resolve for modules ([#604](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/604)) ([264f43b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/264f43b5d4cc7e1ff35e877c6d6b9096cb793496))
+
+
+### Features
+
+* **ui5-tooling-modules:** allow to prepend path mappings for Component ([#605](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/605)) ([71e8ac6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/71e8ac6d83d97859a2aae00d32651a2fc0fb42bc))
+
+
+### Reverts
+
+* Revert "chore: add metadata to `package.json` for all packages for ui5-community website (#600)" (#601) ([b6037d4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b6037d4d397275ad2d83e7f18415c45a878c76bf)), closes [#600](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/600) [#601](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/601)
+
+
+
+
+
 ## [0.2.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.2.6...ui5-tooling-modules@0.2.7) (2022-04-11)
 
 **Note:** Version bump only for package ui5-tooling-modules

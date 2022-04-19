@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-livecompileless",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "UI5 middleware for live compiling less files",
   "author": "Sebastian Mahr, Marcel Schork",
   "license": "Apache-2.0",
