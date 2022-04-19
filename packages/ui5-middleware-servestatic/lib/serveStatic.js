@@ -2,8 +2,9 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:servestati
 
 const path = require("path");
 const serveStatic = require("serve-static");
+const findConfig = require("find-config");
 
-require("dotenv").config();
+require("dotenv").config({path: findConfig(".env")});
 
 const envOptionRegEx = /^\${env\.(.*)}$/;
 
