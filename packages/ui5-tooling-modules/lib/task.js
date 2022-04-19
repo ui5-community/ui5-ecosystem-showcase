@@ -20,8 +20,8 @@ const { XMLParser } = require("fast-xml-parser");
  * @param {string} parameters.options.projectName Project name
  * @param {string} [parameters.options.projectNamespace] Project namespace if available
  * @param {string} [parameters.options.configuration] Task configuration if given in ui5.yaml
-* @param {string} [parameters.options.configuration.prependPathMappings] Prepend the path mappings for the UI5 loader to Component.js
-  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
+ * @param {string} [parameters.options.configuration.prependPathMappings] Prepend the path mappings for the UI5 loader to Component.js
+ * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ workspace, dependencies, taskUtil, options }) {
 	// do not run the task for root projects!
@@ -216,7 +216,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 		if (resComponent) {
 			let pathMappings = "";
 			Array.from(bundledResources).map(async (resource) => {
-				pathMappings += `"${resource}": sap.ui.require.toUrl("${options.projectNamespace}/resources/${resource}"),`
+				pathMappings += `"${resource}": sap.ui.require.toUrl("${options.projectNamespace}/resources/${resource}"),`;
 			});
 			let content = await resComponent.getString();
 			content = `sap.ui.loader.config({ paths: { ${pathMappings} }});

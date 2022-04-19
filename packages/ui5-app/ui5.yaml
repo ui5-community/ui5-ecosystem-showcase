@@ -51,6 +51,8 @@ builder:
     afterTask: replaceVersion
   - name: ui5-tooling-modules-task
     afterTask: replaceVersion
+    configuration:
+      prependPathMappings: true
   - name: ui5-task-zipper
     afterTask: uglify
     configuration:
