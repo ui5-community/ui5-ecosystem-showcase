@@ -20,6 +20,7 @@ const { XMLParser } = require("fast-xml-parser");
  * @param {string} parameters.options.projectName Project name
  * @param {string} [parameters.options.projectNamespace] Project namespace if available
  * @param {string} [parameters.options.configuration] Task configuration if given in ui5.yaml
+ * @param {string} [parameters.options.configuration.prependPathMappings] Prepend the path mappings for the UI5 loader to Component.js
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ workspace, dependencies, taskUtil, options }) {
@@ -172,6 +173,9 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 		})
 	);
 
+	// determine bundled resources
+	const bundledResources = [];
+
 	// every unique dependency will be tried to be transpiled
 	await Promise.all(
 		Array.from(uniqueDeps).map(async (dep) => {
@@ -183,6 +187,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 					path: `/resources/${dep}.js`,
 					string: bundle,
 				});
+				bundledResources.push(dep);
 				await workspace.write(bundleResource);
 			}
 		})
@@ -199,23 +204,26 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 					path: `/resources/${resource}`,
 					string: content,
 				});
+				bundledResources.push(resource);
 				await workspace.write(newResource);
 			}
 		})
 	);
 
-	const resComponent = await workspace.byPath(`/resources/${options.projectNamespace}/Component.js`);
-	if (resComponent) {
-		let content = await resComponent.getString();
-		content = `sap.ui.loader.config({
-    paths: {
-        "": ""
-    }
-});
+	// create path mappings for bundled resources in Component.js
+	if (config?.prependPathMappings) {
+		const resComponent = await workspace.byPath(`/resources/${options.projectNamespace}/Component.js`);
+		if (resComponent) {
+			let pathMappings = "";
+			Array.from(bundledResources).map(async (resource) => {
+				pathMappings += `"${resource}": sap.ui.require.toUrl("${options.projectNamespace}/resources/${resource}"),`;
+			});
+			let content = await resComponent.getString();
+			content = `sap.ui.loader.config({ paths: { ${pathMappings} }});
 
 ${content}`;
-		console.log(content);
-		await resComponent.setString(content);
-		await workspace.write(resComponent);
+			await resComponent.setString(content);
+			await workspace.write(resComponent);
+		}
 	}
 };

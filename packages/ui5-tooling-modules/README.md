@@ -33,6 +33,9 @@ npm install ui5-tooling-modules --save-dev
 - verbose: `boolean`  
   Enables verbose logging (default to `false`)
 
+- prependPathMappings: `boolean`  
+  Prepends the path mappings for the UI5 loader to the `Component.js` which allows to run the Component using 3rd party libs in e.g. Fiori launchpad environments (default to `false`)
+
 ## Usage
 
 1. Define the dependency in `$yourapp/package.json`:
