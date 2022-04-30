@@ -11,7 +11,8 @@
       "source": "^/odatav2/(.*)$",
       "destination": "odatav2",
       "target": "$1"
-    },{
+    },
+    {
       "source": "^/todos/(.*)$",
       "destination": "todos",
       "target": "$1"

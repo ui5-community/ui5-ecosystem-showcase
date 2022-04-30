@@ -1,21 +1,19 @@
-<mvc:View controllerName="test.Sample.controller.ModelView"
-    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
-    xmlns="sap.m">
-    <Page title="{i18n>modelPage.title}" showNavButton="true" navButtonPress="onNavBack">
-        <content>
-            <List id="salesOrderList" items="{ path: 'SAPES5>/SalesOrderSet', parameters: {select: 'SalesOrderID,CustomerName,Note,LifecycleStatusDescription,LifecycleStatus'} }">
-                <items>
-                    <ObjectListItem title="{SAPES5>SalesOrderID}" number="{SAPES5>NetAmount}" numberUnit="{SAPES5>CurrencyCode}" >
-                        <attributes>
-                            <ObjectAttribute text="{SAPES5>CustomerName}"></ObjectAttribute>
-                            <ObjectAttribute text="{SAPES5>Note}"></ObjectAttribute>
-                        </attributes>
-                        <firstStatus>
-                            <ObjectStatus text="{SAPES5>LifecycleStatusDescription}" state="{ path: 'SAPES5>LifecycleStatus', formatter: '.getStatus' }"></ObjectStatus>
-                        </firstStatus>
-                    </ObjectListItem>
-                </items>
-            </List>
-        </content>
-    </Page>
+<mvc:View controllerName="test.Sample.controller.ModelView" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
+  <Page title="{i18n>modelPage.title}" showNavButton="true" navButtonPress="onNavBack">
+    <content>
+      <List id="salesOrderList" items="{ path: 'SAPES5>/SalesOrderSet', parameters: {select: 'SalesOrderID,CustomerName,Note,LifecycleStatusDescription,LifecycleStatus'} }">
+        <items>
+          <ObjectListItem title="{SAPES5>SalesOrderID}" number="{SAPES5>NetAmount}" numberUnit="{SAPES5>CurrencyCode}">
+            <attributes>
+              <ObjectAttribute text="{SAPES5>CustomerName}" />
+              <ObjectAttribute text="{SAPES5>Note}" />
+            </attributes>
+            <firstStatus>
+              <ObjectStatus text="{SAPES5>LifecycleStatusDescription}" state="{ path: 'SAPES5>LifecycleStatus', formatter: '.getStatus' }" />
+            </firstStatus>
+          </ObjectListItem>
+        </items>
+      </List>
+    </content>
+  </Page>
 </mvc:View>

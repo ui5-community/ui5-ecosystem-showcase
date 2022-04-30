@@ -2,7 +2,7 @@
   "root": true,
   "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
   "parser": "@typescript-eslint/parser",
-  "parserOptions": { "project": ["./tsconfig.json"] },
+  "parserOptions": { "project": ["./tsconfig.json", "./packages/ui5-middleware-onelogin/tsconfig.json"] },
   "plugins": ["@typescript-eslint"],
   "rules": {
     "prefer-const": "warn",

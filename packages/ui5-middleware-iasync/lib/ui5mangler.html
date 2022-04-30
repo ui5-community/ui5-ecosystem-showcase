@@ -1,23 +1,17 @@
 <script>
-    sap.ui.require([
-        "sap/m/Button",
-        "sap/ui/unified/calendar/Month",
-        "sap/ui/unified/calendar/YearPicker"
-    ], (Button, Month, YearPicker) => {
+	sap.ui.require(["sap/m/Button", "sap/ui/unified/calendar/Month", "sap/ui/unified/calendar/YearPicker"], (Button, Month, YearPicker) => {
+		Button.prototype.onclick = function () {
+			Button.prototype.ontap.apply(this, arguments);
+		};
 
-        Button.prototype.onclick = function () {
-            Button.prototype.ontap.apply(this, arguments);
-        }
-
-        Month.prototype.onclick = function () {
-            Month.prototype.onmousedown.apply(this, arguments);
-            Month.prototype.onkeydown.apply(this, arguments);
-            Month.prototype.onsapselect.apply(this, arguments);
-        }
-        YearPicker.prototype.onclick = function () {
-            YearPicker.prototype.onmousedown.apply(this, arguments);
-            YearPicker.prototype.onsapselect.apply(this, arguments);
-        }
-
-    });
+		Month.prototype.onclick = function () {
+			Month.prototype.onmousedown.apply(this, arguments);
+			Month.prototype.onkeydown.apply(this, arguments);
+			Month.prototype.onsapselect.apply(this, arguments);
+		};
+		YearPicker.prototype.onclick = function () {
+			YearPicker.prototype.onmousedown.apply(this, arguments);
+			YearPicker.prototype.onsapselect.apply(this, arguments);
+		};
+	});
 </script>

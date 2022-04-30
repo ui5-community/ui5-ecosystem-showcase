@@ -1,69 +1,45 @@
-<mvc:View controllerName="test.Sample.controller.Main"
-	xmlns:core="sap.ui.core"
-	xmlns:mvc="sap.ui.core.mvc"
-	xmlns:am="ui5-app-module"
-	displayBlock="true"
-	xmlns="sap.m">
-
-	<Page id="page"
-		title="{i18n>appTitle}">
-		<headerContent>
-			<core:Icon color="#1873B4"
-				src="sap-icon://sap-ui5"
-				size="2rem" />
-			<Text text="{LatestUI5>/latest} ({LatestUI5>/type})" />
-		</headerContent>
-		<content>
-			<VBox alignItems="Center"
-				justifyContent="Center"
-				height="100%">
-				<Title level="H1"
-					titleStyle="H1"
-					text="{i18n>startPage.title.text}"
-					width="100%"
-					textAlign="Center" />
-				<Button id="NavButton"
-					icon="sap-icon://forward"
-					text="{i18n>startPage.navButton.text}"
-					press="navFwd" />
-				<Button text="IA Sync"
-					press="onPress" />
-				<Panel expandable="true">
-					<headerToolbar>
-						<OverflowToolbar>
-							<Title text="Custom Toolbar with a header text" />
-						</OverflowToolbar>
-					</headerToolbar>
-					<content>
-						<Text text="Lorem ipsum dolor st amet" />
-					</content>
-				</Panel>
-				<Panel expandable="true">
-					<headerToolbar>
-						<OverflowToolbar>
-							<Title text="Content of docs/index.md" />
-						</OverflowToolbar>
-					</headerToolbar>
-					<content>
-						<TextArea id="doc"
-							rows="10"
-							cols="40" />
-					</content>
-				</Panel>
-				<DateTimePicker id="DateTimePicker"
-					placeholder="Enter Date ..." />
-				<Button text="Don't press me!"
-					press="onBoo" />
-				<Text text="Styled with less" class="styledWithLess"/>
-				<am:Chart title="Some Chart" color="green">
-					<am:ChartRecord label="Day 1" value="100"></am:ChartRecord>
-					<am:ChartRecord label="Day 2" value="50"></am:ChartRecord>
-					<am:ChartRecord label="Day 3" value="200"></am:ChartRecord>
-					<am:ChartRecord label="Day 4" value="150"></am:ChartRecord>
-					<am:ChartRecord label="Day 5" value="125"></am:ChartRecord>
-				</am:Chart>
-			</VBox>
-		</content>
-	</Page>
-
+<mvc:View controllerName="test.Sample.controller.Main" xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns:am="ui5-app-module" displayBlock="true" xmlns="sap.m">
+  <Page id="page" title="{i18n>appTitle}">
+    <headerContent>
+      <core:Icon color="#1873B4" src="sap-icon://sap-ui5" size="2rem" />
+      <Text text="{LatestUI5>/latest} ({LatestUI5>/type})" />
+    </headerContent>
+    <content>
+      <VBox alignItems="Center" justifyContent="Center" height="100%">
+        <Title level="H1" titleStyle="H1" text="{i18n>startPage.title.text}" width="100%" textAlign="Center" />
+        <Button id="NavButton" icon="sap-icon://forward" text="{i18n>startPage.navButton.text}" press="navFwd" />
+        <Button text="IA Sync" press="onPress" />
+        <Panel expandable="true">
+          <headerToolbar>
+            <OverflowToolbar>
+              <Title text="Custom Toolbar with a header text" />
+            </OverflowToolbar>
+          </headerToolbar>
+          <content>
+            <Text text="Lorem ipsum dolor st amet" />
+          </content>
+        </Panel>
+        <Panel expandable="true">
+          <headerToolbar>
+            <OverflowToolbar>
+              <Title text="Content of docs/index.md" />
+            </OverflowToolbar>
+          </headerToolbar>
+          <content>
+            <TextArea id="doc" rows="10" cols="40" />
+          </content>
+        </Panel>
+        <DateTimePicker id="DateTimePicker" placeholder="Enter Date ..." />
+        <Button text="Don't press me!" press="onBoo" />
+        <Text text="Styled with less" class="styledWithLess" />
+        <am:Chart title="Some Chart" color="green">
+          <am:ChartRecord label="Day 1" value="100" />
+          <am:ChartRecord label="Day 2" value="50" />
+          <am:ChartRecord label="Day 3" value="200" />
+          <am:ChartRecord label="Day 4" value="150" />
+          <am:ChartRecord label="Day 5" value="125" />
+        </am:Chart>
+      </VBox>
+    </content>
+  </Page>
 </mvc:View>

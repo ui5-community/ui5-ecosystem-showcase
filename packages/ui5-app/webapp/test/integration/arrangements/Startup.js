@@ -1,10 +1,7 @@
-sap.ui.define([
-	"sap/ui/test/Opa5"
-], function (Opa5) {
+sap.ui.define(["sap/ui/test/Opa5"], function (Opa5) {
 	"use strict";
 
 	return Opa5.extend("test.Sample.test.integration.arrangements.Startup", {
-
 		iStartMyApp: function (oOptionsParameter) {
 			var oOptions = oOptionsParameter || {};
 
@@ -15,11 +12,11 @@ sap.ui.define([
 			this.iStartMyUIComponent({
 				componentConfig: {
 					name: "test.Sample",
-					async: true
+					async: true,
 				},
 				hash: oOptions.hash,
-				autoWait: oOptions.autoWait
+				autoWait: oOptions.autoWait,
 			});
-		}
+		},
 	});
 });

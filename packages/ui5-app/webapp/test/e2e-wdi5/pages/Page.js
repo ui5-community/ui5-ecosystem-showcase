@@ -1,5 +1,5 @@
 module.exports = class Page {
-    async open(sHash) {
-        await browser.goTo({ sHash: `${sHash}` })
-    }
-}
+	async open(sHash) {
+		await browser.goTo({ sHash: `${sHash}` });
+	}
+};

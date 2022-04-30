@@ -8,3 +8,6 @@
 /**/*.yml
 /**/*.svg
 /**/*.png
+
+# Additionally ignore folders for lint-staged
+/packages/ui5-middleware-cfdestination/test/**

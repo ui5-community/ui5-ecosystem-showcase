@@ -1,30 +1,30 @@
-const Page = require("./Page")
+const Page = require("./Page");
 
 class Other extends Page {
-    _viewName = "test.Sample.view.Other"
+	_viewName = "test.Sample.view.Other";
 
-    async iShouldSeeTheList() {
-        return (
-            (await browser
-                .asControl({
-                    selector: {
-                        viewName: "test.Sample.view.Other",
-                        id: "PeopleList"
-                    }
-                })
-                .getVisible()) === true
-        )
-    }
+	async iShouldSeeTheList() {
+		return (
+			(await browser
+				.asControl({
+					selector: {
+						viewName: "test.Sample.view.Other",
+						id: "PeopleList",
+					},
+				})
+				.getVisible()) === true
+		);
+	}
 
-    async iNavigateBack() {
-        await browser
-            .asControl({
-                selector: {
-                    id: /.*navButton$/
-                }
-            })
-            .firePress()
-    }
+	async iNavigateBack() {
+		await browser
+			.asControl({
+				selector: {
+					id: /.*navButton$/,
+				},
+			})
+			.firePress();
+	}
 }
 
-module.exports = new Other()
+module.exports = new Other();

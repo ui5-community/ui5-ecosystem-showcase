@@ -14,32 +14,32 @@ const waitOn = require("wait-on")
  * @param {string} tmpDir path to copy ui5 app (that acts as the test app to)
  */
 async function copyUI5app(tmpDir) {
-    await fs.mkdir(tmpDir)
-    const filterFn = (src, _) => {
-        const yo = ["node_modules", "dist", "ui5.yaml", "xs-app.json"].find((node) => src.endsWith(node))
-        return yo === undefined ? true : false
-    }
-    await fs.copy(path.resolve(__dirname, "../../ui5-app"), tmpDir, {
-        filter: filterFn
-    })
+	await fs.mkdir(tmpDir)
+	const filterFn = (src, _) => {
+		const yo = ["node_modules", "dist", "ui5.yaml", "xs-app.json"].find((node) => src.endsWith(node))
+		return yo === undefined ? true : false
+	}
+	await fs.copy(path.resolve(__dirname, "../../ui5-app"), tmpDir, {
+		filter: filterFn
+	})
 }
 
 test.beforeEach(async (t) => {
-    // copy ui5 app to a temp dir in test folder scope
-    t.context.tmpDir = path.resolve(`./test/_ui5-app/${crypto.randomBytes(5).toString("hex")}`)
-    await copyUI5app(t.context.tmpDir)
+	// copy ui5 app to a temp dir in test folder scope
+	t.context.tmpDir = path.resolve(`./test/_ui5-app/${crypto.randomBytes(5).toString("hex")}`)
+	await copyUI5app(t.context.tmpDir)
 
-    // dynamic port allocation for ui5 serve
-    const getPort = (await import("get-port")).default;
-    t.context.port = {
-        ui5Sserver: await getPort(),
-        appRouter: await getPort()
-    }
+	// dynamic port allocation for ui5 serve
+	const getPort = (await import("get-port")).default
+	t.context.port = {
+		ui5Sserver: await getPort(),
+		appRouter: await getPort()
+	}
 })
 
 test.afterEach.always(async (t) => {
-    // cleanup
-    await fs.remove(t.context.tmpDir)
+	// cleanup
+	await fs.remove(t.context.tmpDir)
 })
 
 /**
@@ -63,61 +63,61 @@ test.afterEach.always(async (t) => {
  * @returns {UI5ServerConfig} full path to the test fixtures of ui5.yaml, xsapp.json and defaultEnv.json (the latter is an empty object if not provided as an input parameter)
  */
 async function prepUi5ServerConfig({ ui5Yaml, appRouterPort, xsAppJson, defaultEnvJson, tmpDir }) {
-    // replace default port 1091 for app router w/ random port
-    await fs.copyFile(path.resolve(ui5Yaml), `${tmpDir}/ui5.yaml`) // copy orig ui5.yaml test fixture
-    const _ui5Yaml = await replace({ files: path.resolve(`${tmpDir}/ui5.yaml`), from: "1091", to: appRouterPort }) // replace port config in file
-    const ui5 = { yaml: _ui5Yaml[0].file }
+	// replace default port 1091 for app router w/ random port
+	await fs.copyFile(path.resolve(ui5Yaml), `${tmpDir}/ui5.yaml`) // copy orig ui5.yaml test fixture
+	const _ui5Yaml = await replace({ files: path.resolve(`${tmpDir}/ui5.yaml`), from: "1091", to: appRouterPort }) // replace port config in file
+	const ui5 = { yaml: _ui5Yaml[0].file }
 
-    const _xsapp = { json: path.resolve(xsAppJson) }
-    const xsapp = { json: path.resolve(tmpDir, "xs-app.json") }
-    // we always need the routes
-    const _promises = [fs.copy(_xsapp.json, xsapp.json)]
+	const _xsapp = { json: path.resolve(xsAppJson) }
+	const xsapp = { json: path.resolve(tmpDir, "xs-app.json") }
+	// we always need the routes
+	const _promises = [fs.copy(_xsapp.json, xsapp.json)]
 
-    // auth info only on-demand
-    let defaultEnv = {}
-    if (defaultEnvJson) {
-        const _defaultEnv = { json: path.resolve(defaultEnvJson) }
-        defaultEnv = { json: path.resolve(tmpDir, "default-env.json") }
-        _promises.push(fs.copy(_defaultEnv.json, defaultEnv.json))
-    }
+	// auth info only on-demand
+	let defaultEnv = {}
+	if (defaultEnvJson) {
+		const _defaultEnv = { json: path.resolve(defaultEnvJson) }
+		defaultEnv = { json: path.resolve(tmpDir, "default-env.json") }
+		_promises.push(fs.copy(_defaultEnv.json, defaultEnv.json))
+	}
 
-    // prep routes (+ authentication) config
-    await Promise.all(_promises)
+	// prep routes (+ authentication) config
+	await Promise.all(_promises)
 
-    // return resolved path to config files for re-use in tests
-    return {
-        ui5,
-        xsapp,
-        defaultEnv // this return the empty object in case no input defaultEnvJson was provided
-    }
+	// return resolved path to config files for re-use in tests
+	return {
+		ui5,
+		xsapp,
+		defaultEnv // this return the empty object in case no input defaultEnvJson was provided
+	}
 }
 
 test("ui5.yaml: no config -> default options apply", async (t) => {
-    const { ui5 } = await prepUi5ServerConfig({
-        ui5Yaml: "./test/options/ui5-no-config.yaml",
-        appRouterPort: 5000,
-        xsAppJson: "./test/options/xs-app-minimal.json",
-        tmpDir: t.context.tmpDir
-    })
+	const { ui5 } = await prepUi5ServerConfig({
+		ui5Yaml: "./test/options/ui5-no-config.yaml",
+		appRouterPort: 5000,
+		xsAppJson: "./test/options/xs-app-minimal.json",
+		tmpDir: t.context.tmpDir
+	})
 
-    // start ui5-app with modified route(s) and config
-    const child = spawn(`ui5 serve --port ${t.context.port.ui5Sserver} --config ${ui5.yaml}`, {
-        // stdio: "inherit", // > don't include stdout in test output
-        shell: true,
-        cwd: t.context.tmpDir,
-        detached: true // this for being able to kill all subprocesses of above `ui5 serve` later
-    })
+	// start ui5-app with modified route(s) and config
+	const child = spawn(`ui5 serve --port ${t.context.port.ui5Sserver} --config ${ui5.yaml}`, {
+		// stdio: "inherit", // > don't include stdout in test output
+		shell: true,
+		cwd: t.context.tmpDir,
+		detached: true // this for being able to kill all subprocesses of above `ui5 serve` later
+	})
 
-    // wait for ui5 server and app router to boot
-    await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:5000`] })
+	// wait for ui5 server and app router to boot
+	await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:5000`] })
 
-    const app = request(`http://localhost:${t.context.port.ui5Sserver}`)
-    // test for the app being started correctly
-    const responseIndex = await app.get("/index.html")
-    t.is(responseIndex.status, 200, "http 200 on index")
+	const app = request(`http://localhost:${t.context.port.ui5Sserver}`)
+	// test for the app being started correctly
+	const responseIndex = await app.get("/index.html")
+	t.is(responseIndex.status, 200, "http 200 on index")
 
-    // kill all processes that are in the same pid group (see detached: true)
-    process.kill(-child.pid)
+	// kill all processes that are in the same pid group (see detached: true)
+	process.kill(-child.pid)
 })
 
 /**
@@ -125,34 +125,34 @@ test("ui5.yaml: no config -> default options apply", async (t) => {
  * -> respective default options (port 5000, 0 destinations) should be overriden
  */
 test("ui5.yaml: some config -> default options are overwritten", async (t) => {
-    const { ui5 } = await prepUi5ServerConfig({
-        ui5Yaml: "./test/options/ui5-some-config.yaml",
-        appRouterPort: t.context.port.appRouter,
-        xsAppJson: "./test/options/xs-app-with-routes.json",
-        tmpDir: t.context.tmpDir
-    })
+	const { ui5 } = await prepUi5ServerConfig({
+		ui5Yaml: "./test/options/ui5-some-config.yaml",
+		appRouterPort: t.context.port.appRouter,
+		xsAppJson: "./test/options/xs-app-with-routes.json",
+		tmpDir: t.context.tmpDir
+	})
 
-    // start ui5-app with modified route(s) and config
-    const child = spawn(`ui5 serve --port ${t.context.port.ui5Sserver} --config ${ui5.yaml}`, {
-        // stdio: 'inherit', // > don't include stdout in test output
-        shell: true,
-        cwd: t.context.tmpDir,
-        detached: true // this for being able to kill all subprocesses of above `ui5 serve` later
-    })
+	// start ui5-app with modified route(s) and config
+	const child = spawn(`ui5 serve --port ${t.context.port.ui5Sserver} --config ${ui5.yaml}`, {
+		// stdio: 'inherit', // > don't include stdout in test output
+		shell: true,
+		cwd: t.context.tmpDir,
+		detached: true // this for being able to kill all subprocesses of above `ui5 serve` later
+	})
 
-    // wait for ui5 server and app router to boot
-    await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:${t.context.port.appRouter}`] })
+	// wait for ui5 server and app router to boot
+	await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:${t.context.port.appRouter}`] })
 
-    const app = request(`http://localhost:${t.context.port.ui5Sserver}`)
-    // test for the app being started correctly
-    const responseIndex = await app.get("/index.html")
-    t.is(responseIndex.status, 200, "http 200 on index")
+	const app = request(`http://localhost:${t.context.port.ui5Sserver}`)
+	// test for the app being started correctly
+	const responseIndex = await app.get("/index.html")
+	t.is(responseIndex.status, 200, "http 200 on index")
 
-    // backend resource is accessible w/o authentication
-    const responseNoAuth = await app.get("/backend/")
-    t.is(responseNoAuth.status, 200)
-    t.true(responseNoAuth.body.value.length >= 1, "one or more odata entities received")
+	// backend resource is accessible w/o authentication
+	const responseNoAuth = await app.get("/backend/")
+	t.is(responseNoAuth.status, 200)
+	t.true(responseNoAuth.body.value.length >= 1, "one or more odata entities received")
 
-    // kill all processes that are in the same pid group (see detached: true)
-    process.kill(-child.pid)
+	// kill all processes that are in the same pid group (see detached: true)
+	process.kill(-child.pid)
 })
