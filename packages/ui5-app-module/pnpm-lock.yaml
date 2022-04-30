@@ -1,0 +1,13 @@
+lockfileVersion: 5.3
+
+specifiers:
+  chart.js: ^3.7.1
+
+dependencies:
+  chart.js: 3.7.1
+
+packages:
+
+  /chart.js/3.7.1:
+    resolution: {integrity: sha512-8knRegQLFnPQAheZV8MjxIXc5gQEfDFD897BJgv/klO/vtIyFFmgMXrNfgrXpbTr/XbTturxRgxIXx/Y+ASJBA==}
+    dev: false

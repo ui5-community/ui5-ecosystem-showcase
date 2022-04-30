@@ -15,7 +15,7 @@
     "etag": "^1.8.1",
     "fresh": "^0.5.2",
     "lodash.escaperegexp": "^4.1.2",
-    "minimatch": "5.0.0",
+    "minimatch": "5.0.1",
     "replacestream": "^4.0.3"
   },
   "ui5": {

@@ -21,21 +21,21 @@
   "dependencies": {
     "@ui5/logger": "^2.0.1",
     "async-prompt": "1.0.1",
-    "cookie": "^0.4.2",
+    "cookie": "^0.5.0",
     "dotenv": "^16.0.0",
-    "playwright-chromium": "^1.19.1",
-    "playwright-core": "^1.19.1",
+    "playwright-chromium": "^1.21.1",
+    "playwright-core": "^1.21.1",
     "sleep-promise": "^9.1.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.19.1",
-    "@types/cookie": "^0.4.1",
+    "@playwright/test": "^1.21.1",
+    "@types/cookie": "^0.5.1",
     "@types/express": "^4.17.13",
     "@types/prompt": "^1.1.2",
-    "eslint": "^8.9.0",
-    "eslint-config-prettier": "^8.4.0",
+    "eslint": "^8.14.0",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "prettier": "2.5.1"
+    "prettier": "2.6.2"
   },
   "ui5": {
     "dependencies": []
