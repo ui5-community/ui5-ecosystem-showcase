@@ -2,7 +2,10 @@ name: Release (automatic)
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+
+env:
+  HUSKY_SKIP: true
 
 jobs:
   release:
@@ -14,7 +17,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: "14"
 
       - name: Install dependencies
         run: yarn --no-lockfile
