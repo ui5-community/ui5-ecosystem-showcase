@@ -10,6 +10,9 @@
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
     "directory": "packages/ui5-app-module"
   },
+  "scripts": {
+    "lint": "eslint ."
+  },
   "dependencies": {
     "chart.js": "^3.7.1"
   }

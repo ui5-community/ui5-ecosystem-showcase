@@ -5,8 +5,11 @@
     "es6": true
   },
   "parserOptions": {
-    "ecmaVersion": 8
+    "ecmaVersion": 2022
   },
   "extends": ["eslint:recommended"],
-  "plugins": ["jsdoc"]
+  "plugins": ["jsdoc"],
+  "rules": {
+    "no-mixed-spaces-and-tabs": "warn"
+  }
 }
