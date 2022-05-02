@@ -1,33 +1,33 @@
 /*global QUnit*/
 
 sap.ui.define(["sap/ui/test/opaQunit", "./pages/Main", "./pages/Other"], function (opaTest) {
-    "use strict";
+	"use strict";
 
-    QUnit.module("Navigation Journey");
+	QUnit.module("Navigation Journey");
 
-    opaTest("Should see the initial page of the app", function (Given, When, Then) {
-        // Arrangements
-        Given.iStartMyApp();
+	opaTest("Should see the initial page of the app", function (Given, When, Then) {
+		// Arrangements
+		Given.iStartMyApp();
 
-        // Assertions
-        Then.onTheAppPage.iShouldSeeTheApp();
+		// Assertions
+		Then.onTheAppPage.iShouldSeeTheApp();
 
-        // not really reliable: Then.iTeardownMyApp();
-    });
+		// not really reliable: Then.iTeardownMyApp();
+	});
 
-    opaTest("should navigate to the list page and back", function (Given, When, Then) {
-        // not really reliable: Given.iStartMyApp();
+	opaTest("should navigate to the list page and back", function (Given, When, Then) {
+		// not really reliable: Given.iStartMyApp();
 
-        When.onTheAppPage.iPressTheNavButton();
+		When.onTheAppPage.iPressTheNavButton();
 
-        Then.onTheOtherView.iShouldSeeTheList();
+		Then.onTheOtherView.iShouldSeeTheList();
 
 		When.onTheOtherView.iNavigateBack();
 
-        Then.onTheAppPage
-            .iShouldSeeTheNavButton()
+		Then.onTheAppPage
+			.iShouldSeeTheNavButton()
 
-		// Cleanup
-            .and.iTeardownMyApp();
-    });
+			// Cleanup
+			.and.iTeardownMyApp();
+	});
 });

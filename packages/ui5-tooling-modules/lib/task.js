@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars, no-empty */
 const log = require("@ui5/logger").getLogger("builder:customtask:ui5-tooling-modules");
 const resourceFactory = require("@ui5/fs").resourceFactory;
 

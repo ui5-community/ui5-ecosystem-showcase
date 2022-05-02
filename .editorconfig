@@ -14,7 +14,7 @@ insert_final_newline = true
 # Change these settings to your own preference
 indent_style = tab
 
-[*.{yaml,md,json,xml}]
+[*.{yaml,yml,md,json,xml,properties}]
 indent_size = 2
 indent_style = space
 

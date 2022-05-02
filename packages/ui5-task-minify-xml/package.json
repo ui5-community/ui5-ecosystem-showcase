@@ -9,6 +9,9 @@
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
     "directory": "packages/ui5-task-minify-xml"
   },
+  "scripts": {
+    "lint": "eslint lib"
+  },
   "dependencies": {
     "@ui5/logger": "^2.0.1",
     "minify-xml": "^3.3.1"

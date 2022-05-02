@@ -10,7 +10,8 @@
     "directory": "packages/ui5-middleware-cfdestination"
   },
   "scripts": {
-    "test": "ava"
+    "test": "ava",
+    "lint": "eslint lib"
   },
   "ava": {
     "files": [

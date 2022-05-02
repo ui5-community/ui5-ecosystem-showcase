@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const log = require("@ui5/logger").getLogger("server:custommiddleware:index")
 
 /**
@@ -19,18 +20,18 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:index")
  * @returns {function} Middleware function to use
  */
 module.exports = ({ resources, options, middlewareUtil }) => {
-    return (req, res, next) => {
-        const sIndexFile =
-            options.configuration && options.configuration.index ? options.configuration.index : "index.html"
-        const reqPath = middlewareUtil.getPathname(req)
-        if (reqPath === "/") {
-            options && options.configuration && options.configuration.debug ? log.info(`serving ${sIndexFile}!`) : null
-            // "redirect" the request
-            req.url = `/${sIndexFile}`
-            // FTR
-            req.path = `/${sIndexFile}`
-            req.originalUrl = `/${sIndexFile}`
-        }
-        next()
-    }
+	return (req, res, next) => {
+		const sIndexFile =
+			options.configuration && options.configuration.index ? options.configuration.index : "index.html"
+		const reqPath = middlewareUtil.getPathname(req)
+		if (reqPath === "/") {
+			options && options.configuration && options.configuration.debug ? log.info(`serving ${sIndexFile}!`) : null
+			// "redirect" the request
+			req.url = `/${sIndexFile}`
+			// FTR
+			req.path = `/${sIndexFile}`
+			req.originalUrl = `/${sIndexFile}`
+		}
+		next()
+	}
 }

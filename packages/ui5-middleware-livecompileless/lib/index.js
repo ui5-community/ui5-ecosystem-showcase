@@ -1,7 +1,6 @@
-const log = require("@ui5/logger").getLogger("server:custommiddleware:injectless")
+const log = require("@ui5/logger").getLogger("server:custommiddleware:injectless");
 const less = require("less-openui5");
-const {fsInterface} = require("@ui5/fs");
-
+const { fsInterface } = require("@ui5/fs");
 
 /**
  *
@@ -15,31 +14,31 @@ const {fsInterface} = require("@ui5/fs");
  *                                        the projects dependencies
  * @param {Object} parameters.options Options
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
- * 
+ *
  * @returns {function} Middleware function to use
  */
-module.exports = async ({resources, options}) => {
-    const isDebug = options.configuration && options.configuration.debug;
+module.exports = async ({ resources, options }) => {
+	const isDebug = options.configuration && options.configuration.debug;
 
-    return async function injectLess(req, res, next) {
-        let url = req.url;
-        if (url.includes(".css") && !url.includes("resources/")) {
-            let possibleLessFile = await resources.rootProject.byPath(url.replace(".css", ".less"));
-            if (possibleLessFile) {
-                isDebug && log.info(`Compiling ${possibleLessFile.getPath()}...`)
-                const lessBuilder = new less.Builder({fs: fsInterface(resources.all)});
-                try {
-                    const output = await lessBuilder.build({
-                        lessInputPath: possibleLessFile.getPath()
-                    })
-                    res.setHeader('Content-Type', 'text/css; charset=utf-8');
-                    res.send(output.css);
-                    return;
-                } catch (e) {
-                    log.error(e);
-                }
-            }
-        }
-        next()
-    }
+	return async function injectLess(req, res, next) {
+		let url = req.url;
+		if (url.includes(".css") && !url.includes("resources/")) {
+			let possibleLessFile = await resources.rootProject.byPath(url.replace(".css", ".less"));
+			if (possibleLessFile) {
+				isDebug && log.info(`Compiling ${possibleLessFile.getPath()}...`);
+				const lessBuilder = new less.Builder({ fs: fsInterface(resources.all) });
+				try {
+					const output = await lessBuilder.build({
+						lessInputPath: possibleLessFile.getPath(),
+					});
+					res.setHeader("Content-Type", "text/css; charset=utf-8");
+					res.send(output.css);
+					return;
+				} catch (e) {
+					log.error(e);
+				}
+			}
+		}
+		next();
+	};
 };

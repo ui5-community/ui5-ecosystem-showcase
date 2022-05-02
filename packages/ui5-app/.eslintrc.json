@@ -1,0 +1,14 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "globals": {
+    "sap": true,
+    "jQuery": true
+  },
+  "rules": {
+    "no-undef": "warn",
+    "no-unused-vars": "warn"
+  }
+}

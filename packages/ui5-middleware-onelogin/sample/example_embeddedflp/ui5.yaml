@@ -34,5 +34,4 @@ server:
       configuration:
         baseUri: "https://sapes5.sapdevcenter.com/sap"
         excludePatterns:
-        - "/bc/ui5_ui5/sap/zsample_po_apv/**"
-
+          - "/bc/ui5_ui5/sap/zsample_po_apv/**"

@@ -19,13 +19,7 @@
       "properties": {
         "strategy": {
           "type": "string",
-          "enum": [
-            "Offline-Page",
-            "Offline-Copy",
-            "Offline-Copy-With-Backup-Page",
-            "Advanced-Caching",
-            "Cache-First"
-          ]
+          "enum": ["Offline-Page", "Offline-Copy", "Offline-Copy-With-Backup-Page", "Advanced-Caching", "Cache-First"]
         },
         "offlinePage": {
           "description": "required for Offline-Page, Offline-Copy-With-backup-Page, Advanced-Caching",

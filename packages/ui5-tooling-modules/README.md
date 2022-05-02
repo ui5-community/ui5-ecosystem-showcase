@@ -6,7 +6,7 @@ The UI5 tooling extensions include a custom middleware and a custom task which a
 
 ```bash
 # Install a dev dependency to Chart.js (https://www.chartjs.org/)
-npm install chart.js --save-dev
+npm install chart.js
 ```
 
 ```js

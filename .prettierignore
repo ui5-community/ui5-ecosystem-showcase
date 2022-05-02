@@ -1,6 +1,21 @@
-dist
-
+# Ignore specific files
 CHANGELOG.md
-
-packages-lock.json
+package-lock.json
 yarn.lock
+
+# Ignore specific folders
+.vscode
+
+# Ignore build output folders
+/packages/*/dist/**
+/packages/ui5-middleware-onelogin/lib/**
+
+# Ignore build test folders
+/packages/ui5-middleware-cfdestination/test/*/**
+/packages/ui5-task-pwa-enabler/templates/**
+/packages/ui5-task-zipper/test/**
+
+# Ignore files by extension
+/**/*.svg
+/**/*.png
+/**/*.md
