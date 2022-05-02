@@ -12,58 +12,58 @@ framework:
     - name: themelib_sap_fiori_3
 builder:
   customTasks:
-  - name: ui5-task-transpile
-    afterTask: replaceVersion
-    configuration:
-      debug: true
-      removeConsoleStatements: true
-      excludePatterns:
-      - "lib/"
-  - name: ui5-task-minify-xml
-    afterTask: replaceVersion
-    configuration:
-      minifyOptions:
-        removeComments: true
-        collapseEmptyElements: true
-        collapseWhitespaceInAttributeValues: true
-        # ... further minify-xml attributes
-      fileExtensions:
-      - "xml"
-      - "edmx"
-      excludePatterns:
-      - "lib/"
-      - "another/dir/in/webapp"
-      - "yet/another/dir"
-  - name: ui5-task-i18ncheck
-    afterTask: replaceVersion
-  - name: ui5-task-pwa-enabler
-    afterTask: generateVersionInfo
-    configuration:
-      serviceWorker:
-        strategy: Advanced-Caching
-        offlinePage: offline.html
-        preCache:
-          - "controller/*"
-          - "*.html"
-          - "view/*"
-          - "images/*"
-        networkFirst:
-          - /\/api\/.*/
-        avoidCaching:
-          - /\/realtime-api\/.*/
-      manifest:
-        short_name: UI5 EcoSystem Demoapp
-        name: UI5 EcoSystem Demoapp
-        description: UI5 EcoSystem Demoapp to showcase the ui5-task-pwa-enabler
-        icons:
-          - src: images/SAP_R_192.png
-            type: image/png
-            sizes: 192x192
-          - src: images/SAP_R_512.png
-            type: image/png
-            sizes: 512x512
-        start_url: /index.html
-        scope: /
-        background_color: "#EFF4F9"
-        theme_color: "#3F5161"
-        display: standalone
+    - name: ui5-task-transpile
+      afterTask: replaceVersion
+      configuration:
+        debug: true
+        removeConsoleStatements: true
+        excludePatterns:
+          - "lib/"
+    - name: ui5-task-minify-xml
+      afterTask: replaceVersion
+      configuration:
+        minifyOptions:
+          removeComments: true
+          collapseEmptyElements: true
+          collapseWhitespaceInAttributeValues: true
+          # ... further minify-xml attributes
+        fileExtensions:
+          - "xml"
+          - "edmx"
+        excludePatterns:
+          - "lib/"
+          - "another/dir/in/webapp"
+          - "yet/another/dir"
+    - name: ui5-task-i18ncheck
+      afterTask: replaceVersion
+    - name: ui5-task-pwa-enabler
+      afterTask: generateVersionInfo
+      configuration:
+        serviceWorker:
+          strategy: Advanced-Caching
+          offlinePage: offline.html
+          preCache:
+            - "controller/*"
+            - "*.html"
+            - "view/*"
+            - "images/*"
+          networkFirst:
+            - /\/api\/.*/
+          avoidCaching:
+            - /\/realtime-api\/.*/
+        manifest:
+          short_name: UI5 EcoSystem Demoapp
+          name: UI5 EcoSystem Demoapp
+          description: UI5 EcoSystem Demoapp to showcase the ui5-task-pwa-enabler
+          icons:
+            - src: images/SAP_R_192.png
+              type: image/png
+              sizes: 192x192
+            - src: images/SAP_R_512.png
+              type: image/png
+              sizes: 512x512
+          start_url: /index.html
+          scope: /
+          background_color: "#EFF4F9"
+          theme_color: "#3F5161"
+          display: standalone

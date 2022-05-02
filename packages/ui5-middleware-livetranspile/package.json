@@ -9,6 +9,9 @@
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
     "directory": "packages/ui5-middleware-livetranspile"
   },
+  "scripts": {
+    "lint": "eslint lib"
+  },
   "dependencies": {
     "@babel/core": "^7.17.10",
     "@babel/preset-env": "^7.17.10",

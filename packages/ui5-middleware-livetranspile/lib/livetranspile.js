@@ -1,11 +1,11 @@
-const babel = require("@babel/core")
-const os = require("os")
-const log = require("@ui5/logger").getLogger("server:custommiddleware:livetranspile")
-const merge = require("lodash.merge")
+const babel = require("@babel/core");
+const os = require("os");
+const log = require("@ui5/logger").getLogger("server:custommiddleware:livetranspile");
+const merge = require("lodash.merge");
 
-let fileNotFoundError = new Error("file not found!")
-fileNotFoundError.code = 404
-fileNotFoundError.file = ""
+let fileNotFoundError = new Error("file not found!");
+fileNotFoundError.code = 404;
+fileNotFoundError.file = "";
 
 /**
  * Custom UI5 Server middleware example
@@ -25,94 +25,85 @@ fileNotFoundError.file = ""
  * @returns {function} Middleware function to use
  */
 module.exports = function ({ resources, options, middlewareUtil }) {
-    const config = options.configuration || {}
-    const plugins = config.transpileAsync
-        ? [
-              [
-                  "babel-plugin-transform-async-to-promises",
-                  {
-                      inlineHelpers: true
-                  }
-              ]
-          ]
-        : []
-    const babelConfig = config.babelConfig
-        ? config.babelConfig
-        : {
-              sourceMaps: "inline",
-              plugins,
-              presets: [
-                  [
-                      "@babel/preset-env",
-                      {
-                          targets: {
-                              browsers: "last 2 versions, ie 10-11"
-                          }
-                      }
-                  ]
-              ]
-          }
-    const filePatternConfig = config.filePattern || ".js"
-    return (req, res, next) => {
-        const reqPath = middlewareUtil.getPathname(req)
-        if (
-            reqPath &&
-            reqPath.endsWith(".js") &&
-            !reqPath.includes("resources/") &&
-            !(config.excludePatterns || []).some((pattern) => reqPath.includes(pattern))
-        ) {
-            const pathWithPattern = reqPath.replace(".js", filePatternConfig)
+	const config = options.configuration || {};
+	const plugins = config.transpileAsync
+		? [
+				[
+					"babel-plugin-transform-async-to-promises",
+					{
+						inlineHelpers: true,
+					},
+				],
+		  ]
+		: [];
+	const babelConfig = config.babelConfig
+		? config.babelConfig
+		: {
+				sourceMaps: "inline",
+				plugins,
+				presets: [
+					[
+						"@babel/preset-env",
+						{
+							targets: {
+								browsers: "last 2 versions, ie 10-11",
+							},
+						},
+					],
+				],
+		  };
+	const filePatternConfig = config.filePattern || ".js";
+	return (req, res, next) => {
+		const reqPath = middlewareUtil.getPathname(req);
+		if (reqPath && reqPath.endsWith(".js") && !reqPath.includes("resources/") && !(config.excludePatterns || []).some((pattern) => reqPath.includes(pattern))) {
+			const pathWithPattern = reqPath.replace(".js", filePatternConfig);
 
-            // grab the file via @ui5/fs.AbstractReader API
-            return resources.rootProject
-                .byGlob(pathWithPattern)
-                .then((resources) => {
-                    config.debug && log.info(`handling ${reqPath}...`)
+			// grab the file via @ui5/fs.AbstractReader API
+			return resources.rootProject
+				.byGlob(pathWithPattern)
+				.then((resources) => {
+					config.debug && log.info(`handling ${reqPath}...`);
 
-                    if (!resources || !resources.length) {
-                        fileNotFoundError.file = pathWithPattern
-                        throw fileNotFoundError
-                    }
+					if (!resources || !resources.length) {
+						fileNotFoundError.file = pathWithPattern;
+						throw fileNotFoundError;
+					}
 
-                    // prefer js over other extensions, otherwise grab first possible path
-                    const resource = resources.find((r) => r.getPath() === reqPath) || resources[0]
-                    if (resources.length > 1) {
-                        log.warn(
-                            `found more than 1 file for given pattern (${filePatternConfig}): ${resources
-                                .map((r) => r.getPath())
-                                .join(", ")} `
-                        )
-                        log.info(`using: ${resource.getPath()}`)
-                    }
+					// prefer js over other extensions, otherwise grab first possible path
+					const resource = resources.find((r) => r.getPath() === reqPath) || resources[0];
+					if (resources.length > 1) {
+						log.warn(`found more than 1 file for given pattern (${filePatternConfig}): ${resources.map((r) => r.getPath()).join(", ")} `);
+						log.info(`using: ${resource.getPath()}`);
+					}
 
-                    // read file into string
-                    return resource.getString()
-                })
-                .then((source) => {
-                    config.debug ? log.info(`...${reqPath} transpiled!`) : null
-                    const babelConfigForFile = merge({}, babelConfig, {
-                        filename: reqPath // necessary for source map <-> source assoc
-                    })
-                    return babel.transformAsync(source, babelConfigForFile)
-                })
-                .then((result) => {
-                    // send out transpiled source + source map
-                    res.type(".js")
-                    // since Babel does not care about linefeeds (https://github.com/babel/babel/issues/8921#issuecomment-492429934)
-                    // we have to search for any EOL character and replace it with correct EOL for this OS
-                    let correctLinefeed = result.code.replace(/\r\n|\r|\n/g, os.EOL)
-                    res.end(correctLinefeed)
-                })
-                .catch((err) => {
-                    if (err.code === 404) {
-                        log.warn(`...file not found: ${err.file}!`)
-                    } else {
-                        log.error(err)
-                    }
-                    next()
-                })
-        } else {
-            next()
-        }
-    }
-}
+					// read file into string
+					return resource.getString();
+				})
+				.then((source) => {
+					config.debug ? log.info(`...${reqPath} transpiled!`) : null;
+					const babelConfigForFile = merge({}, babelConfig, {
+						filename: reqPath, // necessary for source map <-> source assoc
+					});
+					return babel.transformAsync(source, babelConfigForFile);
+				})
+				.then((result) => {
+					// send out transpiled source + source map
+					res.type(".js");
+					// since Babel does not care about linefeeds (https://github.com/babel/babel/issues/8921#issuecomment-492429934)
+					// we have to search for any EOL character and replace it with correct EOL for this OS
+					let correctLinefeed = result.code.replace(/\r\n|\r|\n/g, os.EOL);
+					res.end(correctLinefeed);
+				})
+				.catch((err) => {
+					if (err.code === 404) {
+						log.warn(`...file not found: ${err.file}!`);
+					} else {
+						log.error(err);
+					}
+					next();
+				});
+		} else {
+			next();
+		}
+	};
+};

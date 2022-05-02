@@ -1,22 +1,21 @@
 {
-    "endOfLine": "lf",
-    "printWidth": 120,
-    "tabWidth": 4,
-    "trailingComma": "none",
-    "semi": false,
-    "editorconfig": false,
-    "overrides": [
-        {
-            "files": "*.json",
-            "options": {
-                "tabWidth": 2
-            }
-        },
-        {
-            "files": "*.yaml",
-            "options": {
-                "tabWidth": 2
-            }
-        }
-    ]
+	"endOfLine": "lf",
+	"printWidth": 120,
+	"tabWidth": 4,
+	"trailingComma": "none",
+	"semi": false,
+	"overrides": [
+		{
+			"files": "*.json",
+			"options": {
+				"tabWidth": 2
+			}
+		},
+		{
+			"files": "*.yaml",
+			"options": {
+				"tabWidth": 2
+			}
+		}
+	]
 }

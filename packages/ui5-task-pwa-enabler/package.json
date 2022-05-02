@@ -9,6 +9,9 @@
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
     "directory": "packages/ui5-task-pwa-enabler"
   },
+  "scripts": {
+    "lint": "eslint lib"
+  },
   "dependencies": {
     "@ui5/fs": "^2.0.6",
     "graceful-fs": "4.2.10",

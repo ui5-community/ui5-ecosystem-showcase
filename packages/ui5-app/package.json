@@ -24,7 +24,8 @@
     "test:uiveri5": "cd webapp/test/e2e && uiveri5 --debug conf.js",
     "test:wdi5": "wdio",
     "watch:build": "npm-watch build",
-    "watch": "npm-run-all prepare build --parallel watch:build start"
+    "watch": "npm-run-all prepare build --parallel watch:build start",
+    "lint": "eslint webapp"
   },
   "watch": {
     "build": {
@@ -47,9 +48,9 @@
     "@wdio/spec-reporter": "^7.19.5",
     "@wdio/sync": "^7.19.5",
     "babel-plugin-transform-async-to-promises": "^0.8.18",
-    "chromedriver": "^100.0.0",
-    "karma": "^6.3.19",
-    "karma-chrome-launcher": "^3.1.1",
+    "chromedriver": "^101.0.0",
+    "karma": "^6.3.16",
+    "karma-chrome-launcher": "^3.1.0",
     "karma-coverage": "^2.2.0",
     "karma-ui5": "^2.4.0",
     "mkdirp": "~1.0.4",

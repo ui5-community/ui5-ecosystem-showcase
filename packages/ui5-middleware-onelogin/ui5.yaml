@@ -1,4 +1,4 @@
-specVersion: '2.2'
+specVersion: "2.2"
 metadata:
   name: ui5-middleware-onelogin
 kind: extension

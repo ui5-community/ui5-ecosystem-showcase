@@ -1,0 +1,13 @@
+# Additionally ignore files for lint-staged
+/**/*.html
+/**/*.css
+/**/*.json
+/**/*.xml
+/**/*.properties
+/**/*.yaml
+/**/*.yml
+/**/*.svg
+/**/*.png
+
+# Additionally ignore folders for lint-staged
+/packages/ui5-middleware-cfdestination/test/**

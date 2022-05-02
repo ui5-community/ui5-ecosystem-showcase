@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const log = require("@ui5/logger").getLogger("server:custommiddleware:servestatic");
 
 const path = require("path");
@@ -15,15 +16,15 @@ const envOptionRegEx = /^\${env\.(.*)}$/;
  * @return {string|*}
  */
 const parseConfigOption = (optionValue) => {
-  if (!optionValue) {
-    return undefined;
-  }
-  if (envOptionRegEx.test(optionValue)) {
-    const envVariable = optionValue.match(envOptionRegEx)[1];
-    return process.env[envVariable];
-  } else {
-    return optionValue;
-  }
+	if (!optionValue) {
+		return undefined;
+	}
+	if (envOptionRegEx.test(optionValue)) {
+		const envVariable = optionValue.match(envOptionRegEx)[1];
+		return process.env[envVariable];
+	} else {
+		return optionValue;
+	}
 };
 
 /**
@@ -42,13 +43,13 @@ const parseConfigOption = (optionValue) => {
  * @returns {function} Middleware function to use
  */
 module.exports = function ({ resources, options }) {
-  let rootPath = parseConfigOption(options.configuration.rootPath);
-  if (!rootPath) {
-    throw new Error(`No Value for 'rootPath' supplied`);
-  }
-  // resolve the rootPath to be absolute (should happen in serveStatic already, but used for logging)
-  rootPath = path.resolve(rootPath);
-  // some logging to see the root path in case of issues
-  options.configuration.debug ? log.info(`Starting static serve from ${rootPath}`) : null;
-  return serveStatic(rootPath);
+	let rootPath = parseConfigOption(options.configuration.rootPath);
+	if (!rootPath) {
+		throw new Error(`No Value for 'rootPath' supplied`);
+	}
+	// resolve the rootPath to be absolute (should happen in serveStatic already, but used for logging)
+	rootPath = path.resolve(rootPath);
+	// some logging to see the root path in case of issues
+	options.configuration.debug ? log.info(`Starting static serve from ${rootPath}`) : null;
+	return serveStatic(rootPath);
 };
