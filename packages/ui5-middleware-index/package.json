@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-index",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "description": "UI5 middleware for delivering a dedicated welcome/start page",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",

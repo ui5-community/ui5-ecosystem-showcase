@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-i18ncheck@0.3.8...ui5-task-i18ncheck@0.3.9) (2022-05-22)
+
+
+### Bug Fixes
+
+* **ui5-task-i18ncheck:** update xmldom ([#616](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/616)) ([6e45c87](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6e45c87172c366b6933c4a9b66cfee82af6d2d62)), closes [#613](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/613)
+
+
+
+
+
 ## [0.3.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-i18ncheck@0.3.7...ui5-task-i18ncheck@0.3.8) (2022-04-19)
 
 

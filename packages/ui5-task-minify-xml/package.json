@@ -1,6 +1,6 @@
 {
   "name": "ui5-task-minify-xml",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "UI5 task for minifying XML resources (like views, fragments, etc.)",
   "author": "Kristian Kraljic",
   "license": "Apache-2.0",
