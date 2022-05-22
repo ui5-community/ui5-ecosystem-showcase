@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@ui5/logger": "^2.0.1",
-    "xmldom": "^0.6.0"
+    "@xmldom/xmldom": "^0.8.2"
   },
   "ui5": {
     "dependencies": []
