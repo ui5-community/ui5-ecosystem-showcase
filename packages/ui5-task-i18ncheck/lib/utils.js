@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-const xmldom = require("xmldom");
+const xmldom = require("@xmldom/xmldom");
 
 //SECTION:READ FILES
 
