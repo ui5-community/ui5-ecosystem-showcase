@@ -17,7 +17,7 @@
     "connect-livereload": "^0.6.1",
     "livereload": "^0.9.3",
     "portfinder": "^1.0.28",
-    "yargs": "^17.3.1"
+    "yargs": "^17.5.1"
   },
   "ui5": {
     "dependencies": []

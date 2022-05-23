@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@ui5/logger": "^2.0.1",
-    "dotenv": "^16.0.0",
+    "dotenv": "^16.0.1",
     "lodash.escaperegexp": "^4.1.2",
     "replacestream": "^4.0.3"
   },
