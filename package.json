@@ -10,29 +10,28 @@
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git"
   },
   "scripts": {
-    "build": "yarn workspace ui5-app build",
-    "build:pwa": "yarn workspace ui5-app build:pwa",
-    "clean": "yarn workspace ui5-app clean",
-    "dev": "yarn workspace ui5-app dev",
-    "start": "yarn workspace ui5-app start",
-    "//*start:ci": "intentionally not using 'yarn workspace' here to avoid exit/return code mayhem",
+    "build": "pnpm build --filter ui5-app",
+    "build:pwa": "pnpm build:pwa --filter ui5-app",
+    "clean": "pnpm clean --filter ui5-app",
+    "dev": "pnpm  dev --filter ui5-app",
+    "start": "pnpm  start --filter ui5-app",
+    "//*start:ci": "intentionally not using 'pnpm workspace' here to avoid exit/return code mayhem",
     "start:ci": "cd packages/ui5-app && npm run start:ci &",
     "//*test:ci": "1. start ui5 serve and bg it - 2. run the e2e tests in parallel - 3. kill the bg'ed ui5 serve",
-    "pretest:ci": "yarn start:ci",
+    "pretest:ci": "pnpm start:ci -r",
     "test:ci": "wait-on tcp:1081 && HEADLESS=true npm run test:wdi5",
     "posttest:ci": "kill -KILL $(lsof -t -i:1081)",
-    "test:opa5": "yarn workspace ui5-app test",
-    "test:opa5-ci": "yarn workspace ui5-app test:ci",
-    "//deprecated! test:uiveri5": "yarn workspace ui5-app test:uiveri5",
-    "test:wdi5": "yarn workspace ui5-app test:wdi5",
-    "test:ui5-middleware-cfdestination": "yarn workspace ui5-middleware-cfdestination test",
-    "test:ui5-task-zipper": "yarn workspace ui5-task-zipper test",
+    "test:opa5": "pnpm test --filter ui5-app",
+    "test:opa5-ci": "pnpm test:ci --filter ui5-app",
+    "//deprecated! test:uiveri5": "pnpm test:uiveri5 --filter ui5-app",
+    "test:wdi5": "pnpm test:wdi5 --filter ui5-app",
+    "test:ui5-middleware-cfdestination": "pnpm test --filter ui5-middleware-cfdestination ",
+    "test:ui5-task-zipper": "pnpm test --filter  ui5-task-zipper ",
     "test:all": " npm-run-all test:opa5-ci test:ui5-middleware-cfdestination test:ui5-task-zipper",
-    "watch": "yarn workspace ui5-app watch",
+    "watch": "pnpm watch --filter ui5-app",
     "release:version": "lerna version",
     "release:publish": "lerna publish from-git --yes --no-verify-access",
     "release:publish-manual": "lerna publish from-package --yes --no-verify-access",
-    "lint": "yarn workspaces run lint",
     "lint:staged": "lint-staged",
     "lint:commit": "commitlint -e",
     "prettier": "prettier --write .",
@@ -69,9 +68,6 @@
       "@commitlint/config-conventional"
     ]
   },
-  "workspaces": [
-    "packages/*"
-  ],
   "resolutions": {
     "minimist": "^1.2.6"
   }
