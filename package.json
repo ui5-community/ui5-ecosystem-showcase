@@ -15,12 +15,10 @@
     "clean": "pnpm clean --filter ui5-app",
     "dev": "pnpm  dev --filter ui5-app",
     "start": "pnpm  start --filter ui5-app",
-    "//*start:ci": "intentionally not using 'pnpm workspace' here to avoid exit/return code mayhem",
-    "start:ci": "cd packages/ui5-app && npm run start:ci &",
-    "//*test:ci": "1. start ui5 serve and bg it - 2. run the e2e tests in parallel - 3. kill the bg'ed ui5 serve",
-    "pretest:ci": "pnpm start:ci -r",
-    "test:ci": "wait-on tcp:1081 && HEADLESS=true npm run test:wdi5",
-    "posttest:ci": "kill -KILL $(lsof -t -i:1081)",
+    "//*test:ci": "1. start ui5 serve and bg it - 2. run the e2e tests in parallel",
+    "test:ci": "HEADLESS=true npm-run-all -p -r test:ci:pre test:ci:exec",
+    "test:ci:pre": "pnpm start:ci --filter ui5-app",
+    "test:ci:exec": "wait-on tcp:1081 && pnpm run test:wdi5",
     "test:opa5": "pnpm test --filter ui5-app",
     "test:opa5-ci": "pnpm test:ci --filter ui5-app",
     "//deprecated! test:uiveri5": "pnpm test:uiveri5 --filter ui5-app",
@@ -43,7 +41,7 @@
     "hooks:pre-push": "npm-run-all --sequential lint:commit"
   },
   "devDependencies": {
-    "@commitlint/cli": "17.0.0",
+    "@commitlint/cli": "17.0.1",
     "@commitlint/config-conventional": "17.0.0",
     "@prettier/plugin-xml": "^2.2.0",
     "beachball": "^2.22.3",
@@ -56,12 +54,8 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^2.6.2",
     "prettier-plugin-properties": "^0.1.0",
-    "pretty-quick": "^3.1.3"
-  },
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
+    "pretty-quick": "^3.1.3",
+    "wait-on": "^6.0.1"
   },
   "commitlint": {
     "extends": [

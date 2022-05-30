@@ -32,7 +32,8 @@
     "nock": "^13.2.4",
     "prettier": "^2.6.2",
     "replace-in-file": "^6.3.2",
-    "supertest": "^6.2.3"
+    "supertest": "^6.2.3",
+    "wait-on": "^6.0.1"
   },
   "ui5": {
     "dependencies": []
