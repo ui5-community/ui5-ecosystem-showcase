@@ -5,6 +5,7 @@ const minimatch = require("minimatch");
 const etag = require("etag");
 const fresh = require("fresh");
 
+// eslint-disable-next-line jsdoc/require-jsdoc
 function isFresh(req, res) {
 	return fresh(req.headers, {
 		etag: res.getHeader("ETag"),
@@ -31,6 +32,7 @@ const envVariables = process.env;
 
 // manage placeholders
 let placeholderStrings = {};
+// eslint-disable-next-line jsdoc/require-jsdoc
 function addPlaceholderString(key, value) {
 	placeholderStrings[key] = value;
 }
@@ -47,6 +49,7 @@ if (typeof envVariables === "object") {
 }
 
 // create the helper function to pipe the stream and replace the placeholders
+// eslint-disable-next-line jsdoc/require-jsdoc
 function createReplacePlaceholdersDestination({ resource, isDebug }) {
 	const replaceStreamRegExp = `(${Object.keys(placeholderStrings)
 		.map((placeholder) => {
@@ -64,19 +67,19 @@ function createReplacePlaceholdersDestination({ resource, isDebug }) {
 /**
  * Custom UI5 Server middleware example
  *
- * @param {Object} parameters Parameters
- * @param {Object} parameters.resources Resource collections
+ * @param {object} parameters Parameters
+ * @param {object} parameters.resources Resource collections
  * @param {module:@ui5/fs.AbstractReader} parameters.resources.all Reader or Collection to read resources of the
  *                                        root project and its dependencies
  * @param {module:@ui5/fs.AbstractReader} parameters.resources.rootProject Reader or Collection to read resources of
  *                                        the project the server is started in
  * @param {module:@ui5/fs.AbstractReader} parameters.resources.dependencies Reader or Collection to read resources of
  *                                        the projects dependencies
- * @param {Object} parameters.options Options
+ * @param {object} parameters.options Options
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @param {object} parameters.middlewareUtil Specification version dependent interface to a
  *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
- * @returns {function} Middleware function to use
+ * @returns {Function} Middleware function to use
  */
 module.exports = function createMiddleware({ resources, options, middlewareUtil }) {
 	const isDebug = options.configuration && options.configuration.debug;
@@ -99,6 +102,7 @@ module.exports = function createMiddleware({ resources, options, middlewareUtil 
 	}
 
 	// helper to determine whether to handle the request or not
+	// eslint-disable-next-line jsdoc/require-jsdoc
 	function handleRequest(path) {
 		return filesToInclude.some((value) => {
 			return minimatch(path, value);

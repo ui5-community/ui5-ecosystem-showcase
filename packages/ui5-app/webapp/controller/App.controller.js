@@ -10,6 +10,7 @@ sap.ui.define(["test/Sample/controller/BaseController"], (Controller) => {
 			var baseUrl = "BASE_URL_PLACEHOLDER";
 			var randomTextToReplace = "some.deeply.nested.ANOTHER_PLACEHOLDER";
 			var version = "${project.version}";
+			console.log(baseUrl, randomTextToReplace, version);
 		},
 	});
 });

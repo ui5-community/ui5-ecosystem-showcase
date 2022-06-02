@@ -6,14 +6,15 @@ const log = require("@ui5/logger").getLogger("builder:customtask:zipper");
 /**
  * Zips the application content of the output folder
  *
- * @param {Object} parameters Parameters
- * @param {DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {AbstractReader} parameters.dependencies Reader or Collection to read dependency files
- * @param {Object} parameters.options Options
+ * @param {object} parameters Parameters
+ * @param {module:@ui5/fs.DuplexCollection} parameters.workspace DuplexCollection to read and write files
+ * @param {module:@ui5/fs.AbstractReader} parameters.dependencies Reader or Collection to read dependency files
+ * @param {object} parameters.options Options
  * @param {string} parameters.options.projectName Project name
  * @param {string} parameters.options.projectNamespace Project namespace
  * @param {string} [parameters.options.archiveName] ZIP archive name (defaults to project namespace)
  * @param {string} [parameters.options.additionalFiles] List of additional files to be included
+ * @param {object} parameters.taskUtil the task utilities
  * @returns {Promise<undefined>} Promise resolving with undefined once data has been written
  */
 module.exports = async function ({ workspace, dependencies, options, taskUtil }) {

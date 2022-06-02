@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+/* eslint-disable no-unused-vars, jsdoc/require-jsdoc */
 const injector = require("connect-injector");
 
 // mostly directly taken from https://github.com/schmich/connect-browser-sync/blob/master/index.js

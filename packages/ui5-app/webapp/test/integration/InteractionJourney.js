@@ -43,7 +43,7 @@ sap.ui.define(["sap/ui/test/opaQunit", "sap/ui/test/actions/EnterText", "sap/ui/
 		Then.waitFor({
 			viewName: "Main",
 			id: "DateTimePicker",
-			success: function (oDateTimePicker) {
+			success: function (/* oDateTimePicker */) {
 				Opa5.assert.ok(true, "i have no idea how to work OPA5 for framework-immanent popup interaction");
 			},
 		}).and.iTeardownMyApp();

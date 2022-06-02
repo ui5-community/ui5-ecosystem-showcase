@@ -38,6 +38,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 	const uniqueResources = new Set();
 
 	// utility to lookup unique JS dependencies
+	// eslint-disable-next-line jsdoc/require-jsdoc
 	function findUniqueJSDeps(content, depPath) {
 		// use espree to parse the UI5 modules and extract the UI5 module dependencies
 		try {
@@ -87,6 +88,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 	}
 
 	// utility to lookup unique XML dependencies
+	// eslint-disable-next-line jsdoc/require-jsdoc
 	function findUniqueXMLDeps(node, ns = {}) {
 		if (node) {
 			// attributes

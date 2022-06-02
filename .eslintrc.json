@@ -7,7 +7,7 @@
   "parserOptions": {
     "ecmaVersion": 2022
   },
-  "extends": ["eslint:recommended"],
+  "extends": ["eslint:recommended", "plugin:jsdoc/recommended"],
   "plugins": ["jsdoc"],
   "rules": {
     "no-mixed-spaces-and-tabs": "warn"

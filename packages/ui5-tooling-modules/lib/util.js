@@ -87,7 +87,7 @@ const that = (module.exports = {
 	 * @param {string} moduleName the module name
 	 * @param {object} [options] additional options
 	 * @param {boolean} [options.skipCache] skip the module cache
-	 * @returns the content of the resource or undefined
+	 * @returns {string} the content of the resource or undefined
 	 */
 	getResource: async function getResource(moduleName, { skipCache }) {
 		let bundling = false;
