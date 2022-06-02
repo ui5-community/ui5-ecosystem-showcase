@@ -90,11 +90,11 @@ yarn test:opa5
 yarn dev # > start the local ui5 server tooling
 # in another terminal:
 # (uses Chrome)
-yarn test:wdi5 # > run e2e tests via wdi5 from /packages/ui5-app/webapp/test/e2e-wdi5/*
+yarn test:wdi5 # > run e2e tests via wdi5 from /packages/ui5-app/webapp/test/e2e/*
 
 # 6) Utilize CI for end-to-end tests
 # using Chrome headless
-yarn test:ci # > start ui5 server in bg, runs wdi5- + UIveri5-tests, shuts down the ui5 server
+yarn test:ci # > start ui5 server in background, runs wdi5-tests, shuts down the ui5 server
 ```
 
 ## Using tasks and middlewares in your project
