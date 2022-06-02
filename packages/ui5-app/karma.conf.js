@@ -1,5 +1,14 @@
 module.exports = function (config) {
 	config.set({
+		// Make Karma work with pnpm.
+		// See: https://github.com/pnpm/pnpm/issues/720#issuecomment-954120387
+		plugins: Object.keys(require("./package").devDependencies)
+			.filter((packageName) => {
+				return packageName.startsWith("karma-");
+			})
+			.flatMap((packageName) => {
+				return [require(packageName)];
+			}),
 		frameworks: ["ui5"],
 		browsers: ["Chrome"],
 		browserConsoleLogOptions: {
