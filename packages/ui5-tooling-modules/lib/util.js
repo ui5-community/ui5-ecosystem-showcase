@@ -108,6 +108,7 @@ const that = (module.exports = {
 
 					// create a bundle (maybe in future we should again load the )
 					const bundle = await rollup.rollup({
+						preserveSymlinks: true,
 						input: moduleName,
 						plugins: [
 							(function (options) {
