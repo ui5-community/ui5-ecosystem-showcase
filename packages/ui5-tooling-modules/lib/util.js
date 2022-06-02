@@ -47,7 +47,37 @@ function isUI5Module(content, path) {
 	}
 }
 
-module.exports = {
+const that = (module.exports = {
+	/**
+	 * Resolves the bare module name from node_modules utilizing the require.resolve
+	 *
+	 * @param {string} moduleName name of the module (e.g. "chart.js/auto")
+	 * @returns {string} the path of the module in the filesystem
+	 */
+	resolveModule: function resolveModule(moduleName) {
+		let modulePath;
+		try {
+			// try the regular lookup
+			modulePath = require.resolve(moduleName);
+		} catch (err) {
+			// gracefully ignore the error
+			//console.error(err);
+		}
+		if (!modulePath) {
+			// fallback for PNPM and/or DEBUG scenario
+			try {
+				// try the lookup relative to CWD
+				modulePath = require.resolve(moduleName, {
+					paths: [require("path").join(process.cwd())],
+				});
+			} catch (err) {
+				// gracefully ignore the error
+				//console.error(err);
+			}
+		}
+		return modulePath;
+	},
+
 	/**
 	 * Lookup and returns a resource from the node_modules. In case
 	 * of JS modules an UI5 AMD-like bundle is being created. For
@@ -63,17 +93,8 @@ module.exports = {
 		let bundling = false;
 
 		try {
-			// try to resolve the module name from node modules (bare module)
-			const modulePath = require.resolve(moduleName);
+			const modulePath = that.resolveModule(moduleName);
 			const moduleExt = path.extname(modulePath).toLowerCase();
-			// DEBUG: when linking the middleware, you need to use custom paths
-			/*
-            const modulePath = require.resolve(moduleName, {
-                paths: [
-                    require("path").join(process.cwd())
-                ]
-            });
-            */
 
 			let cachedBundle = bundleCache[moduleName];
 			if (skipCache || !cachedBundle) {
@@ -86,11 +107,22 @@ module.exports = {
 
 					// create a bundle (maybe in future we should again load the )
 					const bundle = await rollup.rollup({
+						preserveSymlinks: true,
 						input: moduleName,
 						plugins: [
+							(function (options) {
+								"use strict";
+								// we skip to transform CSS assets
+								return {
+									name: "resolve-pnpm",
+									resolveId(source) {
+										return that.resolveModule(source);
+									},
+								};
+							})(),
 							nodeResolve({
 								browser: true,
-								mainFields: ["module", "main"],
+								mainFields: [/*"browser", */ "module", "main"],
 							}),
 							json(),
 							require("./rollup-skip-assets")(),
@@ -128,8 +160,8 @@ module.exports = {
 			return cachedBundle;
 		} catch (err) {
 			if (bundling) {
-				console.error(`Couldn't bundle ${moduleName}: ${err}`);
+				console.error(`Couldn't bundle ${moduleName}: ${err}`, err);
 			}
 		}
 	},
-};
+});

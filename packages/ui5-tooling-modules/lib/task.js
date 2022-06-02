@@ -2,7 +2,7 @@
 const log = require("@ui5/logger").getLogger("builder:customtask:ui5-tooling-modules");
 const resourceFactory = require("@ui5/fs").resourceFactory;
 
-const { getResource } = require("./util");
+const { getResource, resolveModule } = require("./util");
 
 const { readFileSync } = require("fs");
 const espree = require("espree");
@@ -72,7 +72,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 								// should also be checked for its dependencies to finally handle them
 								// here if they also require to be transpiled by the task
 								try {
-									const depPath = require.resolve(dep);
+									const depPath = resolveModule(dep);
 									const depContent = readFileSync(depPath, { encoding: "utf8" });
 									findUniqueJSDeps(depContent, depPath);
 								} catch (err) {}
@@ -120,7 +120,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 									// should also be checked for its dependencies to finally handle them
 									// here if they also require to be transpiled by the task
 									try {
-										const depPath = require.resolve(dep);
+										const depPath = resolveModule(dep);
 										const depContent = readFileSync(depPath, { encoding: "utf8" });
 										findUniqueJSDeps(depContent, depPath);
 									} catch (ex) {}
