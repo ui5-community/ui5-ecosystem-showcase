@@ -145,7 +145,7 @@ exports.config = {
 	},
 
 	wdi5: {
-		screenshotPath: require("path").join("test", "e2e-wdi5", "report", "screenshots"),
+		screenshotPath: require("path").join("test", "e2e", "report", "screenshots"),
 		logLevel: process.env.HEADLESS ? "silent" : "error", // error | verbose | silent
 		platform: "browser", // browser | android | ios | electron
 		url: "index.html", // path to your bootstrap html file
