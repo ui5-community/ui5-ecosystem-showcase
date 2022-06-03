@@ -48,6 +48,12 @@ if (typeof envVariables === "object") {
 	}
 }
 
+// check if we found any strings to replace
+let hasStringsToReplace = Object.keys(placeholderStrings).length > 0
+if(!hasStringsToReplace){
+    log.warn(`No strings to replace provided either through the process environment or middleware config`);
+}
+
 // create the helper function to pipe the stream and replace the placeholders
 // eslint-disable-next-line jsdoc/require-jsdoc
 function createReplacePlaceholdersDestination({ resource, isDebug }) {
@@ -111,6 +117,12 @@ module.exports = function createMiddleware({ resources, options, middlewareUtil 
 
 	// returns the middleware function
 	return async function stringreplacer(req, res, next) {
+		if(!hasStringsToReplace){
+            // Nothing to do
+			next();
+			return;
+        }
+
 		const pathname = middlewareUtil.getPathname(req);
 		const resource = await resources.all.byPath(pathname);
 		if (!resource) {
