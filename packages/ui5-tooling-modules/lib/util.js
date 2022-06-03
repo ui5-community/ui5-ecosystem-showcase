@@ -10,6 +10,7 @@ const commonjs = require("@rollup/plugin-commonjs");
 const json = require("@rollup/plugin-json");
 const nodePolyfills = require("rollup-plugin-polyfill-node");
 const injectProcessEnv = require("rollup-plugin-inject-process-env");
+const amd = require("rollup-plugin-amd");
 
 const espree = require("espree");
 const estraverse = require("estraverse");
@@ -129,6 +130,7 @@ const that = (module.exports = {
 							commonjs({
 								defaultIsModuleExports: true,
 							}),
+							amd(),
 							nodePolyfills(),
 							injectProcessEnv({
 								NODE_ENV: "production",
