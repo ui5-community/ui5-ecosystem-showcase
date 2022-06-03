@@ -20,7 +20,7 @@ const { getResource } = require("./util");
  * @param {object} parameters.options Options
  * @param {object} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @param {boolean} [parameters.options.configuration.skipCache] Flag whether the module cache for the bundles should be skipped
- * @returns {function} Middleware function to use
+ * @returns {Function} Middleware function to use
  */
 module.exports = function ({ resources, options, middlewareUtil }) {
 	const config = options.configuration || {};
