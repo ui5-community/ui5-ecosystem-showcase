@@ -14,8 +14,8 @@ const list = {
 };
 
 // this suite implemented straigh-fwd, no page objects
-describe("binding", () => {
-	it("Other view: PeopleList: items aggregation + amount of items", async () => {
+describe("binding", function () {
+	it("Other view: PeopleList: items aggregation + amount of items", async function () {
 		await browser.asControl(navFwdButton).firePress();
 
 		const oList = await browser.asControl(list);

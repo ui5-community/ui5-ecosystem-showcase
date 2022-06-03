@@ -50,6 +50,8 @@ importers:
       '@wdio/sync': ^7.19.7
       babel-plugin-transform-async-to-promises: ^0.8.18
       chromedriver: ^101.0.0
+      eslint-plugin-mocha: ^10.0.5
+      eslint-plugin-wdio: ^7.19.4
       karma: ^6.3.20
       karma-chrome-launcher: ^3.1.1
       karma-coverage: ^2.2.0
@@ -91,6 +93,8 @@ importers:
       '@wdio/sync': 7.19.7
       babel-plugin-transform-async-to-promises: 0.8.18
       chromedriver: 101.0.0
+      eslint-plugin-mocha: 10.0.5
+      eslint-plugin-wdio: 7.19.4
       karma: 6.3.20
       karma-chrome-launcher: 3.1.1
       karma-coverage: 2.2.0
@@ -4599,7 +4603,7 @@ packages:
       mississippi: 3.0.0
       mkdirp: 0.5.6
       move-concurrently: 1.0.1
-      promise-inflight: 1.0.1
+      promise-inflight: 1.0.1_bluebird@3.7.2
       rimraf: 2.7.1
       ssri: 6.0.2
       unique-filename: 1.1.1
@@ -6521,6 +6525,21 @@ packages:
       spdx-expression-parse: 3.0.1
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /eslint-plugin-mocha/10.0.5:
+    resolution: {integrity: sha512-H5xuD5NStlpaKLqUWYC5BsMx8fHgrIYsdloFbONUTc2vgVNiJcWdKoX29Tt0BO75QgAltplPLIziByMozGGixA==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      eslint: '>=7.0.0'
+    dependencies:
+      eslint-utils: 3.0.0
+      rambda: 7.1.4
+    dev: true
+
+  /eslint-plugin-wdio/7.19.4:
+    resolution: {integrity: sha512-l3Hs5/b0EAlekJMoiqOM66pevaClA2CCiECVuh5ByrYZ3yWjF6W/JkkjiA3WRllRH2BbcuDoI9OaVD3F3wPedQ==}
+    engines: {node: '>=12.0.0'}
     dev: true
 
   /eslint-scope/5.1.1:
@@ -10692,7 +10711,7 @@ packages:
       npm-pick-manifest: 3.0.2
       npm-registry-fetch: 4.0.7
       osenv: 0.1.5
-      promise-inflight: 1.0.1
+      promise-inflight: 1.0.1_bluebird@3.7.2
       promise-retry: 1.1.1
       protoduck: 5.0.1
       rimraf: 2.7.1
@@ -11072,6 +11091,17 @@ packages:
         optional: true
     dev: true
 
+  /promise-inflight/1.0.1_bluebird@3.7.2:
+    resolution: {integrity: sha512-6zWPyEOFaQBJYcGMHBKTKJ3u6TBsnMFOIZSa6ce1e/ZrrsOlnHRHbabMjLiBYKp+n44X9eUI6VUPaukCXHuG4g==}
+    peerDependencies:
+      bluebird: '*'
+    peerDependenciesMeta:
+      bluebird:
+        optional: true
+    dependencies:
+      bluebird: 3.7.2
+    dev: true
+
   /promise-retry/1.1.1:
     resolution: {integrity: sha512-StEy2osPr28o17bIW776GtwO6+Q+M9zPiZkYfosciUUMYqjhU/ffwRAH0zN2+uvGyUsn8/YICIHRzLbPacpZGw==}
     engines: {node: '>=0.12'}
@@ -11268,6 +11298,10 @@ packages:
   /quick-lru/5.1.1:
     resolution: {integrity: sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==}
     engines: {node: '>=10'}
+    dev: true
+
+  /rambda/7.1.4:
+    resolution: {integrity: sha512-bPK8sSiVHIC7CqdWga8R+hRi5hfc4hK6S01lZW4KrLwSNryQoKaCOJA9GNiF20J7Nbe1vejRfR37/ASQXFL5EA==}
     dev: true
 
   /random-bytes/1.0.0:
