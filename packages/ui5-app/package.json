@@ -75,7 +75,7 @@
     "ui5-task-stringreplacer": "^0.6.6",
     "ui5-task-transpile": "^0.3.10",
     "ui5-task-zipper": "^0.4.13",
-    "ui5-tooling-modules": "^0.3.2",
+    "ui5-tooling-modules": "^0.3.3",
     "wdio-chromedriver-service": "^7.3.2",
     "wdio-ui5-service": "^0.9.0"
   },
