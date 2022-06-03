@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-stringreplacer@0.3.6...ui5-middleware-stringreplacer@0.3.7) (2022-06-03)
+
+
+### Bug Fixes
+
+* handle missing strings ([#617](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/617)) ([465be5a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/465be5a3185b8509f812e058e73591a7c5488fe1))
+
+
+
+
+
 ## [0.3.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-stringreplacer@0.3.5...ui5-middleware-stringreplacer@0.3.6) (2022-05-23)
 
 **Note:** Version bump only for package ui5-middleware-stringreplacer
