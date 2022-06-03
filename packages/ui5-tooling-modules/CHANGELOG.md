@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.3.2...ui5-tooling-modules@0.3.3) (2022-06-03)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** add support for pnpm/symlinks and AMD ([#618](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/618)) ([69922ca](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/69922ca6987946f6484c9365ea3f46415f1ed9f3))
+
+
+
+
+
 ## [0.3.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.3.1...ui5-tooling-modules@0.3.2) (2022-05-23)
 
 **Note:** Version bump only for package ui5-tooling-modules

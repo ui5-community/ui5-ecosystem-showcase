@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-flatten-library@0.2.6...ui5-task-flatten-library@0.2.7) (2022-06-03)
+
+
+### Bug Fixes
+
+* **ui5-task-flatten-library:** support files without extensions ([1aa61ee](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1aa61ee4d448ab1056679d92ccd188f9c3a81e95)), closes [#606](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/606)
+
+
+
+
+
 ## [0.2.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-flatten-library@0.2.5...ui5-task-flatten-library@0.2.6) (2022-05-22)
 
 **Note:** Version bump only for package ui5-task-flatten-library
