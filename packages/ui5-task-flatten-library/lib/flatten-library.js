@@ -25,7 +25,7 @@ module.exports = async function ({ workspace, taskUtil, options }) {
 
 	const libraryResourcesPrefix = `/resources/${options.projectNamespace}/`;
 	const testResourcesPrefix = "/test-resources/";
-	const allWorkspaceResources = await workspace.byGlob("/**/*.*");
+	const allWorkspaceResources = await workspace.byGlob("/**/*");
 
 	await Promise.all(
 		allWorkspaceResources.map(async (resource) => {
