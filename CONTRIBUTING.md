@@ -5,7 +5,7 @@ A sub-package **may** have an additional CONTRIBUTING.md file if needed.
 
 ## Development Environment
 
-### pre-requisites
+### Pre-Requisites
 
 - [PNPM](https://pnpm.io/installation) >= 7.1.7
 - A [Long-Term Support version](https://nodejs.org/en/about/releases/) of Node.js
@@ -46,7 +46,7 @@ The UI5 application is using [QUnit][qunit], [OPA5][opa5] and [WDIO5][wdio5] tes
 [opa5]: https://openui5.hana.ondemand.com/topic/22f175e7084247bc896c15280af9d1dc
 [wdi5]: https://github.com/js-soft/wdi5#readme
 
-### GitHub actions
+### GitHub Actions
 
 In case of facing issues with the central GitHub actions you can verify the GitHub actions locally. You need to install [act](https://github.com/nektos/act). `act` requires [Docker](https://www.docker.com/). To execute e.g. the `tests.yml` workflow locally, just run the following command:
 
