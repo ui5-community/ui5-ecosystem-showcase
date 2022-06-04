@@ -8,7 +8,7 @@ const path = require("path")
  * @param {string} tmpDir path to copy ui5 app (that acts as the test app to)
  */
 async function copyUI5app(tmpDir) {
-	await fs.mkdir(tmpDir)
+	await fs.mkdirs(tmpDir)
 	const filterFn = (src, _) => {
 		const yo = ["node_modules", "dist", "ui5.yaml", "xs-app.json"].find((node) => src.endsWith(node))
 		if (yo === "node_modules") {
