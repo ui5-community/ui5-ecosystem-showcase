@@ -37,7 +37,9 @@
     "prettier:staged": "pretty-quick --staged --verbose",
     "prepare": "node ./.husky/skip.js || husky install",
     "hooks:pre-commit": "npm-run-all --sequential prettier:staged lint:staged",
-    "hooks:pre-push": "npm-run-all --sequential lint:commit"
+    "hooks:pre-push": "npm-run-all --sequential lint:commit",
+    "ncu": "for d in ./packages/*/ ; do (cd \"$d\" && ncu); done",
+    "ncu-u": "for d in ./packages/*/ ; do (cd \"$d\" && ncu -u); done"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.0.2",
