@@ -128,6 +128,7 @@ importers:
   packages/ui5-middleware-cfdestination:
     specifiers:
       '@sap/approuter': ^11.0.1
+      '@ui5/cli': ^2.14.9
       '@ui5/logger': ^2.0.1
       ava: ^4.2.0
       get-port: ^6.1.2
@@ -142,6 +143,7 @@ importers:
       '@ui5/logger': 2.0.1
       request: 2.88.2
     devDependencies:
+      '@ui5/cli': 2.14.9
       ava: 4.3.0
       get-port: 6.1.2
       nock: 13.2.6
@@ -361,6 +363,7 @@ importers:
 
   packages/ui5-task-zipper:
     specifiers:
+      '@ui5/cli': ^2.14.9
       '@ui5/fs': ^2.0.6
       '@ui5/logger': ^2.0.1
       ava: ^4.2.0
@@ -371,6 +374,7 @@ importers:
       '@ui5/logger': 2.0.1
       yazl: 2.5.1
     devDependencies:
+      '@ui5/cli': 2.14.9
       ava: 4.3.0
       yauzl: 2.10.0
 
@@ -4405,7 +4409,7 @@ packages:
   /axios/0.25.0:
     resolution: {integrity: sha512-cD8FOb0tRH3uuEe6+evtAbgJtfxr7ly3fQjYcMcuPlgkwVS9xboaVIpcDV+cYQe+yGykgwZCs1pzjntcGa6l5g==}
     dependencies:
-      follow-redirects: 1.15.1
+      follow-redirects: 1.15.1_debug@4.3.2
     transitivePeerDependencies:
       - debug
     dev: true
@@ -4421,7 +4425,7 @@ packages:
   /axios/0.27.2_debug@4.3.2:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
-      follow-redirects: 1.15.1
+      follow-redirects: 1.15.1_debug@4.3.2
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug
@@ -4761,7 +4765,7 @@ packages:
       mississippi: 3.0.0
       mkdirp: 0.5.6
       move-concurrently: 1.0.1
-      promise-inflight: 1.0.1
+      promise-inflight: 1.0.1_bluebird@3.7.2
       rimraf: 2.7.1
       ssri: 6.0.2
       unique-filename: 1.1.1
@@ -5985,7 +5989,6 @@ packages:
         optional: true
     dependencies:
       ms: 2.1.2
-    dev: false
 
   /debug/4.3.3:
     resolution: {integrity: sha512-/zxw5+vh1Tfv+4Qn7a5nsbcJKPaSvCDhojn6FEl9vupwK2VCSDtEiEtqr8DFtzYFOdz63LBkxec7DYuc2jon6Q==}
@@ -7353,7 +7356,6 @@ packages:
         optional: true
     dependencies:
       debug: 4.3.2
-    dev: false
 
   /forever-agent/0.6.1:
     resolution: {integrity: sha512-j0KLYPhm6zeac4lz3oJ3o65qvgQCcPubiyotZrXqEaG4hNagNYO8qdlUrX5vwqv9ohqeT/Z3j6+yW067yWWdUw==}
@@ -11052,7 +11054,7 @@ packages:
       npm-pick-manifest: 3.0.2
       npm-registry-fetch: 4.0.7
       osenv: 0.1.5
-      promise-inflight: 1.0.1
+      promise-inflight: 1.0.1_bluebird@3.7.2
       promise-retry: 1.1.1
       protoduck: 5.0.1
       rimraf: 2.7.1
@@ -11464,6 +11466,17 @@ packages:
     peerDependenciesMeta:
       bluebird:
         optional: true
+    dev: true
+
+  /promise-inflight/1.0.1_bluebird@3.7.2:
+    resolution: {integrity: sha512-6zWPyEOFaQBJYcGMHBKTKJ3u6TBsnMFOIZSa6ce1e/ZrrsOlnHRHbabMjLiBYKp+n44X9eUI6VUPaukCXHuG4g==}
+    peerDependencies:
+      bluebird: '*'
+    peerDependenciesMeta:
+      bluebird:
+        optional: true
+    dependencies:
+      bluebird: 3.7.2
     dev: true
 
   /promise-retry/1.1.1:

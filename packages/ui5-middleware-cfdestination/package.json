@@ -27,6 +27,7 @@
     "request": "^2.88.2"
   },
   "devDependencies": {
+    "@ui5/cli": "^2.14.9",
     "ava": "^4.2.0",
     "get-port": "^6.1.2",
     "nock": "^13.2.4",
