@@ -5,12 +5,13 @@ Middleware for [ui5-server](https://github.com/SAP/ui5-server), doing a live str
 ## Install
 
 ```bash
+# Using npm
 npm install ui5-middleware-stringreplacer --save-dev
-```
 
-or
+# Using pnpm
+pnpm add --save-dev ui5-middleware-stringreplacer
 
-```bash
+# Using yarn
 yarn add --dev ui5-middleware-stringreplacer
 ```
 

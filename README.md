@@ -37,22 +37,20 @@ packages
 
 ## Getting Started
 
-The `ui5-ecosystem-showcase` repository is a monorepo based on `yarn` workspaces. Instead of `npm` you need yarn to run the project.
+First of all, make sure to use a proper [long-term support version](https://nodejs.org/en/about/releases/) of Node.js. You can download it from [nodejs.org](https://nodejs.org/en/download/) or use [`nvm`](https://github.com/nvm-sh/nvm).
+
+The `ui5-ecosystem-showcase` repository is a monorepo based using [`pnpm`](https://pnpm.io/). To get started with `pnpm`, it's best to install it globally:
 
 ```bash
-# Install yarn (if not done already)
-npm i -g yarn
+# Install pnpm (if not done already)
+npm i -g pnpm
 ```
 
-To get started with the project, please ensure to run `yarn` once to install all required dependencies in your node_modules folder.
+To get started with the project, please ensure to run `pnpm install` once to setup your mono repo and download and install all required dependencies.
 
 ```bash
-# optional: use dedicated node version via nvm
-nvm use
-
-# use yarn --ignore-engines if you're on an (officially) unsupported node version
-# Install the node modules via yarn
-yarn --ignore-engines
+# Install the node modules via pnpm
+pnpm install
 ```
 
 To get started just run one of the following commands:
@@ -68,33 +66,33 @@ To get started just run one of the following commands:
 # - POC: same proxy middleware reused at $server/proxy2
 # - cf-style proxy destinations at $server/$destinations
 # - ability to execute the same UI actions across all browsers pointed to http://localhost:1081/index.html
-yarn dev
+pnpm dev
 
 # 2) Run the Component-preload build + transpile steps
 # which in addition to the above
 # - transpiles all ui5-app/webapp/**/* to ui5-app/dist
 # - live reload of ui5-app/dist/**/*
-yarn watch
+pnpm watch
 
-# 3) Run the dist folder (needs manual build via `yarn build`)
-yarn start
+# 3) Run the dist folder (needs manual build via `pnpm build` first)
+pnpm start
 
 # 4) Run Unit-(QUnit-)Tests and Integration-(OPA5-)Tests
 # against "as-is" sources in /webapp/* (of /packages/ui5-app)
 # with Chrome
 # note: no transpiling, no bundling/building
-yarn test:opa5
+pnpm test:opa5
 
 # 5) Run end-to-end tests
 # in dedicated terminal: 
-yarn dev # > start the local ui5 server tooling
+pnpm dev # > start the local ui5 server tooling
 # in another terminal:
 # (uses Chrome)
-yarn test:wdi5 # > run e2e tests via wdi5 from /packages/ui5-app/webapp/test/e2e/*
+pnpm test:wdi5 # > run e2e tests via wdi5 from /packages/ui5-app/webapp/test/e2e/*
 
 # 6) Utilize CI for end-to-end tests
 # using Chrome headless
-yarn test:ci # > start ui5 server in background, runs wdi5-tests, shuts down the ui5 server
+pnpm test:ci # > start ui5 server in background, runs wdi5-tests, shuts down the ui5 server
 ```
 
 ## Using tasks and middlewares in your project

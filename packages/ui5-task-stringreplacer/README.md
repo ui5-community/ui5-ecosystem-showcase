@@ -5,12 +5,13 @@ Task for [ui5-builder](https://github.com/SAP/ui5-builder), replacing string val
 ## Install
 
 ```bash
+# Using npm
 npm install ui5-task-stringreplacer --save-dev
-```
 
-or
+# Using pnpm
+pnpm add --save-dev ui5-task-stringreplacer
 
-```bash
+# Using yarn
 yarn add --dev ui5-task-stringreplacer
 ```
 

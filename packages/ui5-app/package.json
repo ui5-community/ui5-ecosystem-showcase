@@ -18,7 +18,6 @@
     "start": "ui5 serve --config ui5-dist.yaml --port 1081 --open index.html",
     "start:ci": "ui5 serve --config ui5-min.yaml --port 1081",
     "dev": "ui5 serve --port 1081 --open index.html",
-    "debug": "node --inspect node_modules/.bin/ui5 serve --port 1081",
     "test": "karma start",
     "test:ci": "karma start karma-ci.conf.js",
     "test:wdi5": "wdio",

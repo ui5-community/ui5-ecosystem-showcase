@@ -1,6 +1,6 @@
 {
   "npmClient": "pnpm",
-  "useWorkspaces": true,
+  "packages": ["packages/*"],
   "command": {
     "publish": {
       "conventionalCommits": true

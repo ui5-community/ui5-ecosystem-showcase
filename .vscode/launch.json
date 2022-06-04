@@ -13,15 +13,15 @@
             "sourceMaps": true,
             "disableNetworkCache": true,
             "showAsyncStacks": true,
-            "preLaunchTask": "yarn-debug",
-            "postDebugTask": "postdebug-kill"
+            "preLaunchTask": "pnpm-debug-start",
+            "postDebugTask": "pnpm-debug-stop"
         },
         {
             "type": "node",
             "request": "launch",
             "name": "Debug Middlewares",
-            "args": [ "serve" ],
-            "program": "${workspaceRoot}/node_modules/@ui5/cli/bin/ui5.js",
+            "runtimeExecutable": "pnpm",
+            "args": [ "dev" ],
             "cwd": "${workspaceFolder}/packages/ui5-app",
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"
@@ -30,8 +30,8 @@
             "type": "node",
             "request": "launch",
             "name": "Debug Tasks",
+            "runtimeExecutable": "pnpm",
             "args": [ "build" ],
-            "program": "${workspaceRoot}/node_modules/@ui5/cli/bin/ui5.js",
             "cwd": "${workspaceFolder}/packages/ui5-app",
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"

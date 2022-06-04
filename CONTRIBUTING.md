@@ -7,16 +7,16 @@ A sub-package **may** have an additional CONTRIBUTING.md file if needed.
 
 ### pre-requisites
 
-- [Yarn](https://yarnpkg.com/lang/en/docs/install/) >= 1.22.10
-- A [Long-Term Support version](https://nodejs.org/en/about/releases/) of node.js
+- [PNPM](https://pnpm.io/installation) >= 7.1.7
+- A [Long-Term Support version](https://nodejs.org/en/about/releases/) of Node.js
 - (optional) [commitizen](https://github.com/commitizen/cz-cli#installing-the-command-line-tool) for managing commit messages.
 
 ### Initial Setup
 
 The initial setup is trivial:
 
-- clone this repo
-- `yarn`
+- Clone this repo
+- Run `pnpm install`
 
 ### Commit Messages format
 
@@ -33,17 +33,17 @@ and during the central CI build and will **fail the build** if issues are found.
 
 ### Compiling
 
-This project is implemented using plain ECMAScript without any compilation / transpilation steps.
+This project is implemented using plain ECMAScript without any compilation / transpilation steps. Meanwhile, for some packages TypeScript is used (e.g. `ui5-middleware-onelogin`). Those packages have to be transpiled using the TypeScript compiler.
 
 ### Testing
 
-There is no consistent testing tooling used for this repository. Some of the sub-packages are using [AVA][ava].
+There is no consistent testing tooling used for this repository. Some of the sub-packages are using [AVA][ava] (e.g. `ui5-middleware-cfdestination` or `ui5-task-zipper`). Creating tests for your tooling extensions is highly recommended and appreciated.
 
-The UI5 application is using [OPA5][opa5], [UIVeri5][ui5veri5] and [WDIO5][wdio5] tests for validation.
+The UI5 application is using [QUnit][qunit], [OPA5][opa5] and [WDIO5][wdio5] tests for validation.
 
 [ava]: https://github.com/avajs/ava
+[qunit]: https://openui5.hana.ondemand.com/topic/09d145cd86ee4f8e9d08715f1b364c51
 [opa5]: https://openui5.hana.ondemand.com/topic/22f175e7084247bc896c15280af9d1dc
-[uiveri5]: https://github.com/SAP/ui5-uiveri5
 [wdi5]: https://github.com/js-soft/wdi5#readme
 
 ### Release Life-Cycle
@@ -57,15 +57,15 @@ This monorepo uses Lerna's [Independent][lerna-mode] mode which allows subpackag
 Performing a release requires push permissions to the repository.
 
 - Ensure you are on the default branch and synced with origin.
-- `yarn run release:version`
+- `pnpm release:version`
 - Follow the lerna CLI instructions.
 - Track the newly pushed **commit** with the message (`chore(release): publish`) which triggers the `Release (automatic)` GitHub action until successful completion.
 - Inspect the newly artifacts published on npmjs.com.
 
 ### Upgrading the version of the dependencies
 
-To upgrade the version of the dependencies `yarn upgrade-interactive` is used. To execute the command in all packages you need to run the following command:
+To upgrade the version of the dependencies `pnpm upgrade` is used. To execute the command in all packages you need to run the following command:
 
 ```bash
-yarn upgrade-interactive --latest
+pnpm -r -L -i update
 ```
