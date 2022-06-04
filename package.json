@@ -25,7 +25,7 @@
     "test:wdi5": "pnpm --filter ui5-app test:wdi5",
     "test:ui5-middleware-cfdestination": "pnpm --filter ui5-middleware-cfdestination test",
     "test:ui5-task-zipper": "pnpm --filter ui5-task-zipper test",
-    "test:all": "pnpm --workspace-concurrency 1 -r test",
+    "test:all": "pnpm --filter !ui5-app --workspace-concurrency 1 test",
     "watch": "pnpm --filter ui5-app watch",
     "release:version": "lerna version",
     "release:publish": "lerna publish from-git --yes --no-verify-access",
