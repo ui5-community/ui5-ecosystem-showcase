@@ -12,15 +12,19 @@ jobs:
     runs-on: ubuntu-latest
     if: "contains(github.event.head_commit.message, 'chore(release): publish')"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "14"
 
-      - name: Install dependencies
-        run: yarn --no-lockfile
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7.1.7
+          run_install: |
+            - args: [--frozen-lockfile]
 
       - name: Publish to NPM
         run: |

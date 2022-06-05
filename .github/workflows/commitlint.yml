@@ -5,11 +5,9 @@ on:
   # but only for the main branch
   # See: https://github.community/t/duplicate-checks-on-push-and-pull-request-simultaneous-event/18012
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
 
 env:
   HUSKY_SKIP: true
@@ -18,7 +16,7 @@ jobs:
   commitlint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - uses: wagoid/commitlint-github-action@v4

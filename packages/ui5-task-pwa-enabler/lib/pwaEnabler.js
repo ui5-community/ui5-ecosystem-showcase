@@ -42,13 +42,13 @@ let default_manifest = {
 /**
  * UI5 PWA enabler
  *
- * @param {Object} parameters Parameters
+ * @param {object} parameters Parameters
  * @param {module:@ui5/fs.DuplexCollection} parameters.workspace DuplexCollection to read and write files
  * @param {module:@ui5/fs.AbstractReader} parameters.dependencies Reader or Collection to read dependency files
- * @param {Object} parameters.options Options
+ * @param {object} parameters.options Options
  * @param {string} parameters.options.projectName Project name
  * @param {string} [parameters.options.projectNamespace] Project namespace if available
- * @param {Object} [parameters.options.configuration] Task configuration if given in ui5.yaml
+ * @param {object} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ workspace, dependencies, options: { projectName, projectNamespace, configuration } }) {
@@ -94,10 +94,10 @@ async function addServiceworkerRegistration() {
 /**
  * Writes a new file using the DuplexCollection provided by the caller of this module
  *
- * @param {object} parameters
+ * @param {object} parameters Parameters
  * @param {string} parameters.path The path to the resource that should be written
  * @param {string} parameters.content The content to write to the file
- * @return {Promise} which resolves once the data has been written
+ * @returns {Promise} which resolves once the data has been written
  */
 function writeFile({ path, content }) {
 	return ws.write(new ui5Fs.Resource({ path: path, string: content }));
@@ -106,7 +106,7 @@ function writeFile({ path, content }) {
 /**
  * Takes the template for the offlinePage service worker and fills it with the values provided in parameters
  *
- * @param {object} parameters
+ * @param {object} parameters Parameters
  * @param {string} parameters.offlinePage Path to the file that will be used as offline page
  * @returns {Promise<undefined>}
  */
@@ -126,7 +126,7 @@ async function addOfflineCopySw() {
 /**
  * Takes the template for the offlineCopyWithBackup service worker and fills it with the values provided in parameters
  *
- * @param {object} parameters
+ * @param {object} parameters Parameters
  * @param {string} parameters.offlinePage Path to the file that will be used as offline page
  * @returns {Promise<undefined>}
  */
@@ -137,7 +137,7 @@ async function addOfflineCopyBackupSw(parameters) {
 /**
  * Takes the template for the cacheFirst service worker and fills it with the values provided in parameters
  *
- * @param {object} parameters
+ * @param {object} parameters Parameters
  * @param {string} parameters.preCache Path to the file that will be used as offline page
  * @returns {Promise<undefined>}
  */
@@ -169,7 +169,7 @@ async function addCacheFirstSw(parameters) {
 /**
  * Takes the template for the advancedCache service worker and fills it with the values provided in parameters
  *
- * @param {object} parameters
+ * @param {object} parameters Parameters
  * @param {string} parameters.preCache Path to the file that will be used as offline page
  * @param {string} parameters.networkFirst Path to the file that will be used as offline page
  * @param {string} parameters.avoidCaching Path to the file that will be used as offline page

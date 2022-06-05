@@ -17,6 +17,7 @@ const envVariables = process.env;
 
 // manage placeholders
 let placeholderStrings = {};
+// eslint-disable-next-line jsdoc/require-jsdoc
 function addPlaceholderString(key, value) {
 	placeholderStrings[key] = value;
 }
@@ -40,6 +41,7 @@ if (!hasStringsToReplace) {
 }
 
 // create the helper function to pipe the stream and replace the placeholders
+// eslint-disable-next-line jsdoc/require-jsdoc
 function createReplacePlaceholdersDestination({ resource, isDebug }) {
 	const replaceStreamRegExp = `(${Object.keys(placeholderStrings)
 		.map((placeholder) => {
@@ -57,10 +59,10 @@ function createReplacePlaceholdersDestination({ resource, isDebug }) {
 /**
  * Task to replace strings from files
  *
- * @param {Object} parameters Parameters
- * @param {DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {AbstractReader} parameters.dependencies Reader or Collection to read dependency files
- * @param {Object} parameters.options Options
+ * @param {object} parameters Parameters
+ * @param {module:@ui5/fs.DuplexCollection} parameters.workspace DuplexCollection to read and write files
+ * @param {module:@ui5/fs.AbstractReader} parameters.dependencies Reader or Collection to read dependency files
+ * @param {object} parameters.options Options
  * @param {Array} parameters.options.files all file name patterns where replace should occur
  * @param {Array} [parameters.options.strings] Array of objects containing placeholder and replacment text value
  * @returns {Promise<undefined>} Promise resolving with undefined once data has been written

@@ -16,8 +16,8 @@ const dateTimePicker = {
 };
 
 // this suite implemented straigh-fwd, no page objects
-describe("interaction", () => {
-	it("should manually allow date input", async () => {
+describe("interaction", function () {
+	it("should manually allow date input", async function () {
 		await browser.goTo({ sHash: "#/" });
 
 		// wdi5 fluent async api to
@@ -35,7 +35,7 @@ describe("interaction", () => {
 		expect(newValue).toMatch(/11/);
 	});
 
-	it("should input date via popup + click", async () => {
+	it("should input date via popup + click", async function () {
 		const today = new Date();
 		let month = today.getMonth() + 2; // we want next month
 		month = (month < 10 ? "0" + month : month).toString();

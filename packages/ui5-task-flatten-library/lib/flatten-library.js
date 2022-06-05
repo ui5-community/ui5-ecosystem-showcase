@@ -4,12 +4,12 @@ const log = require("@ui5/logger").getLogger("builder:customtask:ui5-task-flatte
  * Task to flatten the library folder structure.
  * This is required for deployments to SAP NetWeaver.
  *
- * @param {Object} parameters Parameters
- * @param {DuplexCollection} parameters.workspace DuplexCollection to read and write files
+ * @param {object} parameters Parameters
+ * @param {module:@ui5/fs.DuplexCollection} parameters.workspace DuplexCollection to read and write files
  * @param {module:@ui5/builder.tasks.TaskUtil} [parameters.taskUtil] TaskUtil
- * @param {Object} parameters.options Options
- * @param {Object} parameters.options.projectName Project name
- * @param {Object} parameters.options.projectNamespace Project namespace
+ * @param {object} parameters.options Options
+ * @param {object} parameters.options.projectName Project name
+ * @param {object} parameters.options.projectNamespace Project namespace
  * @returns {Promise<undefined>} Promise resolving with undefined once data has been written
  */
 module.exports = async function ({ workspace, taskUtil, options }) {

@@ -9,70 +9,57 @@
     "type": "git",
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git"
   },
+  "packageManager": "pnpm@7.1.7",
   "scripts": {
-    "build": "yarn workspace ui5-app build",
-    "build:pwa": "yarn workspace ui5-app build:pwa",
-    "clean": "yarn workspace ui5-app clean",
-    "dev": "yarn workspace ui5-app dev",
-    "start": "yarn workspace ui5-app start",
-    "//*start:ci": "intentionally not using 'yarn workspace' here to avoid exit/return code mayhem",
-    "start:ci": "cd packages/ui5-app && npm run start:ci &",
-    "//*test:ci": "1. start ui5 serve and bg it - 2. run the e2e tests in parallel - 3. kill the bg'ed ui5 serve",
-    "pretest:ci": "yarn start:ci",
-    "test:ci": "wait-on tcp:1081 && HEADLESS=true npm run test:wdi5",
-    "posttest:ci": "kill -KILL $(lsof -t -i:1081)",
-    "test:opa5": "yarn workspace ui5-app test",
-    "test:opa5-ci": "yarn workspace ui5-app test:ci",
-    "//deprecated! test:uiveri5": "yarn workspace ui5-app test:uiveri5",
-    "test:wdi5": "yarn workspace ui5-app test:wdi5",
-    "test:ui5-middleware-cfdestination": "yarn workspace ui5-middleware-cfdestination test",
-    "test:ui5-task-zipper": "yarn workspace ui5-task-zipper test",
-    "test:all": " npm-run-all test:opa5-ci test:ui5-middleware-cfdestination test:ui5-task-zipper",
-    "watch": "yarn workspace ui5-app watch",
+    "build": "pnpm --filter ui5-app build",
+    "build:pwa": "pnpm --filter ui5-app build:pwa",
+    "clean": "pnpm --filter ui5-app clean",
+    "dev": "pnpm --filter ui5-app dev ",
+    "start": "pnpm --filter ui5-app start",
+    "//*test:ci": "1. start ui5 serve and bg it - 2. run the e2e tests in parallel",
+    "test:ci": "HEADLESS=true npm-run-all -p -r test:ci:pre test:ci:exec",
+    "test:ci:pre": "pnpm --filter ui5-app start:ci",
+    "test:ci:exec": "wait-on tcp:1081 && pnpm run test:wdi5",
+    "test:opa5": "pnpm --filter ui5-app test",
+    "test:opa5-ci": "pnpm --filter ui5-app test:ci",
+    "test:wdi5": "pnpm --filter ui5-app test:wdi5",
+    "test:ui5-middleware-cfdestination": "pnpm --filter ui5-middleware-cfdestination test",
+    "test:ui5-task-zipper": "pnpm --filter ui5-task-zipper test",
+    "test:all": "pnpm --filter !ui5-app --workspace-concurrency 1 test",
+    "watch": "pnpm --filter ui5-app watch",
     "release:version": "lerna version",
     "release:publish": "lerna publish from-git --yes --no-verify-access",
     "release:publish-manual": "lerna publish from-package --yes --no-verify-access",
-    "lint": "yarn workspaces run lint",
+    "lint": "pnpm --workspace-concurrency 1 -r lint",
     "lint:staged": "lint-staged",
     "lint:commit": "commitlint -e",
     "prettier": "prettier --write .",
     "prettier:staged": "pretty-quick --staged --verbose",
-    "ncu": "for d in ./packages/*/ ; do (cd \"$d\" && ncu); done",
-    "ncu-u": "for d in ./packages/*/ ; do (cd \"$d\" && ncu -u); done",
     "prepare": "node ./.husky/skip.js || husky install",
     "hooks:pre-commit": "npm-run-all --sequential prettier:staged lint:staged",
-    "hooks:pre-push": "npm-run-all --sequential lint:commit"
+    "hooks:pre-push": "npm-run-all --sequential lint:commit",
+    "ncu": "for d in ./packages/*/ ; do (cd \"$d\" && ncu); done",
+    "ncu-u": "for d in ./packages/*/ ; do (cd \"$d\" && ncu -u); done"
   },
   "devDependencies": {
-    "@commitlint/cli": "17.0.0",
-    "@commitlint/config-conventional": "17.0.0",
+    "@commitlint/cli": "^17.0.2",
+    "@commitlint/config-conventional": "^17.0.2",
     "@prettier/plugin-xml": "^2.2.0",
-    "beachball": "^2.22.3",
-    "cz-conventional-changelog": "3.3.0",
-    "eslint": "^8.15.0",
-    "eslint-plugin-jsdoc": "^39.3.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^8.16.0",
+    "eslint-plugin-jsdoc": "^39.3.2",
     "husky": "^8.0.1",
-    "lerna": "^4.0.0",
-    "lint-staged": "^12.4.1",
+    "lerna": "^5.0.0",
+    "lint-staged": "^13.0.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.6.2",
     "prettier-plugin-properties": "^0.1.0",
-    "pretty-quick": "^3.1.3"
-  },
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
+    "pretty-quick": "^3.1.3",
+    "wait-on": "^6.0.1"
   },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
     ]
-  },
-  "workspaces": [
-    "packages/*"
-  ],
-  "resolutions": {
-    "minimist": "^1.2.6"
   }
 }

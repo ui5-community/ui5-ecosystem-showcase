@@ -7,7 +7,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "lint": "eslint src",
-    "test": "npx playwright test"
+    "test:onelogin": "npx playwright test"
   },
   "keywords": [
     "UI5-tooling",

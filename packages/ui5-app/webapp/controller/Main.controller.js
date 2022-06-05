@@ -1,4 +1,4 @@
-sap.ui.define(["test/Sample/controller/BaseController", "sap/m/MessageToast"], (Controller, MessageToast, Chart) => {
+sap.ui.define(["test/Sample/controller/BaseController", "sap/m/MessageToast"], (Controller, MessageToast) => {
 	"use strict";
 
 	return Controller.extend("test.Sample.controller.Main", {
@@ -40,7 +40,7 @@ sap.ui.define(["test/Sample/controller/BaseController", "sap/m/MessageToast"], (
 		onPress(oEvent) {
 			MessageToast.show(`${oEvent.getSource().getId()} pressed`);
 		},
-		onBoo(oEvent) {
+		onBoo() {
 			MessageToast.show(`👻`);
 		},
 	});

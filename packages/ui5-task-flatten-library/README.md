@@ -9,12 +9,13 @@ Task for [ui5-builder](https://github.com/SAP/ui5-builder), to prepare build res
 ## Install
 
 ```bash
-npm install --save-dev ui5-task-flatten-library
-```
+# Using npm
+npm install ui5-task-flatten-library --save-dev
 
-or
+# Using pnpm
+pnpm add --save-dev ui5-task-flatten-library
 
-```bash
+# Using yarn
 yarn add --dev ui5-task-flatten-library
 ```
 

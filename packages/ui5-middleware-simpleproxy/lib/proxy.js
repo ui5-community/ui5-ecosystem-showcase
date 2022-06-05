@@ -23,9 +23,9 @@ const env = {
  * passed to environment variable except `"false"` will default to `true`. If both
  * values are undefined or null, return `true` as well.
  *
- * @param {?boolean} environmentValue Value of the environment variable
+ * @param {boolean} [environmentValue] Value of the environment variable
  *                                  UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL
- * @param {?boolean} configurationValue Value from the ui5.yaml configuration
+ * @param {boolean} [configurationValue] Value from the ui5.yaml configuration
  * @returns {boolean} Indicator whether to require strict SSL checking
  */
 function deriveStrictSSL(environmentValue, configurationValue) {
@@ -46,9 +46,8 @@ function deriveStrictSSL(environmentValue, configurationValue) {
  * Get the HTTP headers from environment variable if exists, otherwise get from the configuration
  *
  * @param {string} environmentValue The value coming from the enviroment variable 'UI5_MIDDLEWARE_HTTP_HEADERS'
- * @param {Object} configuration The configuration object
- *
- * @returns {Object} http headers
+ * @param {object} configuration The configuration object
+ * @returns {object} http headers
  */
 function getHttpHeaders(environmentValue, configuration) {
 	let httpHeaders;
@@ -66,7 +65,6 @@ function getHttpHeaders(environmentValue, configuration) {
  *
  * @param {object} environmentValue The enviroment variable object UI5_MIDDLEWARE_SIMPLE_PROXY_*
  * @param {object} configuration The configuration object
- *
  * @returns {string} Basic Authentication token username:password format
  */
 function getBasicAuthenticationToken(environmentValue = {}, configuration = {}) {
@@ -81,9 +79,8 @@ function getBasicAuthenticationToken(environmentValue = {}, configuration = {}) 
  * Get query parameters from environment variable if exists, otherwise get from the configuration
  *
  * @param {string} environmentValue The value coming from the enviroment variable 'UI5_MIDDLEWARE_SIMPLE_PROXY_QUERY_PARAMETERS'
- * @param {Object} configuration The configuration object
- *
- * @returns {Object} Query parameters
+ * @param {object} configuration The configuration object
+ * @returns {object} Query parameters
  */
 function getQueryParameters(environmentValue, configuration) {
 	let queryParameters;
@@ -99,17 +96,17 @@ function getQueryParameters(environmentValue, configuration) {
 /**
  * Custom UI5 Server middleware example
  *
- * @param {Object} parameters Parameters
- * @param {Object} parameters.resources Resource collections
+ * @param {object} parameters Parameters
+ * @param {object} parameters.resources Resource collections
  * @param {module:@ui5/fs.AbstractReader} parameters.resources.all Reader or Collection to read resources of the
  *                                        root project and its dependencies
  * @param {module:@ui5/fs.AbstractReader} parameters.resources.rootProject Reader or Collection to read resources of
  *                                        the project the server is started in
  * @param {module:@ui5/fs.AbstractReader} parameters.resources.dependencies Reader or Collection to read resources of
  *                                        the projects dependencies
- * @param {Object} parameters.options Options
+ * @param {object} parameters.options Options
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
- * @returns {function} Middleware function to use
+ * @returns {Function} Middleware function to use
  */
 module.exports = function ({ resources, options }) {
 	const isDebug = options.configuration && options.configuration.debug;
