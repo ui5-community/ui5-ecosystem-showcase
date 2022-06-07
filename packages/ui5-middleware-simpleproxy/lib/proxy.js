@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, no-useless-escape */
 let proxy = require("express-http-proxy");
 const log = require("@ui5/logger").getLogger("server:custommiddleware:proxy");
 const minimatch = require("minimatch");
@@ -20,16 +19,24 @@ const env = {
 /**
  * @typedef {object} [configuration] configuration
  * @property {string} baseUri - The baseUri to proxy.
+ // eslint-disable-next-line jsdoc/no-undefined-types
  * @property {boolean|yo<confirm>} [strictSSL] Ignore strict SSL checks.
  * @property {string} [limit] This sets the body size limit, If the body size is larger than the specified (or default) limit,
 a 413 Request Entity Too Large error will be returned
+ // eslint-disable-next-line jsdoc/no-undefined-types
  * @property {boolean|yo<confirm>} [removeETag] Removes the ETag header from the response to avoid conditional requests.
  * @property {string} [username] Username used for Basic Authentication.
+ // eslint-disable-next-line jsdoc/no-undefined-types
  * @property {string|yo<password>} [password] Password used for Basic Authentication.
+ // eslint-disable-next-line jsdoc/no-undefined-types
  * @property {map|yo<input>} [httpHeaders] Http headers set for the proxied request. Will overwrite the http headers from the request.
+ // eslint-disable-next-line jsdoc/no-undefined-types
  * @property {map|yo<input>} [query] Query parameters set for the proxied request. Will overwrite the parameters from the request.
+ // eslint-disable-next-line jsdoc/no-undefined-types
  * @property {string[]|yo<input>} [excludePatterns] Array of exclude patterns using glob syntax
+ // eslint-disable-next-line jsdoc/no-undefined-types
  * @property {boolean|yo<confirm>} [skipCache] Remove the cache guid when serving from the FLP launchpad if it matches an excludePattern
+ // eslint-disable-next-line jsdoc/no-undefined-types
  * @property {boolean|yo<confirm>} [debug] see output
  */
 
@@ -124,6 +131,7 @@ function getQueryParameters(environmentValue, configuration) {
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @returns {Function} Middleware function to use
  */
+// eslint-disable-next-line no-unused-vars
 module.exports = function ({ resources, options }) {
 	const isDebug = options.configuration && options.configuration.debug;
 	// Environment wins over YAML configuration when loading settings
@@ -133,7 +141,7 @@ module.exports = function ({ resources, options }) {
 	const providedQueryParameters = getQueryParameters(env.query, options.configuration);
 	isDebug && log.info(`Starting proxy for baseUri ${providedBaseUri}`);
 	// determine the uri parts (protocol, baseUri, path)
-	let baseUriParts = providedBaseUri.match(/(https|http)\:\/\/([^/]*)(\/.*)?/i);
+	let baseUriParts = providedBaseUri.match(/(https|http):\/\/([^/]*)(\/.*)?/i);
 	if (!baseUriParts) {
 		throw new Error(`The baseUri ${providedBaseUri} is not valid!`);
 	}
@@ -155,7 +163,7 @@ module.exports = function ({ resources, options }) {
 		filter:
 			excludePatterns &&
 			Array.isArray(excludePatterns) &&
-			function (req, res) {
+			function (req) {
 				const pattern = !excludePatterns.some((glob) => {
 					isDebug && log.info(`Proxy request ${req.url} is matched to glob "${glob}": ${minimatch(req.url, glob)} ${providedBaseUri}`);
 
