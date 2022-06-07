@@ -69,7 +69,7 @@ const that = (module.exports = {
 			try {
 				// try the lookup relative to CWD
 				modulePath = require.resolve(moduleName, {
-					paths: [require("path").join(process.cwd())],
+					paths: [process.cwd()],
 				});
 			} catch (err) {
 				// gracefully ignore the error
