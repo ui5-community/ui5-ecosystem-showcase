@@ -18,6 +18,22 @@ const env = {
 };
 
 /**
+ * @typedef {object} [configuration] configuration
+ * @property {string} baseUri - The baseUri to proxy.
+ * @property {boolean|yo<confirm>} [strictSSL] Ignore strict SSL checks.
+ * @property {string} [limit] This sets the body size limit, If the body size is larger than the specified (or default) limit,
+a 413 Request Entity Too Large error will be returned
+ * @property {boolean|yo<confirm>} [removeETag] Removes the ETag header from the response to avoid conditional requests.
+ * @property {string} [username] Username used for Basic Authentication.
+ * @property {string|yo<password>} [password] Password used for Basic Authentication.
+ * @property {map|yo<input>} [httpHeaders] Http headers set for the proxied request. Will overwrite the http headers from the request.
+ * @property {map|yo<input>} [query] Query parameters set for the proxied request. Will overwrite the parameters from the request.
+ * @property {string[]|yo<input>} [excludePatterns] Array of exclude patterns using glob syntax
+ * @property {boolean|yo<confirm>} [skipCache] Remove the cache guid when serving from the FLP launchpad if it matches an excludePattern
+ * @property {boolean|yo<confirm>} [debug] see output
+ */
+
+/**
  * Handle decision between configuration and environment value while processing
  * string values from environment and possible null and undefined values. Any string
  * passed to environment variable except `"false"` will default to `true`. If both
