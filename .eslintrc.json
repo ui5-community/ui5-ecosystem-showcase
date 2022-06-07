@@ -11,5 +11,11 @@
   "plugins": ["jsdoc"],
   "rules": {
     "no-mixed-spaces-and-tabs": "warn"
+  },
+  "globals": {
+    "yo": "writable",
+    "confirm": "writable",
+    "map": "writable",
+    "input": "writable"
   }
 }
