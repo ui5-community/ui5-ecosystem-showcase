@@ -19,9 +19,9 @@ var firstTime: boolean = true;
  * @typedef {Object} [configuration] configuration
  * @property {string} path - The path to use
  * @property {string} [username] the username
- * @property {string} [password] the password
- * @property {boolean} [useCertificate] use certificate login instead of username/password
- * @property {boolean} [debug] see output
+ * @property {string|yo<password>} [password] the password
+ * @property {boolean|yo<confirm>} [useCertificate] use certificate login instead of username/password
+ * @property {boolean|yo<confirm>} [debug] see output
  */
 /**
  * Custom UI5 Server middleware example
