@@ -90,7 +90,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 	// utility to lookup unique XML dependencies
 	// eslint-disable-next-line jsdoc/require-jsdoc
 	function findUniqueXMLDeps(node, ns = {}) {
-		if (node) {
+		if (typeof node === "object") {
 			// attributes
 			Object.keys(node)
 				.filter((key) => key.startsWith("@_"))
@@ -106,31 +106,33 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 				.filter((key) => !key.startsWith("@_"))
 				.forEach((key) => {
 					const children = Array.isArray(node[key]) ? node[key] : [node[key]];
-					children.forEach((child) => {
-						const nodeParts = /(?:([^:]*):)?(.*)/.exec(key);
-						if (nodeParts) {
-							// skip #text nodes
-							let module = nodeParts[2];
-							if (module !== "#text") {
-								// only add those dependencies whose namespace is known
-								let namespace = ns[nodeParts[1] || ""];
-								if (typeof namespace === "string") {
-									namespace = namespace.replace(/\./g, "/");
-									const dep = `${namespace}/${module}`;
-									uniqueDeps.add(dep);
-									// each dependency which can be resolved via the NPM package name
-									// should also be checked for its dependencies to finally handle them
-									// here if they also require to be transpiled by the task
-									try {
-										const depPath = resolveModule(dep);
-										const depContent = readFileSync(depPath, { encoding: "utf8" });
-										findUniqueJSDeps(depContent, depPath);
-									} catch (ex) {}
+					children
+						.filter((child) => typeof child === "object")
+						.forEach((child) => {
+							const nodeParts = /(?:([^:]*):)?(.*)/.exec(key);
+							if (nodeParts) {
+								// skip #text nodes
+								let module = nodeParts[2];
+								if (module !== "#text") {
+									// only add those dependencies whose namespace is known
+									let namespace = ns[nodeParts[1] || ""];
+									if (typeof namespace === "string") {
+										namespace = namespace.replace(/\./g, "/");
+										const dep = `${namespace}/${module}`;
+										uniqueDeps.add(dep);
+										// each dependency which can be resolved via the NPM package name
+										// should also be checked for its dependencies to finally handle them
+										// here if they also require to be transpiled by the task
+										try {
+											const depPath = resolveModule(dep);
+											const depContent = readFileSync(depPath, { encoding: "utf8" });
+											findUniqueJSDeps(depContent, depPath);
+										} catch (ex) {}
+									}
+									findUniqueXMLDeps(child, ns);
 								}
-								findUniqueXMLDeps(child, ns);
 							}
-						}
-					});
+						});
 				});
 		}
 	}
