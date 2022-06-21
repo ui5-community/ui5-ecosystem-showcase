@@ -44,7 +44,7 @@ importers:
       '@wdio/spec-reporter': ^7.19.7
       '@wdio/sync': ^7.19.7
       babel-plugin-transform-async-to-promises: ^0.8.18
-      chromedriver: ^101.0.0
+      chromedriver: ^102.0.0
       eslint-plugin-mocha: ^10.0.5
       eslint-plugin-wdio: ^7.19.4
       karma: ^6.3.20
@@ -87,7 +87,7 @@ importers:
       '@wdio/spec-reporter': 7.20.0_@wdio+cli@7.20.1
       '@wdio/sync': 7.20.1
       babel-plugin-transform-async-to-promises: 0.8.18
-      chromedriver: 101.0.0
+      chromedriver: 102.0.0
       eslint-plugin-mocha: 10.0.5
       eslint-plugin-wdio: 7.19.4
       karma: 6.3.20
@@ -116,7 +116,7 @@ importers:
       ui5-task-transpile: link:../ui5-task-transpile
       ui5-task-zipper: link:../ui5-task-zipper
       ui5-tooling-modules: link:../ui5-tooling-modules
-      wdio-chromedriver-service: 7.3.2_t5hperxkc3obomb6s4x3tod7ti
+      wdio-chromedriver-service: 7.3.2_6m2gfva6usolcutattc5juq2dy
       wdio-ui5-service: 0.9.1
 
   packages/ui5-app-module:
@@ -4393,18 +4393,10 @@ packages:
   /axios/0.21.4_debug@4.3.2:
     resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
     dependencies:
-      follow-redirects: 1.15.1
+      follow-redirects: 1.15.1_debug@4.3.2
     transitivePeerDependencies:
       - debug
     dev: false
-
-  /axios/0.24.0:
-    resolution: {integrity: sha512-Q6cWsys88HoPgAaFAVUb0WpPk0O8iTeisR9IMqy9G8AbO4NlpVknrnQS03zzF9PGAWgO3cgletO3VjV/P7VztA==}
-    dependencies:
-      follow-redirects: 1.15.1
-    transitivePeerDependencies:
-      - debug
-    dev: true
 
   /axios/0.25.0:
     resolution: {integrity: sha512-cD8FOb0tRH3uuEe6+evtAbgJtfxr7ly3fQjYcMcuPlgkwVS9xboaVIpcDV+cYQe+yGykgwZCs1pzjntcGa6l5g==}
@@ -4421,6 +4413,15 @@ packages:
     transitivePeerDependencies:
       - debug
     dev: false
+
+  /axios/0.27.2:
+    resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
+    dependencies:
+      follow-redirects: 1.15.1
+      form-data: 4.0.0
+    transitivePeerDependencies:
+      - debug
+    dev: true
 
   /axios/0.27.2_debug@4.3.2:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
@@ -5048,14 +5049,14 @@ packages:
       - supports-color
     dev: true
 
-  /chromedriver/101.0.0:
-    resolution: {integrity: sha512-LkkWxy6KM/0YdJS8qBeg5vfkTZTRamhBfOttb4oic4echDgWvCU1E8QcBbUBOHqZpSrYMyi7WMKmKMhXFUaZ+w==}
+  /chromedriver/102.0.0:
+    resolution: {integrity: sha512-xer/0g1Oarkjc2e+4nyoLgZT4kJHYhcj3PcxD1nEoGJQYEllTjprN1uDpSb4BkgMGo0ydfIS1VDkszrr/J9OOg==}
     engines: {node: '>=10'}
     hasBin: true
     requiresBuild: true
     dependencies:
       '@testim/chrome-version': 1.1.2
-      axios: 0.24.0
+      axios: 0.27.2
       del: 6.1.1
       extract-zip: 2.0.1
       https-proxy-agent: 5.0.1
@@ -7345,6 +7346,7 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
+    dev: true
 
   /follow-redirects/1.15.1_debug@4.3.2:
     resolution: {integrity: sha512-yLAMQs+k0b2m7cVxpS1VKJVvoz7SS9Td1zss3XRwXj+ZDH00RJgnuLx7E44wx02kQLrdM3aOOy+FpzS7+8OizA==}
@@ -8070,7 +8072,7 @@ packages:
     engines: {node: '>=8.0.0'}
     dependencies:
       eventemitter3: 4.0.7
-      follow-redirects: 1.15.1
+      follow-redirects: 1.15.1_debug@4.3.2
       requires-port: 1.0.0
     transitivePeerDependencies:
       - debug
@@ -13713,12 +13715,12 @@ packages:
       minimalistic-assert: 1.0.1
 
   /wcwidth/1.0.1:
-    resolution: {integrity: sha1-8LDc+RW8X/FSivrbLA4XtTLaL+g=}
+    resolution: {integrity: sha512-XHPEwS0q6TaxcvG85+8EYkbiCux2XtWG2mkc47Ng2A77BQu9+DqIOJldST4HgPkuea7dvKSj5VgX3P1d4rW8Tg==}
     dependencies:
       defaults: 1.0.3
     dev: true
 
-  /wdio-chromedriver-service/7.3.2_t5hperxkc3obomb6s4x3tod7ti:
+  /wdio-chromedriver-service/7.3.2_6m2gfva6usolcutattc5juq2dy:
     resolution: {integrity: sha512-4M3OqFzBSC4FdbqkfwOrUMeroMEuyIFCHfcUebkU6tJ1w5GenWO61YweJ8NKlhPZx9nkO8223+20MpvBjv+fTg==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
@@ -13734,7 +13736,7 @@ packages:
     dependencies:
       '@wdio/cli': 7.20.1
       '@wdio/logger': 7.19.0
-      chromedriver: 101.0.0
+      chromedriver: 102.0.0
       fs-extra: 9.1.0
       split2: 3.2.2
       tcp-port-used: 1.0.2
@@ -13933,7 +13935,7 @@ packages:
       strip-ansi: 6.0.1
 
   /wrappy/1.0.2:
-    resolution: {integrity: sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=}
+    resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
   /write-file-atomic/2.4.3:
     resolution: {integrity: sha512-GaETH5wwsX+GcnzhPgKcKjJ6M2Cq3/iZp1WyY/X1CSqrW+jVNM9Y7D8EC2sM4ZG/V8wZlSniJnCKWPmBYAucRQ==}
