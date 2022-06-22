@@ -56,24 +56,24 @@ importers:
       npm-watch: ^0.11.0
       rimraf: ~3.0.2
       ui5-app-module: ^0.1.2
-      ui5-middleware-cfdestination: ^0.8.7
-      ui5-middleware-iasync: ^0.1.0-alpha.10
-      ui5-middleware-index: ^0.2.10
-      ui5-middleware-livecompileless: ^0.2.6
-      ui5-middleware-livereload: ^0.5.13
-      ui5-middleware-livetranspile: ^0.3.11
-      ui5-middleware-servestatic: ^0.3.13
-      ui5-middleware-simpleproxy: ^0.8.4
-      ui5-middleware-stringreplacer: ^0.3.7
-      ui5-middleware-webjars: ^0.3.9
-      ui5-task-compileless: ^0.2.8
+      ui5-middleware-cfdestination: ^0.9.0
+      ui5-middleware-iasync: ^1.0.0-alpha.0
+      ui5-middleware-index: ^0.3.0
+      ui5-middleware-livecompileless: ^0.3.0
+      ui5-middleware-livereload: ^0.6.0
+      ui5-middleware-livetranspile: ^0.4.0
+      ui5-middleware-servestatic: ^0.4.0
+      ui5-middleware-simpleproxy: ^0.9.0
+      ui5-middleware-stringreplacer: ^0.4.0
+      ui5-middleware-webjars: ^0.4.0
+      ui5-task-compileless: ^0.3.0
       ui5-task-i18ncheck: ^0.3.9
-      ui5-task-minify-xml: ^0.2.7
-      ui5-task-pwa-enabler: ^0.2.12
-      ui5-task-stringreplacer: ^0.6.6
-      ui5-task-transpile: ^0.3.10
-      ui5-task-zipper: ^0.4.13
-      ui5-tooling-modules: ^0.3.3
+      ui5-task-minify-xml: ^0.3.0
+      ui5-task-pwa-enabler: ^0.3.0
+      ui5-task-stringreplacer: ^0.7.0
+      ui5-task-transpile: ^0.4.0
+      ui5-task-zipper: ^0.5.0
+      ui5-tooling-modules: ^0.4.0
       wdio-chromedriver-service: ^7.3.2
       wdio-ui5-service: ^0.9.0
     dependencies:
