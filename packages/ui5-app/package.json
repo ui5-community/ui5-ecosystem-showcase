@@ -35,7 +35,9 @@
     }
   },
   "dependencies": {
-    "ui5-app-module": "^0.1.2"
+    "tui-image-editor": "^3.15.3",
+    "ui5-app-module": "^0.1.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@openui5/ts-types": "^1.102.0",
