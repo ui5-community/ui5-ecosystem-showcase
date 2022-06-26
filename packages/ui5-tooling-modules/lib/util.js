@@ -115,6 +115,11 @@ const that = (module.exports = {
 							preserveSymlinks: true,
 							input: moduleName,
 							plugins: [
+								skipAssets({
+									extensions: ["css"],
+									modules: ["crypto"],
+								}),
+								nodePolyfills(),
 								(function (options) {
 									"use strict";
 									return {
@@ -128,15 +133,10 @@ const that = (module.exports = {
 									mainFields: ["module", "main"],
 								}),
 								json(),
-								skipAssets({
-									extensions: ["css"],
-									modules: ["fs", "stream", "crypto"],
-								}),
 								commonjs({
 									defaultIsModuleExports: true,
 								}),
 								amdCustom(),
-								nodePolyfills(),
 								injectProcessEnv({
 									NODE_ENV: "production",
 								}),
