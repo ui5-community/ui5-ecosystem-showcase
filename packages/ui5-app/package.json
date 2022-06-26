@@ -40,18 +40,18 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@openui5/ts-types": "^1.102.0",
+    "@openui5/ts-types": "^1.103.0",
     "@ui5/cli": "^2.14.9",
-    "@wdio/cli": "^7.19.7",
-    "@wdio/local-runner": "^7.19.7",
-    "@wdio/mocha-framework": "^7.19.7",
-    "@wdio/spec-reporter": "^7.19.7",
-    "@wdio/sync": "^7.19.7",
+    "@wdio/cli": "^7.20.5",
+    "@wdio/local-runner": "^7.20.5",
+    "@wdio/mocha-framework": "^7.20.3",
+    "@wdio/spec-reporter": "^7.20.3",
+    "@wdio/sync": "^7.20.5",
     "babel-plugin-transform-async-to-promises": "^0.8.18",
-    "chromedriver": "^102.0.0",
+    "chromedriver": "^103.0.0",
     "eslint-plugin-mocha": "^10.0.5",
     "eslint-plugin-wdio": "^7.19.4",
-    "karma": "^6.3.20",
+    "karma": "^6.4.0",
     "karma-chrome-launcher": "^3.1.1",
     "karma-coverage": "^2.2.0",
     "karma-ui5": "^2.4.0",
@@ -78,7 +78,7 @@
     "ui5-task-zipper": "^0.5.0",
     "ui5-tooling-modules": "^0.4.0",
     "wdio-chromedriver-service": "^7.3.2",
-    "wdio-ui5-service": "^0.9.0"
+    "wdio-ui5-service": "^0.9.5"
   },
   "ui5": {
     "dependencies": [
