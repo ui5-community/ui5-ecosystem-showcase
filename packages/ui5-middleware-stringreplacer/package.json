@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-stringreplacer",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "UI5 middleware for live string replace",
   "author": "Attila Boros",
   "license": "Apache-2.0",

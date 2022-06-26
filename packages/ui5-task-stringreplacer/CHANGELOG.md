@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-stringreplacer@0.7.0...ui5-task-stringreplacer@0.7.1) (2022-06-26)
+
+
+### Bug Fixes
+
+* **stringreplacer:** respect also the placeholders from ui5.yaml ([#628](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/628)) ([cfb0fd5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/cfb0fd5c6921c461057a8cf4a65c67f606a1742b)), closes [#626](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/626)
+
+
+
+
+
 # [0.7.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-stringreplacer@0.6.6...ui5-task-stringreplacer@0.7.0) (2022-06-21)
 
 

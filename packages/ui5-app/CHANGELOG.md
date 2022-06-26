@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.17.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.16.0...ui5-app@0.17.0) (2022-06-26)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** move nodePolyFills back to front ([#630](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/630)) ([1a2a39f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1a2a39fd5034866a0a42a9ea153939dae89ec268))
+
+
+### Features
+
+* **ui5-tooling-modules:** fix AMD bundling and filter Node built-ins ([#627](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/627)) ([0ad6e6e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0ad6e6e26a4b8a6ea1ec95721945696329dda9aa)), closes [#623](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/623)
+
+
+
+
+
 # [0.16.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.15.3...ui5-app@0.16.0) (2022-06-21)
 
 

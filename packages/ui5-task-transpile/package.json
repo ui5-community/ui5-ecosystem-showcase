@@ -1,6 +1,6 @@
 {
   "name": "ui5-task-transpile",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "UI5 task for transpiling ES6+ sources",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
