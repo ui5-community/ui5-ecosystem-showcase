@@ -1,5 +1,14 @@
-sap.ui.define(["test/Sample/controller/BaseController", "xlsx"], (Controller, xlsx) => {
+sap.ui.define(["test/Sample/controller/BaseController", "xlsx", "firebase/app", "firebase/auth"], (Controller, xlsx, app, auth) => {
 	"use strict";
+
+	const { initializeApp } = app;
+	const { getAuth } = auth;
+	const xapp = initializeApp();
+	try {
+		const xauth = getAuth(xapp);
+	} catch (ex) {
+		console.error(ex);
+	}
 
 	return Controller.extend("test.Sample.controller.Thirdparty", {
 		onInit() {
