@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.5.0...ui5-tooling-modules@0.5.1) (2022-06-26)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** properly consider browser, module, main fallback+ ([#631](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/631)) ([63b606e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/63b606e38190543aea51197ea7db7ce81c1b1cf1))
+
+
+
+
+
 # [0.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.4.0...ui5-tooling-modules@0.5.0) (2022-06-26)
 
 
