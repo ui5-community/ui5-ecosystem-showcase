@@ -28,6 +28,7 @@
     "test:all": "pnpm --filter !ui5-app --workspace-concurrency 1 test",
     "watch": "pnpm --filter ui5-app watch",
     "release:version": "lerna version",
+    "version": "pnpm install && git add pnpm-lock.yaml",
     "release:publish": "lerna publish from-git --yes --no-verify-access",
     "release:publish-manual": "lerna publish from-package --yes --no-verify-access",
     "lint": "pnpm --workspace-concurrency 1 -r lint",
