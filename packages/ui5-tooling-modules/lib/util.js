@@ -1,3 +1,5 @@
+"use strict";
+
 /* eslint-disable no-unused-vars */
 const log = require("@ui5/logger").getLogger("server:custommiddleware:ui5-tooling-modules");
 
@@ -10,7 +12,8 @@ const commonjs = require("@rollup/plugin-commonjs");
 const json = require("@rollup/plugin-json");
 const nodePolyfills = require("rollup-plugin-polyfill-node");
 const injectProcessEnv = require("rollup-plugin-inject-process-env");
-const amd = require("rollup-plugin-amd");
+const amdCustom = require("./rollup-plugin-amd-custom");
+const skipAssets = require("./rollup-plugin-skip-assets");
 
 const espree = require("espree");
 const estraverse = require("estraverse");
@@ -95,71 +98,74 @@ const that = (module.exports = {
 
 		try {
 			const modulePath = that.resolveModule(moduleName);
-			const moduleExt = path.extname(modulePath).toLowerCase();
+			if (modulePath) {
+				const moduleExt = path.extname(modulePath).toLowerCase();
 
-			let cachedBundle = bundleCache[moduleName];
-			if (skipCache || !cachedBundle) {
-				// is the bundle a UI5 module?
-				const moduleContent = await readFile(modulePath, { encoding: "utf8" });
+				let cachedBundle = bundleCache[moduleName];
+				if (skipCache || !cachedBundle) {
+					// is the bundle a UI5 module?
+					const moduleContent = await readFile(modulePath, { encoding: "utf8" });
 
-				// only transform non-UI5 modules
-				if (moduleExt === ".js" && !isUI5Module(moduleContent, modulePath)) {
-					bundling = true;
+					// only transform non-UI5 modules
+					if (moduleExt === ".js" && !isUI5Module(moduleContent, modulePath)) {
+						bundling = true;
 
-					// create a bundle (maybe in future we should again load the )
-					const bundle = await rollup.rollup({
-						preserveSymlinks: true,
-						input: moduleName,
-						plugins: [
-							(function (options) {
-								"use strict";
-								// we skip to transform CSS assets
-								return {
-									name: "resolve-pnpm",
-									resolveId(source) {
-										return that.resolveModule(source);
-									},
-								};
-							})(),
-							nodeResolve({
-								browser: true,
-								mainFields: [/*"browser", */ "module", "main"],
-							}),
-							json(),
-							require("./rollup-skip-assets")(),
-							commonjs({
-								defaultIsModuleExports: true,
-							}),
-							amd(),
-							nodePolyfills(),
-							injectProcessEnv({
-								NODE_ENV: "production",
-							}),
-						],
-					});
+						// create a bundle (maybe in future we should again load the )
+						const bundle = await rollup.rollup({
+							preserveSymlinks: true,
+							input: moduleName,
+							plugins: [
+								(function (options) {
+									"use strict";
+									return {
+										name: "resolve-pnpm",
+										resolveId(source) {
+											return that.resolveModule(source);
+										},
+									};
+								})(),
+								nodeResolve({
+									mainFields: ["module", "main"],
+								}),
+								json(),
+								skipAssets({
+									extensions: ["css"],
+									modules: ["fs", "stream", "crypto"],
+								}),
+								commonjs({
+									defaultIsModuleExports: true,
+								}),
+								amdCustom(),
+								nodePolyfills(),
+								injectProcessEnv({
+									NODE_ENV: "production",
+								}),
+							],
+						});
 
-					// generate output specific code in-memory
-					// you can call this function multiple times on the same bundle object
-					const { output } = await bundle.generate({
-						output: {
-							format: "amd",
-							amd: {
-								define: "sap.ui.define",
+						// generate output specific code in-memory
+						// you can call this function multiple times on the same bundle object
+						const { output } = await bundle.generate({
+							output: {
+								format: "amd",
+								amd: {
+									define: "sap.ui.define",
+								},
 							},
-						},
-					});
+						});
 
-					// Right now we only support one chunk as build result
-					// should be also given by the rollup configuration!
-					if (output.length === 1 && output[0].type === "chunk") {
-						cachedBundle = bundleCache[moduleName] = output[0].code;
+						// Right now we only support one chunk as build result
+						// should be also given by the rollup configuration!
+						if (output.length === 1 && output[0].type === "chunk") {
+							cachedBundle = bundleCache[moduleName] = output[0].code;
+						}
+					} else {
+						cachedBundle = bundleCache[moduleName] = moduleContent;
 					}
-				} else {
-					cachedBundle = bundleCache[moduleName] = moduleContent;
 				}
-			}
 
-			return cachedBundle;
+				return cachedBundle;
+			}
 		} catch (err) {
 			if (bundling) {
 				console.error(`Couldn't bundle ${moduleName}: ${err}`, err);
