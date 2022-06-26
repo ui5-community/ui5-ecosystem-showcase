@@ -33,13 +33,6 @@ if (typeof envVariables === "object") {
 	}
 }
 
-// check if we found any strings to replace and stop the build if no strings are found (we don't want to finish build for production while missing strings intended to be included in the build)
-let hasStringsToReplace = Object.keys(placeholderStrings).length > 0;
-if (!hasStringsToReplace) {
-	log.error(`No strings to replace provided either through the process environment or middleware config`);
-	process.exit(-1);
-}
-
 // create the helper function to pipe the stream and replace the placeholders
 // eslint-disable-next-line jsdoc/require-jsdoc
 function createReplacePlaceholdersDestination({ resource, isDebug }) {
@@ -77,6 +70,13 @@ module.exports = function ({ workspace, options }) {
 			replace.forEach((entry) => {
 				addPlaceholderString(entry.placeholder, entry.value);
 			});
+	}
+
+	// check if we found any strings to replace and stop the build if no strings are found
+	// (we don't want to finish build for production while missing strings intended to be included in the build)
+	let hasStringsToReplace = Object.keys(placeholderStrings).length > 0;
+	if (!hasStringsToReplace) {
+		throw new Error(`No strings to replace provided either through the process environment or task config`);
 	}
 
 	return workspace
