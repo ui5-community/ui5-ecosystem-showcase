@@ -110,7 +110,7 @@ const that = (module.exports = {
 					if (moduleExt === ".js" && !isUI5Module(moduleContent, modulePath)) {
 						bundling = true;
 
-						// create a bundle (maybe in future we should again load the )
+						// create a bundle
 						const bundle = await rollup.rollup({
 							preserveSymlinks: true,
 							input: moduleName,
@@ -120,6 +120,15 @@ const that = (module.exports = {
 									modules: ["crypto"],
 								}),
 								nodePolyfills(),
+								json(),
+								commonjs({
+									defaultIsModuleExports: true,
+								}),
+								amdCustom(),
+								nodeResolve({
+									mainFields: ["browser", "module", "main"],
+									preferBuiltins: false,
+								}),
 								(function (options) {
 									"use strict";
 									return {
@@ -129,14 +138,6 @@ const that = (module.exports = {
 										},
 									};
 								})(),
-								nodeResolve({
-									mainFields: ["module", "main"],
-								}),
-								json(),
-								commonjs({
-									defaultIsModuleExports: true,
-								}),
-								amdCustom(),
 								injectProcessEnv({
 									NODE_ENV: "production",
 								}),

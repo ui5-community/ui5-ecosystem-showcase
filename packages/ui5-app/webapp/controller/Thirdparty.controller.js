@@ -1,4 +1,4 @@
-sap.ui.define(["test/Sample/controller/BaseController", "xlsx", "firebase/app", "firebase/auth"], (Controller, xlsx, app, auth) => {
+sap.ui.define(["test/Sample/controller/BaseController", "xlsx", "firebase/app", "firebase/auth", "@supabase/supabase-js"], (Controller, xlsx, app, auth, supabase) => {
 	"use strict";
 
 	const { initializeApp } = app;
@@ -9,6 +9,8 @@ sap.ui.define(["test/Sample/controller/BaseController", "xlsx", "firebase/app", 
 	} catch (ex) {
 		console.error(ex);
 	}
+
+	console.log(supabase);
 
 	return Controller.extend("test.Sample.controller.Thirdparty", {
 		onInit() {
