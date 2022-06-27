@@ -10,4 +10,5 @@
 /**/*.png
 
 # Additionally ignore folders for lint-staged
+/packages/ui5-app/lib/**
 /packages/ui5-middleware-cfdestination/test/**
