@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.17.0...ui5-app@0.18.0) (2022-06-27)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** properly consider browser, module, main fallback+ ([#631](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/631)) ([63b606e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/63b606e38190543aea51197ea7db7ce81c1b1cf1))
+
+
+### Features
+
+* **ui5-tooling-modules:** support app-local bundle defs ([#632](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/632)) ([9375433](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9375433b494bdbea79c6a13f3331087e14a1966e))
+
+
+
+
+
 # [0.17.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.16.0...ui5-app@0.17.0) (2022-06-26)
 
 

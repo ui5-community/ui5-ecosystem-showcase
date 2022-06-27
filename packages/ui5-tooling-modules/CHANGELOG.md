@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.5.1...ui5-tooling-modules@0.6.0) (2022-06-27)
+
+
+### Features
+
+* **ui5-tooling-modules:** support app-local bundle defs ([#632](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/632)) ([9375433](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9375433b494bdbea79c6a13f3331087e14a1966e))
+
+
+
+
+
 ## [0.5.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.5.0...ui5-tooling-modules@0.5.1) (2022-06-26)
 
 
