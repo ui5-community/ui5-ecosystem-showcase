@@ -1,11 +1,10 @@
-sap.ui.define(["test/Sample/controller/BaseController", "xlsx", "firebase/app", "firebase/auth", "@supabase/supabase-js"], (Controller, xlsx, app, auth, supabase) => {
+sap.ui.define(["test/Sample/controller/BaseController", "xlsx", "ui5-app/lib/firebase", "@supabase/supabase-js"], (Controller, xlsx, _firebase, supabase) => {
 	"use strict";
 
-	const { initializeApp } = app;
-	const { getAuth } = auth;
-	const xapp = initializeApp();
+	const { initializeApp, getFirestore } = _firebase;
+	const app = initializeApp({});
 	try {
-		const xauth = getAuth(xapp);
+		getFirestore(app);
 	} catch (ex) {
 		console.error(ex);
 	}

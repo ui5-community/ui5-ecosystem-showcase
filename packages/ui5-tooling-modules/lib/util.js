@@ -21,6 +21,9 @@ const estraverse = require("estraverse");
 // local bundle cache
 const bundleCache = {};
 
+// package.json of app
+const pkg = require(path.join(process.cwd(), "package.json"));
+
 /**
  * Checks whether the given content is a UI5 module or not
  *
@@ -59,6 +62,11 @@ const that = (module.exports = {
 	 * @returns {string} the path of the module in the filesystem
 	 */
 	resolveModule: function resolveModule(moduleName) {
+		// special handling for app-local resources!
+		if (moduleName?.startsWith(`${pkg.name}/`)) {
+			return path.join(process.cwd(), moduleName.substring(`${pkg.name}/`.length) + ".js");
+		}
+		// resolve from node_modules
 		let modulePath;
 		try {
 			// try the regular lookup
