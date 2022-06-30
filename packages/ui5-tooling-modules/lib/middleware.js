@@ -1,3 +1,5 @@
+"use strict";
+
 /* eslint-disable no-unused-vars */
 const log = require("@ui5/logger").getLogger("server:custommiddleware:ui5-tooling-modules");
 

@@ -3,6 +3,113 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.18.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.17.0...ui5-app@0.18.0) (2022-06-27)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** properly consider browser, module, main fallback+ ([#631](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/631)) ([63b606e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/63b606e38190543aea51197ea7db7ce81c1b1cf1))
+
+
+### Features
+
+* **ui5-tooling-modules:** support app-local bundle defs ([#632](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/632)) ([9375433](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9375433b494bdbea79c6a13f3331087e14a1966e))
+
+
+
+
+
+# [0.17.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.16.0...ui5-app@0.17.0) (2022-06-26)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** move nodePolyFills back to front ([#630](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/630)) ([1a2a39f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1a2a39fd5034866a0a42a9ea153939dae89ec268))
+
+
+### Features
+
+* **ui5-tooling-modules:** fix AMD bundling and filter Node built-ins ([#627](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/627)) ([0ad6e6e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0ad6e6e26a4b8a6ea1ec95721945696329dda9aa)), closes [#623](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/623)
+
+
+
+
+
+# [0.16.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.15.3...ui5-app@0.16.0) (2022-06-21)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** avoid stackoverflow for html tags in xmlviews ([#625](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/625)) ([41bcf09](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/41bcf090b1d4f95f2aa5b9a279079009b64a66f7)), closes [#622](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/622)
+
+
+### Features
+
+* replace yarn with pnpm ([#619](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/619)) ([ae7f654](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ae7f6544f010d4b97c8a4db28ea89d01389b5fb5))
+
+
+### BREAKING CHANGES
+
+* new package manager
+
+* refactor: updated tests to pass with pnpm
+
+* refactor: iasync still failing
+
+* feat(ui5-tooling-modules): support pnpm / node_modules symlinks
+
+* fix(ui5-app): make Karma work with pnpm
+
+* chore(ui5-app): remove uiveri5 from sample
+
+* chore(ui5-app): add updated wdio.conf
+
+* fix: make prettier and eslint work with pnpm
+
+* fix: fix cf_dest tests
+
+restructured tests and added node_modules as symlink
+
+* fix(ui5-app): adding eslint for wdio and mocha
+
+* chore(ui5-middleware-cfdestination): cleanup
+
+* feat(ui5-tooling-modules): add bundling support for AMD
+
+* chore(ui5-tooling-modules): cleanup
+
+* chore: fix code style
+
+* fix(ui5-task-flatten-library): support files without extensions
+
+* refactor: updated tests to pass with pnpm
+
+* feat(ui5-tooling-modules): support pnpm / node_modules symlinks
+
+* fix: make prettier and eslint work with pnpm
+
+* fix: update actions, lerna, vscode for pnpm
+
+* chore: only run test on tooling extensions
+
+* chore: use sequential tests for ava
+
+* chore: add @ui5/cli dev dependency for ava tests
+
+* chore: enable support for local act GH action tests
+
+* chore: add docu for local GitHub action execution
+
+* chore: docu cleanup
+
+* chore: re-add ncu scripts
+
+Co-authored-by: Peter Muessig <peter.muessig@sap.com>
+
+
+
+
+
 ## [0.15.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.15.2...ui5-app@0.15.3) (2022-06-03)
 
 **Note:** Version bump only for package ui5-app

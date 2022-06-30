@@ -1,6 +1,6 @@
 {
   "name": "ui5-task-transpile",
-  "version": "0.3.10",
+  "version": "0.4.1",
   "description": "UI5 task for transpiling ES6+ sources",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
@@ -13,7 +13,7 @@
     "lint": "eslint lib"
   },
   "dependencies": {
-    "@babel/core": "^7.18.0",
+    "@babel/core": "^7.18.5",
     "@babel/plugin-transform-modules-commonjs": "^7.18.0",
     "@babel/preset-env": "^7.18.0",
     "@ui5/logger": "^2.0.1",

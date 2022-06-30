@@ -49,7 +49,7 @@
       "id": "app"
     },
     "dependencies": {
-      "minUI5Version": "1.68.1",
+      "minUI5Version": "1.103.0",
       "libs": {
         "sap.m": {},
         "sap.ui.core": {},
@@ -102,6 +102,11 @@
           "target": ["TargetOther"]
         },
         {
+          "name": "RouteThirdparty",
+          "pattern": "thirdparty",
+          "target": ["TargetThirdparty"]
+        },
+        {
           "name": "RouteES5",
           "pattern": "sapes5",
           "target": ["TargetES5"]
@@ -121,6 +126,13 @@
           "clearControlAggregation": false,
           "viewId": "Other",
           "viewName": "Other"
+        },
+        "TargetThirdparty": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewId": "Thirdparty",
+          "viewName": "Thirdparty"
         },
         "TargetES5": {
           "viewType": "XML",

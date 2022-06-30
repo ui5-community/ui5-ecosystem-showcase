@@ -36,6 +36,9 @@ sap.ui.define(["test/Sample/controller/BaseController", "sap/m/MessageToast"], (
 		navFwd() {
 			return this.getOwnerComponent().getRouter().navTo("RouteOther");
 		},
+		navShow3rd() {
+			return this.getOwnerComponent().getRouter().navTo("RouteThirdparty");
+		},
 
 		onPress(oEvent) {
 			MessageToast.show(`${oEvent.getSource().getId()} pressed`);
