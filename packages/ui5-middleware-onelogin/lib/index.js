@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cookie_1 = require("cookie");
 const dotenv_1 = __importDefault(require("dotenv"));
 const cookieGetter_1 = __importDefault(require("./cookieGetter"));
-const log = require('@ui5/logger').getLogger('server:custommiddleware:onelogin');
+const log = require("@ui5/logger").getLogger("server:custommiddleware:onelogin");
 dotenv_1.default.config();
 var cookie;
 //First time to make sure we only output the parsed cookie once
@@ -26,11 +26,11 @@ var firstTime = true;
 // }
 /**
  * @typedef {Object} [configuration] configuration
- * @property {string} path - The path to use
- * @property {string} [username] the username
- * @property {string} [password] the password
- * @property {boolean} [useCertificate] use certificate login instead of username/password
- * @property {boolean} [debug] see output
+ * @property {string} path - The path to use => env:UI5_MIDDLEWARE_ONELOGIN_PATH
+ * @property {string} [username] the username => env:UI5_MIDDLEWARE_ONELOGIN_USERNAME
+ * @property {string|yo<password>} [password] the password => env:UI5_MIDDLEWARE_ONELOGIN_PASSWORD
+ * @property {boolean|yo<confirm:false>} [useCertificate] use certificate login instead of username/password
+ * @property {boolean|yo<confirm:false>} [debug] see output
  */
 /**
  * Custom UI5 Server middleware example
@@ -56,31 +56,29 @@ module.exports = function ({ options }) {
     return function (req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             let cookies = [];
-            if (!process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL &&
-                !process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI &&
-                !options.configuration.path) {
-                log.error('No login url provided');
+            if (!process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL && !process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI && !options.configuration.path) {
+                log.error("No login url provided");
                 next();
                 return;
             }
             else if (!cookie) {
-                log.info('Fetching cookie, hang on!');
+                log.info("Fetching cookie, hang on!");
                 try {
                     const cookieObj = yield new cookieGetter_1.default().getCookie(options);
                     cookies = JSON.parse(cookieObj);
                     cookie = cookieObj;
                 }
                 catch (error) {
-                    log.error('Could not get cookie');
+                    log.error("Could not get cookie");
                     return;
                 }
             }
             else {
                 cookies = JSON.parse(cookie);
             }
-            let cookieStr = '';
+            let cookieStr = "";
             cookies
-                .filter((cookieTemp) => !cookieTemp.name.includes('sap-contextid'))
+                .filter((cookieTemp) => !cookieTemp.name.includes("sap-contextid"))
                 .forEach((cookie) => {
                 cookie.key = cookie.name;
                 delete cookie.expires;
@@ -89,7 +87,7 @@ module.exports = function ({ options }) {
                     httpOnly: true,
                     secure: false, // cookie must be sent over https / ssl)
                 });
-                cookieStr = cookieStr.concat((0, cookie_1.serialize)(cookie.name, cookie.value, Object.assign(Object.assign({}, cookie), { encode: (value) => value })), '; ');
+                cookieStr = cookieStr.concat((0, cookie_1.serialize)(cookie.name, cookie.value, Object.assign(Object.assign({}, cookie), { encode: (value) => value })), "; ");
             });
             if (options.configuration.debug && firstTime) {
                 log.info(`Parsed cookie is ${cookieStr}`);

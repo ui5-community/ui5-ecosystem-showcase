@@ -15,51 +15,51 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const sleep_promise_1 = __importDefault(require("sleep-promise"));
 const prompt = require("async-prompt");
 const playwright_chromium_1 = require("playwright-chromium");
-const log = require('@ui5/logger').getLogger('server:custommiddleware:onelogin');
+const log = require("@ui5/logger").getLogger("server:custommiddleware:onelogin");
 class CookieGetter {
     getCookie(options) {
         return __awaiter(this, void 0, void 0, function* () {
             let attr = {
-                url: (options.configuration && options.configuration.path) ? options.configuration.path : (process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL) ? process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL : process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI,
-                username: (options.configuration && options.configuration.username) ? options.configuration.username : process.env.UI5_MIDDLEWARE_ONELOGIN_USERNAME,
-                password: (options.configuration && options.configuration.password) ? options.configuration.password : process.env.UI5_MIDDLEWARE_ONELOGIN_PASSWORD,
+                url: options.configuration && options.configuration.path
+                    ? options.configuration.path
+                    : process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL
+                        ? process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL
+                        : process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI,
+                username: options.configuration && options.configuration.username ? options.configuration.username : process.env.UI5_MIDDLEWARE_ONELOGIN_USERNAME,
+                password: options.configuration && options.configuration.password ? options.configuration.password : process.env.UI5_MIDDLEWARE_ONELOGIN_PASSWORD,
             };
             if ((!attr.username || !attr.password) && !options.configuration.useCertificate) {
                 log.warn("No credentials provided. Please answer the following prompts");
                 if (!attr.username) {
-                    attr.username = yield prompt('Username: ');
+                    attr.username = yield prompt("Username: ");
                 }
                 if (!attr.password) {
-                    attr.password = yield prompt.password('Password: ');
+                    attr.password = yield prompt.password("Password: ");
                 }
             }
             if ((attr.url.match(new RegExp("/", "g")) || []).length === 2 || attr.url.lastIndexOf("/") === attr.url.length - 1) {
-                attr.url = `${(attr.url.lastIndexOf("/") === attr.url.length - 1) ? attr.url : attr.url + "/"}sap/bc/ui2/flp`;
+                attr.url = `${attr.url.lastIndexOf("/") === attr.url.length - 1 ? attr.url : attr.url + "/"}sap/bc/ui2/flp`;
             }
             const playwrightOpt = {
-                headless: (options) ? !options.configuration.debug : true,
-                args: ['--disable-dev-shm-usage'],
-                channel: 'chrome'
+                headless: options ? !options.configuration.debug : true,
+                args: ["--disable-dev-shm-usage"],
+                channel: "chrome",
             };
             try {
                 const browser = yield playwright_chromium_1.chromium.launch(playwrightOpt);
                 const context = yield browser.newContext({ ignoreHTTPSErrors: true });
                 const page = yield context.newPage();
                 if (!options.configuration.useCertificate) {
-                    yield page.goto(attr.url, { waitUntil: 'domcontentloaded' });
+                    yield page.goto(attr.url, { waitUntil: "domcontentloaded" });
                     let elem;
                     try {
-                        elem = yield Promise.race([
-                            page.waitForSelector('input[type="email"]'),
-                            page.waitForSelector('input[type="username"]'),
-                            page.waitForSelector('input[name="sap-user"]')
-                        ]);
+                        elem = yield Promise.race([page.waitForSelector('input[type="email"]'), page.waitForSelector('input[type="username"]'), page.waitForSelector('input[name="sap-user"]')]);
                     }
                     catch (oError) {
                         elem = yield page.waitForSelector('input[type="text"]');
                     }
                     let password = page.locator('input[type="password"]');
-                    let isHidden = yield password.getAttribute('aria-hidden');
+                    let isHidden = yield password.getAttribute("aria-hidden");
                     yield elem.type(attr.username);
                     if (!!isHidden && isHidden !== null) {
                         try {
@@ -72,38 +72,38 @@ class CookieGetter {
                                 page.waitForSelector('text="Submit"'),
                                 page.waitForSelector('text="Yes"'),
                                 page.waitForSelector('text="Login"'),
-                                page.waitForSelector('text="Yes"')
+                                page.waitForSelector('text="Yes"'),
                             ]);
                             //@ts-ignore
-                            yield buttonLocator.click({ waitUntil: 'networkidle' });
+                            yield buttonLocator.click({ waitUntil: "networkidle" });
                             yield (0, sleep_promise_1.default)(1000);
                         }
                     }
                     while (!!isHidden) {
                         yield (0, sleep_promise_1.default)(2000);
-                        isHidden = yield password.getAttribute('aria-hidden');
+                        isHidden = yield password.getAttribute("aria-hidden");
                     }
                     yield password.type(attr.password);
                     try {
                         yield page.waitForSelector('*[type="submit"]', { timeout: 500 });
                         //@ts-ignore
-                        yield page.click('*[type="submit"]', { waitUntil: 'networkidle' });
+                        yield page.click('*[type="submit"]', { waitUntil: "networkidle" });
                     }
                     catch (oError) {
                         const buttonLocator = yield Promise.race([
                             page.waitForSelector('text="Next"'),
                             page.waitForSelector('text="Submit"'),
                             page.waitForSelector('text="Yes"'),
-                            page.waitForSelector('//*[@id="LOGON_BUTTON"]')
+                            page.waitForSelector('//*[@id="LOGON_BUTTON"]'),
                         ]);
                         //@ts-ignore
-                        yield buttonLocator.click({ waitUntil: 'networkidle' });
+                        yield buttonLocator.click({ waitUntil: "networkidle" });
                     }
                     try {
                         yield page.waitForSelector('text="No"', { timeout: 2000 });
-                        if (yield page.isVisible('text=Stay signed in?')) {
+                        if (yield page.isVisible("text=Stay signed in?")) {
                             //@ts-ignore
-                            yield page.click('text="No"', endUrl ? {} : { waitUntil: 'networkidle' });
+                            yield page.click('text="No"', endUrl ? {} : { waitUntil: "networkidle" });
                         }
                     }
                     catch (oError) {
@@ -111,7 +111,7 @@ class CookieGetter {
                     }
                 }
                 else {
-                    yield page.goto(attr.url, { waitUntil: 'networkidle' });
+                    yield page.goto(attr.url, { waitUntil: "networkidle" });
                 }
                 const cookies = yield context.cookies();
                 browser.close();
