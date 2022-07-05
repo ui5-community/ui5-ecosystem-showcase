@@ -7,6 +7,11 @@ const path = require("path");
 const { getResource } = require("./util");
 
 /**
+ * @typedef {Object} [configuration] configuration
+ * @property {boolean|yo<confirm:false>} [verbose] Enables verbose logging (default to `false`)
+ * @property {boolean|yo<confirm:false>} [prependPathMappings] Prepends the path mappings for the UI5 loader to the `Component.js` which allows to run the Component using 3rd party libs in e.g. Fiori launchpad environments (default to `false`)
+ */
+/**
  * Custom middleware to create the UI5 AMD-like bundles for used ES imports from node_modules.
  *
  * @param {object} parameters Parameters
