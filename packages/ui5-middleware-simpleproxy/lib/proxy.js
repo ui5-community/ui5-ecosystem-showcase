@@ -18,13 +18,13 @@ const env = {
 
 /**
  * @typedef {object} [configuration] configuration
- * @property {string} baseUri - The baseUri to proxy.
- * @property {boolean|yo<confirm>} [strictSSL] Ignore strict SSL checks.
- * @property {string} [limit] This sets the body size limit, If the body size is larger than the specified (or default) limit,
+ * @property {string} baseUri - The baseUri to proxy. => env:UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI
+ * @property {boolean|yo<confirm|true>} [strictSSL] Ignore strict SSL checks. => env:UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL
+ * @property {string|yo<input|1mb>} [limit] This sets the body size limit, If the body size is larger than the specified (or default) limit,
 a 413 Request Entity Too Large error will be returned
  * @property {boolean|yo<confirm>} [removeETag] Removes the ETag header from the response to avoid conditional requests.
- * @property {string} [username] Username used for Basic Authentication.
- * @property {string|yo<password>} [password] Password used for Basic Authentication.
+ * @property {string} [username] Username used for Basic Authentication. => env:UI5_MIDDLEWARE_SIMPLE_PROXY_USERNAME
+ * @property {string|yo<password>} [password] Password used for Basic Authentication. => env:UI5_MIDDLEWARE_SIMPLE_PROXY_PASSWORD
  * @property {map|yo<input>} [httpHeaders] Http headers set for the proxied request. Will overwrite the http headers from the request.
  * @property {map|yo<input>} [query] Query parameters set for the proxied request. Will overwrite the parameters from the request.
  * @property {string[]|yo<input>} [excludePatterns] Array of exclude patterns using glob syntax
