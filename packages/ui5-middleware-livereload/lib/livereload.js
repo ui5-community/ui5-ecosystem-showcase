@@ -6,6 +6,15 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:livereload
 const portfinder = require("portfinder");
 
 /**
+ * @typedef {Object} [configuration] configuration
+ * @property {string|yo<input:xml,json,properties>} extraExts - file extensions other than `js`, `html` and `css` to monitor for changes
+ * @property {string<yo<input:35729>} [port] an open port choosen the live reload server is started on
+ * @property {string|yo<input:webapp>} [watchPath] path inside `$yourapp` the reload server monitors for changes
+ * @property {string} [exclusions] one or many `regex`. By default, this includes `.git/`, `.svn/`, and `.hg/`
+ * @property {boolean|yo<confirm:false>} [debug] see output
+ */
+
+/**
  * Parses the configuration option. If the port passed then it returns with it.
  * If not passed it returns with the following free port after the deafult port.
  *

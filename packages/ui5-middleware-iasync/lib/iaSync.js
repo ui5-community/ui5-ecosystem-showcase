@@ -10,6 +10,15 @@ const path = require("path");
 const customUI5Html = fs.readFileSync(path.join(`${__dirname}`, "ui5mangler.html"), { encoding: "utf-8" });
 
 /**
+ * @typedef {Object} [configuration] configuration
+ * @property {string} httpModule - capability to e.g. use `http2`
+ * @property {string|yo<input:3000>} [port] port to run middleware at
+ * @property {string|yo<confirm:true>} [logConnections] show connected browsers
+ * @property {boolean|yo<confirm:false>} [https] whether to use the middleware via SSL/wss
+ * @property {boolean|yo<confirm:false>} [debug] see output
+ */
+
+/**
  * Custom UI5 Server middleware example
  *
  * @param {object} parameters Parameters
