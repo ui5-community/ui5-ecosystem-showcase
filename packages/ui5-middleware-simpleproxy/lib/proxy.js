@@ -18,6 +18,7 @@ const env = {
 
 /**
  * @typedef {object} [configuration] configuration
+ * @property {string} mountPath - The path to mount the extension
  * @property {string} baseUri - The baseUri to proxy. => env:UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI
  * @property {boolean|yo<confirm|true>} [strictSSL] Ignore strict SSL checks. => env:UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL
  * @property {string|yo<input|1mb>} [limit] This sets the body size limit, If the body size is larger than the specified (or default) limit,
