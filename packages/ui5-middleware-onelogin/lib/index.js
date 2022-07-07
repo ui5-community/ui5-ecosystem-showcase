@@ -26,10 +26,9 @@ var firstTime = true;
 // }
 /**
  * @typedef {Object} [configuration] configuration
- * @property {string} path - The path to use => env:UI5_MIDDLEWARE_ONELOGIN_PATH
+ * @property {string} path - The path to use => env:UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL
  * @property {string} [username] the username => env:UI5_MIDDLEWARE_ONELOGIN_USERNAME
  * @property {string|yo<password>} [password] the password => env:UI5_MIDDLEWARE_ONELOGIN_PASSWORD
-
  * @property {boolean|yo<confirm|false>} [useCertificate] use certificate login instead of username/password
  * @property {boolean|yo<confirm|false>} [debug] see output
  */
