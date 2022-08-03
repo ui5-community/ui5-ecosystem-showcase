@@ -17,6 +17,7 @@
     "clean": "pnpm --filter ui5-app clean",
     "dev": "pnpm --filter ui5-app dev ",
     "start": "pnpm --filter ui5-app start",
+    "start:ts": "pnpm --filter ui5-app-ts start",
     "//*test:ci": "1. start ui5 serve and bg it - 2. run the e2e tests in parallel",
     "test:ci": "HEADLESS=true npm-run-all -p -r test:ci:pre test:ci:exec",
     "test:ci:pre": "pnpm --filter ui5-app start:ci",

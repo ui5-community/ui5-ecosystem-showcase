@@ -4,7 +4,7 @@ metadata:
 type: application
 framework:
   name: OpenUI5
-  version: "1.100.0"
+  version: "1.104.0"
   libraries:
     - name: sap.m
     - name: sap.ui.core
@@ -12,6 +12,8 @@ framework:
     - name: themelib_sap_fiori_3
 builder:
   customTasks:
+    - name: ui5-tooling-modules-task
+      afterTask: replaceVersion
     - name: ui5-tooling-transpile-task
       afterTask: replaceVersion
       configuration:
@@ -28,6 +30,8 @@ server:
         extraExts: "xml,json,properties"
         port: 35729
         path: "webapp"
+    - name: ui5-tooling-modules-middleware
+      afterMiddleware: compression
     - name: ui5-tooling-transpile-middleware
       afterMiddleware: compression
       configuration:

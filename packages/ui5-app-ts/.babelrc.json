@@ -1,10 +1,4 @@
-  
 {
-    "ignore": [
-        "**/*.d.ts"
-    ],
-    "presets": [
-        "transform-ui5",
-        "@babel/preset-typescript"
-    ]
+  "ignore": ["**/*.d.ts"],
+  "presets": ["transform-ui5", "@babel/preset-typescript"]
 }
