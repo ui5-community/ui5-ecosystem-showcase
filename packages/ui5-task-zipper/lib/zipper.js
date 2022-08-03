@@ -4,6 +4,14 @@ const resourceFactory = require("@ui5/fs").resourceFactory;
 const log = require("@ui5/logger").getLogger("builder:customtask:zipper");
 
 /**
+ * @typedef {object} [configuration] configuration
+ * @property {string|yo<input|`<app-id.zip>`>} archiveName -   Desired name for the `.zip` archive.
+ * @property {string} additionalFiles - List of files to be included in the ZIP archive relative to the project root.
+ * @property {boolean|yo<confirm|false>} [onlyZip] Set this to true if you also want to generate the unzipped resources in the `dist` folder. Otherwise, it will only create the zipped archive.
+ * @property {boolean|yo<confirm|false>} [includeDependencies] Set this to true if you also want to include the dependencies (UI5 libraries) in the zip archive. Otherwise, it will only include the workspace files (controller, views, etc).
+ * @property {boolean|yo<confirm>} [debug] see output
+ */
+/**
  * Zips the application content of the output folder
  *
  * @param {object} parameters Parameters

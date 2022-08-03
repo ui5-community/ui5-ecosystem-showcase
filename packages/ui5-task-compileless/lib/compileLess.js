@@ -7,6 +7,12 @@ const resourceFactory = require("@ui5/fs/lib/resourceFactory");
 const minimatch = require("minimatch");
 
 /**
+ * @typedef {object} [configuration] configuration
+ * @property {string|yo<input|webapp>} appFolderPath -   path to your appfolder (default `webapp`)
+ * @property {string} lessToCompile - array of less resources specified as paths or glob patterns which should be compiled
+ * @property {boolean|yo<confirm>} [debug] see output
+ */
+/**
  * Custom task to compile less files in the app folder
  *
  * @param {Array} lessResources Array of objects containing the less resource and the corresponding project resource path

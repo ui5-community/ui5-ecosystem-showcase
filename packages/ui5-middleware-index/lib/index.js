@@ -2,6 +2,11 @@
 const log = require("@ui5/logger").getLogger("server:custommiddleware:index")
 
 /**
+ * @typedef {Object} [configuration] configuration
+ * @property {string|yo<input|index.html>} index -  file inside `$yourapp` to deliver for `http://<host>:<port>/`
+ * @property {boolean|yo<confirm|false>} [debug] see output
+ */
+/**
  * serving an html file when "/" is called in the browser,
  * similar to what Apache httpd calls "DirectoryIndex <file>"
  *
