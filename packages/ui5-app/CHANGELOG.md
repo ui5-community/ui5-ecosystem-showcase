@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.19.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.18.0...ui5-app@0.19.0) (2022-08-11)
+
+
+### Features
+
+* **ui5-tooling-modules:** support namespacing of modules ([#614](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/614)) ([877f718](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/877f71873f7d20c0f27f2a1fccac6a9b1ad0905b))
+
+
+
+
+
 # [0.18.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.17.0...ui5-app@0.18.0) (2022-06-27)
 
 
