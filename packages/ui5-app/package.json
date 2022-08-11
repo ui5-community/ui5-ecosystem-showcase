@@ -13,7 +13,8 @@
   "scripts": {
     "clean": "rimraf dist",
     "prepare": "mkdirp dist",
-    "build": "ui5 build self-contained --clean-dest",
+    "build": "ui5 build --clean-dest",
+    "build:sc": "ui5 build self-contained --clean-dest",
     "build:pwa": "ui5 build self-contained --clean-dest --config ui5-pwa.yaml --verbose",
     "start": "ui5 serve --config ui5-dist.yaml --port 1081 --open index.html",
     "start:ci": "ui5 serve --config ui5-min.yaml --port 1081",

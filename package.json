@@ -12,6 +12,7 @@
   "packageManager": "pnpm@7.1.7",
   "scripts": {
     "build": "pnpm --filter ui5-app build",
+    "build:sc": "pnpm --filter ui5-app build:sc",
     "build:pwa": "pnpm --filter ui5-app build:pwa",
     "clean": "pnpm --filter ui5-app clean",
     "dev": "pnpm --filter ui5-app dev ",

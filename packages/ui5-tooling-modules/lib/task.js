@@ -25,6 +25,7 @@ const escodegen = require("escodegen");
  * @param {string} [parameters.options.projectNamespace] Project namespace if available
  * @param {string} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @param {string} [parameters.options.configuration.prependPathMappings] Prepend the path mappings for the UI5 loader to Component.js
+ * @param {string} [parameters.options.configuration.addToNamespace] Adds the libraries into the sub-namespace thirdparty of the Component namespace
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ workspace, dependencies, taskUtil, options }) {
@@ -91,6 +92,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 	}
 
 	// utility to rewrite JS dependencies
+	// eslint-disable-next-line jsdoc/require-jsdoc
 	function rewriteJSDeps(content, bundledResources) {
 		let changed = false;
 		const program = espree.parse(content, { range: true, comment: true, tokens: true, ecmaVersion: "latest" });
@@ -181,7 +183,8 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 		}
 	}
 
-	// utility to lookup unique XML dependencies
+	// utility to rewrite XML dependencies
+	// eslint-disable-next-line jsdoc/require-jsdoc
 	function rewriteXMLDeps(node, bundledResources) {
 		let changed = false;
 		if (node) {

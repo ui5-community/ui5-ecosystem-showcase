@@ -30,11 +30,18 @@ npm install ui5-tooling-modules --save-dev
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
-- verbose: `boolean`  
-  Enables verbose logging (default to `false`)
+- *verbose*: `boolean`  
+  Enables verbose logging (defaults to `false`)
+  &nbsp;
 
-- prependPathMappings: `boolean`  
-  Prepends the path mappings for the UI5 loader to the `Component.js` which allows to run the Component using 3rd party libs in e.g. Fiori launchpad environments (default to `false`)
+- *prependPathMappings*: `boolean`  
+  Prepends the path mappings for the UI5 loader to the `Component.js` which allows to run the Component using 3rd party modules in e.g. Fiori launchpad environments (defaults to `false`)
+  &nbsp;
+
+- *addToNamespace*: `boolean`
+  Puts 3rd party modules into the namespace of the Component to make them Component-local. All used 3rd party modules will be moved into the sub-namespace `thirdparty` of the Component namespace at build time. With that option you can run your application using 3rd party modules in a Fiori launchpad environment. (defaults to `false`, disables *prependPathMappings* when set to `true`)
+  &nbsp;
+  > :warning: While this works great for any non-UI5 3rd party module, there are limitations for the consumption of UI5 modules from custom control 3rd party modules (NPM packages). The UI5 module names (used for `Object.extend(...)`, aggregation types, ...) are not rewritten and this may cause issues. UI5 assumes that the used module path (slash syntax) is matching the module name (dot syntax). This can lead to issues for `Object.isA(...)` checks, Renderer lookups (when not inlined or referenced by module), or for any other API which derives the module name from the module path or vice versa.
 
 ## Usage
 
@@ -77,7 +84,7 @@ server:
       afterMiddleware: compression
 ```
 
-> Hint: In case your application is using a proxy such `fiori-tools-proxy`, the proxy must run after `ui5-tooling-modules-middleware` middleware. Otherwise proxy will try to serve the resources for your installed npm package instead of `ui5-tooling-modules-middleware`. You can achieve this by setting `afterMiddleware: ui5-tooling-modules-middleware` in `fiori-tools-proxy` middleware.
+> :warning: In case your application is using a proxy such `fiori-tools-proxy`, the proxy must run after `ui5-tooling-modules-middleware` middleware. Otherwise proxy will try to serve the resources for your installed npm package instead of `ui5-tooling-modules-middleware`. You can achieve this by setting `afterMiddleware: ui5-tooling-modules-middleware` in `fiori-tools-proxy` middleware.
 
 ## How it works
 
