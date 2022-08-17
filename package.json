@@ -32,7 +32,7 @@
     "watch": "pnpm --filter ui5-app watch",
     "release:version": "lerna version",
     "version": "npm-run-all --sequential version:pnpm-install version:pnpm-lock-to-git",
-    "version:pnpm-install": "pnpm install --lockfile-only",
+    "version:pnpm-install": "pnpm install --lockfile-only || exit 0",
     "version:pnpm-lock-to-git": "git add pnpm-lock.yaml",
     "release:publish": "lerna publish from-git --yes --no-verify-access",
     "release:publish-manual": "lerna publish from-package --yes --no-verify-access",
