@@ -2,6 +2,7 @@
   "name": "ui5-app-ts",
   "version": "0.1.0",
   "description": "Showcase of a TypeScript setup for developing UI5 applications",
+  "private": true,
   "author": "Jorge Martins, Peter Muessig",
   "license": "Apache-2.0",
   "scripts": {
