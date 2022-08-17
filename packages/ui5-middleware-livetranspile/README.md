@@ -2,6 +2,8 @@
 
 Middleware for [ui5-server](https://github.com/SAP/ui5-server), doing on-the-fly transpilation of ES6+ sources to ES5 (incl IE11 compatability :) )
 
+:warning: The `ui5-middleware-livetranspile` has been deprecated and replaced with the `ui5-tooling-transpile-middleware`. Please check out the tooling extensions from [ui5-tooling-transpile](https://www.npmjs.com/package/ui5-tooling-transpile).
+
 ## Install
 
 ```bash

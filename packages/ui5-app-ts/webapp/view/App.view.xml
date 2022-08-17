@@ -1,0 +1,10 @@
+<mvc:View controllerName="ui5.typescript.helloworld.controller.App" displayBlock="true" xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc">
+  <App id="app">
+    <MessagePage title="Hello World" text="This is a UI5 TypeScript Hello World app" icon="sap-icon://accept" id="page" description="">
+      <buttons>
+        <Button text="Say Hello" press="sayHello" />
+        <Button text="Download XSLX" press="downloadXLSX" />
+      </buttons>
+    </MessagePage>
+  </App>
+</mvc:View>

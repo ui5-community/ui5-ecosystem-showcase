@@ -43,7 +43,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@openui5/ts-types": "^1.103.0",
+    "@openui5/ts-types": "^1.104.0",
     "@ui5/cli": "^2.14.9",
     "@wdio/cli": "^7.20.5",
     "@wdio/local-runner": "^7.20.5",
