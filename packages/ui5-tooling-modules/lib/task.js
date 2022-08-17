@@ -9,7 +9,8 @@ const { getResource, resolveModule } = require("./util");
 const { readFileSync } = require("fs");
 const espree = require("espree");
 const estraverse = require("estraverse");
-const { XMLParser } = require("fast-xml-parser");
+const { XMLParser, XMLBuilder, XMLValidator } = require("fast-xml-parser");
+const escodegen = require("escodegen");
 
 /**
  * Custom task to create the UI5 AMD-like bundles for used ES imports from node_modules.
@@ -24,6 +25,7 @@ const { XMLParser } = require("fast-xml-parser");
  * @param {string} [parameters.options.projectNamespace] Project namespace if available
  * @param {string} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @param {string} [parameters.options.configuration.prependPathMappings] Prepend the path mappings for the UI5 loader to Component.js
+ * @param {string} [parameters.options.configuration.addToNamespace] Adds the libraries into the sub-namespace thirdparty of the Component namespace
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ workspace, dependencies, taskUtil, options }) {
@@ -89,6 +91,48 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 		}
 	}
 
+	// utility to rewrite JS dependencies
+	// eslint-disable-next-line jsdoc/require-jsdoc
+	function rewriteJSDeps(content, bundledResources) {
+		let changed = false;
+		const program = espree.parse(content, { range: true, comment: true, tokens: true, ecmaVersion: "latest" });
+		estraverse.traverse(program, {
+			enter(node, parent) {
+				if (
+					/* sap.ui.require.toUrl */
+					node?.type === "CallExpression" &&
+					node?.callee?.property?.name == "toUrl" &&
+					node?.callee?.object?.property?.name == "require" &&
+					node?.callee?.object?.object?.property?.name == "ui" &&
+					node?.callee?.object?.object?.object?.name == "sap"
+				) {
+					const elDep = node.arguments[0];
+					if (elDep?.type === "Literal" && bundledResources.includes(elDep.value)) {
+						elDep.value = `${options.projectNamespace}/thirdparty/${elDep.value}`;
+						changed = true;
+					}
+				} else if (
+					/* sap.ui.(require|define) */
+					node?.type === "CallExpression" &&
+					/require|define/.test(node?.callee?.property?.name) &&
+					node?.callee?.object?.property?.name == "ui" &&
+					node?.callee?.object?.object?.name == "sap"
+				) {
+					const depsArray = node.arguments.filter((arg) => arg.type === "ArrayExpression");
+					if (depsArray.length > 0) {
+						depsArray[0].elements
+							.filter((el) => el.type === "Literal" && bundledResources.includes(el.value))
+							.map((el) => {
+								el.value = `${options.projectNamespace}/thirdparty/${el.value}`;
+								changed = true;
+							});
+					}
+				}
+			},
+		});
+		return changed ? escodegen.generate(program) : content;
+	}
+
 	// utility to lookup unique XML dependencies
 	// eslint-disable-next-line jsdoc/require-jsdoc
 	function findUniqueXMLDeps(node, ns = {}) {
@@ -137,6 +181,49 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 						});
 				});
 		}
+	}
+
+	// utility to rewrite XML dependencies
+	// eslint-disable-next-line jsdoc/require-jsdoc
+	function rewriteXMLDeps(node, bundledResources) {
+		let changed = false;
+		if (node) {
+			// attributes
+			Object.keys(node)
+				.filter((key) => key.startsWith("@_"))
+				.forEach((key) => {
+					const nsParts = /@_xmlns(?::(.*))?/.exec(key);
+					if (nsParts) {
+						// namespace (default namespace => "")
+						const namespace = node[key].replace(/\./g, "/");
+						if (
+							bundledResources.some((res) => {
+								return res.startsWith(namespace);
+							})
+						) {
+							node[key] = `${options.projectNamespace.replace(/\//g, ".")}.thirdparty.${node[key]}`;
+							changed = true;
+						}
+					}
+				});
+			// nodes
+			Object.keys(node)
+				.filter((key) => !key.startsWith("@_"))
+				.forEach((key) => {
+					const children = Array.isArray(node[key]) ? node[key] : [node[key]];
+					children.forEach((child) => {
+						const nodeParts = /(?:([^:]*):)?(.*)/.exec(key);
+						if (nodeParts) {
+							// skip #text nodes
+							let module = nodeParts[2];
+							if (module !== "#text") {
+								changed = rewriteXMLDeps(child, bundledResources) || changed;
+							}
+						}
+					});
+				});
+		}
+		return changed;
 	}
 
 	// find all XML resources to determine their dependencies
@@ -191,7 +278,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 			if (bundle) {
 				log.info(`Processing dependency: ${dep}`);
 				const bundleResource = resourceFactory.createResource({
-					path: `/resources/${dep}.js`,
+					path: `/resources/${config?.addToNamespace ? options.projectNamespace + "/thirdparty/" : ""}${dep}.js`,
 					string: bundle,
 				});
 				bundledResources.push(dep);
@@ -208,7 +295,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 			if (content) {
 				log.info(`Processing resource: ${resource}`);
 				const newResource = resourceFactory.createResource({
-					path: `/resources/${resource}`,
+					path: `/resources/${config?.addToNamespace ? options.projectNamespace + "/thirdparty/" : ""}${resource}`,
 					string: content,
 				});
 				bundledResources.push(resource);
@@ -217,8 +304,59 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 		})
 	);
 
+	// process all XML and JS files in workspace and rewrite the module names
+	if (config?.addToNamespace) {
+		const parser = new XMLParser({
+			attributeNamePrefix: "@_",
+			ignoreAttributes: false,
+			ignoreNameSpace: false,
+			processEntities: false,
+			allowBooleanAttributes: false,
+			suppressBooleanAttributes: true,
+			preserveOrder: true,
+		});
+		const builder = new XMLBuilder({
+			attributeNamePrefix: "@_",
+			ignoreAttributes: false,
+			ignoreNameSpace: false,
+			processEntities: false,
+			allowBooleanAttributes: false,
+			suppressBooleanAttributes: true,
+			preserveOrder: true,
+			format: true,
+		});
+
+		const allResources = await workspace.byGlob("/**/*.{js,xml}");
+		await Promise.all(
+			allResources.map(async (res) => {
+				if (res.getPath().endsWith(".js")) {
+					try {
+						const content = await res.getString();
+						const newContent = rewriteJSDeps(content, bundledResources);
+						if (newContent != content) {
+							log.info(`Rewriting JS resource: ${res.getPath()}`);
+							res.setString(newContent);
+							await workspace.write(res);
+						}
+					} catch (err) {
+						log.info(`Failed to rewrite "${res.getPath()}" with espree!`, err);
+					}
+				} else if (res.getPath().endsWith(".xml")) {
+					const content = await res.getString();
+					const xmldom = parser.parse(content);
+					if (rewriteXMLDeps(xmldom, bundledResources)) {
+						log.info(`Rewriting XML resource: ${res.getPath()}`);
+						const newContent = builder.build(xmldom);
+						res.setString(newContent);
+						await workspace.write(res);
+					}
+				}
+			})
+		);
+	}
+
 	// create path mappings for bundled resources in Component.js
-	if (config?.prependPathMappings) {
+	if (!config?.addToNamespace && config?.prependPathMappings) {
 		const resComponent = await workspace.byPath(`/resources/${options.projectNamespace}/Component.js`);
 		if (resComponent) {
 			let pathMappings = "";

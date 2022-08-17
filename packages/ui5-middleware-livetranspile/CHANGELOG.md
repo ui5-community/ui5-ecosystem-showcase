@@ -3,6 +3,74 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livetranspile@0.4.1...ui5-middleware-livetranspile@0.5.0) (2022-08-11)
+
+
+* Typedefs (#635) ([841c6e4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/841c6e4c9fe627151c264e3acd8dff1435d65b06)), closes [#635](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/635) [#617](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/617) [#606](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/606)
+* adding Typedefs to packages (#634) ([19a5b72](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/19a5b72281f1b2af9f91342ee7fee462fd812b07)), closes [#634](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/634) [#617](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/617) [#606](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/606)
+
+
+### BREAKING CHANGES
+
+* new package manager
+
+* refactor: updated tests to pass with pnpm
+
+* refactor: iasync still failing
+
+* feat(ui5-tooling-modules): support pnpm / node_modules symlinks
+
+* fix(ui5-app): make Karma work with pnpm
+
+* chore(ui5-app): remove uiveri5 from sample
+
+* chore(ui5-app): add updated wdio.conf
+
+* fix: make prettier and eslint work with pnpm
+
+* fix: fix cf_dest tests
+
+restructured tests and added node_modules as symlink
+
+* fix(ui5-app): adding eslint for wdio and mocha
+
+* chore(ui5-middleware-cfdestination): cleanup
+
+* feat(ui5-tooling-modules): add bundling support for AMD
+
+* chore(ui5-tooling-modules): cleanup
+* new package manager
+
+* refactor: updated tests to pass with pnpm
+
+* refactor: iasync still failing
+
+* feat(ui5-tooling-modules): support pnpm / node_modules symlinks
+
+* fix(ui5-app): make Karma work with pnpm
+
+* chore(ui5-app): remove uiveri5 from sample
+
+* chore(ui5-app): add updated wdio.conf
+
+* fix: make prettier and eslint work with pnpm
+
+* fix: fix cf_dest tests
+
+restructured tests and added node_modules as symlink
+
+* fix(ui5-app): adding eslint for wdio and mocha
+
+* chore(ui5-middleware-cfdestination): cleanup
+
+* feat(ui5-tooling-modules): add bundling support for AMD
+
+* chore(ui5-tooling-modules): cleanup
+
+
+
+
+
 ## [0.4.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livetranspile@0.4.0...ui5-middleware-livetranspile@0.4.1) (2022-06-26)
 
 **Note:** Version bump only for package ui5-middleware-livetranspile

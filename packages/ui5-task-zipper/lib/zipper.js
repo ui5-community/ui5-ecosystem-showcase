@@ -51,6 +51,10 @@ module.exports = async function ({ workspace, dependencies, options, taskUtil })
 		// include the application related resources
 		await Promise.all(
 			allResources.map((resource) => {
+				if (taskUtil.getTag(resource, taskUtil.STANDARD_TAGS.OmitFromBuildResult)) {
+					// resource should not be part of the build result -> no need to include it in the zip
+					return;
+				}
 				if (onlyZip) {
 					taskUtil.setTag(resource, OmitFromBuildResult, true);
 				}

@@ -53,6 +53,7 @@ builder:
       afterTask: replaceVersion
       configuration:
         prependPathMappings: true
+        addToNamespace: true
     - name: ui5-task-zipper
       afterTask: uglify
       configuration:
