@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.5.0...ui5-task-zipper@0.5.1) (2022-08-17)
+
+
+### Bug Fixes
+
+* exclude resources with OmitFromBuildResult tag from zip ([#643](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/643)) ([f33c123](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f33c123a3f2d198629b25172c5161f9d578b914f))
+
+
+
+
+
 # [0.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.4.13...ui5-task-zipper@0.5.0) (2022-06-21)
 
 

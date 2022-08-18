@@ -2,6 +2,8 @@
 
 Task for [ui5-builder](https://github.com/SAP/ui5-builder), enabling transpiling.
 
+:warning: The `ui5-task-transpile` has been deprecated and replaced with the `ui5-tooling-transpile-task`. Please check out the tooling extensions from [ui5-tooling-transpile](https://www.npmjs.com/package/ui5-tooling-transpile).
+
 ## Install
 
 ```bash
