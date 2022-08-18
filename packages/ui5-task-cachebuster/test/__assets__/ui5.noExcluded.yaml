@@ -1,0 +1,21 @@
+specVersion: "2.5"
+metadata:
+  name: ui5-app
+type: application
+framework:
+  name: OpenUI5
+  version: "1.99.0"
+  libraries:
+    - name: sap.m
+    - name: sap.ui.core
+    - name: sap.ui.layout
+    - name: themelib_sap_fiori_3
+builder:
+  customTasks:
+    - name: ui5-task-cachebuster
+      afterTask: uglify
+      configuration:
+        moveResources: true
+        updateIndexHTML: false
+        excludeFromMove: []
+      
