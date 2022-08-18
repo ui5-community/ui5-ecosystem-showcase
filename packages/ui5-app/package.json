@@ -1,6 +1,6 @@
 {
   "name": "ui5-app",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "description": "UI5 application using custom middlewares and tasks",
   "private": true,
   "author": "Volker Buzek, Peter Muessig",
@@ -43,7 +43,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@openui5/ts-types": "^1.103.0",
+    "@openui5/ts-types": "^1.104.0",
     "@ui5/cli": "^2.14.9",
     "@wdio/cli": "^7.20.5",
     "@wdio/local-runner": "^7.20.5",
@@ -67,7 +67,7 @@
     "ui5-middleware-index": "^0.3.0",
     "ui5-middleware-livecompileless": "^0.3.0",
     "ui5-middleware-livereload": "^0.7.0",
-    "ui5-middleware-livetranspile": "^0.5.0",
+    "ui5-middleware-livetranspile": "^0.6.0",
     "ui5-middleware-servestatic": "^0.4.0",
     "ui5-middleware-simpleproxy": "^0.9.1",
     "ui5-middleware-stringreplacer": "^0.4.1",
@@ -77,8 +77,8 @@
     "ui5-task-minify-xml": "^0.3.0",
     "ui5-task-pwa-enabler": "^0.3.1",
     "ui5-task-stringreplacer": "^0.7.1",
-    "ui5-task-transpile": "^0.4.1",
-    "ui5-task-zipper": "^0.5.0",
+    "ui5-task-transpile": "^0.5.0",
+    "ui5-task-zipper": "^0.5.1",
     "ui5-task-cachebuster": "^0.1.0",
     "ui5-tooling-modules": "^0.7.0",
     "wdio-chromedriver-service": "^7.3.2",
