@@ -16,5 +16,4 @@ builder:
       afterTask: uglify
       configuration:
         updateIndexHTML: false
-        excludeFromMove: ["index.html", "manifest.json"]
-      
+        excludeFromMove: ["manifest.json","Component.js"]

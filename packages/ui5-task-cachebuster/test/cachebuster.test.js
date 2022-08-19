@@ -3,9 +3,8 @@ const fs = require("fs-extra");
 const path = require("path");
 const { spawnSync } = require("child_process");
 
-//const test = require("ava");
 const tmpDir = "./test/tmp";
-jest.setTimeout(7000);
+jest.setTimeout(9000);
 
 beforeEach(async () => {
     // cleanup
@@ -18,10 +17,19 @@ afterEach(async () => {
     return fs.remove(tmpDir);
   });
 
-  test("build with defaults", async (t) => {
+  function readResourceRootsIndex(index){
+
+	const content = fs.readFileSync(index, 'utf8');
+	const sRegex = /data-sap-ui-resourceroots.*=.*'(.*)'/;
+	var sResourceRoots = content.match(sRegex)[1];
+	return JSON.parse(sResourceRoots);
+
+  }
+
+  test("build with defaults", () => {
 	console.log(1)
     const ui5 = { yaml: path.resolve("./test/__assets__/ui5.basic.yaml") };
-    spawnSync(`ui5 build --config ${ui5.yaml} --dest ${tmpDir}/dist`, {
+    spawnSync(`ui5 build --config ${ui5.yaml} --dest ../ui5-task-cachebuster/${tmpDir}/dist`, {
       stdio: "inherit", // > don't include stdout in test output,
       shell: true,
       cwd: path.resolve(__dirname, "../../ui5-app"),
@@ -30,56 +38,54 @@ afterEach(async () => {
     // timestamp folder exsists
     // index.html is in root and has timestamp in resourceroots
     const index = path.resolve(tmpDir, "dist", "index.html");
-    expect(fs.existsSync(index)).toBeTruthy();;
+    expect(fs.existsSync(index)).toBeTruthy();
 
-    try {
-        const content = fs.readFileSync(index, 'utf8');
-        console.log(data);
+	const oResouceRoots = readResourceRootsIndex(index);
+	const aModuleNames = Object.keys(oResouceRoots);
+	const sModulePath = oResouceRoots[aModuleNames[0]];
+	const parts = sModulePath.split("~");
+	const timestamp = parts[1];
+	const timestampDir = path.resolve(tmpDir, "dist", `~${timestamp}~/`);
 
-        const sRegex = /data-sap-ui-resourceroots.*=.*'(.*)'/;
-        var sResourceRoots = content.match(sRegex)[1];
-        var oResouceRoots = JSON.parse(sResourceRoots);
-        const aModuleNames = Object.keys(oResouceRoots);
-        const sModulePath = oResouceRoots[aModuleNames[0]];
-        var atmp = sModulePath.split("~")
-        if (atmp.length >2){
-            const timestamp = atmp[1];
-
-            const timestampDir = path.resolve(tmpDir, "dist", `~${timestamp}~`);
-            expect(fs.existsSync(timestampDir)).toBeTruthy();;
-        }
-    } catch (err) {
-        console.error(err);
-
-    }
+	expect(fs.existsSync(timestampDir)).toBeTruthy();
 
   });
+
   test("only update index.html", () => {
 	console.log(2)
     const ui5 = { yaml: path.resolve("./test/__assets__/ui5.onlyIndex.yaml") };
-    var res = spawnSync(`ui5 build --config ${ui5.yaml} --dest ${tmpDir}/dist`, {
+    var res = spawnSync(`ui5 build --config ${ui5.yaml} --dest ../ui5-task-cachebuster/${tmpDir}/dist`, {
       stdio: "inherit", // > don't include stdout in test output,
       shell: true,
       cwd: path.resolve(__dirname, "../../ui5-app"),
     });
-	console.log(res);
     // no timestamp folder
-	expect(true).toBeTruthy();
+	const index = path.resolve(tmpDir, "dist", "index.html");
+    expect(fs.existsSync(index)).toBeTruthy();
+
+	var oResouceRoots = readResourceRootsIndex(index);
+	const aModuleNames = Object.keys(oResouceRoots);
+	const sModulePath = oResouceRoots[aModuleNames[0]];
+	const parts = sModulePath.split("~");
+	const timestamp = parts[1];
+	const timestampDir = path.resolve(tmpDir, "dist", `~${timestamp}~`);
+	expect(fs.existsSync(timestampDir)).toBeFalsy();
+
   });
   /*
-  //test("index.html has more than one resource root path", async (t) => { //TODO how to ?
+  //test("index.html has more than one resource root path",  () => { //TODO how to ?
   //  const ui5 = { yaml: path.resolve("./test/__assets__/ui5.onlyIndex.yaml") };
-  //  spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
+  //  spawnSync(`ui5 build --config ${ui5.yaml} --dest ../ui5-task-cachebuster/${tmpDir}/dist`, {
   //    stdio: "inherit", // > don't include stdout in test output,
   //    shell: true,
   //    cwd: path.resolve(__dirname, "../../ui5-app"),
   //  });
   //  // both resource roots with timestamp path
   //});
-/*
-  test("only move files", async (t) => {
+
+  test("only move files", () => {
     const ui5 = { yaml: path.resolve("./test/__assets__/ui5.onlyMove.yaml") };
-    spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
+    spawnSync(`ui5 build --config ${ui5.yaml} --dest ../ui5-task-cachebuster/${tmpDir}/dist`, {
       stdio: "inherit", // > don't include stdout in test output,
       shell: true,
       cwd: path.resolve(__dirname, "../../ui5-app"),
@@ -88,24 +94,34 @@ afterEach(async () => {
     // index.html not changed
 
   });
-  test("more than default from move excluded resources", async (t) => {
+*/
+  test("more than default from move excluded resources", () => {
+	console.log(3)
     const ui5 = { yaml: path.resolve("./test/__assets__/ui5.onlyMove.yaml") };
-    spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
+    spawnSync(`ui5 build --config ${ui5.yaml} --dest ../ui5-task-cachebuster/${tmpDir}/dist`, {
       stdio: "inherit", // > don't include stdout in test output,
       shell: true,
       cwd: path.resolve(__dirname, "../../ui5-app"),
     });
     // excluded resources also in root folder
+	const index = path.resolve(tmpDir, "dist", "index.html");
+    expect(fs.existsSync(index)).toBeFalsy();
+	const manifest = path.resolve(tmpDir, "dist", "manifest.json");
+    expect(fs.existsSync(manifest)).toBeTruthy();
+	const component = path.resolve(tmpDir, "dist", "Component.js");
+    expect(fs.existsSync(component)).toBeTruthy();
 
   });
-  test("no excluded resources", async (t) => {
+  test("no excluded resources", () => {
+	console.log(4)
     const ui5 = { yaml: path.resolve("./test/__assets__/ui5.noExcluded.yaml") };
-    spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
+    spawnSync(`ui5 build --config ${ui5.yaml} --dest ../ui5-task-cachebuster/${tmpDir}/dist`, {
       stdio: "inherit", // > don't include stdout in test output,
       shell: true,
       cwd: path.resolve(__dirname, "../../ui5-app"),
     });
     // no files in root
-
+	const index = path.resolve(tmpDir, "dist", "index.html");
+    expect(fs.existsSync(index)).toBeFalsy();
   });
-*/
+
