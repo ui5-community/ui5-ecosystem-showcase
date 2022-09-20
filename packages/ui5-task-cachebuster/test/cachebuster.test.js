@@ -95,7 +95,7 @@ afterEach(async () => {
 
   });
 */
-  test("more than default from move excluded resources", () => {
+  test("more than default from-move-excluded resources", () => {
 	console.log(3)
     const ui5 = { yaml: path.resolve("./test/__assets__/ui5.onlyMove.yaml") };
     spawnSync(`ui5 build --config ${ui5.yaml} --dest ../ui5-task-cachebuster/${tmpDir}/dist`, {

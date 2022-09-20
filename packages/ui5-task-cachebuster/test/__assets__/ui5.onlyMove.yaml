@@ -15,5 +15,4 @@ builder:
     - name: ui5-task-cachebuster
       afterTask: uglify
       configuration:
-        updateIndexHTML: false
         excludeFromMove: ["manifest.json","Component.js"]

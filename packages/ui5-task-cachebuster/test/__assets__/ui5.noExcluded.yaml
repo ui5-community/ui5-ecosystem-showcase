@@ -15,7 +15,4 @@ builder:
     - name: ui5-task-cachebuster
       afterTask: uglify
       configuration:
-        moveResources: true
-        updateIndexHTML: false
         excludeFromMove: []
-      
