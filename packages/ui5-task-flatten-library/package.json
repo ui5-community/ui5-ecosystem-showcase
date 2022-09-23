@@ -9,11 +9,12 @@
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
     "directory": "packages/ui5-task-flatten-library"
   },
+  "type": "module",
   "scripts": {
     "lint": "eslint lib"
   },
   "dependencies": {
-    "@ui5/logger": "^2.0.1"
+    "@ui5/logger": "^3.0.1-alpha.3"
   },
   "ui5": {
     "dependencies": []

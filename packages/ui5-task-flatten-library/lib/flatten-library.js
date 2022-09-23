@@ -1,18 +1,19 @@
-const log = require("@ui5/logger").getLogger("builder:customtask:ui5-task-flatten-library");
+import logger from "@ui5/logger";
+const log = logger.getLogger("builder:customtask:ui5-task-flatten-library");
 
 /**
  * Task to flatten the library folder structure.
  * This is required for deployments to SAP NetWeaver.
  *
  * @param {object} parameters Parameters
- * @param {module:@ui5/fs.DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {module:@ui5/builder.tasks.TaskUtil} [parameters.taskUtil] TaskUtil
+ * @param {@ui5/fs.DuplexCollection} parameters.workspace DuplexCollection to read and write files
+ * @param {@ui5/builder.tasks.TaskUtil} [parameters.taskUtil] TaskUtil
  * @param {object} parameters.options Options
  * @param {object} parameters.options.projectName Project name
  * @param {object} parameters.options.projectNamespace Project namespace
  * @returns {Promise<undefined>} Promise resolving with undefined once data has been written
  */
-module.exports = async function ({ workspace, taskUtil, options }) {
+export default async function ({ workspace, taskUtil, options }) {
 	if (!taskUtil.isRootProject()) {
 		// Flattening is only done when library is built as root project
 		log.info(`Skipping execution. Current project '${options.projectName}' is not the root project.`);
@@ -53,4 +54,4 @@ module.exports = async function ({ workspace, taskUtil, options }) {
 			}
 		})
 	);
-};
+}

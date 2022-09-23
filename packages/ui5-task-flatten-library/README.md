@@ -4,8 +4,7 @@ Task for [ui5-builder](https://github.com/SAP/ui5-builder), to prepare build res
 
 ## Prerequisites
 
-- Requires `@ui5/cli` v2.4.0+ (to support [specVersion 2.2](https://sap.github.io/ui5-tooling/pages/Configuration/#specification-version-22))
-
+- Requires `@ui5/cli` v3.0.0+ because of ES Module usage
 ## Install
 
 ```bash
