@@ -7,6 +7,20 @@ const request = require("request")
 const approuter = require("@sap/approuter")()
 
 /**
+ * @typedef {Object} [configuration] configuration
+ * @property {int|yo<number|5000>} port - port to run the underlying `approuter` on
+ * @property {string|yo<input|"./xs-app.json"} [xsappJson] path to the cf-style approuter configuration file `xs-app.json`
+ * @property {string} [destinations] destination name, matching the one used in routes in `xs-app.json`
+ * @property {string} [url] URI to the host to "proxy" to
+ * @property {boolean|yo<confirm|false>} [allowServices] allow BTP services to be used at runtime that are configured in `xs-app.json`
+(requires an authenticated BTP session!)
+ * @property {string|yo<input|none>} [authenticationMethod] whether to equip routes with authenticatio
+* @property {boolean|yo<confirm|false>} [allowLocalDir] allow static assets to be picked up by the included `approuter`
+defaults to `false` as usually all local files/assets are supposedly served by `ui5-server`
+* @property {boolean|yo<confirm|false>} [debug] see output
+ */
+
+/**
  * Custom UI5 Server middleware "cfdestination"
  *
  * @param {object} parameters Parameters

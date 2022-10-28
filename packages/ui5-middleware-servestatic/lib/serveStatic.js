@@ -9,6 +9,11 @@ require("dotenv").config();
 const envOptionRegEx = /^\${env\.(.*)}$/;
 
 /**
+ * @typedef {Object} [configuration] configuration
+ * @property {string} mountPath - The path to mount the extension
+ * @property {string} rootPath -  the root path to the static resources on your system
+ */
+/**
  * Parses the configuration option. If a ${env.<PARAM>} pattern is detected,
  * the corresponding .env-file value will be retrieved. Otherwise the
  * original value will be returned
