@@ -43,9 +43,9 @@ module.exports = ({ resources, options, middlewareUtil }) => {
 	request.debug = effectiveOptions.debug // pass debug flag on to underlying request lib
 	process.env.XS_APP_LOG_LEVEL = effectiveOptions.debug ? "DEBUG" : "ERROR"
 	// read in the cf config file
-	const _xsappJson = path.resolve(resources.rootProject._readers[0]._fsBasePath, "..", effectiveOptions.xsappJson) // respect cwd of containing ui5 server
+	const xsappPath = path.resolve(resources.rootProject._readers[0]._fsBasePath, "..") // respect cwd of containing ui5 server
+	const _xsappJson = path.resolve(xsappPath, effectiveOptions.xsappJson)
 	const xsappConfig = JSON.parse(fs.readFileSync(_xsappJson, "utf8"))
-	const xsappPath = _xsappJson.replace("xs-app.json", "")
 
 	// the default auth mechanism is set to none but the user can pass an auth method using the options
 	xsappConfig.authenticationMethod = effectiveOptions.authenticationMethod
