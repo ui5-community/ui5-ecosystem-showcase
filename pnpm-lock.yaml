@@ -64,19 +64,19 @@ importers:
       ui5-middleware-index: ^0.3.0
       ui5-middleware-livecompileless: ^0.3.0
       ui5-middleware-livereload: ^0.7.0
-      ui5-middleware-livetranspile: ^0.6.0
+      ui5-middleware-livetranspile: ^0.6.1
       ui5-middleware-servestatic: ^0.4.0
       ui5-middleware-simpleproxy: ^0.9.1
       ui5-middleware-stringreplacer: ^0.4.1
       ui5-middleware-webjars: ^0.4.0
-      ui5-task-cachebuster: ^0.1.0
+      ui5-task-cachebuster: ^0.2.0
       ui5-task-compileless: ^0.3.0
       ui5-task-i18ncheck: ^0.3.9
       ui5-task-minify-xml: ^0.3.0
       ui5-task-pwa-enabler: ^0.3.1
       ui5-task-stringreplacer: ^0.7.1
-      ui5-task-transpile: ^0.5.0
-      ui5-task-zipper: ^0.5.1
+      ui5-task-transpile: ^0.5.1
+      ui5-task-zipper: ^0.6.0
       ui5-tooling-modules: ^0.7.0
       wdio-chromedriver-service: ^7.3.2
       wdio-ui5-service: ^0.9.5
@@ -145,7 +145,7 @@ importers:
       typescript: ^4.6.3
       ui5-middleware-livereload: ^0.5.9
       ui5-tooling-modules: ^0.6.0
-      ui5-tooling-transpile: ^0.2.0
+      ui5-tooling-transpile: ^0.2.1
       xlsx: ^0.18.5
     dependencies:
       xlsx: 0.18.5
@@ -229,7 +229,7 @@ importers:
 
   packages/ui5-middleware-livetranspile:
     specifiers:
-      ui5-tooling-transpile: ^0.2.0
+      ui5-tooling-transpile: ^0.2.1
     dependencies:
       ui5-tooling-transpile: link:../ui5-tooling-transpile
 
@@ -387,7 +387,7 @@ importers:
 
   packages/ui5-task-transpile:
     specifiers:
-      ui5-tooling-transpile: ^0.2.0
+      ui5-tooling-transpile: ^0.2.1
     dependencies:
       ui5-tooling-transpile: link:../ui5-tooling-transpile
 
@@ -5920,7 +5920,7 @@ packages:
   /axios/0.27.2:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
-      follow-redirects: 1.15.1
+      follow-redirects: 1.15.1_debug@4.3.2
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug
@@ -9076,7 +9076,6 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
-    dev: true
 
   /follow-redirects/1.15.1_debug@4.3.2:
     resolution: {integrity: sha512-yLAMQs+k0b2m7cVxpS1VKJVvoz7SS9Td1zss3XRwXj+ZDH00RJgnuLx7E44wx02kQLrdM3aOOy+FpzS7+8OizA==}
@@ -9837,7 +9836,7 @@ packages:
     engines: {node: '>=8.0.0'}
     dependencies:
       eventemitter3: 4.0.7
-      follow-redirects: 1.15.1_debug@4.3.2
+      follow-redirects: 1.15.1
       requires-port: 1.0.0
     transitivePeerDependencies:
       - debug

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.2.0...ui5-tooling-transpile@0.2.1) (2022-12-01)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** fix error when no ts file matches for js request ([faea158](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/faea158d66dffee1d924c15e6442e1dd634f3945)), closes [#650](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/650)
+
+
+
+
+
 # 0.2.0 (2022-08-17)
 
 

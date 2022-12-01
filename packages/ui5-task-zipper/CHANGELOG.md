@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.5.1...ui5-task-zipper@0.6.0) (2022-12-01)
+
+
+### Features
+
+* **ui5-task-zipper:** allow mapping of additional files by target path ([#654](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/654)) ([097628c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/097628c024704b0a8be7beab3e33dbed48ce95bf))
+
+
+
+
+
 ## [0.5.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.5.0...ui5-task-zipper@0.5.1) (2022-08-17)
 
 
