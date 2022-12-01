@@ -18,4 +18,6 @@ builder:
         debug: true
         archiveName: "customZipName"
         additionalFiles:
-          - xs-app.json
+          "xs-app.json":
+          "package.json": "package.json"
+          "lib/firebase.js": "some/custom/dir/firebase.js"

@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const fs = require("fs-extra");
+const {rmSync,existsSync,readdirSync} = require("fs");
 const path = require("path");
 const { spawnSync } = require("child_process");
 const yauzl = require("yauzl");
@@ -49,7 +49,40 @@ test.beforeEach(async (t) => {
 
 test.afterEach.always(async (t) => {
   // cleanup
-  await fs.remove(t.context.tmpDir);
+	rmSync(t.context.tmpDir, { recursive: true, force: true });
+});
+
+test("archive creation w/ additional files", async (t) => {
+	const ui5 = { yaml: path.resolve("./test/__assets__/ui5.additionalFiles.yaml") };
+	spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
+		stdio: "inherit", // > don't include stdout in test output,
+		shell: true,
+		cwd: path.resolve(__dirname, "../../ui5-app"),
+	});
+	// default options packs to $app-id.zip
+	const targetZip = path.resolve(t.context.tmpDir, "dist", "customZipName.zip");
+	t.true(existsSync(targetZip));
+	const allDepsFound = await Promise.all([
+		promisifiedNeedleInHaystack(targetZip, "xs-app.json")
+	]);
+	t.true(allDepsFound.every((dep) => dep === true));
+});
+test("archive creation w/ additional files map", async (t) => {
+	const ui5 = { yaml: path.resolve("./test/__assets__/ui5.additionalFilesMap.yaml") };
+	spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
+		stdio: "inherit", // > don't include stdout in test output,
+		shell: true,
+		cwd: path.resolve(__dirname, "../../ui5-app"),
+	});
+	// default options packs to $app-id.zip
+	const targetZip = path.resolve(t.context.tmpDir, "dist", "customZipName.zip");
+	t.true(existsSync(targetZip));
+	const allDepsFound = await Promise.all([
+		promisifiedNeedleInHaystack(targetZip, "xs-app.json"),
+		promisifiedNeedleInHaystack(targetZip, "package.json"),
+		promisifiedNeedleInHaystack(targetZip, "some/custom/dir/firebase.js"),
+	]);
+	t.true(allDepsFound.every((dep) => dep === true));
 });
 
 test("archive creation w/ defaults", async (t) => {
@@ -61,7 +94,7 @@ test("archive creation w/ defaults", async (t) => {
   });
   // default options packs to $app-id.zip
   const targetZip = path.resolve(t.context.tmpDir, "dist", "testSample.zip");
-  t.true(await fs.pathExists(targetZip));
+  t.true(existsSync(targetZip));
 });
 
 test("archive creation with custom archive name", async (t) => {
@@ -75,10 +108,10 @@ test("archive creation with custom archive name", async (t) => {
   });
   // default options packs to $app-id.zip
   const targetZip = path.resolve(t.context.tmpDir, "dist", "customZipName.zip");
-  t.true(await fs.pathExists(targetZip));
+  t.true(existsSync(targetZip));
 });
 
-test("onlyZip only procudes $file.zip + resources folder", async (t) => {
+test("onlyZip only produces $file.zip + resources folder", async (t) => {
   const ui5 = {
     yaml: path.resolve("./test/__assets__/ui5.onlyZip.yaml"),
   };
@@ -88,7 +121,7 @@ test("onlyZip only procudes $file.zip + resources folder", async (t) => {
     cwd: path.resolve(__dirname, "../../ui5-app"),
   });
 
-  const files = await fs.readdir(path.join(t.context.tmpDir, "dist"));
+  const files = readdirSync(path.join(t.context.tmpDir, "dist"));
   t.true(
     files.length > 0 && files.length <= 2,
     `${files.length} in zip: ${files.join(", ")}`
