@@ -17,8 +17,8 @@ Verbose logging
 Desired name for the `.zip` archive.
 Default value: `<app-id.zip>`
 
-- additionalFiles: `String<Array>`
-List of files to be included in the ZIP archive relative to the project root.
+- additionalFiles: `String<Array>` or `Object<Array>`
+List of files to be included in the ZIP archive relative to the project root or Map of of files to be included in the ZIP archive relative to the project root and target path in the ZIP archive.
 
 - onlyZip: `true|false`
 Set this to true if you also want to generate the unzipped resources in the `dist` folder. Otherwise, it will only create the zipped archive.
@@ -58,6 +58,20 @@ builder:
       archiveName: "webapp"
       additionalFiles:
       - xs-app.json
+```
+or
+
+```yaml
+builder:
+  customTasks:
+  - name: ui5-task-zipper
+    afterTask: uglify
+    configuration:
+      archiveName: "webapp"
+      additionalFiles:
+        "app/foo/xs-app.json":  # file will be placed in root of ZIP file
+        "foo.js": "foo.js"      # file will be placed in root of ZIP file
+        "path/to/files/bar.js": "some/custom/dir/bar.js"
 ```
 
 ## How it works

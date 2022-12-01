@@ -21,7 +21,7 @@ module.exports = async function ({ workspace, dependencies, options, taskUtil })
 	const { OmitFromBuildResult } = taskUtil.STANDARD_TAGS;
 
 	// debug mode?
-	const isDebug = options && options.configuration && options.configuration.debug;
+	const isDebug = options?.configuration?.debug;
 
 	// determine the name of the ZIP archive (either from config or from project namespace)
 	const defaultName = options && options.configuration && options.configuration.archiveName;
@@ -65,14 +65,17 @@ module.exports = async function ({ workspace, dependencies, options, taskUtil })
 			})
 		);
 		// include the additional files from the project
-		const additionalFiles = options && options.configuration && options.configuration.additionalFiles;
+		const additionalFiles = options?.configuration?.additionalFiles;
 		if (Array.isArray(additionalFiles) && additionalFiles.length > 0) {
-			await Promise.all(
-				additionalFiles.map((fileName) => {
-					isDebug && log.info(`Adding ${fileName} to archive.`);
-					zip.addFile(path.join(process.cwd(), fileName), fileName);
-				})
-			);
+			additionalFiles.forEach((fileName) => {
+				isDebug && log.info(`Adding ${fileName} to archive.`);
+				zip.addFile(path.join(process.cwd(), fileName), fileName);
+			});
+		} else if (typeof additionalFiles === "object") {
+			for (const [filePathSource, filePathTarget] of Object.entries(additionalFiles)) {
+				isDebug && log.info(`Adding ${filePathSource} to archive at path ${filePathTarget}.`);
+				zip.addFile(path.join(process.cwd(), filePathSource), filePathTarget || filePathSource);
+			}
 		}
 	} catch (e) {
 		log.error(`Couldn't add all resources to the archive: ${e}`);
