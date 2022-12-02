@@ -13,10 +13,5 @@
   "scripts": {
     "lint": "eslint lib"
   },
-  "dependencies": {
-    "@ui5/logger": "^3.0.1-alpha.3"
-  },
-  "ui5": {
-    "dependencies": []
-  }
+  "dependencies": {}
 }
