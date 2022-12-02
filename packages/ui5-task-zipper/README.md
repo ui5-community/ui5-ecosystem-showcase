@@ -69,8 +69,8 @@ builder:
     configuration:
       archiveName: "webapp"
       additionalFiles:
-        "app/foo/xs-app.json":  # file will be placed in root of ZIP file
-        "foo.js": "foo.js"      # file will be placed in root of ZIP file
+        "app/foo/xs-app.json":      # source path will be used as target path
+        "path/to/foo.js": "foo.js"  # file will be placed in root of ZIP file
         "path/to/files/bar.js": "some/custom/dir/bar.js"
 ```
 
