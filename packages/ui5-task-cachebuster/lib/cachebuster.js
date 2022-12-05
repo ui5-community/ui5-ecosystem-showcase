@@ -32,23 +32,23 @@ module.exports = async function({workspace, dependencies, taskUtil, options}) {
 		return indexResource.getString()
 			.then((content)=>{
 				//TODO also for data-sap-ui-theme-roots ??
-				const sRegex = /data-sap-ui-resourceroots[ \n]*=[ \n]*'(.*?)'/s;
-                var match = content.match(sRegex);
-                if(!match || match.length!=2){throw new Error("could not find data-sap-ui-resourceroots.")}
-				var sResourceRoots = match[1]; //captureGroup at index 1 in match result
-				var oResouceRoots = JSON.parse(sResourceRoots);
-				const aModuleNames = Object.keys(oResouceRoots);
-				aModuleNames.forEach((sModuleName)=>{
-					var sModulePath = oResouceRoots[sModuleName];
-					// assumes all paths are relative aka. start with "."
-					if(sModulePath.startsWith("./")) sModulePath = sModulePath.replace("./", `./~${timestamp}~/`);
-					else if(sModulePath.startsWith(".")) sModulePath = sModulePath.replace(".", `./~${timestamp}~/`);
-					oResouceRoots[sModuleName] = sModulePath;
-				})
-				sResourceRoots = JSON.stringify(oResouceRoots);
-				var changed = content.replace(sRegex,`data-sap-ui-resourceroots='${sResourceRoots}'`);
-				indexResource.setString(changed);
-				return workspace.write(indexResource);
+				const sRegex = /data-sap-ui-resourceroots[\s]*=[\s]*'(.*?)'/is;
+                const mParts = content.match(sRegex);;
+                const sResourceRoots = mParts?.[1]; //captureGroup at index 1 in match result
+                if (sResourceRoots) {
+                    var oResouceRoots = JSON.parse(sResourceRoots);
+                    const aModuleNames = Object.keys(oResouceRoots);
+                    aModuleNames.forEach((sModuleName)=>{
+                        var sModulePath = oResouceRoots[sModuleName];
+                        // assumes all paths are relative aka. start with "."
+                        sModulePath = sModulePath.replace(/^\.\/?/, `./~${timestamp}~/`);
+                        oResouceRoots[sModuleName] = sModulePath;
+                    })
+                    
+                    var changed = content.replace(sRegex,`data-sap-ui-resourceroots='${ JSON.stringify(oResouceRoots) }'`);
+                    indexResource.setString(changed);
+                    return workspace.write(indexResource);
+                }
 			}).then(()=>{
 				isDebug && console.log("updated index.html");
 			})
