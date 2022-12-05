@@ -69,14 +69,14 @@ importers:
       ui5-middleware-simpleproxy: ^0.9.1
       ui5-middleware-stringreplacer: ^0.4.1
       ui5-middleware-webjars: ^0.4.0
-      ui5-task-cachebuster: ^0.2.0
+      ui5-task-cachebuster: ^0.2.1
       ui5-task-compileless: ^0.3.0
       ui5-task-i18ncheck: ^0.3.9
       ui5-task-minify-xml: ^0.3.0
       ui5-task-pwa-enabler: ^0.3.1
       ui5-task-stringreplacer: ^0.7.1
       ui5-task-transpile: ^0.5.1
-      ui5-task-zipper: ^0.6.0
+      ui5-task-zipper: ^0.6.1
       ui5-tooling-modules: ^0.7.0
       wdio-chromedriver-service: ^7.3.2
       wdio-ui5-service: ^0.9.5
