@@ -1,5 +1,4 @@
-# UI5 task for zipping all project resources
-## <span style="color:red">This task is only relevant for standalone applications!</span>
+## This task is only relevant for standalone applications!
 
 Task for [ui5-builder](https://github.com/SAP/ui5-builder), enabling cachebusting for standalone applications.
 
@@ -41,7 +40,7 @@ default `["index.html"]`: the files which should not be moved into the timestamp
 
 > As the devDependencies are not recognized by the UI5 tooling, they need to be listed in the `ui5 > dependencies` array. In addition, once using the `ui5 > dependencies` array you need to list all UI5 tooling relevant dependencies.
 
-2. configure it in `$yourapp/ui5.yaml`:\
+2. configure it in `$yourapp/ui5.yaml`:
 
 What is possible:
 ```yaml 
@@ -71,7 +70,7 @@ If ui5-task-zipper is used you need to include the beforeTask config.
 ```
 
 ## How it works
-**This is only relevant for standalone applications, not apps that run in SAP Fiori Launchpad**\
+**This is only relevant for standalone applications, not apps that run in SAP Fiori Launchpad**
 
 Why do we need this? 
 "Cache busting is a way for updates to still happen when using web caching."
