@@ -78,12 +78,17 @@ module.exports = async ({ resources, options }) => {
 	if (options.configuration && options.configuration.debug) {
 		debug = options.configuration.debug;
 	}
+	let usePolling = false;
+	if (options.configuration && options.configuration.usePolling) {
+		usePolling = options.configuration.usePolling;
+	}
 
 	let serverOptions = {
 		debug: debug,
 		extraExts: extraExts ? extraExts.split(",") : undefined,
 		port: port,
 		exclusions: exclusions,
+		usePolling: usePolling,
 	};
 
 	const cli = require("yargs");
