@@ -26,7 +26,7 @@ module.exports = async function({workspace, dependencies, taskUtil, options}) {
 
 
 	// in index.html change the data-sap-ui-resourceroots='{"my.app": "./~1234241421~/"} in the script tag
-	workspace.byPath(`${resourcesPrefix}index.html`)
+	await workspace.byPath(`${resourcesPrefix}index.html`)
 	.then((indexResource)=>{
 		isDebug && console.log(`found: ${indexResource.getPath()}`);
 		return indexResource.getString()
@@ -57,7 +57,7 @@ module.exports = async function({workspace, dependencies, taskUtil, options}) {
 	})
 
     if(moveResources){
-        workspace.byGlob(`${resourcesPrefix}**`).then((aResources)=>{
+        await workspace.byGlob(`${resourcesPrefix}**`).then((aResources)=>{
         aResources = aResources.filter(elem => {// filter out the resources which should not be moved
             var path = elem.getPath().split(resourcesPrefix).pop();
             return !excludeResources.includes(path)
