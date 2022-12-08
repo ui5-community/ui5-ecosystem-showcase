@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-cachebuster@0.2.1...ui5-task-cachebuster@0.2.2) (2022-12-08)
+
+
+### Bug Fixes
+
+* await Promises ([#658](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/658)) ([b01f3d1](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b01f3d148af605fdfec0a29804029d0b041c7563))
+
+
+
+
+
 ## [0.2.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-cachebuster@0.2.0...ui5-task-cachebuster@0.2.1) (2022-12-05)
 
 
