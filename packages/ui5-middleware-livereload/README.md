@@ -87,6 +87,20 @@ server:
             - "../my.reuse.library/src/my/reuse/library"
 ```
 
+Use polling to watch files:
+
+```yaml
+server:
+  customMiddleware:
+  - name: ui5-middleware-livereload
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      extraExts: "xml,json,properties"
+      port: 35729
+      usePolling: true
+```
+
 Exclude single subpath from `path`s/ `watchPath`s:
 
 ```yaml
