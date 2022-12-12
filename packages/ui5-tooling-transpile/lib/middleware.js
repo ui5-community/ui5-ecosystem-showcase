@@ -1,11 +1,10 @@
-const babel = require("@babel/core")
-const log = require("@ui5/logger").getLogger("server:custommiddleware:ui5-tooling-transpile")
-const parseurl = require("parseurl")
-const merge = require("lodash.merge")
-const { createBabelConfig, normalizeLineFeeds } = require("./util")
+const babel = require("@babel/core");
+const log = require("@ui5/logger").getLogger("server:custommiddleware:ui5-tooling-transpile");
+const parseurl = require("parseurl");
+const { createBabelConfig, normalizeLineFeeds } = require("./util");
 
 /**
- * Custom middleware to create the UI5 AMD-like bundles for used ES imports from node_modules.
+ * Custom middleware to transpile resources to JavaScript modules.
  *
  * @param {object} parameters Parameters
  * @param {object} parameters.resources Resource collections
@@ -21,73 +20,56 @@ const { createBabelConfig, normalizeLineFeeds } = require("./util")
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @returns {function} Middleware function to use
  */
-module.exports = function ({ resources, options /*, middlewareUtil */ }) {
-	const config = options.configuration || {}
+module.exports = async function ({ resources, options /*, middlewareUtil */ }) {
+	const config = options?.configuration || {};
+	config.includes = config.includes || config.includePatterns;
+	config.excludes = config.excludes || config.excludePatterns;
 
-	const babelConfig = createBabelConfig({ configuration: config, isMiddleware: true })
+	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: true });
 
-	let filePatternConfig = config.filePattern
-
+	let filePatternConfig = config.filePattern; // .+(ts|tsx)
 	if (!filePatternConfig) {
-		filePatternConfig = config.transpileTypeScript ? ".ts" : ".js"
+		filePatternConfig = config.transpileTypeScript ? ".ts" : ".js";
 	}
+
+	const reader = config.transpileDependencies ? resources.all : resources.rootProject;
 
 	return async (req, res, next) => {
+		const pathname = parseurl(req)?.pathname;
 		if (
-			req.path &&
-			req.path.endsWith(".js") &&
-			!req.path.includes("resources/") &&
-			!(config.excludePatterns || []).some((pattern) => req.path.includes(pattern))
+			(pathname.endsWith(".js") && !(config.excludes || []).some((pattern) => pathname.includes(pattern))) ||
+			(config.includes || []).some((pattern) => pathname.includes(pattern))
 		) {
-			const pathname = parseurl(req).pathname
-			const pathWithPattern = pathname.replace(".js", filePatternConfig)
-			log.info(`---> ${pathWithPattern}`)
+			const pathWithFilePattern = pathname.replace(".js", filePatternConfig);
+			config.verbose && log.info(`Lookup resource ${pathWithFilePattern}`);
 
-			try {
-				// grab the file via @ui5/fs.AbstractReader API
-				const matchedResources = await resources.rootProject.byGlob(pathWithPattern)
-				config.debug && log.info(`handling ${req.path}...`)
+			const matchedResources = await reader.byGlob(pathWithFilePattern);
+			config.verbose && log.info(`  --> Found ${matchedResources?.length || 0} match(es)!`);
 
-				if (!matchedResources || !matchedResources.length) {
-					const fileNotFoundError = new Error(`No match found for ${req.path}`)
-					fileNotFoundError.code = 404
-					fileNotFoundError.file = pathWithPattern
-					throw fileNotFoundError
-				}
-
-				// prefer js over other extensions, otherwise grab first possible path
-				const resource = matchedResources.find((r) => r.getPath() === pathname) || matchedResources[0]
-				if (matchedResources.length > 1) {
-					log.warn(
-						`found more than 1 file for given pattern (${filePatternConfig}): ${matchedResources
-							.map((r) => r.getPath())
-							.join(", ")} `
-					)
-					log.info(`using: ${resource.getPath()}`)
-				}
+			const resource = matchedResources?.[0];
+			if (resource) {
+				config.debug && log.info(`Transpiling resource ${resource.getPath()}`);
 
 				// read file into string
-				const source = await resource.getString()
+				const source = await resource.getString();
 
-				config.debug ? log.info(`...${pathWithPattern} transpiled!`) : null
-				const babelConfigForFile = merge({}, babelConfig, {
-					filename: pathWithPattern // necessary for source map <-> source assoc
-				})
-				let result = await babel.transformAsync(source, babelConfigForFile)
+				// transpile the source
+				const result = await babel.transformAsync(
+					source,
+					Object.assign({}, babelConfig, {
+						filename: resource.getPath() // necessary for source map <-> source assoc
+					})
+				);
 
-				// send out transpiled source + source map
-				res.type(".js")
-				res.end(normalizeLineFeeds(result.code))
-			} catch (err) {
-				if (err.code === 404) {
-					log.warn(`...file not found: ${err.file}!`)
-				} else {
-					log.error(err)
-				}
-				next()
+				// send out transpiled source
+				res.type(".js");
+				res.end(normalizeLineFeeds(result.code));
+
+				// stop processing the request
+				return;
 			}
-		} else {
-			next()
 		}
-	}
-}
+		// not handled by the middleware => go ahead!
+		next();
+	};
+};

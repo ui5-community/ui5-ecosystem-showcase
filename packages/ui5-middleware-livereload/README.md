@@ -19,6 +19,8 @@ npm install ui5-middleware-livereload --save-dev
 - watchPath|path: `string`, default: `webapp`  
   path inside `$yourapp` the reload server monitors for changes
 - exclusions: one or many `regex`. By default, this includes `.git/`, `.svn/`, and `.hg/`
+- usePolling: true|false, default: false. 
+  Enables chokidar polling to support virtualised filesystems(eg. WSL2.0).
 
 ## Usage
 
@@ -83,6 +85,20 @@ server:
       path: 
             - "webapp"
             - "../my.reuse.library/src/my/reuse/library"
+```
+
+Use polling to watch files:
+
+```yaml
+server:
+  customMiddleware:
+  - name: ui5-middleware-livereload
+    afterMiddleware: compression
+    configuration:
+      debug: true
+      extraExts: "xml,json,properties"
+      port: 35729
+      usePolling: true
 ```
 
 Exclude single subpath from `path`s/ `watchPath`s:

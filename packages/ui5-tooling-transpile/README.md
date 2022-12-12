@@ -11,25 +11,34 @@ npm install ui5-tooling-transpile --save-dev
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
 - debug: `true|false`  
-  verbose logging
+  enable basic logging
 
-- removeConsoleStatements: `true|false`  
-  remove console statements while transpiling using [Babel plugin](https://babeljs.io/docs/en/babel-plugin-transform-remove-console)
-
-- excludePatterns: `String<Array>`  
-  array of paths inside `$yourapp/webapp/` to exclude from live transpilation,  
-  e.g. 3-rd party libs in `lib/*`
-
-- transpileAsync: `true|false`  
-  transpiling `async/await` using [this Babel plugin](https://www.npmjs.com/package/babel-plugin-transform-async-to-promises), which doesn't require  
-  the regenerator runtime ([Issue #242](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/242))
-
-- transpileTypeScript: `true|false`
-  transpiling TS sources into UI5
+- verbose: `true|false`  
+  enable verbose logging
 
 - babelConfig: `Object`
-  object to use as configuration for babel instead of the  
-  default configuration defined in this middleware
+  object to use as configuration for babel instead of the babel configuration from the file system (as described at [Babel config files](https://babeljs.io/docs/en/config-files)), or the default configuration defined in this middleware (just using the `@babel/preset-env`)
+
+- includes: `String<Array>` (old alias: includePatterns)
+  array of paths your application to include in transpilation, e.g. `/modern-stuff/`
+
+- excludes: `String<Array>` (old alias: excludePatterns)
+  array of paths your application to exclude from transpilation, e.g. 3-rd party libs in `/lib/`
+
+- filePattern: `String`
+  source file pattern for the resources to transpile, defaults to `.js`; to handle multiple file extensions you can specify the extensions like that: `.+(js|jsx)` or `.+(ts|tsx)`
+
+- transpileTypeScript: `true|false`
+  flag is only supported if no `filePattern` is provided; flag to set the value of `filePattern` to either `.ts` if true (transpiling TypeScript) or `.js` if false
+
+- transpileDependencies: `true|false`
+  if option is enabled, the tooling extensions also transpile the TypeScript sources from the dependencies (*experimental feature*)
+
+- transpileAsync: `true|false`  
+  flag is only supported if no `babelConfig` is provided; transpiling `async/await` using [this Babel plugin](https://www.npmjs.com/package/babel-plugin-transform-async-to-promises), which doesn't require the regenerator runtime ([Issue #242](https://github.com/petermuessig/ui5-ecosystem-showcase/issues/242))
+
+- removeConsoleStatements: `true|false`  
+  flag is only supported if no `babelConfig` is provided; removes console statements while transpiling using [Babel plugin](https://babeljs.io/docs/en/babel-plugin-transform-remove-console)
 
 ## Usage
 
@@ -89,13 +98,13 @@ server:
 
 ## How it works
 
-The custom middleware intercepts every `.js/.ts`-file before it is sent to the client. The file is then transpiled on-the-fly via `babel`, including dynamic creation of a `sourcemap`.
+The custom middleware handles all requests to `.js`-files. The file is then transpiled on-the-fly via `babel`, including dynamic creation of `sourcemap`s.
 
 The transpiled code and the `sourcemap` are subsequently delivered to the client instead of the original `.js/.ts`-file. Because of the `sourcemap`, setting breakpoints in the **original (ES6+) source** will cause the debugger to stop **when the corresponding transpiled source code is reached**.
 
-> `async/await` is transpiled at runtime, but the required `asyncGenerator` sources are not yet delivered on the fly. They need to be `sap.ui.require`d or `<script src="...">`d separately. Alternatively you can use the babel plugin `babel-plugin-transform-async-to-promises` as described [here](../ui5-task-transpile/README.md).
+> `async/await` is transpiled at runtime, but the required `asyncGenerator` sources are not yet delivered on the fly. They need to be `sap.ui.require`d or `<script src="...">`d separately. Alternatively you can use the option `transpileAsync` which transpiles the `async/await` into `Promise`s.
 
-The custom task can be used to transpile ES6+ JavaScript ot Typescript code to ES5 by using `babel`.
+By default the tooling extensions can be used to transpile ES6+ JavaScript ot Typescript code to ES5 by using `babel`. By enabling the option `transpileTypeScript` the tooling extensions can be used to transpile your TypeScript sources into JavaScript.
 
 ## How to obtain support
 
