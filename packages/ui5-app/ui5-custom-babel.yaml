@@ -12,7 +12,7 @@ framework:
     - name: themelib_sap_fiori_3
 builder:
   customTasks:
-    - name: ui5-task-transpile
+    - name: ui5-tooling-transpile-task
       afterTask: replaceVersion
       configuration:
         debug: true
@@ -80,7 +80,7 @@ server:
       afterMiddleware: compression
       configuration:
         baseUri: "https://latest-openui5.rikosjett.com"
-    - name: ui5-middleware-livetranspile
+    - name: ui5-tooling-transpile-middleware
       afterMiddleware: compression
       configuration:
         debug: true

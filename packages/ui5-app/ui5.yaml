@@ -12,7 +12,7 @@ framework:
     - name: themelib_sap_fiori_3
 builder:
   customTasks:
-    - name: ui5-task-transpile
+    - name: ui5-tooling-transpile-task
       afterTask: replaceVersion
       configuration:
         debug: true
@@ -111,7 +111,7 @@ server:
         baseUri: "https://sapui5.hana.ondemand.com/"
         limit: "5mb"
         removeETag: true
-    - name: ui5-middleware-livetranspile
+    - name: ui5-tooling-transpile-middleware
       afterMiddleware: compression
       configuration:
         debug: true
