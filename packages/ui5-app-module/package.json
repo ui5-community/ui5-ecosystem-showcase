@@ -1,6 +1,6 @@
 {
   "name": "ui5-app-module",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "UI5 module",
   "private": true,
   "author": "Peter Muessig",
