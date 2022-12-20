@@ -37,8 +37,8 @@ describe("interaction", function () {
 
 	it("should input date via popup + click", async function () {
 		const today = new Date();
-		let month = today.getMonth() + 2; // we want next month
-		month = (month < 10 ? "0" + month : month).toString();
+		today.setMonth(today.getMonth() + 1); // we want next month
+		let month = `${today.getMonth() + 1}`.padStart(2, "0");
 		const year = today.getFullYear().toString();
 
 		// first, input current date to clear value from previous test
