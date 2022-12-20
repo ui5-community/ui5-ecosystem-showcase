@@ -116,7 +116,7 @@ module.exports = {
 		if (configuration.transpileTypeScript) {
 			// the TypeScript babel configuration
 			babelConfig.presets.push("transform-ui5", "@babel/preset-typescript");
-			babelConfig.ignore.push("**/*.d.ts");
+			babelConfig.ignore = ["**/*.d.ts"];
 		} else {
 			// the default babel configuration
 			babelConfig.presets.push([
