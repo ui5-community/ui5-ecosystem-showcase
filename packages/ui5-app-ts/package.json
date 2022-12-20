@@ -22,7 +22,7 @@
     "@types/openui5": "^1.104.0",
     "@typescript-eslint/eslint-plugin": "^5.17.0",
     "@typescript-eslint/parser": "^5.17.0",
-    "@ui5/cli": "^2.14.7",
+    "@ui5/cli": "^2.14.17",
     "eslint": "^8.12.0",
     "typescript": "^4.6.3",
     "ui5-middleware-livereload": "^0.5.9",

@@ -18,7 +18,7 @@
     "@ui5/logger": "^2.0.1"
   },
   "devDependencies": {
-    "@ui5/cli": "^2.14.9",
+    "@ui5/cli": "^2.14.17",
     "jest": "28.1.3"
   },
   "ui5": {

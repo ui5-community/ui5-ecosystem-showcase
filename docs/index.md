@@ -32,7 +32,6 @@ The following tasks (known to this page) have been created and are available in 
 | [ui5-task-pwa-enabler](https://www.npmjs.com/package/ui5-task-pwa-enabler) | enables ui5 app with pwa functionalities | [![npm version](https://badge.fury.io/js/ui5-task-pwa-enabler.svg)](https://badge.fury.io/js/ui5-task-pwa-enabler) |
 | [ui5-task-stringreplacer](https://www.npmjs.com/package/ui5-task-stringreplacer) | replaces placeholder strings | [![npm version](https://badge.fury.io/js/ui5-task-stringreplacer.svg)](https://badge.fury.io/js/ui5-task-stringreplacer) |
 | [ui5-task-transpile-gen](https://www.npmjs.com/package/ui5-task-transpile-gen) | transpile es6 to es5 code including Async Await syntax | [![npm version](https://badge.fury.io/js/ui5-task-transpile-gen.svg)](https://badge.fury.io/js/ui5-task-transpile-gen) |
-| [ui5-task-transpile](https://www.npmjs.com/package/ui5-task-transpile) | transpile es6 to es5 code | [![npm version](https://badge.fury.io/js/ui5-task-transpile.svg)](https://badge.fury.io/js/ui5-task-transpile) |
 | [ui5-task-zipper](https://www.npmjs.com/package/ui5-task-zipper) | bundle the entire webapp in a zip-archive | [![npm version](https://badge.fury.io/js/ui5-task-zipper.svg)](https://badge.fury.io/js/ui5-task-zipper) |
 | [ui5-task-cachebuster-indexing](https://www.npmjs.com/package/ui5-task-cachebuster-indexing) | task for indexing files to enable CacheBuster | [![npm version](https://badge.fury.io/js/ui5-task-cachebuster-indexing.svg)](https://badge.fury.io/js/ui5-task-cachebuster-indexing) |
 
@@ -51,7 +50,6 @@ The following middlewares (known to this page) have been created and are availab
 | [ui5-middleware-index](packages/ui5-middleware-index/README.md) | serve an HTML file for / (root) | [![npm version](https://badge.fury.io/js/ui5-middleware-index.svg)](https://badge.fury.io/js/ui5-middleware-index) |
 | [ui5-middleware-livecompileless](https://www.npmjs.com/package/ui5-middleware-livecompileless) | livecompiling of less files in the app folder | [![npm version](https://badge.fury.io/js/ui5-middleware-livecompileless.svg)](https://badge.fury.io/js/ui5-middleware-livecompileless) |
 | [ui5-middleware-livereload](https://www.npmjs.com/package/ui5-middleware-livereload) | usage of livereload for development | [![npm version](https://badge.fury.io/js/ui5-middleware-livereload.svg)](https://badge.fury.io/js/ui5-middleware-livereload) |
-| [ui5-middleware-livetranspile](https://www.npmjs.com/package/ui5-middleware-livetranspile) | on-demand es6 to es5 transpile when requesting js | [![npm version](https://badge.fury.io/js/ui5-middleware-livetranspile.svg)](https://badge.fury.io/js/ui5-middleware-livetranspile) |
 | [ui5-middleware-onelogin](https://www.npmjs.com/package/ui5-middleware-onelogin) | enable a generic login support | [![npm version](https://badge.fury.io/js/ui5-middleware-onelogin.svg)](https://badge.fury.io/js/ui5-middleware-onelogin) |
 | [ui5-middleware-route-proxy](https://www.npmjs.com/package/ui5-middleware-route-proxy) | Proxy to forward request for a specific route | [![npm version](https://badge.fury.io/js/ui5-middleware-route-proxy.svg)](https://badge.fury.io/js/ui5-middleware-route-proxy) |
 | [ui5-middleware-servestatic](https://www.npmjs.com/package/ui5-middleware-servestatic) | serve static resources | [![npm version](https://badge.fury.io/js/ui5-middleware-servestatic.svg)](https://badge.fury.io/js/ui5-middleware-servestatic) |
@@ -68,5 +66,6 @@ The following tooling extensions (known to this page) have been created and are 
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
 | [ui5-tooling-modules](https://www.npmjs.com/package/ui5-tooling-modules) | direct consumption of NPM packages | [![npm version](https://badge.fury.io/js/ui5-tooling-modules.svg)](https://badge.fury.io/js/ui5-tooling-modules) |
+| [ui5-tooling-transpile](https://www.npmjs.com/package/ui5-tooling-transpile) | transpile resources using Babel | [![npm version](https://badge.fury.io/js/ui5-tooling-transpile.svg)](https://badge.fury.io/js/ui5-tooling-transpile) |
 
 There might be more tooling extensions in the public NPM registry. You can find all middlewares which applied the suggested naming convention at [https://www.npmjs.com/search?q=ui5-tooling-](https://www.npmjs.com/search?q=ui5-tooling-).
