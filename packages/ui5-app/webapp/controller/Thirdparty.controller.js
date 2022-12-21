@@ -1,4 +1,4 @@
-sap.ui.define(["test/Sample/controller/BaseController", "xlsx", "ui5-app/lib/firebase" /*, "@supabase/supabase-js"*/], (Controller, xlsx, _firebase, supabase) => {
+sap.ui.define(["test/Sample/controller/BaseController", "xlsx", "ui5-app/bundledefs/firebase" /*, "@supabase/supabase-js"*/], (Controller, xlsx, _firebase, supabase) => {
 	"use strict";
 
 	const { initializeApp, getFirestore } = _firebase;

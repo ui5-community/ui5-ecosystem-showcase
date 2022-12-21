@@ -20,4 +20,4 @@ builder:
         additionalFiles:
           "xs-app.json":
           "package.json": "package.json"
-          "lib/firebase.js": "some/custom/dir/firebase.js"
+          "bundledefs/firebase.js": "some/custom/dir/firebase.js"

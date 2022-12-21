@@ -167,6 +167,10 @@ const that = (module.exports = {
 						// should be also given by the rollup configuration!
 						if (output.length === 1 && output[0].type === "chunk") {
 							cachedBundle = bundleCache[moduleName] = output[0].code;
+						} else {
+							log.info(`The bundle for ${moduleName} has ${output.length} chunks!`);
+							// let's take the first chunk only
+							cachedBundle = bundleCache[moduleName] = output[0].code;
 						}
 					} else {
 						cachedBundle = bundleCache[moduleName] = moduleContent;
@@ -177,7 +181,7 @@ const that = (module.exports = {
 			}
 		} catch (err) {
 			if (bundling) {
-				console.error(`Couldn't bundle ${moduleName}: ${err}`, err);
+				log.error(`Couldn't bundle ${moduleName}: ${err}`, err);
 			}
 		}
 	},

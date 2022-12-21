@@ -36,7 +36,7 @@
     }
   },
   "dependencies": {
-    "firebase": "^9.8.4",
+    "firebase": "^9.15.0",
     "tui-image-editor": "^3.15.3",
     "ui5-app-module": "^0.2.0",
     "xlsx": "^0.18.5"
@@ -45,7 +45,7 @@
     "@supabase/supabase-js": "1.35.3"
   },
   "devDependencies": {
-    "@openui5/ts-types": "^1.104.0",
+    "@openui5/ts-types": "^1.109.0",
     "@ui5/cli": "^2.14.17",
     "@wdio/cli": "^7",
     "@wdio/local-runner": "^7",
@@ -54,8 +54,8 @@
     "@wdio/sync": "^7.27.0",
     "babel-plugin-transform-async-to-promises": "^0.8.18",
     "chromedriver": "^108.0.0",
-    "eslint-plugin-mocha": "^10.0.5",
-    "eslint-plugin-wdio": "^7.19.4",
+    "eslint-plugin-mocha": "^10.1.0",
+    "eslint-plugin-wdio": "^7",
     "karma": "^6.4.1",
     "karma-chrome-launcher": "^3.1.1",
     "karma-coverage": "^2.2.0",
