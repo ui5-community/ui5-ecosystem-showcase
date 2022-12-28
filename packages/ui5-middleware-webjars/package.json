@@ -15,7 +15,7 @@
   "dependencies": {
     "@ui5/logger": "^2.0.1",
     "@ui5/server": "^2.4.1",
-    "jszip": "^3.10.0"
+    "jszip": "^3.10.1"
   },
   "ui5": {
     "dependencies": []

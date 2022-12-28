@@ -22,19 +22,19 @@
     "timeout": "20s"
   },
   "dependencies": {
-    "@sap/approuter": "^11.2.1",
+    "@sap/approuter": "^12.0.3",
     "@ui5/logger": "^2.0.1",
     "request": "^2.88.2"
   },
   "devDependencies": {
     "@ui5/cli": "^2.14.17",
-    "ava": "^4.2.0",
+    "ava": "^5.1.0",
     "get-port": "^6.1.2",
-    "nock": "^13.2.7",
-    "prettier": "^2.7.1",
-    "replace-in-file": "^6.3.2",
-    "supertest": "^6.2.3",
-    "wait-on": "^6.0.1"
+    "nock": "^13.2.9",
+    "prettier": "^2.8.1",
+    "replace-in-file": "^6.3.5",
+    "supertest": "^6.3.3",
+    "wait-on": "^7.0.1"
   },
   "ui5": {
     "dependencies": []
