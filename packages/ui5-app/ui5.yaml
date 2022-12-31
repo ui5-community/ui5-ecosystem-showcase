@@ -55,7 +55,7 @@ builder:
         prependPathMappings: true
         addToNamespace: true
     - name: ui5-task-zipper
-      afterTask: uglify
+      afterTask: generateVersionInfo
       configuration:
         archiveName: webapp
         includeDependencies: true

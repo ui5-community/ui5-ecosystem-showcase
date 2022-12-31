@@ -65,7 +65,7 @@ or
 builder:
   customTasks:
   - name: ui5-task-zipper
-    afterTask: uglify
+    afterTask: generateVersionInfo
     configuration:
       archiveName: "webapp"
       additionalFiles:
@@ -73,6 +73,8 @@ builder:
         "path/to/foo.js": "foo.js"  # file will be placed in root of ZIP file
         "path/to/files/bar.js": "some/custom/dir/bar.js"
 ```
+
+> :warning: For UI5 Tooling V3 the configuration `afterTask: uglify` needs to be adopted to `afterTask: generateVersionInfo`. This works for the UI5 Tooling V2 and V3.
 
 ## How it works
 
