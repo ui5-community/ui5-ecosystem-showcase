@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.7.0...ui5-task-zipper@0.7.1) (2022-12-31)
+
+### Bug Fixes
+
+- fixes compatibility issues with V3 ([1ba4c57](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1ba4c578165e061e7c6455d558eb9effd868f842))
+
 # [0.7.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.6.1...ui5-task-zipper@0.7.0) (2022-12-20)
 
 ### Features

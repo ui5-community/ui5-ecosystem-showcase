@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.0...ui5-middleware-cfdestination@0.10.1) (2022-12-31)
+
+### Bug Fixes
+
+- cfdestination multitenancy requires fsbasepath ([70af3f3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/70af3f38d23b18f85eb6aaf704413d91fc52bb13))
+- fixes compatibility issues with V3 ([1ba4c57](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1ba4c578165e061e7c6455d558eb9effd868f842))
+- use correct xsappPath when using custom xsappJson filename ([#653](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/653)) ([f2196bc](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f2196bc2cba2ba8076ee18506d1c5c3e4d609b92))
+
 # [0.10.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.9.1...ui5-middleware-cfdestination@0.10.0) (2022-12-20)
 
 ### Features
