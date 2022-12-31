@@ -23,7 +23,7 @@ const approuter = require("@sap/approuter")()
  *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
  * @returns {Function} Middleware function to use
  */
-module.exports = ({ /* resources,*/ options, middlewareUtil }) => {
+module.exports = ({ resources, options, middlewareUtil }) => {
 	// provide a set of default runtime options
 	const effectiveOptions = {
 		debug: false,
@@ -42,8 +42,9 @@ module.exports = ({ /* resources,*/ options, middlewareUtil }) => {
 
 	request.debug = effectiveOptions.debug // pass debug flag on to underlying request lib
 	process.env.XS_APP_LOG_LEVEL = effectiveOptions.debug ? "DEBUG" : "ERROR"
-	// read in the cf config file
-	const xsappPath = process.cwd() // respect cwd of containing ui5 server
+	// read in the cf config file (TODO: verify better possibility to retrieve the base path of the root project from tooling)
+	const fsBasePath = resources?.rootProject?._readers?.[0]?._fsBasePath
+	const xsappPath = fsBasePath ? path.resolve(fsBasePath, "..") : process.cwd() // respect cwd of containing ui5 server
 	const _xsappJson = path.resolve(xsappPath, effectiveOptions.xsappJson)
 	const xsappConfig = JSON.parse(fs.readFileSync(_xsappJson, "utf8"))
 
