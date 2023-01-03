@@ -36,6 +36,11 @@ builder:
           - "yet/another/dir"
     - name: ui5-task-i18ncheck
       afterTask: replaceVersion
+    - name: ui5-tooling-modules-task
+      afterTask: replaceVersion
+      configuration:
+        prependPathMappings: true
+        addToNamespace: true
     - name: ui5-task-pwa-enabler
       afterTask: generateVersionInfo
       configuration:
@@ -52,14 +57,14 @@ builder:
           avoidCaching:
             - /\/realtime-api\/.*/
         manifest:
-          short_name: UI5 EcoSystem Demoapp
-          name: UI5 EcoSystem Demoapp
-          description: UI5 EcoSystem Demoapp to showcase the ui5-task-pwa-enabler
+          short_name: UI5 PWA Showcase
+          name: UI5 PWA Showcase Demo
+          description: UI5 PWA Showcase for the ui5-task-pwa-enabler
           icons:
-            - src: images/SAP_R_192.png
+            - src: img/192x192.png
               type: image/png
               sizes: 192x192
-            - src: images/SAP_R_512.png
+            - src: img/512x512.png
               type: image/png
               sizes: 512x512
           start_url: /index.html
