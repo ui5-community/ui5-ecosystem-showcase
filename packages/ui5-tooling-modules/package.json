@@ -16,7 +16,7 @@
     "@buxlabs/amd-to-es6": "^0.16.3",
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-json": "^6.0.0",
-    "@rollup/plugin-node-resolve": "^13.3.0",
+    "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/pluginutils": "^5.0.2",
     "@ui5/fs": "^2.0.6",
     "@ui5/logger": "^2.0.1",
