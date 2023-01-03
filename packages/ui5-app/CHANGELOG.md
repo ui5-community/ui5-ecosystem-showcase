@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.22.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.22.2...ui5-app@0.22.3) (2023-01-03)
+
+### Bug Fixes
+
+- **ui5-task-pwa-enabler:** remove dep to JSDom + bugfixes ([#668](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/668)) ([bdda7fb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/bdda7fb86e9a0cd5d516b9c659d190ee7de4576b))
+
 ## [0.22.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.22.1...ui5-app@0.22.2) (2022-12-31)
 
 ### Bug Fixes
