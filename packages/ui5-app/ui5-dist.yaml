@@ -1,4 +1,4 @@
-specVersion: "2.0"
+specVersion: "2.6"
 metadata:
   name: ui5-app
 type: application
@@ -14,51 +14,45 @@ framework:
     - name: sap.ui.core
     - name: sap.ui.layout
     - name: themelib_sap_fiori_3
-builder:
-  customTasks:
-    - name: ui5-tooling-transpile-task
-      afterTask: replaceVersion
-      configuration:
-        excludePatterns:
-          - "lib/"
-          - "test/"
-    - name: ui5-task-minify-xml
-      afterTask: replaceVersion
-      configuration:
-        minifyOptions:
-          removeComments: true
-          collapseEmptyElements: true
-          collapseWhitespaceInAttributeValues: true
-          # ... further minify-xml attributes
-        fileExtensions:
-          - "xml"
-          - "edmx"
-        excludePatterns:
-          - "lib/"
-          - "another/dir/in/webapp"
-          - "yet/another/dir"
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
 server:
   customMiddleware:
-    - name: ui5-middleware-livereload
+    - name: ui5-middleware-servestatic
+      mountPath: /docs
       afterMiddleware: compression
       configuration:
-        port: 35729
-        path: dist
+        debug: true
+        rootPath: ../../docs
+    - name: ui5-middleware-simpleproxy
+      mountPath: /versioninfo
+      afterMiddleware: compression
+      configuration:
+        debug: true
+        baseUri: "https://openui5nightly.hana.ondemand.com/"
+        httpHeaders:
+          Any-Header: AnyHeader
+        query:
+          "sap-ui-config-showall": true
     - name: ui5-middleware-simpleproxy
       mountPath: /proxy
       afterMiddleware: compression
       configuration:
-        baseUri: "https://latest-openui5.rikosjett.com"
-      # PoC: reuse the same middleware at a different "mountPath"
+        debug: true
+        baseUri: "https://sdk.openui5.org/"
+        excludePatterns:
+          - "/local/**"
+    # PoC: reuse the same middleware at a different "mountPath"
     - name: ui5-middleware-simpleproxy
-      mountPath: /proxy2
+      mountPath: /ui5
       afterMiddleware: compression
       configuration:
-        baseUri: "https://latest-openui5.rikosjett.com"
+        baseUri: "https://sdk.openui5.org/"
+        limit: "5mb"
+        removeETag: true
     - name: ui5-middleware-cfdestination
       afterMiddleware: compression
       configuration:
+        debug: true
         port: 1091
         xsappJson: "xs-app.json"
         destinations:
@@ -69,3 +63,7 @@ server:
             url: "https://services.odata.org/V2/Northwind/Northwind.svc/"
           - name: "todos"
             url: "https://jsonplaceholder.typicode.com/todos/"
+    - name: ui5-middleware-index
+      afterMiddleware: compression
+      configuration:
+        debug: true
