@@ -36,7 +36,7 @@ server:
       afterMiddleware: compression
       configuration:
         debug: true
-        extraExts: "xml,json,properties"
+        extraExts: "xml,json,properties,ts"
         port: 35729
         path: "webapp"
     - name: ui5-tooling-transpile-middleware
