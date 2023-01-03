@@ -133,15 +133,6 @@ const that = (module.exports = {
 									defaultIsModuleExports: true,
 								}),
 								amdCustom(),
-								// between @rollup/plugin-node-resolve 13.3.0 and 14.0.0 something changed which leads
-								// to a build issue with the new.target meta property:
-								// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/new.target?retiredLocale=de
-								//
-								// The following change adopted the module resolution which increases the size of firebase.js
-								// and includes the new.target meta property:
-								// => https://github.com/rollup/plugins/commit/886debae6b1d9f00c897c866a4c4c6975a5d47db
-								//
-								// TODO: check why the upgrade to version ^14.0.0 isn't possible?
 								nodeResolve({
 									browser: true,
 									mainFields: ["module", "main"],

@@ -15,6 +15,7 @@ builder:
     excludes:
       - "test/Sample/includes/**/*.js"
       - "test/Sample/lib/**/*.js"
+      - "test/Sample/thirdparty/**/*.js" # including firebase.js will lead to issues with new.target meta property in "ui5 build"
   customTasks:
     - name: ui5-tooling-transpile-task
       afterTask: replaceVersion
