@@ -1,4 +1,4 @@
-specVersion: "2.0"
+specVersion: "2.6"
 metadata:
   name: ui5.typescript.helloworld
 type: application

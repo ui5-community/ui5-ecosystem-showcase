@@ -22,7 +22,7 @@
     "timeout": "20s"
   },
   "dependencies": {
-    "@sap/approuter": "^12.0.3",
+    "@sap/approuter": "^13.0.0",
     "@ui5/logger": "^2.0.1",
     "request": "^2.88.2"
   },

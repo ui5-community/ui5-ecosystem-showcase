@@ -133,8 +133,18 @@ const that = (module.exports = {
 									defaultIsModuleExports: true,
 								}),
 								amdCustom(),
+								// between @rollup/plugin-node-resolve 13.3.0 and 14.0.0 something changed which leads
+								// to a build issue with the new.target meta property:
+								// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/new.target?retiredLocale=de
+								//
+								// The following change adopted the module resolution which increases the size of firebase.js
+								// and includes the new.target meta property:
+								// => https://github.com/rollup/plugins/commit/886debae6b1d9f00c897c866a4c4c6975a5d47db
+								//
+								// TODO: check why the upgrade to version ^14.0.0 isn't possible?
 								nodeResolve({
-									mainFields: ["browser", "module", "main"],
+									browser: true,
+									mainFields: ["module", "main"],
 									preferBuiltins: false,
 								}),
 								(function (options) {
@@ -155,11 +165,9 @@ const that = (module.exports = {
 						// generate output specific code in-memory
 						// you can call this function multiple times on the same bundle object
 						const { output } = await bundle.generate({
-							output: {
-								format: "amd",
-								amd: {
-									define: "sap.ui.define",
-								},
+							format: "amd",
+							amd: {
+								define: "sap.ui.define",
 							},
 						});
 

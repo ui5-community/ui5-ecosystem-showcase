@@ -1,4 +1,5 @@
-specVersion: "2.0"
+# Same like ui5-dist.yaml but without resource mapping to dist folder
+specVersion: "2.6"
 metadata:
   name: ui5-app
 type: application
@@ -13,9 +14,6 @@ framework:
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
 server:
   customMiddleware:
-    - name: ui5-tooling-modules-middleware
-      mountPath: /
-      afterMiddleware: compression
     - name: ui5-middleware-servestatic
       mountPath: /docs
       afterMiddleware: compression
@@ -23,24 +21,29 @@ server:
         debug: true
         rootPath: ../../docs
     - name: ui5-middleware-simpleproxy
+      mountPath: /versioninfo
+      afterMiddleware: compression
+      configuration:
+        debug: true
+        baseUri: "https://openui5nightly.hana.ondemand.com/"
+        httpHeaders:
+          Any-Header: AnyHeader
+        query:
+          "sap-ui-config-showall": true
+    - name: ui5-middleware-simpleproxy
       mountPath: /proxy
       afterMiddleware: compression
       configuration:
         debug: true
-        baseUri: "https://latest-openui5.rikosjett.com"
-        httpHeaders:
-          Any-Header: AnyHeader
-      # PoC: reuse the same middleware at a different "mountPath"
-    - name: ui5-middleware-simpleproxy
-      mountPath: /proxy2
-      afterMiddleware: compression
-      configuration:
-        baseUri: "https://latest-openui5.rikosjett.com"
+        baseUri: "https://sdk.openui5.org/"
+        excludePatterns:
+          - "/local/**"
+    # PoC: reuse the same middleware at a different "mountPath"
     - name: ui5-middleware-simpleproxy
       mountPath: /ui5
       afterMiddleware: compression
       configuration:
-        baseUri: "https://sapui5.hana.ondemand.com/"
+        baseUri: "https://sdk.openui5.org/"
         limit: "5mb"
         removeETag: true
     - name: ui5-middleware-cfdestination
@@ -57,3 +60,7 @@ server:
             url: "https://services.odata.org/V2/Northwind/Northwind.svc/"
           - name: "todos"
             url: "https://jsonplaceholder.typicode.com/todos/"
+    - name: ui5-middleware-index
+      afterMiddleware: compression
+      configuration:
+        debug: true

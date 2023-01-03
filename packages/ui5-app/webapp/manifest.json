@@ -19,8 +19,8 @@
           "odataVersion": "4.0"
         }
       },
-      "LatestUI5Datasource": {
-        "uri": "",
+      "UI5VersionInfo": {
+        "uri": "/versioninfo/version.json",
         "type": "JSON"
       }
     }
@@ -76,9 +76,9 @@
           "synchronizationMode": "None"
         }
       },
-      "LatestUI5": {
+      "UI5VersionInfo": {
         "type": "sap.ui.model.json.JSONModel",
-        "dataSource": "LatestUI5Datasource"
+        "dataSource": "UI5VersionInfo"
       }
     },
     "routing": {

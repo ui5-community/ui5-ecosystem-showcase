@@ -1,4 +1,4 @@
-specVersion: "2.2"
+specVersion: "2.6"
 metadata:
   name: ui5-app
 type: application
@@ -11,6 +11,10 @@ framework:
     - name: sap.ui.layout
     - name: themelib_sap_fiori_3
 builder:
+  componentPreload:
+    excludes:
+      - "test/Sample/includes/**/*.js"
+      - "test/Sample/lib/**/*.js"
   customTasks:
     - name: ui5-tooling-transpile-task
       afterTask: replaceVersion
@@ -22,6 +26,18 @@ builder:
           - "resources/"
           - "lib/"
           - "test/"
+        #babelConfig: &babelConfig
+        #  plugins:
+        #    - - "@babel/plugin-transform-computed-properties"
+        #      - loose: true
+        #    - - "@babel/plugin-transform-for-of"
+        #      - assumeArray: true
+        #    - - "babel-plugin-transform-async-to-promises"
+        #      - inlineHelpers: true
+        #  presets:
+        #    - - "@babel/preset-env"
+        #      - targets:
+        #          browsers: "last 2 versions, ie 10-11"
     - name: ui5-task-stringreplacer
       afterTask: replaceVersion
       configuration:
@@ -87,28 +103,29 @@ server:
         debug: true
         rootPath: ../../docs
     - name: ui5-middleware-simpleproxy
+      mountPath: /versioninfo
+      afterMiddleware: compression
+      configuration:
+        debug: true
+        baseUri: "https://openui5nightly.hana.ondemand.com/"
+        httpHeaders:
+          Any-Header: AnyHeader
+        query:
+          "sap-ui-config-showall": true
+    - name: ui5-middleware-simpleproxy
       mountPath: /proxy
       afterMiddleware: compression
       configuration:
         debug: true
-        baseUri: "https://latest-openui5.rikosjett.com"
-        httpHeaders:
-          Any-Header: AnyHeader
-        query:
-          type: sdk #other types: runtime, runtimeMobile
+        baseUri: "https://sdk.openui5.org/"
         excludePatterns:
           - "/local/**"
-      # PoC: reuse the same middleware at a different "mountPath"
-    - name: ui5-middleware-simpleproxy
-      mountPath: /proxy2
-      afterMiddleware: compression
-      configuration:
-        baseUri: "https://latest-openui5.rikosjett.com"
+    # PoC: reuse the same middleware at a different "mountPath"
     - name: ui5-middleware-simpleproxy
       mountPath: /ui5
       afterMiddleware: compression
       configuration:
-        baseUri: "https://sapui5.hana.ondemand.com/"
+        baseUri: "https://sdk.openui5.org/"
         limit: "5mb"
         removeETag: true
     - name: ui5-tooling-transpile-middleware
@@ -118,6 +135,9 @@ server:
         transpileAsync: true
         excludePatterns:
           - "lib/"
+        #babelConfig:
+        #  <<: *babelConfig
+        #  sourceMaps: "inline"
     - name: ui5-middleware-stringreplacer
       afterMiddleware: compression
       configuration:
