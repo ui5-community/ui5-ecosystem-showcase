@@ -31,7 +31,7 @@
         </Panel>
         <DateTimePicker id="DateTimePicker" placeholder="Enter Date ..." />
         <Button text="Don't press me!" press="onBoo" />
-        <Button text="Show 3rd party!" press="navShow3rd" />
+        <Button text="Test 3rd party!" press="navTest3rd" />
       </VBox>
     </content>
   </Page>

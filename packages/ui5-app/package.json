@@ -36,13 +36,12 @@
     }
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.2.3",
+    "cmis": "^1.0.3",
     "firebase": "^9.15.0",
     "tui-image-editor": "^3.15.3",
     "ui5-app-module": "^0.2.1",
     "xlsx": "^0.18.5"
-  },
-  "backupDependencies": {
-    "@supabase/supabase-js": "1.35.3"
   },
   "devDependencies": {
     "@openui5/ts-types": "^1.109.0",
