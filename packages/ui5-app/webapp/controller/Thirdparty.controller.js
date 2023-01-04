@@ -1,4 +1,14 @@
-sap.ui.define(["test/Sample/controller/BaseController", "xlsx", "ui5-app/bundledefs/firebase" /*, "@supabase/supabase-js"*/], (Controller, xlsx, _firebase, supabase) => {
+// polyfills necessary globals for the @supabase/supabase-js module (otherwise it fails to load!)
+window.process = {
+	stderr: {},
+	nextTick: function (fn) {
+		setTimeout(fn, 0);
+	},
+};
+window.Buffer = sap.ui.requireSync("Buffer").Buffer;
+
+// regular code of the Thirdparty.controller.js
+sap.ui.define(["test/Sample/controller/BaseController", "xlsx", "cmis", "ui5-app/bundledefs/firebase", "@supabase/supabase-js"], (Controller, xlsx, cmis, _firebase, supabase) => {
 	"use strict";
 
 	const { initializeApp, getFirestore } = _firebase;
@@ -9,6 +19,7 @@ sap.ui.define(["test/Sample/controller/BaseController", "xlsx", "ui5-app/bundled
 		console.error(ex);
 	}
 
+	console.log(cmis);
 	console.log(supabase);
 
 	return Controller.extend("test.Sample.controller.Thirdparty", {

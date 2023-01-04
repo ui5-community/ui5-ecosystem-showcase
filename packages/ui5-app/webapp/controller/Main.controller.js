@@ -30,7 +30,7 @@ sap.ui.define(["test/Sample/controller/BaseController", "sap/m/MessageToast"], (
 		navFwd() {
 			return this.getOwnerComponent().getRouter().navTo("RouteOther");
 		},
-		navShow3rd() {
+		navTest3rd() {
 			return this.getOwnerComponent().getRouter().navTo("RouteThirdparty");
 		},
 
