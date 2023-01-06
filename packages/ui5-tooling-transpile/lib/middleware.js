@@ -26,7 +26,7 @@ module.exports = async function ({ resources, options /*, middlewareUtil */ }) {
 
 	// never transpile these default exclusion types
 	const defaultExcludes = [".png", "jpeg", ".jpg"];
-	config.excludes = defaultExcludes.concat(config.excludes || config.excludePatterns);
+	config.excludes = defaultExcludes.concat(config.excludes || config.excludePatterns || []);
 
 	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: true });
 
