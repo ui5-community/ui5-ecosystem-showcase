@@ -131,6 +131,14 @@ module.exports = function createMiddleware({ resources, options, middlewareUtil 
 			return;
 		}
 
+		// determine charset and content-type
+		const { contentType, charset } = middlewareUtil.getMimeInfo(resource.getPath());
+		// never replace strings in these mime types
+		if (contentType.includes("image") || contentType.includes("video")) {
+			next();
+			return;
+		}
+
 		if (handleRequest(pathname)) {
 			//isDebug && log.info(`handling ${pathname}`);
 
@@ -144,8 +152,6 @@ module.exports = function createMiddleware({ resources, options, middlewareUtil 
 				return;
 			}
 
-			// determine charset and content-type
-			const { contentType, charset } = middlewareUtil.getMimeInfo(resource.getPath());
 			if (!res.getHeader("Content-Type")) {
 				res.setHeader("Content-Type", contentType);
 			}
