@@ -133,6 +133,16 @@ const that = (module.exports = {
 									defaultIsModuleExports: true,
 								}),
 								amdCustom(),
+								// between @rollup/plugin-node-resolve 13.3.0 and 14.0.0 something changed which leads
+								// to corrupt bundles for other projects - locally in the ecosystem it seems to work.
+								//
+								// The following change adopted the module resolution:
+								// => https://github.com/rollup/plugins/commit/886debae6b1d9f00c897c866a4c4c6975a5d47db
+								//
+								// TODO: check why the upgrade to version >= 14.0.0 isn't possible?
+								//       - verify with the following projects with ui5-tooling-modules@0.7.2:
+								//         => https://github.com/marianfoo/ui5-cc-excelUpload
+								//         => https://github.com/marianfoo/gh-following-to-rss
 								nodeResolve({
 									browser: true,
 									mainFields: ["module", "main"],
