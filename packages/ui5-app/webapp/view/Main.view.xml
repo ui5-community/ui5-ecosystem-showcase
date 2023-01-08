@@ -2,7 +2,7 @@
   <Page id="page" title="{i18n>appTitle}">
     <headerContent>
       <core:Icon color="#1873B4" src="sap-icon://sap-ui5" size="2rem" />
-      <Text text="Latest: {UI5VersionInfo>/latest/version}&#13;&#10;Current: {UI5VersionInfo>/current/version}" tooltip="Latest OpenUI5 Version" />
+      <Text text="Latest: {UI5VersionInfo>/latest/version}&#13;&#10;Current: {UI5Version>/current/version}" tooltip="Latest OpenUI5 Version" />
     </headerContent>
     <content>
       <VBox alignItems="Center" justifyContent="Center" height="100%">
