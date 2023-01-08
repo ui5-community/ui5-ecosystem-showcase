@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.7.2...ui5-tooling-modules@0.7.3) (2023-01-08)
+
+### Bug Fixes
+
+- **ui5-tooling-modules:** revert to node-resolve v13 due to bundling issues ([#674](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/674)) ([747b7dd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/747b7dd698b5de8a71fc19c21e3ff4447b10fcb0)), closes [#673](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/673)
+
 ## [0.7.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.7.1...ui5-tooling-modules@0.7.2) (2023-01-03)
 
 **Note:** Version bump only for package ui5-tooling-modules

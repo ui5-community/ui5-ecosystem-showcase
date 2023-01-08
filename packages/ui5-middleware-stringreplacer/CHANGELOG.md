@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-stringreplacer@0.4.2...ui5-middleware-stringreplacer@0.5.0) (2023-01-08)
+
+### Features
+
+- **stringreplace:** no replace for mimes image, video ([#672](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/672)) ([14ca5d4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/14ca5d4a5c9bc6625275373eb03bea8678e39f0f))
+
 ## [0.4.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-stringreplacer@0.4.1...ui5-middleware-stringreplacer@0.4.2) (2022-12-31)
 
 **Note:** Version bump only for package ui5-middleware-stringreplacer
