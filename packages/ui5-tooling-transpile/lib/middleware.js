@@ -23,7 +23,10 @@ const { createBabelConfig, normalizeLineFeeds } = require("./util");
 module.exports = async function ({ resources, options /*, middlewareUtil */ }) {
 	const config = options?.configuration || {};
 	config.includes = config.includes || config.includePatterns;
-	config.excludes = config.excludes || config.excludePatterns;
+
+	// never transpile these default exclusion types
+	const defaultExcludes = [".png", ".jpeg", ".jpg"];
+	config.excludes = defaultExcludes.concat(config.excludes || config.excludePatterns || []);
 
 	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: true });
 
