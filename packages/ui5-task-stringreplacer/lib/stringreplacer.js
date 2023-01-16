@@ -50,6 +50,28 @@ function createReplacePlaceholdersDestination({ resource, isDebug }) {
 // END: copy of code from ui5-middleware-stringreplacer
 
 /**
+ * COPY of ui5-server/middleware/MiddelwareUtil
+ *
+ * Returns MIME information derived from a given resource path.
+ * </br></br>
+ * This method is only available to custom middleware extensions defining
+ * <b>Specification Version 2.0 and above</b>.
+ *
+ * @param {object} resourcePath
+ * @returns {@ui5/server/middleware/MiddlewareUtil.MimeInfo}
+ * @public
+ */
+function getMimeInfo(resourcePath) {
+	const type = mime.lookup(resourcePath) || "application/octet-stream";
+	const charset = mime.charset(type);
+	return {
+		type,
+		charset,
+		contentType: type + (charset ? "; charset=" + charset : ""),
+	};
+}
+
+/**
  * Task to replace strings from files
  *
  * @param {object} parameters Parameters
@@ -84,6 +106,13 @@ module.exports = function ({ workspace, options }) {
 		.then((allResources) => {
 			// replaces all files placeholder strings with replacement text values
 			return allResources.map((resource) => {
+				// determine charset and content-type
+				const { contentType } = getMimeInfo(resource.getPath());
+				// never replace strings in these mime types
+				if (contentType.includes("image") || contentType.includes("video")) {
+					return resource;
+				}
+
 				// stream replacement only works for UTF-8 resources!
 				let stream = resource.getStream();
 				stream.setEncoding("utf8");
