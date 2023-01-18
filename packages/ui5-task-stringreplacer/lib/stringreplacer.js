@@ -110,7 +110,7 @@ module.exports = function ({ workspace, options }) {
 				const { contentType } = getMimeInfo(resource.getPath());
 				// never replace strings in these mime types
 				if (contentType.includes("image") || contentType.includes("video")) {
-					return resource;
+					// return resource;
 				}
 
 				// stream replacement only works for UTF-8 resources!
