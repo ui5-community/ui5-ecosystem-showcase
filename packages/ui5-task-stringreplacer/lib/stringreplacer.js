@@ -107,11 +107,11 @@ module.exports = function ({ workspace, options }) {
 			// replaces all files placeholder strings with replacement text values
 			return allResources.map((resource) => {
 				// determine charset and content-type
-				const { contentType } = getMimeInfo(resource.getPath());
+				/* const { contentType } = getMimeInfo(resource.getPath());
 				// never replace strings in these mime types
 				if (contentType.includes("image") || contentType.includes("video")) {
-					// return resource;
-				}
+					return resource;
+				}*/
 
 				// stream replacement only works for UTF-8 resources!
 				let stream = resource.getStream();
