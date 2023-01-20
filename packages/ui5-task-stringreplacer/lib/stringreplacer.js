@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars, no-undef */
 const log = require("@ui5/logger").getLogger("builder:customtask:stringreplacer");
+const mime = require("mime-types");
 
 // BEGIN: copy of code from ui5-middleware-stringreplacer
 const escapeRegExp = require("lodash.escaperegexp");
@@ -129,6 +130,6 @@ module.exports = function ({ workspace, options }) {
 			);
 		})
 		.catch((err) => {
-			log.error("Failed to replace strings. Please check file patterns and string placeholders.");
+			log.error(`Failed to replace strings. Please check file patterns and string placeholders. Initial Error ${err}`);
 		});
 };
