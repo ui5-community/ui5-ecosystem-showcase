@@ -75,7 +75,7 @@ importers:
       ui5-task-pwa-enabler: ^0.3.3
       ui5-task-stringreplacer: ^0.7.2
       ui5-task-zipper: ^0.7.1
-      ui5-tooling-modules: ^0.7.5
+      ui5-tooling-modules: ^0.7.6
       ui5-tooling-transpile: ^0.3.4
       wdio-chromedriver-service: ^8.0.1
       wdio-ui5-service: ^1.0.3
@@ -143,7 +143,7 @@ importers:
       eslint: ^8.31.0
       typescript: ^4.9.4
       ui5-middleware-livereload: ^0.7.2
-      ui5-tooling-modules: ^0.7.5
+      ui5-tooling-modules: ^0.7.6
       ui5-tooling-transpile: ^0.3.4
       xlsx: ^0.18.5
     dependencies:
