@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.7.4...ui5-tooling-modules@0.7.5) (2023-01-21)
+
+### Bug Fixes
+
+- **ui5-tooling-modules:** rollback to old node-resolve ([e1b418f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e1b418fc207919054af40e1ce1afba545847a42e))
+
 ## [0.7.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.7.3...ui5-tooling-modules@0.7.4) (2023-01-21)
 
 ### Bug Fixes
