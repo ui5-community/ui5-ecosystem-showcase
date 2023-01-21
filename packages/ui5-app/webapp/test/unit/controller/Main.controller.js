@@ -7,7 +7,11 @@ sap.ui.define(["test/Sample/controller/Main.controller", "sap/ui/thirdparty/sino
 
 	QUnit.test("inits correctly", function (assert) {
 		const oAppController = new Controller();
+		const oViewStub = sinon.stub(Controller.prototype, "getView").returns({
+			setModel: sinon.stub().returns("stubbed"),
+		});
 		oAppController.onInit();
+		oViewStub.restore();
 		assert.ok(oAppController);
 	});
 
