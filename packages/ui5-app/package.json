@@ -36,6 +36,7 @@
     }
   },
   "dependencies": {
+    "@octokit/core": "4.1.0",
     "@supabase/supabase-js": "^2.2.3",
     "cmis": "^1.0.3",
     "firebase": "^9.15.0",

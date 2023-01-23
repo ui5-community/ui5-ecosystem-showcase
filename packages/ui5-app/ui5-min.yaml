@@ -25,7 +25,7 @@ server:
       afterMiddleware: compression
       configuration:
         debug: true
-        baseUri: "https://openui5nightly.hana.ondemand.com/"
+        baseUri: "https://sdk.openui5.org/"
         httpHeaders:
           Any-Header: AnyHeader
         query:
@@ -35,7 +35,7 @@ server:
       afterMiddleware: compression
       configuration:
         debug: true
-        baseUri: "https://sdk.openui5.org/"
+        baseUri: "https://openui5nightly.hana.ondemand.com/"
         excludePatterns:
           - "/local/**"
     # PoC: reuse the same middleware at a different "mountPath"
