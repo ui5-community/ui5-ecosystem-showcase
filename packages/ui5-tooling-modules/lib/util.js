@@ -4,6 +4,7 @@
 const log = require("@ui5/logger").getLogger("server:custommiddleware:ui5-tooling-modules");
 
 const path = require("path");
+const { existsSync } = require("fs");
 const { readFile, stat } = require("fs").promises;
 
 const rollup = require("rollup");
@@ -21,8 +22,8 @@ const estraverse = require("estraverse");
 // local bundle cache
 const bundleCache = {};
 
-// local ignore list
-const ignoreList = [".", ".."];
+// local list of resolved modules (name to location)
+const resolvedModules = {};
 
 // package.json of app
 const pkg = require(path.join(process.cwd(), "package.json"));
@@ -57,6 +58,32 @@ function isUI5Module(content, path) {
 	}
 }
 
+/**
+ * Resolves the node module
+ *
+ * @param {string} moduleName name of the module
+ * @returns {string} path of the module if found or undefined
+ */
+function resolveNodeModule(moduleName) {
+	let modulePath;
+	// resolve from node_modules via regular lookup
+	try {
+		modulePath = require.resolve(moduleName);
+	} catch (err) {
+		// fallback for PNPM and/or DEBUG scenario
+		try {
+			// try the lookup relative to CWD
+			modulePath = require.resolve(moduleName, {
+				paths: [process.cwd()],
+			});
+		} catch (err) {
+			// gracefully ignore the error
+			//console.error(err);
+		}
+	}
+	return modulePath;
+}
+
 const that = (module.exports = {
 	/**
 	 * Resolves the bare module name from node_modules utilizing the require.resolve
@@ -66,36 +93,52 @@ const that = (module.exports = {
 	 */
 	resolveModule: function resolveModule(moduleName) {
 		// ignore module paths starting with a segment from the ignore list (TODO: maybe a better check?)
-		const moduleNameSegments = moduleName.split("/");
-		if (ignoreList.indexOf(moduleNameSegments?.[0]) >= 0) {
+		if ((resolvedModules[moduleName] && resolvedModules[moduleName].modulePath === undefined) || /^\./.test(moduleName)) {
 			return undefined;
 		}
-		// special handling for app-local resources!
-		if (moduleName?.startsWith(`${pkg.name}/`)) {
-			return path.join(process.cwd(), moduleName.substring(`${pkg.name}/`.length) + ".js");
-		}
-		// resolve from node_modules
-		let modulePath;
-		try {
-			// try the regular lookup
-			modulePath = require.resolve(moduleName);
-		} catch (err) {
-			// gracefully ignore the error
-			//console.error(err);
-		}
-		if (!modulePath) {
-			// fallback for PNPM and/or DEBUG scenario
-			try {
-				// try the lookup relative to CWD
-				modulePath = require.resolve(moduleName, {
-					paths: [process.cwd()],
-				});
-			} catch (err) {
-				// gracefully ignore the error
-				//console.error(err);
+		// retrieve or create a resolved module
+		// (also for the modules which don't exist, as a negative cache!)
+		let resolvedModule = resolvedModules[moduleName];
+		if (!resolvedModule) {
+			log.verbose(`Resolving ${moduleName}...`);
+			// no module found => resolve it
+			resolvedModule = resolvedModules[moduleName] = {};
+			// resolve the module path
+			if (moduleName?.startsWith(`${pkg.name}/`)) {
+				// special handling for app-local resources!
+				resolvedModule.modulePath = path.join(process.cwd(), moduleName.substring(`${pkg.name}/`.length) + ".js");
+			} else {
+				// derive the module path from the package.json entries browser, module or main
+				try {
+					const pckJsonModuleName = path.join(moduleName, "package.json");
+					const pkgJson = require(pckJsonModuleName);
+					if (typeof pkgJson?.browser === "string") {
+						resolvedModule.modulePath = path.join(path.dirname(resolveNodeModule(pckJsonModuleName)), pkgJson?.browser);
+					} else if (typeof pkgJson?.module === "string") {
+						resolvedModule.modulePath = path.join(path.dirname(resolveNodeModule(pckJsonModuleName)), pkgJson?.module);
+					} else if (typeof pkgJson?.main === "string") {
+						resolvedModule.modulePath = path.join(path.dirname(resolveNodeModule(pckJsonModuleName)), pkgJson?.main);
+					}
+					// reset the module path if it doesn't exist
+					if (!existsSync(resolvedModule.modulePath)) {
+						resolvedModule.modulePath = undefined;
+					}
+				} catch (err) {
+					// gracefully ignore the error
+					//console.error(err);
+				}
+				// resolve from node_modules via regular lookup
+				if (!resolvedModule.modulePath) {
+					resolvedModule.modulePath = resolveNodeModule(moduleName);
+				}
+			}
+			if (resolvedModule.modulePath === undefined) {
+				log.verbose(`  => not found!`);
+			} else {
+				log.verbose(`  => found at ${resolvedModule.modulePath}`);
 			}
 		}
-		return modulePath;
+		return resolvedModule.modulePath;
 	},
 
 	/**
@@ -123,15 +166,24 @@ const that = (module.exports = {
 					// is the bundle a UI5 module?
 					const moduleContent = await readFile(modulePath, { encoding: "utf8" });
 
-					// only transform non-UI5 modules
-					if (moduleExt === ".js" && !isUI5Module(moduleContent, modulePath)) {
+					// only transform non-UI5 modules (.js, .mjs, .cjs files)
+					if (/\.(m|c)?js/.test(moduleExt) && !isUI5Module(moduleContent, modulePath)) {
 						bundling = true;
 
 						// create a bundle
 						const bundle = await rollup.rollup({
-							preserveSymlinks: true,
 							input: moduleName,
 							plugins: [
+								(function (options) {
+									"use strict";
+									return {
+										name: "logger",
+										resolveId(source) {
+											console.log(`Bundling resource ${source}`);
+											return undefined;
+										},
+									};
+								})(),
 								skipAssets({
 									extensions: ["css"],
 									modules: ["crypto"],
@@ -142,16 +194,6 @@ const that = (module.exports = {
 									defaultIsModuleExports: true,
 								}),
 								amdCustom(),
-								// between @rollup/plugin-node-resolve 13.3.0 and 14.0.0 something changed which leads
-								// to corrupt bundles for other projects - locally in the ecosystem it seems to work.
-								//
-								// The following change adopted the module resolution:
-								// => https://github.com/rollup/plugins/commit/886debae6b1d9f00c897c866a4c4c6975a5d47db
-								//
-								// TODO: check why the upgrade to version >= 14.0.0 isn't possible?
-								//       - verify with the following projects with ui5-tooling-modules@0.7.2:
-								//         => https://github.com/marianfoo/ui5-cc-excelUpload
-								//         => https://github.com/marianfoo/gh-following-to-rss
 								nodeResolve({
 									browser: true,
 									mainFields: ["module", "main"],
@@ -162,6 +204,10 @@ const that = (module.exports = {
 									return {
 										name: "resolve-pnpm",
 										resolveId(source) {
+											// ignore absolute paths
+											if (path.isAbsolute(source)) {
+												return source;
+											}
 											return that.resolveModule(source);
 										},
 									};
@@ -170,16 +216,21 @@ const that = (module.exports = {
 									NODE_ENV: "production",
 								}),
 							],
-							onwarn: function (warning) {
+							onwarn: function ({ loc, frame, code, message }) {
 								// Skip certain warnings
 
 								// should intercept ... but doesn't in some rollup versions
-								if (warning.code === "THIS_IS_UNDEFINED") {
+								if (code === "THIS_IS_UNDEFINED") {
 									return;
 								}
 
 								// console.warn everything else
-								console.warn(warning.message);
+								if (loc) {
+									log.warn(`${loc.file} (${loc.line}:${loc.column}) ${message}`);
+									if (frame) log.warn(frame);
+								} else {
+									log.warn(message);
+								}
 							},
 						});
 
