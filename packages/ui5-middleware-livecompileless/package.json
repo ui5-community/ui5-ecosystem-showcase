@@ -15,7 +15,7 @@
   "dependencies": {
     "@ui5/fs": "^2.0.6",
     "@ui5/logger": "^2.0.1",
-    "less-openui5": "^0.11.5"
+    "less-openui5": "^0.11.6"
   },
   "ui5": {
     "dependencies": []

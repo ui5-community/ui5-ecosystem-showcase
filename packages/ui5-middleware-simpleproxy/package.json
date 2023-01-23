@@ -16,7 +16,7 @@
     "@ui5/logger": "^2.0.1",
     "dotenv": "^16.0.3",
     "express-http-proxy": "^1.6.3",
-    "minimatch": "^5.1.2"
+    "minimatch": "^6.1.6"
   },
   "ui5": {
     "dependencies": []

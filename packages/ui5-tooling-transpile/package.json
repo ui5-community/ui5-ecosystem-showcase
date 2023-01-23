@@ -10,7 +10,7 @@
     "directory": "packages/ui5-tooling-transpile"
   },
   "dependencies": {
-    "@babel/core": "^7.20.7",
+    "@babel/core": "^7.20.12",
     "@babel/plugin-transform-modules-commonjs": "^7.20.11",
     "@babel/preset-env": "^7.20.2",
     "@babel/preset-typescript": "^7.18.6",
