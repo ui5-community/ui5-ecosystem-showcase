@@ -179,7 +179,7 @@ const that = (module.exports = {
 									return {
 										name: "logger",
 										resolveId(source) {
-											console.log(`Bundling resource ${source}`);
+											log.verbose(`Bundling resource ${source}`);
 											return undefined;
 										},
 									};
