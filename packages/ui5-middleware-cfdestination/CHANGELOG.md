@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.2...ui5-middleware-cfdestination@0.10.3) (2023-01-21)
+
+### Bug Fixes
+
+- **ui5-tooling-modules:** ignore relative paths ([#676](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/676)) ([259aac7](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/259aac754233925bed6bdbd1f79a13757786b1c6))
+
 ## [0.10.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.1...ui5-middleware-cfdestination@0.10.2) (2023-01-03)
 
 **Note:** Version bump only for package ui5-middleware-cfdestination

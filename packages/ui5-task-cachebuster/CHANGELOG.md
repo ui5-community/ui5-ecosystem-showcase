@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-cachebuster@0.3.1...ui5-task-cachebuster@0.3.2) (2023-01-21)
+
+### Bug Fixes
+
+- **ui5-tooling-modules:** ignore relative paths ([#676](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/676)) ([259aac7](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/259aac754233925bed6bdbd1f79a13757786b1c6))
+
 ## [0.3.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-cachebuster@0.3.0...ui5-task-cachebuster@0.3.1) (2022-12-31)
 
 **Note:** Version bump only for package ui5-task-cachebuster

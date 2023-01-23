@@ -4,7 +4,7 @@
 const log = require("@ui5/logger").getLogger("server:custommiddleware:ui5-tooling-modules");
 
 const path = require("path");
-const { readFile } = require("fs").promises;
+const { readFile, stat } = require("fs").promises;
 
 const rollup = require("rollup");
 const { nodeResolve } = require("@rollup/plugin-node-resolve");
@@ -20,6 +20,9 @@ const estraverse = require("estraverse");
 
 // local bundle cache
 const bundleCache = {};
+
+// local ignore list
+const ignoreList = [".", ".."];
 
 // package.json of app
 const pkg = require(path.join(process.cwd(), "package.json"));
@@ -62,6 +65,11 @@ const that = (module.exports = {
 	 * @returns {string} the path of the module in the filesystem
 	 */
 	resolveModule: function resolveModule(moduleName) {
+		// ignore module paths starting with a segment from the ignore list (TODO: maybe a better check?)
+		const moduleNameSegments = moduleName.split("/");
+		if (ignoreList.indexOf(moduleNameSegments?.[0]) >= 0) {
+			return undefined;
+		}
 		// special handling for app-local resources!
 		if (moduleName?.startsWith(`${pkg.name}/`)) {
 			return path.join(process.cwd(), moduleName.substring(`${pkg.name}/`.length) + ".js");
@@ -106,11 +114,12 @@ const that = (module.exports = {
 
 		try {
 			const modulePath = that.resolveModule(moduleName);
+			const lastModified = new Date((await stat(modulePath)).mtime).getTime();
 			if (modulePath) {
 				const moduleExt = path.extname(modulePath).toLowerCase();
 
 				let cachedBundle = bundleCache[moduleName];
-				if (skipCache || !cachedBundle) {
+				if (skipCache || !cachedBundle || cachedBundle.lastModified !== lastModified) {
 					// is the bundle a UI5 module?
 					const moduleContent = await readFile(modulePath, { encoding: "utf8" });
 
@@ -161,6 +170,17 @@ const that = (module.exports = {
 									NODE_ENV: "production",
 								}),
 							],
+							onwarn: function (warning) {
+								// Skip certain warnings
+
+								// should intercept ... but doesn't in some rollup versions
+								if (warning.code === "THIS_IS_UNDEFINED") {
+									return;
+								}
+
+								// console.warn everything else
+								console.warn(warning.message);
+							},
 						});
 
 						// generate output specific code in-memory
@@ -175,18 +195,27 @@ const that = (module.exports = {
 						// Right now we only support one chunk as build result
 						// should be also given by the rollup configuration!
 						if (output.length === 1 && output[0].type === "chunk") {
-							cachedBundle = bundleCache[moduleName] = output[0].code;
+							cachedBundle = bundleCache[moduleName] = {
+								content: output[0].code,
+								lastModified,
+							};
 						} else {
 							log.info(`The bundle for ${moduleName} has ${output.length} chunks!`);
 							// let's take the first chunk only
-							cachedBundle = bundleCache[moduleName] = output[0].code;
+							cachedBundle = bundleCache[moduleName] = {
+								content: output[0].code,
+								lastModified,
+							};
 						}
 					} else {
-						cachedBundle = bundleCache[moduleName] = moduleContent;
+						cachedBundle = bundleCache[moduleName] = {
+							content: moduleContent,
+							lastModified,
+						};
 					}
 				}
 
-				return cachedBundle;
+				return cachedBundle?.content;
 			}
 		} catch (err) {
 			if (bundling) {

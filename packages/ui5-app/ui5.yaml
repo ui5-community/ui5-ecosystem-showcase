@@ -182,7 +182,7 @@ server:
     - name: ui5-tooling-modules-middleware
       afterMiddleware: compression
       configuration:
-        skipCache: true
+        #skipCache: true
     - name: ui5-middleware-livecompileless
       beforeMiddleware: serveResources
       configuration:

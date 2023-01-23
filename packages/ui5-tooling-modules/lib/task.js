@@ -6,7 +6,7 @@ const resourceFactory = require("@ui5/fs").resourceFactory;
 
 const { getResource, resolveModule } = require("./util");
 
-const { readFileSync } = require("fs");
+const { readFileSync, existsSync } = require("fs");
 const espree = require("espree");
 const estraverse = require("estraverse");
 const { XMLParser, XMLBuilder, XMLValidator } = require("fast-xml-parser");
@@ -43,7 +43,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 
 	// utility to lookup unique JS dependencies
 	// eslint-disable-next-line jsdoc/require-jsdoc
-	function findUniqueJSDeps(content, depPath) {
+	function findUniqueJSDeps(content, parentDepPath) {
 		// use espree to parse the UI5 modules and extract the UI5 module dependencies
 		try {
 			const program = espree.parse(content, { range: true, comment: true, tokens: true, ecmaVersion: "latest" });
@@ -64,30 +64,38 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 					} else if (
 						/* sap.ui.(require|define) */
 						node?.type === "CallExpression" &&
-						/require|define/.test(node?.callee?.property?.name) &&
+						/require|define|requireSync/.test(node?.callee?.property?.name) &&
 						node?.callee?.object?.property?.name == "ui" &&
 						node?.callee?.object?.object?.name == "sap"
 					) {
-						const depsArray = node.arguments.filter((arg) => arg.type === "ArrayExpression");
-						if (depsArray.length > 0) {
-							const deps = depsArray[0].elements.filter((el) => el.type === "Literal").map((el) => el.value);
-							deps.forEach((dep) => {
-								uniqueDeps.add(dep);
-								// each dependency which can be resolved via the NPM package name
-								// should also be checked for its dependencies to finally handle them
-								// here if they also require to be transpiled by the task
-								try {
-									const depPath = resolveModule(dep);
+						let deps;
+						if (/requireSync/.test(node?.callee?.property?.name)) {
+							const elDep = node.arguments[0];
+							if (elDep?.type === "Literal") {
+								deps = [elDep.value];
+							}
+						} else {
+							const depsArray = node.arguments.filter((arg) => arg.type === "ArrayExpression");
+							deps = depsArray?.[0].elements.filter((el) => el.type === "Literal").map((el) => el.value);
+						}
+						deps?.forEach((dep) => {
+							uniqueDeps.add(dep);
+							// each dependency which can be resolved via the NPM package name
+							// should also be checked for its dependencies to finally handle them
+							// here if they also require to be transpiled by the task
+							try {
+								const depPath = resolveModule(dep);
+								if (existsSync(depPath)) {
 									const depContent = readFileSync(depPath, { encoding: "utf8" });
 									findUniqueJSDeps(depContent, depPath);
-								} catch (err) {}
-							});
-						}
+								}
+							} catch (err) {}
+						});
 					}
 				},
 			});
 		} catch (err) {
-			log.verbose(`Failed to parse dependency "${depPath}" with espree!`, err);
+			log.verbose(`Failed to parse dependency "${parentDepPath}" with espree!`, err);
 		}
 	}
 
@@ -105,6 +113,18 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 					node?.callee?.object?.property?.name == "require" &&
 					node?.callee?.object?.object?.property?.name == "ui" &&
 					node?.callee?.object?.object?.object?.name == "sap"
+				) {
+					const elDep = node.arguments[0];
+					if (elDep?.type === "Literal" && bundledResources.includes(elDep.value)) {
+						elDep.value = `${options.projectNamespace}/thirdparty/${elDep.value}`;
+						changed = true;
+					}
+				} else if (
+					/* sap.ui.(requireSync) !LEGACY! */
+					node?.type === "CallExpression" &&
+					/requireSync/.test(node?.callee?.property?.name) &&
+					node?.callee?.object?.property?.name == "ui" &&
+					node?.callee?.object?.object?.name == "sap"
 				) {
 					const elDep = node.arguments[0];
 					if (elDep?.type === "Literal" && bundledResources.includes(elDep.value)) {
@@ -171,8 +191,10 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 										// here if they also require to be transpiled by the task
 										try {
 											const depPath = resolveModule(dep);
-											const depContent = readFileSync(depPath, { encoding: "utf8" });
-											findUniqueJSDeps(depContent, depPath);
+											if (existsSync(depPath)) {
+												const depContent = readFileSync(depPath, { encoding: "utf8" });
+												findUniqueJSDeps(depContent, depPath);
+											}
 										} catch (ex) {}
 									}
 									findUniqueXMLDeps(child, ns);

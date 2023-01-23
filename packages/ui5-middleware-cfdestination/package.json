@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-cfdestination",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "description": "UI5 middleware for CF destinations",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
@@ -11,7 +11,7 @@
   },
   "scripts": {
     "test": "ava",
-    "lint": "eslint lib"
+    "lint:disabled": "eslint lib"
   },
   "ava": {
     "files": [
