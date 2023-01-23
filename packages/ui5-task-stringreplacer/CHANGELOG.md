@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-stringreplacer@0.7.2...ui5-task-stringreplacer@0.8.0) (2023-01-23)
+
+### Features
+
+- **ui5-task-stringreplacer:** ignore graphical mime types ([#675](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/675)) ([1163702](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1163702b46f184d50f0a24b1d3d2a4b9687e0fb3))
+
 ## [0.7.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-stringreplacer@0.7.1...ui5-task-stringreplacer@0.7.2) (2022-12-31)
 
 **Note:** Version bump only for package ui5-task-stringreplacer

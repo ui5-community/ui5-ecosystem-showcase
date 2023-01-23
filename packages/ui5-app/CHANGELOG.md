@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.22.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.22.7...ui5-app@0.22.8) (2023-01-23)
+
+### Bug Fixes
+
+- **ui5-tooling-modules:** node-like module resolution ([#677](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/677)) ([51b942a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/51b942a7bd38ae602e207182d56b6fdd240b1338))
+
 ## [0.22.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.22.6...ui5-app@0.22.7) (2023-01-21)
 
 **Note:** Version bump only for package ui5-app
