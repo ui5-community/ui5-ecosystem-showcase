@@ -6,13 +6,11 @@ This repository is showcasing the [UI5 Tooling](https://sap.github.io/ui5-toolin
 
 ![UI5 Tooling Ecosystem](ui5eco.jpg "UI5 Tooling Ecosystem")
 
-This doesn't necessarily need to happen in this repository and everyone can develop and share his own tasks and middleware via [npm](https://www.npmjs.com/). Regarding npm, please prefix the name of all tasks with `ui5-task-` and all middlewares with `ui5-middleware-`. In case you create NPM packages having both: custom tasks and middlewares, the prefix should be `ui5-tooling-`. This will help UI5 developers to easily find tasks and middlewares created and shared by the UI5 community.
+Everyone can develop and share his own tasks, middleware, and tooling extensions or consume them via [NPM](https://www.npmjs.com/). On NPM, all tasks are prefixed with `ui5-task-` and all middlewares with `ui5-middleware-`. In case you create NPM packages having both: custom tasks and middlewares, the prefix should be `ui5-tooling-`. This will help UI5 developers to easily find tasks and middlewares created and shared by the UI5 community.
 
-## Available Tasks and Middlewares
+## Contribute to the UI5 Tooling Ecosystem
 
-Below you can find the list of available tasks and middlewares. The list is provided by [Best Of UI5](https://bestofui5.org/). Best Of UI5 is the central registry for available tasks, middlewares, tooling extensions, libraries, modules, custom controls, Yeoman generators, wdi5 plugins, commands and even applications. The Best Of UI5 metadata will also be used by several open-source tools to provide a better development experience by recommending tooling extensions, libraries, ...
-
-You can extend the UI5 Tooling Ecosystem by providing your own task, middlewares, and/or tooling extensions. Therefore, you have the possibility to either contribute your extension to this repository or do it in your own repository. In both cases, please consider to contribute your extension to [Best Of UI5](https://bestofui5.org/) and *[Add Your Own Package](https://github.com/ui5-community/bestofui5-data/issues/new?assignees=marianfoo&labels=new%20package&template=new_package.md&title=Add%20new%20Package:)*.
+You can contribute to the UI5 Tooling Ecosystem by providing your own task, middlewares, and/or tooling extensions. Therefore, you have the possibility to either contribute your extension to this repository or do it in your own repository. In both cases, please consider to contribute your extension to [Best Of UI5](https://bestofui5.org/) and *[Add Your Own Package](https://github.com/ui5-community/bestofui5-data/issues/new?assignees=marianfoo&labels=new%20package&template=new_package.md&title=Add%20new%20Package:)*.
 
 ### Contributing
 
@@ -22,9 +20,11 @@ This repository is open to anyone who wants to share his/her task or middleware 
 
 The other option is to self-manage your extensions in your own repository. In this case, you'll have full control but need to implement your own release process. Please ensure to stick to the naming convention as described above and check for duplicated tasks at [Best Of UI5](https://bestofui5.org/) or in the [NPM registry](https://www.npmjs.com/).
 
-## Avaiable Tooling Extensions
+## Available Tooling Extensions
 
 Tooling extensions are either tasks, middlewares or combining both in one tooling extension NPM package. The NPM packages including tasks only are prefixed with `ui5-task-` and middlewares only with `ui5-middleware-`. NPM packages including both are prefixed with `ui5-tooling-`.
+
+The best place to find existing tooling extensions is [Best Of UI5](https://bestofui5.org/). This is the central registry for available tasks, middlewares, tooling extensions, libraries, modules, custom controls, Yeoman generators, wdi5 plugins, commands and even applications. The metadata will also be used by several open-source tools to provide a better development experience by recommending tooling extensions, libraries, ...
 
 ### Tasks
 
