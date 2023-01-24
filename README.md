@@ -66,7 +66,14 @@ To get started just run one of the following commands:
 # - POC: same proxy middleware reused at $server/proxy2
 # - cf-style proxy destinations at $server/$destinations
 # - ability to execute the same UI actions across all browsers pointed to http://localhost:1081/index.html
+# - using NPM packages as dependencies
 pnpm dev
+
+# 1.1) Run the TypeScript app dev mode
+# which gives you 
+# - live transpilation of TypeScript code
+# - using NPM packages as dependencies
+pnpm dev:ts
 
 # 2) Run the Component-preload build + transpile steps
 # which in addition to the above
@@ -76,6 +83,9 @@ pnpm watch
 
 # 3) Run the dist folder (needs manual build via `pnpm build` first)
 pnpm start
+
+# 3.1) Run the dist folder for the TypeScript app (needs manual build via `pnpm build:ts` first)
+pnpm start:ts
 
 # 4) Run Unit-(QUnit-)Tests and Integration-(OPA5-)Tests
 # against "as-is" sources in /webapp/* (of /packages/ui5-app)

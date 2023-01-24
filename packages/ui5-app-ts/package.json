@@ -8,8 +8,8 @@
   "scripts": {
     "build": "ui5 build --clean-dest",
     "build:opt": "ui5 build self-contained --clean-dest --all",
-    "start": "ui5 serve --port 8080 -o index.html",
-    "start:dist": "ui5 serve  --port 8080 -o index.html --config ui5-dist.yaml",
+    "dev": "ui5 serve --port 8080 -o index.html",
+    "start": "ui5 serve  --port 8080 -o index.html --config ui5-dist.yaml",
     "ts-typecheck": "tsc --noEmit",
     "lint": "eslint webapp"
   },
