@@ -1,4 +1,5 @@
 sap.ui.define(["sap/ui/core/Control", "chart.js/auto", "sap/ui/dom/includeStylesheet"], function (Control, Chart, includeStylesheet) {
+	console.log(Chart); // testing
 	return Control.extend("ui5-app-module.Chart", {
 		metadata: {
 			properties: {
