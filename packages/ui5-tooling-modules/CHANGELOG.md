@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.7.7...ui5-tooling-modules@0.7.8) (2023-01-25)
+
+### Bug Fixes
+
+- **ui5-tooling-modules:** make amd bundling more robust for side effects ([#679](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/679)) ([1d0e586](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1d0e5862e99a3e86f4bf4e25440df10aa02b9617))
+
 ## [0.7.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.7.6...ui5-tooling-modules@0.7.7) (2023-01-23)
 
 ### Bug Fixes
