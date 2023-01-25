@@ -19,7 +19,7 @@
     "directory": "packages/ui5-app-ts"
   },
   "devDependencies": {
-    "@types/openui5": "^1.109.0",
+    "@types/openui5": "^1.110.0",
     "@typescript-eslint/eslint-plugin": "^5.49.0",
     "@typescript-eslint/parser": "^5.49.0",
     "@ui5/cli": "^2.14.17",

@@ -1,8 +1,15 @@
 // regular code of the Thirdparty.controller.js
 sap.ui.define(
-	["test/Sample/controller/BaseController", "xlsx", "cmis", "ui5-app/bundledefs/firebase", "@supabase/supabase-js", "@octokit/core"],
-	(Controller, xlsx, cmis, _firebase, supabase, octokit) => {
+	["test/Sample/controller/BaseController", "xlsx", "cmis", "ui5-app/bundledefs/firebase", "@supabase/supabase-js", "@octokit/core", "axios"],
+	(Controller, xlsx, cmis, _firebase, supabase, octokit, axios) => {
 		"use strict";
+
+		console.log(xlsx);
+		console.log(cmis);
+		console.log(_firebase);
+		console.log(supabase);
+		console.log(octokit);
+		console.log(axios);
 
 		const { initializeApp, getFirestore } = _firebase;
 		const app = initializeApp({});
@@ -11,12 +18,6 @@ sap.ui.define(
 		} catch (ex) {
 			console.error(ex);
 		}
-
-		console.log(cmis);
-		console.log(supabase);
-		console.log(octokit);
-
-		const o = new octokit.Octokit();
 
 		return Controller.extend("test.Sample.controller.Thirdparty", {
 			onInit() {
