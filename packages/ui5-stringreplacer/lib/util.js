@@ -1,0 +1,85 @@
+const escapeRegExp = require("lodash.escaperegexp");
+const replaceStream = require("replacestream");
+const mime = require("mime-types");
+const log = require("@ui5/logger").getLogger("builder:customtask:stringreplacer");
+
+// manage placeholders
+let placeholderStrings = {};
+
+module.exports = {
+	isPathOnContentTypeExcludeList: function isPathOnContentTypeExcludeList(path) {
+		const { contentType } = this.getMimeInfo(path);
+
+		// TODO: change to regex
+		if (contentType.includes("image") || contentType.includes("video")) {
+			return true;
+		}
+		return false;
+	},
+	readPlaceholderFromEnv: function readPlaceholderFromEnv() {
+		if (process.env.UI5_ENV) {
+			log.info(`UI5_ENV set to ${process.env.UI5_ENV}: loading ./${process.env.UI5_ENV}.env`);
+			require("dotenv").config({ path: `./${process.env.UI5_ENV}.env` });
+		} else {
+			require("dotenv").config(); //loads './.env'
+		}
+
+		// get all environment variables
+		const envVariables = process.env;
+
+		// loop through env variables to find keys which are having prefix 'stringreplacer'
+		if (typeof envVariables === "object") {
+			let key;
+			for (key in envVariables) {
+				// env variable should start with 'stringreplacer' and should in format 'stringreplacer.placeholder'
+				if (/^stringreplacer\.(.+)$/i.test(key)) {
+					let placeholderString = /^stringreplacer\.(.+)$/i.exec(key)[1];
+					this.addPlaceholderString(placeholderString, envVariables[key]);
+				}
+			}
+		}
+
+		return placeholderStrings;
+	},
+
+	// create the helper function to pipe the stream and replace the placeholders
+	// eslint-disable-next-line jsdoc/require-jsdoc
+	createReplacePlaceholdersDestination: function createReplacePlaceholdersDestination({ resource, isDebug }) {
+		const replaceStreamRegExp = `(${Object.keys(placeholderStrings)
+			.map((placeholder) => {
+				return escapeRegExp(placeholder);
+			})
+			.join("|")})`;
+		return replaceStream(new RegExp(replaceStreamRegExp, "g"), (match) => {
+			isDebug && log.info(`${resource.getPath()} matched: ${match}; replacing with ${placeholderStrings[match]}`);
+			return placeholderStrings[match];
+		});
+	},
+
+	// eslint-disable-next-line jsdoc/require-jsdoc
+	addPlaceholderString: function addPlaceholderString(key, value) {
+		placeholderStrings[key] = value;
+	},
+
+	/**
+	 * COPY of ui5-server/middleware/MiddelwareUtil
+	 *
+	 * Returns MIME information derived from a given resource path.
+	 * </br></br>
+	 * This method is only available to custom middleware extensions defining
+	 * <b>Specification Version 2.0 and above</b>.
+	 *
+	 * @param {object} resourcePath
+	 * @returns {@ui5/server/middleware/MiddlewareUtil.MimeInfo}
+	 * @public
+	 */
+	getMimeInfo: function getMimeInfo(resourcePath) {
+		const type = mime.lookup(resourcePath) || "application/octet-stream";
+		const charset = mime.charset(type);
+		return {
+			type,
+			charset,
+			contentType: type + (charset ? "; charset=" + charset : ""),
+		};
+	},
+};
