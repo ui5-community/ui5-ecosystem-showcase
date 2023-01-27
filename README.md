@@ -32,7 +32,8 @@ packages
 ├── ui5-task-stringreplacer         // task extension: replaces placeholder strings
 ├── ui5-task-zipper                 // task extension: bundle the entire webapp in a zip-archive
 ├── ui5-tooling-modules             // tooling extensions: direct consumption of NPM packages in UI5 apps
-└── ui5-tooling-transpile           // tooling extensions: transpile resources using Babel
+├── ui5-tooling-transpile           // tooling extensions: transpile resources using Babel
+└── ui5-tooling-stringreplacer      // task extension: replaces placeholder strings and middleware extension: replaces placeholder strings
 ```
 
 ## Getting Started

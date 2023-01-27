@@ -1,5 +1,5 @@
 {
-  "name": "ui5-stringreplace",
+  "name": "ui5-tooling-stringreplace",
   "version": "0.0.1",
   "description": "UI5 tooling extensions to string replace ",
   "author": "Dominik Feininger",
@@ -7,7 +7,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
-    "directory": "packages/ui5-stringreplace"
+    "directory": "packages/ui5-tooling-stringreplace"
   },
   "dependencies": {
     "@ui5/logger": "^2.0.1",

@@ -1,7 +1,7 @@
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
 specVersion: "2.0"
 metadata:
-  name: ui5-stringreplace-middleware
+  name: ui5-middleware-stringreplacer
 kind: extension
 type: server-middleware
 middleware:
@@ -10,7 +10,7 @@ middleware:
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomTasks/
 specVersion: "2.2"
 metadata:
-  name: ui5-stringreplace-task
+  name: ui5-task-stringreplacer
 kind: extension
 type: task
 task:
