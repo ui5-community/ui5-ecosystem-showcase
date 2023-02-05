@@ -14,9 +14,6 @@ function isFresh(req, res) {
 	});
 }
 
-// TODO: for now, we duplicate the code of the ui5-task-stringreplacer and the ui5-middleware-stringreplacer
-//       BUT for the future we should consider a reuse module for the middlewares and tasks in this repository.
-
 // get all environment variables
 const placeholderStrings = readPlaceholderFromEnv(process.env.UI5_ENV);
 
