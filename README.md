@@ -30,8 +30,8 @@ packages
 ├── ui5-task-pwa-enabler            // task extension: enables ui5 app with pwa functionalities
 ├── ui5-task-zipper                 // task extension: bundle the entire webapp in a zip-archive
 ├── ui5-tooling-modules             // tooling extensions: direct consumption of NPM packages in UI5 apps
-├── ui5-tooling-transpile           // tooling extensions: transpile resources using Babel
-└── ui5-tooling-stringreplace      // tooling extension: replaces placeholder strings
+├── ui5-tooling-stringreplace      // tooling extension: replaces placeholder strings
+└── ui5-tooling-transpile           // tooling extensions: transpile resources using Babel
 ```
 
 ## Getting Started
@@ -131,8 +131,8 @@ The middlewares developed in this monorepo are also publicly available on NPM ri
 The tooling extensions (contains tasks and middlewares) developed in this monorepo are available on NPM right here:
 
 * https://www.npmjs.com/package/ui5-tooling-modules
-* https://www.npmjs.com/package/ui5-tooling-transpile
 * https://www.npmjs.com/package/ui5-tooling-stringreplace
+* https://www.npmjs.com/package/ui5-tooling-transpile
 
 The consumption of the individual tasks and middlewares can be seen inside their local `README.md`.
 
@@ -167,8 +167,8 @@ Available tooling extensions in this project:
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
 | [ui5-tooling-modules](packages/ui5-tooling-modules/README.md) | direct consumption of NPM packages | [![npm version](https://badge.fury.io/js/ui5-tooling-modules.svg)](https://badge.fury.io/js/ui5-tooling-modules) |
-| [ui5-tooling-transpile](packages/ui5-tooling-transpile/README.md) | transpile resources using Babel | [![npm version](https://badge.fury.io/js/ui5-tooling-transpile.svg)](https://badge.fury.io/js/ui5-tooling-transpile) |
 | [ui5-tooling-stringreplace](packages/ui5-tooling-stringreplace/README.md) | stringreplace resources using Babel | [![npm version](https://badge.fury.io/js/ui5-tooling-stringreplace.svg)](https://badge.fury.io/js/ui5-tooling-stringreplace) |
+| [ui5-tooling-transpile](packages/ui5-tooling-transpile/README.md) | transpile resources using Babel | [![npm version](https://badge.fury.io/js/ui5-tooling-transpile.svg)](https://badge.fury.io/js/ui5-tooling-transpile) |
 
 ## License
 

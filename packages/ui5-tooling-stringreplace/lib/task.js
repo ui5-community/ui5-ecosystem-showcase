@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars, no-undef */
-const log = require("@ui5/logger").getLogger("builder:customtask:stringreplacer");
+const log = require("@ui5/logger").getLogger("builder:customtask:stringreplace");
 
 const { createReplacePlaceholdersDestination, addPlaceholderString, readPlaceholderFromEnv, isPathOnContentTypeExcludeList } = require("./util");
 
@@ -21,13 +21,9 @@ module.exports = function ({ workspace, options }) {
 	const isDebug = options.configuration && options.configuration.debug;
 
 	// extract the placeholder strings from the configuration
-	if (options.configuration) {
-		const { replace } = options.configuration;
-		replace &&
-			replace.forEach((entry) => {
-				addPlaceholderString(entry.placeholder, entry.value);
-			});
-	}
+	options.configuration?.replace?.forEach((entry) => {
+		addPlaceholderString(entry.placeholder, entry.value);
+	});
 
 	// check if we found any strings to replace and stop the build if no strings are found
 	// (we don't want to finish build for production while missing strings intended to be included in the build)

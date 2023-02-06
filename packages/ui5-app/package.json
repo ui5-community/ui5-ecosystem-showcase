@@ -79,8 +79,8 @@
     "ui5-task-minify-xml": "^0.3.0",
     "ui5-task-pwa-enabler": "^0.3.3",
     "ui5-task-zipper": "^0.7.2",
-    "ui5-tooling-stringreplace": "^0.0.1",
     "ui5-tooling-modules": "^0.7.7",
+    "ui5-tooling-stringreplace": "^0.0.1",
     "ui5-tooling-transpile": "^0.3.5",
     "wdio-chromedriver-service": "^8.0.1",
     "wdio-ui5-service": "^1.0.5"
@@ -101,8 +101,8 @@
       "ui5-task-pwa-enabler",
       "ui5-task-zipper",
       "ui5-task-cachebuster",
-      "ui5-tooling-stringreplace",
       "ui5-tooling-modules",
+      "ui5-tooling-stringreplace",
       "ui5-tooling-transpile"
     ]
   }

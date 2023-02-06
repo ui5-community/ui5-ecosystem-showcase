@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-const log = require("@ui5/logger").getLogger("server:custommiddleware:stringreplacer");
+const log = require("@ui5/logger").getLogger("server:custommiddleware:stringreplace");
 
 const { createReplacePlaceholdersDestination, addPlaceholderString, getMimeInfo, readPlaceholderFromEnv, isPathOnContentTypeExcludeList } = require("./util");
 
@@ -69,7 +69,7 @@ module.exports = function createMiddleware({ resources, options, middlewareUtil 
 	}
 
 	// returns the middleware function
-	return async function stringreplacer(req, res, next) {
+	return async function stringreplace(req, res, next) {
 		if (!hasStringsToReplace) {
 			// Nothing to do
 			next();
