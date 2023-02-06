@@ -44,5 +44,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Build app
+        run: pnpm build
+
       - name: Run tests on middlewares + tasks
         run: pnpm run test:all
