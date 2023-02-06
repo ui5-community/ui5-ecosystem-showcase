@@ -47,11 +47,9 @@ module.exports = function createMiddleware({ resources, options, middlewareUtil 
 			filesToInclude.push(files);
 		}
 		// extract the placeholder strings from the configuration
-		const { replace } = options.configuration;
-		replace &&
-			replace.forEach((entry) => {
-				addPlaceholderString(entry.placeholder, entry.value);
-			});
+		options.configuration?.replace?.forEach((entry) => {
+			addPlaceholderString(entry.placeholder, entry.value);
+		});
 	}
 
 	// check if we found any strings to replace
