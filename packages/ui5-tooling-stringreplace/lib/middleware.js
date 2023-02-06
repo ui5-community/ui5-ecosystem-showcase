@@ -14,9 +14,6 @@ function isFresh(req, res) {
 	});
 }
 
-// get all environment variables
-const placeholderStrings = readPlaceholderFromEnv(log);
-
 /**
  * Custom UI5 Server middleware example
  *
@@ -36,6 +33,10 @@ const placeholderStrings = readPlaceholderFromEnv(log);
  */
 module.exports = function createMiddleware({ resources, options, middlewareUtil }) {
 	const isDebug = options.configuration && options.configuration.debug;
+
+	// get all environment variables
+	const prefix = options.configuration?.prefix ? options.configuration?.prefix : "UI5_ENV"; // default
+	const placeholderStrings = readPlaceholderFromEnv(prefix, log);
 
 	let filesToInclude = [];
 	if (options.configuration) {

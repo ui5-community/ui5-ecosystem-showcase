@@ -3,9 +3,6 @@ const log = require("@ui5/logger").getLogger("builder:customtask:stringreplace")
 
 const { createReplacePlaceholdersDestination, addPlaceholderString, readPlaceholderFromEnv, isPathOnContentTypeExcludeList } = require("./util");
 
-// get all environment variables
-const placeholderStrings = readPlaceholderFromEnv(log);
-
 /**
  * Task to replace strings from files
  *
@@ -19,6 +16,10 @@ const placeholderStrings = readPlaceholderFromEnv(log);
  */
 module.exports = function ({ workspace, options }) {
 	const isDebug = options.configuration && options.configuration.debug;
+
+	// get all environment variables
+	const prefix = options.configuration?.prefix ? options.configuration?.prefix : "UI5_ENV"; // default
+	const placeholderStrings = readPlaceholderFromEnv(prefix, log);
 
 	// extract the placeholder strings from the configuration
 	options.configuration?.replace?.forEach((entry) => {

@@ -42,6 +42,7 @@ builder:
     - name: ui5-tooling-stringreplace-task
       afterTask: replaceVersion
       configuration:
+        prefix: "UI5_TEST"
         debug: true
         files:
           - "**/*.js"

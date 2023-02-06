@@ -100,6 +100,8 @@ You can keep multiple `.env` files and load a specific environment at build or s
 - package.json
 ```
 
+You can define our own prefix in `$yourapp/ui5.yaml` using configuration `prefix` otherwise will default to `UI5_ENV`.
+
 ```json
  "scripts": {
     "build:dev": "UI5_ENV=dev ui5 build",

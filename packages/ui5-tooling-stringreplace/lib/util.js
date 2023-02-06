@@ -15,10 +15,10 @@ const _self = (module.exports = {
 		}
 		return false;
 	},
-	readPlaceholderFromEnv: function readPlaceholderFromEnv(log) {
-		if (process.env.UI5_ENV) {
-			log.info(`UI5_ENV set to ${process.env.UI5_ENV}: loading ./${process.env.UI5_ENV}.env`);
-			require("dotenv").config({ path: `./${process.env.UI5_ENV}.env` });
+	readPlaceholderFromEnv: function readPlaceholderFromEnv(prefix, log) {
+		if (process.env[prefix]) {
+			log.info(`${prefix} set to ${process.env[prefix]}: loading ./${process.env[prefix]}.env`);
+			require("dotenv").config({ path: `./${process.env[prefix]}.env` });
 		} else {
 			require("dotenv").config(); //loads './.env'
 		}
