@@ -27,13 +27,13 @@ const _self = (module.exports = {
 		// get all environment variables
 		const envVariables = process.env;
 
-		// loop through env variables to find keys which are having prefix 'stringreplacer'
+		// loop through env variables to find keys which are having prefix 'stringreplace'
 		if (typeof envVariables === "object") {
 			let key;
 			for (key in envVariables) {
-				// env variable should start with 'stringreplacer' and should in format 'stringreplacer.placeholder'
-				if (/^stringreplacer\.(.+)$/i.test(key)) {
-					let placeholderString = /^stringreplacer\.(.+)$/i.exec(key)[1];
+				// env variable should start with 'stringreplace' and should in format 'stringreplace.placeholder'
+				if (/^stringreplace\.(.+)$/i.test(key)) {
+					let placeholderString = /^stringreplace\.(.+)$/i.exec(key)[1];
 					_self.addPlaceholderString(placeholderString, envVariables[key]);
 				}
 			}

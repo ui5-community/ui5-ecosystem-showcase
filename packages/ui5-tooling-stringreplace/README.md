@@ -85,8 +85,8 @@ server:
 3. Maintain all string placeholders and values in `.env` file
 
 ```env
-stringreplacer.BASE_URL_PLACEHOLDER = http://localhost:2000
-stringreplacer.some.deeply.nested.ANOTHER_PLACEHOLDER = Replace with this text
+stringreplace.BASE_URL_PLACEHOLDER = http://localhost:2000
+stringreplace.some.deeply.nested.ANOTHER_PLACEHOLDER = Replace with this text
 ```
 
 ## Multiple environments
@@ -114,11 +114,11 @@ With `UI5_ENV` set, the strings will be loaded from the `<UI5_ENV>.env` file.
 
 ### Task
 
-The task reads all files based on configuration patterns and replaces all string placeholders with values for all files. All the string placeholders which are maintained in the process environment with prefix 'stringreplacer.' will be taken into account. If no environment name is set through the process environment variable UI5_ENV, then by default the file`./.env` is loaded.
+The task reads all files based on configuration patterns and replaces all string placeholders with values for all files. All the string placeholders which are maintained in the process environment with prefix 'stringreplace.' will be taken into account. If no environment name is set through the process environment variable UI5_ENV, then by default the file`./.env` is loaded.
 
 ### Middleware
 
-The middleware replaces the placeholders with their values in the files matched by the patterns. All the string placeholders which are maintained in the process environment with prefix 'stringreplacer.' will be taken into account. If no environment name is set through the process environment variable UI5_ENV, then by default the file`./.env` is loaded.
+The middleware replaces the placeholders with their values in the files matched by the patterns. All the string placeholders which are maintained in the process environment with prefix 'stringreplace.' will be taken into account. If no environment name is set through the process environment variable UI5_ENV, then by default the file`./.env` is loaded.
 
 ## License
 
