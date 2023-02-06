@@ -4,7 +4,7 @@ const log = require("@ui5/logger").getLogger("builder:customtask:stringreplace")
 const { createReplacePlaceholdersDestination, addPlaceholderString, readPlaceholderFromEnv, isPathOnContentTypeExcludeList } = require("./util");
 
 // get all environment variables
-const placeholderStrings = readPlaceholderFromEnv(process.env.UI5_ENV);
+const placeholderStrings = readPlaceholderFromEnv(log);
 
 /**
  * Task to replace strings from files
@@ -45,7 +45,7 @@ module.exports = function ({ workspace, options }) {
 				// stream replacement only works for UTF-8 resources!
 				let stream = resource.getStream();
 				stream.setEncoding("utf8");
-				stream = stream.pipe(createReplacePlaceholdersDestination({ resource, isDebug }));
+				stream = stream.pipe(createReplacePlaceholdersDestination(resource, isDebug, log));
 				resource.setStream(stream);
 				return resource;
 			});

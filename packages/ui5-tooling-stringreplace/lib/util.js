@@ -1,7 +1,6 @@
 const escapeRegExp = require("lodash.escaperegexp");
 const replaceStream = require("replacestream");
 const mime = require("mime-types");
-const log = require("@ui5/logger").getLogger("builder:customtask:stringreplacer");
 
 // manage placeholders
 let placeholderStrings = {};
@@ -16,7 +15,7 @@ const _self = (module.exports = {
 		}
 		return false;
 	},
-	readPlaceholderFromEnv: function readPlaceholderFromEnv() {
+	readPlaceholderFromEnv: function readPlaceholderFromEnv(log) {
 		if (process.env.UI5_ENV) {
 			log.info(`UI5_ENV set to ${process.env.UI5_ENV}: loading ./${process.env.UI5_ENV}.env`);
 			require("dotenv").config({ path: `./${process.env.UI5_ENV}.env` });
@@ -44,7 +43,7 @@ const _self = (module.exports = {
 
 	// create the helper function to pipe the stream and replace the placeholders
 	// eslint-disable-next-line jsdoc/require-jsdoc
-	createReplacePlaceholdersDestination: function createReplacePlaceholdersDestination({ resource, isDebug }) {
+	createReplacePlaceholdersDestination: function createReplacePlaceholdersDestination(resource, isDebug, log) {
 		const replaceStreamRegExp = `(${Object.keys(placeholderStrings)
 			.map((placeholder) => {
 				return escapeRegExp(placeholder);

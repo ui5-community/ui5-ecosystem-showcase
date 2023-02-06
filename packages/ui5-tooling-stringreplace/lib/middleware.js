@@ -15,7 +15,7 @@ function isFresh(req, res) {
 }
 
 // get all environment variables
-const placeholderStrings = readPlaceholderFromEnv(process.env.UI5_ENV);
+const placeholderStrings = readPlaceholderFromEnv(log);
 
 /**
  * Custom UI5 Server middleware example
@@ -114,7 +114,7 @@ module.exports = function createMiddleware({ resources, options, middlewareUtil 
 			let stream = resource.getStream();
 			if (!charset || charset === "UTF-8") {
 				stream.setEncoding("utf8");
-				stream = stream.pipe(createReplacePlaceholdersDestination({ resource, isDebug }));
+				stream = stream.pipe(createReplacePlaceholdersDestination(resource, isDebug, log));
 			} else {
 				isDebug && log.warn(`skipping placeholder replacement for non-UTF-8 resource ${pathname}`);
 			}
