@@ -103,12 +103,12 @@ module.exports = function createMiddleware({ resources, options, middlewareUtil 
 				return;
 			}
 
+			// determine charset
+			const { charset, contentType } = getMimeInfo(resource.getPath());
+
 			if (!res.getHeader("Content-Type")) {
 				res.setHeader("Content-Type", contentType);
 			}
-
-			// determine charset
-			const { charset } = getMimeInfo(resource.getPath());
 
 			// stream replacement only works for UTF-8 resources!
 			let stream = resource.getStream();

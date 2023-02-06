@@ -6,9 +6,9 @@ const log = require("@ui5/logger").getLogger("builder:customtask:stringreplacer"
 // manage placeholders
 let placeholderStrings = {};
 
-module.exports = {
+const _self = (module.exports = {
 	isPathOnContentTypeExcludeList: function isPathOnContentTypeExcludeList(path) {
-		const { contentType } = this.getMimeInfo(path);
+		const { contentType } = _self.getMimeInfo(path);
 
 		// TODO: change to regex
 		if (contentType.includes("image") || contentType.includes("video")) {
@@ -34,7 +34,7 @@ module.exports = {
 				// env variable should start with 'stringreplacer' and should in format 'stringreplacer.placeholder'
 				if (/^stringreplacer\.(.+)$/i.test(key)) {
 					let placeholderString = /^stringreplacer\.(.+)$/i.exec(key)[1];
-					this.addPlaceholderString(placeholderString, envVariables[key]);
+					_self.addPlaceholderString(placeholderString, envVariables[key]);
 				}
 			}
 		}
@@ -82,4 +82,4 @@ module.exports = {
 			contentType: type + (charset ? "; charset=" + charset : ""),
 		};
 	},
-};
+});
