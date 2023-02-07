@@ -31,7 +31,7 @@
     "test:ui5-task-zipper": "pnpm --filter ui5-task-zipper test",
     "test:all": "pnpm --filter !ui5-app --workspace-concurrency 1 test",
     "watch": "pnpm --filter ui5-app watch",
-    "release:version": "lerna version --no-private",
+    "release:version": "lerna version",
     "version": "npm-run-all --sequential version:pnpm-install version:pnpm-lock-to-git",
     "version:pnpm-install": "pnpm install --lockfile-only || exit 0",
     "version:pnpm-lock-to-git": "git add pnpm-lock.yaml",
