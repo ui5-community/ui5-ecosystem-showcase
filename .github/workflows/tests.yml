@@ -44,5 +44,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      # test executes all task extensions
+      - name: Build app
+        run: pnpm build
+
       - name: Run tests on middlewares + tasks
         run: pnpm run test:all

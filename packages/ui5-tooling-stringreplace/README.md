@@ -1,18 +1,18 @@
-# UI5 task for replacing strings from any files while creating build
+# UI5 tooling extension middleware and task for replacing strings
 
-Task for [ui5-builder](https://github.com/SAP/ui5-builder), replacing string values.
+Task and Middleware for [ui5-server](https://github.com/SAP/ui5-server), doing a live string replace on files matched by the includePatterns `files` array configuration option.
 
 ## Install
 
 ```bash
 # Using npm
-npm install ui5-task-stringreplacer --save-dev
+npm install ui5-tooling-stringreplace --save-dev
 
 # Using pnpm
-pnpm add --save-dev ui5-task-stringreplacer
+pnpm add --save-dev ui5-tooling-stringreplace
 
 # Using yarn
-yarn add --dev ui5-task-stringreplacer
+yarn add --dev ui5-tooling-stringreplace
 ```
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
@@ -31,13 +31,13 @@ yarn add --dev ui5-task-stringreplacer
 ```json
 "devDependencies": {
     // ...
-    "ui5-task-stringreplacer": "*"
+    "ui5-tooling-stringreplace": "*"
     // ...
 },
 "ui5": {
   "dependencies": [
     // ...
-    "ui5-task-stringreplacer",
+    "ui5-tooling-stringreplace",
     // ...
   ]
 }
@@ -50,9 +50,26 @@ yarn add --dev ui5-task-stringreplacer
 ```yaml
 builder:
   customTasks:
-    - name: ui5-task-stringreplacer
+    - name: ui5-tooling-stringreplace-task
       afterTask: replaceVersion
       configuration:
+        files:
+          - "**/*.js"
+          - "**/*.xml"
+        replace:
+          - placeholder: ${project.artifactId}
+            value: my.sample.app
+          - placeholder: ${project.version}
+            value: 1.0.0-SNAPSHOT
+          - placeholder: "{{app.AppTitle}}"
+            value: My Sample App
+
+server:
+  customMiddleware:
+    - name: ui5-tooling-stringreplace-middleware
+      afterMiddleware: compression
+      configuration:
+        debug: true
         files:
           - "**/*.js"
           - "**/*.xml"
@@ -68,8 +85,8 @@ builder:
 3. Maintain all string placeholders and values in `.env` file
 
 ```env
-stringreplacer.BASE_URL_PLACEHOLDER = http://localhost:2000
-stringreplacer.some.deeply.nested.ANOTHER_PLACEHOLDER = Replace with this text
+stringreplace.BASE_URL_PLACEHOLDER = http://localhost:2000
+stringreplace.some.deeply.nested.ANOTHER_PLACEHOLDER = Replace with this text
 ```
 
 ## Multiple environments
@@ -83,6 +100,8 @@ You can keep multiple `.env` files and load a specific environment at build or s
 - package.json
 ```
 
+You can define our own prefix in `$yourapp/ui5.yaml` using configuration `prefix` otherwise will default to `UI5_ENV`.
+
 ```json
  "scripts": {
     "build:dev": "UI5_ENV=dev ui5 build",
@@ -95,7 +114,13 @@ With `UI5_ENV` set, the strings will be loaded from the `<UI5_ENV>.env` file.
 
 ## How it works
 
-The task reads all files based on configuration patterns and replaces all string placeholders with values for all files. All the string placeholders which are maintained in the process environment with prefix 'stringreplacer.' will be taken into account. If no environment name is set through the process environment variable UI5_ENV, then by default the file`./.env` is loaded.
+### Task
+
+The task reads all files based on configuration patterns and replaces all string placeholders with values for all files. All the string placeholders which are maintained in the process environment with prefix 'stringreplace.' will be taken into account. If no environment name is set through the process environment variable UI5_ENV, then by default the file`./.env` is loaded.
+
+### Middleware
+
+The middleware replaces the placeholders with their values in the files matched by the patterns. All the string placeholders which are maintained in the process environment with prefix 'stringreplace.' will be taken into account. If no environment name is set through the process environment variable UI5_ENV, then by default the file`./.env` is loaded.
 
 ## License
 

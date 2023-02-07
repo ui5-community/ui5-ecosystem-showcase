@@ -39,9 +39,10 @@ builder:
         #    - - "@babel/preset-env"
         #      - targets:
         #          browsers: "last 2 versions, ie 10-11"
-    - name: ui5-task-stringreplacer
+    - name: ui5-tooling-stringreplace-task
       afterTask: replaceVersion
       configuration:
+        prefix: "UI5_TEST"
         debug: true
         files:
           - "**/*.js"
@@ -139,7 +140,7 @@ server:
         #babelConfig:
         #  <<: *babelConfig
         #  sourceMaps: "inline"
-    - name: ui5-middleware-stringreplacer
+    - name: ui5-tooling-stringreplace-middleware
       afterMiddleware: compression
       configuration:
         debug: true

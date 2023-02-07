@@ -21,7 +21,6 @@ packages
 ├── ui5-middleware-onelogin         // middleware extension: enable a generic login support
 ├── ui5-middleware-servestatic      // middleware extension: serve static resources
 ├── ui5-middleware-simpleproxy      // middleware extension: simple express proxy
-├── ui5-middleware-stringreplacer   // middleware extension: replaces placeholder strings
 ├── ui5-middleware-webjars          // middleware extension: deliver content from JAR files
 ├── ui5-task-cachebuster            // task extension: enables cachebusting for standalone applications
 ├── ui5-task-compileless            // task extension: compile less files in the app folder
@@ -29,9 +28,9 @@ packages
 ├── ui5-task-i18ncheck              // task extension: checks for missing i18n texts
 ├── ui5-task-minify-xml             // task extension: minify xml resources
 ├── ui5-task-pwa-enabler            // task extension: enables ui5 app with pwa functionalities
-├── ui5-task-stringreplacer         // task extension: replaces placeholder strings
 ├── ui5-task-zipper                 // task extension: bundle the entire webapp in a zip-archive
 ├── ui5-tooling-modules             // tooling extensions: direct consumption of NPM packages in UI5 apps
+├── ui5-tooling-stringreplace      // tooling extension: replaces placeholder strings
 └── ui5-tooling-transpile           // tooling extensions: transpile resources using Babel
 ```
 
@@ -115,7 +114,6 @@ The tasks developed in this monorepo are also publicly available on NPM right he
 * https://www.npmjs.com/package/ui5-task-minify-xml
 * https://www.npmjs.com/package/ui5-task-i18ncheck 
 * https://www.npmjs.com/package/ui5-task-pwa-enabler
-* https://www.npmjs.com/package/ui5-task-stringreplacer
 * https://www.npmjs.com/package/ui5-task-zipper
 
 The middlewares developed in this monorepo are also publicly available on NPM right here:
@@ -128,12 +126,12 @@ The middlewares developed in this monorepo are also publicly available on NPM ri
 * https://www.npmjs.com/package/ui5-middleware-onelogin
 * https://www.npmjs.com/package/ui5-middleware-servestatic
 * https://www.npmjs.com/package/ui5-middleware-simpleproxy
-* https://www.npmjs.com/package/ui5-middleware-stringreplacer
 * https://www.npmjs.com/package/ui5-middleware-webjars
 
 The tooling extensions (contains tasks and middlewares) developed in this monorepo are available on NPM right here:
 
 * https://www.npmjs.com/package/ui5-tooling-modules
+* https://www.npmjs.com/package/ui5-tooling-stringreplace
 * https://www.npmjs.com/package/ui5-tooling-transpile
 
 The consumption of the individual tasks and middlewares can be seen inside their local `README.md`.
@@ -148,7 +146,6 @@ Available tasks in this project:
 | [ui5-task-i18ncheck](packages/ui5-task-i18ncheck/README.md) | checks for missing i18n texts | [![npm version](https://badge.fury.io/js/ui5-task-i18ncheck.svg)](https://badge.fury.io/js/ui5-task-i18ncheck) |
 | [ui5-task-minify-xml](packages/ui5-task-minify-xml/README.md) | minify xml resources | [![npm version](https://badge.fury.io/js/ui5-task-minify-xml.svg)](https://badge.fury.io/js/ui5-task-minify-xml) |
 | [ui5-task-pwa-enabler](packages/ui5-task-pwa-enabler/README.md) | enables ui5 app with pwa functionalities | [![npm version](https://badge.fury.io/js/ui5-task-pwa-enabler.svg)](https://badge.fury.io/js/ui5-task-pwa-enabler) |
-| [ui5-task-stringreplacer](packages/ui5-task-stringreplacer/README.md) | replaces placeholder strings | [![npm version](https://badge.fury.io/js/ui5-task-stringreplacer.svg)](https://badge.fury.io/js/ui5-task-stringreplacer) |
 | [ui5-task-zipper](packages/ui5-task-zipper/README.md) | bundle the entire webapp in a zip-archive | [![npm version](https://badge.fury.io/js/ui5-task-zipper.svg)](https://badge.fury.io/js/ui5-task-zipper) |
 
 Available middlewares in this project:
@@ -163,7 +160,6 @@ Available middlewares in this project:
 | [ui5-middleware-servestatic](packages/ui5-middleware-servestatic/README.md) | serve static resources | [![npm version](https://badge.fury.io/js/ui5-middleware-servestatic.svg)](https://badge.fury.io/js/ui5-middleware-servestatic) |
 | [ui5-middleware-onelogin](packages/ui5-middleware-onelogin/README.md) | enable a generic login support | [![npm version](https://badge.fury.io/js/ui5-middleware-onelogin.svg)](https://badge.fury.io/js/ui5-middleware-onelogin) |
 | [ui5-middleware-simpleproxy](packages/ui5-middleware-simpleproxy/README.md) | simple express proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-simpleproxy.svg)](https://badge.fury.io/js/ui5-middleware-simpleproxy) |
-| [ui5-middleware-stringreplacer](packages/ui5-middleware-stringreplacer/README.md) | replaces placeholder strings | [![npm version](https://badge.fury.io/js/ui5-middleware-stringreplacer.svg)](https://badge.fury.io/js/ui5-middleware-stringreplacer) |
 | [ui5-middleware-webjars](packages/ui5-middleware-webjars/README.md) | deliver content from JAR files | [![npm version](https://badge.fury.io/js/ui5-middleware-webjars.svg)](https://badge.fury.io/js/ui5-middleware-webjars) |
 
 Available tooling extensions in this project:
@@ -171,6 +167,7 @@ Available tooling extensions in this project:
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
 | [ui5-tooling-modules](packages/ui5-tooling-modules/README.md) | direct consumption of NPM packages | [![npm version](https://badge.fury.io/js/ui5-tooling-modules.svg)](https://badge.fury.io/js/ui5-tooling-modules) |
+| [ui5-tooling-stringreplace](packages/ui5-tooling-stringreplace/README.md) | stringreplace resources using Babel | [![npm version](https://badge.fury.io/js/ui5-tooling-stringreplace.svg)](https://badge.fury.io/js/ui5-tooling-stringreplace) |
 | [ui5-tooling-transpile](packages/ui5-tooling-transpile/README.md) | transpile resources using Babel | [![npm version](https://badge.fury.io/js/ui5-tooling-transpile.svg)](https://badge.fury.io/js/ui5-tooling-transpile) |
 
 ## License
