@@ -1,14 +1,14 @@
 const Page = require("./Page");
 
 class Other extends Page {
-	_viewName = "test.Sample.view.Other";
+	_viewName = "ui5.ecosystem.demo.app.view.Other";
 
 	async iShouldSeeTheList() {
 		return (
 			(await browser
 				.asControl({
 					selector: {
-						viewName: "test.Sample.view.Other",
+						viewName: "ui5.ecosystem.demo.app.view.Other",
 						id: "PeopleList",
 					},
 				})

@@ -93,7 +93,7 @@ test("archive creation w/ defaults", async (t) => {
     cwd: path.resolve(__dirname, "../../ui5-app"),
   });
   // default options packs to $app-id.zip
-  const targetZip = path.resolve(t.context.tmpDir, "dist", "testSample.zip");
+  const targetZip = path.resolve(t.context.tmpDir, "dist", "ui5ecosystemdemoapp.zip");
   t.true(existsSync(targetZip));
 });
 
@@ -138,14 +138,14 @@ test("UI5 lib dependencies are optionally included", async (t) => {
     cwd: path.resolve(__dirname, "../../ui5-app"),
   });
 
-  const zip = path.join(t.context.tmpDir, "dist", "testSample.zip");
+  const zip = path.join(t.context.tmpDir, "dist", "ui5ecosystemdemoapp.zip");
   // see libraries deps in ui5.includeDepy.yaml
   const allDepsFound = await Promise.all([
     promisifiedNeedleInHaystack(zip, "resources/sap/m/"),
     promisifiedNeedleInHaystack(zip, "resources/sap/ui/core"),
     promisifiedNeedleInHaystack(
       zip,
-      "resources/sap/ui/commons/themes/sap_fiori_3"
+      "resources/sap/ui/commons/themes/sap_horizon"
     ),
   ]);
   t.true(allDepsFound.every((dep) => dep === true));

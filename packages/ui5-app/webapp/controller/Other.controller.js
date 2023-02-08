@@ -1,7 +1,7 @@
-sap.ui.define(["test/Sample/controller/BaseController"], (Controller) => {
+sap.ui.define(["ui5/ecosystem/demo/app/controller/BaseController"], (Controller) => {
 	"use strict";
 
-	return Controller.extend("test.Sample.controller.Other", {
+	return Controller.extend("ui5.ecosystem.demo.app.controller.Other", {
 		onInit() {},
 	});
 });

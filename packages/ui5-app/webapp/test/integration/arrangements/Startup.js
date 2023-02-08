@@ -1,7 +1,7 @@
 sap.ui.define(["sap/ui/test/Opa5"], function (Opa5) {
 	"use strict";
 
-	return Opa5.extend("test.Sample.test.integration.arrangements.Startup", {
+	return Opa5.extend("ui5.ecosystem.demo.app.test.integration.arrangements.Startup", {
 		iStartMyApp: function (oOptionsParameter) {
 			var oOptions = oOptionsParameter || {};
 
@@ -11,7 +11,7 @@ sap.ui.define(["sap/ui/test/Opa5"], function (Opa5) {
 			// start the app UI component
 			this.iStartMyUIComponent({
 				componentConfig: {
-					name: "test.Sample",
+					name: "ui5.ecosystem.demo.app",
 					async: true,
 				},
 				hash: oOptions.hash,

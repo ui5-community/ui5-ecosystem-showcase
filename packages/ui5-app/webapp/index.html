@@ -7,16 +7,19 @@
 		<script
 			id="sap-ui-bootstrap"
 			src="resources/sap-ui-core.js"
-			data-sap-ui-theme="sap_fiori_3"
-			data-sap-ui-resourceroots='{"test.Sample": "./"}'
+			data-sap-ui-theme="sap_horizon"
 			data-sap-ui-compatVersion="edge"
 			data-sap-ui-oninit="module:sap/ui/core/ComponentSupport"
+			data-sap-ui-resourceroots='{
+				"ui5.ecosystem.demo.app": "./"
+			}'
 			data-sap-ui-async="true"
 			data-sap-ui-frameOptions="trusted"
 			data-sap-ui-language="en"
 		></script>
 	</head>
 	<body class="sapUiBody">
-		<div data-sap-ui-component data-name="test.Sample" data-id="container" data-settings='{"id" : "Sample"}'></div>
+		<div data-sap-ui-component data-url="./" data-name="ui5.ecosystem.demo.app" data-id="container" data-settings='{"id" : "Sample"}'></div>
+		<!-- div data-sap-ui-component data-url="./" data-name="ui5.ecosystem.demo.app" data-id="container" data-settings='{"id" : "Sample"}'></div -->
 	</body>
 </html>

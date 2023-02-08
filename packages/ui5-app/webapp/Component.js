@@ -2,7 +2,7 @@ sap.ui.define(
 	[
 		"sap/ui/core/UIComponent",
 		"sap/ui/Device",
-		"test/Sample/model/models",
+		"ui5/ecosystem/demo/app/model/models",
 		"./lib/willNotGetTranspiled", // only for demo purpose
 		"./includes/iWillBeTranspiled", // only for demo purpose
 		"sap/ui/core/ComponentSupport", // make sure to include the ComponentSupport in the bundle
@@ -10,7 +10,7 @@ sap.ui.define(
 	(UIComponent, Device, models) => {
 		"use strict";
 
-		return UIComponent.extend("test.Sample.Component", {
+		return UIComponent.extend("ui5.ecosystem.demo.app.Component", {
 			metadata: {
 				manifest: "json",
 			},

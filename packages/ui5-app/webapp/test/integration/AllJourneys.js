@@ -3,7 +3,7 @@ sap.ui.define(["sap/ui/test/Opa5", "./arrangements/Startup", "./NavigationJourne
 
 	Opa5.extendConfig({
 		arrangements: new Startup(),
-		viewNamespace: "test.Sample.view.",
+		viewNamespace: "ui5.ecosystem.demo.app.view.",
 		autoWait: true,
 	});
 });

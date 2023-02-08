@@ -1,0 +1,18 @@
+specVersion: "2.2"
+metadata:
+  name: ui5.ecosystem.demo.lib
+type: library
+framework:
+  name: OpenUI5
+  version: 1.110.0
+  libraries:
+    - name: sap.ui.core
+    - name: themelib_sap_fiori_3
+    - name: themelib_sap_horizon
+server:
+  customMiddleware:
+    - name: ui5-middleware-livereload
+      afterMiddleware: compression
+      configuration:
+        extraExts: "xml,json,properties"
+        path: ["src", "test"]

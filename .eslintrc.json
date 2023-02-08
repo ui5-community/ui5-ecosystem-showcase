@@ -16,6 +16,7 @@
     "yo": "writable",
     "confirm": "writable",
     "map": "writable",
-    "input": "writable"
+    "input": "writable",
+    "sap": "readonly"
   }
 }

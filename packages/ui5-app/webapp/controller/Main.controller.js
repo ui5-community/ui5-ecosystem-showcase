@@ -1,7 +1,7 @@
-sap.ui.define(["test/Sample/controller/BaseController", "sap/ui/model/json/JSONModel", "sap/m/MessageToast"], (Controller, JSONModel, MessageToast) => {
+sap.ui.define(["ui5/ecosystem/demo/app/controller/BaseController", "sap/ui/model/json/JSONModel", "sap/m/MessageToast"], (Controller, JSONModel, MessageToast) => {
 	"use strict";
 
-	return Controller.extend("test.Sample.controller.Main", {
+	return Controller.extend("ui5.ecosystem.demo.app.controller.Main", {
 		// (live) transpiling async functions to ES5 generators not yet doable in ui5-tooling ecosys :)
 		/* async */ onInit() {
 			var versionModel = new JSONModel();
