@@ -1,7 +1,7 @@
 // regular code of the Thirdparty.controller.js
 sap.ui.define(
-	["test/Sample/controller/BaseController", "xlsx", "cmis", "ui5-app/bundledefs/firebase", "@supabase/supabase-js", "@octokit/core", "axios"],
-	(Controller, xlsx, cmis, _firebase, supabase, octokit, axios) => {
+	["ui5/ecosystem/demo/app/controller/BaseController", "xlsx", "cmis", "ui5-app/bundledefs/firebase", "@supabase/supabase-js", "@octokit/core", "axios", "@js-temporal/polyfill"],
+	(Controller, xlsx, cmis, _firebase, supabase, octokit, axios, temporal) => {
 		"use strict";
 
 		console.log(xlsx);
@@ -10,6 +10,7 @@ sap.ui.define(
 		console.log(supabase);
 		console.log(octokit);
 		console.log(axios);
+		console.log(temporal);
 
 		const { initializeApp, getFirestore } = _firebase;
 		const app = initializeApp({});
@@ -19,7 +20,7 @@ sap.ui.define(
 			console.error(ex);
 		}
 
-		return Controller.extend("test.Sample.controller.Thirdparty", {
+		return Controller.extend("ui5.ecosystem.demo.app.controller.Thirdparty", {
 			onInit() {
 				// https://www.npmjs.com/package/xlsx
 				const worksheet = xlsx.utils.aoa_to_sheet([

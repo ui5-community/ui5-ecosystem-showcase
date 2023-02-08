@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<library xmlns="http://www.sap.com/sap.ui.library.xsd">
+	<name>ui5.ecosystem.demo.tslib</name>
+	<vendor>Peter Muessig</vendor>
+	<version>${version}</version>
+	<copyright>${copyright}</copyright>
+	<title>TypeScript-based UI5 library</title>
+	<documentation>Example of a TypeScript-based UI5 library</documentation>
+	<dependencies>
+		<dependency>
+			<libraryName>sap.ui.core</libraryName>
+		</dependency>
+	</dependencies>
+</library>

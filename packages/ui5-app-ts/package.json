@@ -10,6 +10,7 @@
     "build:opt": "ui5 build self-contained --clean-dest --all",
     "dev": "ui5 serve --port 8080 -o index.html",
     "start": "ui5 serve  --port 8080 -o index.html --config ui5-dist.yaml",
+    "start-cdn": "ui5 serve  --port 8080 -o index-cdn.html --config ui5-dist.yaml",
     "ts-typecheck": "tsc --noEmit",
     "lint": "eslint webapp"
   },
@@ -26,17 +27,19 @@
     "eslint": "^8.32.0",
     "typescript": "^4.9.4",
     "ui5-middleware-livereload": "^0.7.2",
-    "ui5-tooling-modules": "^0.7.7",
+    "ui5-tooling-modules": "^0.7.8",
     "ui5-tooling-transpile": "^0.3.5"
   },
   "ui5": {
     "dependencies": [
+      "ui5-lib-ts",
       "ui5-middleware-livereload",
       "ui5-tooling-modules",
       "ui5-tooling-transpile"
     ]
   },
   "dependencies": {
+    "ui5-lib-ts": "^0.1.0",
     "xlsx": "^0.18.5"
   }
 }

@@ -1,6 +1,6 @@
 /*global QUnit, sinon*/
 
-sap.ui.define(["test/Sample/controller/Main.controller", "sap/ui/thirdparty/sinon", "sap/ui/thirdparty/sinon-qunit"], function (Controller /*sinon, sinon-qunit*/) {
+sap.ui.define(["ui5/ecosystem/demo/app/controller/Main.controller", "sap/ui/thirdparty/sinon", "sap/ui/thirdparty/sinon-qunit"], function (Controller /*sinon, sinon-qunit*/) {
 	"use strict";
 
 	QUnit.module("Main Controller");

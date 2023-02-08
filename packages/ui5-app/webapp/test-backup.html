@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta charset="utf-8" />
+
+		<title>lit-html</title>
+
+		<script type="module">
+			// understand the template literals
+			/*
+		function test(strings, ...values) {
+			console.log(arguments);
+			return `${strings.join()} - ${values.join()}`;
+		}
+		const x = "Hello";
+		console.log(test`Test ${x} goes ${1} here`);
+		*/
+
+			// import the lit-html APIs
+			//  - https://www.jsdelivr.com/package/npm/lit-html
+			import { html, render } from "https://cdn.jsdelivr.net/npm/lit-html@2.6.1/+esm";
+			import { repeat } from "https://cdn.jsdelivr.net/npm/lit-html@2.6.1/directives/repeat/+esm";
+			function htmlS(expr) {
+				// htmlFromString
+				return (ctx) => {
+					const keys = Object.keys(ctx).filter((key) => !/^(html|repeat)$/.test(key));
+					const fn = new Function(["html", "repeat", ...keys], "return html`" + expr + "`");
+					const values = keys.map((e) => ctx[e]);
+					return fn(html, repeat, ...values);
+				};
+			}
+			function htmlT(templateId) {
+				// htmlFromTemplate
+				const templateContent = document.getElementById(templateId).innerHTML.replaceAll("&gt;", ">").replaceAll("&lt;", "<").trim();
+				return htmlS(templateContent);
+			}
+
+			// JSEP: https://ericsmekens.github.io/jsep/
+			//  - https://www.jsdelivr.com/package/npm/jsep
+			import jsep from "https://cdn.jsdelivr.net/npm/jsep@1.3.8/+esm";
+			window.jsep = jsep; // should be omitted, just for testing!
+
+			// Add additional plugins for jsep:
+			//  - https://www.jsdelivr.com/package/npm/@jsep-plugin/assignment
+			//  - https://www.jsdelivr.com/package/npm/@jsep-plugin/object
+			//  - https://www.jsdelivr.com/package/npm/@jsep-plugin/numbers
+			//  - https://www.jsdelivr.com/package/npm/@jsep-plugin/arrow
+			//  - https://www.jsdelivr.com/package/npm/@jsep-plugin/template
+			//  - https://www.jsdelivr.com/package/npm/@jsep-plugin/ternary
+			//  - https://www.jsdelivr.com/package/npm/@jsep-plugin/regex
+			//  - https://www.jsdelivr.com/package/npm/@jsep-plugin/new
+			//  - https://www.jsdelivr.com/package/npm/@jsep-plugin/spread
+			//  - https://www.jsdelivr.com/package/npm/@jsep-plugin/async-await
+			//  - https://www.jsdelivr.com/package/npm/@jsep-plugin/comment
+			import jsepPluginAssignment from "https://cdn.jsdelivr.net/npm/@jsep-plugin/assignment@1.2.1/+esm";
+			import jsepPluginObject from "https://cdn.jsdelivr.net/npm/@jsep-plugin/object@1.2.1/+esm";
+			import jsepPluginNumbers from "https://cdn.jsdelivr.net/npm/@jsep-plugin/numbers@1.0.1/+esm";
+			import jsepPluginArrow from "https://cdn.jsdelivr.net/npm/@jsep-plugin/arrow@1.0.5/+esm";
+			import jsepPluginTemplate from "https://cdn.jsdelivr.net/npm/@jsep-plugin/template@1.0.2/+esm";
+			import jsepPluginTernary from "https://cdn.jsdelivr.net/npm/@jsep-plugin/ternary@1.1.3/+esm";
+			import jsepPluginRegex from "https://cdn.jsdelivr.net/npm/@jsep-plugin/regex@1.0.3/+esm";
+			import jsepPluginNew from "https://cdn.jsdelivr.net/npm/@jsep-plugin/new@1.0.2/+esm";
+			import jsepPluginSpread from "https://cdn.jsdelivr.net/npm/@jsep-plugin/spread@1.0.2/+esm";
+			import jsepPluginAsyncAwait from "https://cdn.jsdelivr.net/npm/@jsep-plugin/async-await@1.0.2/+esm";
+			import jsepPluginComment from "https://cdn.jsdelivr.net/npm/@jsep-plugin/comment@1.0.3/+esm";
+			jsep.plugins.register(
+				jsepPluginAssignment,
+				jsepPluginObject,
+				jsepPluginNumbers,
+				jsepPluginArrow,
+				jsepPluginTemplate,
+				jsepPluginTernary,
+				jsepPluginRegex,
+				jsepPluginNew,
+				jsepPluginSpread,
+				jsepPluginAsyncAwait,
+				jsepPluginComment
+			);
+
+			// code generator for arrow function expressions (optional, just demo it)
+			//  - https://www.jsdelivr.com/package/npm/escodegen
+			import escodegen from "https://cdn.jsdelivr.net/npm/escodegen@2.0.0/+esm";
+
+			// parse the template strings and build the lit-html object
+			function parseTemplateLiteral(s) {
+				const info = {
+					strings: [],
+					values: [],
+				};
+				let pos = 0,
+					l = 0,
+					dq = false,
+					sq = false;
+				for (let i = 0; i < s.length; ++i) {
+					switch (s[i]) {
+						case "$":
+							if (!dq && !sq && l == 0 && s[i + 1] === "{") {
+								if (i >= pos) {
+									info.strings.push(s.substring(pos, i));
+								}
+								pos = i + 2;
+							}
+							break;
+						case "{":
+							if (!dq && !sq) {
+								l++;
+							}
+							break;
+						case "}":
+							if (!dq && !sq && l > 0) {
+								l--;
+								if (l == 0) {
+									info.values.push(s.substring(pos, i));
+									pos = i + 1;
+								}
+							}
+							break;
+						case '"':
+							if (l > 0 && !sq) {
+								dq = !dq;
+							}
+							break;
+						case "'":
+							if (l > 0 && !dq) {
+								sq = !sq;
+							}
+							break;
+					}
+				}
+				info.strings.push(s.substr(pos, s.length - 1));
+				info.strings.raw = [...info.strings];
+				return info;
+			}
+
+			// operators
+			const OPERATORS = {
+				"+": function (l, r) {
+					return l + r;
+				},
+				"-": function (l, r) {
+					return l - r;
+				},
+				"*": function (l, r) {
+					return l * r;
+				},
+				"/": function (l, r) {
+					return l / r;
+				},
+				"%": function (l, r) {
+					return l % r;
+				},
+				"<": function (l, r) {
+					return l < r;
+				},
+				">": function (l, r) {
+					return l > r;
+				},
+				"<=": function (l, r) {
+					return l <= r;
+				},
+				">=": function (l, r) {
+					return l >= r;
+				},
+				"&&": function (l, r) {
+					return l && r;
+				},
+				"||": function (l, r) {
+					return l || r;
+				},
+				"!": function (a) {
+					return !a;
+				},
+				"==": function (l, r) {
+					return l == r;
+				},
+				// ...
+			};
+
+			// executes the AST code recursively
+			function executeAST(ast, ctx) {
+				let retval;
+				if (ast.type === jsep.CALL_EXP) {
+					const obj = executeAST(ast.callee, ctx);
+					const args = ast.arguments.map((arg) => executeAST(arg, ctx));
+					retval = obj.apply(undefined, args);
+				} else if (ast.type === jsep.MEMBER_EXP) {
+					const obj = executeAST(ast.object, ctx);
+					const prop = executeAST(ast.property, obj);
+					if (typeof prop === "function") {
+						retval = prop.bind(obj);
+					} else {
+						if (ast.property.type === jsep.IDENTIFIER) {
+							retval = prop; // already resolved
+						} else {
+							retval = obj[prop];
+						}
+					}
+				} else if (ast.type === jsep.BINARY_EXP) {
+					const left = executeAST(ast.left, ctx);
+					const right = executeAST(ast.right, ctx);
+					retval = OPERATORS[ast.operator](left, right);
+				} else if (ast.type === jsep.UNARY_EXP) {
+					const arg = executeAST(ast.argument);
+					retval = OPERATORS[ast.operator](arg);
+				} else if (ast.type === jsep.IDENTIFIER) {
+					retval = ctx[ast.name];
+				} else if (ast.type === jsep.LITERAL) {
+					retval = ast.value;
+				} else if (ast.type === "TemplateLiteral") {
+					const strings = ast.quasis.map((q) => executeAST(q, ctx));
+					const values = ast.expressions.map((exp) => executeAST(exp, ctx));
+					retval = strings.reduce((accumulator, currentValue, currentIndex) => {
+						return `${accumulator}${values[currentIndex - 1]}${currentValue}`;
+					});
+				} else if (ast.type === "TemplateElement") {
+					retval = ast.value.cooked;
+				} else if (ast.type === "TaggedTemplateExpression") {
+					const tFn = executeAST(ast.tag, ctx);
+					const qs = ast.quasi.quasis.map((q) => executeAST(q, ctx));
+					const exps = ast.quasi.expressions.map((exp) => executeAST(exp, ctx));
+					if (ast.tag.name === "html") {
+						// for lit-html we need to add the raw field
+						qs.raw = [...qs];
+					}
+					retval = tFn(qs, ...exps);
+					/* resolve lit-html manually! => NOT EXPECTED BEHAVIOR!
+				const output = tFn(strings, ...values);
+				retval = output.strings.reduce((accumulator, currentValue, currentIndex) => {
+					return `${accumulator}\${${output.values[currentIndex - 1]}}${currentValue}`;
+				});
+				*/
+				} else if (ast.type === "ArrowFunctionExpression") {
+					const params = ast.params.map((param) => param.name);
+					// Non-CSP compliant alternative to execute Arrow Function Expressions using new Function
+					//const body = escodegen.generate(ast.body);
+					// always inject html function (TODO: really? => NOT CSP COMPLIANT!)
+					//retval = new Function("html", ...params, `return ${body};`).bind(undefined, html);
+					// ==========
+					// CSP compliant alternative to execute Arrow Function Expressions
+					retval = (function (params, body) {
+						const args = arguments;
+						return function () {
+							const ctx = {
+								html, // forward the html function for nested html template literals
+							};
+							for (let i = 0; i < params.length; i++) {
+								ctx[params[i]] = arguments[i];
+							}
+							const value = executeAST(body, ctx);
+							return value;
+						};
+					})(params, ast.body);
+				}
+				return retval;
+			}
+
+			// create the template literal execution function which maps the values
+			function createTemplateLiteral(templateFn, string) {
+				const info = parseTemplateLiteral(string);
+				return (ctx) => {
+					return templateFn(
+						info.strings,
+						/* VERY BASIC APPROACH MATCH VALUES!
+					...(info.values.map((v) => {
+						return ctx[v];
+					}))
+					*/
+						// ADVANCED APPROACH PARSING EXPRESSION! (only rudimentary implemented)
+						/*
+					...(info.values.map((v) => {
+						try {
+							const ast = jsep(v);
+							if (ast.type === jsep.IDENTIFIER) {
+								return ctx[v];
+							} else if (ast.type === jsep.CALL_EXP && ast.callee?.type === jsep.MEMBER_EXP) {
+								const obj = ctx[ast.callee.object.name];
+								if (!ast.arguments.every((arg) => arg.type === jsep.LITERAL)) {
+									throw new Error("Only literals are supported!");
+								}
+								return obj[ast.callee.property.name].apply(obj, ast.arguments.map((arg) => {
+									return arg.value;
+								}));
+							} else if (ast.type === jsep.LITERAL) {
+								return ast.value;
+							}
+							console.warn(`Unsupported expression: ${v}`);
+						} catch (ex) {
+							// failed to parse the expression!
+							console.error(`Error parsing: ${v}`, ex);
+						}
+					}))
+					*/
+						// EVEN MODE ADVANCED
+						...info.values.map((v) => {
+							try {
+								const ast = jsep(v);
+								//console.log(v, ast);
+								const value = executeAST(ast, ctx);
+								//console.log(`  returns: ${value}`)
+								return value;
+							} catch (ex) {
+								// failed to parse the expression!
+								console.error(`Error parsing: ${v}`, ex);
+							}
+						})
+					);
+				};
+			}
+			function htmlTCSP(templateId) {
+				const templateContent = document.getElementById(templateId).innerHTML.replaceAll("&gt;", ">").replaceAll("&lt;", "<").trim();
+				return createTemplateLiteral(html, templateContent);
+			}
+
+			// the static html string literal
+			const fnS = (name, firstname) =>
+				html`<p
+					@click=${() => {
+						alert("x");
+					}}
+				>
+					Hello ${name}, ${firstname}
+				</p>`;
+			render(fnS("World", "nice!"), document.getElementById("outputS"));
+
+			// compile the context for the dynamic execution
+			const nested = html`<h1>Header</h1>`;
+			const ctx = {
+				html,
+				repeat,
+				nested,
+				title: "World",
+				employees: [
+					{
+						id: 0,
+						lastName: "Muessig",
+						firstName: "Peter",
+					},
+					{
+						id: 1,
+						lastName: "Mustermann",
+						firstName: "Manni",
+					},
+				],
+				x: () => {
+					console.log("click");
+				},
+				y: (ev) => {
+					console.log(ev.srcElement.value);
+				},
+				z: (ev) => {
+					console.log(ev.srcElement.innerText);
+				},
+				rKey: (employee) => employee.id,
+				rValue: (employee, index) => html` <p>${index}: ${employee.firstName} ${employee.lastName}</p> `,
+			};
+
+			// the dynamic call to the html function
+			const fnD = htmlT("templateContent");
+			console.log(fnD(ctx));
+			render(fnD(ctx), document.getElementById("outputD"));
+
+			// the dynamic call to the CSP-compat html function
+			const fnDCSP = htmlTCSP("templateContent");
+			console.log(fnDCSP(ctx));
+			render(fnDCSP(ctx), document.getElementById("outputDCSP"));
+
+			// GENERATED BY BUILD (extract template literals from template tags => make them static!)
+			function _build471142(html, repeat, nested, title, employees, x, y, z, rKey, rValue) {
+				return html`${nested}
+					<p>Hello ${title.toUpperCase()}</p>
+					<input value="${title}" @change=${y} />
+					<button @click=${z}>
+						${"employees[0].lastName" + html` >> XXX << ${employees[0].firstName.toUpperCase()}` + ` >> XXX << ${employees[0].firstName.toUpperCase()}` + " " + !true}
+					</button>
+					<p style="border: 1px dotted red" @click=${z}>Hallo ${employees[1].firstName.toLowerCase() + " XXX " + employees[1].lastName.toUpperCase()}</p>
+					${repeat(
+						employees,
+						(employee) => employee.id,
+						(employee, index) => html` <p>${index}: ${employee.lastName}, ${employee.firstName}</p> `
+					)}
+					${repeat(employees, rKey, rValue)}`;
+			}
+			render(_build471142.apply(undefined, Object.values(ctx)), document.getElementById("outputSTL"));
+
+			// Table API
+			/*
+		addColumn((ctx) => {
+			return html`<ui5-input value="${title}"></ui5-input>`;
+		});
+		*/
+		</script>
+	</head>
+	<body id="content" class="sapUiBody">
+		<template id="templateContent">
+			${nested}
+			<p>Hello ${title.toUpperCase().toLowerCase()[0]}</p>
+			<input value="${title}" @change="${y}" />
+			<button @click="${z}">${'employees[0].lastName' + html` >> XXX << ${employees[0].firstName.toUpperCase()}` + ` >> XXX << ${employees[0].firstName.toUpperCase()}` + " " + (!true)}</button>
+			<p style="border: 1px dotted red" @click="${z}">Hallo ${employees[1].firstName.toLowerCase() + " XXX " + employees[1].lastName.toUpperCase()}</p>
+			${repeat(employees, (employee) => employee.id, (employee, index) => html`
+			<p>${index}: ${employee.lastName}, ${employee.firstName}</p>
+			`)} ${repeat(employees, rKey, rValue)}
+		</template>
+		<h3 style="color: blue">Regular Template Literal:</h3>
+		<div id="outputS" style="margin: 3px; padding: 3px; border: 3px dotted blue"></div>
+		<h3 style="color: red">Template Literal from String (using new Function):</h3>
+		<div id="outputD" style="margin: 3px; padding: 3px; border: 3px dotted red"></div>
+		<h3 style="color: green">Template Literal from String (using AST parser, CSP compliant):</h3>
+		<div id="outputDCSP" style="margin: 3px; padding: 3px; border: 3px dotted green"></div>
+		<h3 style="color: brown">Static Template Literal:</h3>
+		<div id="outputSTL" style="margin: 3px; padding: 3px; border: 3px dotted brown"></div>
+	</body>
+</html>

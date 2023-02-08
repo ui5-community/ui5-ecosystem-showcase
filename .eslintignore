@@ -13,3 +13,7 @@
 /packages/ui5-app/bundledefs/**
 /packages/ui5-middleware-onelogin/lib/**
 /packages/ui5-middleware-cfdestination/test/**
+
+# config files
+.eslintrc.js
+karma.conf.js

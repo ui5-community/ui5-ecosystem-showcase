@@ -1,4 +1,4 @@
-<mvc:View controllerName="test.Sample.controller.Other" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
+<mvc:View controllerName="ui5.ecosystem.demo.app.controller.Other" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
   <Page title="{i18n>otherPage.title}" showNavButton="true" navButtonPress="onNavBack">
     <content>
       <List id="PeopleList" headerText="{i18n>otherPage.listHeader}" items="{Backend>/People}">

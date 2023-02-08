@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "module": "es2015",
+    "target": "es2022",
+    "module": "es2022",
     "skipLibCheck": true,
     "preserveConstEnums": true,
     "inlineSourceMap": true,
@@ -14,7 +14,7 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
-      "ui5/typescript/helloworld/*": ["webapp/*"]
+      "ui5/ecosystem/demo/tsapp/*": ["webapp/*"]
     }
   },
   "include": ["webapp/**/*"]

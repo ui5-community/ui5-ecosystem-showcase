@@ -2,19 +2,11 @@ import UIComponent from "sap/ui/core/UIComponent";
 import { support } from "sap/ui/Device";
 
 /**
- * @namespace ui5.typescript.helloworld
+ * @namespace ui5.ecosystem.demo.tsapp
  */
 export default class Component extends UIComponent {
 	public static metadata = {
 		manifest: "json",
-	};
-
-	public static xxy = {
-		x: "y",
-	};
-
-	public static xxx = function () {
-		return { manifest: "json" };
 	};
 
 	private contentDensityClass: string;
@@ -22,6 +14,8 @@ export default class Component extends UIComponent {
 	public init(): void {
 		// call the base component's init function
 		super.init();
+		// enable routing
+		this.getRouter().initialize();
 	}
 
 	/**

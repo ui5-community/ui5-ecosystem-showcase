@@ -1,4 +1,4 @@
-<mvc:View controllerName="test.Sample.controller.ModelView" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
+<mvc:View controllerName="ui5.ecosystem.demo.app.controller.ModelView" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
   <Page title="{i18n>modelPage.title}" showNavButton="true" navButtonPress="onNavBack">
     <content>
       <List id="salesOrderList" items="{ path: 'SAPES5>/SalesOrderSet', parameters: {select: 'SalesOrderID,CustomerName,Note,LifecycleStatusDescription,LifecycleStatus'} }">

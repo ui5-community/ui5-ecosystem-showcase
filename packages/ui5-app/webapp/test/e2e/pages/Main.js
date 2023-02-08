@@ -5,12 +5,12 @@ class Main extends Page {
 		await super.open("#/");
 	}
 
-	_viewName = "test.Sample.view.Main";
+	_viewName = "ui5.ecosystem.demo.app.view.Main";
 
 	_navFwdButton = {
 		forceSelect: true,
 		selector: {
-			viewName: "test.Sample.view.Main",
+			viewName: "ui5.ecosystem.demo.app.view.Main",
 			id: "NavButton",
 		},
 	};

@@ -1,0 +1,43 @@
+specVersion: "2.6"
+metadata:
+  name: "ui5.ecosystem.demo.tslib"
+type: library
+framework:
+  name: OpenUI5
+  version: "1.110.0"
+  libraries:
+    - name: sap.ui.core
+    - name: themelib_sap_fiori_3
+    - name: themelib_sap_horizon
+builder:
+  customTasks:
+    - name: ui5-tooling-transpile-task
+      afterTask: replaceVersion
+      configuration: &cfgTranspile
+        debug: true
+        filePattern: .+(ts|tsx)
+        #transpileDependencies: true
+        transpileTypeScript: true
+        transpileAsync: true
+        removeConsoleStatements: true
+        includes:
+          - /controller/App
+        excludes:
+          - /controller/
+    - name: ui5-tooling-modules-task
+      afterTask: ui5-tooling-transpile-task
+      configuration:
+        prependPathMappings: false
+        addToNamespace: true
+server:
+  customMiddleware:
+    - name: ui5-middleware-livereload
+      afterMiddleware: compression
+      configuration:
+        extraExts: "xml,json,properties"
+        path: ["src", "test"]
+    - name: ui5-tooling-transpile-middleware
+      afterMiddleware: compression
+      configuration: *cfgTranspile
+    - name: ui5-tooling-modules-middleware
+      afterMiddleware: ui5-tooling-transpile-middleware

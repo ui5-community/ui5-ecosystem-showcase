@@ -18,6 +18,7 @@
     "build:pwa": "ui5 build self-contained --clean-dest --config ui5-pwa.yaml",
     "start": "ui5 serve --config ui5-dist.yaml --port 1081 --open index.html",
     "start:ci": "ui5 serve --config ui5-min.yaml --port 1081",
+    "start-cdn": "ui5 serve --config ui5-dist.yaml --port 1081 --open index-cdn.html",
     "dev": "ui5 serve --port 1081 --open index.html",
     "test": "karma start",
     "test:ci": "karma start karma-ci.conf.js",
@@ -36,6 +37,7 @@
     }
   },
   "dependencies": {
+    "@js-temporal/polyfill": "^0.4.3",
     "@octokit/core": "4.2.0",
     "@supabase/supabase-js": "^2.4.1",
     "axios": "^1.2.4",
@@ -43,6 +45,7 @@
     "firebase": "^9.16.0",
     "tui-image-editor": "^3.15.3",
     "ui5-app-module": "^0.2.1",
+    "ui5-lib": "^0.1.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
@@ -79,7 +82,7 @@
     "ui5-task-minify-xml": "^0.3.0",
     "ui5-task-pwa-enabler": "^0.3.3",
     "ui5-task-zipper": "^0.7.2",
-    "ui5-tooling-modules": "^0.7.7",
+    "ui5-tooling-modules": "^0.7.8",
     "ui5-tooling-stringreplace": "^0.1.0",
     "ui5-tooling-transpile": "^0.3.5",
     "wdio-chromedriver-service": "^8.0.1",
@@ -87,6 +90,7 @@
   },
   "ui5": {
     "dependencies": [
+      "ui5-lib",
       "ui5-middleware-livecompileless",
       "ui5-middleware-cfdestination",
       "ui5-middleware-livereload",
