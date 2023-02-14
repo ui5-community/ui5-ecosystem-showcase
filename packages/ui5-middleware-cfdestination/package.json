@@ -24,7 +24,8 @@
   "dependencies": {
     "@sap/approuter": "^13.1.0",
     "@ui5/logger": "^2.0.1",
-    "request": "^2.88.2"
+    "content-type": "^1.0.5",
+    "node-fetch": "^3.3.0"
   },
   "devDependencies": {
     "@ui5/cli": "^2.14.17",

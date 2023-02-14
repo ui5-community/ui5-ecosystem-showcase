@@ -2,9 +2,10 @@ const log = require("@ui5/logger").getLogger("server:custommiddleware:cfdestinat
 
 const fs = require("fs")
 const path = require("path")
-const request = require("request")
 
 const approuter = require("@sap/approuter")()
+
+const contentType = require("content-type")
 
 /**
  * Custom UI5 Server middleware "cfdestination"
@@ -40,7 +41,7 @@ module.exports = ({ resources, options, middlewareUtil }) => {
 		Object.assign(effectiveOptions, options.configuration)
 	}
 
-	request.debug = effectiveOptions.debug // pass debug flag on to underlying request lib
+	//request.debug = effectiveOptions.debug // pass debug flag on to underlying request lib
 	process.env.XS_APP_LOG_LEVEL = effectiveOptions.debug ? "DEBUG" : "ERROR"
 	// read in the cf config file (TODO: verify better possibility to retrieve the base path of the root project from tooling)
 	const fsBasePath = resources?.rootProject?._readers?.[0]?._fsBasePath
@@ -90,30 +91,43 @@ module.exports = ({ resources, options, middlewareUtil }) => {
 		xsappConfig: xsappConfig,
 		workingDir: xsappPath || "."
 	})
-	return (req, res, next) => {
-		// check request path for match with each route.source
-		// and proxy to localhost:${effectiveOptions.port}
+
+	let baseUrl
+	if (effectiveOptions.subdomain) {
+		// subdomain of the subscribed tenant in multitenancy context
+		baseUrl = `http://${effectiveOptions.subdomain}.localhost:${effectiveOptions.port}`
+	} else {
+		baseUrl = `http://localhost:${effectiveOptions.port}`
+	}
+
+	return async (req, res, next) => {
 		const reqPath = middlewareUtil.getPathname(req)
-		let match = false
-		let url = ""
-		// eslint-disable-next-line no-unused-vars
-		for (let [index, regEx] of regExes.entries()) {
-			if (regEx.test(reqPath)) {
-				match = true
-				if (effectiveOptions.subdomain) {
-					// subdomain of the subscribed tenant in multitenancy context
-					url = `${req.protocol}://${effectiveOptions.subdomain}.localhost:${effectiveOptions.port}${req.originalUrl}`
-				} else {
-					url = `${req.protocol}://localhost:${effectiveOptions.port}${req.originalUrl}`
-				}
-				break
-			}
-		}
-		if (match) {
+		if (/get/i.test(req.method) && regExes.some((re) => re.test(reqPath))) {
+			const url = `${baseUrl}${req.originalUrl}`
 			effectiveOptions.debug ? log.info(`proxying ${req.method} ${req.originalUrl} to ${url}...`) : null
-			req.pipe(request(url)).pipe(res)
-		} else {
-			next()
+			log.info(`proxying ${req.method} ${req.originalUrl} to ${url}...`)
+
+			const fetch = (await import("node-fetch")).default
+			const response = await fetch(url, {
+				headers: req.headers
+				//redirect: "manual",
+			})
+
+			const responseHeaders = response.headers.raw()
+			const headers = {}
+			Object.keys(responseHeaders)
+				.filter((name) => !/(content-encoding|transfer-encoding|content-length)/i.test(name))
+				.forEach((name) => (headers[name] = responseHeaders[name]))
+			const text = await response.text()
+			const ct = Array.isArray(headers["content-type"])
+				? contentType.parse(headers["content-type"][0])
+				: undefined
+			res.writeHead(response.status, response.statusText, headers)
+			res.end(text, ct?.parameters?.["charset"])
+
+			return
 		}
+
+		next()
 	}
 }
