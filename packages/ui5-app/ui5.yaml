@@ -50,6 +50,7 @@ builder:
         files:
           - "**/*.js"
           - "**/*.xml"
+          - "**/*.html"
         replace:
           - placeholder: "${project.version}"
             value: "1.0.0-SNAPSHOT"
@@ -150,6 +151,7 @@ server:
         files:
           - "**/*.js"
           - "**/*.xml"
+          - "**/*.html"
         replace:
           - placeholder: "${project.version}"
             value: "1.0.0-SNAPSHOT"
