@@ -35,6 +35,27 @@ const getPortForLivereload = async (options, defaultPort) => {
 };
 
 /**
+ * Determines the source paths of the given resource collection recursivly.
+ *
+ * <b>ATTENTION: this is a hack to be compatible with UI5 tooling 2.x and 3.x</b>
+ *
+ * @param {module:@ui5/fs.AbstractReader} collection Reader or Collection to read resources of the root project and its dependencies
+ * @returns {string[]} source paths
+ */
+const determineSourcePaths = (collection) => {
+	const fsPaths = [];
+	collection?._readers?.forEach((_reader) => {
+		fsPaths.push(...determineSourcePaths(_reader));
+	});
+	if (collection?._project?._type === "application") {
+		fsPaths.push(path.resolve(collection._project._modulePath, collection._project._webappPath));
+	} else if (typeof collection?._fsBasePath === "string") {
+		fsPaths.push(collection._fsBasePath);
+	}
+	return fsPaths;
+};
+
+/**
  * Custom UI5 Server middleware example
  *
  * @param {object} parameters Parameters
@@ -56,16 +77,7 @@ module.exports = async ({ resources, options }) => {
 	let watchPath = options?.configuration?.watchPath || options?.configuration?.path;
 	// determine all watchpaths from project resources if not predefined
 	if (!watchPath) {
-		watchPath = [];
-		resources?.all?._readers?.forEach((_reader) => {
-			if (Array.isArray(_reader._readers)) {
-				_reader._readers.forEach((_reader) => {
-					watchPath.push(_reader._fsBasePath);
-				});
-			} else {
-				watchPath.push(_reader._fsBasePath);
-			}
-		});
+		watchPath = determineSourcePaths(resources.all);
 	}
 
 	let exclusions = options?.configuration?.exclusions;
