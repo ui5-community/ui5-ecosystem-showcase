@@ -51,37 +51,34 @@ const getPortForLivereload = async (options, defaultPort) => {
  */
 module.exports = async ({ resources, options }) => {
 	let port = await getPortForLivereload(options, 35729);
-	let watchPath = "webapp";
+
 	// due to compatibility reasons we keep the path as watchPath (watchPath has higher precedence than path)
-	if (options.configuration && (options.configuration.watchPath || options.configuration.path)) {
-		watchPath = options.configuration.watchPath || options.configuration.path;
-	}
-	let exclusions = [];
-	let aOptExclusions;
-	if (options.configuration && options.configuration.exclusions) {
-		aOptExclusions = options.configuration.exclusions;
-	}
-	if (options.configuration && aOptExclusions && Array.isArray(aOptExclusions)) {
-		// multilpe exclusions
-		aOptExclusions.forEach((exclusion) => {
-			exclusions.push(new RegExp(exclusion));
+	let watchPath = options?.configuration?.watchPath || options?.configuration?.path;
+	// determine all watchpaths from project resources if not predefined
+	if (!watchPath) {
+		watchPath = [];
+		resources?.all?._readers?.forEach((_reader) => {
+			if (Array.isArray(_reader._readers)) {
+				_reader._readers.forEach((_reader) => {
+					watchPath.push(_reader._fsBasePath);
+				});
+			} else {
+				watchPath.push(_reader._fsBasePath);
+			}
 		});
-	} else if (options.configuration && aOptExclusions) {
-		// single exclusion
-		exclusions.push(new RegExp(aOptExclusions));
 	}
-	let extraExts = "xml,json,properties";
-	if (options.configuration && options.configuration.extraExts) {
-		extraExts = options.configuration.extraExts;
+
+	let exclusions = options?.configuration?.exclusions;
+	if (Array.isArray(exclusions)) {
+		exclusions = exclusions.map((exclusion) => {
+			return new RegExp(exclusion);
+		});
+	} else if (exclusions) {
+		exclusions = [new RegExp(exclusions)];
 	}
-	let debug = false;
-	if (options.configuration && options.configuration.debug) {
-		debug = options.configuration.debug;
-	}
-	let usePolling = false;
-	if (options.configuration && options.configuration.usePolling) {
-		usePolling = options.configuration.usePolling;
-	}
+	let extraExts = options?.configuration?.extraExts || "jsx,ts,tsx,xml,json,properties";
+	let debug = options?.configuration?.debug;
+	let usePolling = options?.configuration?.usePolling;
 
 	let serverOptions = {
 		debug: debug,
@@ -114,13 +111,13 @@ module.exports = async ({ resources, options }) => {
 	if (Array.isArray(watchPath)) {
 		let watchPaths = [];
 		for (let i = 0; i < watchPath.length; i++) {
-			watchPaths.push(path.join(process.cwd(), watchPath[i]));
+			watchPaths.push(path.resolve(process.cwd(), watchPath[i]));
 		}
 		debug ? log.info(`Livereload connecting to port ${port} for paths ${watchPaths}`) : null;
 		livereloadServer.watch(watchPaths);
 	} else {
 		debug ? log.info(`Livereload connecting to port ${port} for path ${watchPath}`) : null;
-		livereloadServer.watch(path.join(process.cwd(), watchPath));
+		livereloadServer.watch(path.resolve(process.cwd(), watchPath));
 	}
 
 	// connect-livereload already holds the
