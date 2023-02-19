@@ -8,6 +8,32 @@ const approuter = require("@sap/approuter")()
 const contentType = require("content-type")
 
 /**
+ * Determines the applications base path from the given resource collection.
+ *
+ * <b>ATTENTION: this is a hack to be compatible with UI5 tooling 2.x and 3.x</b>
+ *
+ * @param {module:@ui5/fs.AbstractReader} collection Reader or Collection to read resources of the root project and its dependencies
+ * @returns {string} application base path
+ */
+const determineAppBasePath = (collection) => {
+	let appBasePath
+	if (collection?._readers) {
+		for (const _reader of collection._readers) {
+			appBasePath = determineAppBasePath(_reader)
+			if (appBasePath) break
+		}
+	}
+	if (collection?._project?._type === "application") {
+		appBasePath = collection._project._modulePath // UI5 tooling 3.x
+	} else if (collection?._project?.type === "application") {
+		appBasePath = collection._project.path // UI5 tooling 2.x
+	} else if (typeof collection?._fsBasePath === "string") {
+		appBasePath = collection._fsBasePath
+	}
+	return appBasePath
+}
+
+/**
  * Custom UI5 Server middleware "cfdestination"
  *
  * @param {object} parameters Parameters
@@ -44,8 +70,8 @@ module.exports = ({ resources, options, middlewareUtil }) => {
 	//request.debug = effectiveOptions.debug // pass debug flag on to underlying request lib
 	process.env.XS_APP_LOG_LEVEL = effectiveOptions.debug ? "DEBUG" : "ERROR"
 	// read in the cf config file (TODO: verify better possibility to retrieve the base path of the root project from tooling)
-	const fsBasePath = resources?.rootProject?._readers?.[0]?._fsBasePath
-	const xsappPath = fsBasePath ? path.resolve(fsBasePath, "..") : process.cwd() // respect cwd of containing ui5 server
+	const fsBasePath = determineAppBasePath(resources?.rootProject)
+	const xsappPath = fsBasePath || process.cwd() // respect cwd of containing ui5 server
 	const _xsappJson = path.resolve(xsappPath, effectiveOptions.xsappJson)
 	const xsappConfig = JSON.parse(fs.readFileSync(_xsappJson, "utf8"))
 
