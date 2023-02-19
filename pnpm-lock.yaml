@@ -58,6 +58,7 @@ importers:
       karma-coverage: ^2.2.0
       karma-ui5: ^2.4.0
       mkdirp: ~2.1.3
+      node-fetch: ^2.6.9
       npm-run-all: ^4.1.5
       npm-watch: ^0.11.0
       rimraf: ~4.1.2
@@ -91,6 +92,7 @@ importers:
       axios: 1.2.4
       cmis: 1.0.3
       firebase: 9.16.0
+      node-fetch: 2.6.9
       tui-image-editor: 3.15.3
       ui5-app-module: link:../ui5-app-module
       ui5-lib: link:../ui5-lib
@@ -432,25 +434,25 @@ importers:
       escodegen: ^2.0.0
       espree: ^9.4.1
       estraverse: ^5.3.0
-      fast-xml-parser: ^4.0.15
-      rollup: ^3.10.1
+      fast-xml-parser: ^4.1.2
+      rollup: ^3.17.1
       rollup-plugin-inject-process-env: ^1.3.1
       rollup-plugin-polyfill-node: ^0.12.0
     dependencies:
       '@buxlabs/amd-to-es6': 0.16.3
-      '@rollup/plugin-commonjs': 24.0.1_rollup@3.10.1
-      '@rollup/plugin-json': 6.0.0_rollup@3.10.1
-      '@rollup/plugin-node-resolve': 15.0.1_rollup@3.10.1
-      '@rollup/pluginutils': 5.0.2_rollup@3.10.1
+      '@rollup/plugin-commonjs': 24.0.1_rollup@3.17.1
+      '@rollup/plugin-json': 6.0.0_rollup@3.17.1
+      '@rollup/plugin-node-resolve': 15.0.1_rollup@3.17.1
+      '@rollup/pluginutils': 5.0.2_rollup@3.17.1
       '@ui5/fs': 2.0.6
       '@ui5/logger': 2.0.1
       escodegen: 2.0.0
       espree: 9.4.1
       estraverse: 5.3.0
-      fast-xml-parser: 4.0.15
-      rollup: 3.10.1
+      fast-xml-parser: 4.1.2
+      rollup: 3.17.1
       rollup-plugin-inject-process-env: 1.3.1
-      rollup-plugin-polyfill-node: 0.12.0_rollup@3.10.1
+      rollup-plugin-polyfill-node: 0.12.0_rollup@3.17.1
 
   packages/ui5-tooling-stringreplace:
     specifiers:
@@ -3013,7 +3015,7 @@ packages:
     resolution: {integrity: sha512-iLPWMuK7B+ur5HZgexZrqLrmoWxJXx8QCDv7j25V8ZJmYmRkSqb0HCZHDn+ggvb0WHg+1RvUlvSUt5p+k5q9Zw==}
     engines: {node: ^14.15.0 || >=16.0.0}
     dependencies:
-      node-fetch: 2.6.7
+      node-fetch: 2.6.9
       npmlog: 6.0.2
     transitivePeerDependencies:
       - encoding
@@ -3469,7 +3471,7 @@ packages:
       detect-libc: 2.0.1
       https-proxy-agent: 5.0.1
       make-dir: 3.1.0
-      node-fetch: 2.6.7
+      node-fetch: 2.6.9
       nopt: 5.0.0
       npmlog: 5.0.1
       rimraf: 3.0.2
@@ -3775,7 +3777,7 @@ packages:
       '@octokit/request-error': 3.0.2
       '@octokit/types': 8.0.0
       is-plain-object: 5.0.0
-      node-fetch: 2.6.7
+      node-fetch: 2.6.9
       universal-user-agent: 6.0.0
     transitivePeerDependencies:
       - encoding
@@ -3898,7 +3900,7 @@ packages:
     resolution: {integrity: sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==}
     dev: false
 
-  /@rollup/plugin-commonjs/24.0.1_rollup@3.10.1:
+  /@rollup/plugin-commonjs/24.0.1_rollup@3.17.1:
     resolution: {integrity: sha512-15LsiWRZk4eOGqvrJyu3z3DaBu5BhXIMeWnijSRvd8irrrg9SHpQ1pH+BUK4H6Z9wL9yOxZJMTLU+Au86XHxow==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -3907,16 +3909,16 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@rollup/pluginutils': 5.0.2_rollup@3.10.1
+      '@rollup/pluginutils': 5.0.2_rollup@3.17.1
       commondir: 1.0.1
       estree-walker: 2.0.2
       glob: 8.0.3
       is-reference: 1.2.1
       magic-string: 0.27.0
-      rollup: 3.10.1
+      rollup: 3.17.1
     dev: false
 
-  /@rollup/plugin-inject/5.0.3_rollup@3.10.1:
+  /@rollup/plugin-inject/5.0.3_rollup@3.17.1:
     resolution: {integrity: sha512-411QlbL+z2yXpRWFXSmw/teQRMkXcAAC8aYTemc15gwJRpvEVDQwoe+N/HTFD8RFG8+88Bme9DK2V9CVm7hJdA==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -3925,13 +3927,13 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@rollup/pluginutils': 5.0.2_rollup@3.10.1
+      '@rollup/pluginutils': 5.0.2_rollup@3.17.1
       estree-walker: 2.0.2
       magic-string: 0.27.0
-      rollup: 3.10.1
+      rollup: 3.17.1
     dev: false
 
-  /@rollup/plugin-json/6.0.0_rollup@3.10.1:
+  /@rollup/plugin-json/6.0.0_rollup@3.17.1:
     resolution: {integrity: sha512-i/4C5Jrdr1XUarRhVu27EEwjt4GObltD7c+MkCIpO2QIbojw8MUs+CCTqOphQi3Qtg1FLmYt+l+6YeoIf51J7w==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -3940,11 +3942,11 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@rollup/pluginutils': 5.0.2_rollup@3.10.1
-      rollup: 3.10.1
+      '@rollup/pluginutils': 5.0.2_rollup@3.17.1
+      rollup: 3.17.1
     dev: false
 
-  /@rollup/plugin-node-resolve/15.0.1_rollup@3.10.1:
+  /@rollup/plugin-node-resolve/15.0.1_rollup@3.17.1:
     resolution: {integrity: sha512-ReY88T7JhJjeRVbfCyNj+NXAG3IIsVMsX9b5/9jC98dRP8/yxlZdz7mHZbHk5zHr24wZZICS5AcXsFZAXYUQEg==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -3953,16 +3955,16 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@rollup/pluginutils': 5.0.2_rollup@3.10.1
+      '@rollup/pluginutils': 5.0.2_rollup@3.17.1
       '@types/resolve': 1.20.2
       deepmerge: 4.2.2
       is-builtin-module: 3.2.0
       is-module: 1.0.0
       resolve: 1.22.1
-      rollup: 3.10.1
+      rollup: 3.17.1
     dev: false
 
-  /@rollup/pluginutils/5.0.2_rollup@3.10.1:
+  /@rollup/pluginutils/5.0.2_rollup@3.17.1:
     resolution: {integrity: sha512-pTd9rIsP92h+B6wWwFbW8RkZv4hiR/xKsqre4SIuAOaOEQRxi0lqLke9k2/7WegC85GgUs9pjmOjCUi3In4vwA==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -3974,7 +3976,7 @@ packages:
       '@types/estree': 1.0.0
       estree-walker: 2.0.2
       picomatch: 2.3.1
-      rollup: 3.10.1
+      rollup: 3.17.1
     dev: false
 
   /@sap/approuter/13.1.0:
@@ -8721,8 +8723,8 @@ packages:
     resolution: {integrity: sha512-W+KJc2dmILlPplD/H4K9l9LcAHAfPtP6BY84uVLXQ6Evcz9Lcg33Y2z1IVblT6xdY54PXYVHEv+0Wpq8Io6zkA==}
     dev: true
 
-  /fast-xml-parser/4.0.15:
-    resolution: {integrity: sha512-bF4/E33/K/EZDHV23IJpSK2SU7rZTaSkDH5G85nXX8SKlQ9qBpWQhyPpm2nlTBewDJgtpd6+1x4TNpKmocmthQ==}
+  /fast-xml-parser/4.1.2:
+    resolution: {integrity: sha512-CDYeykkle1LiA/uqQyNwYpFbyF6Axec6YapmpUP+/RHWIoR1zKjocdvNaTsxCxZzQ6v9MLXaSYm9Qq0thv0DHg==}
     hasBin: true
     dependencies:
       strnum: 1.0.5
@@ -12636,6 +12638,17 @@ packages:
     dependencies:
       whatwg-url: 5.0.0
 
+  /node-fetch/2.6.9:
+    resolution: {integrity: sha512-DJm/CJkZkRjKKj4Zi4BsKVZh3ValV5IR5s7LVZnW+6YMh0W1BfNA8XSs6DLMGYlId5F3KnA70uu2qepcR08Qqg==}
+    engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
+    dependencies:
+      whatwg-url: 5.0.0
+
   /node-fetch/3.3.0:
     resolution: {integrity: sha512-BKwRP/O0UvoMKp7GNdwPlObhYGB5DQqwhEDQlNKuoqwVYSxkSZCSbHjnFFmUEtwSKRPU4kNK8PbDYYitwaE3QA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
@@ -14607,17 +14620,17 @@ packages:
       magic-string: 0.25.9
     dev: false
 
-  /rollup-plugin-polyfill-node/0.12.0_rollup@3.10.1:
+  /rollup-plugin-polyfill-node/0.12.0_rollup@3.17.1:
     resolution: {integrity: sha512-PWEVfDxLEKt8JX1nZ0NkUAgXpkZMTb85rO/Ru9AQ69wYW8VUCfDgP4CGRXXWYni5wDF0vIeR1UoF3Jmw/Lt3Ug==}
     peerDependencies:
       rollup: ^1.20.0 || ^2.0.0 || ^3.0.0
     dependencies:
-      '@rollup/plugin-inject': 5.0.3_rollup@3.10.1
-      rollup: 3.10.1
+      '@rollup/plugin-inject': 5.0.3_rollup@3.17.1
+      rollup: 3.17.1
     dev: false
 
-  /rollup/3.10.1:
-    resolution: {integrity: sha512-3Er+yel3bZbZX1g2kjVM+FW+RUWDxbG87fcqFM5/9HbPCTpbVp6JOLn7jlxnNlbu7s/N/uDA4EV/91E2gWnxzw==}
+  /rollup/3.17.1:
+    resolution: {integrity: sha512-8RnSms6rNqHmZK+wiqgnPCqen+rRnUHXkciGDirh7B00g1rX1vpKbPDhuxCvAG2bburoI+W4Q9/PlUB/zYkiYA==}
     engines: {node: '>=14.18.0', npm: '>=8.0.0'}
     hasBin: true
     optionalDependencies:

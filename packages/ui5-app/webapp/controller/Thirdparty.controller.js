@@ -1,6 +1,15 @@
 // regular code of the Thirdparty.controller.js
 sap.ui.define(
-	["ui5/ecosystem/demo/app/controller/BaseController", "xlsx", "cmis", "ui5-app/bundledefs/firebase", "@supabase/supabase-js", "@octokit/core", "axios", "@js-temporal/polyfill"],
+	[
+		"ui5/ecosystem/demo/app/controller/BaseController",
+		"xlsx",
+		"cmis",
+		"ui5-app/bundledefs/firebase", // requires node-fetch@2
+		"@supabase/supabase-js",
+		"@octokit/core", // requires node-fetch@2
+		"axios",
+		"@js-temporal/polyfill",
+	],
 	(Controller, xlsx, cmis, _firebase, supabase, octokit, axios, temporal) => {
 		"use strict";
 
