@@ -20,6 +20,17 @@ server:
       configuration:
         debug: true
         rootPath: ../../docs
+    - name: ui5-tooling-stringreplace-middleware
+      afterMiddleware: compression
+      configuration:
+        debug: true
+        files:
+          - "**/*.js"
+          - "**/*.xml"
+          - "**/*.html"
+        replace:
+          - placeholder: "${project.version}"
+            value: "1.0.0-SNAPSHOT"
     - name: ui5-middleware-simpleproxy
       mountPath: /versioninfo
       afterMiddleware: compression
