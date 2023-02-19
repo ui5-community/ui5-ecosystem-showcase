@@ -76,6 +76,7 @@ builder:
       configuration:
         prependPathMappings: true
         addToNamespace: true
+        removeScopePreceder: true
     - name: ui5-task-zipper
       afterTask: generateVersionInfo
       configuration:

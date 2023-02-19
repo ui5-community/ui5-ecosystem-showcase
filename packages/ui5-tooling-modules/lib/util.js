@@ -184,6 +184,28 @@ const that = (module.exports = {
 										},
 									};
 								})(),
+								// This example show-cases how to rewrite dependency names
+								// and how the resolution of the dependency is handled later
+								/* NOT NEEDED FOR NOW!
+								(function (options) {
+									"use strict";
+									return {
+										name: "resolve-node-deps",
+										resolveId(importee, importer, resolveOptions) {
+											if (importee.startsWith("node:")) {
+												const updatedId = importee.substring(5);
+												//console.log(updatedId);
+												return this.resolve(
+													updatedId,
+													importer,
+													Object.assign({ skipSelf: true }, resolveOptions)
+												).then((resolved) => resolved || { id: updatedId });
+											}
+											return null;
+										}
+									};
+								})(),
+								*/
 								skipAssets({
 									extensions: ["css"],
 									modules: ["crypto"],

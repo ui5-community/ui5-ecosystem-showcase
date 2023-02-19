@@ -43,6 +43,9 @@ npm install ui5-tooling-modules --save-dev
   &nbsp;
   > :warning: While this works great for any non-UI5 3rd party module, there are limitations for the consumption of UI5 modules from custom control 3rd party modules (NPM packages). The UI5 module names (used for `Object.extend(...)`, aggregation types, ...) are not rewritten and this may cause issues. UI5 assumes that the used module path (slash syntax) is matching the module name (dot syntax). This can lead to issues for `Object.isA(...)` checks, Renderer lookups (when not inlined or referenced by module), or for any other API which derives the module name from the module path or vice versa.
 
+- *removeScopePreceder*: `boolean`
+  Removes the scope preceder `@` from the namespace/path of the 3rd party module when adding it to the namespace with the *addToNamespace* option.
+
 ## Usage
 
 1. Define the dependency in `$yourapp/package.json`:

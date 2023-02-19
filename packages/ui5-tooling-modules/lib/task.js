@@ -24,8 +24,9 @@ const escodegen = require("escodegen");
  * @param {string} parameters.options.projectName Project name
  * @param {string} [parameters.options.projectNamespace] Project namespace if available
  * @param {string} [parameters.options.configuration] Task configuration if given in ui5.yaml
- * @param {string} [parameters.options.configuration.prependPathMappings] Prepend the path mappings for the UI5 loader to Component.js
- * @param {string} [parameters.options.configuration.addToNamespace] Adds the libraries into the sub-namespace thirdparty of the Component namespace
+ * @param {boolean} [parameters.options.configuration.prependPathMappings] Prepend the path mappings for the UI5 loader to Component.js
+ * @param {boolean} [parameters.options.configuration.addToNamespace] Adds modules into the sub-namespace thirdparty of the Component
+ * @param {boolean} [parameters.options.configuration.removeScopePreceder] Remove the @ preceder for scope in the namespace/path
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ workspace, dependencies, taskUtil, options }) {
@@ -40,6 +41,21 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 	// collector for unique dependencies and resources
 	const uniqueDeps = new Set();
 	const uniqueResources = new Set();
+
+	// utility to rewrite dependency
+	// eslint-disable-next-line jsdoc/require-jsdoc
+	function rewriteDep(dep, useDottedNamespace) {
+		if (config.addToNamespace) {
+			let d = dep;
+			if (config.removeScopePreceder && d.startsWith("@")) {
+				d = d.substring(1);
+			}
+			d = `${options.projectNamespace}/thirdparty/${d}`;
+			return useDottedNamespace ? d.replace(/\//g, ".") : d;
+		} else {
+			return dep;
+		}
+	}
 
 	// utility to lookup unique JS dependencies
 	// eslint-disable-next-line jsdoc/require-jsdoc
@@ -116,7 +132,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 				) {
 					const elDep = node.arguments[0];
 					if (elDep?.type === "Literal" && bundledResources.includes(elDep.value)) {
-						elDep.value = `${options.projectNamespace}/thirdparty/${elDep.value}`;
+						elDep.value = rewriteDep(elDep.value);
 						changed = true;
 					}
 				} else if (
@@ -128,7 +144,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 				) {
 					const elDep = node.arguments[0];
 					if (elDep?.type === "Literal" && bundledResources.includes(elDep.value)) {
-						elDep.value = `${options.projectNamespace}/thirdparty/${elDep.value}`;
+						elDep.value = rewriteDep(elDep.value);
 						changed = true;
 					}
 				} else if (
@@ -143,7 +159,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 						depsArray[0].elements
 							.filter((el) => el.type === "Literal" && bundledResources.includes(el.value))
 							.map((el) => {
-								el.value = `${options.projectNamespace}/thirdparty/${el.value}`;
+								el.value = rewriteDep(el.value);
 								changed = true;
 							});
 					}
@@ -223,7 +239,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 								return res.startsWith(namespace);
 							})
 						) {
-							node[key] = `${options.projectNamespace.replace(/\//g, ".")}.thirdparty.${node[key]}`;
+							node[key] = rewriteDep(node[key], true);
 							changed = true;
 						}
 					}
@@ -300,7 +316,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 			if (bundle) {
 				log.info(`Processing dependency: ${dep}`);
 				const bundleResource = resourceFactory.createResource({
-					path: `/resources/${config?.addToNamespace ? options.projectNamespace + "/thirdparty/" : ""}${dep}.js`,
+					path: `/resources/${rewriteDep(dep)}.js`,
 					string: bundle,
 				});
 				bundledResources.push(dep);
@@ -317,7 +333,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 			if (content) {
 				log.info(`Processing resource: ${resource}`);
 				const newResource = resourceFactory.createResource({
-					path: `/resources/${config?.addToNamespace ? options.projectNamespace + "/thirdparty/" : ""}${resource}`,
+					path: `/resources/${rewriteDep(resource)}`,
 					string: content,
 				});
 				bundledResources.push(resource);
