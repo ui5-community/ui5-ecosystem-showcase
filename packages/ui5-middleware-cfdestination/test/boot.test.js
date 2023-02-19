@@ -5,7 +5,6 @@ const normalizer = require("@ui5/project").normalizer
 const path = require("path")
 const replace = require("replace-in-file")
 const request = require("supertest")
-const _request = require("axios")
 const server = require("@ui5/server").server
 const { spawn } = require("child_process")
 const copyUI5app = require("./_fs_app_util")
