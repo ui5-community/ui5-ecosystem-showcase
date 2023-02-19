@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.6...ui5-middleware-cfdestination@0.10.7) (2023-02-19)
+
+### Bug Fixes
+
+- **ui5-middleware-cfdestionation:** support h2 devserver mode ([#683](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/683)) ([e9ab783](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e9ab783f9d72fd6d043a566938e4c5baf73d93f0)), closes [#641](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/641)
+
 ## [0.10.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.5...ui5-middleware-cfdestination@0.10.6) (2023-02-08)
 
 **Note:** Version bump only for package ui5-middleware-cfdestination

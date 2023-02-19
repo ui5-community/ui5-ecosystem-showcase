@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.24.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.23.1...ui5-app@0.24.0) (2023-02-19)
+
+### Bug Fixes
+
+- **ui5-tooling-modules:** remove scope preceder from path ([#686](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/686)) ([1323cb2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1323cb2609eadfdf07a97a35f39ba50961118398))
+
+### Features
+
+- **ui5-middleware-livereload:** auto-detect watch paths ([#685](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/685)) ([b0fb53d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b0fb53d74c8a42478a755be58908323e44692974))
+
 ## [0.23.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.23.0...ui5-app@0.23.1) (2023-02-08)
 
 **Note:** Version bump only for package ui5-app

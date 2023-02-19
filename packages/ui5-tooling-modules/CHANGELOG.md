@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.7.8...ui5-tooling-modules@0.7.9) (2023-02-19)
+
+### Bug Fixes
+
+- **ui5-tooling-modules:** remove scope preceder from path ([#686](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/686)) ([1323cb2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1323cb2609eadfdf07a97a35f39ba50961118398))
+
 ## [0.7.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.7.7...ui5-tooling-modules@0.7.8) (2023-01-25)
 
 ### Bug Fixes
