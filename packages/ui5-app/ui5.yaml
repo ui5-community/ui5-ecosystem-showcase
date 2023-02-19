@@ -99,7 +99,7 @@ server:
       configuration:
         debug: true
         extraExts: "xml,json,properties,less"
-        path: "webapp"
+        #path: "webapp"
         exclusions:
           - "lib/nolivereload/"
     - name: ui5-middleware-servestatic
