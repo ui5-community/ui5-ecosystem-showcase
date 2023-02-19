@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.7...ui5-middleware-cfdestination@0.10.8) (2023-02-19)
+
+### Bug Fixes
+
+- enable middlewares for UI5 tooling 3.x ([#687](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/687)) ([ab87cb6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ab87cb6480338cd4b83fe5a33e193bc67a9a4724))
+
 ## [0.10.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.6...ui5-middleware-cfdestination@0.10.7) (2023-02-19)
 
 ### Bug Fixes
