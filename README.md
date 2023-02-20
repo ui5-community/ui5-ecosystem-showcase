@@ -167,7 +167,7 @@ Available tooling extensions in this project:
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
 | [ui5-tooling-modules](packages/ui5-tooling-modules/README.md) | direct consumption of NPM packages | [![npm version](https://badge.fury.io/js/ui5-tooling-modules.svg)](https://badge.fury.io/js/ui5-tooling-modules) |
-| [ui5-tooling-stringreplace](packages/ui5-tooling-stringreplace/README.md) | stringreplace resources using Babel | [![npm version](https://badge.fury.io/js/ui5-tooling-stringreplace.svg)](https://badge.fury.io/js/ui5-tooling-stringreplace) |
+| [ui5-tooling-stringreplace](packages/ui5-tooling-stringreplace/README.md) | replace placeholder strings | [![npm version](https://badge.fury.io/js/ui5-tooling-stringreplace.svg)](https://badge.fury.io/js/ui5-tooling-stringreplace) |
 | [ui5-tooling-transpile](packages/ui5-tooling-transpile/README.md) | transpile resources using Babel | [![npm version](https://badge.fury.io/js/ui5-tooling-transpile.svg)](https://badge.fury.io/js/ui5-tooling-transpile) |
 
 ## License
