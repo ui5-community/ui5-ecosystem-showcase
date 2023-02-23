@@ -82,3 +82,40 @@ module.exports = async function ({ workspace, dependencies, /* taskUtil,*/ optio
 		})
 	);
 };
+
+/**
+ * Callback function to define the list of required dependencies
+ *
+ * @param {object} parameters
+ * @param {Set} parameters.availableDependencies
+ *      Set containing the names of all direct dependencies of
+ *      the project currently being built.
+ * @param {function} parameters.getDependencies
+ *      Identical to TaskUtil#getDependencies
+ *         (see https://sap.github.io/ui5-tooling/v3/api/@ui5_project_build_helpers_TaskUtil.html).
+ *      Creates a list of names of all direct dependencies
+ *      of a given project.
+ * @param {function} parameters.getProject
+ *      Identical to TaskUtil#getProject
+ *         (see https://sap.github.io/ui5-tooling/v3/api/@ui5_project_build_helpers_TaskUtil.html).
+ *      Retrieves a Project-instance for a given project name.
+ * @params {object} parameters.options
+ *      Identical to the options given to the standard task function.
+ * @returns {Promise<Set>}
+ *      Promise resolving with a Set containing all dependencies
+ *      that should be made available to the task.
+ *      UI5 Tooling will ensure that those dependencies have been
+ *      built before executing the task.
+ */
+module.exports.determineRequiredDependencies = async function ({ availableDependencies, getProject }) {
+	// "availableDependencies" could look like this: Set(3) { "sap.ui.core", "sap.m", "my.lib" }
+
+	// Reduce list of required dependencies: Do not require any UI5 framework projects
+	availableDependencies.forEach((depName) => {
+		if (getProject(depName).isFrameworkProject()) {
+			availableDependencies.delete(depName);
+		}
+	});
+	// => Only resources of project "my.lib" will be available to the task
+	return availableDependencies;
+};
