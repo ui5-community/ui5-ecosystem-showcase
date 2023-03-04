@@ -20,6 +20,7 @@
     "clean": "pnpm --filter ui5-app clean",
     "dev": "pnpm --filter ui5-app dev",
     "dev:ts": "pnpm --filter ui5-app-ts dev",
+    "dev-h2": "pnpm --filter ui5-app dev-h2",
     "dev-lib": "pnpm --filter ui5-lib dev",
     "dev-lib:ts": "pnpm --filter ui5-lib-ts dev",
     "start": "pnpm --filter ui5-app start",
