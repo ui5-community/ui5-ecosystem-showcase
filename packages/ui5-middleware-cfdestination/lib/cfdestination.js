@@ -123,7 +123,7 @@ module.exports = async ({ resources, options, middlewareUtil }) => {
 			route.authenticationType = "none"
 		}
 
-		// ignore /-redirects (e.g. "^/(.*)"
+		// ignore /-redirects (e.g. "^/(.*)")
 		// a source declaration such as "^/backend/(.*)$" is needed
 		const routeMatch = route.source.match(/[^/]*\/(.*\/)?[^/]*/)
 		if (routeMatch) {

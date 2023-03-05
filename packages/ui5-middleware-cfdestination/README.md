@@ -17,7 +17,7 @@ port to run the underlying `approuter` on
 
 - `xsappJson`: `<string path>`, default: `"./xs-app.json"`  
 path to the cf-style approuter configuration file `xs-app.json`
-:information_source: the regex for the destination routes must match the pattern : `/[^/]*\/(.*\/)?[^/]*/`
+:information_source: the regex for the destination routes must match the pattern : `/[^/]*\/(.*\/)?[^/]*/`, e.g. `"^/backend/(.*)$"` or `"^/index.html"`
 
 - `destinations`: `<Array of name/value pairs>`, default: `[]`
   - `name: <string>` destination name, matching the one used in routes in `xs-app.json`  
@@ -36,7 +36,7 @@ defaults to `false` as usually all local files/assets are supposedly served by `
 
 - `rewriteContent`: `<boolean>`, default: `true`  
 enables/disables rewriting of the content by replacing
-the proxied url in the content with the server url
+the proxied url in the response body with the server url
 
 - `rewriteContentTypes`: `<Array of strings>`, default: `["application/json", "application/atom+xml", "application/xml"]`  
 defines the content types which are included for rewriting the content by enabling the `rewriteContent` option
