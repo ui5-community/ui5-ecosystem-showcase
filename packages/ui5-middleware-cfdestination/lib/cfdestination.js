@@ -5,7 +5,10 @@ const path = require("path")
 
 const approuter = require("@sap/approuter")()
 
-const contentType = require("content-type")
+const proxy = require("express-http-proxy")
+const ct = require("content-type")
+const mime = require("mime-types")
+const portfinder = require("portfinder")
 
 /**
  * Determines the applications base path from the given resource collection.
@@ -34,6 +37,21 @@ const determineAppBasePath = (collection) => {
 }
 
 /**
+ * Returns the next free port coming from the basePort.
+ *
+ * @param {number} basePort the base port coming from
+ * @returns {number} a port which is free
+ */
+const nextFreePort = async (basePort) => {
+	try {
+		portfinder.basePort = basePort
+		return await portfinder.getPortPromise()
+	} catch {
+		return basePort
+	}
+}
+
+/**
  * Custom UI5 Server middleware "cfdestination"
  *
  * @param {object} parameters Parameters
@@ -50,7 +68,7 @@ const determineAppBasePath = (collection) => {
  *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
  * @returns {Function} Middleware function to use
  */
-module.exports = ({ resources, options, middlewareUtil }) => {
+module.exports = async ({ resources, options, middlewareUtil }) => {
 	// provide a set of default runtime options
 	const effectiveOptions = {
 		debug: false,
@@ -60,7 +78,10 @@ module.exports = ({ resources, options, middlewareUtil }) => {
 		allowServices: false,
 		authenticationMethod: "none",
 		allowLocalDir: false,
-		subdomain: null
+		subdomain: null,
+		limit: "10mb",
+		rewriteContent: true,
+		rewriteContentTypes: ["application/json", "application/atom+xml", "application/xml"]
 	}
 	// config-time options from ui5.yaml for cfdestination take precedence
 	if (options.configuration) {
@@ -73,12 +94,22 @@ module.exports = ({ resources, options, middlewareUtil }) => {
 	const fsBasePath = determineAppBasePath(resources?.rootProject)
 	const xsappPath = fsBasePath || process.cwd() // respect cwd of containing ui5 server
 	const _xsappJson = path.resolve(xsappPath, effectiveOptions.xsappJson)
-	const xsappConfig = JSON.parse(fs.readFileSync(_xsappJson, "utf8"))
+	const xsappConfig = JSON.parse(fs.readFileSync(_xsappJson, "utf-8"))
 
 	// the default auth mechanism is set to none but the user can pass an auth method using the options
 	xsappConfig.authenticationMethod = effectiveOptions.authenticationMethod
 
-	let regExes = []
+	// req-use app-router with config file to run in "shadow" mode
+	process.env.destinations = JSON.stringify(effectiveOptions.destinations || [])
+	let destinations
+	if (effectiveOptions.debug && process.env.destinations.length === 0) {
+		log.info(`Provided destinations are empty`)
+		destinations = []
+	} else {
+		destinations = JSON.parse(process.env.destinations)
+	}
+
+	const routes = []
 	// default: ignore routes that point to web apps as they are already hosted by the ui5 tooling,
 	// but allow overwriting this behavior via "allowLocalDir"
 	xsappConfig.routes = xsappConfig.routes.filter(
@@ -92,10 +123,16 @@ module.exports = ({ resources, options, middlewareUtil }) => {
 			route.authenticationType = "none"
 		}
 
-		// ignore /-redirects (e.g. "^/(.*)"
+		// ignore /-redirects (e.g. "^/(.*)")
 		// a source declaration such as "^/backend/(.*)$" is needed
-		if (route.source.match(/.*\/.*\/?.*/)) {
-			regExes.push(new RegExp(route.source))
+		const routeMatch = route.source.match(/[^/]*\/(.*\/)?[^/]*/)
+		if (routeMatch) {
+			routes.push({
+				...route,
+				re: new RegExp(route.source),
+				path: routeMatch[1],
+				url: destinations.find((destination) => destination.name === route.destination)?.url
+			})
 			effectiveOptions.debug
 				? log.info(
 						`adding cf-like destination "${
@@ -106,54 +143,77 @@ module.exports = ({ resources, options, middlewareUtil }) => {
 		}
 	})
 
-	// req-use app-router with config file to run in "shadow" mode
-	process.env.destinations = JSON.stringify(effectiveOptions.destinations || [])
-	if (effectiveOptions.debug && process.env.destinations.length === 0) {
-		log.info(`Provided destinations are empty`)
+	const freePort = await nextFreePort(effectiveOptions.port)
+	if (freePort != effectiveOptions.port) {
+		log.info(`Port ${effectiveOptions.port} already in use! Using next free port: ${freePort} for the AppRouter...`)
 	}
 
 	approuter.start({
-		port: effectiveOptions.port,
+		port: freePort,
 		xsappConfig: xsappConfig,
 		workingDir: xsappPath || "."
 	})
 
-	let baseUrl
+	let baseUri
 	if (effectiveOptions.subdomain) {
 		// subdomain of the subscribed tenant in multitenancy context
-		baseUrl = `http://${effectiveOptions.subdomain}.localhost:${effectiveOptions.port}`
+		baseUri = `http://${effectiveOptions.subdomain}.localhost:${freePort}`
 	} else {
-		baseUrl = `http://localhost:${effectiveOptions.port}`
+		baseUri = `http://localhost:${freePort}`
 	}
 
-	return async (req, res, next) => {
-		const reqPath = middlewareUtil.getPathname(req)
-		if (/get/i.test(req.method) && regExes.some((re) => re.test(reqPath))) {
-			const url = `${baseUrl}${req.originalUrl}`
-			effectiveOptions.debug ? log.info(`proxying ${req.method} ${req.originalUrl} to ${url}...`) : null
-			log.info(`proxying ${req.method} ${req.originalUrl} to ${url}...`)
-
-			const fetch = (await import("node-fetch")).default
-			const response = await fetch(url, {
-				headers: req.headers
-				//redirect: "manual",
-			})
-
-			const responseHeaders = response.headers.raw()
-			const headers = {}
-			Object.keys(responseHeaders)
-				.filter((name) => !/(content-encoding|transfer-encoding|content-length)/i.test(name))
-				.forEach((name) => (headers[name] = responseHeaders[name]))
-			const text = await response.text()
-			const ct = Array.isArray(headers["content-type"])
-				? contentType.parse(headers["content-type"][0])
-				: undefined
-			res.writeHead(response.status, response.statusText, headers)
-			res.end(text, ct?.parameters?.["charset"])
-
-			return
+	const getMimeInfo = (reqPath, headers) => {
+		const ctHeader = Object.keys(headers).find((header) => /content-type/i.test(header))
+		if (ctHeader) {
+			const parsedCtHeader = ct.parse(headers[ctHeader])
+			const contentType = parsedCtHeader?.type || "application/octet-stream"
+			const charset = parsedCtHeader?.parameters?.charset || mime.charset(contentType)
+			return {
+				contentType,
+				charset
+			}
+		} else {
+			return middlewareUtil.getMimeInfo(reqPath)
 		}
-
-		next()
 	}
+
+	return proxy(baseUri, {
+		https: false,
+		limit: effectiveOptions.limit,
+		filter: (req /*, res*/) => {
+			const reqPath = middlewareUtil.getPathname(req)
+			return routes.some((route) => route.re.test(reqPath))
+		},
+		proxyReqOptDecorator: (proxyReqOpts /*, originalReq*/) => {
+			// remove the accept encoding header to get a plain response
+			const aeHeader = Object.keys(proxyReqOpts.headers).find((header) => /accept-encoding/i.test(header))
+			proxyReqOpts.headers[aeHeader] = ""
+			return proxyReqOpts
+		},
+		userResDecorator: (proxyRes, proxyResData, userReq /*, userRes*/) => {
+			const reqPath = middlewareUtil.getPathname(userReq)
+			let { contentType, charset } = getMimeInfo(reqPath, proxyRes.headers)
+			// sometimes the content type isn't defined, so we correct it
+			if (!proxyRes.headers["content-type"]) {
+				proxyRes.headers["content-type"] = contentType
+			}
+			// only rewrite content when enabled and the content type is supported!
+			if (
+				effectiveOptions.rewriteContent &&
+				effectiveOptions.rewriteContentTypes.indexOf(contentType?.toLowerCase()) >= 0
+			) {
+				let data = proxyResData.toString(charset || "utf-8")
+				const route = routes.find((route) => route.re.test(reqPath))
+				const url = `${userReq.protocol}://${userReq.get("host")}/${route.path}`
+				data = data.replaceAll(route.url, url)
+				// in some cases, the odata servers respond http instead of https in the content
+				if (route.url?.startsWith("https://")) {
+					data = data.replaceAll(`http://${route.url.substr(8)}`, url)
+				}
+				return data
+			} else {
+				return proxyResData
+			}
+		}
+	})
 }

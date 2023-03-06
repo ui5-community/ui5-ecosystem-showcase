@@ -1,0 +1,16 @@
+{
+  "authenticationMethod": "none",
+  "welcomeFile": "/index.html",
+  "routes": [
+    {
+      "source": "^/backendv4/(.*)$",
+      "destination": "backendv4",
+      "target": "$1"
+    },
+    {
+      "source": "^/backendv2/(.*)$",
+      "destination": "backendv2",
+      "target": "$1"
+    }
+  ]
+}

@@ -25,7 +25,9 @@
     "@sap/approuter": "^13.1.0",
     "@ui5/logger": "^2.0.1",
     "content-type": "^1.0.5",
-    "node-fetch": "^3.3.0"
+    "express-http-proxy": "^1.6.3",
+    "mime-types": "2.1.35",
+    "portfinder": "^1.0.32"
   },
   "devDependencies": {
     "@ui5/cli": "^2.14.17",
