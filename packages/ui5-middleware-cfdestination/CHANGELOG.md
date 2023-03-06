@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.8...ui5-middleware-cfdestination@0.10.9) (2023-03-06)
+
+### Bug Fixes
+
+- **cfdestination:** full http method support / content rewriting / free port ([#691](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/691)) ([e212830](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e212830596a34524ca9a514bd47343fda429b748)), closes [#689](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/689)
+
 ## [0.10.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.7...ui5-middleware-cfdestination@0.10.8) (2023-02-19)
 
 ### Bug Fixes
