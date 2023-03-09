@@ -186,7 +186,7 @@ server:
       beforeMiddleware: serveResources
       configuration:
         debug: true
-    # Last middleware comes first!
+    # Last middleware (for the same afterMiddleware) comes first!
     - name: ui5-middleware-livereload
       afterMiddleware: compression
       configuration:

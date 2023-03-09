@@ -25,8 +25,6 @@
     "dev-lib:ts": "pnpm --filter ui5-lib-ts dev",
     "start": "pnpm --filter ui5-app start",
     "start:ts": "pnpm --filter ui5-app-ts start",
-    "start-lib:lib": "pnpm --filter ui5-lib start",
-    "start-lib:ts": "pnpm --filter ui5-lib-ts start",
     "start-cdn": "pnpm --filter ui5-app start-cdn",
     "start-cdn:ts": "pnpm --filter ui5-app-ts start-cdn",
     "//*test:ci": "1. start ui5 serve and bg it - 2. run the e2e tests in parallel",

@@ -31,13 +31,10 @@ builder:
         addToNamespace: true
 server:
   customMiddleware:
-    - name: ui5-middleware-livereload
-      afterMiddleware: compression
-      configuration:
-        extraExts: "xml,json,properties"
-        path: ["src", "test"]
     - name: ui5-tooling-transpile-middleware
       afterMiddleware: compression
       configuration: *cfgTranspile
     - name: ui5-tooling-modules-middleware
       afterMiddleware: ui5-tooling-transpile-middleware
+    - name: ui5-middleware-livereload
+      afterMiddleware: compression
