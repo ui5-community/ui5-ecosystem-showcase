@@ -11,6 +11,9 @@ framework:
     - name: sap.ui.layout
     - name: themelib_sap_horizon
 builder:
+  resources:
+    excludes:
+      - "**/* copy.xml" # ignore all views with white spaces in filename
   settings:
     includeDependency:
       - ui5.ecosystem.demo.lib

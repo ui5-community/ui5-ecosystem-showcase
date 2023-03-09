@@ -2,13 +2,15 @@
 import MessageBox from "sap/m/MessageBox";
 import Controller from "sap/ui/core/mvc/Controller";
 import { utils, write } from "xlsx";
+import capitalize from "ui5/ecosystem/demo/tslib/util/capitalize";
 
 /**
  * @namespace ui5.ecosystem.demo.tsapp.controller
  */
 export default class Main extends Controller {
 	public sayHello(): void {
-		MessageBox.show("Hello World!");
+		const text: string = capitalize("ui5");
+		MessageBox.show(`Hello World, ${text}!`);
 	}
 
 	public downloadXLSX(): void {
