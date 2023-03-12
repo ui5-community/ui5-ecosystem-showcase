@@ -44,10 +44,10 @@ module.exports = async function ({ resources, options, middlewareUtil }) {
 			(config.includes || []).some((pattern) => pathname.includes(pattern))
 		) {
 			const pathWithFilePattern = pathname.replace(".js", filePatternConfig);
-			config.verbose && log.info(`Lookup resource ${pathWithFilePattern}`);
+			config.debug && log.verbose(`Lookup resource ${pathWithFilePattern}`);
 
 			const matchedResources = await reader.byGlob(pathWithFilePattern);
-			config.verbose && log.info(`  --> Found ${matchedResources?.length || 0} match(es)!`);
+			config.debug && log.verbose(`  --> Found ${matchedResources?.length || 0} match(es)!`);
 
 			const resource = matchedResources?.[0];
 			if (resource) {
