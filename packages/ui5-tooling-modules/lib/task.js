@@ -6,7 +6,7 @@ const resourceFactory = require("@ui5/fs").resourceFactory;
 
 const { getResource, resolveModule } = require("./util");
 
-const { readFileSync } = require("fs");
+const { readFileSync, existsSync } = require("fs");
 const espree = require("espree");
 const estraverse = require("estraverse");
 const { XMLParser, XMLBuilder, XMLValidator } = require("fast-xml-parser");
@@ -24,8 +24,9 @@ const escodegen = require("escodegen");
  * @param {string} parameters.options.projectName Project name
  * @param {string} [parameters.options.projectNamespace] Project namespace if available
  * @param {string} [parameters.options.configuration] Task configuration if given in ui5.yaml
- * @param {string} [parameters.options.configuration.prependPathMappings] Prepend the path mappings for the UI5 loader to Component.js
- * @param {string} [parameters.options.configuration.addToNamespace] Adds the libraries into the sub-namespace thirdparty of the Component namespace
+ * @param {boolean} [parameters.options.configuration.prependPathMappings] Prepend the path mappings for the UI5 loader to Component.js
+ * @param {boolean} [parameters.options.configuration.addToNamespace] Adds modules into the sub-namespace thirdparty of the Component
+ * @param {boolean} [parameters.options.configuration.removeScopePreceder] Remove the @ preceder for scope in the namespace/path
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ workspace, dependencies, taskUtil, options }) {
@@ -41,9 +42,24 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 	const uniqueDeps = new Set();
 	const uniqueResources = new Set();
 
+	// utility to rewrite dependency
+	// eslint-disable-next-line jsdoc/require-jsdoc
+	function rewriteDep(dep, useDottedNamespace) {
+		if (config.addToNamespace) {
+			let d = dep;
+			if (config.removeScopePreceder && d.startsWith("@")) {
+				d = d.substring(1);
+			}
+			d = `${options.projectNamespace}/thirdparty/${d}`;
+			return useDottedNamespace ? d.replace(/\//g, ".") : d;
+		} else {
+			return dep;
+		}
+	}
+
 	// utility to lookup unique JS dependencies
 	// eslint-disable-next-line jsdoc/require-jsdoc
-	function findUniqueJSDeps(content, depPath) {
+	function findUniqueJSDeps(content, parentDepPath) {
 		// use espree to parse the UI5 modules and extract the UI5 module dependencies
 		try {
 			const program = espree.parse(content, { range: true, comment: true, tokens: true, ecmaVersion: "latest" });
@@ -64,30 +80,38 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 					} else if (
 						/* sap.ui.(require|define) */
 						node?.type === "CallExpression" &&
-						/require|define/.test(node?.callee?.property?.name) &&
+						/require|define|requireSync/.test(node?.callee?.property?.name) &&
 						node?.callee?.object?.property?.name == "ui" &&
 						node?.callee?.object?.object?.name == "sap"
 					) {
-						const depsArray = node.arguments.filter((arg) => arg.type === "ArrayExpression");
-						if (depsArray.length > 0) {
-							const deps = depsArray[0].elements.filter((el) => el.type === "Literal").map((el) => el.value);
-							deps.forEach((dep) => {
-								uniqueDeps.add(dep);
-								// each dependency which can be resolved via the NPM package name
-								// should also be checked for its dependencies to finally handle them
-								// here if they also require to be transpiled by the task
-								try {
-									const depPath = resolveModule(dep);
+						let deps;
+						if (/requireSync/.test(node?.callee?.property?.name)) {
+							const elDep = node.arguments[0];
+							if (elDep?.type === "Literal") {
+								deps = [elDep.value];
+							}
+						} else {
+							const depsArray = node.arguments.filter((arg) => arg.type === "ArrayExpression");
+							deps = depsArray?.[0].elements.filter((el) => el.type === "Literal").map((el) => el.value);
+						}
+						deps?.forEach((dep) => {
+							uniqueDeps.add(dep);
+							// each dependency which can be resolved via the NPM package name
+							// should also be checked for its dependencies to finally handle them
+							// here if they also require to be transpiled by the task
+							try {
+								const depPath = resolveModule(dep);
+								if (existsSync(depPath)) {
 									const depContent = readFileSync(depPath, { encoding: "utf8" });
 									findUniqueJSDeps(depContent, depPath);
-								} catch (err) {}
-							});
-						}
+								}
+							} catch (err) {}
+						});
 					}
 				},
 			});
 		} catch (err) {
-			log.verbose(`Failed to parse dependency "${depPath}" with espree!`, err);
+			log.verbose(`Failed to parse dependency "${parentDepPath}" with espree!`, err);
 		}
 	}
 
@@ -108,7 +132,19 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 				) {
 					const elDep = node.arguments[0];
 					if (elDep?.type === "Literal" && bundledResources.includes(elDep.value)) {
-						elDep.value = `${options.projectNamespace}/thirdparty/${elDep.value}`;
+						elDep.value = rewriteDep(elDep.value);
+						changed = true;
+					}
+				} else if (
+					/* sap.ui.(requireSync) !LEGACY! */
+					node?.type === "CallExpression" &&
+					/requireSync/.test(node?.callee?.property?.name) &&
+					node?.callee?.object?.property?.name == "ui" &&
+					node?.callee?.object?.object?.name == "sap"
+				) {
+					const elDep = node.arguments[0];
+					if (elDep?.type === "Literal" && bundledResources.includes(elDep.value)) {
+						elDep.value = rewriteDep(elDep.value);
 						changed = true;
 					}
 				} else if (
@@ -123,7 +159,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 						depsArray[0].elements
 							.filter((el) => el.type === "Literal" && bundledResources.includes(el.value))
 							.map((el) => {
-								el.value = `${options.projectNamespace}/thirdparty/${el.value}`;
+								el.value = rewriteDep(el.value);
 								changed = true;
 							});
 					}
@@ -171,8 +207,10 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 										// here if they also require to be transpiled by the task
 										try {
 											const depPath = resolveModule(dep);
-											const depContent = readFileSync(depPath, { encoding: "utf8" });
-											findUniqueJSDeps(depContent, depPath);
+											if (existsSync(depPath)) {
+												const depContent = readFileSync(depPath, { encoding: "utf8" });
+												findUniqueJSDeps(depContent, depPath);
+											}
 										} catch (ex) {}
 									}
 									findUniqueXMLDeps(child, ns);
@@ -201,7 +239,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 								return res.startsWith(namespace);
 							})
 						) {
-							node[key] = `${options.projectNamespace.replace(/\//g, ".")}.thirdparty.${node[key]}`;
+							node[key] = rewriteDep(node[key], true);
 							changed = true;
 						}
 					}
@@ -278,7 +316,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 			if (bundle) {
 				log.info(`Processing dependency: ${dep}`);
 				const bundleResource = resourceFactory.createResource({
-					path: `/resources/${config?.addToNamespace ? options.projectNamespace + "/thirdparty/" : ""}${dep}.js`,
+					path: `/resources/${rewriteDep(dep)}.js`,
 					string: bundle,
 				});
 				bundledResources.push(dep);
@@ -295,7 +333,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 			if (content) {
 				log.info(`Processing resource: ${resource}`);
 				const newResource = resourceFactory.createResource({
-					path: `/resources/${config?.addToNamespace ? options.projectNamespace + "/thirdparty/" : ""}${resource}`,
+					path: `/resources/${rewriteDep(resource)}`,
 					string: content,
 				});
 				bundledResources.push(resource);

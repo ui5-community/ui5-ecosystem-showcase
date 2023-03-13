@@ -12,12 +12,12 @@ npm install ui5-middleware-cfdestination --save-dev
 
 - `debug`: `<boolean>`, default: `false`  
 verbose logging
-
 - `port`: `<int>`, default: `5000`  
 port to run the underlying `approuter` on
 
 - `xsappJson`: `<string path>`, default: `"./xs-app.json"`  
 path to the cf-style approuter configuration file `xs-app.json`
+:information_source: the regex for the destination routes must match the pattern : `/[^/]*\/(.*\/)?[^/]*/`, e.g. `"^/backend/(.*)$"` or `"^/index.html"`
 
 - `destinations`: `<Array of name/value pairs>`, default: `[]`
   - `name: <string>` destination name, matching the one used in routes in `xs-app.json`  
@@ -33,6 +33,16 @@ whether to equip routes with authentication
 - `allowLocalDir`: `<boolean>`, default: `false`  
 allow static assets to be picked up by the included `approuter`  
 defaults to `false` as usually all local files/assets are supposedly served by `ui5-server`
+
+- `rewriteContent`: `<boolean>`, default: `true`  
+enables/disables rewriting of the content by replacing
+the proxied url in the response body with the server url
+
+- `rewriteContentTypes`: `<Array of strings>`, default: `["application/json", "application/atom+xml", "application/xml"]`  
+defines the content types which are included for rewriting the content by enabling the `rewriteContent` option
+
+- `limit`: `<string>`, default: `10mb`  
+This sets the body size limit. If the body size is larger than the specified (or default) limit, a `413 Request Entity Too Large`  error will be returned. See [bytes.js](https://www.npmjs.com/package/bytes) for a list of supported formats
 
 ## Usage
 

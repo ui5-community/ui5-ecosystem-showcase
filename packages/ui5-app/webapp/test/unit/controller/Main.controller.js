@@ -1,13 +1,17 @@
 /*global QUnit, sinon*/
 
-sap.ui.define(["test/Sample/controller/Main.controller", "sap/ui/thirdparty/sinon", "sap/ui/thirdparty/sinon-qunit"], function (Controller /*sinon, sinon-qunit*/) {
+sap.ui.define(["ui5/ecosystem/demo/app/controller/Main.controller", "sap/ui/thirdparty/sinon", "sap/ui/thirdparty/sinon-qunit"], function (Controller /*sinon, sinon-qunit*/) {
 	"use strict";
 
 	QUnit.module("Main Controller");
 
 	QUnit.test("inits correctly", function (assert) {
 		const oAppController = new Controller();
+		const oViewStub = sinon.stub(Controller.prototype, "getView").returns({
+			setModel: sinon.stub().returns("stubbed"),
+		});
 		oAppController.onInit();
+		oViewStub.restore();
 		assert.ok(oAppController);
 	});
 

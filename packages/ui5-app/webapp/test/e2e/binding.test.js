@@ -1,14 +1,14 @@
 const navFwdButton = {
 	forceSelect: true,
 	selector: {
-		viewName: "test.Sample.view.Main",
+		viewName: "ui5.ecosystem.demo.app.view.Main",
 		id: "NavButton",
 	},
 };
 
 const list = {
 	selector: {
-		viewName: "test.Sample.view.Other",
+		viewName: "ui5.ecosystem.demo.app.view.Other",
 		id: "PeopleList",
 	},
 };

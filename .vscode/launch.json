@@ -4,7 +4,6 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
         {
             "type": "chrome",
             "request": "launch",
@@ -56,6 +55,16 @@
             "cwd": "${workspaceFolder}/packages/ui5-app-ts",
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"
+        },
+        {
+          "type": "node",
+          "request": "launch",
+          "name": "Debug CFDestination Middleware Test",
+          "runtimeExecutable": "pnpm",
+          "args": [ "test:ui5-middleware-cfdestination" ],
+          "cwd": "${workspaceFolder}",
+          "console": "integratedTerminal",
+          "internalConsoleOptions": "neverOpen"
         }
     ]
 }

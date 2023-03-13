@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-vars */
-const mustache = require("mustache");
-const fs = require("graceful-fs");
+const { readFile } = require("fs").promises;
 const path = require("path");
-const ui5Fs = require("@ui5/fs");
-const { JSDOM } = require("jsdom");
+
+const { Resource } = require("@ui5/fs");
+const mustache = require("mustache");
+const HTMLParser = require("node-html-parser");
 
 let ws = undefined;
 let rootDir = undefined;
@@ -87,7 +88,7 @@ module.exports = async function ({ workspace, dependencies, options: { projectNa
  * @returns {Promise<undefined>}
  */
 async function addServiceworkerRegistration() {
-	let fileContent = fs.readFileSync(path.join(__dirname, "../templates/register-sw.js"));
+	let fileContent = await readFile(path.join(__dirname, "../templates/register-sw.js"), { encoding: "utf-8" });
 	await appendToIndexHtmlHead("<script>" + fileContent.toString() + "</script>");
 }
 
@@ -96,11 +97,15 @@ async function addServiceworkerRegistration() {
  *
  * @param {object} parameters Parameters
  * @param {string} parameters.path The path to the resource that should be written
- * @param {string} parameters.content The content to write to the file
+ * @param {string|buffer} parameters.content The content to write to the file
  * @returns {Promise} which resolves once the data has been written
  */
 function writeFile({ path, content }) {
-	return ws.write(new ui5Fs.Resource({ path: path, string: content }));
+	if (typeof content === "string") {
+		return ws.write(new Resource({ path: path, string: content }));
+	} else {
+		return ws.write(new Resource({ path: path, buffer: content }));
+	}
 }
 
 /**
@@ -226,7 +231,7 @@ async function addAdvancedCachingSw(parameters) {
  */
 async function renderServiceWorker(serviceWorkerTemplate, view) {
 	let path = rootDir + "/service-worker.js";
-	let swCode = fs.readFileSync(serviceWorkerTemplate);
+	let swCode = await readFile(serviceWorkerTemplate, { encoding: "utf-8" });
 	view.timestamp = new Date().getTime().toString();
 	swCode = mustache.render(swCode.toString(), view);
 	await writeFile({ path: path, content: swCode });
@@ -242,11 +247,12 @@ async function renderServiceWorker(serviceWorkerTemplate, view) {
 async function appendToIndexHtmlHead(element) {
 	let resource = await ws.byPath(rootDir + "/index.html");
 	let indexHtmlContent = await resource.getString();
-	let doc = new JSDOM(indexHtmlContent);
+	let doc = new HTMLParser.parse(indexHtmlContent);
 	// Get the head node and append the parsed element:
 	//                       <html>            <head>
-	doc.window.document.firstElementChild.firstElementChild.appendChild(JSDOM.fragment(element));
-	indexHtmlContent = doc.serialize();
+	let head = doc.getElementsByTagName("head")[0];
+	head.appendChild(HTMLParser.parse(element));
+	indexHtmlContent = doc.toString();
 	resource.setString(indexHtmlContent);
 	await ws.write(resource);
 }
@@ -265,12 +271,12 @@ async function addManifest(manifestConfig) {
 	await appendToIndexHtmlHead('<link rel="manifest" href="manifest.webmanifest">');
 	if (!manifestConfig.icons) {
 		//if no icons are provided use default icons
-		let icon192 = fs.readFileSync(path.join(__dirname, "../default_icon/192x192.png"));
+		let icon192 = await readFile(path.join(__dirname, "../default_icon/192x192.png"));
 		await writeFile({
 			path: rootDir + "/images/icons/192x192.png",
 			content: icon192,
 		});
-		let icon512 = fs.readFileSync(path.join(__dirname, "../default_icon/512x512.png"));
+		let icon512 = await readFile(path.join(__dirname, "../default_icon/512x512.png"));
 		await writeFile({
 			path: rootDir + "/images/icons/512x512.png",
 			content: icon512,

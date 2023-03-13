@@ -4,7 +4,8 @@
 const log = require("@ui5/logger").getLogger("server:custommiddleware:ui5-tooling-modules");
 
 const path = require("path");
-const { readFile } = require("fs").promises;
+const { existsSync } = require("fs");
+const { readFile, stat } = require("fs").promises;
 
 const rollup = require("rollup");
 const { nodeResolve } = require("@rollup/plugin-node-resolve");
@@ -20,6 +21,9 @@ const estraverse = require("estraverse");
 
 // local bundle cache
 const bundleCache = {};
+
+// local list of resolved modules (name to location)
+const resolvedModules = {};
 
 // package.json of app
 const pkg = require(path.join(process.cwd(), "package.json"));
@@ -54,6 +58,32 @@ function isUI5Module(content, path) {
 	}
 }
 
+/**
+ * Resolves the node module
+ *
+ * @param {string} moduleName name of the module
+ * @returns {string} path of the module if found or undefined
+ */
+function resolveNodeModule(moduleName) {
+	let modulePath;
+	// resolve from node_modules via regular lookup
+	try {
+		modulePath = require.resolve(moduleName);
+	} catch (err) {
+		// fallback for PNPM and/or DEBUG scenario
+		try {
+			// try the lookup relative to CWD
+			modulePath = require.resolve(moduleName, {
+				paths: [process.cwd()],
+			});
+		} catch (err) {
+			// gracefully ignore the error
+			//console.error(err);
+		}
+	}
+	return modulePath;
+}
+
 const that = (module.exports = {
 	/**
 	 * Resolves the bare module name from node_modules utilizing the require.resolve
@@ -62,32 +92,53 @@ const that = (module.exports = {
 	 * @returns {string} the path of the module in the filesystem
 	 */
 	resolveModule: function resolveModule(moduleName) {
-		// special handling for app-local resources!
-		if (moduleName?.startsWith(`${pkg.name}/`)) {
-			return path.join(process.cwd(), moduleName.substring(`${pkg.name}/`.length) + ".js");
+		// ignore module paths starting with a segment from the ignore list (TODO: maybe a better check?)
+		if ((resolvedModules[moduleName] && resolvedModules[moduleName].modulePath === undefined) || /^\./.test(moduleName)) {
+			return undefined;
 		}
-		// resolve from node_modules
-		let modulePath;
-		try {
-			// try the regular lookup
-			modulePath = require.resolve(moduleName);
-		} catch (err) {
-			// gracefully ignore the error
-			//console.error(err);
-		}
-		if (!modulePath) {
-			// fallback for PNPM and/or DEBUG scenario
-			try {
-				// try the lookup relative to CWD
-				modulePath = require.resolve(moduleName, {
-					paths: [process.cwd()],
-				});
-			} catch (err) {
-				// gracefully ignore the error
-				//console.error(err);
+		// retrieve or create a resolved module
+		// (also for the modules which don't exist, as a negative cache!)
+		let resolvedModule = resolvedModules[moduleName];
+		if (!resolvedModule) {
+			log.verbose(`Resolving ${moduleName}...`);
+			// no module found => resolve it
+			resolvedModule = resolvedModules[moduleName] = {};
+			// resolve the module path
+			if (moduleName?.startsWith(`${pkg.name}/`)) {
+				// special handling for app-local resources!
+				resolvedModule.modulePath = path.join(process.cwd(), moduleName.substring(`${pkg.name}/`.length) + ".js");
+			} else {
+				// derive the module path from the package.json entries browser, module or main
+				try {
+					const pckJsonModuleName = path.join(moduleName, "package.json");
+					const pkgJson = require(pckJsonModuleName);
+					if (typeof pkgJson?.browser === "string") {
+						resolvedModule.modulePath = path.join(path.dirname(resolveNodeModule(pckJsonModuleName)), pkgJson?.browser);
+					} else if (typeof pkgJson?.module === "string") {
+						resolvedModule.modulePath = path.join(path.dirname(resolveNodeModule(pckJsonModuleName)), pkgJson?.module);
+					} else if (typeof pkgJson?.main === "string") {
+						resolvedModule.modulePath = path.join(path.dirname(resolveNodeModule(pckJsonModuleName)), pkgJson?.main);
+					}
+					// reset the module path if it doesn't exist
+					if (!existsSync(resolvedModule.modulePath)) {
+						resolvedModule.modulePath = undefined;
+					}
+				} catch (err) {
+					// gracefully ignore the error
+					//console.error(err);
+				}
+				// resolve from node_modules via regular lookup
+				if (!resolvedModule.modulePath) {
+					resolvedModule.modulePath = resolveNodeModule(moduleName);
+				}
+			}
+			if (resolvedModule.modulePath === undefined) {
+				log.verbose(`  => not found!`);
+			} else {
+				log.verbose(`  => found at ${resolvedModule.modulePath}`);
 			}
 		}
-		return modulePath;
+		return resolvedModule.modulePath;
 	},
 
 	/**
@@ -106,23 +157,55 @@ const that = (module.exports = {
 
 		try {
 			const modulePath = that.resolveModule(moduleName);
+			const lastModified = new Date((await stat(modulePath)).mtime).getTime();
 			if (modulePath) {
 				const moduleExt = path.extname(modulePath).toLowerCase();
 
 				let cachedBundle = bundleCache[moduleName];
-				if (skipCache || !cachedBundle) {
+				if (skipCache || !cachedBundle || cachedBundle.lastModified !== lastModified) {
 					// is the bundle a UI5 module?
 					const moduleContent = await readFile(modulePath, { encoding: "utf8" });
 
-					// only transform non-UI5 modules
-					if (moduleExt === ".js" && !isUI5Module(moduleContent, modulePath)) {
+					// only transform non-UI5 modules (.js, .mjs, .cjs files)
+					if (/\.(m|c)?js/.test(moduleExt) && !isUI5Module(moduleContent, modulePath)) {
 						bundling = true;
 
 						// create a bundle
 						const bundle = await rollup.rollup({
-							preserveSymlinks: true,
 							input: moduleName,
 							plugins: [
+								(function (options) {
+									"use strict";
+									return {
+										name: "logger",
+										resolveId(source) {
+											log.verbose(`Bundling resource ${source}`);
+											return undefined;
+										},
+									};
+								})(),
+								// This example show-cases how to rewrite dependency names
+								// and how the resolution of the dependency is handled later
+								/* NOT NEEDED FOR NOW!
+								(function (options) {
+									"use strict";
+									return {
+										name: "resolve-node-deps",
+										resolveId(importee, importer, resolveOptions) {
+											if (importee.startsWith("node:")) {
+												const updatedId = importee.substring(5);
+												//console.log(updatedId);
+												return this.resolve(
+													updatedId,
+													importer,
+													Object.assign({ skipSelf: true }, resolveOptions)
+												).then((resolved) => resolved || { id: updatedId });
+											}
+											return null;
+										}
+									};
+								})(),
+								*/
 								skipAssets({
 									extensions: ["css"],
 									modules: ["crypto"],
@@ -134,7 +217,8 @@ const that = (module.exports = {
 								}),
 								amdCustom(),
 								nodeResolve({
-									mainFields: ["browser", "module", "main"],
+									browser: true,
+									mainFields: ["module", "main"],
 									preferBuiltins: false,
 								}),
 								(function (options) {
@@ -142,6 +226,10 @@ const that = (module.exports = {
 									return {
 										name: "resolve-pnpm",
 										resolveId(source) {
+											// ignore absolute paths
+											if (path.isAbsolute(source)) {
+												return source;
+											}
 											return that.resolveModule(source);
 										},
 									};
@@ -150,34 +238,61 @@ const that = (module.exports = {
 									NODE_ENV: "production",
 								}),
 							],
+							onwarn: function ({ loc, frame, code, message }) {
+								// Skip certain warnings
+
+								// should intercept ... but doesn't in some rollup versions
+								if (code === "THIS_IS_UNDEFINED") {
+									return;
+								}
+
+								// console.warn everything else
+								if (loc) {
+									log.warn(`${loc.file} (${loc.line}:${loc.column}) ${message}`);
+									if (frame) log.warn(frame);
+								} else {
+									log.warn(message);
+								}
+							},
 						});
 
 						// generate output specific code in-memory
 						// you can call this function multiple times on the same bundle object
 						const { output } = await bundle.generate({
-							output: {
-								format: "amd",
-								amd: {
-									define: "sap.ui.define",
-								},
+							format: "amd",
+							amd: {
+								define: "sap.ui.define",
 							},
 						});
 
 						// Right now we only support one chunk as build result
 						// should be also given by the rollup configuration!
 						if (output.length === 1 && output[0].type === "chunk") {
-							cachedBundle = bundleCache[moduleName] = output[0].code;
+							cachedBundle = bundleCache[moduleName] = {
+								content: output[0].code,
+								lastModified,
+							};
+						} else {
+							log.info(`The bundle for ${moduleName} has ${output.length} chunks!`);
+							// let's take the first chunk only
+							cachedBundle = bundleCache[moduleName] = {
+								content: output[0].code,
+								lastModified,
+							};
 						}
 					} else {
-						cachedBundle = bundleCache[moduleName] = moduleContent;
+						cachedBundle = bundleCache[moduleName] = {
+							content: moduleContent,
+							lastModified,
+						};
 					}
 				}
 
-				return cachedBundle;
+				return cachedBundle?.content;
 			}
 		} catch (err) {
 			if (bundling) {
-				console.error(`Couldn't bundle ${moduleName}: ${err}`, err);
+				log.error(`Couldn't bundle ${moduleName}: ${err}`, err);
 			}
 		}
 	},

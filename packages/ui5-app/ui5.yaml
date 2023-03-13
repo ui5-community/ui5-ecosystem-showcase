@@ -1,16 +1,27 @@
-specVersion: "2.2"
+specVersion: "2.6"
 metadata:
-  name: ui5-app
+  name: ui5.ecosystem.demo.app
 type: application
 framework:
   name: OpenUI5
-  version: "1.104.0"
+  version: "1.110.0"
   libraries:
     - name: sap.m
     - name: sap.ui.core
     - name: sap.ui.layout
-    - name: themelib_sap_fiori_3
+    - name: themelib_sap_horizon
 builder:
+  resources:
+    excludes:
+      - "**/* copy.xml" # ignore all views with white spaces in filename
+  settings:
+    includeDependency:
+      - ui5.ecosystem.demo.lib
+  componentPreload:
+    excludes:
+      - "ui5/ecosystem/demo/app/includes/**/*.js"
+      - "ui5/ecosystem/demo/app/lib/**/*.js"
+      - "ui5/ecosystem/demo/app/thirdparty/**/*.js" # including firebase.js will lead to issues with new.target meta property in "ui5 build"
   customTasks:
     - name: ui5-tooling-transpile-task
       afterTask: replaceVersion
@@ -22,13 +33,27 @@ builder:
           - "resources/"
           - "lib/"
           - "test/"
-    - name: ui5-task-stringreplacer
+        #babelConfig: &babelConfig
+        #  plugins:
+        #    - - "@babel/plugin-transform-computed-properties"
+        #      - loose: true
+        #    - - "@babel/plugin-transform-for-of"
+        #      - assumeArray: true
+        #    - - "babel-plugin-transform-async-to-promises"
+        #      - inlineHelpers: true
+        #  presets:
+        #    - - "@babel/preset-env"
+        #      - targets:
+        #          browsers: "last 2 versions, ie 10-11"
+    - name: ui5-tooling-stringreplace-task
       afterTask: replaceVersion
       configuration:
+        prefix: "UI5_TEST"
         debug: true
         files:
           - "**/*.js"
           - "**/*.xml"
+          - "**/*.html"
         replace:
           - placeholder: "${project.version}"
             value: "1.0.0-SNAPSHOT"
@@ -54,8 +79,9 @@ builder:
       configuration:
         prependPathMappings: true
         addToNamespace: true
+        removeScopePreceder: true
     - name: ui5-task-zipper
-      afterTask: uglify
+      afterTask: generateVersionInfo
       configuration:
         archiveName: webapp
         includeDependencies: true
@@ -72,14 +98,6 @@ builder:
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
 server:
   customMiddleware:
-    - name: ui5-middleware-livereload
-      afterMiddleware: compression
-      configuration:
-        debug: true
-        extraExts: "xml,json,properties,less"
-        path: "webapp"
-        exclusions:
-          - "lib/nolivereload/"
     - name: ui5-middleware-servestatic
       mountPath: /docs
       afterMiddleware: compression
@@ -87,28 +105,29 @@ server:
         debug: true
         rootPath: ../../docs
     - name: ui5-middleware-simpleproxy
+      mountPath: /versioninfo
+      afterMiddleware: compression
+      configuration:
+        debug: true
+        baseUri: "https://sdk.openui5.org/"
+        httpHeaders:
+          Any-Header: AnyHeader
+        query:
+          "sap-ui-config-showall": true
+    - name: ui5-middleware-simpleproxy
       mountPath: /proxy
       afterMiddleware: compression
       configuration:
         debug: true
-        baseUri: "https://latest-openui5.rikosjett.com"
-        httpHeaders:
-          Any-Header: AnyHeader
-        query:
-          type: sdk #other types: runtime, runtimeMobile
+        baseUri: "https://openui5nightly.hana.ondemand.com/"
         excludePatterns:
           - "/local/**"
-      # PoC: reuse the same middleware at a different "mountPath"
-    - name: ui5-middleware-simpleproxy
-      mountPath: /proxy2
-      afterMiddleware: compression
-      configuration:
-        baseUri: "https://latest-openui5.rikosjett.com"
+    # PoC: reuse the same middleware at a different "mountPath"
     - name: ui5-middleware-simpleproxy
       mountPath: /ui5
       afterMiddleware: compression
       configuration:
-        baseUri: "https://sapui5.hana.ondemand.com/"
+        baseUri: "https://sdk.openui5.org/"
         limit: "5mb"
         removeETag: true
     - name: ui5-tooling-transpile-middleware
@@ -118,13 +137,17 @@ server:
         transpileAsync: true
         excludePatterns:
           - "lib/"
-    - name: ui5-middleware-stringreplacer
+        #babelConfig:
+        #  <<: *babelConfig
+        #  sourceMaps: "inline"
+    - name: ui5-tooling-stringreplace-middleware
       afterMiddleware: compression
       configuration:
         debug: true
         files:
           - "**/*.js"
           - "**/*.xml"
+          - "**/*.html"
         replace:
           - placeholder: "${project.version}"
             value: "1.0.0-SNAPSHOT"
@@ -142,13 +165,13 @@ server:
             url: "https://services.odata.org/V2/Northwind/Northwind.svc/"
           - name: "todos"
             url: "https://jsonplaceholder.typicode.com/todos/"
-    - name: ui5-middleware-iasync
-      beforeMiddleware: serveResources
-      configuration:
-        https: false
-        debug: false
-        logConnections: true
-        port: 4711
+    #- name: ui5-middleware-iasync
+    #  beforeMiddleware: serveResources
+    #  configuration:
+    #    https: false
+    #    debug: false
+    #    logConnections: true
+    #    port: 4711
     - name: ui5-middleware-index
       afterMiddleware: compression
       configuration:
@@ -161,8 +184,15 @@ server:
     - name: ui5-tooling-modules-middleware
       afterMiddleware: compression
       configuration:
-        skipCache: true
+        #skipCache: true
     - name: ui5-middleware-livecompileless
       beforeMiddleware: serveResources
       configuration:
         debug: true
+    # Last middleware (for the same afterMiddleware) comes first!
+    - name: ui5-middleware-livereload
+      afterMiddleware: compression
+      configuration:
+        debug: true
+        exclusions:
+          - "lib/nolivereload/"

@@ -1,7 +1,7 @@
 {
   "_version": "1.12.0",
   "sap.app": {
-    "id": "test.Sample",
+    "id": "ui5.ecosystem.demo.app",
     "type": "application",
     "i18n": "i18n/i18n.properties",
     "applicationVersion": {
@@ -19,8 +19,8 @@
           "odataVersion": "4.0"
         }
       },
-      "LatestUI5Datasource": {
-        "uri": "",
+      "UI5VersionInfo": {
+        "uri": "/versioninfo/version.json",
         "type": "JSON"
       }
     }
@@ -43,13 +43,13 @@
   },
   "sap.ui5": {
     "rootView": {
-      "viewName": "test.Sample.view.App",
+      "viewName": "ui5.ecosystem.demo.app.view.App",
       "type": "XML",
       "async": true,
       "id": "app"
     },
     "dependencies": {
-      "minUI5Version": "1.104.0",
+      "minUI5Version": "1.110.0",
       "libs": {
         "sap.m": {},
         "sap.ui.core": {},
@@ -64,7 +64,7 @@
       "i18n": {
         "type": "sap.ui.model.resource.ResourceModel",
         "settings": {
-          "bundleName": "test.Sample.i18n.i18n"
+          "bundleName": "ui5.ecosystem.demo.app.i18n.i18n"
         }
       },
       "Backend": {
@@ -76,9 +76,9 @@
           "synchronizationMode": "None"
         }
       },
-      "LatestUI5": {
+      "UI5VersionInfo": {
         "type": "sap.ui.model.json.JSONModel",
-        "dataSource": "LatestUI5Datasource"
+        "dataSource": "UI5VersionInfo"
       }
     },
     "routing": {
@@ -86,7 +86,7 @@
         "routerClass": "sap.m.routing.Router",
         "viewType": "XML",
         "async": true,
-        "viewPath": "test.Sample.view",
+        "viewPath": "ui5.ecosystem.demo.app.view",
         "controlAggregation": "pages",
         "controlId": "app"
       },

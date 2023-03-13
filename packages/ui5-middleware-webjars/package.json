@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-webjars",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "UI5 middleware for delivering content from JAR files",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
@@ -15,7 +15,7 @@
   "dependencies": {
     "@ui5/logger": "^2.0.1",
     "@ui5/server": "^2.4.1",
-    "jszip": "^3.10.0"
+    "jszip": "^3.10.1"
   },
   "ui5": {
     "dependencies": []

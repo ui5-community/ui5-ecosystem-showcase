@@ -1,7 +1,7 @@
-sap.ui.define(["test/Sample/controller/BaseController", "sap/ui/model/odata/v2/ODataModel", "sap/m/MessageBox"], (Controller, ODataModel, MessageBox) => {
+sap.ui.define(["ui5/ecosystem/demo/app/controller/BaseController", "sap/ui/model/odata/v2/ODataModel", "sap/m/MessageBox"], (Controller, ODataModel, MessageBox) => {
 	"use strict";
 
-	return Controller.extend("test.Sample.controller.ModelView", {
+	return Controller.extend("ui5.ecosystem.demo.app.controller.ModelView", {
 		onInit() {
 			// Never load your model in the onInit function. Always use the manifest possible. This is just for example purposes
 			const oModel = new ODataModel({

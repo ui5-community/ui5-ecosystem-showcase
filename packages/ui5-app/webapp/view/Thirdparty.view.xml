@@ -1,6 +1,6 @@
 <mvc:View
   xmlns:chart="sap.chart"
-  controllerName="test.Sample.controller.Thirdparty"
+  controllerName="ui5.ecosystem.demo.app.controller.Thirdparty"
   displayBlock="true"
   xmlns="sap.m"
   xmlns:mvc="sap.ui.core.mvc"

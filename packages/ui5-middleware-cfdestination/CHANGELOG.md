@@ -3,6 +3,56 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.8...ui5-middleware-cfdestination@0.10.9) (2023-03-06)
+
+### Bug Fixes
+
+- **cfdestination:** full http method support / content rewriting / free port ([#691](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/691)) ([e212830](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e212830596a34524ca9a514bd47343fda429b748)), closes [#689](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/689)
+
+## [0.10.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.7...ui5-middleware-cfdestination@0.10.8) (2023-02-19)
+
+### Bug Fixes
+
+- enable middlewares for UI5 tooling 3.x ([#687](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/687)) ([ab87cb6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ab87cb6480338cd4b83fe5a33e193bc67a9a4724))
+
+## [0.10.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.6...ui5-middleware-cfdestination@0.10.7) (2023-02-19)
+
+### Bug Fixes
+
+- **ui5-middleware-cfdestionation:** support h2 devserver mode ([#683](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/683)) ([e9ab783](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e9ab783f9d72fd6d043a566938e4c5baf73d93f0)), closes [#641](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/641)
+
+## [0.10.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.5...ui5-middleware-cfdestination@0.10.6) (2023-02-08)
+
+**Note:** Version bump only for package ui5-middleware-cfdestination
+
+## [0.10.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.4...ui5-middleware-cfdestination@0.10.5) (2023-01-25)
+
+### Bug Fixes
+
+- **ui5-tooling-modules:** make amd bundling more robust for side effects ([#679](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/679)) ([1d0e586](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1d0e5862e99a3e86f4bf4e25440df10aa02b9617))
+
+## [0.10.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.3...ui5-middleware-cfdestination@0.10.4) (2023-01-23)
+
+**Note:** Version bump only for package ui5-middleware-cfdestination
+
+## [0.10.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.2...ui5-middleware-cfdestination@0.10.3) (2023-01-21)
+
+### Bug Fixes
+
+- **ui5-tooling-modules:** ignore relative paths ([#676](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/676)) ([259aac7](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/259aac754233925bed6bdbd1f79a13757786b1c6))
+
+## [0.10.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.1...ui5-middleware-cfdestination@0.10.2) (2023-01-03)
+
+**Note:** Version bump only for package ui5-middleware-cfdestination
+
+## [0.10.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.0...ui5-middleware-cfdestination@0.10.1) (2022-12-31)
+
+### Bug Fixes
+
+- cfdestination multitenancy requires fsbasepath ([70af3f3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/70af3f38d23b18f85eb6aaf704413d91fc52bb13))
+- fixes compatibility issues with V3 ([1ba4c57](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1ba4c578165e061e7c6455d558eb9effd868f842))
+- use correct xsappPath when using custom xsappJson filename ([#653](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/653)) ([f2196bc](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f2196bc2cba2ba8076ee18506d1c5c3e4d609b92))
+
 # [0.10.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.9.1...ui5-middleware-cfdestination@0.10.0) (2022-12-20)
 
 ### Features

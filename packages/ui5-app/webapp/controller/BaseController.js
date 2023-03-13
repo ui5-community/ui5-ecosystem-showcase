@@ -1,7 +1,7 @@
 sap.ui.define(["sap/ui/core/mvc/Controller"], (Controller) => {
 	"use strict";
 
-	return Controller.extend("test.Sample.controller.BaseController", {
+	return Controller.extend("ui5.ecosystem.demo.app.controller.BaseController", {
 		/**
 		 * inits on controller instantiation
 		 */

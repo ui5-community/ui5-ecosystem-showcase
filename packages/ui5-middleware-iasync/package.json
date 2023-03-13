@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-iasync",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "UI5 Tooling middleware to sync browser interactions",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@ui5/logger": "^2.0.1",
-    "browser-sync": "^2.27.10",
+    "browser-sync": "^2.27.11",
     "connect-injector": "^0.4.4"
   },
   "ui5": {

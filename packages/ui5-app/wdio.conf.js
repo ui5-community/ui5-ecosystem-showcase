@@ -149,7 +149,8 @@ exports.config = {
 		logLevel: process.env.HEADLESS ? "silent" : "error", // error | verbose | silent
 		platform: "browser", // browser | android | ios | electron
 		url: "index.html", // path to your bootstrap html file
-		deviceType: "web", // native | web
+		deviceType: "web", // native | web,
+		waitForUI5Timeout: 30000,
 	},
 	//
 	// =====

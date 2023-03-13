@@ -3,6 +3,81 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.24.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.24.2...ui5-app@0.24.3) (2023-03-06)
+
+### Bug Fixes
+
+- **cfdestination:** full http method support / content rewriting / free port ([#691](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/691)) ([e212830](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e212830596a34524ca9a514bd47343fda429b748)), closes [#689](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/689)
+
+## [0.24.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.24.1...ui5-app@0.24.2) (2023-02-21)
+
+**Note:** Version bump only for package ui5-app
+
+## [0.24.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.24.0...ui5-app@0.24.1) (2023-02-19)
+
+**Note:** Version bump only for package ui5-app
+
+# [0.24.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.23.1...ui5-app@0.24.0) (2023-02-19)
+
+### Bug Fixes
+
+- **ui5-tooling-modules:** remove scope preceder from path ([#686](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/686)) ([1323cb2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1323cb2609eadfdf07a97a35f39ba50961118398))
+
+### Features
+
+- **ui5-middleware-livereload:** auto-detect watch paths ([#685](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/685)) ([b0fb53d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b0fb53d74c8a42478a755be58908323e44692974))
+
+## [0.23.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.23.0...ui5-app@0.23.1) (2023-02-08)
+
+**Note:** Version bump only for package ui5-app
+
+# [0.23.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.22.8...ui5-app@0.23.0) (2023-02-07)
+
+### Bug Fixes
+
+- **ui5-tooling-modules:** make amd bundling more robust for side effects ([#679](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/679)) ([1d0e586](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1d0e5862e99a3e86f4bf4e25440df10aa02b9617))
+
+### Features
+
+- **ui5-tooling-stringreplace:** merge former task and middleware ([#680](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/680)) ([0ce11ce](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0ce11cec2a2b3b535e9f240c26932b332294ecce)), closes [#339](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/339)
+
+## [0.22.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.22.7...ui5-app@0.22.8) (2023-01-23)
+
+### Bug Fixes
+
+- **ui5-tooling-modules:** node-like module resolution ([#677](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/677)) ([51b942a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/51b942a7bd38ae602e207182d56b6fdd240b1338))
+
+## [0.22.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.22.6...ui5-app@0.22.7) (2023-01-21)
+
+**Note:** Version bump only for package ui5-app
+
+## [0.22.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.22.5...ui5-app@0.22.6) (2023-01-21)
+
+**Note:** Version bump only for package ui5-app
+
+## [0.22.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.22.4...ui5-app@0.22.5) (2023-01-21)
+
+### Bug Fixes
+
+- **ui5-app:** use separate model for current UI5 version ([3ba7c94](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3ba7c94e4fa02c1f3714f97108132718932d4183))
+- **ui5-tooling-modules:** ignore relative paths ([#676](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/676)) ([259aac7](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/259aac754233925bed6bdbd1f79a13757786b1c6))
+
+## [0.22.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.22.3...ui5-app@0.22.4) (2023-01-08)
+
+**Note:** Version bump only for package ui5-app
+
+## [0.22.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.22.2...ui5-app@0.22.3) (2023-01-03)
+
+### Bug Fixes
+
+- **ui5-task-pwa-enabler:** remove dep to JSDom + bugfixes ([#668](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/668)) ([bdda7fb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/bdda7fb86e9a0cd5d516b9c659d190ee7de4576b))
+
+## [0.22.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.22.1...ui5-app@0.22.2) (2022-12-31)
+
+### Bug Fixes
+
+- fixes compatibility issues with V3 ([1ba4c57](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1ba4c578165e061e7c6455d558eb9effd868f842))
+
 ## [0.22.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.22.0...ui5-app@0.22.1) (2022-12-20)
 
 **Note:** Version bump only for package ui5-app

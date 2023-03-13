@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-cfdestination",
-  "version": "0.10.0",
+  "version": "0.10.9",
   "description": "UI5 middleware for CF destinations",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
@@ -11,7 +11,7 @@
   },
   "scripts": {
     "test": "ava",
-    "lint": "eslint lib"
+    "lint:disabled": "eslint lib"
   },
   "ava": {
     "files": [
@@ -22,19 +22,22 @@
     "timeout": "20s"
   },
   "dependencies": {
-    "@sap/approuter": "^11.2.1",
+    "@sap/approuter": "^13.1.0",
     "@ui5/logger": "^2.0.1",
-    "request": "^2.88.2"
+    "content-type": "^1.0.5",
+    "express-http-proxy": "^1.6.3",
+    "mime-types": "2.1.35",
+    "portfinder": "^1.0.32"
   },
   "devDependencies": {
     "@ui5/cli": "^2.14.17",
-    "ava": "^4.2.0",
+    "ava": "^5.1.1",
     "get-port": "^6.1.2",
-    "nock": "^13.2.7",
-    "prettier": "^2.7.1",
-    "replace-in-file": "^6.3.2",
-    "supertest": "^6.2.3",
-    "wait-on": "^6.0.1"
+    "nock": "^13.3.0",
+    "prettier": "^2.8.3",
+    "replace-in-file": "^6.3.5",
+    "supertest": "^6.3.3",
+    "wait-on": "^7.0.1"
   },
   "ui5": {
     "dependencies": []

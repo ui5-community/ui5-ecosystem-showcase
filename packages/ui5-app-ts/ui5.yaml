@@ -1,43 +1,49 @@
-specVersion: "2.0"
+specVersion: "2.6"
 metadata:
-  name: ui5.typescript.helloworld
+  name: ui5.ecosystem.demo.tsapp
 type: application
 framework:
   name: OpenUI5
-  version: "1.104.0"
+  version: "1.110.0"
   libraries:
     - name: sap.m
     - name: sap.ui.core
     - name: sap.ui.unified
-    - name: themelib_sap_fiori_3
+    - name: themelib_sap_horizon
 builder:
+  settings:
+    includeDependency:
+      - ui5.ecosystem.demo.tslib
   customTasks:
-    - name: ui5-tooling-modules-task
-      afterTask: replaceVersion
     - name: ui5-tooling-transpile-task
       afterTask: replaceVersion
       configuration: &cfgTranspile
         debug: true
+        # verbose: true
         filePattern: .+(ts|tsx)
-        #transpileDependencies: true
         transpileTypeScript: true
         transpileAsync: true
         removeConsoleStatements: true
-        includes:
-          - /controller/App
-        excludes:
-          - /controller/
+        #includes:
+        #  - /controller/App
+        #  - /controller/Main
+        #excludes:
+        #  - /controller/
+    - name: ui5-tooling-modules-task
+      afterTask: ui5-tooling-transpile-task
+      configuration:
+        prependPathMappings: false
+        addToNamespace: true
 server:
   customMiddleware:
+    - name: ui5-tooling-transpile-middleware
+      afterMiddleware: compression
+      configuration:
+        <<: *cfgTranspile
+        transpileDependencies: true
+    - name: ui5-tooling-modules-middleware
+      afterMiddleware: ui5-tooling-transpile-middleware
     - name: ui5-middleware-livereload
       afterMiddleware: compression
       configuration:
         debug: true
-        extraExts: "xml,json,properties"
-        port: 35729
-        path: "webapp"
-    - name: ui5-tooling-modules-middleware
-      afterMiddleware: compression
-    - name: ui5-tooling-transpile-middleware
-      afterMiddleware: compression
-      configuration: *cfgTranspile

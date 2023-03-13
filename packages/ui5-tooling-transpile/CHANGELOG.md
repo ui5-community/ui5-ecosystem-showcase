@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.3.6...ui5-tooling-transpile@0.3.7) (2023-02-21)
+
+**Note:** Version bump only for package ui5-tooling-transpile
+
+## [0.3.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.3.5...ui5-tooling-transpile@0.3.6) (2023-02-08)
+
+**Note:** Version bump only for package ui5-tooling-transpile
+
+## [0.3.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.3.4...ui5-tooling-transpile@0.3.5) (2023-01-23)
+
+**Note:** Version bump only for package ui5-tooling-transpile
+
+## [0.3.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.3.3...ui5-tooling-transpile@0.3.4) (2023-01-08)
+
+**Note:** Version bump only for package ui5-tooling-transpile
+
+## [0.3.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.3.2...ui5-tooling-transpile@0.3.3) (2023-01-03)
+
+**Note:** Version bump only for package ui5-tooling-transpile
+
+## [0.3.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.3.1...ui5-tooling-transpile@0.3.2) (2022-12-31)
+
+**Note:** Version bump only for package ui5-tooling-transpile
+
 ## [0.3.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.3.0...ui5-tooling-transpile@0.3.1) (2022-12-20)
 
 ### Bug Fixes

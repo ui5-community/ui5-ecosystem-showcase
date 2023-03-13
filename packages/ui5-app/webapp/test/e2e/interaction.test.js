@@ -1,7 +1,7 @@
 const navFwdButton = {
 	forceSelect: true,
 	selector: {
-		viewName: "test.Sample.view.Main",
+		viewName: "ui5.ecosystem.demo.app.view.Main",
 		id: "NavButton",
 	},
 };
@@ -9,7 +9,7 @@ const navFwdButton = {
 const dateTimePicker = {
 	forceSelect: true,
 	selector: {
-		viewName: "test.Sample.view.Main",
+		viewName: "ui5.ecosystem.demo.app.view.Main",
 		id: "DateTimePicker",
 		interaction: "root",
 	},

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.8.0...ui5-middleware-livereload@0.8.1) (2023-02-19)
+
+### Bug Fixes
+
+- enable middlewares for UI5 tooling 3.x ([#687](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/687)) ([ab87cb6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ab87cb6480338cd4b83fe5a33e193bc67a9a4724))
+
+# [0.8.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.7.2...ui5-middleware-livereload@0.8.0) (2023-02-19)
+
+### Features
+
+- **ui5-middleware-livereload:** auto-detect watch paths ([#685](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/685)) ([b0fb53d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b0fb53d74c8a42478a755be58908323e44692974))
+
+## [0.7.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.7.1...ui5-middleware-livereload@0.7.2) (2022-12-31)
+
+**Note:** Version bump only for package ui5-middleware-livereload
+
 ## [0.7.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@0.7.0...ui5-middleware-livereload@0.7.1) (2022-12-20)
 
 **Note:** Version bump only for package ui5-middleware-livereload
