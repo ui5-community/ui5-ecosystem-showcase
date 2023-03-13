@@ -19,7 +19,7 @@ const babel = require("@babel/core");
  * @param {string} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-module.exports = async function ({ workspace, dependencies, taskUtil, options }) {
+module.exports = async function ({ workspace /*, dependencies*/, taskUtil, options }) {
 	const config = options?.configuration || {};
 	config.includes = config.includes || config.includePatterns || [];
 	config.excludes = config.excludes || config.excludePatterns || [];
@@ -33,11 +33,6 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 
 	// TODO: should we accept the full glob pattern as param or just the file pattern?
 	let allResources = await workspace.byGlob(`/**/*${filePatternConfig}`);
-	if (config.transpileDependencies) {
-		// TODO: does transpileDependencies make sense for JavaScript files?
-		const depsResources = await dependencies.byGlob(`/**/*${filePatternConfig}`);
-		allResources.push(...depsResources);
-	}
 
 	// transpile the TypeScript resources and collect the code
 	const sourcesMap = {};
