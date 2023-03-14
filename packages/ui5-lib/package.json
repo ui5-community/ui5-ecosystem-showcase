@@ -1,6 +1,6 @@
 {
   "name": "ui5-lib",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Showcase of a setup for developing UI5 libraries",
   "private": true,
   "author": "Peter Muessig",
