@@ -100,13 +100,13 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 		//       https://sap.github.io/ui5-tooling/v3/api/@ui5_project_build_helpers_TaskUtil.html#~ProjectInterface
 		//       from here we could derive the project type instead of guessing via file existence
 		const libraryResources = await workspace.byGlob(`/resources/${options.projectNamespace}/*library*`);
-		if (libraryResources.length > 0 && config.generateDTS === undefined) {
+		if (libraryResources.length > 0 && config.generateDts === undefined) {
 			config.debug && log.info(`Enabling d.ts generation by default for library projects!`);
-			config.generateDTS = true;
+			config.generateDts = true;
 		}
 
 		// generate the dts files for the ts files
-		if (config.generateDTS) {
+		if (config.generateDts) {
 			try {
 				// dynamically require typescript
 				const ts = require("typescript");
