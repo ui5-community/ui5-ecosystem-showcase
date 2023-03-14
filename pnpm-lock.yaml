@@ -48,7 +48,7 @@ importers:
       '@wdio/sync': ^7.27.0
       axios: ^1.2.4
       babel-plugin-transform-async-to-promises: ^0.8.18
-      chromedriver: ^109.0.0
+      chromedriver: ^111.0.0
       cmis: ^1.0.3
       eslint-plugin-mocha: ^10.1.0
       eslint-plugin-wdio: ^7
@@ -106,7 +106,7 @@ importers:
       '@wdio/spec-reporter': 7.29.1_@wdio+cli@7.30.0
       '@wdio/sync': 7.27.0
       babel-plugin-transform-async-to-promises: 0.8.18
-      chromedriver: 109.0.0
+      chromedriver: 111.0.0
       eslint-plugin-mocha: 10.1.0
       eslint-plugin-wdio: 7.25.3
       karma: 6.4.1
@@ -134,7 +134,7 @@ importers:
       ui5-tooling-modules: link:../ui5-tooling-modules
       ui5-tooling-stringreplace: link:../ui5-tooling-stringreplace
       ui5-tooling-transpile: link:../ui5-tooling-transpile
-      wdio-chromedriver-service: 8.0.1_chromedriver@109.0.0
+      wdio-chromedriver-service: 8.0.1_chromedriver@111.0.0
       wdio-ui5-service: 1.0.5
 
   packages/ui5-app-module:
@@ -5792,7 +5792,7 @@ packages:
   /axios/0.27.2:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
-      follow-redirects: 1.15.2_debug@4.3.2
+      follow-redirects: 1.15.2
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug
@@ -6563,8 +6563,8 @@ packages:
       - supports-color
     dev: true
 
-  /chromedriver/109.0.0:
-    resolution: {integrity: sha512-jdmBq11IUwfThLFiygGTZ89qbROSQI4bICQjvOVQy2Bqr1LwC+MFkhwyZp3YG99eehQbZuTlQmmfCZBfpewTNA==}
+  /chromedriver/111.0.0:
+    resolution: {integrity: sha512-XavNYNBBfKIrT8Oi/ywJ0DoOOU+jHF5bQWTkqStFsAXvfCV9VzYN3J+TGAvZdrpXeoixqPRGUxQ2yZhD2iowdQ==}
     engines: {node: '>=14'}
     hasBin: true
     requiresBuild: true
@@ -7516,6 +7516,7 @@ packages:
         optional: true
     dependencies:
       ms: 2.1.2
+    dev: false
 
   /debug/4.3.3:
     resolution: {integrity: sha512-/zxw5+vh1Tfv+4Qn7a5nsbcJKPaSvCDhojn6FEl9vupwK2VCSDtEiEtqr8DFtzYFOdz63LBkxec7DYuc2jon6Q==}
@@ -9030,6 +9031,7 @@ packages:
         optional: true
     dependencies:
       debug: 4.3.2
+    dev: false
 
   /follow-redirects/1.15.2_debug@4.3.4:
     resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
@@ -16251,7 +16253,7 @@ packages:
       defaults: 1.0.4
     dev: true
 
-  /wdio-chromedriver-service/8.0.1_chromedriver@109.0.0:
+  /wdio-chromedriver-service/8.0.1_chromedriver@111.0.0:
     resolution: {integrity: sha512-nLjJmUBlng8RtnTM/ZJt1rzwAY1QqsMZbmNDxX7/AuSZEu88URTjjUhGPHY0d9al33GSiVoF606P0QSQT6B1ag==}
     engines: {node: ^16.13 || >=18}
     peerDependencies:
@@ -16265,7 +16267,7 @@ packages:
         optional: true
     dependencies:
       '@wdio/logger': 8.1.0
-      chromedriver: 109.0.0
+      chromedriver: 111.0.0
       fs-extra: 11.1.0
       split2: 4.1.0
       tcp-port-used: 1.0.2
