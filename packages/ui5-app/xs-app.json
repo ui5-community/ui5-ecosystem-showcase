@@ -3,6 +3,11 @@
   "welcomeFile": "/index.html",
   "routes": [
     {
+      "source": "^/app/resources/(.*)$",
+      "destination": "app",
+      "target": "/resources/$1"
+    },
+    {
       "source": "^/backend/(.*)$",
       "destination": "backend",
       "target": "$1"
