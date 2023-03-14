@@ -21,7 +21,7 @@ builder:
         debug: true
         filePattern: .+(ts|tsx)
         transpileTypeScript: true
-        skipGenerateDTS: true
+        generateDTS: true
         transpileAsync: true
         removeConsoleStatements: true
         #includes:
