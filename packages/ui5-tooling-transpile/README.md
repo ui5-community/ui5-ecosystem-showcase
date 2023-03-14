@@ -40,8 +40,8 @@ npm install ui5-tooling-transpile --save-dev
 - removeConsoleStatements: `true|false`  
   flag is only supported if no `babelConfig` is provided; removes console statements while transpiling using [Babel plugin](https://babeljs.io/docs/en/babel-plugin-transform-remove-console)
 
-- skipGenerateDTS: `true|false`
-  if option is enabled, the tooling extension will skip the generation of the d.ts files (the flag is only relevant if the option `transpileTypeScript` is set to `true`)
+- generateDTS: `true|false`
+  if option is enabled, the tooling extension will generate the d.ts files (for projects of type `library` this option is considered as `true` (enabled) by default and for other projects such as `application` this option is considered as `false` (disabled) by default)
 
 ## Usage
 

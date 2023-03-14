@@ -32,7 +32,7 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 	}
 
 	// TODO: should we accept the full glob pattern as param or just the file pattern?
-	let allResources = await workspace.byGlob(`/**/*${filePatternConfig}`);
+	const allResources = await workspace.byGlob(`/**/*${filePatternConfig}`);
 
 	// transpile the TypeScript resources and collect the code
 	const sourcesMap = {};
@@ -94,88 +94,87 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 	);
 
 	// generate the dts files for the ts files
-	if (config.transpileTypeScript && !config.skipGenerateDTS) {
-		try {
-			// dynamically require typescript
-			const ts = require("typescript");
+	if (config.transpileTypeScript) {
+		// determine if the project is a library and enable the DTS generation by default
+		// TODO: UI5 Tooling 3.0 allows to access the project with the TaskUtil
+		//       https://sap.github.io/ui5-tooling/v3/api/@ui5_project_build_helpers_TaskUtil.html#~ProjectInterface
+		//       from here we could derive the project type instead of guessing via file existence
+		const libraryResources = await workspace.byGlob(`/resources/${options.projectNamespace}/*library*`);
+		if (libraryResources.length > 0 && config.generateDTS === undefined) {
+			config.debug && log.info(`Enabling d.ts generation by default for library projects!`);
+			config.generateDTS = true;
+		}
 
-			// options to generate d.ts files only
-			const options = {
-				allowJs: true,
-				declaration: true,
-				emitDeclarationOnly: true
-				//traceResolution: true,
-			};
+		// generate the dts files for the ts files
+		if (config.generateDTS) {
+			try {
+				// dynamically require typescript
+				const ts = require("typescript");
 
-			// Create a Program with an in-memory emit
-			const host = ts.createCompilerHost(options);
-			(host.getCurrentDirectory = function () {
-				return "";
-			}),
-				(host.fileExists = function (file) {
-					if (sourcesMap[file]) {
-						return true;
-					} else {
-						return fs.existsSync(file);
-					}
-				});
-			host.readFile = function (file) {
-				if (sourcesMap[file]) {
-					return sourcesMap[file];
-				} else {
-					return fs.readFileSync(file, "utf-8");
-				}
-			};
-			host.writeFile = function (fileName, content) {
-				config.debug && log.info(`Generating d.ts for resource ${fileName}`);
-				const dtsFile = resourceFactory.createResource({
-					path: `${fileName}`,
-					string: content
-				});
-				workspace.write(dtsFile);
-			};
-			host.resolveModuleNames = function (moduleNames, containingFile) {
-				const resolvedModules = [];
-				for (const moduleName of moduleNames) {
-					// try to use standard resolution
-					let result = ts.resolveModuleName(moduleName, containingFile, options, {
-						fileExists: host.fileExists,
-						readFile: host.readFile
+				// options to generate d.ts files only
+				const options = {
+					allowJs: true,
+					declaration: true,
+					emitDeclarationOnly: true
+					//traceResolution: true,
+				};
+
+				// Create a Program with an in-memory emit
+				const host = ts.createCompilerHost(options);
+				(host.getCurrentDirectory = () => ""),
+					(host.fileExists = (file) => !!sourcesMap[file] || fs.existsSync(file));
+				host.readFile = (file) => sourcesMap[file] || fs.readFileSync(file, "utf-8");
+				host.writeFile = function (fileName, content) {
+					config.debug && log.info(`Generating d.ts for resource ${fileName}`);
+					const dtsFile = resourceFactory.createResource({
+						path: `${fileName}`,
+						string: content
 					});
-					if (result.resolvedModule) {
-						// module resolved, store this info
-						resolvedModules.push(result.resolvedModule);
-					} else {
-						// for all other modules, mark them as external library imports
-						// => most probably these are the UI5 modules with the UI5 namespace
-						const resolvedFileName = `/resources/${moduleName}.ts`;
-						resolvedModules.push({
-							resolvedFileName,
-							extension: ".ts",
-							isExternalLibraryImport: !sourcesMap[resolvedFileName]
+					workspace.write(dtsFile);
+				};
+				host.resolveModuleNames = function (moduleNames, containingFile) {
+					const resolvedModules = [];
+					for (const moduleName of moduleNames) {
+						// try to use standard resolution
+						const result = ts.resolveModuleName(moduleName, containingFile, options, {
+							fileExists: host.fileExists,
+							readFile: host.readFile
 						});
+						if (result.resolvedModule) {
+							// module resolved, store this info
+							resolvedModules.push(result.resolvedModule);
+						} else {
+							// for all other modules, mark them as external library imports
+							// => most probably these are the UI5 modules with the UI5 namespace
+							const resolvedFileName = `/resources/${moduleName}.ts`;
+							resolvedModules.push({
+								resolvedFileName,
+								extension: ".ts",
+								isExternalLibraryImport: !sourcesMap[resolvedFileName]
+							});
+						}
 					}
+					return resolvedModules;
+				};
+
+				// prepare and emit the d.ts files
+				const program = ts.createProgram(Object.keys(sourcesMap), options, host);
+				//const program = ts.createProgram(Object.keys(sourcesMap).filter((s) => !s.endsWith("d.ts")), options, host);
+				const result = program.emit();
+
+				// error diagnostics
+				if (result.emitSkipped) {
+					log.error(
+						`The following errors occured during d.ts generation: \n${ts.formatDiagnostics(
+							result.diagnostics,
+							host
+						)}`
+					);
 				}
-				return resolvedModules;
-			};
-
-			// prepare and emit the d.ts files
-			const program = ts.createProgram(Object.keys(sourcesMap), options, host);
-			//const program = ts.createProgram(Object.keys(sourcesMap).filter((s) => !s.endsWith("d.ts")), options, host);
-			const result = program.emit();
-
-			// error diagnostics
-			if (result.emitSkipped) {
-				log.error(
-					`The following errors occured during d.ts generation: \n${ts.formatDiagnostics(
-						result.diagnostics,
-						host
-					)}`
-				);
+			} catch (e) {
+				// typescript dependency should be available, otherwise we can't generate the dts files
+				log.warn(`Generating d.ts failed! Reason: ${e}`);
 			}
-		} catch (e) {
-			// typescript dependency should be available, otherwise we can't generate the dts files
-			log.warn(`Generating d.ts failed! Reason: ${e}`);
 		}
 	}
 };
