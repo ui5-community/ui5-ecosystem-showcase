@@ -1,0 +1,42 @@
+specVersion: "2.6"
+metadata:
+  name: ui5.ecosystem.demo.simpleapp
+type: application
+framework:
+  name: OpenUI5
+  version: "1.111.0"
+  libraries:
+    - name: sap.m
+    - name: sap.ui.core
+    - name: sap.ui.layout
+    - name: themelib_sap_horizon
+builder:
+  customTasks:
+    - name: ui5-tooling-transpile-task
+      afterTask: replaceVersion
+      configuration:
+        debug: true
+        removeConsoleStatements: true
+        transpileAsync: true
+    - name: ui5-tooling-modules-task
+      afterTask: ui5-tooling-transpile-task
+      configuration:
+        debug: true
+        addToNamespace: true
+# https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
+server:
+  customMiddleware:
+    - name: ui5-tooling-transpile-middleware
+      afterMiddleware: compression
+      configuration:
+        debug: true
+        transpileAsync: true
+    - name: ui5-tooling-modules-middleware
+      afterMiddleware: ui5-tooling-transpile-middleware
+      configuration:
+        debug: true
+    # Last middleware (for the same afterMiddleware) comes first!
+    - name: ui5-middleware-livereload
+      afterMiddleware: compression
+      configuration:
+        debug: true
