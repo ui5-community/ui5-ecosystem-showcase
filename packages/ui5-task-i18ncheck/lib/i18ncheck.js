@@ -83,3 +83,16 @@ module.exports = async function ({ workspace, dependencies, options }) {
 		log.error(`Error while reading content of i18n property files: ${e}`);
 	}
 };
+
+/**
+ * Callback function to define the list of required dependencies
+ *
+ * @returns {Promise<Set>}
+ *      Promise resolving with a Set containing all dependencies
+ *      that should be made available to the task.
+ *      UI5 Tooling will ensure that those dependencies have been
+ *      built before executing the task.
+ */
+module.exports.determineRequiredDependencies = async function () {
+	return new Set();
+};
