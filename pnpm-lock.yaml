@@ -62,8 +62,8 @@ importers:
       rimraf: ~4.1.2
       tui-image-editor: ^3.15.3
       ui5-app-module: ^0.2.1
-      ui5-lib: ^0.1.4
-      ui5-middleware-cfdestination: ^0.10.9
+      ui5-lib: ^0.1.5
+      ui5-middleware-cfdestination: ^0.10.10
       ui5-middleware-iasync: ^1.0.0-alpha.2
       ui5-middleware-index: ^0.3.0
       ui5-middleware-livecompileless: ^0.3.2
@@ -71,15 +71,15 @@ importers:
       ui5-middleware-servestatic: ^0.4.1
       ui5-middleware-simpleproxy: ^0.9.4
       ui5-middleware-webjars: ^0.4.2
-      ui5-task-cachebuster: ^0.3.4
-      ui5-task-compileless: ^0.3.2
-      ui5-task-i18ncheck: ^0.3.10
-      ui5-task-minify-xml: ^0.3.0
-      ui5-task-pwa-enabler: ^0.3.3
-      ui5-task-zipper: ^0.7.3
-      ui5-tooling-modules: ^0.7.10
-      ui5-tooling-stringreplace: ^0.1.0
-      ui5-tooling-transpile: ^0.4.0
+      ui5-task-cachebuster: ^0.3.5
+      ui5-task-compileless: ^0.3.3
+      ui5-task-i18ncheck: ^0.3.11
+      ui5-task-minify-xml: ^0.3.1
+      ui5-task-pwa-enabler: ^0.3.4
+      ui5-task-zipper: ^0.7.4
+      ui5-tooling-modules: ^0.7.11
+      ui5-tooling-stringreplace: ^0.1.1
+      ui5-tooling-transpile: ^0.4.1
       wdio-chromedriver-service: ^8.0.1
       wdio-ui5-service: ^1.0.5
       xlsx: ^0.18.5
@@ -146,8 +146,8 @@ importers:
       rimraf: ~4.1.2
       ui5-app-module: ^0.2.1
       ui5-middleware-livereload: ^0.8.1
-      ui5-tooling-modules: ^0.7.10
-      ui5-tooling-transpile: ^0.4.0
+      ui5-tooling-modules: ^0.7.11
+      ui5-tooling-transpile: ^0.4.1
     dependencies:
       ui5-app-module: link:../ui5-app-module
     devDependencies:
@@ -166,10 +166,10 @@ importers:
       '@ui5/cli': ^2.14.17
       eslint: ^8.32.0
       typescript: ^4.9.4
-      ui5-lib-ts: ^0.1.5
+      ui5-lib-ts: ^0.1.6
       ui5-middleware-livereload: ^0.8.1
-      ui5-tooling-modules: ^0.7.10
-      ui5-tooling-transpile: ^0.4.0
+      ui5-tooling-modules: ^0.7.11
+      ui5-tooling-transpile: ^0.4.1
       xlsx: ^0.18.5
     dependencies:
       ui5-lib-ts: link:../ui5-lib-ts
@@ -216,8 +216,8 @@ importers:
       karma-ui5: ^2.4.0
       typescript: ^4.9.4
       ui5-middleware-livereload: ^0.8.1
-      ui5-tooling-modules: ^0.7.10
-      ui5-tooling-transpile: ^0.4.0
+      ui5-tooling-modules: ^0.7.11
+      ui5-tooling-transpile: ^0.4.1
     devDependencies:
       '@types/openui5': 1.111.1
       '@typescript-eslint/eslint-plugin': 5.55.0_342y7v4tc7ytrrysmit6jo4wri

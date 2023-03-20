@@ -1,6 +1,6 @@
 {
   "name": "ui5-lib-ts",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Showcase of a TypeScript setup for developing UI5 libraries",
   "private": true,
   "author": "Peter Muessig",
@@ -31,8 +31,8 @@
     "karma-ui5": "^2.4.0",
     "typescript": "^4.9.4",
     "ui5-middleware-livereload": "^0.8.1",
-    "ui5-tooling-modules": "^0.7.10",
-    "ui5-tooling-transpile": "^0.4.0"
+    "ui5-tooling-modules": "^0.7.11",
+    "ui5-tooling-transpile": "^0.4.1"
   },
   "ui5": {
     "dependencies": [

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-flatten-library@0.3.0...ui5-task-flatten-library@0.3.1) (2023-03-20)
+
+
+### Bug Fixes
+
+* implement determineRequiredDependencies for all tasks ([#692](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/692)) ([d27b55e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d27b55e5bd2ad95336bdad8f4f07cd0e10ac2ca2))
+
+
+
+
+
 # [0.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-flatten-library@0.2.7...ui5-task-flatten-library@0.3.0) (2022-06-21)
 
 

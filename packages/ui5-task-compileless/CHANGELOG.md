@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-compileless@0.3.2...ui5-task-compileless@0.3.3) (2023-03-20)
+
+
+### Bug Fixes
+
+* implement determineRequiredDependencies for all tasks ([#692](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/692)) ([d27b55e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d27b55e5bd2ad95336bdad8f4f07cd0e10ac2ca2))
+* improvements of projects for tooling 3.0 ([#696](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/696)) ([6bd880f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6bd880f4a0c15bdb0f3ac3d19a9f0a91e3c680ab))
+
+
+
+
+
 ## [0.3.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-compileless@0.3.1...ui5-task-compileless@0.3.2) (2023-01-23)
 
 **Note:** Version bump only for package ui5-task-compileless
