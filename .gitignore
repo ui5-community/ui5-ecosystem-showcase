@@ -1,6 +1,10 @@
 # Ignore Mac files
 .DS_Store
 
+# irrelevant lock files
+package-lock.json
+yarn.lock
+
 # wdi5 screenshots
 packages/ui5-app/webapp/test/e2e/report/*
 

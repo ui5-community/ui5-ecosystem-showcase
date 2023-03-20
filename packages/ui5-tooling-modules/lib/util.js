@@ -150,9 +150,10 @@ const that = (module.exports = {
 	 * @param {string} moduleName the module name
 	 * @param {object} [options] additional options
 	 * @param {boolean} [options.skipCache] skip the module cache
+	 * @param {boolean} [options.debug] debug mode
 	 * @returns {string} the content of the resource or undefined
 	 */
-	getResource: async function getResource(moduleName, { skipCache }) {
+	getResource: async function getResource(moduleName, { skipCache, debug }) {
 		let bundling = false;
 
 		try {
@@ -273,7 +274,7 @@ const that = (module.exports = {
 								lastModified,
 							};
 						} else {
-							log.info(`The bundle for ${moduleName} has ${output.length} chunks!`);
+							debug && log.info(`The bundle for ${moduleName} has ${output.length} chunks!`);
 							// let's take the first chunk only
 							cachedBundle = bundleCache[moduleName] = {
 								content: output[0].code,

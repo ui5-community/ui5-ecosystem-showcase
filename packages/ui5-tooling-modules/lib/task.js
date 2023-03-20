@@ -30,12 +30,6 @@ const escodegen = require("escodegen");
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ workspace, dependencies, taskUtil, options }) {
-	// do not run the task for root projects!
-	if (!taskUtil.isRootProject()) {
-		log.info(`Skipping execution. Current project '${options.projectName}' is not the root project.`);
-		return;
-	}
-
 	const config = options.configuration || {};
 
 	// collector for unique dependencies and resources
@@ -265,10 +259,10 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 	}
 
 	// find all XML resources to determine their dependencies
-	const allXMLWorkspaceResources = await workspace.byGlob("/**/*.xml");
+	const allXmlResources = await workspace.byGlob("/**/*.xml");
 
 	// lookup all resources for their dependencies via the above utility
-	if (allXMLWorkspaceResources.length > 0) {
+	if (allXmlResources.length > 0) {
 		const parser = new XMLParser({
 			attributeNamePrefix: "@_",
 			ignoreAttributes: false,
@@ -276,7 +270,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 		});
 
 		await Promise.all(
-			allXMLWorkspaceResources.map(async (resource) => {
+			allXmlResources.map(async (resource) => {
 				log.verbose(`Processing XML resource: ${resource.getPath()}`);
 
 				const content = await resource.getString();
@@ -289,13 +283,11 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 	}
 
 	// find all JS resources to determine their dependencies
-	const allWorkspaceResources = await workspace.byGlob("/**/*.js");
-	const allDependenciesResources = await dependencies.byGlob("/**/*.js");
-	const allResources = [...allWorkspaceResources, ...allDependenciesResources];
+	const allJsResources = await workspace.byGlob("/**/*.js");
 
 	// lookup all resources for their dependencies via the above utility
 	await Promise.all(
-		allResources.map(async (resource) => {
+		allJsResources.map(async (resource) => {
 			log.verbose(`Processing JS resource: ${resource.getPath()}`);
 
 			const content = await resource.getString();
@@ -314,7 +306,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 			log.verbose(`Trying to process dependency: ${dep}`);
 			const bundle = await getResource(dep, config);
 			if (bundle) {
-				log.info(`Processing dependency: ${dep}`);
+				config.debug && log.info(`Processing dependency: ${dep}`);
 				const bundleResource = resourceFactory.createResource({
 					path: `/resources/${rewriteDep(dep)}.js`,
 					string: bundle,
@@ -331,7 +323,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 			log.verbose(`Trying to process resource: ${resource}`);
 			const content = await getResource(resource, config);
 			if (content) {
-				log.info(`Processing resource: ${resource}`);
+				config.debug && log.info(`Processing resource: ${resource}`);
 				const newResource = resourceFactory.createResource({
 					path: `/resources/${rewriteDep(resource)}`,
 					string: content,
@@ -364,26 +356,26 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 			format: true,
 		});
 
-		const allResources = await workspace.byGlob("/**/*.{js,xml}");
+		const allJsXmlResources = await workspace.byGlob("/**/*.{js,xml}");
 		await Promise.all(
-			allResources.map(async (res) => {
+			allJsXmlResources.map(async (res) => {
 				if (res.getPath().endsWith(".js")) {
 					try {
 						const content = await res.getString();
 						const newContent = rewriteJSDeps(content, bundledResources);
 						if (newContent != content) {
-							log.info(`Rewriting JS resource: ${res.getPath()}`);
+							config.debug && log.info(`Rewriting JS resource: ${res.getPath()}`);
 							res.setString(newContent);
 							await workspace.write(res);
 						}
 					} catch (err) {
-						log.info(`Failed to rewrite "${res.getPath()}" with espree!`, err);
+						log.error(`Failed to rewrite "${res.getPath()}" with espree!`, err);
 					}
 				} else if (res.getPath().endsWith(".xml")) {
 					const content = await res.getString();
 					const xmldom = parser.parse(content);
 					if (rewriteXMLDeps(xmldom, bundledResources)) {
-						log.info(`Rewriting XML resource: ${res.getPath()}`);
+						config.debug && log.info(`Rewriting XML resource: ${res.getPath()}`);
 						const newContent = builder.build(xmldom);
 						res.setString(newContent);
 						await workspace.write(res);
@@ -414,16 +406,12 @@ ${content}`;
 /**
  * Callback function to define the list of required dependencies
  *
- * @param {object} parameters The parameters
- * @param {Set} parameters.availableDependencies
- *      Set containing the names of all direct dependencies of
- *      the project currently being built.
  * @returns {Promise<Set>}
  *      Promise resolving with a Set containing all dependencies
  *      that should be made available to the task.
  *      UI5 Tooling will ensure that those dependencies have been
  *      built before executing the task.
  */
-module.exports.determineRequiredDependencies = async function ({ availableDependencies }) {
-	return availableDependencies;
+module.exports.determineRequiredDependencies = async function () {
+	return new Set(); // dependency resolution uses Nodes' require APIs
 };

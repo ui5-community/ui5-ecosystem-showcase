@@ -4,24 +4,13 @@ metadata:
 type: application
 framework:
   name: OpenUI5
-  version: "1.110.0"
+  version: "1.111.0"
   libraries:
     - name: sap.m
     - name: sap.ui.core
     - name: sap.ui.layout
     - name: themelib_sap_horizon
 builder:
-  resources:
-    excludes:
-      - "**/* copy.xml" # ignore all views with white spaces in filename
-  settings:
-    includeDependency:
-      - ui5.ecosystem.demo.lib
-  componentPreload:
-    excludes:
-      - "ui5/ecosystem/demo/app/includes/**/*.js"
-      - "ui5/ecosystem/demo/app/lib/**/*.js"
-      - "ui5/ecosystem/demo/app/thirdparty/**/*.js" # including firebase.js will lead to issues with new.target meta property in "ui5 build"
   customTasks:
     - name: ui5-tooling-transpile-task
       afterTask: replaceVersion
