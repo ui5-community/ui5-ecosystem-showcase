@@ -10,7 +10,7 @@ const { readFileSync, existsSync } = require("fs");
 const espree = require("espree");
 const estraverse = require("estraverse");
 const { XMLParser, XMLBuilder, XMLValidator } = require("fast-xml-parser");
-const escodegen = require("escodegen");
+const escodegen = require("@javascript-obfuscator/escodegen"); // escodegen itself isn't released anymore since 2020 => using fork
 
 /**
  * Custom task to create the UI5 AMD-like bundles for used ES imports from node_modules.
