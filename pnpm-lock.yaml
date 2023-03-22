@@ -77,7 +77,7 @@ importers:
       ui5-task-minify-xml: ^0.3.1
       ui5-task-pwa-enabler: ^0.3.4
       ui5-task-zipper: ^0.7.4
-      ui5-tooling-modules: ^0.7.11
+      ui5-tooling-modules: ^0.7.12
       ui5-tooling-stringreplace: ^0.1.1
       ui5-tooling-transpile: ^0.4.1
       wdio-chromedriver-service: ^8.0.1
@@ -146,7 +146,7 @@ importers:
       rimraf: ~4.1.2
       ui5-app-module: ^0.2.1
       ui5-middleware-livereload: ^0.8.1
-      ui5-tooling-modules: ^0.7.11
+      ui5-tooling-modules: ^0.7.12
       ui5-tooling-transpile: ^0.4.1
     dependencies:
       ui5-app-module: link:../ui5-app-module
@@ -166,9 +166,9 @@ importers:
       '@ui5/cli': ^2.14.17
       eslint: ^8.32.0
       typescript: ^4.9.4
-      ui5-lib-ts: ^0.1.6
+      ui5-lib-ts: ^0.1.7
       ui5-middleware-livereload: ^0.8.1
-      ui5-tooling-modules: ^0.7.11
+      ui5-tooling-modules: ^0.7.12
       ui5-tooling-transpile: ^0.4.1
       xlsx: ^0.18.5
     dependencies:
@@ -216,7 +216,7 @@ importers:
       karma-ui5: ^2.4.0
       typescript: ^4.9.4
       ui5-middleware-livereload: ^0.8.1
-      ui5-tooling-modules: ^0.7.11
+      ui5-tooling-modules: ^0.7.12
       ui5-tooling-transpile: ^0.4.1
     devDependencies:
       '@types/openui5': 1.111.1
