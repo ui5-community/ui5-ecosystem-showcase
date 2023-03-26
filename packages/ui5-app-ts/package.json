@@ -19,7 +19,13 @@
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
     "directory": "packages/ui5-app-ts"
   },
+  "dependencies": {
+    "luxon": "^3.3.0",
+    "ui5-lib-ts": "^0.1.7",
+    "xlsx": "^0.18.5"
+  },
   "devDependencies": {
+    "@types/luxon": "^3.2.0",
     "@types/openui5": "^1.111.0",
     "@typescript-eslint/eslint-plugin": "^5.49.0",
     "@typescript-eslint/parser": "^5.49.0",
@@ -37,9 +43,5 @@
       "ui5-tooling-modules",
       "ui5-tooling-transpile"
     ]
-  },
-  "dependencies": {
-    "ui5-lib-ts": "^0.1.7",
-    "xlsx": "^0.18.5"
   }
 }
