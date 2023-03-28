@@ -99,7 +99,7 @@ module.exports = {
 		configuration?.debug && log.info(`Create Babel configuration based on ui5.yaml configuration options...`);
 
 		// create the babel configuration based on the ui5.yaml
-		babelConfig = { plugins: [], presets: [], sourceMaps: true };
+		babelConfig = { plugins: [], presets: [] };
 
 		// include additional plugins as configured in the ui5.yaml
 		if (configuration.removeConsoleStatements) {
