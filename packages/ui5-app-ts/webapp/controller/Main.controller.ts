@@ -11,6 +11,13 @@ export default class Main extends Controller {
 	public sayHello(): void {
 		const text: string = capitalize("ui5");
 		MessageBox.show(`Hello World, ${text}!`);
+		import("luxon")
+			.then(({ Info }) => {
+				console.log(`Luxon loaded: ${Info.toString()}`);
+			})
+			.catch((ex) => {
+				console.log("Failed to load luxon from application runtime environment!", ex);
+			});
 	}
 
 	public downloadXLSX(): void {

@@ -26,22 +26,55 @@ const escodegen = require("@javascript-obfuscator/escodegen"); // escodegen itse
  * @param {string} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @param {boolean} [parameters.options.configuration.prependPathMappings] Prepend the path mappings for the UI5 loader to Component.js
  * @param {boolean} [parameters.options.configuration.addToNamespace] Adds modules into the sub-namespace thirdparty of the Component
- * @param {boolean} [parameters.options.configuration.removeScopePreceder] Remove the @ preceder for scope in the namespace/path
+ * @param {boolean} [parameters.options.configuration.removeScopePrefix] Remove the @ prefix for the scope in the namespace/path
+ * @param {boolean} [parameters.options.configuration.providedDependencies] List of provided dependencies which should not be processed
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ workspace, dependencies, taskUtil, options }) {
 	const config = options.configuration || {};
+	const removeScopePrefix = config?.removeScopePrefix || config?.removeScopePreceder;
+	const providedDependencies = Array.isArray(config?.providedDependencies) ? config?.providedDependencies : [];
 
 	// collector for unique dependencies and resources
 	const uniqueDeps = new Set();
 	const uniqueResources = new Set();
+	const uniqueNS = new Set();
+
+	// eslint-disable-next-line jsdoc/require-jsdoc
+	function isProvided(depOrRes) {
+		return providedDependencies.filter((e) => depOrRes === e || depOrRes.startsWith(`${e}/`)).length > 0;
+	}
+
+	// eslint-disable-next-line jsdoc/require-jsdoc
+	function addUniqueDep(dep) {
+		if (isProvided(dep)) {
+			return false;
+		} else {
+			uniqueDeps.add(dep);
+			return true;
+		}
+	}
+
+	// eslint-disable-next-line jsdoc/require-jsdoc
+	function addUniqueResource(res) {
+		if (!isProvided(res)) {
+			uniqueResources.add(res);
+		}
+	}
+
+	// eslint-disable-next-line jsdoc/require-jsdoc
+	function addUniqueNamespace(ns) {
+		if (!isProvided(ns)) {
+			uniqueNS.add(ns);
+		}
+	}
 
 	// utility to rewrite dependency
 	// eslint-disable-next-line jsdoc/require-jsdoc
 	function rewriteDep(dep, useDottedNamespace) {
-		if (config.addToNamespace) {
+		if (config.addToNamespace && (uniqueDeps.has(dep) || uniqueResources.has(dep) || uniqueNS.has(dep))) {
 			let d = dep;
-			if (config.removeScopePreceder && d.startsWith("@")) {
+			if (removeScopePrefix && d.startsWith("@")) {
 				d = d.substring(1);
 			}
 			d = `${options.projectNamespace}/thirdparty/${d}`;
@@ -69,7 +102,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 					) {
 						const elDep = node.arguments[0];
 						if (elDep?.type === "Literal") {
-							uniqueResources.add(elDep.value);
+							addUniqueResource(elDep.value);
 						}
 					} else if (
 						/* sap.ui.(require|define) */
@@ -89,17 +122,18 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 							deps = depsArray?.[0].elements.filter((el) => el.type === "Literal").map((el) => el.value);
 						}
 						deps?.forEach((dep) => {
-							uniqueDeps.add(dep);
-							// each dependency which can be resolved via the NPM package name
-							// should also be checked for its dependencies to finally handle them
-							// here if they also require to be transpiled by the task
-							try {
-								const depPath = resolveModule(dep);
-								if (existsSync(depPath)) {
-									const depContent = readFileSync(depPath, { encoding: "utf8" });
-									findUniqueJSDeps(depContent, depPath);
-								}
-							} catch (err) {}
+							if (addUniqueDep(dep)) {
+								// each dependency which can be resolved via the NPM package name
+								// should also be checked for its dependencies to finally handle them
+								// here if they also require to be transpiled by the task
+								try {
+									const depPath = resolveModule(dep);
+									if (existsSync(depPath)) {
+										const depContent = readFileSync(depPath, { encoding: "utf8" });
+										findUniqueJSDeps(depContent, depPath);
+									}
+								} catch (err) {}
+							}
 						});
 					}
 				},
@@ -194,18 +228,20 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 									let namespace = ns[nodeParts[1] || ""];
 									if (typeof namespace === "string") {
 										namespace = namespace.replace(/\./g, "/");
+										addUniqueNamespace(namespace);
 										const dep = `${namespace}/${module}`;
-										uniqueDeps.add(dep);
-										// each dependency which can be resolved via the NPM package name
-										// should also be checked for its dependencies to finally handle them
-										// here if they also require to be transpiled by the task
-										try {
-											const depPath = resolveModule(dep);
-											if (existsSync(depPath)) {
-												const depContent = readFileSync(depPath, { encoding: "utf8" });
-												findUniqueJSDeps(depContent, depPath);
-											}
-										} catch (ex) {}
+										if (addUniqueDep(dep)) {
+											// each dependency which can be resolved via the NPM package name
+											// should also be checked for its dependencies to finally handle them
+											// here if they also require to be transpiled by the task
+											try {
+												const depPath = resolveModule(dep);
+												if (existsSync(depPath)) {
+													const depContent = readFileSync(depPath, { encoding: "utf8" });
+													findUniqueJSDeps(depContent, depPath);
+												}
+											} catch (ex) {}
+										}
 									}
 									findUniqueXMLDeps(child, ns);
 								}
