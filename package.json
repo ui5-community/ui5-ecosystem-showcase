@@ -9,7 +9,7 @@
     "type": "git",
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git"
   },
-  "packageManager": "pnpm@7.1.7",
+  "packageManager": "pnpm@8.1.0",
   "scripts": {
     "build": "pnpm --filter ui5-app build",
     "build:sc": "pnpm --filter ui5-app build:sc",
