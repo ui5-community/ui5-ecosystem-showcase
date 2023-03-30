@@ -17,7 +17,6 @@ builder:
       configuration:
         debug: true
         removeConsoleStatements: true
-        transpileAsync: true
     - name: ui5-tooling-modules-task
       afterTask: ui5-tooling-transpile-task
       configuration:
@@ -30,7 +29,6 @@ server:
       afterMiddleware: compression
       configuration:
         debug: true
-        transpileAsync: true
     - name: ui5-tooling-modules-middleware
       afterMiddleware: ui5-tooling-transpile-middleware
       configuration:

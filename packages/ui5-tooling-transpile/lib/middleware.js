@@ -1,7 +1,8 @@
-const babel = require("@babel/core");
+/* eslint-disable jsdoc/check-param-names */
 const log = require("@ui5/logger").getLogger("server:custommiddleware:ui5-tooling-transpile");
 const parseurl = require("parseurl");
 const { createBabelConfig, normalizeLineFeeds } = require("./util");
+const babel = require("@babel/core");
 
 /**
  * Custom middleware to transpile resources to JavaScript modules.

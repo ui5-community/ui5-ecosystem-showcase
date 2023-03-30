@@ -20,7 +20,7 @@ export default class Main extends Controller {
 			});
 	}
 
-	public downloadXLSX(): void {
+	public async downloadXLSX(): Promise<void> {
 		const book = utils.book_new();
 		const sheet = utils.json_to_sheet([
 			{
@@ -40,5 +40,6 @@ export default class Main extends Controller {
 		link.href = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," + data;
 		link.download = "speakers.xlsx";
 		link.click();
+		await Promise.resolve();
 	}
 }

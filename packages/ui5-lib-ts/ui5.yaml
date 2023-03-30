@@ -16,9 +16,8 @@ builder:
       configuration: &cfgTranspile
         debug: true
         filePattern: .+(ts|tsx)
-        #transpileDependencies: true
         transpileTypeScript: true
-        transpileAsync: true
+        #transformAsyncToPromise: true
         removeConsoleStatements: true
         includes:
           - /controller/App

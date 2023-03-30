@@ -1,8 +1,9 @@
+/* eslint-disable jsdoc/check-param-names */
 const log = require("@ui5/logger").getLogger("builder:customtask:ui5-tooling-transpile");
-const resourceFactory = require("@ui5/fs").resourceFactory;
-const { createBabelConfig, normalizeLineFeeds } = require("./util");
 const path = require("path");
 const fs = require("fs");
+const resourceFactory = require("@ui5/fs").resourceFactory;
+const { createBabelConfig, normalizeLineFeeds } = require("./util");
 const babel = require("@babel/core");
 
 /**
