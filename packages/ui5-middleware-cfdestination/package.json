@@ -22,7 +22,7 @@
     "timeout": "20s"
   },
   "dependencies": {
-    "@sap/approuter": "^13.1.0",
+    "@sap/approuter": "^14.1.1",
     "@ui5/logger": "^2.0.1",
     "content-type": "^1.0.5",
     "express-http-proxy": "^1.6.3",
@@ -31,10 +31,10 @@
   },
   "devDependencies": {
     "@ui5/cli": "^2.14.17",
-    "ava": "^5.1.1",
+    "ava": "^5.2.0",
     "get-port": "^6.1.2",
     "nock": "^13.3.0",
-    "prettier": "^2.8.3",
+    "prettier": "^2.8.7",
     "replace-in-file": "^6.3.5",
     "supertest": "^6.3.3",
     "wait-on": "^7.0.1"

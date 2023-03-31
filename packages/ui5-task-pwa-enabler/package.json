@@ -15,7 +15,7 @@
   "dependencies": {
     "@ui5/fs": "^2.0.6",
     "mustache": "^4.2.0",
-    "node-html-parser": "^6.1.4"
+    "node-html-parser": "^6.1.5"
   },
   "ui5": {
     "dependencies": []

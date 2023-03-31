@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@ui5/cli": "^2.14.17",
-    "ava": "^5.1.1"
+    "ava": "^5.2.0"
   },
   "ui5": {
     "dependencies": []
