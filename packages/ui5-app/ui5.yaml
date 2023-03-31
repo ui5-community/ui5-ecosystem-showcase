@@ -17,7 +17,6 @@ builder:
       configuration:
         debug: true
         removeConsoleStatements: true
-        transpileAsync: true
         excludePatterns:
           - "resources/"
           - "lib/"
@@ -123,7 +122,6 @@ server:
       afterMiddleware: compression
       configuration:
         debug: true
-        transpileAsync: true
         excludePatterns:
           - "lib/"
         #babelConfig:

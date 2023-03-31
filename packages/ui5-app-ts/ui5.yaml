@@ -22,8 +22,9 @@ builder:
         filePattern: .+(ts|tsx)
         transpileTypeScript: true
         generateDTS: true
-        transpileAsync: true
-        removeConsoleStatements: true
+        # using external .babelrc and .browserslistrc
+        #transformAsyncToPromise: true
+        #removeConsoleStatements: true
         #includes:
         #  - /controller/App
         #  - /controller/Main
