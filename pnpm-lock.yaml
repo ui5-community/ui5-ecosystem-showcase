@@ -693,9 +693,6 @@ importers:
       ui5-tooling-transpile:
         specifier: ^0.5.0
         version: link:../../packages/ui5-tooling-transpile
-      ui5-tsutil:
-        specifier: ^0.2.0
-        version: link:../ui5-tsutil
 
   showcases/ui5-tslib:
     devDependencies:
@@ -738,15 +735,6 @@ importers:
       ui5-tooling-transpile:
         specifier: ^0.5.0
         version: link:../../packages/ui5-tooling-transpile
-
-  showcases/ui5-tsutil:
-    devDependencies:
-      '@types/openui5':
-        specifier: 1.112.0
-        version: 1.112.0
-      typescript:
-        specifier: ^5.0.3
-        version: 5.0.3
 
 packages:
 
