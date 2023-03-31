@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.5.0...ui5-tooling-transpile@0.5.1) (2023-03-31)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** correct order of presets ([#707](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/707)) ([760218e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/760218e60c58d9d9fd95b22cd674ab610f2a1262))
+
+
+
+
+
 # [0.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.4.1...ui5-tooling-transpile@0.5.0) (2023-03-31)
 
 
