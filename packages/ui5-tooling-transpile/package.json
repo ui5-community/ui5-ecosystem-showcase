@@ -32,8 +32,7 @@
   "ava": {
     "files": [
       "test/**/*",
-      "!test/_ui5-app",
-      "!__assets__"
+      "!test/__assets__/**/*"
     ],
     "verbose": true,
     "timeout": "20s"

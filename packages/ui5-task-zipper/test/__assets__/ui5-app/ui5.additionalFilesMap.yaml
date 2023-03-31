@@ -4,7 +4,7 @@ metadata:
 type: application
 framework:
   name: OpenUI5
-  version: "1.111.0"
+  version: "1.112.0"
   libraries:
     - name: sap.m
     - name: sap.ui.core
@@ -18,4 +18,6 @@ builder:
         debug: true
         archiveName: "customZipName"
         additionalFiles:
-          - xs-app.json
+          "xs-app.json":
+          "package.json": "package.json"
+          "bundledefs/firebase.js": "some/custom/dir/firebase.js"

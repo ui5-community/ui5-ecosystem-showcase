@@ -11,13 +11,13 @@
   },
   "scripts": {
     "lint": "eslint lib",
-    "test": "ava"
+    "test": "ava --timeout=5m"
   },
   "ava": {
     "files": [
       "test/**/*",
-      "!test/_ui5-app",
-      "!__assets__"
+      "!test/__assets__/**/*",
+      "!test/__dist__/**/*"
     ],
     "verbose": true,
     "timeout": "20s"

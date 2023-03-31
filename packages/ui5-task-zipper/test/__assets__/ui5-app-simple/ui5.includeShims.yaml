@@ -1,0 +1,67 @@
+specVersion: "3.0"
+metadata:
+  name: ui5.ecosystem.demo.simpleapp
+type: application
+framework:
+  name: OpenUI5
+  version: "1.112.0"
+  libraries:
+    - name: sap.m
+    - name: sap.ui.core
+    - name: sap.ui.layout
+    - name: themelib_sap_horizon
+builder:
+  settings:
+    includeDependency:
+      - ui5.ecosystem.demo.simpleapp.shim
+  customTasks:
+    - name: ui5-tooling-transpile-task
+      afterTask: replaceVersion
+      configuration:
+        debug: true
+        removeConsoleStatements: true
+        transpileAsync: true
+    - name: ui5-tooling-modules-task
+      afterTask: ui5-tooling-transpile-task
+      configuration:
+        debug: true
+        addToNamespace: true
+    - name: ui5-task-zipper
+      afterTask: generateVersionInfo
+      configuration:
+        archiveName: simpleapp
+        includeDependencies: true        
+# https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
+server:
+  customMiddleware:
+    - name: ui5-tooling-transpile-middleware
+      afterMiddleware: compression
+      configuration:
+        debug: true
+        transpileAsync: true
+    - name: ui5-tooling-modules-middleware
+      afterMiddleware: ui5-tooling-transpile-middleware
+      configuration:
+        debug: true
+    # Last middleware (for the same afterMiddleware) comes first!
+    - name: ui5-middleware-livereload
+      afterMiddleware: compression
+      configuration:
+        debug: true
+---
+specVersion: "3.0"
+kind: extension
+type: project-shim
+metadata:
+  name: ui5.ecosystem.demo.simpleapp.shim
+shims:
+  configurations:
+    mkdirp: # dependency name as defined in package.json
+      specVersion: "3.0"
+      type: module
+      metadata:
+        name: mkdirp
+      resources:
+        configuration:
+          paths:
+            "/shim/mkdirp/": "dist/cjs/src"

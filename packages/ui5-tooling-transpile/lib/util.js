@@ -154,7 +154,12 @@ module.exports = {
 		// last 2 browser versions (can be overruled via
 		// configuration option defined in the ui5.yaml
 		// using https://github.com/browserslist/browserslist)
-		const browserListConfigFile = browserslist.findConfig(cwd);
+		let browserListConfigFile;
+		try {
+			browserListConfigFile = browserslist.findConfig(cwd);
+		} catch (ex) {
+			configuration?.debug && log.info(`Unable to find browserslist configuration. Fallback to default...`);
+		}
 		const envPreset = ["@babel/preset-env"];
 		if (browserListConfigFile) {
 			configuration?.debug && log.info(`Using external browserslist configuration...`);

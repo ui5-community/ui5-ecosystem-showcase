@@ -42,9 +42,8 @@ async function promisifiedNeedleInHaystack(zip, needle) {
 test.beforeEach(async (t) => {
   // copy ui5 app to a temp dir in test folder scope
   t.context.tmpDir = path.resolve(
-    `./test/_ui5-app/${crypto.randomBytes(5).toString("hex")}`
+    `./test/__dist__/${crypto.randomBytes(5).toString("hex")}`
   );
-  //await copyUI5app(t.context.tmpDir);
 });
 
 test.afterEach.always(async (t) => {
@@ -53,7 +52,7 @@ test.afterEach.always(async (t) => {
 });
 
 test("archive creation w/ additional files", async (t) => {
-	const ui5 = { yaml: path.resolve("./test/__assets__/ui5.additionalFiles.yaml") };
+	const ui5 = { yaml: path.resolve("./test/__assets__/ui5-app/ui5.additionalFiles.yaml") };
 	spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
 		stdio: "inherit", // > don't include stdout in test output,
 		shell: true,
@@ -68,7 +67,7 @@ test("archive creation w/ additional files", async (t) => {
 	t.true(allDepsFound.every((dep) => dep === true));
 });
 test("archive creation w/ additional files map", async (t) => {
-	const ui5 = { yaml: path.resolve("./test/__assets__/ui5.additionalFilesMap.yaml") };
+	const ui5 = { yaml: path.resolve("./test/__assets__/ui5-app/ui5.additionalFilesMap.yaml") };
 	spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
 		stdio: "inherit", // > don't include stdout in test output,
 		shell: true,
@@ -86,7 +85,7 @@ test("archive creation w/ additional files map", async (t) => {
 });
 
 test("archive creation w/ defaults", async (t) => {
-  const ui5 = { yaml: path.resolve("./test/__assets__/ui5.basic.yaml") };
+  const ui5 = { yaml: path.resolve("./test/__assets__/ui5-app/ui5.basic.yaml") };
   spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
     stdio: "inherit", // > don't include stdout in test output,
     shell: true,
@@ -99,7 +98,7 @@ test("archive creation w/ defaults", async (t) => {
 
 test("archive creation with custom archive name", async (t) => {
   const ui5 = {
-    yaml: path.resolve("./test/__assets__/ui5.customZipName.yaml"),
+    yaml: path.resolve("./test/__assets__/ui5-app/ui5.customZipName.yaml"),
   };
   spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
     stdio: "inherit", // > don't include stdout in test output,
@@ -113,7 +112,7 @@ test("archive creation with custom archive name", async (t) => {
 
 test("onlyZip only produces $file.zip + resources folder", async (t) => {
   const ui5 = {
-    yaml: path.resolve("./test/__assets__/ui5.onlyZip.yaml"),
+    yaml: path.resolve("./test/__assets__/ui5-app/ui5.onlyZip.yaml"),
   };
   spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
     stdio: "inherit", // > don't include stdout in test output,
@@ -130,7 +129,7 @@ test("onlyZip only produces $file.zip + resources folder", async (t) => {
 
 test("UI5 lib dependencies are optionally included", async (t) => {
   const ui5 = {
-    yaml: path.resolve("./test/__assets__/ui5.includeDeps.yaml"),
+    yaml: path.resolve("./test/__assets__/ui5-app/ui5.includeDeps.yaml"),
   };
   spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
     stdio: "inherit", // > don't include stdout in test output,
@@ -147,6 +146,24 @@ test("UI5 lib dependencies are optionally included", async (t) => {
       zip,
       "resources/sap/ui/commons/themes/sap_horizon"
     ),
+  ]);
+  t.true(allDepsFound.every((dep) => dep === true));
+});
+
+test("shims are included", async (t) => {
+  const ui5 = {
+    yaml: path.resolve("./test/__assets__/ui5-app-simple/ui5.includeShims.yaml"),
+  };
+  spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
+    stdio: "inherit", // > don't include stdout in test output,
+    shell: true,
+    cwd: path.resolve(__dirname, "../../ui5-app-simple"),
+  });
+
+  const zip = path.join(t.context.tmpDir, "dist", "simpleapp.zip");
+  // see libraries deps in ui5.includeDepy.yaml
+  const allDepsFound = await Promise.all([
+    promisifiedNeedleInHaystack(zip, "shim/mkdirp/"),
   ]);
   t.true(allDepsFound.every((dep) => dep === true));
 });
