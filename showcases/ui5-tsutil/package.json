@@ -1,0 +1,21 @@
+{
+  "name": "ui5-tsutil",
+  "version": "0.1.0",
+  "description": "UI5 TypeScript Utils",
+  "private": true,
+  "author": "Marc Popescu-Pfeiffer",
+  "license": "Apache-2.0",
+  "types": "index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
+    "directory": "packages/ui5-tsutil"
+  },
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@types/openui5": "1.112.0",
+    "typescript": "^5.0.3"
+  }
+}
