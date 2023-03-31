@@ -1,5 +1,17 @@
 {
 	"ignore": ["**/*.d.ts"],
-	"presets": ["transform-ui5", "@babel/preset-typescript", "@babel/preset-env"],
+	"presets": [
+		"@babel/preset-env", // applied 3rd
+		"transform-ui5", // applied 2nd
+		"@babel/preset-typescript" // applied 1st
+	],
+	"plugins": [
+		[
+			"transform-async-to-promises",
+			{
+				"inlineHelpers": true
+			}
+		]
+	],
 	"sourceMaps": true
 }

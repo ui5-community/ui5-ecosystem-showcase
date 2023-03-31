@@ -135,20 +135,17 @@ module.exports = {
 		// create the babel configuration based on the ui5.yaml
 		babelConfig = { ignore: ["**/*.d.ts"], plugins: [], presets: [] };
 
-		// add the presets to enable transformation of ES modules to
-		// UI5 modules and ES classes to UI5 classes
-		const transformModulesToUI5 =
-			configuration?.transformModulesToUI5 !== undefined
-				? configuration?.transformModulesToUI5
-				: configuration?.transpileTypeScript;
-		if (transformModulesToUI5) {
-			babelConfig.presets.push("transform-ui5");
-		}
-
-		// add the preset to enable the transpiling of TS to JS
-		if (configuration?.transpileTypeScript) {
-			babelConfig.presets.push("@babel/preset-typescript");
-		}
+		// order of the presets is important: last preset is applied first
+		// which means the .babelrc config should look like that:
+		//
+		//  "presets": [
+		//      "@babel/preset-env",        // applied 3rd
+		//      "transform-ui5",            // applied 2nd
+		//      "@babel/preset-typescript"  // applied 1st
+		//  ],
+		//
+		// so, first transpile typescript, then ES modules/classes to UI5
+		// and finally transpile the rest to the target browser env.
 
 		// add the env preset and configure to support the
 		// last 2 browser versions (can be overruled via
@@ -173,6 +170,21 @@ module.exports = {
 			});
 		}
 		babelConfig.presets.push(envPreset);
+
+		// add the presets to enable transformation of ES modules to
+		// UI5 modules and ES classes to UI5 classes
+		const transformModulesToUI5 =
+			configuration?.transformModulesToUI5 !== undefined
+				? configuration?.transformModulesToUI5
+				: configuration?.transpileTypeScript;
+		if (transformModulesToUI5) {
+			babelConfig.presets.push("transform-ui5");
+		}
+
+		// add the preset to enable the transpiling of TS to JS
+		if (configuration?.transpileTypeScript) {
+			babelConfig.presets.push("@babel/preset-typescript");
+		}
 
 		// add plugin to remove console statements
 		if (configuration?.removeConsoleStatements) {
