@@ -1,7 +1,7 @@
-const crypto = require("crypto");
-const {rmSync,existsSync,readdirSync} = require("fs");
 const path = require("path");
+const { rmSync, existsSync, readdirSync } = require("fs");
 const { spawnSync } = require("child_process");
+const crypto = require("crypto");
 const yauzl = require("yauzl");
 
 const test = require("ava");
@@ -56,7 +56,7 @@ test("archive creation w/ additional files", async (t) => {
 	spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
 		stdio: "inherit", // > don't include stdout in test output,
 		shell: true,
-		cwd: path.resolve(__dirname, "../../ui5-app"),
+		cwd: path.resolve(__dirname, "../../../showcases/ui5-app"),
 	});
 	// default options packs to $app-id.zip
 	const targetZip = path.resolve(t.context.tmpDir, "dist", "customZipName.zip");
@@ -71,7 +71,7 @@ test("archive creation w/ additional files map", async (t) => {
 	spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
 		stdio: "inherit", // > don't include stdout in test output,
 		shell: true,
-		cwd: path.resolve(__dirname, "../../ui5-app"),
+		cwd: path.resolve(__dirname, "../../../showcases/ui5-app"),
 	});
 	// default options packs to $app-id.zip
 	const targetZip = path.resolve(t.context.tmpDir, "dist", "customZipName.zip");
@@ -89,7 +89,7 @@ test("archive creation w/ defaults", async (t) => {
   spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
     stdio: "inherit", // > don't include stdout in test output,
     shell: true,
-    cwd: path.resolve(__dirname, "../../ui5-app"),
+    cwd: path.resolve(__dirname, "../../../showcases/ui5-app"),
   });
   // default options packs to $app-id.zip
   const targetZip = path.resolve(t.context.tmpDir, "dist", "ui5ecosystemdemoapp.zip");
@@ -103,7 +103,7 @@ test("archive creation with custom archive name", async (t) => {
   spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
     stdio: "inherit", // > don't include stdout in test output,
     shell: true,
-    cwd: path.resolve(__dirname, "../../ui5-app"),
+    cwd: path.resolve(__dirname, "../../../showcases/ui5-app"),
   });
   // default options packs to $app-id.zip
   const targetZip = path.resolve(t.context.tmpDir, "dist", "customZipName.zip");
@@ -117,7 +117,7 @@ test("onlyZip only produces $file.zip + resources folder", async (t) => {
   spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
     stdio: "inherit", // > don't include stdout in test output,
     shell: true,
-    cwd: path.resolve(__dirname, "../../ui5-app"),
+    cwd: path.resolve(__dirname, "../../../showcases/ui5-app"),
   });
 
   const files = readdirSync(path.join(t.context.tmpDir, "dist"));
@@ -134,7 +134,7 @@ test("UI5 lib dependencies are optionally included", async (t) => {
   spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
     stdio: "inherit", // > don't include stdout in test output,
     shell: true,
-    cwd: path.resolve(__dirname, "../../ui5-app"),
+    cwd: path.resolve(__dirname, "../../../showcases/ui5-app"),
   });
 
   const zip = path.join(t.context.tmpDir, "dist", "ui5ecosystemdemoapp.zip");
@@ -157,13 +157,13 @@ test("shims are included", async (t) => {
   spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
     stdio: "inherit", // > don't include stdout in test output,
     shell: true,
-    cwd: path.resolve(__dirname, "../../ui5-app-simple"),
+    cwd: path.resolve(__dirname, "../../../showcases/ui5-app-simple"),
   });
 
   const zip = path.join(t.context.tmpDir, "dist", "simpleapp.zip");
   // see libraries deps in ui5.includeDepy.yaml
   const allDepsFound = await Promise.all([
-    promisifiedNeedleInHaystack(zip, "shim/mkdirp/"),
+    promisifiedNeedleInHaystack(zip, "shim/rimraf/"),
   ]);
   t.true(allDepsFound.every((dep) => dep === true));
 });

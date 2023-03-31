@@ -1,0 +1,29 @@
+<mvc:View
+  xmlns:chart="sap.chart"
+  controllerName="ui5.ecosystem.demo.app.controller.Thirdparty"
+  displayBlock="true"
+  xmlns="sap.m"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:mod="ui5-module"
+  xmlns:html="http://www.w3.org/1999/xhtml"
+>
+  <html:style>
+    .styledWithCss {
+      color: blue !important;
+    }
+  </html:style>
+  <Page title="{i18n>thirdpartyPage.title}" showNavButton="true" navButtonPress="onNavBack">
+    <content>
+      <Text text="Styled with css" class="styledWithCss" />
+      <html:br />
+      <Text text="Styled with less" class="styledWithLess" />
+      <mod:Chart title="Some Chart" color="green">
+        <mod:ChartRecord label="Day 1" value="100" />
+        <mod:ChartRecord label="Day 2" value="50" />
+        <mod:ChartRecord label="Day 3" value="200" />
+        <mod:ChartRecord label="Day 4" value="150" />
+        <mod:ChartRecord label="Day 5" value="125" />
+      </mod:Chart>
+    </content>
+  </Page>
+</mvc:View>

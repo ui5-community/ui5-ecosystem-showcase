@@ -5,7 +5,7 @@ type: application
 resources:
   configuration:
     paths:
-      webapp: ../../../ui5-app/webapp
+      webapp: ../../../../showcases/ui5-app/webapp
 
 framework:
   name: OpenUI5

@@ -1,0 +1,32 @@
+{
+  "name": "ui5-app-simple",
+  "version": "0.1.2",
+  "description": "UI5 application using custom middlewares and tasks",
+  "private": true,
+  "author": "Volker Buzek, Peter Muessig",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
+    "directory": "showcases/ui5-app-simple"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "ui5 build --clean-dest",
+    "build:sc": "ui5 build self-contained --clean-dest",
+    "start": "ui5 serve --config ui5-dist.yaml --port 1337 --open index.html",
+    "dev": "ui5 serve --port 1337 --open index.html",
+    "lint": "eslint webapp"
+  },
+  "dependencies": {
+    "ui5-module": "^0.2.1"
+  },
+  "devDependencies": {
+    "@ui5/cli": "^3.0.6",
+    "rimraf": "~4.1.2",
+    "ui5-middleware-livereload": "^0.8.1",
+    "ui5-task-zipper": "^0.7.4",
+    "ui5-tooling-modules": "^0.7.12",
+    "ui5-tooling-transpile": "^0.4.1"
+  }
+}

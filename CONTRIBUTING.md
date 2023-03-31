@@ -7,7 +7,7 @@ A sub-package **may** have an additional CONTRIBUTING.md file if needed.
 
 ### Pre-Requisites
 
-- [PNPM](https://pnpm.io/installation) >= 7.1.7
+- [PNPM](https://pnpm.io/installation) >= 8.1.0
 - A [Long-Term Support version](https://nodejs.org/en/about/releases/) of Node.js
 - (optional) [commitizen](https://github.com/commitizen/cz-cli#installing-the-command-line-tool) for managing commit messages.
 
