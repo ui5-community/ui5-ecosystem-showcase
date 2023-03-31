@@ -11,7 +11,7 @@
   },
   "scripts": {
     "lint": "eslint lib",
-    "test": "ava --timeout=5m"
+    "test": "ava"
   },
   "ava": {
     "files": [
@@ -20,7 +20,7 @@
       "!test/__dist__/**/*"
     ],
     "verbose": true,
-    "timeout": "20s"
+    "timeout": "5m"
   },
   "dependencies": {
     "@ui5/fs": "^2.0.6",

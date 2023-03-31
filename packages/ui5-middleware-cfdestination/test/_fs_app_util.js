@@ -16,7 +16,7 @@ async function copyUI5app(tmpDir) {
 		}
 		return yo === undefined ? true : false
 	}
-	await fs.copy(path.resolve(__dirname, "../../ui5-app"), tmpDir, {
+	await fs.copy(path.resolve(__dirname, "../../../showcases/ui5-app"), tmpDir, {
 		filter: filterFn
 	})
 }

@@ -1,1 +1,2 @@
-test/_ui5-app/*
+test/__dist__/*
+!test/__dist__/.keepMe

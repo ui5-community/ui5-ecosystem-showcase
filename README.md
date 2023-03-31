@@ -8,11 +8,14 @@ A repository showcasing the UI5 Tooling ecosystem idea.
 
 This repository showcases the endless possibilities of the UI5 Tooling. The UI5 Tooling extensibility (tasks and middleware) can be used to combine various OSS tools for UI5 application development. This increases the development experience and efficiency and also allows to use well-known tools.
 
-The content of the repository is structured like that:
+The content of the repository is structured in `packages` and `showcases`. The `packages` folder includes the tooling extensions implementations and the `showcases` includes the demo applications, libraries and modules.
+
+### Packages (Tooling Extensions)
+
+The following list provides an overview of the available tooling extensions in this repository:
 
 ```text
 packages
-├── ui5-app                         // the UI5 application using the custom middlewares and tasks
 ├── ui5-middleware-cfdestination    // middleware extension: use the approuter as proxy
 ├── ui5-middleware-iasync           // middleware extension: sync UI interaction across browsers (alpha! careful!)
 ├── ui5-middleware-index            // middleware extension: serve an HTML file for / (root)
@@ -30,8 +33,23 @@ packages
 ├── ui5-task-pwa-enabler            // task extension: enables ui5 app with pwa functionalities
 ├── ui5-task-zipper                 // task extension: bundle the entire webapp in a zip-archive
 ├── ui5-tooling-modules             // tooling extensions: direct consumption of NPM packages in UI5 apps
-├── ui5-tooling-stringreplace      // tooling extension: replaces placeholder strings
+├── ui5-tooling-stringreplace       // tooling extension: replaces placeholder strings
 └── ui5-tooling-transpile           // tooling extensions: transpile resources using Babel
+```
+
+### Showcases (Demos)
+
+The following list provides an overview of the available showcases in this repository:
+
+```text
+showcases
+├── ui5-app                         // UI5 application
+├── ui5-app-simple                  // simple UI5 application using UI5 Tooling V3
+├── ui5-lib                         // UI5 library
+├── ui5-module                      // UI5 module providing a custom control as NPM package
+├── ui5-tsapp                       // TypeScript UI5 application
+├── ui5-tsapp-simple                // simple TypeScript UI5 application using UI5 Tooling V3
+└── ui5-tslib                       // TypeScript UI5 library
 ```
 
 ## Getting Started
@@ -169,6 +187,10 @@ Available tooling extensions in this project:
 | [ui5-tooling-modules](packages/ui5-tooling-modules/README.md) | direct consumption of NPM packages | [![npm version](https://badge.fury.io/js/ui5-tooling-modules.svg)](https://badge.fury.io/js/ui5-tooling-modules) |
 | [ui5-tooling-stringreplace](packages/ui5-tooling-stringreplace/README.md) | replace placeholder strings | [![npm version](https://badge.fury.io/js/ui5-tooling-stringreplace.svg)](https://badge.fury.io/js/ui5-tooling-stringreplace) |
 | [ui5-tooling-transpile](packages/ui5-tooling-transpile/README.md) | transpile resources using Babel | [![npm version](https://badge.fury.io/js/ui5-tooling-transpile.svg)](https://badge.fury.io/js/ui5-tooling-transpile) |
+
+## Support, Feedback, Contributing
+
+This project is open to feature requests/suggestions, bug reports etc. via [GitHub issues](https://github.com/ui5-community/ui5-ecosystem-showcase/issues). Contribution and feedback are encouraged and always welcome. For more information about how to contribute, as well as additional contribution information, see our [Contribution Guidelines](CONTRIBUTING.md).
 
 ## License
 

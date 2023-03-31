@@ -110,7 +110,7 @@ module.exports = async function ({ workspace, dependencies, options, taskUtil })
  *      built before executing the task.
  */
 module.exports.determineRequiredDependencies = async function ({ availableDependencies, options }) {
-	const includeDependencies = options && options.configuration && options.configuration.includeDependencies;
+	const includeDependencies = options?.configuration?.includeDependencies;
 	if (includeDependencies) {
 		return availableDependencies;
 	} else {

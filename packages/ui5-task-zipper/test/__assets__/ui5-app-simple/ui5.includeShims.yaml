@@ -56,12 +56,12 @@ metadata:
   name: ui5.ecosystem.demo.simpleapp.shim
 shims:
   configurations:
-    mkdirp: # dependency name as defined in package.json
+    rimraf: # dependency name as defined in package.json
       specVersion: "3.0"
       type: module
       metadata:
-        name: mkdirp
+        name: rimraf
       resources:
         configuration:
           paths:
-            "/shim/mkdirp/": "dist/cjs/src"
+            "/shim/rimraf/": "dist/cjs/src"

@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "es2022",
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "allowJs": true,
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "rootDir": "webapp",
+    "baseUrl": "./",
+    "paths": {
+      "ui5/ecosystem/demo/tsapp/*": ["webapp/*"],
+      "ui5/ecosystem/demo/tslib/*": ["./node_modules/ui5-tslib/src/ui5/ecosystem/demo/tslib/*"]
+    }
+  },
+  "include": ["webapp/**/*"]
+}
