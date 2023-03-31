@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.4.1...ui5-tooling-transpile@0.5.0) (2023-03-31)
+
+
+### Bug Fixes
+
+* **ui5-task-zipper:** introduce test for packaging shims ([#702](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/702)) ([d4f7e28](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d4f7e287e78362719ee687b2e552b4f5adffd0af))
+* **ui5-tooling-modules:** allow to define provided dependencies ([#698](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/698)) ([b3dbbac](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b3dbbac12981b54f3d1ccd6173d1ad1c12504971))
+* **ui5-tooling-transpile:** add sourcemaps to default babelrc config ([#700](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/700)) ([81983da](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/81983dae97da94ad9f494b60c23c92f4f3a50594))
+* update of project depedencies ([#704](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/704)) ([2f94887](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2f94887d736e1dde8063de36f8d2ea6584dddc95))
+
+
+### Features
+
+* **ui5-tooling-transpile:** align and clean-up configuration options ([#701](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/701)) ([8b26e71](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8b26e716f7cc9b224855f9888f1b7af141cf5dd5))
+
+
+
+
+
 ## [0.4.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.4.0...ui5-tooling-transpile@0.4.1) (2023-03-20)
 
 

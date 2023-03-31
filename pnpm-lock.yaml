@@ -448,10 +448,10 @@ importers:
         specifier: ^3.15.3
         version: 3.15.3
       ui5-lib:
-        specifier: ^0.1.5
+        specifier: ^0.1.6
         version: link:../ui5-lib
       ui5-module:
-        specifier: ^0.2.1
+        specifier: ^0.2.2
         version: link:../ui5-module
       xlsx:
         specifier: ^0.18.5
@@ -509,10 +509,10 @@ importers:
         specifier: ~4.4.1
         version: 4.4.1
       ui5-middleware-cfdestination:
-        specifier: ^0.10.10
+        specifier: ^0.10.11
         version: link:../../packages/ui5-middleware-cfdestination
       ui5-middleware-iasync:
-        specifier: ^1.0.0-alpha.2
+        specifier: ^1.0.0-alpha.3
         version: link:../../packages/ui5-middleware-iasync
       ui5-middleware-index:
         specifier: ^0.3.0
@@ -521,43 +521,43 @@ importers:
         specifier: ^0.3.2
         version: link:../../packages/ui5-middleware-livecompileless
       ui5-middleware-livereload:
-        specifier: ^0.8.1
+        specifier: ^0.8.2
         version: link:../../packages/ui5-middleware-livereload
       ui5-middleware-servestatic:
         specifier: ^0.4.1
         version: link:../../packages/ui5-middleware-servestatic
       ui5-middleware-simpleproxy:
-        specifier: ^0.9.4
+        specifier: ^0.9.5
         version: link:../../packages/ui5-middleware-simpleproxy
       ui5-middleware-webjars:
         specifier: ^0.4.2
         version: link:../../packages/ui5-middleware-webjars
       ui5-task-cachebuster:
-        specifier: ^0.3.5
+        specifier: ^0.3.6
         version: link:../../packages/ui5-task-cachebuster
       ui5-task-compileless:
-        specifier: ^0.3.3
+        specifier: ^0.3.4
         version: link:../../packages/ui5-task-compileless
       ui5-task-i18ncheck:
-        specifier: ^0.3.11
+        specifier: ^0.3.12
         version: link:../../packages/ui5-task-i18ncheck
       ui5-task-minify-xml:
         specifier: ^0.3.1
         version: link:../../packages/ui5-task-minify-xml
       ui5-task-pwa-enabler:
-        specifier: ^0.3.4
+        specifier: ^0.3.5
         version: link:../../packages/ui5-task-pwa-enabler
       ui5-task-zipper:
-        specifier: ^0.7.4
+        specifier: ^0.7.5
         version: link:../../packages/ui5-task-zipper
       ui5-tooling-modules:
-        specifier: ^0.7.12
+        specifier: ^0.7.13
         version: link:../../packages/ui5-tooling-modules
       ui5-tooling-stringreplace:
-        specifier: ^0.1.1
+        specifier: ^0.1.2
         version: link:../../packages/ui5-tooling-stringreplace
       ui5-tooling-transpile:
-        specifier: ^0.4.1
+        specifier: ^0.5.0
         version: link:../../packages/ui5-tooling-transpile
       wdio-chromedriver-service:
         specifier: ^8.1.1
@@ -569,7 +569,7 @@ importers:
   showcases/ui5-app-simple:
     dependencies:
       ui5-module:
-        specifier: ^0.2.1
+        specifier: ^0.2.2
         version: link:../ui5-module
     devDependencies:
       '@ui5/cli':
@@ -579,16 +579,16 @@ importers:
         specifier: ~4.4.1
         version: 4.4.1
       ui5-middleware-livereload:
-        specifier: ^0.8.1
+        specifier: ^0.8.2
         version: link:../../packages/ui5-middleware-livereload
       ui5-task-zipper:
-        specifier: ^0.7.4
+        specifier: ^0.7.5
         version: link:../../packages/ui5-task-zipper
       ui5-tooling-modules:
-        specifier: ^0.7.12
+        specifier: ^0.7.13
         version: link:../../packages/ui5-tooling-modules
       ui5-tooling-transpile:
-        specifier: ^0.4.1
+        specifier: ^0.5.0
         version: link:../../packages/ui5-tooling-transpile
 
   showcases/ui5-lib:
@@ -612,7 +612,7 @@ importers:
         specifier: ^2.4.0
         version: 2.4.0(karma@6.4.1)
       ui5-middleware-livereload:
-        specifier: ^0.8.1
+        specifier: ^0.8.2
         version: link:../../packages/ui5-middleware-livereload
 
   showcases/ui5-module:
@@ -627,7 +627,7 @@ importers:
         specifier: ^3.3.0
         version: 3.3.0
       ui5-tslib:
-        specifier: ^0.1.7
+        specifier: ^0.1.8
         version: link:../ui5-tslib
       xlsx:
         specifier: ^0.18.5
@@ -655,13 +655,13 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3
       ui5-middleware-livereload:
-        specifier: ^0.8.1
+        specifier: ^0.8.2
         version: link:../../packages/ui5-middleware-livereload
       ui5-tooling-modules:
-        specifier: ^0.7.12
+        specifier: ^0.7.13
         version: link:../../packages/ui5-tooling-modules
       ui5-tooling-transpile:
-        specifier: ^0.4.1
+        specifier: ^0.5.0
         version: link:../../packages/ui5-tooling-transpile
 
   showcases/ui5-tsapp-simple:
@@ -685,16 +685,16 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3
       ui5-middleware-livereload:
-        specifier: ^0.8.1
+        specifier: ^0.8.2
         version: link:../../packages/ui5-middleware-livereload
       ui5-tooling-modules:
-        specifier: ^0.7.12
+        specifier: ^0.7.13
         version: link:../../packages/ui5-tooling-modules
       ui5-tooling-transpile:
-        specifier: ^0.4.1
+        specifier: ^0.5.0
         version: link:../../packages/ui5-tooling-transpile
       ui5-tsutil:
-        specifier: ^0.1.0
+        specifier: ^0.2.0
         version: link:../ui5-tsutil
 
   showcases/ui5-tslib:
@@ -730,13 +730,13 @@ importers:
         specifier: ^5.0.3
         version: 5.0.3
       ui5-middleware-livereload:
-        specifier: ^0.8.1
+        specifier: ^0.8.2
         version: link:../../packages/ui5-middleware-livereload
       ui5-tooling-modules:
-        specifier: ^0.7.12
+        specifier: ^0.7.13
         version: link:../../packages/ui5-tooling-modules
       ui5-tooling-transpile:
-        specifier: ^0.4.1
+        specifier: ^0.5.0
         version: link:../../packages/ui5-tooling-transpile
 
   showcases/ui5-tsutil:

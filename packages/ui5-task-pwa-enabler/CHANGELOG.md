@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-pwa-enabler@0.3.4...ui5-task-pwa-enabler@0.3.5) (2023-03-31)
+
+
+### Bug Fixes
+
+* update of project depedencies ([#704](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/704)) ([2f94887](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2f94887d736e1dde8063de36f8d2ea6584dddc95))
+
+
+
+
+
 ## [0.3.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-pwa-enabler@0.3.3...ui5-task-pwa-enabler@0.3.4) (2023-03-20)
 
 
