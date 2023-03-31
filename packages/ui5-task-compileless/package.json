@@ -15,7 +15,7 @@
   "dependencies": {
     "@ui5/logger": "^2.0.1",
     "less-openui5": "^0.11.6",
-    "minimatch": "^6.1.6"
+    "minimatch": "^7.4.3"
   },
   "ui5": {
     "dependencies": []
