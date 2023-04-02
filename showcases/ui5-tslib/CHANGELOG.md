@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tslib@0.1.9...ui5-tslib@0.1.10) (2023-04-02)
+
+**Note:** Version bump only for package ui5-tslib
+
+
+
+
+
 ## [0.1.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tslib@0.1.8...ui5-tslib@0.1.9) (2023-03-31)
 
 **Note:** Version bump only for package ui5-tslib

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.5.1...ui5-tooling-transpile@0.5.2) (2023-04-02)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** use proper fs path for resource tranform ([#708](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/708)) ([eee0014](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/eee0014532e7d606db75df2d490f522d3b04ad26))
+
+
+
+
+
 ## [0.5.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.5.0...ui5-tooling-transpile@0.5.1) (2023-03-31)
 
 
