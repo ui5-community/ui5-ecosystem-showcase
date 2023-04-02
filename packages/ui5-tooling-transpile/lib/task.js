@@ -3,7 +3,7 @@ const log = require("@ui5/logger").getLogger("builder:customtask:ui5-tooling-tra
 const path = require("path");
 const fs = require("fs");
 const resourceFactory = require("@ui5/fs").resourceFactory;
-const { createBabelConfig, normalizeLineFeeds } = require("./util");
+const { createBabelConfig, normalizeLineFeeds, determineResourceFSPath } = require("./util");
 const babel = require("@babel/core");
 
 /**
@@ -66,7 +66,7 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 					const result = await babel.transformAsync(
 						source,
 						Object.assign({}, babelConfig, {
-							filename: resourcePath // necessary for source map <-> source assoc
+							filename: determineResourceFSPath(resource) // necessary for source map <-> source assoc
 						})
 					);
 

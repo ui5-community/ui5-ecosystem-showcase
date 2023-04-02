@@ -239,5 +239,39 @@ module.exports = {
 		// we have to search for any EOL character and replace it
 		// with correct EOL for this OS
 		return code.replace(/\r\n|\r|\n/g, os.EOL);
+	},
+
+	/**
+	 * Determine the given resources' file system path
+	 *
+	 * @param {module:@ui5/fs.Resource} resource the resource
+	 * @returns {string} the file system path
+	 */
+	determineResourceFSPath: function determineResourceFSPath(resource) {
+		let resourcePath = resource.getPath();
+		if (typeof resource.getSourceMetadata === "function") {
+			// specVersion 3.0 provides source metadata and only if the
+			// current work directory is the rootpath of the project resource
+			// it is a root resource which should be considered to be resolved
+			if (path.relative(process.cwd(), resource.getProject().getRootPath()) === "") {
+				resourcePath = resource.getSourceMetadata().fsPath || resourcePath;
+			}
+		} else {
+			// for older versions resolving the file system path is a bit more
+			// tricky and also here we only consider the root resources rather
+			// than the dependencies...
+			const isRootResource = resource?._project?._isRoot;
+			if (isRootResource) {
+				const rootPath = resource._project.path;
+				const pathMappings = resource._project.resources?.pathMappings;
+				const pathMapping = Object.keys(pathMappings).find((basePath) => resourcePath.startsWith(basePath));
+				resourcePath = path.join(
+					rootPath,
+					pathMappings[pathMapping],
+					resourcePath.substring(pathMapping.length)
+				);
+			}
+		}
+		return resourcePath;
 	}
 };
