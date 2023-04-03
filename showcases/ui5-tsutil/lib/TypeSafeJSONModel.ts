@@ -133,4 +133,6 @@ export interface TypeSafeJsonModel<D extends JSON> extends JSONModel {
 	setProperty: <P extends PathType<D>, V extends ValueType<D, P>>(sPath: P, oValue: V, oContext?: Context | undefined, bAsyncUpdate?: boolean | undefined) => boolean;
 	setData: (oData: D, bMerge?: boolean | undefined) => void;
 }
+
+export type TypeSafeJSONModelData = JSON;
 //#endregion
