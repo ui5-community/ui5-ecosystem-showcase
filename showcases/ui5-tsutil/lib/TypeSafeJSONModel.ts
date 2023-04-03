@@ -1,27 +1,52 @@
 // eslint-disable-file
 
 /**
- * This file contains a child class of the JSONModel with typechecking called TypeSafeJSONModel.
- * TypeSafeJSONModel has no functional difference to JSONModel at runtime and can be replaced with JSONModel
- * without any issues.
+ * This file contains the type safe facade "TypeSafeJSONModel" for "JSONModel".
  *
- * The JSONModel class is used to store data which has to be synchronized with the view. JSONModel uses the
+ * Since TypeSafeJSONModel is only a type it has no runtime differences or overhead compared to the JSONModel.
+ *
+ * The JSONModel class is used to store data which has to be synchronized with the view. JSONModel mainly uses the
  * getProperty() and setProperty() methods to access the stored values. To specify which property should be
- * returned the JSONModel uses the names of the keys and '/' as a separator to access nested properties.
+ * returned the JSONModel uses the names of the object keys and '/' as a separator to access nested properties.
  * E.g. if we have the object <code>{ foo: 'FOO', bar: { baz: 'BAZ' }}</code> we could use '/foo' to access
  * the string "FOO", '/bar' to access the object <code>{ baz: 1 }</code> or '/bar/baz' to access the string
  * "BAZ".
  *
  * The purpose of TypeSafeJSONModel is to add typechecking at compile time. This means that the returned
  * properties have the correct type, instead of the <code>any</code> type that the JSONModel returns by
- * default. Additionally, accessing nonexistent properties will cause type errors at compile time.
+ * default. Additionally, accessing non-existent properties will cause type errors at compile time.
  */
 
 import JSONModel from "sap/ui/model/json/JSONModel";
 
 import type Context from "sap/ui/model/Context";
 
+//#region Configuration
+/**
+ * You can safely overwrite this value to configure the TypeSafeJSONModel
+ */
+interface TypeSafeJSONModelConfig {
+	/**
+	 * The maximum recursion depth used during path discovery.
+	 *
+	 * Only values between 0 and 20 are allowed. You can safely overwrite this value.
+	 */
+	maxDepth: 10;
+}
+//#endregion
+
 //#region Helper types
+/**
+ * Alias for ease of use
+ */
+type RecursionMaxDepth = TypeSafeJSONModelConfig["maxDepth"];
+
+/**
+ * Array used to limit recursive calls
+ *
+ * This array works as a counter since for e.g. depth = 5 the value of RecursionLimiterValues[5] is 4
+ */
+type RecursionLimiterValues = [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 
 /**
  * Exclude the symbol type from a given type union
@@ -62,19 +87,20 @@ type JSON = JSONArray | JSONObject;
 
 type PathType<D extends JSON> =
 	// We use this intermediary helper for convenience
-	PathTypeHelper<D, NoSymbols<keyof D>>;
+	PathTypeHelper<D, NoSymbols<keyof D>, RecursionMaxDepth>;
 
-type PathTypeHelper<D, K extends NoSymbols<keyof D>> =
-	//
-	D extends JSONObject // Objects
+type PathTypeHelper<D, K extends NoSymbols<keyof D>, DEPTH extends RecursionLimiterValues[number]> = {
+	done: never;
+	recur: D extends JSONObject // Objects
 		? K extends string | number
-			? `/${K}${"" | PathTypeHelper<D[K], NoSymbols<keyof D[K]>>}` // Recursive call
+			? `/${K}${"" | PathTypeHelper<D[K], NoSymbols<keyof D[K]>, RecursionLimiterValues[DEPTH]>}` // Recursive call
 			: never // shouldn't happen
 		: D extends JSONArray // Arrays
 		? K extends number
-			? `/${K}${"" | PathTypeHelper<D[K], NoSymbols<keyof D[K]>>}` // Recursive call
+			? `/${K}${"" | PathTypeHelper<D[K], NoSymbols<keyof D[K]>, RecursionLimiterValues[DEPTH]>}` // Recursive call
 			: never // shouldn't happen
 		: never; // JSON Scalar
+}[DEPTH extends -1 ? "done" : "recur"];
 
 //#endregion
 
@@ -94,40 +120,17 @@ type ValueTypeHelper<D, P extends string> = D extends JSONObject | JSONArray
 	: never;
 //#endregion
 
-//#region Typesafe JSON Model implementation
-
-/*
- * UI5's JSONModel's Documentation states, that it's not safe to inherit from the JSONModel class.
- * To resolve this issue we are creating a subclass of JSONModel only at compile time and using the
- * createTypeSafeJsonModel and applyTypeToJsonModel Methods to assign the instance type of
- * TypeSafeJSONModel to a JSONModel.
- */
+//#region Typesafe JSON Model
 
 /**
- * TypeSafe facade over UI5's JSONModel
+ * Type safe facade over UI5's JSONModel
  *
  * @see JSONModel
  */
-class TypeSafeJsonModelClass<D extends JSON> extends JSONModel {
-	constructor(oData: D, bObserve?: boolean | undefined) {
-		super(oData, bObserve);
-	}
-
-	public getProperty<P extends PathType<D>>(sPath: P, oContext?: Context | undefined) {
-		return super.getProperty(sPath, oContext) as ValueType<D, P>;
-	}
-
-	public setProperty<P extends PathType<D>, V extends ValueType<D, P>>(sPath: P, oValue: V, oContext?: Context | undefined, bAsyncUpdate?: boolean | undefined) {
-		return super.setProperty(sPath, oValue, oContext, bAsyncUpdate);
-	}
-
-	public setData(oData: D, bMerge?: boolean | undefined) {
-		super.setData(oData, bMerge);
-	}
+export interface TypeSafeJsonModel<D extends JSON> extends JSONModel {
+	constructor: (oData: D, bObserve?: boolean | undefined) => this;
+	getProperty: <P extends PathType<D>>(sPath: P, oContext?: Context | undefined) => ValueType<D, P>;
+	setProperty: <P extends PathType<D>, V extends ValueType<D, P>>(sPath: P, oValue: V, oContext?: Context | undefined, bAsyncUpdate?: boolean | undefined) => boolean;
+	setData: (oData: D, bMerge?: boolean | undefined) => void;
 }
-
-/**
- * Instance type of member of the TypeSafeJsonModelClass
- */
-export type TypeSafeJsonModel<D extends JSON> = InstanceType<typeof TypeSafeJsonModelClass<D>>;
 //#endregion
