@@ -22,7 +22,13 @@ module.exports = async ({ resources, options }) => {
 	return async function injectLess(req, res, next) {
 		let url = req.url;
 		if (url.includes(".css") && !url.includes("resources/")) {
-			let possibleLessFile = await resources.rootProject.byPath(url.replace(".css", ".less"));
+			// in case of livereload a `?livereload=<timestamp>` will be appended
+			let lessUrl = url.replace(".css", ".less");
+			if (lessUrl.includes("?")) {
+				lessUrl = lessUrl.substr(0, lessUrl.indexOf("?"));
+			}
+
+			let possibleLessFile = await resources.rootProject.byPath(lessUrl);
 			if (possibleLessFile) {
 				isDebug && log.info(`Compiling ${possibleLessFile.getPath()}...`);
 				const lessBuilder = new less.Builder({ fs: fsInterface(resources.all) });
