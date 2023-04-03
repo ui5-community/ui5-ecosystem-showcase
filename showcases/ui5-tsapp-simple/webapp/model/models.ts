@@ -1,6 +1,7 @@
 import JSONModel from "sap/ui/model/json/JSONModel";
 import Device from "sap/ui/Device";
-import { TypeSafeJsonModel } from "ui5-tsutil/lib/TypeSafeJSONModel";
+
+import type { TypeSafeJsonModel, TypeSafeJSONModelData } from "ui5-tsutil/lib/TypeSafeJSONModel";
 
 export function createDeviceModel(): JSONModel {
 	const model = new JSONModel(Device);
@@ -8,14 +9,6 @@ export function createDeviceModel(): JSONModel {
 	return model;
 }
 
-/**
- * JSON safe object
- */
-type JSONObject = {
-	[x: string]: JSONObject;
-};
-
-export function createTypedJSONModel(): TypeSafeJsonModel<JSONObject> {
-	const model = new JSONModel();
-	return model as TypeSafeJsonModel<JSONObject>;
+export function createTypedJSONModel<T extends TypeSafeJSONModelData>(oData: T, bObserve?: boolean | undefined) {
+	return new JSONModel(oData) as TypeSafeJsonModel<T>;
 }
