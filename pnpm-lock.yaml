@@ -708,6 +708,9 @@ importers:
       '@ui5/cli':
         specifier: ^2.14.17
         version: 2.14.17
+      '@ui5/ts-interface-generator':
+        specifier: ^0.5.5
+        version: 0.5.5
       eslint:
         specifier: ^8.37.0
         version: 8.37.0
@@ -723,6 +726,9 @@ importers:
       karma-ui5:
         specifier: ^2.4.0
         version: 2.4.0(karma@6.4.1)
+      npm-run-all:
+        specifier: ^4.1.5
+        version: 4.1.5
       typescript:
         specifier: ^5.0.3
         version: 5.0.3
@@ -4470,6 +4476,15 @@ packages:
       yesno: 0.4.0
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /@ui5/ts-interface-generator@0.5.5:
+    resolution: {integrity: sha512-1RT1XjjdwxljUydTfcBkpF3/s48MlAdw+6aS5D7kc1Vji0XDBTX/wJIuRU2BKzT8YyYgHegVo1hKgV2JtMaRBw==}
+    hasBin: true
+    dependencies:
+      hjson: 3.2.2
+      loglevel: 1.8.1
+      yargs: 17.6.2
     dev: true
 
   /@wdio/cli@7.30.2(typescript@4.9.5):
@@ -9165,6 +9180,11 @@ packages:
   /hexoid@1.0.0:
     resolution: {integrity: sha512-QFLV0taWQOZtvIRIAdBChesmogZrtuXvVWsFHZTk2SU+anspqZ2vMnoLg7IE1+Uk16N19APic1BuF8bC8c2m5g==}
     engines: {node: '>=8'}
+    dev: true
+
+  /hjson@3.2.2:
+    resolution: {integrity: sha512-MkUeB0cTIlppeSsndgESkfFD21T2nXPRaBStLtf3cAYA2bVEFdXlodZB0TukwZiobPD1Ksax5DK4RTZeaXCI3Q==}
+    hasBin: true
     dev: true
 
   /homedir-polyfill@1.0.3:
@@ -16167,6 +16187,19 @@ packages:
       y18n: 5.0.8
       yargs-parser: 20.2.9
     dev: false
+
+  /yargs@17.6.2:
+    resolution: {integrity: sha512-1/9UrdHjDZc0eOU0HxOHoS78C69UD3JRMvzlJ7S79S2nTaWRA/whGCTV8o9e/N/1Va9YIV7Q4sOxD8VV4pCWOw==}
+    engines: {node: '>=12'}
+    dependencies:
+      cliui: 8.0.1
+      escalade: 3.1.1
+      get-caller-file: 2.0.5
+      require-directory: 2.1.1
+      string-width: 4.2.3
+      y18n: 5.0.8
+      yargs-parser: 21.1.1
+    dev: true
 
   /yargs@17.7.1:
     resolution: {integrity: sha512-cwiTb08Xuv5fqF4AovYacTFNxk62th7LKJ6BL9IGUpTJrWoU7/7WdQGTP2SjKf1dUNBGzDd28p/Yfs/GI6JrLw==}

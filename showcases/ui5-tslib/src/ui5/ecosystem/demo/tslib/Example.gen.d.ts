@@ -1,4 +1,4 @@
-import { ExampleColor } from "./library";
+import { ExampleColor } from "ui5/ecosystem/demo/tslib/library";
 import Event from "sap/ui/base/Event";
 import { PropertyBindingInfo } from "sap/ui/base/ManagedObject";
 import { $ControlSettings } from "sap/ui/core/Control";
