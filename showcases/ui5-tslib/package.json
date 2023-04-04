@@ -8,9 +8,9 @@
   "scripts": {
     "build": "npm run build:controls && ui5 build --clean-dest",
     "build:controls": "npx @ui5/ts-interface-generator",
-    "dev": "run-p dev:controls dev:ui5",
+    "dev": "run-p dev:controls dev:server",
     "dev:controls": "npx @ui5/ts-interface-generator --watch",
-    "dev:ui5": "ui5 serve --port 8080 -o test-resources/ui5/ecosystem/demo/tslib/Example.html",
+    "dev:server": "ui5 serve --port 8080 -o test-resources/ui5/ecosystem/demo/tslib/Example.html",
     "start": "ui5 serve  --port 8080 -o test-resources/ui5/ecosystem/demo/tslib/Example.html --config ui5-dist.yaml",
     "testsuite": "ui5 serve --open test-resources/ui5/ecosystem/demo/tslib/qunit/testsuite.qunit.html",
     "test": "karma start --browsers=ChromeHeadless --singleRun=true",
