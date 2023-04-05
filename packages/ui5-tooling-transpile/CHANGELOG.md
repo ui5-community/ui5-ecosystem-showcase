@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.5.2...ui5-tooling-transpile@0.6.0) (2023-04-05)
+
+
+### Features
+
+* karma-ui5-transpile preprocessor ([#711](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/711)) ([b57542a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b57542a4d342777bf748aee42eb2247e83f26b6f))
+
+
+
+
+
 ## [0.5.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.5.1...ui5-tooling-transpile@0.5.2) (2023-04-02)
 
 
