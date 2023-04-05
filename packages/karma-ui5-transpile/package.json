@@ -1,0 +1,36 @@
+{
+  "name": "karma-ui5-transpile",
+  "version": "0.1.0",
+  "description": "",
+  "author": "Peter Muessig",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
+    "directory": "packages/karma-ui5-transpile"
+  },
+  "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
+  "keywords": [
+    "karma-plugin",
+    "karma-preprocessor",
+    "babel",
+    "transpile",
+    "ui5",
+    "openui5",
+    "sapui5"
+  ],
+  "peerDependencies": {
+    "karma": ">=6.4.1",
+    "ui5-tooling-transpile": ">=0.5.1"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "karma": "^6.4.1",
+    "ui5-tooling-transpile": "^0.5.1"
+  }
+}

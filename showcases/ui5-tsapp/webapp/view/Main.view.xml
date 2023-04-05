@@ -5,7 +5,7 @@
     </headerContent>
     <content>
       <VBox alignItems="Center" justifyContent="Center" height="100%">
-        <Button text="Say Hello" press="sayHello" />
+        <Button id="helloButton" text="Say Hello" press="sayHello" />
         <Button text="Download XLSX" press="downloadXLSX" />
         <lib:Example text="Hello World" />
       </VBox>

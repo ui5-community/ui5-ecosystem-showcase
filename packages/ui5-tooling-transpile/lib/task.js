@@ -3,8 +3,7 @@ const log = require("@ui5/logger").getLogger("builder:customtask:ui5-tooling-tra
 const path = require("path");
 const fs = require("fs");
 const resourceFactory = require("@ui5/fs").resourceFactory;
-const { createBabelConfig, normalizeLineFeeds, determineResourceFSPath } = require("./util");
-const babel = require("@babel/core");
+const { createBabelConfig, normalizeLineFeeds, determineResourceFSPath, transformAsync } = require("./util");
 
 /**
  * Custom task to transpile resources to JavaScript modules.
@@ -63,7 +62,7 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 
 					// transpile the source
 					config.debug && log.info(`Transpiling resource ${resourcePath}`);
-					const result = await babel.transformAsync(
+					const result = await transformAsync(
 						source,
 						Object.assign({}, babelConfig, {
 							filename: determineResourceFSPath(resource) // necessary for source map <-> source assoc

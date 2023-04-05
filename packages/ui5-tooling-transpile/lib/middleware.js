@@ -1,8 +1,7 @@
 /* eslint-disable jsdoc/check-param-names */
 const log = require("@ui5/logger").getLogger("server:custommiddleware:ui5-tooling-transpile");
 const parseurl = require("parseurl");
-const { createBabelConfig, normalizeLineFeeds, determineResourceFSPath } = require("./util");
-const babel = require("@babel/core");
+const { createBabelConfig, normalizeLineFeeds, determineResourceFSPath, transformAsync } = require("./util");
 
 /**
  * Custom middleware to transpile resources to JavaScript modules.
@@ -58,7 +57,7 @@ module.exports = async function ({ resources, options, middlewareUtil }) {
 				const source = await resource.getString();
 
 				// transpile the source
-				const result = await babel.transformAsync(
+				const result = await transformAsync(
 					source,
 					Object.assign({}, babelConfig, {
 						filename: determineResourceFSPath(resource) // necessary for source map <-> source assoc

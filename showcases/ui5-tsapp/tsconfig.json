@@ -7,12 +7,15 @@
     "allowJs": true,
     "strict": true,
     "strictPropertyInitialization": false,
-    "rootDir": "webapp",
+    "rootDir": "./webapp",
     "baseUrl": "./",
+    "sourceMap": true,
     "paths": {
-      "ui5/ecosystem/demo/tsapp/*": ["webapp/*"],
-      "ui5/ecosystem/demo/tslib/*": ["./node_modules/ui5-tslib/src/ui5/ecosystem/demo/tslib/*"]
+      "ui5/ecosystem/demo/tsapp/*": ["./webapp/*"],
+      "ui5/ecosystem/demo/tslib/*": ["./node_modules/ui5-tslib/src/ui5/ecosystem/demo/tslib/*"],
+      "unit/*": ["./webapp/test/unit/*"],
+      "integration/*": ["./webapp/test/integration/*"]
     }
   },
-  "include": ["webapp/**/*"]
+  "include": ["./webapp/**/*.ts"]
 }

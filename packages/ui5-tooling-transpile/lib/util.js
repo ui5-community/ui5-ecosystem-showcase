@@ -273,5 +273,27 @@ module.exports = {
 			}
 		}
 		return resourcePath;
+	},
+
+	/**
+	 * Transforms code synchronously using Babel
+	 *
+	 * @param {string} code code to transform
+	 * @param {object} opts options
+	 * @returns {string} transformed code
+	 */
+	transform: function transform(code, opts) {
+		return babel.transform(code, opts);
+	},
+
+	/**
+	 * Transforms code asynchronously using Babel
+	 *
+	 * @param {string} code code to transform
+	 * @param {object} opts options
+	 * @returns {string} transformed code
+	 */
+	transformAsync: async function transformAsync(code, opts) {
+		return babel.transformAsync(code, opts);
 	}
 };
