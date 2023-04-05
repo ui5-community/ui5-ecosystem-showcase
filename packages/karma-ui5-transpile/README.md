@@ -69,7 +69,7 @@ That's it! Now, you are able to run your coverage tests with Karma for your Type
 karma start
 ```
 
-If you are interested in out of the box examples, you can find them in the [UI5 Ecosystem Showacase repository](https://github.com/ui5-community/ui5-ecosystem-showcase/) within the `showcases` folder:
+If you are interested in out of the box examples, you can find them in the [UI5 Ecosystem Showcase repository](https://github.com/ui5-community/ui5-ecosystem-showcase/) within the `showcases` folder:
 
 * [TypeScript-based UI5 application](https://github.com/ui5-community/ui5-ecosystem-showcase/tree/main/showcases/ui5-tsapp)
 * [TypeScript-based UI5 library](https://github.com/ui5-community/ui5-ecosystem-showcase/tree/main/showcases/ui5-tslib)
