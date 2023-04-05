@@ -45,7 +45,6 @@ module.exports = function (config) {
   config.set({
     frameworks: ["ui5"],
     browsers: ["Chrome"],
-    plugins: ["karma-ui5", "karma-ui5-transpile", "karma-coverage", "karma-chrome-launcher"],
     reporters: ["progress", "coverage"],
     preprocessors: {
       "webapp/**/*.ts": ["ui5-transpile", "coverage"],
