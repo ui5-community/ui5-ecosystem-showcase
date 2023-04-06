@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tslib@0.2.0...ui5-tslib@0.3.0) (2023-04-06)
+
+
+### Features
+
+* **ui5-tooling-transpile:** rework to avoid configurations for default usage ([#712](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/712)) ([97119f6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/97119f6795d839e305659a64be2f920f25a1392f))
+
+
+
+
+
 # [0.2.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tslib@0.1.10...ui5-tslib@0.2.0) (2023-04-05)
 
 
