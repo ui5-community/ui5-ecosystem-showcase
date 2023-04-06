@@ -68,6 +68,56 @@ async function findBabelConfig(dir) {
 
 module.exports = {
 	/**
+	 * Build the configuration for the task and the middleware.
+	 *
+	 * @param {object} configuration task/middleware configuration
+	 * @returns {object} the translated task/middleware configuration
+	 */
+	createConfiguration: function createConfiguration(configuration) {
+		// extract the configuration
+		const config = configuration || {};
+
+		// if a tsconfig.json file exists, the project is a TypeScript project
+		const isTypeScriptProject = fs.existsSync(path.join(process.cwd(), "tsconfig.json"));
+
+		// derive whether TypeScript should be transformed or not
+		const transformTypeScript = config.transformTypeScript ?? config.transpileTypeScript ?? isTypeScriptProject;
+
+		// derive the includes/excludes from the configuration
+		const includes = config.includes || config.includePatterns || [];
+		const defaultExcludes = [".png", ".jpeg", ".jpg"]; // still needed?
+		const excludes = defaultExcludes.concat(config.excludes || config.excludePatterns || []);
+
+		// determine the file pattern from config or based on TypeScript project
+		let filePattern = config.filePattern; // .+(ts|tsx)
+		if (filePattern === undefined) {
+			filePattern = transformTypeScript ? ".ts" : ".js";
+		}
+
+		// derive transformation parameters
+		const transformModulesToUI5 = config.transformModulesToUI5 ?? transformTypeScript;
+		const transformAsyncToPromise = config.transformAsyncToPromise ?? config.transpileAsync;
+
+		// return the normalized configuration object
+		const normalizedConfiguration = {
+			debug: config.debug,
+			babelConfig: config.babelConfig,
+			includes,
+			excludes,
+			filePattern,
+			generateDts: config.generateDts,
+			transpileDependencies: config.transpileDependencies,
+			transformTypeScript,
+			transformModulesToUI5,
+			transformAsyncToPromise,
+			targetBrowsers: config.targetBrowsers,
+			removeConsoleStatements: config.removeConsoleStatements
+		};
+		config.debug && log.info(`Normalized configuration:\n${JSON.stringify(normalizedConfiguration, null, 2)}`);
+		return normalizedConfiguration;
+	},
+
+	/**
 	 * Lookup the Babel configuration from ui5.yaml, Babel configuration files in file system,
 	 * generated Babel configuration from configuration options or fallback to default
 	 * configuration.
@@ -173,16 +223,12 @@ module.exports = {
 
 		// add the presets to enable transformation of ES modules to
 		// UI5 modules and ES classes to UI5 classes
-		const transformModulesToUI5 =
-			configuration?.transformModulesToUI5 !== undefined
-				? configuration?.transformModulesToUI5
-				: configuration?.transpileTypeScript;
-		if (transformModulesToUI5) {
+		if (configuration?.transformModulesToUI5) {
 			babelConfig.presets.push("transform-ui5");
 		}
 
 		// add the preset to enable the transpiling of TS to JS
-		if (configuration?.transpileTypeScript) {
+		if (configuration?.transformTypeScript) {
 			babelConfig.presets.push("@babel/preset-typescript");
 		}
 
@@ -196,11 +242,7 @@ module.exports = {
 		// requires bigger redundant inline code and it is also
 		// not CSP compliant => therefore the Promise is the better
 		// solution than using the regenerator runtime (by default)
-		const transformAsyncToPromise =
-			configuration?.transformAsyncToPromise !== undefined
-				? configuration?.transformAsyncToPromise
-				: configuration?.transpileAsync;
-		if (transformAsyncToPromise) {
+		if (configuration?.transformAsyncToPromise) {
 			babelConfig.plugins.push([
 				"transform-async-to-promises",
 				{

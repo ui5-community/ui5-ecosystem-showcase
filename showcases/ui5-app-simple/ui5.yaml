@@ -34,6 +34,7 @@ server:
       afterMiddleware: compression
       configuration:
         debug: true
+        removeConsoleStatements: true
     - name: ui5-tooling-modules-middleware
       afterMiddleware: ui5-tooling-transpile-middleware
       configuration:

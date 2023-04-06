@@ -20,16 +20,7 @@ builder:
       configuration: &cfgTranspile
         debug: true
         filePattern: .+(ts|tsx)
-        transpileTypeScript: true
         generateDTS: true
-        # using external .babelrc and .browserslistrc
-        #transformAsyncToPromise: true
-        #removeConsoleStatements: true
-        #includes:
-        #  - /controller/App
-        #  - /controller/Main
-        #excludes:
-        #  - /controller/
     - name: ui5-tooling-modules-task
       afterTask: ui5-tooling-transpile-task
       configuration:

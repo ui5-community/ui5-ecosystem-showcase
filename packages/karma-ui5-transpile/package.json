@@ -24,7 +24,7 @@
   ],
   "peerDependencies": {
     "karma": ">=6.4.1",
-    "ui5-tooling-transpile": ">=0.5.1"
+    "ui5-tooling-transpile": ">=0.7.0"
   },
   "dependencies": {
     "js-yaml": "^4.1.0"

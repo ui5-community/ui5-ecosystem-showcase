@@ -4,7 +4,7 @@ const path = require("path");
 const fs = require("fs");
 const yaml = require("js-yaml");
 
-const { createBabelConfig, transform } = require("ui5-tooling-transpile/lib/util");
+const { createConfiguration, createBabelConfig, transform } = require("ui5-tooling-transpile/lib/util");
 
 /**
  * This Karma preprocessor is used to transpile code respecting the
@@ -41,7 +41,7 @@ function createPreprocessor(config, logger) {
 	// determine the ui5-tooling-transpile-task configuration
 	const customTasks = configs?.[0]?.builder?.customTasks;
 	const transpileTask = customTasks?.find((customTask) => customTask.name === "ui5-tooling-transpile-task");
-	const configuration = transpileTask?.configuration;
+	const configuration = createConfiguration(transpileTask?.configuration);
 
 	// create the Babel configuration using the ui5-tooling-tranpile-task util
 	const babelConfigCreated = createBabelConfig({ configuration, isMiddleware: false }).then((babelOptions) => {

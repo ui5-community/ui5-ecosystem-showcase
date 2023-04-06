@@ -4,7 +4,7 @@ The `karma-ui5-transpile` preprocessor transpiles code of UI5 projects having a 
 
 ## Installation
 
-The plugin requires [`karma`](https://www.npmjs.com/package/karma) `>=6.4.1`, and [ui5-tooling-transpile](https://www.npmjs.com/package/ui5-tooling-transpile) `>=0.6.0`. You can install the required dependencies with the following command: 
+The plugin requires [`karma`](https://www.npmjs.com/package/karma) `>=6.4.1`, and [ui5-tooling-transpile](https://www.npmjs.com/package/ui5-tooling-transpile) `>=0.7.0`. You can install the required dependencies with the following command:
 
 ```sh
 npm install --save-dev karma ui5-tooling-transpile karma-ui5-transpile
