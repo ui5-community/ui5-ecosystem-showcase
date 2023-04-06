@@ -2,7 +2,8 @@ sap.ui.define(["ui5/ecosystem/demo/simpleapp/controller/BaseController"], (Contr
 	"use strict";
 	return Controller.extend("ui5.ecosystem.demo.simpleapp.controller.App", {
 		onInit() {
-			/* do nothing */
+			// next line should be removed!
+			console.log(`App#onInit`);
 		},
 	});
 });
