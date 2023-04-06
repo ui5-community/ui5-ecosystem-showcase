@@ -113,7 +113,7 @@ module.exports = {
 			targetBrowsers: config.targetBrowsers,
 			removeConsoleStatements: config.removeConsoleStatements
 		};
-		config.debug && log.info(`Normalized configuration:\n${JSON.stringify(normalizedConfiguration, null, 2)}`);
+		config.debug && log.verbose(`Normalized configuration:\n${JSON.stringify(normalizedConfiguration, null, 2)}`);
 		return normalizedConfiguration;
 	},
 
