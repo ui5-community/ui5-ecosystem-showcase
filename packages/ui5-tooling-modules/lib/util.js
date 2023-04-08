@@ -19,8 +19,8 @@ const skipAssets = require("./rollup-plugin-skip-assets");
 const espree = require("espree");
 const estraverse = require("estraverse");
 
-// local bundle cache
-const bundleCache = {};
+// local output cache of rollup
+const outputCache = {};
 
 // local list of resolved modules (name to location)
 const resolvedModules = {};
@@ -151,19 +151,19 @@ const that = (module.exports = {
 	 * @param {object} [options] additional options
 	 * @param {boolean} [options.skipCache] skip the module cache
 	 * @param {boolean} [options.debug] debug mode
-	 * @returns {string} the content of the resource or undefined
+	 * @returns {object} the output object of the resource (code, chunks?, lastModified)
 	 */
 	getResource: async function getResource(moduleName, { skipCache, debug }) {
 		let bundling = false;
 
 		try {
 			const modulePath = that.resolveModule(moduleName);
-			const lastModified = new Date((await stat(modulePath)).mtime).getTime();
 			if (modulePath) {
+				const lastModified = new Date((await stat(modulePath)).mtime).getTime();
 				const moduleExt = path.extname(modulePath).toLowerCase();
 
-				let cachedBundle = bundleCache[moduleName];
-				if (skipCache || !cachedBundle || cachedBundle.lastModified !== lastModified) {
+				let cachedOutput = outputCache[moduleName];
+				if (skipCache || !cachedOutput || cachedOutput.lastModified !== lastModified) {
 					// is the bundle a UI5 module?
 					const moduleContent = await readFile(modulePath, { encoding: "utf8" });
 
@@ -264,32 +264,43 @@ const that = (module.exports = {
 							amd: {
 								define: "sap.ui.define",
 							},
+							entryFileNames: `${moduleName}.js`,
+							chunkFileNames: `${moduleName}-[hash].js`,
 						});
+
+						// cache the output (can be mulitple chunks)
+						cachedOutput = outputCache[moduleName] = {
+							code: output[0].code,
+							lastModified,
+						};
 
 						// Right now we only support one chunk as build result
 						// should be also given by the rollup configuration!
-						if (output.length === 1 && output[0].type === "chunk") {
-							cachedBundle = bundleCache[moduleName] = {
-								content: output[0].code,
-								lastModified,
-							};
-						} else {
+						if (output.length > 1) {
 							debug && log.info(`The bundle for ${moduleName} has ${output.length} chunks!`);
-							// let's take the first chunk only
-							cachedBundle = bundleCache[moduleName] = {
-								content: output[0].code,
-								lastModified,
-							};
+							// store the individual output chunks as well in the cache
+							cachedOutput.chunks = {};
+							output.slice(1).forEach((chunk) => {
+								const fileName = chunk.fileName.substring(0, chunk.fileName.length - 3);
+								cachedOutput.chunks[fileName] = outputCache[fileName] = {
+									code: chunk.code,
+									lastModified,
+								};
+							});
 						}
 					} else {
-						cachedBundle = bundleCache[moduleName] = {
-							content: moduleContent,
+						cachedOutput = outputCache[moduleName] = {
+							code: moduleContent,
 							lastModified,
 						};
 					}
 				}
 
-				return cachedBundle?.content;
+				return cachedOutput;
+			} else {
+				// try to retrieve the resource from the output cache
+				// most often this is a chunk resource created in addition
+				return outputCache[moduleName];
 			}
 		} catch (err) {
 			if (bundling) {

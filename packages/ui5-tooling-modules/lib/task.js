@@ -39,6 +39,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 	const uniqueDeps = new Set();
 	const uniqueResources = new Set();
 	const uniqueNS = new Set();
+	const uniqueChunks = new Set();
 
 	// eslint-disable-next-line jsdoc/require-jsdoc
 	function isProvided(depOrRes) {
@@ -69,10 +70,17 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 		}
 	}
 
+	// eslint-disable-next-line jsdoc/require-jsdoc
+	function addUniqueChunks(chunk) {
+		if (!isProvided(chunk)) {
+			uniqueChunks.add(chunk);
+		}
+	}
+
 	// utility to rewrite dependency
 	// eslint-disable-next-line jsdoc/require-jsdoc
 	function rewriteDep(dep, useDottedNamespace) {
-		if (config.addToNamespace && (uniqueDeps.has(dep) || uniqueResources.has(dep) || uniqueNS.has(dep))) {
+		if (config.addToNamespace && (uniqueDeps.has(dep) || uniqueResources.has(dep) || uniqueNS.has(dep) || uniqueChunks.has(dep))) {
 			let d = dep;
 			if (removeScopePrefix && d.startsWith("@")) {
 				d = d.substring(1);
@@ -106,13 +114,15 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 						}
 					} else if (
 						/* sap.ui.(require|define) */
-						node?.type === "CallExpression" &&
-						/require|define|requireSync/.test(node?.callee?.property?.name) &&
-						node?.callee?.object?.property?.name == "ui" &&
-						node?.callee?.object?.object?.name == "sap"
+						(node?.type === "CallExpression" &&
+							/require|define|requireSync/.test(node?.callee?.property?.name) &&
+							node?.callee?.object?.property?.name == "ui" &&
+							node?.callee?.object?.object?.name == "sap") ||
+						/* __ui5_require_async (babel-plugin-transform-modules-ui5) */
+						(node?.type === "CallExpression" && node?.callee?.name == "__ui5_require_async")
 					) {
 						let deps;
-						if (/requireSync/.test(node?.callee?.property?.name)) {
+						if (/requireSync/.test(node?.callee?.property?.name) || /__ui5_require_async/.test(node?.callee?.name)) {
 							const elDep = node.arguments[0];
 							if (elDep?.type === "Literal") {
 								deps = [elDep.value];
@@ -165,10 +175,12 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 					}
 				} else if (
 					/* sap.ui.(requireSync) !LEGACY! */
-					node?.type === "CallExpression" &&
-					/requireSync/.test(node?.callee?.property?.name) &&
-					node?.callee?.object?.property?.name == "ui" &&
-					node?.callee?.object?.object?.name == "sap"
+					(node?.type === "CallExpression" &&
+						/requireSync/.test(node?.callee?.property?.name) &&
+						node?.callee?.object?.property?.name == "ui" &&
+						node?.callee?.object?.object?.name == "sap") ||
+					/* __ui5_require_async (babel-plugin-transform-modules-ui5) */
+					(node?.type === "CallExpression" && node?.callee?.name == "__ui5_require_async")
 				) {
 					const elDep = node.arguments[0];
 					if (elDep?.type === "Literal" && bundledResources.includes(elDep.value)) {
@@ -345,26 +357,39 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 				config.debug && log.info(`Processing dependency: ${dep}`);
 				const bundleResource = resourceFactory.createResource({
 					path: `/resources/${rewriteDep(dep)}.js`,
-					string: bundle,
+					string: bundle.code,
 				});
 				bundledResources.push(dep);
 				await workspace.write(bundleResource);
+				// attach the chunks
+				if (bundle.chunks) {
+					for await (const chunk of Object.keys(bundle.chunks)) {
+						config.debug && log.info(`  + chunk ${chunk}`);
+						addUniqueChunks(chunk);
+						const chunkResource = resourceFactory.createResource({
+							path: `/resources/${rewriteDep(chunk)}.js`,
+							string: bundle.chunks[chunk].code,
+						});
+						bundledResources.push(chunk);
+						await workspace.write(chunkResource);
+					}
+				}
 			}
 		})
 	);
 
 	// every unique resource will be copied
 	await Promise.all(
-		Array.from(uniqueResources).map(async (resource) => {
-			log.verbose(`Trying to process resource: ${resource}`);
-			const content = await getResource(resource, config);
-			if (content) {
-				config.debug && log.info(`Processing resource: ${resource}`);
+		Array.from(uniqueResources).map(async (resourceName) => {
+			log.verbose(`Trying to process resource: ${resourceName}`);
+			const resource = await getResource(resourceName, config);
+			if (resource) {
+				config.debug && log.info(`Processing resource: ${resourceName}`);
 				const newResource = resourceFactory.createResource({
-					path: `/resources/${rewriteDep(resource)}`,
-					string: content,
+					path: `/resources/${rewriteDep(resourceName)}`,
+					string: resource.code,
 				});
-				bundledResources.push(resource);
+				bundledResources.push(resourceName);
 				await workspace.write(newResource);
 			}
 		})
