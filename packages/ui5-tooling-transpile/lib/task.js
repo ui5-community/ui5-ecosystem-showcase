@@ -55,8 +55,10 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 
 				// we ignore d.ts files for transpiling
 				if (!resourcePath.endsWith(".d.ts")) {
-					// mark source for omit from build result
-					taskUtil.setTag(resource, taskUtil.STANDARD_TAGS.OmitFromBuildResult, true);
+					// mark TypeScript source for omit from build result
+					if (resourcePath.endsWith(".ts")) {
+						taskUtil.setTag(resource, taskUtil.STANDARD_TAGS.OmitFromBuildResult, true);
+					}
 
 					// transpile the source
 					config.debug && log.info(`Transpiling resource ${resourcePath}`);
