@@ -1,0 +1,31 @@
+{
+  "authenticationMethod": "none",
+  "welcomeFile": "/index.html",
+  "routes": [
+    {
+      "source": "^/app/resources/(.*)$",
+      "destination": "app",
+      "target": "/resources/$1"
+    },
+    {
+      "source": "^/backend/(.*)$",
+      "destination": "backend",
+      "target": "$1"
+    },
+    {
+      "source": "^/odatav2/(.*)$",
+      "destination": "odatav2",
+      "target": "$1"
+    },
+    {
+      "source": "^/todos/(.*)$",
+      "destination": "todos",
+      "target": "$1"
+    },
+    {
+      "source": "^/(.*)",
+      "localDir": "./webapp",
+      "cacheControl": "no-cache, no-store, must-revalidate"
+    }
+  ]
+}

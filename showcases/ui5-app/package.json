@@ -20,6 +20,7 @@
     "start:ci": "ui5 serve --config ui5-min.yaml --port 1081",
     "start-cdn": "ui5 serve --config ui5-dist.yaml --port 1081 --open index-cdn.html",
     "dev": "ui5 serve --port 1081 --open index.html",
+    "dev:no-open": "ui5 serve --port 1081",
     "dev-h2": "ui5 serve --h2 --port 1082 --open index.html",
     "test": "karma start",
     "test:ci": "karma start karma-ci.conf.js",
