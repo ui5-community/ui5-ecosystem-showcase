@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.7.13...ui5-tooling-modules@0.8.0) (2023-04-08)
+
+
+### Features
+
+* **ui5-tooling-module:** support chunks for module bundles ([#716](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/716)) ([9aad0ea](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9aad0ea2eca870d0bae6c9e4b19eaec2a60cf5a7))
+
+
+
+
+
 ## [0.7.13](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.7.12...ui5-tooling-modules@0.7.13) (2023-03-31)
 
 
