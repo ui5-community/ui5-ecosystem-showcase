@@ -7,8 +7,10 @@ The `karma-ui5-transpile` preprocessor transpiles code of UI5 projects having a 
 The plugin requires [`karma`](https://www.npmjs.com/package/karma) `>=6.4.1`, and [ui5-tooling-transpile](https://www.npmjs.com/package/ui5-tooling-transpile) `>=0.7.0`. You can install the required dependencies with the following command:
 
 ```sh
-npm install --save-dev karma ui5-tooling-transpile karma-ui5-transpile
+npm install --save-dev karma ui5-tooling-transpile karma-ui5 karma-ui5-transpile
 ```
+
+The usage of the [`karma-ui5`](https://www.npmjs.com/package/karma-ui5) plugin is obligatory as it integrates UI5 into the Karma testing flow although it is not directly needed by the `karma-ui5-transpile` plugin. Only the configuration is read from the `karma-ui5` plugin.
 
 ## Configuration
 
@@ -33,7 +35,7 @@ module.exports = function (config) {
 To enable code coverage for your TypeScript-based UI5 project, you can use the `karma-ui5-transpile` to preprocess your TypeScript files in your project before passing them to the `karma-coverage` preprocessor to instrument them. Therefore, you first need to install the required Karma dependencies:
 
 ```sh
-npm install --save-dev karma karma-ui5-transpile karma-coverage karma-chrome-launcher
+npm install --save-dev karma ui5-tooling-transpile karma-ui5 karma-ui5-transpile karma-coverage karma-chrome-launcher
 ```
 
 In the scenario above, we assume that you already use the dependency to `ui5-tooling-transpile` and you have a proper configuration in the `ui5.yaml` for this tooling extension. The above installation script installs the dependencies for `karma`, `karma-ui5-transpile`, `karma-coverage`, and `karma-chrome-launcher` which are needed for the automated execution of your e.g. QUnit tests.
