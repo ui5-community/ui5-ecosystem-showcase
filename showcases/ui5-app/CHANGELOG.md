@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.27.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.26.2...ui5-app@0.27.0) (2023-04-10)
+
+
+### Features
+
+* **ui5-tooling-modules:** include assets of npm packages ([#721](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/721)) ([ce048eb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ce048eb65a22ab96fd7f4e5afe647db60813580c)), closes [#590](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/590)
+
+
+
+
+
 ## [0.26.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.26.1...ui5-app@0.26.2) (2023-04-10)
 
 **Note:** Version bump only for package ui5-app

@@ -570,7 +570,7 @@ importers:
         specifier: ^0.8.0
         version: link:../../packages/ui5-task-zipper
       ui5-tooling-modules:
-        specifier: ^0.8.0
+        specifier: ^0.9.0
         version: link:../../packages/ui5-tooling-modules
       ui5-tooling-stringreplace:
         specifier: ^0.1.2
@@ -604,7 +604,7 @@ importers:
         specifier: ^0.8.0
         version: link:../../packages/ui5-task-zipper
       ui5-tooling-modules:
-        specifier: ^0.8.0
+        specifier: ^0.9.0
         version: link:../../packages/ui5-tooling-modules
       ui5-tooling-transpile:
         specifier: ^0.7.1
@@ -652,7 +652,7 @@ importers:
         specifier: ^3.3.0
         version: 3.3.0
       ui5-tslib:
-        specifier: ^0.3.2
+        specifier: ^0.3.3
         version: link:../ui5-tslib
       xlsx:
         specifier: ^0.18.5
@@ -701,7 +701,7 @@ importers:
         specifier: ^0.8.2
         version: link:../../packages/ui5-middleware-livereload
       ui5-tooling-modules:
-        specifier: ^0.8.0
+        specifier: ^0.9.0
         version: link:../../packages/ui5-tooling-modules
       ui5-tooling-transpile:
         specifier: ^0.7.1
@@ -734,7 +734,7 @@ importers:
         specifier: ^0.8.2
         version: link:../../packages/ui5-middleware-livereload
       ui5-tooling-modules:
-        specifier: ^0.8.0
+        specifier: ^0.9.0
         version: link:../../packages/ui5-tooling-modules
       ui5-tooling-transpile:
         specifier: ^0.7.1
@@ -788,7 +788,7 @@ importers:
         specifier: ^0.8.2
         version: link:../../packages/ui5-middleware-livereload
       ui5-tooling-modules:
-        specifier: ^0.8.0
+        specifier: ^0.9.0
         version: link:../../packages/ui5-tooling-modules
       ui5-tooling-transpile:
         specifier: ^0.7.1
