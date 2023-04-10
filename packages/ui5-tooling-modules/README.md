@@ -46,10 +46,10 @@ npm install ui5-tooling-modules --save-dev
 - *removeScopePrefix*: `boolean`
   Removes the scope prefix `@` from the namespace/path of the 3rd party module when adding it to the namespace with the *addToNamespace* option.
 
-- *providedDependencies*: `String<Array>`
+- *providedDependencies*: `String[]`
   An array of NPM package names which will be available in the development server via the middleware but will be ignored for the build process via the task. Provided dependencies are considered as being provided by the application runtime rather than it must be shipped with the current project. Provided dependencies will ignore any of the configurations above.
 
-- *includeAssets*: `Map<String, String<Array>>` *experimental feature*
+- *includeAssets*: `Map<String, String[]>` *experimental feature*
   A map of NPM package names to list of glob patterns which defines the assets to be included. The list of glob patterns can be omitted in case of copying all resources of the NPM package. (The configuration option is only relevant for the task!)
 
 ## Usage
