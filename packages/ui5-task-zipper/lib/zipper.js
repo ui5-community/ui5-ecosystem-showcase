@@ -1,6 +1,6 @@
 const path = require("path");
 const yazl = require("yazl");
-const resourceFactory = require("@ui5/fs").resourceFactory;
+const { resourceFactory, ReaderCollection } = require("@ui5/fs");
 const log = require("@ui5/logger").getLogger("builder:customtask:zipper");
 
 /**
@@ -29,18 +29,30 @@ module.exports = async function ({ workspace, dependencies, options, taskUtil })
 	const onlyZip = options && options.configuration && options.configuration.onlyZip;
 	const zipName = `${defaultName || options.projectNamespace.replace(/\//g, "")}.zip`;
 
+	// determine the dependencies resource collection to be included
+	const deps =
+		includeDependencies === true
+			? dependencies
+			: new ReaderCollection({
+					readers: !includeDependencies
+						? []
+						: dependencies._readers.filter((reader) => {
+								// V2 and V3 way to identify the readers for the included dependencies
+								const depName = /* V2 */ reader?._project?.metadata?.name || /* V3 */ reader?._readers?.[0]?._project?._name;
+								return includeDependencies.indexOf(depName) !== -1;
+						  }),
+					name: "Filtered reader collection of ui5-task-zipper",
+			  });
+
 	// retrieve the resource path prefix (to get all application resources)
 	const prefixPath = `/resources/${options.projectNamespace}/`;
 
 	// get all application related resources
 	let allResources;
 	try {
-		const ws = await workspace.byGlob(`${prefixPath}/**`);
-		allResources = ws;
-		if (includeDependencies) {
-			const dep = await dependencies.byGlob(`**`);
-			allResources = [...ws, ...dep];
-		}
+		const wsResources = await workspace.byGlob(`${prefixPath}/**`);
+		const depResources = await deps.byGlob(`**`);
+		allResources = [...wsResources, ...depResources];
 	} catch (e) {
 		log.error(`Couldn't read resources: ${e}`);
 	}
@@ -112,6 +124,13 @@ module.exports = async function ({ workspace, dependencies, options, taskUtil })
 module.exports.determineRequiredDependencies = async function ({ availableDependencies, options }) {
 	const includeDependencies = options?.configuration?.includeDependencies;
 	if (includeDependencies) {
+		if (Array.isArray(includeDependencies)) {
+			availableDependencies.forEach((depName) => {
+				if (includeDependencies.indexOf(depName) === -1) {
+					availableDependencies.delete(depName);
+				}
+			});
+		}
 		return availableDependencies;
 	} else {
 		return new Set();

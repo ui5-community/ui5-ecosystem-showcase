@@ -167,3 +167,44 @@ test("shims are included", async (t) => {
   ]);
   t.true(allDepsFound.every((dep) => dep === true));
 });
+
+test("Some UI5 lib dependencies are included (V2)", async (t) => {
+  const ui5 = {
+    yaml: path.resolve("./test/__assets__/ui5-app/ui5.includeSomeDeps.yaml"),
+  };
+  spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
+    stdio: "inherit", // > don't include stdout in test output,
+    shell: true,
+    cwd: path.resolve(__dirname, "../../../showcases/ui5-app"),
+  });
+
+  const zip = path.join(t.context.tmpDir, "dist", "ui5ecosystemdemoapp.zip");
+  // see libraries deps in ui5.includeDepy.yaml
+  const allDepsFound = await Promise.allSettled([
+    promisifiedNeedleInHaystack(zip, "resources/sap/ui/core"),
+    promisifiedNeedleInHaystack(zip, "resources/sap/ui/layout"),
+  ]);
+  t.false(allDepsFound[0].value);
+  t.true(allDepsFound[1].value);
+});
+
+test("Some UI5 lib dependencies are included (V3)", async (t) => {
+  const ui5 = {
+    yaml: path.resolve("./test/__assets__/ui5-app-simple/ui5.includeSomeDeps.yaml"),
+  };
+  spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
+    stdio: "inherit", // > don't include stdout in test output,
+    shell: true,
+    cwd: path.resolve(__dirname, "../../../showcases/ui5-app-simple"),
+  });
+
+  const zip = path.join(t.context.tmpDir, "dist", "simpleapp.zip");
+  // see libraries deps in ui5.includeDepy.yaml
+  const allDepsFound = await Promise.allSettled([
+    promisifiedNeedleInHaystack(zip, "resources/sap/ui/core"),
+    promisifiedNeedleInHaystack(zip, "resources/sap/ui/layout"),
+  ]);
+  t.false(allDepsFound[0].value);
+  t.true(allDepsFound[1].value);
+});
+

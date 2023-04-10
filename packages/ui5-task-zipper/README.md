@@ -21,10 +21,10 @@ Default value: `<app-id.zip>`
 List of files to be included in the ZIP archive relative to the project root or Map of of files to be included in the ZIP archive relative to the project root and target path in the ZIP archive.
 
 - onlyZip: `true|false`
-Set this to true if you also want to generate the unzipped resources in the `dist` folder. Otherwise, it will only create the zipped archive.
+Set this to `true` if you also want to generate the unzipped resources in the `dist` folder. Otherwise, it will only create the zipped archive.
 
-- includeDependencies: `true|false`
-Set this to true if you also want to include the dependencies (UI5 libraries) in the zip archive. Otherwise, it will only include the workspace files (controller, views, etc).
+- includeDependencies: `true|false` or `String<Array>`
+Set this to `true` if you also want to include the dependencies (UI5 libraries) in the zip archive. Otherwise, it will only include the workspace files (controller, views, etc). In order to select only specific dependencies to be included in the final zip you just need to specify the list of dependencies (value of `ui5.yaml`: `metadata > name`).
 
 ## Usage
 
@@ -47,7 +47,7 @@ Set this to true if you also want to include the dependencies (UI5 libraries) in
 
 > As the devDependencies are not recognized by the UI5 tooling, they need to be listed in the `ui5 > dependencies` array. In addition, once using the `ui5 > dependencies` array you need to list all UI5 tooling relevant dependencies.
 
-2. configure it in `$yourapp/ui5.yaml`:
+2. configure it in `$yourapp/ui5.yaml` for UI5 tooling 2.x:
 
 ```yaml
 builder:
@@ -59,7 +59,8 @@ builder:
       additionalFiles:
       - xs-app.json
 ```
-or
+
+or for UI5 tooling 3.x:
 
 ```yaml
 builder:
@@ -75,6 +76,21 @@ builder:
 ```
 
 > :warning: For UI5 Tooling V3 the configuration `afterTask: uglify` needs to be adopted to `afterTask: generateVersionInfo`. This works for the UI5 Tooling V2 and V3.
+
+### Select the dependencies to include
+
+With the configuration option `includeDependencies` you can also specifiy a list of dependencies to be included in the zip file. To do so, specify a list of dependencies using their `ui5.yaml`: `metadata > name` property:
+
+```yaml
+builder:
+  customTasks:
+  - name: ui5-task-zipper
+    afterTask: generateVersionInfo
+    configuration:
+      includeDependencies:
+      - sap.ui.table
+      - ui5.ecosystem.demo.lib
+```
 
 ## How it works
 
