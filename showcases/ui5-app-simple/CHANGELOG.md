@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app-simple@0.2.1...ui5-app-simple@0.3.0) (2023-04-10)
+
+
+### Features
+
+* **ui5-task-zipper:** allow to specify the deps to include ([#720](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/720)) ([bec868c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/bec868c7b4723161a06b7c4d6874a8ce147a94a1)), closes [#550](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/550)
+
+
+
+
+
 ## [0.2.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app-simple@0.2.0...ui5-app-simple@0.2.1) (2023-04-08)
 
 **Note:** Version bump only for package ui5-app-simple
