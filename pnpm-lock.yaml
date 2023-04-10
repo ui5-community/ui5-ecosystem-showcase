@@ -434,12 +434,6 @@ importers:
         specifier: ^5.2.0
         version: 5.2.0
 
-  showcases/approuter:
-    dependencies:
-      '@sap/approuter':
-        specifier: ^14.1.1
-        version: 14.1.1
-
   showcases/ui5-app:
     dependencies:
       '@js-temporal/polyfill':
