@@ -19,6 +19,9 @@ const skipAssets = require("./rollup-plugin-skip-assets");
 const espree = require("espree");
 const estraverse = require("estraverse");
 
+const walk = require("ignore-walk");
+const minimatch = require("minimatch");
+
 // local output cache of rollup
 const outputCache = {};
 
@@ -151,9 +154,10 @@ const that = (module.exports = {
 	 * @param {object} [options] additional options
 	 * @param {boolean} [options.skipCache] skip the module cache
 	 * @param {boolean} [options.debug] debug mode
+	 * @param {boolean} [skipTransform] skip the transformation
 	 * @returns {object} the output object of the resource (code, chunks?, lastModified)
 	 */
-	getResource: async function getResource(moduleName, { skipCache, debug }) {
+	getResource: async function getResource(moduleName, { skipCache, debug }, skipTransform) {
 		let bundling = false;
 
 		try {
@@ -168,7 +172,7 @@ const that = (module.exports = {
 					const moduleContent = await readFile(modulePath, { encoding: "utf8" });
 
 					// only transform non-UI5 modules (.js, .mjs, .cjs files)
-					if (/\.(m|c)?js/.test(moduleExt) && !isUI5Module(moduleContent, modulePath)) {
+					if (!skipTransform && /\.(m|c)?js/.test(moduleExt) && !isUI5Module(moduleContent, modulePath)) {
 						bundling = true;
 
 						// create a bundle
@@ -307,5 +311,31 @@ const that = (module.exports = {
 				log.error(`Couldn't bundle ${moduleName}: ${err}`, err);
 			}
 		}
+	},
+
+	/**
+	 * Lists all resources included in the provided NPM package filtered by the
+	 * list of ignore glob patterns
+	 *
+	 * @param {string} npmPackageName name of the module (e.g. "chart.js/auto")
+	 * @param {string[]} ignore list of globs to be ignored
+	 * @returns {string[]} a list of resource paths
+	 */
+	listResources: function listResources(npmPackageName, ignore) {
+		const npmPackagePath = path.resolve(that.resolveModule(`${npmPackageName}/package.json`), "../");
+		const resources = walk
+			.sync({ path: npmPackagePath })
+			.filter((file) => {
+				return (
+					!ignore ||
+					ignore.filter((ignoreGlob) => {
+						return !minimatch(file, ignoreGlob);
+					}).length !== ignore.length
+				);
+			})
+			.map((file) => {
+				return `${npmPackageName}/${file}`;
+			});
+		return resources;
 	},
 });

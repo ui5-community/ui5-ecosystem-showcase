@@ -70,6 +70,12 @@ builder:
         prependPathMappings: true
         addToNamespace: true
         removeScopePrefix: true
+        includeAssets:
+          "@octokit/core":
+            - "dist-web/*.map"
+          "tui-image-editor":
+            - "dist/**/*.css"
+            - "dist/**/*.svg"
     - name: ui5-task-zipper
       afterTask: generateVersionInfo
       configuration:

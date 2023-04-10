@@ -4,7 +4,7 @@
 const log = require("@ui5/logger").getLogger("builder:customtask:ui5-tooling-modules");
 const resourceFactory = require("@ui5/fs").resourceFactory;
 
-const { getResource, resolveModule } = require("./util");
+const { getResource, resolveModule, listResources } = require("./util");
 
 const { readFileSync, existsSync } = require("fs");
 const espree = require("espree");
@@ -36,6 +36,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 	const providedDependencies = Array.isArray(config?.providedDependencies) ? config?.providedDependencies : [];
 
 	// collector for unique dependencies and resources
+	//const uniqueNPMPackages = new Set();
 	const uniqueDeps = new Set();
 	const uniqueResources = new Set();
 	const uniqueNS = new Set();
@@ -47,19 +48,32 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 	}
 
 	// eslint-disable-next-line jsdoc/require-jsdoc
+	/* TODO: keep functionality commented till needed!
+	function addUniqueNPMPackage(npmPackageName) {
+		if (!uniqueNPMPackages.has(npmPackageName) && npmPackageName && !npmPackageName.startsWith(".") && resolveModule(`${npmPackageName}/package.json`)) {
+			uniqueNPMPackages.add(npmPackageName);
+		}
+	}
+	*/
+
+	// eslint-disable-next-line jsdoc/require-jsdoc
 	function addUniqueDep(dep) {
 		if (isProvided(dep)) {
 			return false;
 		} else {
+			// add the dependency
 			uniqueDeps.add(dep);
+			// also add the NPM package name
+			const npmPackageName = /((?:@[^/]+\/)?(?:[^/]+)).*/.exec(dep)?.[1];
+			//addUniqueNPMPackage(npmPackageName);
 			return true;
 		}
 	}
 
 	// eslint-disable-next-line jsdoc/require-jsdoc
-	function addUniqueResource(res) {
-		if (!isProvided(res)) {
-			uniqueResources.add(res);
+	function addUniqueResource(ns) {
+		if (!isProvided(ns)) {
+			uniqueResources.add(ns);
 		}
 	}
 
@@ -345,6 +359,27 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 		})
 	);
 
+	// lookup the assets to be included which are configured in the ui5.yaml
+	if (config.includeAssets) {
+		if (typeof config.includeAssets === "object") {
+			Object.keys(config.includeAssets).forEach((npmPackageName) => {
+				const ignore = config.includeAssets[npmPackageName];
+				if (!ignore || Array.isArray(ignore)) {
+					log.verbose(`Including assets for dependency: ${npmPackageName}`);
+					const assets = listResources(npmPackageName, ignore);
+					if (log.isLevelEnabled("verbose")) {
+						assets.forEach((asset) => log.verbose(`  - ${asset}`));
+					}
+					assets.forEach((asset) => uniqueResources.add(asset));
+				} else {
+					log.error(`The option "includeAssets" must be type of map with the key being a npm package name and optionally values being a list of glob patterns!`);
+				}
+			});
+		} else {
+			log.error(`The option "includeAssets" must be type of map with the key being a npm package name!`);
+		}
+	}
+
 	// determine bundled resources
 	const bundledResources = [];
 
@@ -382,7 +417,7 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 	await Promise.all(
 		Array.from(uniqueResources).map(async (resourceName) => {
 			log.verbose(`Trying to process resource: ${resourceName}`);
-			const resource = await getResource(resourceName, config);
+			const resource = await getResource(resourceName, config, true);
 			if (resource) {
 				config.debug && log.info(`Processing resource: ${resourceName}`);
 				const newResource = resourceFactory.createResource({
