@@ -58,6 +58,8 @@
     "prepare": "node ./.husky/skip.js || husky install",
     "hooks:pre-commit": "npm-run-all --sequential prettier:staged lint:staged",
     "hooks:pre-push": "npm-run-all --sequential lint:commit",
+    "ncu": "ncu --deep --filter !ui5-*",
+    "ncu-u": "ncu --deep --filter !ui5-* -u",
     "ncu:p": "for d in ./packages/*/ ; do (cd \"$d\" && ncu); done",
     "ncu:p-u": "for d in ./packages/*/ ; do (cd \"$d\" && ncu -u); done",
     "ncu:s": "for d in ./showcases/*/ ; do (cd \"$d\" && ncu); done",
