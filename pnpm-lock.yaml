@@ -357,6 +357,9 @@ importers:
       fast-xml-parser:
         specifier: ^4.1.4
         version: 4.1.4
+      minimatch:
+        specifier: ^7.4.3
+        version: 7.4.3
       rollup:
         specifier: ^3.20.2
         version: 3.20.2
@@ -454,6 +457,9 @@ importers:
       firebase:
         specifier: ^9.19.0
         version: 9.19.0
+      ignore-walk:
+        specifier: ^6.0.2
+        version: 6.0.2
       node-fetch:
         specifier: ^2.6.9
         version: 2.6.9
@@ -9606,12 +9612,11 @@ packages:
       minimatch: 5.1.6
     dev: true
 
-  /ignore-walk@6.0.1:
-    resolution: {integrity: sha512-/c8MxUAqpRccq+LyDOecwF+9KqajueJHh8fz7g3YqjMZt+NSfJzx05zrKiXwa2sKwFCzaiZ5qUVfRj0pmxixEA==}
+  /ignore-walk@6.0.2:
+    resolution: {integrity: sha512-ezmQ1Dg2b3jVZh2Dh+ar6Eu2MqNSTkyb32HU2MAQQQX9tKM3q/UQ/9lf03lQ5hW+fOeoMnwxwkleZ0xcNp0/qg==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     dependencies:
-      minimatch: 6.2.0
-    dev: true
+      minimatch: 7.4.3
 
   /ignore@5.2.4:
     resolution: {integrity: sha512-MAb38BcSbH0eHNBxn7ql2NH/kX33OkB3lZ1BNdh7ENeRChHTYsTvWrMubiIAMNS2llXEEgZ1MUOBtXChP3kaFQ==}
@@ -12228,7 +12233,7 @@ packages:
     resolution: {integrity: sha512-d6RGEuRrNS5/N84iglPivjaJPxhDbZmlbTwTDX2IbcRHG5bZCdtysYMhwiPvcF4GisXHGn7xsxv+GQ7T/02M5Q==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     dependencies:
-      ignore-walk: 6.0.1
+      ignore-walk: 6.0.2
     dev: true
 
   /npm-pick-manifest@3.0.2:
