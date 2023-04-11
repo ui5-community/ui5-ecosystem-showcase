@@ -6,7 +6,7 @@ sap.ui.define(["sap/ui/test/Opa5", "sap/ui/test/actions/Press"], function (Opa5,
 	Opa5.createPageObjects({
 		onTheMainPage: {
 			actions: {
-				iPressTheSayHelloWithDialogButton: function () {
+				iPressTheSayHelloButton: function () {
 					return this.waitFor({
 						id: "helloButton",
 						viewName,

@@ -10,7 +10,7 @@ sap.ui.define(["sap/ui/test/opaQunit", "./pages/Main"], function () {
 		});
 
 		//Actions
-		When.onTheMainPage.iPressTheSayHelloWithDialogButton();
+		When.onTheMainPage.iPressTheSayHelloButton();
 
 		// Assertions
 		Then.onTheMainPage.iShouldSeeTheHelloDialog();
@@ -34,7 +34,7 @@ sap.ui.define(["sap/ui/test/opaQunit", "./pages/Main"], function () {
 		});
 
 		//Actions
-		When.onTheMainPage.iPressTheSayHelloWithDialogButton().and.iPressTheOkButtonInTheDialog();
+		When.onTheMainPage.iPressTheSayHelloButton().and.iPressTheOkButtonInTheDialog();
 
 		// Assertions
 		Then.onTheMainPage.iShouldNotSeeTheHelloDialog();
