@@ -567,7 +567,7 @@ importers:
         specifier: ^0.3.5
         version: link:../../packages/ui5-task-pwa-enabler
       ui5-task-zipper:
-        specifier: ^0.8.0
+        specifier: ^0.8.1
         version: link:../../packages/ui5-task-zipper
       ui5-tooling-modules:
         specifier: ^0.9.2
@@ -601,7 +601,7 @@ importers:
         specifier: ^0.8.2
         version: link:../../packages/ui5-middleware-livereload
       ui5-task-zipper:
-        specifier: ^0.8.0
+        specifier: ^0.8.1
         version: link:../../packages/ui5-task-zipper
       ui5-tooling-modules:
         specifier: ^0.9.2
