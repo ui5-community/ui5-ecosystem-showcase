@@ -14,6 +14,6 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "chart.js": "~3.8"
+    "chart.js": "^3.8"
   }
 }

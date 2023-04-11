@@ -6,8 +6,10 @@
     <content>
       <VBox alignItems="Center" justifyContent="Center" height="100%">
         <Button id="helloButton" text="Say Hello" press="sayHello" />
+        <Button text="Say Hello Async" press="sayHelloAsync" />
         <Button text="Download XLSX" press="downloadXLSX" />
         <Button text="Download PDF" press="downloadPDF" />
+        <Button text="Create Mail" press="createMail" />
         <lib:Example text="Hello World" />
       </VBox>
     </content>
