@@ -14,6 +14,9 @@ builder:
   settings:
     includeDependency:
       - ui5.ecosystem.demo.tslib
+  componentPreload:
+    excludes:
+      - "ui5/ecosystem/demo/tsapp/thirdparty/@stomp/**"
   customTasks:
     - name: ui5-tooling-transpile-task
       afterTask: replaceVersion

@@ -13,6 +13,15 @@ import("luxon")
 		console.log("Failed to load luxon from application runtime environment!", ex);
 	});
 
+// dynamic import of an existing library
+import("@stomp/stompjs")
+	.then(({ Client }) => {
+		console.log(`STOMP.js loaded: ${Client.toString()}`);
+	})
+	.catch((ex) => {
+		console.log("Failed to load STOMP.js from application runtime environment!", ex);
+	});
+
 /**
  * @namespace ui5.ecosystem.demo.tsapp.controller
  */

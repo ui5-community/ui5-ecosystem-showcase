@@ -9,8 +9,9 @@ sap.ui.define(
 		"@octokit/core", // requires node-fetch@2
 		"axios",
 		"@js-temporal/polyfill",
+		"@stomp/stompjs",
 	],
-	(Controller, xlsx, cmis, _firebase, supabase, octokit, axios, temporal) => {
+	(Controller, xlsx, cmis, _firebase, supabase, octokit, axios, temporal, stompjs) => {
 		"use strict";
 
 		console.log(xlsx);
@@ -20,6 +21,7 @@ sap.ui.define(
 		console.log(octokit);
 		console.log(axios);
 		console.log(temporal);
+		console.log(stompjs);
 
 		const { initializeApp, getFirestore } = _firebase;
 		const app = initializeApp({});
