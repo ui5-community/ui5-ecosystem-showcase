@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.27.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.27.4...ui5-app@0.27.5) (2023-04-12)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** include ignore-walk as dependency ([#725](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/725)) ([a8764b5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/a8764b5d598bc4f764f8710516369b045b570f76))
+
+
+
+
+
 ## [0.27.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.27.3...ui5-app@0.27.4) (2023-04-11)
 
 
