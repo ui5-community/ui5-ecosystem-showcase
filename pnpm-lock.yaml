@@ -357,6 +357,9 @@ importers:
       fast-xml-parser:
         specifier: ^4.2.0
         version: 4.2.0
+      ignore-walk:
+        specifier: ^6.0.2
+        version: 6.0.2
       minimatch:
         specifier: ^7.4.6
         version: 7.4.6
@@ -445,6 +448,9 @@ importers:
       '@octokit/core':
         specifier: 4.2.0
         version: 4.2.0
+      '@stomp/stompjs':
+        specifier: ^7.0.0
+        version: 7.0.0
       '@supabase/supabase-js':
         specifier: ^2.19.0
         version: 2.19.0
@@ -457,9 +463,6 @@ importers:
       firebase:
         specifier: ^9.19.1
         version: 9.19.1
-      ignore-walk:
-        specifier: ^6.0.2
-        version: 6.0.2
       node-fetch:
         specifier: ^2.6.9
         version: 2.6.9
@@ -645,6 +648,9 @@ importers:
 
   showcases/ui5-tsapp:
     dependencies:
+      '@stomp/stompjs':
+        specifier: ^7.0.0
+        version: 7.0.0
       jspdf:
         specifier: ^2.5.1
         version: 2.5.1
@@ -3714,6 +3720,10 @@ packages:
 
   /@socket.io/component-emitter@3.1.0:
     resolution: {integrity: sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==}
+
+  /@stomp/stompjs@7.0.0:
+    resolution: {integrity: sha512-fGdq4wPDnSV/KyOsjq4P+zLc8MFWC3lMmP5FBgLWKPJTYcuCbAIrnRGjB7q2jHZdYCOD5vxLuFoKIYLy5/u8Pw==}
+    dev: false
 
   /@supabase/functions-js@2.1.0:
     resolution: {integrity: sha512-vRziB+AqRXRaGHjEFHwBo0kuNDTuAxI7VUeqU24Fe86ISoD8YEQm0dGdpleJEcqgDGWaO6pxT1tfj1BRY5PwMg==}
