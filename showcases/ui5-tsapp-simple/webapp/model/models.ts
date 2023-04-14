@@ -10,5 +10,5 @@ export function createDeviceModel(): JSONModel {
 }
 
 export function createTypedJSONModel<T extends TypeSafeJSONModelData>(oData: T, bObserve?: boolean | undefined) {
-	return new JSONModel(oData) as TypeSafeJsonModel<T>;
+	return new JSONModel(oData, bObserve) as TypeSafeJsonModel<T>;
 }
