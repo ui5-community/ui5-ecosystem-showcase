@@ -60,7 +60,7 @@ type NoSymbols<T> = T extends symbol ? never : T;
 /**
  * JSON safe value
  */
-type JSONScalar = string | boolean | number | null;
+type JSONScalar = string | boolean | number | Date | null;
 
 /**
  * JSON safe array
