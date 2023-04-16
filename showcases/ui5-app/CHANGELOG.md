@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.27.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.27.5...ui5-app@0.27.6) (2023-04-16)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** ensure __esModule marker being exported ([#728](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/728)) ([8f8afd3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8f8afd3cac6abbf4e02ff1546442357df2d76b59)), closes [#726](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/726)
+
+
+
+
+
 ## [0.27.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.27.4...ui5-app@0.27.5) (2023-04-12)
 
 

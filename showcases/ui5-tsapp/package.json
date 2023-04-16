@@ -1,6 +1,6 @@
 {
   "name": "ui5-tsapp",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "description": "Showcase of a TypeScript setup for developing UI5 applications",
   "private": true,
   "author": "Jorge Martins, Peter Muessig",
@@ -29,7 +29,7 @@
     "jspdf": "^2.5.1",
     "luxon": "^3.3.0",
     "moment": "^2.29.4",
-    "ui5-tslib": "^0.3.7",
+    "ui5-tslib": "^0.3.8",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
@@ -43,12 +43,12 @@
     "karma-chrome-launcher": "^3.1.1",
     "karma-coverage": "^2.2.0",
     "karma-ui5": "^2.4.0",
-    "karma-ui5-transpile": "^0.3.3",
+    "karma-ui5-transpile": "^0.3.4",
     "rimraf": "^5.0.0",
     "typescript": "^5.0.4",
     "ui5-middleware-livereload": "^0.8.2",
-    "ui5-tooling-modules": "^0.9.4",
-    "ui5-tooling-transpile": "^0.7.2"
+    "ui5-tooling-modules": "^0.9.5",
+    "ui5-tooling-transpile": "^0.7.3"
   },
   "ui5": {
     "dependencies": [
