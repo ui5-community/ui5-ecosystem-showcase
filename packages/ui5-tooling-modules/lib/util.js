@@ -26,8 +26,8 @@ const minimatch = require("minimatch");
 // local output cache of rollup
 const outputCache = {};
 
-// local list of resolved modules (name to location)
-const resolvedModules = {};
+// local cache of negative modules (avoid additional lookups)
+const modulesNegativeCache = [];
 
 // main field processing order (for nodeResolve and resolveModule)
 const defaultMainFields = ["browser", "module", "main"];
@@ -97,9 +97,9 @@ const that = (module.exports = {
 	 * @param {string[]} options.mainFields an order of main fields to check in package.json
 	 * @returns {string} the path of the module in the filesystem
 	 */
+	// ignore module paths starting with a segment from the ignore list (TODO: maybe a better check?)
 	resolveModule: function resolveModule(moduleName, { mainFields } = {}) {
-		// ignore module paths starting with a segment from the ignore list (TODO: maybe a better check?)
-		if ((resolvedModules[moduleName] && resolvedModules[moduleName].modulePath === undefined) || /^\./.test(moduleName)) {
+		if (modulesNegativeCache.indexOf(moduleName) !== -1 || /^\./.test(moduleName)) {
 			return undefined;
 		}
 		// package.json of app
@@ -107,48 +107,152 @@ const that = (module.exports = {
 		// default the mainFields
 		mainFields = mainFields || defaultMainFields;
 		// retrieve or create a resolved module
-		// (also for the modules which don't exist, as a negative cache!)
-		let resolvedModule = resolvedModules[moduleName];
-		if (!resolvedModule) {
-			log.verbose(`Resolving ${moduleName}...`);
-			// no module found => resolve it
-			resolvedModule = resolvedModules[moduleName] = {};
-			// resolve the module path
-			if (moduleName?.startsWith(`${pkg.name}/`)) {
-				// special handling for app-local resources!
-				resolvedModule.modulePath = path.join(process.cwd(), moduleName.substring(`${pkg.name}/`.length) + ".js");
-			} else {
-				// derive the module path from the package.json entries browser, module or main
-				try {
-					const pckJsonModuleName = path.join(moduleName, "package.json");
-					const pkgJson = require(pckJsonModuleName);
-					// resolve the main field from the package.json
-					for (const field of mainFields) {
-						if (typeof pkgJson?.[field] === "string") {
-							resolvedModule.modulePath = path.join(path.dirname(resolveNodeModule(pckJsonModuleName)), pkgJson?.[field]);
-							break;
-						}
+		log.verbose(`Resolving ${moduleName} [${mainFields}]...`);
+		// no module found => resolve it
+		let modulePath;
+		// resolve the module path
+		if (moduleName?.startsWith(`${pkg.name}/`)) {
+			// special handling for app-local resources!
+			modulePath = path.join(process.cwd(), moduleName.substring(`${pkg.name}/`.length) + ".js");
+		} else {
+			// derive the module path from the package.json entries browser, module or main
+			try {
+				const pckJsonModuleName = path.join(moduleName, "package.json");
+				const pkgJson = require(pckJsonModuleName);
+				// resolve the main field from the package.json
+				for (const field of mainFields) {
+					if (typeof pkgJson?.[field] === "string") {
+						modulePath = path.join(path.dirname(resolveNodeModule(pckJsonModuleName)), pkgJson?.[field]);
+						break;
 					}
-					// reset the module path if it doesn't exist
-					if (!existsSync(resolvedModule.modulePath)) {
-						resolvedModule.modulePath = undefined;
-					}
-				} catch (err) {
-					// gracefully ignore the error
-					//console.error(err);
 				}
-				// resolve from node_modules via regular lookup
-				if (!resolvedModule.modulePath) {
-					resolvedModule.modulePath = resolveNodeModule(moduleName);
+				// reset the module path if it doesn't exist
+				if (!existsSync(modulePath)) {
+					modulePath = undefined;
 				}
+			} catch (err) {
+				// gracefully ignore the error
+				//console.error(err);
 			}
-			if (resolvedModule.modulePath === undefined) {
-				log.verbose(`  => not found!`);
-			} else {
-				log.verbose(`  => found at ${resolvedModule.modulePath}`);
+			// resolve from node_modules via regular lookup
+			if (!modulePath) {
+				modulePath = resolveNodeModule(moduleName);
 			}
 		}
-		return resolvedModule.modulePath;
+		if (modulePath === undefined) {
+			modulesNegativeCache.push(moduleName);
+			log.verbose(`  => not found!`);
+		} else {
+			log.verbose(`  => found at ${modulePath}`);
+		}
+		return modulePath;
+	},
+
+	/**
+	 * creates a bundle for the given module name
+	 *
+	 * @param {string} moduleName name of the module (e.g. "chart.js/auto")
+	 * @param {object} options configuration options
+	 * @param {string[]} options.mainFields an order of main fields to check in package.json
+	 * @returns {string} the bundle
+	 */
+	createBundle: async function createBundle(moduleName, { mainFields } = {}) {
+		// create a bundle
+		const bundle = await rollup.rollup({
+			input: moduleName,
+			plugins: [
+				(function (options) {
+					return {
+						name: "logger",
+						resolveId(source) {
+							log.verbose(`Bundling resource ${source}`);
+							return undefined;
+						},
+					};
+				})(),
+				injectESModule(),
+				// This example show-cases how to rewrite dependency names
+				// and how the resolution of the dependency is handled later
+				/* NOT NEEDED FOR NOW!
+				(function (options) {
+					return {
+						name: "resolve-node-deps",
+						resolveId(importee, importer, resolveOptions) {
+							if (importee.startsWith("node:")) {
+								const updatedId = importee.substring(5);
+								//console.log(updatedId);
+								return this.resolve(
+									updatedId,
+									importer,
+									Object.assign({ skipSelf: true }, resolveOptions)
+								).then((resolved) => resolved || { id: updatedId });
+							}
+							return null;
+						}
+					};
+				})(),
+				*/
+				skipAssets({
+					log,
+					extensions: ["css"],
+					modules: ["crypto"],
+				}),
+				nodePolyfills(),
+				json(),
+				commonjs({
+					defaultIsModuleExports: true,
+				}),
+				amdCustom(),
+				nodeResolve({
+					mainFields,
+					preferBuiltins: false,
+				}),
+				(function (options) {
+					const { mainFields } = options;
+					return {
+						name: "resolve-pnpm",
+						resolveId(source) {
+							// ignore absolute paths
+							if (path.isAbsolute(source)) {
+								return source;
+							}
+							// needs to be in sync with nodeResolve
+							return that.resolveModule(source, { mainFields });
+						},
+					};
+				})({ mainFields }),
+				injectProcessEnv({
+					NODE_ENV: "production",
+				}),
+			],
+			onwarn: function ({ loc, frame, code, message }) {
+				// Skip certain warnings
+				const skipWarnings = ["THIS_IS_UNDEFINED", "CIRCULAR_DEPENDENCY", "MIXED_EXPORTS"];
+				if (skipWarnings.indexOf(code) !== -1) {
+					return;
+				}
+				// console.warn everything else
+				if (loc) {
+					log.warn(`${loc.file} (${loc.line}:${loc.column}) ${message}`);
+					if (frame) log.warn(frame);
+				} else {
+					log.warn(`${message} [${code}]`);
+				}
+			},
+		});
+
+		// generate output specific code in-memory
+		// you can call this function multiple times on the same bundle object
+		const { output } = await bundle.generate({
+			format: "amd",
+			amd: {
+				define: "sap.ui.define",
+			},
+			entryFileNames: `${moduleName}.js`,
+			chunkFileNames: `${moduleName}-[hash].js`,
+		});
+
+		return output;
 	},
 
 	/**
@@ -182,99 +286,17 @@ const that = (module.exports = {
 					if (!skipTransform && /\.(m|c)?js/.test(moduleExt) && !isUI5Module(moduleContent, modulePath)) {
 						bundling = true;
 
-						// create a bundle
-						const bundle = await rollup.rollup({
-							input: moduleName,
-							plugins: [
-								(function (options) {
-									return {
-										name: "logger",
-										resolveId(source) {
-											log.verbose(`Bundling resource ${source}`);
-											return undefined;
-										},
-									};
-								})(),
-								injectESModule(),
-								// This example show-cases how to rewrite dependency names
-								// and how the resolution of the dependency is handled later
-								/* NOT NEEDED FOR NOW!
-								(function (options) {
-									return {
-										name: "resolve-node-deps",
-										resolveId(importee, importer, resolveOptions) {
-											if (importee.startsWith("node:")) {
-												const updatedId = importee.substring(5);
-												//console.log(updatedId);
-												return this.resolve(
-													updatedId,
-													importer,
-													Object.assign({ skipSelf: true }, resolveOptions)
-												).then((resolved) => resolved || { id: updatedId });
-											}
-											return null;
-										}
-									};
-								})(),
-								*/
-								skipAssets({
-									log,
-									extensions: ["css"],
-									modules: ["crypto"],
-								}),
-								nodePolyfills(),
-								json(),
-								commonjs({
-									defaultIsModuleExports: true,
-								}),
-								amdCustom(),
-								nodeResolve({
-									mainFields: defaultMainFields,
-									preferBuiltins: false,
-								}),
-								(function (options) {
-									return {
-										name: "resolve-pnpm",
-										resolveId(source) {
-											// ignore absolute paths
-											if (path.isAbsolute(source)) {
-												return source;
-											}
-											// needs to be in sync with nodeResolve
-											return that.resolveModule(source);
-										},
-									};
-								})(),
-								injectProcessEnv({
-									NODE_ENV: "production",
-								}),
-							],
-							onwarn: function ({ loc, frame, code, message }) {
-								// Skip certain warnings
-								const skipWarnings = ["THIS_IS_UNDEFINED", "CIRCULAR_DEPENDENCY", "MIXED_EXPORTS"];
-								if (skipWarnings.indexOf(code) !== -1) {
-									return;
-								}
-								// console.warn everything else
-								if (loc) {
-									log.warn(`${loc.file} (${loc.line}:${loc.column}) ${message}`);
-									if (frame) log.warn(frame);
-								} else {
-									log.warn(`${message} [${code}]`);
-								}
-							},
-						});
-
-						// generate output specific code in-memory
-						// you can call this function multiple times on the same bundle object
-						const { output } = await bundle.generate({
-							format: "amd",
-							amd: {
-								define: "sap.ui.define",
-							},
-							entryFileNames: `${moduleName}.js`,
-							chunkFileNames: `${moduleName}-[hash].js`,
-						});
+						// create the bundle
+						let output;
+						try {
+							output = await that.createBundle(moduleName, { mainFields: defaultMainFields });
+						} catch (ex) {
+							// related to issue #726 for which the generation of jspdf fails on Windows machines
+							// when running the build in a standalone project with npm (without monorepo and pnpm)
+							log.warn(`Failed to bundle "${moduleName}" using ES modules, falling back to CommonJS modules...`);
+							log.verbose(ex); // report error in verbose case!
+							output = await that.createBundle(moduleName, { mainFields: ["browser", "main", "module"] });
+						}
 
 						// cache the output (can be mulitple chunks)
 						cachedOutput = outputCache[moduleName] = {
