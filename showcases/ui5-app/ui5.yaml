@@ -49,7 +49,7 @@ builder:
       configuration: &cfgTranspile
         debug: true
         transformAsyncToPromise: true
-        removeConsoleStatements: true
+        #removeConsoleStatements: true
         targetBrowsers: ">0.2% and not dead"
         excludePatterns:
           - "resources/"

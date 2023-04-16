@@ -6,7 +6,7 @@ sap.ui.define(
 		"cmis",
 		"ui5-app/bundledefs/firebase", // requires node-fetch@2
 		"@supabase/supabase-js",
-		"@octokit/core", // requires node-fetch@2
+		"@octokit/core", // requires node-fetch@2 and is-plain-object@5
 		"axios",
 		"@js-temporal/polyfill",
 		"@stomp/stompjs",
