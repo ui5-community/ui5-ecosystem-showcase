@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.9.5...ui5-tooling-modules@0.9.6) (2023-04-16)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** fallback mode to retry bundling with cjs modules ([#729](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/729)) ([c33549b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c33549b6d193a10b8bddc466902419a8d9670d5a)), closes [#726](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/726)
+
+
+
+
+
 ## [0.9.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.9.4...ui5-tooling-modules@0.9.5) (2023-04-16)
 
 
