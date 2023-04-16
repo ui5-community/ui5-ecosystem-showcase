@@ -1,7 +1,7 @@
 "use strict";
 
 /* eslint-disable no-unused-vars */
-const log = require("@ui5/logger").getLogger("server:custommiddleware:ui5-tooling-modules");
+const log = require("@ui5/logger").getLogger("util:toolingextension:ui5-tooling-modules");
 
 const path = require("path");
 const { existsSync } = require("fs");
@@ -15,6 +15,7 @@ const nodePolyfills = require("rollup-plugin-polyfill-node");
 const injectProcessEnv = require("rollup-plugin-inject-process-env");
 const amdCustom = require("./rollup-plugin-amd-custom");
 const skipAssets = require("./rollup-plugin-skip-assets");
+const injectESModule = require("./rollup-plugin-inject-esmodule");
 
 const espree = require("espree");
 const estraverse = require("estraverse");
@@ -28,8 +29,8 @@ const outputCache = {};
 // local list of resolved modules (name to location)
 const resolvedModules = {};
 
-// package.json of app
-const pkg = require(path.join(process.cwd(), "package.json"));
+// main field processing order (for nodeResolve and resolveModule)
+const defaultMainFields = ["browser", "module", "main"];
 
 /**
  * Checks whether the given content is a UI5 module or not
@@ -71,14 +72,14 @@ function resolveNodeModule(moduleName) {
 	let modulePath;
 	// resolve from node_modules via regular lookup
 	try {
-		modulePath = require.resolve(moduleName);
+		// try the lookup relative to CWD
+		modulePath = require.resolve(moduleName, {
+			paths: [process.cwd()], // necessary for PNPM and/or DEBUG scenario
+		});
 	} catch (err) {
-		// fallback for PNPM and/or DEBUG scenario
+		// use the default lookup
 		try {
-			// try the lookup relative to CWD
-			modulePath = require.resolve(moduleName, {
-				paths: [process.cwd()],
-			});
+			modulePath = require.resolve(moduleName);
 		} catch (err) {
 			// gracefully ignore the error
 			//console.error(err);
@@ -92,13 +93,19 @@ const that = (module.exports = {
 	 * Resolves the bare module name from node_modules utilizing the require.resolve
 	 *
 	 * @param {string} moduleName name of the module (e.g. "chart.js/auto")
+	 * @param {object} options configuration options
+	 * @param {string[]} options.mainFields an order of main fields to check in package.json
 	 * @returns {string} the path of the module in the filesystem
 	 */
-	resolveModule: function resolveModule(moduleName) {
+	resolveModule: function resolveModule(moduleName, { mainFields } = {}) {
 		// ignore module paths starting with a segment from the ignore list (TODO: maybe a better check?)
 		if ((resolvedModules[moduleName] && resolvedModules[moduleName].modulePath === undefined) || /^\./.test(moduleName)) {
 			return undefined;
 		}
+		// package.json of app
+		const pkg = require(path.join(process.cwd(), "package.json"));
+		// default the mainFields
+		mainFields = mainFields || defaultMainFields;
 		// retrieve or create a resolved module
 		// (also for the modules which don't exist, as a negative cache!)
 		let resolvedModule = resolvedModules[moduleName];
@@ -115,12 +122,12 @@ const that = (module.exports = {
 				try {
 					const pckJsonModuleName = path.join(moduleName, "package.json");
 					const pkgJson = require(pckJsonModuleName);
-					if (typeof pkgJson?.browser === "string") {
-						resolvedModule.modulePath = path.join(path.dirname(resolveNodeModule(pckJsonModuleName)), pkgJson?.browser);
-					} else if (typeof pkgJson?.module === "string") {
-						resolvedModule.modulePath = path.join(path.dirname(resolveNodeModule(pckJsonModuleName)), pkgJson?.module);
-					} else if (typeof pkgJson?.main === "string") {
-						resolvedModule.modulePath = path.join(path.dirname(resolveNodeModule(pckJsonModuleName)), pkgJson?.main);
+					// resolve the main field from the package.json
+					for (const field of mainFields) {
+						if (typeof pkgJson?.[field] === "string") {
+							resolvedModule.modulePath = path.join(path.dirname(resolveNodeModule(pckJsonModuleName)), pkgJson?.[field]);
+							break;
+						}
 					}
 					// reset the module path if it doesn't exist
 					if (!existsSync(resolvedModule.modulePath)) {
@@ -180,7 +187,6 @@ const that = (module.exports = {
 							input: moduleName,
 							plugins: [
 								(function (options) {
-									"use strict";
 									return {
 										name: "logger",
 										resolveId(source) {
@@ -189,11 +195,11 @@ const that = (module.exports = {
 										},
 									};
 								})(),
+								injectESModule(),
 								// This example show-cases how to rewrite dependency names
 								// and how the resolution of the dependency is handled later
 								/* NOT NEEDED FOR NOW!
 								(function (options) {
-									"use strict";
 									return {
 										name: "resolve-node-deps",
 										resolveId(importee, importer, resolveOptions) {
@@ -212,6 +218,7 @@ const that = (module.exports = {
 								})(),
 								*/
 								skipAssets({
+									log,
 									extensions: ["css"],
 									modules: ["crypto"],
 								}),
@@ -222,12 +229,10 @@ const that = (module.exports = {
 								}),
 								amdCustom(),
 								nodeResolve({
-									browser: true,
-									mainFields: ["module", "main"],
+									mainFields: defaultMainFields,
 									preferBuiltins: false,
 								}),
 								(function (options) {
-									"use strict";
 									return {
 										name: "resolve-pnpm",
 										resolveId(source) {
@@ -235,6 +240,7 @@ const that = (module.exports = {
 											if (path.isAbsolute(source)) {
 												return source;
 											}
+											// needs to be in sync with nodeResolve
 											return that.resolveModule(source);
 										},
 									};
@@ -245,18 +251,16 @@ const that = (module.exports = {
 							],
 							onwarn: function ({ loc, frame, code, message }) {
 								// Skip certain warnings
-
-								// should intercept ... but doesn't in some rollup versions
-								if (code === "THIS_IS_UNDEFINED") {
+								const skipWarnings = ["THIS_IS_UNDEFINED", "CIRCULAR_DEPENDENCY", "MIXED_EXPORTS"];
+								if (skipWarnings.indexOf(code) !== -1) {
 									return;
 								}
-
 								// console.warn everything else
 								if (loc) {
 									log.warn(`${loc.file} (${loc.line}:${loc.column}) ${message}`);
 									if (frame) log.warn(frame);
 								} else {
-									log.warn(message);
+									log.warn(`${message} [${code}]`);
 								}
 							},
 						});

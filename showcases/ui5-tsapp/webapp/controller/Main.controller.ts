@@ -1,25 +1,53 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
 import Controller from "sap/ui/core/mvc/Controller";
 import MessageBox from "sap/m/MessageBox";
-import { utils, write } from "xlsx";
+import { version, utils, write } from "xlsx";
+import { Info } from "luxon";
+import { Client } from "@stomp/stompjs";
 import capitalize from "ui5/ecosystem/demo/tslib/util/capitalize";
 
-// dynamic import of a provided library
-import("luxon")
-	.then(({ Info }) => {
-		console.log(`Luxon loaded: ${Info.toString()}`);
+function limitString(string = "", limit = 40) {
+	return string.substring(0, limit);
+}
+
+console.log(`[STATIC IMPORT] XLSX loaded: ${version}`);
+console.log(`[STATIC IMPORT] Luxon loaded: ${limitString(Info.toString())}`);
+console.log(`[STATIC IMPORT] STOMP loaded: ${limitString(Client.toString())}`);
+
+// dynamic import of xlsx (just named exports)
+import("xlsx")
+	.then(({ version }) => {
+		console.log(`[DYNAMIC IMPORT] XLSX loaded: ${version}`);
 	})
 	.catch((ex) => {
-		console.log("Failed to load luxon from application runtime environment!", ex);
+		console.log("[DYNAMIC IMPORT] Failed to load XLSX from application runtime environment!", ex);
 	});
 
-// dynamic import of an existing library
-import("@stomp/stompjs")
-	.then(({ Client }) => {
-		console.log(`STOMP.js loaded: ${Client.toString()}`);
+// dynamic import of an existing library (default and named exports)
+import("luxon")
+	.then(({ Info }) => {
+		console.log(`[DYNAMIC IMPORT] Luxon loaded: ${limitString(Info.toString())}`);
 	})
 	.catch((ex) => {
-		console.log("Failed to load STOMP.js from application runtime environment!", ex);
+		console.log("[DYNAMIC IMPORT] Failed to load Luxon from application runtime environment!", ex);
+	});
+
+// dynamic import of an existing library (just default export)
+import("@stomp/stompjs")
+	.then(({ Client }) => {
+		console.log(`[DYNAMIC IMPORT] STOMP loaded: ${limitString(Client.toString())}`);
+	})
+	.catch((ex) => {
+		console.log("[DYNAMIC IMPORT] Failed to load STOMP from application runtime environment!", ex);
+	});
+
+// dynamic import of a provided library (will fail without UI5 tooling server!)
+import("moment")
+	.then(({ version }) => {
+		console.log(`[DYNAMIC IMPORT] Moment.js loaded: ${version}`);
+	})
+	.catch((ex) => {
+		console.log("[DYNAMIC IMPORT] Failed to load Moment.js from application runtime environment!", ex);
 	});
 
 /**
@@ -66,8 +94,8 @@ export default class Main extends Controller {
 		const { jsPDF } = await import("jspdf");
 		const doc = new jsPDF();
 
-		doc.text("Hello world!", 10, 10);
-		doc.save("a4.pdf");
+		doc.text("Hello World!", 10, 10);
+		doc.save("document.pdf");
 	}
 
 	public async createMail(): Promise<void> {

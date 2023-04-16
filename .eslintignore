@@ -13,6 +13,7 @@
 /showcases/ui5-app/bundledefs/**
 /packages/ui5-middleware-onelogin/lib/**
 /packages/ui5-middleware-cfdestination/test/**
+/packages/ui5-tooling-modules/test/__snap__/**
 
 # config files
 .eslintrc.js

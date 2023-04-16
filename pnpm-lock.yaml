@@ -331,8 +331,8 @@ importers:
         specifier: ^2.3.0
         version: 2.3.0
       '@rollup/plugin-commonjs':
-        specifier: ^24.0.1
-        version: 24.0.1(rollup@3.20.2)
+        specifier: ^24.1.0
+        version: 24.1.0(rollup@3.20.2)
       '@rollup/plugin-json':
         specifier: ^6.0.0
         version: 6.0.0(rollup@3.20.2)
@@ -372,6 +372,10 @@ importers:
       rollup-plugin-polyfill-node:
         specifier: ^0.12.0
         version: 0.12.0(rollup@3.20.2)
+    devDependencies:
+      ava:
+        specifier: ^5.2.0
+        version: 5.2.0
 
   packages/ui5-tooling-stringreplace:
     dependencies:
@@ -463,6 +467,9 @@ importers:
       firebase:
         specifier: ^9.19.1
         version: 9.19.1
+      is-plain-object:
+        specifier: ^5.0.0
+        version: 5.0.0
       node-fetch:
         specifier: ^2.6.9
         version: 2.6.9
@@ -657,6 +664,9 @@ importers:
       luxon:
         specifier: ^3.3.0
         version: 3.3.0
+      moment:
+        specifier: ^2.29.4
+        version: 2.29.4
       ui5-tslib:
         specifier: ^0.3.7
         version: link:../ui5-tslib
@@ -3491,8 +3501,8 @@ packages:
     resolution: {integrity: sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==}
     dev: false
 
-  /@rollup/plugin-commonjs@24.0.1(rollup@3.20.2):
-    resolution: {integrity: sha512-15LsiWRZk4eOGqvrJyu3z3DaBu5BhXIMeWnijSRvd8irrrg9SHpQ1pH+BUK4H6Z9wL9yOxZJMTLU+Au86XHxow==}
+  /@rollup/plugin-commonjs@24.1.0(rollup@3.20.2):
+    resolution: {integrity: sha512-eSL45hjhCWI0jCCXcNtLVqM5N1JlBGvlFfY0m6oOYnLCJ6N0qEXoZql4sY2MOUArzhH4SA/qBpTxvvZp2Sc+DQ==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       rollup: ^2.68.0||^3.0.0

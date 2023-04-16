@@ -17,6 +17,8 @@ builder:
   componentPreload:
     excludes:
       - "ui5/ecosystem/demo/tsapp/thirdparty/@stomp/**"
+      - "ui5/ecosystem/demo/tsapp/thirdparty/jspdf*.js"
+      - "ui5/ecosystem/demo/tsapp/thirdparty/xlsx.js"
   customTasks:
     - name: ui5-tooling-transpile-task
       afterTask: replaceVersion
@@ -31,7 +33,7 @@ builder:
         prependPathMappings: false
         addToNamespace: true
         providedDependencies:
-          - luxon
+          - moment
 server:
   customMiddleware:
     - name: ui5-tooling-transpile-middleware

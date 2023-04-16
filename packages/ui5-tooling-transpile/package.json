@@ -31,7 +31,7 @@
   },
   "ava": {
     "files": [
-      "test/**/*",
+      "test/**/*.test.js",
       "!test/__assets__/**/*"
     ],
     "verbose": true,
