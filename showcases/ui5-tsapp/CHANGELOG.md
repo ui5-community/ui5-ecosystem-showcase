@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.8.9...ui5-tsapp@0.8.10) (2023-04-17)
+
+
+### Bug Fixes
+
+* **karma-ui5-transpile:** add only source maps if processed ([#730](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/730)) ([286b636](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/286b636fabfbc3ffa64b773d8b0e28508f2ec682))
+
+
+
+
+
 ## [0.8.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.8.8...ui5-tsapp@0.8.9) (2023-04-17)
 
 **Note:** Version bump only for package ui5-tsapp

@@ -1,6 +1,6 @@
 {
   "name": "ui5-tslib",
-  "version": "0.3.10",
+  "version": "0.3.11",
   "description": "Showcase of a TypeScript setup for developing UI5 libraries",
   "private": true,
   "author": "Peter Muessig",
@@ -37,7 +37,7 @@
     "karma-chrome-launcher": "^3.1.1",
     "karma-coverage": "^2.2.0",
     "karma-ui5": "^2.4.0",
-    "karma-ui5-transpile": "^0.3.5",
+    "karma-ui5-transpile": "^0.3.6",
     "npm-run-all": "^4.1.5",
     "rimraf": "^5.0.0",
     "typescript": "^5.0.4",
