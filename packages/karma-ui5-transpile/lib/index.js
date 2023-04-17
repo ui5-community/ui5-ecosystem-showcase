@@ -72,10 +72,10 @@ function createPreprocessor(config, logger) {
 			let code = content;
 			if (processed) {
 				code = processed.code;
+				file.sourceMap = processed.map; // attach the source map to the file
 			}
 			// replace all suffixes with ".js" (e.g. .jsx to .js, or .ts to .js or .tsx to .js)
 			file.path = file.originalPath.replace(/\.[^.]+$/, ".js");
-			file.sourceMap = processed.map; // attach the source map to the file
 			done(code);
 		} catch (e) {
 			log.error("%s\n at %s", e.message, file.originalPath);
