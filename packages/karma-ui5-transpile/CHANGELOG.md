@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/karma-ui5-transpile@0.3.8...karma-ui5-transpile@0.3.9) (2023-04-19)
+
+
+### Bug Fixes
+
+* **karma-ui5-transpile:** istanbul should run as first plugin ([#733](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/733)) ([e6dcd7f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e6dcd7fcab8832c7d06e8f2172e8c8772798a9d0))
+
+
+
+
+
 ## [0.3.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/karma-ui5-transpile@0.3.7...karma-ui5-transpile@0.3.8) (2023-04-19)
 
 
