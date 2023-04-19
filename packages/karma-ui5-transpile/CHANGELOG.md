@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/karma-ui5-transpile@0.3.7...karma-ui5-transpile@0.3.8) (2023-04-19)
+
+
+### Bug Fixes
+
+* **karma-ui5-transpile:** inline sourcemaps for debugging support ([#732](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/732)) ([9317c57](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9317c573221b34936703536c84b874247f65a48c))
+
+
+
+
+
 ## [0.3.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/karma-ui5-transpile@0.3.6...karma-ui5-transpile@0.3.7) (2023-04-19)
 
 
