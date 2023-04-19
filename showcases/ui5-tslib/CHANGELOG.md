@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.12](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tslib@0.3.11...ui5-tslib@0.3.12) (2023-04-19)
+
+
+### Bug Fixes
+
+* **karma-ui5-transpile:** also instrument in Babel transformation ([#731](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/731)) ([0677524](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0677524002da853f4e7ffe53c35fab3c1f3ceb04))
+
+
+
+
+
 ## [0.3.11](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tslib@0.3.10...ui5-tslib@0.3.11) (2023-04-17)
 
 **Note:** Version bump only for package ui5-tslib

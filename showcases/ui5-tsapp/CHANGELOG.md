@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.11](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.8.10...ui5-tsapp@0.8.11) (2023-04-19)
+
+
+### Bug Fixes
+
+* **karma-ui5-transpile:** also instrument in Babel transformation ([#731](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/731)) ([0677524](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0677524002da853f4e7ffe53c35fab3c1f3ceb04))
+
+
+
+
+
 ## [0.8.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.8.9...ui5-tsapp@0.8.10) (2023-04-17)
 
 
