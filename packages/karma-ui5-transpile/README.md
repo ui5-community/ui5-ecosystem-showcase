@@ -4,13 +4,13 @@ The `karma-ui5-transpile` preprocessor transpiles code of UI5 projects having a 
 
 ## Installation
 
-The plugin requires [`karma`](https://www.npmjs.com/package/karma) `>=6.4.1`, [`karma-coverage`](https://www.npmjs.com/package/karma-coverage) `>=2.2.0`, and [ui5-tooling-transpile](https://www.npmjs.com/package/ui5-tooling-transpile) `>=0.7.0`. You can install the required dependencies with the following command:
+The plugin requires [`karma`](https://www.npmjs.com/package/karma) `>=6.4.1`, and [ui5-tooling-transpile](https://www.npmjs.com/package/ui5-tooling-transpile) `>=0.7.0`. You can install the required dependencies with the following command:
 
 ```sh
 npm install --save-dev karma karma-coverage ui5-tooling-transpile karma-ui5 karma-ui5-transpile
 ```
 
-The usage of the [`karma-ui5`](https://www.npmjs.com/package/karma-ui5) plugin is obligatory as it integrates UI5 into the Karma testing flow although it is not directly necessary for the `karma-ui5-transpile` plugin. Only the configuration is read from the `karma-ui5` plugin.
+The usage of the [`karma-ui5`](https://www.npmjs.com/package/karma-ui5) plugin is obligatory as it integrates UI5 into the Karma testing flow although it is not directly necessary for the `karma-ui5-transpile` plugin. Only the configuration is read from the `karma-ui5` plugin. The plugin `karma-coverage` is also optional as it can be used for the creation of the coverage report. As a preprocessor it is not needed when using `karma-ui5-transpile`.
 
 ## Configuration
 

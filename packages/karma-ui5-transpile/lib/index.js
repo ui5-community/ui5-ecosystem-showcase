@@ -92,7 +92,7 @@ function createPreprocessor(config, logger) {
 				content,
 				Object.assign({}, babelConfig, {
 					filename: file.originalPath,
-					sourceMaps: true // we need to create source maps to attach it later
+					sourceMaps: "inline" // inline source maps for code completion / code coverage results on source file
 				})
 			);
 			let code = content;

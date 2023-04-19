@@ -525,6 +525,9 @@ importers:
       karma-ui5:
         specifier: ^2.4.0
         version: 2.4.0(karma@6.4.1)
+      karma-ui5-transpile:
+        specifier: ^0.3.7
+        version: link:../../packages/karma-ui5-transpile
       mkdirp:
         specifier: ^3.0.0
         version: 3.0.0
