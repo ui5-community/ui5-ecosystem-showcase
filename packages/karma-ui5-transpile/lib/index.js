@@ -72,7 +72,8 @@ function createPreprocessor(config, logger) {
 				return plugin.file.request === "istanbul";
 			})
 		) {
-			babelOptions.plugins.push("istanbul");
+			// add istanbul as first plugin into the plugins chain
+			babelOptions.plugins.unshift("istanbul");
 		}
 		return babelOptions;
 	});
