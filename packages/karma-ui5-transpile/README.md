@@ -4,13 +4,13 @@ The `karma-ui5-transpile` preprocessor transpiles code of UI5 projects having a 
 
 ## Installation
 
-The plugin requires [`karma`](https://www.npmjs.com/package/karma) `>=6.4.1`, and [ui5-tooling-transpile](https://www.npmjs.com/package/ui5-tooling-transpile) `>=0.7.0`. You can install the required dependencies with the following command:
+The plugin requires [`karma`](https://www.npmjs.com/package/karma) `>=6.4.1`, [`karma-coverage`](https://www.npmjs.com/package/karma-coverage) `>=2.2.0`, and [ui5-tooling-transpile](https://www.npmjs.com/package/ui5-tooling-transpile) `>=0.7.0`. You can install the required dependencies with the following command:
 
 ```sh
-npm install --save-dev karma ui5-tooling-transpile karma-ui5 karma-ui5-transpile
+npm install --save-dev karma karma-coverage ui5-tooling-transpile karma-ui5 karma-ui5-transpile
 ```
 
-The usage of the [`karma-ui5`](https://www.npmjs.com/package/karma-ui5) plugin is obligatory as it integrates UI5 into the Karma testing flow although it is not directly needed by the `karma-ui5-transpile` plugin. Only the configuration is read from the `karma-ui5` plugin.
+The usage of the [`karma-ui5`](https://www.npmjs.com/package/karma-ui5) plugin is obligatory as it integrates UI5 into the Karma testing flow although it is not directly necessary for the `karma-ui5-transpile` plugin. Only the configuration is read from the `karma-ui5` plugin.
 
 ## Configuration
 
@@ -30,17 +30,17 @@ module.exports = function (config) {
 };
 ```
 
-## Code Coverage for UI5 TypeScript projects
+## Code Coverage for UI5 projects using `ui5-tooling-transpile`
 
-To enable code coverage for your TypeScript-based UI5 project, you can use the `karma-ui5-transpile` to preprocess your TypeScript files in your project before passing them to the `karma-coverage` preprocessor to instrument them. Therefore, you first need to install the required Karma dependencies:
+To enable code coverage for your UI5 project using `ui5-tooling-transpile`, you can install and use the `karma-ui5-transpile` to preprocess your source files of your project. It uses the same configuration as the `ui5-tooling-transpile` and `karma-ui5`.
+
+Let's assume you already use the tooling extension `ui5-tooling-transpile` and all is configured properly in `ui5.yaml`. To add code coverage, we first need to install all required dependencies `karma`, `karma-ui5`, `karma-ui5-transpile`, `karma-coverage`, and `karma-chrome-launcher` which are needed for the automated execution of your e.g. QUnit or OPA tests:
 
 ```sh
-npm install --save-dev karma ui5-tooling-transpile karma-ui5 karma-ui5-transpile karma-coverage karma-chrome-launcher
+npm install --save-dev karma karma-ui5 karma-ui5-transpile karma-coverage karma-chrome-launcher
 ```
 
-In the scenario above, we assume that you already use the dependency to `ui5-tooling-transpile` and you have a proper configuration in the `ui5.yaml` for this tooling extension. The above installation script installs the dependencies for `karma`, `karma-ui5-transpile`, `karma-coverage`, and `karma-chrome-launcher` which are needed for the automated execution of your e.g. QUnit tests.
-
-In your `karma.conf.js` (or better you create separate ones for different scenarios), you need to configure the preprocessors (for which local folder they will run - below we use the preprocessor for all `.ts` resources in the `webapp` folder - also defining multiple folders is possible, e.g. `src/**/*.ts` and `test/**/*.ts` for typical UI5 library projects):
+Second, in your `karma.conf.js` (or better you create separate ones for different scenarios), you need to configure the preprocessor `ui5-transpile` for which local paths is should run. Below we use the preprocessor for all `.ts` resources in the `webapp` folder - also defining multiple folders is possible, e.g. `src/**/*.ts` and `test/**/*.ts` for typical UI5 library projects:
 
 ```js
 module.exports = function (config) {
@@ -49,7 +49,7 @@ module.exports = function (config) {
     browsers: ["Chrome"],
     reporters: ["progress", "coverage"],
     preprocessors: {
-      "webapp/**/*.ts": ["ui5-transpile", "coverage"],
+      "webapp/**/*.ts": ["ui5-transpile"],
     },
     coverageReporter: {
       dir: "coverage",
@@ -63,6 +63,8 @@ module.exports = function (config) {
   });
 };
 ```
+
+:warning: When using the `ui5-transpile` preprocessor please avoid using the `coverage` preprocessor as the instrumentation will also take place during the `ui5-transpile` Babel transformation process. If you use both, you will see a warning in the console and instrument your source files twice!
 
 That's it! Now, you are able to run your coverage tests with Karma for your TypeScript-based UI5 projects. To do so, just run:
 

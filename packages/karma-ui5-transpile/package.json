@@ -18,6 +18,7 @@
     "karma-preprocessor",
     "babel",
     "transpile",
+    "istanbul",
     "ui5",
     "openui5",
     "sapui5"
@@ -27,6 +28,7 @@
     "ui5-tooling-transpile": ">=0.7.0"
   },
   "dependencies": {
+    "babel-plugin-istanbul": "^6.1.1",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
