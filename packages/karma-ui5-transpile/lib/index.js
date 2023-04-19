@@ -21,6 +21,25 @@ const { createConfiguration, createBabelConfig, transform } = require("ui5-tooli
 function createPreprocessor(config, logger) {
 	const log = logger.create("preprocessor.ui5-transpile");
 
+	// when using karma-ui5-transpile, karma-coverage preprocessor must not be used
+	// => follow-up instrumentation with karma-coverage leads to wrong results as the
+	//    istanbul instrumenter is running after the complete transpile and when adding
+	//    istanbul as a Babel plugin it is executed directly after the TypeScript
+	//    transpilation which is the right point in time!
+	if (typeof config?.preprocessors === "object") {
+		Object.values(config?.preprocessors).forEach((preprocessorList) => {
+			if (
+				Array.isArray(preprocessorList) &&
+				preprocessorList.indexOf("ui5-transpile") !== -1 &&
+				preprocessorList.indexOf("coverage") !== -1
+			) {
+				log.warn(
+					`The preprocessors "ui5-transpile" and "coverage" should not be used together. The preprocessor "ui5-transpile" includes the "babel-plugin-istanbul" into the Babel transformation configuration! Please remove the "coverage" preprocessor, the "coverage" reporter can be kept!`
+				);
+			}
+		});
+	}
+
 	// determine the ui5.yaml path from base path + alternative config path
 	const basePath = config.basePath;
 	const configPath = config.ui5?.configPath || "ui5.yaml";
@@ -46,8 +65,15 @@ function createPreprocessor(config, logger) {
 	// create the Babel configuration using the ui5-tooling-tranpile-task util
 	const babelConfigCreated = createBabelConfig({ configuration, isMiddleware: false }).then((babelOptions) => {
 		// and inject the babel-plugin-istanbul into the configuration
+		// if not already configured in the plugins section
 		babelOptions.plugins = babelOptions.plugins || [];
-		//babelOptions.plugins.push("istanbul");
+		if (
+			!babelOptions.plugins.find((plugin) => {
+				return plugin.file.request === "istanbul";
+			})
+		) {
+			babelOptions.plugins.push("istanbul");
+		}
 		return babelOptions;
 	});
 
@@ -76,9 +102,10 @@ function createPreprocessor(config, logger) {
 			}
 			// replace all suffixes with ".js" (e.g. .jsx to .js, or .ts to .js or .tsx to .js)
 			file.path = file.originalPath.replace(/\.[^.]+$/, ".js");
-			done(code);
+			file.originalPath = file.path;
+			done(null, code);
 		} catch (e) {
-			log.error("%s\n at %s", e.message, file.originalPath);
+			log.error("%s\n at %s\n%s", e.message, file.originalPath, e.stack);
 			done(e);
 		}
 	}
