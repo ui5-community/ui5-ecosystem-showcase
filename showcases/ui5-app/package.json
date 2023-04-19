@@ -11,7 +11,7 @@
     "directory": "showcases/ui5-app"
   },
   "scripts": {
-    "clean": "rimraf dist",
+    "clean": "rimraf dist coverage",
     "prepare": "mkdirp dist",
     "build": "ui5 build --clean-dest",
     "build:sc": "ui5 build self-contained --clean-dest",
@@ -23,6 +23,7 @@
     "dev-h2": "ui5 serve --h2 --port 1082 --open index.html",
     "test": "karma start",
     "test:ci": "karma start karma-ci.conf.js",
+    "test:ci-cov": "karma start karma-ci-cov.conf.js",
     "test:wdi5": "wdio",
     "watch:build": "npm-watch build",
     "watch": "npm-run-all prepare build --parallel watch:build start",
@@ -66,6 +67,7 @@
     "karma-chrome-launcher": "^3.1.1",
     "karma-coverage": "^2.2.0",
     "karma-ui5": "^2.4.0",
+    "karma-ui5-transpile": "^0.3.7",
     "mkdirp": "^3.0.0",
     "npm-run-all": "^4.1.5",
     "npm-watch": "^0.11.0",
