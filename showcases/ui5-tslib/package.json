@@ -1,18 +1,25 @@
 {
   "name": "ui5-tslib",
-  "version": "0.1.10",
+  "version": "0.3.14",
   "description": "Showcase of a TypeScript setup for developing UI5 libraries",
   "private": true,
   "author": "Peter Muessig",
   "license": "Apache-2.0",
   "scripts": {
-    "build": "ui5 build --clean-dest",
-    "dev": "ui5 serve --port 8080 -o test-resources/ui5/ecosystem/demo/tslib/Example.html",
+    "clean": "rimraf dist coverage",
+    "build": "npm run build:controls && ui5 build --clean-dest",
+    "build:controls": "npx @ui5/ts-interface-generator",
+    "dev": "run-p dev:controls dev:server",
+    "dev:controls": "npx @ui5/ts-interface-generator --watch",
+    "dev:server": "ui5 serve --port 8080 -o test-resources/ui5/ecosystem/demo/tslib/Example.html",
     "start": "ui5 serve  --port 8080 -o test-resources/ui5/ecosystem/demo/tslib/Example.html --config ui5-dist.yaml",
     "testsuite": "ui5 serve --open test-resources/ui5/ecosystem/demo/tslib/qunit/testsuite.qunit.html",
-    "test": "karma start --browsers=ChromeHeadless --singleRun=true",
     "ts-typecheck": "tsc --noEmit",
-    "lint": "eslint src test"
+    "lint": "eslint src test",
+    "karma": "karma start",
+    "karma-ci": "karma start karma-ci.conf.js",
+    "karma-ci-cov": "karma start karma-ci-cov.conf.js",
+    "test": "npm run lint && npm run karma-ci-cov"
   },
   "repository": {
     "type": "git",
@@ -21,18 +28,22 @@
   },
   "devDependencies": {
     "@types/openui5": "1.112.0",
-    "@typescript-eslint/eslint-plugin": "^5.57.0",
-    "@typescript-eslint/parser": "^5.57.0",
+    "@typescript-eslint/eslint-plugin": "^5.58.0",
+    "@typescript-eslint/parser": "^5.58.0",
     "@ui5/cli": "^2.14.17",
-    "eslint": "^8.37.0",
+    "@ui5/ts-interface-generator": "^0.5.5",
+    "eslint": "^8.38.0",
     "karma": "^6.4.1",
     "karma-chrome-launcher": "^3.1.1",
     "karma-coverage": "^2.2.0",
     "karma-ui5": "^2.4.0",
-    "typescript": "^5.0.3",
+    "karma-ui5-transpile": "^0.3.9",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^5.0.0",
+    "typescript": "^5.0.4",
     "ui5-middleware-livereload": "^0.8.2",
-    "ui5-tooling-modules": "^0.7.13",
-    "ui5-tooling-transpile": "^0.5.2"
+    "ui5-tooling-modules": "^0.9.7",
+    "ui5-tooling-transpile": "^0.7.4"
   },
   "ui5": {
     "dependencies": [

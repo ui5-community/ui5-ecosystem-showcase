@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.8.1...ui5-task-zipper@0.8.2) (2023-04-17)
+
+**Note:** Version bump only for package ui5-task-zipper
+
+
+
+
+
+## [0.8.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.8.0...ui5-task-zipper@0.8.1) (2023-04-11)
+
+
+### Bug Fixes
+
+* **ui5-task-zipper:** detection of project name for deps ([#722](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/722)) ([400e967](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/400e967fd6b7a700863cf9c75d9f357ce09f2ca4)), closes [#550](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/550)
+
+
+
+
+
+# [0.8.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.7.5...ui5-task-zipper@0.8.0) (2023-04-10)
+
+
+### Features
+
+* **ui5-task-zipper:** allow to specify the deps to include ([#720](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/720)) ([bec868c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/bec868c7b4723161a06b7c4d6874a8ce147a94a1)), closes [#550](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/550)
+
+
+
+
+
 ## [0.7.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.7.4...ui5-task-zipper@0.7.5) (2023-03-31)
 
 

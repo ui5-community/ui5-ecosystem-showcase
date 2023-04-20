@@ -1,17 +1,21 @@
 {
   "name": "ui5-lib",
-  "version": "0.1.6",
+  "version": "0.2.1",
   "description": "Showcase of a setup for developing UI5 libraries",
   "private": true,
   "author": "Peter Muessig",
   "license": "Apache-2.0",
   "scripts": {
+    "clean": "rimraf dist coverage",
     "build": "ui5 build --clean-dest",
     "dev": "ui5 serve --port 8080 -o test-resources/ui5/ecosystem/demo/lib/Example.html",
     "start": "ui5 serve  --port 8080 -o test-resources/ui5/ecosystem/demo/lib/Example.html --config ui5-dist.yaml",
     "testsuite": "ui5 serve --open test-resources/ui5/ecosystem/demo/lib/qunit/testsuite.qunit.html",
-    "test": "karma start --browsers=ChromeHeadless --singleRun=true",
-    "lint": "eslint src test"
+    "lint": "eslint src test",
+    "karma": "karma start",
+    "karma-ci": "karma start karma-ci.conf.js",
+    "karma-ci-cov": "karma start karma-ci-cov.conf.js",
+    "test": "npm run lint && npm run karma-ci-cov"
   },
   "repository": {
     "type": "git",
@@ -20,11 +24,12 @@
   },
   "devDependencies": {
     "@ui5/cli": "^2.14.17",
-    "eslint": "^8.37.0",
+    "eslint": "^8.38.0",
     "karma": "^6.4.1",
     "karma-chrome-launcher": "^3.1.1",
     "karma-coverage": "^2.2.0",
     "karma-ui5": "^2.4.0",
+    "rimraf": "^5.0.0",
     "ui5-middleware-livereload": "^0.8.2"
   },
   "ui5": {

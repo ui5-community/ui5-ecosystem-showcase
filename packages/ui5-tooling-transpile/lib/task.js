@@ -3,8 +3,13 @@ const log = require("@ui5/logger").getLogger("builder:customtask:ui5-tooling-tra
 const path = require("path");
 const fs = require("fs");
 const resourceFactory = require("@ui5/fs").resourceFactory;
-const { createBabelConfig, normalizeLineFeeds, determineResourceFSPath } = require("./util");
-const babel = require("@babel/core");
+const {
+	createConfiguration,
+	createBabelConfig,
+	normalizeLineFeeds,
+	determineResourceFSPath,
+	transformAsync
+} = require("./util");
 
 /**
  * Custom task to transpile resources to JavaScript modules.
@@ -21,19 +26,11 @@ const babel = require("@babel/core");
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ workspace /*, dependencies*/, taskUtil, options }) {
-	const config = options?.configuration || {};
-	config.includes = config.includes || config.includePatterns || [];
-	config.excludes = config.excludes || config.excludePatterns || [];
-
+	const config = createConfiguration(options?.configuration || {});
 	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: false });
 
-	let filePatternConfig = config.filePattern; // .+(ts|tsx)
-	if (!filePatternConfig) {
-		filePatternConfig = config.transpileTypeScript ? ".ts" : ".js";
-	}
-
 	// TODO: should we accept the full glob pattern as param or just the file pattern?
-	const allResources = await workspace.byGlob(`/**/*${filePatternConfig}`);
+	const allResources = await workspace.byGlob(`/**/*${config.filePattern}`);
 
 	// transpile the TypeScript resources and collect the code
 	const sourcesMap = {};
@@ -52,18 +49,20 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 				const source = await resource.getString();
 
 				// store the ts source code in the sources map
-				if (config.transpileTypeScript) {
+				if (config.transformTypeScript) {
 					sourcesMap[resourcePath] = source;
 				}
 
 				// we ignore d.ts files for transpiling
 				if (!resourcePath.endsWith(".d.ts")) {
-					// mark source for omit from build result
-					taskUtil.setTag(resource, taskUtil.STANDARD_TAGS.OmitFromBuildResult, true);
+					// mark TypeScript source for omit from build result
+					if (resourcePath.endsWith(".ts")) {
+						taskUtil.setTag(resource, taskUtil.STANDARD_TAGS.OmitFromBuildResult, true);
+					}
 
 					// transpile the source
 					config.debug && log.info(`Transpiling resource ${resourcePath}`);
-					const result = await babel.transformAsync(
+					const result = await transformAsync(
 						source,
 						Object.assign({}, babelConfig, {
 							filename: determineResourceFSPath(resource) // necessary for source map <-> source assoc
@@ -95,7 +94,7 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 	);
 
 	// generate the dts files for the ts files
-	if (config.transpileTypeScript) {
+	if (config.transformTypeScript) {
 		// determine if the project is a library and enable the DTS generation by default
 		// TODO: UI5 Tooling 3.0 allows to access the project with the TaskUtil
 		//       https://sap.github.io/ui5-tooling/v3/api/@ui5_project_build_helpers_TaskUtil.html#~ProjectInterface

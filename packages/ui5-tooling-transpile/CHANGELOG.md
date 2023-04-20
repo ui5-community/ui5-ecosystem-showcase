@@ -3,6 +3,72 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.3...ui5-tooling-transpile@0.7.4) (2023-04-17)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** dependency cleanup ([#714](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/714)) ([5971b24](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5971b24461fd4866ef1e97d48ea0ab39b534305a))
+
+
+
+
+
+## [0.7.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.2...ui5-tooling-transpile@0.7.3) (2023-04-16)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** ensure __esModule marker being exported ([#728](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/728)) ([8f8afd3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8f8afd3cac6abbf4e02ff1546442357df2d76b59)), closes [#726](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/726)
+
+
+
+
+
+## [0.7.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.1...ui5-tooling-transpile@0.7.2) (2023-04-11)
+
+
+### Bug Fixes
+
+* update dependencies ([#723](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/723)) ([88d90e4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/88d90e4d94aa8d7d016a316076c87dc195bbee88))
+
+
+
+
+
+## [0.7.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.0...ui5-tooling-transpile@0.7.1) (2023-04-08)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** only omit TS sources from build output ([#717](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/717)) ([88d6738](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/88d6738522a657a0b696f67c9081c1d1362bb2e2))
+
+
+
+
+
+# [0.7.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.6.0...ui5-tooling-transpile@0.7.0) (2023-04-06)
+
+
+### Features
+
+* **ui5-tooling-transpile:** rework to avoid configurations for default usage ([#712](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/712)) ([97119f6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/97119f6795d839e305659a64be2f920f25a1392f))
+
+
+
+
+
+# [0.6.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.5.2...ui5-tooling-transpile@0.6.0) (2023-04-05)
+
+
+### Features
+
+* karma-ui5-transpile preprocessor ([#711](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/711)) ([b57542a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b57542a4d342777bf748aee42eb2247e83f26b6f))
+
+
+
+
+
 ## [0.5.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.5.1...ui5-tooling-transpile@0.5.2) (2023-04-02)
 
 

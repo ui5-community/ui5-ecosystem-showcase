@@ -1,8 +1,13 @@
 /* eslint-disable jsdoc/check-param-names */
 const log = require("@ui5/logger").getLogger("server:custommiddleware:ui5-tooling-transpile");
 const parseurl = require("parseurl");
-const { createBabelConfig, normalizeLineFeeds, determineResourceFSPath } = require("./util");
-const babel = require("@babel/core");
+const {
+	createConfiguration,
+	createBabelConfig,
+	normalizeLineFeeds,
+	determineResourceFSPath,
+	transformAsync
+} = require("./util");
 
 /**
  * Custom middleware to transpile resources to JavaScript modules.
@@ -22,19 +27,8 @@ const babel = require("@babel/core");
  * @returns {function} Middleware function to use
  */
 module.exports = async function ({ resources, options, middlewareUtil }) {
-	const config = options?.configuration || {};
-	config.includes = config.includes || config.includePatterns;
-
-	// never transpile these default exclusion types
-	const defaultExcludes = [".png", ".jpeg", ".jpg"];
-	config.excludes = defaultExcludes.concat(config.excludes || config.excludePatterns || []);
-
+	const config = createConfiguration(options?.configuration || {});
 	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: true });
-
-	let filePatternConfig = config.filePattern; // .+(ts|tsx)
-	if (!filePatternConfig) {
-		filePatternConfig = config.transpileTypeScript ? ".ts" : ".js";
-	}
 
 	const reader = config.transpileDependencies ? resources.all : resources.rootProject;
 
@@ -44,7 +38,7 @@ module.exports = async function ({ resources, options, middlewareUtil }) {
 			(pathname.endsWith(".js") && !(config.excludes || []).some((pattern) => pathname.includes(pattern))) ||
 			(config.includes || []).some((pattern) => pathname.includes(pattern))
 		) {
-			const pathWithFilePattern = pathname.replace(".js", filePatternConfig);
+			const pathWithFilePattern = pathname.replace(".js", config.filePattern);
 			config.debug && log.verbose(`Lookup resource ${pathWithFilePattern}`);
 
 			const matchedResources = await reader.byGlob(pathWithFilePattern);
@@ -58,7 +52,7 @@ module.exports = async function ({ resources, options, middlewareUtil }) {
 				const source = await resource.getString();
 
 				// transpile the source
-				const result = await babel.transformAsync(
+				const result = await transformAsync(
 					source,
 					Object.assign({}, babelConfig, {
 						filename: determineResourceFSPath(resource) // necessary for source map <-> source assoc

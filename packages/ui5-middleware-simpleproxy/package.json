@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-simpleproxy",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "description": "UI5 simple proxy middleware",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
@@ -16,7 +16,7 @@
     "@ui5/logger": "^2.0.1",
     "dotenv": "^16.0.3",
     "express-http-proxy": "^1.6.3",
-    "minimatch": "^7.4.3"
+    "minimatch": "^7.4.6"
   },
   "ui5": {
     "dependencies": []

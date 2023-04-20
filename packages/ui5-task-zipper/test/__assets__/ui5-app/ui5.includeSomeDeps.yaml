@@ -1,0 +1,19 @@
+specVersion: "2.5"
+metadata:
+  name: ui5-app
+type: application
+framework:
+  name: OpenUI5
+  version: "1.112.0"
+  libraries:
+    - name: sap.m
+    - name: sap.ui.core
+    - name: sap.ui.layout
+    - name: themelib_sap_horizon
+builder:
+  customTasks:
+    - name: ui5-task-zipper
+      afterTask: uglify
+      configuration:
+        includeDependencies:
+          - sap.ui.layout

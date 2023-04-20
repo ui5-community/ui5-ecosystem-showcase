@@ -15,18 +15,10 @@ builder:
       afterTask: replaceVersion
       configuration: &cfgTranspile
         debug: true
-        filePattern: .+(ts|tsx)
-        transpileTypeScript: true
-        #transformAsyncToPromise: true
-        removeConsoleStatements: true
-        includes:
-          - /controller/App
-        excludes:
-          - /controller/
     - name: ui5-tooling-modules-task
       afterTask: ui5-tooling-transpile-task
       configuration:
-        prependPathMappings: false
+        debug: true
         addToNamespace: true
 server:
   customMiddleware:

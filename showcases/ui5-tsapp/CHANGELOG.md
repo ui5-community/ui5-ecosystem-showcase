@@ -3,6 +3,158 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.13](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.8.12...ui5-tsapp@0.8.13) (2023-04-19)
+
+**Note:** Version bump only for package ui5-tsapp
+
+
+
+
+
+## [0.8.12](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.8.11...ui5-tsapp@0.8.12) (2023-04-19)
+
+**Note:** Version bump only for package ui5-tsapp
+
+
+
+
+
+## [0.8.11](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.8.10...ui5-tsapp@0.8.11) (2023-04-19)
+
+
+### Bug Fixes
+
+* **karma-ui5-transpile:** also instrument in Babel transformation ([#731](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/731)) ([0677524](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0677524002da853f4e7ffe53c35fab3c1f3ceb04))
+
+
+
+
+
+## [0.8.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.8.9...ui5-tsapp@0.8.10) (2023-04-17)
+
+
+### Bug Fixes
+
+* **karma-ui5-transpile:** add only source maps if processed ([#730](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/730)) ([286b636](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/286b636fabfbc3ffa64b773d8b0e28508f2ec682))
+
+
+
+
+
+## [0.8.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.8.8...ui5-tsapp@0.8.9) (2023-04-17)
+
+**Note:** Version bump only for package ui5-tsapp
+
+
+
+
+
+## [0.8.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.8.7...ui5-tsapp@0.8.8) (2023-04-16)
+
+**Note:** Version bump only for package ui5-tsapp
+
+
+
+
+
+## [0.8.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.8.6...ui5-tsapp@0.8.7) (2023-04-16)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** ensure __esModule marker being exported ([#728](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/728)) ([8f8afd3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8f8afd3cac6abbf4e02ff1546442357df2d76b59)), closes [#726](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/726)
+
+
+
+
+
+## [0.8.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.8.5...ui5-tsapp@0.8.6) (2023-04-12)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** include ignore-walk as dependency ([#725](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/725)) ([a8764b5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/a8764b5d598bc4f764f8710516369b045b570f76))
+
+
+
+
+
+## [0.8.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.8.4...ui5-tsapp@0.8.5) (2023-04-11)
+
+
+### Bug Fixes
+
+* update dependencies ([#723](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/723)) ([88d90e4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/88d90e4d94aa8d7d016a316076c87dc195bbee88))
+
+
+
+
+
+## [0.8.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.8.3...ui5-tsapp@0.8.4) (2023-04-10)
+
+**Note:** Version bump only for package ui5-tsapp
+
+
+
+
+
+## [0.8.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.8.2...ui5-tsapp@0.8.3) (2023-04-10)
+
+**Note:** Version bump only for package ui5-tsapp
+
+
+
+
+
+## [0.8.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.8.1...ui5-tsapp@0.8.2) (2023-04-10)
+
+**Note:** Version bump only for package ui5-tsapp
+
+
+
+
+
+## [0.8.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.8.0...ui5-tsapp@0.8.1) (2023-04-10)
+
+**Note:** Version bump only for package ui5-tsapp
+
+
+
+
+
+# [0.8.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.7.0...ui5-tsapp@0.8.0) (2023-04-08)
+
+
+### Features
+
+* **ui5-tooling-module:** support chunks for module bundles ([#716](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/716)) ([9aad0ea](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9aad0ea2eca870d0bae6c9e4b19eaec2a60cf5a7))
+
+
+
+
+
+# [0.7.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.6.0...ui5-tsapp@0.7.0) (2023-04-06)
+
+
+### Features
+
+* **ui5-tooling-transpile:** rework to avoid configurations for default usage ([#712](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/712)) ([97119f6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/97119f6795d839e305659a64be2f920f25a1392f))
+
+
+
+
+
+# [0.6.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.5.5...ui5-tsapp@0.6.0) (2023-04-05)
+
+
+### Features
+
+* karma-ui5-transpile preprocessor ([#711](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/711)) ([b57542a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b57542a4d342777bf748aee42eb2247e83f26b6f))
+
+
+
+
+
 ## [0.5.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.5.4...ui5-tsapp@0.5.5) (2023-04-02)
 
 **Note:** Version bump only for package ui5-tsapp

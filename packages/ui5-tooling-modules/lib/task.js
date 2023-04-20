@@ -4,7 +4,7 @@
 const log = require("@ui5/logger").getLogger("builder:customtask:ui5-tooling-modules");
 const resourceFactory = require("@ui5/fs").resourceFactory;
 
-const { getResource, resolveModule } = require("./util");
+const { getResource, resolveModule, listResources } = require("./util");
 
 const { readFileSync, existsSync } = require("fs");
 const espree = require("espree");
@@ -36,9 +36,11 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 	const providedDependencies = Array.isArray(config?.providedDependencies) ? config?.providedDependencies : [];
 
 	// collector for unique dependencies and resources
+	//const uniqueNPMPackages = new Set();
 	const uniqueDeps = new Set();
 	const uniqueResources = new Set();
 	const uniqueNS = new Set();
+	const uniqueChunks = new Set();
 
 	// eslint-disable-next-line jsdoc/require-jsdoc
 	function isProvided(depOrRes) {
@@ -46,19 +48,32 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 	}
 
 	// eslint-disable-next-line jsdoc/require-jsdoc
+	/* TODO: keep functionality commented till needed!
+	function addUniqueNPMPackage(npmPackageName) {
+		if (!uniqueNPMPackages.has(npmPackageName) && npmPackageName && !npmPackageName.startsWith(".") && resolveModule(`${npmPackageName}/package.json`)) {
+			uniqueNPMPackages.add(npmPackageName);
+		}
+	}
+	*/
+
+	// eslint-disable-next-line jsdoc/require-jsdoc
 	function addUniqueDep(dep) {
 		if (isProvided(dep)) {
 			return false;
 		} else {
+			// add the dependency
 			uniqueDeps.add(dep);
+			// also add the NPM package name
+			const npmPackageName = /((?:@[^/]+\/)?(?:[^/]+)).*/.exec(dep)?.[1];
+			//addUniqueNPMPackage(npmPackageName);
 			return true;
 		}
 	}
 
 	// eslint-disable-next-line jsdoc/require-jsdoc
-	function addUniqueResource(res) {
-		if (!isProvided(res)) {
-			uniqueResources.add(res);
+	function addUniqueResource(ns) {
+		if (!isProvided(ns)) {
+			uniqueResources.add(ns);
 		}
 	}
 
@@ -69,10 +84,17 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 		}
 	}
 
+	// eslint-disable-next-line jsdoc/require-jsdoc
+	function addUniqueChunks(chunk) {
+		if (!isProvided(chunk)) {
+			uniqueChunks.add(chunk);
+		}
+	}
+
 	// utility to rewrite dependency
 	// eslint-disable-next-line jsdoc/require-jsdoc
 	function rewriteDep(dep, useDottedNamespace) {
-		if (config.addToNamespace && (uniqueDeps.has(dep) || uniqueResources.has(dep) || uniqueNS.has(dep))) {
+		if (config.addToNamespace && (uniqueDeps.has(dep) || uniqueResources.has(dep) || uniqueNS.has(dep) || uniqueChunks.has(dep))) {
 			let d = dep;
 			if (removeScopePrefix && d.startsWith("@")) {
 				d = d.substring(1);
@@ -106,13 +128,15 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 						}
 					} else if (
 						/* sap.ui.(require|define) */
-						node?.type === "CallExpression" &&
-						/require|define|requireSync/.test(node?.callee?.property?.name) &&
-						node?.callee?.object?.property?.name == "ui" &&
-						node?.callee?.object?.object?.name == "sap"
+						(node?.type === "CallExpression" &&
+							/require|define|requireSync/.test(node?.callee?.property?.name) &&
+							node?.callee?.object?.property?.name == "ui" &&
+							node?.callee?.object?.object?.name == "sap") ||
+						/* __ui5_require_async (babel-plugin-transform-modules-ui5) */
+						(node?.type === "CallExpression" && node?.callee?.name == "__ui5_require_async")
 					) {
 						let deps;
-						if (/requireSync/.test(node?.callee?.property?.name)) {
+						if (/requireSync/.test(node?.callee?.property?.name) || /__ui5_require_async/.test(node?.callee?.name)) {
 							const elDep = node.arguments[0];
 							if (elDep?.type === "Literal") {
 								deps = [elDep.value];
@@ -165,10 +189,12 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 					}
 				} else if (
 					/* sap.ui.(requireSync) !LEGACY! */
-					node?.type === "CallExpression" &&
-					/requireSync/.test(node?.callee?.property?.name) &&
-					node?.callee?.object?.property?.name == "ui" &&
-					node?.callee?.object?.object?.name == "sap"
+					(node?.type === "CallExpression" &&
+						/requireSync/.test(node?.callee?.property?.name) &&
+						node?.callee?.object?.property?.name == "ui" &&
+						node?.callee?.object?.object?.name == "sap") ||
+					/* __ui5_require_async (babel-plugin-transform-modules-ui5) */
+					(node?.type === "CallExpression" && node?.callee?.name == "__ui5_require_async")
 				) {
 					const elDep = node.arguments[0];
 					if (elDep?.type === "Literal" && bundledResources.includes(elDep.value)) {
@@ -333,6 +359,27 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 		})
 	);
 
+	// lookup the assets to be included which are configured in the ui5.yaml
+	if (config.includeAssets) {
+		if (typeof config.includeAssets === "object") {
+			Object.keys(config.includeAssets).forEach((npmPackageName) => {
+				const ignore = config.includeAssets[npmPackageName];
+				if (!ignore || Array.isArray(ignore)) {
+					log.verbose(`Including assets for dependency: ${npmPackageName}`);
+					const assets = listResources(npmPackageName, ignore);
+					if (log.isLevelEnabled("verbose")) {
+						assets.forEach((asset) => log.verbose(`  - ${asset}`));
+					}
+					assets.forEach((asset) => uniqueResources.add(asset));
+				} else {
+					log.error(`The option "includeAssets" must be type of map with the key being a npm package name and optionally values being a list of glob patterns!`);
+				}
+			});
+		} else {
+			log.error(`The option "includeAssets" must be type of map with the key being a npm package name!`);
+		}
+	}
+
 	// determine bundled resources
 	const bundledResources = [];
 
@@ -345,26 +392,39 @@ module.exports = async function ({ workspace, dependencies, taskUtil, options })
 				config.debug && log.info(`Processing dependency: ${dep}`);
 				const bundleResource = resourceFactory.createResource({
 					path: `/resources/${rewriteDep(dep)}.js`,
-					string: bundle,
+					string: bundle.code,
 				});
 				bundledResources.push(dep);
 				await workspace.write(bundleResource);
+				// attach the chunks
+				if (bundle.chunks) {
+					for await (const chunk of Object.keys(bundle.chunks)) {
+						config.debug && log.info(`  + chunk ${chunk}`);
+						addUniqueChunks(chunk);
+						const chunkResource = resourceFactory.createResource({
+							path: `/resources/${rewriteDep(chunk)}.js`,
+							string: bundle.chunks[chunk].code,
+						});
+						bundledResources.push(chunk);
+						await workspace.write(chunkResource);
+					}
+				}
 			}
 		})
 	);
 
 	// every unique resource will be copied
 	await Promise.all(
-		Array.from(uniqueResources).map(async (resource) => {
-			log.verbose(`Trying to process resource: ${resource}`);
-			const content = await getResource(resource, config);
-			if (content) {
-				config.debug && log.info(`Processing resource: ${resource}`);
+		Array.from(uniqueResources).map(async (resourceName) => {
+			log.verbose(`Trying to process resource: ${resourceName}`);
+			const resource = await getResource(resourceName, config, true);
+			if (resource) {
+				config.debug && log.info(`Processing resource: ${resourceName}`);
 				const newResource = resourceFactory.createResource({
-					path: `/resources/${rewriteDep(resource)}`,
-					string: content,
+					path: `/resources/${rewriteDep(resourceName)}`,
+					string: resource.code,
 				});
-				bundledResources.push(resource);
+				bundledResources.push(resourceName);
 				await workspace.write(newResource);
 			}
 		})

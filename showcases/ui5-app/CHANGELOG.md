@@ -3,6 +3,144 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.27.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.27.9...ui5-app@0.27.10) (2023-04-19)
+
+**Note:** Version bump only for package ui5-app
+
+
+
+
+
+## [0.27.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.27.8...ui5-app@0.27.9) (2023-04-19)
+
+
+### Bug Fixes
+
+* **karma-ui5-transpile:** inline sourcemaps for debugging support ([#732](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/732)) ([9317c57](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9317c573221b34936703536c84b874247f65a48c))
+
+
+
+
+
+## [0.27.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.27.7...ui5-app@0.27.8) (2023-04-17)
+
+**Note:** Version bump only for package ui5-app
+
+
+
+
+
+## [0.27.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.27.6...ui5-app@0.27.7) (2023-04-16)
+
+**Note:** Version bump only for package ui5-app
+
+
+
+
+
+## [0.27.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.27.5...ui5-app@0.27.6) (2023-04-16)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** ensure __esModule marker being exported ([#728](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/728)) ([8f8afd3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8f8afd3cac6abbf4e02ff1546442357df2d76b59)), closes [#726](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/726)
+
+
+
+
+
+## [0.27.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.27.4...ui5-app@0.27.5) (2023-04-12)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** include ignore-walk as dependency ([#725](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/725)) ([a8764b5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/a8764b5d598bc4f764f8710516369b045b570f76))
+
+
+
+
+
+## [0.27.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.27.3...ui5-app@0.27.4) (2023-04-11)
+
+
+### Bug Fixes
+
+* update dependencies ([#723](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/723)) ([88d90e4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/88d90e4d94aa8d7d016a316076c87dc195bbee88))
+
+
+
+
+
+## [0.27.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.27.2...ui5-app@0.27.3) (2023-04-11)
+
+**Note:** Version bump only for package ui5-app
+
+
+
+
+
+## [0.27.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.27.1...ui5-app@0.27.2) (2023-04-10)
+
+**Note:** Version bump only for package ui5-app
+
+
+
+
+
+## [0.27.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.27.0...ui5-app@0.27.1) (2023-04-10)
+
+**Note:** Version bump only for package ui5-app
+
+
+
+
+
+# [0.27.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.26.2...ui5-app@0.27.0) (2023-04-10)
+
+
+### Features
+
+* **ui5-tooling-modules:** include assets of npm packages ([#721](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/721)) ([ce048eb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ce048eb65a22ab96fd7f4e5afe647db60813580c)), closes [#590](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/590)
+
+
+
+
+
+## [0.26.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.26.1...ui5-app@0.26.2) (2023-04-10)
+
+**Note:** Version bump only for package ui5-app
+
+
+
+
+
+## [0.26.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.26.0...ui5-app@0.26.1) (2023-04-08)
+
+**Note:** Version bump only for package ui5-app
+
+
+
+
+
+# [0.26.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.25.6...ui5-app@0.26.0) (2023-04-06)
+
+
+### Features
+
+* **ui5-tooling-transpile:** rework to avoid configurations for default usage ([#712](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/712)) ([97119f6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/97119f6795d839e305659a64be2f920f25a1392f))
+
+
+
+
+
+## [0.25.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.25.5...ui5-app@0.25.6) (2023-04-05)
+
+**Note:** Version bump only for package ui5-app
+
+
+
+
+
 ## [0.25.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.25.4...ui5-app@0.25.5) (2023-04-02)
 
 **Note:** Version bump only for package ui5-app

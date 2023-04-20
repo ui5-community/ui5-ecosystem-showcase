@@ -1,6 +1,6 @@
 {
   "name": "ui5-app-simple",
-  "version": "0.1.5",
+  "version": "0.3.9",
   "description": "UI5 application using custom middlewares and tasks",
   "private": true,
   "author": "Volker Buzek, Peter Muessig",
@@ -19,14 +19,14 @@
     "lint": "eslint webapp"
   },
   "dependencies": {
-    "ui5-module": "^0.2.2"
+    "ui5-module": "^0.2.3"
   },
   "devDependencies": {
     "@ui5/cli": "^3.0.6",
-    "rimraf": "~4.4.1",
+    "rimraf": "^5.0.0",
     "ui5-middleware-livereload": "^0.8.2",
-    "ui5-task-zipper": "^0.7.5",
-    "ui5-tooling-modules": "^0.7.13",
-    "ui5-tooling-transpile": "^0.5.2"
+    "ui5-task-zipper": "^0.8.2",
+    "ui5-tooling-modules": "^0.9.7",
+    "ui5-tooling-transpile": "^0.7.4"
   }
 }

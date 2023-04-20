@@ -11,28 +11,10 @@ framework:
     - name: sap.ui.layout
     - name: themelib_sap_horizon
 builder:
+  componentPreload:
+    excludes:
+      - "ui5/ecosystem/demo/app/thirdparty/stomp/**"
   customTasks:
-    - name: ui5-tooling-transpile-task
-      afterTask: replaceVersion
-      configuration:
-        debug: true
-        removeConsoleStatements: true
-        excludePatterns:
-          - "resources/"
-          - "lib/"
-          - "test/"
-        #babelConfig: &babelConfig
-        #  plugins:
-        #    - - "@babel/plugin-transform-computed-properties"
-        #      - loose: true
-        #    - - "@babel/plugin-transform-for-of"
-        #      - assumeArray: true
-        #    - - "babel-plugin-transform-async-to-promises"
-        #      - inlineHelpers: true
-        #  presets:
-        #    - - "@babel/preset-env"
-        #      - targets:
-        #          browsers: "last 2 versions, ie 10-11"
     - name: ui5-tooling-stringreplace-task
       afterTask: replaceVersion
       configuration:
@@ -62,12 +44,42 @@ builder:
           - "yet/another/dir"
     - name: ui5-task-i18ncheck
       afterTask: replaceVersion
-    - name: ui5-tooling-modules-task
+    - name: ui5-tooling-transpile-task
       afterTask: replaceVersion
+      configuration: &cfgTranspile
+        debug: true
+        transformAsyncToPromise: true
+        #removeConsoleStatements: true
+        targetBrowsers: ">0.2% and not dead"
+        excludePatterns:
+          - "resources/"
+          - "lib/"
+          - "test/"
+        #babelConfig: &babelConfig
+        #  plugins:
+        #    - - "@babel/plugin-transform-computed-properties"
+        #      - loose: true
+        #    - - "@babel/plugin-transform-for-of"
+        #      - assumeArray: true
+        #    - - "babel-plugin-transform-async-to-promises"
+        #      - inlineHelpers: true
+        #  presets:
+        #    - - "@babel/preset-env"
+        #      - targets:
+        #          browsers: "last 2 versions, ie 10-11"
+    - name: ui5-tooling-modules-task
+      afterTask: ui5-tooling-transpile-task
       configuration:
+        debug: true
         prependPathMappings: true
         addToNamespace: true
         removeScopePrefix: true
+        includeAssets:
+          "@octokit/core":
+            - "dist-web/*.map"
+          "tui-image-editor":
+            - "dist/**/*.css"
+            - "dist/**/*.svg"
     - name: ui5-task-zipper
       afterTask: generateVersionInfo
       configuration:
@@ -118,15 +130,6 @@ server:
         baseUri: "https://sdk.openui5.org/"
         limit: "5mb"
         removeETag: true
-    - name: ui5-tooling-transpile-middleware
-      afterMiddleware: compression
-      configuration:
-        debug: true
-        excludePatterns:
-          - "lib/"
-        #babelConfig:
-        #  <<: *babelConfig
-        #  sourceMaps: "inline"
     - name: ui5-tooling-stringreplace-middleware
       afterMiddleware: compression
       configuration:
@@ -168,8 +171,12 @@ server:
       configuration:
         debug: true
         jarRootPath: "META-INF/"
-    - name: ui5-tooling-modules-middleware
+    - name: ui5-tooling-transpile-middleware
       afterMiddleware: compression
+      configuration:
+        <<: *cfgTranspile
+    - name: ui5-tooling-modules-middleware
+      afterMiddleware: ui5-tooling-transpile-middleware
       configuration:
         #skipCache: true
     - name: ui5-middleware-livecompileless
