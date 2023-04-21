@@ -8,14 +8,14 @@
     "strict": true,
     "strictPropertyInitialization": false,
     "rootDir": "./webapp",
-    "baseUrl": "./",
     "sourceMap": true,
     "paths": {
       "ui5/ecosystem/demo/tsapp/*": ["./webapp/*"],
-      "ui5/ecosystem/demo/tslib/*": ["./node_modules/ui5-tslib/src/ui5/ecosystem/demo/tslib/*"],
       "unit/*": ["./webapp/test/unit/*"],
-      "integration/*": ["./webapp/test/integration/*"]
-    }
+      "integration/*": ["./webapp/test/integration/*"],
+      "ui5/ecosystem/demo/tslib/*": ["./node_modules/ui5-tslib/src/ui5/ecosystem/demo/tslib/*"]
+    },
+    "typeRoots": ["./node_modules/@types", "./node_modules/ui5-tslib"]
   },
   "include": ["./webapp/**/*.ts"]
 }

@@ -8,10 +8,8 @@
     "strict": true,
     "strictPropertyInitialization": false,
     "rootDir": "./webapp",
-    "baseUrl": "./",
     "paths": {
-      "ui5/ecosystem/demo/tsapp/*": ["./webapp/*"],
-      "ui5/ecosystem/demo/tslib/*": ["./node_modules/ui5-tslib/src/ui5/ecosystem/demo/tslib/*"]
+      "ui5/ecosystem/demo/tsapp/*": ["./webapp/*"]
     }
   },
   "include": ["./webapp/**/*"]
