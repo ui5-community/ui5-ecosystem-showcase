@@ -213,7 +213,7 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 				}
 			} catch (e) {
 				// typescript dependency should be available, otherwise we can't generate the dts files
-				log.warn(`Generating d.ts failed! Reason: ${e}`);
+				log.error(`Generating d.ts failed! Reason: ${e.message}\n${e.stack}`);
 			}
 		}
 	}
