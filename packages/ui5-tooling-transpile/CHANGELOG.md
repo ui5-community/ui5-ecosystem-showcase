@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.4...ui5-tooling-transpile@0.7.5) (2023-04-21)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** d.ts files to be modules + generate index.d.ts ([#734](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/734)) ([bc75c8c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/bc75c8c50bdf694d5283146082eed6792318f87e))
+
+
+
+
+
 ## [0.7.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.3...ui5-tooling-transpile@0.7.4) (2023-04-17)
 
 
