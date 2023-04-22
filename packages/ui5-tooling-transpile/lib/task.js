@@ -91,7 +91,7 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 
 	// generate the d.ts(.map)? files for the ts files via TSC API
 	// for the resources of the root project (not included dependencies)
-	if (config.transformTypeScript && taskUtil.isRootProject()) {
+	if (config.transformTypeScript) {
 		// determine if the project is a library and enable the DTS generation by default
 		// TODO: UI5 Tooling 3.0 allows to access the project with the TaskUtil
 		//       https://sap.github.io/ui5-tooling/v3/api/@ui5_project_build_helpers_TaskUtil.html#~ProjectInterface
@@ -121,7 +121,7 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 		}
 
 		// generate the dts files for the ts files
-		if (config.generateDts) {
+		if (config.generateDts && taskUtil.isRootProject()) {
 			try {
 				// dynamically require typescript
 				const ts = require("typescript");
