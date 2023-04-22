@@ -1,6 +1,6 @@
 {
   "name": "ui5-tooling-transpile",
-  "version": "0.7.6",
+  "version": "0.7.7",
   "description": "UI5 tooling extensions to transpile code",
   "author": "Jorge Martins, Peter Muessig",
   "license": "Apache-2.0",
