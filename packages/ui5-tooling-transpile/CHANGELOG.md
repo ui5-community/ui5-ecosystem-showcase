@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.5...ui5-tooling-transpile@0.7.6) (2023-04-22)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** add support for d.ts source maps ([#735](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/735)) ([cafc5b9](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/cafc5b966cb46ca14dec77cd6fe60bb9c14851bc))
+* **ui5-tooling-transpile:** use error logging instead of warnings ([93ec11e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/93ec11ee043c655ec50e12a7444e4c8d0462c50b))
+
+
+
+
+
 ## [0.7.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.4...ui5-tooling-transpile@0.7.5) (2023-04-21)
 
 

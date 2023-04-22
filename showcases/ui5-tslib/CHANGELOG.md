@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.16](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tslib@0.3.15...ui5-tslib@0.3.16) (2023-04-22)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** add support for d.ts source maps ([#735](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/735)) ([cafc5b9](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/cafc5b966cb46ca14dec77cd6fe60bb9c14851bc))
+
+
+
+
+
 ## [0.3.15](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tslib@0.3.14...ui5-tslib@0.3.15) (2023-04-21)
 
 
