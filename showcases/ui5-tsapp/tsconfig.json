@@ -12,10 +12,9 @@
     "paths": {
       "ui5/ecosystem/demo/tsapp/*": ["./webapp/*"],
       "unit/*": ["./webapp/test/unit/*"],
-      "integration/*": ["./webapp/test/integration/*"],
-      "ui5/ecosystem/demo/tslib/*": ["./node_modules/ui5-tslib/src/ui5/ecosystem/demo/tslib/*"]
+      "integration/*": ["./webapp/test/integration/*"]
     },
-    "typeRoots": ["./node_modules/@types", "./node_modules/ui5-tslib"]
+    "types": ["openui5", "ui5-tslib"]
   },
   "include": ["./webapp/**/*.ts"]
 }
