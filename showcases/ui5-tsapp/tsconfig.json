@@ -14,7 +14,8 @@
       "unit/*": ["./webapp/test/unit/*"],
       "integration/*": ["./webapp/test/integration/*"]
     },
-    "types": ["openui5", "ui5-tslib"]
+    "typeRoots": ["./node_modules/@types"],
+    "types": ["ui5-tslib"]
   },
   "include": ["./webapp/**/*.ts"]
 }
