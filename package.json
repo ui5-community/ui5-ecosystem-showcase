@@ -42,7 +42,7 @@
     "test:wdi5": "pnpm --filter ui5-app test:wdi5",
     "test:ui5-middleware-cfdestination": "pnpm --filter ui5-middleware-cfdestination test",
     "test:ui5-task-zipper": "pnpm --filter ui5-task-zipper test",
-    "test:all": "pnpm --filter !ui5-app --workspace-concurrency 1 test",
+    "test:all": "pnpm --filter \"./packages/*\" --workspace-concurrency 1 test",
     "watch": "pnpm --filter ui5-app watch",
     "release:version": "lerna version",
     "version": "npm-run-all --sequential version:pnpm-install version:pnpm-lock-to-git",
