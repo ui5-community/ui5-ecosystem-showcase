@@ -65,14 +65,14 @@ function deriveStrictSSL(environmentValue, configurationValue) {
  * @param {object} configuration The configuration object
  * @returns {object} http headers
  */
-function getHttpHeaders(environmentValue, configuration) {
+function getHttpHeaders(environmentValue, configuration = {}) {
 	let httpHeaders;
 	if (environmentValue) {
 		httpHeaders = JSON.parse(environmentValue);
 	} else if (configuration) {
 		httpHeaders = configuration.httpHeaders;
 	}
-	httpHeaders && configuration && configuration.debug && log.info(`HTTP headers will be injected: ${Object.keys(httpHeaders).join(", ")} `);
+	httpHeaders && configuration?.debug && log.info(`HTTP headers will be injected: ${Object.keys(httpHeaders).join(", ")} `);
 	return httpHeaders;
 }
 
@@ -98,14 +98,14 @@ function getBasicAuthenticationToken(environmentValue = {}, configuration = {}) 
  * @param {object} configuration The configuration object
  * @returns {object} Query parameters
  */
-function getQueryParameters(environmentValue, configuration) {
+function getQueryParameters(environmentValue, configuration = {}) {
 	let queryParameters;
 	if (environmentValue) {
 		queryParameters = JSON.parse(environmentValue);
 	} else if (configuration) {
 		queryParameters = configuration.query;
 	}
-	queryParameters && configuration && configuration.debug && log.info(`Query parameters will be attached: ${Object.keys(queryParameters).join(", ")} `);
+	queryParameters && configuration?.debug && log.info(`Query parameters will be attached: ${Object.keys(queryParameters).join(", ")} `);
 	return queryParameters;
 }
 
@@ -126,15 +126,15 @@ function getQueryParameters(environmentValue, configuration) {
  */
 // eslint-disable-next-line no-unused-vars
 module.exports = function ({ resources, options }) {
-	const isDebug = options.configuration && options.configuration.debug;
+	const isDebug = options.configuration?.debug;
 	// Environment wins over YAML configuration when loading settings
-	const providedBaseUri = env.baseUri || (options.configuration && options.configuration.baseUri);
-	const providedStrictSSL = deriveStrictSSL(env.strictSSL, options.configuration ? options.configuration.strictSSL : undefined);
+	const providedBaseUri = env.baseUri || options.configuration?.baseUri;
+	const providedStrictSSL = deriveStrictSSL(env.strictSSL, options.configuration?.strictSSL);
 	const providedHttpHeaders = getHttpHeaders(env.httpHeaders, options.configuration);
 	const providedQueryParameters = getQueryParameters(env.query, options.configuration);
 	isDebug && log.info(`Starting proxy for baseUri ${providedBaseUri}`);
 	// determine the uri parts (protocol, baseUri, path)
-	let baseUriParts = providedBaseUri.match(/(https|http):\/\/([^/]*)(\/.*)?/i);
+	let baseUriParts = providedBaseUri?.match(/(https|http):\/\/([^/]*)(\/.*)?/i);
 	if (!baseUriParts) {
 		throw new Error(`The baseUri ${providedBaseUri} is not valid!`);
 	}
@@ -144,9 +144,9 @@ module.exports = function ({ resources, options }) {
 	if (path && path.endsWith("/")) {
 		path = path.slice(0, -1);
 	}
-	const limit = env.limit || (options.configuration && options.configuration.limit);
-	const removeETag = env.removeETag || (options.configuration && options.configuration.removeETag);
-	const excludePatterns = options.configuration && options.configuration.excludePatterns;
+	const limit = env.limit || options.configuration?.limit;
+	const removeETag = env.removeETag || options.configuration?.removeETag;
+	const excludePatterns = options.configuration?.excludePatterns;
 	isDebug && log.info(`excludePatterns: ${excludePatterns}`);
 
 	// run the proxy middleware based on the baseUri configuration
@@ -162,7 +162,7 @@ module.exports = function ({ resources, options }) {
 
 					return minimatch(req.url, glob);
 				});
-				if (!pattern && req.url.includes("~") && options.configuration && options.configuration.skipCache) {
+				if (!pattern && req.url.includes("~") && options.configuration?.skipCache) {
 					const newUrl = req.url.replaceAll(/\/~.*~.\//g, "/");
 					isDebug && log.info(`Removing cache from ${req.url}, resolving to ${newUrl}`);
 					req.url = newUrl;
