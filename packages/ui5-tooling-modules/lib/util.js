@@ -12,10 +12,10 @@ const { nodeResolve } = require("@rollup/plugin-node-resolve");
 const commonjs = require("@rollup/plugin-commonjs");
 const json = require("@rollup/plugin-json");
 const nodePolyfills = require("rollup-plugin-polyfill-node");
-const injectProcessEnv = require("rollup-plugin-inject-process-env");
 const amdCustom = require("./rollup-plugin-amd-custom");
 const skipAssets = require("./rollup-plugin-skip-assets");
 const injectESModule = require("./rollup-plugin-inject-esmodule");
+const replace = require("@rollup/plugin-replace");
 
 const espree = require("espree");
 const estraverse = require("estraverse");
@@ -170,39 +170,24 @@ const that = (module.exports = {
 						},
 					};
 				})(),
+				replace({
+					preventAssignment: false,
+					values: {
+						"process.env.NODE_ENV": JSON.stringify("development"),
+					},
+				}),
 				injectESModule(),
-				// This example show-cases how to rewrite dependency names
-				// and how the resolution of the dependency is handled later
-				/* NOT NEEDED FOR NOW!
-				(function (options) {
-					return {
-						name: "resolve-node-deps",
-						resolveId(importee, importer, resolveOptions) {
-							if (importee.startsWith("node:")) {
-								const updatedId = importee.substring(5);
-								//console.log(updatedId);
-								return this.resolve(
-									updatedId,
-									importer,
-									Object.assign({ skipSelf: true }, resolveOptions)
-								).then((resolved) => resolved || { id: updatedId });
-							}
-							return null;
-						}
-					};
-				})(),
-				*/
 				skipAssets({
 					log,
 					extensions: ["css"],
 					modules: ["crypto"],
 				}),
-				nodePolyfills(),
-				json(),
 				commonjs({
 					defaultIsModuleExports: true,
 				}),
 				amdCustom(),
+				nodePolyfills(),
+				json(),
 				nodeResolve({
 					mainFields,
 					preferBuiltins: false,
@@ -221,9 +206,6 @@ const that = (module.exports = {
 						},
 					};
 				})({ mainFields }),
-				injectProcessEnv({
-					NODE_ENV: "production",
-				}),
 			],
 			onwarn: function ({ loc, frame, code, message }) {
 				// Skip certain warnings
@@ -274,6 +256,11 @@ const that = (module.exports = {
 		try {
 			const modulePath = that.resolveModule(moduleName);
 			if (modulePath) {
+				if (!existsSync(modulePath)) {
+					log.error(`Bundle ${moduleName} doesn't exist at the resolved path ${modulePath}!`);
+					return;
+				}
+
 				const lastModified = new Date((await stat(modulePath)).mtime).getTime();
 				const moduleExt = path.extname(modulePath).toLowerCase();
 
