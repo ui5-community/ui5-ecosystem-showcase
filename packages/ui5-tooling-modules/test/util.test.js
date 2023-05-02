@@ -284,3 +284,16 @@ test.serial("Verify generation of @js-temporal/polyfill", async (t) => {
 		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
 	}
 });
+
+test.serial("Verify generation of ui5-app/bundledefs/react", async (t) => {
+	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
+	const util = require("../lib/util");
+	const module = await getModule("ui5-app/bundledefs/react", {
+		tmpDir: t.context.tmpDir,
+		util,
+	});
+	t.true(module.retVal.__esModule);
+	if (platform() !== "win32") {
+		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
+	}
+});

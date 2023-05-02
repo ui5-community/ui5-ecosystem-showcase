@@ -10,8 +10,9 @@ sap.ui.define(
 		"axios",
 		"@js-temporal/polyfill",
 		"@stomp/stompjs",
+		"ui5-app/bundledefs/react",
 	],
-	(Controller, xlsx, cmis, _firebase, supabase, octokit, axios, temporal, stompjs) => {
+	(Controller, xlsx, cmis, _firebase, supabase, octokit, axios, temporal, stompjs, _react) => {
 		"use strict";
 
 		console.log(xlsx);
@@ -22,6 +23,7 @@ sap.ui.define(
 		console.log(axios);
 		console.log(temporal);
 		console.log(stompjs);
+		console.log(_react);
 
 		const { initializeApp, getFirestore } = _firebase;
 		const app = initializeApp({});

@@ -15,18 +15,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return Object.freeze(n);
     }
 
-    (function() {
-        const env = {"NODE_ENV":"production"};
-        try {
-            if (process) {
-                process.env = Object.assign({}, process.env);
-                Object.assign(process.env, env);
-                return;
-            }
-        } catch (e) {} // avoid ReferenceError: process is not defined
-        globalThis.process = { env:env };
-    })();
-
     var __awaiter$d = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
@@ -4154,6 +4142,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
     const version$1 = '2.19.0';
 
+    // constants.ts
     const DEFAULT_HEADERS$1 = { 'X-Client-Info': `supabase-js/${version$1}` };
 
     var __awaiter$5 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
