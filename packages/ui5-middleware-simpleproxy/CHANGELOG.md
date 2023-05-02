@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.9.6...ui5-middleware-simpleproxy@0.9.7) (2023-05-02)
+
+
+### Bug Fixes
+
+* **ui5-middleware-proxy:** proper error handling for missing baseUri ([#737](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/737)) ([20061c9](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/20061c9582a26cf615f7eabaac73eb0fe3fefe33)), closes [#736](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/736)
+
+
+
+
+
 ## [0.9.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.9.5...ui5-middleware-simpleproxy@0.9.6) (2023-04-11)
 
 
