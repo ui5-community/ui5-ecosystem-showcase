@@ -8,7 +8,8 @@ const {
 	createBabelConfig,
 	normalizeLineFeeds,
 	determineResourceFSPath,
-	transformAsync
+	transformAsync,
+	determineAppBasePath
 } = require("./util");
 
 /**
@@ -26,8 +27,9 @@ const {
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ workspace /*, dependencies*/, taskUtil, options }) {
-	const config = createConfiguration(options?.configuration || {});
-	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: false });
+	const cwd = determineAppBasePath(workspace) || process.cwd();
+	const config = createConfiguration(options?.configuration || {}, cwd);
+	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: false }, cwd);
 
 	// TODO: should we accept the full glob pattern as param or just the file pattern?
 	const allResources = await workspace.byGlob(`/**/*${config.filePattern}`);
@@ -190,7 +192,7 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 								const jsonContent = JSON.parse(content);
 								// libs build into namespace (resolve), applications into root (assume "..") in dist folder!
 								jsonContent.sourceRoot = isLibrary ? path.relative(resource.getPath(), "/") : "..";
-								jsonContent.sources = [path.relative(process.cwd(), determineResourceFSPath(resource))];
+								jsonContent.sources = [path.relative(cwd, determineResourceFSPath(resource))];
 								writeDtsFile(fileName, JSON.stringify(jsonContent));
 							});
 						} catch (e) {
@@ -239,7 +241,7 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 				if (!result.emitSkipped) {
 					// create the index.d.ts in the root output folder
 					config.debug && log.info(`  + [.d.ts] index.d.ts`);
-					const pckgJsonFile = path.join(process.cwd(), "package.json");
+					const pckgJsonFile = path.join(cwd, "package.json");
 					if (fs.existsSync(pckgJsonFile)) {
 						const pckgJson = require(pckgJsonFile);
 						if (!pckgJson.types) {
