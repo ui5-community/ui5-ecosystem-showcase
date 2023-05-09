@@ -66,19 +66,20 @@ async function findBabelConfig(dir) {
 	return partialConfig ? { configFile, options: partialConfig.options } : undefined;
 }
 
-module.exports = {
+const _this = (module.exports = {
 	/**
 	 * Build the configuration for the task and the middleware.
 	 *
 	 * @param {object} configuration task/middleware configuration
+	 * @param {string} [cwd] the cwd to lookup the configuration (defaults to process.cwd())
 	 * @returns {object} the translated task/middleware configuration
 	 */
-	createConfiguration: function createConfiguration(configuration) {
+	createConfiguration: function createConfiguration(configuration, cwd = process.cwd()) {
 		// extract the configuration
 		const config = configuration || {};
 
 		// if a tsconfig.json file exists, the project is a TypeScript project
-		const isTypeScriptProject = fs.existsSync(path.join(process.cwd(), "tsconfig.json"));
+		const isTypeScriptProject = fs.existsSync(path.join(cwd, "tsconfig.json"));
 
 		// derive whether TypeScript should be transformed or not
 		const transformTypeScript = config.transformTypeScript ?? config.transpileTypeScript ?? isTypeScriptProject;
@@ -125,17 +126,13 @@ module.exports = {
 	 * @param {object} cfg configuration object
 	 * @param {object} cfg.configuration task/middleware configuration
 	 * @param {boolean} cfg.isMiddleware true, if the function is called from the middleware
+	 * @param {string} [cwd] the cwd to lookup the configuration (defaults to process.cwd())
 	 * @returns {object} the babel plugins configuration
 	 */
-	createBabelConfig: async function createBabelConfig({ configuration, isMiddleware }) {
+	createBabelConfig: async function createBabelConfig({ configuration, isMiddleware }, cwd = process.cwd()) {
 		// Things to consider:
 		//   - middleware uses configs from app also for dependencies
-		//   - task uses .babelrc and .browserslistrc from app but config
-		//     in ui5.yaml from the different projects (since the config
-		//     files are loaded relative to process.cwd())
-
-		// for testing purposes we store the cwd of the initial function call
-		const cwd = process.cwd();
+		//   - task must provide the cwd from outside
 
 		// report usage of configuration options in case ofan external
 		//  configuration file or inline Babel config is used
@@ -284,18 +281,47 @@ module.exports = {
 	},
 
 	/**
+	 * Determines the applications base path from the given resource collection.
+	 *
+	 * <b>ATTENTION: this is a hack to be compatible with UI5 tooling 2.x and 3.x</b>
+	 *
+	 * @param {module:@ui5/fs.AbstractReader} collection Reader or Collection to read resources of the root project and its dependencies
+	 * @returns {string} application base path
+	 */
+	determineAppBasePath: function (collection) {
+		let appBasePath;
+		if (collection?._readers) {
+			for (const _reader of collection._readers) {
+				appBasePath = _this.determineAppBasePath(_reader);
+				if (appBasePath) break;
+			}
+		}
+		if (collection?._project?._type === "application") {
+			appBasePath = collection._project._modulePath; // UI5 tooling 3.x
+		} else if (collection?._project?.type === "application") {
+			appBasePath = collection._project.path; // UI5 tooling 2.x
+		} else if (typeof collection?._fsBasePath === "string") {
+			appBasePath = collection._fsBasePath;
+		}
+		return appBasePath;
+	},
+
+	/**
 	 * Determine the given resources' file system path
 	 *
+	 * <b>ATTENTION: this is a hack to be compatible with UI5 tooling 2.x and 3.x</b>
+	 *
 	 * @param {module:@ui5/fs.Resource} resource the resource
+	 * @param {string} [cwd] the cwd to lookup the configuration (defaults to process.cwd())
 	 * @returns {string} the file system path
 	 */
-	determineResourceFSPath: function determineResourceFSPath(resource) {
+	determineResourceFSPath: function determineResourceFSPath(resource, cwd = process.cwd()) {
 		let resourcePath = resource.getPath();
 		if (typeof resource.getSourceMetadata === "function") {
 			// specVersion 3.0 provides source metadata and only if the
 			// current work directory is the rootpath of the project resource
 			// it is a root resource which should be considered to be resolved
-			if (path.relative(process.cwd(), resource.getProject().getRootPath()) === "") {
+			if (path.relative(cwd, resource.getProject().getRootPath()) === "") {
 				resourcePath = resource.getSourceMetadata().fsPath || resourcePath;
 			}
 		} else {
@@ -338,4 +364,4 @@ module.exports = {
 	transformAsync: async function transformAsync(code, opts) {
 		return babel.transformAsync(code, opts);
 	}
-};
+});
