@@ -9,7 +9,7 @@ const {
 	normalizeLineFeeds,
 	determineResourceFSPath,
 	transformAsync,
-	determineAppBasePath
+	determineProjectBasePath
 } = require("./util");
 
 /**
@@ -27,7 +27,7 @@ const {
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ workspace /*, dependencies*/, taskUtil, options }) {
-	const cwd = determineAppBasePath(workspace) || process.cwd();
+	const cwd = determineProjectBasePath(workspace) || process.cwd();
 	const config = createConfiguration(options?.configuration || {}, cwd);
 	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: false }, cwd);
 
