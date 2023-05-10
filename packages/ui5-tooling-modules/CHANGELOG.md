@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.9.8...ui5-tooling-modules@0.9.9) (2023-05-10)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** avoid warnings for unknown directives ([#740](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/740)) ([2a118e0](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2a118e0efa785b3684de88fc5c1ba88ad83563ed))
+
+
+
+
+
 ## [0.9.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.9.7...ui5-tooling-modules@0.9.8) (2023-05-02)
 
 

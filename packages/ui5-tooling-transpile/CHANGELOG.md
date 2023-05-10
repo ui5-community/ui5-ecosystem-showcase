@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.9...ui5-tooling-transpile@0.7.10) (2023-05-10)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** determine base path for libs and apps ([#741](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/741)) ([8257389](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/82573890aae7034f16402700aa53c8188c325d9a))
+
+
+
+
+
 ## [0.7.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.8...ui5-tooling-transpile@0.7.9) (2023-05-09)
 
 

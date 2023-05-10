@@ -1,6 +1,6 @@
 {
   "name": "ui5-tooling-modules",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "description": "UI5 tooling extensions to load and convert node modules as UI5 AMD-like modules",
   "author": "Peter Muessig",
   "license": "Apache-2.0",
