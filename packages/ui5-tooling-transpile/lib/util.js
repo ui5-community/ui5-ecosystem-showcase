@@ -288,22 +288,22 @@ const _this = (module.exports = {
 	 * @param {module:@ui5/fs.AbstractReader} collection Reader or Collection to read resources of the root project and its dependencies
 	 * @returns {string} application base path
 	 */
-	determineAppBasePath: function (collection) {
-		let appBasePath;
+	determineProjectBasePath: function (collection) {
+		let projectBasePath;
 		if (collection?._readers) {
 			for (const _reader of collection._readers) {
-				appBasePath = _this.determineAppBasePath(_reader);
-				if (appBasePath) break;
+				projectBasePath = _this.determineProjectBasePath(_reader);
+				if (projectBasePath) break;
 			}
 		}
-		if (collection?._project?._type === "application") {
-			appBasePath = collection._project._modulePath; // UI5 tooling 3.x
-		} else if (collection?._project?.type === "application") {
-			appBasePath = collection._project.path; // UI5 tooling 2.x
+		if (/^(application|library)$/.test(collection?._project?._type)) {
+			projectBasePath = collection._project._modulePath; // UI5 tooling 3.x
+		} else if (/^(application|library)$/.test(collection?._project?.type)) {
+			projectBasePath = collection._project.path; // UI5 tooling 2.x
 		} else if (typeof collection?._fsBasePath === "string") {
-			appBasePath = collection._fsBasePath;
+			projectBasePath = collection._fsBasePath;
 		}
-		return appBasePath;
+		return projectBasePath;
 	},
 
 	/**

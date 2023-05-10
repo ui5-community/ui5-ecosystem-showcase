@@ -7,7 +7,7 @@ const {
 	normalizeLineFeeds,
 	determineResourceFSPath,
 	transformAsync,
-	determineAppBasePath
+	determineProjectBasePath
 } = require("./util");
 
 /**
@@ -28,7 +28,7 @@ const {
  * @returns {function} Middleware function to use
  */
 module.exports = async function ({ resources, options, middlewareUtil }) {
-	const cwd = determineAppBasePath(resources.rootProject) || process.cwd();
+	const cwd = determineProjectBasePath(resources.rootProject) || process.cwd();
 	const config = createConfiguration(options?.configuration || {}, cwd);
 	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: true }, cwd);
 
