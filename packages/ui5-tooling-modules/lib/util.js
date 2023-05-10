@@ -209,7 +209,7 @@ const that = (module.exports = {
 			],
 			onwarn: function ({ loc, frame, code, message }) {
 				// Skip certain warnings
-				const skipWarnings = ["THIS_IS_UNDEFINED", "CIRCULAR_DEPENDENCY", "MIXED_EXPORTS"];
+				const skipWarnings = ["THIS_IS_UNDEFINED", "CIRCULAR_DEPENDENCY", "MIXED_EXPORTS", "MODULE_LEVEL_DIRECTIVE"];
 				if (skipWarnings.indexOf(code) !== -1) {
 					return;
 				}
