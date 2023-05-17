@@ -36,7 +36,8 @@ module.exports = function createMiddleware({ resources, options, middlewareUtil 
 
 	// get all environment variables
 	const prefix = options.configuration?.prefix ? options.configuration?.prefix : "UI5_ENV"; // default
-	const placeholderStrings = readPlaceholderFromEnv(prefix, log);
+	const path = options.configuration?.ui5_env_path ? options.configuration?.ui5_env_path : "./"; // default
+	const placeholderStrings = readPlaceholderFromEnv(path, prefix, log);
 
 	let filesToInclude = [];
 	if (options.configuration) {
