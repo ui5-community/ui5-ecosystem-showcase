@@ -31,6 +31,8 @@
   },
   "devDependencies": {
     "@ui5/cli": "^2.14.17",
+    "@ui5/project": "^2.6.0",
+    "@ui5/server": "^2.4.1",
     "ava": "^5.2.0",
     "get-port": "^6.1.2",
     "nock": "^13.3.0",
