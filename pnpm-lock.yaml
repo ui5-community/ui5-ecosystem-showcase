@@ -121,6 +121,12 @@ importers:
       '@ui5/cli':
         specifier: ^2.14.17
         version: 2.14.17
+      '@ui5/project':
+        specifier: ^2.6.0
+        version: 2.6.0
+      '@ui5/server':
+        specifier: ^2.4.1
+        version: 2.4.1
       ava:
         specifier: ^5.2.0
         version: 5.2.0
@@ -6782,6 +6788,7 @@ packages:
   /connect-openui5@0.10.3:
     resolution: {integrity: sha512-7pdGd0bg/dRH8LWZTSXB7GQuZQtwhKspImyDKFcHAMkxlBwJ6YMWmDOlXhQmYzyeoI06sDsD8Nd5bdGmZGN61w==}
     engines: {node: '>= 10', npm: '>= 5'}
+    deprecated: 'connect-openui5 has been deprecated: https://github.com/SAP-archive/connect-openui5#deprecated'
     dependencies:
       async: 3.2.4
       cookie: 0.4.2
@@ -10125,11 +10132,6 @@ packages:
     dependencies:
       ci-info: 3.8.0
     dev: true
-
-  /is-core-module@2.11.0:
-    resolution: {integrity: sha512-RRjxlvLDkD1YJwDbroBHMb+cukurkDWNyHx7D3oNB5x9rb5ogcksMC5wHCadcXoo67gVr/+3GFySh3134zi6rw==}
-    dependencies:
-      has: 1.0.3
 
   /is-core-module@2.12.1:
     resolution: {integrity: sha512-Q4ZuBAe2FUsKtyQJoQHlvP8OvBERxO3jEmy1I7hcRXcJBGGHFh/aJBswbXuS9sgrDH2QUO8ilkwNPHvHMd8clg==}
@@ -14309,7 +14311,7 @@ packages:
     resolution: {integrity: sha512-nBpuuYuY5jFsli/JIs1oldw6fOQCBioohqWZg/2hiaOybXOft4lonv85uDOKXdf8rhyK159cxU5cDcK/NKk8zw==}
     hasBin: true
     dependencies:
-      is-core-module: 2.11.0
+      is-core-module: 2.12.1
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
 
