@@ -587,7 +587,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       ui5-middleware-cfdestination:
-        specifier: ^0.10.12
+        specifier: ^0.10.13
         version: link:../../packages/ui5-middleware-cfdestination
       ui5-middleware-iasync:
         specifier: ^1.0.0-alpha.3
