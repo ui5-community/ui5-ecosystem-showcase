@@ -17,6 +17,7 @@ The following list provides an overview of the available tooling extensions in t
 ```text
 packages
 ├── karma-ui5-transpile             // karma preprocessor: transpile sources using ui5-tooling-transpile
+├── ui5-middleware-cap              // middleware extension: use the CAP server middlewares inside the UI5 tooling
 ├── ui5-middleware-cfdestination    // middleware extension: use the approuter as proxy
 ├── ui5-middleware-iasync           // middleware extension: sync UI interaction across browsers (alpha! careful!)
 ├── ui5-middleware-index            // middleware extension: serve an HTML file for / (root)
@@ -171,6 +172,7 @@ Available middlewares in this project:
 
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
+| [ui5-middleware-cap](packages/ui5-middleware-cap/README.md) | use the CAP server middlewares inside the UI5 tooling | [![npm version](https://badge.fury.io/js/ui5-middleware-cap.svg)](https://badge.fury.io/js/ui5-middleware-cap) |
 | [ui5-middleware-cfdestination](packages/ui5-middleware-cfdestination/README.md) | use the approuter as proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-cfdestination.svg)](https://badge.fury.io/js/ui5-middleware-cfdestination) |
 | [ui5-middleware-iasync](packages/ui5-middleware-iasync/README.md) | sync UI interactions across connected browsers (alpha! careful!) | [![npm version](https://badge.fury.io/js/ui5-middleware-iasync.svg)](https://badge.fury.io/js/ui5-middleware-iasync) |
 | [ui5-middleware-index](packages/ui5-middleware-index/README.md) | serve an HTML file for / (root) | [![npm version](https://badge.fury.io/js/ui5-middleware-index.svg)](https://badge.fury.io/js/ui5-middleware-index) |
