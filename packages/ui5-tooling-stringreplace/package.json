@@ -11,11 +11,11 @@
   },
   "dependencies": {
     "@ui5/logger": "^2.0.1",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.1.0",
     "etag": "^1.8.1",
     "fresh": "^0.5.2",
     "lodash.escaperegexp": "^4.1.2",
-    "mime-types": "2.1.35",
+    "mime-types": "^2.1.35",
     "minimatch": "^7.4.6",
     "replacestream": "^4.0.3"
   },

@@ -740,7 +740,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             this.body = builder.body;
             this.shouldThrowOnError = builder.shouldThrowOnError;
             this.signal = builder.signal;
-            this.allowEmpty = builder.allowEmpty;
+            this.isMaybeSingle = builder.isMaybeSingle;
             if (builder.fetch) {
                 this.fetch = builder.fetch;
             }
@@ -808,6 +808,29 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     if (countHeader && contentRange && contentRange.length > 1) {
                         count = parseInt(contentRange[1]);
                     }
+                    // Temporary partial fix for https://github.com/supabase/postgrest-js/issues/361
+                    // Issue persists e.g. for `.insert([...]).select().maybeSingle()`
+                    if (this.isMaybeSingle && this.method === 'GET' && Array.isArray(data)) {
+                        if (data.length > 1) {
+                            error = {
+                                // https://github.com/PostgREST/postgrest/blob/a867d79c42419af16c18c3fb019eba8df992626f/src/PostgREST/Error.hs#L553
+                                code: 'PGRST116',
+                                details: `Results contain ${data.length} rows, application/vnd.pgrst.object+json requires 1 row`,
+                                hint: null,
+                                message: 'JSON object requested, multiple (or no) rows returned',
+                            };
+                            data = null;
+                            count = null;
+                            status = 406;
+                            statusText = 'Not Acceptable';
+                        }
+                        else if (data.length === 1) {
+                            data = data[0];
+                        }
+                        else {
+                            data = null;
+                        }
+                    }
                 }
                 else {
                     const body = await res.text();
@@ -833,7 +856,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                             };
                         }
                     }
-                    if (error && this.allowEmpty && ((_c = error === null || error === void 0 ? void 0 : error.details) === null || _c === void 0 ? void 0 : _c.includes('Results contain 0 rows'))) {
+                    if (error && this.isMaybeSingle && ((_c = error === null || error === void 0 ? void 0 : error.details) === null || _c === void 0 ? void 0 : _c.includes('Results contain 0 rows'))) {
                         error = null;
                         status = 200;
                         statusText = 'OK';
@@ -852,18 +875,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 return postgrestResponse;
             });
             if (!this.shouldThrowOnError) {
-                res = res.catch((fetchError) => ({
-                    error: {
-                        message: `FetchError: ${fetchError.message}`,
-                        details: '',
-                        hint: '',
-                        code: fetchError.code || '',
-                    },
-                    data: null,
-                    count: null,
-                    status: 0,
-                    statusText: '',
-                }));
+                res = res.catch((fetchError) => {
+                    var _a, _b, _c;
+                    return ({
+                        error: {
+                            message: `${(_a = fetchError === null || fetchError === void 0 ? void 0 : fetchError.name) !== null && _a !== void 0 ? _a : 'FetchError'}: ${fetchError === null || fetchError === void 0 ? void 0 : fetchError.message}`,
+                            details: `${(_b = fetchError === null || fetchError === void 0 ? void 0 : fetchError.stack) !== null && _b !== void 0 ? _b : ''}`,
+                            hint: '',
+                            code: `${(_c = fetchError === null || fetchError === void 0 ? void 0 : fetchError.code) !== null && _c !== void 0 ? _c : ''}`,
+                        },
+                        data: null,
+                        count: null,
+                        status: 0,
+                        statusText: '',
+                    });
+                });
             }
             return res.then(onfulfilled, onrejected);
         }
@@ -979,8 +1005,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * this returns an error.
          */
         maybeSingle() {
-            this.headers['Accept'] = 'application/vnd.pgrst.object+json';
-            this.allowEmpty = true;
+            // Temporary partial fix for https://github.com/supabase/postgrest-js/issues/361
+            // Issue persists e.g. for `.insert([...]).select().maybeSingle()`
+            if (this.method === 'GET') {
+                this.headers['Accept'] = 'application/json';
+            }
+            else {
+                this.headers['Accept'] = 'application/vnd.pgrst.object+json';
+            }
+            this.isMaybeSingle = true;
             return this;
         }
         /**
@@ -1135,6 +1168,26 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             return this;
         }
         /**
+         * Match only rows where `column` matches all of `patterns` case-sensitively.
+         *
+         * @param column - The column to filter on
+         * @param patterns - The patterns to match with
+         */
+        likeAllOf(column, patterns) {
+            this.url.searchParams.append(column, `like(all).{${patterns.join(',')}}`);
+            return this;
+        }
+        /**
+         * Match only rows where `column` matches any of `patterns` case-sensitively.
+         *
+         * @param column - The column to filter on
+         * @param patterns - The patterns to match with
+         */
+        likeAnyOf(column, patterns) {
+            this.url.searchParams.append(column, `like(any).{${patterns.join(',')}}`);
+            return this;
+        }
+        /**
          * Match only rows where `column` matches `pattern` case-insensitively.
          *
          * @param column - The column to filter on
@@ -1142,6 +1195,26 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          */
         ilike(column, pattern) {
             this.url.searchParams.append(column, `ilike.${pattern}`);
+            return this;
+        }
+        /**
+         * Match only rows where `column` matches all of `patterns` case-insensitively.
+         *
+         * @param column - The column to filter on
+         * @param patterns - The patterns to match with
+         */
+        ilikeAllOf(column, patterns) {
+            this.url.searchParams.append(column, `ilike(all).{${patterns.join(',')}}`);
+            return this;
+        }
+        /**
+         * Match only rows where `column` matches any of `patterns` case-insensitively.
+         *
+         * @param column - The column to filter on
+         * @param patterns - The patterns to match with
+         */
+        ilikeAnyOf(column, patterns) {
+            this.url.searchParams.append(column, `ilike(any).{${patterns.join(',')}}`);
             return this;
         }
         /**
@@ -1471,16 +1544,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          *
          * `"estimated"`: Uses exact count for low numbers and planned count for high
          * numbers.
+         *
+         * @param options.defaultToNull - Make missing fields default to `null`.
+         * Otherwise, use the default value for the column.
          */
-        insert(values, { count, } = {}) {
+        insert(values, { count, defaultToNull = true, } = {}) {
             const method = 'POST';
             const prefersHeaders = [];
-            const body = values;
+            if (this.headers['Prefer']) {
+                prefersHeaders.push(this.headers['Prefer']);
+            }
             if (count) {
                 prefersHeaders.push(`count=${count}`);
             }
-            if (this.headers['Prefer']) {
-                prefersHeaders.unshift(this.headers['Prefer']);
+            if (!defaultToNull) {
+                prefersHeaders.push('missing=default');
             }
             this.headers['Prefer'] = prefersHeaders.join(',');
             if (Array.isArray(values)) {
@@ -1495,7 +1573,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 url: this.url,
                 headers: this.headers,
                 schema: this.schema,
-                body,
+                body: values,
                 fetch: this.fetch,
                 allowEmpty: false,
             });
@@ -1532,26 +1610,40 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          *
          * `"estimated"`: Uses exact count for low numbers and planned count for high
          * numbers.
+         *
+         * @param options.defaultToNull - Make missing fields default to `null`.
+         * Otherwise, use the default value for the column. This only applies when
+         * inserting new rows, not when merging with existing rows under
+         * `ignoreDuplicates: false`.
          */
-        upsert(values, { onConflict, ignoreDuplicates = false, count, } = {}) {
+        upsert(values, { onConflict, ignoreDuplicates = false, count, defaultToNull = true, } = {}) {
             const method = 'POST';
             const prefersHeaders = [`resolution=${ignoreDuplicates ? 'ignore' : 'merge'}-duplicates`];
             if (onConflict !== undefined)
                 this.url.searchParams.set('on_conflict', onConflict);
-            const body = values;
+            if (this.headers['Prefer']) {
+                prefersHeaders.push(this.headers['Prefer']);
+            }
             if (count) {
                 prefersHeaders.push(`count=${count}`);
             }
-            if (this.headers['Prefer']) {
-                prefersHeaders.unshift(this.headers['Prefer']);
+            if (!defaultToNull) {
+                prefersHeaders.push('missing=default');
             }
             this.headers['Prefer'] = prefersHeaders.join(',');
+            if (Array.isArray(values)) {
+                const columns = values.reduce((acc, x) => acc.concat(Object.keys(x)), []);
+                if (columns.length > 0) {
+                    const uniqueColumns = [...new Set(columns)].map((column) => `"${column}"`);
+                    this.url.searchParams.set('columns', uniqueColumns.join(','));
+                }
+            }
             return new PostgrestFilterBuilder({
                 method,
                 url: this.url,
                 headers: this.headers,
                 schema: this.schema,
-                body,
+                body: values,
                 fetch: this.fetch,
                 allowEmpty: false,
             });
@@ -1580,12 +1672,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         update(values, { count, } = {}) {
             const method = 'PATCH';
             const prefersHeaders = [];
-            const body = values;
+            if (this.headers['Prefer']) {
+                prefersHeaders.push(this.headers['Prefer']);
+            }
             if (count) {
                 prefersHeaders.push(`count=${count}`);
-            }
-            if (this.headers['Prefer']) {
-                prefersHeaders.unshift(this.headers['Prefer']);
             }
             this.headers['Prefer'] = prefersHeaders.join(',');
             return new PostgrestFilterBuilder({
@@ -1593,7 +1684,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 url: this.url,
                 headers: this.headers,
                 schema: this.schema,
-                body,
+                body: values,
                 fetch: this.fetch,
                 allowEmpty: false,
             });
@@ -1638,7 +1729,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    const version$6 = '1.4.1';
+    const version$6 = '1.7.0';
 
     const DEFAULT_HEADERS$4 = { 'X-Client-Info': `postgrest-js/${version$6}` };
 
@@ -3599,9 +3690,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             });
         }
         /**
-         * Upload a file with a token generated from `createUploadSignedUrl`.
+         * Upload a file with a token generated from `createSignedUploadUrl`.
          * @param path The file path, including the file name. Should be of the format `folder/subfolder/filename.png`. The bucket must already exist before attempting to upload.
-         * @param token The token generated from `createUploadSignedUrl`
+         * @param token The token generated from `createSignedUploadUrl`
          * @param fileBody The body of the file to be stored in the bucket.
          */
         uploadToSignedUrl(path, token, fileBody, fileOptions) {
@@ -3654,7 +3745,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
         /**
          * Creates a signed upload URL.
-         * Signed upload URLs can be used upload files to the bucket without further authentication.
+         * Signed upload URLs can be used to upload files to the bucket without further authentication.
          * They are valid for one minute.
          * @param path The file path, including the current file name. For example `folder/image.png`.
          */
@@ -3971,7 +4062,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
 
     // generated by genversion
-    const version$2 = '2.5.0';
+    const version$2 = '2.5.1';
 
     const DEFAULT_HEADERS$2 = { 'X-Client-Info': `storage-js/${version$2}` };
 
@@ -4031,8 +4122,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          *
          * @param id A unique identifier for the bucket you are creating.
          * @param options.public The visibility of the bucket. Public buckets don't require an authorization token to download objects, but still require a valid token for all other operations. By default, buckets are private.
-         * @param options.fileSizeLimit specifies the file size limit that this bucket can accept during upload
-         * @param options.allowedMimeTypes specifies the allowed mime types that this bucket can accept during upload
+         * @param options.fileSizeLimit specifies the max file size in bytes that can be uploaded to this bucket.
+         * The global file size limit takes precedence over this value.
+         * The default value is null, which doesn't set a per bucket file size limit.
+         * @param options.allowedMimeTypes specifies the allowed mime types that this bucket can accept during upload.
+         * The default value is null, which allows files with all mime types to be uploaded.
+         * Each mime type specified can be a wildcard, e.g. image/*, or a specific mime type, e.g. image/png.
          * @returns newly created bucket id
          */
         createBucket(id, options = {
@@ -4062,8 +4157,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          *
          * @param id A unique identifier for the bucket you are updating.
          * @param options.public The visibility of the bucket. Public buckets don't require an authorization token to download objects, but still require a valid token for all other operations.
-         * @param options.fileSizeLimit specifies the file size limit that this bucket can accept during upload
-         * @param options.allowedMimeTypes specifies the allowed mime types that this bucket can accept during upload
+         * @param options.fileSizeLimit specifies the max file size in bytes that can be uploaded to this bucket.
+         * The global file size limit takes precedence over this value.
+         * The default value is null, which doesn't set a per bucket file size limit.
+         * @param options.allowedMimeTypes specifies the allowed mime types that this bucket can accept during upload.
+         * The default value is null, which allows files with all mime types to be uploaded.
+         * Each mime type specified can be a wildcard, e.g. image/*, or a specific mime type, e.g. image/png.
          */
         updateBucket(id, options) {
             return __awaiter$6(this, void 0, void 0, function* () {
@@ -4140,7 +4239,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    const version$1 = '2.19.0';
+    const version$1 = '2.24.0';
 
     // constants.ts
     const DEFAULT_HEADERS$1 = { 'X-Client-Info': `supabase-js/${version$1}` };
@@ -4411,7 +4510,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         const verifierLength = 56;
         const array = new Uint32Array(verifierLength);
         if (typeof crypto === 'undefined') {
-            throw new Error('PKCE is not supported on devices without WebCrypto API support, please add polyfills');
+            const charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+            const charSetLen = charSet.length;
+            let verifier = '';
+            for (let i = 0; i < verifierLength; i++) {
+                verifier += charSet.charAt(Math.floor(Math.random() * charSetLen));
+            }
+            return verifier;
         }
         crypto.getRandomValues(array);
         return Array.from(array, dec2hex).join('');
@@ -4420,9 +4525,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return __awaiter$4(this, void 0, void 0, function* () {
             const encoder = new TextEncoder();
             const encodedData = encoder.encode(randomString);
-            if (typeof crypto === 'undefined') {
-                throw new Error('PKCE is not supported on devices without WebCrypto API support, please add polyfills');
-            }
             const hash = yield crypto.subtle.digest('SHA-256', encodedData);
             const bytes = new Uint8Array(hash);
             return Array.from(bytes)
@@ -4435,6 +4537,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     function generatePKCEChallenge(verifier) {
         return __awaiter$4(this, void 0, void 0, function* () {
+            if (typeof crypto === 'undefined') {
+                console.warn('WebCrypto API is not supported. Code challenge method will default to use plain instead of sha256.');
+                return verifier;
+            }
             const hashed = yield sha256(verifier);
             return base64urlencode(hashed);
         });
@@ -4722,8 +4828,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         /**
          * Sends an invite link to an email address.
          * @param email The email address of the user.
-         * @param options.redirectTo A URL or mobile deeplink to send the user to after they are confirmed.
-         * @param options.data Optional user metadata
+         * @param options Additional options to be included when inviting.
          */
         inviteUserByEmail(email, options = {}) {
             return __awaiter$2(this, void 0, void 0, function* () {
@@ -4959,7 +5064,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
 
     // Generated by genversion.
-    const version = '2.22.0';
+    const version = '2.28.0';
 
     const GOTRUE_URL = 'http://localhost:9999';
     const STORAGE_KEY = 'supabase.auth.token';
@@ -5033,7 +5138,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         flowType: 'implicit',
     };
     /** Current session will be checked for refresh at this interval. */
-    const AUTO_REFRESH_TICK_DURATION = 10 * 1000;
+    const AUTO_REFRESH_TICK_DURATION = 30 * 1000;
     /**
      * A token refresh will be attempted this many ticks before the current session expires. */
     const AUTO_REFRESH_TICK_THRESHOLD = 3;
@@ -5163,6 +5268,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          *
          * Be aware that if a user account exists in the system you may get back an
          * error message that attempts to hide this information from the user.
+         * This method has support for PKCE via email signups. The PKCE flow cannot be used when autoconfirm is enabled.
          *
          * @returns A logged-in session if the server has "autoconfirm" ON
          * @returns A user if the server has "autoconfirm" OFF
@@ -5175,6 +5281,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     let res;
                     if ('email' in credentials) {
                         const { email, password, options } = credentials;
+                        let codeChallenge = null;
+                        let codeChallengeMethod = null;
+                        if (this.flowType === 'pkce') {
+                            const codeVerifier = generatePKCEVerifier();
+                            yield setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
+                            codeChallenge = yield generatePKCEChallenge(codeVerifier);
+                            codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
+                        }
                         res = yield _request(this.fetch, 'POST', `${this.url}/signup`, {
                             headers: this.headers,
                             redirectTo: options === null || options === void 0 ? void 0 : options.emailRedirectTo,
@@ -5183,6 +5297,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                                 password,
                                 data: (_a = options === null || options === void 0 ? void 0 : options.data) !== null && _a !== void 0 ? _a : {},
                                 gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
+                                code_challenge: codeChallenge,
+                                code_challenge_method: codeChallengeMethod,
                             },
                             xform: _sessionResponse,
                         });
@@ -5283,6 +5399,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
         /**
          * Log in an existing user via a third-party provider.
+         * This method supports the PKCE flow.
          */
         signInWithOAuth(credentials) {
             var _a, _b, _c, _d;
@@ -5297,7 +5414,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             });
         }
         /**
-         * Log in an existing user via a third-party provider.
+         * Log in an existing user by exchanging an Auth Code issued during the PKCE flow.
          */
         exchangeCodeForSession(authCode) {
             return __awaiter$1(this, void 0, void 0, function* () {
@@ -5373,6 +5490,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * if you are using phone sign in with the 'whatsapp' channel. The whatsapp
          * channel is not supported on other providers
          * at this time.
+         * This method supports PKCE when an email is passed.
          */
         signInWithOtp(credentials) {
             var _a, _b, _c, _d, _e;
@@ -5382,10 +5500,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     if ('email' in credentials) {
                         const { email, options } = credentials;
                         let codeChallenge = null;
+                        let codeChallengeMethod = null;
                         if (this.flowType === 'pkce') {
                             const codeVerifier = generatePKCEVerifier();
                             yield setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
                             codeChallenge = yield generatePKCEChallenge(codeVerifier);
+                            codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
                         }
                         const { error } = yield _request(this.fetch, 'POST', `${this.url}/otp`, {
                             headers: this.headers,
@@ -5395,7 +5515,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                                 create_user: (_b = options === null || options === void 0 ? void 0 : options.shouldCreateUser) !== null && _b !== void 0 ? _b : true,
                                 gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
                                 code_challenge: codeChallenge,
-                                code_challenge_method: codeChallenge ? 's256' : null,
+                                code_challenge_method: codeChallengeMethod,
                             },
                             redirectTo: options === null || options === void 0 ? void 0 : options.emailRedirectTo,
                         });
@@ -5491,6 +5611,74 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 catch (error) {
                     if (isAuthError(error)) {
                         return { data: null, error };
+                    }
+                    throw error;
+                }
+            });
+        }
+        /**
+         * Sends a reauthentication OTP to the user's email or phone number.
+         * Requires the user to be signed-in.
+         */
+        reauthenticate() {
+            return __awaiter$1(this, void 0, void 0, function* () {
+                try {
+                    const { data: { session }, error: sessionError, } = yield this.getSession();
+                    if (sessionError)
+                        throw sessionError;
+                    if (!session)
+                        throw new AuthSessionMissingError();
+                    const { error } = yield _request(this.fetch, 'GET', `${this.url}/reauthenticate`, {
+                        headers: this.headers,
+                        jwt: session.access_token,
+                    });
+                    return { data: { user: null, session: null }, error };
+                }
+                catch (error) {
+                    if (isAuthError(error)) {
+                        return { data: { user: null, session: null }, error };
+                    }
+                    throw error;
+                }
+            });
+        }
+        /**
+         * Resends an existing signup confirmation email, email change email, SMS OTP or phone change OTP.
+         */
+        resend(credentials) {
+            return __awaiter$1(this, void 0, void 0, function* () {
+                try {
+                    yield this._removeSession();
+                    const endpoint = `${this.url}/resend`;
+                    if ('email' in credentials) {
+                        const { email, type, options } = credentials;
+                        const { error } = yield _request(this.fetch, 'POST', endpoint, {
+                            headers: this.headers,
+                            body: {
+                                email,
+                                type,
+                                gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
+                            },
+                        });
+                        return { data: { user: null, session: null }, error };
+                    }
+                    else if ('phone' in credentials) {
+                        const { phone, type, options } = credentials;
+                        const { error } = yield _request(this.fetch, 'POST', endpoint, {
+                            headers: this.headers,
+                            body: {
+                                phone,
+                                type,
+                                gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
+                            },
+                        });
+                        return { data: { user: null, session: null }, error };
+                    }
+                    throw new AuthInvalidCredentialsError('You must provide either an email or phone number and a type');
+                }
+                catch (error) {
+                    if (isAuthError(error)) {
+                        return { data: { user: null, session: null }, error };
                     }
                     throw error;
                 }
@@ -5724,6 +5912,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                             throw error;
                         if (!data.session)
                             throw new AuthPKCEGrantCodeExchangeError('No session detected.');
+                        let url = new URL(window.location.href);
+                        url.searchParams.delete('code');
+                        window.history.replaceState(window.history.state, '', url.toString());
                         return { data: { session: data.session, redirectType: null }, error: null };
                     }
                     const error_description = getParameterByName('error_description');
@@ -5822,6 +6013,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     }
                 }
                 yield this._removeSession();
+                yield removeItemAsync(this.storage, `${this.storageKey}-code-verifier`);
                 this._notifyAllSubscribers('SIGNED_OUT', null);
                 return { error: null };
             });
@@ -5860,6 +6052,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
         /**
          * Sends a password reset request to an email address.
+         * This method supports the PKCE flow.
          * @param email The email address of the user.
          * @param options.redirectTo The URL to send the user to after they click the password reset link.
          * @param options.captchaToken Verification token received when the user completes the captcha on the site.
@@ -5867,17 +6060,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         resetPasswordForEmail(email, options = {}) {
             return __awaiter$1(this, void 0, void 0, function* () {
                 let codeChallenge = null;
+                let codeChallengeMethod = null;
                 if (this.flowType === 'pkce') {
                     const codeVerifier = generatePKCEVerifier();
                     yield setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
                     codeChallenge = yield generatePKCEChallenge(codeVerifier);
+                    codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
                 }
                 try {
                     return yield _request(this.fetch, 'POST', `${this.url}/recover`, {
                         body: {
                             email,
                             code_challenge: codeChallenge,
-                            code_challenge_method: codeChallenge ? 's256' : null,
+                            code_challenge_method: codeChallengeMethod,
                             gotrue_meta_security: { captcha_token: options.captchaToken },
                         },
                         headers: this.headers,
@@ -5967,9 +6162,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                                 console.log(error.message);
                                 yield this._removeSession();
                             }
-                        }
-                        else {
-                            yield this._removeSession();
                         }
                     }
                     else {
@@ -6090,6 +6282,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     // finished and tests run endlessly. This can be prevented by calling
                     // `unref()` on the returned object.
                     ticker.unref();
+                    // @ts-ignore
+                }
+                else if (typeof Deno !== 'undefined' && typeof Deno.unrefTimer === 'function') {
+                    // similar like for NodeJS, but with the Deno API
+                    // https://deno.land/api@latest?unstable&s=Deno.unrefTimer
+                    // @ts-ignore
+                    Deno.unrefTimer(ticker);
                 }
                 // run the tick immediately
                 yield this._autoRefreshTokenTick();
@@ -6124,7 +6323,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * changes on your own.
          *
          * On non-browser platforms the refresh process works *continuously* in the
-         * background, which may not be desireable. You should hook into your
+         * background, which may not be desirable. You should hook into your
          * platform's foreground indication mechanism and call these methods
          * appropriately to conserve resources.
          *
@@ -6241,9 +6440,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     const codeVerifier = generatePKCEVerifier();
                     yield setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
                     const codeChallenge = yield generatePKCEChallenge(codeVerifier);
+                    const codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
                     const flowParams = new URLSearchParams({
                         code_challenge: `${encodeURIComponent(codeChallenge)}`,
-                        code_challenge_method: `${encodeURIComponent('s256')}`,
+                        code_challenge_method: `${encodeURIComponent(codeChallengeMethod)}`,
                     });
                     urlParams.push(flowParams.toString());
                 }
@@ -6494,14 +6694,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             this.realtimeUrl = `${_supabaseUrl}/realtime/v1`.replace(/^http/i, 'ws');
             this.authUrl = `${_supabaseUrl}/auth/v1`;
             this.storageUrl = `${_supabaseUrl}/storage/v1`;
-            const isPlatform = _supabaseUrl.match(/(supabase\.co)|(supabase\.in)/);
-            if (isPlatform) {
-                const urlParts = _supabaseUrl.split('.');
-                this.functionsUrl = `${urlParts[0]}.functions.${urlParts[1]}.${urlParts[2]}`;
-            }
-            else {
-                this.functionsUrl = `${_supabaseUrl}/functions/v1`;
-            }
+            this.functionsUrl = `${_supabaseUrl}/functions/v1`;
             // default storage key uses the supabase project ref as a namespace
             const defaultStorageKey = `sb-${new URL(this.authUrl).hostname.split('.')[0]}-auth-token`;
             const DEFAULTS = {
@@ -6538,17 +6731,34 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         get storage() {
             return new StorageClient(this.storageUrl, this.headers, this.fetch);
         }
+        /**
+         * Perform a query on a table or a view.
+         *
+         * @param relation - The table or view name to query
+         */
         from(relation) {
             return this.rest.from(relation);
         }
         /**
          * Perform a function call.
          *
-         * @param fn  The function name to call.
-         * @param args  The parameters to pass to the function call.
-         * @param options.head   When set to true, no data will be returned.
-         * @param options.count  Count algorithm to use to count rows in a table.
+         * @param fn - The function name to call
+         * @param args - The arguments to pass to the function call
+         * @param options - Named parameters
+         * @param options.head - When set to `true`, `data` will not be returned.
+         * Useful if you only need the count.
+         * @param options.count - Count algorithm to use to count rows returned by the
+         * function. Only applicable for [set-returning
+         * functions](https://www.postgresql.org/docs/current/functions-srf.html).
          *
+         * `"exact"`: Exact but slow count algorithm. Performs a `COUNT(*)` under the
+         * hood.
+         *
+         * `"planned"`: Approximated but fast count algorithm. Uses the Postgres
+         * statistics under the hood.
+         *
+         * `"estimated"`: Uses exact count for low numbers and planned count for high
+         * numbers.
          */
         rpc(fn, args = {}, options) {
             return this.rest.rpc(fn, args, options);

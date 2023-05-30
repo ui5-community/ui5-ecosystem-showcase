@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@ui5/logger": "^2.0.1",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.1.0",
     "serve-static": "^1.15.0"
   },
   "ui5": {
