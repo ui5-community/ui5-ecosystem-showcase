@@ -212,7 +212,11 @@ const _this = (module.exports = {
 			envPreset.push({
 				targets: {
 					// future: consider to read the browserslist config from OpenUI5/SAPUI5?
-					browsers: configuration?.targetBrowsers || "defaults"
+					// env variables must not use "-" or "." and therefore we use "_" only
+					browsers:
+						process.env?.["ui5_tooling_transpile__targetBrowsers"] ||
+						configuration?.targetBrowsers ||
+						"defaults"
 				}
 			});
 		}
