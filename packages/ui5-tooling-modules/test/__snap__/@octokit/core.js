@@ -758,259 +758,280 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    const VERSION$2 = "6.2.3";
+    // pkg/dist-src/index.js
 
+    // pkg/dist-src/version.js
+    var VERSION$2 = "6.2.5";
+
+    // pkg/dist-src/get-buffer-response.js
     function getBufferResponse(response) {
-        return response.arrayBuffer();
+      return response.arrayBuffer();
     }
 
+    // pkg/dist-src/fetch-wrapper.js
     function fetchWrapper(requestOptions) {
-        const log = requestOptions.request && requestOptions.request.log
-            ? requestOptions.request.log
-            : console;
-        if (isPlainObject(requestOptions.body) ||
-            Array.isArray(requestOptions.body)) {
-            requestOptions.body = JSON.stringify(requestOptions.body);
-        }
-        let headers = {};
-        let status;
-        let url;
-        const fetch = (requestOptions.request && requestOptions.request.fetch) ||
-            globalThis.fetch ||
-            /* istanbul ignore next */ browserExports;
-        return fetch(requestOptions.url, Object.assign({
+      const log = requestOptions.request && requestOptions.request.log ? requestOptions.request.log : console;
+      if (isPlainObject(requestOptions.body) || Array.isArray(requestOptions.body)) {
+        requestOptions.body = JSON.stringify(requestOptions.body);
+      }
+      let headers = {};
+      let status;
+      let url;
+      const fetch = requestOptions.request && requestOptions.request.fetch || globalThis.fetch || /* istanbul ignore next */
+      browserExports;
+      return fetch(
+        requestOptions.url,
+        Object.assign(
+          {
             method: requestOptions.method,
             body: requestOptions.body,
             headers: requestOptions.headers,
             redirect: requestOptions.redirect,
-        }, 
-        // `requestOptions.request.agent` type is incompatible
-        // see https://github.com/octokit/types.ts/pull/264
-        requestOptions.request))
-            .then(async (response) => {
-            url = response.url;
-            status = response.status;
-            for (const keyAndValue of response.headers) {
-                headers[keyAndValue[0]] = keyAndValue[1];
-            }
-            if ("deprecation" in headers) {
-                const matches = headers.link && headers.link.match(/<([^>]+)>; rel="deprecation"/);
-                const deprecationLink = matches && matches.pop();
-                log.warn(`[@octokit/request] "${requestOptions.method} ${requestOptions.url}" is deprecated. It is scheduled to be removed on ${headers.sunset}${deprecationLink ? `. See ${deprecationLink}` : ""}`);
-            }
-            if (status === 204 || status === 205) {
-                return;
-            }
-            // GitHub API returns 200 for HEAD requests
-            if (requestOptions.method === "HEAD") {
-                if (status < 400) {
-                    return;
-                }
-                throw new RequestError(response.statusText, status, {
-                    response: {
-                        url,
-                        status,
-                        headers,
-                        data: undefined,
-                    },
-                    request: requestOptions,
-                });
-            }
-            if (status === 304) {
-                throw new RequestError("Not modified", status, {
-                    response: {
-                        url,
-                        status,
-                        headers,
-                        data: await getResponseData(response),
-                    },
-                    request: requestOptions,
-                });
-            }
-            if (status >= 400) {
-                const data = await getResponseData(response);
-                const error = new RequestError(toErrorMessage(data), status, {
-                    response: {
-                        url,
-                        status,
-                        headers,
-                        data,
-                    },
-                    request: requestOptions,
-                });
-                throw error;
-            }
-            return getResponseData(response);
-        })
-            .then((data) => {
-            return {
-                status,
-                url,
-                headers,
-                data,
-            };
-        })
-            .catch((error) => {
-            if (error instanceof RequestError)
-                throw error;
-            else if (error.name === "AbortError")
-                throw error;
-            throw new RequestError(error.message, 500, {
-                request: requestOptions,
-            });
+            // duplex must be set if request.body is ReadableStream or Async Iterables.
+            // See https://fetch.spec.whatwg.org/#dom-requestinit-duplex.
+            ...requestOptions.body && { duplex: "half" }
+          },
+          // `requestOptions.request.agent` type is incompatible
+          // see https://github.com/octokit/types.ts/pull/264
+          requestOptions.request
+        )
+      ).then(async (response) => {
+        url = response.url;
+        status = response.status;
+        for (const keyAndValue of response.headers) {
+          headers[keyAndValue[0]] = keyAndValue[1];
+        }
+        if ("deprecation" in headers) {
+          const matches = headers.link && headers.link.match(/<([^>]+)>; rel="deprecation"/);
+          const deprecationLink = matches && matches.pop();
+          log.warn(
+            `[@octokit/request] "${requestOptions.method} ${requestOptions.url}" is deprecated. It is scheduled to be removed on ${headers.sunset}${deprecationLink ? `. See ${deprecationLink}` : ""}`
+          );
+        }
+        if (status === 204 || status === 205) {
+          return;
+        }
+        if (requestOptions.method === "HEAD") {
+          if (status < 400) {
+            return;
+          }
+          throw new RequestError(response.statusText, status, {
+            response: {
+              url,
+              status,
+              headers,
+              data: void 0
+            },
+            request: requestOptions
+          });
+        }
+        if (status === 304) {
+          throw new RequestError("Not modified", status, {
+            response: {
+              url,
+              status,
+              headers,
+              data: await getResponseData(response)
+            },
+            request: requestOptions
+          });
+        }
+        if (status >= 400) {
+          const data = await getResponseData(response);
+          const error = new RequestError(toErrorMessage(data), status, {
+            response: {
+              url,
+              status,
+              headers,
+              data
+            },
+            request: requestOptions
+          });
+          throw error;
+        }
+        return getResponseData(response);
+      }).then((data) => {
+        return {
+          status,
+          url,
+          headers,
+          data
+        };
+      }).catch((error) => {
+        if (error instanceof RequestError)
+          throw error;
+        else if (error.name === "AbortError")
+          throw error;
+        throw new RequestError(error.message, 500, {
+          request: requestOptions
         });
+      });
     }
     async function getResponseData(response) {
-        const contentType = response.headers.get("content-type");
-        if (/application\/json/.test(contentType)) {
-            return response.json();
-        }
-        if (!contentType || /^text\/|charset=utf-8$/.test(contentType)) {
-            return response.text();
-        }
-        return getBufferResponse(response);
+      const contentType = response.headers.get("content-type");
+      if (/application\/json/.test(contentType)) {
+        return response.json();
+      }
+      if (!contentType || /^text\/|charset=utf-8$/.test(contentType)) {
+        return response.text();
+      }
+      return getBufferResponse(response);
     }
     function toErrorMessage(data) {
-        if (typeof data === "string")
-            return data;
-        // istanbul ignore else - just in case
-        if ("message" in data) {
-            if (Array.isArray(data.errors)) {
-                return `${data.message}: ${data.errors.map(JSON.stringify).join(", ")}`;
-            }
-            return data.message;
+      if (typeof data === "string")
+        return data;
+      if ("message" in data) {
+        if (Array.isArray(data.errors)) {
+          return `${data.message}: ${data.errors.map(JSON.stringify).join(", ")}`;
         }
-        // istanbul ignore next - just in case
-        return `Unknown error: ${JSON.stringify(data)}`;
+        return data.message;
+      }
+      return `Unknown error: ${JSON.stringify(data)}`;
     }
 
+    // pkg/dist-src/with-defaults.js
     function withDefaults$1(oldEndpoint, newDefaults) {
-        const endpoint = oldEndpoint.defaults(newDefaults);
-        const newApi = function (route, parameters) {
-            const endpointOptions = endpoint.merge(route, parameters);
-            if (!endpointOptions.request || !endpointOptions.request.hook) {
-                return fetchWrapper(endpoint.parse(endpointOptions));
-            }
-            const request = (route, parameters) => {
-                return fetchWrapper(endpoint.parse(endpoint.merge(route, parameters)));
-            };
-            Object.assign(request, {
-                endpoint,
-                defaults: withDefaults$1.bind(null, endpoint),
-            });
-            return endpointOptions.request.hook(request, endpointOptions);
+      const endpoint2 = oldEndpoint.defaults(newDefaults);
+      const newApi = function(route, parameters) {
+        const endpointOptions = endpoint2.merge(route, parameters);
+        if (!endpointOptions.request || !endpointOptions.request.hook) {
+          return fetchWrapper(endpoint2.parse(endpointOptions));
+        }
+        const request2 = (route2, parameters2) => {
+          return fetchWrapper(
+            endpoint2.parse(endpoint2.merge(route2, parameters2))
+          );
         };
-        return Object.assign(newApi, {
-            endpoint,
-            defaults: withDefaults$1.bind(null, endpoint),
+        Object.assign(request2, {
+          endpoint: endpoint2,
+          defaults: withDefaults$1.bind(null, endpoint2)
         });
+        return endpointOptions.request.hook(request2, endpointOptions);
+      };
+      return Object.assign(newApi, {
+        endpoint: endpoint2,
+        defaults: withDefaults$1.bind(null, endpoint2)
+      });
     }
 
-    const request = withDefaults$1(endpoint, {
-        headers: {
-            "user-agent": `octokit-request.js/${VERSION$2} ${getUserAgent()}`,
-        },
+    // pkg/dist-src/index.js
+    var request = withDefaults$1(endpoint, {
+      headers: {
+        "user-agent": `octokit-request.js/${VERSION$2} ${getUserAgent()}`
+      }
     });
 
-    const VERSION$1 = "5.0.5";
+    // pkg/dist-src/index.js
 
+    // pkg/dist-src/version.js
+    var VERSION$1 = "5.0.6";
+
+    // pkg/dist-src/error.js
     function _buildMessageForResponseErrors(data) {
-        return (`Request failed due to following response errors:\n` +
-            data.errors.map((e) => ` - ${e.message}`).join("\n"));
+      return `Request failed due to following response errors:
+` + data.errors.map((e) => ` - ${e.message}`).join("\n");
     }
-    class GraphqlResponseError extends Error {
-        constructor(request, headers, response) {
-            super(_buildMessageForResponseErrors(response));
-            this.request = request;
-            this.headers = headers;
-            this.response = response;
-            this.name = "GraphqlResponseError";
-            // Expose the errors and response data in their shorthand properties.
-            this.errors = response.errors;
-            this.data = response.data;
-            // Maintains proper stack trace (only available on V8)
-            /* istanbul ignore next */
-            if (Error.captureStackTrace) {
-                Error.captureStackTrace(this, this.constructor);
-            }
+    var GraphqlResponseError = class extends Error {
+      constructor(request2, headers, response) {
+        super(_buildMessageForResponseErrors(response));
+        this.request = request2;
+        this.headers = headers;
+        this.response = response;
+        this.name = "GraphqlResponseError";
+        this.errors = response.errors;
+        this.data = response.data;
+        if (Error.captureStackTrace) {
+          Error.captureStackTrace(this, this.constructor);
         }
-    }
+      }
+    };
 
-    const NON_VARIABLE_OPTIONS = [
-        "method",
-        "baseUrl",
-        "url",
-        "headers",
-        "request",
-        "query",
-        "mediaType",
+    // pkg/dist-src/graphql.js
+    var NON_VARIABLE_OPTIONS = [
+      "method",
+      "baseUrl",
+      "url",
+      "headers",
+      "request",
+      "query",
+      "mediaType"
     ];
-    const FORBIDDEN_VARIABLE_OPTIONS = ["query", "method", "url"];
-    const GHES_V3_SUFFIX_REGEX = /\/api\/v3\/?$/;
-    function graphql(request, query, options) {
-        if (options) {
-            if (typeof query === "string" && "query" in options) {
-                return Promise.reject(new Error(`[@octokit/graphql] "query" cannot be used as variable name`));
-            }
-            for (const key in options) {
-                if (!FORBIDDEN_VARIABLE_OPTIONS.includes(key))
-                    continue;
-                return Promise.reject(new Error(`[@octokit/graphql] "${key}" cannot be used as variable name`));
-            }
+    var FORBIDDEN_VARIABLE_OPTIONS = ["query", "method", "url"];
+    var GHES_V3_SUFFIX_REGEX = /\/api\/v3\/?$/;
+    function graphql(request2, query, options) {
+      if (options) {
+        if (typeof query === "string" && "query" in options) {
+          return Promise.reject(
+            new Error(`[@octokit/graphql] "query" cannot be used as variable name`)
+          );
         }
-        const parsedOptions = typeof query === "string" ? Object.assign({ query }, options) : query;
-        const requestOptions = Object.keys(parsedOptions).reduce((result, key) => {
-            if (NON_VARIABLE_OPTIONS.includes(key)) {
-                result[key] = parsedOptions[key];
-                return result;
-            }
-            if (!result.variables) {
-                result.variables = {};
-            }
-            result.variables[key] = parsedOptions[key];
-            return result;
-        }, {});
-        // workaround for GitHub Enterprise baseUrl set with /api/v3 suffix
-        // https://github.com/octokit/auth-app.js/issues/111#issuecomment-657610451
-        const baseUrl = parsedOptions.baseUrl || request.endpoint.DEFAULTS.baseUrl;
-        if (GHES_V3_SUFFIX_REGEX.test(baseUrl)) {
-            requestOptions.url = baseUrl.replace(GHES_V3_SUFFIX_REGEX, "/api/graphql");
+        for (const key in options) {
+          if (!FORBIDDEN_VARIABLE_OPTIONS.includes(key))
+            continue;
+          return Promise.reject(
+            new Error(`[@octokit/graphql] "${key}" cannot be used as variable name`)
+          );
         }
-        return request(requestOptions).then((response) => {
-            if (response.data.errors) {
-                const headers = {};
-                for (const key of Object.keys(response.headers)) {
-                    headers[key] = response.headers[key];
-                }
-                throw new GraphqlResponseError(requestOptions, headers, response.data);
-            }
-            return response.data.data;
-        });
+      }
+      const parsedOptions = typeof query === "string" ? Object.assign({ query }, options) : query;
+      const requestOptions = Object.keys(
+        parsedOptions
+      ).reduce((result, key) => {
+        if (NON_VARIABLE_OPTIONS.includes(key)) {
+          result[key] = parsedOptions[key];
+          return result;
+        }
+        if (!result.variables) {
+          result.variables = {};
+        }
+        result.variables[key] = parsedOptions[key];
+        return result;
+      }, {});
+      const baseUrl = parsedOptions.baseUrl || request2.endpoint.DEFAULTS.baseUrl;
+      if (GHES_V3_SUFFIX_REGEX.test(baseUrl)) {
+        requestOptions.url = baseUrl.replace(GHES_V3_SUFFIX_REGEX, "/api/graphql");
+      }
+      return request2(requestOptions).then((response) => {
+        if (response.data.errors) {
+          const headers = {};
+          for (const key of Object.keys(response.headers)) {
+            headers[key] = response.headers[key];
+          }
+          throw new GraphqlResponseError(
+            requestOptions,
+            headers,
+            response.data
+          );
+        }
+        return response.data.data;
+      });
     }
 
-    function withDefaults(request, newDefaults) {
-        const newRequest = request.defaults(newDefaults);
-        const newApi = (query, options) => {
-            return graphql(newRequest, query, options);
-        };
-        return Object.assign(newApi, {
-            defaults: withDefaults.bind(null, newRequest),
-            endpoint: newRequest.endpoint,
-        });
+    // pkg/dist-src/with-defaults.js
+    function withDefaults(request2, newDefaults) {
+      const newRequest = request2.defaults(newDefaults);
+      const newApi = (query, options) => {
+        return graphql(newRequest, query, options);
+      };
+      return Object.assign(newApi, {
+        defaults: withDefaults.bind(null, newRequest),
+        endpoint: newRequest.endpoint
+      });
     }
 
+    // pkg/dist-src/index.js
     withDefaults(request, {
-        headers: {
-            "user-agent": `octokit-graphql.js/${VERSION$1} ${getUserAgent()}`,
-        },
-        method: "POST",
-        url: "/graphql",
+      headers: {
+        "user-agent": `octokit-graphql.js/${VERSION$1} ${getUserAgent()}`
+      },
+      method: "POST",
+      url: "/graphql"
     });
     function withCustomRequest(customRequest) {
-        return withDefaults(customRequest, {
-            method: "POST",
-            url: "/graphql",
-        });
+      return withDefaults(customRequest, {
+        method: "POST",
+        url: "/graphql"
+      });
     }
 
     const REGEX_IS_INSTALLATION_LEGACY = /^v1\./;
@@ -1066,125 +1087,128 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         });
     };
 
-    const VERSION = "4.2.0";
+    // pkg/dist-src/index.js
 
-    class Octokit {
-        constructor(options = {}) {
-            const hook = new Collection();
-            const requestDefaults = {
-                baseUrl: request.endpoint.DEFAULTS.baseUrl,
-                headers: {},
-                request: Object.assign({}, options.request, {
-                    // @ts-ignore internal usage only, no need to type
-                    hook: hook.bind(null, "request"),
-                }),
-                mediaType: {
-                    previews: [],
-                    format: "",
-                },
-            };
-            // prepend default user agent with `options.userAgent` if set
-            requestDefaults.headers["user-agent"] = [
-                options.userAgent,
-                `octokit-core.js/${VERSION} ${getUserAgent()}`,
-            ]
-                .filter(Boolean)
-                .join(" ");
-            if (options.baseUrl) {
-                requestDefaults.baseUrl = options.baseUrl;
+    // pkg/dist-src/version.js
+    var VERSION = "4.2.1";
+
+    // pkg/dist-src/index.js
+    var Octokit = class {
+      static defaults(defaults) {
+        const OctokitWithDefaults = class extends this {
+          constructor(...args) {
+            const options = args[0] || {};
+            if (typeof defaults === "function") {
+              super(defaults(options));
+              return;
             }
-            if (options.previews) {
-                requestDefaults.mediaType.previews = options.previews;
-            }
-            if (options.timeZone) {
-                requestDefaults.headers["time-zone"] = options.timeZone;
-            }
-            this.request = request.defaults(requestDefaults);
-            this.graphql = withCustomRequest(this.request).defaults(requestDefaults);
-            this.log = Object.assign({
-                debug: () => { },
-                info: () => { },
-                warn: console.warn.bind(console),
-                error: console.error.bind(console),
-            }, options.log);
-            this.hook = hook;
-            // (1) If neither `options.authStrategy` nor `options.auth` are set, the `octokit` instance
-            //     is unauthenticated. The `this.auth()` method is a no-op and no request hook is registered.
-            // (2) If only `options.auth` is set, use the default token authentication strategy.
-            // (3) If `options.authStrategy` is set then use it and pass in `options.auth`. Always pass own request as many strategies accept a custom request instance.
-            // TODO: type `options.auth` based on `options.authStrategy`.
-            if (!options.authStrategy) {
-                if (!options.auth) {
-                    // (1)
-                    this.auth = async () => ({
-                        type: "unauthenticated",
-                    });
-                }
-                else {
-                    // (2)
-                    const auth = createTokenAuth(options.auth);
-                    // @ts-ignore  ¯\_(ツ)_/¯
-                    hook.wrap("request", auth.hook);
-                    this.auth = auth;
-                }
-            }
-            else {
-                const { authStrategy, ...otherOptions } = options;
-                const auth = authStrategy(Object.assign({
-                    request: this.request,
-                    log: this.log,
-                    // we pass the current octokit instance as well as its constructor options
-                    // to allow for authentication strategies that return a new octokit instance
-                    // that shares the same internal state as the current one. The original
-                    // requirement for this was the "event-octokit" authentication strategy
-                    // of https://github.com/probot/octokit-auth-probot.
-                    octokit: this,
-                    octokitOptions: otherOptions,
-                }, options.auth));
-                // @ts-ignore  ¯\_(ツ)_/¯
-                hook.wrap("request", auth.hook);
-                this.auth = auth;
-            }
-            // apply plugins
-            // https://stackoverflow.com/a/16345172
-            const classConstructor = this.constructor;
-            classConstructor.plugins.forEach((plugin) => {
-                Object.assign(this, plugin(this, options));
+            super(
+              Object.assign(
+                {},
+                defaults,
+                options,
+                options.userAgent && defaults.userAgent ? {
+                  userAgent: `${options.userAgent} ${defaults.userAgent}`
+                } : null
+              )
+            );
+          }
+        };
+        return OctokitWithDefaults;
+      }
+      /**
+       * Attach a plugin (or many) to your Octokit instance.
+       *
+       * @example
+       * const API = Octokit.plugin(plugin1, plugin2, plugin3, ...)
+       */
+      static plugin(...newPlugins) {
+        var _a;
+        const currentPlugins = this.plugins;
+        const NewOctokit = (_a = class extends this {
+        }, _a.plugins = currentPlugins.concat(
+          newPlugins.filter((plugin) => !currentPlugins.includes(plugin))
+        ), _a);
+        return NewOctokit;
+      }
+      constructor(options = {}) {
+        const hook = new Collection();
+        const requestDefaults = {
+          baseUrl: request.endpoint.DEFAULTS.baseUrl,
+          headers: {},
+          request: Object.assign({}, options.request, {
+            // @ts-ignore internal usage only, no need to type
+            hook: hook.bind(null, "request")
+          }),
+          mediaType: {
+            previews: [],
+            format: ""
+          }
+        };
+        requestDefaults.headers["user-agent"] = [
+          options.userAgent,
+          `octokit-core.js/${VERSION} ${getUserAgent()}`
+        ].filter(Boolean).join(" ");
+        if (options.baseUrl) {
+          requestDefaults.baseUrl = options.baseUrl;
+        }
+        if (options.previews) {
+          requestDefaults.mediaType.previews = options.previews;
+        }
+        if (options.timeZone) {
+          requestDefaults.headers["time-zone"] = options.timeZone;
+        }
+        this.request = request.defaults(requestDefaults);
+        this.graphql = withCustomRequest(this.request).defaults(requestDefaults);
+        this.log = Object.assign(
+          {
+            debug: () => {
+            },
+            info: () => {
+            },
+            warn: console.warn.bind(console),
+            error: console.error.bind(console)
+          },
+          options.log
+        );
+        this.hook = hook;
+        if (!options.authStrategy) {
+          if (!options.auth) {
+            this.auth = async () => ({
+              type: "unauthenticated"
             });
+          } else {
+            const auth = createTokenAuth(options.auth);
+            hook.wrap("request", auth.hook);
+            this.auth = auth;
+          }
+        } else {
+          const { authStrategy, ...otherOptions } = options;
+          const auth = authStrategy(
+            Object.assign(
+              {
+                request: this.request,
+                log: this.log,
+                // we pass the current octokit instance as well as its constructor options
+                // to allow for authentication strategies that return a new octokit instance
+                // that shares the same internal state as the current one. The original
+                // requirement for this was the "event-octokit" authentication strategy
+                // of https://github.com/probot/octokit-auth-probot.
+                octokit: this,
+                octokitOptions: otherOptions
+              },
+              options.auth
+            )
+          );
+          hook.wrap("request", auth.hook);
+          this.auth = auth;
         }
-        static defaults(defaults) {
-            const OctokitWithDefaults = class extends this {
-                constructor(...args) {
-                    const options = args[0] || {};
-                    if (typeof defaults === "function") {
-                        super(defaults(options));
-                        return;
-                    }
-                    super(Object.assign({}, defaults, options, options.userAgent && defaults.userAgent
-                        ? {
-                            userAgent: `${options.userAgent} ${defaults.userAgent}`,
-                        }
-                        : null));
-                }
-            };
-            return OctokitWithDefaults;
-        }
-        /**
-         * Attach a plugin (or many) to your Octokit instance.
-         *
-         * @example
-         * const API = Octokit.plugin(plugin1, plugin2, plugin3, ...)
-         */
-        static plugin(...newPlugins) {
-            var _a;
-            const currentPlugins = this.plugins;
-            const NewOctokit = (_a = class extends this {
-                },
-                _a.plugins = currentPlugins.concat(newPlugins.filter((plugin) => !currentPlugins.includes(plugin))),
-                _a);
-            return NewOctokit;
-        }
-    }
+        const classConstructor = this.constructor;
+        classConstructor.plugins.forEach((plugin) => {
+          Object.assign(this, plugin(this, options));
+        });
+      }
+    };
     Octokit.VERSION = VERSION;
     Octokit.plugins = [];
 

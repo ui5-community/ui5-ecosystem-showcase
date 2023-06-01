@@ -1980,17 +1980,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    const openPromise = wrap(request);
 	    if (upgrade) {
 	        request.addEventListener('upgradeneeded', (event) => {
-	            upgrade(wrap(request.result), event.oldVersion, event.newVersion, wrap(request.transaction));
+	            upgrade(wrap(request.result), event.oldVersion, event.newVersion, wrap(request.transaction), event);
 	        });
 	    }
-	    if (blocked)
-	        request.addEventListener('blocked', () => blocked());
+	    if (blocked) {
+	        request.addEventListener('blocked', (event) => blocked(
+	        // Casting due to https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/1405
+	        event.oldVersion, event.newVersion, event));
+	    }
 	    openPromise
 	        .then((db) => {
 	        if (terminated)
 	            db.addEventListener('close', () => terminated());
-	        if (blocking)
-	            db.addEventListener('versionchange', () => blocking());
+	        if (blocking) {
+	            db.addEventListener('versionchange', (event) => blocking(event.oldVersion, event.newVersion, event));
+	        }
 	    })
 	        .catch(() => { });
 	    return openPromise;
@@ -2095,7 +2099,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	}
 
 	const name$o = "@firebase/app";
-	const version$1$1 = "0.9.7";
+	const version$1$1 = "0.9.11";
 
 	/**
 	 * @license
@@ -2162,7 +2166,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	const name$1 = "@firebase/firestore-compat";
 
 	const name = "firebase";
-	const version$3 = "9.19.1";
+	const version$3 = "9.22.1";
 
 	/**
 	 * @license
@@ -2338,7 +2342,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	 */
 	const ERRORS = {
 	    ["no-app" /* AppError.NO_APP */]: "No Firebase App '{$appName}' has been created - " +
-	        'call Firebase App.initializeApp()',
+	        'call initializeApp() first',
 	    ["bad-app-name" /* AppError.BAD_APP_NAME */]: "Illegal App name: '{$appName}",
 	    ["duplicate-app" /* AppError.DUPLICATE_APP */]: "Firebase App named '{$appName}' already exists with different options or config",
 	    ["app-deleted" /* AppError.APP_DELETED */]: "Firebase App named '{$appName}' already deleted",
@@ -2509,7 +2513,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	 */
 	function getApp(name = DEFAULT_ENTRY_NAME) {
 	    const app = _apps.get(name);
-	    if (!app && name === DEFAULT_ENTRY_NAME) {
+	    if (!app && name === DEFAULT_ENTRY_NAME && getDefaultAppConfig()) {
 	        return initializeApp();
 	    }
 	    if (!app) {
@@ -2658,10 +2662,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	async function readHeartbeatsFromIndexedDB(app) {
 	    try {
 	        const db = await getDbPromise();
-	        return db
+	        const result = await db
 	            .transaction(STORE_NAME)
 	            .objectStore(STORE_NAME)
 	            .get(computeKey(app));
+	        return result;
 	    }
 	    catch (e) {
 	        if (e instanceof FirebaseError) {
@@ -2681,7 +2686,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	        const tx = db.transaction(STORE_NAME, 'readwrite');
 	        const objectStore = tx.objectStore(STORE_NAME);
 	        await objectStore.put(heartbeatObject, computeKey(app));
-	        return tx.done;
+	        await tx.done;
 	    }
 	    catch (e) {
 	        if (e instanceof FirebaseError) {
@@ -2997,7 +3002,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		var app = require$$0;
 
 		var name = "firebase";
-		var version = "9.19.1";
+		var version = "9.22.1";
 
 		/**
 		 * @license
@@ -6019,7 +6024,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
 	var nodeFetch__default = /*#__PURE__*/_interopDefaultLegacy(nodeFetch);
 
-	const version$1 = "3.10.0";
+	const version$1 = "3.12.1";
 
 	/**
 	 * @license
@@ -6072,7 +6077,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	User.FIRST_PARTY = new User('first-party-uid');
 	User.MOCK_USER = new User('mock-user');
 
-	const version = "9.19.0";
+	const version = "9.22.1";
 
 	/**
 	 * @license
@@ -6659,10 +6664,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	     * when using WebChannel as the network transport.
 	     * @param autoDetectLongPolling - Whether to use the detectBufferingProxy
 	     * option when using WebChannel as the network transport.
+	     * @param longPollingOptions Options that configure long-polling.
 	     * @param useFetchStreams Whether to use the Fetch API instead of
 	     * XMLHTTPRequest
 	     */
-	    constructor(databaseId, appId, persistenceKey, host, ssl, forceLongPolling, autoDetectLongPolling, useFetchStreams) {
+	    constructor(databaseId, appId, persistenceKey, host, ssl, forceLongPolling, autoDetectLongPolling, longPollingOptions, useFetchStreams) {
 	        this.databaseId = databaseId;
 	        this.appId = appId;
 	        this.persistenceKey = persistenceKey;
@@ -6670,6 +6676,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	        this.ssl = ssl;
 	        this.forceLongPolling = forceLongPolling;
 	        this.autoDetectLongPolling = autoDetectLongPolling;
+	        this.longPollingOptions = longPollingOptions;
 	        this.useFetchStreams = useFetchStreams;
 	    }
 	}
@@ -7183,6 +7190,40 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    if (n <= 0) {
 	        throw new FirestoreError(Code.INVALID_ARGUMENT, `Function ${functionName}() requires a positive number, but it was: ${n}.`);
 	    }
+	}
+
+	/**
+	 * @license
+	 * Copyright 2023 Google LLC
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *   http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	/**
+	 * Compares two `ExperimentalLongPollingOptions` objects for equality.
+	 */
+	function longPollingOptionsEqual(options1, options2) {
+	    return options1.timeoutSeconds === options2.timeoutSeconds;
+	}
+	/**
+	 * Creates and returns a new `ExperimentalLongPollingOptions` with the same
+	 * option values as the given instance.
+	 */
+	function cloneLongPollingOptions(options) {
+	    const clone = {};
+	    if (options.timeoutSeconds !== undefined) {
+	        clone.timeoutSeconds = options.timeoutSeconds;
+	    }
+	    return clone;
 	}
 
 	/**
@@ -10680,14 +10721,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    }
 	    return hasCommittedMutations ? result.setHasCommittedMutations() : result;
 	}
-	function fromAggregationResult(aggregationQueryResponse) {
-	    var _a;
-	    assertPresent(aggregationQueryResponse.result);
-	    assertPresent(aggregationQueryResponse.result.aggregateFields);
-	    return new ObjectValue({
-	        mapValue: { fields: (_a = aggregationQueryResponse.result) === null || _a === void 0 ? void 0 : _a.aggregateFields }
-	    });
-	}
 	function fromFound(serializer, doc) {
 	    hardAssert(!!doc.found);
 	    assertPresent(doc.found.name);
@@ -10834,17 +10867,24 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	}
 	function toRunAggregationQueryRequest(serializer, target, aggregates) {
 	    const queryTarget = toQueryTarget(serializer, target);
+	    const aliasMap = {};
 	    const aggregations = [];
+	    let aggregationNum = 0;
 	    aggregates.forEach(aggregate => {
+	        // Map all client-side aliases to a unique short-form
+	        // alias. This avoids issues with client-side aliases that
+	        // exceed the 1500-byte string size limit.
+	        const serverAlias = `aggregate_${aggregationNum++}`;
+	        aliasMap[serverAlias] = aggregate.alias;
 	        if (aggregate.aggregateType === 'count') {
 	            aggregations.push({
-	                alias: aggregate.alias.canonicalString(),
+	                alias: serverAlias,
 	                count: {}
 	            });
 	        }
 	        else if (aggregate.aggregateType === 'avg') {
 	            aggregations.push({
-	                alias: aggregate.alias.canonicalString(),
+	                alias: serverAlias,
 	                avg: {
 	                    field: toFieldPathReference(aggregate.fieldPath)
 	                }
@@ -10852,7 +10892,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	        }
 	        else if (aggregate.aggregateType === 'sum') {
 	            aggregations.push({
-	                alias: aggregate.alias.canonicalString(),
+	                alias: serverAlias,
 	                sum: {
 	                    field: toFieldPathReference(aggregate.fieldPath)
 	                }
@@ -10860,11 +10900,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	        }
 	    });
 	    return {
-	        structuredAggregationQuery: {
-	            aggregations,
-	            structuredQuery: queryTarget.structuredQuery
+	        request: {
+	            structuredAggregationQuery: {
+	                aggregations,
+	                structuredQuery: queryTarget.structuredQuery
+	            },
+	            parent: queryTarget.parent
 	        },
-	        parent: queryTarget.parent
+	        aliasMap
 	    };
 	}
 	function toFilters(filters) {
@@ -11291,8 +11334,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	        .map(proto => fromDocument(datastoreImpl.serializer, proto.document, undefined)));
 	}
 	async function invokeRunAggregationQueryRpc(datastore, query, aggregates) {
+	    var _a;
 	    const datastoreImpl = debugCast(datastore);
-	    const request = toRunAggregationQueryRequest(datastoreImpl.serializer, queryToTarget(query), aggregates);
+	    const { request, aliasMap } = toRunAggregationQueryRequest(datastoreImpl.serializer, queryToTarget(query), aggregates);
 	    const parent = request.parent;
 	    if (!datastoreImpl.connection.shouldResourcePathBeIncludedInRequest) {
 	        delete request.parent;
@@ -11301,7 +11345,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    // Omit RunAggregationQueryResponse that only contain readTimes.
 	    const filteredResult = response.filter(proto => !!proto.result);
 	    hardAssert(filteredResult.length === 1);
-	    return fromAggregationResult(filteredResult[0]);
+	    // Remap the short-form aliases that were sent to the server
+	    // to the client-side aliases. Users will access the results
+	    // using the client-side alias.
+	    const unmappedAggregateFields = (_a = filteredResult[0].result) === null || _a === void 0 ? void 0 : _a.aggregateFields;
+	    const remappedFields = Object.keys(unmappedAggregateFields).reduce((accumulator, key) => {
+	        accumulator[aliasMap[key]] = unmappedAggregateFields[key];
+	        return accumulator;
+	    }, {});
+	    return remappedFields;
 	}
 
 	/**
@@ -11358,7 +11410,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    }
 	}
 	function makeDatabaseInfo(databaseId, appId, persistenceKey, settings) {
-	    return new DatabaseInfo(databaseId, appId, persistenceKey, settings.host, settings.ssl, settings.experimentalForceLongPolling, settings.experimentalAutoDetectLongPolling, settings.useFetchStreams);
+	    return new DatabaseInfo(databaseId, appId, persistenceKey, settings.host, settings.ssl, settings.experimentalForceLongPolling, settings.experimentalAutoDetectLongPolling, cloneLongPollingOptions(settings.experimentalLongPollingOptions), settings.useFetchStreams);
 	}
 
 	/**
@@ -11440,6 +11492,17 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	// settings() defaults:
 	const DEFAULT_HOST = 'firestore.googleapis.com';
 	const DEFAULT_SSL = true;
+	// The minimum long-polling timeout is hardcoded on the server. The value here
+	// should be kept in sync with the value used by the server, as the server will
+	// silently ignore a value below the minimum and fall back to the default.
+	// Googlers see b/266868871 for relevant discussion.
+	const MIN_LONG_POLLING_TIMEOUT_SECONDS = 5;
+	// No maximum long-polling timeout is configured in the server, and defaults to
+	// 30 seconds, which is what Watch appears to use.
+	// Googlers see b/266868871 for relevant discussion.
+	const MAX_LONG_POLLING_TIMEOUT_SECONDS = 30;
+	// Whether long-polling auto-detected is enabled by default.
+	const DEFAULT_AUTO_DETECT_LONG_POLLING = true;
 	/**
 	 * A concrete type describing all the values that can be applied via a
 	 * user-supplied `FirestoreSettings` object. This is a separate type so that
@@ -11447,7 +11510,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	 */
 	class FirestoreSettingsImpl {
 	    constructor(settings) {
-	        var _a;
+	        var _a, _b;
 	        if (settings.host === undefined) {
 	            if (settings.ssl !== undefined) {
 	                throw new FirestoreError(Code.INVALID_ARGUMENT, "Can't provide ssl option if host option is not set");
@@ -11474,11 +11537,24 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	                this.cacheSizeBytes = settings.cacheSizeBytes;
 	            }
 	        }
-	        this.experimentalForceLongPolling = !!settings.experimentalForceLongPolling;
-	        this.experimentalAutoDetectLongPolling =
-	            !!settings.experimentalAutoDetectLongPolling;
-	        this.useFetchStreams = !!settings.useFetchStreams;
 	        validateIsNotUsedTogether('experimentalForceLongPolling', settings.experimentalForceLongPolling, 'experimentalAutoDetectLongPolling', settings.experimentalAutoDetectLongPolling);
+	        this.experimentalForceLongPolling = !!settings.experimentalForceLongPolling;
+	        if (this.experimentalForceLongPolling) {
+	            this.experimentalAutoDetectLongPolling = false;
+	        }
+	        else if (settings.experimentalAutoDetectLongPolling === undefined) {
+	            this.experimentalAutoDetectLongPolling = DEFAULT_AUTO_DETECT_LONG_POLLING;
+	        }
+	        else {
+	            // For backwards compatibility, coerce the value to boolean even though
+	            // the TypeScript compiler has narrowed the type to boolean already.
+	            // noinspection PointlessBooleanExpressionJS
+	            this.experimentalAutoDetectLongPolling =
+	                !!settings.experimentalAutoDetectLongPolling;
+	        }
+	        this.experimentalLongPollingOptions = cloneLongPollingOptions((_b = settings.experimentalLongPollingOptions) !== null && _b !== void 0 ? _b : {});
+	        validateLongPollingOptions(this.experimentalLongPollingOptions);
+	        this.useFetchStreams = !!settings.useFetchStreams;
 	    }
 	    isEqual(other) {
 	        return (this.host === other.host &&
@@ -11489,8 +11565,25 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	                other.experimentalForceLongPolling &&
 	            this.experimentalAutoDetectLongPolling ===
 	                other.experimentalAutoDetectLongPolling &&
+	            longPollingOptionsEqual(this.experimentalLongPollingOptions, other.experimentalLongPollingOptions) &&
 	            this.ignoreUndefinedProperties === other.ignoreUndefinedProperties &&
 	            this.useFetchStreams === other.useFetchStreams);
+	    }
+	}
+	function validateLongPollingOptions(options) {
+	    if (options.timeoutSeconds !== undefined) {
+	        if (isNaN(options.timeoutSeconds)) {
+	            throw new FirestoreError(Code.INVALID_ARGUMENT, `invalid long polling timeout: ` +
+	                `${options.timeoutSeconds} (must not be NaN)`);
+	        }
+	        if (options.timeoutSeconds < MIN_LONG_POLLING_TIMEOUT_SECONDS) {
+	            throw new FirestoreError(Code.INVALID_ARGUMENT, `invalid long polling timeout: ${options.timeoutSeconds} ` +
+	                `(minimum allowed value is ${MIN_LONG_POLLING_TIMEOUT_SECONDS})`);
+	        }
+	        if (options.timeoutSeconds > MAX_LONG_POLLING_TIMEOUT_SECONDS) {
+	            throw new FirestoreError(Code.INVALID_ARGUMENT, `invalid long polling timeout: ${options.timeoutSeconds} ` +
+	                `(maximum allowed value is ${MAX_LONG_POLLING_TIMEOUT_SECONDS})`);
+	        }
 	    }
 	}
 
@@ -11762,53 +11855,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	 * See the License for the specific language governing permissions and
 	 * limitations under the License.
 	 */
-	const aliasRegExp = /^[_a-zA-Z][_a-zA-Z0-9]*(?:\.[_a-zA-Z][_a-zA-Z0-9]*)*$/;
-	/**
-	 * An alias for aggregation results.
-	 * @internal
-	 */
-	class AggregateAlias {
-	    /**
-	     * @internal
-	     * @param alias Un-escaped alias representation
-	     */
-	    constructor(alias) {
-	        this.alias = alias;
-	    }
-	    /**
-	     * Returns true if the string could be used as an alias.
-	     */
-	    static isValidAlias(value) {
-	        return aliasRegExp.test(value);
-	    }
-	    /**
-	     * Return an escaped and quoted string representation of the alias.
-	     */
-	    canonicalString() {
-	        let alias = this.alias.replace(/\\/g, '\\\\').replace(/`/g, '\\`');
-	        if (!AggregateAlias.isValidAlias(alias)) {
-	            alias = '`' + alias + '`';
-	        }
-	        return alias;
-	    }
-	}
-
-	/**
-	 * @license
-	 * Copyright 2022 Google LLC
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 *   http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 */
 	/**
 	 * Represents an aggregation that can be performed by Firestore.
 	 */
@@ -11853,7 +11899,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	     * query.
 	     */
 	    data() {
-	        return this._userDataWriter.convertValue(this._data.value);
+	        return this._userDataWriter.convertObjectMap(this._data);
 	    }
 	}
 
@@ -13894,8 +13940,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	        }
 	    }
 	    convertObject(mapValue, serverTimestampBehavior) {
+	        return this.convertObjectMap(mapValue.fields, serverTimestampBehavior);
+	    }
+	    /**
+	     * @internal
+	     */
+	    convertObjectMap(fields, serverTimestampBehavior = 'none') {
 	        const result = {};
-	        forEach(mapValue.fields, (key, value) => {
+	        forEach(fields, (key, value) => {
 	            result[key] = this.convertValue(value, serverTimestampBehavior);
 	        });
 	        return result;
@@ -14191,7 +14243,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    const firestore = cast(query.firestore, Firestore);
 	    const datastore = getDatastore(firestore);
 	    const internalAggregates = mapToArray(aggregateSpec, (aggregate, alias) => {
-	        return new AggregateImpl(new AggregateAlias(alias), aggregate._aggregateType, aggregate._internalFieldPath);
+	        return new AggregateImpl(alias, aggregate._aggregateType, aggregate._internalFieldPath);
 	    });
 	    // Run the aggregation and convert the results
 	    return invokeRunAggregationQueryRpc(datastore, query._query, internalAggregates).then(aggregateResult => convertToAggregateQuerySnapshot(firestore, query, aggregateResult));
