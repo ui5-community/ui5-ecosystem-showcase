@@ -11,20 +11,41 @@ const applyUI5Middleware = require("./lib/applyUI5Middleware");
 // to disable the ui5-middleware-cap if used in apps
 process.env["cds-plugin-ui5"] = true;
 
-cds.on("bootstrap", async (app) => {
-	console.log("[cds-ui5-plugin] bootstrap");
+/**
+ * helper to log colorful messages
+ * @param {string} type the type of the message
+ * @param {string} message the message text
+ */
+function log(type, message) {
+	const colors = {
+		log: "\x1b[0m", // default
+		info: "\x1b[32m", // green
+		debug: "\x1b[34m", // blue
+		warn: "\x1b[33m", // yellow
+		error: "\x1b[31m", // red
+	};
+	if (!console[type]) {
+		type = "log";
+	}
+	console[type](`\x1b[36m[cds-ui5-plugin]\x1b[0m %s[%s]\x1b[0m %s`, colors[type], type, message);
+}
 
-	// prepare the _app_links to add links dynamically
-	const links = (app._app_links = app._app_links || []);
+cds.on("bootstrap", async function bootstrap(app) {
+	log("debug", "bootstrap");
 
-	// lookup the app folder
-	const appDirs = [];
-	appDirs.push(
-		...fs
-			.readdirSync(path.join(process.cwd(), "app"), { withFileTypes: true })
-			.filter((f) => f.isDirectory() && fs.existsSync(path.join(process.cwd(), "app", f.name, "ui5.yaml")))
-			.map((f) => path.join(process.cwd(), "app", f.name))
-	);
+	// lookup the app folder to determine local apps and ui5 app directories
+	const localApps = new Set(),
+		appDirs = [];
+	fs.readdirSync(path.join(process.cwd(), "app"), { withFileTypes: true })
+		.filter((f) => f.isDirectory())
+		.forEach((d) => localApps.add(d.name));
+	localApps.forEach((e) => {
+		const d = path.join(process.cwd(), "app", e);
+		if (fs.existsSync(path.join(d, "ui5.yaml"))) {
+			localApps.delete(e);
+			appDirs.push(d);
+		}
+	});
 
 	// lookup the UI5 dependencies
 	const pkgJson = require(path.join(process.cwd(), "package.json"));
@@ -49,6 +70,7 @@ cds.on("bootstrap", async (app) => {
 	// if apps are available, attach the middlewares of the UI5 apps
 	// to the express of the CAP server via a express router
 	if (appDirs) {
+		const links = [];
 		for await (const appDir of appDirs) {
 			// read the ui5.yaml file to extract the configuration
 			const ui5YamlPath = require.resolve(path.join(appDir, "ui5.yaml"), {
@@ -60,7 +82,7 @@ cds.on("bootstrap", async (app) => {
 				ui5Configs = yaml.loadAll(content);
 			} catch (err) {
 				if (err.name === "YAMLException") {
-					console.error(`Failed to read ${ui5YamlPath}!`);
+					log("error", `Failed to read ${ui5YamlPath}!`);
 				}
 				throw err;
 			}
@@ -74,7 +96,7 @@ cds.on("bootstrap", async (app) => {
 			}
 
 			// mounting the Router for the application to the CAP server
-			console.log(`Mounting ${mountPath} to UI5 app ${appDir}`);
+			log("info", `Mounting ${mountPath} to UI5 app ${appDir}`);
 			const modulePath = path.dirname(ui5YamlPath);
 
 			// create the router and get rid of the mount path
@@ -103,18 +125,65 @@ cds.on("bootstrap", async (app) => {
 			pages.forEach((page) => {
 				const prefix = mountPath !== "/" ? mountPath : "";
 				links.push(`${prefix}${page.getPath()}`);
-				console.log(`${prefix}${page.getPath()}`);
 			});
 
 			// mount the router to the determined mount path
 			app.use(`${mountPath}`, router);
 		}
+
+		// register the custom middleware (similar like in @sap/cds/server.js)
+		app.get("/", function appendLinksToIndex(req, res, next) {
+			var send = res.send;
+			res.send = function (content) {
+				// the first <ul> element contains the links to the
+				// application pages which is fully under control of
+				// our plugin now and we keep all links to static
+				// pages to ensure coop with classic apps
+				const HTMLParser = require("node-html-parser");
+				const doc = new HTMLParser.parse(content);
+				const ul = doc.getElementsByTagName("ul")?.[0];
+				if (ul) {
+					const newLis = [];
+					const lis = ul.getElementsByTagName("li");
+					lis?.forEach((li) => {
+						const appDir = li.firstChild?.text?.split("/")?.[1];
+						if (localApps.has(appDir)) {
+							newLis.push(li.toString());
+						}
+					});
+					newLis.push(...links.map((link) => `<li><a href="${link}">${link}</a></li>`));
+					ul.innerHTML = newLis.join("\n");
+					content = doc.toString();
+				} else {
+					log("warn", `Failed to inject application links into CAP index page!`);
+				}
+				send.apply(this, arguments);
+			};
+			//log("debug", req.url);
+			next();
+		});
+
+		// move our middleware before the CAP index serve middleware to
+		// allow that we can intercept the response and modify it to
+		// inject our application pages an remove the exitsing ones
+		const middlewareStack = app?._router?.stack;
+		if (Array.isArray(middlewareStack)) {
+			const cmw = middlewareStack.pop();
+			const idxOfServeStatic = middlewareStack.findIndex((layer) => layer.name === "serveStatic");
+			if (idxOfServeStatic !== -1) {
+				middlewareStack.splice(idxOfServeStatic, 0, cmw);
+			} else {
+				log("error", `Failed to determine CAP overview page middleware! You need to manually open the application pages!`);
+			}
+		} else {
+			log("error", `Failed to inject application pages to CAP overview page! You need to manually open the application pages!`);
+		}
 	}
 });
 
-// mount static resources and common middlewares...
+// return callback for plugin activation
 module.exports = {
 	activate: function activate(conf) {
-		console.log("[cds-ui5-plugin] activate", conf);
+		log("debug", "activate", conf);
 	},
 };
