@@ -1,6 +1,6 @@
 {
   "name": "ui5-lib",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Showcase of a setup for developing UI5 libraries",
   "private": true,
   "author": "Peter Muessig",
@@ -30,7 +30,7 @@
     "karma-coverage": "^2.2.0",
     "karma-ui5": "^2.4.0",
     "rimraf": "^5.0.1",
-    "ui5-middleware-livereload": "^0.8.2"
+    "ui5-middleware-livereload": "^0.8.3"
   },
   "ui5": {
     "dependencies": [

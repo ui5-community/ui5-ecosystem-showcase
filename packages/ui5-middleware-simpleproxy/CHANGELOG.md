@@ -3,38 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.9.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.9.6...ui5-middleware-simpleproxy@0.9.7) (2023-05-02)
-
+## [0.9.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.9.7...ui5-middleware-simpleproxy@0.9.8) (2023-06-03)
 
 ### Bug Fixes
 
-* **ui5-middleware-proxy:** proper error handling for missing baseUri ([#737](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/737)) ([20061c9](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/20061c9582a26cf615f7eabaac73eb0fe3fefe33)), closes [#736](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/736)
+- update dependencies ([#749](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/749)) ([b1c8cfb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b1c8cfb4da1dcd0ae91bee181f539684d767d067))
 
+## [0.9.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.9.6...ui5-middleware-simpleproxy@0.9.7) (2023-05-02)
 
+### Bug Fixes
 
-
+- **ui5-middleware-proxy:** proper error handling for missing baseUri ([#737](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/737)) ([20061c9](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/20061c9582a26cf615f7eabaac73eb0fe3fefe33)), closes [#736](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/736)
 
 ## [0.9.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.9.5...ui5-middleware-simpleproxy@0.9.6) (2023-04-11)
 
-
 ### Bug Fixes
 
-* update dependencies ([#723](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/723)) ([88d90e4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/88d90e4d94aa8d7d016a316076c87dc195bbee88))
-
-
-
-
+- update dependencies ([#723](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/723)) ([88d90e4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/88d90e4d94aa8d7d016a316076c87dc195bbee88))
 
 ## [0.9.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.9.4...ui5-middleware-simpleproxy@0.9.5) (2023-03-31)
 
-
 ### Bug Fixes
 
-* update of project depedencies ([#704](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/704)) ([2f94887](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2f94887d736e1dde8063de36f8d2ea6584dddc95))
-
-
-
-
+- update of project depedencies ([#704](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/704)) ([2f94887](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2f94887d736e1dde8063de36f8d2ea6584dddc95))
 
 ## [0.9.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@0.9.3...ui5-middleware-simpleproxy@0.9.4) (2023-02-19)
 

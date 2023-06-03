@@ -3,48 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-onelogin@3.1.9...ui5-middleware-onelogin@3.1.10) (2023-06-03)
+
+### Bug Fixes
+
+- update dependencies ([#749](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/749)) ([b1c8cfb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b1c8cfb4da1dcd0ae91bee181f539684d767d067))
+
 ## [3.1.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-onelogin@3.1.8...ui5-middleware-onelogin@3.1.9) (2023-04-17)
 
 **Note:** Version bump only for package ui5-middleware-onelogin
 
-
-
-
-
 ## [3.1.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-onelogin@3.1.7...ui5-middleware-onelogin@3.1.8) (2023-04-11)
-
 
 ### Bug Fixes
 
-* update dependencies ([#723](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/723)) ([88d90e4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/88d90e4d94aa8d7d016a316076c87dc195bbee88))
-
-
-
-
+- update dependencies ([#723](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/723)) ([88d90e4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/88d90e4d94aa8d7d016a316076c87dc195bbee88))
 
 ## [3.1.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-onelogin@3.1.6...ui5-middleware-onelogin@3.1.7) (2023-03-31)
 
-
 ### Bug Fixes
 
-* refactor repository structure ([#703](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/703)) ([fd154d7](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/fd154d791d5d87a41a3e350b5bfef23f5938fd5d))
-* **ui5-task-zipper:** introduce test for packaging shims ([#702](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/702)) ([d4f7e28](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d4f7e287e78362719ee687b2e552b4f5adffd0af))
-* update of project depedencies ([#704](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/704)) ([2f94887](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2f94887d736e1dde8063de36f8d2ea6584dddc95))
-
-
-
-
+- refactor repository structure ([#703](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/703)) ([fd154d7](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/fd154d791d5d87a41a3e350b5bfef23f5938fd5d))
+- **ui5-task-zipper:** introduce test for packaging shims ([#702](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/702)) ([d4f7e28](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d4f7e287e78362719ee687b2e552b4f5adffd0af))
+- update of project depedencies ([#704](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/704)) ([2f94887](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2f94887d736e1dde8063de36f8d2ea6584dddc95))
 
 ## [3.1.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-onelogin@3.1.5...ui5-middleware-onelogin@3.1.6) (2023-03-20)
 
-
 ### Bug Fixes
 
-* improvements of projects for tooling 3.0 ([#696](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/696)) ([6bd880f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6bd880f4a0c15bdb0f3ac3d19a9f0a91e3c680ab))
-
-
-
-
+- improvements of projects for tooling 3.0 ([#696](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/696)) ([6bd880f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6bd880f4a0c15bdb0f3ac3d19a9f0a91e3c680ab))
 
 ## [3.1.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-onelogin@3.1.4...ui5-middleware-onelogin@3.1.5) (2023-02-08)
 
