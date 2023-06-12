@@ -104,7 +104,7 @@ You can keep multiple `.env` files and load a specific environment at build or s
 
 You can define our own prefix in `$yourapp/ui5.yaml` using configuration `prefix` otherwise will default to `UI5_ENV`.
 
-You can specify the `<UI5_ENV>.env` location by setting the `ui5_env_path` property in the configuration. Default path fallback is set to `./` to find the `<UI5_ENV>.env` file in the same location as the executed `package.json` file.  
+You can specify the `<UI5_ENV>.env` location by setting the `path` property in the configuration. Default path fallback is set to `./` to find the `<UI5_ENV>.env` file in the same location as the executed `package.json` file.  
 
 ```json
  "scripts": {
