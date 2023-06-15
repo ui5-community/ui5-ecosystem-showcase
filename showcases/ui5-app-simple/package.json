@@ -1,6 +1,6 @@
 {
   "name": "ui5-app-simple",
-  "version": "0.3.17",
+  "version": "0.3.18",
   "description": "UI5 application using custom middlewares and tasks",
   "private": true,
   "author": "Volker Buzek, Peter Muessig",
@@ -25,8 +25,8 @@
     "@ui5/cli": "^3.2.0",
     "rimraf": "^5.0.1",
     "ui5-middleware-livereload": "^0.8.3",
-    "ui5-task-zipper": "^0.8.3",
-    "ui5-tooling-modules": "^0.9.10",
-    "ui5-tooling-transpile": "^0.7.11"
+    "ui5-task-zipper": "^0.8.4",
+    "ui5-tooling-modules": "^0.9.11",
+    "ui5-tooling-transpile": "^0.7.12"
   }
 }

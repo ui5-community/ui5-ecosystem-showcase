@@ -1,6 +1,6 @@
 {
   "name": "karma-ui5-transpile",
-  "version": "0.3.16",
+  "version": "0.3.17",
   "description": "",
   "author": "Peter Muessig",
   "license": "Apache-2.0",
@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "karma": "^6.4.2",
-    "ui5-tooling-transpile": "^0.7.11"
+    "ui5-tooling-transpile": "^0.7.12"
   },
   "peerDependencies": {
     "karma": ">=6.4.1",
