@@ -2099,7 +2099,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	}
 
 	const name$o = "@firebase/app";
-	const version$1$1 = "0.9.11";
+	const version$1$1 = "0.9.12";
 
 	/**
 	 * @license
@@ -2166,7 +2166,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	const name$1 = "@firebase/firestore-compat";
 
 	const name = "firebase";
-	const version$3 = "9.22.1";
+	const version$3 = "9.22.2";
 
 	/**
 	 * @license
@@ -3002,7 +3002,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		var app = require$$0;
 
 		var name = "firebase";
-		var version = "9.22.1";
+		var version = "9.22.2";
 
 		/**
 		 * @license
@@ -6024,7 +6024,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
 	var nodeFetch__default = /*#__PURE__*/_interopDefaultLegacy(nodeFetch);
 
-	const version$1 = "3.12.1";
+	const version$1 = "3.12.2";
 
 	/**
 	 * @license
@@ -6077,7 +6077,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	User.FIRST_PARTY = new User('first-party-uid');
 	User.MOCK_USER = new User('mock-user');
 
-	const version = "9.22.1";
+	const version = "9.22.2";
 
 	/**
 	 * @license
@@ -11730,11 +11730,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    var _a;
 	    firestore = cast(firestore, Firestore);
 	    const settings = firestore._getSettings();
-	    if (settings.host !== DEFAULT_HOST && settings.host !== host) {
-	        logWarn('Host has been set in both settings() and useEmulator(), emulator host ' +
-	            'will be used');
+	    const newHostSetting = `${host}:${port}`;
+	    if (settings.host !== DEFAULT_HOST && settings.host !== newHostSetting) {
+	        logWarn('Host has been set in both settings() and connectFirestoreEmulator(), emulator host ' +
+	            'will be used.');
 	    }
-	    firestore._setSettings(Object.assign(Object.assign({}, settings), { host: `${host}:${port}`, ssl: false }));
+	    firestore._setSettings(Object.assign(Object.assign({}, settings), { host: newHostSetting, ssl: false }));
 	    if (options.mockUserToken) {
 	        let token;
 	        let user;
