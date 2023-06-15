@@ -42,10 +42,10 @@
     "@js-temporal/polyfill": "^0.4.4",
     "@octokit/core": "^4.2.1",
     "@stomp/stompjs": "^7.0.0",
-    "@supabase/supabase-js": "^2.24.0",
+    "@supabase/supabase-js": "^2.25.0",
     "axios": "^1.4.0",
     "cmis": "^1.0.3",
-    "firebase": "^9.22.1",
+    "firebase": "^9.22.2",
     "is-plain-object": "^5.0.0",
     "node-fetch": "^2.6.9",
     "react": "^18.2.0",
@@ -92,7 +92,7 @@
     "ui5-tooling-stringreplace": "^0.1.4",
     "ui5-tooling-transpile": "^0.7.11",
     "wdio-chromedriver-service": "^8.1.1",
-    "wdio-ui5-service": "1.3.2"
+    "wdio-ui5-service": "1.5.1"
   },
   "ui5": {
     "dependencies": [
