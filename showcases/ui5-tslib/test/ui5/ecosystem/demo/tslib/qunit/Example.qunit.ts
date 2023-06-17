@@ -1,20 +1,10 @@
-/* eslint-disable @typescript-eslint/no-namespace */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-ignore
-import QUnitUtils from "sap/ui/qunit/QUnitUtils";
-declare namespace QUnitUtils {
-	export function triggerMouseEvent(oTarget: string, sEventType: string, iOffsetX?: number, iOffsetY?: number, iPageX?: number, iPageY?: number, iButton?: number): void;
-}
-
-// @ts-ignore
-import createAndAppendDiv from "sap/ui/qunit/utils/createAndAppendDiv";
-declare function createAndAppendDiv(sUIArea: string): void;
-
 import { ExampleColor } from "ui5/ecosystem/demo/tslib/library";
 import Example from "ui5/ecosystem/demo/tslib/Example";
 
 // prepare DOM
-createAndAppendDiv("uiArea1");
+const elem = document.createElement("div");
+elem.id = "uiArea1";
+document.body.appendChild(elem);
 
 // module for basic checks
 QUnit.module("Example Tests");
@@ -50,7 +40,7 @@ QUnit.test("Test get properties", function (assert) {
 // some basic eventing check
 QUnit.test("Test click event", function (assert) {
 	assert.expect(1);
-	new Example("example", {
+	const oExample = new Example("example", {
 		text: "Example",
 		press: function () {
 			assert.ok(true, "Event has been fired!");
@@ -58,7 +48,7 @@ QUnit.test("Test click event", function (assert) {
 	}).placeAt("uiArea1");
 	return new Promise(function (resolve /*, reject */) {
 		setTimeout(function () {
-			QUnitUtils.triggerMouseEvent("example", "click", 1, 1);
+			oExample.$().trigger(jQuery.Event("click"));
 			resolve();
 		}, 100);
 	});
