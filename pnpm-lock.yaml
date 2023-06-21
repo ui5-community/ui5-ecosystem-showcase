@@ -92,7 +92,7 @@ importers:
         specifier: ^6.4.2
         version: 6.4.2
       ui5-tooling-transpile:
-        specifier: ^0.7.12
+        specifier: ^0.7.13
         version: link:../ui5-tooling-transpile
 
   packages/ui5-middleware-cap:
@@ -582,7 +582,7 @@ importers:
         specifier: ^2.4.0
         version: 2.4.0(karma@6.4.2)
       karma-ui5-transpile:
-        specifier: ^0.3.17
+        specifier: ^0.3.18
         version: link:../../packages/karma-ui5-transpile
       mkdirp:
         specifier: ^3.0.1
@@ -645,7 +645,7 @@ importers:
         specifier: ^0.1.5
         version: link:../../packages/ui5-tooling-stringreplace
       ui5-tooling-transpile:
-        specifier: ^0.7.12
+        specifier: ^0.7.13
         version: link:../../packages/ui5-tooling-transpile
       wdio-chromedriver-service:
         specifier: ^8.1.1
@@ -676,7 +676,7 @@ importers:
         specifier: ^0.9.11
         version: link:../../packages/ui5-tooling-modules
       ui5-tooling-transpile:
-        specifier: ^0.7.12
+        specifier: ^0.7.13
         version: link:../../packages/ui5-tooling-transpile
 
   showcases/ui5-lib:
@@ -727,7 +727,7 @@ importers:
         specifier: ^2.29.4
         version: 2.29.4
       ui5-tslib:
-        specifier: ^0.3.23
+        specifier: ^0.3.24
         version: link:../ui5-tslib
       xlsx:
         specifier: ^0.18.5
@@ -764,7 +764,7 @@ importers:
         specifier: ^2.4.0
         version: 2.4.0(karma@6.4.2)
       karma-ui5-transpile:
-        specifier: ^0.3.17
+        specifier: ^0.3.18
         version: link:../../packages/karma-ui5-transpile
       rimraf:
         specifier: ^5.0.1
@@ -779,7 +779,7 @@ importers:
         specifier: ^0.9.11
         version: link:../../packages/ui5-tooling-modules
       ui5-tooling-transpile:
-        specifier: ^0.7.12
+        specifier: ^0.7.13
         version: link:../../packages/ui5-tooling-transpile
 
   showcases/ui5-tsapp-simple:
@@ -812,7 +812,7 @@ importers:
         specifier: ^0.9.11
         version: link:../../packages/ui5-tooling-modules
       ui5-tooling-transpile:
-        specifier: ^0.7.12
+        specifier: ^0.7.13
         version: link:../../packages/ui5-tooling-transpile
 
   showcases/ui5-tslib:
@@ -848,7 +848,7 @@ importers:
         specifier: ^2.4.0
         version: 2.4.0(karma@6.4.2)
       karma-ui5-transpile:
-        specifier: ^0.3.17
+        specifier: ^0.3.18
         version: link:../../packages/karma-ui5-transpile
       npm-run-all:
         specifier: ^4.1.5
@@ -866,7 +866,7 @@ importers:
         specifier: ^0.9.11
         version: link:../../packages/ui5-tooling-modules
       ui5-tooling-transpile:
-        specifier: ^0.7.12
+        specifier: ^0.7.13
         version: link:../../packages/ui5-tooling-transpile
 
 packages:
