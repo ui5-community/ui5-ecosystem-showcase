@@ -128,15 +128,22 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 				// dynamically require typescript
 				const ts = require("typescript");
 
+				// read the tsconfig.json
+				const tsConfigFile = path.join(cwd, "tsconfig.json");
+				let tsOptions = {};
+				if (fs.existsSync(tsConfigFile)) {
+					tsOptions = JSON.parse(fs.readFileSync(tsConfigFile, { encoding: "utf8" }));
+				}
+
 				// options to generate d.ts files only
-				const options = {
+				const options = Object.assign({}, tsOptions, {
 					allowJs: true,
 					declaration: true,
 					declarationMap: true,
 					emitDeclarationOnly: true,
 					sourceRoot: "."
 					//traceResolution: true,
-				};
+				});
 
 				// update the sources map to declare the modules with the full module name
 				for await (const resourcePath of Object.keys(sourcesMap)) {
@@ -183,7 +190,7 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 
 				// emit type definitions in-memory and read/write resources from the UI5 workspace
 				const host = ts.createCompilerHost(options);
-				(host.getCurrentDirectory = () => ""),
+				(host.getCurrentDirectory = () => cwd),
 					(host.fileExists = (file) => !!sourcesMap[file] || fs.existsSync(file));
 				host.readFile = (file) => sourcesMap[file] || fs.readFileSync(file, "utf-8");
 				host.writeFile = function (fileName, content, writeByteOrderMark, onError, sourceFiles /*, data*/) {
