@@ -15,10 +15,13 @@ const _self = (module.exports = {
 		}
 		return false;
 	},
-	readPlaceholderFromEnv: function readPlaceholderFromEnv(prefix, log) {
+	readPlaceholderFromEnv: function readPlaceholderFromEnv(path, prefix, log) {
 		if (process.env[prefix]) {
-			log.info(`${prefix} set to ${process.env[prefix]}: loading ./${process.env[prefix]}.env`);
-			require("dotenv").config({ path: `./${process.env[prefix]}.env` });
+			log.info(`${prefix} set to ${process.env[prefix]}: loading ${path}${process.env[prefix]}.env`);
+			const result = require("dotenv").config({ path: `${path}${process.env[prefix]}.env` });
+			if (result.error) {
+				log.warn(result.error);
+			}
 		} else {
 			require("dotenv").config(); //loads './.env'
 		}
