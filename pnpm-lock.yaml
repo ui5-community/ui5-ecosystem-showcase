@@ -642,7 +642,7 @@ importers:
         specifier: ^0.9.11
         version: link:../../packages/ui5-tooling-modules
       ui5-tooling-stringreplace:
-        specifier: ^0.1.5
+        specifier: ^0.2.0
         version: link:../../packages/ui5-tooling-stringreplace
       ui5-tooling-transpile:
         specifier: ^0.7.13

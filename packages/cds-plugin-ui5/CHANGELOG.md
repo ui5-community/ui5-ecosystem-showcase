@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.1.2...cds-plugin-ui5@0.1.3) (2023-06-22)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** add marker for links using ui5 middlewares ([#756](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/756)) ([00a6f6b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/00a6f6b8c2c57ebcc1c92b3012163c112dd32028))
+
+
+
+
+
 ## [0.1.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.1.1...cds-plugin-ui5@0.1.2) (2023-06-15)
 
 
