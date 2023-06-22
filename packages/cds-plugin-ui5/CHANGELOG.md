@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.1.3...cds-plugin-ui5@0.1.4) (2023-06-22)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** make ui5 marker color scheme aware ([d847569](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d84756973e09e34054f0a1e05d8ad902e791205c))
+
+
+
+
+
 ## [0.1.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.1.2...cds-plugin-ui5@0.1.3) (2023-06-22)
 
 
