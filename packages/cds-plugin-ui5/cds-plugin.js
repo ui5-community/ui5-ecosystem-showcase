@@ -153,6 +153,11 @@ cds.on("bootstrap", async function bootstrap(app) {
 						margin: 0.25rem;
 						color: #1873B4;
 					}
+					@media (prefers-color-scheme: dark) {
+						a.ui5:after {
+							color: #FF5A37;
+						}
+					}
 					</style>`)
 					);
 				}
