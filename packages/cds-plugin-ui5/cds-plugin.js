@@ -141,6 +141,21 @@ cds.on("bootstrap", async function bootstrap(app) {
 				// pages to ensure coop with classic apps
 				const HTMLParser = require("node-html-parser");
 				const doc = new HTMLParser.parse(content);
+				const head = doc.getElementsByTagName("head")?.[0];
+				if (head) {
+					head.appendChild(
+						HTMLParser.parse(`<style>
+					a.ui5:after {
+						content: "UI5";
+						font-weight: bold;
+						font-size: 0.5rem;
+						vertical-align: super;
+						margin: 0.25rem;
+						color: #1873B4;
+					}
+					</style>`)
+					);
+				}
 				const ul = doc.getElementsByTagName("ul")?.[0];
 				if (ul) {
 					const newLis = [];
@@ -151,7 +166,7 @@ cds.on("bootstrap", async function bootstrap(app) {
 							newLis.push(li.toString());
 						}
 					});
-					newLis.push(...links.map((link) => `<li><a href="${link}">${link}</a></li>`));
+					newLis.push(...links.map((link) => `<li><a class="ui5" href="${link}">${link}</a></li>`));
 					ul.innerHTML = newLis.join("\n");
 					content = doc.toString();
 				} else {
