@@ -7,7 +7,8 @@ const {
 	normalizeLineFeeds,
 	determineResourceFSPath,
 	transformAsync,
-	determineProjectBasePath
+	determineProjectBasePath,
+	shouldHandlePath
 } = require("./util");
 
 /**
@@ -34,12 +35,60 @@ module.exports = async function ({ resources, options, middlewareUtil }) {
 
 	const reader = config.transpileDependencies ? resources.all : resources.rootProject;
 
+	const outputCache = {};
+	const transpileAsync = async (resource) => {
+		// lookup the cached resource or create one if not found
+		let cachedResource = outputCache[resource.getPath()];
+		if (!cachedResource) {
+			outputCache[resource.getPath()] = cachedResource = {};
+		}
+
+		// compare the timestamp of the cached and requested resource
+		// and retrigger the transformation if the timestamp differs
+		if (resource.getStatInfo().mtime?.getTime() !== cachedResource.mtime?.getTime()) {
+			config.debug && log.info(`Transpiling resource ${resource.getPath()}`);
+
+			// read file into string
+			const source = await resource.getString();
+
+			// transpile the source
+			const result = await transformAsync(
+				source,
+				Object.assign({}, babelConfig, {
+					filename: determineResourceFSPath(resource) // necessary for source map <-> source assoc
+				})
+			);
+
+			// store the cached resource
+			cachedResource.code = result.code;
+			cachedResource.mtime = resource.getStatInfo().mtime;
+		}
+
+		// return the code of the cached resource
+		return cachedResource.code;
+	};
+
+	// pre-transform sources (fill the server cache)
+	if (!config.skipTransformAtStartup) {
+		const resources = await reader.byGlob(`**/*${config.filePattern}`);
+		await Promise.all(
+			resources
+				.filter((resource) => {
+					const resourcePath = resource.getPath();
+					return (
+						!resourcePath.endsWith(".d.ts") &&
+						shouldHandlePath(resourcePath, config.excludes, config.includes)
+					);
+				})
+				.map((resource) => {
+					return transpileAsync(resource);
+				})
+		);
+	}
+
 	return async (req, res, next) => {
 		const pathname = parseurl(req)?.pathname;
-		if (
-			(pathname.endsWith(".js") && !(config.excludes || []).some((pattern) => pathname.includes(pattern))) ||
-			(config.includes || []).some((pattern) => pathname.includes(pattern))
-		) {
+		if (pathname.endsWith(".js") && shouldHandlePath(pathname, config.excludes, config.includes)) {
 			const pathWithFilePattern = pathname.replace(".js", config.filePattern);
 			config.debug && log.verbose(`Lookup resource ${pathWithFilePattern}`);
 
@@ -48,23 +97,13 @@ module.exports = async function ({ resources, options, middlewareUtil }) {
 
 			const resource = matchedResources?.[0];
 			if (resource) {
-				config.debug && log.info(`Transpiling resource ${resource.getPath()}`);
-
-				// read file into string
-				const source = await resource.getString();
-
-				// transpile the source
-				const result = await transformAsync(
-					source,
-					Object.assign({}, babelConfig, {
-						filename: determineResourceFSPath(resource) // necessary for source map <-> source assoc
-					})
-				);
+				// transpile the resource
+				const code = await transpileAsync(resource);
 
 				// send out transpiled source
 				let { contentType /*, charset */ } = middlewareUtil.getMimeInfo(".js");
 				res.setHeader("Content-Type", contentType);
-				res.end(normalizeLineFeeds(result.code));
+				res.end(normalizeLineFeeds(code));
 
 				// stop processing the request
 				return;

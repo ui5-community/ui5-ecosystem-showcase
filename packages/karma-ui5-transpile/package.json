@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "karma": "^6.4.2",
-    "ui5-tooling-transpile": "^0.7.13"
+    "ui5-tooling-transpile": "workspace:^"
   },
   "peerDependencies": {
     "karma": ">=6.4.1",
