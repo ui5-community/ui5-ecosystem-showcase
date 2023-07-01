@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.1.4...cds-plugin-ui5@0.1.5) (2023-07-01)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** transpile at startup + caching ([#757](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/757)) ([6c7946d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6c7946d05abf34f11c6ad8ad593f3d418272527e))
+
+
+
+
+
 ## [0.1.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.1.3...cds-plugin-ui5@0.1.4) (2023-06-22)
 
 

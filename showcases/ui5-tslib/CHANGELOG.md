@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.25](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tslib@0.3.24...ui5-tslib@0.3.25) (2023-07-01)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** transpile at startup + caching ([#757](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/757)) ([6c7946d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6c7946d05abf34f11c6ad8ad593f3d418272527e))
+
+
+
+
+
 ## [0.3.24](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tslib@0.3.23...ui5-tslib@0.3.24) (2023-06-21)
 
 **Note:** Version bump only for package ui5-tslib

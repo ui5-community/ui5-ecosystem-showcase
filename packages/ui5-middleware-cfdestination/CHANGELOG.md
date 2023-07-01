@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.16](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.15...ui5-middleware-cfdestination@0.10.16) (2023-07-01)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** transpile at startup + caching ([#757](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/757)) ([6c7946d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6c7946d05abf34f11c6ad8ad593f3d418272527e))
+
+
+
+
+
 ## [0.10.15](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.14...ui5-middleware-cfdestination@0.10.15) (2023-06-15)
 
 
