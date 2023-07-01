@@ -41,7 +41,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     class FunctionsError extends Error {
         constructor(message, name = 'FunctionsError', context) {
             super(message);
-            super.name = name;
+            this.name = name;
             this.context = context;
         }
     }
@@ -1729,7 +1729,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    const version$6 = '1.7.0';
+    const version$6 = '1.7.1';
 
     const DEFAULT_HEADERS$4 = { 'X-Client-Info': `postgrest-js/${version$6}` };
 
@@ -4239,7 +4239,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    const version$1 = '2.25.0';
+    const version$1 = '2.26.0';
 
     // constants.ts
     const DEFAULT_HEADERS$1 = { 'X-Client-Info': `supabase-js/${version$1}` };
@@ -4645,6 +4645,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             super(message, 'AuthRetryableFetchError', status);
         }
     }
+    function isAuthRetryableFetchError(error) {
+        return isAuthError(error) && error.name === 'AuthRetryableFetchError';
+    }
 
     var __awaiter$3 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -4667,28 +4670,26 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return t;
     };
     const _getErrorMessage = (err) => err.msg || err.message || err.error_description || err.error || JSON.stringify(err);
-    const handleError = (error, reject) => __awaiter$3(void 0, void 0, void 0, function* () {
-        const NETWORK_ERROR_CODES = [502, 503, 504];
-        if (!looksLikeFetchResponse(error)) {
-            reject(new AuthRetryableFetchError(_getErrorMessage(error), 0));
-        }
-        else if (NETWORK_ERROR_CODES.includes(error.status)) {
-            // status in 500...599 range - server had an error, request might be retryed.
-            reject(new AuthRetryableFetchError(_getErrorMessage(error), error.status));
-        }
-        else {
-            // got a response from server that is not in the 500...599 range - should not retry
-            error
-                .json()
-                .then((err) => {
-                reject(new AuthApiError(_getErrorMessage(err), error.status || 500));
-            })
-                .catch((e) => {
-                // not a valid json response
-                reject(new AuthUnknownError(_getErrorMessage(e), e));
-            });
-        }
-    });
+    const NETWORK_ERROR_CODES = [502, 503, 504];
+    function handleError(error) {
+        return __awaiter$3(this, void 0, void 0, function* () {
+            if (!looksLikeFetchResponse(error)) {
+                throw new AuthRetryableFetchError(_getErrorMessage(error), 0);
+            }
+            if (NETWORK_ERROR_CODES.includes(error.status)) {
+                // status in 500...599 range - server had an error, request might be retryed.
+                throw new AuthRetryableFetchError(_getErrorMessage(error), error.status);
+            }
+            let data;
+            try {
+                data = yield error.json();
+            }
+            catch (e) {
+                throw new AuthUnknownError(_getErrorMessage(e), e);
+            }
+            throw new AuthApiError(_getErrorMessage(data), error.status || 500);
+        });
+    }
     const _getRequestParams = (method, options, parameters, body) => {
         const params = { method, headers: (options === null || options === void 0 ? void 0 : options.headers) || {} };
         if (method === 'GET') {
@@ -4716,18 +4717,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     function _handleRequest(fetcher, method, url, options, parameters, body) {
         return __awaiter$3(this, void 0, void 0, function* () {
-            return new Promise((resolve, reject) => {
-                fetcher(url, _getRequestParams(method, options, parameters, body))
-                    .then((result) => {
-                    if (!result.ok)
-                        throw result;
-                    if (options === null || options === void 0 ? void 0 : options.noResolveJson)
-                        return result;
-                    return result.json();
-                })
-                    .then((data) => resolve(data))
-                    .catch((error) => handleError(error, reject));
-            });
+            const requestParams = _getRequestParams(method, options, parameters, body);
+            let result;
+            try {
+                result = yield fetcher(url, requestParams);
+            }
+            catch (e) {
+                console.error(e);
+                // fetch failed, likely due to a network or CORS error
+                throw new AuthRetryableFetchError(_getErrorMessage(e), 0);
+            }
+            if (!result.ok) {
+                yield handleError(result);
+            }
+            if (options === null || options === void 0 ? void 0 : options.noResolveJson) {
+                return result;
+            }
+            try {
+                return yield result.json();
+            }
+            catch (e) {
+                yield handleError(e);
+            }
         });
     }
     function _sessionResponse(data) {
@@ -5069,7 +5080,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
 
     // Generated by genversion.
-    const version = '2.29.0';
+    const version = '2.37.0';
 
     const GOTRUE_URL = 'http://localhost:9999';
     const STORAGE_KEY = 'supabase.auth.token';
@@ -5141,6 +5152,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         detectSessionInUrl: true,
         headers: DEFAULT_HEADERS,
         flowType: 'implicit',
+        debug: false,
     };
     /** Current session will be checked for refresh at this interval. */
     const AUTO_REFRESH_TICK_DURATION = 30 * 1000;
@@ -5169,7 +5181,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
              * Used to broadcast state change events to other tabs listening.
              */
             this.broadcastChannel = null;
+            this.instanceID = GoTrueClient.nextInstanceID;
+            GoTrueClient.nextInstanceID += 1;
+            if (this.instanceID > 0 && isBrowser()) {
+                console.warn('Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.');
+            }
             const settings = Object.assign(Object.assign({}, DEFAULT_OPTIONS), options);
+            this.logDebugMessages = settings.debug;
             this.inMemorySession = null;
             this.storageKey = settings.storageKey;
             this.autoRefreshToken = settings.autoRefreshToken;
@@ -5205,11 +5223,18 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 catch (e) {
                     console.error('Failed to create a new BroadcastChannel, multi-tab state changes will not be available', e);
                 }
-                (_a = this.broadcastChannel) === null || _a === void 0 ? void 0 : _a.addEventListener('message', (event) => {
-                    this._notifyAllSubscribers(event.data.event, event.data.session, false); // broadcast = false so we don't get an endless loop of messages
-                });
+                (_a = this.broadcastChannel) === null || _a === void 0 ? void 0 : _a.addEventListener('message', (event) => __awaiter$1(this, void 0, void 0, function* () {
+                    this._debug('received broadcast notification from other tab or client', event);
+                    yield this._notifyAllSubscribers(event.data.event, event.data.session, false); // broadcast = false so we don't get an endless loop of messages
+                }));
             }
             this.initialize();
+        }
+        _debug(...args) {
+            if (this.logDebugMessages) {
+                console.log(`GoTrueClient@${this.instanceID} ${new Date().toISOString()}`, ...args);
+            }
+            return this;
         }
         /**
          * Initializes the client session either from the url or from storage.
@@ -5235,24 +5260,27 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 }
                 try {
                     const isPKCEFlow = isBrowser() ? yield this._isPKCEFlow() : false;
+                    this._debug('#_initialize()', 'begin', 'is PKCE flow', isPKCEFlow);
                     if (isPKCEFlow || (this.detectSessionInUrl && this._isImplicitGrantFlow())) {
                         const { data, error } = yield this._getSessionFromUrl(isPKCEFlow);
                         if (error) {
+                            this._debug('#_initialize()', 'error detecting session from URL', error);
                             // failed login attempt via url,
                             // remove old session as in verifyOtp, signUp and signInWith*
                             yield this._removeSession();
                             return { error };
                         }
                         const { session, redirectType } = data;
+                        this._debug('#_initialize()', 'detected session in URL', session, 'redirect type', redirectType);
                         yield this._saveSession(session);
-                        setTimeout(() => {
+                        setTimeout(() => __awaiter$1(this, void 0, void 0, function* () {
                             if (redirectType === 'recovery') {
-                                this._notifyAllSubscribers('PASSWORD_RECOVERY', session);
+                                yield this._notifyAllSubscribers('PASSWORD_RECOVERY', session);
                             }
                             else {
-                                this._notifyAllSubscribers('SIGNED_IN', session);
+                                yield this._notifyAllSubscribers('SIGNED_IN', session);
                             }
-                        }, 0);
+                        }), 0);
                         return { error: null };
                     }
                     // no login attempt via callback url try to recover session from storage
@@ -5269,6 +5297,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 }
                 finally {
                     yield this._handleVisibilityChange();
+                    this._debug('#_initialize()', 'end');
                 }
             });
         }
@@ -5337,7 +5366,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     const user = data.user;
                     if (data.session) {
                         yield this._saveSession(data.session);
-                        this._notifyAllSubscribers('SIGNED_IN', session);
+                        yield this._notifyAllSubscribers('SIGNED_IN', session);
                     }
                     return { data: { user, session }, error: null };
                 }
@@ -5398,7 +5427,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     }
                     if (data.session) {
                         yield this._saveSession(data.session);
-                        this._notifyAllSubscribers('SIGNED_IN', data.session);
+                        yield this._notifyAllSubscribers('SIGNED_IN', data.session);
                     }
                     return { data: { user: data.user, session: data.session }, error };
                 }
@@ -5449,27 +5478,26 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 }
                 if (data.session) {
                     yield this._saveSession(data.session);
-                    this._notifyAllSubscribers('SIGNED_IN', data.session);
+                    yield this._notifyAllSubscribers('SIGNED_IN', data.session);
                 }
                 return { data, error };
             });
         }
         /**
-         * Allows signing in with an ID token issued by certain supported providers.
-         * The ID token is verified for validity and a new session is established.
-         *
-         * @experimental
+         * Allows signing in with an OIDC ID token. The authentication provider used
+         * should be enabled and configured.
          */
         signInWithIdToken(credentials) {
             return __awaiter$1(this, void 0, void 0, function* () {
                 yield this._removeSession();
                 try {
-                    const { options, provider, token, nonce } = credentials;
+                    const { options, provider, token, access_token, nonce } = credentials;
                     const res = yield _request(this.fetch, 'POST', `${this.url}/token?grant_type=id_token`, {
                         headers: this.headers,
                         body: {
                             provider,
                             id_token: token,
+                            access_token,
                             nonce,
                             gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
                         },
@@ -5487,7 +5515,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     }
                     if (data.session) {
                         yield this._saveSession(data.session);
-                        this._notifyAllSubscribers('SIGNED_IN', data.session);
+                        yield this._notifyAllSubscribers('SIGNED_IN', data.session);
                     }
                     return { data, error };
                 }
@@ -5547,7 +5575,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     }
                     if ('phone' in credentials) {
                         const { phone, options } = credentials;
-                        const { error } = yield _request(this.fetch, 'POST', `${this.url}/otp`, {
+                        const { data, error } = yield _request(this.fetch, 'POST', `${this.url}/otp`, {
                             headers: this.headers,
                             body: {
                                 phone,
@@ -5557,7 +5585,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                                 channel: (_e = options === null || options === void 0 ? void 0 : options.channel) !== null && _e !== void 0 ? _e : 'sms',
                             },
                         });
-                        return { data: { user: null, session: null }, error };
+                        return { data: { user: null, session: null, messageId: data === null || data === void 0 ? void 0 : data.message_id }, error };
                     }
                     throw new AuthInvalidCredentialsError('You must provide either an email or phone number.');
                 }
@@ -5596,7 +5624,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     const user = data.user;
                     if (session === null || session === void 0 ? void 0 : session.access_token) {
                         yield this._saveSession(session);
-                        this._notifyAllSubscribers('SIGNED_IN', session);
+                        yield this._notifyAllSubscribers('SIGNED_IN', session);
                     }
                     return { data: { user, session }, error: null };
                 }
@@ -5691,7 +5719,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     }
                     else if ('phone' in credentials) {
                         const { phone, type, options } = credentials;
-                        const { error } = yield _request(this.fetch, 'POST', endpoint, {
+                        const { data, error } = yield _request(this.fetch, 'POST', endpoint, {
                             headers: this.headers,
                             body: {
                                 phone,
@@ -5699,7 +5727,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                                 gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
                             },
                         });
-                        return { data: { user: null, session: null }, error };
+                        return { data: { user: null, session: null, messageId: data === null || data === void 0 ? void 0 : data.message_id }, error };
                     }
                     throw new AuthInvalidCredentialsError('You must provide either an email or phone number and a type');
                 }
@@ -5720,35 +5748,45 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 // make sure we've read the session from the url if there is one
                 // save to just await, as long we make sure _initialize() never throws
                 yield this.initializePromise;
-                let currentSession = null;
-                if (this.persistSession) {
-                    const maybeSession = yield getItemAsync(this.storage, this.storageKey);
-                    if (maybeSession !== null) {
-                        if (this._isValidSession(maybeSession)) {
-                            currentSession = maybeSession;
-                        }
-                        else {
-                            yield this._removeSession();
+                this._debug('#getSession()', 'begin');
+                try {
+                    let currentSession = null;
+                    if (this.persistSession) {
+                        const maybeSession = yield getItemAsync(this.storage, this.storageKey);
+                        this._debug('#getSession()', 'session from storage', maybeSession);
+                        if (maybeSession !== null) {
+                            if (this._isValidSession(maybeSession)) {
+                                currentSession = maybeSession;
+                            }
+                            else {
+                                this._debug('#getSession()', 'session from storage is not valid');
+                                yield this._removeSession();
+                            }
                         }
                     }
+                    else {
+                        currentSession = this.inMemorySession;
+                        this._debug('#getSession()', 'session from memory', currentSession);
+                    }
+                    if (!currentSession) {
+                        return { data: { session: null }, error: null };
+                    }
+                    const hasExpired = currentSession.expires_at
+                        ? currentSession.expires_at <= Date.now() / 1000
+                        : false;
+                    this._debug('#getSession()', `session has${hasExpired ? '' : ' not'} expired`, 'expires_at', currentSession.expires_at);
+                    if (!hasExpired) {
+                        return { data: { session: currentSession }, error: null };
+                    }
+                    const { session, error } = yield this._callRefreshToken(currentSession.refresh_token);
+                    if (error) {
+                        return { data: { session: null }, error };
+                    }
+                    return { data: { session }, error: null };
                 }
-                else {
-                    currentSession = this.inMemorySession;
+                finally {
+                    this._debug('#getSession()', 'end');
                 }
-                if (!currentSession) {
-                    return { data: { session: null }, error: null };
-                }
-                const hasExpired = currentSession.expires_at
-                    ? currentSession.expires_at <= Date.now() / 1000
-                    : false;
-                if (!hasExpired) {
-                    return { data: { session: currentSession }, error: null };
-                }
-                const { session, error } = yield this._callRefreshToken(currentSession.refresh_token);
-                if (error) {
-                    return { data: { session: null }, error };
-                }
-                return { data: { session }, error: null };
             });
         }
         /**
@@ -5806,7 +5844,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         throw userError;
                     session.user = data.user;
                     yield this._saveSession(session);
-                    this._notifyAllSubscribers('USER_UPDATED', session);
+                    yield this._notifyAllSubscribers('USER_UPDATED', session);
                     return { data: { user: session.user }, error: null };
                 }
                 catch (error) {
@@ -5867,7 +5905,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                             expires_at: expiresAt,
                         };
                         yield this._saveSession(session);
-                        this._notifyAllSubscribers('SIGNED_IN', session);
+                        yield this._notifyAllSubscribers('SIGNED_IN', session);
                     }
                     return { data: { user: session.user, session }, error: null };
                 }
@@ -5987,6 +6025,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     const redirectType = getParameterByName('type');
                     // Remove tokens from URL
                     window.location.hash = '';
+                    this._debug('#_getSessionFromUrl()', 'clearing window.location.hash');
                     return { data: { session, redirectType }, error: null };
                 }
                 catch (error) {
@@ -6041,7 +6080,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 }
                 yield this._removeSession();
                 yield removeItemAsync(this.storage, `${this.storageKey}-code-verifier`);
-                this._notifyAllSubscribers('SIGNED_OUT', null);
+                yield this._notifyAllSubscribers('SIGNED_OUT', null);
                 return { error: null };
             });
         }
@@ -6055,24 +6094,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 id,
                 callback,
                 unsubscribe: () => {
+                    this._debug('#unsubscribe()', 'state change callback with id removed', id);
                     this.stateChangeEmitters.delete(id);
                 },
             };
+            this._debug('#onAuthStateChange()', 'registered callback with id', id);
             this.stateChangeEmitters.set(id, subscription);
-            this.emitInitialSession(id);
+            this._emitInitialSession(id);
             return { data: { subscription } };
         }
-        emitInitialSession(id) {
+        _emitInitialSession(id) {
             var _a, _b;
             return __awaiter$1(this, void 0, void 0, function* () {
                 try {
                     const { data: { session }, error, } = yield this.getSession();
                     if (error)
                         throw error;
-                    (_a = this.stateChangeEmitters.get(id)) === null || _a === void 0 ? void 0 : _a.callback('INITIAL_SESSION', session);
+                    yield ((_a = this.stateChangeEmitters.get(id)) === null || _a === void 0 ? void 0 : _a.callback('INITIAL_SESSION', session));
+                    this._debug('INITIAL_SESSION', 'callback id', id, 'session', session);
                 }
                 catch (err) {
-                    (_b = this.stateChangeEmitters.get(id)) === null || _b === void 0 ? void 0 : _b.callback('INITIAL_SESSION', null);
+                    yield ((_b = this.stateChangeEmitters.get(id)) === null || _b === void 0 ? void 0 : _b.callback('INITIAL_SESSION', null));
+                    this._debug('INITIAL_SESSION', 'callback id', id, 'error', err);
                     console.error(err);
                 }
             });
@@ -6120,11 +6163,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          */
         _refreshAccessToken(refreshToken) {
             return __awaiter$1(this, void 0, void 0, function* () {
+                const debugName = `#_refreshAccessToken(${refreshToken.substring(0, 5)}...)`;
+                this._debug(debugName, 'begin');
                 try {
                     const startedAt = Date.now();
                     // will attempt to refresh the token with exponential backoff
                     return yield retryable((attempt) => __awaiter$1(this, void 0, void 0, function* () {
                         yield sleep(attempt * 200); // 0, 200, 400, 800, ...
+                        this._debug(debugName, 'refreshing attempt', attempt);
                         return yield _request(this.fetch, 'POST', `${this.url}/token?grant_type=refresh_token`, {
                             body: { refresh_token: refreshToken },
                             headers: this.headers,
@@ -6132,15 +6178,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         });
                     }), (attempt, _, result) => result &&
                         result.error &&
-                        result.error instanceof AuthRetryableFetchError &&
+                        isAuthRetryableFetchError(result.error) &&
                         // retryable only if the request can be sent before the backoff overflows the tick duration
                         Date.now() + (attempt + 1) * 200 - startedAt < AUTO_REFRESH_TICK_DURATION);
                 }
                 catch (error) {
+                    this._debug(debugName, 'error', error);
                     if (isAuthError(error)) {
                         return { data: { session: null, user: null }, error };
                     }
                     throw error;
+                }
+                finally {
+                    this._debug(debugName, 'end');
                 }
             });
         }
@@ -6159,6 +6209,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     scopes: options.scopes,
                     queryParams: options.queryParams,
                 });
+                this._debug('#_handleProviderSignIn()', 'provider', provider, 'options', options, 'url', url);
                 // try to open on the browser
                 if (isBrowser() && !options.skipBrowserRedirect) {
                     window.location.assign(url);
@@ -6173,61 +6224,77 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         _recoverAndRefresh() {
             var _a;
             return __awaiter$1(this, void 0, void 0, function* () {
+                const debugName = '#_recoverAndRefresh()';
+                this._debug(debugName, 'begin');
                 try {
                     const currentSession = yield getItemAsync(this.storage, this.storageKey);
+                    this._debug(debugName, 'session from storage', currentSession);
                     if (!this._isValidSession(currentSession)) {
+                        this._debug(debugName, 'session is not valid');
                         if (currentSession !== null) {
                             yield this._removeSession();
                         }
                         return;
                     }
                     const timeNow = Math.round(Date.now() / 1000);
-                    if (((_a = currentSession.expires_at) !== null && _a !== void 0 ? _a : Infinity) < timeNow + EXPIRY_MARGIN) {
+                    const expiresWithMargin = ((_a = currentSession.expires_at) !== null && _a !== void 0 ? _a : Infinity) < timeNow + EXPIRY_MARGIN;
+                    this._debug(debugName, `session has${expiresWithMargin ? '' : ' not'} expired with margin of ${EXPIRY_MARGIN}s`);
+                    if (expiresWithMargin) {
                         if (this.autoRefreshToken && currentSession.refresh_token) {
                             const { error } = yield this._callRefreshToken(currentSession.refresh_token);
                             if (error) {
-                                console.log(error.message);
-                                yield this._removeSession();
+                                console.error(error);
+                                if (!isAuthRetryableFetchError(error)) {
+                                    this._debug(debugName, 'refresh failed with a non-retryable error, removing the session', error);
+                                    yield this._removeSession();
+                                }
                             }
                         }
                     }
                     else {
-                        if (this.persistSession) {
-                            yield this._saveSession(currentSession);
-                        }
-                        this._notifyAllSubscribers('SIGNED_IN', currentSession);
+                        // no need to persist currentSession again, as we just loaded it from
+                        // local storage; persisting it again may overwrite a value saved by
+                        // another client with access to the same local storage
+                        yield this._notifyAllSubscribers('SIGNED_IN', currentSession);
                     }
                 }
                 catch (err) {
+                    this._debug(debugName, 'error', err);
                     console.error(err);
                     return;
+                }
+                finally {
+                    this._debug(debugName, 'end');
                 }
             });
         }
         _callRefreshToken(refreshToken) {
             var _a, _b;
             return __awaiter$1(this, void 0, void 0, function* () {
+                if (!refreshToken) {
+                    throw new AuthSessionMissingError();
+                }
                 // refreshing is already in progress
                 if (this.refreshingDeferred) {
                     return this.refreshingDeferred.promise;
                 }
+                const debugName = `#_callRefreshToken(${refreshToken.substring(0, 5)}...)`;
+                this._debug(debugName, 'begin');
                 try {
                     this.refreshingDeferred = new Deferred();
-                    if (!refreshToken) {
-                        throw new AuthSessionMissingError();
-                    }
                     const { data, error } = yield this._refreshAccessToken(refreshToken);
                     if (error)
                         throw error;
                     if (!data.session)
                         throw new AuthSessionMissingError();
                     yield this._saveSession(data.session);
-                    this._notifyAllSubscribers('TOKEN_REFRESHED', data.session);
+                    yield this._notifyAllSubscribers('TOKEN_REFRESHED', data.session);
                     const result = { session: data.session, error: null };
                     this.refreshingDeferred.resolve(result);
                     return result;
                 }
                 catch (error) {
+                    this._debug(debugName, 'error', error);
                     if (isAuthError(error)) {
                         const result = { session: null, error };
                         (_a = this.refreshingDeferred) === null || _a === void 0 ? void 0 : _a.resolve(result);
@@ -6238,14 +6305,39 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 }
                 finally {
                     this.refreshingDeferred = null;
+                    this._debug(debugName, 'end');
                 }
             });
         }
         _notifyAllSubscribers(event, session, broadcast = true) {
-            if (this.broadcastChannel && broadcast) {
-                this.broadcastChannel.postMessage({ event, session });
-            }
-            this.stateChangeEmitters.forEach((x) => x.callback(event, session));
+            return __awaiter$1(this, void 0, void 0, function* () {
+                const debugName = `#_notifyAllSubscribers(${event})`;
+                this._debug(debugName, 'begin', session, `broadcast = ${broadcast}`);
+                try {
+                    if (this.broadcastChannel && broadcast) {
+                        this.broadcastChannel.postMessage({ event, session });
+                    }
+                    const errors = [];
+                    const promises = Array.from(this.stateChangeEmitters.values()).map((x) => __awaiter$1(this, void 0, void 0, function* () {
+                        try {
+                            yield x.callback(event, session);
+                        }
+                        catch (e) {
+                            errors.push(e);
+                        }
+                    }));
+                    yield Promise.all(promises);
+                    if (errors.length > 0) {
+                        for (let i = 0; i < errors.length; i += 1) {
+                            console.error(errors[i]);
+                        }
+                        throw errors[0];
+                    }
+                }
+                finally {
+                    this._debug(debugName, 'end');
+                }
+            });
         }
         /**
          * set currentSession and currentUser
@@ -6253,6 +6345,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          */
         _saveSession(session) {
             return __awaiter$1(this, void 0, void 0, function* () {
+                this._debug('#_saveSession()', session);
                 if (!this.persistSession) {
                     this.inMemorySession = session;
                 }
@@ -6262,10 +6355,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             });
         }
         _persistSession(currentSession) {
+            this._debug('#_persistSession()', currentSession);
             return setItemAsync(this.storage, this.storageKey, currentSession);
         }
         _removeSession() {
             return __awaiter$1(this, void 0, void 0, function* () {
+                this._debug('#_removeSession()');
                 if (this.persistSession) {
                     yield removeItemAsync(this.storage, this.storageKey);
                 }
@@ -6281,6 +6376,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * {@see #stopAutoRefresh}
          */
         _removeVisibilityChangedCallback() {
+            this._debug('#_removeVisibilityChangedCallback()');
             const callback = this.visibilityChangedCallback;
             this.visibilityChangedCallback = null;
             try {
@@ -6299,6 +6395,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         _startAutoRefresh() {
             return __awaiter$1(this, void 0, void 0, function* () {
                 yield this._stopAutoRefresh();
+                this._debug('#_startAutoRefresh()');
                 const ticker = setInterval(() => this._autoRefreshTokenTick(), AUTO_REFRESH_TICK_DURATION);
                 this.autoRefreshTicker = ticker;
                 if (ticker && typeof ticker === 'object' && typeof ticker.unref === 'function') {
@@ -6327,6 +6424,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          */
         _stopAutoRefresh() {
             return __awaiter$1(this, void 0, void 0, function* () {
+                this._debug('#_stopAutoRefresh()');
                 const ticker = this.autoRefreshTicker;
                 this.autoRefreshTicker = null;
                 if (ticker) {
@@ -6381,20 +6479,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          */
         _autoRefreshTokenTick() {
             return __awaiter$1(this, void 0, void 0, function* () {
-                const now = Date.now();
+                this._debug('#_autoRefreshTokenTick()', 'begin');
                 try {
-                    const { data: { session }, } = yield this.getSession();
-                    if (!session || !session.refresh_token || !session.expires_at) {
-                        return;
+                    const now = Date.now();
+                    try {
+                        const { data: { session }, } = yield this.getSession();
+                        if (!session || !session.refresh_token || !session.expires_at) {
+                            this._debug('#_autoRefreshTokenTick()', 'no session');
+                            return;
+                        }
+                        // session will expire in this many ticks (or has already expired if <= 0)
+                        const expiresInTicks = Math.floor((session.expires_at * 1000 - now) / AUTO_REFRESH_TICK_DURATION);
+                        this._debug('#_autoRefreshTokenTick()', `access token expires in ${expiresInTicks} ticks, a tick lasts ${AUTO_REFRESH_TICK_DURATION}ms, refresh threshold is ${AUTO_REFRESH_TICK_THRESHOLD} ticks`);
+                        if (expiresInTicks <= AUTO_REFRESH_TICK_THRESHOLD) {
+                            yield this._callRefreshToken(session.refresh_token);
+                        }
                     }
-                    // session will expire in this many ticks (or has already expired if <= 0)
-                    const expiresInTicks = Math.floor((session.expires_at * 1000 - now) / AUTO_REFRESH_TICK_DURATION);
-                    if (expiresInTicks < AUTO_REFRESH_TICK_THRESHOLD) {
-                        yield this._callRefreshToken(session.refresh_token);
+                    catch (e) {
+                        console.error('Auto refresh tick failed with error. This is likely a transient error.', e);
                     }
                 }
-                catch (e) {
-                    console.error('Auto refresh tick failed with error. This is likely a transient error.', e);
+                finally {
+                    this._debug('#_autoRefreshTokenTick()', 'end');
                 }
             });
         }
@@ -6405,6 +6511,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          */
         _handleVisibilityChange() {
             return __awaiter$1(this, void 0, void 0, function* () {
+                this._debug('#_handleVisibilityChange()');
                 if (!isBrowser() || !(window === null || window === void 0 ? void 0 : window.addEventListener)) {
                     if (this.autoRefreshToken) {
                         // in non-browser environments the refresh token ticker runs always
@@ -6429,11 +6536,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          */
         _onVisibilityChanged(isInitial) {
             return __awaiter$1(this, void 0, void 0, function* () {
+                this._debug(`#_onVisibilityChanged(${isInitial})`, 'visibilityState', document.visibilityState);
                 if (document.visibilityState === 'visible') {
                     if (!isInitial) {
                         // initial visibility change setup is handled in another flow under #initialize()
                         yield this.initializePromise;
                         yield this._recoverAndRefresh();
+                        this._debug('#_onVisibilityChanged()', 'finished waiting for initialize, _recoverAndRefresh');
                     }
                     if (this.autoRefreshToken) {
                         // in browser environments the refresh token ticker runs only on focused tabs
@@ -6468,6 +6577,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     yield setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
                     const codeChallenge = yield generatePKCEChallenge(codeVerifier);
                     const codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
+                    this._debug('PKCE', 'code verifier', `${codeVerifier.substring(0, 5)}...`, 'code challenge', codeChallenge, 'method', codeChallengeMethod);
                     const flowParams = new URLSearchParams({
                         code_challenge: `${encodeURIComponent(codeChallenge)}`,
                         code_challenge_method: `${encodeURIComponent(codeChallengeMethod)}`,
@@ -6558,7 +6668,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         return { data: null, error };
                     }
                     yield this._saveSession(Object.assign({ expires_at: Math.round(Date.now() / 1000) + data.expires_in }, data));
-                    this._notifyAllSubscribers('MFA_CHALLENGE_VERIFIED', data);
+                    yield this._notifyAllSubscribers('MFA_CHALLENGE_VERIFIED', data);
                     return { data, error };
                 }
                 catch (error) {
@@ -6662,6 +6772,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             });
         }
     }
+    GoTrueClient.nextInstanceID = 0;
 
     class SupabaseAuthClient extends GoTrueClient {
         constructor(options) {
@@ -6850,11 +6961,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
         _listenForAuthEvents() {
             let data = this.auth.onAuthStateChange((event, session) => {
-                this._handleTokenChanged(event, session === null || session === void 0 ? void 0 : session.access_token, 'CLIENT');
+                this._handleTokenChanged(event, 'CLIENT', session === null || session === void 0 ? void 0 : session.access_token);
             });
             return data;
         }
-        _handleTokenChanged(event, token, source) {
+        _handleTokenChanged(event, source, token) {
             if ((event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') &&
                 this.changedAccessToken !== token) {
                 // Token has changed
@@ -6904,5 +7015,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     exports.createClient = createClient;
     exports.isAuthApiError = isAuthApiError;
     exports.isAuthError = isAuthError;
+    exports.isAuthRetryableFetchError = isAuthRetryableFetchError;
 
 }));

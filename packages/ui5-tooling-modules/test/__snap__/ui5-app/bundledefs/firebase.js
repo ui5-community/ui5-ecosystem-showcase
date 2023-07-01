@@ -2099,7 +2099,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	}
 
 	const name$o = "@firebase/app";
-	const version$1$1 = "0.9.12";
+	const version$1$1 = "0.9.13";
 
 	/**
 	 * @license
@@ -2166,7 +2166,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	const name$1 = "@firebase/firestore-compat";
 
 	const name = "firebase";
-	const version$3 = "9.22.2";
+	const version$3 = "9.23.0";
 
 	/**
 	 * @license
@@ -3002,7 +3002,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		var app = require$$0;
 
 		var name = "firebase";
-		var version = "9.22.2";
+		var version = "9.23.0";
 
 		/**
 		 * @license
@@ -6024,7 +6024,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
 	var nodeFetch__default = /*#__PURE__*/_interopDefaultLegacy(nodeFetch);
 
-	const version$1 = "3.12.2";
+	const version$1 = "3.13.0";
 
 	/**
 	 * @license
@@ -6077,7 +6077,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	User.FIRST_PARTY = new User('first-party-uid');
 	User.MOCK_USER = new User('mock-user');
 
-	const version = "9.22.2";
+	const version = "9.23.0";
 
 	/**
 	 * @license

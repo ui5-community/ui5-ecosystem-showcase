@@ -40,6 +40,9 @@ npm install ui5-tooling-transpile --save-dev
 - transpileDependencies: `boolean` (*experimental feature*)
   if enabled, the middleware also transpile the sources from the dependencies which is needed for development scenarios when referring to other projects (this configuration option is ignored by the task)
 
+- skipTransformAtStartup: `boolean` (*experimental feature*)
+  if enabled, the transpile of the resources at startup will be skipped and happen ondemand when the resources are requested by the middleware.
+
 The following configuration options will only be taken into account if no inline babel configuration is maintained in the `ui5.yaml` as `babelConfig` or no external babel configuration exists in any configuration file as described in [Babels configuration section](https://babeljs.io/docs/configuration):
 
 - targetBrowsers: `String` (default: [`"defaults"`](https://browsersl.ist/#q=defaults))

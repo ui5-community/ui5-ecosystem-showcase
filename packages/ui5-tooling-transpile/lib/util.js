@@ -285,6 +285,21 @@ const _this = (module.exports = {
 	},
 
 	/**
+	 * Checks whether the given path name should be handled
+	 *
+	 * @param {string} pathname the path name
+	 * @param {Array<string>} excludes exclude paths
+	 * @param {Array<string>} includes include paths
+	 * @returns true, if the path should be handled
+	 */
+	shouldHandlePath: function shouldHandlePath(pathname, excludes = [], includes = []) {
+		return (
+			!(excludes || []).some((pattern) => pathname.includes(pattern)) ||
+			(includes || []).some((pattern) => pathname.includes(pattern))
+		);
+	},
+
+	/**
 	 * Determines the applications base path from the given resource collection.
 	 *
 	 * <b>ATTENTION: this is a hack to be compatible with UI5 tooling 2.x and 3.x</b>

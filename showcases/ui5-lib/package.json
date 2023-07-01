@@ -23,14 +23,14 @@
     "directory": "showcases/ui5-lib"
   },
   "devDependencies": {
-    "@ui5/cli": "^2.14.17",
-    "eslint": "^8.42.0",
+    "@ui5/cli": "^2.14.19",
+    "eslint": "^8.44.0",
     "karma": "^6.4.2",
     "karma-chrome-launcher": "^3.2.0",
-    "karma-coverage": "^2.2.0",
+    "karma-coverage": "^2.2.1",
     "karma-ui5": "^2.4.0",
     "rimraf": "^5.0.1",
-    "ui5-middleware-livereload": "^0.8.3"
+    "ui5-middleware-livereload": "workspace:^"
   },
   "ui5": {
     "dependencies": [

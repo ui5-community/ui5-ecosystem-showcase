@@ -708,7 +708,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     // pkg/dist-src/index.js
 
     // pkg/dist-src/version.js
-    var VERSION$2 = "6.2.5";
+    var VERSION$2 = "6.2.8";
 
     // pkg/dist-src/get-buffer-response.js
     function getBufferResponse(response) {
@@ -1034,7 +1034,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     // pkg/dist-src/index.js
 
     // pkg/dist-src/version.js
-    var VERSION = "4.2.1";
+    var VERSION = "4.2.4";
 
     // pkg/dist-src/index.js
     var Octokit = class {
