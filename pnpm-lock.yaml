@@ -1,4 +1,11 @@
-lockfileVersion: '6.0'
+lockfileVersion: '6.1'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+overrides:
+  chromedriver: '>=113'
 
 settings:
   autoInstallPeers: true
@@ -4127,8 +4134,8 @@ packages:
     resolution: {integrity: sha512-0JTdf3CGV0oWzE6Wa40Ayv2e2GhpP3pEJMcrlM74vBSJPuuNkVwfDnl0SZxyFCXETcB4oKA/MpTVfuYSMOelBg==}
     dev: true
 
-  /@types/openui5@1.112.0:
-    resolution: {integrity: sha512-rY7Mh7c1WbbYFCFG8toxphn5ODUvDHYtszIWR2KfAzMfEHql2ekCCgyfPz2PpoAQ/ep2WxdHVxaPlQBe4hW3Gw==}
+  /@types/openui5@1.115.1:
+    resolution: {integrity: sha512-mLJP5R4HhqVpIlA7AOxIjCsXSP+Mk9jTZX4O/LgNJ2btUJUEpY6ITHHyb9BmGUtRuHKsHIpeIQY0ODkNROPIjg==}
     dependencies:
       '@types/jquery': 3.5.16
       '@types/qunit': 2.19.6
