@@ -1,0 +1,27 @@
+{
+  "name": "cds-plugin-ui5",
+  "version": "0.1.5",
+  "description": "A CAP server cds-plugin to inject the middlewares of all related UI5 tooling based projects.",
+  "author": "Peter Muessig",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
+    "directory": "packages/cds-plugin-ui5"
+  },
+  "dependencies": {
+    "@ui5/fs": "^3.0.4",
+    "@ui5/project": "^3.4.0",
+    "@ui5/server": "^3.1.3",
+    "js-yaml": "^4.1.0",
+    "node-html-parser": "^6.1.5"
+  },
+  "devDependencies": {
+    "@sap/cds": "^6.8.4",
+    "express": "^4.18.2"
+  },
+  "peerDependencies": {
+    "@sap/cds": ">=6.8.2",
+    "express": ">=4.18.2"
+  }
+}

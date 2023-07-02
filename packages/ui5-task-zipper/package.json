@@ -1,6 +1,6 @@
 {
   "name": "ui5-task-zipper",
-  "version": "0.7.5",
+  "version": "0.8.5",
   "description": "Task for the UI5 tooling to zip the webapp.",
   "author": "Marius Obert",
   "license": "Apache-2.0",
@@ -28,8 +28,8 @@
     "yazl": "^2.5.1"
   },
   "devDependencies": {
-    "@ui5/cli": "^2.14.17",
-    "ava": "^5.2.0",
+    "@ui5/cli": "^2.14.19",
+    "ava": "^5.3.1",
     "yauzl": "^2.10.0"
   },
   "ui5": {

@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-module@0.2.3...ui5-module@0.2.4) (2023-07-01)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** transpile at startup + caching ([#757](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/757)) ([6c7946d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6c7946d05abf34f11c6ad8ad593f3d418272527e))
+
+
+
+
+
+## [0.2.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-module@0.2.2...ui5-module@0.2.3) (2023-04-11)
+
+
+### Bug Fixes
+
+* update dependencies ([#723](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/723)) ([88d90e4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/88d90e4d94aa8d7d016a316076c87dc195bbee88))
+
+
+
+
+
 ## 0.2.2 (2023-03-31)
 
 

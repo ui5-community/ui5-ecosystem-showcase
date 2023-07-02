@@ -8,7 +8,6 @@
     "strict": true,
     "strictPropertyInitialization": false,
     "rootDir": "./",
-    "baseUrl": "./",
     "paths": {
       "ui5/ecosystem/demo/tslib/*": ["./src/ui5/ecosystem/demo/tslib/*"]
     }

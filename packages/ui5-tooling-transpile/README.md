@@ -28,25 +28,28 @@ npm install ui5-tooling-transpile --save-dev
 - excludes: `String<Array>` (old alias: excludePatterns)
   array of paths your application to exclude from transpilation, e.g. 3-rd party libs in `/lib/`
 
-- transpileTypeScript: `boolean`
-  if enabled the tooling extensions handle TypeScript files instead of JavaScript files and enable other TypeScript related configuration options (such as `generateDts`) - although `babelConfig` is inlined or available as external Babel configuration file, this option needs to be enabled for TypeScript support but in such cases the [`@babel/preset-typescript`](https://babeljs.io/docs/babel-preset-typescript) needs to be included manually in the Babel configuration
-
 - filePattern: `String`
-  source file pattern for the resources to transpile, defaults to `.js` and will be changed to `.ts` if `transpileTypeScript` is set to `true` (to handle multiple file extensions you can specify the extensions like that: `.+(js|jsx)` or `.+(ts|tsx)`)
+  source file pattern for the resources to transpile, defaults to `.js` and will be changed to `.ts` if a `tsconfig.json` file is located in the project or by explicitly setting the configuration option transformTypeScript to `true` (multiple file extensions can be handled by specifying mutliple extensions using the glob syntax, e.g.: `.+(js|jsx)` or `.+(ts|tsx)`)
+
+- transformTypeScript: `boolean` (old alias: transpileTypeScript)
+  if enabled, the tooling extension transforms TypeScript sources; the default value is derived from the existence of a `tsconfig.json` in the root folder of the project - if the file exists the configuration option is `true` otherwise `false`; setting this configuration option overrules the automatic determination
 
 - generateDts: `boolean`
-  if enabled, the tooling extension will generate the d.ts files (for projects of type `library` this option is considered as `true` (enabled) by default and for other projects such as `application` this option is considered as `false` (disabled by default)
+  if enabled, the tooling extension will generate type definitions (`.d.ts`) files; by default for projects of type `library` this option is considered as `true` and for other projects such as `application` this option is considered as `false` by default (is only relevant in case of transformTypeScript is `true`)
 
 - transpileDependencies: `boolean` (*experimental feature*)
-  if enabled, the middleware also transpile the TypeScript sources from the dependencies which is needed for development scenarios when referring to other TypeScript projects - the task ignores this configuration option
+  if enabled, the middleware also transpile the sources from the dependencies which is needed for development scenarios when referring to other projects (this configuration option is ignored by the task)
+
+- transformAtStartup: `boolean` (*experimental feature*)
+  if enabled, the resources will be transpiled at startup to avoid additional overhead for the first requests to the transpiled resources.
 
 The following configuration options will only be taken into account if no inline babel configuration is maintained in the `ui5.yaml` as `babelConfig` or no external babel configuration exists in any configuration file as described in [Babels configuration section](https://babeljs.io/docs/configuration):
 
-- transpileTypeScript: `boolean`
-  includes the Babel presets [`@babel/preset-typescript`](https://babeljs.io/docs/babel-preset-typescript) and [`babel-preset-transform-ui5`](https://github.com/ui5-community/babel-plugin-transform-modules-ui5) into Babels preset configuration (if `transformModulesToUI5` is explicitely set to `false` the `babel-preset-transform-ui5` will not be added to the presets)
-
 - targetBrowsers: `String` (default: [`"defaults"`](https://browsersl.ist/#q=defaults))
   first, the config will be looked up in the `package.json` `browserslist` property, second the config is searched in an external `.browserlistrc` file and if nothing has been found, the targeted browsers can be defined with the shared browser compatibility config from [browserslist](https://github.com/browserslist/browserslist) within this configuration option; to transpile back to ES5 you can i.e. use the browserslist configuration: `">0.2% and not dead"`
+
+- transformTypeScript: `boolean` (old: `transpileTypeScript`)
+  includes the Babel presets [`@babel/preset-typescript`](https://babeljs.io/docs/babel-preset-typescript) and [`babel-preset-transform-ui5`](https://github.com/ui5-community/babel-plugin-transform-modules-ui5) into Babels preset configuration (if `transformModulesToUI5` is explicitely set to `false` the `babel-preset-transform-ui5` will not be added to the presets)
 
 - transformModulesToUI5: `boolean`
   includes the [`babel-preset-transform-ui5`](https://github.com/ui5-community/babel-plugin-transform-modules-ui5) into Babels preset configuration (included implicitly when `transpileTypeScript` is set to `true` and this configuration option is omitted); this preset ensures that ES module `import`s will be transpiled to UI5 classic `sap.ui.define` or `sap.ui.require` calls and ES UI5 classes to classic UI5 classes using the `extend` API
@@ -57,7 +60,11 @@ The following configuration options will only be taken into account if no inline
 - removeConsoleStatements: `boolean`  
   includes the [babel-plugin-transform-remove-console](https://babeljs.io/docs/en/babel-plugin-transform-remove-console) which removes the console statement from the transpiled code
 
-## Setup
+> :warning: When using `builder` > `settings` > `includeDependency` to add references to other projects (libraries, modules, ...) which also require a Babel transformation, the Babel configuration lookup or the `tsconfig.json` lookup will take place relative to the current working directory. If you want to ensure to use project local configurations in this case, inline the Babel configuration `babelConfig` and the `transformTypeScript` (with `true`=TS or `false`=JS) switch explicitly in the `ui5.yaml`.
+
+## Usage
+
+By default, the tooling extension is configuration free and works out-of-the-box. The programming language is derived from the existence of the `tsconfig.json` in the project root.
 
 Define the dependency in `$yourapp/package.json`:
 
@@ -80,9 +87,27 @@ Define the dependency in `$yourapp/package.json`:
 >
 > :speech_balloon: For UI5 Tooling 3.0 the `ui5 > dependencies` section in the `package.json` isn't necessary anymore and can be removed.
 
-### Configuration of `ui5.yaml` for JavaScript
+Register the task and middleware in your `$yourapp/ui5.yaml`:
 
-The configuration for the custom task:
+```yaml
+builder:
+  customTasks:
+  - name: ui5-tooling-transpile-task
+    afterTask: replaceVersion
+[...]
+server:
+  customMiddleware:
+  - name: ui5-tooling-transpile-middleware
+    afterMiddleware: compression
+```
+
+That's it. Now you can transpile your sources with the help of Babel.
+
+### Advanced Options
+
+Configuration options are added in the configuration section. For JavaScript projects, ensure that no `tsconfig.json` is present in the project root. This would turn the tooling extension into the TypeScript mode.
+
+Example configuration for a JavaScript project without external Babel configuration which removes console statements and exclude specific paths:
 
 ```yaml
 builder:
@@ -96,11 +121,7 @@ builder:
       - "lib/"
       - "another/dir/in/webapp"
       - "yet/another/dir"
-```
-
-The configuration for the custom middleware:
-
-```yaml
+[...]
 server:
   customMiddleware:
   - name: ui5-tooling-transpile-middleware
@@ -114,9 +135,7 @@ server:
       - "yet/another/dir"
 ```
 
-### Configuration of `ui5.yaml` for TypeScript
-
-The configuration for the custom task:
+Example configuration for a TypeScript project without external Babel configuration which transforms `async/await` to `Promises` and removes console statements:
 
 ```yaml
 builder:
@@ -125,30 +144,26 @@ builder:
     afterTask: replaceVersion
     configuration:
       debug: true
-      transpileTypeScript: true
+      transformAsyncToPromise: true
       removeConsoleStatements: true
-```
-
-The configuration for the custom middleware:
-
-```yaml
+[...]
 server:
   customMiddleware:
   - name: ui5-tooling-transpile-middleware
     afterMiddleware: compression
     configuration:
       debug: true
-      transpileTypeScript: true
+      transformAsyncToPromise: true
       removeConsoleStatements: true
 ```
 
-## How to obtain support
+## Support
 
 Please use the GitHub bug tracking system to post questions, bug reports or to create pull requests.
 
 ## Contributing
 
-Any type of contribution (code contributions, pull requests, issues) to this showcase will be equally appreciated.
+Any type of contribution (code contributions, pull requests, issues) to this set of tooling extensions will be equally appreciated.
 
 ## License
 

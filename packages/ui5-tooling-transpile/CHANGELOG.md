@@ -3,35 +3,161 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.4.1...ui5-tooling-transpile@0.5.0) (2023-03-31)
+## [0.7.15](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.14...ui5-tooling-transpile@0.7.15) (2023-07-02)
 
 
 ### Bug Fixes
 
-* **ui5-task-zipper:** introduce test for packaging shims ([#702](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/702)) ([d4f7e28](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d4f7e287e78362719ee687b2e552b4f5adffd0af))
-* **ui5-tooling-modules:** allow to define provided dependencies ([#698](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/698)) ([b3dbbac](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b3dbbac12981b54f3d1ccd6173d1ad1c12504971))
-* **ui5-tooling-transpile:** add sourcemaps to default babelrc config ([#700](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/700)) ([81983da](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/81983dae97da94ad9f494b60c23c92f4f3a50594))
-* update of project depedencies ([#704](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/704)) ([2f94887](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2f94887d736e1dde8063de36f8d2ea6584dddc95))
+* **ui5-tooling-transpile:** add option to enable transform at startup ([#758](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/758)) ([5f01f04](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5f01f045523239d9135562a99f2cab10aec43e25))
 
+
+
+
+
+## [0.7.14](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.13...ui5-tooling-transpile@0.7.14) (2023-07-01)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** transpile at startup + caching ([#757](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/757)) ([6c7946d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6c7946d05abf34f11c6ad8ad593f3d418272527e))
+
+
+
+
+
+## [0.7.13](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.12...ui5-tooling-transpile@0.7.13) (2023-06-21)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** consider tsconfig.json for d.ts generation ([#755](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/755)) ([0eb1995](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0eb19959585bfa8ba0ffab8263a93e992d88f063))
+
+
+
+
+
+## [0.7.12](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.11...ui5-tooling-transpile@0.7.12) (2023-06-15)
+
+
+### Bug Fixes
+
+* update dependencies ([#754](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/754)) ([3893473](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/389347300795cfed881dc8be72eeb59d1bf45fff))
+
+
+
+
+
+## [0.7.11](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.10...ui5-tooling-transpile@0.7.11) (2023-06-03)
+
+### Bug Fixes
+
+-   **ui5-tooling-transpile:** allow to inject targetBrowsers via env var ([#751](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/751)) ([26bc59b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/26bc59b427f746db073861cc2e25c80f253c787e))
+-   **ui5-tooling-transpile:** ensure absolute module path for ambient modules ([#753](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/753)) ([d1ffda6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d1ffda6ae59d163a44327cce312a9bdf05f62427)), closes [#743](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/743)
+-   update dependencies ([#749](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/749)) ([b1c8cfb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b1c8cfb4da1dcd0ae91bee181f539684d767d067))
+
+## [0.7.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.9...ui5-tooling-transpile@0.7.10) (2023-05-10)
+
+### Bug Fixes
+
+-   **ui5-tooling-transpile:** determine base path for libs and apps ([#741](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/741)) ([8257389](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/82573890aae7034f16402700aa53c8188c325d9a))
+
+## [0.7.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.8...ui5-tooling-transpile@0.7.9) (2023-05-09)
+
+### Bug Fixes
+
+-   **ui5-tooling-transpile:** config should be found relative to project ([#739](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/739)) ([9ba4dd8](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9ba4dd84bd720a86565096c04ed14e9c18320fd0))
+
+## [0.7.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.7...ui5-tooling-transpile@0.7.8) (2023-04-22)
+
+### Bug Fixes
+
+-   **ui5-tooling-transpile:** omit resources also for non-root projects ([78a0f87](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/78a0f87989a18987ef6e0b3f710e434df0b9e1ae))
+
+## [0.7.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.6...ui5-tooling-transpile@0.7.7) (2023-04-22)
+
+### Bug Fixes
+
+-   **ui5-tooling-transpile:** fix library detection ([e6a4167](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e6a416787fc564e21de22aa46f8d29b5aa7d6c09))
+
+## [0.7.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.5...ui5-tooling-transpile@0.7.6) (2023-04-22)
+
+### Bug Fixes
+
+-   **ui5-tooling-transpile:** add support for d.ts source maps ([#735](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/735)) ([cafc5b9](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/cafc5b966cb46ca14dec77cd6fe60bb9c14851bc))
+-   **ui5-tooling-transpile:** use error logging instead of warnings ([93ec11e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/93ec11ee043c655ec50e12a7444e4c8d0462c50b))
+
+## [0.7.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.4...ui5-tooling-transpile@0.7.5) (2023-04-21)
+
+### Bug Fixes
+
+-   **ui5-tooling-transpile:** d.ts files to be modules + generate index.d.ts ([#734](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/734)) ([bc75c8c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/bc75c8c50bdf694d5283146082eed6792318f87e))
+
+## [0.7.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.3...ui5-tooling-transpile@0.7.4) (2023-04-17)
+
+### Bug Fixes
+
+-   **ui5-tooling-transpile:** dependency cleanup ([#714](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/714)) ([5971b24](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5971b24461fd4866ef1e97d48ea0ab39b534305a))
+
+## [0.7.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.2...ui5-tooling-transpile@0.7.3) (2023-04-16)
+
+### Bug Fixes
+
+-   **ui5-tooling-modules:** ensure \_\_esModule marker being exported ([#728](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/728)) ([8f8afd3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8f8afd3cac6abbf4e02ff1546442357df2d76b59)), closes [#726](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/726)
+
+## [0.7.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.1...ui5-tooling-transpile@0.7.2) (2023-04-11)
+
+### Bug Fixes
+
+-   update dependencies ([#723](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/723)) ([88d90e4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/88d90e4d94aa8d7d016a316076c87dc195bbee88))
+
+## [0.7.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.0...ui5-tooling-transpile@0.7.1) (2023-04-08)
+
+### Bug Fixes
+
+-   **ui5-tooling-transpile:** only omit TS sources from build output ([#717](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/717)) ([88d6738](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/88d6738522a657a0b696f67c9081c1d1362bb2e2))
+
+# [0.7.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.6.0...ui5-tooling-transpile@0.7.0) (2023-04-06)
 
 ### Features
 
-* **ui5-tooling-transpile:** align and clean-up configuration options ([#701](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/701)) ([8b26e71](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8b26e716f7cc9b224855f9888f1b7af141cf5dd5))
+-   **ui5-tooling-transpile:** rework to avoid configurations for default usage ([#712](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/712)) ([97119f6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/97119f6795d839e305659a64be2f920f25a1392f))
 
+# [0.6.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.5.2...ui5-tooling-transpile@0.6.0) (2023-04-05)
 
+### Features
 
+-   karma-ui5-transpile preprocessor ([#711](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/711)) ([b57542a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b57542a4d342777bf748aee42eb2247e83f26b6f))
 
-
-## [0.4.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.4.0...ui5-tooling-transpile@0.4.1) (2023-03-20)
-
+## [0.5.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.5.1...ui5-tooling-transpile@0.5.2) (2023-04-02)
 
 ### Bug Fixes
 
-* implement determineRequiredDependencies for all tasks ([#692](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/692)) ([d27b55e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d27b55e5bd2ad95336bdad8f4f07cd0e10ac2ca2))
+-   **ui5-tooling-transpile:** use proper fs path for resource tranform ([#708](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/708)) ([eee0014](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/eee0014532e7d606db75df2d490f522d3b04ad26))
 
+## [0.5.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.5.0...ui5-tooling-transpile@0.5.1) (2023-03-31)
 
+### Bug Fixes
 
+-   **ui5-tooling-transpile:** correct order of presets ([#707](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/707)) ([760218e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/760218e60c58d9d9fd95b22cd674ab610f2a1262))
 
+# [0.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.4.1...ui5-tooling-transpile@0.5.0) (2023-03-31)
+
+### Bug Fixes
+
+-   **ui5-task-zipper:** introduce test for packaging shims ([#702](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/702)) ([d4f7e28](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d4f7e287e78362719ee687b2e552b4f5adffd0af))
+-   **ui5-tooling-modules:** allow to define provided dependencies ([#698](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/698)) ([b3dbbac](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b3dbbac12981b54f3d1ccd6173d1ad1c12504971))
+-   **ui5-tooling-transpile:** add sourcemaps to default babelrc config ([#700](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/700)) ([81983da](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/81983dae97da94ad9f494b60c23c92f4f3a50594))
+-   update of project depedencies ([#704](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/704)) ([2f94887](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2f94887d736e1dde8063de36f8d2ea6584dddc95))
+
+### Features
+
+-   **ui5-tooling-transpile:** align and clean-up configuration options ([#701](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/701)) ([8b26e71](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8b26e716f7cc9b224855f9888f1b7af141cf5dd5))
+
+## [0.4.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.4.0...ui5-tooling-transpile@0.4.1) (2023-03-20)
+
+### Bug Fixes
+
+-   implement determineRequiredDependencies for all tasks ([#692](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/692)) ([d27b55e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d27b55e5bd2ad95336bdad8f4f07cd0e10ac2ca2))
 
 # [0.4.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.3.7...ui5-tooling-transpile@0.4.0) (2023-03-14)
 

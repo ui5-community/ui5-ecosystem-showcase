@@ -13,4 +13,7 @@ export default class App extends Controller {
 			view.addStyleClass((this.getOwnerComponent() as AppComponent).getContentDensityClass());
 		}
 	}
+	public getAppComponent(): AppComponent {
+		return <AppComponent>this.getOwnerComponent();
+	}
 }

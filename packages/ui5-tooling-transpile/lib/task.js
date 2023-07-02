@@ -3,8 +3,14 @@ const log = require("@ui5/logger").getLogger("builder:customtask:ui5-tooling-tra
 const path = require("path");
 const fs = require("fs");
 const resourceFactory = require("@ui5/fs").resourceFactory;
-const { createBabelConfig, normalizeLineFeeds } = require("./util");
-const babel = require("@babel/core");
+const {
+	createConfiguration,
+	createBabelConfig,
+	normalizeLineFeeds,
+	determineResourceFSPath,
+	transformAsync,
+	determineProjectBasePath
+} = require("./util");
 
 /**
  * Custom task to transpile resources to JavaScript modules.
@@ -21,19 +27,12 @@ const babel = require("@babel/core");
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ workspace /*, dependencies*/, taskUtil, options }) {
-	const config = options?.configuration || {};
-	config.includes = config.includes || config.includePatterns || [];
-	config.excludes = config.excludes || config.excludePatterns || [];
-
-	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: false });
-
-	let filePatternConfig = config.filePattern; // .+(ts|tsx)
-	if (!filePatternConfig) {
-		filePatternConfig = config.transpileTypeScript ? ".ts" : ".js";
-	}
+	const cwd = determineProjectBasePath(workspace) || process.cwd();
+	const config = createConfiguration(options?.configuration || {}, cwd);
+	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: false }, cwd);
 
 	// TODO: should we accept the full glob pattern as param or just the file pattern?
-	const allResources = await workspace.byGlob(`/**/*${filePatternConfig}`);
+	const allResources = await workspace.byGlob(`/**/*${config.filePattern}`);
 
 	// transpile the TypeScript resources and collect the code
 	const sourcesMap = {};
@@ -51,87 +50,179 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 				// read source file
 				const source = await resource.getString();
 
-				// store the ts source code in the sources map
-				if (config.transpileTypeScript) {
+				// store the source code in the sources map
+				if (config.transformTypeScript) {
 					sourcesMap[resourcePath] = source;
 				}
 
 				// we ignore d.ts files for transpiling
 				if (!resourcePath.endsWith(".d.ts")) {
-					// mark source for omit from build result
-					taskUtil.setTag(resource, taskUtil.STANDARD_TAGS.OmitFromBuildResult, true);
-
 					// transpile the source
 					config.debug && log.info(`Transpiling resource ${resourcePath}`);
-					const result = await babel.transformAsync(
+					const result = await transformAsync(
 						source,
 						Object.assign({}, babelConfig, {
-							filename: resourcePath // necessary for source map <-> source assoc
+							filename: determineResourceFSPath(resource) // necessary for source map <-> source assoc
 						})
 					);
 
 					// create the ts file in the workspace
+					config.debug && log.info(`  + [.js] ${filePath}`);
 					const transpiledResource = resourceFactory.createResource({
 						path: filePath,
 						string: normalizeLineFeeds(result.code)
 					});
-					workspace.write(transpiledResource);
+					await workspace.write(transpiledResource);
 
 					// create sourcemap resource if available
 					if (result.map) {
 						result.map.file = path.basename(filePath);
-						config.debug && log.info(`  + sourcemap ${filePath}.map`);
+						config.debug && log.info(`  + [.js.map] ${filePath}.map`);
 
 						const resourceMap = resourceFactory.createResource({
 							path: `${filePath}.map`,
 							string: JSON.stringify(result.map)
 						});
 
-						workspace.write(resourceMap);
+						await workspace.write(resourceMap);
 					}
 				}
 			}
 		})
 	);
 
-	// generate the dts files for the ts files
-	if (config.transpileTypeScript) {
+	// generate the d.ts(.map)? files for the ts files via TSC API
+	// for the resources of the root project (not included dependencies)
+	if (config.transformTypeScript) {
 		// determine if the project is a library and enable the DTS generation by default
 		// TODO: UI5 Tooling 3.0 allows to access the project with the TaskUtil
 		//       https://sap.github.io/ui5-tooling/v3/api/@ui5_project_build_helpers_TaskUtil.html#~ProjectInterface
 		//       from here we could derive the project type instead of guessing via file existence
 		const libraryResources = await workspace.byGlob(`/resources/${options.projectNamespace}/*library*`);
-		if (libraryResources.length > 0 && config.generateDts === undefined) {
+		const isLibrary = libraryResources.length > 0;
+		if (isLibrary && config.generateDts === undefined) {
 			config.debug && log.info(`Enabling d.ts generation by default for library projects!`);
 			config.generateDts = true;
 		}
 
+		// omit resources from build result (unfortunately no better place found which
+		// allows doing this during the iteration across all resources at another place...)
+		for await (const resourcePath of Object.keys(sourcesMap)) {
+			// all ts files will be omitted from the build result
+			let omitFromBuildResult = resourcePath.endsWith(".ts");
+			// root projects with generateDts=true will include d.ts files for build result
+			if (resourcePath.endsWith(".d.ts")) {
+				omitFromBuildResult = !taskUtil.isRootProject() || !config.generateDts;
+			}
+			// omit the resource from the build result
+			if (omitFromBuildResult) {
+				config.debug && log.verbose(`Omitting resource ${resourcePath}`);
+				const resource = await workspace.byPath(resourcePath);
+				taskUtil.setTag(resource, taskUtil.STANDARD_TAGS.OmitFromBuildResult, true);
+			}
+		}
+
 		// generate the dts files for the ts files
-		if (config.generateDts) {
+		if (config.generateDts && taskUtil.isRootProject()) {
 			try {
 				// dynamically require typescript
 				const ts = require("typescript");
 
+				// read the tsconfig.json
+				const tsConfigFile = path.join(cwd, "tsconfig.json");
+				let tsOptions = {};
+				if (fs.existsSync(tsConfigFile)) {
+					tsOptions = JSON.parse(fs.readFileSync(tsConfigFile, { encoding: "utf8" }));
+				}
+
 				// options to generate d.ts files only
-				const options = {
+				const options = Object.assign({}, tsOptions, {
 					allowJs: true,
 					declaration: true,
-					emitDeclarationOnly: true
+					declarationMap: true,
+					emitDeclarationOnly: true,
+					sourceRoot: "."
 					//traceResolution: true,
-				};
+				});
 
-				// Create a Program with an in-memory emit
-				const host = ts.createCompilerHost(options);
-				(host.getCurrentDirectory = () => ""),
-					(host.fileExists = (file) => !!sourcesMap[file] || fs.existsSync(file));
-				host.readFile = (file) => sourcesMap[file] || fs.readFileSync(file, "utf-8");
-				host.writeFile = function (fileName, content) {
-					config.debug && log.info(`Generating d.ts for resource ${fileName}`);
+				// update the sources map to declare the modules with the full module name
+				for await (const resourcePath of Object.keys(sourcesMap)) {
+					// declare the modules as an ambient module (with full module namespace)
+					let source = sourcesMap[resourcePath];
+					let moduleName = /^\/resources\/(.*)\.ts$/.exec(resourcePath)?.[1];
+					// we differentiate between ".gen.d.ts" files and regular ".ts" files
+					if (moduleName?.endsWith(".gen.d")) {
+						// we assume that each "*.gen.d.ts" is generated by the @ui5/ts-interface-generator
+						// and as the generated interfaces include a "declare module" definition we need to
+						// move the "declare module" to the root and use the fully qualified module name
+						moduleName = /^(.*)\.gen\.d$/.exec(moduleName)[1];
+						sourcesMap[resourcePath] = `declare module "${moduleName}" {\n${source.replace(
+							/\ndeclare module "[^"]+" {\n/,
+							""
+						)}`;
+						// update the modified resource
+						const resource = await workspace.byPath(resourcePath);
+						resource.setString(sourcesMap[resourcePath]);
+						await workspace.write(resource);
+					} else if (moduleName) {
+						// rewrite all imports with their fully qualified name
+						const relativeModulePaths = [...source.matchAll(/import.+("\.{1,2}[^"]+"|'\.{1,2}[^']+')/g)];
+						relativeModulePaths.forEach((reModPath) => {
+							const relativePath = reModPath[1].slice(1, -1);
+							source = source.replaceAll(
+								reModPath[0],
+								reModPath[0].replaceAll(relativePath, path.join(moduleName, "..", relativePath))
+							);
+						});
+						sourcesMap[resourcePath] = `declare module "${moduleName}" {\n${source}\n}`;
+					}
+				}
+
+				// array of promises (d.ts generation) to await them later
+				const dtsFilePromises = [];
+				const writeDtsFile = function (fileName, content) {
 					const dtsFile = resourceFactory.createResource({
 						path: `${fileName}`,
 						string: content
 					});
-					workspace.write(dtsFile);
+					dtsFilePromises.push(workspace.write(dtsFile));
+				};
+
+				// emit type definitions in-memory and read/write resources from the UI5 workspace
+				const host = ts.createCompilerHost(options);
+				(host.getCurrentDirectory = () => cwd),
+					(host.fileExists = (file) => !!sourcesMap[file] || fs.existsSync(file));
+				host.readFile = (file) => sourcesMap[file] || fs.readFileSync(file, "utf-8");
+				host.writeFile = function (fileName, content, writeByteOrderMark, onError, sourceFiles /*, data*/) {
+					const sourceFile = sourceFiles[0]; // we typically only have one source file!
+					config.debug && log.info(`  + [${/(\.d\.ts(?:\.map)?)$/.exec(fileName)[0]}] ${fileName}`);
+					if (/\.d\.ts\.map$/.test(fileName)) {
+						// for d.ts.map we need to fix the sources mapping in order to be
+						// able to use the "Go to Source Definition" feature of VSCode
+						// /!\ this solution is fragile as it assumes to be generated
+						//     into a direct folder (like dist) and not in deeper structures
+						//     -> to avoid the hack we need more FS infos from the tooling!
+						try {
+							const resourcePath = /^\//.test(sourceFile.fileName)
+								? sourceFile.fileName
+								: `/${sourceFile.fileName}`;
+							workspace.byPath(resourcePath).then((resource) => {
+								const jsonContent = JSON.parse(content);
+								// libs build into namespace (resolve), applications into root (assume "..") in dist folder!
+								jsonContent.sourceRoot = isLibrary ? path.relative(resource.getPath(), "/") : "..";
+								jsonContent.sources = [path.relative(cwd, determineResourceFSPath(resource))];
+								writeDtsFile(fileName, JSON.stringify(jsonContent));
+							});
+						} catch (e) {
+							config.debug &&
+								log.warn(`  /!\\ Failed to patch sources information of ${fileName}. Reason: ${e}`);
+							// as this is a hack, we can fallback to the by default
+							// generated sources information of the ts builder
+							writeDtsFile(fileName, content);
+						}
+					} else {
+						writeDtsFile(fileName, content);
+					}
 				};
 				host.resolveModuleNames = function (moduleNames, containingFile) {
 					const resolvedModules = [];
@@ -160,11 +251,39 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 
 				// prepare and emit the d.ts files
 				const program = ts.createProgram(Object.keys(sourcesMap), options, host);
-				//const program = ts.createProgram(Object.keys(sourcesMap).filter((s) => !s.endsWith("d.ts")), options, host);
 				const result = program.emit();
 
-				// error diagnostics
-				if (result.emitSkipped) {
+				// wait until all files are d.ts(.map)? written
+				await Promise.all(dtsFilePromises);
+
+				if (!result.emitSkipped) {
+					// create the index.d.ts in the root output folder
+					config.debug && log.info(`  + [.d.ts] index.d.ts`);
+					const pckgJsonFile = path.join(cwd, "package.json");
+					if (fs.existsSync(pckgJsonFile)) {
+						const pckgJson = require(pckgJsonFile);
+						if (!pckgJson.types) {
+							log.warn(
+								`  /!\\ package.json has no "types" property! Add it and point to "index.d.ts" in build destination!`
+							);
+						}
+					}
+					const indexDtsContent = Object.keys(sourcesMap)
+						.filter((dtsFile) => dtsFile.startsWith("/resources/"))
+						.map(
+							(dtsFile) =>
+								`/// <reference path=".${
+									/\.d\.ts$/.test(dtsFile) ? dtsFile : dtsFile.replace(/\.ts$/, ".d.ts")
+								}"/>`
+						)
+						.join("\n");
+					const indexDtsFile = resourceFactory.createResource({
+						path: `/index.d.ts`,
+						string: indexDtsContent
+					});
+					await workspace.write(indexDtsFile);
+				} else {
+					// error diagnostics
 					log.error(
 						`The following errors occured during d.ts generation: \n${ts.formatDiagnostics(
 							result.diagnostics,
@@ -174,7 +293,7 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 				}
 			} catch (e) {
 				// typescript dependency should be available, otherwise we can't generate the dts files
-				log.warn(`Generating d.ts failed! Reason: ${e}`);
+				log.error(`Generating d.ts failed! Reason: ${e.message}\n${e.stack}`);
 			}
 		}
 	}

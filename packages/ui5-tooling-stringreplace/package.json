@@ -1,6 +1,6 @@
 {
   "name": "ui5-tooling-stringreplace",
-  "version": "0.1.2",
+  "version": "0.2.1",
   "description": "UI5 tooling extensions to string replace ",
   "author": "Dominik Feininger",
   "license": "Apache-2.0",
@@ -11,12 +11,12 @@
   },
   "dependencies": {
     "@ui5/logger": "^2.0.1",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.3.1",
     "etag": "^1.8.1",
     "fresh": "^0.5.2",
     "lodash.escaperegexp": "^4.1.2",
-    "mime-types": "2.1.35",
-    "minimatch": "^7.4.3",
+    "mime-types": "^2.1.35",
+    "minimatch": "^7.4.6",
     "replacestream": "^4.0.3"
   },
   "ui5": {

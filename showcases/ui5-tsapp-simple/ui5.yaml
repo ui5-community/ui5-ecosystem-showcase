@@ -4,7 +4,7 @@ metadata:
 type: application
 framework:
   name: OpenUI5
-  version: "1.112.0"
+  version: "1.115.1"
   libraries:
     - name: sap.m
     - name: sap.ui.core
@@ -14,10 +14,8 @@ builder:
   customTasks:
     - name: ui5-tooling-transpile-task
       afterTask: replaceVersion
-      configuration: &cfgTranspile
+      configuration:
         debug: true
-        transpileTypeScript: true
-        generateDTS: true
     - name: ui5-tooling-modules-task
       afterTask: ui5-tooling-transpile-task
       configuration:
@@ -28,8 +26,7 @@ server:
     - name: ui5-tooling-transpile-middleware
       afterMiddleware: compression
       configuration:
-        <<: *cfgTranspile
-        transpileDependencies: true
+        debug: true
     - name: ui5-tooling-modules-middleware
       afterMiddleware: ui5-tooling-transpile-middleware
       configuration:

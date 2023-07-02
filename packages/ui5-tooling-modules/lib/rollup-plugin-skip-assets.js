@@ -1,9 +1,8 @@
 "use strict";
 
-const log = require("@ui5/logger").getLogger("server:custommiddleware:ui5-tooling-modules");
-
 /* eslint-disable no-unused-vars */
 module.exports = function (options = {}) {
+	const log = options.log;
 	// we skip to transform CSS assets
 	return {
 		name: "skip-assets",

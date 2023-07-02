@@ -3,30 +3,64 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.7.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.7.4...ui5-task-zipper@0.7.5) (2023-03-31)
+## [0.8.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.8.4...ui5-task-zipper@0.8.5) (2023-07-01)
 
 
 ### Bug Fixes
 
-* refactor repository structure ([#703](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/703)) ([fd154d7](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/fd154d791d5d87a41a3e350b5bfef23f5938fd5d))
-* **ui5-task-zipper:** introduce test for packaging shims ([#702](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/702)) ([d4f7e28](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d4f7e287e78362719ee687b2e552b4f5adffd0af))
-* update of project depedencies ([#704](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/704)) ([2f94887](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2f94887d736e1dde8063de36f8d2ea6584dddc95))
+* **ui5-tooling-transpile:** transpile at startup + caching ([#757](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/757)) ([6c7946d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6c7946d05abf34f11c6ad8ad593f3d418272527e))
 
 
 
 
+
+## [0.8.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.8.3...ui5-task-zipper@0.8.4) (2023-06-15)
+
+
+### Bug Fixes
+
+* update dependencies ([#754](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/754)) ([3893473](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/389347300795cfed881dc8be72eeb59d1bf45fff))
+
+
+
+
+
+## [0.8.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.8.2...ui5-task-zipper@0.8.3) (2023-06-03)
+
+### Bug Fixes
+
+- update dependencies ([#749](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/749)) ([b1c8cfb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b1c8cfb4da1dcd0ae91bee181f539684d767d067))
+
+## [0.8.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.8.1...ui5-task-zipper@0.8.2) (2023-04-17)
+
+**Note:** Version bump only for package ui5-task-zipper
+
+## [0.8.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.8.0...ui5-task-zipper@0.8.1) (2023-04-11)
+
+### Bug Fixes
+
+- **ui5-task-zipper:** detection of project name for deps ([#722](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/722)) ([400e967](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/400e967fd6b7a700863cf9c75d9f357ce09f2ca4)), closes [#550](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/550)
+
+# [0.8.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.7.5...ui5-task-zipper@0.8.0) (2023-04-10)
+
+### Features
+
+- **ui5-task-zipper:** allow to specify the deps to include ([#720](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/720)) ([bec868c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/bec868c7b4723161a06b7c4d6874a8ce147a94a1)), closes [#550](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/550)
+
+## [0.7.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.7.4...ui5-task-zipper@0.7.5) (2023-03-31)
+
+### Bug Fixes
+
+- refactor repository structure ([#703](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/703)) ([fd154d7](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/fd154d791d5d87a41a3e350b5bfef23f5938fd5d))
+- **ui5-task-zipper:** introduce test for packaging shims ([#702](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/702)) ([d4f7e28](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d4f7e287e78362719ee687b2e552b4f5adffd0af))
+- update of project depedencies ([#704](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/704)) ([2f94887](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2f94887d736e1dde8063de36f8d2ea6584dddc95))
 
 ## [0.7.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.7.3...ui5-task-zipper@0.7.4) (2023-03-20)
 
-
 ### Bug Fixes
 
-* implement determineRequiredDependencies for all tasks ([#692](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/692)) ([d27b55e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d27b55e5bd2ad95336bdad8f4f07cd0e10ac2ca2))
-* improvements of projects for tooling 3.0 ([#696](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/696)) ([6bd880f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6bd880f4a0c15bdb0f3ac3d19a9f0a91e3c680ab))
-
-
-
-
+- implement determineRequiredDependencies for all tasks ([#692](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/692)) ([d27b55e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d27b55e5bd2ad95336bdad8f4f07cd0e10ac2ca2))
+- improvements of projects for tooling 3.0 ([#696](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/696)) ([6bd880f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6bd880f4a0c15bdb0f3ac3d19a9f0a91e3c680ab))
 
 ## [0.7.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@0.7.2...ui5-task-zipper@0.7.3) (2023-02-08)
 

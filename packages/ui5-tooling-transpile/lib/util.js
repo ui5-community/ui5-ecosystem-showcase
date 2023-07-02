@@ -66,7 +66,58 @@ async function findBabelConfig(dir) {
 	return partialConfig ? { configFile, options: partialConfig.options } : undefined;
 }
 
-module.exports = {
+const _this = (module.exports = {
+	/**
+	 * Build the configuration for the task and the middleware.
+	 *
+	 * @param {object} configuration task/middleware configuration
+	 * @param {string} [cwd] the cwd to lookup the configuration (defaults to process.cwd())
+	 * @returns {object} the translated task/middleware configuration
+	 */
+	createConfiguration: function createConfiguration(configuration, cwd = process.cwd()) {
+		// extract the configuration
+		const config = configuration || {};
+
+		// if a tsconfig.json file exists, the project is a TypeScript project
+		const isTypeScriptProject = fs.existsSync(path.join(cwd, "tsconfig.json"));
+
+		// derive whether TypeScript should be transformed or not
+		const transformTypeScript = config.transformTypeScript ?? config.transpileTypeScript ?? isTypeScriptProject;
+
+		// derive the includes/excludes from the configuration
+		const includes = config.includes || config.includePatterns || [];
+		const defaultExcludes = [".png", ".jpeg", ".jpg"]; // still needed?
+		const excludes = defaultExcludes.concat(config.excludes || config.excludePatterns || []);
+
+		// determine the file pattern from config or based on TypeScript project
+		let filePattern = config.filePattern; // .+(ts|tsx)
+		if (filePattern === undefined) {
+			filePattern = transformTypeScript ? ".ts" : ".js";
+		}
+
+		// derive transformation parameters
+		const transformModulesToUI5 = config.transformModulesToUI5 ?? transformTypeScript;
+		const transformAsyncToPromise = config.transformAsyncToPromise ?? config.transpileAsync;
+
+		// return the normalized configuration object
+		const normalizedConfiguration = {
+			debug: config.debug,
+			babelConfig: config.babelConfig,
+			includes,
+			excludes,
+			filePattern,
+			generateDts: config.generateDts,
+			transpileDependencies: config.transpileDependencies,
+			transformTypeScript,
+			transformModulesToUI5,
+			transformAsyncToPromise,
+			targetBrowsers: config.targetBrowsers,
+			removeConsoleStatements: config.removeConsoleStatements
+		};
+		config.debug && log.verbose(`Normalized configuration:\n${JSON.stringify(normalizedConfiguration, null, 2)}`);
+		return normalizedConfiguration;
+	},
+
 	/**
 	 * Lookup the Babel configuration from ui5.yaml, Babel configuration files in file system,
 	 * generated Babel configuration from configuration options or fallback to default
@@ -75,17 +126,13 @@ module.exports = {
 	 * @param {object} cfg configuration object
 	 * @param {object} cfg.configuration task/middleware configuration
 	 * @param {boolean} cfg.isMiddleware true, if the function is called from the middleware
+	 * @param {string} [cwd] the cwd to lookup the configuration (defaults to process.cwd())
 	 * @returns {object} the babel plugins configuration
 	 */
-	createBabelConfig: async function createBabelConfig({ configuration, isMiddleware }) {
+	createBabelConfig: async function createBabelConfig({ configuration, isMiddleware }, cwd = process.cwd()) {
 		// Things to consider:
 		//   - middleware uses configs from app also for dependencies
-		//   - task uses .babelrc and .browserslistrc from app but config
-		//     in ui5.yaml from the different projects (since the config
-		//     files are loaded relative to process.cwd())
-
-		// for testing purposes we store the cwd of the initial function call
-		const cwd = process.cwd();
+		//   - task must provide the cwd from outside
 
 		// report usage of configuration options in case ofan external
 		//  configuration file or inline Babel config is used
@@ -135,20 +182,17 @@ module.exports = {
 		// create the babel configuration based on the ui5.yaml
 		babelConfig = { ignore: ["**/*.d.ts"], plugins: [], presets: [] };
 
-		// add the presets to enable transformation of ES modules to
-		// UI5 modules and ES classes to UI5 classes
-		const transformModulesToUI5 =
-			configuration?.transformModulesToUI5 !== undefined
-				? configuration?.transformModulesToUI5
-				: configuration?.transpileTypeScript;
-		if (transformModulesToUI5) {
-			babelConfig.presets.push("transform-ui5");
-		}
-
-		// add the preset to enable the transpiling of TS to JS
-		if (configuration?.transpileTypeScript) {
-			babelConfig.presets.push("@babel/preset-typescript");
-		}
+		// order of the presets is important: last preset is applied first
+		// which means the .babelrc config should look like that:
+		//
+		//  "presets": [
+		//      "@babel/preset-env",        // applied 3rd
+		//      "transform-ui5",            // applied 2nd
+		//      "@babel/preset-typescript"  // applied 1st
+		//  ],
+		//
+		// so, first transpile typescript, then ES modules/classes to UI5
+		// and finally transpile the rest to the target browser env.
 
 		// add the env preset and configure to support the
 		// last 2 browser versions (can be overruled via
@@ -168,11 +212,26 @@ module.exports = {
 			envPreset.push({
 				targets: {
 					// future: consider to read the browserslist config from OpenUI5/SAPUI5?
-					browsers: configuration?.targetBrowsers || "defaults"
+					// env variables must not use "-" or "." and therefore we use "_" only
+					browsers:
+						process.env?.["ui5_tooling_transpile__targetBrowsers"] ||
+						configuration?.targetBrowsers ||
+						"defaults"
 				}
 			});
 		}
 		babelConfig.presets.push(envPreset);
+
+		// add the presets to enable transformation of ES modules to
+		// UI5 modules and ES classes to UI5 classes
+		if (configuration?.transformModulesToUI5) {
+			babelConfig.presets.push("transform-ui5");
+		}
+
+		// add the preset to enable the transpiling of TS to JS
+		if (configuration?.transformTypeScript) {
+			babelConfig.presets.push("@babel/preset-typescript");
+		}
 
 		// add plugin to remove console statements
 		if (configuration?.removeConsoleStatements) {
@@ -184,11 +243,7 @@ module.exports = {
 		// requires bigger redundant inline code and it is also
 		// not CSP compliant => therefore the Promise is the better
 		// solution than using the regenerator runtime (by default)
-		const transformAsyncToPromise =
-			configuration?.transformAsyncToPromise !== undefined
-				? configuration?.transformAsyncToPromise
-				: configuration?.transpileAsync;
-		if (transformAsyncToPromise) {
+		if (configuration?.transformAsyncToPromise) {
 			babelConfig.plugins.push([
 				"transform-async-to-promises",
 				{
@@ -227,5 +282,105 @@ module.exports = {
 		// we have to search for any EOL character and replace it
 		// with correct EOL for this OS
 		return code.replace(/\r\n|\r|\n/g, os.EOL);
+	},
+
+	/**
+	 * Checks whether the given path name should be handled
+	 *
+	 * @param {string} pathname the path name
+	 * @param {Array<string>} excludes exclude paths
+	 * @param {Array<string>} includes include paths
+	 * @returns true, if the path should be handled
+	 */
+	shouldHandlePath: function shouldHandlePath(pathname, excludes = [], includes = []) {
+		return (
+			!(excludes || []).some((pattern) => pathname.includes(pattern)) ||
+			(includes || []).some((pattern) => pathname.includes(pattern))
+		);
+	},
+
+	/**
+	 * Determines the applications base path from the given resource collection.
+	 *
+	 * <b>ATTENTION: this is a hack to be compatible with UI5 tooling 2.x and 3.x</b>
+	 *
+	 * @param {module:@ui5/fs.AbstractReader} collection Reader or Collection to read resources of the root project and its dependencies
+	 * @returns {string} application base path
+	 */
+	determineProjectBasePath: function (collection) {
+		let projectBasePath;
+		if (collection?._readers) {
+			for (const _reader of collection._readers) {
+				projectBasePath = _this.determineProjectBasePath(_reader);
+				if (projectBasePath) break;
+			}
+		}
+		if (/^(application|library)$/.test(collection?._project?._type)) {
+			projectBasePath = collection._project._modulePath; // UI5 tooling 3.x
+		} else if (/^(application|library)$/.test(collection?._project?.type)) {
+			projectBasePath = collection._project.path; // UI5 tooling 2.x
+		} else if (typeof collection?._fsBasePath === "string") {
+			projectBasePath = collection._fsBasePath;
+		}
+		return projectBasePath;
+	},
+
+	/**
+	 * Determine the given resources' file system path
+	 *
+	 * <b>ATTENTION: this is a hack to be compatible with UI5 tooling 2.x and 3.x</b>
+	 *
+	 * @param {module:@ui5/fs.Resource} resource the resource
+	 * @param {string} [cwd] the cwd to lookup the configuration (defaults to process.cwd())
+	 * @returns {string} the file system path
+	 */
+	determineResourceFSPath: function determineResourceFSPath(resource, cwd = process.cwd()) {
+		let resourcePath = resource.getPath();
+		if (typeof resource.getSourceMetadata === "function") {
+			// specVersion 3.0 provides source metadata and only if the
+			// current work directory is the rootpath of the project resource
+			// it is a root resource which should be considered to be resolved
+			if (path.relative(cwd, resource.getProject().getRootPath()) === "") {
+				resourcePath = resource.getSourceMetadata().fsPath || resourcePath;
+			}
+		} else {
+			// for older versions resolving the file system path is a bit more
+			// tricky and also here we only consider the root resources rather
+			// than the dependencies...
+			const isRootResource = resource?._project?._isRoot;
+			if (isRootResource) {
+				const rootPath = resource._project.path;
+				const pathMappings = resource._project.resources?.pathMappings;
+				const pathMapping = Object.keys(pathMappings).find((basePath) => resourcePath.startsWith(basePath));
+				resourcePath = path.join(
+					rootPath,
+					pathMappings[pathMapping],
+					resourcePath.substring(pathMapping.length)
+				);
+			}
+		}
+		return resourcePath;
+	},
+
+	/**
+	 * Transforms code synchronously using Babel
+	 *
+	 * @param {string} code code to transform
+	 * @param {object} opts options
+	 * @returns {string} transformed code
+	 */
+	transform: function transform(code, opts) {
+		return babel.transform(code, opts);
+	},
+
+	/**
+	 * Transforms code asynchronously using Babel
+	 *
+	 * @param {string} code code to transform
+	 * @param {object} opts options
+	 * @returns {string} transformed code
+	 */
+	transformAsync: async function transformAsync(code, opts) {
+		return babel.transformAsync(code, opts);
 	}
-};
+});

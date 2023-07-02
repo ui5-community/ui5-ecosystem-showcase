@@ -1,15 +1,15 @@
 {
-  "name": "ui5-tsutil",
+  "name": "ui5-types-typedjsonmodel",
   "version": "0.2.0",
-  "description": "UI5 TypeScript Utils",
+  "description": "UI5 TypedJSONModel",
   "private": true,
   "author": "Marc Popescu-Pfeiffer",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
-    "directory": "packages/ui5-tsutil"
+    "directory": "packages/ui5-types-typedjsonmodel"
   },
   "scripts": {
     "lint": "eslint ."

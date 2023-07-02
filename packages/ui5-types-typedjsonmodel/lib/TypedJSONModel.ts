@@ -1,9 +1,9 @@
 // eslint-disable-file
 
 /**
- * This file contains the type safe facade "TypeSafeJSONModel" for "JSONModel".
+ * This file contains the type safe facade "TypedJSONModel" for "JSONModel".
  *
- * Since TypeSafeJSONModel is only a type it has no runtime differences or overhead compared to the JSONModel.
+ * Since TypedJSONModel is only a type it has no runtime differences or overhead compared to the JSONModel.
  *
  * The JSONModel class is used to store data which has to be synchronized with the view. JSONModel mainly uses the
  * getProperty() and setProperty() methods to access the stored values. To specify which property should be
@@ -12,7 +12,7 @@
  * the string "FOO", '/bar' to access the object <code>{ baz: 1 }</code> or '/bar/baz' to access the string
  * "BAZ".
  *
- * The purpose of TypeSafeJSONModel is to add typechecking at compile time. This means that the returned
+ * The purpose of TypedJSONModel is to add typechecking at compile time. This means that the returned
  * properties have the correct type, instead of the <code>any</code> type that the JSONModel returns by
  * default. Additionally, accessing non-existent properties will cause type errors at compile time.
  */
@@ -23,9 +23,9 @@ import type Context from "sap/ui/model/Context";
 
 //#region Configuration
 /**
- * You can safely overwrite this value to configure the TypeSafeJSONModel
+ * You can safely overwrite this value to configure the TypedJSONModel
  */
-interface TypeSafeJSONModelConfig {
+interface TypedJSONModelConfig {
 	/**
 	 * The maximum recursion depth used during path discovery.
 	 *
@@ -39,7 +39,7 @@ interface TypeSafeJSONModelConfig {
 /**
  * Alias for ease of use
  */
-type RecursionMaxDepth = TypeSafeJSONModelConfig["maxDepth"];
+type RecursionMaxDepth = TypedJSONModelConfig["maxDepth"];
 
 /**
  * Array used to limit recursive calls
@@ -60,7 +60,7 @@ type NoSymbols<T> = T extends symbol ? never : T;
 /**
  * JSON safe value
  */
-type JSONScalar = string | boolean | number | Date | null;
+type JSONScalar = string | boolean | number | Date | null | undefined;
 
 /**
  * JSON safe array
@@ -127,12 +127,12 @@ type ValueTypeHelper<D, P extends string> = D extends JSONObject | JSONArray
  *
  * @see JSONModel
  */
-export interface TypeSafeJsonModel<D extends JSON> extends JSONModel {
+export interface TypedJSONModel<D extends JSON> extends JSONModel {
 	constructor: (oData: D, bObserve?: boolean | undefined) => this;
 	getProperty: <P extends PathType<D>>(sPath: P, oContext?: Context | undefined) => ValueType<D, P>;
 	setProperty: <P extends PathType<D>, V extends ValueType<D, P>>(sPath: P, oValue: V, oContext?: Context | undefined, bAsyncUpdate?: boolean | undefined) => boolean;
 	setData: (oData: D, bMerge?: boolean | undefined) => void;
 }
 
-export type TypeSafeJSONModelData = JSON;
+export type TypedJSONModelData = JSON;
 //#endregion

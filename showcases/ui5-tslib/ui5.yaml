@@ -4,7 +4,7 @@ metadata:
 type: library
 framework:
   name: OpenUI5
-  version: "1.112.0"
+  version: "1.115.1"
   libraries:
     - name: sap.ui.core
     - name: themelib_sap_fiori_3
@@ -15,18 +15,10 @@ builder:
       afterTask: replaceVersion
       configuration: &cfgTranspile
         debug: true
-        filePattern: .+(ts|tsx)
-        transpileTypeScript: true
-        #transformAsyncToPromise: true
-        removeConsoleStatements: true
-        includes:
-          - /controller/App
-        excludes:
-          - /controller/
     - name: ui5-tooling-modules-task
       afterTask: ui5-tooling-transpile-task
       configuration:
-        prependPathMappings: false
+        debug: true
         addToNamespace: true
 server:
   customMiddleware:

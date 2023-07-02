@@ -4,7 +4,7 @@ metadata:
 type: application
 framework:
   name: OpenUI5
-  version: "1.112.0"
+  version: "1.115.1"
   libraries:
     - name: sap.m
     - name: sap.ui.core
@@ -14,22 +14,18 @@ builder:
   settings:
     includeDependency:
       - ui5.ecosystem.demo.tslib
+  componentPreload:
+    excludes:
+      - "ui5/ecosystem/demo/tsapp/thirdparty/@stomp/**"
+      - "ui5/ecosystem/demo/tsapp/thirdparty/jspdf*.js"
+      - "ui5/ecosystem/demo/tsapp/thirdparty/xlsx.js"
   customTasks:
     - name: ui5-tooling-transpile-task
       afterTask: replaceVersion
       configuration: &cfgTranspile
         debug: true
         filePattern: .+(ts|tsx)
-        transpileTypeScript: true
-        generateDTS: true
-        # using external .babelrc and .browserslistrc
-        #transformAsyncToPromise: true
-        #removeConsoleStatements: true
-        #includes:
-        #  - /controller/App
-        #  - /controller/Main
-        #excludes:
-        #  - /controller/
+        generateDts: true
     - name: ui5-tooling-modules-task
       afterTask: ui5-tooling-transpile-task
       configuration:
@@ -37,7 +33,7 @@ builder:
         prependPathMappings: false
         addToNamespace: true
         providedDependencies:
-          - luxon
+          - moment
 server:
   customMiddleware:
     - name: ui5-tooling-transpile-middleware

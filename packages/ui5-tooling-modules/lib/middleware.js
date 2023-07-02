@@ -61,7 +61,7 @@ module.exports = function ({ resources, options, middlewareUtil }) {
 					res.setHeader("Content-Type", contentType);
 
 					// respond the content
-					res.end(resource);
+					res.end(resource.code);
 
 					log.verbose(`Processing resource ${moduleName} took ${Date.now() - time} millis`);
 

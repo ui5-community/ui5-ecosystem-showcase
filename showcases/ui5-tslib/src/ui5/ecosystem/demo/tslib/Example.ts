@@ -56,7 +56,7 @@ export default class Example extends Control {
 		},
 	};
 
-	static renderer = ExampleRenderer;
+	static renderer: typeof ExampleRenderer = ExampleRenderer;
 
 	onclick = () => {
 		this.firePress();

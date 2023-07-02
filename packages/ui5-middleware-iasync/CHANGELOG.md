@@ -3,16 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [1.0.0-alpha.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-iasync@1.0.0-alpha.2...ui5-middleware-iasync@1.0.0-alpha.3) (2023-03-31)
-
+# [1.0.0-alpha.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-iasync@1.0.0-alpha.3...ui5-middleware-iasync@1.0.0-alpha.4) (2023-06-03)
 
 ### Bug Fixes
 
-* update of project depedencies ([#704](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/704)) ([2f94887](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2f94887d736e1dde8063de36f8d2ea6584dddc95))
+- update dependencies ([#749](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/749)) ([b1c8cfb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b1c8cfb4da1dcd0ae91bee181f539684d767d067))
 
+# [1.0.0-alpha.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-iasync@1.0.0-alpha.2...ui5-middleware-iasync@1.0.0-alpha.3) (2023-03-31)
 
+### Bug Fixes
 
-
+- update of project depedencies ([#704](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/704)) ([2f94887](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2f94887d736e1dde8063de36f8d2ea6584dddc95))
 
 # [1.0.0-alpha.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-iasync@1.0.0-alpha.1...ui5-middleware-iasync@1.0.0-alpha.2) (2022-12-31)
 

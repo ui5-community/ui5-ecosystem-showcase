@@ -4,7 +4,7 @@ metadata:
 type: application
 framework:
   name: OpenUI5
-  version: "1.112.0"
+  version: "1.115.1"
   libraries:
     - name: sap.m
     - name: sap.ui.core
@@ -26,7 +26,6 @@ builder:
       afterTask: generateVersionInfo
       configuration:
         archiveName: simpleapp
-        includeDependencies: false
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
 server:
   customMiddleware:
@@ -34,6 +33,7 @@ server:
       afterMiddleware: compression
       configuration:
         debug: true
+        removeConsoleStatements: true
     - name: ui5-tooling-modules-middleware
       afterMiddleware: ui5-tooling-transpile-middleware
       configuration:
