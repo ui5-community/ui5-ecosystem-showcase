@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.15](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.14...ui5-tooling-transpile@0.7.15) (2023-07-02)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** add option to enable transform at startup ([#758](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/758)) ([5f01f04](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5f01f045523239d9135562a99f2cab10aec43e25))
+
+
+
+
+
 ## [0.7.14](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.13...ui5-tooling-transpile@0.7.14) (2023-07-01)
 
 
