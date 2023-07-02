@@ -69,7 +69,7 @@ module.exports = async function ({ resources, options, middlewareUtil }) {
 	};
 
 	// pre-transform sources (fill the server cache)
-	if (!config.skipTransformAtStartup) {
+	if (config.transformAtStartup) {
 		const resources = await reader.byGlob(`**/*${config.filePattern}`);
 		await Promise.all(
 			resources
