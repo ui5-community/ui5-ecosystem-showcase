@@ -42,15 +42,18 @@ const getPortForLivereload = async (options, defaultPort) => {
  * @param {module:@ui5/fs.AbstractReader} collection Reader or Collection to read resources of the root project and its dependencies
  * @returns {string[]} source paths
  */
-const determineSourcePaths = (collection) => {
+const determineSourcePaths = (collection, skipFwkDeps) => {
 	const fsPaths = [];
 	collection?._readers?.forEach((_reader) => {
-		fsPaths.push(...determineSourcePaths(_reader));
+		fsPaths.push(...determineSourcePaths(_reader, skipFwkDeps));
 	});
-	if (collection?._project?._type === "application") {
-		fsPaths.push(path.resolve(collection._project._modulePath, collection._project._webappPath));
-	} else if (typeof collection?._fsBasePath === "string") {
-		fsPaths.push(collection._fsBasePath);
+	const projectId = collection?._project?.id ?? collection?._project?.__id;
+	if (!skipFwkDeps || !/^@(open|sap)ui5\/.*/g.test(projectId)) {
+		if (collection?._project?._type === "application") {
+			fsPaths.push(path.resolve(collection._project._modulePath, collection._project._webappPath));
+		} else if (typeof collection?._fsBasePath === "string") {
+			fsPaths.push(collection._fsBasePath);
+		}
 	}
 	return fsPaths;
 };
@@ -77,7 +80,7 @@ module.exports = async ({ resources, options }) => {
 	let watchPath = options?.configuration?.watchPath || options?.configuration?.path;
 	// determine all watchpaths from project resources if not predefined
 	if (!watchPath) {
-		watchPath = determineSourcePaths(resources.all);
+		watchPath = determineSourcePaths(resources.all, !options.configuration?.includeFwkDeps);
 	}
 
 	let exclusions = options?.configuration?.exclusions;
