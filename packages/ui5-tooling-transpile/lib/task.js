@@ -34,6 +34,13 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 	// TODO: should we accept the full glob pattern as param or just the file pattern?
 	const allResources = await workspace.byGlob(`/**/*${config.filePattern}`);
 
+	// determine root project
+	let rootProject;
+	if (allResources.length > 0) {
+		rootProject =
+			typeof allResources[0].getProject === "function" ? allResources[0].getProject() : allResources[0]._project;
+	}
+
 	// transpile the TypeScript resources and collect the code
 	const sourcesMap = {};
 	await Promise.all(
@@ -268,14 +275,26 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 							);
 						}
 					}
+					// determine the virtual resource base path
+					let virBasePath;
+					if (typeof rootProject?.getNamespace === "function") {
+						virBasePath = `/resources/${rootProject.getNamespace()}`;
+					} else if (rootProject?.metadata?.namespace) {
+						virBasePath = `/resources/${rootProject.metadata.namespace}`;
+					}
+					// generate the index.d.ts content
 					const indexDtsContent = Object.keys(sourcesMap)
 						.filter((dtsFile) => dtsFile.startsWith("/resources/"))
-						.map(
-							(dtsFile) =>
-								`/// <reference path=".${
-									/\.d\.ts$/.test(dtsFile) ? dtsFile : dtsFile.replace(/\.ts$/, ".d.ts")
-								}"/>`
-						)
+						.map((dtsFile) => {
+							// if the dts file is in the virtual base path, we strip the path
+							if (!isLibrary && dtsFile.startsWith(virBasePath)) {
+								dtsFile = dtsFile.substring(virBasePath.length);
+							}
+							// create the reference line
+							return `/// <reference path=".${
+								/\.d\.ts$/.test(dtsFile) ? dtsFile : dtsFile.replace(/\.ts$/, ".d.ts")
+							}"/>`;
+						})
 						.join("\n");
 					const indexDtsFile = resourceFactory.createResource({
 						path: `/index.d.ts`,
