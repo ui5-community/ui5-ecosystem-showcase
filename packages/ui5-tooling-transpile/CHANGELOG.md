@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.16](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.15...ui5-tooling-transpile@0.7.16) (2023-07-03)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** delegate transformAtStartup option ([#759](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/759)) ([2bb3616](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2bb36165b34896b6d2acd516b952c6c538e0b640))
+
+
+
+
+
 ## [0.7.15](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.14...ui5-tooling-transpile@0.7.15) (2023-07-02)
 
 
