@@ -21,6 +21,8 @@ npm install ui5-middleware-livereload --save-dev
 - exclusions: one or many `regex`. By default, this includes `.git/`, `.svn/`, and `.hg/`
 - usePolling: true|false, default: `false`
   Enables chokidar polling to support virtualised filesystems(eg. WSL2.0).
+- includeFwkDeps: true|false, default: `false`
+  Includes the framework dependencies into the `watchPath`
 
 ## Usage
 
