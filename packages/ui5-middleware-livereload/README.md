@@ -16,7 +16,7 @@ npm install ui5-middleware-livereload --save-dev
   file extensions other than `js`, `html` and `css` to monitor for changes
 - port: `integer`, default: an free port choosen from `35729` onwards
   port the live reload server is started on
-- watchPath|path: `string`, default: all paths from app and UI5 dependencies
+- watchPath|path: `string`, default: all paths from app and non framework dependencies
   path inside `$yourapp` the reload server monitors for changes
 - exclusions: one or many `regex`. By default, this includes `.git/`, `.svn/`, and `.hg/`
 - usePolling: true|false, default: `false`
@@ -147,7 +147,7 @@ server:
 
 ## How it works
 
-The middleware launches a `livereload`-server on the specified `port`, listening to changes in the app and any of the UI5 dependencies or alternativly the specified `path` or `watchPath` inside your application directory.
+The middleware launches a `livereload`-server on the specified `port`, listening to changes in the app and any of the non framework dependencies or alternativly the specified `path` or `watchPath` inside your application directory.
 
 When changes are detected, a reload is triggered to **all connected clients** - so all browsers having `$yourapp` will reload the application. The reload is `#`-aware, meaning the current displayed route in your single-page UI5 app is kept steady.
 
