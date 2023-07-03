@@ -108,6 +108,7 @@ const _this = (module.exports = {
 			filePattern,
 			generateDts: config.generateDts,
 			transpileDependencies: config.transpileDependencies,
+			transformAtStartup: config.transformAtStartup,
 			transformTypeScript,
 			transformModulesToUI5,
 			transformAsyncToPromise,
