@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.18](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.17...ui5-tooling-transpile@0.7.18) (2023-07-05)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** include TypeScript sources in build output ([#762](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/762)) ([8998aa5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8998aa5b672364167cf02a4329b93a4870e22742))
+
+
+
+
+
 ## [0.7.17](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.16...ui5-tooling-transpile@0.7.17) (2023-07-03)
 
 
