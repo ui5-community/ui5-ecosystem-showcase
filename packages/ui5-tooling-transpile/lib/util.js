@@ -106,6 +106,7 @@ const _this = (module.exports = {
 			includes,
 			excludes,
 			filePattern,
+			omitTSFromBuildResult: config.omitTSFromBuildResult,
 			generateDts: config.generateDts,
 			transpileDependencies: config.transpileDependencies,
 			transformAtStartup: config.transformAtStartup,

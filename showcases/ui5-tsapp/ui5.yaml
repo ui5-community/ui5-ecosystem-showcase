@@ -26,6 +26,7 @@ builder:
         debug: true
         filePattern: .+(ts|tsx)
         generateDts: true
+        omitTSFromBuildResult: true
     - name: ui5-tooling-modules-task
       afterTask: ui5-tooling-transpile-task
       configuration:
