@@ -115,8 +115,8 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 		// omit resources from build result (unfortunately no better place found which
 		// allows doing this during the iteration across all resources at another place...)
 		for await (const resourcePath of Object.keys(sourcesMap)) {
-			// all ts files will be omitted from the build result
-			let omitFromBuildResult = resourcePath.endsWith(".ts");
+			// all ts files will be omitted from the build result (if set in config)
+			let omitFromBuildResult = resourcePath.endsWith(".ts") && config.omitTSFromBuildResult;
 			// root projects with generateDts=true will include d.ts files for build result
 			if (resourcePath.endsWith(".d.ts")) {
 				omitFromBuildResult = !taskUtil.isRootProject() || !config.generateDts;
