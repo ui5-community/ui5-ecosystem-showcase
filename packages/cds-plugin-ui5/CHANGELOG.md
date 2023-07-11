@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.1.5...cds-plugin-ui5@0.1.6) (2023-07-11)
+
+
+### Bug Fixes
+
+* support single app in ./app ([#763](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/763)) ([8642de6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8642de6695efd49bc0e1b4e907497a82241bc90d))
+
+
+
+
+
 ## [0.1.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.1.4...cds-plugin-ui5@0.1.5) (2023-07-01)
 
 
