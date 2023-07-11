@@ -47,6 +47,14 @@ cds.on("bootstrap", async function bootstrap(app) {
 		}
 	});
 
+	// look for a single app if no apps were found in the app directories
+	if(appDirs.length === 0) {
+		const d = path.join(process.cwd(), "app");
+		if (fs.existsSync(path.join(d, "ui5.yaml"))) {
+			appDirs.push(d);
+		}
+	}
+
 	// lookup the UI5 dependencies
 	const pkgJson = require(path.join(process.cwd(), "package.json"));
 	const deps = [];
