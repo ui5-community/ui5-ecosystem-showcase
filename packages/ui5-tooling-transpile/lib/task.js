@@ -196,10 +196,23 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 				};
 
 				// emit type definitions in-memory and read/write resources from the UI5 workspace
+				const typeDefs = {};
 				const host = ts.createCompilerHost(options);
 				(host.getCurrentDirectory = () => cwd),
 					(host.fileExists = (file) => !!sourcesMap[file] || fs.existsSync(file));
-				host.readFile = (file) => sourcesMap[file] || fs.readFileSync(file, "utf-8");
+				host.readFile = (file) => {
+					if (/\/package.json$/g.test(file)) {
+						if (!typeDefs[file]) {
+							try {
+								const typeDefPkgJson = JSON.parse(fs.readFileSync(file, { encoding: "utf8" }));
+								typeDefs[file] = typeDefPkgJson;
+							} catch (err) {
+								/* ignore the error */
+							}
+						}
+					}
+					return sourcesMap[file] || fs.readFileSync(file, "utf-8");
+				};
 				host.writeFile = function (fileName, content, writeByteOrderMark, onError, sourceFiles /*, data*/) {
 					const sourceFile = sourceFiles[0]; // we typically only have one source file!
 					config.debug && log.info(`  + [${/(\.d\.ts(?:\.map)?)$/.exec(fileName)[0]}] ${fileName}`);
@@ -294,11 +307,19 @@ module.exports = async function ({ workspace /*, dependencies*/, taskUtil, optio
 							return `/// <reference path=".${
 								/\.d\.ts$/.test(dtsFile) ? dtsFile : dtsFile.replace(/\.ts$/, ".d.ts")
 							}"/>`;
-						})
-						.join("\n");
+						});
+					const typeDefPkgJsons = Object.values(typeDefs);
+					typeDefPkgJsons.forEach((typeDefPkgJson) => {
+						indexDtsContent.unshift(`//   - ${typeDefPkgJson.name}@${typeDefPkgJson.version}`);
+					});
+					indexDtsContent.unshift(
+						`// Generated with TypeScript ${ts.version || "unknown"} / ${
+							rootProject?.framework?.name || "UI5"
+						} ${rootProject?.framework?.version || "unknown"}${typeDefPkgJsons.length > 0 ? " using:" : ""}`
+					);
 					const indexDtsFile = resourceFactory.createResource({
 						path: `/index.d.ts`,
-						string: indexDtsContent
+						string: indexDtsContent.join("\n")
 					});
 					await workspace.write(indexDtsFile);
 				} else {
