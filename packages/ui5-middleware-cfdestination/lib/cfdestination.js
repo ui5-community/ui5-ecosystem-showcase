@@ -103,11 +103,15 @@ module.exports = async ({ resources, options, middlewareUtil }) => {
 
 	// check if destinations exist in .env file as JSON string
 	if (typeof effectiveOptions.destinations === "string" && effectiveOptions.destinations.startsWith("$env:")) {
-		const destinationsEnvKey = effectiveOptions.destinations.substring(5)
-		try {
-			effectiveOptions.destinations = JSON.parse(process.env[destinationsEnvKey])
-		} catch (error) {
-			throw new Error(`No valid destinations JSON in .env file at '${destinationsEnvKey}': ${error}`)
+		const destinationsEnvKey = effectiveOptions.destinations.substring(5).trim()
+		if (destinationsEnvKey && destinationsEnvKey in process.env) {
+			try {
+				effectiveOptions.destinations = JSON.parse(process.env[destinationsEnvKey])
+			} catch (error) {
+				throw new Error(`No valid destinations JSON in .env file at '${destinationsEnvKey}': ${error}`)
+			}
+		} else {
+			throw new Error(`No variable for 'destinations' with name '${destinationsEnvKey}' found in process.env!`)
 		}
 	}
 	// req-use app-router with config file to run in "shadow" mode
