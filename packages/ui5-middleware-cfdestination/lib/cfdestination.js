@@ -9,6 +9,8 @@ const proxy = require("express-http-proxy")
 const ct = require("content-type")
 const mime = require("mime-types")
 const portfinder = require("portfinder")
+const dotenv = require("dotenv")
+dotenv.config()
 
 /**
  * Determines the applications base path from the given resource collection.
@@ -99,6 +101,15 @@ module.exports = async ({ resources, options, middlewareUtil }) => {
 	// the default auth mechanism is set to none but the user can pass an auth method using the options
 	xsappConfig.authenticationMethod = effectiveOptions.authenticationMethod
 
+	// check if destinations exist in .env file as JSON string
+	if (typeof effectiveOptions.destinations === "string" && effectiveOptions.destinations.startsWith("$env:")) {
+		const destinationsEnvKey = effectiveOptions.destinations.substring(5)
+		try {
+			effectiveOptions.destinations = JSON.parse(process.env[destinationsEnvKey])
+		} catch (error) {
+			throw new Error(`No valid destinations JSON in .env file at '${destinationsEnvKey}': ${error}`)
+		}
+	}
 	// req-use app-router with config file to run in "shadow" mode
 	process.env.destinations = JSON.stringify(effectiveOptions.destinations || [])
 	let destinations
