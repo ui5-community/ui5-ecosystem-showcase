@@ -97,14 +97,19 @@ module.exports = async function ({ resources, options, middlewareUtil }) {
 
 			const resource = matchedResources?.[0];
 			if (resource) {
-				// transpile the resource
-				const code = await transpileAsync(resource);
+				// transpile the resource (+ error handling)
+				try {
+					const code = await transpileAsync(resource);
 
-				// send out transpiled source
-				let { contentType /*, charset */ } = middlewareUtil.getMimeInfo(".js");
-				res.setHeader("Content-Type", contentType);
-				res.end(normalizeLineFeeds(code));
-
+					// send out transpiled source
+					let { contentType /*, charset */ } = middlewareUtil.getMimeInfo(".js");
+					res.setHeader("Content-Type", contentType);
+					res.end(normalizeLineFeeds(code));
+				} catch (err) {
+					res.status(500);
+					console.error(err.message);
+					res.end(JSON.stringify(err, undefined, 2));
+				}
 				// stop processing the request
 				return;
 			}
