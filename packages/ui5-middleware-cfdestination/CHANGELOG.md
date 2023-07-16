@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.16...ui5-middleware-cfdestination@0.11.0) (2023-07-16)
+
+
+### Features
+
+* **ui5-middleware-cfdestination:** allow dest. to be maintained in .env ([#765](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/765)) ([d42db9e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d42db9ecc2115d3ae5964a654d6da6108aa2d78e))
+
+
+
+
+
 ## [0.10.16](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@0.10.15...ui5-middleware-cfdestination@0.10.16) (2023-07-01)
 
 

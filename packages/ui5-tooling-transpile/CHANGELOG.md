@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.19](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.18...ui5-tooling-transpile@0.7.19) (2023-07-16)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** add generation context info to index.d.ts ([#764](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/764)) ([03998d4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/03998d468c5d2516c79a6f98ca849997e6151fc3))
+* **ui5-tooling-transpile:** do not stop server for transpile issues ([#766](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/766)) ([2cbfd30](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2cbfd300de0ca0191dc07af70f92c45f5eb7a078))
+
+
+
+
+
 ## [0.7.18](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@0.7.17...ui5-tooling-transpile@0.7.18) (2023-07-05)
 
 
