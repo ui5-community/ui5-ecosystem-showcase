@@ -21,7 +21,16 @@ path to the cf-style approuter configuration file `xs-app.json`
 
 - `destinations`: `<Array of name/value pairs>`, default: `[]`
   - `name: <string>` destination name, matching the one used in routes in `xs-app.json`  
-  - `url: <string>` URI to the host to "proxy" to
+  - `url: <string>` URI to the host to "proxy" to  
+  
+  alternatively the destinations can also be defined in a `.env` file. They need to be in encoded in a single JSON string  
+  e.g.
+
+  ```properties
+  xsapp_dest = [{"name": "destination-name", "url": "<some-service-url>"}]
+  ```
+
+  To use these destinations they need to passed to the `destinations` option as a string `"$env:<key-in-env-file>"` (e.g. `destinations: "$env:xsapp_dest"`)
 
 - `allowServices`: `<boolean>`, default: `false`  
 allow [BTP services](https://discovery-center.cloud.sap/serviceCatalog?) to be used at runtime that are configured in `xs-app.json`  
