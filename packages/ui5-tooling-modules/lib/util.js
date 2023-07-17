@@ -25,6 +25,7 @@ const minimatch = require("minimatch");
 
 // local output cache of rollup
 const outputCache = {};
+const chunkToModulePath = {};
 
 // local cache of negative modules (avoid additional lookups)
 const modulesNegativeCache = [];
@@ -254,7 +255,8 @@ const that = (module.exports = {
 		let bundling = false;
 
 		try {
-			const modulePath = that.resolveModule(moduleName);
+			// in case of chunks are requested, we lookup the original module
+			const modulePath = chunkToModulePath[moduleName] ?? that.resolveModule(moduleName);
 			if (modulePath) {
 				if (!existsSync(modulePath)) {
 					log.error(`Bundle ${moduleName} doesn't exist at the resolved path ${modulePath}!`);
@@ -263,9 +265,10 @@ const that = (module.exports = {
 
 				const lastModified = new Date((await stat(modulePath)).mtime).getTime();
 				const moduleExt = path.extname(modulePath).toLowerCase();
+				const isChunk = !!chunkToModulePath[moduleName];
 
 				let cachedOutput = outputCache[moduleName];
-				if (skipCache || !cachedOutput || cachedOutput.lastModified !== lastModified) {
+				if (!isChunk && (skipCache || !cachedOutput || cachedOutput.lastModified !== lastModified)) {
 					// is the bundle a UI5 module?
 					const moduleContent = await readFile(modulePath, { encoding: "utf8" });
 
@@ -295,6 +298,12 @@ const that = (module.exports = {
 						// should be also given by the rollup configuration!
 						if (output.length > 1) {
 							debug && log.info(`The bundle for ${moduleName} has ${output.length} chunks!`);
+							// cleanup the chunkToModulePath mapping for the current module
+							Object.keys(chunkToModulePath).forEach((fileName) => {
+								if (chunkToModulePath[fileName] === modulePath) {
+									delete chunkToModulePath[fileName];
+								}
+							});
 							// store the individual output chunks as well in the cache
 							cachedOutput.chunks = {};
 							output.slice(1).forEach((chunk) => {
@@ -303,6 +312,7 @@ const that = (module.exports = {
 									code: chunk.code,
 									lastModified,
 								};
+								chunkToModulePath[fileName] = modulePath;
 							});
 						}
 					} else {
