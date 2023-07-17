@@ -96,7 +96,7 @@ const _this = (module.exports = {
 		}
 
 		// derive transformation parameters
-		const transformModulesToUI5 = config.transformModulesToUI5 ?? transformTypeScript;
+		const transformModulesToUI5 = config.transformModulesToUI5 ?? !!transformTypeScript;
 		const transformAsyncToPromise = config.transformAsyncToPromise ?? config.transpileAsync;
 
 		// return the normalized configuration object
@@ -227,12 +227,24 @@ const _this = (module.exports = {
 		// add the presets to enable transformation of ES modules to
 		// UI5 modules and ES classes to UI5 classes
 		if (configuration?.transformModulesToUI5) {
-			babelConfig.presets.push("transform-ui5");
+			// if the configuration option transformModulesToUI5 is an object
+			// it contains the configuration options for the plugin
+			if (typeof configuration.transformModulesToUI5 === "object") {
+				babelConfig.presets.push(["transform-ui5", configuration.transformModulesToUI5]);
+			} else {
+				babelConfig.presets.push("transform-ui5");
+			}
 		}
 
 		// add the preset to enable the transpiling of TS to JS
 		if (configuration?.transformTypeScript) {
-			babelConfig.presets.push("@babel/preset-typescript");
+			// if the configuration option transformTypeScript is an object
+			// it contains the configuration options for the plugin
+			if (typeof configuration.transformTypeScript === "object") {
+				babelConfig.presets.push(["@babel/preset-typescript", configuration.transformTypeScript]);
+			} else {
+				babelConfig.presets.push("@babel/preset-typescript");
+			}
 		}
 
 		// add plugin to remove console statements
