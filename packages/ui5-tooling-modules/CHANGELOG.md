@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.13](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.9.12...ui5-tooling-modules@0.9.13) (2023-07-17)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** re-enable chunks for middleware ([#767](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/767)) ([aaea4b0](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/aaea4b0691d6d5e2dc03e9c4715637b4de277d58))
+
+
+
+
+
 ## [0.9.12](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.9.11...ui5-tooling-modules@0.9.12) (2023-07-01)
 
 
