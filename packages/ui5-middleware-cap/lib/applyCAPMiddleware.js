@@ -2,6 +2,13 @@ const path = require("path");
 const fs = require("fs");
 
 // inspired by https://cap.cloud.sap/docs/node.js/cds-serve
+/**
+ * Applies the middlewares for the CAP server located in the given
+ * root directory to the given router.
+ * @param {import("express").Router} router Express Router instance
+ * @param {object} options configuration options
+ * @param {string} options.root root directory of the CAP server
+ */
 module.exports = async function applyCAPMiddleware(router, { root }) {
 	const options = Object.assign(
 		{
@@ -18,15 +25,14 @@ module.exports = async function applyCAPMiddleware(router, { root }) {
 	const cwd = process.cwd();
 	process.chdir(options.root);
 
-	// require the CAP server module
-	const cds = require("@sap/cds", {
+	// require the CAP server module (locally from the server root!)
+	const cdsModule = require.resolve("@sap/cds", {
 		paths: [options.root],
 	});
+	const cds = require(cdsModule);
 
 	// load the package.json for additional metadata
-	const pkgJson = require(path.join(options.root, "package.json"), {
-		paths: [options.root],
-	});
+	const pkgJson = require(path.join(options.root, "package.json"));
 
 	// rebuild the same logic as in @sap/cds/bin/server.js:
 	//   * load custom server if exists (to attach hooks)
@@ -34,9 +40,7 @@ module.exports = async function applyCAPMiddleware(router, { root }) {
 	//   ==> ASK: helper to start the server with all configs
 	//let serverModuleId = "@sap/cds";
 	if (fs.existsSync(path.join(options.root, "server.js"))) {
-		require(path.join(options.root, "server.js"), {
-			paths: [options.root],
-		});
+		require(path.join(options.root, "server.js"));
 	}
 	// here we by intention only use the dependencies and not the
 	// devDependencies as we want to simulate the later runtime
@@ -60,6 +64,7 @@ module.exports = async function applyCAPMiddleware(router, { root }) {
 	cds.emit("loaded", cds.model);
 
 	// bootstrap in-memory db
+	// eslint-disable-next-line jsdoc/require-jsdoc
 	async function _init(db) {
 		if (!options.in_memory || cds.requires.multitenancy) return db;
 		const fts = cds.requires.toggles && cds.resolve(cds.features.folders);
