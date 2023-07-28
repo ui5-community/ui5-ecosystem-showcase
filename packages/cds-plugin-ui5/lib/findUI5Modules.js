@@ -15,52 +15,58 @@ const log = require("./log");
  * Returns all UI5 modules from local apps and the project dependencies.
  * @param {object} options configuration options
  * @param {string} options.cwd current working directory
+ * @param {string} options.skipLocalApps skip local apps
+ * @param {string} options.skipDeps skip dependencies
  * @returns {Array<UI5Module>} array of UI5 module
  */
-module.exports = async function findApps({ cwd }) {
+module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps }) {
 	// lookup the app folder to determine local apps and UI5 apps
 	const localApps = new Set();
 	const appDirs = [];
-	const appDir = path.join(cwd, "app");
-	if (fs.existsSync(appDir)) {
-		fs.readdirSync(appDir, { withFileTypes: true })
-			.filter((f) => f.isDirectory())
-			.forEach((d) => localApps.add(d.name));
-		localApps.forEach((e) => {
-			const d = path.join(appDir, e);
-			if (fs.existsSync(path.join(d, "ui5.yaml"))) {
-				localApps.delete(e);
-				appDirs.push(d);
-			}
-		});
-	}
+	if (!skipLocalApps) {
+		const appDir = path.join(cwd, "app");
+		if (fs.existsSync(appDir)) {
+			fs.readdirSync(appDir, { withFileTypes: true })
+				.filter((f) => f.isDirectory())
+				.forEach((d) => localApps.add(d.name));
+			localApps.forEach((e) => {
+				const d = path.join(appDir, e);
+				if (fs.existsSync(path.join(d, "ui5.yaml"))) {
+					localApps.delete(e);
+					appDirs.push(d);
+				}
+			});
+		}
 
-	// look for a single app if no apps were found in the app directories
-	if (appDirs.length === 0) {
-		if (fs.existsSync(path.join(appDir, "ui5.yaml"))) {
-			appDirs.push(appDir);
+		// look for a single app if no apps were found in the app directories
+		if (appDirs.length === 0) {
+			if (fs.existsSync(path.join(appDir, "ui5.yaml"))) {
+				appDirs.push(appDir);
+			}
 		}
 	}
 
 	// lookup the UI5 modules in the project dependencies
-	const pkgJson = require(path.join(cwd, "package.json"));
-	const deps = [];
-	deps.push(...Object.keys(pkgJson.dependencies || {}));
-	deps.push(...Object.keys(pkgJson.devDependencies || {}));
-	//deps.push(...Object.keys(pkgJson.peerDependencies || {}));
-	//deps.push(...Object.keys(pkgJson.optionalDependencies || {}));
-	appDirs.push(
-		...deps.filter((dep) => {
-			try {
-				require.resolve(`${dep}/ui5.yaml`, {
-					paths: [cwd],
-				});
-				return true;
-			} catch (e) {
-				return false;
-			}
-		})
-	);
+	if (!skipDeps) {
+		const pkgJson = require(path.join(cwd, "package.json"));
+		const deps = [];
+		deps.push(...Object.keys(pkgJson.dependencies || {}));
+		deps.push(...Object.keys(pkgJson.devDependencies || {}));
+		//deps.push(...Object.keys(pkgJson.peerDependencies || {}));
+		//deps.push(...Object.keys(pkgJson.optionalDependencies || {}));
+		appDirs.push(
+			...deps.filter((dep) => {
+				try {
+					require.resolve(`${dep}/ui5.yaml`, {
+						paths: [cwd],
+					});
+					return true;
+				} catch (e) {
+					return false;
+				}
+			})
+		);
+	}
 
 	// if apps are available, attach the middlewares of the UI5 apps
 	// to the express of the CAP server via a express router
