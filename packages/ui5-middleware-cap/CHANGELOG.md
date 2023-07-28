@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cap@0.1.3...ui5-middleware-cap@0.1.4) (2023-07-28)
+
+
+### Bug Fixes
+
+* **ui5-middleware-cap:** proper dependency handling / decoupling ([#774](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/774)) ([2493a06](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2493a06ad04e9e55298a5cc8df5a638efc0604a1))
+
+
+
+
+
 ## [0.1.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cap@0.1.2...ui5-middleware-cap@0.1.3) (2023-07-01)
 
 

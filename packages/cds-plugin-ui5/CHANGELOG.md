@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.1.6...cds-plugin-ui5@0.1.7) (2023-07-28)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** allow to select apps or deps ([#775](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/775)) ([aeefb3f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/aeefb3f5aa70129489f90d684965ade6fc20ef53))
+* **cds-plugin-ui5:** proper dependency handling / decoupling ([#773](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/773)) ([9ef8bf3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9ef8bf3da69721a2d599a119407e53c1272fb884))
+
+
+
+
+
 ## [0.1.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.1.5...cds-plugin-ui5@0.1.6) (2023-07-11)
 
 
