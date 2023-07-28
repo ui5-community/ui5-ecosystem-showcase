@@ -1,6 +1,21 @@
 const path = require("path");
 
+/**
+ * @typedef UI5AppInfo
+ * @type {object}
+ * @property {Array<string>} pages root path of the module
+ */
+
 // inspired by https://github.com/SAP/karma-ui5/blob/main/lib/framework.js#L466-L522
+/**
+ * Applies the middlewares for the UI5 application located in the given
+ * root directory to the given router.
+ * @param {import("express").Router} router Express Router instance
+ * @param {object} options configuration options
+ * @param {string} options.basePath base path of the UI5 application
+ * @param {string} [options.configPath] path to the ui5.yaml (defaults to "${basePath}/ui5.yaml")
+ * @returns {UI5AppInfo} UI5 application information object
+ */
 module.exports = async function applyUI5Middleware(router, { basePath, configPath }) {
 	const { graphFromPackageDependencies } = await import("@ui5/project/graph");
 	const { createReaderCollection } = await import("@ui5/fs/resourceFactory");
@@ -54,5 +69,7 @@ module.exports = async function applyUI5Middleware(router, { basePath, configPat
 	});
 	await middlewareManager.applyMiddleware(router);
 
-	return await rootReader.byGlob("**/*.html");
+	return {
+		pages: await rootReader.byGlob("**/*.html"),
+	};
 };
