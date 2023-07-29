@@ -12,10 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const cookie_1 = require("cookie");
 const dotenv_1 = __importDefault(require("dotenv"));
 const cookieGetter_1 = __importDefault(require("./cookieGetter"));
-const log = require("@ui5/logger").getLogger("server:custommiddleware:onelogin");
 dotenv_1.default.config();
 var cookie;
 //First time to make sure we only output the parsed cookie once
@@ -36,6 +36,7 @@ var firstTime = true;
  * Custom UI5 Server middleware example
  *
  * @param {Object} parameters Parameters
+ * @param {module:@ui5/logger/Logger} parameters.log Logger instance
  * @param {Object} parameters.resources Resource collections
  * @param {module:@ui5/fs.AbstractReader} parameters.resources.
  *                                        all Reader or Collection to read resources of the
@@ -51,7 +52,7 @@ var firstTime = true;
  *                                                      if given in ui5.yaml
  * @returns {function} Middleware function to use
  */
-module.exports = function ({ options }) {
+module.exports = function ({ log, options }) {
     // eslint-disable-next-line func-names
     return function (req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -64,7 +65,7 @@ module.exports = function ({ options }) {
             else if (!cookie) {
                 log.info("Fetching cookie, hang on!");
                 try {
-                    const cookieObj = yield new cookieGetter_1.default().getCookie(options);
+                    const cookieObj = yield new cookieGetter_1.default().getCookie(log, options);
                     cookies = JSON.parse(cookieObj);
                     cookie = cookieObj;
                 }

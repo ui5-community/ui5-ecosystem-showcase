@@ -1,6 +1,4 @@
 /* eslint-disable no-undef */
-const log = require("@ui5/logger").getLogger("server:custommiddleware:stringreplace");
-
 const { createReplacePlaceholdersDestination, addPlaceholderString, getMimeInfo, readPlaceholderFromEnv, isPathOnContentTypeExcludeList } = require("./util");
 
 const minimatch = require("minimatch");
@@ -18,6 +16,7 @@ function isFresh(req, res) {
  * Custom UI5 Server middleware example
  *
  * @param {object} parameters Parameters
+ * @param {module:@ui5/logger/Logger} parameters.log Logger instance
  * @param {object} parameters.resources Resource collections
  * @param {module:@ui5/fs.AbstractReader} parameters.resources.all Reader or Collection to read resources of the
  *                                        root project and its dependencies
@@ -31,7 +30,7 @@ function isFresh(req, res) {
  *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
  * @returns {Function} Middleware function to use
  */
-module.exports = function createMiddleware({ resources, options, middlewareUtil }) {
+module.exports = function createMiddleware({ log, resources, options, middlewareUtil }) {
 	const isDebug = options.configuration && options.configuration.debug;
 
 	// get all environment variables

@@ -1,21 +1,12 @@
 /* eslint-disable jsdoc/check-param-names */
-const log = require("@ui5/logger").getLogger("builder:customtask:ui5-tooling-transpile");
 const path = require("path");
 const fs = require("fs");
-const resourceFactory = require("@ui5/fs").resourceFactory;
-const {
-	createConfiguration,
-	createBabelConfig,
-	normalizeLineFeeds,
-	determineResourceFSPath,
-	transformAsync,
-	determineProjectBasePath
-} = require("./util");
 
 /**
  * Custom task to transpile resources to JavaScript modules.
  *
  * @param {object} parameters Parameters
+ * @param {module:@ui5/logger/Logger} parameters.log Logger instance
  * @param {module:@ui5/fs.DuplexCollection} parameters.workspace DuplexCollection to read and write files
  * @param {module:@ui5/fs.AbstractReader} parameters.dependencies Reader or Collection to read dependency files
  * @param {object} parameters.taskUtil Specification Version dependent interface to a
@@ -26,10 +17,21 @@ const {
  * @param {string} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-module.exports = async function ({ workspace /*, dependencies*/, taskUtil, options }) {
+module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, options }) {
+	const {
+		createConfiguration,
+		createBabelConfig,
+		normalizeLineFeeds,
+		determineResourceFSPath,
+		transformAsync,
+		determineProjectBasePath
+	} = require("./util")(log);
+
 	const cwd = determineProjectBasePath(workspace) || process.cwd();
 	const config = createConfiguration(options?.configuration || {}, cwd);
 	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: false }, cwd);
+
+	const { resourceFactory } = taskUtil;
 
 	// TODO: should we accept the full glob pattern as param or just the file pattern?
 	const allResources = await workspace.byGlob(`/**/*${config.filePattern}`);

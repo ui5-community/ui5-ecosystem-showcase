@@ -12,12 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const sleep_promise_1 = __importDefault(require("sleep-promise"));
 const prompt = require("async-prompt");
 const playwright_chromium_1 = require("playwright-chromium");
-const log = require("@ui5/logger").getLogger("server:custommiddleware:onelogin");
 class CookieGetter {
-    getCookie(options) {
+    getCookie(log, options) {
         return __awaiter(this, void 0, void 0, function* () {
             let attr = {
                 url: options.configuration && options.configuration.path

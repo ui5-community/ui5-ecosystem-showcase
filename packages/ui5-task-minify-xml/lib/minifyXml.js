@@ -1,28 +1,28 @@
 /* eslint-disable no-unused-vars, no-useless-escape */
-const minify = require("minify-xml").minify;
 const defaultMinifyOptions = {
 	collapseWhitespaceInAttributeValues: true,
 };
 
 const attrValueRegExp = /(?<=<\/?[^\s\/>]+\b(?:\s+[^=\s>]+\s*=\s*(?:"[^"]*"|'[^']*'))*\s+[^\s=\/>]+\s*=\s*(["']))[^\1]*?(?=\1)/g;
-const log = require("@ui5/logger").getLogger("builder:customtask:minifyxml");
 
 /**
  * Task to minify XML views, fragments, controls, etc.
  *
  * @param {object} parameters Parameters
+ * @param {module:@ui5/logger/Logger} parameters.log Logger instance
  * @param {module:@ui5/fs.DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {module:@ui5/fs.AbstractReader} parameters.dependencies Reader or Collection to read dependency files
  * @param {object} parameters.options Options
  * @param {string} parameters.options.projectName Project name
  * @param {string} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @returns {Promise<undefined>} Promise resolving with undefined once data has been written
  */
-module.exports = async ({ workspace, dependencies, options }) => {
+module.exports = async ({ log, workspace, options }) => {
 	const config = options.configuration || {};
 
 	const fileExtensions = Array.isArray(config.fileExtensions) ? config.fileExtensions : [config.fileExtensions || "xml"];
 	const xmlResources = await workspace.byGlob(`**/*.+(${fileExtensions.join("|")})`);
+
+	const { minify } = await import("minify-xml");
 
 	await Promise.all(
 		xmlResources.map(async (resource) => {

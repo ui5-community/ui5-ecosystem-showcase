@@ -1,6 +1,5 @@
 {
   "name": "example_simpleproxy_and_onelogin",
-  "version": "0.0.1",
   "description": "UI5 application using custom middlewares and tasks",
   "private": true,
   "author": "Jakob Kjaer",
@@ -23,7 +22,7 @@
     }
   },
   "devDependencies": {
-    "@openui5/ts-types": "1.115.1",
+    "@openui5/ts-types": "1.116.0",
     "@ui5/cli": "^2.14.17",
     "@ui5/uiveri5": "^1.47.9",
     "@wdio/cli": "^7",
@@ -43,13 +42,6 @@
     "ui5-middleware-onelogin": "file:../../",
     "ui5-middleware-servestatic": "^0.3.7",
     "ui5-middleware-simpleproxy": "^0.7.6"
-  },
-  "ui5": {
-    "dependencies": [
-      "ui5-middleware-simpleproxy",
-      "ui5-middleware-onelogin",
-      "ui5-middleware-servestatic"
-    ]
   },
   "dependencies": {
     "async-prompt": "^1.0.1",

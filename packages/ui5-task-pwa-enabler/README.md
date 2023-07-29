@@ -54,7 +54,7 @@ Whatever you supply here will be copied to the `manifest.webmanifest` file, you 
 This is a example configuration for an advanced service worker and some custom manifest parameters.
 
 ```yaml
-specVersion: '1.0'
+specVersion: "3.0"
 metadata:
   name: openui5-sample-app
 type: application

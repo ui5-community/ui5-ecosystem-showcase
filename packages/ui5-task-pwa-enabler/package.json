@@ -1,6 +1,6 @@
 {
   "name": "ui5-task-pwa-enabler",
-  "version": "0.3.5",
+  "version": "2.0.0",
   "description": "UI5 task to make a PWA out of a UI5 application.",
   "author": "Mona Kaczun, Maximilian Moehl",
   "license": "Apache-2.0",
@@ -13,11 +13,8 @@
     "lint": "eslint lib"
   },
   "dependencies": {
-    "@ui5/fs": "^2.0.6",
+    "@ui5/fs": "^3.0.4",
     "mustache": "^4.2.0",
     "node-html-parser": "^6.1.5"
-  },
-  "ui5": {
-    "dependencies": []
   }
 }

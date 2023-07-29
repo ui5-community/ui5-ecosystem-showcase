@@ -1,8 +1,17 @@
 /* eslint-disable no-unused-vars, no-prototype-builtins */
 const utils = require("./utils");
-const log = require("@ui5/logger").getLogger("builder:customtask:i18ncheck");
 
-module.exports = async function ({ workspace, dependencies, options }) {
+/**
+ * Checks the i18n texts to be used
+ *
+ * @param {object} parameters Parameters
+ * @param {module:@ui5/logger/Logger} parameters.log Logger instance
+ * @param {module:@ui5/fs.DuplexCollection} parameters.workspace DuplexCollection to read and write files
+ * @param {object} parameters.options Options
+ * @param {string} parameters.options.configuration Configuration object
+ * @returns {Promise<undefined>} Promise resolving with undefined once data has been written
+ */
+module.exports = async function ({ log, workspace, options }) {
 	let propertyFilesP = workspace.byGlob(["**/i18n*.properties", "!**/node_modules/**"]);
 	let xmlviewFilesP = workspace.byGlob(["**/*.view.xml", "**/*.fragment.xml", "!**/node_modules/**"]);
 
@@ -19,7 +28,7 @@ module.exports = async function ({ workspace, dependencies, options }) {
 	let xmlviewFileContentsP = [];
 	for (let resource of xmlviewFiles) {
 		let asyncWorkForContent = async () => {
-			options.configuration && options.configuration.debug && log.info(`Reading XML view: ${resource.getPath()} .`);
+			options?.configuration?.debug && log.info(`Reading XML view: ${resource.getPath()} .`);
 			let fileContent = await resource.getString();
 			return utils.readI18nUsageFromXML(fileContent, resource.getPath());
 		};
@@ -51,7 +60,7 @@ module.exports = async function ({ workspace, dependencies, options }) {
 
 	for (let resource of propertyFiles) {
 		let asyncWorkForContent = async () => {
-			options.configuration && options.configuration.debug && log.info(`Reading i18n.properties file: ${resource.getPath()} .`);
+			options?.configuration?.debug && log.info(`Reading i18n.properties file: ${resource.getPath()} .`);
 			let fileContent = await resource.getString();
 			let properties = utils.readProperties(fileContent);
 

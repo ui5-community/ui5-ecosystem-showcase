@@ -21,11 +21,11 @@
     "directory": "showcases/ui5-tsapp-simple"
   },
   "devDependencies": {
-    "@types/openui5": "1.115.1",
-    "@typescript-eslint/eslint-plugin": "^5.60.1",
-    "@typescript-eslint/parser": "^5.60.1",
-    "@ui5/cli": "^3.3.0",
-    "eslint": "^8.44.0",
+    "@types/openui5": "1.116.1",
+    "@typescript-eslint/eslint-plugin": "^6.2.0",
+    "@typescript-eslint/parser": "^6.2.0",
+    "@ui5/cli": "^3.3.4",
+    "eslint": "^8.46.0",
     "rimraf": "^5.0.1",
     "typescript": "^5.1.6",
     "ui5-middleware-livereload": "workspace:^",

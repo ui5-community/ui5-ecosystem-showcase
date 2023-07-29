@@ -1,9 +1,4 @@
-const log = require("@ui5/logger").getLogger("builder:customtask:compileless");
 const less = require("less-openui5");
-const { ReaderCollectionPrioritized, DuplexCollection, fsInterface } = require("@ui5/fs");
-const Memory = require("@ui5/fs").adapters.Memory;
-const FileSystem = require("@ui5/fs").adapters.FileSystem;
-const resourceFactory = require("@ui5/fs/lib/resourceFactory");
 const minimatch = require("minimatch");
 
 /**
@@ -15,7 +10,7 @@ const minimatch = require("minimatch");
  * @returns {Promise<Array>} Promise resolving with the created css resources
  * @private
  */
-async function compileLess(lessResources, fs, isDebug) {
+async function compileLess(lessResources, fs, resourceFactory, isDebug, log) {
 	const lessBuilder = new less.Builder({ fs });
 
 	return Promise.all(
@@ -41,6 +36,7 @@ async function compileLess(lessResources, fs, isDebug) {
  * Custom task to compile less files in the app folder
  *
  * @param {object} parameters Parameters
+ * @param {module:@ui5/logger/Logger} parameters.log Logger instance
  * @param {module:@ui5/fs.DuplexCollection} parameters.workspace DuplexCollection to read and write files
  * @param {module:@ui5/fs.AbstractReader} parameters.dependencies Reader or Collection to read dependency files
  * @param {object} parameters.options Options
@@ -48,7 +44,7 @@ async function compileLess(lessResources, fs, isDebug) {
  * @param {string} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-module.exports = async function ({ workspace, dependencies, options }) {
+module.exports = async function ({ log, workspace, dependencies, options, taskUtil }) {
 	const appFolderPath = (options.configuration && options.configuration.appFolderPath) || "webapp";
 
 	const isDebug = options.configuration && options.configuration.debug;
@@ -60,6 +56,12 @@ module.exports = async function ({ workspace, dependencies, options }) {
 	if (lessToCompile.length === 0 && manifest && manifest["sap.ui5"] && manifest["sap.ui5"].resources && manifest["sap.ui5"].resources.css) {
 		lessToCompile = manifest["sap.ui5"].resources.css.map((style) => (style.uri ? style.uri.replace(".css", ".less") : null)).filter((lessfile) => !!lessfile);
 	}
+
+	const { default: DuplexCollection } = await import("@ui5/fs/DuplexCollection");
+	const { default: FileSystem } = await import("@ui5/fs/adapters/FileSystem");
+	const { default: Memory } = await import("@ui5/fs/adapters/Memory");
+	const { default: ReaderCollectionPrioritized } = await import("@ui5/fs/ReaderCollectionPrioritized");
+	const { default: fsInterface } = await import("@ui5/fs/fsInterface");
 
 	//create custom duplex collection where the webapp is in the "/" folder
 	//By default when building the workspace reader is in the vir dir "/resources/{namespace}
@@ -96,7 +98,7 @@ module.exports = async function ({ workspace, dependencies, options }) {
 		};
 	});
 
-	const compiledResources = await compileLess(lessResources, fsInterface(customCombo), isDebug);
+	const compiledResources = await compileLess(lessResources, fsInterface(customCombo), taskUtil.resourceFactory, isDebug, log);
 
 	return Promise.all(
 		compiledResources.map((resource) => {

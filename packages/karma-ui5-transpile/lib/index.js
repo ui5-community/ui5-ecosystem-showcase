@@ -1,10 +1,6 @@
-"use strict";
-
 const path = require("path");
 const fs = require("fs");
 const yaml = require("js-yaml");
-
-const { createConfiguration, createBabelConfig, transform } = require("ui5-tooling-transpile/lib/util");
 
 /**
  * This Karma preprocessor is used to transpile code respecting the
@@ -20,6 +16,13 @@ const { createConfiguration, createBabelConfig, transform } = require("ui5-tooli
  */
 function createPreprocessor(config, logger) {
 	const log = logger.create("preprocessor.ui5-transpile");
+	// create a UI5 logger compatible API for the Karma logger
+	["silly", "verbose", "perf", "info", "warn", "error", "silent"].forEach((level) => {
+		if (!log[level]) {
+			log[level] = log.debug;
+		}
+	});
+	const { createConfiguration, createBabelConfig, transform } = require("ui5-tooling-transpile/lib/util")(log);
 
 	// when using karma-ui5-transpile, karma-coverage preprocessor must not be used
 	// => follow-up instrumentation with karma-coverage leads to wrong results as the

@@ -102,8 +102,18 @@ if (generateSnapshots) {
 test.beforeEach(async (t) => {
 	t.context.tmpDir = path.resolve(cwd, generateSnapshots ? `test/__snap__` : `test/__dist__/${crypto.randomBytes(5).toString("hex")}`);
 	t.context.snapDir = snapDir;
+	const log = (t.context.log = { logs: [] });
+	["silly", "verbose", "perf", "info", "warn", "error", "silent"].forEach((level) => {
+		log[level] = function (...messages) {
+			log.logs.push(`[${level}] ${messages}`);
+		};
+	});
+	t.context.util = require("../lib/util")(log);
 });
 test.afterEach.always(async (t) => {
+	if (!t.passed) {
+		t.log(t.context.log.logs);
+	}
 	if (!generateSnapshots) {
 		rmSync(t.context.tmpDir, { recursive: true, force: true });
 	}
@@ -112,10 +122,9 @@ test.afterEach.always(async (t) => {
 
 test.serial("Verify generation of @stomp/stompjs", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp"));
-	const util = require("../lib/util");
 	const module = await getModule("@stomp/stompjs", {
 		tmpDir: t.context.tmpDir,
-		util,
+		util: t.context.util,
 	});
 	t.true(module.retVal.__esModule);
 	if (platform() !== "win32") {
@@ -125,10 +134,9 @@ test.serial("Verify generation of @stomp/stompjs", async (t) => {
 
 test.serial("Verify generation of jspdf", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp"));
-	const util = require("../lib/util");
 	const module = await getModule("jspdf", {
 		tmpDir: t.context.tmpDir,
-		util,
+		util: t.context.util,
 		scope: {
 			navigator: {},
 		},
@@ -141,10 +149,9 @@ test.serial("Verify generation of jspdf", async (t) => {
 
 test.serial("Verify generation of luxon", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp"));
-	const util = require("../lib/util");
 	const module = await getModule("luxon", {
 		tmpDir: t.context.tmpDir,
-		util,
+		util: t.context.util,
 	});
 	t.true(module.retVal.__esModule);
 	if (platform() !== "win32") {
@@ -154,10 +161,9 @@ test.serial("Verify generation of luxon", async (t) => {
 
 test.serial("Verify generation of XLSX", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp"));
-	const util = require("../lib/util");
 	const module = await getModule("xlsx", {
 		tmpDir: t.context.tmpDir,
-		util,
+		util: t.context.util,
 	});
 	t.true(module.retVal.__esModule);
 	if (platform() !== "win32") {
@@ -167,10 +173,9 @@ test.serial("Verify generation of XLSX", async (t) => {
 
 test.serial("Verify generation of moment", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp"));
-	const util = require("../lib/util");
 	const module = await getModule("moment", {
 		tmpDir: t.context.tmpDir,
-		util,
+		util: t.context.util,
 	});
 	t.true(module.retVal.__esModule);
 	if (platform() !== "win32") {
@@ -180,10 +185,9 @@ test.serial("Verify generation of moment", async (t) => {
 
 test.serial("Verify generation of cmis", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
-	const util = require("../lib/util");
 	const module = await getModule("cmis", {
 		tmpDir: t.context.tmpDir,
-		util,
+		util: t.context.util,
 		scope: {
 			atob: function () {},
 			btoa: function () {},
@@ -207,10 +211,9 @@ test.serial("Verify generation of cmis", async (t) => {
  */
 test.serial("Verify generation of ui5-app/bundledefs/firebase", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
-	const util = require("../lib/util");
 	const module = await getModule("ui5-app/bundledefs/firebase", {
 		tmpDir: t.context.tmpDir,
-		util,
+		util: t.context.util,
 		scope: {
 			fetch: function () {},
 		},
@@ -223,10 +226,9 @@ test.serial("Verify generation of ui5-app/bundledefs/firebase", async (t) => {
 
 test.serial("Verify generation of @supabase/supabase-js", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
-	const util = require("../lib/util");
 	const module = await getModule("@supabase/supabase-js", {
 		tmpDir: t.context.tmpDir,
-		util,
+		util: t.context.util,
 	});
 	t.true(module.retVal.__esModule);
 	if (platform() !== "win32") {
@@ -239,10 +241,9 @@ test.serial("Verify generation of @supabase/supabase-js", async (t) => {
  */
 test.serial("Verify generation of @octokit/core", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
-	const util = require("../lib/util");
 	const module = await getModule("@octokit/core", {
 		tmpDir: t.context.tmpDir,
-		util,
+		util: t.context.util,
 		scope: {
 			fetch: function () {},
 			XMLHttpRequest: function () {
@@ -261,10 +262,9 @@ test.serial("Verify generation of @octokit/core", async (t) => {
 
 test.serial("Verify generation of axios", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
-	const util = require("../lib/util");
 	const module = await getModule("axios", {
 		tmpDir: t.context.tmpDir,
-		util,
+		util: t.context.util,
 	});
 	t.true(module.retVal.__esModule);
 	if (platform() !== "win32") {
@@ -274,10 +274,9 @@ test.serial("Verify generation of axios", async (t) => {
 
 test.serial("Verify generation of @js-temporal/polyfill", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
-	const util = require("../lib/util");
 	const module = await getModule("@js-temporal/polyfill", {
 		tmpDir: t.context.tmpDir,
-		util,
+		util: t.context.util,
 	});
 	t.true(module.retVal.__esModule);
 	if (platform() !== "win32") {
@@ -287,10 +286,9 @@ test.serial("Verify generation of @js-temporal/polyfill", async (t) => {
 
 test.serial("Verify generation of ui5-app/bundledefs/react", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
-	const util = require("../lib/util");
 	const module = await getModule("ui5-app/bundledefs/react", {
 		tmpDir: t.context.tmpDir,
-		util,
+		util: t.context.util,
 	});
 	t.true(module.retVal.__esModule);
 	if (platform() !== "win32") {

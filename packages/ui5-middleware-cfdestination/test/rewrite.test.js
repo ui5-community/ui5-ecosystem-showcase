@@ -1,11 +1,7 @@
 const crypto = require("crypto")
 const fs = require("fs-extra")
-const nock = require("nock")
-const normalizer = require("@ui5/project").normalizer
 const path = require("path")
-const replace = require("replace-in-file")
 const request = require("supertest")
-const server = require("@ui5/server").server
 const { spawn } = require("child_process")
 const test = require("ava")
 const waitOn = require("wait-on")

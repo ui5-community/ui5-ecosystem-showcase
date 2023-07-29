@@ -2,16 +2,21 @@ const test = require("ava");
 const path = require("path");
 
 const cwd = process.cwd();
-test.beforeEach(async (/*t*/) => {
-	/* nothing to do */
+test.beforeEach(async (t) => {
+	const log = (t.context.log = { logs: [] });
+	["silly", "verbose", "perf", "info", "warn", "error", "silent"].forEach((level) => {
+		log[level] = function (...messages) {
+			log.logs.push(`[${level}] ${messages}`);
+		};
+	});
+	t.context.util = require("../lib/util")(log);
 });
 test.afterEach.always(async (/*t*/) => {
 	process.chdir(cwd);
 });
 
 test("simple creation of babel config", async (t) => {
-	const util = require("../lib/util");
-	const config = await util.createBabelConfig({
+	const config = await t.context.util.createBabelConfig({
 		configuration: {
 			debug: true
 		}
@@ -20,9 +25,8 @@ test("simple creation of babel config", async (t) => {
 });
 
 test("usage of external babel config", async (t) => {
-	const util = require("../lib/util");
 	process.chdir(path.join(__dirname, "__assets__/external"));
-	const config = await util.createBabelConfig({
+	const config = await t.context.util.createBabelConfig({
 		configuration: {
 			debug: true
 		}
@@ -31,14 +35,13 @@ test("usage of external babel config", async (t) => {
 });
 
 test("inject configuration options", async (t) => {
-	const util = require("../lib/util");
 	process.chdir(path.join(__dirname, "__assets__/typescript"));
 
 	// typescript, default config
-	let configuration = util.createConfiguration({
+	let configuration = t.context.util.createConfiguration({
 		debug: true
 	});
-	let babelConfig = await util.createBabelConfig({ configuration });
+	let babelConfig = await t.context.util.createBabelConfig({ configuration });
 	t.deepEqual(babelConfig, {
 		ignore: ["**/*.d.ts"],
 		plugins: [],
@@ -58,13 +61,13 @@ test("inject configuration options", async (t) => {
 	});
 
 	// typescript, custom transform-ui5 config
-	configuration = util.createConfiguration({
+	configuration = t.context.util.createConfiguration({
 		debug: true,
 		transformModulesToUI5: {
 			overridesToOverride: true
 		}
 	});
-	babelConfig = await util.createBabelConfig({ configuration });
+	babelConfig = await t.context.util.createBabelConfig({ configuration });
 	t.deepEqual(babelConfig, {
 		ignore: ["**/*.d.ts"],
 		plugins: [],
@@ -89,7 +92,7 @@ test("inject configuration options", async (t) => {
 	});
 
 	// typescript, custom typescript and transform-ui5 config
-	configuration = util.createConfiguration({
+	configuration = t.context.util.createConfiguration({
 		debug: true,
 		transformTypeScript: {
 			optimizeConstEnums: true
@@ -98,7 +101,7 @@ test("inject configuration options", async (t) => {
 			overridesToOverride: true
 		}
 	});
-	babelConfig = await util.createBabelConfig({ configuration });
+	babelConfig = await t.context.util.createBabelConfig({ configuration });
 	t.deepEqual(babelConfig, {
 		ignore: ["**/*.d.ts"],
 		plugins: [],

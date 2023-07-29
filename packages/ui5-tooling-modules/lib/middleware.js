@@ -1,10 +1,5 @@
-"use strict";
-
 /* eslint-disable no-unused-vars */
-const log = require("@ui5/logger").getLogger("server:custommiddleware:ui5-tooling-modules");
-
 const path = require("path");
-const { getResource } = require("./util");
 
 /**
  * @typedef {Object} [configuration] configuration
@@ -14,13 +9,7 @@ const { getResource } = require("./util");
  * Custom middleware to create the UI5 AMD-like bundles for used ES imports from node_modules.
  *
  * @param {object} parameters Parameters
- * @param {object} parameters.resources Resource collections
- * @param {module:@ui5/fs.AbstractReader} parameters.resources.all Reader or Collection to read resources of the
- *                                        root project and its dependencies
- * @param {module:@ui5/fs.AbstractReader} parameters.resources.rootProject Reader or Collection to read resources of
- *                                        the project the server is started in
- * @param {module:@ui5/fs.AbstractReader} parameters.resources.dependencies Reader or Collection to read resources of
- *                                        the projects dependencies
+ * @param {module:@ui5/logger/Logger} parameters.log Logger instance
  * @param {object} parameters.middlewareUtil Specification version dependent interface to a
  *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
  * @param {object} parameters.options Options
@@ -28,7 +17,9 @@ const { getResource } = require("./util");
  * @param {boolean} [parameters.options.configuration.skipCache] Flag whether the module cache for the bundles should be skipped
  * @returns {Function} Middleware function to use
  */
-module.exports = function ({ resources, options, middlewareUtil }) {
+module.exports = function ({ log, options, middlewareUtil }) {
+	const { getResource } = require("./util")(log);
+
 	const config = options.configuration || {};
 	log.verbose(`Starting ui5-tooling-modules-middleware`);
 

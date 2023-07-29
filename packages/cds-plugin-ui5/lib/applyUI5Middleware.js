@@ -56,7 +56,7 @@ module.exports = async function applyUI5Middleware(router, { basePath, configPat
 	};
 
 	// TODO: rework ui5-server API and make public
-	const MiddlewareManager = (await import("@ui5/server/internal/MiddlewareManager")).default;
+	const { default: MiddlewareManager } = await import("@ui5/server/internal/MiddlewareManager");
 	const middlewareManager = new MiddlewareManager({
 		graph,
 		rootProject,
