@@ -1,12 +1,19 @@
 # UI5 Tooling Extension for Transpiling JS/TS
 
-> **DISCLAIMER**: This is a community project and there is no official support for this package! Also the functionality may stop working at any time in future with newer versions of the UI5 tooling!
+> :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
 
 The tooling extension provides a middleware and a task which transpiles JavaScript or TypeScript code to ES5 by using Babel. A default Babel configuration will be provided by the tooling extension unless a inline Babel configuration in the `ui5.yaml` or any Babel configuration as described at [Babel config files](https://babeljs.io/docs/en/config-files) will be provided.
 
 The middleware handles by default all requests to `.js`-files. For JavaScript transpilation the matching `.js`-file or for TypeScript the matching `.ts`-file will be transpiled on-the-fly via Babel. The transpiled JavaScript file will inline the `sourcemap`. Because of the `sourcemap`, setting breakpoints in the **original (ES6+ or TS) source** will cause the debugger to stop **when the corresponding transpiled source code is reached**.
 
 The task finally transpiles the relevant source files during the UI5 Tooling build process. In case of TypeScript is enabled, for libraries, the task also generates the `d.ts`-files. For applications, this option can be enabled on demand.
+
+## Prerequisites
+
+- Requires at least [`@ui5/cli@3.0.0`](https://sap.github.io/ui5-tooling/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://sap.github.io/ui5-tooling/pages/Configuration/#specification-version-30))
+
+> :warning: **UI5 Tooling Compatibility**
+> All releases of this tooling extension using the major version `3.x.x` only support UI5 Tooling V3. Any previous release below version `3` (if available) also supports older versions of the UI5 Tooling. But it's strongly recommended to upgrade to UI5 Tooling V3!
 
 ## Install
 
@@ -76,19 +83,8 @@ Define the dependency in `$yourapp/package.json`:
     // ...
     "ui5-tooling-transpile": "*"
     // ...
-},
-"ui5": {
-  "dependencies": [
-    // ...
-    "ui5-tooling-transpile",
-    // ...
-  ]
 }
 ```
-
-> :warning: As the devDependencies are not recognized by the UI5 tooling, they need to be listed in the `ui5 > dependencies` array. In addition, once using the `ui5 > dependencies` array you need to list all UI5 tooling relevant dependencies.
->
-> :speech_balloon: For UI5 Tooling 3.0 the `ui5 > dependencies` section in the `package.json` isn't necessary anymore and can be removed.
 
 Register the task and middleware in your `$yourapp/ui5.yaml`:
 

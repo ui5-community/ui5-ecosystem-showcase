@@ -1,6 +1,15 @@
 # UI5 task for compiling less files 
 
+> :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
+
 Task for [ui5-builder](https://github.com/SAP/ui5-builder), enabling compiling of less files in your app folder.
+
+## Prerequisites
+
+- Requires at least [`@ui5/cli@3.0.0`](https://sap.github.io/ui5-tooling/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://sap.github.io/ui5-tooling/pages/Configuration/#specification-version-30))
+
+> :warning: **UI5 Tooling Compatibility**
+> All releases of this tooling extension using the major version `3.x.x` only support UI5 Tooling V3. Any previous release below version `3` (if available) also supports older versions of the UI5 Tooling. But it's strongly recommended to upgrade to UI5 Tooling V3!
 
 ## Install
 
@@ -28,17 +37,8 @@ npm install ui5-task-compileless --save-dev
     // ...
     "ui5-task-compileless": "*"
     // ...
-},
-"ui5": {
-  "dependencies": [
-    // ...
-    "ui5-task-compileless",
-    // ...
-  ]
 }
 ```
-
-> As the devDependencies are not recognized by the UI5 tooling, they need to be listed in the `ui5 > dependencies` array. In addition, once using the `ui5 > dependencies` array you need to list all UI5 tooling relevant dependencies.
 
 2. configure it in `$yourapp/ui5.yaml`:
 

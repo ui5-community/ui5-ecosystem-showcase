@@ -1,10 +1,16 @@
 # karma-ui5-transpile
 
+> :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
+
 The `karma-ui5-transpile` preprocessor transpiles code of UI5 projects having a `ui5.yaml` using `ui5-tooling-transpile` tooling extension. This preprocesser is usable for [Karma](https://karma-runner.github.io/) testing to transpile your resources before testing (i.e. TypeScript compilation for later usage of the [`karma-coverage`](https://www.npmjs.com/package/karma-coverage) plugin).
+
+## Prerequisites
+
+The plugin requires [`karma`](https://www.npmjs.com/package/karma) `>=6.4.1`, and [ui5-tooling-transpile](https://www.npmjs.com/package/ui5-tooling-transpile) `>=3.0.0`.
 
 ## Installation
 
-The plugin requires [`karma`](https://www.npmjs.com/package/karma) `>=6.4.1`, and [ui5-tooling-transpile](https://www.npmjs.com/package/ui5-tooling-transpile) `>=0.7.0`. You can install the required dependencies with the following command:
+You can install the required dependencies with the following command:
 
 ```sh
 npm install --save-dev karma karma-coverage ui5-tooling-transpile karma-ui5 karma-ui5-transpile

@@ -1,5 +1,7 @@
 # UI5 onelogin middleware
 
+> :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
+
 Middleware for [ui5-server](https://github.com/SAP/ui5-server), enabling a generic login support.
 
 The middleware will on first request try to login with the provided credentials and save the cookie for further requests. This uses playwright in a headless mode to run the login process.
@@ -8,6 +10,13 @@ The first request will take longer.
 This has been tested with Azure AD, Google, OpenAM and the SAP Gateway login pages.
 
 Merge requests with other login handlers are more than welcome via pull request.
+
+## Prerequisites
+
+- Requires at least [`@ui5/cli@3.0.0`](https://sap.github.io/ui5-tooling/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://sap.github.io/ui5-tooling/pages/Configuration/#specification-version-30))
+
+> :warning: **UI5 Tooling Compatibility**
+> All releases of this tooling extension using the major version `3.x.x` only support UI5 Tooling V3. Any previous release below version `3` (if available) also supports older versions of the UI5 Tooling. But it's strongly recommended to upgrade to UI5 Tooling V3!
 
 ## Install
 
@@ -50,17 +59,8 @@ You can choose to just add the url and let the rest be prompted in the terminal
     // ...
     "ui5-middleware-onelogin": "*"
     // ...
-},
-"ui5": {
-  "dependencies": [
-    // ...
-    "ui5-middleware-onelogin",
-    // ...
-  ]
 }
 ```
-
-> As the devDependencies are not recognized by the UI5 tooling, they need to be listed in the `ui5 > dependencies` array. In addition, once using the `ui5 > dependencies` array you need to list all UI5 tooling relevant dependencies.
 
 2. configure it in `$yourapp/ui5.yaml`:
 
@@ -79,4 +79,4 @@ server:
 
 ## License
 
-MIT
+This work is [dual-licensed](../../LICENSE) under Apache 2.0 and the Derived Beer-ware License. The official license will be Apache 2.0 but finally you can choose between one of them if you use this work.

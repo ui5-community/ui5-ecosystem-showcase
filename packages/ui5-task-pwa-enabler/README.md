@@ -1,6 +1,15 @@
 # UI5 task for turning a UI5 App into a PWA
 
-[What are Progressive Web Apps (PWAs)?](https://web.dev/progressive-web-apps/)
+> :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
+
+Progressive Web Apps are web applications that have been designed to be capable, reliable, and installable. These three pillars transform them into an experience that feels like a platform-specific application. Interested? Find out more here: [What are Progressive Web Apps (PWAs)?](https://web.dev/progressive-web-apps/).
+
+## Prerequisites
+
+- Requires at least [`@ui5/cli@3.0.0`](https://sap.github.io/ui5-tooling/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://sap.github.io/ui5-tooling/pages/Configuration/#specification-version-30))
+
+> :warning: **UI5 Tooling Compatibility**
+> All releases of this tooling extension using the major version `3.x.x` only support UI5 Tooling V3. Any previous release below version `3` (if available) also supports older versions of the UI5 Tooling. But it's strongly recommended to upgrade to UI5 Tooling V3!
 
 ## Install
 
@@ -41,11 +50,6 @@ Whatever you supply here will be copied to the `manifest.webmanifest` file, you 
 ```json
 "devDependencies": {
     "ui5-task-pwa-enabler": "*"
-},
-"ui5": {
-    "dependencies": [
-        "ui5-task-pwa-enabler"
-    ]
 }
 ```
 
@@ -107,4 +111,4 @@ your own fancy PWA.
 
 This work is [dual-licensed](../../LICENSE) under Apache 2.0 and the Derived Beer-ware License. The official license will be Apache 2.0 but finally you can choose between one of them if you use this work.
 
-When you like this stuff, buy [@vobu](https://twitter.com/vobu), [@maxmoehl](https://github.com/maxmoehl) or [@monakac](https://github.com/monakac) a beer or buy [@pmuessig](https://twitter.com/pmuessig) a coke when you see them.
+When you like this stuff, buy [@maxmoehl](https://github.com/maxmoehl) or [@monakac](https://github.com/monakac) a beer when you see them.

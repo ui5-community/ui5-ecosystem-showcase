@@ -2,6 +2,13 @@
 
 Middleware for [ui5-server](https://github.com/SAP/ui5-server), enabling proxy support.
 
+## Prerequisites
+
+- Requires at least [`@ui5/cli@3.0.0`](https://sap.github.io/ui5-tooling/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://sap.github.io/ui5-tooling/pages/Configuration/#specification-version-30))
+
+> :warning: **UI5 Tooling Compatibility**
+> All releases of this tooling extension using the major version `3.x.x` only support UI5 Tooling V3. Any previous release below version `3` (if available) also supports older versions of the UI5 Tooling. But it's strongly recommended to upgrade to UI5 Tooling V3!
+
 ## Install
 
 ```bash
@@ -44,17 +51,8 @@ In general, use of environment variables or values set in a `.env` file will ove
     // ...
     "ui5-middleware-simpleproxy": "*"
     // ...
-},
-"ui5": {
-  "dependencies": [
-    // ...
-    "ui5-middleware-simpleproxy",
-    // ...
-  ]
 }
 ```
-
-> As the devDependencies are not recognized by the UI5 tooling, they need to be listed in the `ui5 > dependencies` array. In addition, once using the `ui5 > dependencies` array you need to list all UI5 tooling relevant dependencies.
 
 2. configure it in `$yourapp/ui5.yaml`:
 
