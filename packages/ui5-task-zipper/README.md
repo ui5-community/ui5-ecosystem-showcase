@@ -1,6 +1,15 @@
 # UI5 task for zipping all project resources
 
+> :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
+
 Task for [ui5-builder](https://github.com/SAP/ui5-builder), enabling zipping.
+
+## Prerequisites
+
+- Requires at least [`@ui5/cli@3.0.0`](https://sap.github.io/ui5-tooling/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://sap.github.io/ui5-tooling/pages/Configuration/#specification-version-30))
+
+> :warning: **UI5 Tooling Compatibility**
+> All releases of this tooling extension using the major version `3.x.x` only support UI5 Tooling V3. Any previous release below version `3` (if available) also supports older versions of the UI5 Tooling. But it's strongly recommended to upgrade to UI5 Tooling V3!
 
 ## Install
 
@@ -35,32 +44,10 @@ Set this to `true` if you also want to include the dependencies (UI5 libraries) 
     // ...
     "ui5-task-zipper": "*"
     // ...
-},
-"ui5": {
-  "dependencies": [
-    // ...
-    "ui5-task-zipper",
-    // ...
-  ]
 }
 ```
 
-> As the devDependencies are not recognized by the UI5 tooling, they need to be listed in the `ui5 > dependencies` array. In addition, once using the `ui5 > dependencies` array you need to list all UI5 tooling relevant dependencies.
-
-2. configure it in `$yourapp/ui5.yaml` for UI5 tooling 2.x:
-
-```yaml
-builder:
-  customTasks:
-  - name: ui5-task-zipper
-    afterTask: uglify
-    configuration:
-      archiveName: "webapp"
-      additionalFiles:
-      - xs-app.json
-```
-
-or for UI5 tooling 3.x:
+2. configure it in `$yourapp/ui5.yaml`:
 
 ```yaml
 builder:
@@ -74,8 +61,6 @@ builder:
         "path/to/foo.js": "foo.js"  # file will be placed in root of ZIP file
         "path/to/files/bar.js": "some/custom/dir/bar.js"
 ```
-
-> :warning: For UI5 Tooling V3 the configuration `afterTask: uglify` needs to be adopted to `afterTask: generateVersionInfo`. This works for the UI5 Tooling V2 and V3.
 
 ### Select the dependencies to include
 

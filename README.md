@@ -1,6 +1,8 @@
 # ui5-ecosystem-showcase
 
-A repository showcasing the UI5 Tooling ecosystem idea.
+The repository showcasing the UI5 Tooling ecosystem possibilites. 
+
+> :warning: All tooling extensions only support UI5 Tooling **V3** only! The support for UI5 Tooling **V2** has been removed. All tooling extensions with **V3** support have the major version `3.x.x`, for the **V2** support please use the previous versions of the tooling extensions.
 
 [![OpenUI5 Community Slack (#tooling channel)](https://img.shields.io/badge/slack-join-44cc11.svg)](https://join-ui5-slack.herokuapp.com)
 

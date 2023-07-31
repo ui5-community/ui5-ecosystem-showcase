@@ -11,6 +11,10 @@ A sub-package **may** have an additional CONTRIBUTING.md file if needed.
 - A [Long-Term Support version](https://nodejs.org/en/about/releases/) of Node.js
 - (optional) [commitizen](https://github.com/commitizen/cz-cli#installing-the-command-line-tool) for managing commit messages.
 
+### Branches
+
+The development branch is the `main` branch. It only supports tooling extensions for UI5 Tooling **V3**. The tooling extensions which also support the older versions of the UI5 Tooling can be found in the [**V2** branch](https://github.com/ui5-community/ui5-ecosystem-showcase/tree/v2).
+
 ### Initial Setup
 
 The initial setup is trivial:

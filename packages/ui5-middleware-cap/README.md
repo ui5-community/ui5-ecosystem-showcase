@@ -1,9 +1,18 @@
 # ui5-middleware-cap
 
+> :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
+
 The `ui5-middleware-cap` is a UI5 tooling middleware which enables the integration of a CAP server into the UI5 development server via the CAP server express middlewares. In addition to the middleware the CAP server project needs to be added as dependency so that the server is detected and attached properly. The pre-defined routes in the CAP server are reused.
 
 > :construction: **Note**
 > This middleware is still work in progress and not final yet!
+
+## Prerequisites
+
+- Requires at least [`@ui5/cli@3.0.0`](https://sap.github.io/ui5-tooling/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://sap.github.io/ui5-tooling/pages/Configuration/#specification-version-30))
+
+> :warning: **UI5 Tooling Compatibility**
+> All releases of this tooling extension using the major version `3.x.x` only support UI5 Tooling V3. Any previous release below version `3` (if available) also supports older versions of the UI5 Tooling. But it's strongly recommended to upgrade to UI5 Tooling V3!
 
 ## Usage
 

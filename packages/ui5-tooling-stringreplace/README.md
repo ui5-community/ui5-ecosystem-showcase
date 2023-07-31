@@ -1,6 +1,15 @@
-# UI5 tooling extension middleware and task for replacing strings
+# UI5 Tooling Extension for Replacing Strings
+
+> :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
 
 Task and Middleware for [ui5-server](https://github.com/SAP/ui5-server), doing a live string replace on files matched by the includePatterns `files` array configuration option.
+
+## Prerequisites
+
+- Requires at least [`@ui5/cli@3.0.0`](https://sap.github.io/ui5-tooling/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://sap.github.io/ui5-tooling/pages/Configuration/#specification-version-30))
+
+> :warning: **UI5 Tooling Compatibility**
+> All releases of this tooling extension using the major version `3.x.x` only support UI5 Tooling V3. Any previous release below version `3` (if available) also supports older versions of the UI5 Tooling. But it's strongly recommended to upgrade to UI5 Tooling V3!
 
 ## Install
 
@@ -33,17 +42,8 @@ yarn add --dev ui5-tooling-stringreplace
     // ...
     "ui5-tooling-stringreplace": "*"
     // ...
-},
-"ui5": {
-  "dependencies": [
-    // ...
-    "ui5-tooling-stringreplace",
-    // ...
-  ]
 }
 ```
-
-> As the devDependencies are not recognized by the UI5 tooling, they need to be listed in the `ui5 > dependencies` array. In addition, once using the `ui5 > dependencies` array you need to list all UI5 tooling relevant dependencies.
 
 2. configure it in `$yourapp/ui5.yaml`:
 
