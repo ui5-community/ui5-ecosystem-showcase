@@ -260,18 +260,11 @@ importers:
 
   packages/ui5-middleware-webjars:
     dependencies:
-      '@ui5/server':
-        specifier: ^3.1.3
-        version: 3.1.3
       jszip:
         specifier: ^3.10.1
         version: 3.10.1
 
   packages/ui5-task-cachebuster:
-    dependencies:
-      '@ui5/fs':
-        specifier: ^3.0.4
-        version: 3.0.4
     devDependencies:
       '@ui5/cli':
         specifier: ^3.3.4
@@ -292,11 +285,7 @@ importers:
         specifier: ^7.4.6
         version: 7.4.6
 
-  packages/ui5-task-flatten-library:
-    dependencies:
-      '@ui5/logger':
-        specifier: ^3.0.0
-        version: 3.0.0
+  packages/ui5-task-flatten-library: {}
 
   packages/ui5-task-i18ncheck:
     dependencies:
@@ -312,9 +301,6 @@ importers:
 
   packages/ui5-task-pwa-enabler:
     dependencies:
-      '@ui5/fs':
-        specifier: ^3.0.4
-        version: 3.0.4
       mustache:
         specifier: ^4.2.0
         version: 4.2.0
@@ -324,9 +310,6 @@ importers:
 
   packages/ui5-task-zipper:
     dependencies:
-      '@ui5/fs':
-        specifier: ^3.0.4
-        version: 3.0.4
       yazl:
         specifier: ^2.5.1
         version: 2.5.1
@@ -364,9 +347,6 @@ importers:
       '@rollup/pluginutils':
         specifier: ^5.0.2
         version: 5.0.2(rollup@3.27.0)
-      '@ui5/fs':
-        specifier: ^3.0.4
-        version: 3.0.4
       espree:
         specifier: ^9.6.1
         version: 9.6.1
@@ -428,9 +408,6 @@ importers:
       '@babel/preset-typescript':
         specifier: ^7.22.5
         version: 7.22.5(@babel/core@7.22.9)
-      '@ui5/fs':
-        specifier: ^3.0.4
-        version: 3.0.4
       babel-plugin-transform-async-to-promises:
         specifier: ^0.8.18
         version: 0.8.18

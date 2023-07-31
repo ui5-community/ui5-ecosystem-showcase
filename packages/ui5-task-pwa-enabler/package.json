@@ -13,7 +13,6 @@
     "lint": "eslint lib"
   },
   "dependencies": {
-    "@ui5/fs": "^3.0.4",
     "mustache": "^4.2.0",
     "node-html-parser": "^6.1.5"
   }

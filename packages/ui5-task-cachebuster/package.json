@@ -22,9 +22,6 @@
     "verbose": true,
     "timeout": "5m"
   },
-  "dependencies": {
-    "@ui5/fs": "^3.0.4"
-  },
   "devDependencies": {
     "@ui5/cli": "^3.3.4",
     "ava": "^5.3.1"

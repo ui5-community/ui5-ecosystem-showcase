@@ -13,7 +13,6 @@
     "@babel/core": "^7.22.9",
     "@babel/preset-env": "^7.22.9",
     "@babel/preset-typescript": "^7.22.5",
-    "@ui5/fs": "^3.0.4",
     "babel-plugin-transform-async-to-promises": "^0.8.18",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "babel-preset-transform-ui5": "^7.2.4",

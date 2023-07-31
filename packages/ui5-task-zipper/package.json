@@ -23,7 +23,6 @@
     "timeout": "5m"
   },
   "dependencies": {
-    "@ui5/fs": "^3.0.4",
     "yazl": "^2.5.1"
   },
   "devDependencies": {
