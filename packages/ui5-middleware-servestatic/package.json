@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-servestatic",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "UI5 simple proxy middleware",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",

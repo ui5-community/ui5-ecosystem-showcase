@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-lib@0.2.5...ui5-lib@0.3.0) (2023-07-31)
+
+
+### Features
+
+* migration to UI5 Tooling V3 ([#776](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/776)) ([c03bc0e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c03bc0e8a8d0b55d38510164c885022e11b597e6))
+
+
+
+
+
 ## [0.2.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-lib@0.2.4...ui5-lib@0.2.5) (2023-07-03)
 
 **Note:** Version bump only for package ui5-lib

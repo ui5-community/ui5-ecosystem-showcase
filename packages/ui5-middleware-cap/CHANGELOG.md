@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cap@0.1.4...ui5-middleware-cap@3.0.0) (2023-07-31)
+
+
+### Features
+
+* migration to UI5 Tooling V3 ([#776](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/776)) ([c03bc0e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c03bc0e8a8d0b55d38510164c885022e11b597e6))
+* prepare versions for release for UI5 Tooling V3 ([#778](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/778)) ([5d2da55](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5d2da55e77513e026377aca799c413560c651f56)), closes [#770](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/770)
+
+
+### BREAKING CHANGES
+
+* The support for UI5 Tooling V2 has been removed
+
+
+
+
+
 ## [0.1.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cap@0.1.3...ui5-middleware-cap@0.1.4) (2023-07-28)
 
 

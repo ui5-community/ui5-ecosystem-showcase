@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-cachebuster@0.3.10...ui5-task-cachebuster@3.0.0) (2023-07-31)
+
+
+### Bug Fixes
+
+* more cleanup of obsolete deps ([#779](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/779)) ([221a843](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/221a843ed1693f8db4233c5c6ea03ce368374046))
+
+
+### Features
+
+* migration to UI5 Tooling V3 ([#776](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/776)) ([c03bc0e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c03bc0e8a8d0b55d38510164c885022e11b597e6))
+* prepare versions for release for UI5 Tooling V3 ([#778](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/778)) ([5d2da55](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5d2da55e77513e026377aca799c413560c651f56)), closes [#770](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/770)
+
+
+### BREAKING CHANGES
+
+* The support for UI5 Tooling V2 has been removed
+
+
+
+
+
 ## [0.3.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-cachebuster@0.3.9...ui5-task-cachebuster@0.3.10) (2023-07-01)
 
 
