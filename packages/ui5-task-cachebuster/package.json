@@ -1,6 +1,6 @@
 {
   "name": "ui5-task-cachebuster",
-  "version": "0.3.10",
+  "version": "2.0.0",
   "description": "Task for the UI5 tooling for simple cachebusting for standalone applications.",
   "author": "Hanna Olbert",
   "license": "Apache-2.0",
@@ -23,14 +23,10 @@
     "timeout": "5m"
   },
   "dependencies": {
-    "@ui5/fs": "^2.0.6",
-    "@ui5/logger": "^2.0.1"
+    "@ui5/fs": "^3.0.4"
   },
   "devDependencies": {
-    "@ui5/cli": "^2.14.19",
+    "@ui5/cli": "^3.3.4",
     "ava": "^5.3.1"
-  },
-  "ui5": {
-    "dependencies": []
   }
 }

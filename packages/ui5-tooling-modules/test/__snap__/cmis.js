@@ -8,10 +8,7 @@ sap.ui.define((function () { 'use strict';
 		if (typeof f == "function") {
 			var a = function a () {
 				if (this instanceof a) {
-					var args = [null];
-					args.push.apply(args, arguments);
-					var Ctor = Function.bind.apply(f, args);
-					return new Ctor();
+	        return Reflect.construct(f, arguments, this.constructor);
 				}
 				return f.apply(this, arguments);
 			};

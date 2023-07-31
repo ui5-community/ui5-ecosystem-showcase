@@ -1,10 +1,8 @@
 const crypto = require("crypto")
 const fs = require("fs-extra")
 const nock = require("nock")
-const normalizer = require("@ui5/project").normalizer
 const path = require("path")
 const request = require("supertest")
-const server = require("@ui5/server").server
 const { spawn } = require("child_process")
 const test = require("ava")
 const waitOn = require("wait-on")
@@ -216,8 +214,11 @@ test("(multitenant) auth in yaml, xsuaa auth in route -> route is protected", as
 	// start ui5-app with modified route(s) and config - in this test case, do things programmatically
 	// with the ui5 server api instead of spawning sub-processes
 	// reason: above DNS mock; nock needs to attach to the current running process and can't attach to a sub-process
-	const tree = await normalizer.generateProjectTree({ cwd: t.context.tmpDir })
-	let serve = await server.serve(tree, { port: t.context.port.ui5Sserver })
+	const { graphFromPackageDependencies } = await import("@ui5/project/graph")
+	const graph = await graphFromPackageDependencies({ cwd: t.context.tmpDir })
+
+	const server = await import("@ui5/server")
+	let serve = await server.serve(graph, { port: t.context.port.ui5Sserver })
 
 	// wait for ui5 server and app router to boot
 	// -- probably don't need this as we're `await`ing server.serve() above?

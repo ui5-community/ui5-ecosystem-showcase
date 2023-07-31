@@ -1,10 +1,10 @@
-specVersion: "2.6"
+specVersion: "3.0"
 metadata:
   name: "ui5.ecosystem.demo.tslib"
 type: library
 framework:
   name: OpenUI5
-  version: "1.115.1"
+  version: "1.116.0"
   libraries:
     - name: sap.ui.core
     - name: themelib_sap_fiori_3

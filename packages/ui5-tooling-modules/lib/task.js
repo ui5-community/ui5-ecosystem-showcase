@@ -1,11 +1,4 @@
-"use strict";
-
 /* eslint-disable no-unused-vars, no-empty */
-const log = require("@ui5/logger").getLogger("builder:customtask:ui5-tooling-modules");
-const resourceFactory = require("@ui5/fs").resourceFactory;
-
-const { getResource, resolveModule, listResources } = require("./util");
-
 const { readFileSync, existsSync } = require("fs");
 const espree = require("espree");
 const estraverse = require("estraverse");
@@ -16,8 +9,8 @@ const escodegen = require("@javascript-obfuscator/escodegen"); // escodegen itse
  * Custom task to create the UI5 AMD-like bundles for used ES imports from node_modules.
  *
  * @param {object} parameters Parameters
+ * @param {module:@ui5/logger/Logger} parameters.log Logger instance
  * @param {module:@ui5/fs.DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {module:@ui5/fs.AbstractReader} parameters.dependencies Reader or Collection to read dependency files
  * @param {object} parameters.taskUtil Specification Version dependent interface to a
  *                [TaskUtil]{@link module:@ui5/builder.tasks.TaskUtil} instance
  * @param {object} parameters.options Options
@@ -30,10 +23,14 @@ const escodegen = require("@javascript-obfuscator/escodegen"); // escodegen itse
  * @param {boolean} [parameters.options.configuration.providedDependencies] List of provided dependencies which should not be processed
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-module.exports = async function ({ workspace, dependencies, taskUtil, options }) {
+module.exports = async function ({ log, workspace, taskUtil, options }) {
+	const { getResource, resolveModule, listResources } = require("./util")(log);
+
 	const config = options.configuration || {};
 	const removeScopePrefix = config?.removeScopePrefix || config?.removeScopePreceder;
 	const providedDependencies = Array.isArray(config?.providedDependencies) ? config?.providedDependencies : [];
+
+	const { resourceFactory } = taskUtil;
 
 	// collector for unique dependencies and resources
 	//const uniqueNPMPackages = new Set();

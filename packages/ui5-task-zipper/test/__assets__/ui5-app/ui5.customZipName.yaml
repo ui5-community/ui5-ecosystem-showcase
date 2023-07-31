@@ -1,10 +1,10 @@
-specVersion: "2.5"
+specVersion: "3.0"
 metadata:
   name: ui5-app
 type: application
 framework:
   name: OpenUI5
-  version: "1.115.1"
+  version: "1.116.0"
   libraries:
     - name: sap.m
     - name: sap.ui.core
@@ -13,6 +13,6 @@ framework:
 builder:
   customTasks:
     - name: ui5-task-zipper
-      afterTask: uglify
+      afterTask: generateVersionInfo
       configuration:
         archiveName: "customZipName"

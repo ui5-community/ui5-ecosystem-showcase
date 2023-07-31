@@ -1,7 +1,5 @@
 const path = require("path");
 const yazl = require("yazl");
-const { resourceFactory, ReaderCollection } = require("@ui5/fs");
-const log = require("@ui5/logger").getLogger("builder:customtask:zipper");
 
 /**
  * Determines the project name from the given resource collection.
@@ -27,6 +25,7 @@ const determineProjectName = (collection) => {
  * Zips the application content of the output folder
  *
  * @param {object} parameters Parameters
+ * @param {module:@ui5/logger/Logger} parameters.log Logger instance
  * @param {module:@ui5/fs.DuplexCollection} parameters.workspace DuplexCollection to read and write files
  * @param {module:@ui5/fs.AbstractReader} parameters.dependencies Reader or Collection to read dependency files
  * @param {object} parameters.options Options
@@ -37,7 +36,7 @@ const determineProjectName = (collection) => {
  * @param {object} parameters.taskUtil the task utilities
  * @returns {Promise<undefined>} Promise resolving with undefined once data has been written
  */
-module.exports = async function ({ workspace, dependencies, options, taskUtil }) {
+module.exports = async function ({ log, workspace, dependencies, options, taskUtil }) {
 	const { OmitFromBuildResult } = taskUtil.STANDARD_TAGS;
 
 	// debug mode?
@@ -50,6 +49,7 @@ module.exports = async function ({ workspace, dependencies, options, taskUtil })
 	const zipName = `${defaultName || options.projectNamespace.replace(/\//g, "")}.zip`;
 
 	// determine the dependencies resource collection to be included
+	const { default: ReaderCollection } = await import("@ui5/fs/ReaderCollection");
 	const deps =
 		includeDependencies === true
 			? dependencies
@@ -115,7 +115,7 @@ module.exports = async function ({ workspace, dependencies, options, taskUtil })
 		zip.end();
 	}
 
-	const res = resourceFactory.createResource({
+	const res = taskUtil.resourceFactory.createResource({
 		path: `/${zipName}`,
 		stream: zip.outputStream,
 	});

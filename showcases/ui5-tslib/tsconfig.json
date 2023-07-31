@@ -9,7 +9,7 @@
     "strictPropertyInitialization": false,
     "rootDir": "./",
     "paths": {
-      "ui5/ecosystem/demo/tslib/*": ["./src/ui5/ecosystem/demo/tslib/*"]
+      "ui5/ecosystem/demo/tslib/*": ["./src/*"]
     }
   },
   "include": ["./src/**/*", "./test/**/*"]

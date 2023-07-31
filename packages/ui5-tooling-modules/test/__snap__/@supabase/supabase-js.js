@@ -15,7 +15,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return Object.freeze(n);
     }
 
-    var __awaiter$d = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$9 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -30,7 +30,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             _fetch = customFetch;
         }
         else if (typeof fetch === 'undefined') {
-            _fetch = (...args) => __awaiter$d(void 0, void 0, void 0, function* () { return yield (yield Promise.resolve().then(function () { return browserPonyfill; })).fetch(...args); });
+            _fetch = (...args) => __awaiter$9(void 0, void 0, void 0, function* () { return yield (yield Promise.resolve().then(function () { return browserPonyfill; })).fetch(...args); });
         }
         else {
             _fetch = fetch;
@@ -61,7 +61,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    var __awaiter$c = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$8 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -90,7 +90,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          */
         invoke(functionName, options = {}) {
             var _a;
-            return __awaiter$c(this, void 0, void 0, function* () {
+            return __awaiter$8(this, void 0, void 0, function* () {
                 try {
                     const { headers, method, body: functionArgs } = options;
                     let _headers = {};
@@ -2650,7 +2650,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return value;
     };
 
-    var __awaiter$b = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$7 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -2812,7 +2812,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             return this.presence.state;
         }
         track(payload, opts = {}) {
-            return __awaiter$b(this, void 0, void 0, function* () {
+            return __awaiter$7(this, void 0, void 0, function* () {
                 return yield this.send({
                     type: 'presence',
                     event: 'track',
@@ -2821,7 +2821,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             });
         }
         untrack(opts = {}) {
-            return __awaiter$b(this, void 0, void 0, function* () {
+            return __awaiter$7(this, void 0, void 0, function* () {
                 return yield this.send({
                     type: 'presence',
                     event: 'untrack',
@@ -3096,7 +3096,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    var __awaiter$a = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$6 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -3175,7 +3175,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             this.decode = (options === null || options === void 0 ? void 0 : options.decode)
                 ? options.decode
                 : this.serializer.decode.bind(this.serializer);
-            this.reconnectTimer = new Timer(() => __awaiter$a(this, void 0, void 0, function* () {
+            this.reconnectTimer = new Timer(() => __awaiter$6(this, void 0, void 0, function* () {
                 this.disconnect();
                 this.connect();
             }), this.reconnectAfterMs);
@@ -3228,7 +3228,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param channel A RealtimeChannel instance
          */
         removeChannel(channel) {
-            return __awaiter$a(this, void 0, void 0, function* () {
+            return __awaiter$6(this, void 0, void 0, function* () {
                 const status = yield channel.unsubscribe();
                 if (this.channels.length === 0) {
                     this.disconnect();
@@ -3240,7 +3240,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * Unsubscribes and removes all channels
          */
         removeAllChannels() {
-            return __awaiter$a(this, void 0, void 0, function* () {
+            return __awaiter$6(this, void 0, void 0, function* () {
                 const values_1 = yield Promise.all(this.channels.map((channel) => channel.unsubscribe()));
                 this.disconnect();
                 return values_1;
@@ -3499,7 +3499,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    var __awaiter$9 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$5 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -3514,21 +3514,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             _fetch = customFetch;
         }
         else if (typeof fetch === 'undefined') {
-            _fetch = (...args) => __awaiter$9(void 0, void 0, void 0, function* () { return yield (yield Promise.resolve().then(function () { return browserPonyfill; })).fetch(...args); });
+            _fetch = (...args) => __awaiter$5(void 0, void 0, void 0, function* () { return yield (yield Promise.resolve().then(function () { return browserPonyfill; })).fetch(...args); });
         }
         else {
             _fetch = fetch;
         }
         return (...args) => _fetch(...args);
     };
-    const resolveResponse = () => __awaiter$9(void 0, void 0, void 0, function* () {
+    const resolveResponse = () => __awaiter$5(void 0, void 0, void 0, function* () {
         if (typeof Response === 'undefined') {
             return (yield Promise.resolve().then(function () { return browserPonyfill; })).Response;
         }
         return Response;
     });
 
-    var __awaiter$8 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$4 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -3538,7 +3538,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         });
     };
     const _getErrorMessage$1 = (err) => err.msg || err.message || err.error_description || err.error || JSON.stringify(err);
-    const handleError$1 = (error, reject) => __awaiter$8(void 0, void 0, void 0, function* () {
+    const handleError$1 = (error, reject) => __awaiter$4(void 0, void 0, void 0, function* () {
         const Res = yield resolveResponse();
         if (error instanceof Res) {
             error
@@ -3564,7 +3564,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return Object.assign(Object.assign({}, params), parameters);
     };
     function _handleRequest$1(fetcher, method, url, options, parameters, body) {
-        return __awaiter$8(this, void 0, void 0, function* () {
+        return __awaiter$4(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
                 fetcher(url, _getRequestParams$1(method, options, parameters, body))
                     .then((result) => {
@@ -3580,27 +3580,27 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         });
     }
     function get(fetcher, url, options, parameters) {
-        return __awaiter$8(this, void 0, void 0, function* () {
+        return __awaiter$4(this, void 0, void 0, function* () {
             return _handleRequest$1(fetcher, 'GET', url, options, parameters);
         });
     }
     function post(fetcher, url, body, options, parameters) {
-        return __awaiter$8(this, void 0, void 0, function* () {
+        return __awaiter$4(this, void 0, void 0, function* () {
             return _handleRequest$1(fetcher, 'POST', url, options, parameters, body);
         });
     }
     function put(fetcher, url, body, options, parameters) {
-        return __awaiter$8(this, void 0, void 0, function* () {
+        return __awaiter$4(this, void 0, void 0, function* () {
             return _handleRequest$1(fetcher, 'PUT', url, options, parameters, body);
         });
     }
     function remove(fetcher, url, body, options, parameters) {
-        return __awaiter$8(this, void 0, void 0, function* () {
+        return __awaiter$4(this, void 0, void 0, function* () {
             return _handleRequest$1(fetcher, 'DELETE', url, options, parameters, body);
         });
     }
 
-    var __awaiter$7 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$3 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -3637,7 +3637,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param fileBody The body of the file to be stored in the bucket.
          */
         uploadOrUpdate(method, path, fileBody, fileOptions) {
-            return __awaiter$7(this, void 0, void 0, function* () {
+            return __awaiter$3(this, void 0, void 0, function* () {
                 try {
                     let body;
                     const options = Object.assign(Object.assign({}, DEFAULT_FILE_OPTIONS), fileOptions);
@@ -3685,7 +3685,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param fileBody The body of the file to be stored in the bucket.
          */
         upload(path, fileBody, fileOptions) {
-            return __awaiter$7(this, void 0, void 0, function* () {
+            return __awaiter$3(this, void 0, void 0, function* () {
                 return this.uploadOrUpdate('POST', path, fileBody, fileOptions);
             });
         }
@@ -3696,7 +3696,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param fileBody The body of the file to be stored in the bucket.
          */
         uploadToSignedUrl(path, token, fileBody, fileOptions) {
-            return __awaiter$7(this, void 0, void 0, function* () {
+            return __awaiter$3(this, void 0, void 0, function* () {
                 const cleanPath = this._removeEmptyFolders(path);
                 const _path = this._getFinalPath(cleanPath);
                 const url = new URL(this.url + `/object/upload/sign/${_path}`);
@@ -3750,7 +3750,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param path The file path, including the current file name. For example `folder/image.png`.
          */
         createSignedUploadUrl(path) {
-            return __awaiter$7(this, void 0, void 0, function* () {
+            return __awaiter$3(this, void 0, void 0, function* () {
                 try {
                     let _path = this._getFinalPath(path);
                     const data = yield post(this.fetch, `${this.url}/object/upload/sign/${_path}`, {}, { headers: this.headers });
@@ -3776,7 +3776,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param fileBody The body of the file to be stored in the bucket.
          */
         update(path, fileBody, fileOptions) {
-            return __awaiter$7(this, void 0, void 0, function* () {
+            return __awaiter$3(this, void 0, void 0, function* () {
                 return this.uploadOrUpdate('PUT', path, fileBody, fileOptions);
             });
         }
@@ -3787,7 +3787,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param toPath The new file path, including the new file name. For example `folder/image-new.png`.
          */
         move(fromPath, toPath) {
-            return __awaiter$7(this, void 0, void 0, function* () {
+            return __awaiter$3(this, void 0, void 0, function* () {
                 try {
                     const data = yield post(this.fetch, `${this.url}/object/move`, { bucketId: this.bucketId, sourceKey: fromPath, destinationKey: toPath }, { headers: this.headers });
                     return { data, error: null };
@@ -3807,7 +3807,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param toPath The new file path, including the new file name. For example `folder/image-copy.png`.
          */
         copy(fromPath, toPath) {
-            return __awaiter$7(this, void 0, void 0, function* () {
+            return __awaiter$3(this, void 0, void 0, function* () {
                 try {
                     const data = yield post(this.fetch, `${this.url}/object/copy`, { bucketId: this.bucketId, sourceKey: fromPath, destinationKey: toPath }, { headers: this.headers });
                     return { data: { path: data.Key }, error: null };
@@ -3829,7 +3829,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param options.transform Transform the asset before serving it to the client.
          */
         createSignedUrl(path, expiresIn, options) {
-            return __awaiter$7(this, void 0, void 0, function* () {
+            return __awaiter$3(this, void 0, void 0, function* () {
                 try {
                     let _path = this._getFinalPath(path);
                     let data = yield post(this.fetch, `${this.url}/object/sign/${_path}`, Object.assign({ expiresIn }, ((options === null || options === void 0 ? void 0 : options.transform) ? { transform: options.transform } : {})), { headers: this.headers });
@@ -3856,7 +3856,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param options.download triggers the file as a download if set to true. Set this parameter as the name of the file if you want to trigger the download with a different filename.
          */
         createSignedUrls(paths, expiresIn, options) {
-            return __awaiter$7(this, void 0, void 0, function* () {
+            return __awaiter$3(this, void 0, void 0, function* () {
                 try {
                     const data = yield post(this.fetch, `${this.url}/object/sign/${this.bucketId}`, { expiresIn, paths }, { headers: this.headers });
                     const downloadQueryParam = (options === null || options === void 0 ? void 0 : options.download)
@@ -3884,7 +3884,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param options.transform Transform the asset before serving it to the client.
          */
         download(path, options) {
-            return __awaiter$7(this, void 0, void 0, function* () {
+            return __awaiter$3(this, void 0, void 0, function* () {
                 const wantsTransformation = typeof (options === null || options === void 0 ? void 0 : options.transform) !== 'undefined';
                 const renderPath = wantsTransformation ? 'render/image/authenticated' : 'object';
                 const transformationQuery = this.transformOptsToQueryString((options === null || options === void 0 ? void 0 : options.transform) || {});
@@ -3943,7 +3943,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param paths An array of files to delete, including the path and file name. For example [`'folder/image.png'`].
          */
         remove(paths) {
-            return __awaiter$7(this, void 0, void 0, function* () {
+            return __awaiter$3(this, void 0, void 0, function* () {
                 try {
                     const data = yield remove(this.fetch, `${this.url}/object/${this.bucketId}`, { prefixes: paths }, { headers: this.headers });
                     return { data, error: null };
@@ -4020,7 +4020,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param path The folder path.
          */
         list(path, options, parameters) {
-            return __awaiter$7(this, void 0, void 0, function* () {
+            return __awaiter$3(this, void 0, void 0, function* () {
                 try {
                     const body = Object.assign(Object.assign(Object.assign({}, DEFAULT_SEARCH_OPTIONS), options), { prefix: path || '' });
                     const data = yield post(this.fetch, `${this.url}/object/list/${this.bucketId}`, body, { headers: this.headers }, parameters);
@@ -4066,7 +4066,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
     const DEFAULT_HEADERS$2 = { 'X-Client-Info': `storage-js/${version$2}` };
 
-    var __awaiter$6 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$2 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -4085,7 +4085,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * Retrieves the details of all Storage buckets within an existing project.
          */
         listBuckets() {
-            return __awaiter$6(this, void 0, void 0, function* () {
+            return __awaiter$2(this, void 0, void 0, function* () {
                 try {
                     const data = yield get(this.fetch, `${this.url}/bucket`, { headers: this.headers });
                     return { data, error: null };
@@ -4104,7 +4104,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param id The unique identifier of the bucket you would like to retrieve.
          */
         getBucket(id) {
-            return __awaiter$6(this, void 0, void 0, function* () {
+            return __awaiter$2(this, void 0, void 0, function* () {
                 try {
                     const data = yield get(this.fetch, `${this.url}/bucket/${id}`, { headers: this.headers });
                     return { data, error: null };
@@ -4133,7 +4133,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         createBucket(id, options = {
             public: false,
         }) {
-            return __awaiter$6(this, void 0, void 0, function* () {
+            return __awaiter$2(this, void 0, void 0, function* () {
                 try {
                     const data = yield post(this.fetch, `${this.url}/bucket`, {
                         id,
@@ -4165,7 +4165,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * Each mime type specified can be a wildcard, e.g. image/*, or a specific mime type, e.g. image/png.
          */
         updateBucket(id, options) {
-            return __awaiter$6(this, void 0, void 0, function* () {
+            return __awaiter$2(this, void 0, void 0, function* () {
                 try {
                     const data = yield put(this.fetch, `${this.url}/bucket/${id}`, {
                         id,
@@ -4190,7 +4190,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param id The unique identifier of the bucket you would like to empty.
          */
         emptyBucket(id) {
-            return __awaiter$6(this, void 0, void 0, function* () {
+            return __awaiter$2(this, void 0, void 0, function* () {
                 try {
                     const data = yield post(this.fetch, `${this.url}/bucket/${id}/empty`, {}, { headers: this.headers });
                     return { data, error: null };
@@ -4210,7 +4210,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param id The unique identifier of the bucket you would like to delete.
          */
         deleteBucket(id) {
-            return __awaiter$6(this, void 0, void 0, function* () {
+            return __awaiter$2(this, void 0, void 0, function* () {
                 try {
                     const data = yield remove(this.fetch, `${this.url}/bucket/${id}`, {}, { headers: this.headers });
                     return { data, error: null };
@@ -4239,12 +4239,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    const version$1 = '2.26.0';
+    const version$1 = '2.31.0';
 
     // constants.ts
     const DEFAULT_HEADERS$1 = { 'X-Client-Info': `supabase-js/${version$1}` };
 
-    var __awaiter$5 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$1 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -4275,7 +4275,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     const fetchWithAuth = (supabaseKey, getAccessToken, customFetch) => {
         const fetch = resolveFetch$1(customFetch);
         const HeadersConstructor = resolveHeadersConstructor();
-        return (input, init) => __awaiter$5(void 0, void 0, void 0, function* () {
+        return (input, init) => __awaiter$1(void 0, void 0, void 0, function* () {
             var _a;
             const accessToken = (_a = (yield getAccessToken())) !== null && _a !== void 0 ? _a : supabaseKey;
             let headers = new HeadersConstructor(init === null || init === void 0 ? void 0 : init.headers);
@@ -4303,15 +4303,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         };
     }
 
-    var __awaiter$4 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    };
     function expiresAt(expiresIn) {
         const timeNow = Math.round(Date.now() / 1000);
         return timeNow + expiresIn;
@@ -4361,18 +4352,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
         return localStorageWriteTests.writable;
     };
-    function getParameterByName(name, url) {
-        var _a;
-        if (!url)
-            url = ((_a = window === null || window === void 0 ? void 0 : window.location) === null || _a === void 0 ? void 0 : _a.href) || '';
-        // eslint-disable-next-line no-useless-escape
-        name = name.replace(/[\[\]]/g, '\\$&');
-        const regex = new RegExp('[?&#]' + name + '(=([^&#]*)|&|#|$)'), results = regex.exec(url);
-        if (!results)
-            return null;
-        if (!results[2])
-            return '';
-        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    /**
+     * Extracts parameters encoded in the URL both in the query and fragment.
+     */
+    function parseParametersFromURL(href) {
+        const result = {};
+        const url = new URL(href);
+        if (url.hash && url.hash[0] === '#') {
+            try {
+                const hashSearchParams = new URLSearchParams(url.hash.substring(1));
+                hashSearchParams.forEach((value, key) => {
+                    result[key] = value;
+                });
+            }
+            catch (e) {
+                // hash is not a query string
+            }
+        }
+        // search parameters take precedence over hash parameters
+        url.searchParams.forEach((value, key) => {
+            result[key] = value;
+        });
+        return result;
     }
     const resolveFetch = (customFetch) => {
         let _fetch;
@@ -4380,7 +4381,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             _fetch = customFetch;
         }
         else if (typeof fetch === 'undefined') {
-            _fetch = (...args) => __awaiter$4(void 0, void 0, void 0, function* () { return yield (yield Promise.resolve().then(function () { return browserPonyfill; })).fetch(...args); });
+            _fetch = async (...args) => await (await Promise.resolve().then(function () { return browserPonyfill; })).fetch(...args);
         }
         else {
             _fetch = fetch;
@@ -4396,11 +4397,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             typeof maybeResponse.json === 'function');
     };
     // Storage helpers
-    const setItemAsync = (storage, key, data) => __awaiter$4(void 0, void 0, void 0, function* () {
-        yield storage.setItem(key, JSON.stringify(data));
-    });
-    const getItemAsync = (storage, key) => __awaiter$4(void 0, void 0, void 0, function* () {
-        const value = yield storage.getItem(key);
+    const setItemAsync = async (storage, key, data) => {
+        await storage.setItem(key, JSON.stringify(data));
+    };
+    const getItemAsync = async (storage, key) => {
+        const value = await storage.getItem(key);
         if (!value) {
             return null;
         }
@@ -4410,10 +4411,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         catch (_a) {
             return value;
         }
-    });
-    const removeItemAsync = (storage, key) => __awaiter$4(void 0, void 0, void 0, function* () {
-        yield storage.removeItem(key);
-    });
+    };
+    const removeItemAsync = async (storage, key) => {
+        await storage.removeItem(key);
+    };
     function decodeBase64URL(value) {
         const key = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
         let base64 = '';
@@ -4470,8 +4471,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     /**
      * Creates a promise that resolves to null after some time.
      */
-    function sleep(time) {
-        return new Promise((accept) => {
+    async function sleep(time) {
+        return await new Promise((accept) => {
             setTimeout(() => accept(null), time);
         });
     }
@@ -4482,10 +4483,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
      */
     function retryable(fn, isRetryable) {
         const promise = new Promise((accept, reject) => {
-            (() => __awaiter$4(this, void 0, void 0, function* () {
+            (async () => {
                 for (let attempt = 0; attempt < Infinity; attempt++) {
                     try {
-                        const result = yield fn(attempt);
+                        const result = await fn(attempt);
                         if (!isRetryable(attempt, null, result)) {
                             accept(result);
                             return;
@@ -4498,7 +4499,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         }
                     }
                 }
-            }))();
+            })();
         });
         return promise;
     }
@@ -4521,30 +4522,139 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         crypto.getRandomValues(array);
         return Array.from(array, dec2hex).join('');
     }
-    function sha256(randomString) {
-        return __awaiter$4(this, void 0, void 0, function* () {
-            const encoder = new TextEncoder();
-            const encodedData = encoder.encode(randomString);
-            const hash = yield crypto.subtle.digest('SHA-256', encodedData);
-            const bytes = new Uint8Array(hash);
-            return Array.from(bytes)
-                .map((c) => String.fromCharCode(c))
-                .join('');
-        });
+    async function sha256(randomString) {
+        const encoder = new TextEncoder();
+        const encodedData = encoder.encode(randomString);
+        const hash = await crypto.subtle.digest('SHA-256', encodedData);
+        const bytes = new Uint8Array(hash);
+        return Array.from(bytes)
+            .map((c) => String.fromCharCode(c))
+            .join('');
     }
     function base64urlencode(str) {
         return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     }
-    function generatePKCEChallenge(verifier) {
-        return __awaiter$4(this, void 0, void 0, function* () {
-            if (typeof crypto === 'undefined') {
-                console.warn('WebCrypto API is not supported. Code challenge method will default to use plain instead of sha256.');
-                return verifier;
-            }
-            const hashed = yield sha256(verifier);
-            return base64urlencode(hashed);
-        });
+    async function generatePKCEChallenge(verifier) {
+        if (typeof crypto === 'undefined') {
+            console.warn('WebCrypto API is not supported. Code challenge method will default to use plain instead of sha256.');
+            return verifier;
+        }
+        const hashed = await sha256(verifier);
+        return base64urlencode(hashed);
     }
+    const STACK_GUARD_PREFIX = `__stack_guard__`;
+    const STACK_GUARD_SUFFIX = `__`;
+    // Firefox and WebKit based browsers encode the stack entry differently, but
+    // they all include the function name. So instead of trying to parse the entry,
+    // we're only looking for the special string `__stack_guard__${guardName}__`.
+    // Guard names can only be letters with dashes or underscores.
+    //
+    // Example Firefox stack trace:
+    // ```
+    // __stack_guard__EXAMPLE__@debugger eval code:1:55
+    // @debugger eval code:1:3
+    // ```
+    //
+    // Example WebKit/Chrome stack trace:
+    // ```
+    // Error
+    //  at Object.__stack_guard__EXAMPLE__ (<anonymous>:1:55)
+    //  at <anonymous>:1:13
+    // ```
+    //
+    const STACK_ENTRY_REGEX = /__stack_guard__([a-zA-Z0-9_-]+)__/;
+    let STACK_GUARD_CHECKED = false;
+    let STACK_GUARD_CHECK_FN; // eslint-disable-line prefer-const
+    let STACK_GUARDS_SUPPORTED = false;
+    /**
+     * Checks if the current caller of the function is in a {@link
+     * #stackGuard} of the provided `name`. Works by looking through
+     * the stack trace of an `Error` object for a special function
+     * name (generated by {@link #stackGuard}).
+     *
+     * @param name The name of the stack guard to check for. Must be `[a-zA-Z0-9_-]` only.
+     */
+    function isInStackGuard(name) {
+        var _a, _b;
+        STACK_GUARD_CHECK_FN();
+        let error;
+        try {
+            throw new Error();
+        }
+        catch (e) {
+            error = e;
+        }
+        const stack = (_b = (_a = error.stack) === null || _a === void 0 ? void 0 : _a.split('\n')) !== null && _b !== void 0 ? _b : [];
+        for (let i = 0; i < stack.length; i += 1) {
+            const entry = stack[i];
+            const match = entry.match(STACK_ENTRY_REGEX);
+            if (match && match[1] === name) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * Creates a minification resistant stack guard, i.e. if you
+     * call {@link #isInStackGuard} from within the `fn` parameter
+     * function, you will always get `true` otherwise it will be
+     * `false`.
+     *
+     * Works by dynamically defining a function name before calling
+     * into `fn`, which is then parsed from the stack trace on an
+     * `Error` object within {@link #isInStackGuard}.
+     *
+     * @param name The name of the stack guard. Must be `[a-zA-Z0-9_-]` only.
+     * @param fn The async/await function to be run within the stack guard.
+     */
+    async function stackGuard(name, fn) {
+        await STACK_GUARD_CHECK_FN();
+        const guardName = `${STACK_GUARD_PREFIX}${name}${STACK_GUARD_SUFFIX}`;
+        const guardFunc = {
+            // per ECMAScript rules, this defines a new function with the dynamic name
+            // contained in the `guardName` variable
+            // this function name shows up in stack traces and is resistant to mangling
+            // from minification processes as it is determined at runtime
+            [guardName]: async () => await fn(),
+        };
+        // Safari does not log the name of a dynamically named function unless you
+        // explicitly set the displayName
+        Object.assign(guardFunc[guardName], { displayName: guardName });
+        return await guardFunc[guardName]();
+    }
+    /**
+     * Returns if the JavaScript engine supports stack guards. If it doesn't
+     * certain features that depend on detecting recursive calls should be disabled
+     * to prevent deadlocks.
+     */
+    async function stackGuardsSupported() {
+        if (STACK_GUARD_CHECKED) {
+            return STACK_GUARDS_SUPPORTED;
+        }
+        await STACK_GUARD_CHECK_FN();
+        return STACK_GUARDS_SUPPORTED;
+    }
+    let STACK_GUARD_WARNING_LOGGED = false;
+    // In certain cases, if this file is transpiled using an ES2015 target, or is
+    // running in a JS engine that does not support async/await stack traces, this
+    // function will log a single warning message.
+    STACK_GUARD_CHECK_FN = async () => {
+        if (!STACK_GUARD_CHECKED) {
+            STACK_GUARD_CHECKED = true;
+            await stackGuard('ENV_CHECK', async () => {
+                // sleeping for the next tick as Safari loses track of the async/await
+                // trace beyond this point
+                await sleep(0);
+                const result = isInStackGuard('ENV_CHECK');
+                STACK_GUARDS_SUPPORTED = result;
+                if (!result && !STACK_GUARD_WARNING_LOGGED) {
+                    STACK_GUARD_WARNING_LOGGED = true;
+                    console.warn('@supabase/gotrue-js: Stack guards not supported in this environment. Generally not an issue but may point to a very conservative transpilation environment (use ES2017 or above) that implements async/await with generators, or this is a JavaScript engine that does not support async/await stack traces. Safari is known to not support stack guards.');
+                }
+                return result;
+            });
+        }
+    };
 
     class AuthError extends Error {
         constructor(message, status) {
@@ -4649,15 +4759,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return isAuthError(error) && error.name === 'AuthRetryableFetchError';
     }
 
-    var __awaiter$3 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    };
     var __rest$1 = (undefined && undefined.__rest) || function (s, e) {
         var t = {};
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
@@ -4671,24 +4772,22 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     };
     const _getErrorMessage = (err) => err.msg || err.message || err.error_description || err.error || JSON.stringify(err);
     const NETWORK_ERROR_CODES = [502, 503, 504];
-    function handleError(error) {
-        return __awaiter$3(this, void 0, void 0, function* () {
-            if (!looksLikeFetchResponse(error)) {
-                throw new AuthRetryableFetchError(_getErrorMessage(error), 0);
-            }
-            if (NETWORK_ERROR_CODES.includes(error.status)) {
-                // status in 500...599 range - server had an error, request might be retryed.
-                throw new AuthRetryableFetchError(_getErrorMessage(error), error.status);
-            }
-            let data;
-            try {
-                data = yield error.json();
-            }
-            catch (e) {
-                throw new AuthUnknownError(_getErrorMessage(e), e);
-            }
-            throw new AuthApiError(_getErrorMessage(data), error.status || 500);
-        });
+    async function handleError(error) {
+        if (!looksLikeFetchResponse(error)) {
+            throw new AuthRetryableFetchError(_getErrorMessage(error), 0);
+        }
+        if (NETWORK_ERROR_CODES.includes(error.status)) {
+            // status in 500...599 range - server had an error, request might be retryed.
+            throw new AuthRetryableFetchError(_getErrorMessage(error), error.status);
+        }
+        let data;
+        try {
+            data = await error.json();
+        }
+        catch (e) {
+            throw new AuthUnknownError(_getErrorMessage(e), e);
+        }
+        throw new AuthApiError(_getErrorMessage(data), error.status || 500);
     }
     const _getRequestParams = (method, options, parameters, body) => {
         const params = { method, headers: (options === null || options === void 0 ? void 0 : options.headers) || {} };
@@ -4699,47 +4798,43 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         params.body = JSON.stringify(body);
         return Object.assign(Object.assign({}, params), parameters);
     };
-    function _request(fetcher, method, url, options) {
+    async function _request(fetcher, method, url, options) {
         var _a;
-        return __awaiter$3(this, void 0, void 0, function* () {
-            const headers = Object.assign({}, options === null || options === void 0 ? void 0 : options.headers);
-            if (options === null || options === void 0 ? void 0 : options.jwt) {
-                headers['Authorization'] = `Bearer ${options.jwt}`;
-            }
-            const qs = (_a = options === null || options === void 0 ? void 0 : options.query) !== null && _a !== void 0 ? _a : {};
-            if (options === null || options === void 0 ? void 0 : options.redirectTo) {
-                qs['redirect_to'] = options.redirectTo;
-            }
-            const queryString = Object.keys(qs).length ? '?' + new URLSearchParams(qs).toString() : '';
-            const data = yield _handleRequest(fetcher, method, url + queryString, { headers, noResolveJson: options === null || options === void 0 ? void 0 : options.noResolveJson }, {}, options === null || options === void 0 ? void 0 : options.body);
-            return (options === null || options === void 0 ? void 0 : options.xform) ? options === null || options === void 0 ? void 0 : options.xform(data) : { data: Object.assign({}, data), error: null };
-        });
+        const headers = Object.assign({}, options === null || options === void 0 ? void 0 : options.headers);
+        if (options === null || options === void 0 ? void 0 : options.jwt) {
+            headers['Authorization'] = `Bearer ${options.jwt}`;
+        }
+        const qs = (_a = options === null || options === void 0 ? void 0 : options.query) !== null && _a !== void 0 ? _a : {};
+        if (options === null || options === void 0 ? void 0 : options.redirectTo) {
+            qs['redirect_to'] = options.redirectTo;
+        }
+        const queryString = Object.keys(qs).length ? '?' + new URLSearchParams(qs).toString() : '';
+        const data = await _handleRequest(fetcher, method, url + queryString, { headers, noResolveJson: options === null || options === void 0 ? void 0 : options.noResolveJson }, {}, options === null || options === void 0 ? void 0 : options.body);
+        return (options === null || options === void 0 ? void 0 : options.xform) ? options === null || options === void 0 ? void 0 : options.xform(data) : { data: Object.assign({}, data), error: null };
     }
-    function _handleRequest(fetcher, method, url, options, parameters, body) {
-        return __awaiter$3(this, void 0, void 0, function* () {
-            const requestParams = _getRequestParams(method, options, parameters, body);
-            let result;
-            try {
-                result = yield fetcher(url, requestParams);
-            }
-            catch (e) {
-                console.error(e);
-                // fetch failed, likely due to a network or CORS error
-                throw new AuthRetryableFetchError(_getErrorMessage(e), 0);
-            }
-            if (!result.ok) {
-                yield handleError(result);
-            }
-            if (options === null || options === void 0 ? void 0 : options.noResolveJson) {
-                return result;
-            }
-            try {
-                return yield result.json();
-            }
-            catch (e) {
-                yield handleError(e);
-            }
-        });
+    async function _handleRequest(fetcher, method, url, options, parameters, body) {
+        const requestParams = _getRequestParams(method, options, parameters, body);
+        let result;
+        try {
+            result = await fetcher(url, requestParams);
+        }
+        catch (e) {
+            console.error(e);
+            // fetch failed, likely due to a network or CORS error
+            throw new AuthRetryableFetchError(_getErrorMessage(e), 0);
+        }
+        if (!result.ok) {
+            await handleError(result);
+        }
+        if (options === null || options === void 0 ? void 0 : options.noResolveJson) {
+            return result;
+        }
+        try {
+            return await result.json();
+        }
+        catch (e) {
+            await handleError(e);
+        }
     }
     function _sessionResponse(data) {
         var _a;
@@ -4789,15 +4884,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return data.access_token && data.refresh_token && data.expires_in;
     }
 
-    var __awaiter$2 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    };
     var __rest = (undefined && undefined.__rest) || function (s, e) {
         var t = {};
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
@@ -4822,47 +4908,44 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         /**
          * Removes a logged-in session.
          * @param jwt A valid, logged-in JWT.
+         * @param scope The logout sope.
          */
-        signOut(jwt) {
-            return __awaiter$2(this, void 0, void 0, function* () {
-                try {
-                    yield _request(this.fetch, 'POST', `${this.url}/logout`, {
-                        headers: this.headers,
-                        jwt,
-                        noResolveJson: true,
-                    });
-                    return { data: null, error: null };
+        async signOut(jwt, scope = 'global') {
+            try {
+                await _request(this.fetch, 'POST', `${this.url}/logout?scope=${scope}`, {
+                    headers: this.headers,
+                    jwt,
+                    noResolveJson: true,
+                });
+                return { data: null, error: null };
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: null, error };
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: null, error };
-                    }
-                    throw error;
-                }
-            });
+                throw error;
+            }
         }
         /**
          * Sends an invite link to an email address.
          * @param email The email address of the user.
          * @param options Additional options to be included when inviting.
          */
-        inviteUserByEmail(email, options = {}) {
-            return __awaiter$2(this, void 0, void 0, function* () {
-                try {
-                    return yield _request(this.fetch, 'POST', `${this.url}/invite`, {
-                        body: { email, data: options.data },
-                        headers: this.headers,
-                        redirectTo: options.redirectTo,
-                        xform: _userResponse,
-                    });
+        async inviteUserByEmail(email, options = {}) {
+            try {
+                return await _request(this.fetch, 'POST', `${this.url}/invite`, {
+                    body: { email, data: options.data },
+                    headers: this.headers,
+                    redirectTo: options.redirectTo,
+                    xform: _userResponse,
+                });
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { user: null }, error };
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: { user: null }, error };
-                    }
-                    throw error;
-                }
-            });
+                throw error;
+            }
         }
         /**
          * Generates email links and OTPs to be sent via a custom email provider.
@@ -4871,58 +4954,54 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param options.data Optional user metadata. For signup only.
          * @param options.redirectTo The redirect url which should be appended to the generated link
          */
-        generateLink(params) {
-            return __awaiter$2(this, void 0, void 0, function* () {
-                try {
-                    const { options } = params, rest = __rest(params, ["options"]);
-                    const body = Object.assign(Object.assign({}, rest), options);
-                    if ('newEmail' in rest) {
-                        // replace newEmail with new_email in request body
-                        body.new_email = rest === null || rest === void 0 ? void 0 : rest.newEmail;
-                        delete body['newEmail'];
-                    }
-                    return yield _request(this.fetch, 'POST', `${this.url}/admin/generate_link`, {
-                        body: body,
-                        headers: this.headers,
-                        xform: _generateLinkResponse,
-                        redirectTo: options === null || options === void 0 ? void 0 : options.redirectTo,
-                    });
+        async generateLink(params) {
+            try {
+                const { options } = params, rest = __rest(params, ["options"]);
+                const body = Object.assign(Object.assign({}, rest), options);
+                if ('newEmail' in rest) {
+                    // replace newEmail with new_email in request body
+                    body.new_email = rest === null || rest === void 0 ? void 0 : rest.newEmail;
+                    delete body['newEmail'];
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return {
-                            data: {
-                                properties: null,
-                                user: null,
-                            },
-                            error,
-                        };
-                    }
-                    throw error;
+                return await _request(this.fetch, 'POST', `${this.url}/admin/generate_link`, {
+                    body: body,
+                    headers: this.headers,
+                    xform: _generateLinkResponse,
+                    redirectTo: options === null || options === void 0 ? void 0 : options.redirectTo,
+                });
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return {
+                        data: {
+                            properties: null,
+                            user: null,
+                        },
+                        error,
+                    };
                 }
-            });
+                throw error;
+            }
         }
         // User Admin API
         /**
          * Creates a new user.
          * This function should only be called on a server. Never expose your `service_role` key in the browser.
          */
-        createUser(attributes) {
-            return __awaiter$2(this, void 0, void 0, function* () {
-                try {
-                    return yield _request(this.fetch, 'POST', `${this.url}/admin/users`, {
-                        body: attributes,
-                        headers: this.headers,
-                        xform: _userResponse,
-                    });
+        async createUser(attributes) {
+            try {
+                return await _request(this.fetch, 'POST', `${this.url}/admin/users`, {
+                    body: attributes,
+                    headers: this.headers,
+                    xform: _userResponse,
+                });
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { user: null }, error };
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: { user: null }, error };
-                    }
-                    throw error;
-                }
-            });
+                throw error;
+            }
         }
         /**
          * Get a list of users.
@@ -4930,42 +5009,40 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * This function should only be called on a server. Never expose your `service_role` key in the browser.
          * @param params An object which supports `page` and `perPage` as numbers, to alter the paginated results.
          */
-        listUsers(params) {
+        async listUsers(params) {
             var _a, _b, _c, _d, _e, _f, _g;
-            return __awaiter$2(this, void 0, void 0, function* () {
-                try {
-                    const pagination = { nextPage: null, lastPage: 0, total: 0 };
-                    const response = yield _request(this.fetch, 'GET', `${this.url}/admin/users`, {
-                        headers: this.headers,
-                        noResolveJson: true,
-                        query: {
-                            page: (_b = (_a = params === null || params === void 0 ? void 0 : params.page) === null || _a === void 0 ? void 0 : _a.toString()) !== null && _b !== void 0 ? _b : '',
-                            per_page: (_d = (_c = params === null || params === void 0 ? void 0 : params.perPage) === null || _c === void 0 ? void 0 : _c.toString()) !== null && _d !== void 0 ? _d : '',
-                        },
-                        xform: _noResolveJsonResponse,
+            try {
+                const pagination = { nextPage: null, lastPage: 0, total: 0 };
+                const response = await _request(this.fetch, 'GET', `${this.url}/admin/users`, {
+                    headers: this.headers,
+                    noResolveJson: true,
+                    query: {
+                        page: (_b = (_a = params === null || params === void 0 ? void 0 : params.page) === null || _a === void 0 ? void 0 : _a.toString()) !== null && _b !== void 0 ? _b : '',
+                        per_page: (_d = (_c = params === null || params === void 0 ? void 0 : params.perPage) === null || _c === void 0 ? void 0 : _c.toString()) !== null && _d !== void 0 ? _d : '',
+                    },
+                    xform: _noResolveJsonResponse,
+                });
+                if (response.error)
+                    throw response.error;
+                const users = await response.json();
+                const total = (_e = response.headers.get('x-total-count')) !== null && _e !== void 0 ? _e : 0;
+                const links = (_g = (_f = response.headers.get('link')) === null || _f === void 0 ? void 0 : _f.split(',')) !== null && _g !== void 0 ? _g : [];
+                if (links.length > 0) {
+                    links.forEach((link) => {
+                        const page = parseInt(link.split(';')[0].split('=')[1].substring(0, 1));
+                        const rel = JSON.parse(link.split(';')[1].split('=')[1]);
+                        pagination[`${rel}Page`] = page;
                     });
-                    if (response.error)
-                        throw response.error;
-                    const users = yield response.json();
-                    const total = (_e = response.headers.get('x-total-count')) !== null && _e !== void 0 ? _e : 0;
-                    const links = (_g = (_f = response.headers.get('link')) === null || _f === void 0 ? void 0 : _f.split(',')) !== null && _g !== void 0 ? _g : [];
-                    if (links.length > 0) {
-                        links.forEach((link) => {
-                            const page = parseInt(link.split(';')[0].split('=')[1].substring(0, 1));
-                            const rel = JSON.parse(link.split(';')[1].split('=')[1]);
-                            pagination[`${rel}Page`] = page;
-                        });
-                        pagination.total = parseInt(total);
-                    }
-                    return { data: Object.assign(Object.assign({}, users), pagination), error: null };
+                    pagination.total = parseInt(total);
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: { users: [] }, error };
-                    }
-                    throw error;
+                return { data: Object.assign(Object.assign({}, users), pagination), error: null };
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { users: [] }, error };
                 }
-            });
+                throw error;
+            }
         }
         /**
          * Get user by id.
@@ -4974,21 +5051,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          *
          * This function should only be called on a server. Never expose your `service_role` key in the browser.
          */
-        getUserById(uid) {
-            return __awaiter$2(this, void 0, void 0, function* () {
-                try {
-                    return yield _request(this.fetch, 'GET', `${this.url}/admin/users/${uid}`, {
-                        headers: this.headers,
-                        xform: _userResponse,
-                    });
+        async getUserById(uid) {
+            try {
+                return await _request(this.fetch, 'GET', `${this.url}/admin/users/${uid}`, {
+                    headers: this.headers,
+                    xform: _userResponse,
+                });
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { user: null }, error };
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: { user: null }, error };
-                    }
-                    throw error;
-                }
-            });
+                throw error;
+            }
         }
         /**
          * Updates the user data.
@@ -4997,22 +5072,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          *
          * This function should only be called on a server. Never expose your `service_role` key in the browser.
          */
-        updateUserById(uid, attributes) {
-            return __awaiter$2(this, void 0, void 0, function* () {
-                try {
-                    return yield _request(this.fetch, 'PUT', `${this.url}/admin/users/${uid}`, {
-                        body: attributes,
-                        headers: this.headers,
-                        xform: _userResponse,
-                    });
+        async updateUserById(uid, attributes) {
+            try {
+                return await _request(this.fetch, 'PUT', `${this.url}/admin/users/${uid}`, {
+                    body: attributes,
+                    headers: this.headers,
+                    xform: _userResponse,
+                });
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { user: null }, error };
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: { user: null }, error };
-                    }
-                    throw error;
-                }
-            });
+                throw error;
+            }
         }
         /**
          * Delete a user. Requires a `service_role` key.
@@ -5023,64 +5096,58 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          *
          * This function should only be called on a server. Never expose your `service_role` key in the browser.
          */
-        deleteUser(id, shouldSoftDelete = false) {
-            return __awaiter$2(this, void 0, void 0, function* () {
-                try {
-                    return yield _request(this.fetch, 'DELETE', `${this.url}/admin/users/${id}`, {
-                        headers: this.headers,
-                        body: {
-                            should_soft_delete: shouldSoftDelete,
-                        },
-                        xform: _userResponse,
-                    });
+        async deleteUser(id, shouldSoftDelete = false) {
+            try {
+                return await _request(this.fetch, 'DELETE', `${this.url}/admin/users/${id}`, {
+                    headers: this.headers,
+                    body: {
+                        should_soft_delete: shouldSoftDelete,
+                    },
+                    xform: _userResponse,
+                });
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { user: null }, error };
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: { user: null }, error };
-                    }
-                    throw error;
-                }
-            });
+                throw error;
+            }
         }
-        _listFactors(params) {
-            return __awaiter$2(this, void 0, void 0, function* () {
-                try {
-                    const { data, error } = yield _request(this.fetch, 'GET', `${this.url}/admin/users/${params.userId}/factors`, {
-                        headers: this.headers,
-                        xform: (factors) => {
-                            return { data: { factors }, error: null };
-                        },
-                    });
-                    return { data, error };
+        async _listFactors(params) {
+            try {
+                const { data, error } = await _request(this.fetch, 'GET', `${this.url}/admin/users/${params.userId}/factors`, {
+                    headers: this.headers,
+                    xform: (factors) => {
+                        return { data: { factors }, error: null };
+                    },
+                });
+                return { data, error };
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: null, error };
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: null, error };
-                    }
-                    throw error;
-                }
-            });
+                throw error;
+            }
         }
-        _deleteFactor(params) {
-            return __awaiter$2(this, void 0, void 0, function* () {
-                try {
-                    const data = yield _request(this.fetch, 'DELETE', `${this.url}/admin/users/${params.userId}/factors/${params.id}`, {
-                        headers: this.headers,
-                    });
-                    return { data, error: null };
+        async _deleteFactor(params) {
+            try {
+                const data = await _request(this.fetch, 'DELETE', `${this.url}/admin/users/${params.userId}/factors/${params.id}`, {
+                    headers: this.headers,
+                });
+                return { data, error: null };
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: null, error };
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: null, error };
-                    }
-                    throw error;
-                }
-            });
+                throw error;
+            }
         }
     }
 
     // Generated by genversion.
-    const version = '2.37.0';
+    const version = '2.46.1';
 
     const GOTRUE_URL = 'http://localhost:9999';
     const STORAGE_KEY = 'supabase.auth.token';
@@ -5134,15 +5201,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    var __awaiter$1 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    };
     polyfillGlobalThis(); // Make "globalThis" available
     const DEFAULT_OPTIONS = {
         url: GOTRUE_URL,
@@ -5159,6 +5217,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     /**
      * A token refresh will be attempted this many ticks before the current session expires. */
     const AUTO_REFRESH_TICK_THRESHOLD = 3;
+    async function lockNoOp(name, acquireTimeout, fn) {
+        return await fn();
+    }
     class GoTrueClient {
         /**
          * Create a new client for use in the browser.
@@ -5201,6 +5262,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             this.url = settings.url;
             this.headers = settings.headers;
             this.fetch = resolveFetch(settings.fetch);
+            this.lock = settings.lock || lockNoOp;
             this.detectSessionInUrl = settings.detectSessionInUrl;
             this.flowType = settings.flowType;
             this.mfa = {
@@ -5223,16 +5285,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 catch (e) {
                     console.error('Failed to create a new BroadcastChannel, multi-tab state changes will not be available', e);
                 }
-                (_a = this.broadcastChannel) === null || _a === void 0 ? void 0 : _a.addEventListener('message', (event) => __awaiter$1(this, void 0, void 0, function* () {
+                (_a = this.broadcastChannel) === null || _a === void 0 ? void 0 : _a.addEventListener('message', async (event) => {
                     this._debug('received broadcast notification from other tab or client', event);
-                    yield this._notifyAllSubscribers(event.data.event, event.data.session, false); // broadcast = false so we don't get an endless loop of messages
-                }));
+                    await this._notifyAllSubscribers(event.data.event, event.data.session, false); // broadcast = false so we don't get an endless loop of messages
+                });
             }
             this.initialize();
         }
         _debug(...args) {
             if (this.logDebugMessages) {
-                console.log(`GoTrueClient@${this.instanceID} ${new Date().toISOString()}`, ...args);
+                console.log(`GoTrueClient@${this.instanceID} (${version}) ${new Date().toISOString()}`, ...args);
             }
             return this;
         }
@@ -5242,10 +5304,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * manually when checking for an error from an auth redirect (oauth, magiclink, password recovery, etc).
          */
         initialize() {
-            if (!this.initializePromise) {
-                this.initializePromise = this._initialize();
+            if (this.initializePromise) {
+                return this.initializePromise;
             }
-            return this.initializePromise;
+            return this._initialize();
         }
         /**
          * IMPORTANT:
@@ -5253,38 +5315,38 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * 2. Never return a session from this method as it would be cached over
          *    the whole lifetime of the client
          */
-        _initialize() {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                if (this.initializePromise) {
-                    return this.initializePromise;
-                }
+        async _initialize() {
+            if (this.initializePromise) {
+                throw new Error('Double call of #_initialize()');
+            }
+            this.initializePromise = this._acquireLock(-1, async () => await stackGuard('_initialize', async () => {
                 try {
-                    const isPKCEFlow = isBrowser() ? yield this._isPKCEFlow() : false;
+                    const isPKCEFlow = isBrowser() ? await this._isPKCEFlow() : false;
                     this._debug('#_initialize()', 'begin', 'is PKCE flow', isPKCEFlow);
                     if (isPKCEFlow || (this.detectSessionInUrl && this._isImplicitGrantFlow())) {
-                        const { data, error } = yield this._getSessionFromUrl(isPKCEFlow);
+                        const { data, error } = await this._getSessionFromURL(isPKCEFlow);
                         if (error) {
                             this._debug('#_initialize()', 'error detecting session from URL', error);
                             // failed login attempt via url,
                             // remove old session as in verifyOtp, signUp and signInWith*
-                            yield this._removeSession();
+                            await this._removeSession();
                             return { error };
                         }
                         const { session, redirectType } = data;
                         this._debug('#_initialize()', 'detected session in URL', session, 'redirect type', redirectType);
-                        yield this._saveSession(session);
-                        setTimeout(() => __awaiter$1(this, void 0, void 0, function* () {
+                        await this._saveSession(session);
+                        setTimeout(async () => {
                             if (redirectType === 'recovery') {
-                                yield this._notifyAllSubscribers('PASSWORD_RECOVERY', session);
+                                await this._notifyAllSubscribers('PASSWORD_RECOVERY', session);
                             }
                             else {
-                                yield this._notifyAllSubscribers('SIGNED_IN', session);
+                                await this._notifyAllSubscribers('SIGNED_IN', session);
                             }
-                        }), 0);
+                        }, 0);
                         return { error: null };
                     }
                     // no login attempt via callback url try to recover session from storage
-                    yield this._recoverAndRefresh();
+                    await this._recoverAndRefresh();
                     return { error: null };
                 }
                 catch (error) {
@@ -5296,10 +5358,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     };
                 }
                 finally {
-                    yield this._handleVisibilityChange();
+                    await this._handleVisibilityChange();
                     this._debug('#_initialize()', 'end');
                 }
-            });
+            }));
+            return await this.initializePromise;
         }
         /**
          * Creates a new user.
@@ -5311,72 +5374,70 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @returns A logged-in session if the server has "autoconfirm" ON
          * @returns A user if the server has "autoconfirm" OFF
          */
-        signUp(credentials) {
+        async signUp(credentials) {
             var _a, _b, _c;
-            return __awaiter$1(this, void 0, void 0, function* () {
-                try {
-                    yield this._removeSession();
-                    let res;
-                    if ('email' in credentials) {
-                        const { email, password, options } = credentials;
-                        let codeChallenge = null;
-                        let codeChallengeMethod = null;
-                        if (this.flowType === 'pkce') {
-                            const codeVerifier = generatePKCEVerifier();
-                            yield setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
-                            codeChallenge = yield generatePKCEChallenge(codeVerifier);
-                            codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
-                        }
-                        res = yield _request(this.fetch, 'POST', `${this.url}/signup`, {
-                            headers: this.headers,
-                            redirectTo: options === null || options === void 0 ? void 0 : options.emailRedirectTo,
-                            body: {
-                                email,
-                                password,
-                                data: (_a = options === null || options === void 0 ? void 0 : options.data) !== null && _a !== void 0 ? _a : {},
-                                gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
-                                code_challenge: codeChallenge,
-                                code_challenge_method: codeChallengeMethod,
-                            },
-                            xform: _sessionResponse,
-                        });
+            try {
+                await this._removeSession();
+                let res;
+                if ('email' in credentials) {
+                    const { email, password, options } = credentials;
+                    let codeChallenge = null;
+                    let codeChallengeMethod = null;
+                    if (this.flowType === 'pkce') {
+                        const codeVerifier = generatePKCEVerifier();
+                        await setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
+                        codeChallenge = await generatePKCEChallenge(codeVerifier);
+                        codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
                     }
-                    else if ('phone' in credentials) {
-                        const { phone, password, options } = credentials;
-                        res = yield _request(this.fetch, 'POST', `${this.url}/signup`, {
-                            headers: this.headers,
-                            body: {
-                                phone,
-                                password,
-                                data: (_b = options === null || options === void 0 ? void 0 : options.data) !== null && _b !== void 0 ? _b : {},
-                                channel: (_c = options === null || options === void 0 ? void 0 : options.channel) !== null && _c !== void 0 ? _c : 'sms',
-                                gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
-                            },
-                            xform: _sessionResponse,
-                        });
-                    }
-                    else {
-                        throw new AuthInvalidCredentialsError('You must provide either an email or phone number and a password');
-                    }
-                    const { data, error } = res;
-                    if (error || !data) {
-                        return { data: { user: null, session: null }, error: error };
-                    }
-                    const session = data.session;
-                    const user = data.user;
-                    if (data.session) {
-                        yield this._saveSession(data.session);
-                        yield this._notifyAllSubscribers('SIGNED_IN', session);
-                    }
-                    return { data: { user, session }, error: null };
+                    res = await _request(this.fetch, 'POST', `${this.url}/signup`, {
+                        headers: this.headers,
+                        redirectTo: options === null || options === void 0 ? void 0 : options.emailRedirectTo,
+                        body: {
+                            email,
+                            password,
+                            data: (_a = options === null || options === void 0 ? void 0 : options.data) !== null && _a !== void 0 ? _a : {},
+                            gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
+                            code_challenge: codeChallenge,
+                            code_challenge_method: codeChallengeMethod,
+                        },
+                        xform: _sessionResponse,
+                    });
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: { user: null, session: null }, error };
-                    }
-                    throw error;
+                else if ('phone' in credentials) {
+                    const { phone, password, options } = credentials;
+                    res = await _request(this.fetch, 'POST', `${this.url}/signup`, {
+                        headers: this.headers,
+                        body: {
+                            phone,
+                            password,
+                            data: (_b = options === null || options === void 0 ? void 0 : options.data) !== null && _b !== void 0 ? _b : {},
+                            channel: (_c = options === null || options === void 0 ? void 0 : options.channel) !== null && _c !== void 0 ? _c : 'sms',
+                            gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
+                        },
+                        xform: _sessionResponse,
+                    });
                 }
-            });
+                else {
+                    throw new AuthInvalidCredentialsError('You must provide either an email or phone number and a password');
+                }
+                const { data, error } = res;
+                if (error || !data) {
+                    return { data: { user: null, session: null }, error: error };
+                }
+                const session = data.session;
+                const user = data.user;
+                if (data.session) {
+                    await this._saveSession(data.session);
+                    await this._notifyAllSubscribers('SIGNED_IN', session);
+                }
+                return { data: { user, session }, error: null };
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { user: null, session: null }, error };
+                }
+                throw error;
+            }
         }
         /**
          * Log in an existing user with an email and password or phone and password.
@@ -5386,90 +5447,38 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * email/phone and password combination is wrong or that the account can only
          * be accessed via social login.
          */
-        signInWithPassword(credentials) {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                try {
-                    yield this._removeSession();
-                    let res;
-                    if ('email' in credentials) {
-                        const { email, password, options } = credentials;
-                        res = yield _request(this.fetch, 'POST', `${this.url}/token?grant_type=password`, {
-                            headers: this.headers,
-                            body: {
-                                email,
-                                password,
-                                gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
-                            },
-                            xform: _sessionResponse,
-                        });
-                    }
-                    else if ('phone' in credentials) {
-                        const { phone, password, options } = credentials;
-                        res = yield _request(this.fetch, 'POST', `${this.url}/token?grant_type=password`, {
-                            headers: this.headers,
-                            body: {
-                                phone,
-                                password,
-                                gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
-                            },
-                            xform: _sessionResponse,
-                        });
-                    }
-                    else {
-                        throw new AuthInvalidCredentialsError('You must provide either an email or phone number and a password');
-                    }
-                    const { data, error } = res;
-                    if (error) {
-                        return { data: { user: null, session: null }, error };
-                    }
-                    else if (!data || !data.session || !data.user) {
-                        return { data: { user: null, session: null }, error: new AuthInvalidTokenResponseError() };
-                    }
-                    if (data.session) {
-                        yield this._saveSession(data.session);
-                        yield this._notifyAllSubscribers('SIGNED_IN', data.session);
-                    }
-                    return { data: { user: data.user, session: data.session }, error };
+        async signInWithPassword(credentials) {
+            try {
+                await this._removeSession();
+                let res;
+                if ('email' in credentials) {
+                    const { email, password, options } = credentials;
+                    res = await _request(this.fetch, 'POST', `${this.url}/token?grant_type=password`, {
+                        headers: this.headers,
+                        body: {
+                            email,
+                            password,
+                            gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
+                        },
+                        xform: _sessionResponse,
+                    });
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: { user: null, session: null }, error };
-                    }
-                    throw error;
+                else if ('phone' in credentials) {
+                    const { phone, password, options } = credentials;
+                    res = await _request(this.fetch, 'POST', `${this.url}/token?grant_type=password`, {
+                        headers: this.headers,
+                        body: {
+                            phone,
+                            password,
+                            gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
+                        },
+                        xform: _sessionResponse,
+                    });
                 }
-            });
-        }
-        /**
-         * Log in an existing user via a third-party provider.
-         * This method supports the PKCE flow.
-         */
-        signInWithOAuth(credentials) {
-            var _a, _b, _c, _d;
-            return __awaiter$1(this, void 0, void 0, function* () {
-                yield this._removeSession();
-                return yield this._handleProviderSignIn(credentials.provider, {
-                    redirectTo: (_a = credentials.options) === null || _a === void 0 ? void 0 : _a.redirectTo,
-                    scopes: (_b = credentials.options) === null || _b === void 0 ? void 0 : _b.scopes,
-                    queryParams: (_c = credentials.options) === null || _c === void 0 ? void 0 : _c.queryParams,
-                    skipBrowserRedirect: (_d = credentials.options) === null || _d === void 0 ? void 0 : _d.skipBrowserRedirect,
-                });
-            });
-        }
-        /**
-         * Log in an existing user by exchanging an Auth Code issued during the PKCE flow.
-         */
-        exchangeCodeForSession(authCode) {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                const codeVerifier = yield getItemAsync(this.storage, `${this.storageKey}-code-verifier`);
-                const { data, error } = yield _request(this.fetch, 'POST', `${this.url}/token?grant_type=pkce`, {
-                    headers: this.headers,
-                    body: {
-                        auth_code: authCode,
-                        code_verifier: codeVerifier,
-                    },
-                    xform: _sessionResponse,
-                });
-                yield removeItemAsync(this.storage, `${this.storageKey}-code-verifier`);
+                else {
+                    throw new AuthInvalidCredentialsError('You must provide either an email or phone number and a password');
+                }
+                const { data, error } = res;
                 if (error) {
                     return { data: { user: null, session: null }, error };
                 }
@@ -5477,55 +5486,99 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     return { data: { user: null, session: null }, error: new AuthInvalidTokenResponseError() };
                 }
                 if (data.session) {
-                    yield this._saveSession(data.session);
-                    yield this._notifyAllSubscribers('SIGNED_IN', data.session);
+                    await this._saveSession(data.session);
+                    await this._notifyAllSubscribers('SIGNED_IN', data.session);
                 }
-                return { data, error };
+                return { data: { user: data.user, session: data.session }, error };
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { user: null, session: null }, error };
+                }
+                throw error;
+            }
+        }
+        /**
+         * Log in an existing user via a third-party provider.
+         * This method supports the PKCE flow.
+         */
+        async signInWithOAuth(credentials) {
+            var _a, _b, _c, _d;
+            await this._removeSession();
+            return await this._handleProviderSignIn(credentials.provider, {
+                redirectTo: (_a = credentials.options) === null || _a === void 0 ? void 0 : _a.redirectTo,
+                scopes: (_b = credentials.options) === null || _b === void 0 ? void 0 : _b.scopes,
+                queryParams: (_c = credentials.options) === null || _c === void 0 ? void 0 : _c.queryParams,
+                skipBrowserRedirect: (_d = credentials.options) === null || _d === void 0 ? void 0 : _d.skipBrowserRedirect,
             });
+        }
+        /**
+         * Log in an existing user by exchanging an Auth Code issued during the PKCE flow.
+         */
+        async exchangeCodeForSession(authCode) {
+            const codeVerifier = await getItemAsync(this.storage, `${this.storageKey}-code-verifier`);
+            const { data, error } = await _request(this.fetch, 'POST', `${this.url}/token?grant_type=pkce`, {
+                headers: this.headers,
+                body: {
+                    auth_code: authCode,
+                    code_verifier: codeVerifier,
+                },
+                xform: _sessionResponse,
+            });
+            await removeItemAsync(this.storage, `${this.storageKey}-code-verifier`);
+            if (error) {
+                return { data: { user: null, session: null }, error };
+            }
+            else if (!data || !data.session || !data.user) {
+                return { data: { user: null, session: null }, error: new AuthInvalidTokenResponseError() };
+            }
+            if (data.session) {
+                await this._saveSession(data.session);
+                await this._notifyAllSubscribers('SIGNED_IN', data.session);
+            }
+            return { data, error };
         }
         /**
          * Allows signing in with an OIDC ID token. The authentication provider used
          * should be enabled and configured.
          */
-        signInWithIdToken(credentials) {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                yield this._removeSession();
-                try {
-                    const { options, provider, token, access_token, nonce } = credentials;
-                    const res = yield _request(this.fetch, 'POST', `${this.url}/token?grant_type=id_token`, {
-                        headers: this.headers,
-                        body: {
-                            provider,
-                            id_token: token,
-                            access_token,
-                            nonce,
-                            gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
-                        },
-                        xform: _sessionResponse,
-                    });
-                    const { data, error } = res;
-                    if (error) {
-                        return { data: { user: null, session: null }, error };
-                    }
-                    else if (!data || !data.session || !data.user) {
-                        return {
-                            data: { user: null, session: null },
-                            error: new AuthInvalidTokenResponseError(),
-                        };
-                    }
-                    if (data.session) {
-                        yield this._saveSession(data.session);
-                        yield this._notifyAllSubscribers('SIGNED_IN', data.session);
-                    }
-                    return { data, error };
+        async signInWithIdToken(credentials) {
+            await this._removeSession();
+            try {
+                const { options, provider, token, access_token, nonce } = credentials;
+                const res = await _request(this.fetch, 'POST', `${this.url}/token?grant_type=id_token`, {
+                    headers: this.headers,
+                    body: {
+                        provider,
+                        id_token: token,
+                        access_token,
+                        nonce,
+                        gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
+                    },
+                    xform: _sessionResponse,
+                });
+                const { data, error } = res;
+                if (error) {
+                    return { data: { user: null, session: null }, error };
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: { user: null, session: null }, error };
-                    }
-                    throw error;
+                else if (!data || !data.session || !data.user) {
+                    return {
+                        data: { user: null, session: null },
+                        error: new AuthInvalidTokenResponseError(),
+                    };
                 }
-            });
+                if (data.session) {
+                    await this._saveSession(data.session);
+                    await this._notifyAllSubscribers('SIGNED_IN', data.session);
+                }
+                return { data, error };
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { user: null, session: null }, error };
+                }
+                throw error;
+            }
         }
         /**
          * Log in a user using magiclink or a one-time password (OTP).
@@ -5544,97 +5597,99 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * at this time.
          * This method supports PKCE when an email is passed.
          */
-        signInWithOtp(credentials) {
+        async signInWithOtp(credentials) {
             var _a, _b, _c, _d, _e;
-            return __awaiter$1(this, void 0, void 0, function* () {
-                try {
-                    yield this._removeSession();
-                    if ('email' in credentials) {
-                        const { email, options } = credentials;
-                        let codeChallenge = null;
-                        let codeChallengeMethod = null;
-                        if (this.flowType === 'pkce') {
-                            const codeVerifier = generatePKCEVerifier();
-                            yield setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
-                            codeChallenge = yield generatePKCEChallenge(codeVerifier);
-                            codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
-                        }
-                        const { error } = yield _request(this.fetch, 'POST', `${this.url}/otp`, {
-                            headers: this.headers,
-                            body: {
-                                email,
-                                data: (_a = options === null || options === void 0 ? void 0 : options.data) !== null && _a !== void 0 ? _a : {},
-                                create_user: (_b = options === null || options === void 0 ? void 0 : options.shouldCreateUser) !== null && _b !== void 0 ? _b : true,
-                                gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
-                                code_challenge: codeChallenge,
-                                code_challenge_method: codeChallengeMethod,
-                            },
-                            redirectTo: options === null || options === void 0 ? void 0 : options.emailRedirectTo,
-                        });
-                        return { data: { user: null, session: null }, error };
+            try {
+                await this._removeSession();
+                if ('email' in credentials) {
+                    const { email, options } = credentials;
+                    let codeChallenge = null;
+                    let codeChallengeMethod = null;
+                    if (this.flowType === 'pkce') {
+                        const codeVerifier = generatePKCEVerifier();
+                        await setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
+                        codeChallenge = await generatePKCEChallenge(codeVerifier);
+                        codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
                     }
-                    if ('phone' in credentials) {
-                        const { phone, options } = credentials;
-                        const { data, error } = yield _request(this.fetch, 'POST', `${this.url}/otp`, {
-                            headers: this.headers,
-                            body: {
-                                phone,
-                                data: (_c = options === null || options === void 0 ? void 0 : options.data) !== null && _c !== void 0 ? _c : {},
-                                create_user: (_d = options === null || options === void 0 ? void 0 : options.shouldCreateUser) !== null && _d !== void 0 ? _d : true,
-                                gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
-                                channel: (_e = options === null || options === void 0 ? void 0 : options.channel) !== null && _e !== void 0 ? _e : 'sms',
-                            },
-                        });
-                        return { data: { user: null, session: null, messageId: data === null || data === void 0 ? void 0 : data.message_id }, error };
-                    }
-                    throw new AuthInvalidCredentialsError('You must provide either an email or phone number.');
+                    const { error } = await _request(this.fetch, 'POST', `${this.url}/otp`, {
+                        headers: this.headers,
+                        body: {
+                            email,
+                            data: (_a = options === null || options === void 0 ? void 0 : options.data) !== null && _a !== void 0 ? _a : {},
+                            create_user: (_b = options === null || options === void 0 ? void 0 : options.shouldCreateUser) !== null && _b !== void 0 ? _b : true,
+                            gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
+                            code_challenge: codeChallenge,
+                            code_challenge_method: codeChallengeMethod,
+                        },
+                        redirectTo: options === null || options === void 0 ? void 0 : options.emailRedirectTo,
+                    });
+                    return { data: { user: null, session: null }, error };
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: { user: null, session: null }, error };
-                    }
-                    throw error;
+                if ('phone' in credentials) {
+                    const { phone, options } = credentials;
+                    const { data, error } = await _request(this.fetch, 'POST', `${this.url}/otp`, {
+                        headers: this.headers,
+                        body: {
+                            phone,
+                            data: (_c = options === null || options === void 0 ? void 0 : options.data) !== null && _c !== void 0 ? _c : {},
+                            create_user: (_d = options === null || options === void 0 ? void 0 : options.shouldCreateUser) !== null && _d !== void 0 ? _d : true,
+                            gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
+                            channel: (_e = options === null || options === void 0 ? void 0 : options.channel) !== null && _e !== void 0 ? _e : 'sms',
+                        },
+                    });
+                    return { data: { user: null, session: null, messageId: data === null || data === void 0 ? void 0 : data.message_id }, error };
                 }
-            });
+                throw new AuthInvalidCredentialsError('You must provide either an email or phone number.');
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { user: null, session: null }, error };
+                }
+                throw error;
+            }
         }
         /**
          * Log in a user given a User supplied OTP received via mobile.
          */
-        verifyOtp(params) {
+        async verifyOtp(params) {
             var _a, _b;
-            return __awaiter$1(this, void 0, void 0, function* () {
-                try {
-                    if (params.type !== 'email_change' && params.type !== 'phone_change') {
-                        // we don't want to remove the authenticated session if the user is performing an email_change or phone_change verification
-                        yield this._removeSession();
-                    }
-                    const { data, error } = yield _request(this.fetch, 'POST', `${this.url}/verify`, {
-                        headers: this.headers,
-                        body: Object.assign(Object.assign({}, params), { gotrue_meta_security: { captcha_token: (_a = params.options) === null || _a === void 0 ? void 0 : _a.captchaToken } }),
-                        redirectTo: (_b = params.options) === null || _b === void 0 ? void 0 : _b.redirectTo,
-                        xform: _sessionResponse,
-                    });
-                    if (error) {
-                        throw error;
-                    }
-                    if (!data) {
-                        throw new Error('An error occurred on token verification.');
-                    }
-                    const session = data.session;
-                    const user = data.user;
-                    if (session === null || session === void 0 ? void 0 : session.access_token) {
-                        yield this._saveSession(session);
-                        yield this._notifyAllSubscribers('SIGNED_IN', session);
-                    }
-                    return { data: { user, session }, error: null };
+            try {
+                if (params.type !== 'email_change' && params.type !== 'phone_change') {
+                    // we don't want to remove the authenticated session if the user is performing an email_change or phone_change verification
+                    await this._removeSession();
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: { user: null, session: null }, error };
-                    }
+                let redirectTo = undefined;
+                let captchaToken = undefined;
+                if ('options' in params) {
+                    redirectTo = (_a = params.options) === null || _a === void 0 ? void 0 : _a.redirectTo;
+                    captchaToken = (_b = params.options) === null || _b === void 0 ? void 0 : _b.captchaToken;
+                }
+                const { data, error } = await _request(this.fetch, 'POST', `${this.url}/verify`, {
+                    headers: this.headers,
+                    body: Object.assign(Object.assign({}, params), { gotrue_meta_security: { captcha_token: captchaToken } }),
+                    redirectTo,
+                    xform: _sessionResponse,
+                });
+                if (error) {
                     throw error;
                 }
-            });
+                if (!data) {
+                    throw new Error('An error occurred on token verification.');
+                }
+                const session = data.session;
+                const user = data.user;
+                if (session === null || session === void 0 ? void 0 : session.access_token) {
+                    await this._saveSession(session);
+                    await this._notifyAllSubscribers('SIGNED_IN', session);
+                }
+                return { data: { user, session }, error: null };
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { user: null, session: null }, error };
+                }
+                throw error;
+            }
         }
         /**
          * Attempts a single-sign on using an enterprise Identity Provider. A
@@ -5650,182 +5705,255 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * If you have built an organization-specific login page, you can use the
          * organization's SSO Identity Provider UUID directly instead.
          */
-        signInWithSSO(params) {
+        async signInWithSSO(params) {
             var _a, _b, _c;
-            return __awaiter$1(this, void 0, void 0, function* () {
-                try {
-                    yield this._removeSession();
-                    return yield _request(this.fetch, 'POST', `${this.url}/sso`, {
-                        body: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, ('providerId' in params ? { provider_id: params.providerId } : null)), ('domain' in params ? { domain: params.domain } : null)), { redirect_to: (_b = (_a = params.options) === null || _a === void 0 ? void 0 : _a.redirectTo) !== null && _b !== void 0 ? _b : undefined }), (((_c = params === null || params === void 0 ? void 0 : params.options) === null || _c === void 0 ? void 0 : _c.captchaToken)
-                            ? { gotrue_meta_security: { captcha_token: params.options.captchaToken } }
-                            : null)), { skip_http_redirect: true }),
-                        headers: this.headers,
-                        xform: _ssoResponse,
-                    });
+            try {
+                await this._removeSession();
+                return await _request(this.fetch, 'POST', `${this.url}/sso`, {
+                    body: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, ('providerId' in params ? { provider_id: params.providerId } : null)), ('domain' in params ? { domain: params.domain } : null)), { redirect_to: (_b = (_a = params.options) === null || _a === void 0 ? void 0 : _a.redirectTo) !== null && _b !== void 0 ? _b : undefined }), (((_c = params === null || params === void 0 ? void 0 : params.options) === null || _c === void 0 ? void 0 : _c.captchaToken)
+                        ? { gotrue_meta_security: { captcha_token: params.options.captchaToken } }
+                        : null)), { skip_http_redirect: true }),
+                    headers: this.headers,
+                    xform: _ssoResponse,
+                });
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: null, error };
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: null, error };
-                    }
-                    throw error;
-                }
-            });
+                throw error;
+            }
         }
         /**
          * Sends a reauthentication OTP to the user's email or phone number.
          * Requires the user to be signed-in.
          */
-        reauthenticate() {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                try {
-                    const { data: { session }, error: sessionError, } = yield this.getSession();
+        async reauthenticate() {
+            try {
+                return await this._useSession(async (result) => {
+                    const { data: { session }, error: sessionError, } = result;
                     if (sessionError)
                         throw sessionError;
                     if (!session)
                         throw new AuthSessionMissingError();
-                    const { error } = yield _request(this.fetch, 'GET', `${this.url}/reauthenticate`, {
+                    const { error } = await _request(this.fetch, 'GET', `${this.url}/reauthenticate`, {
                         headers: this.headers,
                         jwt: session.access_token,
                     });
                     return { data: { user: null, session: null }, error };
+                });
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { user: null, session: null }, error };
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: { user: null, session: null }, error };
-                    }
-                    throw error;
-                }
-            });
+                throw error;
+            }
         }
         /**
          * Resends an existing signup confirmation email, email change email, SMS OTP or phone change OTP.
          */
-        resend(credentials) {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                try {
-                    yield this._removeSession();
-                    const endpoint = `${this.url}/resend`;
-                    if ('email' in credentials) {
-                        const { email, type, options } = credentials;
-                        const { error } = yield _request(this.fetch, 'POST', endpoint, {
-                            headers: this.headers,
-                            body: {
-                                email,
-                                type,
-                                gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
-                            },
-                        });
-                        return { data: { user: null, session: null }, error };
-                    }
-                    else if ('phone' in credentials) {
-                        const { phone, type, options } = credentials;
-                        const { data, error } = yield _request(this.fetch, 'POST', endpoint, {
-                            headers: this.headers,
-                            body: {
-                                phone,
-                                type,
-                                gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
-                            },
-                        });
-                        return { data: { user: null, session: null, messageId: data === null || data === void 0 ? void 0 : data.message_id }, error };
-                    }
-                    throw new AuthInvalidCredentialsError('You must provide either an email or phone number and a type');
+        async resend(credentials) {
+            try {
+                if (credentials.type != 'email_change' && credentials.type != 'phone_change') {
+                    await this._removeSession();
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: { user: null, session: null }, error };
-                    }
-                    throw error;
+                const endpoint = `${this.url}/resend`;
+                if ('email' in credentials) {
+                    const { email, type, options } = credentials;
+                    const { error } = await _request(this.fetch, 'POST', endpoint, {
+                        headers: this.headers,
+                        body: {
+                            email,
+                            type,
+                            gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
+                        },
+                        redirectTo: options === null || options === void 0 ? void 0 : options.emailRedirectTo,
+                    });
+                    return { data: { user: null, session: null }, error };
                 }
-            });
+                else if ('phone' in credentials) {
+                    const { phone, type, options } = credentials;
+                    const { data, error } = await _request(this.fetch, 'POST', endpoint, {
+                        headers: this.headers,
+                        body: {
+                            phone,
+                            type,
+                            gotrue_meta_security: { captcha_token: options === null || options === void 0 ? void 0 : options.captchaToken },
+                        },
+                    });
+                    return { data: { user: null, session: null, messageId: data === null || data === void 0 ? void 0 : data.message_id }, error };
+                }
+                throw new AuthInvalidCredentialsError('You must provide either an email or phone number and a type');
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { user: null, session: null }, error };
+                }
+                throw error;
+            }
         }
         /**
          * Returns the session, refreshing it if necessary.
          * The session returned can be null if the session is not detected which can happen in the event a user is not signed-in or has logged out.
          */
-        getSession() {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                // make sure we've read the session from the url if there is one
-                // save to just await, as long we make sure _initialize() never throws
-                yield this.initializePromise;
-                this._debug('#getSession()', 'begin');
-                try {
-                    let currentSession = null;
-                    if (this.persistSession) {
-                        const maybeSession = yield getItemAsync(this.storage, this.storageKey);
-                        this._debug('#getSession()', 'session from storage', maybeSession);
-                        if (maybeSession !== null) {
-                            if (this._isValidSession(maybeSession)) {
-                                currentSession = maybeSession;
-                            }
-                            else {
-                                this._debug('#getSession()', 'session from storage is not valid');
-                                yield this._removeSession();
-                            }
+        async getSession() {
+            return this._useSession(async (result) => {
+                return result;
+            });
+        }
+        /**
+         * Acquires a global lock based on the storage key.
+         */
+        async _acquireLock(acquireTimeout, fn) {
+            this._debug('#_acquireLock', 'begin', acquireTimeout);
+            try {
+                if (!(await stackGuardsSupported())) {
+                    this._debug('#_acquireLock', 'Stack guards not supported, so exclusive locking is not performed as it can lead to deadlocks if the lock is attempted to be recursively acquired (as the recursion cannot be detected).');
+                    return await fn();
+                }
+                if (isInStackGuard('_acquireLock')) {
+                    this._debug('#_acquireLock', 'recursive call');
+                    return await fn();
+                }
+                return await this.lock(`lock:${this.storageKey}`, acquireTimeout, async () => {
+                    this._debug('#_acquireLock', 'lock acquired for storage key', this.storageKey);
+                    try {
+                        return await stackGuard('_acquireLock', async () => {
+                            return await fn();
+                        });
+                    }
+                    finally {
+                        this._debug('#_acquireLock', 'lock released for storage key', this.storageKey);
+                    }
+                });
+            }
+            finally {
+                this._debug('#_acquireLock', 'end');
+            }
+        }
+        /**
+         * Use instead of {@link #getSession} inside the library. It is
+         * semantically usually what you want, as getting a session involves some
+         * processing afterwards that requires only one client operating on the
+         * session at once across multiple tabs or processes.
+         */
+        async _useSession(fn) {
+            this._debug('#_useSession', 'begin');
+            try {
+                if (isInStackGuard('_useSession')) {
+                    this._debug('#_useSession', 'recursive call');
+                    // the use of __loadSession here is the only correct use of the function!
+                    const result = await this.__loadSession();
+                    return await fn(result);
+                }
+                return await this._acquireLock(-1, async () => {
+                    return await stackGuard('_useSession', async () => {
+                        // the use of __loadSession here is the only correct use of the function!
+                        const result = await this.__loadSession();
+                        return await fn(result);
+                    });
+                });
+            }
+            finally {
+                this._debug('#_useSession', 'end');
+            }
+        }
+        /**
+         * NEVER USE DIRECTLY!
+         *
+         * Always use {@link #_useSession}.
+         */
+        async __loadSession() {
+            this._debug('#__loadSession()', 'begin');
+            if (this.logDebugMessages && !isInStackGuard('_useSession') && (await stackGuardsSupported())) {
+                throw new Error('Please use #_useSession()');
+            }
+            if (isInStackGuard('_initialize')) {
+                this._debug('#__loadSession', '#_initialize recursion detected', new Error().stack);
+            }
+            // always wait for #_initialize() to finish before loading anything from
+            // storage
+            await this.initializePromise;
+            try {
+                let currentSession = null;
+                if (this.persistSession) {
+                    const maybeSession = await getItemAsync(this.storage, this.storageKey);
+                    this._debug('#getSession()', 'session from storage', maybeSession);
+                    if (maybeSession !== null) {
+                        if (this._isValidSession(maybeSession)) {
+                            currentSession = maybeSession;
+                        }
+                        else {
+                            this._debug('#getSession()', 'session from storage is not valid');
+                            await this._removeSession();
                         }
                     }
-                    else {
-                        currentSession = this.inMemorySession;
-                        this._debug('#getSession()', 'session from memory', currentSession);
-                    }
-                    if (!currentSession) {
-                        return { data: { session: null }, error: null };
-                    }
-                    const hasExpired = currentSession.expires_at
-                        ? currentSession.expires_at <= Date.now() / 1000
-                        : false;
-                    this._debug('#getSession()', `session has${hasExpired ? '' : ' not'} expired`, 'expires_at', currentSession.expires_at);
-                    if (!hasExpired) {
-                        return { data: { session: currentSession }, error: null };
-                    }
-                    const { session, error } = yield this._callRefreshToken(currentSession.refresh_token);
-                    if (error) {
-                        return { data: { session: null }, error };
-                    }
-                    return { data: { session }, error: null };
                 }
-                finally {
-                    this._debug('#getSession()', 'end');
+                else {
+                    currentSession = this.inMemorySession;
+                    this._debug('#getSession()', 'session from memory', currentSession);
                 }
-            });
+                if (!currentSession) {
+                    return { data: { session: null }, error: null };
+                }
+                const hasExpired = currentSession.expires_at
+                    ? currentSession.expires_at <= Date.now() / 1000
+                    : false;
+                this._debug('#__loadSession()', `session has${hasExpired ? '' : ' not'} expired`, 'expires_at', currentSession.expires_at);
+                if (!hasExpired) {
+                    return { data: { session: currentSession }, error: null };
+                }
+                const { session, error } = await this._callRefreshToken(currentSession.refresh_token);
+                if (error) {
+                    return { data: { session: null }, error };
+                }
+                return { data: { session }, error: null };
+            }
+            finally {
+                this._debug('#__loadSession()', 'end');
+            }
         }
         /**
          * Gets the current user details if there is an existing session.
          * @param jwt Takes in an optional access token jwt. If no jwt is provided, getUser() will attempt to get the jwt from the current session.
          */
-        getUser(jwt) {
-            var _a, _b;
-            return __awaiter$1(this, void 0, void 0, function* () {
-                try {
-                    if (!jwt) {
-                        const { data, error } = yield this.getSession();
-                        if (error) {
-                            throw error;
-                        }
-                        // Default to Authorization header if there is no existing session
-                        jwt = (_b = (_a = data.session) === null || _a === void 0 ? void 0 : _a.access_token) !== null && _b !== void 0 ? _b : undefined;
-                    }
-                    return yield _request(this.fetch, 'GET', `${this.url}/user`, {
+        async getUser(jwt) {
+            try {
+                if (jwt) {
+                    return await _request(this.fetch, 'GET', `${this.url}/user`, {
                         headers: this.headers,
                         jwt: jwt,
                         xform: _userResponse,
                     });
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: { user: null }, error };
+                return await this._useSession(async (result) => {
+                    var _a, _b;
+                    const { data, error } = result;
+                    if (error) {
+                        throw error;
                     }
-                    throw error;
+                    return await _request(this.fetch, 'GET', `${this.url}/user`, {
+                        headers: this.headers,
+                        jwt: (_b = (_a = data.session) === null || _a === void 0 ? void 0 : _a.access_token) !== null && _b !== void 0 ? _b : undefined,
+                        xform: _userResponse,
+                    });
+                });
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { user: null }, error };
                 }
-            });
+                throw error;
+            }
         }
         /**
          * Updates user data for a logged in user.
          */
-        updateUser(attributes, options = {}) {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                try {
-                    const { data: sessionData, error: sessionError } = yield this.getSession();
+        async updateUser(attributes, options = {}) {
+            try {
+                return await this._useSession(async (result) => {
+                    const { data: sessionData, error: sessionError } = result;
                     if (sessionError) {
                         throw sessionError;
                     }
@@ -5833,7 +5961,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         throw new AuthSessionMissingError();
                     }
                     const session = sessionData.session;
-                    const { data, error: userError } = yield _request(this.fetch, 'PUT', `${this.url}/user`, {
+                    const { data, error: userError } = await _request(this.fetch, 'PUT', `${this.url}/user`, {
                         headers: this.headers,
                         redirectTo: options === null || options === void 0 ? void 0 : options.emailRedirectTo,
                         body: attributes,
@@ -5843,17 +5971,17 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     if (userError)
                         throw userError;
                     session.user = data.user;
-                    yield this._saveSession(session);
-                    yield this._notifyAllSubscribers('USER_UPDATED', session);
+                    await this._saveSession(session);
+                    await this._notifyAllSubscribers('USER_UPDATED', session);
                     return { data: { user: session.user }, error: null };
+                });
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { user: null }, error };
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: { user: null }, error };
-                    }
-                    throw error;
-                }
-            });
+                throw error;
+            }
         }
         /**
          * Decodes a JWT (without performing any validation).
@@ -5866,56 +5994,54 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * If the refresh token or access token in the current session is invalid, an error will be thrown.
          * @param currentSession The current session that minimally contains an access token and refresh token.
          */
-        setSession(currentSession) {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                try {
-                    if (!currentSession.access_token || !currentSession.refresh_token) {
-                        throw new AuthSessionMissingError();
-                    }
-                    const timeNow = Date.now() / 1000;
-                    let expiresAt = timeNow;
-                    let hasExpired = true;
-                    let session = null;
-                    const payload = decodeJWTPayload(currentSession.access_token);
-                    if (payload.exp) {
-                        expiresAt = payload.exp;
-                        hasExpired = expiresAt <= timeNow;
-                    }
-                    if (hasExpired) {
-                        const { session: refreshedSession, error } = yield this._callRefreshToken(currentSession.refresh_token);
-                        if (error) {
-                            return { data: { user: null, session: null }, error: error };
-                        }
-                        if (!refreshedSession) {
-                            return { data: { user: null, session: null }, error: null };
-                        }
-                        session = refreshedSession;
-                    }
-                    else {
-                        const { data, error } = yield this.getUser(currentSession.access_token);
-                        if (error) {
-                            throw error;
-                        }
-                        session = {
-                            access_token: currentSession.access_token,
-                            refresh_token: currentSession.refresh_token,
-                            user: data.user,
-                            token_type: 'bearer',
-                            expires_in: expiresAt - timeNow,
-                            expires_at: expiresAt,
-                        };
-                        yield this._saveSession(session);
-                        yield this._notifyAllSubscribers('SIGNED_IN', session);
-                    }
-                    return { data: { user: session.user, session }, error: null };
+        async setSession(currentSession) {
+            try {
+                if (!currentSession.access_token || !currentSession.refresh_token) {
+                    throw new AuthSessionMissingError();
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: { session: null, user: null }, error };
-                    }
-                    throw error;
+                const timeNow = Date.now() / 1000;
+                let expiresAt = timeNow;
+                let hasExpired = true;
+                let session = null;
+                const payload = decodeJWTPayload(currentSession.access_token);
+                if (payload.exp) {
+                    expiresAt = payload.exp;
+                    hasExpired = expiresAt <= timeNow;
                 }
-            });
+                if (hasExpired) {
+                    const { session: refreshedSession, error } = await this._callRefreshToken(currentSession.refresh_token);
+                    if (error) {
+                        return { data: { user: null, session: null }, error: error };
+                    }
+                    if (!refreshedSession) {
+                        return { data: { user: null, session: null }, error: null };
+                    }
+                    session = refreshedSession;
+                }
+                else {
+                    const { data, error } = await this.getUser(currentSession.access_token);
+                    if (error) {
+                        throw error;
+                    }
+                    session = {
+                        access_token: currentSession.access_token,
+                        refresh_token: currentSession.refresh_token,
+                        user: data.user,
+                        token_type: 'bearer',
+                        expires_in: expiresAt - timeNow,
+                        expires_at: expiresAt,
+                    };
+                    await this._saveSession(session);
+                    await this._notifyAllSubscribers('SIGNED_IN', session);
+                }
+                return { data: { user: session.user, session }, error: null };
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { session: null, user: null }, error };
+                }
+                throw error;
+            }
         }
         /**
          * Returns a new session, regardless of expiry status.
@@ -5923,12 +6049,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * If the current session's refresh token is invalid, an error will be thrown.
          * @param currentSession The current session. If passed in, it must contain a refresh token.
          */
-        refreshSession(currentSession) {
-            var _a;
-            return __awaiter$1(this, void 0, void 0, function* () {
-                try {
+        async refreshSession(currentSession) {
+            try {
+                return await this._useSession(async (result) => {
+                    var _a;
                     if (!currentSession) {
-                        const { data, error } = yield this.getSession();
+                        const { data, error } = result;
                         if (error) {
                             throw error;
                         }
@@ -5937,7 +6063,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     if (!(currentSession === null || currentSession === void 0 ? void 0 : currentSession.refresh_token)) {
                         throw new AuthSessionMissingError();
                     }
-                    const { session, error } = yield this._callRefreshToken(currentSession.refresh_token);
+                    const { session, error } = await this._callRefreshToken(currentSession.refresh_token);
                     if (error) {
                         return { data: { user: null, session: null }, error: error };
                     }
@@ -5945,113 +6071,92 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         return { data: { user: null, session: null }, error: null };
                     }
                     return { data: { user: session.user, session }, error: null };
+                });
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { user: null, session: null }, error };
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: { user: null, session: null }, error };
-                    }
-                    throw error;
-                }
-            });
+                throw error;
+            }
         }
         /**
          * Gets the session data from a URL string
          */
-        _getSessionFromUrl(isPKCEFlow) {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                try {
-                    if (!isBrowser())
-                        throw new AuthImplicitGrantRedirectError('No browser detected.');
-                    if (this.flowType === 'implicit' && !this._isImplicitGrantFlow()) {
-                        throw new AuthImplicitGrantRedirectError('Not a valid implicit grant flow url.');
-                    }
-                    else if (this.flowType == 'pkce' && !isPKCEFlow) {
-                        throw new AuthPKCEGrantCodeExchangeError('Not a valid PKCE flow url.');
-                    }
-                    if (isPKCEFlow) {
-                        const authCode = getParameterByName('code');
-                        if (!authCode)
-                            throw new AuthPKCEGrantCodeExchangeError('No code detected.');
-                        const { data, error } = yield this.exchangeCodeForSession(authCode);
-                        if (error)
-                            throw error;
-                        if (!data.session)
-                            throw new AuthPKCEGrantCodeExchangeError('No session detected.');
-                        let url = new URL(window.location.href);
-                        url.searchParams.delete('code');
-                        window.history.replaceState(window.history.state, '', url.toString());
-                        return { data: { session: data.session, redirectType: null }, error: null };
-                    }
-                    const error_description = getParameterByName('error_description');
-                    if (error_description) {
-                        const error_code = getParameterByName('error_code');
-                        if (!error_code)
-                            throw new AuthImplicitGrantRedirectError('No error_code detected.');
-                        const error = getParameterByName('error');
-                        if (!error)
-                            throw new AuthImplicitGrantRedirectError('No error detected.');
-                        throw new AuthImplicitGrantRedirectError(error_description, { error, code: error_code });
-                    }
-                    const provider_token = getParameterByName('provider_token');
-                    const provider_refresh_token = getParameterByName('provider_refresh_token');
-                    const access_token = getParameterByName('access_token');
-                    if (!access_token)
-                        throw new AuthImplicitGrantRedirectError('No access_token detected.');
-                    const expires_in = getParameterByName('expires_in');
-                    if (!expires_in)
-                        throw new AuthImplicitGrantRedirectError('No expires_in detected.');
-                    const refresh_token = getParameterByName('refresh_token');
-                    if (!refresh_token)
-                        throw new AuthImplicitGrantRedirectError('No refresh_token detected.');
-                    const token_type = getParameterByName('token_type');
-                    if (!token_type)
-                        throw new AuthImplicitGrantRedirectError('No token_type detected.');
-                    const timeNow = Math.round(Date.now() / 1000);
-                    const expires_at = timeNow + parseInt(expires_in);
-                    const { data, error } = yield this.getUser(access_token);
+        async _getSessionFromURL(isPKCEFlow) {
+            try {
+                if (!isBrowser())
+                    throw new AuthImplicitGrantRedirectError('No browser detected.');
+                if (this.flowType === 'implicit' && !this._isImplicitGrantFlow()) {
+                    throw new AuthImplicitGrantRedirectError('Not a valid implicit grant flow url.');
+                }
+                else if (this.flowType == 'pkce' && !isPKCEFlow) {
+                    throw new AuthPKCEGrantCodeExchangeError('Not a valid PKCE flow url.');
+                }
+                const params = parseParametersFromURL(window.location.href);
+                if (isPKCEFlow) {
+                    if (!params.code)
+                        throw new AuthPKCEGrantCodeExchangeError('No code detected.');
+                    const { data, error } = await this.exchangeCodeForSession(params.code);
                     if (error)
                         throw error;
-                    const user = data.user;
-                    const session = {
-                        provider_token,
-                        provider_refresh_token,
-                        access_token,
-                        expires_in: parseInt(expires_in),
-                        expires_at,
-                        refresh_token,
-                        token_type,
-                        user,
-                    };
-                    const redirectType = getParameterByName('type');
-                    // Remove tokens from URL
-                    window.location.hash = '';
-                    this._debug('#_getSessionFromUrl()', 'clearing window.location.hash');
-                    return { data: { session, redirectType }, error: null };
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('code');
+                    window.history.replaceState(window.history.state, '', url.toString());
+                    return { data: { session: data.session, redirectType: null }, error: null };
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: { session: null, redirectType: null }, error };
-                    }
+                if (params.error || params.error_description || params.error_code) {
+                    throw new AuthImplicitGrantRedirectError(params.error_description || 'Error in URL with unspecified error_description', {
+                        error: params.error || 'unspecified_error',
+                        code: params.error_code || 'unspecified_code',
+                    });
+                }
+                const { provider_token, provider_refresh_token, access_token, refresh_token, expires_in, token_type, } = params;
+                if (!access_token || !expires_in || !refresh_token || !token_type) {
+                    throw new AuthImplicitGrantRedirectError('No session defined in URL');
+                }
+                const timeNow = Math.round(Date.now() / 1000);
+                const expiresIn = parseInt(expires_in);
+                const expires_at = timeNow + expiresIn;
+                const { data, error } = await this.getUser(access_token);
+                if (error)
                     throw error;
+                const session = {
+                    provider_token,
+                    provider_refresh_token,
+                    access_token,
+                    expires_in: expiresIn,
+                    expires_at,
+                    refresh_token,
+                    token_type,
+                    user: data.user,
+                };
+                // Remove tokens from URL
+                window.location.hash = '';
+                this._debug('#_getSessionFromURL()', 'clearing window.location.hash');
+                return { data: { session, redirectType: params.type }, error: null };
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { session: null, redirectType: null }, error };
                 }
-            });
+                throw error;
+            }
         }
         /**
          * Checks if the current URL contains parameters given by an implicit oauth grant flow (https://www.rfc-editor.org/rfc/rfc6749.html#section-4.2)
          */
         _isImplicitGrantFlow() {
-            return (isBrowser() &&
-                (Boolean(getParameterByName('access_token')) ||
-                    Boolean(getParameterByName('error_description'))));
+            const params = parseParametersFromURL(window.location.href);
+            return !!(isBrowser() && (params.access_token || params.error_description));
         }
         /**
          * Checks if the current URL and backing storage contain parameters given by a PKCE flow
          */
-        _isPKCEFlow() {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                const currentStorageContent = yield getItemAsync(this.storage, `${this.storageKey}-code-verifier`);
-                return Boolean(getParameterByName('code')) && Boolean(currentStorageContent);
-            });
+        async _isPKCEFlow() {
+            const params = parseParametersFromURL(window.location.href);
+            const currentStorageContent = await getItemAsync(this.storage, `${this.storageKey}-code-verifier`);
+            return !!(params.code && currentStorageContent);
         }
         /**
          * Inside a browser context, `signOut()` will remove the logged in user from the browser session
@@ -6059,17 +6164,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          *
          * For server-side management, you can revoke all refresh tokens for a user by passing a user's JWT through to `auth.api.signOut(JWT: string)`.
          * There is no way to revoke a user's access token jwt until it expires. It is recommended to set a shorter expiry on the jwt for this reason.
+         *
+         * If using others scope, no `SIGNED_OUT` event is fired!
          */
-        signOut() {
-            var _a;
-            return __awaiter$1(this, void 0, void 0, function* () {
-                const { data, error: sessionError } = yield this.getSession();
+        async signOut({ scope } = { scope: 'global' }) {
+            return await this._useSession(async (result) => {
+                var _a;
+                const { data, error: sessionError } = result;
                 if (sessionError) {
                     return { error: sessionError };
                 }
                 const accessToken = (_a = data.session) === null || _a === void 0 ? void 0 : _a.access_token;
                 if (accessToken) {
-                    const { error } = yield this.admin.signOut(accessToken);
+                    const { error } = await this.admin.signOut(accessToken, scope);
                     if (error) {
                         // ignore 404s since user might not exist anymore
                         // ignore 401s since an invalid or expired JWT should sign out the current session
@@ -6078,9 +6185,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         }
                     }
                 }
-                yield this._removeSession();
-                yield removeItemAsync(this.storage, `${this.storageKey}-code-verifier`);
-                yield this._notifyAllSubscribers('SIGNED_OUT', null);
+                if (scope !== 'others') {
+                    await this._removeSession();
+                    await removeItemAsync(this.storage, `${this.storageKey}-code-verifier`);
+                    await this._notifyAllSubscribers('SIGNED_OUT', null);
+                }
                 return { error: null };
             });
         }
@@ -6103,18 +6212,18 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             this._emitInitialSession(id);
             return { data: { subscription } };
         }
-        _emitInitialSession(id) {
-            var _a, _b;
-            return __awaiter$1(this, void 0, void 0, function* () {
+        async _emitInitialSession(id) {
+            return await this._useSession(async (result) => {
+                var _a, _b;
                 try {
-                    const { data: { session }, error, } = yield this.getSession();
+                    const { data: { session }, error, } = result;
                     if (error)
                         throw error;
-                    yield ((_a = this.stateChangeEmitters.get(id)) === null || _a === void 0 ? void 0 : _a.callback('INITIAL_SESSION', session));
+                    await ((_a = this.stateChangeEmitters.get(id)) === null || _a === void 0 ? void 0 : _a.callback('INITIAL_SESSION', session));
                     this._debug('INITIAL_SESSION', 'callback id', id, 'session', session);
                 }
                 catch (err) {
-                    yield ((_b = this.stateChangeEmitters.get(id)) === null || _b === void 0 ? void 0 : _b.callback('INITIAL_SESSION', null));
+                    await ((_b = this.stateChangeEmitters.get(id)) === null || _b === void 0 ? void 0 : _b.callback('INITIAL_SESSION', null));
                     this._debug('INITIAL_SESSION', 'callback id', id, 'error', err);
                     console.error(err);
                 }
@@ -6127,72 +6236,68 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param options.redirectTo The URL to send the user to after they click the password reset link.
          * @param options.captchaToken Verification token received when the user completes the captcha on the site.
          */
-        resetPasswordForEmail(email, options = {}) {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                let codeChallenge = null;
-                let codeChallengeMethod = null;
-                if (this.flowType === 'pkce') {
-                    const codeVerifier = generatePKCEVerifier();
-                    yield setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
-                    codeChallenge = yield generatePKCEChallenge(codeVerifier);
-                    codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
+        async resetPasswordForEmail(email, options = {}) {
+            let codeChallenge = null;
+            let codeChallengeMethod = null;
+            if (this.flowType === 'pkce') {
+                const codeVerifier = generatePKCEVerifier();
+                await setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
+                codeChallenge = await generatePKCEChallenge(codeVerifier);
+                codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
+            }
+            try {
+                return await _request(this.fetch, 'POST', `${this.url}/recover`, {
+                    body: {
+                        email,
+                        code_challenge: codeChallenge,
+                        code_challenge_method: codeChallengeMethod,
+                        gotrue_meta_security: { captcha_token: options.captchaToken },
+                    },
+                    headers: this.headers,
+                    redirectTo: options.redirectTo,
+                });
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: null, error };
                 }
-                try {
-                    return yield _request(this.fetch, 'POST', `${this.url}/recover`, {
-                        body: {
-                            email,
-                            code_challenge: codeChallenge,
-                            code_challenge_method: codeChallengeMethod,
-                            gotrue_meta_security: { captcha_token: options.captchaToken },
-                        },
-                        headers: this.headers,
-                        redirectTo: options.redirectTo,
-                    });
-                }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: null, error };
-                    }
-                    throw error;
-                }
-            });
+                throw error;
+            }
         }
         /**
          * Generates a new JWT.
          * @param refreshToken A valid refresh token that was returned on login.
          */
-        _refreshAccessToken(refreshToken) {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                const debugName = `#_refreshAccessToken(${refreshToken.substring(0, 5)}...)`;
-                this._debug(debugName, 'begin');
-                try {
-                    const startedAt = Date.now();
-                    // will attempt to refresh the token with exponential backoff
-                    return yield retryable((attempt) => __awaiter$1(this, void 0, void 0, function* () {
-                        yield sleep(attempt * 200); // 0, 200, 400, 800, ...
-                        this._debug(debugName, 'refreshing attempt', attempt);
-                        return yield _request(this.fetch, 'POST', `${this.url}/token?grant_type=refresh_token`, {
-                            body: { refresh_token: refreshToken },
-                            headers: this.headers,
-                            xform: _sessionResponse,
-                        });
-                    }), (attempt, _, result) => result &&
-                        result.error &&
-                        isAuthRetryableFetchError(result.error) &&
-                        // retryable only if the request can be sent before the backoff overflows the tick duration
-                        Date.now() + (attempt + 1) * 200 - startedAt < AUTO_REFRESH_TICK_DURATION);
+        async _refreshAccessToken(refreshToken) {
+            const debugName = `#_refreshAccessToken(${refreshToken.substring(0, 5)}...)`;
+            this._debug(debugName, 'begin');
+            try {
+                const startedAt = Date.now();
+                // will attempt to refresh the token with exponential backoff
+                return await retryable(async (attempt) => {
+                    await sleep(attempt * 200); // 0, 200, 400, 800, ...
+                    this._debug(debugName, 'refreshing attempt', attempt);
+                    return await _request(this.fetch, 'POST', `${this.url}/token?grant_type=refresh_token`, {
+                        body: { refresh_token: refreshToken },
+                        headers: this.headers,
+                        xform: _sessionResponse,
+                    });
+                }, (attempt, _, result) => result &&
+                    result.error &&
+                    isAuthRetryableFetchError(result.error) &&
+                    // retryable only if the request can be sent before the backoff overflows the tick duration
+                    Date.now() + (attempt + 1) * 200 - startedAt < AUTO_REFRESH_TICK_DURATION);
+            }
+            catch (error) {
+                this._debug(debugName, 'error', error);
+                if (isAuthError(error)) {
+                    return { data: { session: null, user: null }, error };
                 }
-                catch (error) {
-                    this._debug(debugName, 'error', error);
-                    if (isAuthError(error)) {
-                        return { data: { session: null, user: null }, error };
-                    }
-                    throw error;
-                }
-                finally {
-                    this._debug(debugName, 'end');
-                }
-            });
+                throw error;
+            }
+            finally {
+                this._debug(debugName, 'end');
+            }
         }
         _isValidSession(maybeSession) {
             const isValidSession = typeof maybeSession === 'object' &&
@@ -6202,172 +6307,160 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 'expires_at' in maybeSession;
             return isValidSession;
         }
-        _handleProviderSignIn(provider, options) {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                const url = yield this._getUrlForProvider(provider, {
-                    redirectTo: options.redirectTo,
-                    scopes: options.scopes,
-                    queryParams: options.queryParams,
-                });
-                this._debug('#_handleProviderSignIn()', 'provider', provider, 'options', options, 'url', url);
-                // try to open on the browser
-                if (isBrowser() && !options.skipBrowserRedirect) {
-                    window.location.assign(url);
-                }
-                return { data: { provider, url }, error: null };
+        async _handleProviderSignIn(provider, options) {
+            const url = await this._getUrlForProvider(provider, {
+                redirectTo: options.redirectTo,
+                scopes: options.scopes,
+                queryParams: options.queryParams,
             });
+            this._debug('#_handleProviderSignIn()', 'provider', provider, 'options', options, 'url', url);
+            // try to open on the browser
+            if (isBrowser() && !options.skipBrowserRedirect) {
+                window.location.assign(url);
+            }
+            return { data: { provider, url }, error: null };
         }
         /**
          * Recovers the session from LocalStorage and refreshes
          * Note: this method is async to accommodate for AsyncStorage e.g. in React native.
          */
-        _recoverAndRefresh() {
+        async _recoverAndRefresh() {
             var _a;
-            return __awaiter$1(this, void 0, void 0, function* () {
-                const debugName = '#_recoverAndRefresh()';
-                this._debug(debugName, 'begin');
-                try {
-                    const currentSession = yield getItemAsync(this.storage, this.storageKey);
-                    this._debug(debugName, 'session from storage', currentSession);
-                    if (!this._isValidSession(currentSession)) {
-                        this._debug(debugName, 'session is not valid');
-                        if (currentSession !== null) {
-                            yield this._removeSession();
-                        }
-                        return;
+            const debugName = '#_recoverAndRefresh()';
+            this._debug(debugName, 'begin');
+            try {
+                const currentSession = await getItemAsync(this.storage, this.storageKey);
+                this._debug(debugName, 'session from storage', currentSession);
+                if (!this._isValidSession(currentSession)) {
+                    this._debug(debugName, 'session is not valid');
+                    if (currentSession !== null) {
+                        await this._removeSession();
                     }
-                    const timeNow = Math.round(Date.now() / 1000);
-                    const expiresWithMargin = ((_a = currentSession.expires_at) !== null && _a !== void 0 ? _a : Infinity) < timeNow + EXPIRY_MARGIN;
-                    this._debug(debugName, `session has${expiresWithMargin ? '' : ' not'} expired with margin of ${EXPIRY_MARGIN}s`);
-                    if (expiresWithMargin) {
-                        if (this.autoRefreshToken && currentSession.refresh_token) {
-                            const { error } = yield this._callRefreshToken(currentSession.refresh_token);
-                            if (error) {
-                                console.error(error);
-                                if (!isAuthRetryableFetchError(error)) {
-                                    this._debug(debugName, 'refresh failed with a non-retryable error, removing the session', error);
-                                    yield this._removeSession();
-                                }
+                    return;
+                }
+                const timeNow = Math.round(Date.now() / 1000);
+                const expiresWithMargin = ((_a = currentSession.expires_at) !== null && _a !== void 0 ? _a : Infinity) < timeNow + EXPIRY_MARGIN;
+                this._debug(debugName, `session has${expiresWithMargin ? '' : ' not'} expired with margin of ${EXPIRY_MARGIN}s`);
+                if (expiresWithMargin) {
+                    if (this.autoRefreshToken && currentSession.refresh_token) {
+                        const { error } = await this._callRefreshToken(currentSession.refresh_token);
+                        if (error) {
+                            console.error(error);
+                            if (!isAuthRetryableFetchError(error)) {
+                                this._debug(debugName, 'refresh failed with a non-retryable error, removing the session', error);
+                                await this._removeSession();
                             }
                         }
                     }
-                    else {
-                        // no need to persist currentSession again, as we just loaded it from
-                        // local storage; persisting it again may overwrite a value saved by
-                        // another client with access to the same local storage
-                        yield this._notifyAllSubscribers('SIGNED_IN', currentSession);
-                    }
                 }
-                catch (err) {
-                    this._debug(debugName, 'error', err);
-                    console.error(err);
-                    return;
+                else {
+                    // no need to persist currentSession again, as we just loaded it from
+                    // local storage; persisting it again may overwrite a value saved by
+                    // another client with access to the same local storage
+                    await this._notifyAllSubscribers('SIGNED_IN', currentSession);
                 }
-                finally {
-                    this._debug(debugName, 'end');
-                }
-            });
+            }
+            catch (err) {
+                this._debug(debugName, 'error', err);
+                console.error(err);
+                return;
+            }
+            finally {
+                this._debug(debugName, 'end');
+            }
         }
-        _callRefreshToken(refreshToken) {
+        async _callRefreshToken(refreshToken) {
             var _a, _b;
-            return __awaiter$1(this, void 0, void 0, function* () {
-                if (!refreshToken) {
+            if (!refreshToken) {
+                throw new AuthSessionMissingError();
+            }
+            // refreshing is already in progress
+            if (this.refreshingDeferred) {
+                return this.refreshingDeferred.promise;
+            }
+            const debugName = `#_callRefreshToken(${refreshToken.substring(0, 5)}...)`;
+            this._debug(debugName, 'begin');
+            try {
+                this.refreshingDeferred = new Deferred();
+                const { data, error } = await this._refreshAccessToken(refreshToken);
+                if (error)
+                    throw error;
+                if (!data.session)
                     throw new AuthSessionMissingError();
-                }
-                // refreshing is already in progress
-                if (this.refreshingDeferred) {
-                    return this.refreshingDeferred.promise;
-                }
-                const debugName = `#_callRefreshToken(${refreshToken.substring(0, 5)}...)`;
-                this._debug(debugName, 'begin');
-                try {
-                    this.refreshingDeferred = new Deferred();
-                    const { data, error } = yield this._refreshAccessToken(refreshToken);
-                    if (error)
-                        throw error;
-                    if (!data.session)
-                        throw new AuthSessionMissingError();
-                    yield this._saveSession(data.session);
-                    yield this._notifyAllSubscribers('TOKEN_REFRESHED', data.session);
-                    const result = { session: data.session, error: null };
-                    this.refreshingDeferred.resolve(result);
+                await this._saveSession(data.session);
+                await this._notifyAllSubscribers('TOKEN_REFRESHED', data.session);
+                const result = { session: data.session, error: null };
+                this.refreshingDeferred.resolve(result);
+                return result;
+            }
+            catch (error) {
+                this._debug(debugName, 'error', error);
+                if (isAuthError(error)) {
+                    const result = { session: null, error };
+                    (_a = this.refreshingDeferred) === null || _a === void 0 ? void 0 : _a.resolve(result);
                     return result;
                 }
-                catch (error) {
-                    this._debug(debugName, 'error', error);
-                    if (isAuthError(error)) {
-                        const result = { session: null, error };
-                        (_a = this.refreshingDeferred) === null || _a === void 0 ? void 0 : _a.resolve(result);
-                        return result;
-                    }
-                    (_b = this.refreshingDeferred) === null || _b === void 0 ? void 0 : _b.reject(error);
-                    throw error;
-                }
-                finally {
-                    this.refreshingDeferred = null;
-                    this._debug(debugName, 'end');
-                }
-            });
+                (_b = this.refreshingDeferred) === null || _b === void 0 ? void 0 : _b.reject(error);
+                throw error;
+            }
+            finally {
+                this.refreshingDeferred = null;
+                this._debug(debugName, 'end');
+            }
         }
-        _notifyAllSubscribers(event, session, broadcast = true) {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                const debugName = `#_notifyAllSubscribers(${event})`;
-                this._debug(debugName, 'begin', session, `broadcast = ${broadcast}`);
-                try {
-                    if (this.broadcastChannel && broadcast) {
-                        this.broadcastChannel.postMessage({ event, session });
-                    }
-                    const errors = [];
-                    const promises = Array.from(this.stateChangeEmitters.values()).map((x) => __awaiter$1(this, void 0, void 0, function* () {
-                        try {
-                            yield x.callback(event, session);
-                        }
-                        catch (e) {
-                            errors.push(e);
-                        }
-                    }));
-                    yield Promise.all(promises);
-                    if (errors.length > 0) {
-                        for (let i = 0; i < errors.length; i += 1) {
-                            console.error(errors[i]);
-                        }
-                        throw errors[0];
-                    }
+        async _notifyAllSubscribers(event, session, broadcast = true) {
+            const debugName = `#_notifyAllSubscribers(${event})`;
+            this._debug(debugName, 'begin', session, `broadcast = ${broadcast}`);
+            try {
+                if (this.broadcastChannel && broadcast) {
+                    this.broadcastChannel.postMessage({ event, session });
                 }
-                finally {
-                    this._debug(debugName, 'end');
+                const errors = [];
+                const promises = Array.from(this.stateChangeEmitters.values()).map(async (x) => {
+                    try {
+                        await x.callback(event, session);
+                    }
+                    catch (e) {
+                        errors.push(e);
+                    }
+                });
+                await Promise.all(promises);
+                if (errors.length > 0) {
+                    for (let i = 0; i < errors.length; i += 1) {
+                        console.error(errors[i]);
+                    }
+                    throw errors[0];
                 }
-            });
+            }
+            finally {
+                this._debug(debugName, 'end');
+            }
         }
         /**
          * set currentSession and currentUser
          * process to _startAutoRefreshToken if possible
          */
-        _saveSession(session) {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                this._debug('#_saveSession()', session);
-                if (!this.persistSession) {
-                    this.inMemorySession = session;
-                }
-                if (this.persistSession && session.expires_at) {
-                    yield this._persistSession(session);
-                }
-            });
+        async _saveSession(session) {
+            this._debug('#_saveSession()', session);
+            if (!this.persistSession) {
+                this.inMemorySession = session;
+            }
+            if (this.persistSession && session.expires_at) {
+                await this._persistSession(session);
+            }
         }
         _persistSession(currentSession) {
             this._debug('#_persistSession()', currentSession);
             return setItemAsync(this.storage, this.storageKey, currentSession);
         }
-        _removeSession() {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                this._debug('#_removeSession()');
-                if (this.persistSession) {
-                    yield removeItemAsync(this.storage, this.storageKey);
-                }
-                else {
-                    this.inMemorySession = null;
-                }
-            });
+        async _removeSession() {
+            this._debug('#_removeSession()');
+            if (this.persistSession) {
+                await removeItemAsync(this.storage, this.storageKey);
+            }
+            else {
+                this.inMemorySession = null;
+            }
         }
         /**
          * Removes any registered visibilitychange callback.
@@ -6392,45 +6485,46 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * This is the private implementation of {@link #startAutoRefresh}. Use this
          * within the library.
          */
-        _startAutoRefresh() {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                yield this._stopAutoRefresh();
-                this._debug('#_startAutoRefresh()');
-                const ticker = setInterval(() => this._autoRefreshTokenTick(), AUTO_REFRESH_TICK_DURATION);
-                this.autoRefreshTicker = ticker;
-                if (ticker && typeof ticker === 'object' && typeof ticker.unref === 'function') {
-                    // ticker is a NodeJS Timeout object that has an `unref` method
-                    // https://nodejs.org/api/timers.html#timeoutunref
-                    // When auto refresh is used in NodeJS (like for testing) the
-                    // `setInterval` is preventing the process from being marked as
-                    // finished and tests run endlessly. This can be prevented by calling
-                    // `unref()` on the returned object.
-                    ticker.unref();
-                    // @ts-ignore
-                }
-                else if (typeof Deno !== 'undefined' && typeof Deno.unrefTimer === 'function') {
-                    // similar like for NodeJS, but with the Deno API
-                    // https://deno.land/api@latest?unstable&s=Deno.unrefTimer
-                    // @ts-ignore
-                    Deno.unrefTimer(ticker);
-                }
-                // run the tick immediately
-                yield this._autoRefreshTokenTick();
-            });
+        async _startAutoRefresh() {
+            await this._stopAutoRefresh();
+            this._debug('#_startAutoRefresh()');
+            const ticker = setInterval(() => this._autoRefreshTokenTick(), AUTO_REFRESH_TICK_DURATION);
+            this.autoRefreshTicker = ticker;
+            if (ticker && typeof ticker === 'object' && typeof ticker.unref === 'function') {
+                // ticker is a NodeJS Timeout object that has an `unref` method
+                // https://nodejs.org/api/timers.html#timeoutunref
+                // When auto refresh is used in NodeJS (like for testing) the
+                // `setInterval` is preventing the process from being marked as
+                // finished and tests run endlessly. This can be prevented by calling
+                // `unref()` on the returned object.
+                ticker.unref();
+                // @ts-ignore
+            }
+            else if (typeof Deno !== 'undefined' && typeof Deno.unrefTimer === 'function') {
+                // similar like for NodeJS, but with the Deno API
+                // https://deno.land/api@latest?unstable&s=Deno.unrefTimer
+                // @ts-ignore
+                Deno.unrefTimer(ticker);
+            }
+            // run the tick immediately, but in the next pass of the event loop so that
+            // #_initialize can be allowed to complete without recursively waiting on
+            // itself
+            setTimeout(async () => {
+                await this.initializePromise;
+                await this._autoRefreshTokenTick();
+            }, 0);
         }
         /**
          * This is the private implementation of {@link #stopAutoRefresh}. Use this
          * within the library.
          */
-        _stopAutoRefresh() {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                this._debug('#_stopAutoRefresh()');
-                const ticker = this.autoRefreshTicker;
-                this.autoRefreshTicker = null;
-                if (ticker) {
-                    clearInterval(ticker);
-                }
-            });
+        async _stopAutoRefresh() {
+            this._debug('#_stopAutoRefresh()');
+            const ticker = this.autoRefreshTicker;
+            this.autoRefreshTicker = null;
+            if (ticker) {
+                clearInterval(ticker);
+            }
         }
         /**
          * Starts an auto-refresh process in the background. The session is checked
@@ -6454,11 +6548,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          *
          * {@see #stopAutoRefresh}
          */
-        startAutoRefresh() {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                this._removeVisibilityChangedCallback();
-                yield this._startAutoRefresh();
-            });
+        async startAutoRefresh() {
+            this._removeVisibilityChangedCallback();
+            await this._startAutoRefresh();
         }
         /**
          * Stops an active auto refresh process running in the background (if any).
@@ -6468,22 +6560,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          *
          * See {@link #startAutoRefresh} for more details.
          */
-        stopAutoRefresh() {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                this._removeVisibilityChangedCallback();
-                yield this._stopAutoRefresh();
-            });
+        async stopAutoRefresh() {
+            this._removeVisibilityChangedCallback();
+            await this._stopAutoRefresh();
         }
         /**
          * Runs the auto refresh token tick.
          */
-        _autoRefreshTokenTick() {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                this._debug('#_autoRefreshTokenTick()', 'begin');
+        async _autoRefreshTokenTick() {
+            this._debug('#_autoRefreshTokenTick()', 'begin');
+            try {
+                const now = Date.now();
                 try {
-                    const now = Date.now();
-                    try {
-                        const { data: { session }, } = yield this.getSession();
+                    return await this._useSession(async (result) => {
+                        const { data: { session }, } = result;
                         if (!session || !session.refresh_token || !session.expires_at) {
                             this._debug('#_autoRefreshTokenTick()', 'no session');
                             return;
@@ -6492,56 +6582,56 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         const expiresInTicks = Math.floor((session.expires_at * 1000 - now) / AUTO_REFRESH_TICK_DURATION);
                         this._debug('#_autoRefreshTokenTick()', `access token expires in ${expiresInTicks} ticks, a tick lasts ${AUTO_REFRESH_TICK_DURATION}ms, refresh threshold is ${AUTO_REFRESH_TICK_THRESHOLD} ticks`);
                         if (expiresInTicks <= AUTO_REFRESH_TICK_THRESHOLD) {
-                            yield this._callRefreshToken(session.refresh_token);
+                            await this._callRefreshToken(session.refresh_token);
                         }
-                    }
-                    catch (e) {
-                        console.error('Auto refresh tick failed with error. This is likely a transient error.', e);
-                    }
+                    });
                 }
-                finally {
-                    this._debug('#_autoRefreshTokenTick()', 'end');
+                catch (e) {
+                    console.error('Auto refresh tick failed with error. This is likely a transient error.', e);
                 }
-            });
+            }
+            finally {
+                this._debug('#_autoRefreshTokenTick()', 'end');
+            }
         }
         /**
          * Registers callbacks on the browser / platform, which in-turn run
          * algorithms when the browser window/tab are in foreground. On non-browser
          * platforms it assumes always foreground.
          */
-        _handleVisibilityChange() {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                this._debug('#_handleVisibilityChange()');
-                if (!isBrowser() || !(window === null || window === void 0 ? void 0 : window.addEventListener)) {
-                    if (this.autoRefreshToken) {
-                        // in non-browser environments the refresh token ticker runs always
-                        this.startAutoRefresh();
-                    }
-                    return false;
+        async _handleVisibilityChange() {
+            this._debug('#_handleVisibilityChange()');
+            if (!isBrowser() || !(window === null || window === void 0 ? void 0 : window.addEventListener)) {
+                if (this.autoRefreshToken) {
+                    // in non-browser environments the refresh token ticker runs always
+                    this.startAutoRefresh();
                 }
-                try {
-                    this.visibilityChangedCallback = () => __awaiter$1(this, void 0, void 0, function* () { return yield this._onVisibilityChanged(false); });
-                    window === null || window === void 0 ? void 0 : window.addEventListener('visibilitychange', this.visibilityChangedCallback);
-                    // now immediately call the visbility changed callback to setup with the
-                    // current visbility state
-                    yield this._onVisibilityChanged(true); // initial call
-                }
-                catch (error) {
-                    console.error('_handleVisibilityChange', error);
-                }
-            });
+                return false;
+            }
+            try {
+                this.visibilityChangedCallback = async () => await this._onVisibilityChanged(false);
+                window === null || window === void 0 ? void 0 : window.addEventListener('visibilitychange', this.visibilityChangedCallback);
+                // now immediately call the visbility changed callback to setup with the
+                // current visbility state
+                await this._onVisibilityChanged(true); // initial call
+            }
+            catch (error) {
+                console.error('_handleVisibilityChange', error);
+            }
         }
         /**
          * Callback registered with `window.addEventListener('visibilitychange')`.
          */
-        _onVisibilityChanged(isInitial) {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                this._debug(`#_onVisibilityChanged(${isInitial})`, 'visibilityState', document.visibilityState);
-                if (document.visibilityState === 'visible') {
+        async _onVisibilityChanged(isInitial) {
+            this._debug(`#_onVisibilityChanged(${isInitial})`, 'visibilityState', document.visibilityState);
+            if (document.visibilityState === 'visible') {
+                // to avoid recursively depending on #_initialize(), run the visibility
+                // changed callback in the next event loop tick
+                setTimeout(async () => {
                     if (!isInitial) {
                         // initial visibility change setup is handled in another flow under #initialize()
-                        yield this.initializePromise;
-                        yield this._recoverAndRefresh();
+                        await this.initializePromise;
+                        await this._recoverAndRefresh();
                         this._debug('#_onVisibilityChanged()', 'finished waiting for initialize, _recoverAndRefresh');
                     }
                     if (this.autoRefreshToken) {
@@ -6549,13 +6639,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         // which prevents race conditions
                         this._startAutoRefresh();
                     }
+                }, 0);
+            }
+            else if (document.visibilityState === 'hidden') {
+                if (this.autoRefreshToken) {
+                    this._stopAutoRefresh();
                 }
-                else if (document.visibilityState === 'hidden') {
-                    if (this.autoRefreshToken) {
-                        this._stopAutoRefresh();
-                    }
-                }
-            });
+            }
         }
         /**
          * Generates the relevant login URL for a third-party provider.
@@ -6563,67 +6653,65 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param options.scopes A space-separated list of scopes granted to the OAuth application.
          * @param options.queryParams An object of key-value pairs containing query parameters granted to the OAuth application.
          */
-        _getUrlForProvider(provider, options) {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                const urlParams = [`provider=${encodeURIComponent(provider)}`];
-                if (options === null || options === void 0 ? void 0 : options.redirectTo) {
-                    urlParams.push(`redirect_to=${encodeURIComponent(options.redirectTo)}`);
-                }
-                if (options === null || options === void 0 ? void 0 : options.scopes) {
-                    urlParams.push(`scopes=${encodeURIComponent(options.scopes)}`);
-                }
-                if (this.flowType === 'pkce') {
-                    const codeVerifier = generatePKCEVerifier();
-                    yield setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
-                    const codeChallenge = yield generatePKCEChallenge(codeVerifier);
-                    const codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
-                    this._debug('PKCE', 'code verifier', `${codeVerifier.substring(0, 5)}...`, 'code challenge', codeChallenge, 'method', codeChallengeMethod);
-                    const flowParams = new URLSearchParams({
-                        code_challenge: `${encodeURIComponent(codeChallenge)}`,
-                        code_challenge_method: `${encodeURIComponent(codeChallengeMethod)}`,
-                    });
-                    urlParams.push(flowParams.toString());
-                }
-                if (options === null || options === void 0 ? void 0 : options.queryParams) {
-                    const query = new URLSearchParams(options.queryParams);
-                    urlParams.push(query.toString());
-                }
-                return `${this.url}/authorize?${urlParams.join('&')}`;
-            });
+        async _getUrlForProvider(provider, options) {
+            const urlParams = [`provider=${encodeURIComponent(provider)}`];
+            if (options === null || options === void 0 ? void 0 : options.redirectTo) {
+                urlParams.push(`redirect_to=${encodeURIComponent(options.redirectTo)}`);
+            }
+            if (options === null || options === void 0 ? void 0 : options.scopes) {
+                urlParams.push(`scopes=${encodeURIComponent(options.scopes)}`);
+            }
+            if (this.flowType === 'pkce') {
+                const codeVerifier = generatePKCEVerifier();
+                await setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
+                const codeChallenge = await generatePKCEChallenge(codeVerifier);
+                const codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
+                this._debug('PKCE', 'code verifier', `${codeVerifier.substring(0, 5)}...`, 'code challenge', codeChallenge, 'method', codeChallengeMethod);
+                const flowParams = new URLSearchParams({
+                    code_challenge: `${encodeURIComponent(codeChallenge)}`,
+                    code_challenge_method: `${encodeURIComponent(codeChallengeMethod)}`,
+                });
+                urlParams.push(flowParams.toString());
+            }
+            if (options === null || options === void 0 ? void 0 : options.queryParams) {
+                const query = new URLSearchParams(options.queryParams);
+                urlParams.push(query.toString());
+            }
+            return `${this.url}/authorize?${urlParams.join('&')}`;
         }
-        _unenroll(params) {
-            var _a;
-            return __awaiter$1(this, void 0, void 0, function* () {
-                try {
-                    const { data: sessionData, error: sessionError } = yield this.getSession();
+        async _unenroll(params) {
+            try {
+                return await this._useSession(async (result) => {
+                    var _a;
+                    const { data: sessionData, error: sessionError } = result;
                     if (sessionError) {
                         return { data: null, error: sessionError };
                     }
-                    return yield _request(this.fetch, 'DELETE', `${this.url}/factors/${params.factorId}`, {
+                    return await _request(this.fetch, 'DELETE', `${this.url}/factors/${params.factorId}`, {
                         headers: this.headers,
                         jwt: (_a = sessionData === null || sessionData === void 0 ? void 0 : sessionData.session) === null || _a === void 0 ? void 0 : _a.access_token,
                     });
+                });
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: null, error };
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: null, error };
-                    }
-                    throw error;
-                }
-            });
+                throw error;
+            }
         }
         /**
          * {@see GoTrueMFAApi#enroll}
          */
-        _enroll(params) {
-            var _a, _b;
-            return __awaiter$1(this, void 0, void 0, function* () {
-                try {
-                    const { data: sessionData, error: sessionError } = yield this.getSession();
+        async _enroll(params) {
+            try {
+                return await this._useSession(async (result) => {
+                    var _a, _b;
+                    const { data: sessionData, error: sessionError } = result;
                     if (sessionError) {
                         return { data: null, error: sessionError };
                     }
-                    const { data, error } = yield _request(this.fetch, 'POST', `${this.url}/factors`, {
+                    const { data, error } = await _request(this.fetch, 'POST', `${this.url}/factors`, {
                         body: {
                             friendly_name: params.friendlyName,
                             factor_type: params.factorType,
@@ -6639,27 +6727,27 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         data.totp.qr_code = `data:image/svg+xml;utf-8,${data.totp.qr_code}`;
                     }
                     return { data, error: null };
+                });
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: null, error };
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: null, error };
-                    }
-                    throw error;
-                }
-            });
+                throw error;
+            }
         }
         /**
          * {@see GoTrueMFAApi#verify}
          */
-        _verify(params) {
-            var _a;
-            return __awaiter$1(this, void 0, void 0, function* () {
-                try {
-                    const { data: sessionData, error: sessionError } = yield this.getSession();
+        async _verify(params) {
+            try {
+                return await this._useSession(async (result) => {
+                    var _a;
+                    const { data: sessionData, error: sessionError } = result;
                     if (sessionError) {
                         return { data: null, error: sessionError };
                     }
-                    const { data, error } = yield _request(this.fetch, 'POST', `${this.url}/factors/${params.factorId}/verify`, {
+                    const { data, error } = await _request(this.fetch, 'POST', `${this.url}/factors/${params.factorId}/verify`, {
                         body: { code: params.code, challenge_id: params.challengeId },
                         headers: this.headers,
                         jwt: (_a = sessionData === null || sessionData === void 0 ? void 0 : sessionData.session) === null || _a === void 0 ? void 0 : _a.access_token,
@@ -6667,87 +6755,83 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     if (error) {
                         return { data: null, error };
                     }
-                    yield this._saveSession(Object.assign({ expires_at: Math.round(Date.now() / 1000) + data.expires_in }, data));
-                    yield this._notifyAllSubscribers('MFA_CHALLENGE_VERIFIED', data);
+                    await this._saveSession(Object.assign({ expires_at: Math.round(Date.now() / 1000) + data.expires_in }, data));
+                    await this._notifyAllSubscribers('MFA_CHALLENGE_VERIFIED', data);
                     return { data, error };
+                });
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: null, error };
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: null, error };
-                    }
-                    throw error;
-                }
-            });
+                throw error;
+            }
         }
         /**
          * {@see GoTrueMFAApi#challenge}
          */
-        _challenge(params) {
-            var _a;
-            return __awaiter$1(this, void 0, void 0, function* () {
-                try {
-                    const { data: sessionData, error: sessionError } = yield this.getSession();
+        async _challenge(params) {
+            try {
+                return await this._useSession(async (result) => {
+                    var _a;
+                    const { data: sessionData, error: sessionError } = result;
                     if (sessionError) {
                         return { data: null, error: sessionError };
                     }
-                    return yield _request(this.fetch, 'POST', `${this.url}/factors/${params.factorId}/challenge`, {
+                    return await _request(this.fetch, 'POST', `${this.url}/factors/${params.factorId}/challenge`, {
                         headers: this.headers,
                         jwt: (_a = sessionData === null || sessionData === void 0 ? void 0 : sessionData.session) === null || _a === void 0 ? void 0 : _a.access_token,
                     });
+                });
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: null, error };
                 }
-                catch (error) {
-                    if (isAuthError(error)) {
-                        return { data: null, error };
-                    }
-                    throw error;
-                }
-            });
+                throw error;
+            }
         }
         /**
          * {@see GoTrueMFAApi#challengeAndVerify}
          */
-        _challengeAndVerify(params) {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                const { data: challengeData, error: challengeError } = yield this._challenge({
-                    factorId: params.factorId,
-                });
-                if (challengeError) {
-                    return { data: null, error: challengeError };
-                }
-                return yield this._verify({
-                    factorId: params.factorId,
-                    challengeId: challengeData.id,
-                    code: params.code,
-                });
+        async _challengeAndVerify(params) {
+            const { data: challengeData, error: challengeError } = await this._challenge({
+                factorId: params.factorId,
+            });
+            if (challengeError) {
+                return { data: null, error: challengeError };
+            }
+            return await this._verify({
+                factorId: params.factorId,
+                challengeId: challengeData.id,
+                code: params.code,
             });
         }
         /**
          * {@see GoTrueMFAApi#listFactors}
          */
-        _listFactors() {
-            return __awaiter$1(this, void 0, void 0, function* () {
-                const { data: { user }, error: userError, } = yield this.getUser();
-                if (userError) {
-                    return { data: null, error: userError };
-                }
-                const factors = (user === null || user === void 0 ? void 0 : user.factors) || [];
-                const totp = factors.filter((factor) => factor.factor_type === 'totp' && factor.status === 'verified');
-                return {
-                    data: {
-                        all: factors,
-                        totp,
-                    },
-                    error: null,
-                };
-            });
+        async _listFactors() {
+            const { data: { user }, error: userError, } = await this.getUser();
+            if (userError) {
+                return { data: null, error: userError };
+            }
+            const factors = (user === null || user === void 0 ? void 0 : user.factors) || [];
+            const totp = factors.filter((factor) => factor.factor_type === 'totp' && factor.status === 'verified');
+            return {
+                data: {
+                    all: factors,
+                    totp,
+                },
+                error: null,
+            };
         }
         /**
          * {@see GoTrueMFAApi#getAuthenticatorAssuranceLevel}
          */
-        _getAuthenticatorAssuranceLevel() {
-            var _a, _b;
-            return __awaiter$1(this, void 0, void 0, function* () {
-                const { data: { session }, error: sessionError, } = yield this.getSession();
+        async _getAuthenticatorAssuranceLevel() {
+            return await this._useSession(async (result) => {
+                var _a, _b;
+                const { data: { session }, error: sessionError, } = result;
                 if (sessionError) {
                     return { data: null, error: sessionError };
                 }
@@ -6773,6 +6857,136 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
     GoTrueClient.nextInstanceID = 0;
+
+    /**
+     * @experimental
+     */
+    const internals = {
+        /**
+         * @experimental
+         */
+        debug: !!(globalThis &&
+            globalThis.localStorage &&
+            globalThis.localStorage.getItem('supabase.gotrue-js.locks.debug') === 'true'),
+    };
+    class NavigatorLockAcquireTimeoutError extends Error {
+        constructor(message) {
+            super(message);
+            this.isAcquireTimeout = true;
+        }
+    }
+    /**
+     * Implements a global exclusive lock using the Navigator LockManager API. It
+     * is available on all browsers released after 2022-03-15 with Safari being the
+     * last one to release support. If the API is not available, this function will
+     * throw. Make sure you check availablility before configuring {@link
+     * GoTrueClient}.
+     *
+     * You can turn on debugging by setting the `supabase.gotrue-js.locks.debug`
+     * local storage item to `true`.
+     *
+     * Internals:
+     *
+     * Since the LockManager API does not preserve stack traces for the async
+     * function passed in the `request` method, a trick is used where acquiring the
+     * lock releases a previously started promise to run the operation in the `fn`
+     * function. The lock waits for that promise to finish (with or without error),
+     * while the function will finally wait for the result anyway.
+     *
+     * @experimental
+     *
+     * @param name Name of the lock to be acquired.
+     * @param acquireTimeout If negative, no timeout. If 0 an error is thrown if
+     *                       the lock can't be acquired without waiting. If positive, the lock acquire
+     *                       will time out after so many milliseconds. An error is
+     *                       a timeout if it has `isAcquireTimeout` set to true.
+     * @param fn The operation to run once the lock is acquired.
+     */
+    async function navigatorLock(name, acquireTimeout, fn) {
+        if (internals.debug) {
+            console.log('@supabase/gotrue-js: navigatorLock: acquire lock', name, acquireTimeout);
+        }
+        let beginOperation = null;
+        let rejectOperation = null;
+        const beginOperationPromise = new Promise((accept, reject) => {
+            beginOperation = accept;
+            rejectOperation = reject;
+        });
+        // this lets us preserve stack traces over the operation, which the
+        // navigator.locks.request function does not preserve well still
+        const result = (async () => {
+            await beginOperationPromise;
+            if (internals.debug) {
+                console.log('@supabase/gotrue-js: navigatorLock: operation start');
+            }
+            try {
+                return await fn();
+            }
+            finally {
+                if (internals.debug) {
+                    console.log('@supabase/gotrue-js: navigatorLock: operation end');
+                }
+            }
+        })();
+        const abortController = new globalThis.AbortController();
+        if (acquireTimeout > 0) {
+            setTimeout(() => {
+                beginOperation = null;
+                abortController.abort();
+                if (rejectOperation) {
+                    if (internals.debug) {
+                        console.log('@supabase/gotrue-js: navigatorLock acquire timed out', name);
+                    }
+                    if (rejectOperation) {
+                        rejectOperation(new NavigatorLockAcquireTimeoutError(`Acquiring an exclusive Navigator LockManager lock "${name}" timed out after ${acquireTimeout}ms`));
+                    }
+                    beginOperation = null;
+                    rejectOperation = null;
+                }
+            }, acquireTimeout);
+        }
+        await globalThis.navigator.locks.request(name, {
+            mode: 'exclusive',
+            ifAvailable: acquireTimeout === 0,
+            signal: abortController.signal,
+        }, async (lock) => {
+            if (lock) {
+                if (internals.debug) {
+                    console.log('@supabase/gotrue-js: navigatorLock acquired', name);
+                }
+                try {
+                    if (beginOperation) {
+                        beginOperation();
+                        beginOperation = null;
+                        rejectOperation = null;
+                        await result;
+                    }
+                }
+                catch (e) {
+                    // not important to handle the error here
+                }
+                finally {
+                    if (internals.debug) {
+                        console.log('@supabase/gotrue-js: navigatorLock released', name);
+                    }
+                }
+            }
+            else {
+                if (internals.debug) {
+                    console.log('@supabase/gotrue-js: navigatorLock not immediately available', name);
+                }
+                // no lock was available because acquireTimeout === 0
+                const timeout = new Error(`Acquiring an exclusive Navigator LockManager lock "${name}" immediately failed`);
+                timeout.isAcquireTimeout = true;
+                if (rejectOperation) {
+                    rejectOperation(new NavigatorLockAcquireTimeoutError(`Acquiring an exclusive Navigator LockManager lock "${name}" immediately failed`));
+                }
+                beginOperation = null;
+                rejectOperation = null;
+            }
+        });
+        return await result;
+    }
 
     class SupabaseAuthClient extends GoTrueClient {
         constructor(options) {
@@ -6939,7 +7153,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 return (_b = (_a = data.session) === null || _a === void 0 ? void 0 : _a.access_token) !== null && _b !== void 0 ? _b : null;
             });
         }
-        _initSupabaseAuthClient({ autoRefreshToken, persistSession, detectSessionInUrl, storage, storageKey, flowType, }, headers, fetch) {
+        _initSupabaseAuthClient({ autoRefreshToken, persistSession, detectSessionInUrl, storage, storageKey, flowType, debug, }, headers, fetch) {
             const authHeaders = {
                 Authorization: `Bearer ${this.supabaseKey}`,
                 apikey: `${this.supabaseKey}`,
@@ -6953,6 +7167,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 detectSessionInUrl,
                 storage,
                 flowType,
+                debug,
                 fetch,
             });
         }
@@ -7007,6 +7222,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     exports.FunctionsRelayError = FunctionsRelayError;
     exports.GoTrueAdminApi = GoTrueAdminApi;
     exports.GoTrueClient = GoTrueClient;
+    exports.NavigatorLockAcquireTimeoutError = NavigatorLockAcquireTimeoutError;
     exports.RealtimeChannel = RealtimeChannel;
     exports.RealtimeClient = RealtimeClient;
     exports.RealtimePresence = RealtimePresence;
@@ -7016,5 +7232,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     exports.isAuthApiError = isAuthApiError;
     exports.isAuthError = isAuthError;
     exports.isAuthRetryableFetchError = isAuthRetryableFetchError;
+    exports.lockInternals = internals;
+    exports.navigatorLock = navigatorLock;
 
 }));

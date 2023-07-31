@@ -2,7 +2,6 @@
 const connectLivereload = require("connect-livereload");
 const livereload = require("livereload");
 const path = require("path");
-const log = require("@ui5/logger").getLogger("server:custommiddleware:livereload");
 const portfinder = require("portfinder");
 
 /**
@@ -62,6 +61,7 @@ const determineSourcePaths = (collection, skipFwkDeps) => {
  * Custom UI5 Server middleware example
  *
  * @param {object} parameters Parameters
+ * @param {@ui5/logger/Logger} parameters.log Logger instance
  * @param {object} parameters.resources Resource collections
  * @param {module:@ui5/fs.AbstractReader} parameters.resources.all Reader or Collection to read resources of the
  *                                        root project and its dependencies
@@ -73,7 +73,7 @@ const determineSourcePaths = (collection, skipFwkDeps) => {
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @returns {Function} Middleware function to use
  */
-module.exports = async ({ resources, options }) => {
+module.exports = async ({ log, resources, options }) => {
 	let port = await getPortForLivereload(options, 35729);
 
 	// due to compatibility reasons we keep the path as watchPath (watchPath has higher precedence than path)

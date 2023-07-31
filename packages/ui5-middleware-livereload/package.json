@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-livereload",
-  "version": "0.8.4",
+  "version": "2.0.0",
   "description": "UI5 middleware for live reloading `webapp` sources on change",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
@@ -13,13 +13,9 @@
     "lint": "eslint lib"
   },
   "dependencies": {
-    "@ui5/logger": "^2.0.1",
     "connect-livereload": "^0.6.1",
     "livereload": "^0.9.3",
     "portfinder": "^1.0.32",
     "yargs": "^17.7.2"
-  },
-  "ui5": {
-    "dependencies": []
   }
 }

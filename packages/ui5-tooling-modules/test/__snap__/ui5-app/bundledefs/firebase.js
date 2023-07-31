@@ -8,10 +8,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		if (typeof f == "function") {
 			var a = function a () {
 				if (this instanceof a) {
-					var args = [null];
-					args.push.apply(args, arguments);
-					var Ctor = Function.bind.apply(f, args);
-					return new Ctor();
+	        return Reflect.construct(f, arguments, this.constructor);
 				}
 				return f.apply(this, arguments);
 			};
@@ -2099,7 +2096,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	}
 
 	const name$o = "@firebase/app";
-	const version$1$1 = "0.9.13";
+	const version$1$1 = "0.9.15";
 
 	/**
 	 * @license
@@ -2166,7 +2163,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	const name$1 = "@firebase/firestore-compat";
 
 	const name = "firebase";
-	const version$3 = "9.23.0";
+	const version$3 = "10.1.0";
 
 	/**
 	 * @license
@@ -3002,7 +2999,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		var app = require$$0;
 
 		var name = "firebase";
-		var version = "9.23.0";
+		var version = "10.1.0";
 
 		/**
 		 * @license
@@ -6024,7 +6021,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
 	var nodeFetch__default = /*#__PURE__*/_interopDefaultLegacy(nodeFetch);
 
-	const version$1 = "3.13.0";
+	const version$1 = "4.1.0";
 
 	/**
 	 * @license
@@ -6077,7 +6074,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	User.FIRST_PARTY = new User('first-party-uid');
 	User.MOCK_USER = new User('mock-user');
 
-	const version = "9.23.0";
+	const version = "10.1.0";
 
 	/**
 	 * @license
@@ -7328,13 +7325,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	        this.databaseInfo = databaseInfo;
 	        this.databaseId = databaseInfo.databaseId;
 	        const proto = databaseInfo.ssl ? 'https' : 'http';
+	        const projectId = encodeURIComponent(this.databaseId.projectId);
+	        const databaseId = encodeURIComponent(this.databaseId.database);
 	        this.baseUrl = proto + '://' + databaseInfo.host;
-	        this.databaseRoot =
-	            'projects/' +
-	                this.databaseId.projectId +
-	                '/databases/' +
-	                this.databaseId.database +
-	                '/documents';
+	        this.databasePath = `projects/${projectId}/databases/${databaseId}`;
+	        this.requestParams =
+	            this.databaseId.database === DEFAULT_DATABASE_NAME
+	                ? `project_id=${projectId}`
+	                : `project_id=${projectId}&database_id=${databaseId}`;
 	    }
 	    get shouldResourcePathBeIncludedInRequest() {
 	        // Both `invokeRPC()` and `invokeStreamingRPC()` use their `path` arguments to determine
@@ -7345,7 +7343,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	        const streamId = generateUniqueDebugId();
 	        const url = this.makeUrl(rpcName, path);
 	        logDebug(LOG_TAG$3, `Sending RPC '${rpcName}' ${streamId}:`, url, req);
-	        const headers = {};
+	        const headers = {
+	            'google-cloud-resource-prefix': this.databasePath,
+	            'x-goog-request-params': this.requestParams
+	        };
 	        this.modifyHeadersForRequest(headers, authToken, appCheckToken);
 	        return this.performRPCRequest(rpcName, url, headers, req).then(response => {
 	            logDebug(LOG_TAG$3, `Received RPC '${rpcName}' ${streamId}: `, response);
@@ -11524,7 +11525,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	        }
 	        this.credentials = settings.credentials;
 	        this.ignoreUndefinedProperties = !!settings.ignoreUndefinedProperties;
-	        this.cache = settings.localCache;
+	        this.localCache = settings.localCache;
 	        if (settings.cacheSizeBytes === undefined) {
 	            this.cacheSizeBytes = LRU_DEFAULT_CACHE_SIZE_BYTES;
 	        }
@@ -11921,6 +11922,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	 * limitations under the License.
 	 */
 	/**
+	 * A `Query` refers to a query which you can read or listen to. You can also
+	 * construct refined `Query` objects by adding filters and ordering.
+	 */
+	class Query {
+	    // This is the lite version of the Query class in the main SDK.
+	    /** @hideconstructor protected */
+	    constructor(firestore, 
+	    /**
+	     * If provided, the `FirestoreDataConverter` associated with this instance.
+	     */
+	    converter, _query) {
+	        this.converter = converter;
+	        this._query = _query;
+	        /** The type of this Firestore reference. */
+	        this.type = 'query';
+	        this.firestore = firestore;
+	    }
+	    withConverter(converter) {
+	        return new Query(this.firestore, converter, this._query);
+	    }
+	}
+	/**
 	 * A `DocumentReference` refers to a document location in a Firestore database
 	 * and can be used to write, read, or listen to the location. The document at
 	 * the referenced location may or may not exist.
@@ -11962,28 +11985,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    }
 	    withConverter(converter) {
 	        return new DocumentReference(this.firestore, converter, this._key);
-	    }
-	}
-	/**
-	 * A `Query` refers to a query which you can read or listen to. You can also
-	 * construct refined `Query` objects by adding filters and ordering.
-	 */
-	class Query {
-	    // This is the lite version of the Query class in the main SDK.
-	    /** @hideconstructor protected */
-	    constructor(firestore, 
-	    /**
-	     * If provided, the `FirestoreDataConverter` associated with this instance.
-	     */
-	    converter, _query) {
-	        this.converter = converter;
-	        this._query = _query;
-	        /** The type of this Firestore reference. */
-	        this.type = 'query';
-	        this.firestore = firestore;
-	    }
-	    withConverter(converter) {
-	        return new Query(this.firestore, converter, this._query);
 	    }
 	}
 	/**

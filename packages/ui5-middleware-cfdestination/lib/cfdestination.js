@@ -1,5 +1,3 @@
-const log = require("@ui5/logger").getLogger("server:custommiddleware:cfdestination")
-
 const fs = require("fs")
 const path = require("path")
 
@@ -57,6 +55,7 @@ const nextFreePort = async (basePort) => {
  * Custom UI5 Server middleware "cfdestination"
  *
  * @param {object} parameters Parameters
+ * @param {@ui5/logger/Logger} parameters.log Logger instance
  * @param {object} parameters.resources Resource collections
  * @param {module:@ui5/fs.AbstractReader} parameters.resources.all Reader or Collection to read resources of the
  *                                        root project and its dependencies
@@ -70,7 +69,7 @@ const nextFreePort = async (basePort) => {
  *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
  * @returns {Function} Middleware function to use
  */
-module.exports = async ({ resources, options, middlewareUtil }) => {
+module.exports = async ({ log, resources, options, middlewareUtil }) => {
 	// provide a set of default runtime options
 	const effectiveOptions = {
 		debug: false,

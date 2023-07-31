@@ -1,5 +1,3 @@
-"use strict";
-
 // Inspired by https://github.com/piuccio/rollup-plugin-amd
 // Necessary to use a newer version of the @buxlabs/amd-to-es6 package
 

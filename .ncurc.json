@@ -1,18 +1,16 @@
 {
   "reject": [
-    "@ui5/cli",
-    "@ui5/fs",
-    "@ui5/project",
-    "@ui5/logger",
-    "@ui5/server",
-    "karma-ui5",
+    "@sap/cds",
     "chart.js",
+    "@octokit/core",
     "node-fetch",
     "minimatch",
     "@wdio/cli",
     "@wdio/local-runner",
     "@wdio/mocha-framework",
     "@wdio/spec-reporter",
-    "eslint-plugin-wdio"
+    "eslint-plugin-wdio",
+    "@prettier/plugin-xml",
+    "prettier"
   ]
 }

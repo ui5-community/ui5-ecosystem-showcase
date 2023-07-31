@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import sleep from "sleep-promise";
 import { Options } from "./types";
 const prompt = require("async-prompt");
 import { chromium } from "playwright-chromium";
-const log = require("@ui5/logger").getLogger("server:custommiddleware:onelogin");
 
 interface Attributes {
 	url: string;
@@ -16,7 +16,7 @@ interface PlaywrightOpt {
 	channel?: "chrome";
 }
 export default class CookieGetter {
-	async getCookie(options: Options): Promise<string> {
+	async getCookie(log: any, options: Options): Promise<string> {
 		let attr: Attributes = {
 			url:
 				options.configuration && options.configuration.path

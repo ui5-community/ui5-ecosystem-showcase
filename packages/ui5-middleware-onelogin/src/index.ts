@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { serialize } from "cookie";
 import dotenv from "dotenv";
 import cookieGetter from "./cookieGetter";
 import { Options } from "./types";
-const log = require("@ui5/logger").getLogger("server:custommiddleware:onelogin");
 dotenv.config();
 
 var cookie: string;
@@ -27,6 +27,7 @@ var firstTime: boolean = true;
  * Custom UI5 Server middleware example
  *
  * @param {Object} parameters Parameters
+ * @param {module:@ui5/logger/Logger} parameters.log Logger instance
  * @param {Object} parameters.resources Resource collections
  * @param {module:@ui5/fs.AbstractReader} parameters.resources.
  *                                        all Reader or Collection to read resources of the
@@ -42,7 +43,7 @@ var firstTime: boolean = true;
  *                                                      if given in ui5.yaml
  * @returns {function} Middleware function to use
  */
-module.exports = function ({ options }: { options: Options }) {
+module.exports = function ({ log, options }: { log: any; options: Options }) {
 	// eslint-disable-next-line func-names
 	return async function (req: any, res: any, next: any) {
 		let cookies = [];
@@ -53,7 +54,7 @@ module.exports = function ({ options }: { options: Options }) {
 		} else if (!cookie) {
 			log.info("Fetching cookie, hang on!");
 			try {
-				const cookieObj = await new cookieGetter().getCookie(options);
+				const cookieObj = await new cookieGetter().getCookie(log, options);
 				cookies = JSON.parse(cookieObj);
 				cookie = cookieObj;
 			} catch (error) {

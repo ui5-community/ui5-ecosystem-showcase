@@ -2,7 +2,6 @@
 const { readFile } = require("fs").promises;
 const path = require("path");
 
-const { Resource } = require("@ui5/fs");
 const mustache = require("mustache");
 const HTMLParser = require("node-html-parser");
 
@@ -100,7 +99,8 @@ async function addServiceworkerRegistration() {
  * @param {string|buffer} parameters.content The content to write to the file
  * @returns {Promise} which resolves once the data has been written
  */
-function writeFile({ path, content }) {
+async function writeFile({ path, content }) {
+	const { default: Resource } = await import("@ui5/fs/Resource");
 	if (typeof content === "string") {
 		return ws.write(new Resource({ path: path, string: content }));
 	} else {

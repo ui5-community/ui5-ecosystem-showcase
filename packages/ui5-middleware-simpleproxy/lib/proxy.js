@@ -1,5 +1,4 @@
 let proxy = require("express-http-proxy");
-const log = require("@ui5/logger").getLogger("server:custommiddleware:proxy");
 const minimatch = require("minimatch");
 const dotenv = require("dotenv");
 
@@ -63,9 +62,10 @@ function deriveStrictSSL(environmentValue, configurationValue) {
  *
  * @param {string} environmentValue The value coming from the enviroment variable 'UI5_MIDDLEWARE_HTTP_HEADERS'
  * @param {object} configuration The configuration object
+ * @param {@ui5/logger/Logger} log Logger instance
  * @returns {object} http headers
  */
-function getHttpHeaders(environmentValue, configuration = {}) {
+function getHttpHeaders(environmentValue, configuration = {}, log) {
 	let httpHeaders;
 	if (environmentValue) {
 		httpHeaders = JSON.parse(environmentValue);
@@ -96,9 +96,10 @@ function getBasicAuthenticationToken(environmentValue = {}, configuration = {}) 
  *
  * @param {string} environmentValue The value coming from the enviroment variable 'UI5_MIDDLEWARE_SIMPLE_PROXY_QUERY_PARAMETERS'
  * @param {object} configuration The configuration object
+ * @param {@ui5/logger/Logger} log Logger instance
  * @returns {object} Query parameters
  */
-function getQueryParameters(environmentValue, configuration = {}) {
+function getQueryParameters(environmentValue, configuration = {}, log) {
 	let queryParameters;
 	if (environmentValue) {
 		queryParameters = JSON.parse(environmentValue);
@@ -113,25 +114,19 @@ function getQueryParameters(environmentValue, configuration = {}) {
  * Custom UI5 Server middleware example
  *
  * @param {object} parameters Parameters
- * @param {object} parameters.resources Resource collections
- * @param {module:@ui5/fs.AbstractReader} parameters.resources.all Reader or Collection to read resources of the
- *                                        root project and its dependencies
- * @param {module:@ui5/fs.AbstractReader} parameters.resources.rootProject Reader or Collection to read resources of
- *                                        the project the server is started in
- * @param {module:@ui5/fs.AbstractReader} parameters.resources.dependencies Reader or Collection to read resources of
- *                                        the projects dependencies
+ * @param {@ui5/logger/Logger} parameters.log Logger instance
  * @param {object} parameters.options Options
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @returns {Function} Middleware function to use
  */
 // eslint-disable-next-line no-unused-vars
-module.exports = function ({ resources, options }) {
+module.exports = function ({ log, options }) {
 	const isDebug = options.configuration?.debug;
 	// Environment wins over YAML configuration when loading settings
 	const providedBaseUri = env.baseUri || options.configuration?.baseUri;
 	const providedStrictSSL = deriveStrictSSL(env.strictSSL, options.configuration?.strictSSL);
-	const providedHttpHeaders = getHttpHeaders(env.httpHeaders, options.configuration);
-	const providedQueryParameters = getQueryParameters(env.query, options.configuration);
+	const providedHttpHeaders = getHttpHeaders(env.httpHeaders, options.configuration, log);
+	const providedQueryParameters = getQueryParameters(env.query, options.configuration, log);
 	isDebug && log.info(`Starting proxy for baseUri ${providedBaseUri}`);
 	// determine the uri parts (protocol, baseUri, path)
 	let baseUriParts = providedBaseUri?.match(/(https|http):\/\/([^/]*)(\/.*)?/i);

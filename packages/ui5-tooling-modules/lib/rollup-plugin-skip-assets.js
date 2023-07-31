@@ -1,5 +1,3 @@
-"use strict";
-
 /* eslint-disable no-unused-vars */
 module.exports = function (options = {}) {
 	const log = options.log;

@@ -1,20 +1,11 @@
 /* eslint-disable jsdoc/check-param-names */
-const log = require("@ui5/logger").getLogger("server:custommiddleware:ui5-tooling-transpile");
 const parseurl = require("parseurl");
-const {
-	createConfiguration,
-	createBabelConfig,
-	normalizeLineFeeds,
-	determineResourceFSPath,
-	transformAsync,
-	determineProjectBasePath,
-	shouldHandlePath
-} = require("./util");
 
 /**
  * Custom middleware to transpile resources to JavaScript modules.
  *
  * @param {object} parameters Parameters
+ * @param {module:@ui5/logger/Logger} parameters.log Logger instance
  * @param {object} parameters.resources Resource collections
  * @param {module:@ui5/fs.AbstractReader} parameters.resources.all Reader or Collection to read resources of the
  *                                        root project and its dependencies
@@ -28,7 +19,17 @@ const {
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @returns {function} Middleware function to use
  */
-module.exports = async function ({ resources, options, middlewareUtil }) {
+module.exports = async function ({ log, resources, options, middlewareUtil }) {
+	const {
+		createConfiguration,
+		createBabelConfig,
+		normalizeLineFeeds,
+		determineResourceFSPath,
+		transformAsync,
+		determineProjectBasePath,
+		shouldHandlePath
+	} = require("./util")(log);
+
 	const cwd = determineProjectBasePath(resources.rootProject) || process.cwd();
 	const config = createConfiguration(options?.configuration || {}, cwd);
 	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: true }, cwd);

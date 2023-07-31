@@ -1,6 +1,4 @@
 // Inspired by https://rollupjs.org/plugin-development/#resolveid (the Polyfill Injection)
-"use strict";
-
 const PROXY_SUFFIX = "?inject-esmodule";
 module.exports = function (/* options = {} */) {
 	return {
