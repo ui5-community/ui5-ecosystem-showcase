@@ -11,8 +11,5 @@
   },
   "scripts": {
     "lint": "eslint lib"
-  },
-  "dependencies": {
-    "@ui5/logger": "^3.0.0"
   }
 }

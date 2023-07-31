@@ -358,7 +358,8 @@ module.exports = function (log) {
 				// current work directory is the rootpath of the project resource
 				// it is a root resource which should be considered to be resolved
 				if (path.relative(cwd, resource.getProject().getRootPath()) === "") {
-					resourcePath = resource.getSourceMetadata().fsPath || resourcePath;
+					// npm dependencies don't have sourceMetadata applied to resource!
+					resourcePath = resource.getSourceMetadata()?.fsPath || resourcePath;
 				}
 			} else {
 				// for older versions resolving the file system path is a bit more

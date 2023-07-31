@@ -13,7 +13,6 @@
     "lint": "eslint lib"
   },
   "dependencies": {
-    "@ui5/server": "^3.1.3",
     "jszip": "^3.10.1"
   }
 }

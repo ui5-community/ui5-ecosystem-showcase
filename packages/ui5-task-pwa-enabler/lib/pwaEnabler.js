@@ -7,6 +7,7 @@ const HTMLParser = require("node-html-parser");
 
 let ws = undefined;
 let rootDir = undefined;
+let createResource = undefined;
 
 const swStrategies = {
 	offlinePage: "Offline-Page",
@@ -49,11 +50,13 @@ let default_manifest = {
  * @param {string} parameters.options.projectName Project name
  * @param {string} [parameters.options.projectNamespace] Project namespace if available
  * @param {object} [parameters.options.configuration] Task configuration if given in ui5.yaml
+ * @param {object} parameters.taskUtil the task utilities
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-module.exports = async function ({ workspace, dependencies, options: { projectName, projectNamespace, configuration } }) {
+module.exports = async function ({ workspace, dependencies, options: { projectName, projectNamespace, configuration }, taskUtil }) {
 	ws = workspace;
 	rootDir = "/resources/" + projectNamespace;
+	createResource = taskUtil.resourceFactory.createResource;
 	if (!configuration) {
 		throw "Configuration is missing";
 	}
@@ -100,11 +103,10 @@ async function addServiceworkerRegistration() {
  * @returns {Promise} which resolves once the data has been written
  */
 async function writeFile({ path, content }) {
-	const { default: Resource } = await import("@ui5/fs/Resource");
 	if (typeof content === "string") {
-		return ws.write(new Resource({ path: path, string: content }));
+		return ws.write(createResource({ path: path, string: content }));
 	} else {
-		return ws.write(new Resource({ path: path, buffer: content }));
+		return ws.write(createResource({ path: path, buffer: content }));
 	}
 }
 

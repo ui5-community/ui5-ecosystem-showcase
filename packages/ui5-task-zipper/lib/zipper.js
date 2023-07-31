@@ -49,11 +49,10 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 	const zipName = `${defaultName || options.projectNamespace.replace(/\//g, "")}.zip`;
 
 	// determine the dependencies resource collection to be included
-	const { default: ReaderCollection } = await import("@ui5/fs/ReaderCollection");
 	const deps =
 		includeDependencies === true
 			? dependencies
-			: new ReaderCollection({
+			: taskUtil.resourceFactory.createReaderCollection({
 					readers: !includeDependencies
 						? []
 						: dependencies._readers.filter((reader) => {
