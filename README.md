@@ -1,10 +1,17 @@
 # ui5-ecosystem-showcase
 
-The repository showcasing the UI5 Tooling ecosystem possibilites. 
-
-> :warning: All tooling extensions only support UI5 Tooling **V3** only! The support for UI5 Tooling **V2** has been removed. All tooling extensions with **V3** support have the major version `3.x.x`, for the **V2** support please use the previous versions of the tooling extensions.
-
 [![OpenUI5 Community Slack (#tooling channel)](https://img.shields.io/badge/slack-join-44cc11.svg)](https://join-ui5-slack.herokuapp.com)
+
+The repository is showcasing the ecosystem possibilites of the UI5 Tooling.
+
+> :wave: This is a **community project** and there is no official support! Feel free to use it, open issues, contribute, and help answering questions.
+
+## Prerequisites
+
+- Latest releases of the provided tooling extensions require at least [`@ui5/cli@3.0.0`](https://sap.github.io/ui5-tooling/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://sap.github.io/ui5-tooling/pages/Configuration/#specification-version-30))
+
+> :warning: **UI5 Tooling Compatibility**
+> All tooling extensions using the major version `3` require UI5 Tooling V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 Tooling. But the usage of the latest UI5 Tooling is strongly recommended!
 
 ## Overview
 

@@ -27,7 +27,7 @@ Once the UI5 application is finally built, the Chart.js dependency will be copie
 - Requires at least [`@ui5/cli@3.0.0`](https://sap.github.io/ui5-tooling/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://sap.github.io/ui5-tooling/pages/Configuration/#specification-version-30))
 
 > :warning: **UI5 Tooling Compatibility**
-> All releases of this tooling extension using the major version `3.x.x` only support UI5 Tooling V3. Any previous release below version `3` (if available) also supports older versions of the UI5 Tooling. But it's strongly recommended to upgrade to UI5 Tooling V3!
+> All releases of this tooling extension using the major version `3` require UI5 Tooling V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 Tooling. But the usage of the latest UI5 Tooling is strongly recommended!
 
 ## Install
 
