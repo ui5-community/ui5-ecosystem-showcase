@@ -10,6 +10,23 @@ const applyUI5Middleware = require("./lib/applyUI5Middleware");
 // to disable the ui5-middleware-cap if used in apps
 process.env["cds-plugin-ui5"] = true;
 
+// promise to await the bootstrap and lock the
+// served event to delay the startup a bit
+let bootstrapped;
+const bootstrapCompleted = new Promise((r) => {
+	bootstrapped = r;
+});
+
+// hook into the "served" event to delay the startup of the
+// CDS server until the bootstrap is completed and the UI5
+// middlewares for the UI5 applications are properly available
+cds.on("served", async function served(/* cdsServices */) {
+	log.debug("served");
+	await bootstrapCompleted;
+});
+
+// hook into the "bootstrap" event to startup the UI5 middlewares
+// for the available UI5 applications in the CDS server and its deps
 cds.on("bootstrap", async function bootstrap(app) {
 	log.debug("bootstrap");
 
@@ -115,6 +132,8 @@ cds.on("bootstrap", async function bootstrap(app) {
 			log.error(`Failed to inject application pages to CAP overview page! You need to manually open the application pages!`);
 		}
 	}
+	// bootstrap completed, unlock the "served" event
+	bootstrapped();
 });
 
 // return callback for plugin activation
