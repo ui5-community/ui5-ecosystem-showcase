@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.9.0...ui5-tsapp@0.9.1) (2023-08-01)
+
+
+### Bug Fixes
+
+* **karma-ui5-transpile:** ensure to instrument test files ([#782](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/782)) ([1d201bb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1d201bb394cb4fb2d22c307acde45b6f47b0ed6c))
+
+
+
+
+
 # [0.9.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.8.32...ui5-tsapp@0.9.0) (2023-07-31)
 
 

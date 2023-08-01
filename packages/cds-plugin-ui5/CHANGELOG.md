@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.2.0...cds-plugin-ui5@0.2.1) (2023-08-01)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** delay server start until bootstrap is completed ([#783](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/783)) ([88380ba](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/88380ba91ff9d4539a746edf7dc36f3bd4228137))
+
+
+
+
+
 # [0.2.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.1.7...cds-plugin-ui5@0.2.0) (2023-07-31)
 
 

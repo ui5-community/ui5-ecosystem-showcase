@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tslib@0.4.0...ui5-tslib@0.4.1) (2023-08-01)
+
+
+### Bug Fixes
+
+* **karma-ui5-transpile:** ensure to instrument test files ([#782](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/782)) ([1d201bb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1d201bb394cb4fb2d22c307acde45b6f47b0ed6c))
+* re-enable code coverage for flat libraries ([#781](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/781)) ([62e7adc](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/62e7adcd406c081987c0c91ff99c9609d80b9329))
+
+
+
+
+
 # [0.4.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tslib@0.3.33...ui5-tslib@0.4.0) (2023-07-31)
 
 
