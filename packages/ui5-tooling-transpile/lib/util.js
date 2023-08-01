@@ -185,7 +185,7 @@ module.exports = function (log) {
 			configuration?.debug && log.info(`Create Babel configuration based on ui5.yaml configuration options...`);
 
 			// create the babel configuration based on the ui5.yaml
-			babelConfig = { ignore: ["**/*.d.ts"], plugins: [], presets: [] };
+			babelConfig = { plugins: [], presets: [] };
 
 			// order of the presets is important: last preset is applied first
 			// which means the .babelrc config should look like that:

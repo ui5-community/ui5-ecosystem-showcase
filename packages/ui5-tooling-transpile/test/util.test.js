@@ -43,7 +43,6 @@ test("inject configuration options", async (t) => {
 	});
 	let babelConfig = await t.context.util.createBabelConfig({ configuration });
 	t.deepEqual(babelConfig, {
-		ignore: ["**/*.d.ts"],
 		plugins: [],
 		presets: [
 			[
@@ -69,7 +68,6 @@ test("inject configuration options", async (t) => {
 	});
 	babelConfig = await t.context.util.createBabelConfig({ configuration });
 	t.deepEqual(babelConfig, {
-		ignore: ["**/*.d.ts"],
 		plugins: [],
 		presets: [
 			[
@@ -103,7 +101,6 @@ test("inject configuration options", async (t) => {
 	});
 	babelConfig = await t.context.util.createBabelConfig({ configuration });
 	t.deepEqual(babelConfig, {
-		ignore: ["**/*.d.ts"],
 		plugins: [],
 		presets: [
 			[

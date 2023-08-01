@@ -76,7 +76,13 @@ function createPreprocessor(config, logger) {
 			})
 		) {
 			// add istanbul as first plugin into the plugins chain
-			babelOptions.plugins.unshift("istanbul");
+			babelOptions.plugins.unshift([
+				"istanbul",
+				{
+					include: ["**/*"],
+					exclude: []
+				}
+			]);
 		}
 		return babelOptions;
 	});
