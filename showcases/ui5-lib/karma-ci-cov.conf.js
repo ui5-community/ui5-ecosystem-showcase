@@ -6,6 +6,10 @@ module.exports = function (config) {
 			"src/**/*.js": ["coverage"],
 			"test/**/*.js": ["coverage"],
 		},
+		proxies: {
+			"/resources/ui5/ecosystem/demo/lib/": "/base/src/",
+			"/test-resources/ui5/ecosystem/demo/lib/": "/base/test/",
+		},
 		coverageReporter: {
 			dir: "coverage",
 			reporters: [
