@@ -78,7 +78,28 @@ module.exports = function (log) {
 			const config = configuration || {};
 
 			// if a tsconfig.json file exists, the project is a TypeScript project
-			const isTypeScriptProject = fs.existsSync(path.join(cwd, "tsconfig.json"));
+			const tscJsonPath = path.join(cwd, "tsconfig.json");
+			const isTypeScriptProject = fs.existsSync(tscJsonPath);
+
+			// read package.json and tsconfig.json to determine whether to transpile dependencies or not
+			if (isTypeScriptProject && !config.transpileDependencies) {
+				const tscJson = JSON.parse(fs.readFileSync(tscJsonPath, { encoding: "utf8" }));
+				const tsDeps = tscJson?.compilerOptions?.types?.filter((typePkgName) => {
+					try {
+						// if a type dependency includes a ui5.yaml we assume
+						// to support transpiling of dependencies - and in case
+						// of the project is built already the js files are
+						// available and can be served directly without transpile
+						const ui5YamlPath = require.resolve(`${typePkgName}/ui5.yaml`, {
+							paths: [cwd]
+						});
+						return !!ui5YamlPath;
+					} catch (e) {
+						return false;
+					}
+				});
+				config.transpileDependencies = tsDeps?.length || 0 > 0;
+			}
 
 			// derive whether TypeScript should be transformed or not
 			const transformTypeScript = config.transformTypeScript ?? config.transpileTypeScript ?? isTypeScriptProject;

@@ -41,7 +41,7 @@ server:
       afterMiddleware: compression
       configuration:
         <<: *cfgTranspile
-        transpileDependencies: true
+        #transpileDependencies: true # detected automatically from tsconfig.json/package.json
     - name: ui5-tooling-modules-middleware
       afterMiddleware: ui5-tooling-transpile-middleware
       configuration:
