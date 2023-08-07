@@ -21,3 +21,4 @@ pnpm-lock.yaml
 /**/*.svg
 /**/*.png
 /**/*.md
+/**/*.gen.d.ts

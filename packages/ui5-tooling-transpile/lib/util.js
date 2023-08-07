@@ -198,8 +198,8 @@ module.exports = function (log) {
 			const tscJsonPath = path.join(cwd, "tsconfig.json");
 			const isTypeScriptProject = fs.existsSync(tscJsonPath);
 
-			// read package.json and tsconfig.json to determine whether to transpile dependencies or not
-			if (isTypeScriptProject && !config.transpileDependencies) {
+			// read tsconfig.json to determine whether to transpile dependencies or not
+			if (isTypeScriptProject && !config.transpileDependencies && fs.existsSync(tscJsonPath)) {
 				const tscJson = JSONC.parse(fs.readFileSync(tscJsonPath, { encoding: "utf8" }));
 				const tsDeps = tscJson?.compilerOptions?.types?.filter((typePkgName) => {
 					try {
@@ -220,6 +220,21 @@ module.exports = function (log) {
 
 			// derive whether TypeScript should be transformed or not
 			const transformTypeScript = config.transformTypeScript ?? config.transpileTypeScript ?? isTypeScriptProject;
+
+			// load the pkgJson to determine the existence of the @ui5/ts-interface-generator
+			// to automatically set the config option generateTsInterfaces (if this is a ts project)
+			let generateTsInterfaces = config.generateTsInterfaces;
+			const pkgJsonPath = path.join(cwd, "package.json");
+			if (transformTypeScript && generateTsInterfaces === undefined && fs.existsSync(pkgJsonPath)) {
+				const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, { encoding: "utf8" }));
+				const deps = [
+					...Object.keys(pkgJson?.dependencies || {}),
+					...Object.keys(pkgJson?.devDependencies || {})
+				];
+				if (deps.indexOf("@ui5/ts-interface-generator") !== -1) {
+					generateTsInterfaces = true;
+				}
+			}
 
 			// derive the includes/excludes from the configuration
 			const includes = config.includes || config.includePatterns || [];
@@ -244,6 +259,7 @@ module.exports = function (log) {
 				excludes,
 				filePattern,
 				omitTSFromBuildResult: config.omitTSFromBuildResult,
+				generateTsInterfaces,
 				generateDts: config.generateDts,
 				transpileDependencies: config.transpileDependencies,
 				transformAtStartup: config.transformAtStartup,
@@ -448,7 +464,7 @@ module.exports = function (log) {
 		 * @param {string} pathname the path name
 		 * @param {Array<string>} excludes exclude paths
 		 * @param {Array<string>} includes include paths
-		 * @returns true, if the path should be handled
+		 * @returns {boolean} true, if the path should be handled
 		 */
 		shouldHandlePath: function shouldHandlePath(pathname, excludes = [], includes = []) {
 			return (

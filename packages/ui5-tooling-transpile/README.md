@@ -41,6 +41,9 @@ npm install ui5-tooling-transpile --save-dev
 - transformTypeScript: `boolean` (old alias: transpileTypeScript)
   if enabled, the tooling extension transforms TypeScript sources; the default value is derived from the existence of a `tsconfig.json` in the root folder of the project - if the file exists the configuration option is `true` otherwise `false`; setting this configuration option overrules the automatic determination
 
+- generateTsInterfaces: `boolean|undefined` (*experimental feature*)
+  option requires a dependency to the `@ui5/ts-interface-generator` when either the value of the option is `true` or `undefined` and the project is a TypeScript-based project or the `transformTypeScript` option is set to `true` - can be forced to be inactive by setting the option to `false` (only relevant for the middleware)
+
 - generateDts: `boolean`
   if enabled, the tooling extension will generate type definitions (`.d.ts`) files; by default for projects of type `library` this option is considered as `true` and for other projects such as `application` this option is considered as `false` by default (is only relevant in case of transformTypeScript is `true`)
 

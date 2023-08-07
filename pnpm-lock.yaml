@@ -429,6 +429,9 @@ importers:
       '@babel/preset-typescript':
         specifier: ^7.22.5
         version: 7.22.5(@babel/core@7.22.10)
+      '@ui5/ts-interface-generator':
+        specifier: '>=0.8.0'
+        version: 0.8.0(typescript@5.1.6)
       babel-plugin-transform-async-to-promises:
         specifier: ^0.8.18
         version: 0.8.18
@@ -757,8 +760,11 @@ importers:
       '@ui5/cli':
         specifier: ^3.4.0
         version: 3.4.0
+      '@ui5/ts-interface-generator':
+        specifier: ^0.8.0
+        version: 0.8.0(typescript@5.1.6)
       eslint:
-        specifier: ^8.47.0
+        specifier: ^8.46.0
         version: 8.47.0
       rimraf:
         specifier: ^5.0.1
@@ -791,8 +797,8 @@ importers:
         specifier: ^3.4.0
         version: 3.4.0
       '@ui5/ts-interface-generator':
-        specifier: ^0.7.0
-        version: 0.7.0
+        specifier: ^0.8.0
+        version: 0.8.0(typescript@5.1.6)
       eslint:
         specifier: ^8.47.0
         version: 8.47.0
@@ -3197,7 +3203,7 @@ packages:
     resolution: {integrity: sha512-YXmxzxXTP3u9HQpSXvK8qqoAm7VWQIFria3FVMQKkOSkWkph1TNnvt3Q1JvKT7/Jgd1HfTc3QrK09a2FND9+8A==}
     engines: {node: ^14.17.0 || >=16.0.0}
     dependencies:
-      chalk: 4.1.0
+      chalk: 4.1.2
       execa: 5.0.0
       strong-log-transformer: 2.1.0
     dev: true
@@ -5097,14 +5103,16 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@ui5/ts-interface-generator@0.7.0:
-    resolution: {integrity: sha512-3dCDGr05UnnjMCFm89Mj7m5q2rBtI+zDZ3p3aSbWD463XkC7G3xwXcJ/ynFa8cdWH64H7M+66qQmStuYQ/zHXg==}
+  /@ui5/ts-interface-generator@0.8.0(typescript@5.1.6):
+    resolution: {integrity: sha512-V6djTW+IZ3ScOoXQvAIqwSb09nfPZniAkjTlqAFSAD7JsTLK4RwjMD4u/MpUKYewBC5RIElSqz2jScNH+ttLiw==}
     hasBin: true
+    peerDependencies:
+      typescript: '>=4.4.3'
     dependencies:
       hjson: 3.2.2
       loglevel: 1.8.1
+      typescript: 5.1.6
       yargs: 17.7.2
-    dev: true
 
   /@wdio/cli@7.32.0(typescript@5.1.6):
     resolution: {integrity: sha512-JT6h5Tk7ZjaMWVFNCZFz+Y4vQRVmtUAlZjx6ECqDQuumItu9Fqf9NEmoFHOoyFJqz6mJ/85x/IQb9nfQf7HH+w==}
@@ -9841,7 +9849,7 @@ packages:
       fs.realpath: 1.0.0
       inflight: 1.0.6
       inherits: 2.0.4
-      minimatch: 3.0.5
+      minimatch: 3.1.2
       once: 1.4.0
       path-is-absolute: 1.0.1
     dev: true
@@ -9852,7 +9860,7 @@ packages:
       fs.realpath: 1.0.0
       inflight: 1.0.6
       inherits: 2.0.4
-      minimatch: 3.0.8
+      minimatch: 3.1.2
       once: 1.4.0
       path-is-absolute: 1.0.1
     dev: true
@@ -10177,7 +10185,6 @@ packages:
   /hjson@3.2.2:
     resolution: {integrity: sha512-MkUeB0cTIlppeSsndgESkfFD21T2nXPRaBStLtf3cAYA2bVEFdXlodZB0TukwZiobPD1Ksax5DK4RTZeaXCI3Q==}
     hasBin: true
-    dev: true
 
   /homedir-polyfill@1.0.3:
     resolution: {integrity: sha512-eSmmWE5bZTK2Nou4g0AI3zZ9rswp7GRKoKXS1BLUkvPviOqs4YTN1djQIqrXy9k5gEtdLPy86JjRwsNM9tnDcA==}
@@ -11138,7 +11145,7 @@ packages:
     resolution: {integrity: sha512-t+ST7CB9GX5F2xKwhwCf0TAR17uNDiaPTZnVymP9lw0lssa9vG+AFyDZoeIHStU3WowFFwT+ky+er0WVl2yGhA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     dependencies:
-      chalk: 4.1.0
+      chalk: 4.1.2
       diff-sequences: 29.4.3
       jest-get-type: 29.4.3
       pretty-format: 29.6.2
@@ -12190,7 +12197,6 @@ packages:
   /loglevel@1.8.1:
     resolution: {integrity: sha512-tCRIJM51SHjAayKwC+QAg8hT8vg6z7GSgLJKGvzuPb1Wc+hLzqtuVLxp6/HzSPOozuK+8ErAhy7U/sVzw8Dgfg==}
     engines: {node: '>= 0.6.0'}
-    dev: true
 
   /long@4.0.0:
     resolution: {integrity: sha512-XsP+KhQif4bjX1kbuSiySJFNAehNxgLb6hPRGJ9QsUr8ajHkuXGdrHmFUTUUXhDwVX2R5bY4JNZEwbUiMhV+MA==}
@@ -13097,7 +13103,7 @@ packages:
       array-differ: 3.0.0
       array-union: 2.1.0
       arrify: 2.0.1
-      minimatch: 3.0.5
+      minimatch: 3.1.2
     dev: true
 
   /mustache@2.2.1:
@@ -13596,7 +13602,7 @@ packages:
       '@yarnpkg/parsers': 3.0.0-rc.46
       '@zkochan/js-yaml': 0.0.6
       axios: 1.4.0
-      chalk: 4.1.0
+      chalk: 4.1.2
       cli-cursor: 3.1.0
       cli-spinners: 2.6.1
       cliui: 7.0.4
@@ -16924,7 +16930,6 @@ packages:
     resolution: {integrity: sha512-zaWCozRZ6DLEWAWFrVDz1H6FVXzUSfTy5FUMWsQlU8Ym5JP9eO4xkTIROFCQvhQf61z6O/G6ugw3SgAnvvm+HA==}
     engines: {node: '>=14.17'}
     hasBin: true
-    dev: true
 
   /ua-parser-js@0.7.35:
     resolution: {integrity: sha512-veRf7dawaj9xaWEu9HoTVn5Pggtc/qj+kqTOFvNiN1l0YdxwC1kvel57UCjThjGa3BHBihE8/UJAHI+uQHmd/g==}
