@@ -74,17 +74,17 @@ function createPreprocessor(config, logger) {
 				return plugin.file.request === "istanbul";
 			})
 		) {
-			const istanbunConfig = {
+			const istanbulConfig = {
 				include: ["**/*"],
 				exclude: []
 			};
 			// apply the `instrumenterOptions` for istanbul from `coverageReporter` in the `karma.config`
 			const instrumenterOptionsIstanbul = config.coverageReporter?.instrumenterOptions?.istanbul;
 			if (instrumenterOptionsIstanbul && typeof instrumenterOptionsIstanbul === "object") {
-				Object.assign(istanbunConfig, config.coverageReporter.instrumenterOptions.istanbul);
+				Object.assign(istanbulConfig, config.coverageReporter.instrumenterOptions.istanbul);
 			}
 			// add istanbul as first plugin into the plugins chain
-			babelOptions.plugins.unshift(["istanbul", istanbunConfig]);
+			babelOptions.plugins.unshift(["istanbul", istanbulConfig]);
 		}
 		return babelOptions;
 	});
