@@ -26,6 +26,8 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 	if (!skipLocalApps) {
 		const appDir = path.join(cwd, "app");
 		if (fs.existsSync(appDir)) {
+			// lookup all dirs inside the root app directory for
+			// being either a local app or a UI5 application
 			fs.readdirSync(appDir, { withFileTypes: true })
 				.filter((f) => f.isDirectory())
 				.forEach((d) => localApps.add(d.name));
@@ -36,12 +38,22 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 					appDirs.push(d);
 				}
 			});
-		}
 
-		// look for a single app if no apps were found in the app directories
-		if (appDirs.length === 0) {
-			if (fs.existsSync(path.join(appDir, "ui5.yaml"))) {
-				appDirs.push(appDir);
+			// also include all root app directory HTML files if no ui5.yaml is present
+			if (!fs.existsSync(path.join(appDir, "ui5.yaml"))) {
+				fs.readdirSync(appDir, { withFileTypes: true })
+					.filter((f) => {
+						return f.isFile();
+					})
+					.forEach((f) => {
+						localApps.add(f.name);
+					});
+			} else {
+				// if a ui5.yaml is present in the root app directory consider this
+				// as a UI5 application to be included into the mounting
+				if (appDirs.length === 0) {
+					appDirs.push(appDir);
+				}
 			}
 		}
 	}
