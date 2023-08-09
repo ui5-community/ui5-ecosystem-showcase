@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/karma-ui5-transpile@3.0.1...karma-ui5-transpile@3.1.0) (2023-08-09)
+
+
+### Features
+
+* **karma-ui5-transpile:** Apply `instrumenterOptions` for Istanbul from `coverageReporter` in `karma.config` ([#788](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/788)) ([574d5dd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/574d5dd09b9e6020bc3dcc1698600cfd0315c24c))
+
+
+
+
+
 ## [3.0.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/karma-ui5-transpile@3.0.0...karma-ui5-transpile@3.0.1) (2023-08-01)
 
 

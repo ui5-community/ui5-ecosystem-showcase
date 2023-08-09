@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.9.1...ui5-tsapp@0.9.2) (2023-08-09)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** derive transpileDependencies from tsconfig ([#786](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/786)) ([ba5d734](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ba5d734bd6772a6c4b05344ec7f69b4d1de4a1ea))
+
+
+
+
+
 ## [0.9.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.9.0...ui5-tsapp@0.9.1) (2023-08-01)
 
 
