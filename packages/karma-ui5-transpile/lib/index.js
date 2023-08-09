@@ -80,8 +80,8 @@ function createPreprocessor(config, logger) {
 			};
 			// apply the `instrumenterOptions` for istanbul from `coverageReporter` in the `karma.config`
 			const instrumenterOptionsIstanbul = config.coverageReporter?.instrumenterOptions?.istanbul;
-			if (instrumenterOptionsIstanbul && typeof instrumenterOptionsIstanbul === "object") {
-				Object.assign(istanbulConfig, config.coverageReporter.instrumenterOptions.istanbul);
+			if (typeof instrumenterOptionsIstanbul === "object") {
+				Object.assign(istanbulConfig, instrumenterOptionsIstanbul);
 			}
 			// add istanbul as first plugin into the plugins chain
 			babelOptions.plugins.unshift(["istanbul", istanbulConfig]);
