@@ -9,7 +9,6 @@ const yaml = require("js-yaml");
  *
  * Kudos goes to: https://github.com/babel/karma-babel-preprocessor
  * which inspired the creation of this Karma preprocessor.
- *
  * @param {object} config Config object of UI5.
  * @param {object} logger Karma's logger.
  * @returns {Function} The preprocess function.
@@ -75,21 +74,23 @@ function createPreprocessor(config, logger) {
 				return plugin.file.request === "istanbul";
 			})
 		) {
+			const istanbulConfig = {
+				include: ["**/*"],
+				exclude: []
+			};
+			// apply the `instrumenterOptions` for istanbul from `coverageReporter` in the `karma.config`
+			const instrumenterOptionsIstanbul = config.coverageReporter?.instrumenterOptions?.istanbul;
+			if (typeof instrumenterOptionsIstanbul === "object") {
+				Object.assign(istanbulConfig, instrumenterOptionsIstanbul);
+			}
 			// add istanbul as first plugin into the plugins chain
-			babelOptions.plugins.unshift([
-				"istanbul",
-				{
-					include: ["**/*"],
-					exclude: []
-				}
-			]);
+			babelOptions.plugins.unshift(["istanbul", istanbulConfig]);
 		}
 		return babelOptions;
 	});
 
 	/**
 	 * preprocess function for the individual files to transpile
-	 *
 	 * @param {string} content file content
 	 * @param {object} file file info
 	 * @param {Function} done callback function when done
