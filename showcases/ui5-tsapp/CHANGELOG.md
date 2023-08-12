@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.9.3...ui5-tsapp@0.9.4) (2023-08-12)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** activate keepDynamicImports by default ([#794](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/794)) ([7f2ea27](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7f2ea272d12c311c459c47cbc235df854ffd38c6))
+
+
+
+
+
 ## [0.9.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.9.2...ui5-tsapp@0.9.3) (2023-08-12)
 
 
