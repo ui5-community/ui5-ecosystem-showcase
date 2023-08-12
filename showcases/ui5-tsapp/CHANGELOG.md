@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.9.2...ui5-tsapp@0.9.3) (2023-08-12)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** allow to skip convert of dynamic imports ([#792](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/792)) ([c27500b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c27500be0495d76b6f62aed40490532d03dfdc6d))
+
+
+
+
+
 ## [0.9.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.9.1...ui5-tsapp@0.9.2) (2023-08-09)
 
 

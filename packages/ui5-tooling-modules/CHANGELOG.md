@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.0.0...ui5-tooling-modules@3.0.1) (2023-08-12)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** allow to skip convert of dynamic imports ([#792](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/792)) ([c27500b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c27500be0495d76b6f62aed40490532d03dfdc6d))
+
+
+
+
+
 # [3.0.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@0.9.13...ui5-tooling-modules@3.0.0) (2023-07-31)
 
 
