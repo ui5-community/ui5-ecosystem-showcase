@@ -22,7 +22,7 @@
     }
   },
   "devDependencies": {
-    "@openui5/ts-types": "^1.116.0",
+    "@openui5/ts-types": "^1.117.0",
     "@ui5/cli": "^2.14.17",
     "@ui5/uiveri5": "^1.47.9",
     "@wdio/cli": "^7",
