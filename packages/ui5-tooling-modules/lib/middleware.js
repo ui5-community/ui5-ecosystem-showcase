@@ -11,7 +11,7 @@ const path = require("path");
  * @param {object} parameters.options Options
  * @param {object} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @param {boolean} [parameters.options.configuration.skipCache] Flag whether the module cache for the bundles should be skipped
- * @param {boolean} [parameters.options.configuration.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept
+ * @param {boolean|string[]} [parameters.options.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
  * @returns {Function} Middleware function to use
  */
 module.exports = function ({ log, options, middlewareUtil }) {

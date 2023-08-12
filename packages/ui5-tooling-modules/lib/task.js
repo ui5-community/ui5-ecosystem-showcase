@@ -21,7 +21,7 @@ const escodegen = require("@javascript-obfuscator/escodegen"); // escodegen itse
  * @param {boolean} [parameters.options.configuration.addToNamespace] Adds modules into the sub-namespace thirdparty of the Component
  * @param {boolean} [parameters.options.configuration.removeScopePrefix] Remove the @ prefix for the scope in the namespace/path
  * @param {boolean} [parameters.options.configuration.providedDependencies] List of provided dependencies which should not be processed
- * @param {boolean} [parameters.options.configuration.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept
+ * @param {boolean|string[]} [parameters.options.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ log, workspace, taskUtil, options }) {

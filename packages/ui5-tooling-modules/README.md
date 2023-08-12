@@ -47,8 +47,8 @@ The following configuration options are relevant for the `task` and the `middlew
   For development scenarios, the module cache can be disabled by setting this option to true. Normally, if a module changes (e.g. bundledefs), this change is detected and the bundle is recreated. This just forces the regeneration always (defaults to `false`)
   &nbsp;
 
-- *keepDynamicImports*: `String[]` *experimental feature*
-  An arrays of NPM package names for which the dynamic imports with a generic target module (e.g. `import(anyUrl)`) will not be converted into a `require` based polyfill. This experimental feature is useful in scenarios loading ES modules dynamically from generic URLs. All dynamic imports resolving a concrete module (e.g. `import("jspdf")`) will be converted into chunks and loaded with a `require` call.
+- *keepDynamicImports*: `boolean|String[]` *experimental feature*
+  An arrays of NPM package names for which the dynamic imports with a generic target module (e.g. `import(anyUrl)`) will not be converted into a `require` based polyfill. If the value is a boolean, it activates/deactivates the feature for all modules (by default it is active!). This experimental feature is useful in scenarios loading ES modules dynamically from generic URLs. All dynamic imports resolving a concrete module (e.g. `import("jspdf")`) will be converted into chunks and loaded with a `require` call.
   &nbsp;
 
 The following configuration options are just relevant for the `task`:
