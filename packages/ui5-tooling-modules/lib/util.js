@@ -11,6 +11,9 @@ const nodePolyfills = require("rollup-plugin-polyfill-node");
 const amdCustom = require("./rollup-plugin-amd-custom");
 const skipAssets = require("./rollup-plugin-skip-assets");
 const injectESModule = require("./rollup-plugin-inject-esmodule");
+const logger = require("./rollup-plugin-logger");
+const pnpmResolve = require("./rollup-plugin-pnpm-resolve");
+const dynamicImports = require("./rollup-plugin-dynamic-imports");
 const replace = require("@rollup/plugin-replace");
 
 const espree = require("espree");
@@ -152,22 +155,16 @@ module.exports = function (log) {
 		 * @param {string} moduleName name of the module (e.g. "chart.js/auto")
 		 * @param {object} options configuration options
 		 * @param {string[]} options.mainFields an order of main fields to check in package.json
+		 * @param {boolean} [options.beforePlugins] rollup plugins to be executed before
+		 * @param {boolean} [options.afterPlugins] rollup plugins to be executed after
 		 * @returns {string} the bundle
 		 */
-		createBundle: async function createBundle(moduleName, { mainFields } = {}) {
+		createBundle: async function createBundle(moduleName, { mainFields, beforePlugins, afterPlugins } = {}) {
 			// create a bundle
 			const bundle = await rollup.rollup({
 				input: moduleName,
 				plugins: [
-					(function (options) {
-						return {
-							name: "logger",
-							resolveId(source) {
-								log.verbose(`Bundling resource ${source}`);
-								return undefined;
-							},
-						};
-					})(),
+					...(beforePlugins || []),
 					replace({
 						preventAssignment: false,
 						values: {
@@ -190,20 +187,11 @@ module.exports = function (log) {
 						mainFields,
 						preferBuiltins: false,
 					}),
-					(function (options) {
-						const { mainFields } = options;
-						return {
-							name: "resolve-pnpm",
-							resolveId(source) {
-								// ignore absolute paths
-								if (path.isAbsolute(source)) {
-									return source;
-								}
-								// needs to be in sync with nodeResolve
-								return that.resolveModule(source, { mainFields });
-							},
-						};
-					})({ mainFields }),
+					pnpmResolve({
+						mainFields,
+						resolveModule: that.resolveModule.bind(that),
+					}),
+					...(afterPlugins || []),
 				],
 				onwarn: function ({ loc, frame, code, message }) {
 					// Skip certain warnings
@@ -245,10 +233,11 @@ module.exports = function (log) {
 		 * @param {object} [options] additional options
 		 * @param {boolean} [options.skipCache] skip the module cache
 		 * @param {boolean} [options.debug] debug mode
+		 * @param {boolean} [options.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept
 		 * @param {boolean} [skipTransform] skip the transformation
 		 * @returns {object} the output object of the resource (code, chunks?, lastModified)
 		 */
-		getResource: async function getResource(moduleName, { skipCache, debug }, skipTransform) {
+		getResource: async function getResource(moduleName, { skipCache, debug, keepDynamicImports }, skipTransform) {
 			let bundling = false;
 
 			try {
@@ -276,13 +265,21 @@ module.exports = function (log) {
 							// create the bundle
 							let output;
 							try {
-								output = await that.createBundle(moduleName, { mainFields: defaultMainFields });
+								output = await that.createBundle(moduleName, {
+									mainFields: defaultMainFields,
+									beforePlugins: [logger({ log })],
+									afterPlugins: [dynamicImports({ moduleName, keepDynamicImports })],
+								});
 							} catch (ex) {
 								// related to issue #726 for which the generation of jspdf fails on Windows machines
 								// when running the build in a standalone project with npm (without monorepo and pnpm)
 								log.warn(`Failed to bundle "${moduleName}" using ES modules, falling back to CommonJS modules...`);
 								log.verbose(ex); // report error in verbose case!
-								output = await that.createBundle(moduleName, { mainFields: ["browser", "main", "module"] });
+								output = await that.createBundle(moduleName, {
+									mainFields: ["browser", "main", "module"],
+									beforePlugins: [logger({ log })],
+									afterPlugins: [dynamicImports({ moduleName, keepDynamicImports })],
+								});
 							}
 
 							// cache the output (can be mulitple chunks)

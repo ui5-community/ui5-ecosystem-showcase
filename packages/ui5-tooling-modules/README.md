@@ -37,9 +37,21 @@ npm install ui5-tooling-modules --save-dev
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
+The following configuration options are relevant for the `task` and the `middleware`:
+
 - *verbose*: `boolean`  
   Enables verbose logging (defaults to `false`)
   &nbsp;
+
+- *skipCache*: `boolean` *experimental feature*
+  For development scenarios, the module cache can be disabled by setting this option to true. Normally, if a module changes (e.g. bundledefs), this change is detected and the bundle is recreated. This just forces the regeneration always (defaults to `false`)
+  &nbsp;
+
+- *keepDynamicImports*: `String[]` *experimental feature*
+  An arrays of NPM package names for which the dynamic imports with a generic target module (e.g. `import(anyUrl)`) will not be converted into a `require` based polyfill. This experimental feature is useful in scenarios loading ES modules dynamically from generic URLs. All dynamic imports resolving a concrete module (e.g. `import("jspdf")`) will be converted into chunks and loaded with a `require` call.
+  &nbsp;
+
+The following configuration options are just relevant for the `task`:
 
 - *prependPathMappings*: `boolean`  
   Prepends the path mappings for the UI5 loader to the `Component.js` which allows to run the Component using 3rd party modules in e.g. Fiori launchpad environments (defaults to `false`)
@@ -52,12 +64,15 @@ npm install ui5-tooling-modules --save-dev
 
 - *removeScopePrefix*: `boolean`
   Removes the scope prefix `@` from the namespace/path of the 3rd party module when adding it to the namespace with the *addToNamespace* option.
+  &nbsp;
 
 - *providedDependencies*: `String[]`
   An array of NPM package names which will be available in the development server via the middleware but will be ignored for the build process via the task. Provided dependencies are considered as being provided by the application runtime rather than it must be shipped with the current project. Provided dependencies will ignore any of the configurations above.
+  &nbsp;
 
 - *includeAssets*: `Map<String, String[]>` *experimental feature*
-  A map of NPM package names to list of glob patterns which defines the assets to be included. The list of glob patterns can be omitted in case of copying all resources of the NPM package. (The configuration option is only relevant for the task!)
+  A map of NPM package names to list of glob patterns which defines the assets to be included. The list of glob patterns can be omitted in case of copying all resources of the NPM package.
+  &nbsp;
 
 ## Usage
 
@@ -92,6 +107,35 @@ server:
 ```
 
 > :warning: In case your application is using a proxy such `fiori-tools-proxy`, the proxy must run after `ui5-tooling-modules-middleware` middleware. Otherwise proxy will try to serve the resources for your installed npm package instead of `ui5-tooling-modules-middleware`. You can achieve this by setting `afterMiddleware: ui5-tooling-modules-middleware` in `fiori-tools-proxy` middleware.
+
+---
+:fire: **TIP** :fire:
+
+[YAML anchors](https://yaml.org/spec/1.2.2/#692-node-anchors) are a great feature to avoid redundancies in `.yaml` files. You can share the configuration of the `task` and the `middleware` in the following way:
+
+**`ui5.yaml`**
+```yaml
+server:
+  customMiddleware:
+    - name: ui5-tooling-modules-middleware
+      afterMiddleware: compression
+      configuration: &cfgModules
+        debug: true
+        keepDynamicImports:
+          - "@luigi-project/container"
+[...]
+builder:
+  customTasks:
+    - name: ui5-tooling-modules-task
+      afterTask: replaceVersion
+      configuration:
+        <<: *cfgModules
+        addToNamespace: true
+```
+
+With this approach you can ensure that you have a consistent configuration across your `task` and `middleware`.
+
+---
 
 ## How it works
 

@@ -26,6 +26,7 @@
     "directory": "showcases/ui5-tsapp"
   },
   "dependencies": {
+    "@luigi-project/container": "1.0.0-rc5",
     "@stomp/stompjs": "^7.0.0",
     "jspdf": "^2.5.1",
     "luxon": "^3.3.0",

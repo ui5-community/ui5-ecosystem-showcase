@@ -9,8 +9,8 @@ const { platform } = require("os");
 // *****************************************************************************
 
 // eslint-disable-next-line jsdoc/require-jsdoc
-async function getResource(resourceName, ctx) {
-	return ctx.util.getResource(resourceName, { skipCache: true, debug: true });
+async function getResource(resourceName, ctx, options = {}) {
+	return ctx.util.getResource(resourceName, { skipCache: true, debug: true, ...options });
 }
 
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -68,7 +68,7 @@ async function runModule(resourceName, code, ctx) {
 }
 
 // eslint-disable-next-line jsdoc/require-jsdoc
-async function getModule(resourceName, ctx) {
+async function getModule(resourceName, ctx, options = {}) {
 	if (resourceName?.startsWith("..")) {
 		throw Error("Paths must be resolved relative to resource!");
 	}
@@ -78,7 +78,7 @@ async function getModule(resourceName, ctx) {
 	if (resourceName === "require") {
 		return function () {};
 	}
-	const resource = await getResource(resourceName, ctx);
+	const resource = await getResource(resourceName, ctx, options);
 	writeFile(resourceName, resource.code, ctx);
 	const retVal = await runModule(resourceName, resource.code, ctx);
 	return {
@@ -290,6 +290,31 @@ test.serial("Verify generation of ui5-app/bundledefs/react", async (t) => {
 		tmpDir: t.context.tmpDir,
 		util: t.context.util,
 	});
+	t.true(module.retVal.__esModule);
+	if (platform() !== "win32") {
+		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
+	}
+});
+
+test.serial("Verify generation of @luigi-project/container", async (t) => {
+	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp"));
+	const module = await getModule(
+		"@luigi-project/container",
+		{
+			tmpDir: t.context.tmpDir,
+			util: t.context.util,
+			scope: {
+				HTMLElement: function () {},
+				customElements: {
+					get: function () {},
+					define: function () {},
+				},
+			},
+		},
+		{
+			keepDynamicImports: ["@luigi-project/container"],
+		}
+	);
 	t.true(module.retVal.__esModule);
 	if (platform() !== "win32") {
 		t.is(module.code, readSnapFile(module.name, t.context.snapDir));

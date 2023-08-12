@@ -2,10 +2,6 @@
 const path = require("path");
 
 /**
- * @typedef {Object} [configuration] configuration
- * @property {boolean|yo<confirm|false>} [prependPathMappings] Prepends the path mappings for the UI5 loader to the `Component.js` which allows to run the Component using 3rd party libs in e.g. Fiori launchpad environments (default to `false`)
- */
-/**
  * Custom middleware to create the UI5 AMD-like bundles for used ES imports from node_modules.
  *
  * @param {object} parameters Parameters
@@ -15,6 +11,7 @@ const path = require("path");
  * @param {object} parameters.options Options
  * @param {object} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @param {boolean} [parameters.options.configuration.skipCache] Flag whether the module cache for the bundles should be skipped
+ * @param {boolean} [parameters.options.configuration.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept
  * @returns {Function} Middleware function to use
  */
 module.exports = function ({ log, options, middlewareUtil }) {

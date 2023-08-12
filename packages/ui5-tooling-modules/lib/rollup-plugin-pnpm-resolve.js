@@ -1,0 +1,14 @@
+const path = require("path");
+module.exports = function ({ mainFields, resolveModule } = {}) {
+	return {
+		name: "pnpm-resolve",
+		resolveId(source) {
+			// ignore absolute paths
+			if (path.isAbsolute(source)) {
+				return source;
+			}
+			// needs to be in sync with nodeResolve
+			return resolveModule(source, { mainFields });
+		},
+	};
+};

@@ -1,6 +1,6 @@
 // Inspired by https://rollupjs.org/plugin-development/#resolveid (the Polyfill Injection)
 const PROXY_SUFFIX = "?inject-esmodule";
-module.exports = function (/* options = {} */) {
+module.exports = function (/* { log } = {} */) {
 	return {
 		name: "inject-esmodule",
 		async resolveId(source, importer, options) {
