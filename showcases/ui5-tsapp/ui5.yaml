@@ -1,6 +1,16 @@
 specVersion: "3.0"
 metadata:
   name: ui5.ecosystem.demo.tsapp
+customConfiguration:
+  config-ui5-tooling-transpile: &cfgTranspile
+    debug: true
+    filePattern: .+(ts|tsx)
+    generateDts: true
+    omitTSFromBuildResult: true
+  config-ui5-tooling-modules: &cfgModules
+    debug: true
+    keepDynamicImports:
+      - "@luigi-project/container"
 type: application
 framework:
   name: OpenUI5
@@ -22,15 +32,12 @@ builder:
   customTasks:
     - name: ui5-tooling-transpile-task
       afterTask: replaceVersion
-      configuration: &cfgTranspile
-        debug: true
-        filePattern: .+(ts|tsx)
-        generateDts: true
-        omitTSFromBuildResult: true
+      configuration:
+        <<: *cfgTranspile
     - name: ui5-tooling-modules-task
       afterTask: ui5-tooling-transpile-task
       configuration:
-        debug: true
+        <<: *cfgModules
         prependPathMappings: false
         addToNamespace: true
         providedDependencies:
@@ -45,7 +52,7 @@ server:
     - name: ui5-tooling-modules-middleware
       afterMiddleware: ui5-tooling-transpile-middleware
       configuration:
-        debug: true
+        <<: *cfgModules
     - name: ui5-middleware-livereload
       afterMiddleware: compression
       configuration:

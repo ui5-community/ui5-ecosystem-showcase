@@ -648,6 +648,9 @@ importers:
 
   showcases/ui5-tsapp:
     dependencies:
+      '@luigi-project/container':
+        specifier: 1.0.0-rc5
+        version: 1.0.0-rc5
       '@stomp/stompjs':
         specifier: ^7.0.0
         version: 7.0.0
@@ -3292,6 +3295,10 @@ packages:
       - bluebird
       - supports-color
     dev: true
+
+  /@luigi-project/container@1.0.0-rc5:
+    resolution: {integrity: sha512-0DTDLDXh02Vc6GsltCgFcvHNtgcZIMR/SpxsE89dBZH8pheu/xyCZgl4Vkf4NkUX9CS8p77/RCIIsuwfM8QWYA==}
+    dev: false
 
   /@mapbox/node-pre-gyp@1.0.10:
     resolution: {integrity: sha512-4ySo4CjzStuprMwk35H5pPbkymjv1SF3jGLj6rAHp/xT/RF7TL7bd9CTm1xDY49K2qF7jmR/g7k+SkLETP6opA==}
