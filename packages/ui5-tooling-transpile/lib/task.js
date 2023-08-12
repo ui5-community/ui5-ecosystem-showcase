@@ -77,11 +77,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 
 					// create the ts file in the workspace
 					config.debug && log.info(`  + [.js] ${filePath}`);
-					const transpiledResource = resourceFactory.createResource({
-						path: filePath,
-						string: normalizeLineFeeds(result.code)
-					});
-					await workspace.write(transpiledResource);
+					let string = normalizeLineFeeds(result.code);
 
 					// create sourcemap resource if available
 					if (result.map) {
@@ -94,7 +90,16 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 						});
 
 						await workspace.write(resourceMap);
+
+						// append the source mapping url to the resource string
+						string += `\n//# sourceMappingURL=${result.map.file}.map`;
 					}
+
+					const transpiledResource = resourceFactory.createResource({
+						path: filePath,
+						string
+					});
+					await workspace.write(transpiledResource);
 				}
 			}
 		})
