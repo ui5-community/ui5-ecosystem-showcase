@@ -233,7 +233,7 @@ module.exports = function (log) {
 		 * @param {object} [options] additional options
 		 * @param {boolean} [options.skipCache] skip the module cache
 		 * @param {boolean} [options.debug] debug mode
-		 * @param {boolean} [options.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept
+		 * @param {boolean|string[]} [options.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
 		 * @param {boolean} [skipTransform] skip the transformation
 		 * @returns {object} the output object of the resource (code, chunks?, lastModified)
 		 */

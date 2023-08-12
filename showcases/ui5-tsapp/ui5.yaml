@@ -9,8 +9,6 @@ customConfiguration:
     omitTSFromBuildResult: true
   config-ui5-tooling-modules: &cfgModules
     debug: true
-    keepDynamicImports:
-      - "@luigi-project/container"
 type: application
 framework:
   name: OpenUI5
