@@ -708,7 +708,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   function mapMonths(f) {
     var ms = [];
     for (var i = 1; i <= 12; i++) {
-      var dt = DateTime.utc(2016, i, 1);
+      var dt = DateTime.utc(2009, i, 1);
       ms.push(f(dt));
     }
     return ms;
@@ -721,8 +721,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     return ms;
   }
-  function listStuff(loc, length, defaultOK, englishFn, intlFn) {
-    var mode = loc.listingMode(defaultOK);
+  function listStuff(loc, length, englishFn, intlFn) {
+    var mode = loc.listingMode();
     if (mode === "error") {
       return null;
     } else if (mode === "en") {
@@ -934,15 +934,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         defaultToEN: false
       }));
     };
-    _proto4.months = function months$1(length, format, defaultOK) {
+    _proto4.months = function months$1(length, format) {
       var _this2 = this;
       if (format === void 0) {
         format = false;
       }
-      if (defaultOK === void 0) {
-        defaultOK = true;
-      }
-      return listStuff(this, length, defaultOK, months, function () {
+      return listStuff(this, length, months, function () {
         var intl = format ? {
           month: length,
           day: "numeric"
@@ -957,15 +954,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return _this2.monthsCache[formatStr][length];
       });
     };
-    _proto4.weekdays = function weekdays$1(length, format, defaultOK) {
+    _proto4.weekdays = function weekdays$1(length, format) {
       var _this3 = this;
       if (format === void 0) {
         format = false;
       }
-      if (defaultOK === void 0) {
-        defaultOK = true;
-      }
-      return listStuff(this, length, defaultOK, weekdays, function () {
+      return listStuff(this, length, weekdays, function () {
         var intl = format ? {
           weekday: length,
           year: "numeric",
@@ -982,12 +976,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return _this3.weekdaysCache[formatStr][length];
       });
     };
-    _proto4.meridiems = function meridiems$1(defaultOK) {
+    _proto4.meridiems = function meridiems$1() {
       var _this4 = this;
-      if (defaultOK === void 0) {
-        defaultOK = true;
-      }
-      return listStuff(this, undefined, defaultOK, function () {
+      return listStuff(this, undefined, function () {
         return meridiems;
       }, function () {
         if (!_this4.meridiemCache) {
@@ -1002,12 +993,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return _this4.meridiemCache;
       });
     };
-    _proto4.eras = function eras$1(length, defaultOK) {
+    _proto4.eras = function eras$1(length) {
       var _this5 = this;
-      if (defaultOK === void 0) {
-        defaultOK = true;
-      }
-      return listStuff(this, length, defaultOK, eras, function () {
+      return listStuff(this, length, eras, function () {
         var intl = {
           era: length
         };
@@ -1194,7 +1182,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       if (lowered === "default") return defaultZone; else if (lowered === "local" || lowered === "system") return SystemZone.instance; else if (lowered === "utc" || lowered === "gmt") return FixedOffsetZone.utcInstance; else return FixedOffsetZone.parseSpecifier(lowered) || IANAZone.create(input);
     } else if (isNumber(input)) {
       return FixedOffsetZone.instance(input);
-    } else if (typeof input === "object" && input.offset && typeof input.offset === "number") {
+    } else if (typeof input === "object" && ("offset" in input) && typeof input.offset === "function") {
       return input;
     } else {
       return new InvalidZone(input);
@@ -1650,33 +1638,24 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       var df = this.systemLoc.dtFormatter(dt, _extends({}, this.opts, opts));
       return df.format();
     };
-    _proto.formatDateTime = function formatDateTime(dt, opts) {
+    _proto.dtFormatter = function dtFormatter(dt, opts) {
       if (opts === void 0) {
         opts = {};
       }
-      var df = this.loc.dtFormatter(dt, _extends({}, this.opts, opts));
-      return df.format();
+      return this.loc.dtFormatter(dt, _extends({}, this.opts, opts));
+    };
+    _proto.formatDateTime = function formatDateTime(dt, opts) {
+      return this.dtFormatter(dt, opts).format();
     };
     _proto.formatDateTimeParts = function formatDateTimeParts(dt, opts) {
-      if (opts === void 0) {
-        opts = {};
-      }
-      var df = this.loc.dtFormatter(dt, _extends({}, this.opts, opts));
-      return df.formatToParts();
+      return this.dtFormatter(dt, opts).formatToParts();
     };
     _proto.formatInterval = function formatInterval(interval, opts) {
-      if (opts === void 0) {
-        opts = {};
-      }
-      var df = this.loc.dtFormatter(interval.start, _extends({}, this.opts, opts));
+      var df = this.dtFormatter(interval.start, opts);
       return df.dtf.formatRange(interval.start.toJSDate(), interval.end.toJSDate());
     };
     _proto.resolvedOptions = function resolvedOptions(dt, opts) {
-      if (opts === void 0) {
-        opts = {};
-      }
-      var df = this.loc.dtFormatter(dt, _extends({}, this.opts, opts));
-      return df.resolvedOptions();
+      return this.dtFormatter(dt, opts).resolvedOptions();
     };
     _proto.num = function num(n, p) {
       if (p === void 0) {
@@ -2240,13 +2219,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     };
     return new Duration(conf);
   }
-  function antiTrunc(n) {
-    return n < 0 ? Math.floor(n) : Math.ceil(n);
+  function removePrecisionIssue(a) {
+    return Math.trunc(a * 1000) / 1000;
   }
   function convert(matrix, fromMap, fromUnit, toMap, toUnit) {
-    var conv = matrix[toUnit][fromUnit], raw = fromMap[fromUnit] / conv, sameSign = Math.sign(raw) === Math.sign(toMap[toUnit]), added = !sameSign && toMap[toUnit] !== 0 && Math.abs(raw) <= 1 ? antiTrunc(raw) : Math.trunc(raw);
-    toMap[toUnit] += added;
-    fromMap[fromUnit] -= added * conv;
+    var conv = matrix[toUnit][fromUnit], raw = fromMap[fromUnit] / conv, added = Math.floor(raw);
+    toMap[toUnit] = removePrecisionIssue(toMap[toUnit] + added);
+    fromMap[fromUnit] = removePrecisionIssue(fromMap[fromUnit] - added * conv);
   }
   function normalizeValues(matrix, vals) {
     reverseUnits.reduce(function (previous, current) {
@@ -2437,20 +2416,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         suppressSeconds: false,
         includePrefix: false,
         format: "extended"
-      }, opts);
-      var value = this.shiftTo("hours", "minutes", "seconds", "milliseconds");
-      var fmt = opts.format === "basic" ? "hhmm" : "hh:mm";
-      if (!opts.suppressSeconds || value.seconds !== 0 || value.milliseconds !== 0) {
-        fmt += opts.format === "basic" ? "ss" : ":ss";
-        if (!opts.suppressMilliseconds || value.milliseconds !== 0) {
-          fmt += ".SSS";
-        }
-      }
-      var str = value.toFormat(fmt);
-      if (opts.includePrefix) {
-        str = "T" + str;
-      }
-      return str;
+      }, opts, {
+        includeOffset: false
+      });
+      var dateTime = DateTime.fromMillis(millis, {
+        zone: "UTC"
+      });
+      return dateTime.toISOTime(opts);
     };
     _proto.toJSON = function toJSON() {
       return this.toISO();
@@ -2459,7 +2431,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       return this.toISO();
     };
     _proto.toMillis = function toMillis() {
-      return this.as("milliseconds");
+      var _this$values$millisec;
+      var sum = (_this$values$millisec = this.values.milliseconds) != null ? _this$values$millisec : 0;
+      for (var _iterator = _createForOfIteratorHelperLoose(reverseUnits.slice(1)), _step; !(_step = _iterator()).done; ) {
+        var _this$values;
+        var unit = _step.value;
+        if ((_this$values = this.values) != null && _this$values[unit]) {
+          sum += this.values[unit] * this.matrix[unit]["milliseconds"];
+        }
+      }
+      return sum;
     };
     _proto.valueOf = function valueOf() {
       return this.toMillis();
@@ -2522,10 +2503,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     _proto.normalize = function normalize() {
       if (!this.isValid) return this;
       var vals = this.toObject();
-      normalizeValues(this.matrix, vals);
-      return clone$1(this, {
-        values: vals
-      }, true);
+      if (this.valueOf() >= 0) {
+        normalizeValues(this.matrix, vals);
+        return clone$1(this, {
+          values: vals
+        }, true);
+      }
+      return this.negate().normalize().negate();
     };
     _proto.rescale = function rescale() {
       if (!this.isValid) return this;
@@ -3112,6 +3096,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         if (highWater > later) {
           results[unit]--;
           cursor = earlier.plus(results);
+          if (cursor > later) {
+            highWater = cursor;
+            results[unit]--;
+            cursor = earlier.plus(results);
+          }
         } else {
           cursor = highWater;
         }
@@ -3293,9 +3282,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       switch (t.val) {
         case "G":
-          return oneOf(loc.eras("short", false), 0);
+          return oneOf(loc.eras("short"), 0);
         case "GG":
-          return oneOf(loc.eras("long", false), 0);
+          return oneOf(loc.eras("long"), 0);
         case "y":
           return intUnit(oneToSix);
         case "yy":
@@ -3311,17 +3300,17 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         case "MM":
           return intUnit(two);
         case "MMM":
-          return oneOf(loc.months("short", true, false), 1);
+          return oneOf(loc.months("short", true), 1);
         case "MMMM":
-          return oneOf(loc.months("long", true, false), 1);
+          return oneOf(loc.months("long", true), 1);
         case "L":
           return intUnit(oneOrTwo);
         case "LL":
           return intUnit(two);
         case "LLL":
-          return oneOf(loc.months("short", false, false), 1);
+          return oneOf(loc.months("short", false), 1);
         case "LLLL":
-          return oneOf(loc.months("long", false, false), 1);
+          return oneOf(loc.months("long", false), 1);
         case "d":
           return intUnit(oneOrTwo);
         case "dd":
@@ -3374,13 +3363,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         case "c":
           return intUnit(one);
         case "EEE":
-          return oneOf(loc.weekdays("short", false, false), 1);
+          return oneOf(loc.weekdays("short", false), 1);
         case "EEEE":
-          return oneOf(loc.weekdays("long", false, false), 1);
+          return oneOf(loc.weekdays("long", false), 1);
         case "ccc":
-          return oneOf(loc.weekdays("short", true, false), 1);
+          return oneOf(loc.weekdays("short", true), 1);
         case "cccc":
-          return oneOf(loc.weekdays("long", true, false), 1);
+          return oneOf(loc.weekdays("long", true), 1);
         case "Z":
         case "ZZ":
           return offset(new RegExp("([+-]" + oneOrTwo.source + ")(?::(" + two.source + "))?"), 2);
@@ -3421,9 +3410,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     },
     dayperiod: "a",
     dayPeriod: "a",
-    hour: {
+    hour12: {
       numeric: "h",
       "2-digit": "hh"
+    },
+    hour24: {
+      numeric: "H",
+      "2-digit": "HH"
     },
     minute: {
       numeric: "m",
@@ -3438,7 +3431,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       short: "ZZZ"
     }
   };
-  function tokenForPart(part, formatOpts) {
+  function tokenForPart(part, formatOpts, resolvedOpts) {
     var type = part.type, value = part.value;
     if (type === "literal") {
       var isSpace = (/^\s+$/).test(value);
@@ -3448,7 +3441,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       };
     }
     var style = formatOpts[type];
-    var val = partTypeStyleToTokenVal[type];
+    var actualType = type;
+    if (type === "hour") {
+      if (formatOpts.hour12 != null) {
+        actualType = formatOpts.hour12 ? "hour12" : "hour24";
+      } else if (formatOpts.hourCycle != null) {
+        if (formatOpts.hourCycle === "h11" || formatOpts.hourCycle === "h12") {
+          actualType = "hour12";
+        } else {
+          actualType = "hour24";
+        }
+      } else {
+        actualType = resolvedOpts.hour12 ? "hour12" : "hour24";
+      }
+    }
+    var val = partTypeStyleToTokenVal[actualType];
     if (typeof val === "object") {
       val = val[style];
     }
@@ -3619,9 +3626,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       return null;
     }
     var formatter = Formatter.create(locale, formatOpts);
-    var parts = formatter.formatDateTimeParts(getDummyDateTime());
+    var df = formatter.dtFormatter(getDummyDateTime());
+    var parts = df.formatToParts();
+    var resolvedOpts = df.resolvedOptions();
     return parts.map(function (p) {
-      return tokenForPart(p, formatOpts);
+      return tokenForPart(p, formatOpts, resolvedOpts);
     });
   }
   var nonLeapLadder = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334], leapLadder = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335];
@@ -3864,13 +3873,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     if (extended) {
       c += ":";
       c += padStart(o.c.minute);
-      if (o.c.second !== 0 || !suppressSeconds) {
+      if (o.c.millisecond !== 0 || o.c.second !== 0 || !suppressSeconds) {
         c += ":";
       }
     } else {
       c += padStart(o.c.minute);
     }
-    if (o.c.second !== 0 || !suppressSeconds) {
+    if (o.c.millisecond !== 0 || o.c.second !== 0 || !suppressSeconds) {
       c += padStart(o.c.second);
       if (o.c.millisecond !== 0 || !suppressMilliseconds) {
         c += ".";
@@ -4266,6 +4275,33 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     var _proto = DateTime.prototype;
     _proto.get = function get(unit) {
       return this[unit];
+    };
+    _proto.getPossibleOffsets = function getPossibleOffsets() {
+      if (!this.isValid || this.isOffsetFixed) {
+        return [this];
+      }
+      var dayMs = 86400000;
+      var minuteMs = 60000;
+      var localTS = objToLocalTS(this.c);
+      var oEarlier = this.zone.offset(localTS - dayMs);
+      var oLater = this.zone.offset(localTS + dayMs);
+      var o1 = this.zone.offset(localTS - oEarlier * minuteMs);
+      var o2 = this.zone.offset(localTS - oLater * minuteMs);
+      if (o1 === o2) {
+        return [this];
+      }
+      var ts1 = localTS - o1 * minuteMs;
+      var ts2 = localTS - o2 * minuteMs;
+      var c1 = tsToObj(ts1, o1);
+      var c2 = tsToObj(ts2, o2);
+      if (c1.hour === c2.hour && c1.minute === c2.minute && c1.second === c2.second && c1.millisecond === c2.millisecond) {
+        return [clone(this, {
+          ts: ts1
+        }), clone(this, {
+          ts: ts2
+        })];
+      }
+      return [this];
     };
     _proto.resolvedLocaleOptions = function resolvedLocaleOptions(opts) {
       if (opts === void 0) {
@@ -4951,7 +4987,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       throw new InvalidArgumentError("Unknown datetime argument: " + dateTimeish + ", of type " + typeof dateTimeish);
     }
   }
-  var VERSION = "3.3.0";
+  var VERSION = "3.4.0";
   var DateTime_1 = luxon.DateTime = DateTime;
   var Duration_1 = luxon.Duration = Duration;
   var FixedOffsetZone_1 = luxon.FixedOffsetZone = FixedOffsetZone;
