@@ -20,6 +20,27 @@ module.exports = function ({ log, options, middlewareUtil }) {
 	const config = options.configuration || {};
 	log.verbose(`Starting ui5-tooling-modules-middleware`);
 
+	// extract the configuration of files to be skipped during transformation
+	let skipTransform = options?.configuration?.skipTransform || false;
+
+	// merge the skipTransform configuration from the dependencies if not skipping
+	// the transformation of the whole project (usage of boolean values are overruling!)
+	if (skipTransform !== true) {
+		middlewareUtil.getDependencies().forEach((dep) => {
+			const customConfig = middlewareUtil.getProject(dep).getCustomConfiguration();
+			const customSkipTransform = customConfig?.["ui5-tooling-modules"]?.skipTransform;
+			if (Array.isArray(customSkipTransform)) {
+				if (!skipTransform) {
+					skipTransform = [];
+				}
+				(skipTransform || []).push(...customSkipTransform);
+				log.verbose(`The dependency "${dep}" provides the following "skipTransform" configuration: "${customSkipTransform.join(", ")}"`);
+			} else if (typeof customSkipTransform === "boolean") {
+				log.warn(`The dependency "${dep}" defines "skipTransform" with a boolean value. This configuration is ignored! Pleas specify the "skipTransform" with a string[] to be considered...`);
+			}
+		});
+	}
+
 	// return the middleware
 	return async (req, res, next) => {
 		// determine the request path
@@ -39,7 +60,7 @@ module.exports = function ({ log, options, middlewareUtil }) {
 			}
 
 			// try to resolve the resource from node_modules
-			const resource = await getResource(moduleName, config);
+			const resource = await getResource(moduleName, config, skipTransform);
 			if (resource) {
 				try {
 					log.verbose(`Processing resource ${moduleName}...`);

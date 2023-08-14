@@ -51,6 +51,26 @@ The following configuration options are relevant for the `task` and the `middlew
   An arrays of NPM package names for which the dynamic imports with a generic target module (e.g. `import(anyUrl)`) will not be converted into a `require` based polyfill. If the value is a boolean, it activates/deactivates the feature for all modules (by default it is active!). This experimental feature is useful in scenarios loading ES modules dynamically from generic URLs. All dynamic imports resolving a concrete module (e.g. `import("jspdf")`) will be converted into chunks and loaded with a `require` call.
   &nbsp;
 
+- *skipTransform*: `boolean|String[]` *experimental feature*
+  Array of glob patterns to verify whether the module transformation should be skipped for the modules which are matching the glob pattern. If the value is a `boolean` then the transformation can be skipped in general by setting the value to `true`. The configuration can be incorporated from the `customConfiguration` of a dependency using that middleware, e.g. a library can provide its `customConfiguration` for the application project like this (and can reuse the configuration internally via [YAML anchors](https://yaml.org/spec/1.2.2/#692-node-anchors)):
+  ```yaml
+  specVersion: "3.0"
+  metadata:
+    name: com.myorg.mylib
+  type: library
+  customConfiguration:
+    ui5-tooling-modules: &cfgModules
+      skipTransform:
+        - "@luigi-project/container/dist/anypath/**"
+  builder:
+    customTasks:
+      - name: ui5-tooling-modules-task
+        afterTask: replaceVersion
+        configuration:
+          <<: *cfgModules
+  ```
+  &nbsp;
+
 The following configuration options are just relevant for the `task`:
 
 - *prependPathMappings*: `boolean`  
@@ -115,14 +135,18 @@ server:
 
 **`ui5.yaml`**
 ```yaml
+customConfiguration:
+  ui5-tooling-modules: &cfgModules
+    debug: true
+    keepDynamicImports:
+      - "@luigi-project/container"
+[...]
 server:
   customMiddleware:
     - name: ui5-tooling-modules-middleware
       afterMiddleware: compression
-      configuration: &cfgModules
-        debug: true
-        keepDynamicImports:
-          - "@luigi-project/container"
+      configuration:
+        <<: *cfgModules
 [...]
 builder:
   customTasks:

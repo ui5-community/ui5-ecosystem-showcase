@@ -1,9 +1,11 @@
 /* eslint-disable no-unused-vars, no-empty */
+const path = require("path");
 const { readFileSync, existsSync } = require("fs");
 const espree = require("espree");
 const estraverse = require("estraverse");
 const { XMLParser, XMLBuilder, XMLValidator } = require("fast-xml-parser");
 const escodegen = require("@javascript-obfuscator/escodegen"); // escodegen itself isn't released anymore since 2020 => using fork
+const minimatch = require("minimatch");
 
 /**
  * Custom task to create the UI5 AMD-like bundles for used ES imports from node_modules.
@@ -21,7 +23,9 @@ const escodegen = require("@javascript-obfuscator/escodegen"); // escodegen itse
  * @param {boolean} [parameters.options.configuration.addToNamespace] Adds modules into the sub-namespace thirdparty of the Component
  * @param {boolean} [parameters.options.configuration.removeScopePrefix] Remove the @ prefix for the scope in the namespace/path
  * @param {boolean} [parameters.options.configuration.providedDependencies] List of provided dependencies which should not be processed
- * @param {boolean|string[]} [parameters.options.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
+ * @param {object<string, string[]>} [parameters.options.configuration.includeAssets] Map of assets (key: npm package name, value: local paths) to be included (embedded)
+ * @param {boolean|string[]} [parameters.options.configuration.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
+ * @param {boolean|string[]} [parameters.options.configuration.skipTransform] flag or array of globs to verify whether the module transformation should be skipped
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ log, workspace, taskUtil, options }) {
@@ -30,6 +34,28 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	const config = options.configuration || {};
 	const removeScopePrefix = config?.removeScopePrefix || config?.removeScopePreceder;
 	const providedDependencies = Array.isArray(config?.providedDependencies) ? config?.providedDependencies : [];
+
+	// extract the configuration of files to be skipped during transformation
+	const skipTransform = options?.configuration?.skipTransform || false;
+
+	// list of included assets pattern (required for rewrite)
+	const includedAssets = [];
+	if (config.includeAssets) {
+		Object.keys(config.includeAssets).forEach((npmPackageName) => {
+			const localPaths = config.includeAssets[npmPackageName];
+			if (Array.isArray(localPaths)) {
+				includedAssets.push(...localPaths.map((localPath) => path.join(npmPackageName, localPath)));
+			} else {
+				includedAssets.push(`${npmPackageName}/**`);
+			}
+		});
+	}
+	// eslint-disable-next-line jsdoc/require-jsdoc
+	function isAssetIncluded(path) {
+		return includedAssets.some((value) => {
+			return minimatch(path, value);
+		});
+	}
 
 	const { resourceFactory } = taskUtil;
 
@@ -92,7 +118,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	// utility to rewrite dependency
 	// eslint-disable-next-line jsdoc/require-jsdoc
 	function rewriteDep(dep, useDottedNamespace) {
-		if (config.addToNamespace && (uniqueDeps.has(dep) || uniqueResources.has(dep) || uniqueNS.has(dep) || uniqueChunks.has(dep))) {
+		if (config.addToNamespace && (uniqueDeps.has(dep) || uniqueResources.has(dep) || uniqueNS.has(dep) || uniqueChunks.has(dep) || isAssetIncluded(dep))) {
 			let d = dep;
 			if (removeScopePrefix && d.startsWith("@")) {
 				d = d.substring(1);
@@ -181,7 +207,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 					node?.callee?.object?.object?.object?.name == "sap"
 				) {
 					const elDep = node.arguments[0];
-					if (elDep?.type === "Literal" && bundledResources.includes(elDep.value)) {
+					if (elDep?.type === "Literal" && (bundledResources.includes(elDep.value) || isAssetIncluded(elDep.value))) {
 						elDep.value = rewriteDep(elDep.value);
 						changed = true;
 					}
@@ -364,11 +390,15 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				const ignore = config.includeAssets[npmPackageName];
 				if (!ignore || Array.isArray(ignore)) {
 					log.verbose(`Including assets for dependency: ${npmPackageName}`);
-					const assets = listResources(npmPackageName, ignore);
-					if (log.isLevelEnabled("verbose")) {
-						assets.forEach((asset) => log.verbose(`  - ${asset}`));
+					try {
+						const assets = listResources(npmPackageName, ignore);
+						if (log.isLevelEnabled("verbose")) {
+							assets.forEach((asset) => log.verbose(`  - ${asset}`));
+						}
+						assets.forEach((asset) => uniqueResources.add(asset));
+					} catch (ex) {
+						log.error(`The npm package ${npmPackageName} defined in "includeAssets" not found! Skipping assets...`);
 					}
-					assets.forEach((asset) => uniqueResources.add(asset));
 				} else {
 					log.error(`The option "includeAssets" must be type of map with the key being a npm package name and optionally values being a list of glob patterns!`);
 				}
@@ -385,7 +415,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	await Promise.all(
 		Array.from(uniqueDeps).map(async (dep) => {
 			log.verbose(`Trying to process dependency: ${dep}`);
-			const bundle = await getResource(dep, config);
+			const bundle = await getResource(dep, config, skipTransform);
 			if (bundle) {
 				config.debug && log.info(`Processing dependency: ${dep}`);
 				const bundleResource = resourceFactory.createResource({
