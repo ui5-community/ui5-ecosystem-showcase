@@ -234,7 +234,7 @@ module.exports = function (log) {
 		 * @param {boolean} [options.skipCache] skip the module cache
 		 * @param {boolean} [options.debug] debug mode
 		 * @param {boolean|string[]} [options.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
-		 * @param {boolean} [skipTransform] skip the transformation
+		 * @param {boolean|string[]} [skipTransform] flag or array of globs to verify whether the module transformation should be skipped
 		 * @returns {object} the output object of the resource (code, chunks?, lastModified)
 		 */
 		getResource: async function getResource(moduleName, { skipCache, debug, keepDynamicImports }, skipTransform) {
@@ -258,8 +258,15 @@ module.exports = function (log) {
 						// is the bundle a UI5 module?
 						const moduleContent = await readFile(modulePath, { encoding: "utf8" });
 
+						// check whether the current resource should be skipped or not (based on module name)
+						const shouldSkipTransform = Array.isArray(skipTransform)
+							? skipTransform.some((value) => {
+									return minimatch(moduleName, value);
+							  })
+							: skipTransform;
+
 						// only transform non-UI5 modules (.js, .mjs, .cjs files)
-						if (!skipTransform && /\.(m|c)?js/.test(moduleExt) && !isUI5Module(moduleContent, modulePath)) {
+						if (!shouldSkipTransform && /\.(m|c)?js/.test(moduleExt) && !isUI5Module(moduleContent, modulePath)) {
 							bundling = true;
 
 							// create the bundle
@@ -339,21 +346,26 @@ module.exports = function (log) {
 		 * @returns {string[]} a list of resource paths
 		 */
 		listResources: function listResources(npmPackageName, ignore) {
-			const npmPackagePath = path.resolve(that.resolveModule(`${npmPackageName}/package.json`), "../");
-			const resources = walk
-				.sync({ path: npmPackagePath })
-				.filter((file) => {
-					return (
-						!ignore ||
-						ignore.filter((ignoreGlob) => {
-							return !minimatch(file, ignoreGlob);
-						}).length !== ignore.length
-					);
-				})
-				.map((file) => {
-					return `${npmPackageName}/${file}`;
-				});
-			return resources;
+			const npmPackageJsonPath = that.resolveModule(`${npmPackageName}/package.json`);
+			if (typeof npmPackageJsonPath === "string") {
+				const npmPackagePath = path.resolve(npmPackageJsonPath, "../");
+				const resources = walk
+					.sync({ path: npmPackagePath })
+					.filter((file) => {
+						return (
+							!ignore ||
+							ignore.filter((ignoreGlob) => {
+								return !minimatch(file, ignoreGlob);
+							}).length !== ignore.length
+						);
+					})
+					.map((file) => {
+						return `${npmPackageName}/${file}`;
+					});
+				return resources;
+			} else {
+				throw new Error(`NPM package ${npmPackageName} not found. Ignoring package...`);
+			}
 		},
 	};
 	return that;
