@@ -116,15 +116,15 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 				// manually get the module name as defined in package.json
 				// skipDeps is only true if we are looking for UI5 apps inside a CAP server project
 				// in all other cases the module name equals the appDir
-				let moduleName
+				let moduleName;
 				if (skipDeps) {
 					const packageJsonPath = require.resolve(path.join(appDir, "package.json"), {
 						paths: [cwd],
 					});
-					const packageJsonContent = fs.readFileSync(packageJsonPath, "utf-8")
-					moduleName = JSON.parse(packageJsonContent).name
+					const packageJsonContent = fs.readFileSync(packageJsonPath, "utf-8");
+					moduleName = JSON.parse(packageJsonContent).name;
 				}
-				const moduleId = moduleName || appDir
+				const moduleId = moduleName || appDir;
 
 				apps.push({ moduleId, modulePath, mountPath });
 			}
