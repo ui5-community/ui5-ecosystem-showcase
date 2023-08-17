@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.2.3...cds-plugin-ui5@0.3.0) (2023-08-17)
+
+
+### Features
+
+* include moduleId in return value to increase reuseability of fu… ([#796](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/796)) ([ae69ed4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ae69ed44070f72b0460893904729b49cf4341ffe))
+
+
+
+
+
 ## [0.2.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.2.2...cds-plugin-ui5@0.2.3) (2023-08-12)
 
 **Note:** Version bump only for package cds-plugin-ui5
