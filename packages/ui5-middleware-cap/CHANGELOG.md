@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cap@3.0.1...ui5-middleware-cap@3.1.0) (2023-08-18)
+
+
+### Features
+
+* **ui5-middleware-cap:** applyCAPMiddleware provides server info ([#798](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/798)) ([fed3685](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/fed368521e604e6aeb85a6a0fc1eb85d6b120622))
+
+
+
+
+
 ## [3.0.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cap@3.0.0...ui5-middleware-cap@3.0.1) (2023-08-12)
 
 **Note:** Version bump only for package ui5-middleware-cap

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.0.3...ui5-tooling-modules@3.0.4) (2023-08-18)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** consider skipTransform for rewrite of deps ([#799](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/799)) ([be67457](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/be67457f372db391244b8c9c151b95f9f5f2a913))
+
+
+
+
+
 ## [3.0.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.0.2...ui5-tooling-modules@3.0.3) (2023-08-14)
 
 
