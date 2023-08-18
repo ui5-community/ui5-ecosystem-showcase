@@ -167,7 +167,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 							}
 						} else {
 							const depsArray = node.arguments.filter((arg) => arg.type === "ArrayExpression");
-							deps = depsArray?.[0].elements.filter((el) => el.type === "Literal").map((el) => el.value);
+							deps = depsArray?.[0]?.elements.filter((el) => el.type === "Literal").map((el) => el.value);
 						}
 						deps?.forEach((dep) => {
 							if (addUniqueDep(dep)) {
@@ -187,64 +187,71 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				},
 			});
 		} catch (err) {
-			log.verbose(`Failed to parse dependency "${parentDepPath}" with espree!`, err);
+			log.error(`Failed to parse "${parentDepPath}"! Ignoring resource...`);
+			config.debug && log.error(err);
 		}
 	}
 
 	// utility to rewrite JS dependencies
 	// eslint-disable-next-line jsdoc/require-jsdoc
-	function rewriteJSDeps(content, bundledResources) {
+	function rewriteJSDeps(content, bundledResources, resourcePath) {
 		let changed = false;
-		const program = espree.parse(content, { range: true, comment: true, tokens: true, ecmaVersion: "latest" });
-		estraverse.traverse(program, {
-			enter(node, parent) {
-				if (
-					/* sap.ui.require.toUrl */
-					node?.type === "CallExpression" &&
-					node?.callee?.property?.name == "toUrl" &&
-					node?.callee?.object?.property?.name == "require" &&
-					node?.callee?.object?.object?.property?.name == "ui" &&
-					node?.callee?.object?.object?.object?.name == "sap"
-				) {
-					const elDep = node.arguments[0];
-					if (elDep?.type === "Literal" && (bundledResources.includes(elDep.value) || isAssetIncluded(elDep.value))) {
-						elDep.value = rewriteDep(elDep.value);
-						changed = true;
-					}
-				} else if (
-					/* sap.ui.(requireSync) !LEGACY! */
-					(node?.type === "CallExpression" &&
-						/requireSync/.test(node?.callee?.property?.name) &&
+		try {
+			const program = espree.parse(content, { range: true, comment: true, tokens: true, ecmaVersion: "latest" });
+			estraverse.traverse(program, {
+				enter(node, parent) {
+					if (
+						/* sap.ui.require.toUrl */
+						node?.type === "CallExpression" &&
+						node?.callee?.property?.name == "toUrl" &&
+						node?.callee?.object?.property?.name == "require" &&
+						node?.callee?.object?.object?.property?.name == "ui" &&
+						node?.callee?.object?.object?.object?.name == "sap"
+					) {
+						const elDep = node.arguments[0];
+						if (elDep?.type === "Literal" && (bundledResources.includes(elDep.value) || isAssetIncluded(elDep.value))) {
+							elDep.value = rewriteDep(elDep.value);
+							changed = true;
+						}
+					} else if (
+						/* sap.ui.(requireSync) !LEGACY! */
+						(node?.type === "CallExpression" &&
+							/requireSync/.test(node?.callee?.property?.name) &&
+							node?.callee?.object?.property?.name == "ui" &&
+							node?.callee?.object?.object?.name == "sap") ||
+						/* __ui5_require_async (babel-plugin-transform-modules-ui5) */
+						(node?.type === "CallExpression" && node?.callee?.name == "__ui5_require_async")
+					) {
+						const elDep = node.arguments[0];
+						if (elDep?.type === "Literal" && bundledResources.includes(elDep.value)) {
+							elDep.value = rewriteDep(elDep.value);
+							changed = true;
+						}
+					} else if (
+						/* sap.ui.(require|define) */
+						node?.type === "CallExpression" &&
+						/require|define/.test(node?.callee?.property?.name) &&
 						node?.callee?.object?.property?.name == "ui" &&
-						node?.callee?.object?.object?.name == "sap") ||
-					/* __ui5_require_async (babel-plugin-transform-modules-ui5) */
-					(node?.type === "CallExpression" && node?.callee?.name == "__ui5_require_async")
-				) {
-					const elDep = node.arguments[0];
-					if (elDep?.type === "Literal" && bundledResources.includes(elDep.value)) {
-						elDep.value = rewriteDep(elDep.value);
-						changed = true;
+						node?.callee?.object?.object?.name == "sap"
+					) {
+						const depsArray = node.arguments.filter((arg) => arg.type === "ArrayExpression");
+						if (depsArray.length > 0) {
+							depsArray[0].elements
+								.filter((el) => el.type === "Literal" && bundledResources.includes(el.value))
+								.map((el) => {
+									el.value = rewriteDep(el.value);
+									changed = true;
+								});
+						}
 					}
-				} else if (
-					/* sap.ui.(require|define) */
-					node?.type === "CallExpression" &&
-					/require|define/.test(node?.callee?.property?.name) &&
-					node?.callee?.object?.property?.name == "ui" &&
-					node?.callee?.object?.object?.name == "sap"
-				) {
-					const depsArray = node.arguments.filter((arg) => arg.type === "ArrayExpression");
-					if (depsArray.length > 0) {
-						depsArray[0].elements
-							.filter((el) => el.type === "Literal" && bundledResources.includes(el.value))
-							.map((el) => {
-								el.value = rewriteDep(el.value);
-								changed = true;
-							});
-					}
-				}
-			},
-		});
-		return changed ? escodegen.generate(program) : content;
+				},
+			});
+			changed = changed ? escodegen.generate(program) : content;
+		} catch (err) {
+			log.error(`Failed to rewrite "${resourcePath}"! Ignoring resource... (maybe an ES module you included as asset by mistake?)`);
+			config.debug && log.error(err);
+		}
+		return changed;
 	}
 
 	// utility to lookup unique XML dependencies
@@ -480,26 +487,36 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 			format: true,
 		});
 
+		// check whether the current resource should be skipped or not (based on module name)
+		const shouldSkipTransform = function (resourcePath) {
+			return Array.isArray(skipTransform)
+				? skipTransform.some((value) => {
+						return minimatch(resourcePath, `/resources/${options.projectNamespace}/thirdparty/${value}`);
+				  })
+				: skipTransform;
+		};
+
 		const allJsXmlResources = await workspace.byGlob("/**/*.{js,xml}");
 		await Promise.all(
 			allJsXmlResources.map(async (res) => {
-				if (res.getPath().endsWith(".js")) {
-					try {
+				const resourcePath = res.getPath();
+				if (resourcePath.endsWith(".js")) {
+					if (!shouldSkipTransform(resourcePath)) {
 						const content = await res.getString();
-						const newContent = rewriteJSDeps(content, bundledResources);
-						if (newContent != content) {
-							config.debug && log.info(`Rewriting JS resource: ${res.getPath()}`);
+						const newContent = rewriteJSDeps(content, bundledResources, resourcePath);
+						if (newContent /* false in case of rewrite issues! */ && newContent != content) {
+							config.debug && log.info(`Rewriting JS resource: ${resourcePath}`);
 							res.setString(newContent);
 							await workspace.write(res);
 						}
-					} catch (err) {
-						log.error(`Failed to rewrite "${res.getPath()}" with espree!`, err);
+					} else {
+						config.debug && log.info(`Skipping rewriting of resource "${resourcePath}"...`);
 					}
-				} else if (res.getPath().endsWith(".xml")) {
+				} else if (resourcePath.endsWith(".xml")) {
 					const content = await res.getString();
 					const xmldom = parser.parse(content);
 					if (rewriteXMLDeps(xmldom, bundledResources)) {
-						config.debug && log.info(`Rewriting XML resource: ${res.getPath()}`);
+						config.debug && log.info(`Rewriting XML resource: ${resourcePath}`);
 						const newContent = builder.build(xmldom);
 						res.setString(newContent);
 						await workspace.write(res);
