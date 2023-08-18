@@ -1,6 +1,12 @@
 const path = require("path");
 const fs = require("fs");
 
+/**
+ * @typedef CAPServerInfo
+ * @type {object}
+ * @property {Array<string>} servicePaths list of paths of available app services
+ */
+
 // inspired by https://cap.cloud.sap/docs/node.js/cds-serve
 /**
  * Applies the middlewares for the CAP server located in the given
@@ -8,6 +14,7 @@ const fs = require("fs");
  * @param {import("express").Router} router Express Router instance
  * @param {object} options configuration options
  * @param {string} options.root root directory of the CAP server
+ * @returns {CAPServerInfo} CAP server information
  */
 module.exports = async function applyCAPMiddleware(router, { root }) {
 	const options = Object.assign(
@@ -80,6 +87,16 @@ module.exports = async function applyCAPMiddleware(router, { root }) {
 	await cds.serve(options).from(csn).in(router);
 	await cds.emit("served", cds.services);
 
+	// extract the service paths from cds services
+	const servicesPaths = Object.keys(cds.services)
+		.filter((service) => cds.services[service].kind === "app-service")
+		.map((service) => {
+			return cds.services[service].path;
+		});
+
 	// change dir back (only needed temporary for cds bootstrap)
 	process.chdir(cwd);
+
+	// return the CAP server information
+	return { servicesPaths };
 };
