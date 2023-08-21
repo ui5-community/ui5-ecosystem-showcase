@@ -1,5 +1,7 @@
 const path = require("path");
 
+const log = require("./log");
+
 /**
  * @typedef UI5AppInfo
  * @type {object}
@@ -69,7 +71,25 @@ module.exports = async function applyUI5Middleware(router, { basePath, configPat
 	});
 	await middlewareManager.applyMiddleware(router);
 
+	// collect app pages from workspace
+	const pages = (await rootReader.byGlob("**/*.html")).map((resource) => resource.getPath());
+
+	// collect app pages from middlewares implementing the getAppPages
+	middlewareManager.middlewareExecutionOrder?.map((name) => {
+		const { middleware } = middlewareManager.middleware?.[name] || {};
+		if (typeof middleware?.getAppPages === "function") {
+			const customAppPages = middleware.getAppPages();
+			if (Array.isArray(customAppPages)) {
+				pages.push(...customAppPages);
+			} else {
+				if (customAppPages) {
+					log.warn(`The middleware ${name} returns an unexpected value for "getAppPages". The value must be either undefined or string[]! Ignoring app pages from middleware!`);
+				}
+			}
+		}
+	});
+
 	return {
-		pages: await rootReader.byGlob("**/*.html"),
+		pages,
 	};
 };
