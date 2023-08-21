@@ -59,7 +59,7 @@ cds.on("bootstrap", async function bootstrap(app) {
 		// append the HTML pages to the links
 		appInfo.pages.forEach((page) => {
 			const prefix = mountPath !== "/" ? mountPath : "";
-			links.push(`${prefix}${page.getPath()}`);
+			links.push(`${prefix}${page}`);
 		});
 	}
 

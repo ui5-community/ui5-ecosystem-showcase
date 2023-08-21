@@ -21,6 +21,34 @@ npm add cds-plugin-ui5 -D
 
 That's it!
 
+## Info for UI5 Tooling Extension Developers
+
+Custom middlewares may generate virtual app pages which should also be listed as web applications in the welcome page of the `@sap/cds` server. This is possible by assigning a static `getAppPages` function to the middleware function. The following snippet show-cases how this can be done:
+
+```js
+// the middleware factory function
+module.exports = async ({ log, resources, options }) => {
+  // create the middleware function
+  const mwFn = (req, res, next) => {
+    [...]
+  };
+
+  /**
+   * Returns an array of app pages to be added to the welcome
+   * page of the <code>@sap/cds</code> server.
+   * @returns {undefined|string[]} array of app pages
+   */
+  mwFn.getAppPages = function() {
+    return ["/test.html"];
+  };
+
+  // finally return the middleware function
+  return mwFn;
+};
+```
+
+The returned app pages will be added to the welcome page within the respective mount path.
+
 ## Support
 
 Please use the GitHub bug tracking system to post questions, bug reports or to create pull requests.
