@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.3.0...cds-plugin-ui5@0.4.0) (2023-08-21)
+
+
+### Features
+
+* **cds-plugin-ui5:** allow to attach custom app pages to cds server ([#800](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/800)) ([0670b5e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0670b5e9d01175ecf9d1f0db332963b8c9fec007)), closes [#785](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/785)
+
+
+
+
+
 # [0.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.2.3...cds-plugin-ui5@0.3.0) (2023-08-17)
 
 
