@@ -1,11 +1,26 @@
-<mvc:View controllerName="ui5.ecosystem.demo.simpletsapp.controller.Main" displayBlock="true" xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc">
+<mvc:View xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:core="sap.ui.core" controllerName="ui5.ecosystem.demo.simpletsapp.controller.Main" displayBlock="true">
   <Page id="page" title="{i18n>appTitle}">
     <headerContent>
       <core:Icon color="#1873B4" src="sap-icon://sap-ui5" size="2rem" />
     </headerContent>
     <content>
-      <VBox alignItems="Center" justifyContent="Center" height="100%">
-        <Button text="Don't press me!" press="onBoo" />
+      <VBox class="sapUiSmallMarginTop">
+        <List headerText="{i18n>MyNotes}" growing="true" items="{ path: '/notes' }">
+          <CustomListItem>
+            <HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiMediumMarginBeginEnd sapUiTinyMarginTopBottom">
+              <Title text="{text}" level="H3" />
+              <HBox alignItems="Center">
+                <Text text="{ path: 'createdAt', type: 'sap.ui.model.type.Date', formatOptions: { pattern: 'dd.MM.yyyy mm:HH:ss' } }" class="sapUiSmallMarginEnd" />
+                <Button icon="sap-icon://delete" press=".onDelete(${id})" tooltip="{i18n>DeleteNote}" />
+              </HBox>
+            </HBox>
+          </CustomListItem>
+        </List>
+        <Title text="{i18n>AddNote}" class="sapUiLargeMarginTop" />
+        <HBox alignItems="Center">
+          <Input value="{/newNoteInput}" class="sapUiSmallMarginEnd" />
+          <Button icon="sap-icon://add" press=".onCreate()" />
+        </HBox>
       </VBox>
     </content>
   </Page>

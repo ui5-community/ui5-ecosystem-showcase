@@ -7,6 +7,13 @@ settings:
 overrides:
   chromedriver: '>=115'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+overrides:
+  chromedriver: '>=113'
+
 importers:
 
   .:
@@ -428,6 +435,15 @@ importers:
         specifier: ^5.3.1
         version: 5.3.1
 
+  packages/ui5-types-typedjsonmodel:
+    devDependencies:
+      '@types/openui5':
+        specifier: 1.112.0
+        version: 1.112.0
+      typescript:
+        specifier: ^5.0.3
+        version: 5.1.6
+
   showcases/ui5-app:
     dependencies:
       '@js-temporal/polyfill':
@@ -751,6 +767,9 @@ importers:
       ui5-tooling-transpile:
         specifier: workspace:^
         version: link:../../packages/ui5-tooling-transpile
+      ui5-types-typedjsonmodel:
+        specifier: workspace:^
+        version: link:../../packages/ui5-types-typedjsonmodel
 
   showcases/ui5-tslib:
     devDependencies:
@@ -4638,6 +4657,13 @@ packages:
 
   /@types/openui5@1.117.0:
     resolution: {integrity: sha512-cSrT++FOAVQbjxnosbaqjiEEq67LSkCc0U+PwPDtZhqiLPQ8otFWJTZGXMj4kqookmeO9fSRZGnxCGRPlPmNuA==}
+    dependencies:
+      '@types/jquery': 3.5.16
+      '@types/qunit': 2.19.6
+    dev: true
+
+  /@types/openui5@1.115.1:
+    resolution: {integrity: sha512-mLJP5R4HhqVpIlA7AOxIjCsXSP+Mk9jTZX4O/LgNJ2btUJUEpY6ITHHyb9BmGUtRuHKsHIpeIQY0ODkNROPIjg==}
     dependencies:
       '@types/jquery': 3.5.16
       '@types/qunit': 2.19.6
