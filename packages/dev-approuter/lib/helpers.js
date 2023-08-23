@@ -10,12 +10,18 @@ const path = require("path");
 const parseConfig = () => {
     let config;
     let configFile;
-    try {
-        config = require(path.join(process.cwd(), "xs-dev.json"));
-        configFile = "xs-dev.json";
-    } catch {
-        config = require(path.join(process.cwd(), "xs-app.json"));
-        configFile = "xs-app.json"
+    let configFiles = ["xs-dev.json", "xs-app.json"];
+    for (const file of configFiles) {
+        if (fs.existsSync(path.join(process.cwd(), file))) {
+            config = JSON.parse(
+                fs.readFileSync(
+                    path.join(process.cwd(), file),
+                    { encoding: "utf8" }
+                )
+            );
+            configFile = file;
+            break;
+        }
     }
     config.dependencyRoutes = {};
     config.routes?.forEach(route => {
@@ -64,7 +70,7 @@ const addDestination = (moduleId, port, mountPath) => {
     } else {
         url = `http://localhost:${port}`;
     }
-    
+
     // only add new destination if it's not already provided
     let destinationAlreadyExists;
     destinations.forEach(destination => {
