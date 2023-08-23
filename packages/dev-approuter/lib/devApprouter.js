@@ -57,7 +57,7 @@ class DevApprouter {
         let capServerConfig;
         const capModules = await findCAPModules({ cwd });
         if (capModules.length > 1) {
-            throw new Error(`Multiple CAP modules found. The package approuter-middlewaare-ui5-cap can only handle one CAP module as dependency.`);
+            throw new Error(`Multiple CAP modules found. The package dev-approuter can only handle one CAP module as dependency.`);
         } else if (capModules.length === 1) {
             capServerConfig = capModules[0];
         }
