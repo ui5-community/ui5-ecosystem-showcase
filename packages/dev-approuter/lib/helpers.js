@@ -72,15 +72,12 @@ const addDestination = (moduleId, port, mountPath) => {
     }
 
     // only add new destination if it's not already provided
-    let destinationAlreadyExists;
-    destinations.forEach(destination => {
+    const destinationAlreadyExists = destinations.some(destination => {
         const lowerCaseDestination = {};
         Object.keys(destination).forEach(key => {
             lowerCaseDestination[key.toLowerCase()] = destination[key];
         })
-        if (lowerCaseDestination.name === moduleId) {
-            destinationAlreadyExists = true;
-        }
+        return lowerCaseDestination.name === moduleId
     })
     if (!destinationAlreadyExists) {
         destinations.push({
