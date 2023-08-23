@@ -71,7 +71,7 @@ class DevApprouter {
         // collect UI5 middlewares
         const ui5Middlewares = [];
         for await (const ui5Module of ui5Modules) {
-            let { moduleId, modulePath, mountPath } = ui5Module;
+            const { moduleId, modulePath, mountPath } = ui5Module;
 
             // create a patched router
             const router = await createPatchedRouter();
