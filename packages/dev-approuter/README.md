@@ -88,19 +88,20 @@ The above configuration result in the UI5 app being available at `http://localho
 
 ### SAP CAP apps
 
-SAP CAP apps are started on a separate port (4004) by default. The `dev-approuter` automatically creates a route and destination behind the scenes, so that you (and your UI5 apps) can reach your SAP CAP services directly at their service path, but through the `dev-approuter`, e.g. `http://localhost:5000/my-cap-service`.
+SAP CAP apps are started on a separate port (4004 by default, can be overwritten via `CAP_PORT`). The `dev-approuter` automatically creates a route and destination behind the scenes, so that you (and your UI5 apps) can reach your SAP CAP services directly at their service path, but through the `dev-approuter`, e.g. `http://localhost:5000/my-cap-service`.
 
 There is no need manually create a destination for you SAP CAP app, unless you want to overwrite the [default destination configuration](./lib/helpers.js#L81-L85). In this case, create a new destination in a `default-env.json`. The destination's name has to match the module name as declared in the approuter's `devDependencies`:
 
 ```json
 {
+    "CAP_PORT": 4005,
     "destinations": [
         {
             "Name": "my-cap-app",
             "Authentication": "NoAuthentication",
             "ProxyType": "Internet",
             "Type": "HTTP",
-            "URL": "http://localhost:4004",
+            "URL": "http://localhost:4005",
             "forwardAuthToken": true
         }
     ],

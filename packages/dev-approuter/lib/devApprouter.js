@@ -114,8 +114,8 @@ class DevApprouter {
             // start CAP server on different port
             const app = express();
             const { servicesPaths } = await applyCAPMiddleware(app, { root: modulePath, cwd });
-            app.listen(4004, () => {
-                console.log(`CAP server started at: http://localhost:4004`);
+            app.listen(process.env.CAP_PORT || 4004, () => {
+                console.log(`CAP server started at: http://localhost:${process.env.CAP_PORT || 4004}`);
             });
 
             // configure CAP route if referenced as "dependency" in xs-dev.json/xs-app.json
@@ -124,7 +124,7 @@ class DevApprouter {
             }
 
             // add destination for newly configured route
-            addDestination(moduleId, 4004);
+            addDestination(moduleId, process.env.CAP_PORT || 4004);
         }
 
         // create and start the SAP Approuter
