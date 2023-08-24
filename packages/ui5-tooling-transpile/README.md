@@ -53,6 +53,9 @@ npm install ui5-tooling-transpile --save-dev
 - transformAtStartup: `boolean` (*experimental feature*)
   if enabled, the resources will be transpiled at startup to avoid additional overhead for the first requests to the transpiled resources.
 
+- skipBabelPresetPluginResolve: `boolean` (*experimental feature*)
+  if enabled, the babel presets and plugins will not be resolved by the tooling extension and babel itself will do it. This can cause babel presets or plugins not to be found in case of working in monorepos.
+
 The following configuration options will only be taken into account if no inline babel configuration is maintained in the `ui5.yaml` as `babelConfig` or no external babel configuration exists in any configuration file as described in [Babels configuration section](https://babeljs.io/docs/configuration):
 
 - targetBrowsers: `String` (default: [`"defaults"`](https://browsersl.ist/#q=defaults))

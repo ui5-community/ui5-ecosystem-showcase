@@ -15,10 +15,45 @@ test.afterEach.always(async (/*t*/) => {
 	process.chdir(cwd);
 });
 
+test("normalization of babel presets and plugins", (t) => {
+	const { normalizePresetOrPlugin } = t.context.util._helpers;
+	t.is(normalizePresetOrPlugin("/dir/preset.js", true), "/dir/preset.js");
+	t.is(normalizePresetOrPlugin("/dir/plugin.js", false), "/dir/plugin.js");
+	t.is(normalizePresetOrPlugin("./dir/preset.js", true), "./dir/preset.js");
+	t.is(normalizePresetOrPlugin("./dir/plugin.js", false), "./dir/plugin.js");
+	t.is(normalizePresetOrPlugin("mod", true), "babel-preset-mod");
+	t.is(normalizePresetOrPlugin("mod", false), "babel-plugin-mod");
+	t.is(normalizePresetOrPlugin("mod/preset", true), "mod/preset");
+	t.is(normalizePresetOrPlugin("mod/plugin", false), "mod/plugin");
+	t.is(normalizePresetOrPlugin("babel-preset-mod", true), "babel-preset-mod");
+	t.is(normalizePresetOrPlugin("babel-plugin-mod", false), "babel-plugin-mod");
+	t.is(normalizePresetOrPlugin("@babel/mod", true), "@babel/preset-mod");
+	t.is(normalizePresetOrPlugin("@babel/mod", false), "@babel/plugin-mod");
+	t.is(normalizePresetOrPlugin("@babel/preset-mod", true), "@babel/preset-mod");
+	t.is(normalizePresetOrPlugin("@babel/plugin-mod", false), "@babel/plugin-mod");
+	t.is(normalizePresetOrPlugin("@babel/mod/preset", true), "@babel/mod/preset");
+	t.is(normalizePresetOrPlugin("@babel/mod/plugin", false), "@babel/mod/plugin");
+	t.is(normalizePresetOrPlugin("@scope", true), "@scope/babel-preset");
+	t.is(normalizePresetOrPlugin("@scope", false), "@scope/babel-plugin");
+	t.is(normalizePresetOrPlugin("@scope/babel-preset", true), "@scope/babel-preset");
+	t.is(normalizePresetOrPlugin("@scope/babel-plugin", false), "@scope/babel-plugin");
+	t.is(normalizePresetOrPlugin("@scope/mod", true), "@scope/babel-preset-mod");
+	t.is(normalizePresetOrPlugin("@scope/mod", false), "@scope/babel-plugin-mod");
+	t.is(normalizePresetOrPlugin("@scope/babel-preset-mod", true), "@scope/babel-preset-mod");
+	t.is(normalizePresetOrPlugin("@scope/babel-plugin-mod", false), "@scope/babel-plugin-mod");
+	t.is(normalizePresetOrPlugin("@scope/prefix-babel-preset-mod", true), "@scope/prefix-babel-preset-mod");
+	t.is(normalizePresetOrPlugin("@scope/prefix-babel-plugin-mod", false), "@scope/prefix-babel-plugin-mod");
+	t.is(normalizePresetOrPlugin("@scope/mod/preset", true), "@scope/mod/preset");
+	t.is(normalizePresetOrPlugin("@scope/mod/plugin", false), "@scope/mod/plugin");
+	t.is(normalizePresetOrPlugin("module:foo", true), "foo");
+	t.is(normalizePresetOrPlugin("module:foo", false), "foo");
+});
+
 test("simple creation of babel config", async (t) => {
 	const config = await t.context.util.createBabelConfig({
 		configuration: {
-			debug: true
+			debug: true,
+			skipBabelPresetPluginResolve: true
 		}
 	});
 	t.true(config !== undefined);
@@ -28,7 +63,8 @@ test("usage of external babel config", async (t) => {
 	process.chdir(path.join(__dirname, "__assets__/external"));
 	const config = await t.context.util.createBabelConfig({
 		configuration: {
-			debug: true
+			debug: true,
+			skipBabelPresetPluginResolve: true
 		}
 	});
 	t.true(config !== undefined);
@@ -39,7 +75,8 @@ test("inject configuration options", async (t) => {
 
 	// typescript, default config
 	let configuration = t.context.util.createConfiguration({
-		debug: true
+		debug: true,
+		skipBabelPresetPluginResolve: true
 	});
 	let babelConfig = await t.context.util.createBabelConfig({ configuration });
 	t.deepEqual(babelConfig, {
@@ -64,7 +101,8 @@ test("inject configuration options", async (t) => {
 		debug: true,
 		transformModulesToUI5: {
 			overridesToOverride: true
-		}
+		},
+		skipBabelPresetPluginResolve: true
 	});
 	babelConfig = await t.context.util.createBabelConfig({ configuration });
 	t.deepEqual(babelConfig, {
@@ -97,7 +135,8 @@ test("inject configuration options", async (t) => {
 		},
 		transformModulesToUI5: {
 			overridesToOverride: true
-		}
+		},
+		skipBabelPresetPluginResolve: true
 	});
 	babelConfig = await t.context.util.createBabelConfig({ configuration });
 	t.deepEqual(babelConfig, {
