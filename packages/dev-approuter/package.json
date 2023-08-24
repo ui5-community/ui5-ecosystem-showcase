@@ -1,20 +1,20 @@
 {
-    "name": "dev-approuter",
-    "version": "0.0.0",
-    "description": "A dev time wrapper for the SAP Approuter that can serve UI5 and CAP modules added as dependencies.",
-    "author": "Nico Schoenteich <nicolai.schoenteich@sap.com> (https://github.com/nicoschoenteich)",
-    "license": "Apache-2.0",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
-        "directory": "packages/dev-approuter"
-    },
-    "dependencies": {
-        "@sap/approuter": ">=14.3.0",
-        "@sap/xsenv": "4.0.0",
-        "cds-plugin-ui5": "workspace:^",
-        "express": "^4.18.2",
-        "path": "^0.12.7",
-        "ui5-middleware-cap": "workspace:^"
-    }
+  "name": "dev-approuter",
+  "version": "0.0.0",
+  "description": "A dev time wrapper for the SAP Application Router that can serve UI5 and CAP modules added as dependencies.",
+  "author": "Nico Schoenteich <nicolai.schoenteich@sap.com> (https://github.com/nicoschoenteich)",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
+    "directory": "packages/dev-approuter"
+  },
+  "dependencies": {
+    "@sap/approuter": ">=14.3.0",
+    "@sap/xsenv": "4.0.0",
+    "cds-plugin-ui5": "workspace:^",
+    "express": "^4.18.2",
+    "path": "^0.12.7",
+    "ui5-middleware-cap": "workspace:^"
+  }
 }

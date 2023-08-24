@@ -2,8 +2,8 @@
 
 > :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
 
-The `dev-approuter` is a dev time wrapper for the [SAP Approuter](https://www.npmjs.com/package/@sap/approuter) that can serve [UI5](https://ui5.sap.com/) and [SAP CAP](https://cap.cloud.sap/docs/) apps that are added as (dev)dependencies to the approuter's `package.json`. A few key notes to begin with:
-- The `dev-approuter` utilizes the [SAP Approuter's extension API](https://help.sap.com/docs/btp/sap-business-technology-platform/extension-api-of-application-router) by adding UI5 servers as extensions - providing the full [UI5 Tooling](https://sap.github.io/ui5-tooling/v3/) experience.
+The `dev-approuter` is a dev time wrapper for the [SAP Application Router](https://www.npmjs.com/package/@sap/approuter) that can serve [UI5](https://ui5.sap.com/) and [SAP CAP](https://cap.cloud.sap/docs/) apps that are added as (dev)dependencies to the approuter's `package.json`. A few key notes to begin with:
+- The `dev-approuter` utilizes the [SAP Application Router's extension API](https://help.sap.com/docs/btp/sap-business-technology-platform/extension-api-of-application-router) by adding UI5 servers as extensions - providing the full [UI5 Tooling](https://sap.github.io/ui5-tooling/v3/) experience.
 - A linked SAP CAP app is started on a different port - this is to mimic a deployed architecture. The corresponding destination is automatically created for you.
 - In order to safely separate development configuration from productive code, the `dev-approuter` introduces the concept of the `xs-dev.json` - think of it as an extension to the [`xs-app.json`](https://help.sap.com/docs/btp/sap-business-technology-platform/routing-configuration-file).
 - As the name suggests, the `dev-approuter` is for development only and not meant to be used in production.
@@ -16,7 +16,7 @@ The `dev-approuter` is a dev time wrapper for the [SAP Approuter](https://www.np
     - [UI5 apps](#ui5-apps)
     - [SAP CAP apps](#sap-cap-apps)
 4. [The `xs-dev.json` file](#the-xs-devjson-file)
-5. [Using the `dev-approuter` and SAP Approuter simultaneously](#using-the-dev-approuter-and-sap-approuter-simultaneously)
+5. [Using the `dev-approuter` and SAP Application Router simultaneously](#using-the-dev-approuter-and-sap-approuter-simultaneously)
 6. [Extending the `dev-approuter`](#extending-the-dev-approuter)
 
 ## Prerequisites
@@ -25,7 +25,7 @@ The `dev-approuter` is a dev time wrapper for the [SAP Approuter](https://www.np
 
 ## Starting the `dev-approuter`
 
-The `dev-approuter` is a wrapper for the SAP Approuter, meaning your current (productive) approuter configuration will also work with the `dev-approuter`, with the option to add dev time configuration to it (see [xs-dev.json](#the-xs-devjson-file)).
+The `dev-approuter` is a wrapper for the SAP Application Router, meaning your current (productive) approuter configuration will also work with the `dev-approuter`, with the option to add dev time configuration to it (see [xs-dev.json](#the-xs-devjson-file)).
 
 1. Install the `dev-approuter` as a dev dependency: 
     ```bash
@@ -48,7 +48,7 @@ The `dev-approuter` is a wrapper for the SAP Approuter, meaning your current (pr
     npm run dev
     ```
 
-4. The `dev-approuter` starts on port 5000 by default, just like the SAP Approuter. If that port is already in use on your machine (hello Mac users :wave:), you can set another port via the `default-env.json` file:
+4. The `dev-approuter` starts on port 5000 by default, just like the SAP Application Router. If that port is already in use on your machine (hello Mac users :wave:), you can set another port via the `default-env.json` file:
     ```json
     {
         "PORT": 5001,
@@ -111,7 +111,7 @@ There is no need manually create a destination for you SAP CAP app, unless you w
 
 ## The `xs-dev.json` file
 
-The `dev-approuter` introduces the concept of an `xs-dev.json` file, which works like a regular [`xs-app.json`](https://help.sap.com/docs/btp/sap-business-technology-platform/routing-configuration-file) file, but is used by the `dev-approuter` exclusively (meaning it's ignored by the SAP Approuter). The idea behind this concept is to safely separate dev time configuration from productive code.
+The `dev-approuter` introduces the concept of an `xs-dev.json` file, which works like a regular [`xs-app.json`](https://help.sap.com/docs/btp/sap-business-technology-platform/routing-configuration-file) file, but is used by the `dev-approuter` exclusively (meaning it's ignored by the SAP Application Router). The idea behind this concept is to safely separate dev time configuration from productive code.
 
 The `xs-dev.json` follows the same logic and syntax as the [`xs-app.json`](https://help.sap.com/docs/btp/sap-business-technology-platform/routing-configuration-file) file, but has one additional key feature: You can add a `dependency` to a `route`, which links it to a UI5 or SAP CAP app.
 
@@ -123,12 +123,12 @@ Look at the following example `xs-dev.json` that defines different `authenticati
     "authenticationMethod": "route",
     "routes": [
         {
-        "dependency": "my-ui5-app1",
-        "authenticationType": "none"
+            "dependency": "my-ui5-app1",
+            "authenticationType": "none"
         },
         {
-        "dependency": "my-ui5-app2",
-        "authenticationType": "xsuaa"
+            "dependency": "my-ui5-app2",
+            "authenticationType": "xsuaa"
         }
     ]
 }
@@ -136,9 +136,9 @@ Look at the following example `xs-dev.json` that defines different `authenticati
 
 Behind the scenes, the `dev-approuter` will resolve these "dependency routes" by adding the `source`, `target`, and `destination` properties to them. Be aware that exactly these properties might get overwritten by the `dev-approuter` in case you use them together with `dependency`.
 
-## Using the `dev-approuter` and SAP Approuter simultaneously
+## Using the `dev-approuter` and SAP Application Router simultaneously
 
-If you choose to place your `dev-approuter` in the same directory as an SAP Approuter, which you will eventually deploy, you will have to remove the `devDependencies` section of the `package.json` before deployment. This is required because the SAP Approuter will not be able to install local dev dependencies (your UI5 and SAP CAP apps) in the cloud. To achieve this, you could introduce a build step for the approuter, moving required files to a `dist/` folder and removing dev dependencies:
+If you choose to place your `dev-approuter` in the same directory as an SAP Application Router, which you will eventually deploy, you will have to remove the `devDependencies` section of the `package.json` before deployment. This is required because the SAP Application Router will not be able to install local dev dependencies (your UI5 and SAP CAP apps) in the cloud. To achieve this, you could introduce a build step for the approuter, moving required files to a `dist/` folder and removing dev dependencies:
 
 ```json
 "build": "mkdir -p dist && jq 'del(.devDependencies)' package.json > dist/package.json && cp xs-app.json dist/xs-app.json"
@@ -146,7 +146,7 @@ If you choose to place your `dev-approuter` in the same directory as an SAP Appr
 
 ## Extending the `dev-approuter`
 
-The `dev-approuter` offers an extension point to pass middleware to the SAP Approuter, that gets started by the `dev-approuter` (behind the scenes) and has an extension point of its own (see the [documentation](https://help.sap.com/docs/btp/sap-business-technology-platform/extension-api-of-application-router) for more info). You can use this extension point by passing extensions to the `dev-approuter`'s `start()` method:
+The `dev-approuter` offers an extension point to pass middleware to the SAP Application Router, that gets started by the `dev-approuter` (behind the scenes) and has an extension point of its own (see the [documentation](https://help.sap.com/docs/btp/sap-business-technology-platform/extension-api-of-application-router) for more info). You can use this extension point by passing extensions to the `dev-approuter`'s `start()` method:
 
 ```js
 const devApprouter = require("dev-approuter/lib/devApprouter");
