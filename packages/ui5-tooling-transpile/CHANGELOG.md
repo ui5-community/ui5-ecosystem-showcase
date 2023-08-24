@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.0.3...ui5-tooling-transpile@3.0.4) (2023-08-24)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** support preset/plugin resolution with UI5 tooling binary ([#802](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/802)) ([a3943ab](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/a3943abf118c78bc37019c0a39d5a41adcf240db))
+
+
+
+
+
 ## [3.0.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.0.2...ui5-tooling-transpile@3.0.3) (2023-08-12)
 
 
