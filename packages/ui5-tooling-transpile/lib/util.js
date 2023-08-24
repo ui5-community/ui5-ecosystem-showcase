@@ -24,6 +24,7 @@ const PRJ_CFG_FILES = [...multiply("babel.config", [".json", ".js", ".cjs", ".mj
 // file-relative configuration
 const CFG_FILES = [...multiply(".babelrc", [".json", ".js", ".cjs", ".mjs"]), ".babelrc", "package.json"];
 
+// helper to find the babel configuration
 // eslint-disable-next-line jsdoc/require-jsdoc
 async function findBabelConfig(dir) {
 	let configFile;
@@ -62,6 +63,91 @@ async function findBabelConfig(dir) {
 	}
 
 	return partialConfig ? { configFile, options: partialConfig.options } : undefined;
+}
+
+// utility to resolve the node modules (also for mono repo environments)
+// eslint-disable-next-line jsdoc/require-jsdoc
+function resolveNodeModule(moduleName, cwd = process.cwd()) {
+	let modulePath;
+	// resolve from node_modules via regular lookup
+	try {
+		// try the lookup relative to CWD
+		modulePath = require.resolve(moduleName, {
+			paths: [cwd] // necessary for PNPM and/or DEBUG scenario
+		});
+	} catch (err) {
+		// use the default lookup
+		try {
+			modulePath = require.resolve(moduleName);
+		} catch (err) {
+			// gracefully ignore the error
+			//console.error(err);
+		}
+	}
+	return modulePath;
+}
+
+// utility to normalite the name of the babel preset or plugin
+// like specified here: https://babeljs.io/docs/options#name-normalization
+// eslint-disable-next-line jsdoc/require-jsdoc
+function normalizePresetOrPlugin(babelPresetOrPlugin, isPreset) {
+	const type = isPreset ? "preset" : "plugin";
+	let moduleName = babelPresetOrPlugin;
+	let matches;
+	if (!(typeof moduleName === "string")) {
+		// ConfigItems are ignored (means preset/plugin is already loaded)
+	} else if (!moduleName) {
+		// empty module names stay untouched
+	} else if (path.isAbsolute(moduleName)) {
+		// absolute paths stay untouched
+	} else if (moduleName.startsWith("./")) {
+		// relative paths stay untouched
+	} else if ((matches = /^module:(.*)/.exec(moduleName))) {
+		// any identifier prefixed with module: will have the prefix removed but otherwise be untouched.
+		moduleName = matches[1];
+	} else if ((matches = new RegExp(`^@babel/(?!${type}-)([^/]+)$`).exec(moduleName))) {
+		// plugin-/preset- will be injected at the start of any @babel-scoped package that doesn't have it as a prefix.
+		moduleName = `@babel/${type}-${matches[1]}`;
+	} else if ((matches = /^@([^/]+)$/.exec(moduleName))) {
+		// babel-plugin/babel-preset will be injected as the package name if only the @-scope name is given.
+		moduleName = `${moduleName}/babel-${type}`;
+	} else if ((matches = new RegExp(`^(?!(@|babel-${type}-))([^/]+)$`).exec(moduleName))) {
+		// babel-plugin-/babel-preset- will be injected as a prefix any unscoped package that doesn't have it as a prefix
+		moduleName = `babel-${type}-${moduleName}`;
+	} else if ((matches = new RegExp(`^(@(?!babel)(?:[^/]+)/)([^/]+)$`).exec(moduleName))) {
+		// babel-plugin-/babel-preset- will be injected as a prefix any @-scoped package that doesn't have it anywhere in their name.
+		if (!new RegExp(`babel-${type}`).test(matches[2])) {
+			moduleName = `${matches[1]}babel-${type}-${matches[2]}`;
+		}
+	}
+	return moduleName;
+}
+
+// utility to normalize and resolve the babel preset or plugin
+// eslint-disable-next-line jsdoc/require-jsdoc
+function resolvePresetOrPlugin(babelPresetOrPlugin, isPreset, cwd = process.cwd()) {
+	if (Array.isArray(babelPresetOrPlugin)) {
+		const normalized = normalizePresetOrPlugin(babelPresetOrPlugin[0], isPreset);
+		babelPresetOrPlugin[0] = resolveNodeModule(normalized, cwd);
+	} else {
+		const normalized = normalizePresetOrPlugin(babelPresetOrPlugin, isPreset);
+		babelPresetOrPlugin = resolveNodeModule(normalized, cwd);
+	}
+	return babelPresetOrPlugin;
+}
+
+// helper to normalize and resolve the babel configuration (resolve plugins and presets to absolute paths)
+// eslint-disable-next-line jsdoc/require-jsdoc
+function normalizeBabelConfig(babelConfig, cwd = process.cwd()) {
+	// resolve the presets
+	if (Array.isArray(babelConfig?.presets)) {
+		babelConfig.presets = babelConfig.presets.map((preset) => resolvePresetOrPlugin(preset, true, cwd));
+	}
+	// resolve the plugins
+	if (Array.isArray(babelConfig?.plugins)) {
+		babelConfig.plugins = babelConfig.plugins.map((plugin) => resolvePresetOrPlugin(plugin, false, cwd));
+	}
+	return babelConfig;
 }
 
 module.exports = function (log) {
@@ -134,7 +220,8 @@ module.exports = function (log) {
 				transformModulesToUI5,
 				transformAsyncToPromise,
 				targetBrowsers: config.targetBrowsers,
-				removeConsoleStatements: config.removeConsoleStatements
+				removeConsoleStatements: config.removeConsoleStatements,
+				skipBabelPresetPluginResolve: config.skipBabelPresetPluginResolve
 			};
 			config.debug &&
 				log.verbose(`Normalized configuration:\n${JSON.stringify(normalizedConfiguration, null, 2)}`);
@@ -172,11 +259,20 @@ module.exports = function (log) {
 				});
 			};
 
-			// utility to add source maps support for middleware usage
-			const enhanceForSourceMaps = function (babelConfig) {
+			// utility to update the babel config
+			const updateBabelConfig = function (babelConfig) {
+				// make the paths of the babel plugins and presets absolute
+				if (!configuration.skipBabelPresetPluginResolve) {
+					normalizeBabelConfig(babelConfig, cwd);
+				}
+				// in the middleware case we generate the sourcemaps inline for
+				// debugging purposes since the middleware may not know about the
+				// sourcemaps files next to the source file
 				if (isMiddleware) {
 					babelConfig.sourceMaps = "inline";
 				}
+				// some logging
+				configuration?.debug && log.verbose(`${JSON.stringify(babelConfig, null, 2)}`);
 				return babelConfig;
 			};
 
@@ -188,7 +284,7 @@ module.exports = function (log) {
 					warnAboutIgnoredConfig();
 					log.verbose(`${JSON.stringify(babelConfig, null, 2)}`);
 				}
-				return enhanceForSourceMaps(babelConfig);
+				return updateBabelConfig(babelConfig);
 			}
 
 			// lookup the babel config by file
@@ -199,7 +295,7 @@ module.exports = function (log) {
 					warnAboutIgnoredConfig();
 					log.verbose(`${JSON.stringify(config.options, null, 2)}`);
 				}
-				return enhanceForSourceMaps(config.options);
+				return updateBabelConfig(config.options);
 			}
 
 			// create configuration based on ui5.yaml configuration options
@@ -294,18 +390,10 @@ module.exports = function (log) {
 				);
 			}
 
-			// in the middleware case we generate the sourcemaps inline for
-			// debugging purposes since the middleware may not know about the
-			// sourcemaps files next to the source file
-			if (isMiddleware) {
-				babelConfig.sourceMaps = "inline";
-			} else {
-				babelConfig.sourceMaps = true;
-			}
+			// include the source maps
+			babelConfig.sourceMaps = true;
 
-			configuration?.debug && log.verbose(`${JSON.stringify(babelConfig, null, 2)}`);
-
-			return babelConfig;
+			return updateBabelConfig(babelConfig);
 		},
 
 		/**
@@ -422,6 +510,14 @@ module.exports = function (log) {
 		transformAsync: async function transformAsync(code, opts) {
 			return babel.transformAsync(code, opts);
 		}
+	};
+	// expose internal functions for testing purposes
+	_this._helpers = {
+		findBabelConfig,
+		normalizeBabelConfig,
+		resolvePresetOrPlugin,
+		resolveNodeModule,
+		normalizePresetOrPlugin
 	};
 	return _this;
 };
