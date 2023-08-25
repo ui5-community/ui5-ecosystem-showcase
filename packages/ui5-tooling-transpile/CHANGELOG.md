@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.0.5...ui5-tooling-transpile@3.1.0) (2023-08-25)
+
+
+### Features
+
+* **ui5-tooling-transpile:** integrate ts-interface-generator ([#787](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/787)) ([7dfa15d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7dfa15dfe34aac201a9ff5c501b61716460f05c5))
+
+
+
+
+
 ## [3.0.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.0.4...ui5-tooling-transpile@3.0.5) (2023-08-25)
 
 

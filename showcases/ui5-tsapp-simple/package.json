@@ -1,6 +1,6 @@
 {
   "name": "ui5-tsapp-simple",
-  "version": "0.5.8",
+  "version": "0.6.0",
   "description": "Simple showcase of a TypeScript setup for developing UI5 applications",
   "private": true,
   "author": "Peter Muessig",
@@ -24,8 +24,8 @@
     "@types/openui5": "1.117.0",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
-    "@ui5/ts-interface-generator": "^0.8.0",
     "@ui5/cli": "^3.4.0",
+    "@ui5/ts-interface-generator": "^0.8.0",
     "eslint": "^8.46.0",
     "rimraf": "^5.0.1",
     "typescript": "^5.1.6",

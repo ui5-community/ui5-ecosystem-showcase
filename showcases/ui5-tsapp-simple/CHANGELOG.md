@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-simple@0.5.8...ui5-tsapp-simple@0.6.0) (2023-08-25)
+
+
+### Features
+
+* **ui5-tooling-transpile:** integrate ts-interface-generator ([#787](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/787)) ([7dfa15d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7dfa15dfe34aac201a9ff5c501b61716460f05c5))
+
+
+
+
+
 ## [0.5.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-simple@0.5.7...ui5-tsapp-simple@0.5.8) (2023-08-25)
 
 **Note:** Version bump only for package ui5-tsapp-simple
