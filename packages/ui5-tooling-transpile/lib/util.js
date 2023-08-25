@@ -16,55 +16,6 @@ function multiply(fileName, exts) {
 	});
 }
 
-// https://babeljs.io/docs/en/config-files
-
-// project-wide configuration
-const PRJ_CFG_FILES = [...multiply("babel.config", [".json", ".js", ".cjs", ".mjs"])];
-
-// file-relative configuration
-const CFG_FILES = [...multiply(".babelrc", [".json", ".js", ".cjs", ".mjs"]), ".babelrc", "package.json"];
-
-// helper to find the babel configuration
-// eslint-disable-next-line jsdoc/require-jsdoc
-async function findBabelConfig(dir) {
-	let configFile;
-
-	const findConfigFile = function (cfgFiles, dir) {
-		const configFile = cfgFiles.find((cfgFile) => {
-			return fs.existsSync(path.join(dir, cfgFile));
-		});
-		return configFile && path.join(dir, configFile);
-	};
-
-	configFile = findConfigFile(PRJ_CFG_FILES, dir);
-	while (!configFile) {
-		configFile = findConfigFile(CFG_FILES, dir);
-		if (dir == path.dirname(dir)) {
-			break;
-		}
-		dir = path.dirname(dir);
-	}
-
-	let partialConfig;
-	if (path.basename(configFile) === "package.json") {
-		// for the package.json, we need to extract the babel config
-		partialConfig = require(configFile);
-		if (partialConfig.babel) {
-			partialConfig = await babel.loadPartialConfigAsync(
-				Object.assign({ filename: "src/dummy.js" }, partialConfig.babel)
-			);
-		} else {
-			partialConfig = configFile = undefined;
-		}
-	} else if (configFile) {
-		// the `filename` field is required
-		// in case there're filename-related options like `ignore` in the user config
-		partialConfig = await babel.loadPartialConfigAsync({ configFile, filename: "src/dummy.js" });
-	}
-
-	return partialConfig ? { configFile, options: partialConfig.options } : undefined;
-}
-
 // utility to resolve the node modules (also for mono repo environments)
 // eslint-disable-next-line jsdoc/require-jsdoc
 function resolveNodeModule(moduleName, cwd = process.cwd()) {
@@ -87,16 +38,83 @@ function resolveNodeModule(moduleName, cwd = process.cwd()) {
 	return modulePath;
 }
 
-// utility to normalite the name of the babel preset or plugin
+// https://babeljs.io/docs/en/config-files
+
+// project-wide configuration
+const PRJ_CFG_FILES = [...multiply("babel.config", [".json", ".js", ".cjs", ".mjs"])];
+
+// file-relative configuration
+const CFG_FILES = [...multiply(".babelrc", [".json", ".js", ".cjs", ".mjs"]), ".babelrc", "package.json"];
+
+// helper to load the babel configuration
+// eslint-disable-next-line jsdoc/require-jsdoc
+async function loadBabelConfig(babelConfig, skipBabelPresetPluginResolve, cwd = process.cwd()) {
+	// make the paths of the babel plugins and presets absolute
+	if (!skipBabelPresetPluginResolve) {
+		babelConfig = normalizeBabelConfig(babelConfig, cwd);
+	}
+	// let babel load the babel config
+	return babel.loadPartialConfigAsync(
+		Object.assign(
+			{},
+			{
+				configFile: false,
+				babelrc: false
+			},
+			babelConfig
+		)
+	);
+}
+
+// helper to find the babel configuration
+// eslint-disable-next-line jsdoc/require-jsdoc
+async function findBabelConfig(cwd) {
+	let configFile;
+
+	const findConfigFile = function (cfgFiles, dir) {
+		const configFile = cfgFiles.find((cfgFile) => {
+			return fs.existsSync(path.join(dir, cfgFile));
+		});
+		return configFile && path.join(dir, configFile);
+	};
+
+	configFile = findConfigFile(PRJ_CFG_FILES, cwd);
+	while (!configFile) {
+		configFile = findConfigFile(CFG_FILES, cwd);
+		if (cwd == path.dirname(cwd)) {
+			break;
+		}
+		cwd = path.dirname(cwd);
+	}
+
+	let babelConfig;
+	if (path.basename(configFile) === "package.json") {
+		// for the package.json, we need to extract the babel config
+		const pkgJson = JSON.parse(fs.readFileSync(configFile, { encoding: "utf8" }));
+		if (pkgJson.babel) {
+			babelConfig = pkgJson.babel;
+		} else {
+			babelConfig = configFile = undefined;
+		}
+	} else if (configFile) {
+		// for a babel config file we load it on our own to normalize the plugin/preset paths
+		// => no recursive merging of babel config is possible with this approach
+		babelConfig = JSON.parse(fs.readFileSync(configFile, { encoding: "utf8" }));
+		// let Babel lookup the configuration file with the Babel API
+		//partialConfig = await loadBabelConfig({ configFile, filename: dir, babelrc: true });
+	}
+
+	return babelConfig ? { configFile, babelConfig } : undefined;
+}
+
+// utility to normalize the name of the babel preset or plugin
 // like specified here: https://babeljs.io/docs/options#name-normalization
 // eslint-disable-next-line jsdoc/require-jsdoc
 function normalizePresetOrPlugin(babelPresetOrPlugin, isPreset) {
 	const type = isPreset ? "preset" : "plugin";
 	let moduleName = babelPresetOrPlugin;
 	let matches;
-	if (!(typeof moduleName === "string")) {
-		// ConfigItems are ignored (means preset/plugin is already loaded)
-	} else if (!moduleName) {
+	if (!moduleName) {
 		// empty module names stay untouched
 	} else if (path.isAbsolute(moduleName)) {
 		// absolute paths stay untouched
@@ -126,10 +144,12 @@ function normalizePresetOrPlugin(babelPresetOrPlugin, isPreset) {
 // utility to normalize and resolve the babel preset or plugin
 // eslint-disable-next-line jsdoc/require-jsdoc
 function resolvePresetOrPlugin(babelPresetOrPlugin, isPreset, cwd = process.cwd()) {
+	// either an array or string is processed here as ConfigItems
+	// should be ignored and just returned (already resolved by babel)
 	if (Array.isArray(babelPresetOrPlugin)) {
 		const normalized = normalizePresetOrPlugin(babelPresetOrPlugin[0], isPreset);
 		babelPresetOrPlugin[0] = resolveNodeModule(normalized, cwd);
-	} else {
+	} else if (typeof babelPresetOrPlugin === "string") {
 		const normalized = normalizePresetOrPlugin(babelPresetOrPlugin, isPreset);
 		babelPresetOrPlugin = resolveNodeModule(normalized, cwd);
 	}
@@ -152,6 +172,14 @@ function normalizeBabelConfig(babelConfig, cwd = process.cwd()) {
 
 module.exports = function (log) {
 	const _this = {
+		/**
+		 * Helper to resolve node modules
+		 *
+		 * @param {string} moduleName the name of the node module to lookup
+		 * @param {string} [cwd] the cwd to lookup the configuration (defaults to process.cwd())
+		 * @returns {string} the absolute path of the node module
+		 */
+		resolveNodeModule,
 		/**
 		 * Build the configuration for the task and the middleware.
 		 *
@@ -260,20 +288,23 @@ module.exports = function (log) {
 			};
 
 			// utility to update the babel config
-			const updateBabelConfig = function (babelConfig) {
-				// make the paths of the babel plugins and presets absolute
-				if (!configuration.skipBabelPresetPluginResolve) {
-					normalizeBabelConfig(babelConfig, cwd);
-				}
+			const updateBabelConfig = async function (babelConfig) {
 				// in the middleware case we generate the sourcemaps inline for
 				// debugging purposes since the middleware may not know about the
 				// sourcemaps files next to the source file
 				if (isMiddleware) {
 					babelConfig.sourceMaps = "inline";
 				}
+				// finally load the babel config
+				const partialConfig = await loadBabelConfig(
+					babelConfig,
+					configuration.skipBabelPresetPluginResolve,
+					cwd
+				);
+				const loadedBabelConfig = partialConfig?.options;
 				// some logging
-				configuration?.debug && log.verbose(`${JSON.stringify(babelConfig, null, 2)}`);
-				return babelConfig;
+				configuration?.debug && log.verbose(`${JSON.stringify(loadedBabelConfig, null, 2)}`);
+				return loadedBabelConfig;
 			};
 
 			// the inline babel configuration in the ui5.yaml wins
@@ -282,9 +313,8 @@ module.exports = function (log) {
 				if (configuration?.debug) {
 					log.info(`Using inline Babel configuration from ui5.yaml...`);
 					warnAboutIgnoredConfig();
-					log.verbose(`${JSON.stringify(babelConfig, null, 2)}`);
 				}
-				return updateBabelConfig(babelConfig);
+				return await updateBabelConfig(babelConfig);
 			}
 
 			// lookup the babel config by file
@@ -293,9 +323,8 @@ module.exports = function (log) {
 				if (configuration?.debug) {
 					log.info(`Using Babel configuration from ${config.configFile}...`);
 					warnAboutIgnoredConfig();
-					log.verbose(`${JSON.stringify(config.options, null, 2)}`);
 				}
-				return updateBabelConfig(config.options);
+				return await updateBabelConfig(config.babelConfig);
 			}
 
 			// create configuration based on ui5.yaml configuration options
@@ -513,10 +542,10 @@ module.exports = function (log) {
 	};
 	// expose internal functions for testing purposes
 	_this._helpers = {
+		loadBabelConfig,
 		findBabelConfig,
 		normalizeBabelConfig,
 		resolvePresetOrPlugin,
-		resolveNodeModule,
 		normalizePresetOrPlugin
 	};
 	return _this;
