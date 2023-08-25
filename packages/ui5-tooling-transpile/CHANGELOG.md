@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.0.4...ui5-tooling-transpile@3.0.5) (2023-08-25)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** load and normalize the babel config ([#804](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/804)) ([9f3c9fd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9f3c9fd9bb9497774d3ecbb2d95951783251e442))
+* **ui5-tooling-transpile:** support comments in ts config and babel config ([#806](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/806)) ([17e3302](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/17e3302a5ada070e9c694d530a04e184ce31e650)), closes [#803](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/803)
+* **ui5-tooling-transpile:** use latest UI5 Tooling V3 APIs only ([#805](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/805)) ([202c19d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/202c19d9556078ede196442da0f76bad6bb03e15))
+
+
+
+
+
 ## [3.0.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.0.3...ui5-tooling-transpile@3.0.4) (2023-08-24)
 
 
