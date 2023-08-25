@@ -1,3 +1,4 @@
+const fs = require("fs");
 const path = require("path");
 
 /**
@@ -8,32 +9,27 @@ const path = require("path");
  * @returns {Object} the approuter configuration including all `dependencyRoutes`.
  */
 const parseConfig = () => {
-    let config;
-    let configFile;
-    let configFiles = ["xs-dev.json", "xs-app.json"];
-    for (const file of configFiles) {
-        if (fs.existsSync(path.join(process.cwd(), file))) {
-            config = JSON.parse(
-                fs.readFileSync(
-                    path.join(process.cwd(), file),
-                    { encoding: "utf8" }
-                )
-            );
-            configFile = file;
-            break;
-        }
-    }
-    config.dependencyRoutes = {};
-    config.routes?.forEach(route => {
-        if (route.dependency) {
-            if (config.dependencyRoutes[`${route.dependency}`]) {
-                throw new Error(`Duplicate dependency "${route.dependency}" found in file ${path.join(process.cwd(), configFile)}.`);
-            } else {
-                config.dependencyRoutes[`${route.dependency}`] = route;
-            }
-        }
-    });
-    return config;
+	let config;
+	let configFile;
+	let configFiles = ["xs-dev.json", "xs-app.json"];
+	for (const file of configFiles) {
+		if (fs.existsSync(path.join(process.cwd(), file))) {
+			config = JSON.parse(fs.readFileSync(path.join(process.cwd(), file), { encoding: "utf8" }));
+			configFile = file;
+			break;
+		}
+	}
+	config.dependencyRoutes = {};
+	config.routes?.forEach((route) => {
+		if (route.dependency) {
+			if (config.dependencyRoutes[`${route.dependency}`]) {
+				throw new Error(`Duplicate dependency "${route.dependency}" found in file ${path.join(process.cwd(), configFile)}.`);
+			} else {
+				config.dependencyRoutes[`${route.dependency}`] = route;
+			}
+		}
+	});
+	return config;
 };
 
 /**
@@ -42,13 +38,13 @@ const parseConfig = () => {
  * @returns {Object} config - the approuter configuration that can be used to start the approuter.
  */
 const applyDependencyConfig = (config) => {
-    config.routes?.forEach(route => {
-        if (route.dependency) {
-            route = config.dependencyRoutes[route.dependency];
-        }
-    });
-    delete config.dependencyRoutes;
-    return config;
+	config.routes?.forEach((route) => {
+		if (route.dependency) {
+			route = config.dependencyRoutes[route.dependency];
+		}
+	});
+	delete config.dependencyRoutes;
+	return config;
 };
 
 /**
@@ -59,36 +55,36 @@ const applyDependencyConfig = (config) => {
  * @param {String} mountPath - the path the module was mounted to and the destination should point to.
  */
 const addDestination = (moduleId, port, mountPath) => {
-    let destinations = [];
-    if (process.env.destinations) {
-        destinations = JSON.parse(process.env.destinations);
-    }
+	let destinations = [];
+	if (process.env.destinations) {
+		destinations = JSON.parse(process.env.destinations);
+	}
 
-    let url;
-    if (mountPath) {
-        url = `http://localhost:${process.env.PORT || 5000}${mountPath}`;
-    } else {
-        url = `http://localhost:${port}`;
-    }
+	let url;
+	if (mountPath) {
+		url = `http://localhost:${process.env.PORT || 5000}${mountPath}`;
+	} else {
+		url = `http://localhost:${port}`;
+	}
 
-    // only add new destination if it's not already provided
-    const destinationAlreadyExists = destinations.some(destination => {
-        const lowerCaseDestination = {};
-        Object.keys(destination).forEach(key => {
-            lowerCaseDestination[key.toLowerCase()] = destination[key];
-        })
-        return lowerCaseDestination.name === moduleId
-    })
-    if (!destinationAlreadyExists) {
-        destinations.push({
-            Name: moduleId,
-            Authentication: "NoAuthentication",
-            ProxyType: "Internet",
-            Type: "HTTP",
-            URL: url
-        });
-        process.env.destinations = JSON.stringify(destinations);
-    }
+	// only add new destination if it's not already provided
+	const destinationAlreadyExists = destinations.some((destination) => {
+		const lowerCaseDestination = {};
+		Object.keys(destination).forEach((key) => {
+			lowerCaseDestination[key.toLowerCase()] = destination[key];
+		});
+		return lowerCaseDestination.name === moduleId;
+	});
+	if (!destinationAlreadyExists) {
+		destinations.push({
+			Name: moduleId,
+			Authentication: "NoAuthentication",
+			ProxyType: "Internet",
+			Type: "HTTP",
+			URL: url,
+		});
+		process.env.destinations = JSON.stringify(destinations);
+	}
 };
 
 /**
@@ -99,38 +95,42 @@ const addDestination = (moduleId, port, mountPath) => {
  * @returns {Object} the configured route.
  */
 const configureCAPRoute = (moduleId, servicesPaths, route) => {
-    route.source = servicesPaths.map(path => { return `${path}(.*)` }).join("|");
-    route.destination = moduleId;
-    delete route.dependency;
+	route.source = servicesPaths
+		.map((path) => {
+			return `${path}(.*)`;
+		})
+		.join("|");
+	route.destination = moduleId;
+	delete route.dependency;
 
-    return route;
+	return route;
 };
 
 /**
  * Configures the route for a given UI5 module.
- * @param {String} moduleId - the id of the module that the route should be configured for. 
+ * @param {String} moduleId - the id of the module that the route should be configured for.
  * @param {String} sourcePath - the path the approuter should handle the module at.
  * @param {Object} route - the route that is to be configured.
  * @returns {Object} the configured route.
  */
 const configureUI5Route = (moduleId, sourcePath, route) => {
-    if (sourcePath === "/") {
-        // special regex to avoid endless loop
-        route.source = `^(?!.*(/_${sourcePath}))`;
-    } else {
-        route.source = `^${sourcePath}(.*)$`;
-        route.target = "$1";
-    }
-    route.destination = moduleId;
-    delete route.dependency;
+	if (sourcePath === "/") {
+		// special regex to avoid endless loop
+		route.source = `^(?!.*(/_${sourcePath}))`;
+	} else {
+		route.source = `^${sourcePath}(.*)$`;
+		route.target = "$1";
+	}
+	route.destination = moduleId;
+	delete route.dependency;
 
-    return route;
+	return route;
 };
 
 module.exports = {
-    parseConfig,
-    applyDependencyConfig,
-    addDestination,
-    configureCAPRoute,
-    configureUI5Route
+	parseConfig,
+	applyDependencyConfig,
+	addDestination,
+	configureCAPRoute,
+	configureUI5Route,
 };
