@@ -19,6 +19,7 @@ const fs = require("fs");
  */
 module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, options }) {
 	const {
+		resolveNodeModule,
 		createConfiguration,
 		createBabelConfig,
 		normalizeLineFeeds,
@@ -140,7 +141,8 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 		if (config.generateDts && taskUtil.isRootProject()) {
 			try {
 				// dynamically require typescript
-				const ts = require("typescript");
+				const tsPath = resolveNodeModule("typescript", cwd);
+				const ts = require(tsPath);
 
 				// read the tsconfig.json
 				const tsConfigFile = path.join(cwd, "tsconfig.json");
