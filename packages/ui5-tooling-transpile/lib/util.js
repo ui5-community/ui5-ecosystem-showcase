@@ -455,35 +455,7 @@ module.exports = function (log) {
 		},
 
 		/**
-		 * Determines the applications base path from the given resource collection.
-		 *
-		 * <b>ATTENTION: this is a hack to be compatible with UI5 tooling 2.x and 3.x</b>
-		 *
-		 * @param {module:@ui5/fs.AbstractReader} collection Reader or Collection to read resources of the root project and its dependencies
-		 * @returns {string} application base path
-		 */
-		determineProjectBasePath: function (collection) {
-			let projectBasePath;
-			if (collection?._readers) {
-				for (const _reader of collection._readers) {
-					projectBasePath = _this.determineProjectBasePath(_reader);
-					if (projectBasePath) break;
-				}
-			}
-			if (/^(application|library)$/.test(collection?._project?._type)) {
-				projectBasePath = collection._project._modulePath; // UI5 tooling 3.x
-			} else if (/^(application|library)$/.test(collection?._project?.type)) {
-				projectBasePath = collection._project.path; // UI5 tooling 2.x
-			} else if (typeof collection?._fsBasePath === "string") {
-				projectBasePath = collection._fsBasePath;
-			}
-			return projectBasePath;
-		},
-
-		/**
 		 * Determine the given resources' file system path
-		 *
-		 * <b>ATTENTION: this is a hack to be compatible with UI5 tooling 2.x and 3.x</b>
 		 *
 		 * @param {module:@ui5/fs.Resource} resource the resource
 		 * @param {string} [cwd] the cwd to lookup the configuration (defaults to process.cwd())
@@ -491,29 +463,12 @@ module.exports = function (log) {
 		 */
 		determineResourceFSPath: function determineResourceFSPath(resource, cwd = process.cwd()) {
 			let resourcePath = resource.getPath();
-			if (typeof resource.getSourceMetadata === "function") {
-				// specVersion 3.0 provides source metadata and only if the
-				// current work directory is the rootpath of the project resource
-				// it is a root resource which should be considered to be resolved
-				if (path.relative(cwd, resource.getProject().getRootPath()) === "") {
-					// npm dependencies don't have sourceMetadata applied to resource!
-					resourcePath = resource.getSourceMetadata()?.fsPath || resourcePath;
-				}
-			} else {
-				// for older versions resolving the file system path is a bit more
-				// tricky and also here we only consider the root resources rather
-				// than the dependencies...
-				const isRootResource = resource?._project?._isRoot;
-				if (isRootResource) {
-					const rootPath = resource._project.path;
-					const pathMappings = resource._project.resources?.pathMappings;
-					const pathMapping = Object.keys(pathMappings).find((basePath) => resourcePath.startsWith(basePath));
-					resourcePath = path.join(
-						rootPath,
-						pathMappings[pathMapping],
-						resourcePath.substring(pathMapping.length)
-					);
-				}
+			// specVersion 3.0 provides source metadata and only if the
+			// current work directory is the rootpath of the project resource
+			// it is a root resource which should be considered to be resolved
+			if (path.relative(cwd, resource.getProject().getRootPath()) === "") {
+				// npm dependencies don't have sourceMetadata applied to resource!
+				resourcePath = resource.getSourceMetadata()?.fsPath || resourcePath;
 			}
 			return resourcePath;
 		},

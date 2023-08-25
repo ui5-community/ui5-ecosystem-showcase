@@ -26,11 +26,10 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 		normalizeLineFeeds,
 		determineResourceFSPath,
 		transformAsync,
-		determineProjectBasePath,
 		shouldHandlePath
 	} = require("./util")(log);
 
-	const cwd = determineProjectBasePath(resources.rootProject) || process.cwd();
+	const cwd = middlewareUtil.getProject().getRootPath() || process.cwd();
 	const config = createConfiguration(options?.configuration || {}, cwd);
 	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: true }, cwd);
 
