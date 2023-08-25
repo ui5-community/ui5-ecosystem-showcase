@@ -290,7 +290,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 					config.debug && log.info(`  + [.d.ts] index.d.ts`);
 					const pckgJsonFile = path.join(cwd, "package.json");
 					if (fs.existsSync(pckgJsonFile)) {
-						const pckgJson = require(pckgJsonFile);
+						const pckgJson = JSON.parse(fs.readFileSync(pckgJsonFile, { encoding: "utf8" }));
 						if (!pckgJson.types) {
 							log.warn(
 								`  /!\\ package.json has no "types" property! Add it and point to "index.d.ts" in build destination!`

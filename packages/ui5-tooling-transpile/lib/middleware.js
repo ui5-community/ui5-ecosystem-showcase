@@ -1,4 +1,5 @@
 /* eslint-disable jsdoc/check-param-names */
+const path = require("path");
 const parseurl = require("parseurl");
 
 /**
@@ -17,7 +18,7 @@ const parseurl = require("parseurl");
  *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
  * @param {object} parameters.options Options
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
- * @returns {function} Middleware function to use
+ * @returns {Function} Middleware function to use
  */
 module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	const {
@@ -26,7 +27,8 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 		normalizeLineFeeds,
 		determineResourceFSPath,
 		transformAsync,
-		shouldHandlePath
+		shouldHandlePath,
+		resolveNodeModule
 	} = require("./util")(log);
 
 	const cwd = middlewareUtil.getProject().getRootPath() || process.cwd();
@@ -84,6 +86,32 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 					return transpileAsync(resource);
 				})
 		);
+	}
+
+	// if the TypeScript interfaces should be created, launch the ts-interface-generator in watch mode
+	if (config.generateTsInterfaces) {
+		const generateTSInterfacesAPI = resolveNodeModule(
+			"@ui5/ts-interface-generator/dist/generateTSInterfacesAPI",
+			cwd
+		);
+		if (generateTSInterfacesAPI) {
+			const { main } = require(generateTSInterfacesAPI);
+			try {
+				config.debug && log.info(`Starting "@ui5/ts-interface-generator" in watch mode...`);
+				main({
+					watch: true,
+					logLevel: config.debug ? log.constructor.getLevel() : "error",
+					config: path.join(cwd, "tsconfig.json")
+				});
+			} catch (e) {
+				log.error(e);
+			}
+		} else {
+			config.debug &&
+				log.warn(
+					`Missing dependency "@ui5/ts-interface-generator"! TypeScript interfaces will not be generated until dependency has been added...`
+				);
+		}
 	}
 
 	return async (req, res, next) => {
