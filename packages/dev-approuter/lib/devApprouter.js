@@ -109,10 +109,8 @@ class DevApprouter {
 				console.log(`CAP server started at: http://localhost:${process.env.CAP_PORT || 4004}`);
 			});
 
-			// configure CAP route if referenced as "dependency" in xs-dev.json/xs-app.json
-			if (config.dependencyRoutes && config.dependencyRoutes[moduleId]) {
-				config.dependencyRoutes[moduleId] = configureCAPRoute(moduleId, servicesPaths, config.dependencyRoutes[moduleId]);
-			}
+			config.routes.unshift(configureCAPRoute(moduleId, servicesPaths, config.dependencyRoutes[moduleId]));
+			config.dependencyRoutes[moduleId] = configureCAPRoute(moduleId, servicesPaths, config.dependencyRoutes[moduleId]);
 
 			// add destination for newly configured route
 			addDestination(moduleId, process.env.CAP_PORT || 4004);

@@ -95,6 +95,10 @@ const addDestination = (moduleId, port, mountPath) => {
  * @returns {Object} the configured route.
  */
 const configureCAPRoute = (moduleId, servicesPaths, route) => {
+	if (!route) {
+		route = {};
+		route.authenticationType = "none";
+	}
 	route.source = servicesPaths
 		.map((path) => {
 			return `${path}(.*)`;
