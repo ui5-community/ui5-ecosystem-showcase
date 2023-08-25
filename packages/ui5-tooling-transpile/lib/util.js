@@ -9,6 +9,9 @@ const babel = require("@babel/core");
 // https://github.com/browserslist/browserslist#queries
 const browserslist = require("browserslist");
 
+// JSON parser with comments (for tsconfig.json or babel config)
+const JSONC = require("comment-json");
+
 // eslint-disable-next-line jsdoc/require-jsdoc
 function multiply(fileName, exts) {
 	return exts.map((ext) => {
@@ -99,7 +102,7 @@ async function findBabelConfig(cwd) {
 	} else if (configFile) {
 		// for a babel config file we load it on our own to normalize the plugin/preset paths
 		// => no recursive merging of babel config is possible with this approach
-		babelConfig = JSON.parse(fs.readFileSync(configFile, { encoding: "utf8" }));
+		babelConfig = JSONC.parse(fs.readFileSync(configFile, { encoding: "utf8" }));
 		// let Babel lookup the configuration file with the Babel API
 		//partialConfig = await loadBabelConfig({ configFile, filename: dir, babelrc: true });
 	}
@@ -197,7 +200,7 @@ module.exports = function (log) {
 
 			// read package.json and tsconfig.json to determine whether to transpile dependencies or not
 			if (isTypeScriptProject && !config.transpileDependencies) {
-				const tscJson = JSON.parse(fs.readFileSync(tscJsonPath, { encoding: "utf8" }));
+				const tscJson = JSONC.parse(fs.readFileSync(tscJsonPath, { encoding: "utf8" }));
 				const tsDeps = tscJson?.compilerOptions?.types?.filter((typePkgName) => {
 					try {
 						// if a type dependency includes a ui5.yaml we assume

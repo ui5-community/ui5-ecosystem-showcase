@@ -1,4 +1,5 @@
 {
+	// comments are allowed
 	"presets": ["transform-ui5", "@babel/preset-typescript", "@babel/preset-env"],
 	"sourceMaps": true
 }
