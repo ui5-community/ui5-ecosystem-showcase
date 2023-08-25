@@ -1,6 +1,7 @@
 /* eslint-disable jsdoc/check-param-names */
 const path = require("path");
 const fs = require("fs");
+const JSONC = require("comment-json");
 
 /**
  * Custom task to transpile resources to JavaScript modules.
@@ -147,7 +148,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 				const tsConfigFile = path.join(cwd, "tsconfig.json");
 				let tsOptions = {};
 				if (fs.existsSync(tsConfigFile)) {
-					tsOptions = JSON.parse(fs.readFileSync(tsConfigFile, { encoding: "utf8" }));
+					tsOptions = JSONC.parse(fs.readFileSync(tsConfigFile, { encoding: "utf8" }));
 				}
 
 				// options to generate d.ts files only
