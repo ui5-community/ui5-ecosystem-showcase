@@ -26,6 +26,7 @@ The following list provides an overview of the available tooling extensions in t
 ```text
 packages
 ├── cds-plugin-ui5                  // cds-plugin: embed UI5 tooling based projects via express middleware into CAP server
+├── dev-approuter                   // dev time wrapper for the SAP Application Router that can serve UI5 and CAP modules added as dependencies
 ├── karma-ui5-transpile             // karma preprocessor: transpile sources using ui5-tooling-transpile
 ├── ui5-middleware-cap              // middleware extension: use the CAP server middlewares inside the UI5 tooling
 ├── ui5-middleware-cfdestination    // middleware extension: use the approuter as proxy
@@ -206,6 +207,7 @@ Other NPM packages in this project:
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
 | [cds-plugin-ui5](packages/cds-plugin-ui5/README.md) | embed UI5 tooling based projects via express middleware into CAP server | [![npm version](https://badge.fury.io/js/cds-plugin-ui5.svg)](https://badge.fury.io/js/cds-plugin-ui5) |
+| [dev-approuter](packages/dev-approuter/README.md) | dev time wrapper for the SAP Application Router that can serve UI5 and CAP modules added as dependencies | [![npm version](https://badge.fury.io/js/dev-approuter.svg)](https://badge.fury.io/js/dev-approuter) |
 | [karma-ui5-transpile](packages/karma-ui5-transpile/README.md) | Karma preprocessor to transpile sources using `ui5-tooling-transpile` | [![npm version](https://badge.fury.io/js/karma-ui5-transpile.svg)](https://badge.fury.io/js/karma-ui5-transpile) |
 
 ## Support, Feedback, Contributing
