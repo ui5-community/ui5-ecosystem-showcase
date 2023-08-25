@@ -24,11 +24,10 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 		createBabelConfig,
 		normalizeLineFeeds,
 		determineResourceFSPath,
-		transformAsync,
-		determineProjectBasePath
+		transformAsync
 	} = require("./util")(log);
 
-	const cwd = determineProjectBasePath(workspace) || process.cwd();
+	const cwd = taskUtil.getProject().getRootPath() || process.cwd();
 	const config = createConfiguration(options?.configuration || {}, cwd);
 	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: false }, cwd);
 
