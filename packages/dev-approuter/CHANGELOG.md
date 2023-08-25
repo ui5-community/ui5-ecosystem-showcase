@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.0...dev-approuter@0.1.1) (2023-08-25)
+
+
+### Bug Fixes
+
+* **dev-approuter:** add missing require('fs') ([#808](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/808)) ([0793907](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/07939070bb60f4acb81864b2fd59d2b730f19e7f))
+
+
+
+
+
 # 0.1.0 (2023-08-25)
 
 
