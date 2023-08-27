@@ -39,8 +39,8 @@ npm install ui5-tooling-modules --save-dev
 
 The following configuration options are relevant for the `task` and the `middleware`:
 
-- *verbose*: `boolean`  
-  Enables verbose logging (defaults to `false`)
+- *debug*: `boolean|string`  
+  Enables debug logging (defaults to `false`), by setting value to `"verbose"` the extension will log even more detailed
   &nbsp;
 
 - *skipCache*: `boolean` *experimental feature*
