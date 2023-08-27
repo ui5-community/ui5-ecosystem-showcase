@@ -187,8 +187,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				},
 			});
 		} catch (err) {
-			log.error(`Failed to parse "${parentDepPath}"! Ignoring resource...`);
-			config.debug && log.error(err);
+			config.debug && log.warn(`Failed to analyzed resource "${parentDepPath}"! Most likely an NPM package with reasion: ${err}${config.debug === "verbose" ? `\n${err.stack}` : ""}`);
 		}
 	}
 
