@@ -65,28 +65,43 @@ function createPreprocessor(config, logger) {
 	const configuration = createConfiguration(transpileTask?.configuration);
 
 	// create the Babel configuration using the ui5-tooling-tranpile-task util
-	const babelConfigCreated = createBabelConfig({ configuration, isMiddleware: false }).then((babelOptions) => {
-		// and inject the babel-plugin-istanbul into the configuration
-		// if not already configured in the plugins section
-		babelOptions.plugins = babelOptions.plugins || [];
-		if (
-			!babelOptions.plugins.find((plugin) => {
-				return plugin.file.request === "istanbul";
-			})
-		) {
-			const istanbulConfig = {
-				include: ["**/*"],
-				exclude: []
-			};
-			// apply the `instrumenterOptions` for istanbul from `coverageReporter` in the `karma.config`
-			const instrumenterOptionsIstanbul = config.coverageReporter?.instrumenterOptions?.istanbul;
-			if (typeof instrumenterOptionsIstanbul === "object") {
-				Object.assign(istanbulConfig, instrumenterOptionsIstanbul);
+	const babelConfigCreated = createBabelConfig({
+		configuration,
+		isMiddleware: false,
+		preprocess: function (babelOptions) {
+			// and inject the babel-plugin-istanbul into the configuration
+			// if not already configured in the plugins section
+			babelOptions.plugins = babelOptions.plugins || [];
+			if (
+				!babelOptions.plugins.find((plugin) => {
+					let pluginName;
+					if (typeof plugin === "string") {
+						// plugin defined as string only
+						pluginName = plugin;
+					} else if (Array.isArray(plugin)) {
+						// plugin defined with config
+						pluginName = plugin[0];
+					} else if (plugin.file) {
+						// plugin already processed by babel
+						pluginName = plugin.file.request;
+					}
+					return pluginName === "istanbul";
+				})
+			) {
+				// default include/exclude configuration for istanbul
+				const istanbulConfig = {
+					include: ["**/*"],
+					exclude: []
+				};
+				// apply the `instrumenterOptions` for istanbul from `coverageReporter` in the `karma.config`
+				const instrumenterOptionsIstanbul = config.coverageReporter?.instrumenterOptions?.istanbul;
+				if (typeof instrumenterOptionsIstanbul === "object") {
+					Object.assign(istanbulConfig, instrumenterOptionsIstanbul);
+				}
+				// add istanbul as first plugin into the plugins chain
+				babelOptions.plugins.unshift(["istanbul", istanbulConfig]);
 			}
-			// add istanbul as first plugin into the plugins chain
-			babelOptions.plugins.unshift(["istanbul", istanbulConfig]);
 		}
-		return babelOptions;
 	});
 
 	/**

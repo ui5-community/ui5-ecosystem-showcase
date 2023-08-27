@@ -5,7 +5,7 @@ module.exports = function (config) {
 		preprocessors: {
 			//"webapp/**/!(*.d.)ts": ["ui5-transpile"],
 			"webapp/{*.ts,!(test)/**/*.ts}": ["ui5-transpile"],
-			"webapp/**/*.js": ["coverage"],
+			"webapp/{*.js,!(test)/**/*.js}": ["coverage"],
 		},
 		coverageReporter: {
 			dir: "coverage",

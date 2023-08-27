@@ -87,28 +87,26 @@ test("inject configuration options", async (t) => {
 	let babelConfig = await t.context.util.createBabelConfig({ configuration }, cwd);
 	t.deepEqual(
 		babelConfig,
-		(
-			await t.context.util._helpers.loadBabelConfig(
-				{
-					plugins: [],
-					presets: [
-						[
-							"@babel/preset-env",
-							{
-								targets: {
-									browsers: "defaults"
-								}
+		await t.context.util._helpers.loadBabelConfigOptions(
+			{
+				plugins: [],
+				presets: [
+					[
+						"@babel/preset-env",
+						{
+							targets: {
+								browsers: "defaults"
 							}
-						],
-						"transform-ui5",
-						"@babel/preset-typescript"
+						}
 					],
-					sourceMaps: true
-				},
-				true,
-				cwd
-			)
-		).options
+					"transform-ui5",
+					"@babel/preset-typescript"
+				],
+				sourceMaps: true
+			},
+			true,
+			cwd
+		)
 	);
 
 	// typescript, custom transform-ui5 config
@@ -125,33 +123,31 @@ test("inject configuration options", async (t) => {
 	babelConfig = await t.context.util.createBabelConfig({ configuration }, cwd);
 	t.deepEqual(
 		babelConfig,
-		(
-			await t.context.util._helpers.loadBabelConfig(
-				{
-					plugins: [],
-					presets: [
-						[
-							"@babel/preset-env",
-							{
-								targets: {
-									browsers: "defaults"
-								}
+		await t.context.util._helpers.loadBabelConfigOptions(
+			{
+				plugins: [],
+				presets: [
+					[
+						"@babel/preset-env",
+						{
+							targets: {
+								browsers: "defaults"
 							}
-						],
-						[
-							"transform-ui5",
-							{
-								overridesToOverride: true
-							}
-						],
-						"@babel/preset-typescript"
+						}
 					],
-					sourceMaps: true
-				},
-				true,
-				cwd
-			)
-		).options
+					[
+						"transform-ui5",
+						{
+							overridesToOverride: true
+						}
+					],
+					"@babel/preset-typescript"
+				],
+				sourceMaps: true
+			},
+			true,
+			cwd
+		)
 	);
 
 	// typescript, custom typescript and transform-ui5 config
@@ -171,37 +167,35 @@ test("inject configuration options", async (t) => {
 	babelConfig = await t.context.util.createBabelConfig({ configuration }, cwd);
 	t.deepEqual(
 		babelConfig,
-		(
-			await t.context.util._helpers.loadBabelConfig(
-				{
-					plugins: [],
-					presets: [
-						[
-							"@babel/preset-env",
-							{
-								targets: {
-									browsers: "defaults"
-								}
+		await t.context.util._helpers.loadBabelConfigOptions(
+			{
+				plugins: [],
+				presets: [
+					[
+						"@babel/preset-env",
+						{
+							targets: {
+								browsers: "defaults"
 							}
-						],
-						[
-							"transform-ui5",
-							{
-								overridesToOverride: true
-							}
-						],
-						[
-							"@babel/preset-typescript",
-							{
-								optimizeConstEnums: true
-							}
-						]
+						}
 					],
-					sourceMaps: true
-				},
-				true,
-				cwd
-			)
-		).options
+					[
+						"transform-ui5",
+						{
+							overridesToOverride: true
+						}
+					],
+					[
+						"@babel/preset-typescript",
+						{
+							optimizeConstEnums: true
+						}
+					]
+				],
+				sourceMaps: true
+			},
+			true,
+			cwd
+		)
 	);
 });
