@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.1.0...ui5-tooling-transpile@3.2.0) (2023-08-27)
+
+
+### Features
+
+* **ui5-tooling-transpile:** resolve presets/plugins for babel config options ([#811](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/811)) ([cb17b23](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/cb17b234a8457a00b0d32e7adc366fc8b73c6ae3)), closes [#810](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/810)
+
+
+
+
+
 # [3.1.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.0.5...ui5-tooling-transpile@3.1.0) (2023-08-25)
 
 

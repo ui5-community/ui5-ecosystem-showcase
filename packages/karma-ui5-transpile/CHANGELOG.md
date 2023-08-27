@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/karma-ui5-transpile@3.1.4...karma-ui5-transpile@3.2.0) (2023-08-27)
+
+
+### Features
+
+* **ui5-tooling-transpile:** resolve presets/plugins for babel config options ([#811](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/811)) ([cb17b23](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/cb17b234a8457a00b0d32e7adc366fc8b73c6ae3)), closes [#810](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/810)
+
+
+
+
+
 ## [3.1.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/karma-ui5-transpile@3.1.3...karma-ui5-transpile@3.1.4) (2023-08-25)
 
 **Note:** Version bump only for package karma-ui5-transpile
