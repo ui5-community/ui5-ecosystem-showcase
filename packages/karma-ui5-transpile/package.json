@@ -33,6 +33,6 @@
   },
   "peerDependencies": {
     "karma": ">=6.4.1",
-    "ui5-tooling-transpile": ">=3.0.0"
+    "ui5-tooling-transpile": ">=3.2.0"
   }
 }
