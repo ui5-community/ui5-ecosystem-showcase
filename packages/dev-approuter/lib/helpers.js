@@ -97,11 +97,13 @@ const addDestination = (moduleId, port, mountPath) => {
  * @returns {Object} the configured route.
  */
 const configureCAPRoute = (moduleId, servicesPaths, route) => {
-	route.source = servicesPaths
-		.map((path) => {
-			return `${path}(.*)`;
-		})
-		.join("|");
+	if (!route.source) {
+		route.source = servicesPaths
+			.map((path) => {
+				return `${path}(.*)`;
+			})
+			.join("|");
+	}
 	route.destination = moduleId;
 	delete route.dependency;
 
