@@ -177,7 +177,7 @@ module.exports = async ({ log, resources, options, middlewareUtil }) => {
 	}
 
 	const getMimeInfo = (reqPath, headers) => {
-		const ctHeader = Object.keys(headers).find((header) => /content-type/i.test(header))
+		const ctHeader = Object.keys(headers).find((header) => /^content-type$/i.test(header))
 		if (ctHeader) {
 			const parsedCtHeader = ct.parse(headers[ctHeader])
 			const contentType = parsedCtHeader?.type || "application/octet-stream"
