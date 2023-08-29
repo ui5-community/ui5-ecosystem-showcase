@@ -134,7 +134,7 @@ Look at the following example `xs-dev.json` that defines different `authenticati
 }
 ```
 
-Behind the scenes, the `dev-approuter` will resolve these "dependency routes" by adding the `source`, `target`, and `destination` properties to them. Be aware that exactly these properties might get overwritten by the `dev-approuter` in case you use them together with `dependency`.
+Behind the scenes, the `dev-approuter` will resolve these "dependency routes" by adding the `source`, `target`, and `destination` properties to them. Be aware that exactly these properties get overwritten by the `dev-approuter` in case you use them together with `dependency`. The only exception are SAP CAP dependencies, for which only the `destination` property gets overwritten by the `dev-approuter`.
 
 ## Using the `dev-approuter` and SAP Application Router simultaneously
 

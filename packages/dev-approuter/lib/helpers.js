@@ -25,7 +25,8 @@ const parseConfig = () => {
 			if (config.dependencyRoutes[`${route.dependency}`]) {
 				throw new Error(`Duplicate dependency "${route.dependency}" found in file ${path.join(process.cwd(), configFile)}.`);
 			} else {
-				config.dependencyRoutes[`${route.dependency}`] = route;
+				config.dependencyRoutes[`${route.dependency}`] = {};
+				Object.assign(config.dependencyRoutes[`${route.dependency}`], route);
 			}
 		}
 	});
@@ -40,7 +41,8 @@ const parseConfig = () => {
 const applyDependencyConfig = (config) => {
 	config.routes?.forEach((route) => {
 		if (route.dependency) {
-			route = config.dependencyRoutes[route.dependency];
+			Object.assign(route, config.dependencyRoutes[route.dependency]);
+			delete route.dependency;
 		}
 	});
 	delete config.dependencyRoutes;
@@ -95,15 +97,13 @@ const addDestination = (moduleId, port, mountPath) => {
  * @returns {Object} the configured route.
  */
 const configureCAPRoute = (moduleId, servicesPaths, route) => {
-	if (!route) {
-		route = {};
-		route.authenticationType = "none";
+	if (!route.source) {
+		route.source = servicesPaths
+			.map((path) => {
+				return `${path}(.*)`;
+			})
+			.join("|");
 	}
-	route.source = servicesPaths
-		.map((path) => {
-			return `${path}(.*)`;
-		})
-		.join("|");
 	route.destination = moduleId;
 	delete route.dependency;
 
