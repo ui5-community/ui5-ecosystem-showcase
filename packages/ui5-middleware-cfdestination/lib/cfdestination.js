@@ -3,38 +3,12 @@ const path = require("path")
 
 const approuter = require("@sap/approuter")()
 
-const proxy = require("express-http-proxy")
+const { createProxyMiddleware, responseInterceptor } = require("http-proxy-middleware")
 const ct = require("content-type")
 const mime = require("mime-types")
 const portfinder = require("portfinder")
 const dotenv = require("dotenv")
 dotenv.config()
-
-/**
- * Determines the applications base path from the given resource collection.
- *
- * <b>ATTENTION: this is a hack to be compatible with UI5 tooling 2.x and 3.x</b>
- *
- * @param {module:@ui5/fs.AbstractReader} collection Reader or Collection to read resources of the root project and its dependencies
- * @returns {string} application base path
- */
-const determineAppBasePath = (collection) => {
-	let appBasePath
-	if (collection?._readers) {
-		for (const _reader of collection._readers) {
-			appBasePath = determineAppBasePath(_reader)
-			if (appBasePath) break
-		}
-	}
-	if (collection?._project?._type === "application") {
-		appBasePath = collection._project._modulePath // UI5 tooling 3.x
-	} else if (collection?._project?.type === "application") {
-		appBasePath = collection._project.path // UI5 tooling 2.x
-	} else if (typeof collection?._fsBasePath === "string") {
-		appBasePath = collection._fsBasePath
-	}
-	return appBasePath
-}
 
 /**
  * Returns the next free port coming from the basePort.
@@ -56,20 +30,13 @@ const nextFreePort = async (basePort) => {
  *
  * @param {object} parameters Parameters
  * @param {@ui5/logger/Logger} parameters.log Logger instance
- * @param {object} parameters.resources Resource collections
- * @param {module:@ui5/fs.AbstractReader} parameters.resources.all Reader or Collection to read resources of the
- *                                        root project and its dependencies
- * @param {module:@ui5/fs.AbstractReader} parameters.resources.rootProject Reader or Collection to read resources of
- *                                        the project the server is started in
- * @param {module:@ui5/fs.AbstractReader} parameters.resources.dependencies Reader or Collection to read resources of
- *                                        the projects dependencies
  * @param {object} parameters.options Options
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @param {object} parameters.middlewareUtil Specification version dependent interface to a
  *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
  * @returns {Function} Middleware function to use
  */
-module.exports = async ({ log, resources, options, middlewareUtil }) => {
+module.exports = async ({ log, options, middlewareUtil }) => {
 	// provide a set of default runtime options
 	const effectiveOptions = {
 		debug: false,
@@ -80,7 +47,6 @@ module.exports = async ({ log, resources, options, middlewareUtil }) => {
 		authenticationMethod: "none",
 		allowLocalDir: false,
 		subdomain: null,
-		limit: "10mb",
 		rewriteContent: true,
 		rewriteContentTypes: ["application/json", "application/atom+xml", "application/xml"]
 	}
@@ -89,13 +55,14 @@ module.exports = async ({ log, resources, options, middlewareUtil }) => {
 		Object.assign(effectiveOptions, options.configuration)
 	}
 
-	//request.debug = effectiveOptions.debug // pass debug flag on to underlying request lib
-	process.env.XS_APP_LOG_LEVEL = effectiveOptions.debug ? "DEBUG" : "ERROR"
+	// set the log level for the approuter
+	process.env.XS_APP_LOG_LEVEL = process.env.XS_APP_LOG_LEVEL || effectiveOptions.debug ? "DEBUG" : "ERROR"
+
 	// read in the cf config file (TODO: verify better possibility to retrieve the base path of the root project from tooling)
-	const fsBasePath = determineAppBasePath(resources?.rootProject)
+	const fsBasePath = middlewareUtil.getProject().getRootPath() || process.cwd()
 	const xsappPath = fsBasePath || process.cwd() // respect cwd of containing ui5 server
 	const _xsappJson = path.resolve(xsappPath, effectiveOptions.xsappJson)
-	const xsappConfig = JSON.parse(fs.readFileSync(_xsappJson, "utf-8"))
+	const xsappConfig = JSON.parse(fs.readFileSync(_xsappJson, "utf8"))
 
 	// the default auth mechanism is set to none but the user can pass an auth method using the options
 	xsappConfig.authenticationMethod = effectiveOptions.authenticationMethod
@@ -176,10 +143,9 @@ module.exports = async ({ log, resources, options, middlewareUtil }) => {
 		baseUri = `http://localhost:${freePort}`
 	}
 
-	const getMimeInfo = (reqPath, headers) => {
-		const ctHeader = Object.keys(headers).find((header) => /^content-type$/i.test(header))
-		if (ctHeader) {
-			const parsedCtHeader = ct.parse(headers[ctHeader])
+	const getMimeInfo = (reqPath, ctValue) => {
+		if (ctValue) {
+			const parsedCtHeader = ct.parse(ctValue)
 			const contentType = parsedCtHeader?.type || "application/octet-stream"
 			const charset = parsedCtHeader?.parameters?.charset || mime.charset(contentType)
 			return {
@@ -191,43 +157,46 @@ module.exports = async ({ log, resources, options, middlewareUtil }) => {
 		}
 	}
 
-	return proxy(baseUri, {
-		https: false,
-		limit: effectiveOptions.limit,
-		filter: (req /*, res*/) => {
+	const filter = (pathname /*, req */) => {
+		return routes.some((route) => route.re.test(pathname))
+	}
+
+	return createProxyMiddleware(filter, {
+		logLevel: effectiveOptions.debug ? "info" : "warn",
+		target: baseUri,
+		changeOrigin: true, // for vhosted sites
+		selfHandleResponse: true, // res.end() will be called internally by responseInterceptor()
+		ws: true, // enable websocket support
+		autoRewrite: true, // rewrites the location host/port on (301/302/307/308) redirects based on requested host/port
+		onProxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
+			// logging
+			effectiveOptions.debug &&
+				log.info(
+					`${req.method} ${req.path} -> ${proxyRes.req.protocol}//${proxyRes.req.host}${proxyRes.req.path} [${proxyRes.statusCode}]`
+				)
+
+			// determine and update content type (avoid no content type!)
 			const reqPath = middlewareUtil.getPathname(req)
-			return routes.some((route) => route.re.test(reqPath))
-		},
-		proxyReqOptDecorator: (proxyReqOpts /*, originalReq*/) => {
-			// remove the accept encoding header to get a plain response
-			const aeHeader = Object.keys(proxyReqOpts.headers).find((header) => /accept-encoding/i.test(header))
-			proxyReqOpts.headers[aeHeader] = ""
-			return proxyReqOpts
-		},
-		userResDecorator: (proxyRes, proxyResData, userReq /*, userRes*/) => {
-			const reqPath = middlewareUtil.getPathname(userReq)
-			let { contentType, charset } = getMimeInfo(reqPath, proxyRes.headers)
-			// sometimes the content type isn't defined, so we correct it
-			if (!proxyRes.headers["content-type"]) {
-				proxyRes.headers["content-type"] = contentType
-			}
+			let { contentType, charset } = getMimeInfo(reqPath, proxyRes.headers["content-type"])
+			res.setHeader("content-type", contentType + (charset ? `; charset=${charset}` : ""))
+
 			// only rewrite content when enabled and the content type is supported!
 			if (
 				effectiveOptions.rewriteContent &&
 				effectiveOptions.rewriteContentTypes.indexOf(contentType?.toLowerCase()) >= 0
 			) {
-				let data = proxyResData.toString(charset || "utf-8")
+				let data = responseBuffer.toString(charset || "utf8")
 				const route = routes.find((route) => route.re.test(reqPath))
-				const url = `${userReq.protocol}://${userReq.get("host")}/${route.path}`
+				const url = `${req.protocol}://${req.get("host")}/${route.path}`
 				data = data.replaceAll(route.url, url)
 				// in some cases, the odata servers respond http instead of https in the content
 				if (route.url?.startsWith("https://")) {
 					data = data.replaceAll(`http://${route.url.substr(8)}`, url)
 				}
-				return data
+				return new Buffer.from(data)
 			} else {
-				return proxyResData
+				return responseBuffer
 			}
-		}
+		})
 	})
 }

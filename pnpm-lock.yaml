@@ -139,9 +139,9 @@ importers:
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1
-      express-http-proxy:
-        specifier: ^1.6.3
-        version: 1.6.3
+      http-proxy-middleware:
+        specifier: ^2.0.6
+        version: 2.0.6
       mime-types:
         specifier: ^2.1.35
         version: 2.1.35
@@ -153,8 +153,8 @@ importers:
         specifier: ^3.4.0
         version: 3.4.0
       '@ui5/project':
-        specifier: ^3.5.0
-        version: 3.5.0
+        specifier: ^3.6.0
+        version: 3.6.0
       '@ui5/server':
         specifier: ^3.1.3
         version: 3.1.3
@@ -168,11 +168,8 @@ importers:
         specifier: ^7.0.0
         version: 7.0.0
       nock:
-        specifier: ^13.3.2
-        version: 13.3.2
-      prettier:
-        specifier: ^2.8.8
-        version: 2.8.8
+        specifier: ^13.3.3
+        version: 13.3.3
       replace-in-file:
         specifier: ^7.0.1
         version: 7.0.1
@@ -272,12 +269,43 @@ importers:
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1
-      express-http-proxy:
-        specifier: ^1.6.3
-        version: 1.6.3
+      http-proxy-agent:
+        specifier: ^7.0.0
+        version: 7.0.0
+      http-proxy-middleware:
+        specifier: ^2.0.6
+        version: 2.0.6
+      https-proxy-agent:
+        specifier: ^7.0.1
+        version: 7.0.1
       minimatch:
         specifier: ^7.4.6
         version: 7.4.6
+      proxy-from-env:
+        specifier: ^1.1.0
+        version: 1.1.0
+    devDependencies:
+      '@ui5/project':
+        specifier: ^3.6.0
+        version: 3.6.0
+      '@ui5/server':
+        specifier: ^3.1.3
+        version: 3.1.3
+      ava:
+        specifier: ^5.3.1
+        version: 5.3.1
+      get-port:
+        specifier: ^7.0.0
+        version: 7.0.0
+      nock:
+        specifier: ^13.3.3
+        version: 13.3.3
+      node-tcp-proxy:
+        specifier: ^0.0.28
+        version: 0.0.28
+      supertest:
+        specifier: ^6.3.3
+        version: 6.3.3
 
   packages/ui5-middleware-webjars:
     dependencies:
@@ -4561,6 +4589,12 @@ packages:
     resolution: {integrity: sha512-/K3ds8TRAfBvi5vfjuz8y6+GiAYBZ0x4tXv1Av6CWBWn0IlADc+ZX9pMq7oU0fNQPnBwIZl3rmeLp6SBApbxSQ==}
     dev: true
 
+  /@types/http-proxy@1.17.11:
+    resolution: {integrity: sha512-HC8G7c1WmaF2ekqpnFq626xd3Zz0uvaqFmBJNRZCGEZCXkvSdJoNFn/8Ygbd9fKNQj8UzLdCETaI0UWPAjK7IA==}
+    dependencies:
+      '@types/node': 20.4.10
+    dev: false
+
   /@types/inquirer@8.2.6:
     resolution: {integrity: sha512-3uT88kxg8lNzY8ay2ZjP44DKcRaTGztqeIvN2zHvhzIBH/uAPaL75aBtdNRKbA7xXoMbBt5kX0M00VKAnfOYlA==}
     dependencies:
@@ -5077,6 +5111,38 @@ packages:
       - bluebird
       - supports-color
 
+  /@ui5/project@3.6.0:
+    resolution: {integrity: sha512-5A2nxPeRVYP5j1j9fVbGY5gkkdyf7xdDz3X4PRrl482MIZl5/X5YvnKhxYHRfzkmbzWVVxl7aitOQQrOymaoJw==}
+    engines: {node: ^16.18.0 || >=18.12.0, npm: '>= 8'}
+    dependencies:
+      '@npmcli/config': 6.2.1
+      '@ui5/builder': 3.0.9
+      '@ui5/fs': 3.0.4
+      '@ui5/logger': 3.0.0
+      ajv: 6.12.6
+      ajv-errors: 1.0.1(ajv@6.12.6)
+      chalk: 5.3.0
+      escape-string-regexp: 5.0.0
+      globby: 13.2.2
+      graceful-fs: 4.2.11
+      js-yaml: 4.1.0
+      lockfile: 1.0.4
+      make-fetch-happen: 11.1.1
+      node-stream-zip: 1.15.0
+      pacote: 15.2.0
+      pretty-hrtime: 1.0.3
+      read-pkg: 8.0.0
+      read-pkg-up: 10.0.0
+      resolve: 1.22.4
+      rimraf: 5.0.1
+      semver: 7.5.4
+      xml2js: 0.6.2
+      yesno: 0.4.0
+    transitivePeerDependencies:
+      - bluebird
+      - supports-color
+    dev: true
+
   /@ui5/server@3.1.3:
     resolution: {integrity: sha512-LdGkdJqDBkIXBbg7LiTH9GYhU3hMNiAmm5j46+jxsGwSyi82IfZEQ3aTjh+Y3NyRrhPBmRMWlhAbztglbbvVKQ==}
     engines: {node: ^16.18.0 || >=18.12.0, npm: '>= 8'}
@@ -5576,7 +5642,6 @@ packages:
       debug: 4.3.4(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
-    dev: true
 
   /agentkeepalive@2.0.5:
     resolution: {integrity: sha512-dlXxjfkCrcEPmvJju6ypP6/eq1q0l+cu0u10IhKfiwMoy4yH73n0TQ2jMO2H39xbcC3Q4cWUFPkNk1b3GLEklg==}
@@ -8958,17 +9023,6 @@ packages:
   /exponential-backoff@3.1.1:
     resolution: {integrity: sha512-dX7e/LHVJ6W3DE1MHWi9S1EYzDESENfLrYohG2G++ovZrYOkm4Knwa0mc1cn84xJOR4KEU0WSchhLbd0UklbHw==}
 
-  /express-http-proxy@1.6.3:
-    resolution: {integrity: sha512-/l77JHcOUrDUX8V67E287VEUQT0lbm71gdGVoodnlWBziarYKgMcpqT7xvh/HM8Jv52phw8Bd8tY+a7QjOr7Yg==}
-    engines: {node: '>=6.0.0'}
-    dependencies:
-      debug: 3.2.7(supports-color@5.5.0)
-      es6-promise: 4.2.8
-      raw-body: 2.5.2
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
   /express-session@1.17.0:
     resolution: {integrity: sha512-t4oX2z7uoSqATbMfsxWMbNjAL0T5zpvcJCk3Z9wnPPN7ibddhnmDZXHfEcoBMG2ojKXZoCyPMc5FbtK+G7SoDg==}
     engines: {node: '>= 0.8.0'}
@@ -10331,7 +10385,24 @@ packages:
       debug: 4.3.4(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
-    dev: true
+
+  /http-proxy-middleware@2.0.6:
+    resolution: {integrity: sha512-ya/UeJ6HVBYxrgYotAZo1KvPWlgB48kUJLDePFeneHsVujFaW5WNj2NgWCAE//B1Dl02BIfYlpNgBy8Kf8Rjmw==}
+    engines: {node: '>=12.0.0'}
+    peerDependencies:
+      '@types/express': ^4.17.13
+    peerDependenciesMeta:
+      '@types/express':
+        optional: true
+    dependencies:
+      '@types/http-proxy': 1.17.11
+      http-proxy: 1.18.1
+      is-glob: 4.0.3
+      is-plain-obj: 3.0.0
+      micromatch: 4.0.5
+    transitivePeerDependencies:
+      - debug
+    dev: false
 
   /http-proxy@1.18.1:
     resolution: {integrity: sha512-7mz/721AbnJwIVbnaSv1Cz3Am0ZLT/UBwkC92VlxhXv/k/BBQfM2fXElQNC27BVGr0uwUpplYPQM9LnaBMR5NQ==}
@@ -10396,7 +10467,6 @@ packages:
       debug: 4.3.4(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
-    dev: true
 
   /human-signals@1.1.1:
     resolution: {integrity: sha512-SEQu7vl8KjNL2eoGBLF3+wAjpsNfA9XMlXAYj/3EdaNfAlxKthD1xjEQfGOUhllCGGJVNY34bRr6lPINhNjyZw==}
@@ -10884,6 +10954,11 @@ packages:
   /is-plain-obj@2.1.0:
     resolution: {integrity: sha512-YWnfyRwxL/+SsrWYfOpUtz5b3YD+nyfkHvjbcanzk8zgyO4ASD67uVMRt8k5bM4lLMDnXfriRhOpemw+NfT1eA==}
     engines: {node: '>=8'}
+
+  /is-plain-obj@3.0.0:
+    resolution: {integrity: sha512-gwsOE28k+23GP1B6vFl1oVh/WOzmawBrKwo5Ev6wMKzPkaXaCDIQKzLnvsA42DRlbVTWorkgTKIviAKCWkfUwA==}
+    engines: {node: '>=10'}
+    dev: false
 
   /is-plain-obj@4.1.0:
     resolution: {integrity: sha512-+Pgi+vMuUNkJyExiMBt5IlFoMyKnr5zhJ4Uspz58WOhBF5QoIZkFyNHIbBAtHwzVAgk5RtndVNsDRN61/mmDqg==}
@@ -11603,7 +11678,7 @@ packages:
       karma: '>= 4.3.0'
     dependencies:
       '@ui5/fs': 3.0.4
-      '@ui5/project': 3.5.0
+      '@ui5/project': 3.6.0
       '@ui5/server': 3.1.3
       express: 4.18.2
       http-proxy: 1.18.1
@@ -13185,8 +13260,8 @@ packages:
     engines: {node: '>=12.0.0'}
     dev: false
 
-  /nock@13.3.2:
-    resolution: {integrity: sha512-CwbljitiWJhF1gL83NbanhoKs1l23TDlRioNraPTZrzZIEooPemrHRj5m0FZCPkB1ecdYCSWWGcHysJgX/ngnQ==}
+  /nock@13.3.3:
+    resolution: {integrity: sha512-z+KUlILy9SK/RjpeXDiDUEAq4T94ADPHE3qaRkf66mpEhzc/ytOMm3Bwdrbq6k1tMWkbdujiKim3G2tfQARuJw==}
     engines: {node: '>= 10.13'}
     dependencies:
       debug: 4.3.4(supports-color@8.1.1)
@@ -13332,6 +13407,13 @@ packages:
   /node-stream-zip@1.15.0:
     resolution: {integrity: sha512-LN4fydt9TqhZhThkZIVQnF9cwjU3qmUH9h78Mx/K7d3VvfRqqwthLwJEUOEL0QPZ0XQmNN7be5Ggit5+4dq3Bw==}
     engines: {node: '>=0.12.0'}
+
+  /node-tcp-proxy@0.0.28:
+    resolution: {integrity: sha512-LfcN2CcUzJ5M7aG0kgD2Zueji5+anluVoRjXFDXJRzwFplao/xMmQ7iOKy5nWFutCQk30LTuShi1ULWTCl6MaQ==}
+    hasBin: true
+    dependencies:
+      commander: 2.20.3
+    dev: true
 
   /nodemon@2.0.22:
     resolution: {integrity: sha512-B8YqaKMmyuCO7BowF1Z1/mkPqLk6cs/l63Ojtd6otKjMx47Dq1utxfRxcavH1I7VSaL8n5BUaoutadnsX3AAVQ==}
@@ -16365,8 +16447,8 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /superagent@8.0.9:
-    resolution: {integrity: sha512-4C7Bh5pyHTvU33KpZgwrNKh/VQnvgtCSqPRfJAUdmrtSYePVzVg4E4OzsrbkhJj9O7SO6Bnv75K/F8XVZT8YHA==}
+  /superagent@8.1.2:
+    resolution: {integrity: sha512-6WTxW1EB6yCxV5VFOIPQruWGHqc3yI7hEmZK6h+pyk69Lk/Ut7rLUY6W/ONF2MjBuGjvmMiIpsrVJ2vjrHlslA==}
     engines: {node: '>=6.4.0 <13 || >=14'}
     dependencies:
       component-emitter: 1.3.0
@@ -16398,7 +16480,7 @@ packages:
     engines: {node: '>=6.4.0'}
     dependencies:
       methods: 1.1.2
-      superagent: 8.0.9
+      superagent: 8.1.2
     transitivePeerDependencies:
       - supports-color
     dev: true

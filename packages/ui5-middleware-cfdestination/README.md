@@ -2,7 +2,7 @@
 
 > :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
 
-Middleware for [ui5-server](https://github.com/SAP/ui5-server), making `destinations` configured in SAP CF available for local development.
+Middleware for [ui5-server](https://github.com/SAP/ui5-server), making `destinations` configured in SAP CF available for local development using the [`http-proxy-middleware`](https://www.npmjs.com/package/http-proxy-middleware).
 
 ## Prerequisites
 
@@ -58,9 +58,6 @@ the proxied url in the response body with the server url
 
 - `rewriteContentTypes`: `<Array of strings>`, default: `["application/json", "application/atom+xml", "application/xml"]`  
 defines the content types which are included for rewriting the content by enabling the `rewriteContent` option
-
-- `limit`: `<string>`, default: `10mb`  
-This sets the body size limit. If the body size is larger than the specified (or default) limit, a `413 Request Entity Too Large`  error will be returned. See [bytes.js](https://www.npmjs.com/package/bytes) for a list of supported formats
 
 ## Usage
 
