@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.0.1...ui5-middleware-cfdestination@3.0.2) (2023-08-29)
+
+
+### Bug Fixes
+
+* **ui5-middleware-cfdestination:** fixed mime info detection ([#815](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/815)) ([cca1106](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/cca110682f45e785734d824246f771e5ecb81a65)), closes [#797](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/797)
+
+
+
+
+
 ## [3.0.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.0.0...ui5-middleware-cfdestination@3.0.1) (2023-08-12)
 
 **Note:** Version bump only for package ui5-middleware-cfdestination
