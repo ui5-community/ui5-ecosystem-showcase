@@ -1,0 +1,19 @@
+[req]
+distinguished_name = ui5-ecosystem-showcase
+x509_extensions = v3_req
+prompt = no
+[ui5-ecosystem-showcase]
+C = DE
+ST = BW
+L = UHM
+O = UI5 Community
+OU = Ecosystem
+CN = www.localhost.com
+[v3_req]
+keyUsage = critical, digitalSignature, keyAgreement
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = www.localhost.com
+DNS.2 = localhost.com
+DNS.3 = localhost

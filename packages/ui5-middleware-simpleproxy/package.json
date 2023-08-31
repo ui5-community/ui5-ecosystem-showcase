@@ -10,11 +10,31 @@
     "directory": "packages/ui5-middleware-simpleproxy"
   },
   "scripts": {
+    "test": "ava",
     "lint": "eslint lib"
+  },
+  "ava": {
+    "files": [
+      "test/**/*"
+    ],
+    "verbose": true,
+    "timeout": "20s"
   },
   "dependencies": {
     "dotenv": "^16.3.1",
-    "express-http-proxy": "^1.6.3",
-    "minimatch": "^7.4.6"
+    "https-proxy-agent": "^7.0.1",
+    "http-proxy-agent": "^7.0.0",
+    "http-proxy-middleware": "^2.0.6",
+    "minimatch": "^7.4.6",
+    "proxy-from-env": "^1.1.0"
+  },
+  "devDependencies": {
+    "@ui5/project": "^3.6.0",
+    "@ui5/server": "^3.1.3",
+    "ava": "^5.3.1",
+    "get-port": "^7.0.0",
+    "node-tcp-proxy": "^0.0.28",
+    "nock": "^13.3.3",
+    "supertest": "^6.3.3"
   }
 }

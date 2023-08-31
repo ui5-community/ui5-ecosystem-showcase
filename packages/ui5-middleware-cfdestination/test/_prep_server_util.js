@@ -22,7 +22,7 @@ const replace = require("replace-in-file")
  * @param {string} config.tmpDir temporary directory all of the config files should be copied to
  * @returns {UI5ServerConfig} full path to the test fixtures of ui5.yaml, xsapp.json and defaultEnv.json (the latter is an empty object if not provided as an input parameter)
  */
-async function prepUi5ServerConfig({ ui5Yaml, appRouterPort, xsAppJson, defaultEnvJson, tmpDir }) {
+async function prepUI5ServerConfig({ ui5Yaml, appRouterPort, xsAppJson, defaultEnvJson, tmpDir }) {
 	// replace default port 1091 for app router w/ random port
 	await fs.copyFile(path.resolve(ui5Yaml), `${tmpDir}/ui5.yaml`) // copy orig ui5.yaml test fixture
 	const _ui5Yaml = await replace({ files: path.resolve(`${tmpDir}/ui5.yaml`), from: "1091", to: appRouterPort }) // replace port config in file
@@ -52,4 +52,4 @@ async function prepUi5ServerConfig({ ui5Yaml, appRouterPort, xsAppJson, defaultE
 	}
 }
 
-module.exports = prepUi5ServerConfig
+module.exports = prepUI5ServerConfig

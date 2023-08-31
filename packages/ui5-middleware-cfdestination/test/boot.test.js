@@ -8,7 +8,7 @@ const test = require("ava")
 const waitOn = require("wait-on")
 
 const copyUI5app = require("./_fs_app_util")
-const prepUi5ServerConfig = require("./_prep_server_util")
+const prepUI5ServerConfig = require("./_prep_server_util")
 
 test.beforeEach(async (t) => {
 	// copy ui5 app to a temp dir in test folder scope
@@ -18,7 +18,7 @@ test.beforeEach(async (t) => {
 	// dynamic port allocation for ui5 serve
 	const getPort = (await import("get-port")).default
 	t.context.port = {
-		ui5Sserver: await getPort(),
+		ui5Server: await getPort(),
 		appRouter: await getPort()
 	}
 })
@@ -29,7 +29,7 @@ test.afterEach.always(async (t) => {
 })
 
 test("no auth in yaml, no xsuaa auth in route -> route is unprotected", async (t) => {
-	const { ui5 } = await prepUi5ServerConfig({
+	const { ui5 } = await prepUI5ServerConfig({
 		ui5Yaml: "./test/no-auth/ui5.yaml",
 		appRouterPort: t.context.port.appRouter,
 		xsAppJson: "./test/no-auth/xs-app.json",
@@ -37,7 +37,7 @@ test("no auth in yaml, no xsuaa auth in route -> route is unprotected", async (t
 	})
 
 	// start ui5-app with modified route(s) and config
-	const child = spawn(`ui5 serve --port ${t.context.port.ui5Sserver} --config ${ui5.yaml}`, {
+	const child = spawn(`ui5 serve --port ${t.context.port.ui5Server} --config ${ui5.yaml}`, {
 		// stdio: "inherit", // > don't include stdout in test output,
 		shell: true,
 		cwd: t.context.tmpDir,
@@ -45,9 +45,9 @@ test("no auth in yaml, no xsuaa auth in route -> route is unprotected", async (t
 	})
 
 	// wait for ui5 server and app router to boot
-	await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:${t.context.port.appRouter}`] })
+	await waitOn({ resources: [`tcp:${t.context.port.ui5Server}`, `tcp:${t.context.port.appRouter}`] })
 
-	const app = request(`http://localhost:${t.context.port.ui5Sserver}`)
+	const app = request(`http://localhost:${t.context.port.ui5Server}`)
 	// test for the app being started correctly
 	const responseIndex = await app.get("/index.html")
 	t.is(responseIndex.status, 200, "http 200 on index")
@@ -65,7 +65,7 @@ test("no auth in yaml, no xsuaa auth in route -> route is unprotected", async (t
  * expected result: redirect to idp for route /backend
  */
 test("auth in yaml, xsuaa auth in route -> route is protected", async (t) => {
-	const { ui5 } = await prepUi5ServerConfig({
+	const { ui5 } = await prepUI5ServerConfig({
 		ui5Yaml: "./test/auth/ui5-auth-in-yaml.yaml",
 		appRouterPort: t.context.port.appRouter,
 		xsAppJson: "./test/auth/xs-app.json",
@@ -74,7 +74,7 @@ test("auth in yaml, xsuaa auth in route -> route is protected", async (t) => {
 	})
 
 	// start ui5-app with modified route(s) and config
-	const child = spawn(`ui5 serve --port ${t.context.port.ui5Sserver} --config ${ui5.yaml}`, {
+	const child = spawn(`ui5 serve --port ${t.context.port.ui5Server} --config ${ui5.yaml}`, {
 		// stdio: 'inherit', // > don't include stdout in test output
 		shell: true,
 		cwd: t.context.tmpDir,
@@ -82,9 +82,9 @@ test("auth in yaml, xsuaa auth in route -> route is protected", async (t) => {
 	})
 
 	// wait for ui5 server and app router to boot
-	await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:${t.context.port.appRouter}`] })
+	await waitOn({ resources: [`tcp:${t.context.port.ui5Server}`, `tcp:${t.context.port.appRouter}`] })
 
-	const app = request(`http://localhost:${t.context.port.ui5Sserver}`)
+	const app = request(`http://localhost:${t.context.port.ui5Server}`)
 	// test for the app being started correctly
 	const responseIndex = await app.get("/index.html")
 	t.is(responseIndex.status, 200, "http 200 on index")
@@ -108,7 +108,7 @@ test("auth in yaml, xsuaa auth in route -> route is protected", async (t) => {
  * and does not require any route protection on /backend
  */
 test("no auth in yaml, xsuaa auth in route -> route is unprotected", async (t) => {
-	const { ui5 } = await prepUi5ServerConfig({
+	const { ui5 } = await prepUI5ServerConfig({
 		ui5Yaml: "./test/no-auth/ui5-no-auth-in-yaml.yaml",
 		appRouterPort: t.context.port.appRouter,
 		xsAppJson: "./test/auth/xs-app.json",
@@ -117,7 +117,7 @@ test("no auth in yaml, xsuaa auth in route -> route is unprotected", async (t) =
 	})
 
 	// start ui5-app with modified route(s) and config
-	const child = spawn(`ui5 serve --port ${t.context.port.ui5Sserver} --config ${ui5.yaml}`, {
+	const child = spawn(`ui5 serve --port ${t.context.port.ui5Server} --config ${ui5.yaml}`, {
 		// stdio: 'inherit', // > don't include stdout in test output
 		shell: true,
 		cwd: t.context.tmpDir,
@@ -125,9 +125,9 @@ test("no auth in yaml, xsuaa auth in route -> route is unprotected", async (t) =
 	})
 
 	// wait for ui5 server and app router to boot
-	await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:${t.context.port.appRouter}`] })
+	await waitOn({ resources: [`tcp:${t.context.port.ui5Server}`, `tcp:${t.context.port.appRouter}`] })
 
-	const app = request(`http://localhost:${t.context.port.ui5Sserver}`)
+	const app = request(`http://localhost:${t.context.port.ui5Server}`)
 	// test for the app being started correctly
 	const responseIndex = await app.get("/index.html")
 	t.is(responseIndex.status, 200, "http 200 on index")
@@ -146,7 +146,7 @@ test("no auth in yaml, xsuaa auth in route -> route is unprotected", async (t) =
  * ui5 serve results in a redirect to the idp
  */
 test("allow localDir usage in app router for auth-protected static files", async (t) => {
-	const { ui5 } = await prepUi5ServerConfig({
+	const { ui5 } = await prepUI5ServerConfig({
 		ui5Yaml: "./test/auth/ui5-with-localDir.yaml",
 		appRouterPort: t.context.port.appRouter,
 		xsAppJson: "./test/auth/xs-app-with-localDir.json",
@@ -158,7 +158,7 @@ test("allow localDir usage in app router for auth-protected static files", async
 	await fs.copy(path.resolve("./test/auth/index1.html"), `${t.context.tmpDir}/webapp/index1.html`)
 
 	// start ui5-app with modified route(s) and config
-	const child = spawn(`ui5 serve --port ${t.context.port.ui5Sserver} --config ${ui5.yaml}`, {
+	const child = spawn(`ui5 serve --port ${t.context.port.ui5Server} --config ${ui5.yaml}`, {
 		// stdio: 'inherit', // > don't include stdout in test output
 		shell: true,
 		cwd: t.context.tmpDir,
@@ -166,9 +166,9 @@ test("allow localDir usage in app router for auth-protected static files", async
 	})
 
 	// wait for ui5 server and app router to boot
-	await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:${t.context.port.appRouter}`] })
+	await waitOn({ resources: [`tcp:${t.context.port.ui5Server}`, `tcp:${t.context.port.appRouter}`] })
 
-	const app = request(`http://localhost:${t.context.port.ui5Sserver}`)
+	const app = request(`http://localhost:${t.context.port.ui5Server}`)
 	// test for the app being started correctly
 	const responseIndex = await app.get("/index.html")
 	t.is(responseIndex.status, 200, "http 200 on index")
@@ -196,7 +196,7 @@ test("allow localDir usage in app router for auth-protected static files", async
  * expected result: redirect to subscribed subaccount idp for route /backend
  */
 test("(multitenant) auth in yaml, xsuaa auth in route -> route is protected", async (t) => {
-	await prepUi5ServerConfig({
+	await prepUI5ServerConfig({
 		ui5Yaml: "./test/multitenant/ui5-auth-multitenant.yaml",
 		appRouterPort: t.context.port.appRouter,
 		xsAppJson: "./test/multitenant/xs-app.json",
@@ -218,13 +218,13 @@ test("(multitenant) auth in yaml, xsuaa auth in route -> route is protected", as
 	const graph = await graphFromPackageDependencies({ cwd: t.context.tmpDir })
 
 	const server = await import("@ui5/server")
-	let serve = await server.serve(graph, { port: t.context.port.ui5Sserver })
+	let serve = await server.serve(graph, { port: t.context.port.ui5Server })
 
 	// wait for ui5 server and app router to boot
 	// -- probably don't need this as we're `await`ing server.serve() above?
-	// await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:${t.context.port.appRouter}`] })
+	// await waitOn({ resources: [`tcp:${t.context.port.ui5Server}`, `tcp:${t.context.port.appRouter}`] })
 
-	const app = request(`http://localhost:${t.context.port.ui5Sserver}`)
+	const app = request(`http://localhost:${t.context.port.ui5Server}`)
 	// test for the app being started correctly
 	const responseIndex = await app.get("/index.html")
 	t.is(responseIndex.status, 200, "http 200 on index")

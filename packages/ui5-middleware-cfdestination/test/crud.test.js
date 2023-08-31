@@ -9,7 +9,7 @@ const test = require("ava")
 const waitOn = require("wait-on")
 
 const copyUI5app = require("./_fs_app_util")
-const prepUi5ServerConfig = require("./_prep_server_util")
+const prepUI5ServerConfig = require("./_prep_server_util")
 
 test.beforeEach(async (t) => {
 	// copy ui5 app to a temp dir in test folder scope
@@ -19,7 +19,7 @@ test.beforeEach(async (t) => {
 	// dynamic port allocation for ui5 serve
 	const getPort = (await import("get-port")).default
 	t.context.port = {
-		ui5Sserver: await getPort(),
+		ui5Server: await getPort(),
 		appRouter: await getPort()
 	}
 })
@@ -32,7 +32,7 @@ test.afterEach.always(async (t) => {
 // https://github.com/avajs/ava/blob/main/docs/03-assertions.md
 
 test("crud commands (GET, POST, PUT, DELETE)", async (t) => {
-	const { ui5 } = await prepUi5ServerConfig({
+	const { ui5 } = await prepUI5ServerConfig({
 		ui5Yaml: "./test/crud/ui5.yaml",
 		appRouterPort: t.context.port.appRouter,
 		xsAppJson: "./test/crud/xs-app.json",
@@ -40,7 +40,7 @@ test("crud commands (GET, POST, PUT, DELETE)", async (t) => {
 	})
 
 	// start ui5-app with modified route(s) and config
-	const child = spawn(`ui5 serve --port ${t.context.port.ui5Sserver} --config ${ui5.yaml}`, {
+	const child = spawn(`ui5 serve --port ${t.context.port.ui5Server} --config ${ui5.yaml}`, {
 		// stdio: "inherit", // > don't include stdout in test output,
 		shell: true,
 		cwd: t.context.tmpDir,
@@ -48,9 +48,9 @@ test("crud commands (GET, POST, PUT, DELETE)", async (t) => {
 	})
 
 	// wait for ui5 server and app router to boot
-	await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:${t.context.port.appRouter}`] })
+	await waitOn({ resources: [`tcp:${t.context.port.ui5Server}`, `tcp:${t.context.port.appRouter}`] })
 
-	const baseUri = `http://localhost:${t.context.port.ui5Sserver}`
+	const baseUri = `http://localhost:${t.context.port.ui5Server}`
 	const app = request(baseUri)
 	// test for the app being started correctly
 	const responseIndex = await app.get("/index.html")

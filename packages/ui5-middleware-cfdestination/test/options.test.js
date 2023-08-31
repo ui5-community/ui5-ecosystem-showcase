@@ -7,7 +7,7 @@ const test = require("ava")
 const waitOn = require("wait-on")
 
 const copyUI5app = require("./_fs_app_util")
-const prepUi5ServerConfig = require("./_prep_server_util")
+const prepUI5ServerConfig = require("./_prep_server_util")
 
 test.beforeEach(async (t) => {
 	// copy ui5 app to a temp dir in test folder scope
@@ -17,7 +17,7 @@ test.beforeEach(async (t) => {
 	// dynamic port allocation for ui5 serve
 	const getPort = (await import("get-port")).default
 	t.context.port = {
-		ui5Sserver: await getPort(),
+		ui5Server: await getPort(),
 		appRouter: await getPort()
 	}
 })
@@ -28,7 +28,7 @@ test.afterEach.always(async (t) => {
 })
 
 test("ui5.yaml: no config -> default options apply", async (t) => {
-	const { ui5 } = await prepUi5ServerConfig({
+	const { ui5 } = await prepUI5ServerConfig({
 		ui5Yaml: "./test/options/ui5-no-config.yaml",
 		appRouterPort: 5000,
 		xsAppJson: "./test/options/xs-app-minimal.json",
@@ -36,7 +36,7 @@ test("ui5.yaml: no config -> default options apply", async (t) => {
 	})
 
 	// start ui5-app with modified route(s) and config
-	const child = spawn(`ui5 serve --port ${t.context.port.ui5Sserver} --config ${ui5.yaml}`, {
+	const child = spawn(`ui5 serve --port ${t.context.port.ui5Server} --config ${ui5.yaml}`, {
 		// stdio: "inherit", // > don't include stdout in test output
 		shell: true,
 		cwd: t.context.tmpDir,
@@ -44,9 +44,9 @@ test("ui5.yaml: no config -> default options apply", async (t) => {
 	})
 
 	// wait for ui5 server and app router to boot
-	await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:5000`] })
+	await waitOn({ resources: [`tcp:${t.context.port.ui5Server}`, `tcp:5000`] })
 
-	const app = request(`http://localhost:${t.context.port.ui5Sserver}`)
+	const app = request(`http://localhost:${t.context.port.ui5Server}`)
 	// test for the app being started correctly
 	const responseIndex = await app.get("/index.html")
 	t.is(responseIndex.status, 200, "http 200 on index")
@@ -60,7 +60,7 @@ test("ui5.yaml: no config -> default options apply", async (t) => {
  * -> respective default options (port 5000, 0 destinations) should be overriden
  */
 test("ui5.yaml: some config -> default options are overwritten", async (t) => {
-	const { ui5 } = await prepUi5ServerConfig({
+	const { ui5 } = await prepUI5ServerConfig({
 		ui5Yaml: "./test/options/ui5-some-config.yaml",
 		appRouterPort: t.context.port.appRouter,
 		xsAppJson: "./test/options/xs-app-with-routes.json",
@@ -68,7 +68,7 @@ test("ui5.yaml: some config -> default options are overwritten", async (t) => {
 	})
 
 	// start ui5-app with modified route(s) and config
-	const child = spawn(`ui5 serve --port ${t.context.port.ui5Sserver} --config ${ui5.yaml}`, {
+	const child = spawn(`ui5 serve --port ${t.context.port.ui5Server} --config ${ui5.yaml}`, {
 		// stdio: 'inherit', // > don't include stdout in test output
 		shell: true,
 		cwd: t.context.tmpDir,
@@ -76,9 +76,9 @@ test("ui5.yaml: some config -> default options are overwritten", async (t) => {
 	})
 
 	// wait for ui5 server and app router to boot
-	await waitOn({ resources: [`tcp:${t.context.port.ui5Sserver}`, `tcp:${t.context.port.appRouter}`] })
+	await waitOn({ resources: [`tcp:${t.context.port.ui5Server}`, `tcp:${t.context.port.appRouter}`] })
 
-	const app = request(`http://localhost:${t.context.port.ui5Sserver}`)
+	const app = request(`http://localhost:${t.context.port.ui5Server}`)
 	// test for the app being started correctly
 	const responseIndex = await app.get("/index.html")
 	t.is(responseIndex.status, 200, "http 200 on index")
