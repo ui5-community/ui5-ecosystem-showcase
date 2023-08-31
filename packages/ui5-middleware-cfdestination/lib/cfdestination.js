@@ -64,6 +64,9 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	const _xsappJson = path.resolve(xsappPath, effectiveOptions.xsappJson)
 	const xsappConfig = JSON.parse(fs.readFileSync(_xsappJson, "utf8"))
 
+	// when running ui5 serve, we do not want to redirect /
+	delete xsappConfig.welcomeFile
+
 	// the default auth mechanism is set to none but the user can pass an auth method using the options
 	xsappConfig.authenticationMethod = effectiveOptions.authenticationMethod
 
