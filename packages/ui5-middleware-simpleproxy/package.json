@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-simpleproxy",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "UI5 simple proxy middleware",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
@@ -22,9 +22,9 @@
   },
   "dependencies": {
     "dotenv": "^16.3.1",
-    "https-proxy-agent": "^7.0.1",
     "http-proxy-agent": "^7.0.0",
     "http-proxy-middleware": "^2.0.6",
+    "https-proxy-agent": "^7.0.1",
     "minimatch": "^7.4.6",
     "proxy-from-env": "^1.1.0"
   },
@@ -33,8 +33,8 @@
     "@ui5/server": "^3.1.3",
     "ava": "^5.3.1",
     "get-port": "^7.0.0",
-    "node-tcp-proxy": "^0.0.28",
     "nock": "^13.3.3",
+    "node-tcp-proxy": "^0.0.28",
     "supertest": "^6.3.3"
   }
 }

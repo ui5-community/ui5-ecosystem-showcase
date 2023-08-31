@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.0.2...ui5-middleware-cfdestination@3.1.0) (2023-08-31)
+
+
+### Features
+
+* usage of http-proxy-middleware for proxies ([#818](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/818)) ([3d6d844](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3d6d844ba5894b4b0aa4c22a9e876039f1ddd72a)), closes [#557](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/557) [#748](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/748) [#817](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/817) [#816](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/816)
+
+
+
+
+
 ## [3.0.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.0.1...ui5-middleware-cfdestination@3.0.2) (2023-08-29)
 
 
