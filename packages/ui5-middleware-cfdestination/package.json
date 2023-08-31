@@ -27,7 +27,8 @@
     "dotenv": "^16.3.1",
     "http-proxy-middleware": "^2.0.6",
     "mime-types": "^2.1.35",
-    "portfinder": "^1.0.32"
+    "portfinder": "^1.0.32",
+    "ui5-middleware-websocket": "workspace:^"
   },
   "devDependencies": {
     "@ui5/cli": "^3.4.0",

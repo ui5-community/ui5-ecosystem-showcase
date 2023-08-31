@@ -13,6 +13,7 @@
  * @property {boolean|yo<confirm>} [debug] see output
  */
 
+const hook = require("ui5-middleware-websocket/lib/hook");
 const { createProxyMiddleware, responseInterceptor } = require("http-proxy-middleware");
 
 const minimatch = require("minimatch");
@@ -86,6 +87,7 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 		query: null,
 		excludePatterns: [],
 		skipCache: false,
+		enableWebSocket: false,
 	};
 
 	// config-time options from ui5.yaml for cfdestination take precedence
@@ -99,14 +101,13 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 
 	// validate baseUri and determine the protocol
 	const baseURL = new URL(baseUri);
-	const protocol = baseURL.protocol.slice(0, -1);
-	const https = protocol === "https";
+	const ssl = /^(https|wss)/i.test(baseURL.protocol);
 
 	// support for coporate proxies (for HTTPS or HTTP)
 	const { getProxyForUrl } = await import("proxy-from-env");
 	const proxyUrl = getProxyForUrl(baseURL);
 	let agent;
-	if (https) {
+	if (ssl) {
 		const { HttpsProxyAgent } = await import("https-proxy-agent");
 		agent = proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined;
 	} else {
@@ -138,12 +139,11 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 
 	// run the proxy middleware based on the host configuration
 	const target = /^(.*)\/$/.exec(baseURL.toString())?.[1] || baseURL.toString(); // remove trailing slash!
-	return createProxyMiddleware(filter, {
+	const proxyMiddleware = createProxyMiddleware(filter, {
 		logLevel: effectiveOptions.debug ? "info" : "warn",
 		target,
 		agent,
 		secure: strictSSL,
-		ws: true, // enable websocket support
 		changeOrigin: true, // for vhosted sites
 		autoRewrite: true, // rewrites the location host/port on (301/302/307/308) redirects based on requested host/port
 		xfwd: true, // adds x-forward headers
@@ -170,7 +170,7 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 			const url = req.url;
 			effectiveOptions.debug && log.info(`[${baseUri}] ${req.method} ${url} -> ${target}${url} [${proxyRes.statusCode}]`);
 			// remove the secure flag of the cookies
-			if (protocol === "https") {
+			if (ssl) {
 				const setCookie = res.getHeader("set-cookie");
 				if (Array.isArray(setCookie)) {
 					res.setHeader(
@@ -203,4 +203,25 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 			return responseBuffer;
 		}),
 	});
+
+	// manually install the upgrade function for the websocket
+	return effectiveOptions.enableWebSocket
+		? hook(
+				"ui5-middleware-simpleproxy",
+				({ on, options }) => {
+					const { mountpath } = options;
+					on("upgrade", (req, socket, head) => {
+						// only handle requests in the mountpath
+						if (mountpath === req.url) {
+							req.baseUrl = req.url;
+							req.url += "/";
+							// call the upgrade function of the proxy middleware to
+							// initialize the websocket and establish the connection
+							proxyMiddleware.upgrade.call(this, req, socket, head);
+						}
+					});
+				},
+				proxyMiddleware
+		  )
+		: proxyMiddleware;
 };

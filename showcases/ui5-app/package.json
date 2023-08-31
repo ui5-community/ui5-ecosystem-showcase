@@ -82,6 +82,7 @@
     "ui5-middleware-servestatic": "workspace:^",
     "ui5-middleware-simpleproxy": "workspace:^",
     "ui5-middleware-webjars": "workspace:^",
+    "ui5-middleware-websocket": "workspace:^",
     "ui5-task-cachebuster": "workspace:^",
     "ui5-task-compileless": "workspace:^",
     "ui5-task-i18ncheck": "workspace:^",

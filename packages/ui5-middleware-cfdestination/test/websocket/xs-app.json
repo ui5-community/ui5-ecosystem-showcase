@@ -1,0 +1,18 @@
+{
+  "authenticationMethod": "none",
+  "routes": [
+    {
+      "source": "^/express(.*)$",
+      "destination": "express",
+      "target": "$1"
+    },
+    {
+      "source": "^/ui5(.*)$",
+      "destination": "ui5",
+      "target": "$1"
+    }
+  ],
+  "websockets": {
+    "enabled": true
+  }
+}

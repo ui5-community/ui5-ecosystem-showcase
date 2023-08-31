@@ -74,6 +74,8 @@ server:
             url: "https://services.odata.org/V2/Northwind/Northwind.svc/"
           - name: "todos"
             url: "https://jsonplaceholder.typicode.com/todos/"
+          - name: "cfwsecho"
+            url: "ws://localhost:1081/wsecho/"
     - name: ui5-middleware-index
       afterMiddleware: compression
       configuration:

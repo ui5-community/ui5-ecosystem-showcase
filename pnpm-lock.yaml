@@ -145,6 +145,9 @@ importers:
       portfinder:
         specifier: ^1.0.32
         version: 1.0.32
+      ui5-middleware-websocket:
+        specifier: workspace:^
+        version: link:../ui5-middleware-websocket
     devDependencies:
       '@ui5/cli':
         specifier: ^3.4.0
@@ -281,6 +284,9 @@ importers:
       proxy-from-env:
         specifier: ^1.1.0
         version: 1.1.0
+      ui5-middleware-websocket:
+        specifier: workspace:^
+        version: link:../ui5-middleware-websocket
     devDependencies:
       '@ui5/project':
         specifier: ^3.6.0
@@ -303,12 +309,24 @@ importers:
       supertest:
         specifier: ^6.3.3
         version: 6.3.3
+      superwstest:
+        specifier: ^2.0.3
+        version: 2.0.3(supertest@6.3.3)
+      ws:
+        specifier: ^8.13.0
+        version: 8.13.0
 
   packages/ui5-middleware-webjars:
     dependencies:
       jszip:
         specifier: ^3.10.1
         version: 3.10.1
+
+  packages/ui5-middleware-websocket:
+    dependencies:
+      ws:
+        specifier: ^8.13.0
+        version: 8.13.0
 
   packages/ui5-task-cachebuster:
     devDependencies:
@@ -674,6 +692,9 @@ importers:
       ui5-middleware-webjars:
         specifier: workspace:^
         version: link:../../packages/ui5-middleware-webjars
+      ui5-middleware-websocket:
+        specifier: workspace:^
+        version: link:../../packages/ui5-middleware-websocket
       ui5-task-cachebuster:
         specifier: workspace:^
         version: link:../../packages/ui5-task-cachebuster
@@ -4668,6 +4689,10 @@ packages:
     resolution: {integrity: sha512-COUnqfB2+ckwXXSFInsFdOAWQzCCx+a5hq2ruyj+Vjund94RJQd4LG2u9hnvJrTgunKAaax7ancBYlDrNYxA0g==}
     dev: true
 
+  /@types/cookiejar@2.1.2:
+    resolution: {integrity: sha512-t73xJJrvdTjXrn4jLS9VSGRbz0nUY3cl2DMGDU48lKl+HR9dbbjW2A9r3g40VA++mQpy6uuHg33gy7du2BKpog==}
+    dev: true
+
   /@types/cors@2.8.13:
     resolution: {integrity: sha512-RG8AStHlUiV5ysZQKq97copd2UmVYw3/pRMLefISZ3S1hK104Cwm7iLQ3fTKx+lsUH2CE8FlLaYeEA2LSeqYUA==}
     dependencies:
@@ -4960,6 +4985,19 @@ packages:
     resolution: {integrity: sha512-qU/K1tb2yUdhXkLIATzsIPwbtX6BpZk0l3dPW6xqWyhfzzM1ECaQ/8faEnu3CNraLiQ9LHyQQPBGp7N9Fbs25w==}
     dependencies:
       '@types/node': 20.4.10
+    dev: true
+
+  /@types/superagent@4.1.18:
+    resolution: {integrity: sha512-LOWgpacIV8GHhrsQU+QMZuomfqXiqzz3ILLkCtKx3Us6AmomFViuzKT9D693QTKgyut2oCytMG8/efOop+DB+w==}
+    dependencies:
+      '@types/cookiejar': 2.1.2
+      '@types/node': 20.4.10
+    dev: true
+
+  /@types/supertest@2.0.12:
+    resolution: {integrity: sha512-X3HPWTwXRerBZS7Mo1k6vMVR1Z6zmJcDVn5O/31whe0tnjE4te6ZJSJGq1RiqHPjzPdMTfjCFogDJmwng9xHaQ==}
+    dependencies:
+      '@types/superagent': 4.1.18
     dev: true
 
   /@types/supports-color@8.1.1:
@@ -16753,6 +16791,23 @@ packages:
       - supports-color
     dev: true
 
+  /superwstest@2.0.3(supertest@6.3.3):
+    resolution: {integrity: sha512-NRZMg+1UU1KNWzkE/QBqBDuTKPG2vFBLvG4xahcPqzZynVnbs3idllwgUL7zglPXymPP1g04+3NDGhbt6NCa5A==}
+    peerDependencies:
+      supertest: '*'
+    peerDependenciesMeta:
+      supertest:
+        optional: true
+    dependencies:
+      '@types/supertest': 2.0.12
+      '@types/ws': 8.5.5
+      supertest: 6.3.3
+      ws: 8.13.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: true
+
   /supports-color@2.0.0:
     resolution: {integrity: sha512-KKNVtd6pCYgPIKU4cp2733HWYCpplQhddZLBUryaAHou723x+FRzQ5Df824Fj+IyyuiQTRoub4SnIFfIcrp70g==}
     engines: {node: '>=0.8.0'}
@@ -18183,7 +18238,6 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
-    dev: true
 
   /ws@8.2.3:
     resolution: {integrity: sha512-wBuoj1BDpC6ZQ1B7DWQBYVLphPWkm8i9Y0/3YdHjHKHiohOJ1ws+3OccDWtH+PoC9DZD5WOTrJvNbWvjS6JWaA==}

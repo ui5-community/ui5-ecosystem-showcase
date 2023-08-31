@@ -7,9 +7,11 @@
     <content>
       <VBox alignItems="Center" justifyContent="Center" height="100%">
         <Title level="H1" titleStyle="H1" text="{i18n>startPage.title.text}" width="100%" textAlign="Center" />
-        <Button id="NavButton" icon="sap-icon://forward" text="{i18n>startPage.navButton.text}" press="navFwd" />
-        <Button icon="sap-icon://forward" text="{i18n>startPage.odatav4Button.text}" press="navFwdODataV4" />
-        <Button icon="sap-icon://forward" text="{i18n>startPage.odatav2Button.text}" press="navFwdODataV2" />
+        <HBox>
+          <Button id="NavButton" icon="sap-icon://forward" text="{i18n>startPage.navButton.text}" press="navTo('RouteOther')" />
+          <Button icon="sap-icon://forward" text="{i18n>startPage.odatav4Button.text}" press="navTo('RouteODataV4')" />
+          <Button icon="sap-icon://forward" text="{i18n>startPage.odatav2Button.text}" press="navTo('RouteODataV2')" />
+        </HBox>
         <Button text="IA Sync" press="onPress" />
         <Panel expandable="true">
           <headerToolbar>
@@ -33,7 +35,12 @@
         </Panel>
         <DateTimePicker id="DateTimePicker" placeholder="Enter Date ..." />
         <Button text="Don't press me!" press="onBoo" />
-        <Button text="Test 3rd party!" press="navTest3rd" />
+        <Button text="Test 3rd party!" press="navTo('RouteThirdparty')" />
+        <HBox>
+          <Button text="Test WebSocket!" press="testWebSocket" />
+          <Button text="Test WebSocket SimpleProxy!" press="testWebSocketSP" />
+          <Button text="Test WebSocket CF!" press="testWebSocketCF" />
+        </HBox>
         <lib:Example text="Hello World" />
       </VBox>
     </content>

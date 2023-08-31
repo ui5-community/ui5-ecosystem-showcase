@@ -17,24 +17,26 @@ npm install ui5-middleware-simpleproxy --save-dev
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
-- baseUri: `string`
-  The baseUri to proxy. Can also be set using the `UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI` environment variable.
-- strictSSL: `boolean`
+- `baseUri`: `string`
+  The baseUri to proxy. Can also be set using the `UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI` environment variable. To proxy WebSockets just use a WebSocket URL, e.g. `ws://echo.websocket.org`
+- `strictSSL`: `boolean`
   Ignore strict SSL checks. Default value `true`. Can also be set using the `UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL` environment variable.
-- removeETag:  `boolean`
+- `removeETag`:  `boolean`
   Removes the ETag header from the response to avoid conditional requests.
-- username:  `string`
+- `username`:  `string`
   Username used for Basic Authentication.
-- password:  `string`
+- `password`:  `string`
   Password used for Basic Authentication.
-- httpHeaders: `map`
+- `httpHeaders`: `map`
   Http headers set for the proxied request. Will overwrite the http headers from the request. 
-- query: `map`
+- `query`: `map`
   Query parameters set for the proxied request. Will overwrite the parameters from the request. 
-- excludePatterns: `string[]`
+- `excludePatterns`: `string[]`
   Array of exclude patterns using glob syntax
-- skipCache: `boolean`
+- `skipCache`: `boolean`
   Remove the cache guid when serving from the FLP launchpad if it matches an excludePattern
+- `enableWebSocket`: `<boolean>`, default: `false` *experimental*
+enables support for proxying web sockets
 
 In general, use of environment variables or values set in a `.env` file will override configuration values in the `ui5.yaml`.
 

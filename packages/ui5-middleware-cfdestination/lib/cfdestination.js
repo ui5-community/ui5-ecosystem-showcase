@@ -3,6 +3,7 @@ const path = require("path")
 
 const approuter = require("@sap/approuter")()
 
+const hook = require("ui5-middleware-websocket/lib/hook")
 const { createProxyMiddleware, responseInterceptor } = require("http-proxy-middleware")
 const ct = require("content-type")
 const mime = require("mime-types")
@@ -57,6 +58,9 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	if (options.configuration) {
 		Object.assign(effectiveOptions, options.configuration)
 	}
+
+	// whitelist all localhost requests
+	process.env.WS_ALLOWED_ORIGINS = process.env.WS_ALLOWED_ORIGINS || JSON.stringify([{ host: "localhost" }])
 
 	// set the log level for the approuter
 	process.env.XS_APP_LOG_LEVEL = process.env.XS_APP_LOG_LEVEL || effectiveOptions.debug ? "DEBUG" : "ERROR"
@@ -234,14 +238,13 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	})
 
 	// the proxy middleware (based on https://www.npmjs.com/package/http-proxy-middleware)
-	return createProxyMiddleware(filter, {
+	const proxyMiddleware = createProxyMiddleware(filter, {
 		logLevel: effectiveOptions.debug ? "info" : "warn",
 		target: baseUri,
 		changeOrigin: true, // for vhosted sites
 		selfHandleResponse: true, // res.end() will be called internally by responseInterceptor()
 		autoRewrite: true, // rewrites the location host/port on (301/302/307/308) redirects based on requested host/port
 		xfwd: true, // adds x-forward headers
-		ws: effectiveOptions.enableWebSocket, // enable websocket support
 		onProxyReq: (proxyReq, req, res) => {
 			// if the ui5-middleware-index is used and redirects the welcome file
 			// we need to send a redirect to trigger the auth-flow of the approuter
@@ -257,6 +260,11 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 				proxyReq.setHeader("x-forwarded-path", req["cds-plugin-ui5"].originalUrl)
 			}
 		},
+		/*
+		onProxyReqWs: (proxyReq, req, socket, options, head) => {
+			console.log(`${req.url}`);
+		},
+		*/
 		onProxyRes: async (proxyRes, req, res) => {
 			// we only handle the response when the request hasn't been
 			// redirected already in the flow above
@@ -265,4 +273,23 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 			}
 		}
 	})
+
+	// manually install the upgrade function for the websocket (if configured)
+	return effectiveOptions.enableWebSocket
+		? hook(
+				"ui5-middleware-cfdestination",
+				({ on, options }) => {
+					const { mountpath } = options
+					on("upgrade", (req, socket, head) => {
+						// only handle requests in the mountpath
+						if (req.url?.startsWith(mountpath)) {
+							// call the upgrade function of the proxy middleware to
+							// initialize the websocket and establish the connection
+							proxyMiddleware.upgrade.call(this, req, socket, head)
+						}
+					})
+				},
+				proxyMiddleware
+		  )
+		: proxyMiddleware
 }
