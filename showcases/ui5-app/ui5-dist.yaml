@@ -57,8 +57,8 @@ server:
       mountPath: /ui5
       afterMiddleware: compression
       configuration:
+        debug: true
         baseUri: "https://sdk.openui5.org/"
-        limit: "5mb"
         removeETag: true
     - name: ui5-middleware-cfdestination
       afterMiddleware: compression
