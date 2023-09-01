@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.1.0...ui5-middleware-cfdestination@3.1.1) (2023-09-01)
+
+
+### Bug Fixes
+
+* **ui5-middleware-cfdestination:** ignore approuter config's welcomeFile ([#820](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/820)) ([652446a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/652446aa18118c88f9b7af935c066d759a326c8e))
+* **ui5-middleware-cfdestination:** make ws configurable ([#821](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/821)) ([2603135](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2603135afcadcaabad71f85acf56f829f4bc9f46))
+
+
+
+
+
 # [3.1.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.0.2...ui5-middleware-cfdestination@3.1.0) (2023-08-31)
 
 
