@@ -72,7 +72,7 @@ module.exports = async function applyUI5Middleware(router, { basePath, configPat
 	await middlewareManager.applyMiddleware(router);
 
 	// collect app pages from workspace
-	const pages = (await rootReader.byGlob("**/*.html")).map((resource) => resource.getPath());
+	const pages = (await rootReader.byGlob("**/*.{html,htm}")).filter(resource => !resource.getPath().endsWith('fragment.html')).map((resource) => resource.getPath());
 
 	// collect app pages from middlewares implementing the getAppPages
 	middlewareManager.middlewareExecutionOrder?.map((name) => {
