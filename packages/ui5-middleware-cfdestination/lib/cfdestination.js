@@ -48,7 +48,8 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		allowLocalDir: false,
 		subdomain: null,
 		rewriteContent: true,
-		rewriteContentTypes: ["application/json", "application/atom+xml", "application/xml"]
+		rewriteContentTypes: ["application/json", "application/atom+xml", "application/xml"],
+		enableWebSocket: false
 	}
 	// config-time options from ui5.yaml for cfdestination take precedence
 	if (options.configuration) {
@@ -169,8 +170,9 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		target: baseUri,
 		changeOrigin: true, // for vhosted sites
 		selfHandleResponse: true, // res.end() will be called internally by responseInterceptor()
-		ws: true, // enable websocket support
+		ws: effectiveOptions.enableWebSocket, // enable websocket support
 		autoRewrite: true, // rewrites the location host/port on (301/302/307/308) redirects based on requested host/port
+		followRedirects: true,
 		onProxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
 			// logging
 			effectiveOptions.debug &&

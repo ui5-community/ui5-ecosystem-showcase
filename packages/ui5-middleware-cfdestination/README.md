@@ -59,6 +59,9 @@ the proxied url in the response body with the server url
 - `rewriteContentTypes`: `<Array of strings>`, default: `["application/json", "application/atom+xml", "application/xml"]`  
 defines the content types which are included for rewriting the content by enabling the `rewriteContent` option
 
+- `enableWebSocket`: `<boolean>`, default: `false` *experimental*
+enables support for proxying web sockets
+
 ## Usage
 
 1. Define the dependency in `$yourapp/package.json`:
