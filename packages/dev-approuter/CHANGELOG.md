@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.5...dev-approuter@0.1.6) (2023-09-02)
+
+
+### Bug Fixes
+
+* cap endpoint detection, dev-approuter showcase ([#827](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/827)) ([c3abb2a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c3abb2aeb23ff7a1dced632c8b2e1abad168e274)), closes [#826](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/826)
+
+
+
+
+
 ## [0.1.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.4...dev-approuter@0.1.5) (2023-09-02)
 
 **Note:** Version bump only for package dev-approuter
