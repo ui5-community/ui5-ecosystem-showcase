@@ -1,0 +1,25 @@
+{
+  "name": "approuter",
+  "description": "Showcase for the dev-approuter",
+  "version": "0.0.0",
+  "private": "true",
+  "author": "Nicolai Schoenteich, Peter Muessig",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
+    "directory": "showcases/approuter"
+  },
+  "scripts": {
+    "dev": "node -e 'new require(`dev-approuter`)' _",
+    "start": "node -e 'new require(`@sap/approuter`)().start()' _"
+  },
+  "dependencies": {
+    "@sap/approuter": "^14.3.0"
+  },
+  "devDependencies": {
+    "cds-bookshop": "workspace:^",
+    "cds-ui5-bookshopviewer": "workspace:^",
+    "dev-approuter": "workspace:^"
+  }
+}

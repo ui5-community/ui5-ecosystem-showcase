@@ -56,6 +56,7 @@ The following list provides an overview of the available showcases in this repos
 
 ```text
 showcases
+├── approuter                       // Showcase for the dev-approuter
 ├── cds-bookshop                    // CAP bookshop app to showcase cds-plugin-ui5
 ├── cds-ui5-bookshopviewer          // Standalone UI5 bookshop viewer to demo ui5-middleware-cap
 ├── ui5-app                         // UI5 application

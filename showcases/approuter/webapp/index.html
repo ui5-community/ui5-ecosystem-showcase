@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Bookshop - Launchpad</title>
+
+		<script>
+			window["sap-ushell-config"] = {
+				defaultRenderer: "fiori2",
+				bootstrapPlugins: {
+					RuntimeAuthoringPlugin: {
+						component: "sap.ushell.plugins.rta",
+						config: {
+							validateAppVersion: false,
+						},
+					},
+				},
+				renderers: {
+					fiori2: {
+						componentData: {
+							config: {
+								//rootIntent: "fe-lrop-v4",
+								search: "hidden",
+							},
+						},
+					},
+				},
+				applications: {
+					"fs-form": {
+						title: "Bookshop",
+						description: "Bookshop",
+						additionalInformation: "SAPUI5.Component=ui5.bookshop",
+						applicationType: "URL",
+						url: "./ui5.bookshop",
+						navigationMode: "embedded",
+					},
+					"fs-viewer": {
+						title: "Viewer",
+						description: "Viewer",
+						additionalInformation: "SAPUI5.Component=ui5.bookshopviewer",
+						applicationType: "URL",
+						url: "./ui5.bookshopviewer",
+						navigationMode: "embedded",
+					},
+				},
+			};
+		</script>
+
+		<script
+			src="https://ui5.sap.com/1.117.0/resources/sap-ui-core.js"
+			data-sap-ui-async="true"
+			data-sap-ui-libs="sap.ui.core,sap.ui.layout,sap.m,sap.ushell"
+			data-sap-ui-compatVersion="edge"
+			data-sap-ui-theme="sap_horizon"
+			data-sap-ui-frameOptions="allow"
+			data-sap-ui-bindingSyntax="complex"
+		></script>
+
+		<!-- moved the sandbox.js script after the UI5 bootstrap -->
+		<script src="https://ui5.sap.com/1.117.0/test-resources/sap/ushell/bootstrap/sandbox.js"></script>
+
+		<script>
+			sap.ui.getCore().attachInit(function () {
+				// call the boot-task of the sandbox.js manually
+				window["sap-ui-config"]["xx-bootTask"](function () {
+					// initialize the ushell sandbox component
+					sap.ushell.Container.createRenderer().placeAt("content");
+				});
+			});
+		</script>
+	</head>
+	<body class="sapUiBody" id="content"></body>
+</html>

@@ -87,12 +87,11 @@ module.exports = async function applyCAPMiddleware(router, { root }) {
 	await cds.serve(options).from(csn).in(router);
 	await cds.emit("served", cds.services);
 
-	// extract the service paths from cds services
-	const servicesPaths = Object.keys(cds.services)
-		.filter((service) => cds.services[service].kind === "app-service")
-		.map((service) => {
-			return cds.services[service].path;
-		});
+	// extract the "odata-v4" service paths from cds services
+	const servicesPaths = [];
+	Object.keys(cds.services)
+		.filter((service) => Array.isArray(cds.services[service].endpoints))
+		.forEach((service) => servicesPaths.push(...cds.services[service].endpoints.filter((endpoint) => endpoint.kind === "odata-v4").map((endpoint) => endpoint.path)));
 
 	// change dir back (only needed temporary for cds bootstrap)
 	process.chdir(cwd);
