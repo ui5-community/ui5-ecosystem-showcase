@@ -59,8 +59,8 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 	}
 
 	// lookup the UI5 modules in the project dependencies
+	const pkgJson = require(path.join(cwd, "package.json"));
 	if (!skipDeps) {
-		const pkgJson = require(path.join(cwd, "package.json"));
 		const deps = [];
 		deps.push(...Object.keys(pkgJson.dependencies || {}));
 		deps.push(...Object.keys(pkgJson.devDependencies || {}));
@@ -80,9 +80,23 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 		);
 	}
 
+	// determine module configuration:
+	//   => env variable: CDS_PLUGIN_UI5_MODULES (JSONObject<string, object>)
+	//   => package.json: cds-plugin-ui5 > modules (JSONObject<string, object>)
+	// JSONObject<string, object>: key = moduleId (folder name, npm package name), object={ configFile: string }
+	let modulesConfig;
+	try {
+		modulesConfig = JSON.parse(process.env.CDS_PLUGIN_UI5_MODULES);
+		log.info(`Using modules configuration from env`);
+	} catch (err) {
+		modulesConfig = pkgJson.cds?.["cds-plugin-ui5"]?.modules;
+	}
+	log.debug(JSON.stringify(modulesConfig, undefined, 2));
+
 	// if apps are available, attach the middlewares of the UI5 apps
 	// to the express of the CAP server via a express router
 	const apps = [];
+	apps.configFiles = {};
 	if (appDirs) {
 		for await (const appDir of appDirs) {
 			// read the ui5.yaml file to extract the configuration
@@ -95,7 +109,7 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 				ui5Configs = yaml.loadAll(content);
 			} catch (err) {
 				if (err.name === "YAMLException") {
-					log("error", `Failed to read ${ui5YamlPath}!`);
+					log.error(`Failed to read ${ui5YamlPath}!`);
 				}
 				throw err;
 			}
@@ -124,12 +138,19 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 					const packageJsonContent = fs.readFileSync(packageJsonPath, "utf-8");
 					moduleName = JSON.parse(packageJsonContent).name;
 				}
-				const moduleId = moduleName || appDir;
+				const moduleId = moduleName || path.basename(appDir);
+
+				// store the custom config file
+				if (modulesConfig?.[moduleId]?.configFile) {
+					apps.configFiles[moduleId] = modulesConfig?.[moduleId]?.configFile;
+				}
 
 				apps.push({ moduleId, modulePath, mountPath });
 			}
 		}
 	}
 	apps.localApps = localApps; // necessary for CAP index.html rewrite
+
+	// return the apps
 	return apps;
 };

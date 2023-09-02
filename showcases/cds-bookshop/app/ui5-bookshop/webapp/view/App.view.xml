@@ -1,0 +1,84 @@
+<mvc:View xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" controllerName="ui5.bookshop.controller.App">
+  <App>
+    <pages>
+      <Page title="{i18n>Bookshop}">
+        <content>
+          <Panel headerText="Hello, UI5er! 👋">
+            <content>
+              <SearchField liveChange=".onSearch" />
+              <Table id="booksTable" items="{/Books}">
+                <columns>
+                  <Column>
+                    <Text text="{i18n>Book}" />
+                  </Column>
+                  <Column>
+                    <Text text="{i18n>Author}" />
+                  </Column>
+                  <Column>
+                    <Text text="{i18n>Genre}" />
+                  </Column>
+                  <Column>
+                    <Text text="{i18n>Price}" />
+                  </Column>
+                  <Column>
+                    <Text text="{i18n>Stock}" />
+                  </Column>
+                </columns>
+                <items>
+                  <ColumnListItem vAlign="Middle" press=".onSelect" type="Active">
+                    <cells>
+                      <ObjectIdentifier title="{title}" />
+                      <Text text="{author}" />
+                      <Text text="{genre/name}" />
+                      <ObjectNumber number="{price}" unit="{currency_code}" />
+                      <ObjectStatus
+                        text="{stock}"
+                        state="{=
+                                            ${stock} >= 20
+                                                ? 'Success'
+                                            : ${stock} > 0
+                                                ? 'Warning'
+                                            : 'Error'}"
+                      />
+                    </cells>
+                  </ColumnListItem>
+                </items>
+              </Table>
+              <FlexBox direction="Column" class="sapUiMediumMarginTop">
+                <FlexBox alignItems="Center" justifyContent="End" class="orderControls">
+                  <Button
+                    text="Order"
+                    press=".onSubmitOrder"
+                    enabled="{=
+                                    ${order>/selectedItemData}
+                                        ? ${order>/selectedItemData/stock} === 0
+                                            || ${order>/quantity} === 0
+                                            ? false
+                                            : true
+                                        : false}"
+                  />
+                  <StepInput
+                    value="{order>/quantity}"
+                    min="0"
+                    textAlign="Center"
+                    max="{order>/selectedItemData/stock}"
+                    enabled="{=
+                                    ${order>/selectedItemData}
+                                        ? ${order>/selectedItemData/stock} === 0
+                                            ? false
+                                            : true
+                                        : false}"
+                  />
+                </FlexBox>
+                <FlexBox id="selectedBook" direction="Column">
+                  <Title text="{title}" />
+                  <Text text="{descr}" class="sapUiSmallMarginTop" />
+                </FlexBox>
+              </FlexBox>
+            </content>
+          </Panel>
+        </content>
+      </Page>
+    </pages>
+  </App>
+</mvc:View>

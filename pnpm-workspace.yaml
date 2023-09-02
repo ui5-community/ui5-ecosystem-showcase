@@ -1,5 +1,6 @@
 packages:
   # all packages (tooling extensions)
   - "packages/*"
-  # all showcases (demo apps, libs, modules, ...)
+  # all showcases (demo apps, libs, modules, cds-ui5 apps, ...)
   - "showcases/*"
+  - "showcases/cds-bookshop/app/*"
