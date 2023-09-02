@@ -1,6 +1,6 @@
 {
   "name": "cds-ui5-bookshopviewer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "UI5 bookshop application using custom tooling extensions",
   "private": true,
   "author": "Nicolai Schoenteich, Peter Muessig",
