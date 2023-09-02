@@ -91,7 +91,9 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 	} catch (err) {
 		modulesConfig = pkgJson.cds?.["cds-plugin-ui5"]?.modules;
 	}
-	log.debug(JSON.stringify(modulesConfig, undefined, 2));
+	if (modulesConfig) {
+		log.debug(JSON.stringify(modulesConfig, undefined, 2));
+	}
 
 	// if apps are available, attach the middlewares of the UI5 apps
 	// to the express of the CAP server via a express router
