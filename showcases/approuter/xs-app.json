@@ -1,0 +1,41 @@
+{
+  "welcomeFile": "index.html",
+  "authenticationMethod": "route",
+  "routes": [
+    {
+      "source": "^.*/resources/(.*)$",
+      "target": "/resources/$1",
+      "authenticationType": "none",
+      "destination": "ui5"
+    },
+    {
+      "source": "^.*/test-resources/(.*)$",
+      "target": "/test-resources/$1",
+      "authenticationType": "none",
+      "destination": "ui5"
+    },
+    {
+      "source": "^/ui5.bookshop/(.*)$",
+      "target": "$1",
+      "authenticationType": "none",
+      "localDir": "./ui5-bookshop"
+    },
+    {
+      "source": "^/ui5.bookshopviewer/(.*)$",
+      "target": "$1",
+      "authenticationType": "none",
+      "localDir": "./ui5-bookshopviewer"
+    },
+    {
+      "source": "^/(bookshop/.*)$",
+      "target": "$1",
+      "destination": "server"
+    },
+    {
+      "source": "^/(index.html)$",
+      "target": "$1",
+      "authenticationType": "none",
+      "localDir": "./webapp"
+    }
+  ]
+}

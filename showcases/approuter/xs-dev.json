@@ -1,0 +1,20 @@
+{
+  "welcomeFile": "index.html",
+  "authenticationMethod": "route",
+  "routes": [
+    {
+      "dependency": "cds-bookshop",
+      "authenticationType": "none"
+    },
+    {
+      "dependency": "cds-ui5-bookshopviewer",
+      "authenticationType": "none"
+    },
+    {
+      "source": "^/(index.html)$",
+      "target": "$1",
+      "authenticationType": "none",
+      "localDir": "./webapp"
+    }
+  ]
+}
