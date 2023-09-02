@@ -16,16 +16,17 @@ const log = require("./log");
  * @param {object} options configuration options
  * @param {string} options.basePath base path of the UI5 application
  * @param {string} [options.configPath] path to the ui5.yaml (defaults to "${basePath}/ui5.yaml")
+ * @param {string} [options.configFile] name of the config file (defaults to "ui5.yaml")
  * @returns {UI5AppInfo} UI5 application information object
  */
-module.exports = async function applyUI5Middleware(router, { basePath, configPath }) {
+module.exports = async function applyUI5Middleware(router, { basePath, configPath, configFile = "ui5.yaml" }) {
 	const { graphFromPackageDependencies } = await import("@ui5/project/graph");
 	const { createReaderCollection } = await import("@ui5/fs/resourceFactory");
 
 	const graph = await graphFromPackageDependencies({
 		workspaceName: process.env["ui5-workspace"],
 		cwd: basePath,
-		rootConfigPath: configPath ? path.resolve(configPath, "ui5.yaml") : undefined,
+		rootConfigPath: configPath ? path.resolve(configPath, configFile) : undefined,
 	});
 
 	const rootProject = graph.getRoot();
@@ -71,8 +72,9 @@ module.exports = async function applyUI5Middleware(router, { basePath, configPat
 	});
 	await middlewareManager.applyMiddleware(router);
 
-	// collect app pages from workspace
-	const pages = (await rootReader.byGlob("**/*.html")).map((resource) => resource.getPath());
+	// collect app pages from workspace (glob testing: https://globster.xyz/ and https://codepen.io/mrmlnc/pen/OXQjMe)
+	//   -> but exclude the HTML fragments from the list of app pages!
+	const pages = (await rootReader.byGlob("**/!(*.fragment).{html,htm}")).map((resource) => resource.getPath());
 
 	// collect app pages from middlewares implementing the getAppPages
 	middlewareManager.middlewareExecutionOrder?.map((name) => {

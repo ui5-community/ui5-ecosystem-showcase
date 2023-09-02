@@ -21,6 +21,33 @@ npm add cds-plugin-ui5 -D
 
 That's it!
 
+### Configuration
+
+The plugin can be configured using the `cds-plugin-ui5` section in the `package.json`. To define a custom configFile for any module you can add a configuration object for each module in the `modules` section:
+
+```json
+{
+    "cds-plugin-ui5": {
+      "modules": {
+        "ui5-bookshop": {
+          "configFile": "ui5.yaml"
+        },
+        "cds-ui5-bookshopviewer": {
+          "configFile": "ui5-dist.yaml"
+        }
+      }
+    }
+}
+```
+
+The key is the `moduleId` which is either the directory name for local apps in the `app` directory of the CAP server or for dependencies the `name` from the `package.json`. As value you can specify an alternative `configFile` name.
+
+A second option to override this configuration is the usage of the environment variable `CDS_PLUGIN_UI5_MODULES`. It contains the JSON string from the configuration above, e.g.:
+
+```sh
+CDS_PLUGIN_UI5_MODULES="{ \"ui5-bookshop\": { \"configFile\": \"ui5-dist.yaml\" } }" cds-serve
+```
+
 ## Info for UI5 Tooling Extension Developers
 
 Custom middlewares may generate virtual app pages which should also be listed as web applications in the welcome page of the `@sap/cds` server. This is possible by assigning a static `getAppPages` function to the middleware function. The following snippet show-cases how this can be done:
