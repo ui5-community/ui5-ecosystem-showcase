@@ -19,6 +19,13 @@
           "odataVersion": "4.0"
         }
       },
+      "ODataV4DataSource": {
+        "uri": "/odatav4/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0"
+        }
+      },
       "UI5VersionInfo": {
         "uri": "/versioninfo/version.json",
         "type": "JSON"
@@ -76,6 +83,15 @@
           "synchronizationMode": "None"
         }
       },
+      "ODataV4": {
+        "dataSource": "ODataV4DataSource",
+        "settings": {
+          "autoExpandSelect": true,
+          "operationMode": "Server",
+          "groupId": "$direct",
+          "synchronizationMode": "None"
+        }
+      },
       "UI5VersionInfo": {
         "type": "sap.ui.model.json.JSONModel",
         "dataSource": "UI5VersionInfo"
@@ -102,6 +118,11 @@
           "target": ["TargetOther"]
         },
         {
+          "name": "RouteODataV4",
+          "pattern": "odatav4",
+          "target": ["TargetODataV4"]
+        },
+        {
           "name": "RouteThirdparty",
           "pattern": "thirdparty",
           "target": ["TargetThirdparty"]
@@ -126,6 +147,13 @@
           "clearControlAggregation": false,
           "viewId": "Other",
           "viewName": "Other"
+        },
+        "TargetODataV4": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewId": "ODataV4",
+          "viewName": "ODataV4"
         },
         "TargetThirdparty": {
           "viewType": "XML",

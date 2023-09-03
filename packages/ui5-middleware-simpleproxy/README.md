@@ -112,7 +112,7 @@ UI5_MIDDLEWARE_SIMPLE_PROXY_PASSWORD=myPassword
 
 ## Hints
 
-If you are using the Microsoft OData services for testing purposes, like [Northwind](https://services.odata.org/v2/northwind/northwind.svc/) for V2 or [TripPin](https://www.odata.org/blog/trippin-new-odata-v4-sample-service/) for V4, please ensure to use the `https` URLs instead of the `http` URLs. The `http` URL will redirect to `https` but instead of the proxy it will try to directly connect to the Microsoft OData services. 
+If you are using the Microsoft OData services for testing purposes, like [Northwind](https://services.odata.org/v2/northwind/northwind.svc/) for V2 or [TripPin](https://www.odata.org/blog/trippin-new-odata-v4-sample-service/) for V4, please ensure to use the `https` URLs instead of the `http` URLs. The `http` URL will redirect to `https` but instead of the proxy it will try to directly connect to the Microsoft OData services.
 
 Another known issue is the the validation of the `csrf-token` fails for the `$batch` requests (e.g. in Chrome). To workaround this issue, also running the dev server in `https` can solve the issue.
 

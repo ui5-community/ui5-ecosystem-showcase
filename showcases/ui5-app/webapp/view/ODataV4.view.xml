@@ -1,0 +1,13 @@
+<mvc:View controllerName="ui5.ecosystem.demo.app.controller.ODataV4" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
+  <Page title="{i18n>odataV4page.title}" showNavButton="true" navButtonPress="onNavBack">
+    <content>
+      <List id="PeopleList" headerText="{i18n>odataV4page.listHeader}" items="{ODataV4>/People}">
+        <CustomListItem>
+          <VBox class="sapUiSmallMarginBegin sapUiSmallMarginTopBottom">
+            <Link text="{ODataV4>FirstName} {ODataV4>LastName}" press=".handlePeopleClick" />
+          </VBox>
+        </CustomListItem>
+      </List>
+    </content>
+  </Page>
+</mvc:View>
