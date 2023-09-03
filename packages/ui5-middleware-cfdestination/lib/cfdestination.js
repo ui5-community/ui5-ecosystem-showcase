@@ -49,6 +49,8 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		subdomain: null,
 		rewriteContent: true,
 		rewriteContentTypes: ["application/json", "application/atom+xml", "application/xml"],
+		appendAuthRoute: false,
+		disableWelcomeFile: false,
 		enableWebSocket: false
 	}
 	// config-time options from ui5.yaml for cfdestination take precedence
@@ -59,14 +61,15 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	// set the log level for the approuter
 	process.env.XS_APP_LOG_LEVEL = process.env.XS_APP_LOG_LEVEL || effectiveOptions.debug ? "DEBUG" : "ERROR"
 
-	// read in the cf config file (TODO: verify better possibility to retrieve the base path of the root project from tooling)
-	const fsBasePath = middlewareUtil.getProject().getRootPath() || process.cwd()
-	const xsappPath = fsBasePath || process.cwd() // respect cwd of containing ui5 server
+	// read in the cf config file from the root path
+	const xsappPath = middlewareUtil.getProject().getRootPath() || process.cwd()
 	const _xsappJson = path.resolve(xsappPath, effectiveOptions.xsappJson)
 	const xsappConfig = JSON.parse(fs.readFileSync(_xsappJson, "utf8"))
 
-	// when running ui5 serve, we do not want to redirect /
-	delete xsappConfig.welcomeFile
+	// when running ui5 serve, we may not want to redirect /
+	if (effectiveOptions.disableWelcomeFile) {
+		delete xsappConfig.welcomeFile
+	}
 
 	// the default auth mechanism is set to none but the user can pass an auth method using the options
 	xsappConfig.authenticationMethod = effectiveOptions.authenticationMethod
@@ -102,8 +105,23 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 			(effectiveOptions.allowLocalDir || !route.localDir) && (effectiveOptions.allowServices || !route.service)
 	)
 
+	// add the route for all html/htm pages to support XSUAA login (if needed)
+	if (effectiveOptions.appendAuthRoute && effectiveOptions.authenticationMethod !== "none") {
+		const relativeSourcePath = path.relative(
+			middlewareUtil.getProject().getRootPath(),
+			middlewareUtil.getProject().getSourcePath()
+		)
+		xsappConfig.routes.push({
+			source: "^/([^.]+\\.html?(?:\\?.*)?)$",
+			localDir: relativeSourcePath,
+			target: "$1",
+			cacheControl: "no-store",
+			authenticationType: "xsuaa"
+		})
+	}
+
 	xsappConfig.routes.forEach((route) => {
-		/* Authentication type should come from route if authenticationMethod is set to "route", otherwise set to "none" */
+		// Authentication type should come from route if authenticationMethod is set to "route", otherwise set to "none"
 		if (xsappConfig.authenticationMethod.toLowerCase() === "none") {
 			route.authenticationType = "none"
 		}
@@ -128,17 +146,20 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		}
 	})
 
+	// determine the next free port
 	const freePort = await nextFreePort(effectiveOptions.port)
 	if (freePort != effectiveOptions.port) {
 		log.info(`Port ${effectiveOptions.port} already in use! Using next free port: ${freePort} for the AppRouter...`)
 	}
 
+	// start the approuter with the custom config
 	approuter.start({
 		port: freePort,
 		xsappConfig: xsappConfig,
-		workingDir: xsappPath || "."
+		workingDir: xsappPath
 	})
 
+	// determine base uri based on subdomain info
 	let baseUri
 	if (effectiveOptions.subdomain) {
 		// subdomain of the subscribed tenant in multitenancy context
@@ -147,6 +168,26 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		baseUri = `http://localhost:${freePort}`
 	}
 
+	// define custom routes to be also handled by the approuter, e.g. login and logout
+	// callbacks or the welcome file redirect of the approuter itself
+	const customRoutes = [xsappConfig?.login?.callbackEndpoint || "/login/callback"]
+	if (!effectiveOptions.disableWelcomeFile) {
+		customRoutes.unshift("/")
+	}
+	if (xsappConfig?.logout?.logoutEndpoint) {
+		customRoutes.push(xsappConfig.logout.logoutEndpoint)
+	}
+
+	// filter function to determine which routes should be proxied to the approuter
+	const filter = (pathname /*, req */) => {
+		return (
+			customRoutes.some((customRoute) => new RegExp(`^${customRoute}(\\?.*)?$`).test(pathname)) ||
+			routes.some((route) => route.re.test(pathname))
+		)
+	}
+
+	// helper to determine the mime type either from the req path or if provided
+	// we parse the content-type value and retunr content type and charset
 	const getMimeInfo = (reqPath, ctValue) => {
 		if (ctValue) {
 			const parsedCtHeader = ct.parse(ctValue)
@@ -161,47 +202,58 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		}
 	}
 
-	const filter = (pathname /*, req */) => {
-		return routes.some((route) => route.re.test(pathname))
-	}
+	// intereceptor of the response to update the content-type and rewrite the content
+	const intercept = responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
+		const reqPath = middlewareUtil.getPathname(req)
+		effectiveOptions.debug && log.info(`${req.method} ${reqPath} -> ${baseUri}${reqPath} [${proxyRes.statusCode}]`)
 
+		// determine and update content type (avoid no content type!)
+		let { contentType, charset } = getMimeInfo(reqPath, proxyRes.headers["content-type"])
+		res.setHeader("content-type", contentType + (charset ? `; charset=${charset}` : ""))
+
+		// only rewrite content when enabled and the content type is supported!
+		if (
+			effectiveOptions.rewriteContent &&
+			effectiveOptions.rewriteContentTypes.indexOf(contentType?.toLowerCase()) >= 0
+		) {
+			let data = responseBuffer.toString(charset || "utf8")
+			const route = routes.find((route) => route.re.test(reqPath))
+			const url = `${req.protocol}://${req.get("host")}/${route.path}`
+			data = data.replaceAll(route.url, url)
+			// in some cases, the odata servers respond http instead of https in the content
+			if (route.url?.startsWith("https://")) {
+				data = data.replaceAll(`http://${route.url.substr(8)}`, url)
+			}
+			return new Buffer.from(data)
+		} else {
+			return responseBuffer
+		}
+	})
+
+	// the proxy middleware (based on https://www.npmjs.com/package/http-proxy-middleware)
 	return createProxyMiddleware(filter, {
 		logLevel: effectiveOptions.debug ? "info" : "warn",
 		target: baseUri,
 		changeOrigin: true, // for vhosted sites
 		selfHandleResponse: true, // res.end() will be called internally by responseInterceptor()
-		ws: effectiveOptions.enableWebSocket, // enable websocket support
 		autoRewrite: true, // rewrites the location host/port on (301/302/307/308) redirects based on requested host/port
-		followRedirects: true,
-		onProxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
-			// logging
-			effectiveOptions.debug &&
-				log.info(
-					`${req.method} ${req.path} -> ${proxyRes.req.protocol}//${proxyRes.req.host}${proxyRes.req.path} [${proxyRes.statusCode}]`
-				)
-
-			// determine and update content type (avoid no content type!)
-			const reqPath = middlewareUtil.getPathname(req)
-			let { contentType, charset } = getMimeInfo(reqPath, proxyRes.headers["content-type"])
-			res.setHeader("content-type", contentType + (charset ? `; charset=${charset}` : ""))
-
-			// only rewrite content when enabled and the content type is supported!
-			if (
-				effectiveOptions.rewriteContent &&
-				effectiveOptions.rewriteContentTypes.indexOf(contentType?.toLowerCase()) >= 0
-			) {
-				let data = responseBuffer.toString(charset || "utf8")
-				const route = routes.find((route) => route.re.test(reqPath))
-				const url = `${req.protocol}://${req.get("host")}/${route.path}`
-				data = data.replaceAll(route.url, url)
-				// in some cases, the odata servers respond http instead of https in the content
-				if (route.url?.startsWith("https://")) {
-					data = data.replaceAll(`http://${route.url.substr(8)}`, url)
-				}
-				return new Buffer.from(data)
-			} else {
-				return responseBuffer
+		xfwd: true, // adds x-forward headers
+		ws: effectiveOptions.enableWebSocket, // enable websocket support
+		onProxyReq: (proxyReq, req, res) => {
+			// if the ui5-middleware-index is used and redirects the welcome file
+			// we need to send a redirect to trigger the auth-flow of the approuter
+			if (req["ui5-middleware-index"]?.path === "/") {
+				const reqPath = middlewareUtil.getPathname(req)
+				res._redirected = true
+				return res.redirect(reqPath)
 			}
-		})
+		},
+		onProxyRes: async (proxyRes, req, res) => {
+			// we only handle the response when the request hasn't been
+			// redirected already in the flow above
+			if (!res._redirected) {
+				return intercept(proxyRes, req, res)
+			}
+		}
 	})
 }

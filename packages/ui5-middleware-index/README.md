@@ -19,9 +19,11 @@ npm install ui5-middleware-index --save-dev
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
-- index: `<string>`, default: `index.html`  
-  file inside `$yourapp` to deliver for `http://<host>:<port>/`
 - debug: `<boolean>`, default: `false`
+- welcomeFile: `<string>`, default: `index.html`
+  the file to redirect to when the root path `/` is requested
+- index: `<string>`, default: `index.html`  *deprecated*
+  file inside `$yourapp` to deliver for `http://<host>:<port>/`
 
 ## Usage
 
@@ -43,7 +45,7 @@ server:
   - name: ui5-middleware-index
     afterMiddleware: compression
     configuration:
-      index: "index_peter.html"
+      welcomeFile: "index_peter.html"
 ```
 
 ## How it works
@@ -53,7 +55,6 @@ The middleware delivers the configured `index` HTML-file to the client if the FQ
 ## Development
 
 If you want to contribute to `ui5-middleware-index`, please use [`Prettier`](https://prettier.io) for code formatting/style and apply the rules from `./.prettierrc`. Thanks 🙏!
-
 
 ## License
 

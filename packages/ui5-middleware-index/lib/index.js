@@ -14,7 +14,7 @@
  */
 module.exports = ({ log, options, middlewareUtil }) => {
 	return (req, res, next) => {
-		const sIndexFile = options?.configuration?.index || "index.html"
+		const sIndexFile = options?.configuration?.welcomeFile || options?.configuration?.index || "index.html"
 		const reqPath = middlewareUtil.getPathname(req)
 		if (reqPath === "/") {
 			options?.configuration?.debug && log.info(`serving ${sIndexFile}!`)
@@ -23,6 +23,11 @@ module.exports = ({ log, options, middlewareUtil }) => {
 			// FTR
 			req.path = `/${sIndexFile}`
 			req.originalUrl = `/${sIndexFile}`
+			// redirect about original request url
+			req["ui5-middleware-index"] = {
+				url: reqPath,
+				path: reqPath
+			}
 		}
 		next()
 	}
