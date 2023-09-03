@@ -489,9 +489,9 @@ importers:
       cds-bookshop:
         specifier: workspace:^
         version: link:../cds-bookshop
-      cds-ui5-bookshopviewer:
+      cds-bookshop-ui5-viewer:
         specifier: workspace:^
-        version: link:../cds-ui5-bookshopviewer
+        version: link:../cds-bookshop-ui5-viewer
       dev-approuter:
         specifier: workspace:^
         version: link:../../packages/dev-approuter
@@ -511,15 +511,30 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
     devDependencies:
+      cds-bookshop-ui5-viewer:
+        specifier: workspace:^
+        version: link:../cds-bookshop-ui5-viewer
       cds-plugin-ui5:
         specifier: workspace:^
         version: link:../../packages/cds-plugin-ui5
-      cds-ui5-bookshopviewer:
-        specifier: workspace:^
-        version: link:../cds-ui5-bookshopviewer
       rimraf:
         specifier: ^5.0.1
         version: 5.0.1
+
+  showcases/cds-bookshop-ui5-viewer:
+    devDependencies:
+      '@ui5/cli':
+        specifier: ^3.4.0
+        version: 3.4.0
+      rimraf:
+        specifier: ^5.0.1
+        version: 5.0.1
+      ui5-middleware-livereload:
+        specifier: workspace:^
+        version: link:../../packages/ui5-middleware-livereload
+      ui5-task-zipper:
+        specifier: workspace:^
+        version: link:../../packages/ui5-task-zipper
 
   showcases/cds-bookshop/app/ui5-bookshop:
     devDependencies:
@@ -535,27 +550,6 @@ importers:
       ui5-task-zipper:
         specifier: workspace:^
         version: link:../../../../packages/ui5-task-zipper
-
-  showcases/cds-ui5-bookshopviewer:
-    devDependencies:
-      '@ui5/cli':
-        specifier: ^3.4.0
-        version: 3.4.0
-      cds-bookshop:
-        specifier: workspace:^
-        version: link:../cds-bookshop
-      rimraf:
-        specifier: ^5.0.1
-        version: 5.0.1
-      ui5-middleware-cap:
-        specifier: workspace:^
-        version: link:../../packages/ui5-middleware-cap
-      ui5-middleware-livereload:
-        specifier: workspace:^
-        version: link:../../packages/ui5-middleware-livereload
-      ui5-task-zipper:
-        specifier: workspace:^
-        version: link:../../packages/ui5-task-zipper
 
   showcases/ui5-app:
     dependencies:
@@ -741,6 +735,27 @@ importers:
       ui5-tooling-transpile:
         specifier: workspace:^
         version: link:../../packages/ui5-tooling-transpile
+
+  showcases/ui5-bookshop-viewer:
+    devDependencies:
+      '@ui5/cli':
+        specifier: ^3.4.0
+        version: 3.4.0
+      cds-bookshop:
+        specifier: workspace:^
+        version: link:../cds-bookshop
+      rimraf:
+        specifier: ^5.0.1
+        version: 5.0.1
+      ui5-middleware-cap:
+        specifier: workspace:^
+        version: link:../../packages/ui5-middleware-cap
+      ui5-middleware-livereload:
+        specifier: workspace:^
+        version: link:../../packages/ui5-middleware-livereload
+      ui5-task-zipper:
+        specifier: workspace:^
+        version: link:../../packages/ui5-task-zipper
 
   showcases/ui5-lib:
     devDependencies:

@@ -1,6 +1,6 @@
-# Standalone UI5 bookshop viewer to demo `ui5-middleware-cap``
+# UI5 bookshop viewer to demo `ui5-middleware-cap` referenced in `cds-bookshop``
 
-This sample application shows the consumption of the custom tooling extensions.
+This sample application shows the consumption of a UI5 application in the CAP server `cds-bookshop`.
 
 Peek at both [`ui5.yaml`](ui5.yaml) and [`package.json`](package.json) in order to learn about the `ui5-tooling` configuration and its' `npm` package dependencies and configuration options.
 

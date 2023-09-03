@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "cds-bookshop": "workspace:^",
-    "cds-ui5-bookshopviewer": "workspace:^",
+    "cds-bookshop-ui5-viewer": "workspace:^",
     "dev-approuter": "workspace:^"
   }
 }

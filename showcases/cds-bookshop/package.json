@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "cds-plugin-ui5": "workspace:^",
-    "cds-ui5-bookshopviewer": "workspace:^",
+    "cds-bookshop-ui5-viewer": "workspace:^",
     "rimraf": "^5.0.1"
   },
   "scripts": {

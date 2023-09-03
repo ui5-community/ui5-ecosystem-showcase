@@ -1,28 +1,26 @@
 {
-  "name": "cds-ui5-bookshopviewer",
+  "name": "cds-bookshop-ui5-viewer",
   "version": "0.1.2",
-  "description": "UI5 bookshop application using custom tooling extensions",
+  "description": "UI5 bookshop viewer referenced in cds-bookshop",
   "private": true,
   "author": "Nicolai Schoenteich, Peter Muessig",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
-    "directory": "showcases/cds-ui5-bookshopviewer"
+    "directory": "showcases/cds-bookshop-ui5-viewer"
   },
   "scripts": {
     "clean": "rimraf dist",
     "build": "ui5 build --clean-dest",
     "build:sc": "ui5 build self-contained --clean-dest",
-    "start": "ui5 serve --config ui5-dist.yaml --port 1337 --open index.html",
-    "dev": "ui5 serve --port 1337 --open index.html",
+    "start": "ui5 serve --config ui5-dist.yaml --open index.html",
+    "dev": "ui5 serve --open index.html",
     "lint": "eslint webapp"
   },
   "devDependencies": {
     "@ui5/cli": "^3.4.0",
-    "cds-bookshop": "workspace:^",
     "rimraf": "^5.0.1",
-    "ui5-middleware-cap": "workspace:^",
     "ui5-middleware-livereload": "workspace:^",
     "ui5-task-zipper": "workspace:^"
   }

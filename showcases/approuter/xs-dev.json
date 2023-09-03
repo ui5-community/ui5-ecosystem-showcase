@@ -7,7 +7,7 @@
       "authenticationType": "none"
     },
     {
-      "dependency": "cds-ui5-bookshopviewer",
+      "dependency": "cds-bookshop-ui5-viewer",
       "authenticationType": "none"
     },
     {
