@@ -13,7 +13,7 @@
  * @property {boolean|yo<confirm>} [debug] see output
  */
 
-const { createProxyMiddleware } = require("http-proxy-middleware");
+const { createProxyMiddleware, responseInterceptor } = require("http-proxy-middleware");
 
 const minimatch = require("minimatch");
 
@@ -57,10 +57,12 @@ function sanitizeObject(o) {
  * @param {@ui5/logger/Logger} parameters.log Logger instance
  * @param {object} parameters.options Options
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
+ * @param {object} parameters.middlewareUtil Specification version dependent interface to a
+ *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
  * @returns {Function} Middleware function to use
  */
 // eslint-disable-next-line no-unused-vars
-module.exports = async function ({ log, options }) {
+module.exports = async function ({ log, options, middlewareUtil }) {
 	// determine environment variables
 	const env = {
 		baseUri: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI,
@@ -117,7 +119,7 @@ module.exports = async function ({ log, options }) {
 	const hasExcludePatterns = excludePatterns && Array.isArray(excludePatterns);
 	const filter = function (pathname, req) {
 		if (hasExcludePatterns) {
-			const targetPath = pathname.substring(req.baseUrl.length);
+			const targetPath = pathname.substring(req.baseUrl?.length || 0);
 			const exclude = excludePatterns.some((glob) => minimatch(targetPath, glob));
 			if (exclude) {
 				debug && log.info(`[${baseUri}] Request ${req.url} is excluded`);
@@ -134,57 +136,65 @@ module.exports = async function ({ log, options }) {
 	};
 
 	// run the proxy middleware based on the host configuration
+	const target = /^(.*)\/$/.exec(baseURL.toString())?.[1] || baseURL.toString(); // remove trailing slash!
 	return createProxyMiddleware(filter, {
 		logLevel: effectiveOptions.debug ? "info" : "warn",
-		target: baseURL.toString(),
+		target,
+		agent,
 		secure: strictSSL,
 		ws: true, // enable websocket support
+		changeOrigin: true, // for vhosted sites
 		autoRewrite: true, // rewrites the location host/port on (301/302/307/308) redirects based on requested host/port
-		agent,
-		changeOrigin: true,
+		xfwd: true, // adds x-forward headers
 		auth: username != null && password != null ? `${username}:${password}` : undefined,
 		headers: httpHeaders,
 		pathRewrite: function (path, req) {
-			let targetPath = path.substring(req.baseUrl.length);
+			let targetPath = path.substring(req.baseUrl?.length || 0);
 			// append the query parameters if available
 			if (query) {
-				const url = new URL(targetPath, baseUri);
+				const url = new URL(targetPath, baseURL);
 				const search = url.searchParams;
 				Object.keys(query).forEach((key) => search.append(key, query[key]));
 				targetPath = `${url.pathname}${url.search}`;
 			}
 			return targetPath;
 		},
-		onProxyRes: function (proxyRes, req /*, res */) {
-			// logging
-			effectiveOptions.debug && log.info(`[${baseUri}] ${req.method} ${req.path} -> ${proxyRes.req.protocol}//${proxyRes.req.host}${proxyRes.req.path} [${proxyRes.statusCode}]`);
+		selfHandleResponse: true, // + responseInterceptor: necessary to omit ERR_CONTENT_DECODING_FAILED error when opening OData URls directly
+		onProxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
+			const reqPath = middlewareUtil.getPathname(req);
+			effectiveOptions.debug && log.info(`[${baseUri}] ${req.method} ${reqPath} -> ${target}${reqPath} [${proxyRes.statusCode}]`);
 			// remove the secure flag of the cookies
 			if (protocol === "https") {
-				if (Array.isArray(proxyRes.headers["set-cookie"])) {
-					proxyRes.headers["set-cookie"] = proxyRes.headers["set-cookie"]
-						// remove flag 'Secure'
-						.map(function (cookieValue) {
-							return cookieValue.replace(/;\s*secure\s*(?:;|$)/gi, ";");
-						})
-						// remove attribute 'Domain'
-						.map(function (cookieValue) {
-							return cookieValue.replace(/;\s*domain=[^;]+\s*(?:;|$)/gi, ";");
-						})
-						// remove attribute 'Path'
-						.map(function (cookieValue) {
-							return cookieValue.replace(/;\s*path=[^;]+\s*(?:;|$)/gi, ";");
-						})
-						// remove attribute 'SameSite'
-						.map(function (cookieValue) {
-							return cookieValue.replace(/;\s*samesite=[^;]+\s*(?:;|$)/gi, ";");
-						});
+				const setCookie = res.getHeader("set-cookie");
+				if (Array.isArray(setCookie)) {
+					res.setHeader(
+						"set-cookie",
+						proxyRes.headers["set-cookie"]
+							// remove flag 'Secure'
+							.map(function (cookieValue) {
+								return cookieValue.replace(/;\s*secure\s*(?:;|$)/gi, ";");
+							})
+							// remove attribute 'Domain'
+							.map(function (cookieValue) {
+								return cookieValue.replace(/;\s*domain=[^;]+\s*(?:;|$)/gi, ";");
+							})
+							// remove attribute 'Path'
+							.map(function (cookieValue) {
+								return cookieValue.replace(/;\s*path=[^;]+\s*(?:;|$)/gi, ";");
+							})
+							// remove attribute 'SameSite'
+							.map(function (cookieValue) {
+								return cookieValue.replace(/;\s*samesite=[^;]+\s*(?:;|$)/gi, ";");
+							})
+					);
 				}
 			}
 			// remove etag
 			if (removeETag) {
 				debug && log.info(`[${baseUri}] Removing etag from ${req.url}`);
-				delete proxyRes.headers["etag"];
+				res.removeHeader("etag", undefined);
 			}
-		},
+			return responseBuffer;
+		}),
 	});
 };

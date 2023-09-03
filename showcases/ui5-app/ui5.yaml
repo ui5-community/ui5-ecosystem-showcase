@@ -131,6 +131,12 @@ server:
         debug: true
         baseUri: "https://sdk.openui5.org/"
         removeETag: true
+    - name: ui5-middleware-simpleproxy
+      mountPath: /odatav4
+      afterMiddleware: compression
+      configuration:
+        debug: true
+        baseUri: "https://services.odata.org/V4/(S(soab2geixerd5hqzncsoqpba))/TripPinServiceRW/"
     - name: ui5-tooling-stringreplace-middleware
       afterMiddleware: compression
       configuration:

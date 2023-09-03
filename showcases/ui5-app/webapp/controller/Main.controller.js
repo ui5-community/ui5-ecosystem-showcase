@@ -31,6 +31,9 @@ sap.ui.define(["ui5/ecosystem/demo/app/controller/BaseController", "sap/ui/model
 		navFwd() {
 			return this.getOwnerComponent().getRouter().navTo("RouteOther");
 		},
+		navFwdODataV4() {
+			return this.getOwnerComponent().getRouter().navTo("RouteODataV4");
+		},
 		navTest3rd() {
 			return this.getOwnerComponent().getRouter().navTo("RouteThirdparty");
 		},
