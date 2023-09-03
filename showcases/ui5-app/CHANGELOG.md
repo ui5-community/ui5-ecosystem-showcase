@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.29.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.29.0...ui5-app@0.29.1) (2023-09-03)
+
+
+### Bug Fixes
+
+* **ui5-middleware-simpleproxy:** support for express/connect servers ([#829](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/829)) ([1372f8c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1372f8c9281199ec7689b7ed9dba62cb303a0a8c))
+
+
+
+
+
 # [0.29.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.28.14...ui5-app@0.29.0) (2023-09-02)
 
 

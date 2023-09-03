@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.1.1...ui5-middleware-cfdestination@3.1.2) (2023-09-03)
+
+
+### Bug Fixes
+
+* **ui5-middleware-cfdestination:** support UAA flow ([#828](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/828)) ([20a0df1](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/20a0df16155f1f29b190525163cac457816c8a54)), closes [#817](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/817)
+
+
+
+
+
 ## [3.1.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.1.0...ui5-middleware-cfdestination@3.1.1) (2023-09-01)
 
 
