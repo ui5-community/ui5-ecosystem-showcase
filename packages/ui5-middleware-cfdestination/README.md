@@ -49,15 +49,29 @@ allow [BTP services](https://discovery-center.cloud.sap/serviceCatalog?) to be u
 whether to equip routes with authentication
 
 - `allowLocalDir`: `<boolean>`, default: `false`  
-allow static assets to be picked up by the included `approuter`  
-defaults to `false` as usually all local files/assets are supposedly served by `ui5-server`
+allow static assets to be picked up by the included `approuter`; defaults to `false` as usually all local files/assets are supposedly served by `ui5-server`
 
 - `rewriteContent`: `<boolean>`, default: `true`  
-enables/disables rewriting of the content by replacing
-the proxied url in the response body with the server url
+enables/disables rewriting of the content by replacing the proxied url in the response body with the server url
 
 - `rewriteContentTypes`: `<Array of strings>`, default: `["application/json", "application/atom+xml", "application/xml"]`  
 defines the content types which are included for rewriting the content by enabling the `rewriteContent` option
+
+- `disableWelcomeFile`: `<boolean>`, default: `false` *experimental*
+disables the welcome file handling of the approuter based on the `welcomeFile` property in the `xsappJson` file
+
+- `appendAuthRoute`: `<boolean>`, default: `false` *experimental*
+if `true` the middleware adds a custom route for all HTML pages to trigger authentication:
+
+  ```json
+  {
+    "source": "^/([^.]+\\.html?(?:\\?.*)?)$",
+    "localDir": relativeSourcePath,
+    "target": "$1",
+    "cacheControl": "no-store",
+    "authenticationType": "xsuaa"
+  }
+  ```
 
 - `enableWebSocket`: `<boolean>`, default: `false` *experimental*
 enables support for proxying web sockets
