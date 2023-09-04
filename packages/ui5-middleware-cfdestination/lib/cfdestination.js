@@ -187,11 +187,11 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	}
 
 	// helper to determine the mime type either from the req path or if provided
-	// we parse the content-type value and retunr content type and charset
+	// we parse the content-type value and return the content-type and charset
 	const getMimeInfo = (reqPath, ctValue) => {
 		if (ctValue) {
 			const parsedCtHeader = ct.parse(ctValue)
-			const contentType = parsedCtHeader?.type || "application/octet-stream"
+			const contentType = parsedCtHeader?.type ? ctValue : "application/octet-stream"
 			const charset = parsedCtHeader?.parameters?.charset || mime.charset(contentType)
 			return {
 				contentType,
