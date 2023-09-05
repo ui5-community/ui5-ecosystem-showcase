@@ -186,20 +186,20 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		)
 	}
 
-	// helper to determine the mime type either from the req path or if provided
-	// we parse the content-type value and retunr content type and charset
+	// helper to determine the mime info either from the req path or if provided
+	// we parse the content-type value and return the mime info
 	const getMimeInfo = (reqPath, ctValue) => {
+		let mimeInfo = {}
 		if (ctValue) {
 			const parsedCtHeader = ct.parse(ctValue)
-			const contentType = parsedCtHeader?.type || "application/octet-stream"
-			const charset = parsedCtHeader?.parameters?.charset || mime.charset(contentType)
-			return {
-				contentType,
-				charset
-			}
+			const type = parsedCtHeader?.type || "application/octet-stream"
+			const charset = parsedCtHeader?.parameters?.charset || mime.charset(type)
+			const contentType = ct.format({ type, parameters: parsedCtHeader?.parameters })
+			Object.assign(mimeInfo, { type, charset, contentType })
 		} else {
-			return middlewareUtil.getMimeInfo(reqPath)
+			Object.assign(mimeInfo, middlewareUtil.getMimeInfo(reqPath))
 		}
+		return mimeInfo
 	}
 
 	// intereceptor of the response to update the content-type and rewrite the content
@@ -208,17 +208,19 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		effectiveOptions.debug && log.info(`${req.method} ${reqPath} -> ${baseUri}${reqPath} [${proxyRes.statusCode}]`)
 
 		// determine and update content type (avoid no content type!)
-		let { contentType, charset } = getMimeInfo(reqPath, proxyRes.headers["content-type"])
-		res.setHeader("content-type", contentType + (charset ? `; charset=${charset}` : ""))
+		let { type, charset, contentType } = getMimeInfo(reqPath, proxyRes.headers["content-type"])
+		res.setHeader("content-type", contentType)
 
 		// only rewrite content when enabled and the content type is supported!
-		if (
-			effectiveOptions.rewriteContent &&
-			effectiveOptions.rewriteContentTypes.indexOf(contentType?.toLowerCase()) >= 0
-		) {
+		if (effectiveOptions.rewriteContent && effectiveOptions.rewriteContentTypes.indexOf(type?.toLowerCase()) >= 0) {
 			let data = responseBuffer.toString(charset || "utf8")
 			const route = routes.find((route) => route.re.test(reqPath))
-			const url = `${req.protocol}://${req.get("host")}/${route.path}`
+			// use the referrer or fallback to xfwd information to calculate the URL
+			const referrer =
+				req.headers.referrer ||
+				req.headers.referer ||
+				`${req.headers["x-forwarded-proto"]}://${req.headers["x-forwarded-host"]}${req.baseUrl}`
+			const url = new URL(route.path, referrer).toString()
 			data = data.replaceAll(route.url, url)
 			// in some cases, the odata servers respond http instead of https in the content
 			if (route.url?.startsWith("https://")) {

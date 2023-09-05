@@ -9,6 +9,7 @@
         <Title level="H1" titleStyle="H1" text="{i18n>startPage.title.text}" width="100%" textAlign="Center" />
         <Button id="NavButton" icon="sap-icon://forward" text="{i18n>startPage.navButton.text}" press="navFwd" />
         <Button icon="sap-icon://forward" text="{i18n>startPage.odatav4Button.text}" press="navFwdODataV4" />
+        <Button icon="sap-icon://forward" text="{i18n>startPage.odatav2Button.text}" press="navFwdODataV2" />
         <Button text="IA Sync" press="onPress" />
         <Panel expandable="true">
           <headerToolbar>

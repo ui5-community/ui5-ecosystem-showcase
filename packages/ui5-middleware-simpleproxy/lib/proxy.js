@@ -149,7 +149,11 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 		auth: username != null && password != null ? `${username}:${password}` : undefined,
 		headers: httpHeaders,
 		pathRewrite: function (path, req) {
-			let targetPath = path.substring(req.baseUrl?.length || 0);
+			// in case of Router scenarios (cds-plugin-ui5) we need to use
+			// the parsed original url to determine the proper target path
+			// as it contains also the mountpath of the proxy middleware
+			const reqPath = req._parsedOriginalUrl?.path || path;
+			let targetPath = reqPath.substr(req.baseUrl?.length || 0);
 			// append the query parameters if available
 			if (query) {
 				const url = new URL(targetPath, baseURL);

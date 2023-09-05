@@ -19,6 +19,13 @@
           "odataVersion": "4.0"
         }
       },
+      "ODataV2DataSource": {
+        "uri": "/odatav2/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "2.0"
+        }
+      },
       "ODataV4DataSource": {
         "uri": "/odatav4/",
         "type": "OData",
@@ -83,6 +90,9 @@
           "synchronizationMode": "None"
         }
       },
+      "ODataV2": {
+        "dataSource": "ODataV2DataSource"
+      },
       "ODataV4": {
         "dataSource": "ODataV4DataSource",
         "settings": {
@@ -123,6 +133,11 @@
           "target": ["TargetODataV4"]
         },
         {
+          "name": "RouteODataV2",
+          "pattern": "odatav2",
+          "target": ["TargetODataV2"]
+        },
+        {
           "name": "RouteThirdparty",
           "pattern": "thirdparty",
           "target": ["TargetThirdparty"]
@@ -154,6 +169,13 @@
           "clearControlAggregation": false,
           "viewId": "ODataV4",
           "viewName": "ODataV4"
+        },
+        "TargetODataV2": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewId": "ODataV2",
+          "viewName": "ODataV2"
         },
         "TargetThirdparty": {
           "viewType": "XML",
