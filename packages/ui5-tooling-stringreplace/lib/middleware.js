@@ -26,11 +26,9 @@ function isFresh(req, res) {
  *                                        the projects dependencies
  * @param {object} parameters.options Options
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
- * @param {object} parameters.middlewareUtil Specification version dependent interface to a
- *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
  * @returns {Function} Middleware function to use
  */
-module.exports = function createMiddleware({ log, resources, options, middlewareUtil }) {
+module.exports = function createMiddleware({ log, resources, options }) {
 	const isDebug = options.configuration && options.configuration.debug;
 
 	// get all environment variables
@@ -75,7 +73,7 @@ module.exports = function createMiddleware({ log, resources, options, middleware
 			return;
 		}
 
-		const pathname = middlewareUtil.getPathname(req);
+		const pathname = req.url?.match("^[^?]*")[0];
 		const resource = await resources.all.byPath(pathname);
 		if (!resource) {
 			// Resource not found

@@ -5,7 +5,7 @@ sap.ui.define(["ui5/ecosystem/demo/app/controller/BaseController", "sap/ui/util/
 		onInit() {},
 		handleEmployeeClick(event) {
 			const bindingContext = event.getSource().getBindingContext("ODataV2"),
-				serviceUrl = bindingContext.getModel().getServiceUrl(),
+				serviceUrl = bindingContext.getModel().sServiceUrl, // THIS IS A HACK! NOT FOR PRODUCTIVE USAGE!!
 				sanitizedServiceUrl = /^(.*)\/$/.exec(serviceUrl)?.[1] || serviceUrl,
 				path = bindingContext.getPath(),
 				href = new URL(sanitizedServiceUrl + path, location.href).toString();

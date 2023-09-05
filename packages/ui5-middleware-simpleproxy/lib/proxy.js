@@ -122,11 +122,12 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 			const targetPath = pathname.substring(req.baseUrl?.length || 0);
 			const exclude = excludePatterns.some((glob) => minimatch(targetPath, glob));
 			if (exclude) {
-				debug && log.info(`[${baseUri}] Request ${req.url} is excluded`);
+				const url = req.url;
+				debug && log.info(`[${baseUri}] Request ${url} is excluded`);
 				const reCBToken = /\/~.*~.\//g;
-				if (skipCache && reCBToken.test(req.url)) {
-					const newUrl = req.url.replace(reCBToken, "/");
-					debug && log.info(`[${baseUri}] Removing cachebuster token from ${req.url}, resolving to ${newUrl}`);
+				if (skipCache && reCBToken.test(url)) {
+					const newUrl = url.replace(reCBToken, "/");
+					debug && log.info(`[${baseUri}] Removing cachebuster token from ${url}, resolving to ${newUrl}`);
 					req.url = newUrl;
 				}
 			}
@@ -152,21 +153,22 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 			// in case of Router scenarios (cds-plugin-ui5) we need to use
 			// the parsed original url to determine the proper target path
 			// as it contains also the mountpath of the proxy middleware
-			const reqPath = req._parsedOriginalUrl?.path || path;
-			let targetPath = reqPath.substr(req.baseUrl?.length || 0);
+			const baseUrl = req.baseUrl?.length > 1 ? req.baseUrl + "/" : undefined;
+			const url = req.url;
+			let pathname = baseUrl && url?.startsWith(baseUrl) ? url.substring(baseUrl.length - 1) : url;
 			// append the query parameters if available
 			if (query) {
-				const url = new URL(targetPath, baseURL);
+				const url = new URL(pathname, baseURL);
 				const search = url.searchParams;
 				Object.keys(query).forEach((key) => search.append(key, query[key]));
-				targetPath = `${url.pathname}${url.search}`;
+				pathname = `${url.pathname}${url.search}`;
 			}
-			return targetPath;
+			return pathname;
 		},
 		selfHandleResponse: true, // + responseInterceptor: necessary to omit ERR_CONTENT_DECODING_FAILED error when opening OData URls directly
 		onProxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
-			const reqPath = middlewareUtil.getPathname(req);
-			effectiveOptions.debug && log.info(`[${baseUri}] ${req.method} ${reqPath} -> ${target}${reqPath} [${proxyRes.statusCode}]`);
+			const url = req.url;
+			effectiveOptions.debug && log.info(`[${baseUri}] ${req.method} ${url} -> ${target}${url} [${proxyRes.statusCode}]`);
 			// remove the secure flag of the cookies
 			if (protocol === "https") {
 				const setCookie = res.getHeader("set-cookie");
@@ -195,7 +197,7 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 			}
 			// remove etag
 			if (removeETag) {
-				debug && log.info(`[${baseUri}] Removing etag from ${req.url}`);
+				debug && log.info(`[${baseUri}] Removing etag from ${url}`);
 				res.removeHeader("etag", undefined);
 			}
 			return responseBuffer;

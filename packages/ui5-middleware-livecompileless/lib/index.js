@@ -19,9 +19,9 @@ module.exports = async ({ log, resources, options }) => {
 	const isDebug = options?.configuration?.debug;
 
 	return async function injectLess(req, res, next) {
-		let url = req.url;
-		if (url.includes(".css") && !url.includes("resources/")) {
-			let possibleLessFile = await resources.rootProject.byPath(url.replace(".css", ".less"));
+		const pathname = req.url?.match("^[^?]*")[0];
+		if (pathname.includes(".css") && !pathname.includes("resources/")) {
+			let possibleLessFile = await resources.rootProject.byPath(pathname.replace(".css", ".less"));
 			if (possibleLessFile) {
 				isDebug && log.info(`Compiling ${possibleLessFile.getPath()}...`);
 				const { default: fsInterface } = await import("@ui5/fs/fsInterface");

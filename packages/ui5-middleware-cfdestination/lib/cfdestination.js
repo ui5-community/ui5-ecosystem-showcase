@@ -188,7 +188,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 
 	// helper to determine the mime info either from the req path or if provided
 	// we parse the content-type value and return the mime info
-	const getMimeInfo = (reqPath, ctValue) => {
+	const getMimeInfo = (pathname, ctValue) => {
 		let mimeInfo = {}
 		if (ctValue) {
 			const parsedCtHeader = ct.parse(ctValue)
@@ -197,34 +197,35 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 			const contentType = ct.format({ type, parameters: parsedCtHeader?.parameters })
 			Object.assign(mimeInfo, { type, charset, contentType })
 		} else {
-			Object.assign(mimeInfo, middlewareUtil.getMimeInfo(reqPath))
+			Object.assign(mimeInfo, middlewareUtil.getMimeInfo(pathname))
 		}
 		return mimeInfo
 	}
 
 	// intereceptor of the response to update the content-type and rewrite the content
 	const intercept = responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
-		const reqPath = middlewareUtil.getPathname(req)
-		effectiveOptions.debug && log.info(`${req.method} ${reqPath} -> ${baseUri}${reqPath} [${proxyRes.statusCode}]`)
+		const url = req.url
+		effectiveOptions.debug && log.info(`${req.method} ${url} -> ${baseUri}${url} [${proxyRes.statusCode}]`)
 
 		// determine and update content type (avoid no content type!)
-		let { type, charset, contentType } = getMimeInfo(reqPath, proxyRes.headers["content-type"])
+		const pathname = url?.match("^[^?]*")[0] // req.url
+		let { type, charset, contentType } = getMimeInfo(pathname, proxyRes.headers["content-type"])
 		res.setHeader("content-type", contentType)
 
 		// only rewrite content when enabled and the content type is supported!
 		if (effectiveOptions.rewriteContent && effectiveOptions.rewriteContentTypes.indexOf(type?.toLowerCase()) >= 0) {
 			let data = responseBuffer.toString(charset || "utf8")
-			const route = routes.find((route) => route.re.test(reqPath))
+			const route = routes.find((route) => route.re.test(url))
 			// use the referrer or fallback to xfwd information to calculate the URL
 			const referrer =
 				req.headers.referrer ||
 				req.headers.referer ||
 				`${req.headers["x-forwarded-proto"]}://${req.headers["x-forwarded-host"]}${req.baseUrl}`
-			const url = new URL(route.path, referrer).toString()
-			data = data.replaceAll(route.url, url)
+			const referrerUrl = new URL(route.path, referrer).toString()
+			data = data.replaceAll(route.url, referrerUrl)
 			// in some cases, the odata servers respond http instead of https in the content
 			if (route.url?.startsWith("https://")) {
-				data = data.replaceAll(`http://${route.url.substr(8)}`, url)
+				data = data.replaceAll(`http://${route.url.substr(8)}`, referrerUrl)
 			}
 			return new Buffer.from(data)
 		} else {
@@ -244,16 +245,22 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		onProxyReq: (proxyReq, req, res) => {
 			// if the ui5-middleware-index is used and redirects the welcome file
 			// we need to send a redirect to trigger the auth-flow of the approuter
-			if (req["ui5-middleware-index"]?.path === "/") {
-				const reqPath = middlewareUtil.getPathname(req)
-				res._redirected = true
-				return res.redirect(reqPath)
+			if (req["ui5-middleware-index"]?.url === "/") {
+				// mark the response as redirected
+				res["ui5-middleware-cfdestination"] = {
+					redirected: true
+				}
+				// redirect the response to baseUrl + url
+				const baseUrl = req["cds-plugin-ui5"]?.baseUrl
+				return res.redirect(`${baseUrl !== "/" ? baseUrl : ""}${req.url}`)
+			} else if (req["cds-plugin-ui5"]?.originalUrl) {
+				proxyReq.setHeader("x-forwarded-path", req["cds-plugin-ui5"].originalUrl)
 			}
 		},
 		onProxyRes: async (proxyRes, req, res) => {
 			// we only handle the response when the request hasn't been
 			// redirected already in the flow above
-			if (!res._redirected) {
+			if (!res["ui5-middleware-cfdestination"]?.redirected) {
 				return intercept(proxyRes, req, res)
 			}
 		}

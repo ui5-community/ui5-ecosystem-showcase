@@ -44,13 +44,13 @@ module.exports = function ({ log, options, middlewareUtil }) {
 	// return the middleware
 	return async (req, res, next) => {
 		// determine the request path
-		const reqPath = middlewareUtil.getPathname(req);
+		const pathname = req.url?.match("^[^?]*")[0];
 
 		// perf
 		const time = Date.now();
 
 		// check for resources requests
-		const match = /^\/resources\/(.*)$/.exec(reqPath);
+		const match = /^\/resources\/(.*)$/.exec(pathname);
 		if (match) {
 			// determine the module name (for JS resources we strip the extension)
 			let moduleName = match[1];
@@ -66,7 +66,7 @@ module.exports = function ({ log, options, middlewareUtil }) {
 					log.verbose(`Processing resource ${moduleName}...`);
 
 					// determine charset and content-type
-					let { contentType, charset } = middlewareUtil.getMimeInfo(reqPath);
+					let { contentType, charset } = middlewareUtil.getMimeInfo(pathname);
 					res.setHeader("Content-Type", contentType);
 
 					// respond the content
