@@ -209,7 +209,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 
 		// determine and update content type (avoid no content type!)
 		let { contentType, charset } = getMimeInfo(reqPath, proxyRes.headers["content-type"])
-		res.setHeader("content-type", contentType)
+		res.setHeader("content-type", contentType + (charset ? `; charset=${charset}` : ""))
 
 		// only rewrite content when enabled and the content type is supported!
 		if (
