@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.2.0...ui5-tooling-transpile@3.2.1) (2023-09-06)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** ensure loadPartialConfigAsync works with filters ([#834](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/834)) ([1f33961](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1f33961b240b37e6f36b90e8b071f7bee366d3a8))
+
+
+
+
+
 # [3.2.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.1.0...ui5-tooling-transpile@3.2.0) (2023-08-27)
 
 
