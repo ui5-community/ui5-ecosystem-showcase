@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "connect-livereload": "^0.6.1",
-    "livereload": "^0.9.3",
+    "livereload": "git+ssh://git@github.com:dominikfeininger/node-livereload.git",
     "portfinder": "^1.0.32",
     "yargs": "^17.7.2"
   }

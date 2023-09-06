@@ -91,7 +91,7 @@ module.exports = async ({ log, resources, options }) => {
 	} else if (exclusions) {
 		exclusions = [new RegExp(exclusions)];
 	}
-	let extraExts = options?.configuration?.extraExts || "jsx,ts,tsx,xml,json,properties";
+	let extraExts = options?.configuration?.extraExts || "jsx,ts,tsx,xml,json,properties,less";
 	let debug = options?.configuration?.debug;
 	let usePolling = options?.configuration?.usePolling;
 
