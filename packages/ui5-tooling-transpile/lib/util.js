@@ -62,10 +62,10 @@ async function loadBabelConfigOptions(babelConfigOptions, skipBabelPresetPluginR
 	// let babel load the babel config
 	const partialConfig = await babel.loadPartialConfigAsync(
 		Object.assign(
-			{},
 			{
 				configFile: false,
-				babelrc: false
+				babelrc: false,
+				filename: "src/dummy.js" // necessary for ignore/include/exclude
 			},
 			babelConfigOptions
 		)
