@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.29.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.29.3...ui5-app@0.29.4) (2023-09-07)
+
+
+### Bug Fixes
+
+* consistent request path handling of all middlewares ([#833](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/833)) ([11ad435](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/11ad4356ddb6f8503ebf46039ad898b1c4aec7c9)), closes [#817](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/817)
+
+
+
+
+
 ## [0.29.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.29.2...ui5-app@0.29.3) (2023-09-06)
 
 **Note:** Version bump only for package ui5-app
