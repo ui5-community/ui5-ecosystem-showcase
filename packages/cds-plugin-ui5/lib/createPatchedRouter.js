@@ -11,13 +11,21 @@ module.exports = async function createPatchedRouter() {
 	router.use(function (req, res, next) {
 		// disable the compression when livereload is used
 		// for loading html-related content (via accept header)
-		const accept = req.headers["accept"]?.indexOf("html");
+		const accept = req.headers["accept"]?.indexOf("html") !== -1;
 		if (accept && res._livereload) {
 			req.headers["accept-encoding"] = "identity";
 		}
-		// remove the mount path from the url
+		// store the original request information
+		const { url, originalUrl, baseUrl } = req;
+		req["cds-plugin-ui5"] = {
+			url,
+			originalUrl,
+			baseUrl,
+		};
+		// rewite the path to simulate requests on the root level
 		req.originalUrl = req.url;
 		req.baseUrl = "/";
+		// next one!
 		next();
 	});
 	return router;

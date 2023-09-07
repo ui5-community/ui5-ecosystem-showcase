@@ -106,7 +106,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	);
 
 	return async function serveWebJARs(req, res, next) {
-		const pathname = middlewareUtil.getPathname(req);
+		const pathname = req.url?.match("^[^?]*")[0];
 		const jarPath = path.join(jarRootPath, pathname.substr(1));
 
 		const jarResource = jarResources[jarPath];
@@ -115,8 +115,8 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 				log.info(`Serving ${pathname}`);
 			}
 
-			// determine charset and content-type
-			let { contentType, charset } = middlewareUtil.getMimeInfo(pathname);
+			// determine content-type
+			let { contentType } = middlewareUtil.getMimeInfo(pathname);
 			if (pathname.endsWith(".properties")) {
 				contentType = "text/plain";
 			}

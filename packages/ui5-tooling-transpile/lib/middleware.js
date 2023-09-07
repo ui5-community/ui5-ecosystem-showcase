@@ -1,9 +1,10 @@
 /* eslint-disable jsdoc/check-param-names */
 const path = require("path");
-const parseurl = require("parseurl");
 
 /**
  * Custom middleware to transpile resources to JavaScript modules.
+ *
+ * Hint: mime type for TypeScript is "application/x-typescript"
  *
  * @param {object} parameters Parameters
  * @param {module:@ui5/logger/Logger} parameters.log Logger instance
@@ -115,7 +116,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	}
 
 	return async (req, res, next) => {
-		const pathname = parseurl(req)?.pathname;
+		const pathname = req.url?.match("^[^?]*")[0];
 		if (pathname.endsWith(".js") && shouldHandlePath(pathname, config.excludes, config.includes)) {
 			const pathWithFilePattern = pathname.replace(".js", config.filePattern);
 			config.debug && log.verbose(`Lookup resource ${pathWithFilePattern}`);

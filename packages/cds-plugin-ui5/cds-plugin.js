@@ -113,7 +113,6 @@ cds.on("bootstrap", async function bootstrap(app) {
 				}
 				send.apply(this, arguments);
 			};
-			//log.debug(req.url);
 			next();
 		});
 
