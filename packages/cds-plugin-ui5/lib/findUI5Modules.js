@@ -116,22 +116,16 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 				throw err;
 			}
 
-			// by default the mount path is derived from the metadata/name
-			// and can be overridden by customConfiguration/mountPath
+			// extract the configuration
 			const ui5Config = ui5Configs?.[0];
 			const isApplication = ui5Config?.type === "application";
 			if (isApplication) {
-				let mountPath = ui5Config?.customConfiguration?.mountPath || ui5Config?.metadata?.name;
-				if (!/^\//.test(mountPath)) {
-					mountPath = `/${mountPath}`; // always start with /
-				}
-
 				// determine the module path based on the location of the ui5.yaml
 				const modulePath = path.dirname(ui5YamlPath);
 
 				// manually get the module name as defined in package.json
-				// skipDeps is only true if we are looking for UI5 apps inside a CAP server project
-				// in all other cases the module name equals the appDir
+				// skipDeps is only true if we are looking for UI5 apps inside a CAP
+				// server project in all other cases the module name equals the appDir
 				let moduleName;
 				if (skipDeps) {
 					const packageJsonPath = require.resolve(path.join(appDir, "package.json"), {
@@ -141,6 +135,17 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 					moduleName = JSON.parse(packageJsonContent).name;
 				}
 				const moduleId = moduleName || path.basename(appDir);
+
+				// by default the mount path is derived from the "metadata/name"
+				// and can be overridden by "customConfiguration/mountPath" or
+				// by "customConfiguration/cds-plugin-ui5/mountPath" or by
+				// the following configuration entry in the package.json of CAP
+				// server: "cds/cds-plugin-ui5/modules/%moduleId%/mountPath"
+				let mountPath =
+					modulesConfig?.[moduleId]?.mountPath || ui5Config?.customConfiguration?.["cds-plugin-ui5"]?.mountPath || ui5Config?.customConfiguration?.mountPath || ui5Config?.metadata?.name;
+				if (!/^\//.test(mountPath)) {
+					mountPath = `/${mountPath}`; // always start with /
+				}
 
 				// store the custom config in the configuration map
 				if (modulesConfig?.[moduleId]) {

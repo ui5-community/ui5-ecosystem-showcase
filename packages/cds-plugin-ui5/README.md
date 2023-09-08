@@ -23,7 +23,61 @@ That's it!
 
 ### Configuration
 
-The plugin can be configured using the `cds-plugin-ui5` section in the `package.json`. To define a custom configFile for any module you can add a configuration object for each module in the `modules` section:
+The plugin accepts configuration to control the mount path for the embedding into the CAP server and selected configuration options for the UI5 server middlewares which are embedded into the mount path of the CAP server.
+
+#### Mount Path
+
+The mount path of the UI5 application configures the nested Router for the UI5 server middlewares to run under this predefined path. It is by default derived from the `metadata/name` of the `ui5.yaml`:
+
+```yaml
+specVersion: "3.0"
+metadata:
+  name: ui5.bookshop
+type: application
+```
+
+This configuration can be overruled by adding a the `customConfiguration/cds-plugin-ui5/mountPath` option into the `ui5.yaml`:
+
+```yaml
+specVersion: "3.0"
+metadata:
+  name: ui5.bookshop
+type: application
+customConfiguration:
+  cds-plugin-ui5:
+    mountPath: /bookshop
+```
+
+In some cases it is necessary to overrule the UI5 application local configuration in the CAP server. Therefore, you can add custom configuration into the `package.json` of the CAP server into the section: `cds/cds-plugin-ui5/modules/%moduleId%/mountPath`
+
+```json
+{
+  "name": "cds-bookshop",
+  [...]
+  "cds": {
+    [...]
+    "cds-plugin-ui5": {
+      "modules": {
+        "ui5-bookshop": {
+          "mountPath": "/the-bookshop"
+        }
+      }
+    }
+  }
+}
+```
+
+The `moduleId` is either the directory name for local apps in the `app` directory of the CAP server or for dependencies the `name` from the `package.json`.
+
+The configuration can also be injected with the environment variable `CDS_PLUGIN_UI5_MODULES`. It contains the JSON string from the configuration above, e.g.:
+
+```sh
+CDS_PLUGIN_UI5_MODULES="{ \"ui5-bookshop\": { \"mountPath\": \"/the-bookshop\" } }" cds-serve
+```
+
+#### UI5 Server Middlewares
+
+If you require to configure the UI5 server middlewares, you can do so by adding some selected configuration options in the `package.json` of the CAP server in the section: `cds/cds-plugin-ui5/modules/%moduleId%`
 
 ```json
 {
@@ -45,13 +99,22 @@ The plugin can be configured using the `cds-plugin-ui5` section in the `package.
 }
 ```
 
-The key is the `moduleId` which is either the directory name for local apps in the `app` directory of the CAP server or for dependencies the `name` from the `package.json`. As value you can specify an alternative `configFile`, `workspaceConfigFile`, `workspaceName`, and/or `versionOverride`. The location of the config files are relative to the modules' base path.
+The `moduleId` is either the directory name for local apps in the `app` directory of the CAP server or for dependencies the `name` from the `package.json`.
 
-A second option to override this configuration is the usage of the environment variable `CDS_PLUGIN_UI5_MODULES`. It contains the JSON string from the configuration above, e.g.:
+The available configuration options are:
+
+* `configFile`: *`string`* - name of the config file (defaults to "ui5.yaml")
+* `workspaceConfigFile`: *`string`* - name of the workspace config file (defaults to "ui5-workspace.yaml")
+* `workspaceName`: *`string`* - name of the workspace (defaults to "default" when the file at workspaceConfigPath exists)
+* `versionOverride`: *`string`* - Framework version to use instead of the one defined in the root project
+
+The configuration can also be injected with the environment variable `CDS_PLUGIN_UI5_MODULES`. It contains the JSON string from the configuration above, e.g.:
 
 ```sh
 CDS_PLUGIN_UI5_MODULES="{ \"ui5-bookshop\": { \"configFile\": \"ui5-dist.yaml\" } }" cds-serve
 ```
+
+The configuration options from the UI5 server middlewares and the mount path can be mixed together as they both are in the same section of the `package.json`.
 
 ## Info for UI5 Tooling Extension Developers
 
