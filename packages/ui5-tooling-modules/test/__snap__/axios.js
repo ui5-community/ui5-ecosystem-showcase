@@ -544,8 +544,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     const reducedDescriptors = {};
 
     forEach(descriptors, (descriptor, name) => {
-      if (reducer(descriptor, name, obj) !== false) {
-        reducedDescriptors[name] = descriptor;
+      let ret;
+      if ((ret = reducer(descriptor, name, obj)) !== false) {
+        reducedDescriptors[name] = ret || descriptor;
       }
     });
 
@@ -1274,10 +1275,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     return null;
   }
 
-  const DEFAULT_CONTENT_TYPE = {
-    'Content-Type': undefined
-  };
-
   /**
    * It takes a string, tries to parse it, and if it fails, it returns the stringified version
    * of the input
@@ -1307,7 +1304,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
     transitional: transitionalDefaults,
 
-    adapter: ['xhr', 'http'],
+    adapter: platform.isNode ? 'http' : 'xhr',
 
     transformRequest: [function transformRequest(data, headers) {
       const contentType = headers.getContentType() || '';
@@ -1416,17 +1413,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
     headers: {
       common: {
-        'Accept': 'application/json, text/plain, */*'
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': undefined
       }
     }
   };
 
-  utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
+  utils.forEach(['delete', 'get', 'head', 'post', 'put', 'patch'], (method) => {
     defaults.headers[method] = {};
-  });
-
-  utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
-    defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
   });
 
   // RawAxiosHeaders whose duplicates are ignored by node
@@ -1760,7 +1754,17 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   AxiosHeaders$1.accessor(['Content-Type', 'Content-Length', 'Accept', 'Accept-Encoding', 'User-Agent', 'Authorization']);
 
-  utils.freezeMethods(AxiosHeaders$1.prototype);
+  // reserved names hotfix
+  utils.reduceDescriptors(AxiosHeaders$1.prototype, ({value}, key) => {
+    let mapped = key[0].toUpperCase() + key.slice(1); // map `set` => `Set`
+    return {
+      get: () => value,
+      set(headerValue) {
+        this[mapped] = headerValue;
+      }
+    }
+  });
+
   utils.freezeMethods(AxiosHeaders$1);
 
   /**
@@ -2513,7 +2517,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     return config;
   }
 
-  const VERSION$1 = "1.4.0";
+  const VERSION$1 = "1.5.0";
 
   const validators$1 = {};
 
@@ -2666,15 +2670,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       // Set config.method
       config.method = (config.method || this.defaults.method || 'get').toLowerCase();
 
-      let contextHeaders;
-
       // Flatten headers
-      contextHeaders = headers && utils.merge(
+      let contextHeaders = headers && utils.merge(
         headers.common,
         headers[config.method]
       );
 
-      contextHeaders && utils.forEach(
+      headers && utils.forEach(
         ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
         (method) => {
           delete headers[method];
@@ -3078,6 +3080,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   axios.formToJSON = thing => formDataToJSON(utils.isHTMLForm(thing) ? new FormData(thing) : thing);
 
+  axios.getAdapter = adapters.getAdapter;
+
   axios.HttpStatusCode = HttpStatusCode$1;
 
   axios.default = axios;
@@ -3100,6 +3104,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     AxiosHeaders,
     HttpStatusCode,
     formToJSON,
+    getAdapter,
     mergeConfig
   } = axios;
 
@@ -3116,6 +3121,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   exports.all = all;
   exports.default = axios;
   exports.formToJSON = formToJSON;
+  exports.getAdapter = getAdapter;
   exports.isAxiosError = isAxiosError;
   exports.isCancel = isCancel;
   exports.mergeConfig = mergeConfig;

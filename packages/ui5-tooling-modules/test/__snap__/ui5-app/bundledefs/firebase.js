@@ -2096,7 +2096,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	}
 
 	const name$o = "@firebase/app";
-	const version$1$1 = "0.9.15";
+	const version$1$1 = "0.9.18";
 
 	/**
 	 * @license
@@ -2163,7 +2163,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	const name$1 = "@firebase/firestore-compat";
 
 	const name = "firebase";
-	const version$3 = "10.1.0";
+	const version$3 = "10.3.1";
 
 	/**
 	 * @license
@@ -2999,7 +2999,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		var app = require$$0;
 
 		var name = "firebase";
-		var version = "10.1.0";
+		var version = "10.3.1";
 
 		/**
 		 * @license
@@ -6021,7 +6021,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
 	var nodeFetch__default = /*#__PURE__*/_interopDefaultLegacy(nodeFetch);
 
-	const version$1 = "4.1.0";
+	const version$1 = "4.1.3";
 
 	/**
 	 * @license
@@ -6074,7 +6074,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	User.FIRST_PARTY = new User('first-party-uid');
 	User.MOCK_USER = new User('mock-user');
 
-	const version = "10.1.0";
+	const version = "10.3.1";
 
 	/**
 	 * @license
@@ -10099,9 +10099,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	        this.limitType = limitType;
 	        this.startAt = startAt;
 	        this.endAt = endAt;
-	        this.memoizedOrderBy = null;
-	        // The corresponding `Target` of this `Query` instance.
+	        this.memoizedNormalizedOrderBy = null;
+	        // The corresponding `Target` of this `Query` instance, for use with
+	        // non-aggregate queries.
 	        this.memoizedTarget = null;
+	        // The corresponding `Target` of this `Query` instance, for use with
+	        // aggregate queries. Unlike targets for non-aggregate queries,
+	        // aggregate query targets do not contain normalized order-bys, they only
+	        // contain explicit order-bys.
+	        this.memoizedAggregateTarget = null;
 	        if (this.startAt) ;
 	        if (this.endAt) ;
 	    }
@@ -10139,14 +10145,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    return query.collectionGroup !== null;
 	}
 	/**
-	 * Returns the implicit order by constraint that is used to execute the Query,
-	 * which can be different from the order by constraints the user provided (e.g.
-	 * the SDK and backend always orders by `__name__`).
+	 * Returns the normalized order-by constraint that is used to execute the Query,
+	 * which can be different from the order-by constraints the user provided (e.g.
+	 * the SDK and backend always orders by `__name__`). The normalized order-by
+	 * includes implicit order-bys in addition to the explicit user provided
+	 * order-bys.
 	 */
-	function queryOrderBy(query) {
+	function queryNormalizedOrderBy(query) {
 	    const queryImpl = debugCast(query);
-	    if (queryImpl.memoizedOrderBy === null) {
-	        queryImpl.memoizedOrderBy = [];
+	    if (queryImpl.memoizedNormalizedOrderBy === null) {
+	        queryImpl.memoizedNormalizedOrderBy = [];
 	        const inequalityField = getInequalityFilterField(queryImpl);
 	        const firstOrderByField = getFirstOrderByField(queryImpl);
 	        if (inequalityField !== null && firstOrderByField === null) {
@@ -10154,61 +10162,77 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	            // inequality filter field for it to be a valid query.
 	            // Note that the default inequality field and key ordering is ascending.
 	            if (!inequalityField.isKeyField()) {
-	                queryImpl.memoizedOrderBy.push(new OrderBy(inequalityField));
+	                queryImpl.memoizedNormalizedOrderBy.push(new OrderBy(inequalityField));
 	            }
-	            queryImpl.memoizedOrderBy.push(new OrderBy(FieldPath$1.keyField(), "asc" /* Direction.ASCENDING */));
+	            queryImpl.memoizedNormalizedOrderBy.push(new OrderBy(FieldPath$1.keyField(), "asc" /* Direction.ASCENDING */));
 	        }
 	        else {
 	            let foundKeyOrdering = false;
 	            for (const orderBy of queryImpl.explicitOrderBy) {
-	                queryImpl.memoizedOrderBy.push(orderBy);
+	                queryImpl.memoizedNormalizedOrderBy.push(orderBy);
 	                if (orderBy.field.isKeyField()) {
 	                    foundKeyOrdering = true;
 	                }
 	            }
 	            if (!foundKeyOrdering) {
 	                // The order of the implicit key ordering always matches the last
-	                // explicit order by
+	                // explicit order-by
 	                const lastDirection = queryImpl.explicitOrderBy.length > 0
 	                    ? queryImpl.explicitOrderBy[queryImpl.explicitOrderBy.length - 1]
 	                        .dir
 	                    : "asc" /* Direction.ASCENDING */;
-	                queryImpl.memoizedOrderBy.push(new OrderBy(FieldPath$1.keyField(), lastDirection));
+	                queryImpl.memoizedNormalizedOrderBy.push(new OrderBy(FieldPath$1.keyField(), lastDirection));
 	            }
 	        }
 	    }
-	    return queryImpl.memoizedOrderBy;
+	    return queryImpl.memoizedNormalizedOrderBy;
 	}
 	/**
-	 * Converts this `Query` instance to it's corresponding `Target` representation.
+	 * Converts this `Query` instance to its corresponding `Target` representation.
 	 */
 	function queryToTarget(query) {
 	    const queryImpl = debugCast(query);
 	    if (!queryImpl.memoizedTarget) {
-	        if (queryImpl.limitType === "F" /* LimitType.First */) {
-	            queryImpl.memoizedTarget = newTarget(queryImpl.path, queryImpl.collectionGroup, queryOrderBy(queryImpl), queryImpl.filters, queryImpl.limit, queryImpl.startAt, queryImpl.endAt);
-	        }
-	        else {
-	            // Flip the orderBy directions since we want the last results
-	            const orderBys = [];
-	            for (const orderBy of queryOrderBy(queryImpl)) {
-	                const dir = orderBy.dir === "desc" /* Direction.DESCENDING */
-	                    ? "asc" /* Direction.ASCENDING */
-	                    : "desc" /* Direction.DESCENDING */;
-	                orderBys.push(new OrderBy(orderBy.field, dir));
-	            }
-	            // We need to swap the cursors to match the now-flipped query ordering.
-	            const startAt = queryImpl.endAt
-	                ? new Bound(queryImpl.endAt.position, queryImpl.endAt.inclusive)
-	                : null;
-	            const endAt = queryImpl.startAt
-	                ? new Bound(queryImpl.startAt.position, queryImpl.startAt.inclusive)
-	                : null;
-	            // Now return as a LimitType.First query.
-	            queryImpl.memoizedTarget = newTarget(queryImpl.path, queryImpl.collectionGroup, orderBys, queryImpl.filters, queryImpl.limit, startAt, endAt);
-	        }
+	        queryImpl.memoizedTarget = _queryToTarget(queryImpl, queryNormalizedOrderBy(query));
 	    }
 	    return queryImpl.memoizedTarget;
+	}
+	/**
+	 * Converts this `Query` instance to its corresponding `Target` representation,
+	 * for use within an aggregate query. Unlike targets for non-aggregate queries,
+	 * aggregate query targets do not contain normalized order-bys, they only
+	 * contain explicit order-bys.
+	 */
+	function queryToAggregateTarget(query) {
+	    const queryImpl = debugCast(query);
+	    if (!queryImpl.memoizedAggregateTarget) {
+	        // Do not include implicit order-bys for aggregate queries.
+	        queryImpl.memoizedAggregateTarget = _queryToTarget(queryImpl, query.explicitOrderBy);
+	    }
+	    return queryImpl.memoizedAggregateTarget;
+	}
+	function _queryToTarget(queryImpl, orderBys) {
+	    if (queryImpl.limitType === "F" /* LimitType.First */) {
+	        return newTarget(queryImpl.path, queryImpl.collectionGroup, orderBys, queryImpl.filters, queryImpl.limit, queryImpl.startAt, queryImpl.endAt);
+	    }
+	    else {
+	        // Flip the orderBy directions since we want the last results
+	        orderBys = orderBys.map(orderBy => {
+	            const dir = orderBy.dir === "desc" /* Direction.DESCENDING */
+	                ? "asc" /* Direction.ASCENDING */
+	                : "desc" /* Direction.DESCENDING */;
+	            return new OrderBy(orderBy.field, dir);
+	        });
+	        // We need to swap the cursors to match the now-flipped query ordering.
+	        const startAt = queryImpl.endAt
+	            ? new Bound(queryImpl.endAt.position, queryImpl.endAt.inclusive)
+	            : null;
+	        const endAt = queryImpl.startAt
+	            ? new Bound(queryImpl.startAt.position, queryImpl.startAt.inclusive)
+	            : null;
+	        // Now return as a LimitType.First query.
+	        return newTarget(queryImpl.path, queryImpl.collectionGroup, orderBys, queryImpl.filters, queryImpl.limit, startAt, endAt);
+	    }
 	}
 	function queryWithAddedFilter(query, filter) {
 	    filter.getFirstInequalityField();
@@ -11337,7 +11361,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	async function invokeRunAggregationQueryRpc(datastore, query, aggregates) {
 	    var _a;
 	    const datastoreImpl = debugCast(datastore);
-	    const { request, aliasMap } = toRunAggregationQueryRequest(datastoreImpl.serializer, queryToTarget(query), aggregates);
+	    const { request, aliasMap } = toRunAggregationQueryRequest(datastoreImpl.serializer, queryToAggregateTarget(query), aggregates);
 	    const parent = request.parent;
 	    if (!datastoreImpl.connection.shouldResourcePathBeIncludedInRequest) {
 	        delete request.parent;
@@ -13664,7 +13688,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    // the provided document. Without the key (by using the explicit sort
 	    // orders), multiple documents could match the position, yielding duplicate
 	    // results.
-	    for (const orderBy of queryOrderBy(query)) {
+	    for (const orderBy of queryNormalizedOrderBy(query)) {
 	        if (orderBy.field.isKeyField()) {
 	            components.push(refValue(databaseId, doc.key));
 	        }
@@ -14853,6 +14877,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	        // and so we attach a dummy catch callback to avoid
 	        // 'UnhandledPromiseRejectionWarning' log spam.
 	        this.deferred.promise.catch(err => { });
+	    }
+	    get promise() {
+	        return this.deferred.promise;
 	    }
 	    /**
 	     * Creates and returns a DelayedOperation that has been scheduled to be
