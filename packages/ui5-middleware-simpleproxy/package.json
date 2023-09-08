@@ -26,7 +26,8 @@
     "http-proxy-middleware": "^2.0.6",
     "https-proxy-agent": "^7.0.1",
     "minimatch": "^7.4.6",
-    "proxy-from-env": "^1.1.0"
+    "proxy-from-env": "^1.1.0",
+    "ui5-middleware-websocket": "workspace:^"
   },
   "devDependencies": {
     "@ui5/project": "^3.6.0",
@@ -35,6 +36,9 @@
     "get-port": "^7.0.0",
     "nock": "^13.3.3",
     "node-tcp-proxy": "^0.0.28",
-    "supertest": "^6.3.3"
+    "supertest": "^6.3.3",
+    "superwstest": "^2.0.3",
+    "ui5-middleware-websocket": "workspace:^",
+    "ws": "^8.13.0"
   }
 }

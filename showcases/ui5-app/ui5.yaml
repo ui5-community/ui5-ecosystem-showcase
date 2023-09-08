@@ -137,6 +137,13 @@ server:
       configuration:
         debug: true
         baseUri: "https://services.odata.org/V4/(S(soab2geixerd5hqzncsoqpba))/TripPinServiceRW/"
+    - name: ui5-middleware-simpleproxy
+      mountPath: /spwsecho
+      afterMiddleware: compression
+      configuration:
+        debug: true
+        baseUri: "ws://localhost:1081/wsecho/"
+        enableWebSocket: true
     - name: ui5-tooling-stringreplace-middleware
       afterMiddleware: compression
       configuration:
@@ -162,6 +169,9 @@ server:
             url: "https://services.odata.org/V2/Northwind/Northwind.svc/"
           - name: "todos"
             url: "https://jsonplaceholder.typicode.com/todos/"
+          - name: "cfwsecho"
+            url: "ws://localhost:1081/wsecho/"
+        enableWebSocket: true
     #- name: ui5-middleware-iasync
     #  beforeMiddleware: serveResources
     #  configuration:
@@ -190,6 +200,9 @@ server:
       beforeMiddleware: serveResources
       configuration:
         debug: true
+    - name: ui5-middleware-websocket-echo
+      afterMiddleware: compression
+      mountPath: /wsecho/
     # Last middleware (for the same afterMiddleware) comes first!
     - name: ui5-middleware-livereload
       afterMiddleware: compression

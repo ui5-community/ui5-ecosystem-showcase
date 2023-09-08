@@ -38,6 +38,7 @@ packages
 ├── ui5-middleware-servestatic      // middleware extension: serve static resources
 ├── ui5-middleware-simpleproxy      // middleware extension: simple express proxy
 ├── ui5-middleware-webjars          // middleware extension: deliver content from JAR files
+├── ui5-middleware-websocket        // middleware extension: enable web sockets for the UI5 Tooling
 ├── ui5-task-cachebuster            // task extension: enables cachebusting for standalone applications
 ├── ui5-task-compileless            // task extension: compile less files in the app folder
 ├── ui5-task-flatten-library        // task extension: prepares build result for deployment to SAP NetWeaver
@@ -146,13 +147,14 @@ The tasks developed in this monorepo are also publicly available on NPM right he
 * https://www.npmjs.com/package/ui5-task-cachebuster
 * https://www.npmjs.com/package/ui5-task-compileless
 * https://www.npmjs.com/package/ui5-task-flatten-library
-* https://www.npmjs.com/package/ui5-task-minify-xml
 * https://www.npmjs.com/package/ui5-task-i18ncheck 
+* https://www.npmjs.com/package/ui5-task-minify-xml
 * https://www.npmjs.com/package/ui5-task-pwa-enabler
 * https://www.npmjs.com/package/ui5-task-zipper
 
 The middlewares developed in this monorepo are also publicly available on NPM right here:
 
+* https://www.npmjs.com/package/ui5-middleware-cap
 * https://www.npmjs.com/package/ui5-middleware-cfdestination
 * https://www.npmjs.com/package/ui5-middleware-iasync (alpha! careful!)
 * https://www.npmjs.com/package/ui5-middleware-index
@@ -162,6 +164,7 @@ The middlewares developed in this monorepo are also publicly available on NPM ri
 * https://www.npmjs.com/package/ui5-middleware-servestatic
 * https://www.npmjs.com/package/ui5-middleware-simpleproxy
 * https://www.npmjs.com/package/ui5-middleware-webjars
+* https://www.npmjs.com/package/ui5-middleware-websocket
 
 The tooling extensions (contains tasks and middlewares) developed in this monorepo are available on NPM right here:
 
@@ -197,6 +200,7 @@ Available middlewares in this project:
 | [ui5-middleware-onelogin](packages/ui5-middleware-onelogin/README.md) | enable a generic login support | [![npm version](https://badge.fury.io/js/ui5-middleware-onelogin.svg)](https://badge.fury.io/js/ui5-middleware-onelogin) |
 | [ui5-middleware-simpleproxy](packages/ui5-middleware-simpleproxy/README.md) | simple express proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-simpleproxy.svg)](https://badge.fury.io/js/ui5-middleware-simpleproxy) |
 | [ui5-middleware-webjars](packages/ui5-middleware-webjars/README.md) | deliver content from JAR files | [![npm version](https://badge.fury.io/js/ui5-middleware-webjars.svg)](https://badge.fury.io/js/ui5-middleware-webjars) |
+| [ui5-middleware-websocket](packages/ui5-middleware-websocket/README.md) | enable web sockets for UI5 tooling | [![npm version](https://badge.fury.io/js/ui5-middleware-websocket.svg)](https://badge.fury.io/js/ui5-middleware-websocket) |
 
 Available tooling extensions in this project:
 

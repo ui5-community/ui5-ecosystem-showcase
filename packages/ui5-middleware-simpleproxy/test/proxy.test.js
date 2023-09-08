@@ -1,8 +1,12 @@
 const test = require("ava");
 
+const express = require("express");
+const { createProxyMiddleware, responseInterceptor } = require("http-proxy-middleware");
+const expressws = require("ui5-middleware-websocket/lib/expressws");
 const querystring = require("querystring");
 
 const supertest = require("supertest");
+const superwstest = require("superwstest");
 const nock = require("nock");
 const proxy = require("node-tcp-proxy");
 
@@ -13,6 +17,8 @@ test.before(async (t) => {
 	// create the ports for the proxy server
 	const getPort = (await import("get-port")).default;
 	const proxyServerPort = await getPort();
+	const wsServerPort = await getPort();
+	const wsProxyServerPort = await getPort();
 
 	// define environment variables
 	//process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
@@ -22,15 +28,15 @@ test.before(async (t) => {
 	// setup the corporate proxy server (simulate close function)
 	const proxyServer = (t.context.proxyServer = proxy.createProxy(proxyServerPort, "corporate-proxy", 80, {
 		upstream: function (context, data) {
-			const { remoteAddress, remotePort } = context.proxySocket;
-			console.log(`[PROXY] Client ${remoteAddress}:${remotePort}: ${data}`);
+			//const { remoteAddress, remotePort } = context.proxySocket;
+			//console.log(`[PROXY] Client ${remoteAddress}:${remotePort}: ${data}`);
 			proxyServerHitCount++;
 			// do something with the data and return modified data
 			return data;
 		},
 		downstream: function (context, data) {
-			const { remoteAddress, remotePort } = context.serviceSocket;
-			console.log(`[PROXY] Service ${remoteAddress}:${remotePort}: ${data}`);
+			//const { remoteAddress, remotePort } = context.serviceSocket;
+			//console.log(`[PROXY] Service ${remoteAddress}:${remotePort}: ${data}`);
 			// do something with the data and return modified data
 			return data;
 		},
@@ -39,6 +45,39 @@ test.before(async (t) => {
 		proxyServer.end();
 		cb();
 	};
+
+	// setup the WebSocket echo server (as counterpart)
+	const wsApp = express();
+	expressws(wsApp); // enhance the express app for websocket support
+	wsApp.ws("/", function (ws /*, req, next */) {
+		ws.on("message", function (message) {
+			console.log(`message: ${message}`);
+			ws.send(`echo ${message}`);
+		});
+		ws.send(`hello`);
+	});
+	t.context.wsServer = wsApp.listen(wsServerPort);
+
+	// setup a standard express proxy server using the default
+	// http-proxy-middleware plus the WebSocket extension
+	const app = express();
+	const wsProxy = createProxyMiddleware({
+		target: `ws://localhost:${wsServerPort}`,
+		changeOrigin: true,
+		autoRewrite: true,
+		xfwd: true,
+		secure: false,
+		pathRewrite: {
+			"^/ws": "/",
+		},
+		selfHandleResponse: true,
+		onProxyRes: responseInterceptor(async (responseBuffer /*, proxyRes, req, res */) => {
+			return responseBuffer;
+		}),
+	});
+	app.use("/ws", wsProxy);
+	const testserver = (t.context.wsProxyServer = app.listen(wsProxyServerPort));
+	testserver.on("upgrade", wsProxy.upgrade);
 
 	// start the UI5 development server with multiple proxy middlewares
 	const { graphFromPackageDependencies } = await import("@ui5/project/graph");
@@ -112,6 +151,21 @@ test.before(async (t) => {
 							baseUri: `http://corporate-proxy`,
 						},
 					},
+					{
+						name: "ui5-middleware-simpleproxy",
+						mountPath: "/ws",
+						afterMiddleware: "compression",
+						configuration: {
+							debug: true,
+							baseUri: `http://localhost:${wsServerPort}`,
+							enableWebSocket: true,
+						},
+					},
+					{
+						name: "ui5-middleware-websocket-echo",
+						afterMiddleware: "compression",
+						mountPath: "/otherws",
+					},
 				],
 			},
 		},
@@ -123,7 +177,11 @@ test.before(async (t) => {
 	t.context.server = await serve(graph, {
 		port: ui5ServerPort,
 	});
-	t.context.request = supertest(`http://localhost:${ui5ServerPort}`);
+	const request = supertest,
+		wsRequest = superwstest;
+	t.context.request = request(`http://localhost:${ui5ServerPort}`);
+	t.context.wsRequest = wsRequest(`http://localhost:${ui5ServerPort}`);
+	t.context.wsProxyRequest = wsRequest(`http://localhost:${wsProxyServerPort}`);
 });
 
 test.after.always((t) => {
@@ -141,10 +199,7 @@ test.after.always((t) => {
 	}
 
 	// stop all servers
-	return Promise.all([
-		close(t.context.server),
-		//close(t.context.proxyServer)
-	]);
+	return Promise.all([close(t.context.proxyServer), close(t.context.wsProxyServer), close(t.context.wsServer), close(t.context.server)]);
 });
 
 test("HTTP basic test", async (t) => {
@@ -345,4 +400,123 @@ test("Check corporate proxy setup", async (t) => {
 	t.is(proxyServerHitCount, 1, "Proxy server was not hit!");
 	await request.get("/corporate-proxy/proxy.txt");
 	t.is(proxyServerHitCount, 2, "Proxy server was hit!");
+});
+
+test("CRUD operations", async (t) => {
+	const { request } = t.context;
+
+	// GET
+	nock("http://www.example.com").get("/DataService").reply(
+		200,
+		{
+			key: "value",
+		},
+		{
+			"content-type": "application/json",
+		}
+	);
+	const resGET = await request.get("/local/DataService");
+	if (resGET.error) {
+		throw resGET.error;
+	}
+	t.is(resGET.statusCode, 200, "Correct HTTP status code");
+	t.regex(resGET.headers["content-type"], /json/, "Correct content type");
+	t.is(resGET.body.key, "value", "Correct content");
+
+	// POST
+	nock("http://www.example.com").post("/DataService").reply(
+		201,
+		{
+			key: "value",
+		},
+		{
+			"content-type": "application/json",
+		}
+	);
+	const resPOST = await request.post("/local/DataService");
+	if (resPOST.error) {
+		throw resPOST.error;
+	}
+	t.is(resPOST.statusCode, 201, "Correct HTTP status code");
+	t.regex(resPOST.headers["content-type"], /json/, "Correct content type");
+	t.is(resPOST.body.key, "value", "Correct content");
+
+	// PUT
+	nock("http://www.example.com").put("/DataService").reply(
+		200,
+		{
+			key: "value",
+		},
+		{
+			"content-type": "application/json",
+		}
+	);
+	const resPUT = await request.put("/local/DataService");
+	if (resPUT.error) {
+		throw resPUT.error;
+	}
+	t.is(resPUT.statusCode, 200, "Correct HTTP status code");
+	t.regex(resPUT.headers["content-type"], /json/, "Correct content type");
+	t.is(resPUT.body.key, "value", "Correct content");
+
+	// PATCH
+	nock("http://www.example.com").patch("/DataService").reply(204);
+	const resPATCH = await request.patch("/local/DataService");
+	if (resPATCH.error) {
+		throw resPATCH.error;
+	}
+	t.is(resPATCH.statusCode, 204, "Correct HTTP status code");
+
+	// DELETE
+	nock("http://www.example.com").delete("/DataService").reply(204);
+	const resDELETE = await request.delete("/local/DataService");
+	if (resDELETE.error) {
+		throw resDELETE.error;
+	}
+	t.is(resDELETE.statusCode, 204, "Correct HTTP status code");
+});
+
+test("WebSocket basic test (plain http-proxy-middleware)", async (t) => {
+	const { wsProxyRequest } = t.context;
+	await wsProxyRequest
+		.ws("/ws")
+		.expectText((msg) => {
+			t.is(msg, "hello");
+			return true;
+		})
+		.sendText("XXX")
+		.expectText((msg) => {
+			t.is(msg, "echo XXX");
+			return true;
+		})
+		.close();
+});
+
+test("WebSocket basic test (ui5-middleware-simpleproxy)", async (t) => {
+	const { wsRequest } = t.context;
+	await wsRequest
+		.ws("/ws")
+		.expectText((msg) => {
+			t.is(msg, "hello");
+			return true;
+		})
+		.sendText("XXX")
+		.expectText((msg) => {
+			t.is(msg, "echo XXX");
+			return true;
+		})
+		.close();
+});
+
+test("WebSocket basic test (ui5-middleware-websocket)", async (t) => {
+	const { wsRequest } = t.context;
+	await wsRequest
+		.ws("/otherws")
+		.wait(500)
+		.sendText("XXX")
+		.expectText((msg) => {
+			t.is(msg, "echo XXX");
+			return true;
+		})
+		.close();
 });

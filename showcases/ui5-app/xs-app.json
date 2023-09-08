@@ -18,9 +18,17 @@
       "target": "$1"
     },
     {
+      "source": "^/cfwsecho(.*)$",
+      "destination": "cfwsecho",
+      "target": "$1"
+    },
+    {
       "source": "^/(.*)",
       "localDir": "./webapp",
       "cacheControl": "no-cache, no-store, must-revalidate"
     }
-  ]
+  ],
+  "websockets": {
+    "enabled": true
+  }
 }

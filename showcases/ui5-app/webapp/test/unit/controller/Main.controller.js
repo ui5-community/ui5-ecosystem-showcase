@@ -21,7 +21,7 @@ sap.ui.define(["ui5/ecosystem/demo/app/controller/Main.controller", "sap/ui/thir
 			getRouter: sinon.stub().returnsThis(),
 			navTo: sinon.stub().returns("stubbed"),
 		});
-		const stubbedRet = oAppController.navFwd();
+		const stubbedRet = oAppController.navTo("RouteOther");
 		oRouterStub.restore();
 		assert.strictEqual(stubbedRet, "stubbed");
 	});

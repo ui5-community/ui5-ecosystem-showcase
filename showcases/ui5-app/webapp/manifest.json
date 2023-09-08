@@ -34,7 +34,7 @@
         }
       },
       "UI5VersionInfo": {
-        "uri": "/versioninfo/version.json",
+        "uri": "versioninfo/version.json",
         "type": "JSON"
       }
     }
@@ -91,7 +91,10 @@
         }
       },
       "ODataV2": {
-        "dataSource": "ODataV2DataSource"
+        "dataSource": "ODataV2DataSource",
+        "settings": {
+          "disableHeadRequestForToken": true
+        }
       },
       "ODataV4": {
         "dataSource": "ODataV4DataSource",

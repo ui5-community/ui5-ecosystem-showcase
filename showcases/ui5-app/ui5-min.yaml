@@ -54,9 +54,22 @@ server:
       mountPath: /ui5
       afterMiddleware: compression
       configuration:
+        debug: true
         baseUri: "https://sdk.openui5.org/"
-        limit: "5mb"
         removeETag: true
+    - name: ui5-middleware-simpleproxy
+      mountPath: /odatav4
+      afterMiddleware: compression
+      configuration:
+        debug: true
+        baseUri: "https://services.odata.org/V4/(S(soab2geixerd5hqzncsoqpba))/TripPinServiceRW/"
+    - name: ui5-middleware-simpleproxy
+      mountPath: /spwsecho
+      afterMiddleware: compression
+      configuration:
+        debug: true
+        baseUri: "ws://localhost:1081/wsecho/"
+        enableWebSocket: true
     - name: ui5-middleware-cfdestination
       afterMiddleware: compression
       configuration:
@@ -71,6 +84,8 @@ server:
             url: "https://services.odata.org/V2/Northwind/Northwind.svc/"
           - name: "todos"
             url: "https://jsonplaceholder.typicode.com/todos/"
+          - name: "cfwsecho"
+            url: "ws://localhost:1081/wsecho/"
     - name: ui5-middleware-index
       afterMiddleware: compression
       configuration:
