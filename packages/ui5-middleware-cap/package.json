@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-cap",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "UI5 tooling middleware embedding the CAP server middlewares",
   "author": "Peter Muessig",
   "license": "Apache-2.0",
