@@ -19,7 +19,7 @@
     "lint": "eslint webapp"
   },
   "devDependencies": {
-    "@ui5/cli": "^3.4.0",
+    "@ui5/cli": "^3.6.0",
     "cds-bookshop": "workspace:^",
     "rimraf": "^5.0.1",
     "ui5-middleware-cap": "workspace:^",

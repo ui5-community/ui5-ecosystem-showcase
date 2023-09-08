@@ -1,4 +1,4 @@
-sap.ui.define(['exports', './jspdf-2eb8ad87'], (function (exports, jspdf_es_min) { 'use strict';
+sap.ui.define(['exports', './jspdf-60fc8dd7'], (function (exports, jspdf_es_min) { 'use strict';
 
 
 

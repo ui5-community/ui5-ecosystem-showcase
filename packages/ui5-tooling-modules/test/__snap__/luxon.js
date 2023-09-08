@@ -2219,19 +2219,39 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     };
     return new Duration(conf);
   }
-  function removePrecisionIssue(a) {
-    return Math.trunc(a * 1000) / 1000;
-  }
-  function convert(matrix, fromMap, fromUnit, toMap, toUnit) {
-    var conv = matrix[toUnit][fromUnit], raw = fromMap[fromUnit] / conv, added = Math.floor(raw);
-    toMap[toUnit] = removePrecisionIssue(toMap[toUnit] + added);
-    fromMap[fromUnit] = removePrecisionIssue(fromMap[fromUnit] - added * conv);
+  function durationToMillis(matrix, vals) {
+    var _vals$milliseconds;
+    var sum = (_vals$milliseconds = vals.milliseconds) != null ? _vals$milliseconds : 0;
+    for (var _iterator = _createForOfIteratorHelperLoose(reverseUnits.slice(1)), _step; !(_step = _iterator()).done; ) {
+      var unit = _step.value;
+      if (vals[unit]) {
+        sum += vals[unit] * matrix[unit]["milliseconds"];
+      }
+    }
+    return sum;
   }
   function normalizeValues(matrix, vals) {
-    reverseUnits.reduce(function (previous, current) {
+    var factor = durationToMillis(matrix, vals) < 0 ? -1 : 1;
+    orderedUnits$1.reduceRight(function (previous, current) {
       if (!isUndefined(vals[current])) {
         if (previous) {
-          convert(matrix, vals, previous, vals, current);
+          var previousVal = vals[previous] * factor;
+          var conv = matrix[current][previous];
+          var rollUp = Math.floor(previousVal / conv);
+          vals[current] += rollUp * factor;
+          vals[previous] -= rollUp * conv * factor;
+        }
+        return current;
+      } else {
+        return previous;
+      }
+    }, null);
+    orderedUnits$1.reduce(function (previous, current) {
+      if (!isUndefined(vals[current])) {
+        if (previous) {
+          var fraction = vals[previous] % 1;
+          vals[previous] -= fraction;
+          vals[current] += fraction * matrix[previous][current];
         }
         return current;
       } else {
@@ -2367,6 +2387,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       if (opts === void 0) {
         opts = {};
       }
+      if (!this.isValid) return INVALID$2;
       var l = orderedUnits$1.map(function (unit) {
         var val = _this.values[unit];
         if (isUndefined(val)) {
@@ -2431,16 +2452,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       return this.toISO();
     };
     _proto.toMillis = function toMillis() {
-      var _this$values$millisec;
-      var sum = (_this$values$millisec = this.values.milliseconds) != null ? _this$values$millisec : 0;
-      for (var _iterator = _createForOfIteratorHelperLoose(reverseUnits.slice(1)), _step; !(_step = _iterator()).done; ) {
-        var _this$values;
-        var unit = _step.value;
-        if ((_this$values = this.values) != null && _this$values[unit]) {
-          sum += this.values[unit] * this.matrix[unit]["milliseconds"];
-        }
-      }
-      return sum;
+      if (!this.isValid) return NaN;
+      return durationToMillis(this.matrix, this.values);
     };
     _proto.valueOf = function valueOf() {
       return this.toMillis();
@@ -2503,13 +2516,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     _proto.normalize = function normalize() {
       if (!this.isValid) return this;
       var vals = this.toObject();
-      if (this.valueOf() >= 0) {
-        normalizeValues(this.matrix, vals);
-        return clone$1(this, {
-          values: vals
-        }, true);
-      }
-      return this.negate().normalize().negate();
+      normalizeValues(this.matrix, vals);
+      return clone$1(this, {
+        values: vals
+      }, true);
     };
     _proto.rescale = function rescale() {
       if (!this.isValid) return this;
@@ -2546,11 +2556,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           var i = Math.trunc(own);
           built[k] = i;
           accumulated[k] = (own * 1000 - i * 1000) / 1000;
-          for (var down in vals) {
-            if (orderedUnits$1.indexOf(down) > orderedUnits$1.indexOf(k)) {
-              convert(this.matrix, vals, down, built, k);
-            }
-          }
         } else if (isNumber(vals[k])) {
           accumulated[k] = vals[k];
         }
@@ -2560,9 +2565,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           built[lastUnit] += key === lastUnit ? accumulated[key] : accumulated[key] / this.matrix[lastUnit][key];
         }
       }
+      normalizeValues(this.matrix, built);
       return clone$1(this, {
         values: built
-      }, true).normalize();
+      }, true);
     };
     _proto.shiftToAll = function shiftToAll() {
       if (!this.isValid) return this;
@@ -4987,7 +4993,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       throw new InvalidArgumentError("Unknown datetime argument: " + dateTimeish + ", of type " + typeof dateTimeish);
     }
   }
-  var VERSION = "3.4.0";
+  var VERSION = "3.4.3";
   var DateTime_1 = luxon.DateTime = DateTime;
   var Duration_1 = luxon.Duration = Duration;
   var FixedOffsetZone_1 = luxon.FixedOffsetZone = FixedOffsetZone;

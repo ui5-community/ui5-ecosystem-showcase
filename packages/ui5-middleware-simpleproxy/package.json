@@ -24,13 +24,13 @@
     "dotenv": "^16.3.1",
     "http-proxy-agent": "^7.0.0",
     "http-proxy-middleware": "^2.0.6",
-    "https-proxy-agent": "^7.0.1",
+    "https-proxy-agent": "^7.0.2",
     "minimatch": "^7.4.6",
     "proxy-from-env": "^1.1.0",
     "ui5-middleware-websocket": "workspace:^"
   },
   "devDependencies": {
-    "@ui5/project": "^3.6.0",
+    "@ui5/project": "^3.7.0",
     "@ui5/server": "^3.1.3",
     "ava": "^5.3.1",
     "get-port": "^7.0.0",
@@ -39,6 +39,6 @@
     "supertest": "^6.3.3",
     "superwstest": "^2.0.3",
     "ui5-middleware-websocket": "workspace:^",
-    "ws": "^8.13.0"
+    "ws": "^8.14.0"
   }
 }

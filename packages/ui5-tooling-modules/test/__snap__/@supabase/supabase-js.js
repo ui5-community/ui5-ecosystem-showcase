@@ -164,572 +164,43 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
     var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
-    var browserPonyfill$1 = {exports: {}};
+    var browser$3 = {exports: {}};
 
     (function (module, exports) {
-    	var global = typeof self !== 'undefined' ? self : commonjsGlobal;
-    	var __self__ = (function () {
-    	function F() {
-    	this.fetch = false;
-    	this.DOMException = global.DOMException;
+
+    	// ref: https://github.com/tc39/proposal-global
+    	var getGlobal = function () {
+    		// the only reliable means to get the global object is
+    		// `Function('return this')()`
+    		// However, this causes CSP violations in Chrome apps.
+    		if (typeof self !== 'undefined') { return self; }
+    		if (typeof window !== 'undefined') { return window; }
+    		if (typeof commonjsGlobal !== 'undefined') { return commonjsGlobal; }
+    		throw new Error('unable to locate global object');
+    	};
+
+    	var globalObject = getGlobal();
+
+    	module.exports = exports = globalObject.fetch;
+
+    	// Needed for TypeScript and Webpack.
+    	if (globalObject.fetch) {
+    		exports.default = globalObject.fetch.bind(globalObject);
     	}
-    	F.prototype = global;
-    	return new F();
-    	})();
-    	(function(self) {
 
-    	((function (exports) {
+    	exports.Headers = globalObject.Headers;
+    	exports.Request = globalObject.Request;
+    	exports.Response = globalObject.Response; 
+    } (browser$3, browser$3.exports));
 
-    	  var support = {
-    	    searchParams: 'URLSearchParams' in self,
-    	    iterable: 'Symbol' in self && 'iterator' in Symbol,
-    	    blob:
-    	      'FileReader' in self &&
-    	      'Blob' in self &&
-    	      (function() {
-    	        try {
-    	          new Blob();
-    	          return true
-    	        } catch (e) {
-    	          return false
-    	        }
-    	      })(),
-    	    formData: 'FormData' in self,
-    	    arrayBuffer: 'ArrayBuffer' in self
-    	  };
+    var browserExports = browser$3.exports;
 
-    	  function isDataView(obj) {
-    	    return obj && DataView.prototype.isPrototypeOf(obj)
-    	  }
-
-    	  if (support.arrayBuffer) {
-    	    var viewClasses = [
-    	      '[object Int8Array]',
-    	      '[object Uint8Array]',
-    	      '[object Uint8ClampedArray]',
-    	      '[object Int16Array]',
-    	      '[object Uint16Array]',
-    	      '[object Int32Array]',
-    	      '[object Uint32Array]',
-    	      '[object Float32Array]',
-    	      '[object Float64Array]'
-    	    ];
-
-    	    var isArrayBufferView =
-    	      ArrayBuffer.isView ||
-    	      function(obj) {
-    	        return obj && viewClasses.indexOf(Object.prototype.toString.call(obj)) > -1
-    	      };
-    	  }
-
-    	  function normalizeName(name) {
-    	    if (typeof name !== 'string') {
-    	      name = String(name);
-    	    }
-    	    if (/[^a-z0-9\-#$%&'*+.^_`|~]/i.test(name)) {
-    	      throw new TypeError('Invalid character in header field name')
-    	    }
-    	    return name.toLowerCase()
-    	  }
-
-    	  function normalizeValue(value) {
-    	    if (typeof value !== 'string') {
-    	      value = String(value);
-    	    }
-    	    return value
-    	  }
-
-    	  // Build a destructive iterator for the value list
-    	  function iteratorFor(items) {
-    	    var iterator = {
-    	      next: function() {
-    	        var value = items.shift();
-    	        return {done: value === undefined, value: value}
-    	      }
-    	    };
-
-    	    if (support.iterable) {
-    	      iterator[Symbol.iterator] = function() {
-    	        return iterator
-    	      };
-    	    }
-
-    	    return iterator
-    	  }
-
-    	  function Headers(headers) {
-    	    this.map = {};
-
-    	    if (headers instanceof Headers) {
-    	      headers.forEach(function(value, name) {
-    	        this.append(name, value);
-    	      }, this);
-    	    } else if (Array.isArray(headers)) {
-    	      headers.forEach(function(header) {
-    	        this.append(header[0], header[1]);
-    	      }, this);
-    	    } else if (headers) {
-    	      Object.getOwnPropertyNames(headers).forEach(function(name) {
-    	        this.append(name, headers[name]);
-    	      }, this);
-    	    }
-    	  }
-
-    	  Headers.prototype.append = function(name, value) {
-    	    name = normalizeName(name);
-    	    value = normalizeValue(value);
-    	    var oldValue = this.map[name];
-    	    this.map[name] = oldValue ? oldValue + ', ' + value : value;
-    	  };
-
-    	  Headers.prototype['delete'] = function(name) {
-    	    delete this.map[normalizeName(name)];
-    	  };
-
-    	  Headers.prototype.get = function(name) {
-    	    name = normalizeName(name);
-    	    return this.has(name) ? this.map[name] : null
-    	  };
-
-    	  Headers.prototype.has = function(name) {
-    	    return this.map.hasOwnProperty(normalizeName(name))
-    	  };
-
-    	  Headers.prototype.set = function(name, value) {
-    	    this.map[normalizeName(name)] = normalizeValue(value);
-    	  };
-
-    	  Headers.prototype.forEach = function(callback, thisArg) {
-    	    for (var name in this.map) {
-    	      if (this.map.hasOwnProperty(name)) {
-    	        callback.call(thisArg, this.map[name], name, this);
-    	      }
-    	    }
-    	  };
-
-    	  Headers.prototype.keys = function() {
-    	    var items = [];
-    	    this.forEach(function(value, name) {
-    	      items.push(name);
-    	    });
-    	    return iteratorFor(items)
-    	  };
-
-    	  Headers.prototype.values = function() {
-    	    var items = [];
-    	    this.forEach(function(value) {
-    	      items.push(value);
-    	    });
-    	    return iteratorFor(items)
-    	  };
-
-    	  Headers.prototype.entries = function() {
-    	    var items = [];
-    	    this.forEach(function(value, name) {
-    	      items.push([name, value]);
-    	    });
-    	    return iteratorFor(items)
-    	  };
-
-    	  if (support.iterable) {
-    	    Headers.prototype[Symbol.iterator] = Headers.prototype.entries;
-    	  }
-
-    	  function consumed(body) {
-    	    if (body.bodyUsed) {
-    	      return Promise.reject(new TypeError('Already read'))
-    	    }
-    	    body.bodyUsed = true;
-    	  }
-
-    	  function fileReaderReady(reader) {
-    	    return new Promise(function(resolve, reject) {
-    	      reader.onload = function() {
-    	        resolve(reader.result);
-    	      };
-    	      reader.onerror = function() {
-    	        reject(reader.error);
-    	      };
-    	    })
-    	  }
-
-    	  function readBlobAsArrayBuffer(blob) {
-    	    var reader = new FileReader();
-    	    var promise = fileReaderReady(reader);
-    	    reader.readAsArrayBuffer(blob);
-    	    return promise
-    	  }
-
-    	  function readBlobAsText(blob) {
-    	    var reader = new FileReader();
-    	    var promise = fileReaderReady(reader);
-    	    reader.readAsText(blob);
-    	    return promise
-    	  }
-
-    	  function readArrayBufferAsText(buf) {
-    	    var view = new Uint8Array(buf);
-    	    var chars = new Array(view.length);
-
-    	    for (var i = 0; i < view.length; i++) {
-    	      chars[i] = String.fromCharCode(view[i]);
-    	    }
-    	    return chars.join('')
-    	  }
-
-    	  function bufferClone(buf) {
-    	    if (buf.slice) {
-    	      return buf.slice(0)
-    	    } else {
-    	      var view = new Uint8Array(buf.byteLength);
-    	      view.set(new Uint8Array(buf));
-    	      return view.buffer
-    	    }
-    	  }
-
-    	  function Body() {
-    	    this.bodyUsed = false;
-
-    	    this._initBody = function(body) {
-    	      this._bodyInit = body;
-    	      if (!body) {
-    	        this._bodyText = '';
-    	      } else if (typeof body === 'string') {
-    	        this._bodyText = body;
-    	      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
-    	        this._bodyBlob = body;
-    	      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
-    	        this._bodyFormData = body;
-    	      } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
-    	        this._bodyText = body.toString();
-    	      } else if (support.arrayBuffer && support.blob && isDataView(body)) {
-    	        this._bodyArrayBuffer = bufferClone(body.buffer);
-    	        // IE 10-11 can't handle a DataView body.
-    	        this._bodyInit = new Blob([this._bodyArrayBuffer]);
-    	      } else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
-    	        this._bodyArrayBuffer = bufferClone(body);
-    	      } else {
-    	        this._bodyText = body = Object.prototype.toString.call(body);
-    	      }
-
-    	      if (!this.headers.get('content-type')) {
-    	        if (typeof body === 'string') {
-    	          this.headers.set('content-type', 'text/plain;charset=UTF-8');
-    	        } else if (this._bodyBlob && this._bodyBlob.type) {
-    	          this.headers.set('content-type', this._bodyBlob.type);
-    	        } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
-    	          this.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
-    	        }
-    	      }
-    	    };
-
-    	    if (support.blob) {
-    	      this.blob = function() {
-    	        var rejected = consumed(this);
-    	        if (rejected) {
-    	          return rejected
-    	        }
-
-    	        if (this._bodyBlob) {
-    	          return Promise.resolve(this._bodyBlob)
-    	        } else if (this._bodyArrayBuffer) {
-    	          return Promise.resolve(new Blob([this._bodyArrayBuffer]))
-    	        } else if (this._bodyFormData) {
-    	          throw new Error('could not read FormData body as blob')
-    	        } else {
-    	          return Promise.resolve(new Blob([this._bodyText]))
-    	        }
-    	      };
-
-    	      this.arrayBuffer = function() {
-    	        if (this._bodyArrayBuffer) {
-    	          return consumed(this) || Promise.resolve(this._bodyArrayBuffer)
-    	        } else {
-    	          return this.blob().then(readBlobAsArrayBuffer)
-    	        }
-    	      };
-    	    }
-
-    	    this.text = function() {
-    	      var rejected = consumed(this);
-    	      if (rejected) {
-    	        return rejected
-    	      }
-
-    	      if (this._bodyBlob) {
-    	        return readBlobAsText(this._bodyBlob)
-    	      } else if (this._bodyArrayBuffer) {
-    	        return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer))
-    	      } else if (this._bodyFormData) {
-    	        throw new Error('could not read FormData body as text')
-    	      } else {
-    	        return Promise.resolve(this._bodyText)
-    	      }
-    	    };
-
-    	    if (support.formData) {
-    	      this.formData = function() {
-    	        return this.text().then(decode)
-    	      };
-    	    }
-
-    	    this.json = function() {
-    	      return this.text().then(JSON.parse)
-    	    };
-
-    	    return this
-    	  }
-
-    	  // HTTP methods whose capitalization should be normalized
-    	  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT'];
-
-    	  function normalizeMethod(method) {
-    	    var upcased = method.toUpperCase();
-    	    return methods.indexOf(upcased) > -1 ? upcased : method
-    	  }
-
-    	  function Request(input, options) {
-    	    options = options || {};
-    	    var body = options.body;
-
-    	    if (input instanceof Request) {
-    	      if (input.bodyUsed) {
-    	        throw new TypeError('Already read')
-    	      }
-    	      this.url = input.url;
-    	      this.credentials = input.credentials;
-    	      if (!options.headers) {
-    	        this.headers = new Headers(input.headers);
-    	      }
-    	      this.method = input.method;
-    	      this.mode = input.mode;
-    	      this.signal = input.signal;
-    	      if (!body && input._bodyInit != null) {
-    	        body = input._bodyInit;
-    	        input.bodyUsed = true;
-    	      }
-    	    } else {
-    	      this.url = String(input);
-    	    }
-
-    	    this.credentials = options.credentials || this.credentials || 'same-origin';
-    	    if (options.headers || !this.headers) {
-    	      this.headers = new Headers(options.headers);
-    	    }
-    	    this.method = normalizeMethod(options.method || this.method || 'GET');
-    	    this.mode = options.mode || this.mode || null;
-    	    this.signal = options.signal || this.signal;
-    	    this.referrer = null;
-
-    	    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
-    	      throw new TypeError('Body not allowed for GET or HEAD requests')
-    	    }
-    	    this._initBody(body);
-    	  }
-
-    	  Request.prototype.clone = function() {
-    	    return new Request(this, {body: this._bodyInit})
-    	  };
-
-    	  function decode(body) {
-    	    var form = new FormData();
-    	    body
-    	      .trim()
-    	      .split('&')
-    	      .forEach(function(bytes) {
-    	        if (bytes) {
-    	          var split = bytes.split('=');
-    	          var name = split.shift().replace(/\+/g, ' ');
-    	          var value = split.join('=').replace(/\+/g, ' ');
-    	          form.append(decodeURIComponent(name), decodeURIComponent(value));
-    	        }
-    	      });
-    	    return form
-    	  }
-
-    	  function parseHeaders(rawHeaders) {
-    	    var headers = new Headers();
-    	    // Replace instances of \r\n and \n followed by at least one space or horizontal tab with a space
-    	    // https://tools.ietf.org/html/rfc7230#section-3.2
-    	    var preProcessedHeaders = rawHeaders.replace(/\r?\n[\t ]+/g, ' ');
-    	    preProcessedHeaders.split(/\r?\n/).forEach(function(line) {
-    	      var parts = line.split(':');
-    	      var key = parts.shift().trim();
-    	      if (key) {
-    	        var value = parts.join(':').trim();
-    	        headers.append(key, value);
-    	      }
-    	    });
-    	    return headers
-    	  }
-
-    	  Body.call(Request.prototype);
-
-    	  function Response(bodyInit, options) {
-    	    if (!options) {
-    	      options = {};
-    	    }
-
-    	    this.type = 'default';
-    	    this.status = options.status === undefined ? 200 : options.status;
-    	    this.ok = this.status >= 200 && this.status < 300;
-    	    this.statusText = 'statusText' in options ? options.statusText : 'OK';
-    	    this.headers = new Headers(options.headers);
-    	    this.url = options.url || '';
-    	    this._initBody(bodyInit);
-    	  }
-
-    	  Body.call(Response.prototype);
-
-    	  Response.prototype.clone = function() {
-    	    return new Response(this._bodyInit, {
-    	      status: this.status,
-    	      statusText: this.statusText,
-    	      headers: new Headers(this.headers),
-    	      url: this.url
-    	    })
-    	  };
-
-    	  Response.error = function() {
-    	    var response = new Response(null, {status: 0, statusText: ''});
-    	    response.type = 'error';
-    	    return response
-    	  };
-
-    	  var redirectStatuses = [301, 302, 303, 307, 308];
-
-    	  Response.redirect = function(url, status) {
-    	    if (redirectStatuses.indexOf(status) === -1) {
-    	      throw new RangeError('Invalid status code')
-    	    }
-
-    	    return new Response(null, {status: status, headers: {location: url}})
-    	  };
-
-    	  exports.DOMException = self.DOMException;
-    	  try {
-    	    new exports.DOMException();
-    	  } catch (err) {
-    	    exports.DOMException = function(message, name) {
-    	      this.message = message;
-    	      this.name = name;
-    	      var error = Error(message);
-    	      this.stack = error.stack;
-    	    };
-    	    exports.DOMException.prototype = Object.create(Error.prototype);
-    	    exports.DOMException.prototype.constructor = exports.DOMException;
-    	  }
-
-    	  function fetch(input, init) {
-    	    return new Promise(function(resolve, reject) {
-    	      var request = new Request(input, init);
-
-    	      if (request.signal && request.signal.aborted) {
-    	        return reject(new exports.DOMException('Aborted', 'AbortError'))
-    	      }
-
-    	      var xhr = new XMLHttpRequest();
-
-    	      function abortXhr() {
-    	        xhr.abort();
-    	      }
-
-    	      xhr.onload = function() {
-    	        var options = {
-    	          status: xhr.status,
-    	          statusText: xhr.statusText,
-    	          headers: parseHeaders(xhr.getAllResponseHeaders() || '')
-    	        };
-    	        options.url = 'responseURL' in xhr ? xhr.responseURL : options.headers.get('X-Request-URL');
-    	        var body = 'response' in xhr ? xhr.response : xhr.responseText;
-    	        resolve(new Response(body, options));
-    	      };
-
-    	      xhr.onerror = function() {
-    	        reject(new TypeError('Network request failed'));
-    	      };
-
-    	      xhr.ontimeout = function() {
-    	        reject(new TypeError('Network request failed'));
-    	      };
-
-    	      xhr.onabort = function() {
-    	        reject(new exports.DOMException('Aborted', 'AbortError'));
-    	      };
-
-    	      xhr.open(request.method, request.url, true);
-
-    	      if (request.credentials === 'include') {
-    	        xhr.withCredentials = true;
-    	      } else if (request.credentials === 'omit') {
-    	        xhr.withCredentials = false;
-    	      }
-
-    	      if ('responseType' in xhr && support.blob) {
-    	        xhr.responseType = 'blob';
-    	      }
-
-    	      request.headers.forEach(function(value, name) {
-    	        xhr.setRequestHeader(name, value);
-    	      });
-
-    	      if (request.signal) {
-    	        request.signal.addEventListener('abort', abortXhr);
-
-    	        xhr.onreadystatechange = function() {
-    	          // DONE (success or failure)
-    	          if (xhr.readyState === 4) {
-    	            request.signal.removeEventListener('abort', abortXhr);
-    	          }
-    	        };
-    	      }
-
-    	      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit);
-    	    })
-    	  }
-
-    	  fetch.polyfill = true;
-
-    	  if (!self.fetch) {
-    	    self.fetch = fetch;
-    	    self.Headers = Headers;
-    	    self.Request = Request;
-    	    self.Response = Response;
-    	  }
-
-    	  exports.Headers = Headers;
-    	  exports.Request = Request;
-    	  exports.Response = Response;
-    	  exports.fetch = fetch;
-
-    	  Object.defineProperty(exports, '__esModule', { value: true });
-
-    	  return exports;
-
-    	}))({});
-    	})(__self__);
-    	__self__.fetch.ponyfill = true;
-    	// Remove "polyfill" property added by whatwg-fetch
-    	delete __self__.fetch.polyfill;
-    	// Choose between native implementation (global) or custom implementation (__self__)
-    	// var ctx = global.fetch ? global : __self__;
-    	var ctx = __self__; // this line disable service worker support temporarily
-    	exports = ctx.fetch; // To enable: import fetch from 'cross-fetch'
-    	exports.default = ctx.fetch; // For TypeScript consumers without esModuleInterop.
-    	exports.fetch = ctx.fetch; // To enable: import {fetch} from 'cross-fetch'
-    	exports.Headers = ctx.Headers;
-    	exports.Request = ctx.Request;
-    	exports.Response = ctx.Response;
-    	module.exports = exports; 
-    } (browserPonyfill$1, browserPonyfill$1.exports));
-
-    var browserPonyfillExports = browserPonyfill$1.exports;
-
-    var browserPonyfill = /*#__PURE__*/_mergeNamespaces({
+    var browser$2 = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        default: browserPonyfillExports
-    }, [browserPonyfillExports]);
+        default: browserExports
+    });
 
+    // @ts-ignore
     class PostgrestBuilder {
         constructor(builder) {
             this.shouldThrowOnError = false;
@@ -745,7 +216,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 this.fetch = builder.fetch;
             }
             else if (typeof fetch === 'undefined') {
-                this.fetch = browserPonyfillExports;
+                this.fetch = browserExports;
             }
             else {
                 this.fetch = fetch;
@@ -1734,7 +1205,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    const version$6 = '1.8.0';
+    const version$6 = '1.8.4';
 
     const DEFAULT_HEADERS$4 = { 'X-Client-Info': `postgrest-js/${version$6}` };
 
@@ -2020,7 +1491,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         'version'      : websocket_version
     };
 
-    const version$3 = '2.7.3';
+    const version$3 = '2.7.4';
 
     const DEFAULT_HEADERS$3 = { 'X-Client-Info': `realtime-js/${version$3}` };
     const VSN = '1.0.0';
@@ -3141,7 +2612,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param options.reconnectAfterMs he optional function that returns the millsec reconnect interval. Defaults to stepped backoff off.
          */
         constructor(endPoint, options) {
-            var _a;
+            var _a, _b;
             this.accessToken = null;
             this.channels = [];
             this.endPoint = '';
@@ -3181,6 +2652,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             const eventsPerSecond = (_a = options === null || options === void 0 ? void 0 : options.params) === null || _a === void 0 ? void 0 : _a.eventsPerSecond;
             if (eventsPerSecond)
                 this.eventsPerSecondLimitMs = Math.floor(1000 / eventsPerSecond);
+            const accessToken = (_b = options === null || options === void 0 ? void 0 : options.params) === null || _b === void 0 ? void 0 : _b.apikey;
+            if (accessToken)
+                this.accessToken = accessToken;
             this.reconnectAfterMs = (options === null || options === void 0 ? void 0 : options.reconnectAfterMs)
                 ? options.reconnectAfterMs
                 : (tries) => {
@@ -3765,7 +3239,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         /**
          * Creates a signed upload URL.
          * Signed upload URLs can be used to upload files to the bucket without further authentication.
-         * They are valid for one minute.
+         * They are valid for 2 hours.
          * @param path The file path, including the current file name. For example `folder/image.png`.
          */
         createSignedUploadUrl(path) {
@@ -4081,7 +3555,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
 
     // generated by genversion
-    const version$2 = '2.5.1';
+    const version$2 = '2.5.3';
 
     const DEFAULT_HEADERS$2 = { 'X-Client-Info': `storage-js/${version$2}` };
 
@@ -4258,10 +3732,576 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    const version$1 = '2.32.0';
+    const version$1 = '2.33.1';
 
     // constants.ts
     const DEFAULT_HEADERS$1 = { 'X-Client-Info': `supabase-js/${version$1}` };
+
+    var browserPonyfill$1 = {exports: {}};
+
+    (function (module, exports) {
+    	var global = typeof self !== 'undefined' ? self : commonjsGlobal;
+    	var __self__ = (function () {
+    	function F() {
+    	this.fetch = false;
+    	this.DOMException = global.DOMException;
+    	}
+    	F.prototype = global;
+    	return new F();
+    	})();
+    	(function(self) {
+
+    	((function (exports) {
+
+    	  var support = {
+    	    searchParams: 'URLSearchParams' in self,
+    	    iterable: 'Symbol' in self && 'iterator' in Symbol,
+    	    blob:
+    	      'FileReader' in self &&
+    	      'Blob' in self &&
+    	      (function() {
+    	        try {
+    	          new Blob();
+    	          return true
+    	        } catch (e) {
+    	          return false
+    	        }
+    	      })(),
+    	    formData: 'FormData' in self,
+    	    arrayBuffer: 'ArrayBuffer' in self
+    	  };
+
+    	  function isDataView(obj) {
+    	    return obj && DataView.prototype.isPrototypeOf(obj)
+    	  }
+
+    	  if (support.arrayBuffer) {
+    	    var viewClasses = [
+    	      '[object Int8Array]',
+    	      '[object Uint8Array]',
+    	      '[object Uint8ClampedArray]',
+    	      '[object Int16Array]',
+    	      '[object Uint16Array]',
+    	      '[object Int32Array]',
+    	      '[object Uint32Array]',
+    	      '[object Float32Array]',
+    	      '[object Float64Array]'
+    	    ];
+
+    	    var isArrayBufferView =
+    	      ArrayBuffer.isView ||
+    	      function(obj) {
+    	        return obj && viewClasses.indexOf(Object.prototype.toString.call(obj)) > -1
+    	      };
+    	  }
+
+    	  function normalizeName(name) {
+    	    if (typeof name !== 'string') {
+    	      name = String(name);
+    	    }
+    	    if (/[^a-z0-9\-#$%&'*+.^_`|~]/i.test(name)) {
+    	      throw new TypeError('Invalid character in header field name')
+    	    }
+    	    return name.toLowerCase()
+    	  }
+
+    	  function normalizeValue(value) {
+    	    if (typeof value !== 'string') {
+    	      value = String(value);
+    	    }
+    	    return value
+    	  }
+
+    	  // Build a destructive iterator for the value list
+    	  function iteratorFor(items) {
+    	    var iterator = {
+    	      next: function() {
+    	        var value = items.shift();
+    	        return {done: value === undefined, value: value}
+    	      }
+    	    };
+
+    	    if (support.iterable) {
+    	      iterator[Symbol.iterator] = function() {
+    	        return iterator
+    	      };
+    	    }
+
+    	    return iterator
+    	  }
+
+    	  function Headers(headers) {
+    	    this.map = {};
+
+    	    if (headers instanceof Headers) {
+    	      headers.forEach(function(value, name) {
+    	        this.append(name, value);
+    	      }, this);
+    	    } else if (Array.isArray(headers)) {
+    	      headers.forEach(function(header) {
+    	        this.append(header[0], header[1]);
+    	      }, this);
+    	    } else if (headers) {
+    	      Object.getOwnPropertyNames(headers).forEach(function(name) {
+    	        this.append(name, headers[name]);
+    	      }, this);
+    	    }
+    	  }
+
+    	  Headers.prototype.append = function(name, value) {
+    	    name = normalizeName(name);
+    	    value = normalizeValue(value);
+    	    var oldValue = this.map[name];
+    	    this.map[name] = oldValue ? oldValue + ', ' + value : value;
+    	  };
+
+    	  Headers.prototype['delete'] = function(name) {
+    	    delete this.map[normalizeName(name)];
+    	  };
+
+    	  Headers.prototype.get = function(name) {
+    	    name = normalizeName(name);
+    	    return this.has(name) ? this.map[name] : null
+    	  };
+
+    	  Headers.prototype.has = function(name) {
+    	    return this.map.hasOwnProperty(normalizeName(name))
+    	  };
+
+    	  Headers.prototype.set = function(name, value) {
+    	    this.map[normalizeName(name)] = normalizeValue(value);
+    	  };
+
+    	  Headers.prototype.forEach = function(callback, thisArg) {
+    	    for (var name in this.map) {
+    	      if (this.map.hasOwnProperty(name)) {
+    	        callback.call(thisArg, this.map[name], name, this);
+    	      }
+    	    }
+    	  };
+
+    	  Headers.prototype.keys = function() {
+    	    var items = [];
+    	    this.forEach(function(value, name) {
+    	      items.push(name);
+    	    });
+    	    return iteratorFor(items)
+    	  };
+
+    	  Headers.prototype.values = function() {
+    	    var items = [];
+    	    this.forEach(function(value) {
+    	      items.push(value);
+    	    });
+    	    return iteratorFor(items)
+    	  };
+
+    	  Headers.prototype.entries = function() {
+    	    var items = [];
+    	    this.forEach(function(value, name) {
+    	      items.push([name, value]);
+    	    });
+    	    return iteratorFor(items)
+    	  };
+
+    	  if (support.iterable) {
+    	    Headers.prototype[Symbol.iterator] = Headers.prototype.entries;
+    	  }
+
+    	  function consumed(body) {
+    	    if (body.bodyUsed) {
+    	      return Promise.reject(new TypeError('Already read'))
+    	    }
+    	    body.bodyUsed = true;
+    	  }
+
+    	  function fileReaderReady(reader) {
+    	    return new Promise(function(resolve, reject) {
+    	      reader.onload = function() {
+    	        resolve(reader.result);
+    	      };
+    	      reader.onerror = function() {
+    	        reject(reader.error);
+    	      };
+    	    })
+    	  }
+
+    	  function readBlobAsArrayBuffer(blob) {
+    	    var reader = new FileReader();
+    	    var promise = fileReaderReady(reader);
+    	    reader.readAsArrayBuffer(blob);
+    	    return promise
+    	  }
+
+    	  function readBlobAsText(blob) {
+    	    var reader = new FileReader();
+    	    var promise = fileReaderReady(reader);
+    	    reader.readAsText(blob);
+    	    return promise
+    	  }
+
+    	  function readArrayBufferAsText(buf) {
+    	    var view = new Uint8Array(buf);
+    	    var chars = new Array(view.length);
+
+    	    for (var i = 0; i < view.length; i++) {
+    	      chars[i] = String.fromCharCode(view[i]);
+    	    }
+    	    return chars.join('')
+    	  }
+
+    	  function bufferClone(buf) {
+    	    if (buf.slice) {
+    	      return buf.slice(0)
+    	    } else {
+    	      var view = new Uint8Array(buf.byteLength);
+    	      view.set(new Uint8Array(buf));
+    	      return view.buffer
+    	    }
+    	  }
+
+    	  function Body() {
+    	    this.bodyUsed = false;
+
+    	    this._initBody = function(body) {
+    	      this._bodyInit = body;
+    	      if (!body) {
+    	        this._bodyText = '';
+    	      } else if (typeof body === 'string') {
+    	        this._bodyText = body;
+    	      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+    	        this._bodyBlob = body;
+    	      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+    	        this._bodyFormData = body;
+    	      } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+    	        this._bodyText = body.toString();
+    	      } else if (support.arrayBuffer && support.blob && isDataView(body)) {
+    	        this._bodyArrayBuffer = bufferClone(body.buffer);
+    	        // IE 10-11 can't handle a DataView body.
+    	        this._bodyInit = new Blob([this._bodyArrayBuffer]);
+    	      } else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
+    	        this._bodyArrayBuffer = bufferClone(body);
+    	      } else {
+    	        this._bodyText = body = Object.prototype.toString.call(body);
+    	      }
+
+    	      if (!this.headers.get('content-type')) {
+    	        if (typeof body === 'string') {
+    	          this.headers.set('content-type', 'text/plain;charset=UTF-8');
+    	        } else if (this._bodyBlob && this._bodyBlob.type) {
+    	          this.headers.set('content-type', this._bodyBlob.type);
+    	        } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+    	          this.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+    	        }
+    	      }
+    	    };
+
+    	    if (support.blob) {
+    	      this.blob = function() {
+    	        var rejected = consumed(this);
+    	        if (rejected) {
+    	          return rejected
+    	        }
+
+    	        if (this._bodyBlob) {
+    	          return Promise.resolve(this._bodyBlob)
+    	        } else if (this._bodyArrayBuffer) {
+    	          return Promise.resolve(new Blob([this._bodyArrayBuffer]))
+    	        } else if (this._bodyFormData) {
+    	          throw new Error('could not read FormData body as blob')
+    	        } else {
+    	          return Promise.resolve(new Blob([this._bodyText]))
+    	        }
+    	      };
+
+    	      this.arrayBuffer = function() {
+    	        if (this._bodyArrayBuffer) {
+    	          return consumed(this) || Promise.resolve(this._bodyArrayBuffer)
+    	        } else {
+    	          return this.blob().then(readBlobAsArrayBuffer)
+    	        }
+    	      };
+    	    }
+
+    	    this.text = function() {
+    	      var rejected = consumed(this);
+    	      if (rejected) {
+    	        return rejected
+    	      }
+
+    	      if (this._bodyBlob) {
+    	        return readBlobAsText(this._bodyBlob)
+    	      } else if (this._bodyArrayBuffer) {
+    	        return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer))
+    	      } else if (this._bodyFormData) {
+    	        throw new Error('could not read FormData body as text')
+    	      } else {
+    	        return Promise.resolve(this._bodyText)
+    	      }
+    	    };
+
+    	    if (support.formData) {
+    	      this.formData = function() {
+    	        return this.text().then(decode)
+    	      };
+    	    }
+
+    	    this.json = function() {
+    	      return this.text().then(JSON.parse)
+    	    };
+
+    	    return this
+    	  }
+
+    	  // HTTP methods whose capitalization should be normalized
+    	  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT'];
+
+    	  function normalizeMethod(method) {
+    	    var upcased = method.toUpperCase();
+    	    return methods.indexOf(upcased) > -1 ? upcased : method
+    	  }
+
+    	  function Request(input, options) {
+    	    options = options || {};
+    	    var body = options.body;
+
+    	    if (input instanceof Request) {
+    	      if (input.bodyUsed) {
+    	        throw new TypeError('Already read')
+    	      }
+    	      this.url = input.url;
+    	      this.credentials = input.credentials;
+    	      if (!options.headers) {
+    	        this.headers = new Headers(input.headers);
+    	      }
+    	      this.method = input.method;
+    	      this.mode = input.mode;
+    	      this.signal = input.signal;
+    	      if (!body && input._bodyInit != null) {
+    	        body = input._bodyInit;
+    	        input.bodyUsed = true;
+    	      }
+    	    } else {
+    	      this.url = String(input);
+    	    }
+
+    	    this.credentials = options.credentials || this.credentials || 'same-origin';
+    	    if (options.headers || !this.headers) {
+    	      this.headers = new Headers(options.headers);
+    	    }
+    	    this.method = normalizeMethod(options.method || this.method || 'GET');
+    	    this.mode = options.mode || this.mode || null;
+    	    this.signal = options.signal || this.signal;
+    	    this.referrer = null;
+
+    	    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
+    	      throw new TypeError('Body not allowed for GET or HEAD requests')
+    	    }
+    	    this._initBody(body);
+    	  }
+
+    	  Request.prototype.clone = function() {
+    	    return new Request(this, {body: this._bodyInit})
+    	  };
+
+    	  function decode(body) {
+    	    var form = new FormData();
+    	    body
+    	      .trim()
+    	      .split('&')
+    	      .forEach(function(bytes) {
+    	        if (bytes) {
+    	          var split = bytes.split('=');
+    	          var name = split.shift().replace(/\+/g, ' ');
+    	          var value = split.join('=').replace(/\+/g, ' ');
+    	          form.append(decodeURIComponent(name), decodeURIComponent(value));
+    	        }
+    	      });
+    	    return form
+    	  }
+
+    	  function parseHeaders(rawHeaders) {
+    	    var headers = new Headers();
+    	    // Replace instances of \r\n and \n followed by at least one space or horizontal tab with a space
+    	    // https://tools.ietf.org/html/rfc7230#section-3.2
+    	    var preProcessedHeaders = rawHeaders.replace(/\r?\n[\t ]+/g, ' ');
+    	    preProcessedHeaders.split(/\r?\n/).forEach(function(line) {
+    	      var parts = line.split(':');
+    	      var key = parts.shift().trim();
+    	      if (key) {
+    	        var value = parts.join(':').trim();
+    	        headers.append(key, value);
+    	      }
+    	    });
+    	    return headers
+    	  }
+
+    	  Body.call(Request.prototype);
+
+    	  function Response(bodyInit, options) {
+    	    if (!options) {
+    	      options = {};
+    	    }
+
+    	    this.type = 'default';
+    	    this.status = options.status === undefined ? 200 : options.status;
+    	    this.ok = this.status >= 200 && this.status < 300;
+    	    this.statusText = 'statusText' in options ? options.statusText : 'OK';
+    	    this.headers = new Headers(options.headers);
+    	    this.url = options.url || '';
+    	    this._initBody(bodyInit);
+    	  }
+
+    	  Body.call(Response.prototype);
+
+    	  Response.prototype.clone = function() {
+    	    return new Response(this._bodyInit, {
+    	      status: this.status,
+    	      statusText: this.statusText,
+    	      headers: new Headers(this.headers),
+    	      url: this.url
+    	    })
+    	  };
+
+    	  Response.error = function() {
+    	    var response = new Response(null, {status: 0, statusText: ''});
+    	    response.type = 'error';
+    	    return response
+    	  };
+
+    	  var redirectStatuses = [301, 302, 303, 307, 308];
+
+    	  Response.redirect = function(url, status) {
+    	    if (redirectStatuses.indexOf(status) === -1) {
+    	      throw new RangeError('Invalid status code')
+    	    }
+
+    	    return new Response(null, {status: status, headers: {location: url}})
+    	  };
+
+    	  exports.DOMException = self.DOMException;
+    	  try {
+    	    new exports.DOMException();
+    	  } catch (err) {
+    	    exports.DOMException = function(message, name) {
+    	      this.message = message;
+    	      this.name = name;
+    	      var error = Error(message);
+    	      this.stack = error.stack;
+    	    };
+    	    exports.DOMException.prototype = Object.create(Error.prototype);
+    	    exports.DOMException.prototype.constructor = exports.DOMException;
+    	  }
+
+    	  function fetch(input, init) {
+    	    return new Promise(function(resolve, reject) {
+    	      var request = new Request(input, init);
+
+    	      if (request.signal && request.signal.aborted) {
+    	        return reject(new exports.DOMException('Aborted', 'AbortError'))
+    	      }
+
+    	      var xhr = new XMLHttpRequest();
+
+    	      function abortXhr() {
+    	        xhr.abort();
+    	      }
+
+    	      xhr.onload = function() {
+    	        var options = {
+    	          status: xhr.status,
+    	          statusText: xhr.statusText,
+    	          headers: parseHeaders(xhr.getAllResponseHeaders() || '')
+    	        };
+    	        options.url = 'responseURL' in xhr ? xhr.responseURL : options.headers.get('X-Request-URL');
+    	        var body = 'response' in xhr ? xhr.response : xhr.responseText;
+    	        resolve(new Response(body, options));
+    	      };
+
+    	      xhr.onerror = function() {
+    	        reject(new TypeError('Network request failed'));
+    	      };
+
+    	      xhr.ontimeout = function() {
+    	        reject(new TypeError('Network request failed'));
+    	      };
+
+    	      xhr.onabort = function() {
+    	        reject(new exports.DOMException('Aborted', 'AbortError'));
+    	      };
+
+    	      xhr.open(request.method, request.url, true);
+
+    	      if (request.credentials === 'include') {
+    	        xhr.withCredentials = true;
+    	      } else if (request.credentials === 'omit') {
+    	        xhr.withCredentials = false;
+    	      }
+
+    	      if ('responseType' in xhr && support.blob) {
+    	        xhr.responseType = 'blob';
+    	      }
+
+    	      request.headers.forEach(function(value, name) {
+    	        xhr.setRequestHeader(name, value);
+    	      });
+
+    	      if (request.signal) {
+    	        request.signal.addEventListener('abort', abortXhr);
+
+    	        xhr.onreadystatechange = function() {
+    	          // DONE (success or failure)
+    	          if (xhr.readyState === 4) {
+    	            request.signal.removeEventListener('abort', abortXhr);
+    	          }
+    	        };
+    	      }
+
+    	      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit);
+    	    })
+    	  }
+
+    	  fetch.polyfill = true;
+
+    	  if (!self.fetch) {
+    	    self.fetch = fetch;
+    	    self.Headers = Headers;
+    	    self.Request = Request;
+    	    self.Response = Response;
+    	  }
+
+    	  exports.Headers = Headers;
+    	  exports.Request = Request;
+    	  exports.Response = Response;
+    	  exports.fetch = fetch;
+
+    	  Object.defineProperty(exports, '__esModule', { value: true });
+
+    	  return exports;
+
+    	}))({});
+    	})(__self__);
+    	__self__.fetch.ponyfill = true;
+    	// Remove "polyfill" property added by whatwg-fetch
+    	delete __self__.fetch.polyfill;
+    	// Choose between native implementation (global) or custom implementation (__self__)
+    	// var ctx = global.fetch ? global : __self__;
+    	var ctx = __self__; // this line disable service worker support temporarily
+    	exports = ctx.fetch; // To enable: import fetch from 'cross-fetch'
+    	exports.default = ctx.fetch; // For TypeScript consumers without esModuleInterop.
+    	exports.fetch = ctx.fetch; // To enable: import {fetch} from 'cross-fetch'
+    	exports.Headers = ctx.Headers;
+    	exports.Request = ctx.Request;
+    	exports.Response = ctx.Response;
+    	module.exports = exports; 
+    } (browserPonyfill$1, browserPonyfill$1.exports));
+
+    var browserPonyfillExports = browserPonyfill$1.exports;
+
+    var browserPonyfill = /*#__PURE__*/_mergeNamespaces({
+        __proto__: null,
+        default: browserPonyfillExports
+    }, [browserPonyfillExports]);
 
     var __awaiter$1 = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -4400,7 +4440,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             _fetch = customFetch;
         }
         else if (typeof fetch === 'undefined') {
-            _fetch = async (...args) => await (await Promise.resolve().then(function () { return browserPonyfill; })).fetch(...args);
+            _fetch = (...args) => Promise.resolve().then(function () { return browser$2; }).then(({ default: fetch }) => fetch(...args));
         }
         else {
             _fetch = fetch;
@@ -4561,119 +4601,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         const hashed = await sha256(verifier);
         return base64urlencode(hashed);
     }
-    const STACK_GUARD_PREFIX = `__stack_guard__`;
-    const STACK_GUARD_SUFFIX = `__`;
-    // Firefox and WebKit based browsers encode the stack entry differently, but
-    // they all include the function name. So instead of trying to parse the entry,
-    // we're only looking for the special string `__stack_guard__${guardName}__`.
-    // Guard names can only be letters with dashes or underscores.
-    //
-    // Example Firefox stack trace:
-    // ```
-    // __stack_guard__EXAMPLE__@debugger eval code:1:55
-    // @debugger eval code:1:3
-    // ```
-    //
-    // Example WebKit/Chrome stack trace:
-    // ```
-    // Error
-    //  at Object.__stack_guard__EXAMPLE__ (<anonymous>:1:55)
-    //  at <anonymous>:1:13
-    // ```
-    //
-    const STACK_ENTRY_REGEX = /__stack_guard__([a-zA-Z0-9_-]+)__/;
-    let STACK_GUARD_CHECKED = false;
-    let STACK_GUARD_CHECK_FN; // eslint-disable-line prefer-const
-    let STACK_GUARDS_SUPPORTED = false;
-    /**
-     * Checks if the current caller of the function is in a {@link
-     * #stackGuard} of the provided `name`. Works by looking through
-     * the stack trace of an `Error` object for a special function
-     * name (generated by {@link #stackGuard}).
-     *
-     * @param name The name of the stack guard to check for. Must be `[a-zA-Z0-9_-]` only.
-     */
-    function isInStackGuard(name) {
-        var _a, _b;
-        STACK_GUARD_CHECK_FN();
-        let error;
-        try {
-            throw new Error();
-        }
-        catch (e) {
-            error = e;
-        }
-        const stack = (_b = (_a = error.stack) === null || _a === void 0 ? void 0 : _a.split('\n')) !== null && _b !== void 0 ? _b : [];
-        for (let i = 0; i < stack.length; i += 1) {
-            const entry = stack[i];
-            const match = entry.match(STACK_ENTRY_REGEX);
-            if (match && match[1] === name) {
-                return true;
-            }
-        }
-        return false;
-    }
-    /**
-     * Creates a minification resistant stack guard, i.e. if you
-     * call {@link #isInStackGuard} from within the `fn` parameter
-     * function, you will always get `true` otherwise it will be
-     * `false`.
-     *
-     * Works by dynamically defining a function name before calling
-     * into `fn`, which is then parsed from the stack trace on an
-     * `Error` object within {@link #isInStackGuard}.
-     *
-     * @param name The name of the stack guard. Must be `[a-zA-Z0-9_-]` only.
-     * @param fn The async/await function to be run within the stack guard.
-     */
-    async function stackGuard(name, fn) {
-        await STACK_GUARD_CHECK_FN();
-        const guardName = `${STACK_GUARD_PREFIX}${name}${STACK_GUARD_SUFFIX}`;
-        const guardFunc = {
-            // per ECMAScript rules, this defines a new function with the dynamic name
-            // contained in the `guardName` variable
-            // this function name shows up in stack traces and is resistant to mangling
-            // from minification processes as it is determined at runtime
-            [guardName]: async () => await fn(),
-        };
-        // Safari does not log the name of a dynamically named function unless you
-        // explicitly set the displayName
-        Object.assign(guardFunc[guardName], { displayName: guardName });
-        return await guardFunc[guardName]();
-    }
-    /**
-     * Returns if the JavaScript engine supports stack guards. If it doesn't
-     * certain features that depend on detecting recursive calls should be disabled
-     * to prevent deadlocks.
-     */
-    async function stackGuardsSupported() {
-        if (STACK_GUARD_CHECKED) {
-            return STACK_GUARDS_SUPPORTED;
-        }
-        await STACK_GUARD_CHECK_FN();
-        return STACK_GUARDS_SUPPORTED;
-    }
-    let STACK_GUARD_WARNING_LOGGED = false;
-    // In certain cases, if this file is transpiled using an ES2015 target, or is
-    // running in a JS engine that does not support async/await stack traces, this
-    // function will log a single warning message.
-    STACK_GUARD_CHECK_FN = async () => {
-        if (!STACK_GUARD_CHECKED) {
-            STACK_GUARD_CHECKED = true;
-            await stackGuard('ENV_CHECK', async () => {
-                // sleeping for the next tick as Safari loses track of the async/await
-                // trace beyond this point
-                await sleep(0);
-                const result = isInStackGuard('ENV_CHECK');
-                STACK_GUARDS_SUPPORTED = result;
-                if (!result && !STACK_GUARD_WARNING_LOGGED) {
-                    STACK_GUARD_WARNING_LOGGED = true;
-                    console.warn('@supabase/gotrue-js: Stack guards not supported in this environment. Generally not an issue but may point to a very conservative transpilation environment (use ES2017 or above) that implements async/await with generators, or this is a JavaScript engine that does not support async/await stack traces. Safari is known to not support stack guards.');
-                }
-                return result;
-            });
-        }
-    };
 
     class AuthError extends Error {
         constructor(message, status) {
@@ -4860,7 +4787,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         let session = null;
         if (hasSession(data)) {
             session = Object.assign({}, data);
-            session.expires_at = expiresAt(data.expires_in);
+            if (!data.expires_at) {
+                session.expires_at = expiresAt(data.expires_in);
+            }
         }
         const user = (_a = data.user) !== null && _a !== void 0 ? _a : data;
         return { data: { session, user }, error: null };
@@ -5166,7 +5095,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
 
     // Generated by genversion.
-    const version = '2.46.2';
+    const version = '2.51.0';
 
     const GOTRUE_URL = 'http://localhost:9999';
     const STORAGE_KEY = 'supabase.auth.token';
@@ -5220,6 +5149,117 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
+    /**
+     * @experimental
+     */
+    const internals = {
+        /**
+         * @experimental
+         */
+        debug: !!(globalThis &&
+            supportsLocalStorage() &&
+            globalThis.localStorage &&
+            globalThis.localStorage.getItem('supabase.gotrue-js.locks.debug') === 'true'),
+    };
+    class LockAcquireTimeoutError extends Error {
+        constructor(message) {
+            super(message);
+            this.isAcquireTimeout = true;
+        }
+    }
+    class NavigatorLockAcquireTimeoutError extends LockAcquireTimeoutError {
+    }
+    /**
+     * Implements a global exclusive lock using the Navigator LockManager API. It
+     * is available on all browsers released after 2022-03-15 with Safari being the
+     * last one to release support. If the API is not available, this function will
+     * throw. Make sure you check availablility before configuring {@link
+     * GoTrueClient}.
+     *
+     * You can turn on debugging by setting the `supabase.gotrue-js.locks.debug`
+     * local storage item to `true`.
+     *
+     * Internals:
+     *
+     * Since the LockManager API does not preserve stack traces for the async
+     * function passed in the `request` method, a trick is used where acquiring the
+     * lock releases a previously started promise to run the operation in the `fn`
+     * function. The lock waits for that promise to finish (with or without error),
+     * while the function will finally wait for the result anyway.
+     *
+     * @experimental
+     *
+     * @param name Name of the lock to be acquired.
+     * @param acquireTimeout If negative, no timeout. If 0 an error is thrown if
+     *                       the lock can't be acquired without waiting. If positive, the lock acquire
+     *                       will time out after so many milliseconds. An error is
+     *                       a timeout if it has `isAcquireTimeout` set to true.
+     * @param fn The operation to run once the lock is acquired.
+     */
+    async function navigatorLock(name, acquireTimeout, fn) {
+        if (internals.debug) {
+            console.log('@supabase/gotrue-js: navigatorLock: acquire lock', name, acquireTimeout);
+        }
+        const abortController = new globalThis.AbortController();
+        if (acquireTimeout > 0) {
+            setTimeout(() => {
+                abortController.abort();
+                if (internals.debug) {
+                    console.log('@supabase/gotrue-js: navigatorLock acquire timed out', name);
+                }
+            }, acquireTimeout);
+        }
+        // MDN article: https://developer.mozilla.org/en-US/docs/Web/API/LockManager/request
+        return await globalThis.navigator.locks.request(name, acquireTimeout === 0
+            ? {
+                mode: 'exclusive',
+                ifAvailable: true,
+            }
+            : {
+                mode: 'exclusive',
+                signal: abortController.signal,
+            }, async (lock) => {
+            if (lock) {
+                if (internals.debug) {
+                    console.log('@supabase/gotrue-js: navigatorLock: acquired', name, lock.name);
+                }
+                try {
+                    return await fn();
+                }
+                finally {
+                    if (internals.debug) {
+                        console.log('@supabase/gotrue-js: navigatorLock: released', name, lock.name);
+                    }
+                }
+            }
+            else {
+                if (acquireTimeout === 0) {
+                    if (internals.debug) {
+                        console.log('@supabase/gotrue-js: navigatorLock: not immediately available', name);
+                    }
+                    throw new NavigatorLockAcquireTimeoutError(`Acquiring an exclusive Navigator LockManager lock "${name}" immediately failed`);
+                }
+                else {
+                    if (internals.debug) {
+                        try {
+                            const result = await globalThis.navigator.locks.query();
+                            console.log('@supabase/gotrue-js: Navigator LockManager state', JSON.stringify(result, null, '  '));
+                        }
+                        catch (e) {
+                            console.warn('@supabase/gotrue-js: Error when querying Navigator LockManager state', e);
+                        }
+                    }
+                    // Browser is not following the Navigator LockManager spec, it
+                    // returned a null lock when we didn't use ifAvailable. So we can
+                    // pretend the lock is acquired in the name of backward compatibility
+                    // and user experience and just run the function.
+                    console.warn('@supabase/gotrue-js: Navigator LockManager returned a null lock when using #request without ifAvailable set to true, it appears this browser is not following the LockManager spec https://developer.mozilla.org/en-US/docs/Web/API/LockManager/request');
+                    return await fn();
+                }
+            }
+        });
+    }
+
     polyfillGlobalThis(); // Make "globalThis" available
     const DEFAULT_OPTIONS = {
         url: GOTRUE_URL,
@@ -5257,6 +5297,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
              */
             this.initializePromise = null;
             this.detectSessionInUrl = true;
+            this.lockAcquired = false;
+            this.pendingInLock = [];
             /**
              * Used to broadcast state change events to other tabs listening.
              */
@@ -5322,11 +5364,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * This method is automatically called when instantiating the client, but should also be called
          * manually when checking for an error from an auth redirect (oauth, magiclink, password recovery, etc).
          */
-        initialize() {
+        async initialize() {
             if (this.initializePromise) {
-                return this.initializePromise;
+                return await this.initializePromise;
             }
-            return this._initialize();
+            this.initializePromise = (async () => {
+                return await this._acquireLock(-1, async () => {
+                    return await this._initialize();
+                });
+            })();
+            return await this.initializePromise;
         }
         /**
          * IMPORTANT:
@@ -5335,53 +5382,47 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          *    the whole lifetime of the client
          */
         async _initialize() {
-            if (this.initializePromise) {
-                throw new Error('Double call of #_initialize()');
-            }
-            this.initializePromise = this._acquireLock(-1, async () => await stackGuard('_initialize', async () => {
-                try {
-                    const isPKCEFlow = isBrowser() ? await this._isPKCEFlow() : false;
-                    this._debug('#_initialize()', 'begin', 'is PKCE flow', isPKCEFlow);
-                    if (isPKCEFlow || (this.detectSessionInUrl && this._isImplicitGrantFlow())) {
-                        const { data, error } = await this._getSessionFromURL(isPKCEFlow);
-                        if (error) {
-                            this._debug('#_initialize()', 'error detecting session from URL', error);
-                            // failed login attempt via url,
-                            // remove old session as in verifyOtp, signUp and signInWith*
-                            await this._removeSession();
-                            return { error };
-                        }
-                        const { session, redirectType } = data;
-                        this._debug('#_initialize()', 'detected session in URL', session, 'redirect type', redirectType);
-                        await this._saveSession(session);
-                        setTimeout(async () => {
-                            if (redirectType === 'recovery') {
-                                await this._notifyAllSubscribers('PASSWORD_RECOVERY', session);
-                            }
-                            else {
-                                await this._notifyAllSubscribers('SIGNED_IN', session);
-                            }
-                        }, 0);
-                        return { error: null };
-                    }
-                    // no login attempt via callback url try to recover session from storage
-                    await this._recoverAndRefresh();
-                    return { error: null };
-                }
-                catch (error) {
-                    if (isAuthError(error)) {
+            try {
+                const isPKCEFlow = isBrowser() ? await this._isPKCEFlow() : false;
+                this._debug('#_initialize()', 'begin', 'is PKCE flow', isPKCEFlow);
+                if (isPKCEFlow || (this.detectSessionInUrl && this._isImplicitGrantFlow())) {
+                    const { data, error } = await this._getSessionFromURL(isPKCEFlow);
+                    if (error) {
+                        this._debug('#_initialize()', 'error detecting session from URL', error);
+                        // failed login attempt via url,
+                        // remove old session as in verifyOtp, signUp and signInWith*
+                        await this._removeSession();
                         return { error };
                     }
-                    return {
-                        error: new AuthUnknownError('Unexpected error during initialization', error),
-                    };
+                    const { session, redirectType } = data;
+                    this._debug('#_initialize()', 'detected session in URL', session, 'redirect type', redirectType);
+                    await this._saveSession(session);
+                    setTimeout(async () => {
+                        if (redirectType === 'recovery') {
+                            await this._notifyAllSubscribers('PASSWORD_RECOVERY', session);
+                        }
+                        else {
+                            await this._notifyAllSubscribers('SIGNED_IN', session);
+                        }
+                    }, 0);
+                    return { error: null };
                 }
-                finally {
-                    await this._handleVisibilityChange();
-                    this._debug('#_initialize()', 'end');
+                // no login attempt via callback url try to recover session from storage
+                await this._recoverAndRefresh();
+                return { error: null };
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { error };
                 }
-            }));
-            return await this.initializePromise;
+                return {
+                    error: new AuthUnknownError('Unexpected error during initialization', error),
+                };
+            }
+            finally {
+                await this._handleVisibilityChange();
+                this._debug('#_initialize()', 'end');
+            }
         }
         /**
          * Creates a new user.
@@ -5535,6 +5576,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * Log in an existing user by exchanging an Auth Code issued during the PKCE flow.
          */
         async exchangeCodeForSession(authCode) {
+            await this.initializePromise;
+            return this._acquireLock(-1, async () => {
+                return this._exchangeCodeForSession(authCode);
+            });
+        }
+        async _exchangeCodeForSession(authCode) {
             const codeVerifier = await getItemAsync(this.storage, `${this.storageKey}-code-verifier`);
             const { data, error } = await _request(this.fetch, 'POST', `${this.url}/token?grant_type=pkce`, {
                 headers: this.headers,
@@ -5668,7 +5715,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             }
         }
         /**
-         * Log in a user given a User supplied OTP received via mobile.
+         * Log in a user given a User supplied OTP or TokenHash received through mobile or email.
          */
         async verifyOtp(params) {
             var _a, _b;
@@ -5748,6 +5795,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * Requires the user to be signed-in.
          */
         async reauthenticate() {
+            await this.initializePromise;
+            return await this._acquireLock(-1, async () => {
+                return await this._reauthenticate();
+            });
+        }
+        async _reauthenticate() {
             try {
                 return await this._useSession(async (result) => {
                     const { data: { session }, error: sessionError, } = result;
@@ -5817,8 +5870,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * The session returned can be null if the session is not detected which can happen in the event a user is not signed-in or has logged out.
          */
         async getSession() {
-            return this._useSession(async (result) => {
-                return result;
+            await this.initializePromise;
+            return this._acquireLock(-1, async () => {
+                return this._useSession(async (result) => {
+                    return result;
+                });
             });
         }
         /**
@@ -5827,23 +5883,49 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         async _acquireLock(acquireTimeout, fn) {
             this._debug('#_acquireLock', 'begin', acquireTimeout);
             try {
-                if (!(await stackGuardsSupported())) {
-                    this._debug('#_acquireLock', 'Stack guards not supported, so exclusive locking is not performed as it can lead to deadlocks if the lock is attempted to be recursively acquired (as the recursion cannot be detected).');
-                    return await fn();
-                }
-                if (isInStackGuard('_acquireLock')) {
-                    this._debug('#_acquireLock', 'recursive call');
-                    return await fn();
+                if (this.lockAcquired) {
+                    const last = this.pendingInLock.length
+                        ? this.pendingInLock[this.pendingInLock.length - 1]
+                        : Promise.resolve();
+                    const result = (async () => {
+                        await last;
+                        return await fn();
+                    })();
+                    this.pendingInLock.push((async () => {
+                        try {
+                            await result;
+                        }
+                        catch (e) {
+                            // we jsut care if it finished
+                        }
+                    })());
+                    return result;
                 }
                 return await this.lock(`lock:${this.storageKey}`, acquireTimeout, async () => {
                     this._debug('#_acquireLock', 'lock acquired for storage key', this.storageKey);
                     try {
-                        return await stackGuard('_acquireLock', async () => {
-                            return await fn();
-                        });
+                        this.lockAcquired = true;
+                        const result = fn();
+                        this.pendingInLock.push((async () => {
+                            try {
+                                await result;
+                            }
+                            catch (e) {
+                                // we just care if it finished
+                            }
+                        })());
+                        await result;
+                        // keep draining the queue until there's nothing to wait on
+                        while (this.pendingInLock.length) {
+                            const waitOn = [...this.pendingInLock];
+                            await Promise.all(waitOn);
+                            this.pendingInLock.splice(0, waitOn.length);
+                        }
+                        return await result;
                     }
                     finally {
                         this._debug('#_acquireLock', 'lock released for storage key', this.storageKey);
+                        this.lockAcquired = false;
                     }
                 });
             }
@@ -5860,19 +5942,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         async _useSession(fn) {
             this._debug('#_useSession', 'begin');
             try {
-                if (isInStackGuard('_useSession')) {
-                    this._debug('#_useSession', 'recursive call');
-                    // the use of __loadSession here is the only correct use of the function!
-                    const result = await this.__loadSession();
-                    return await fn(result);
-                }
-                return await this._acquireLock(-1, async () => {
-                    return await stackGuard('_useSession', async () => {
-                        // the use of __loadSession here is the only correct use of the function!
-                        const result = await this.__loadSession();
-                        return await fn(result);
-                    });
-                });
+                // the use of __loadSession here is the only correct use of the function!
+                const result = await this.__loadSession();
+                return await fn(result);
             }
             finally {
                 this._debug('#_useSession', 'end');
@@ -5885,15 +5957,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          */
         async __loadSession() {
             this._debug('#__loadSession()', 'begin');
-            if (this.logDebugMessages && !isInStackGuard('_useSession') && (await stackGuardsSupported())) {
-                throw new Error('Please use #_useSession()');
+            if (!this.lockAcquired) {
+                this._debug('#__loadSession()', 'used outside of an acquired lock!', new Error().stack);
             }
-            if (isInStackGuard('_initialize')) {
-                this._debug('#__loadSession', '#_initialize recursion detected', new Error().stack);
-            }
-            // always wait for #_initialize() to finish before loading anything from
-            // storage
-            await this.initializePromise;
             try {
                 let currentSession = null;
                 if (this.persistSession) {
@@ -5938,6 +6004,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param jwt Takes in an optional access token jwt. If no jwt is provided, getUser() will attempt to get the jwt from the current session.
          */
         async getUser(jwt) {
+            if (jwt) {
+                return await this._getUser(jwt);
+            }
+            await this.initializePromise;
+            return this._acquireLock(-1, async () => {
+                return await this._getUser();
+            });
+        }
+        async _getUser(jwt) {
             try {
                 if (jwt) {
                     return await _request(this.fetch, 'GET', `${this.url}/user`, {
@@ -5970,6 +6045,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * Updates user data for a logged in user.
          */
         async updateUser(attributes, options = {}) {
+            await this.initializePromise;
+            return await this._acquireLock(-1, async () => {
+                return await this._updateUser(attributes, options);
+            });
+        }
+        async _updateUser(attributes, options = {}) {
             try {
                 return await this._useSession(async (result) => {
                     const { data: sessionData, error: sessionError } = result;
@@ -5980,10 +6061,18 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         throw new AuthSessionMissingError();
                     }
                     const session = sessionData.session;
+                    let codeChallenge = null;
+                    let codeChallengeMethod = null;
+                    if (this.flowType === 'pkce' && attributes.email != null) {
+                        const codeVerifier = generatePKCEVerifier();
+                        await setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
+                        codeChallenge = await generatePKCEChallenge(codeVerifier);
+                        codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
+                    }
                     const { data, error: userError } = await _request(this.fetch, 'PUT', `${this.url}/user`, {
                         headers: this.headers,
                         redirectTo: options === null || options === void 0 ? void 0 : options.emailRedirectTo,
-                        body: attributes,
+                        body: Object.assign(Object.assign({}, attributes), { code_challenge: codeChallenge, code_challenge_method: codeChallengeMethod }),
                         jwt: session.access_token,
                         xform: _userResponse,
                     });
@@ -6014,6 +6103,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param currentSession The current session that minimally contains an access token and refresh token.
          */
         async setSession(currentSession) {
+            await this.initializePromise;
+            return await this._acquireLock(-1, async () => {
+                return await this._setSession(currentSession);
+            });
+        }
+        async _setSession(currentSession) {
             try {
                 if (!currentSession.access_token || !currentSession.refresh_token) {
                     throw new AuthSessionMissingError();
@@ -6038,7 +6133,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     session = refreshedSession;
                 }
                 else {
-                    const { data, error } = await this.getUser(currentSession.access_token);
+                    const { data, error } = await this._getUser(currentSession.access_token);
                     if (error) {
                         throw error;
                     }
@@ -6069,6 +6164,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param currentSession The current session. If passed in, it must contain a refresh token.
          */
         async refreshSession(currentSession) {
+            await this.initializePromise;
+            return await this._acquireLock(-1, async () => {
+                return await this._refreshSession(currentSession);
+            });
+        }
+        async _refreshSession(currentSession) {
             try {
                 return await this._useSession(async (result) => {
                     var _a;
@@ -6116,7 +6217,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 if (isPKCEFlow) {
                     if (!params.code)
                         throw new AuthPKCEGrantCodeExchangeError('No code detected.');
-                    const { data, error } = await this.exchangeCodeForSession(params.code);
+                    const { data, error } = await this._exchangeCodeForSession(params.code);
                     if (error)
                         throw error;
                     const url = new URL(window.location.href);
@@ -6130,14 +6231,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         code: params.error_code || 'unspecified_code',
                     });
                 }
-                const { provider_token, provider_refresh_token, access_token, refresh_token, expires_in, token_type, } = params;
+                const { provider_token, provider_refresh_token, access_token, refresh_token, expires_in, expires_at, token_type, } = params;
                 if (!access_token || !expires_in || !refresh_token || !token_type) {
                     throw new AuthImplicitGrantRedirectError('No session defined in URL');
                 }
                 const timeNow = Math.round(Date.now() / 1000);
                 const expiresIn = parseInt(expires_in);
-                const expires_at = timeNow + expiresIn;
-                const { data, error } = await this.getUser(access_token);
+                let expiresAt = timeNow + expiresIn;
+                if (expires_at) {
+                    expiresAt = parseInt(expires_at);
+                }
+                const actuallyExpiresIn = expiresAt - timeNow;
+                if (actuallyExpiresIn * 1000 <= AUTO_REFRESH_TICK_DURATION) {
+                    console.warn(`@supabase/gotrue-js: Session as retrieved from URL expires in ${actuallyExpiresIn}s, should have been closer to ${expiresIn}s`);
+                }
+                const issuedAt = expiresAt - expiresIn;
+                if (timeNow - issuedAt >= 120) {
+                    console.warn('@supabase/gotrue-js: Session as retrieved from URL was issued over 120s ago, URL could be stale', issuedAt, expiresAt, timeNow);
+                }
+                else if (timeNow - issuedAt < 0) {
+                    console.warn('@supabase/gotrue-js: Session as retrieved from URL was issued in the future? Check the device clok for skew', issuedAt, expiresAt, timeNow);
+                }
+                const { data, error } = await this._getUser(access_token);
                 if (error)
                     throw error;
                 const session = {
@@ -6145,7 +6260,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     provider_refresh_token,
                     access_token,
                     expires_in: expiresIn,
-                    expires_at,
+                    expires_at: expiresAt,
                     refresh_token,
                     token_type,
                     user: data.user,
@@ -6186,7 +6301,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          *
          * If using others scope, no `SIGNED_OUT` event is fired!
          */
-        async signOut({ scope } = { scope: 'global' }) {
+        async signOut(options = { scope: 'global' }) {
+            await this.initializePromise;
+            return await this._acquireLock(-1, async () => {
+                return await this._signOut(options);
+            });
+        }
+        async _signOut({ scope } = { scope: 'global' }) {
             return await this._useSession(async (result) => {
                 var _a;
                 const { data, error: sessionError } = result;
@@ -6228,7 +6349,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             };
             this._debug('#onAuthStateChange()', 'registered callback with id', id);
             this.stateChangeEmitters.set(id, subscription);
-            this._emitInitialSession(id);
+            (async () => {
+                await this.initializePromise;
+                await this._acquireLock(-1, async () => {
+                    this._emitInitialSession(id);
+                });
+            })();
             return { data: { subscription } };
         }
         async _emitInitialSession(id) {
@@ -6589,28 +6715,40 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         async _autoRefreshTokenTick() {
             this._debug('#_autoRefreshTokenTick()', 'begin');
             try {
-                const now = Date.now();
-                try {
-                    return await this._useSession(async (result) => {
-                        const { data: { session }, } = result;
-                        if (!session || !session.refresh_token || !session.expires_at) {
-                            this._debug('#_autoRefreshTokenTick()', 'no session');
-                            return;
+                await this._acquireLock(0, async () => {
+                    try {
+                        const now = Date.now();
+                        try {
+                            return await this._useSession(async (result) => {
+                                const { data: { session }, } = result;
+                                if (!session || !session.refresh_token || !session.expires_at) {
+                                    this._debug('#_autoRefreshTokenTick()', 'no session');
+                                    return;
+                                }
+                                // session will expire in this many ticks (or has already expired if <= 0)
+                                const expiresInTicks = Math.floor((session.expires_at * 1000 - now) / AUTO_REFRESH_TICK_DURATION);
+                                this._debug('#_autoRefreshTokenTick()', `access token expires in ${expiresInTicks} ticks, a tick lasts ${AUTO_REFRESH_TICK_DURATION}ms, refresh threshold is ${AUTO_REFRESH_TICK_THRESHOLD} ticks`);
+                                if (expiresInTicks <= AUTO_REFRESH_TICK_THRESHOLD) {
+                                    await this._callRefreshToken(session.refresh_token);
+                                }
+                            });
                         }
-                        // session will expire in this many ticks (or has already expired if <= 0)
-                        const expiresInTicks = Math.floor((session.expires_at * 1000 - now) / AUTO_REFRESH_TICK_DURATION);
-                        this._debug('#_autoRefreshTokenTick()', `access token expires in ${expiresInTicks} ticks, a tick lasts ${AUTO_REFRESH_TICK_DURATION}ms, refresh threshold is ${AUTO_REFRESH_TICK_THRESHOLD} ticks`);
-                        if (expiresInTicks <= AUTO_REFRESH_TICK_THRESHOLD) {
-                            await this._callRefreshToken(session.refresh_token);
+                        catch (e) {
+                            console.error('Auto refresh tick failed with error. This is likely a transient error.', e);
                         }
-                    });
-                }
-                catch (e) {
-                    console.error('Auto refresh tick failed with error. This is likely a transient error.', e);
-                }
+                    }
+                    finally {
+                        this._debug('#_autoRefreshTokenTick()', 'end');
+                    }
+                });
             }
-            finally {
-                this._debug('#_autoRefreshTokenTick()', 'end');
+            catch (e) {
+                if (e.isAcquireTimeout || e instanceof LockAcquireTimeoutError) {
+                    this._debug('auto refresh token tick lock not available');
+                }
+                else {
+                    throw e;
+                }
             }
         }
         /**
@@ -6641,24 +6779,31 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         /**
          * Callback registered with `window.addEventListener('visibilitychange')`.
          */
-        async _onVisibilityChanged(isInitial) {
-            this._debug(`#_onVisibilityChanged(${isInitial})`, 'visibilityState', document.visibilityState);
+        async _onVisibilityChanged(calledFromInitialize) {
+            const methodName = `#_onVisibilityChanged(${calledFromInitialize})`;
+            this._debug(methodName, 'visibilityState', document.visibilityState);
             if (document.visibilityState === 'visible') {
-                // to avoid recursively depending on #_initialize(), run the visibility
-                // changed callback in the next event loop tick
-                setTimeout(async () => {
-                    if (!isInitial) {
-                        // initial visibility change setup is handled in another flow under #initialize()
-                        await this.initializePromise;
+                if (this.autoRefreshToken) {
+                    // in browser environments the refresh token ticker runs only on focused tabs
+                    // which prevents race conditions
+                    this._startAutoRefresh();
+                }
+                if (!calledFromInitialize) {
+                    // called when the visibility has changed, i.e. the browser
+                    // transitioned from hidden -> visible so we need to see if the session
+                    // should be recovered immediately... but to do that we need to acquire
+                    // the lock first asynchronously
+                    await this.initializePromise;
+                    await this._acquireLock(-1, async () => {
+                        if (document.visibilityState !== 'visible') {
+                            this._debug(methodName, 'acquired the lock to recover the session, but the browser visibilityState is no longer visible, aborting');
+                            // visibility has changed while waiting for the lock, abort
+                            return;
+                        }
+                        // recover the session
                         await this._recoverAndRefresh();
-                        this._debug('#_onVisibilityChanged()', 'finished waiting for initialize, _recoverAndRefresh');
-                    }
-                    if (this.autoRefreshToken) {
-                        // in browser environments the refresh token ticker runs only on focused tabs
-                        // which prevents race conditions
-                        this._startAutoRefresh();
-                    }
-                }, 0);
+                    });
+                }
             }
             else if (document.visibilityState === 'hidden') {
                 if (this.autoRefreshToken) {
@@ -6830,7 +6975,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * {@see GoTrueMFAApi#listFactors}
          */
         async _listFactors() {
-            const { data: { user }, error: userError, } = await this.getUser();
+            const { data: { user }, error: userError, } = await this._getUser();
             if (userError) {
                 return { data: null, error: userError };
             }
@@ -6876,137 +7021,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
     GoTrueClient.nextInstanceID = 0;
-
-    /**
-     * @experimental
-     */
-    const internals = {
-        /**
-         * @experimental
-         */
-        debug: !!(globalThis &&
-            supportsLocalStorage() &&
-            globalThis.localStorage &&
-            globalThis.localStorage.getItem('supabase.gotrue-js.locks.debug') === 'true'),
-    };
-    class NavigatorLockAcquireTimeoutError extends Error {
-        constructor(message) {
-            super(message);
-            this.isAcquireTimeout = true;
-        }
-    }
-    /**
-     * Implements a global exclusive lock using the Navigator LockManager API. It
-     * is available on all browsers released after 2022-03-15 with Safari being the
-     * last one to release support. If the API is not available, this function will
-     * throw. Make sure you check availablility before configuring {@link
-     * GoTrueClient}.
-     *
-     * You can turn on debugging by setting the `supabase.gotrue-js.locks.debug`
-     * local storage item to `true`.
-     *
-     * Internals:
-     *
-     * Since the LockManager API does not preserve stack traces for the async
-     * function passed in the `request` method, a trick is used where acquiring the
-     * lock releases a previously started promise to run the operation in the `fn`
-     * function. The lock waits for that promise to finish (with or without error),
-     * while the function will finally wait for the result anyway.
-     *
-     * @experimental
-     *
-     * @param name Name of the lock to be acquired.
-     * @param acquireTimeout If negative, no timeout. If 0 an error is thrown if
-     *                       the lock can't be acquired without waiting. If positive, the lock acquire
-     *                       will time out after so many milliseconds. An error is
-     *                       a timeout if it has `isAcquireTimeout` set to true.
-     * @param fn The operation to run once the lock is acquired.
-     */
-    async function navigatorLock(name, acquireTimeout, fn) {
-        if (internals.debug) {
-            console.log('@supabase/gotrue-js: navigatorLock: acquire lock', name, acquireTimeout);
-        }
-        let beginOperation = null;
-        let rejectOperation = null;
-        const beginOperationPromise = new Promise((accept, reject) => {
-            beginOperation = accept;
-            rejectOperation = reject;
-        });
-        // this lets us preserve stack traces over the operation, which the
-        // navigator.locks.request function does not preserve well still
-        const result = (async () => {
-            await beginOperationPromise;
-            if (internals.debug) {
-                console.log('@supabase/gotrue-js: navigatorLock: operation start');
-            }
-            try {
-                return await fn();
-            }
-            finally {
-                if (internals.debug) {
-                    console.log('@supabase/gotrue-js: navigatorLock: operation end');
-                }
-            }
-        })();
-        const abortController = new globalThis.AbortController();
-        if (acquireTimeout > 0) {
-            setTimeout(() => {
-                beginOperation = null;
-                abortController.abort();
-                if (rejectOperation) {
-                    if (internals.debug) {
-                        console.log('@supabase/gotrue-js: navigatorLock acquire timed out', name);
-                    }
-                    if (rejectOperation) {
-                        rejectOperation(new NavigatorLockAcquireTimeoutError(`Acquiring an exclusive Navigator LockManager lock "${name}" timed out after ${acquireTimeout}ms`));
-                    }
-                    beginOperation = null;
-                    rejectOperation = null;
-                }
-            }, acquireTimeout);
-        }
-        await globalThis.navigator.locks.request(name, {
-            mode: 'exclusive',
-            ifAvailable: acquireTimeout === 0,
-            signal: abortController.signal,
-        }, async (lock) => {
-            if (lock) {
-                if (internals.debug) {
-                    console.log('@supabase/gotrue-js: navigatorLock acquired', name);
-                }
-                try {
-                    if (beginOperation) {
-                        beginOperation();
-                        beginOperation = null;
-                        rejectOperation = null;
-                        await result;
-                    }
-                }
-                catch (e) {
-                    // not important to handle the error here
-                }
-                finally {
-                    if (internals.debug) {
-                        console.log('@supabase/gotrue-js: navigatorLock released', name);
-                    }
-                }
-            }
-            else {
-                if (internals.debug) {
-                    console.log('@supabase/gotrue-js: navigatorLock not immediately available', name);
-                }
-                // no lock was available because acquireTimeout === 0
-                const timeout = new Error(`Acquiring an exclusive Navigator LockManager lock "${name}" immediately failed`);
-                timeout.isAcquireTimeout = true;
-                if (rejectOperation) {
-                    rejectOperation(new NavigatorLockAcquireTimeoutError(`Acquiring an exclusive Navigator LockManager lock "${name}" immediately failed`));
-                }
-                beginOperation = null;
-                rejectOperation = null;
-            }
-        });
-        return await result;
-    }
 
     class SupabaseAuthClient extends GoTrueClient {
         constructor(options) {
