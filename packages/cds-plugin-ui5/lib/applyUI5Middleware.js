@@ -41,7 +41,7 @@ module.exports = async function applyUI5Middleware(router, options) {
 	const configPath = options.configPath || options.basePath;
 	const configFile = options.configFile || "ui5.yaml";
 	const workspaceConfigPath = options.workspaceConfigPath || options.basePath;
-	const workpaceConfigFile = options.workpaceConfigFile || "ui5-workspace.yaml";
+	const workspaceConfigFile = options.workspaceConfigFile || "ui5-workspace.yaml";
 
 	const determineConfigPath = function (configPath, configFile) {
 		// ensure that the config path is absolute
@@ -69,7 +69,7 @@ module.exports = async function applyUI5Middleware(router, options) {
 		cwd: options.basePath,
 		rootConfigPath: determineConfigPath(configPath, configFile),
 		workspaceName: process.env["ui5-workspace"] || options.workspaceName || "default",
-		workspaceConfigPath: determineConfigPath(workspaceConfigPath, workpaceConfigFile),
+		workspaceConfigPath: determineConfigPath(workspaceConfigPath, workspaceConfigFile),
 		versionOverride: options.versionOverride,
 		cacheMode: options.cacheMode,
 	});
