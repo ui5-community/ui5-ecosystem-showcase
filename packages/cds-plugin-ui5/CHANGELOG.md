@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.6.2...cds-plugin-ui5@0.6.3) (2023-09-08)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** fix type for config ([ebd95f0](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ebd95f0e5a269c769587e7c9c3bdf6885fc7ca3d))
+
+
+
+
+
 ## [0.6.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.6.1...cds-plugin-ui5@0.6.2) (2023-09-08)
 
 

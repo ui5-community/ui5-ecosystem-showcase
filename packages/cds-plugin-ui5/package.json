@@ -1,6 +1,6 @@
 {
   "name": "cds-plugin-ui5",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "A CAP server cds-plugin to inject the middlewares of all related UI5 tooling based projects.",
   "author": "Peter Muessig",
   "license": "Apache-2.0",
