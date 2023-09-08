@@ -47,7 +47,7 @@
       "modules": {
         "ui5-bookshop": {
           "configFile": "ui5.yaml",
-          "_workpaceConfigFile": "ui5-workspace-test.yaml"
+          "_workspaceConfigFile": "ui5-workspace-test.yaml"
         }
       }
     }
