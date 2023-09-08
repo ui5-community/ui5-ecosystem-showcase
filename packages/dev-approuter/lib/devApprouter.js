@@ -70,8 +70,8 @@ class DevApprouter {
 
 			// apply the UI5 middlewares to the router
 			await applyUI5Middleware(router, {
+				cwd,
 				basePath: modulePath,
-				configPath: modulePath,
 			});
 
 			// mounting the router for the UI5 application to the CAP server

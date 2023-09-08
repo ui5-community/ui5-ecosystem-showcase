@@ -31,7 +31,7 @@
     "build": "cds build",
     "watch": "cds watch",
     "start": "cds-serve",
-    "start:dist": "CDS_PLUGIN_UI5_CONFIGFILE=ui5-dist.yaml "
+    "start:dist": "CDS_PLUGIN_UI5_MODULES=\"{ \"ui5-bookshop\": { \"configFile\": \"ui5-dist.yaml\" } }\" cds-serve"
   },
   "cds": {
     "requires": {
