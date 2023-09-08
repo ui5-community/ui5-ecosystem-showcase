@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.9...dev-approuter@0.1.10) (2023-09-08)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** allow relative config files in package.json ([#838](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/838)) ([735b24d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/735b24d34cebee5463c97c3bb5a3d58e07dace24))
+
+
+
+
+
 ## [0.1.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.8...dev-approuter@0.1.9) (2023-09-08)
 
 **Note:** Version bump only for package dev-approuter
