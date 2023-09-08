@@ -27,20 +27,25 @@ The plugin can be configured using the `cds-plugin-ui5` section in the `package.
 
 ```json
 {
+  "name": "cds-bookshop",
+  [...]
+  "cds": {
+    [...]
     "cds-plugin-ui5": {
       "modules": {
         "ui5-bookshop": {
-          "configFile": "ui5.yaml"
-        },
-        "cds-ui5-bookshopviewer": {
-          "configFile": "ui5-dist.yaml"
+          "configFile": "ui5.yaml",
+          "workspaceConfigFile": "ui5-workspace.yaml",
+          "workspaceName": "default",
+          "versionOverride": "1.117.0"
         }
       }
     }
+  }
 }
 ```
 
-The key is the `moduleId` which is either the directory name for local apps in the `app` directory of the CAP server or for dependencies the `name` from the `package.json`. As value you can specify an alternative `configFile` name.
+The key is the `moduleId` which is either the directory name for local apps in the `app` directory of the CAP server or for dependencies the `name` from the `package.json`. As value you can specify an alternative `configFile`, `workspaceConfigFile`, `workspaceName`, and/or `versionOverride`. The location of the config files are relative to the modules' base path.
 
 A second option to override this configuration is the usage of the environment variable `CDS_PLUGIN_UI5_MODULES`. It contains the JSON string from the configuration above, e.g.:
 

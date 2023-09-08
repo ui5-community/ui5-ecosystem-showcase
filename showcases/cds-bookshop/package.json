@@ -46,10 +46,8 @@
     "cds-plugin-ui5": {
       "modules": {
         "ui5-bookshop": {
-          "configFile": "ui5.yaml"
-        },
-        "cds-ui5-bookshopviewer": {
-          "configFile": "ui5-dist.yaml"
+          "configFile": "ui5.yaml",
+          "_workpaceConfigFile": "ui5-workspace-test.yaml"
         }
       }
     }

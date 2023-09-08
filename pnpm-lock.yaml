@@ -559,6 +559,9 @@ importers:
       rimraf:
         specifier: ^5.0.1
         version: 5.0.1
+      ui5-middleware-index:
+        specifier: workspace:^
+        version: link:../../../../packages/ui5-middleware-index
       ui5-middleware-livereload:
         specifier: workspace:^
         version: link:../../../../packages/ui5-middleware-livereload

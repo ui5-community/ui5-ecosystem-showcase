@@ -83,7 +83,7 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 	// determine module configuration:
 	//   => env variable: CDS_PLUGIN_UI5_MODULES (JSONObject<string, object>)
 	//   => package.json: cds-plugin-ui5 > modules (JSONObject<string, object>)
-	// JSONObject<string, object>: key = moduleId (folder name, npm package name), object={ configFile: string }
+	// JSONObject<string, object>: key = moduleId (folder name, npm package name), object={ configFile: string, ... }
 	let modulesConfig;
 	try {
 		modulesConfig = JSON.parse(process.env.CDS_PLUGIN_UI5_MODULES);
@@ -92,13 +92,13 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 		modulesConfig = pkgJson.cds?.["cds-plugin-ui5"]?.modules;
 	}
 	if (modulesConfig) {
-		log.debug(JSON.stringify(modulesConfig, undefined, 2));
+		log.debug(`Found modules configuration: ${JSON.stringify(modulesConfig, undefined, 2)}`);
 	}
 
 	// if apps are available, attach the middlewares of the UI5 apps
 	// to the express of the CAP server via a express router
 	const apps = [];
-	apps.configFiles = {};
+	apps.config = {};
 	if (appDirs) {
 		for await (const appDir of appDirs) {
 			// read the ui5.yaml file to extract the configuration
@@ -142,9 +142,9 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 				}
 				const moduleId = moduleName || path.basename(appDir);
 
-				// store the custom config file
-				if (modulesConfig?.[moduleId]?.configFile) {
-					apps.configFiles[moduleId] = modulesConfig?.[moduleId]?.configFile;
+				// store the custom config in the configuration map
+				if (modulesConfig?.[moduleId]) {
+					apps.config[moduleId] = modulesConfig[moduleId];
 				}
 
 				apps.push({ moduleId, modulePath, mountPath });
