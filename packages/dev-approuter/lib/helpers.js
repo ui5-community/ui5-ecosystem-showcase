@@ -100,7 +100,7 @@ const configureCAPRoute = (moduleId, servicesPaths, route) => {
 	if (!route.source) {
 		route.source = servicesPaths
 			.map((path) => {
-				return `${path}(.*)`;
+				return `${path}(/.*)`;
 			})
 			.join("|");
 	}
@@ -122,7 +122,7 @@ const configureUI5Route = (moduleId, sourcePath, route) => {
 		// special regex to avoid endless loop
 		route.source = `^(?!.*(/_${sourcePath}))`;
 	} else {
-		route.source = `^${sourcePath}(.*)$`;
+		route.source = `^${sourcePath}(/.*)$`;
 		route.target = "$1";
 	}
 	route.destination = moduleId;

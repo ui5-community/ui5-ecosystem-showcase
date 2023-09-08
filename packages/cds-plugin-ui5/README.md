@@ -108,6 +108,8 @@ The available configuration options are:
 * `workspaceName`: *`string`* - name of the workspace (defaults to "default" when the file at workspaceConfigPath exists)
 * `versionOverride`: *`string`* - Framework version to use instead of the one defined in the root project
 
+If the `configFile` or `workspaceConfigFile` startes with `./` or `../` then the config file is considered to be relative to the `package.json`.
+
 The configuration can also be injected with the environment variable `CDS_PLUGIN_UI5_MODULES`. It contains the JSON string from the configuration above, e.g.:
 
 ```sh

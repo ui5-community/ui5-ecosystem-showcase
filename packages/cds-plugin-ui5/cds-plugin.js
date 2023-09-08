@@ -49,6 +49,7 @@ cds.on("bootstrap", async function bootstrap(app) {
 		// apply the UI5 middlewares to the router and
 		// retrieve the available HTML pages
 		const appInfo = await applyUI5Middleware(router, {
+			cwd,
 			basePath: modulePath,
 			...(config[moduleId] || {}),
 		});

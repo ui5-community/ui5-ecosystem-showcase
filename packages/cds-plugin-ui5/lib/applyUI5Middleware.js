@@ -12,6 +12,7 @@ const log = require("./log");
 /**
  * @typedef applyUI5MiddlewareOptions
  * @type {object}
+ * @property {string} [cwd] cwd to resolve relative config files to, e.g. "./ui5.yaml" or "./ui5-workspace.yaml" (defaults to `process.cwd()`)
  * @property {string} [basePath] base path of the UI5 application (defaults to `process.cwd()`)
  * @property {string} [configFile] name of the config file (defaults to "ui5.yaml")
  * @property {string} [configPath] /!\ RESTRICTED /!\ - path to the ui5.yaml (defaults to "${basePath}/${configFile}")
@@ -30,9 +31,12 @@ const log = require("./log");
  * @param {applyUI5MiddlewareOptions} options configuration options
  * @returns {UI5AppInfo} UI5 application information object
  */
-module.exports = async function applyUI5Middleware(router, options = { basePath: process.cwd() }) {
+module.exports = async function applyUI5Middleware(router, options) {
 	const { graphFromPackageDependencies } = await import("@ui5/project/graph");
 	const { createReaderCollection } = await import("@ui5/fs/resourceFactory");
+
+	options.cwd = options.cwd || process.cwd();
+	options.basePath = options.basePath || process.cwd();
 
 	const configPath = options.configPath || options.basePath;
 	const configFile = options.configFile || "ui5.yaml";
@@ -40,13 +44,24 @@ module.exports = async function applyUI5Middleware(router, options = { basePath:
 	const workpaceConfigFile = options.workpaceConfigFile || "ui5-workspace.yaml";
 
 	const determineConfigPath = function (configPath, configFile) {
+		// ensure that the config path is absolute
+		if (!path.isAbsolute(configPath)) {
+			configPath = path.resolve(options.basePath, configPath);
+		}
+		// if the config path is a file, then we assume that this is the
+		// configuration which should be used for the UI5 server middlewares
 		if (fs.existsSync(configPath) && fs.statSync(configPath).isFile()) {
 			return configPath;
 		}
-		configPath = path.resolve(configPath, configFile);
+		// if the configuration file is starting with ./ or ../ then we
+		// resolve the configuration relative to the current working dir
+		// otherwise we are resolving it relative to the config path
+		// which is typically the directory of the UI5 application
+		configPath = path.resolve(/^\.\.?\//.test(configFile) ? options.cwd : configPath, configFile);
 		if (fs.existsSync(configPath) && fs.statSync(configPath).isFile()) {
 			return configPath;
 		}
+		// nothing matched => no config
 		return undefined;
 	};
 
