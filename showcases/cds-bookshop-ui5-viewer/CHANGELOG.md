@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-bookshop-ui5-viewer@0.1.4...cds-bookshop-ui5-viewer@0.1.5) (2023-09-08)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** flexible mount path configuration ([#837](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/837)) ([dc31a9e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/dc31a9e30f628c7236c93281909fafe19234bafe))
+
+
+
+
+
 ## [0.1.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-bookshop-ui5-viewer@0.1.3...cds-bookshop-ui5-viewer@0.1.4) (2023-09-08)
 
 **Note:** Version bump only for package cds-bookshop-ui5-viewer
