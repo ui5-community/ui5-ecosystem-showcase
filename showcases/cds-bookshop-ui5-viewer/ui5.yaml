@@ -2,6 +2,9 @@ specVersion: "3.0"
 metadata:
   name: ui5.bookshopviewer
 type: application
+customConfiguration:
+  cds-plugin-ui5:
+    mountPath: /bookshop-viewer
 framework:
   name: OpenUI5
   version: "1.118.0"
