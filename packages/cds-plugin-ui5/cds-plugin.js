@@ -32,7 +32,7 @@ cds.on("bootstrap", async function bootstrap(app) {
 
 	const cwd = process.cwd();
 	const ui5Modules = await findUI5Modules({ cwd });
-	const { localApps, configFiles } = ui5Modules;
+	const { localApps, config } = ui5Modules;
 
 	const links = [];
 
@@ -41,7 +41,7 @@ cds.on("bootstrap", async function bootstrap(app) {
 		const { moduleId, mountPath, modulePath } = ui5Module;
 
 		// mounting the Router for the UI5 application to the CAP server
-		log.info(`Mounting ${mountPath} to UI5 app ${modulePath} (id=${moduleId})${configFiles[moduleId] ? ` using configFile=${configFiles[moduleId]}` : ""}`);
+		log.info(`Mounting ${mountPath} to UI5 app ${modulePath} (id=${moduleId})${config[moduleId] ? ` using config=${JSON.stringify(config[moduleId])}` : ""}`);
 
 		// create a patched router
 		const router = await createPatchedRouter();
@@ -50,8 +50,7 @@ cds.on("bootstrap", async function bootstrap(app) {
 		// retrieve the available HTML pages
 		const appInfo = await applyUI5Middleware(router, {
 			basePath: modulePath,
-			configPath: modulePath,
-			configFile: configFiles[moduleId],
+			...(config[moduleId] || {}),
 		});
 
 		// register the router to the specified mount path

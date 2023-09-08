@@ -19,6 +19,8 @@ builder:
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
 server:
   customMiddleware:
+    - name: ui5-middleware-index
+      afterMiddleware: compression
     # Last middleware (for the same afterMiddleware) comes first!
     - name: ui5-middleware-livereload
       afterMiddleware: compression

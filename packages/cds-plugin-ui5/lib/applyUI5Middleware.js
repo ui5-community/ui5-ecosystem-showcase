@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require("fs");
 
 const log = require("./log");
 
@@ -8,25 +9,54 @@ const log = require("./log");
  * @property {Array<string>} pages root path of the module
  */
 
+/**
+ * @typedef applyUI5MiddlewareOptions
+ * @type {object}
+ * @property {string} [basePath] base path of the UI5 application (defaults to `process.cwd()`)
+ * @property {string} [configFile] name of the config file (defaults to "ui5.yaml")
+ * @property {string} [configPath] /!\ RESTRICTED /!\ - path to the ui5.yaml (defaults to "${basePath}/${configFile}")
+ * @property {string} [workspaceName] name of the workspace (defaults to "default" when the file at workspaceConfigPath exists)
+ * @property {string} [workspaceConfigFile] name of the workspace config file (defaults to "ui5-workspace.yaml")
+ * @property {string} [workspaceConfigPath] /!\ RESTRICTED /!\ - path to the ui5-workspace.yaml (defaults to "${basePath}/${workspaceConfigFile}")
+ * @property {string} [versionOverride] Framework version to use instead of the one defined in the root project
+ * @property {string} [cacheMode] /!\ RESTRICTED /!\ - Cache mode to use when consuming SNAPSHOT versions of a framework (one of: Default|False|Off)
+ */
+
 // inspired by https://github.com/SAP/karma-ui5/blob/main/lib/framework.js#L466-L522
 /**
  * Applies the middlewares for the UI5 application located in the given
  * root directory to the given router.
  * @param {import("express").Router} router Express Router instance
- * @param {object} options configuration options
- * @param {string} options.basePath base path of the UI5 application
- * @param {string} [options.configPath] path to the ui5.yaml (defaults to "${basePath}/ui5.yaml")
- * @param {string} [options.configFile] name of the config file (defaults to "ui5.yaml")
+ * @param {applyUI5MiddlewareOptions} options configuration options
  * @returns {UI5AppInfo} UI5 application information object
  */
-module.exports = async function applyUI5Middleware(router, { basePath, configPath, configFile = "ui5.yaml" }) {
+module.exports = async function applyUI5Middleware(router, options = { basePath: process.cwd() }) {
 	const { graphFromPackageDependencies } = await import("@ui5/project/graph");
 	const { createReaderCollection } = await import("@ui5/fs/resourceFactory");
 
+	const configPath = options.configPath || options.basePath;
+	const configFile = options.configFile || "ui5.yaml";
+	const workspaceConfigPath = options.workspaceConfigPath || options.basePath;
+	const workpaceConfigFile = options.workpaceConfigFile || "ui5-workspace.yaml";
+
+	const determineConfigPath = function (configPath, configFile) {
+		if (fs.existsSync(configPath) && fs.statSync(configPath).isFile()) {
+			return configPath;
+		}
+		configPath = path.resolve(configPath, configFile);
+		if (fs.existsSync(configPath) && fs.statSync(configPath).isFile()) {
+			return configPath;
+		}
+		return undefined;
+	};
+
 	const graph = await graphFromPackageDependencies({
-		workspaceName: process.env["ui5-workspace"],
-		cwd: basePath,
-		rootConfigPath: configPath ? path.resolve(configPath, configFile) : undefined,
+		cwd: options.basePath,
+		rootConfigPath: determineConfigPath(configPath, configFile),
+		workspaceName: process.env["ui5-workspace"] || options.workspaceName || "default",
+		workspaceConfigPath: determineConfigPath(workspaceConfigPath, workpaceConfigFile),
+		versionOverride: options.versionOverride,
+		cacheMode: options.cacheMode,
 	});
 
 	const rootProject = graph.getRoot();

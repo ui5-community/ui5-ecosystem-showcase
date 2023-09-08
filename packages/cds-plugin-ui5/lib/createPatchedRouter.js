@@ -25,6 +25,29 @@ module.exports = async function createPatchedRouter() {
 		// rewite the path to simulate requests on the root level
 		req.originalUrl = req.url;
 		req.baseUrl = "/";
+		// try to override UI5 tooling directory listing
+		if (req.url?.endsWith("/")) {
+			const end = res.end;
+			res.end = function (content) {
+				const contentType = res.getHeader("content-type");
+				if (content && contentType?.indexOf("text/html") !== -1) {
+					const HTMLParser = require("node-html-parser");
+					const doc = new HTMLParser.parse(content);
+					const title = doc.getElementsByTagName("title")?.[0];
+					if (title) {
+						title.innerHTML = `Index of ${baseUrl}/`;
+					}
+					const as = doc.getElementsByTagName("a");
+					as?.forEach((a) => {
+						a.setAttribute("href", `${baseUrl}${a.getAttribute("href")}`);
+					});
+					const h1 = doc.getElementsByTagName("h1")?.[0];
+					h1?.insertAdjacentHTML("afterbegin", `<a href="/">@sap/cds</a> &gt; `);
+					content = doc.toString();
+				}
+				end.apply(res, arguments);
+			};
+		}
 		// next one!
 		next();
 	});

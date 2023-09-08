@@ -21,6 +21,7 @@
   "devDependencies": {
     "@ui5/cli": "^3.6.0",
     "rimraf": "^5.0.1",
+    "ui5-middleware-index": "workspace:^",
     "ui5-middleware-livereload": "workspace:^",
     "ui5-task-zipper": "workspace:^"
   }
