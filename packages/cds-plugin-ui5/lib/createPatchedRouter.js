@@ -1,4 +1,5 @@
 const { Router } = require("express");
+const rewriteHTML = require("./rewriteHTML");
 
 /**
  * Creates a patched router removing the mount path
@@ -9,12 +10,6 @@ module.exports = async function createPatchedRouter() {
 	// create the router and get rid of the mount path
 	const router = new Router();
 	router.use(function (req, res, next) {
-		// disable the compression when livereload is used
-		// for loading html-related content (via accept header)
-		const accept = req.headers["accept"]?.indexOf("html") !== -1;
-		if (accept && res._livereload) {
-			req.headers["accept-encoding"] = "identity";
-		}
 		// store the original request information
 		const { url, originalUrl, baseUrl } = req;
 		req["cds-plugin-ui5"] = {
@@ -25,28 +20,46 @@ module.exports = async function createPatchedRouter() {
 		// rewite the path to simulate requests on the root level
 		req.originalUrl = req.url;
 		req.baseUrl = "/";
-		// try to override UI5 tooling directory listing
-		if (req.url?.endsWith("/")) {
-			const end = res.end;
-			res.end = function (content) {
-				const contentType = res.getHeader("content-type");
-				if (content && contentType?.indexOf("text/html") !== -1) {
-					const HTMLParser = require("node-html-parser");
-					const doc = new HTMLParser.parse(content);
+		// override UI5 server directory listing if:
+		//   1.) not handled by the CDS Plugin UI5 already
+		//   2.) only if it ends with a slash
+		//   3.) not forwarded to a welcome page
+		if (!req._cds_plugin_ui5 && req.url?.endsWith("/") && req.url === (req?.["ui5-middleware-index"]?.url || req.url)) {
+			// determine context path (approuter contains x-forwarded-path header)
+			let contextPath = baseUrl;
+			if (req.headers["x-forwarded-path"]) {
+				// determine the context path by removing the subpath from the forwarded path
+				contextPath = req.headers["x-forwarded-path"].slice(0, -1 * url.length);
+			} else if (req["cds-plugin-ui5"].originalUrl) {
+				// determine the context path by removing the subpath from the originalUrl
+				contextPath = req["cds-plugin-ui5"].originalUrl.slice(0, -1 * url.length);
+			}
+			rewriteHTML(
+				req,
+				res,
+				(res) => {
+					const contentType = res.getHeader("content-type");
+					return contentType?.indexOf("text/html") !== -1;
+				},
+				(doc) => {
 					const title = doc.getElementsByTagName("title")?.[0];
 					if (title) {
-						title.innerHTML = `Index of ${baseUrl}/`;
+						title.innerHTML = `Index of ${contextPath}/`;
 					}
-					const as = doc.getElementsByTagName("a");
-					as?.forEach((a) => {
-						a.setAttribute("href", `${baseUrl}${a.getAttribute("href")}`);
+					const files = doc.getElementById("files");
+					const filesas = files?.getElementsByTagName("a");
+					filesas?.forEach((a) => {
+						a.setAttribute("href", `${contextPath}${a.getAttribute("href")}`);
 					});
 					const h1 = doc.getElementsByTagName("h1")?.[0];
-					h1?.insertAdjacentHTML("afterbegin", `<a href="/">@sap/cds</a> &gt; `);
-					content = doc.toString();
+					const h1as = h1?.getElementsByTagName("a");
+					h1as?.forEach((a) => {
+						const path = a.getAttribute("href") === "/" ? "/" : a.getAttribute("href") + "/";
+						a.setAttribute("href", `${contextPath}${path}`);
+					});
+					h1?.insertAdjacentHTML("afterbegin", `<a href="/">🏡</a> / `);
 				}
-				end.apply(res, arguments);
-			};
+			);
 		}
 		// next one!
 		next();
