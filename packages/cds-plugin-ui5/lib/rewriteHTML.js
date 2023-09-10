@@ -47,14 +47,14 @@ module.exports = async function rewriteHTML(req, res, rewriteCondition, rewriteC
 
 	// remove the content-length header
 	res.writeHead = function () {
-		if (!rewriteCondition(res)) return end.apply(this, arguments);
+		if (res.statusCode !== 200 || !rewriteCondition(res)) return writeHead.apply(this, arguments);
 		res.removeHeader("content-length");
 		return writeHead.apply(this, arguments);
 	};
 
 	// intercepts the response end to parse the HTML content
 	res.end = function (content, encoding) {
-		if (!rewriteCondition(res)) return end.apply(this, arguments);
+		if (res.statusCode !== 200 || !rewriteCondition(res)) return end.apply(this, arguments);
 
 		// store the last chunk in the content buffer
 		contentBuffer.push(content instanceof Buffer ? content.toString(encoding) : content);
