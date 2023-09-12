@@ -1,0 +1,24 @@
+{
+  "name": "ui5-middleware-serveframework",
+  "version": "3.0.0-alpha.0",
+  "description": "UI5 middleware to serve a locally built framework",
+  "author": "Peter Muessig",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
+    "directory": "packages/ui5-middleware-servedist"
+  },
+  "scripts": {
+    "lint": "eslint lib"
+  },
+  "dependencies": {
+    "@ui5/project": "^3.7.0",
+    "etag": "^1.8.1",
+    "fresh": "^0.5.2",
+    "https-proxy-agent": "^7.0.2",
+    "js-yaml": "^4.1.0",
+    "node-fetch": "^2.7.0",
+    "proxy-from-env": "^1.1.0"
+  }
+}
