@@ -35,6 +35,7 @@ packages
 ├── ui5-middleware-livecompileless  // middleware extension: livecompiling of less files in the app folder
 ├── ui5-middleware-livereload       // middleware extension: usage of livereload for development
 ├── ui5-middleware-onelogin         // middleware extension: enable a generic login support
+├── ui5-middleware-serveframework   // middleware extension: serve resources of a locally built framework
 ├── ui5-middleware-servestatic      // middleware extension: serve static resources
 ├── ui5-middleware-simpleproxy      // middleware extension: simple express proxy
 ├── ui5-middleware-webjars          // middleware extension: deliver content from JAR files
@@ -161,6 +162,7 @@ The middlewares developed in this monorepo are also publicly available on NPM ri
 * https://www.npmjs.com/package/ui5-middleware-livecompileless
 * https://www.npmjs.com/package/ui5-middleware-livereload
 * https://www.npmjs.com/package/ui5-middleware-onelogin
+* https://www.npmjs.com/package/ui5-middleware-serveframework
 * https://www.npmjs.com/package/ui5-middleware-servestatic
 * https://www.npmjs.com/package/ui5-middleware-simpleproxy
 * https://www.npmjs.com/package/ui5-middleware-webjars
@@ -196,6 +198,7 @@ Available middlewares in this project:
 | [ui5-middleware-index](packages/ui5-middleware-index/README.md) | serve an HTML file for / (root) | [![npm version](https://badge.fury.io/js/ui5-middleware-index.svg)](https://badge.fury.io/js/ui5-middleware-index) |
 | [ui5-middleware-livecompileless](https://www.npmjs.com/package/ui5-middleware-livecompileless) | livecompiling of less files in the app folder | [![npm version](https://badge.fury.io/js/ui5-middleware-livecompileless.svg)](https://badge.fury.io/js/ui5-middleware-livecompileless) |
 | [ui5-middleware-livereload](packages/ui5-middleware-livereload/README.md) | usage of livereload for development | [![npm version](https://badge.fury.io/js/ui5-middleware-livereload.svg)](https://badge.fury.io/js/ui5-middleware-livereload) |
+| [ui5-middleware-serveframework](packages/ui5-middleware-serveframework/README.md) | serve resources of a locally built framework | [![npm version](https://badge.fury.io/js/ui5-middleware-serveframework.svg)](https://badge.fury.io/js/ui5-middleware-servestatic) |
 | [ui5-middleware-servestatic](packages/ui5-middleware-servestatic/README.md) | serve static resources | [![npm version](https://badge.fury.io/js/ui5-middleware-servestatic.svg)](https://badge.fury.io/js/ui5-middleware-servestatic) |
 | [ui5-middleware-onelogin](packages/ui5-middleware-onelogin/README.md) | enable a generic login support | [![npm version](https://badge.fury.io/js/ui5-middleware-onelogin.svg)](https://badge.fury.io/js/ui5-middleware-onelogin) |
 | [ui5-middleware-simpleproxy](packages/ui5-middleware-simpleproxy/README.md) | simple express proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-simpleproxy.svg)](https://badge.fury.io/js/ui5-middleware-simpleproxy) |
