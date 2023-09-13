@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-bookshop@0.2.7...cds-bookshop@0.2.8) (2023-09-13)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** handle special case of UI5 in root app dir ([423794d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/423794d5edd19f6a5ded67bab1d43d33e5e9a319))
+
+
+
+
+
 ## [0.2.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-bookshop@0.2.6...cds-bookshop@0.2.7) (2023-09-13)
 
 **Note:** Version bump only for package cds-bookshop
