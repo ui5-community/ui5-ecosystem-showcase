@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.6.5...cds-plugin-ui5@0.6.6) (2023-09-13)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** disable compression for CDS livereload ([#841](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/841)) ([9589436](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9589436ac6891a35335e857ddef7afbdf5ed323f))
+
+
+
+
+
 ## [0.6.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.6.4...cds-plugin-ui5@0.6.5) (2023-09-10)
 
 
