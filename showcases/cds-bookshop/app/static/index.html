@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta charset="utf-8" />
+
+		<title>Just a Button</title>
+
+		<script
+			src="https://openui5.hana.ondemand.com/resources/sap-ui-core.js"
+			id="sap-ui-bootstrap"
+			data-sap-ui-libs="sap.m"
+			data-sap-ui-theme="sap_fiori_3"
+			data-sap-ui-compatVersion="edge"
+		></script>
+		<!-- only load the main library "sap.m" and the Fiori 3 theme -->
+
+		<script>
+			var btn = new sap.m.Button({
+				text: "Hello World",
+				press: function () {
+					alert("Hello");
+				},
+			});
+			btn.placeAt("content");
+		</script>
+	</head>
+	<body id="content" class="sapUiBody"></body>
+</html>

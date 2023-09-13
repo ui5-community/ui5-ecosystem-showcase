@@ -26,21 +26,22 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 	if (!skipLocalApps) {
 		const appDir = path.join(cwd, "app");
 		if (fs.existsSync(appDir)) {
-			// lookup all dirs inside the root app directory for
-			// being either a local app or a UI5 application
-			fs.readdirSync(appDir, { withFileTypes: true })
-				.filter((f) => f.isDirectory())
-				.forEach((d) => localApps.add(d.name));
-			localApps.forEach((e) => {
-				const d = path.join(appDir, e);
-				if (fs.existsSync(path.join(d, "ui5.yaml"))) {
-					localApps.delete(e);
-					appDirs.push(d);
-				}
-			});
-
-			// also include all root app directory HTML files if no ui5.yaml is present
+			// is the UI5 app directly in teh app directory?
 			if (!fs.existsSync(path.join(appDir, "ui5.yaml"))) {
+				// lookup all dirs inside the root app directory for
+				// being either a local app or a UI5 application
+				fs.readdirSync(appDir, { withFileTypes: true })
+					.filter((f) => f.isDirectory())
+					.forEach((d) => localApps.add(d.name));
+				localApps.forEach((e) => {
+					const d = path.join(appDir, e);
+					if (fs.existsSync(path.join(d, "ui5.yaml"))) {
+						localApps.delete(e);
+						appDirs.push(d);
+					}
+				});
+
+				// also include all root app directory HTML files if no ui5.yaml is present
 				fs.readdirSync(appDir, { withFileTypes: true })
 					.filter((f) => {
 						return f.isFile();
