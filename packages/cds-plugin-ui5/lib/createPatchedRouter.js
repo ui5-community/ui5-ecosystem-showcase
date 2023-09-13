@@ -20,10 +20,11 @@ module.exports = async function createPatchedRouter() {
 		// rewite the path to simulate requests on the root level
 		req.originalUrl = req.url;
 		req.baseUrl = "/";
-		// disable the compression for fixing issues with the cds-livereload-middleware
-		// which ignores the gzipped response from the UI5 tooling serveResources
+		// disable the compression when livereload is used
+		// for loading html-related content (via accept header)
+		// otherwise we run into compression issue with CDS livereload
 		const accept = req.headers["accept"]?.indexOf("html") !== -1;
-		if (accept) {
+		if (accept && res._livereload) {
 			req.headers["accept-encoding"] = "identity";
 		}
 		// override UI5 server directory listing if:
