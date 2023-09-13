@@ -20,6 +20,12 @@ module.exports = async function createPatchedRouter() {
 		// rewite the path to simulate requests on the root level
 		req.originalUrl = req.url;
 		req.baseUrl = "/";
+		// disable the compression for fixing issues with the cds-livereload-middleware
+		// which ignores the gzipped response from the UI5 tooling serveResources
+		const accept = req.headers["accept"]?.indexOf("html") !== -1;
+		if (accept) {
+			req.headers["accept-encoding"] = "identity";
+		}
 		// override UI5 server directory listing if:
 		//   1.) not handled by the CDS Plugin UI5 already
 		//   2.) only if it ends with a slash
