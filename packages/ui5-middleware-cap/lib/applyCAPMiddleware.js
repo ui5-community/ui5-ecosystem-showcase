@@ -38,10 +38,7 @@ module.exports = async function applyCAPMiddleware(router, { root }) {
 	});
 	const cds = require(cdsModule);
 
-	// load the package.json for additional metadata
-	const pkgJson = require(path.join(options.root, "package.json"));
-
-	// rebuild the same logic as in @sap/cds/bin/server.js:
+	// rebuild the same logic as in @sap/cds/bin/server.js (based on v6.8.2):
 	//   * load custom server if exists (to attach hooks)
 	//   * find and register plugins (for extensions)
 	//   ==> ASK: helper to start the server with all configs
@@ -49,19 +46,16 @@ module.exports = async function applyCAPMiddleware(router, { root }) {
 	if (fs.existsSync(path.join(options.root, "server.js"))) {
 		require(path.join(options.root, "server.js"));
 	}
-	// here we by intention only use the dependencies and not the
-	// devDependencies as we want to simulate the later runtime
-	Object.keys(pkgJson?.dependencies || {})
-		.map((dep) => {
-			try {
-				return require.resolve(path.join(dep, "cds-plugin"), {
-					paths: [options.root],
-				});
-			} catch (e) {
-				/* undefined */
-			}
-		})
-		.filter((dep) => dep !== undefined);
+
+	// inpired from @sap/cds/bin/serve.js (based on V7.2.0)
+	// Ensure loading plugins before calling cds.env!
+	await cds.plugins; // load the plugins
+	// dummy express API for Fiori preview
+	if (cds.plugins !== undefined) {
+		cds.app = cds.app || {
+			use: function () {},
+		};
+	}
 
 	cds.emit("bootstrap", router);
 
