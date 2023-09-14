@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cap@3.1.2...ui5-middleware-cap@3.1.3) (2023-09-14)
+
+
+### Bug Fixes
+
+* **ui5-middleware-cap:** support cds-plugins ([af5585c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/af5585cdaf32d783204ed49122a53d987add2f08))
+
+
+
+
+
 ## [3.1.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cap@3.1.1...ui5-middleware-cap@3.1.2) (2023-09-08)
 
 **Note:** Version bump only for package ui5-middleware-cap
