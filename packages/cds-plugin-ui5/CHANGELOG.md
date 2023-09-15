@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.6.9...cds-plugin-ui5@0.6.10) (2023-09-15)
+
+
+### Bug Fixes
+
+* no cache for rewrite, cds server lookup ([#843](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/843)) ([fc7b9b5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/fc7b9b5e8c362a499e2fbb70ece764e9f17b0f6e))
+
+
+
+
+
 ## [0.6.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.6.8...cds-plugin-ui5@0.6.9) (2023-09-15)
 
 

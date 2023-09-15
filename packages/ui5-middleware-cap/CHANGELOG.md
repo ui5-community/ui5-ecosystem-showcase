@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cap@3.1.4...ui5-middleware-cap@3.1.5) (2023-09-15)
+
+
+### Bug Fixes
+
+* no cache for rewrite, cds server lookup ([#843](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/843)) ([fc7b9b5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/fc7b9b5e8c362a499e2fbb70ece764e9f17b0f6e))
+
+
+
+
+
 ## [3.1.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cap@3.1.3...ui5-middleware-cap@3.1.4) (2023-09-15)
 
 
