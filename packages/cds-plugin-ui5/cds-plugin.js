@@ -41,7 +41,7 @@ cds.on("bootstrap", async function bootstrap(app) {
 	for await (const ui5Module of ui5Modules) {
 		const { moduleId, mountPath, modulePath } = ui5Module;
 
-		// mounting the Router for the UI5 application to the CAP server
+		// mounting the Router for the UI5 application to the CDS server
 		log.info(`Mounting ${mountPath} to UI5 app ${modulePath} (id=${moduleId})${config[moduleId] ? ` using config=${JSON.stringify(config[moduleId])}` : ""}`);
 
 		// create a patched router
@@ -65,7 +65,18 @@ cds.on("bootstrap", async function bootstrap(app) {
 		});
 	}
 
-	if (links.length > 0) {
+	// identify whether the welcome page should be rewritten
+	let rewrite = links.length > 0;
+	if (process.env["ui5-middleware-cap"]) {
+		log.info("Skip rewriting of welcome page as CDS server is started via ui5-middleware-cap!");
+		rewrite = false;
+	} else if (process.env["dev-approuter"]) {
+		log.info("Skip rewriting of welcome page as CDS server is started via dev-approuter!");
+		rewrite = false;
+	}
+
+	// rewrite the welcome page
+	if (rewrite) {
 		// register the custom middleware (similar like in @sap/cds/server.js)
 		app.get("/", function appendLinksToIndex(req, res, next) {
 			req._cds_plugin_ui5 = true; // marker for patched router to ignore
@@ -110,14 +121,14 @@ cds.on("bootstrap", async function bootstrap(app) {
 						newLis.push(...links.map((link) => `<li><a class="ui5" href="${link}">${link}</a></li>`));
 						ul.innerHTML = newLis.join("\n");
 					} else {
-						log.warn(`Failed to inject application links into CAP index page!`);
+						log.warn(`Failed to inject application links into CDS index page!`);
 					}
 				}
 			);
 			next();
 		});
 
-		// move our middleware before the CAP index serve middleware to
+		// move our middleware before the CDS index serve middleware to
 		// allow that we can intercept the response and modify it to
 		// inject our application pages an remove the exitsing ones
 		const middlewareStack = app?._router?.stack;
@@ -127,10 +138,10 @@ cds.on("bootstrap", async function bootstrap(app) {
 			if (idxOfServeStatic !== -1) {
 				middlewareStack.splice(idxOfServeStatic, 0, cmw);
 			} else {
-				log.error(`Failed to determine CAP overview page middleware! You need to manually open the application pages!`);
+				log.error(`Failed to determine welcome page middleware! The links of the application pages may not work properly!`);
 			}
 		} else {
-			log.error(`Failed to inject application pages to CAP overview page! You need to manually open the application pages!`);
+			log.error(`Failed to inject application pages to welcome page! The links of the application pages may not work properly!`);
 		}
 	}
 	// bootstrap completed, unlock the "served" event

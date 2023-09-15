@@ -25,10 +25,10 @@ The following list provides an overview of the available tooling extensions in t
 
 ```text
 packages
-├── cds-plugin-ui5                  // cds-plugin: embed UI5 tooling based projects via express middleware into CAP server
-├── dev-approuter                   // dev time wrapper for the SAP Application Router that can serve UI5 and CAP modules added as dependencies
+├── cds-plugin-ui5                  // cds-plugin: embed UI5 tooling based projects via express middleware into CDS server
+├── dev-approuter                   // dev time wrapper for the SAP Application Router that can serve UI5 and CDS modules added as dependencies
 ├── karma-ui5-transpile             // karma preprocessor: transpile sources using ui5-tooling-transpile
-├── ui5-middleware-cap              // middleware extension: use the CAP server middlewares inside the UI5 tooling
+├── ui5-middleware-cap              // middleware extension: use the CDS server middlewares inside the UI5 tooling
 ├── ui5-middleware-cfdestination    // middleware extension: use the approuter as proxy
 ├── ui5-middleware-iasync           // middleware extension: sync UI interaction across browsers (alpha! careful!)
 ├── ui5-middleware-index            // middleware extension: serve an HTML file for / (root)
@@ -59,7 +59,7 @@ The following list provides an overview of the available showcases in this repos
 ```text
 showcases
 ├── approuter                       // Showcase for the dev-approuter
-├── cds-bookshop                    // CAP bookshop app to showcase cds-plugin-ui5
+├── cds-bookshop                    // CDS bookshop app to showcase cds-plugin-ui5
 ├── cds-bookshop-ui5-viewer         // UI5 bookshop viewer referenced in cds-bookshop
 ├── ui5-app                         // UI5 application
 ├── ui5-app-simple                  // simple UI5 application using UI5 Tooling V3
@@ -192,7 +192,7 @@ Available middlewares in this project:
 
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
-| [ui5-middleware-cap](packages/ui5-middleware-cap/README.md) | use the CAP server middlewares inside the UI5 tooling | [![npm version](https://badge.fury.io/js/ui5-middleware-cap.svg)](https://badge.fury.io/js/ui5-middleware-cap) |
+| [ui5-middleware-cap](packages/ui5-middleware-cap/README.md) | use the CDS server middlewares inside the UI5 tooling | [![npm version](https://badge.fury.io/js/ui5-middleware-cap.svg)](https://badge.fury.io/js/ui5-middleware-cap) |
 | [ui5-middleware-cfdestination](packages/ui5-middleware-cfdestination/README.md) | use the approuter as proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-cfdestination.svg)](https://badge.fury.io/js/ui5-middleware-cfdestination) |
 | [ui5-middleware-iasync](packages/ui5-middleware-iasync/README.md) | sync UI interactions across connected browsers (alpha! careful!) | [![npm version](https://badge.fury.io/js/ui5-middleware-iasync.svg)](https://badge.fury.io/js/ui5-middleware-iasync) |
 | [ui5-middleware-index](packages/ui5-middleware-index/README.md) | serve an HTML file for / (root) | [![npm version](https://badge.fury.io/js/ui5-middleware-index.svg)](https://badge.fury.io/js/ui5-middleware-index) |
@@ -217,8 +217,8 @@ Other NPM packages in this project:
 
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
-| [cds-plugin-ui5](packages/cds-plugin-ui5/README.md) | embed UI5 tooling based projects via express middleware into CAP server | [![npm version](https://badge.fury.io/js/cds-plugin-ui5.svg)](https://badge.fury.io/js/cds-plugin-ui5) |
-| [dev-approuter](packages/dev-approuter/README.md) | dev time wrapper for the SAP Application Router that can serve UI5 and CAP modules added as dependencies | [![npm version](https://badge.fury.io/js/dev-approuter.svg)](https://badge.fury.io/js/dev-approuter) |
+| [cds-plugin-ui5](packages/cds-plugin-ui5/README.md) | embed UI5 tooling based projects via express middleware into CDS server | [![npm version](https://badge.fury.io/js/cds-plugin-ui5.svg)](https://badge.fury.io/js/cds-plugin-ui5) |
+| [dev-approuter](packages/dev-approuter/README.md) | dev time wrapper for the SAP Application Router that can serve UI5 and CDS modules added as dependencies | [![npm version](https://badge.fury.io/js/dev-approuter.svg)](https://badge.fury.io/js/dev-approuter) |
 | [karma-ui5-transpile](packages/karma-ui5-transpile/README.md) | Karma preprocessor to transpile sources using `ui5-tooling-transpile` | [![npm version](https://badge.fury.io/js/karma-ui5-transpile.svg)](https://badge.fury.io/js/karma-ui5-transpile) |
 
 ## Support, Feedback, Contributing

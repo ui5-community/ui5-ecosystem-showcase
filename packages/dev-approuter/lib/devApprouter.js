@@ -6,10 +6,13 @@ const findUI5Modules = require("cds-plugin-ui5/lib/findUI5Modules");
 const createPatchedRouter = require("cds-plugin-ui5/lib/createPatchedRouter");
 const applyUI5Middleware = require("cds-plugin-ui5/lib/applyUI5Middleware");
 
-const findCAPModules = require("ui5-middleware-cap/lib/findCAPModules");
-const applyCAPMiddleware = require("ui5-middleware-cap/lib/applyCAPMiddleware");
+const findCDSModules = require("ui5-middleware-cap/lib/findCDSModules");
+const applyCDSMiddleware = require("ui5-middleware-cap/lib/applyCDSMiddleware");
 
-const { parseConfig, applyDependencyConfig, addDestination, configureCAPRoute, configureUI5Route } = require("./helpers");
+const { parseConfig, applyDependencyConfig, addDestination, configureCDSRoute, configureUI5Route } = require("./helpers");
+
+// marker that the dev-approuter is running
+process.env["dev-approuter"] = true;
 
 class DevApprouter {
 	constructor() {}
@@ -21,7 +24,7 @@ class DevApprouter {
 	 * Here is a shorter summary:
 	 * UI5 modules declared as (dev)dependencies are added as extensions
 	 * using the extension API of the SAP Approuter.
-	 * CAP modules declared as (dev)dependencies are started on a different port.
+	 * CDS modules declared as (dev)dependencies are started on a different port.
 	 * Corresponding routes and destinations are automatically created.
 	 * A custom `xs-dev.json` can be used to configure the dev approuter,
 	 * so the productive configuration can be kept in the `xs-app.json`.
@@ -45,19 +48,19 @@ class DevApprouter {
 		const config = parseConfig();
 		const cwd = process.cwd();
 
-		// lookup the CAP server root
-		let capServerConfig;
-		const capModules = await findCAPModules({ cwd });
-		if (capModules.length > 1) {
-			throw new Error(`Multiple CAP modules found. The package dev-approuter can only handle one CAP module as dependency.`);
-		} else if (capModules.length === 1) {
-			capServerConfig = capModules[0];
+		// lookup the CDS server root
+		let cdsServerConfig;
+		const cdsModules = await findCDSModules({ cwd });
+		if (cdsModules.length > 1) {
+			throw new Error(`Multiple CDS modules found. The package dev-approuter can only handle one CDS module as dependency.`);
+		} else if (cdsModules.length === 1) {
+			cdsServerConfig = cdsModules[0];
 		}
 
-		// find all UI5 modules from the CAP server root and dependencies from the approuter
+		// find all UI5 modules from the CDS server root and dependencies from the approuter
 		const ui5Modules = [...(await findUI5Modules({ cwd, skipLocalApps: true }))];
-		if (capServerConfig) {
-			ui5Modules.push(...(await findUI5Modules({ cwd: capServerConfig.modulePath, skipDeps: true })));
+		if (cdsServerConfig) {
+			ui5Modules.push(...(await findUI5Modules({ cwd: cdsServerConfig.modulePath, skipDeps: true })));
 		}
 
 		// collect UI5 middlewares
@@ -74,7 +77,7 @@ class DevApprouter {
 				basePath: modulePath,
 			});
 
-			// mounting the router for the UI5 application to the CAP server
+			// mounting the router for the UI5 application to the CDS server
 			console.log(`Mounting ${mountPath} to UI5 app ${modulePath}`);
 
 			let middlewareMountPath;
@@ -98,31 +101,31 @@ class DevApprouter {
 			});
 		}
 
-		// start CAP server on different port
-		if (capServerConfig) {
-			const { modulePath, moduleId } = capServerConfig;
+		// start CDS server on different port
+		if (cdsServerConfig) {
+			const { modulePath, moduleId } = cdsServerConfig;
 
-			// start CAP server on different port
+			// start CDS server on different port
 			const app = express();
-			const { servicesPaths } = await applyCAPMiddleware(app, { root: modulePath, cwd });
-			app.listen(process.env.CAP_PORT || 4004, () => {
-				console.log(`CAP server started at: http://localhost:${process.env.CAP_PORT || 4004}`);
+			const { servicesPaths } = await applyCDSMiddleware(app, { root: modulePath, cwd });
+			app.listen(process.env.CDS_PORT || 4004, () => {
+				console.log(`CDS server started at: http://localhost:${process.env.CDS_PORT || 4004}`);
 			});
 
-			// create route if CAP module is not referenced in xs-dev.json/xs-app.json
+			// create route if CDS module is not referenced in xs-dev.json/xs-app.json
 			if (!config.dependencyRoutes[moduleId]) {
 				const route = {
 					dependency: moduleId,
 					authenticationType: "none",
 				};
 				config.routes.unshift(Object.assign({}, route));
-				config.dependencyRoutes[moduleId] = configureCAPRoute(moduleId, servicesPaths, route);
+				config.dependencyRoutes[moduleId] = configureCDSRoute(moduleId, servicesPaths, route);
 			} else {
-				config.dependencyRoutes[moduleId] = configureCAPRoute(moduleId, servicesPaths, config.dependencyRoutes[moduleId]);
+				config.dependencyRoutes[moduleId] = configureCDSRoute(moduleId, servicesPaths, config.dependencyRoutes[moduleId]);
 			}
 
 			// add destination for newly configured route
-			addDestination(moduleId, process.env.CAP_PORT || 4004);
+			addDestination(moduleId, process.env.CDS_PORT || 4004);
 		}
 
 		// create and start the SAP Approuter

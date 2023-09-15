@@ -2,27 +2,27 @@ const path = require("path");
 const fs = require("fs");
 
 /**
- * @typedef CAPModule
+ * @typedef CDSModule
  * @type {object}
  * @property {string} moduleId id of the module
  * @property {string} modulePath root path of the module
  */
 
 /**
- * Returns all CAP modules in the project dependencies.
+ * Returns all CDS modules in the project dependencies.
  * @param {object} options configuration options
  * @param {string} options.cwd current working directory
- * @returns {Array<CAPModule>} array of CAP modules
+ * @returns {Array<CDSModule>} array of CDS modules
  */
-module.exports = async function findCAPModules({ cwd }) {
-	// lookup the CAP server from dependencies
+module.exports = async function findCDSModules({ cwd }) {
+	// lookup the CDS server from dependencies
 	const pkgJson = require(path.join(cwd, "package.json"));
 	const deps = [];
 	deps.push(...Object.keys(pkgJson.dependencies || {}));
 	deps.push(...Object.keys(pkgJson.devDependencies || {}));
 	//deps.push(...Object.keys(pkgJson.peerDependencies || {}));
 	//deps.push(...Object.keys(pkgJson.optionalDependencies || {}));
-	const capModules = deps
+	const cdsModules = deps
 		.filter((dep) => {
 			// ignore the @sap/cds module! ;-)
 			if (dep === "@sap/cds") {
@@ -55,5 +55,5 @@ module.exports = async function findCAPModules({ cwd }) {
 				),
 			};
 		});
-	return capModules;
+	return cdsModules;
 };

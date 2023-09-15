@@ -97,7 +97,7 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 	}
 
 	// if apps are available, attach the middlewares of the UI5 apps
-	// to the express of the CAP server via a express router
+	// to the express of the CDS server via a express router
 	const apps = [];
 	apps.config = {};
 	if (appDirs) {
@@ -125,7 +125,7 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 				const modulePath = path.dirname(ui5YamlPath);
 
 				// manually get the module name as defined in package.json
-				// skipDeps is only true if we are looking for UI5 apps inside a CAP
+				// skipDeps is only true if we are looking for UI5 apps inside a CDS
 				// server project in all other cases the module name equals the appDir
 				let moduleName;
 				if (skipDeps) {
@@ -140,7 +140,7 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 				// by default the mount path is derived from the "metadata/name"
 				// and can be overridden by "customConfiguration/mountPath" or
 				// by "customConfiguration/cds-plugin-ui5/mountPath" or by
-				// the following configuration entry in the package.json of CAP
+				// the following configuration entry in the package.json of CDS
 				// server: "cds/cds-plugin-ui5/modules/%moduleId%/mountPath"
 				let mountPath =
 					modulesConfig?.[moduleId]?.mountPath || ui5Config?.customConfiguration?.["cds-plugin-ui5"]?.mountPath || ui5Config?.customConfiguration?.mountPath || ui5Config?.metadata?.name;
@@ -157,7 +157,7 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 			}
 		}
 	}
-	apps.localApps = localApps; // necessary for CAP index.html rewrite
+	apps.localApps = localApps; // necessary for CDS index.html rewrite
 
 	// return the apps
 	return apps;
