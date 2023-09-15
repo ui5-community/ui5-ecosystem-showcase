@@ -45,10 +45,12 @@ module.exports = async function rewriteHTML(req, res, rewriteCondition, rewriteC
 	// buffer to store the received content in
 	const contentBuffer = [];
 
-	// remove the content-length header
+	// remove the content-length and etag header / disable caching
 	res.writeHead = function () {
 		if (res.statusCode !== 200 || !rewriteCondition(res)) return writeHead.apply(this, arguments);
 		res.removeHeader("content-length");
+		res.removeHeader("etag");
+		res.setHeader("cache-control", "no-cache");
 		return writeHead.apply(this, arguments);
 	};
 

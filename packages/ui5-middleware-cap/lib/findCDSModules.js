@@ -1,6 +1,10 @@
 const path = require("path");
 const fs = require("fs");
 
+function existsDir(path) {
+	return fs.existsSync(path) && fs.statSync(path).isDirectory();
+}
+
 /**
  * @typedef CDSModule
  * @type {object}
@@ -28,18 +32,28 @@ module.exports = async function findCDSModules({ cwd }) {
 			if (dep === "@sap/cds") {
 				return false;
 			}
-			// either a cds section is in the package.json
-			// or the .cdsrc.json exists in the module dir
+			// try to identify the CDS server module
 			try {
-				const pkgJsonFile = require.resolve(`${dep}/package.json`, {
+				// we only consider npm packages having a package.json because
+				// otherwise require.resolve will cause an exception if not found
+				const pkgJsonFile = require.resolve(path.join(dep, "package.json"), {
 					paths: [cwd],
 				});
+				// if the package.json has a cds section, we assume it is the CDS server module
 				const pkgJson = JSON.parse(fs.readFileSync(pkgJsonFile, { encoding: "utf8" }));
-				if (!pkgJson.cds) {
-					require.resolve(`${dep}/.cdsrc.json`, {
-						paths: [cwd],
-					});
+				if (pkgJson.cds) {
+					return true;
 				}
+				// if the package.json has a dependency to @sap/cds and the db and srv dir exists
+				// we also assume it is the CDS server module
+				if (Object.keys(pkgJson.dependencies || {}).includes("@sap/cds") && existsDir(path.join(path.dirname(pkgJsonFile), "db")) && existsDir(path.join(path.dirname(pkgJsonFile), "srv"))) {
+					return true;
+				}
+				// if we can find a .cdsrc.json in the project we assume it is a CDS server module
+				// otherwise require.resolve will cause an exception if not found
+				require.resolve(path.join(dep, ".cdsrc.json"), {
+					paths: [cwd],
+				});
 				return true;
 			} catch (e) {
 				return false;
