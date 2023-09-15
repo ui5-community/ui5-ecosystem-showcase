@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.18](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.17...dev-approuter@0.1.18) (2023-09-15)
+
+
+### Bug Fixes
+
+* prevent side-effects for combined scenarios ([#842](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/842)) ([36aaa5f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/36aaa5f8d8b8404725250664704a560229055943))
+
+
+
+
+
 ## [0.1.17](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.16...dev-approuter@0.1.17) (2023-09-14)
 
 **Note:** Version bump only for package dev-approuter

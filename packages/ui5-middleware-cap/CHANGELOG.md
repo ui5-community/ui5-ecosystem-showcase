@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cap@3.1.3...ui5-middleware-cap@3.1.4) (2023-09-15)
+
+
+### Bug Fixes
+
+* prevent side-effects for combined scenarios ([#842](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/842)) ([36aaa5f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/36aaa5f8d8b8404725250664704a560229055943))
+
+
+
+
+
 ## [3.1.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cap@3.1.2...ui5-middleware-cap@3.1.3) (2023-09-14)
 
 
