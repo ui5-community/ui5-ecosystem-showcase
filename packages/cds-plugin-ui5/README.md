@@ -2,7 +2,7 @@
 
 > :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
 
-The `cds-plugin-ui5` is a CAP server `cds-plugin` which enables the integration of UI5 tooling based (UI5 freestyle or Fiori elements) projects into the CAP server via the UI5 tooling express middlewares. The UI5 or Fiori elements projects just need to be located in the `app` folder of the CAP server or be dependency of the CAP server.
+The `cds-plugin-ui5` is a CDS server `cds-plugin` which enables the integration of UI5 tooling based (UI5 freestyle or Fiori elements) projects into the CDS server via the UI5 tooling express middlewares. The UI5 or Fiori elements projects just need to be located in the `app` folder of the CDS server or be dependency of the CDS server.
 
 > :construction: **Note**
 > This cds-plugin is still work in progress and not final yet!
@@ -13,7 +13,7 @@ The plugin requires [`@sap/cds`](https://www.npmjs.com/package/@sap/cds) `>=6.8.
 
 ## Usage
 
-Add a `devDependency` to the `cds-plugin-ui5` to your CAP server project:
+Add a `devDependency` to the `cds-plugin-ui5` to your CDS server project:
 
 ```sh
 npm add cds-plugin-ui5 -D
@@ -23,7 +23,7 @@ That's it!
 
 ### Configuration
 
-The plugin accepts configuration to control the mount path for the embedding into the CAP server and selected configuration options for the UI5 server middlewares which are embedded into the mount path of the CAP server.
+The plugin accepts configuration to control the mount path for the embedding into the CDS server and selected configuration options for the UI5 server middlewares which are embedded into the mount path of the CDS server.
 
 #### Mount Path
 
@@ -48,7 +48,7 @@ customConfiguration:
     mountPath: /bookshop
 ```
 
-In some cases it is necessary to overrule the UI5 application local configuration in the CAP server. Therefore, you can add custom configuration into the `package.json` of the CAP server into the section: `cds/cds-plugin-ui5/modules/%moduleId%/mountPath`
+In some cases it is necessary to overrule the UI5 application local configuration in the CDS server. Therefore, you can add custom configuration into the `package.json` of the CDS server into the section: `cds/cds-plugin-ui5/modules/%moduleId%/mountPath`
 
 ```json
 {
@@ -67,7 +67,7 @@ In some cases it is necessary to overrule the UI5 application local configuratio
 }
 ```
 
-The `moduleId` is either the directory name for local apps in the `app` directory of the CAP server or for dependencies the `name` from the `package.json`.
+The `moduleId` is either the directory name for local apps in the `app` directory of the CDS server or for dependencies the `name` from the `package.json`.
 
 The configuration can also be injected with the environment variable `CDS_PLUGIN_UI5_MODULES`. It contains the JSON string from the configuration above, e.g.:
 
@@ -77,7 +77,7 @@ CDS_PLUGIN_UI5_MODULES="{ \"ui5-bookshop\": { \"mountPath\": \"/the-bookshop\" }
 
 #### UI5 Server Middlewares
 
-If you require to configure the UI5 server middlewares, you can do so by adding some selected configuration options in the `package.json` of the CAP server in the section: `cds/cds-plugin-ui5/modules/%moduleId%`
+If you require to configure the UI5 server middlewares, you can do so by adding some selected configuration options in the `package.json` of the CDS server in the section: `cds/cds-plugin-ui5/modules/%moduleId%`
 
 ```json
 {
@@ -99,7 +99,7 @@ If you require to configure the UI5 server middlewares, you can do so by adding 
 }
 ```
 
-The `moduleId` is either the directory name for local apps in the `app` directory of the CAP server or for dependencies the `name` from the `package.json`.
+The `moduleId` is either the directory name for local apps in the `app` directory of the CDS server or for dependencies the `name` from the `package.json`.
 
 The available configuration options are:
 

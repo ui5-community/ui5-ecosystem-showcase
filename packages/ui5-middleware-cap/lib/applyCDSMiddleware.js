@@ -2,7 +2,7 @@ const path = require("path");
 const fs = require("fs");
 
 /**
- * @typedef CAPServerInfo
+ * @typedef CDSServerInfo
  * @type {object}
  * @property {Array<string>} servicePaths list of paths of available app services
  */
@@ -14,9 +14,9 @@ const fs = require("fs");
  * @param {import("express").Router} router Express Router instance
  * @param {object} options configuration options
  * @param {string} options.root root directory of the CAP server
- * @returns {CAPServerInfo} CAP server information
+ * @returns {CDSServerInfo} CAP server information
  */
-module.exports = async function applyCAPMiddleware(router, { root }) {
+module.exports = async function applyCDSMiddleware(router, { root }) {
 	const options = Object.assign(
 		{
 			in_memory: true,

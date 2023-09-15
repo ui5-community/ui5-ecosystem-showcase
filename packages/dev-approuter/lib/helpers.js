@@ -90,13 +90,13 @@ const addDestination = (moduleId, port, mountPath) => {
 };
 
 /**
- * Configures the route for a given CAP module.
+ * Configures the route for a given CDS module.
  * @param {String} moduleId - the id of the module that the route should be configured for.
- * @param {String[]} servicePaths - an array of service paths that the CAP module serves.
+ * @param {String[]} servicesPaths - an array of service paths that the CDS module serves.
  * @param {Object} route - the route that is to be configured.
  * @returns {Object} the configured route.
  */
-const configureCAPRoute = (moduleId, servicesPaths, route) => {
+const configureCDSRoute = (moduleId, servicesPaths, route) => {
 	if (!route.source) {
 		route.source = servicesPaths
 			.map((path) => {
@@ -135,6 +135,6 @@ module.exports = {
 	parseConfig,
 	applyDependencyConfig,
 	addDestination,
-	configureCAPRoute,
+	configureCDSRoute,
 	configureUI5Route,
 };

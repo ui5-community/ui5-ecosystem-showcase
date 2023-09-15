@@ -2,7 +2,7 @@
 
 > :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
 
-The `ui5-middleware-cap` is a UI5 tooling middleware which enables the integration of a CAP server into the UI5 development server via the CAP server express middlewares. In addition to the middleware the CAP server project needs to be added as dependency so that the server is detected and attached properly. The pre-defined routes in the CAP server are reused.
+The `ui5-middleware-cap` is a UI5 tooling middleware which is used to improve the development experience for the [SAP Cloud Application Programming Model (CAP)](https://cap.cloud.sap/docs/about/) and enables the integration of a CDS server into the UI5 development server via the CDS server express middlewares. In addition to the middleware the CDS server project needs to be added as dependency so that the server is detected and attached properly. The pre-defined routes in the CDS server are reused.
 
 > :construction: **Note**
 > This middleware is still work in progress and not final yet!
@@ -36,7 +36,7 @@ That's it!
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
 - `moduleId`: `<string>`
-If specified, the CAP server will be loaded from the NPM package with the given moduleId (package name). If not provided, the middleware will lookup the CAP server from the dependencies.
+If specified, the CDS server will be loaded from the NPM package with the given moduleId (package name). If not provided, the middleware will lookup the CDS server from the project `dependencies` or `devDependencies`.
 
 ## Support
 
