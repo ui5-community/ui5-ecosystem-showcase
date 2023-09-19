@@ -171,7 +171,13 @@ server:
             url: "https://jsonplaceholder.typicode.com/todos/"
           - name: "cfwsecho"
             url: "ws://localhost:1081/wsecho/"
-        enableWebSocket: true
+        extensions:
+          - module: ./approuter-local-ext.js
+            parameters:
+              authenticated: true
+              userId: mustermann@ui5.com
+              userType: EMPLOYEE # EMPLOYEE|CONSUMER
+              #maintenanceText: "The shop is currently in maintenance mode!"
     #- name: ui5-middleware-iasync
     #  beforeMiddleware: serveResources
     #  configuration:

@@ -24,11 +24,11 @@ verbose logging
 - `port`: `<int>`, default: `5000`  
 port to run the underlying `approuter` on
 
-- `xsappJson`: `<string path>`, default: `"./xs-app.json"`  
+- `xsappJson`: `<string>`, default: `"./xs-app.json"`  
 path to the cf-style approuter configuration file `xs-app.json`
 :information_source: the regex for the destination routes must match the pattern : `/[^/]*\/(.*\/)?[^/]*/`, e.g. `"^/backend/(.*)$"` or `"^/index.html"`
 
-- `destinations`: `<Array of name/value pairs>`, default: `[]`
+- `destinations`: `<string[]>`, default: `[]`
   - `name: <string>` destination name, matching the one used in routes in `xs-app.json`  
   - `url: <string>` URI to the host to "proxy" to  
   
@@ -54,8 +54,12 @@ allow static assets to be picked up by the included `approuter`; defaults to `fa
 - `rewriteContent`: `<boolean>`, default: `true`  
 enables/disables rewriting of the content by replacing the proxied url in the response body with the server url
 
-- `rewriteContentTypes`: `<Array of strings>`, default: `["application/json", "application/atom+xml", "application/xml"]`  
+- `rewriteContentTypes`: `<string[]>`, default: `["application/json", "application/atom+xml", "application/xml"]`  
 defines the content types which are included for rewriting the content by enabling the `rewriteContent` option
+
+- `extensions`: `<string[]>`, default: `[]` - a list of extensions to be required and injected into the local approuter instance
+  - `module: <string>` - local module path (must start with `./`): `"./my-local-extension.js"` or a module from an npm package: `"@my-scope/my-package/my-extension.js"`
+  - `parameters: <Map<string, string>>`, optional - a map of parameters given as key value pairs which will be injected into the handler function of the extension as the last (4th) argument (`function(req, res, next, params)`, remark: handler functions with more than 3 arguments will not be called for regular extensions only for these extensions!)
 
 - `disableWelcomeFile`: `<boolean>`, default: `false` *experimental*
 disables the welcome file handling of the approuter based on the `welcomeFile` property in the `xsappJson` file
@@ -74,7 +78,7 @@ if `true` the middleware adds a custom route for all HTML pages to trigger authe
   ```
 
 - `enableWebSocket`: `<boolean>`, default: `false` *experimental*
-enables support for proxying web sockets
+enables support for proxying web sockets, will be also automatically detected from `xs-app.json`
 
 ## Usage
 
@@ -115,6 +119,42 @@ recommendation is to put it at the root `/` of your UI5 app!
 The middleware wraps the `@sap/approuter` npm module that is used in the SAP BTP CloudFoundry environment for serving UI5 applications, including proxying the configured destinations.
 
 During development, the `approuter` is started on a configurable port, running alongside the regular local `ui5-server`. When a call to a URL destination is detected at `$webserver/destination`, it is proxied to `$approuter:$port` via [`request`](https://www.npmjs.com/package/request).
+
+### Using `approuter` extensions
+
+The `ui5-middleware-cfdestination` allows using `approuter` extensions. It is possible to pass parameters to handler functions of the extensions as a 4th argument of the handler function.
+
+The configuration of the extensions in the `ui5.yaml` looks like that:
+
+```yaml
+    - name: ui5-middleware-cfdestination
+      afterMiddleware: compression
+      configuration:
+        extensions:
+          - module: ./approuter-local-ext.js
+            parameters:
+              userId: mustermann@ui5.com
+```
+
+And in the `approuter-local-ext.js` you can consume the parameters like that:
+
+```js
+module.exports = {
+    insertMiddleware: {
+        beforeRequestHandler: [
+            {
+                path: '/',
+                handler: function forwardUserInfo(req, res, next, params) {
+                    res.setHeader('x-user-id', params?.userId || "unknown@ui5.com")
+                    next()
+                }
+            }
+        ]
+    }
+}
+```
+
+Keep in mind that the 4th parameter doesn't work for the regular `approuter` extensions and the handler function will not be called when having more than 3 arguments.
 
 ## Misc/FAQ
 
