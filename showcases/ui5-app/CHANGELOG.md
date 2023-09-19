@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.32.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.31.0...ui5-app@0.32.0) (2023-09-19)
+
+
+### Features
+
+* **ui5-middleware-cfdestination:** support for extensions ([#844](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/844)) ([7056fbf](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7056fbff796c4e335b59fe38d7959f3745f06fa0))
+
+
+
+
+
 # [0.31.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.30.0...ui5-app@0.31.0) (2023-09-12)
 
 
