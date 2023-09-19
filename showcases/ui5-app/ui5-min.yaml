@@ -86,6 +86,7 @@ server:
             url: "https://jsonplaceholder.typicode.com/todos/"
           - name: "cfwsecho"
             url: "ws://localhost:1081/wsecho/"
+        enableWebSocket: false
     - name: ui5-middleware-index
       afterMiddleware: compression
       configuration:

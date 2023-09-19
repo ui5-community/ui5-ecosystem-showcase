@@ -52,7 +52,8 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		rewriteContentTypes: ["application/json", "application/atom+xml", "application/xml"],
 		appendAuthRoute: false,
 		disableWelcomeFile: false,
-		enableWebSocket: false
+		enableWebSocket: false,
+		extensions: []
 	}
 	// config-time options from ui5.yaml for cfdestination take precedence
 	if (options.configuration) {
@@ -66,8 +67,8 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	process.env.XS_APP_LOG_LEVEL = process.env.XS_APP_LOG_LEVEL || effectiveOptions.debug ? "DEBUG" : "ERROR"
 
 	// read in the cf config file from the root path
-	const xsappPath = middlewareUtil.getProject().getRootPath() || process.cwd()
-	const _xsappJson = path.resolve(xsappPath, effectiveOptions.xsappJson)
+	const rootPath = middlewareUtil.getProject().getRootPath() || process.cwd()
+	const _xsappJson = path.resolve(rootPath, effectiveOptions.xsappJson)
 	const xsappConfig = JSON.parse(fs.readFileSync(_xsappJson, "utf8"))
 
 	// when running ui5 serve, we may not want to redirect /
@@ -75,32 +76,51 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		delete xsappConfig.welcomeFile
 	}
 
+	// detect enableWebSocket from xs-app.json (if enableWebSocket has not been provided)
+	if (options.configuration?.enableWebSocket == null) {
+		effectiveOptions.enableWebSocket = xsappConfig.websockets?.enabled || false
+	}
+
 	// the default auth mechanism is set to none but the user can pass an auth method using the options
 	xsappConfig.authenticationMethod = effectiveOptions.authenticationMethod
 
-	// check if destinations exist in .env file as JSON string
-	if (typeof effectiveOptions.destinations === "string" && effectiveOptions.destinations.startsWith("$env:")) {
-		const destinationsEnvKey = effectiveOptions.destinations.substring(5).trim()
-		if (destinationsEnvKey && destinationsEnvKey in process.env) {
-			try {
-				effectiveOptions.destinations = JSON.parse(process.env[destinationsEnvKey])
-			} catch (error) {
-				throw new Error(`No valid destinations JSON in .env file at '${destinationsEnvKey}': ${error}`)
+	// extract destinations information
+	//   1.) destinations from env variable "destinations"
+	//   2.) check for ui5.yaml destinations to start wit "$env" and extract from that env variable
+	//   3.) ui5.yaml to be an array of destinations configuration
+	let destinations
+	try {
+		destinations = JSON.parse(process.env.destinations)
+	} catch (ex) {
+		// no destinations from environment => let's check the effectiveOptions
+	}
+	if (!destinations) {
+		// check if destinations exist in .env file as JSON string
+		if (typeof effectiveOptions.destinations === "string" && effectiveOptions.destinations.startsWith("$env:")) {
+			const destinationsEnvKey = effectiveOptions.destinations.substring(5).trim()
+			if (destinationsEnvKey && destinationsEnvKey in process.env) {
+				try {
+					destinations = effectiveOptions.destinations = JSON.parse(process.env[destinationsEnvKey])
+				} catch (error) {
+					throw new Error(`No valid destinations JSON in .env file at '${destinationsEnvKey}': ${error}`)
+				}
+			} else {
+				throw new Error(
+					`No variable for 'destinations' with name '${destinationsEnvKey}' found in process.env!`
+				)
 			}
-		} else {
-			throw new Error(`No variable for 'destinations' with name '${destinationsEnvKey}' found in process.env!`)
+		} else if (Array.isArray(effectiveOptions.destinations)) {
+			destinations = effectiveOptions.destinations
 		}
 	}
-	// req-use app-router with config file to run in "shadow" mode
-	process.env.destinations = JSON.stringify(effectiveOptions.destinations || [])
-	let destinations
-	if (effectiveOptions.debug && process.env.destinations.length === 0) {
-		log.info(`Provided destinations are empty`)
-		destinations = []
-	} else {
-		destinations = JSON.parse(process.env.destinations)
+
+	// finally the destinations need to be an array,
+	// so that we can serialize it to the env
+	if (Array.isArray(destinations)) {
+		process.env.destinations = JSON.stringify(destinations)
 	}
 
+	// determine the routes
 	const routes = []
 	// default: ignore routes that point to web apps as they are already hosted by the ui5 tooling,
 	// but allow overwriting this behavior via "allowLocalDir"
@@ -150,6 +170,53 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		}
 	})
 
+	// resolve the extensions and append the paths / inject parameters into request
+	//   => req["ui5-middleware-cfdestination"]?.parameters provides access to params
+	const extensionsRoutes = []
+	const createParametersInjector = function (middleware, parameters) {
+		// we always need the injectParameters wrapper to have <= 3 arguments otherwise
+		// the approuter will not call the middleware function when it has a 4th argument!
+		return function injectParameters(req) {
+			req["ui5-middleware-cfdestination"] = {
+				parameters
+			}
+			return middleware.apply(this, [...arguments, parameters])
+		}
+	}
+	const extensions = effectiveOptions.extensions
+		?.map((extension) => {
+			try {
+				const extensionModulePath = require.resolve(extension.module, {
+					paths: [rootPath]
+				})
+				const extensionModule = require(extensionModulePath)
+				Object.keys(extensionModule?.insertMiddleware || {}).forEach((type) => {
+					extensionModule.insertMiddleware[type] = extensionModule.insertMiddleware[type].map(
+						(middleware) => {
+							if (typeof middleware === "function") {
+								// middleware function
+								return createParametersInjector(middleware, extension.parameters)
+							} else {
+								// middleware object with path / handler
+								if (middleware.path) {
+									extensionsRoutes.push(middleware.path)
+								}
+								middleware.handler = createParametersInjector(middleware.handler, extension.parameters)
+								return middleware
+							}
+						}
+					)
+				})
+				return extensionModule
+			} catch (ex) {
+				log.warn(
+					`⚠️ Failed to resolve extension "${JSON.stringify(extension)}"! The extension will be ignored...`
+				)
+				return undefined
+			}
+		})
+		.filter((extension) => extension != null)
+
 	// determine the next free port
 	const freePort = await nextFreePort(effectiveOptions.port)
 	if (freePort != effectiveOptions.port) {
@@ -160,7 +227,8 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	approuter.start({
 		port: freePort,
 		xsappConfig: xsappConfig,
-		workingDir: xsappPath
+		workingDir: rootPath,
+		extensions
 	})
 
 	// determine base uri based on subdomain info
@@ -174,7 +242,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 
 	// define custom routes to be also handled by the approuter, e.g. login and logout
 	// callbacks or the welcome file redirect of the approuter itself
-	const customRoutes = [xsappConfig?.login?.callbackEndpoint || "/login/callback"]
+	const customRoutes = [...extensionsRoutes, xsappConfig?.login?.callbackEndpoint || "/login/callback"]
 	if (!effectiveOptions.disableWelcomeFile) {
 		customRoutes.unshift("/")
 	}
@@ -216,10 +284,14 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		let { type, charset, contentType } = getMimeInfo(pathname, proxyRes.headers["content-type"])
 		res.setHeader("content-type", contentType)
 
-		// only rewrite content when enabled and the content type is supported!
-		if (effectiveOptions.rewriteContent && effectiveOptions.rewriteContentTypes.indexOf(type?.toLowerCase()) >= 0) {
+		// only rewrite content when enabled, a route exists, and the content type is supported!
+		const route = routes.find((route) => route.re.test(url))
+		if (
+			route &&
+			effectiveOptions.rewriteContent &&
+			effectiveOptions.rewriteContentTypes.indexOf(type?.toLowerCase()) >= 0
+		) {
 			let data = responseBuffer.toString(charset || "utf8")
-			const route = routes.find((route) => route.re.test(url))
 			// use the referrer or fallback to xfwd information to calculate the URL
 			const referrer =
 				req.headers.referrer ||
