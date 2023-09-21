@@ -326,7 +326,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 					redirected: true
 				}
 				// redirect the response to baseUrl + url
-				const baseUrl = req["cds-plugin-ui5"]?.baseUrl
+				const baseUrl = req["cds-plugin-ui5"]?.baseUrl || "/"
 				return res.redirect(`${baseUrl !== "/" ? baseUrl : ""}${req.url}`)
 			} else if (req["cds-plugin-ui5"]?.originalUrl) {
 				proxyReq.setHeader("x-forwarded-path", req["cds-plugin-ui5"].originalUrl)
