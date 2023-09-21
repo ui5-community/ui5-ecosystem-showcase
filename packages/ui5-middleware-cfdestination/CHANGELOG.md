@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.3.0...ui5-middleware-cfdestination@3.3.1) (2023-09-21)
+
+
+### Bug Fixes
+
+* **ui5-middleware-cfdestination:** ensure proper index redirect without baseUrl ([#846](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/846)) ([d5aa59f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d5aa59fbc629b5fa5e875e7469c5696b91df5d22))
+
+
+
+
+
 # [3.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.2.0...ui5-middleware-cfdestination@3.3.0) (2023-09-19)
 
 
