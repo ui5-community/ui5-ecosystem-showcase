@@ -123,7 +123,14 @@ if (!skip) {
 									newLis.push(li.toString());
 								}
 							});
-							newLis.push(...links.sort().map((link) => `<li><a class="ui5" href="${link}">${link}</a></li>`));
+							newLis.push(
+								...links.sort().map((link) => {
+									// we remove the query parameters from the link text
+									const linkText = link.indexOf("?") === -1 ? link : link.substr(0, link.indexOf("?"));
+									// renders a UI5 link ;-)
+									return `<li><a class="ui5" href="${link}">${linkText}</a></li>`;
+								})
+							);
 							ul.innerHTML = newLis.join("\n");
 						} else {
 							log.warn(`Failed to inject application links into CDS index page!`);

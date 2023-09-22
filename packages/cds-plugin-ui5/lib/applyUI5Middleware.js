@@ -117,9 +117,12 @@ module.exports = async function applyUI5Middleware(router, options) {
 	});
 	await middlewareManager.applyMiddleware(router);
 
+	// for Fiori elements based applications we need to invalidate the view cache
+	const isFioriElementsBased = rootProject.getFrameworkDependencies().find((lib) => lib.name.startsWith("sap.fe"));
+
 	// collect app pages from workspace (glob testing: https://globster.xyz/ and https://codepen.io/mrmlnc/pen/OXQjMe)
 	//   -> but exclude the HTML fragments from the list of app pages!
-	const pages = (await rootReader.byGlob("**/!(*.fragment).{html,htm}")).map((resource) => resource.getPath());
+	const pages = (await rootReader.byGlob("**/!(*.fragment).{html,htm}")).map((resource) => `${resource.getPath()}${isFioriElementsBased ? "?sap-ui-xx-viewCache=false" : ""}`);
 
 	// collect app pages from middlewares implementing the getAppPages
 	middlewareManager.middlewareExecutionOrder?.map((name) => {
