@@ -5006,7 +5006,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   var VERSION_1 = luxon.VERSION = VERSION;
   var Zone_1 = luxon.Zone = Zone;
 
-  Object.defineProperty(luxon, "__" + "esModule", { value: true });
+  try { Object.defineProperty(luxon, "__" + "esModule", { value: true }); } catch (ex) {}
 
   exports.DateTime = DateTime_1;
   exports.Duration = Duration_1;

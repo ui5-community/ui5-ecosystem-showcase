@@ -3628,7 +3628,7 @@ sap.ui.define((function () { 'use strict';
 	})(moment);
 	var momentExports = moment.exports;
 
-	Object.defineProperty(momentExports, "__" + "esModule", { value: true });
+	try { Object.defineProperty(momentExports, "__" + "esModule", { value: true }); } catch (ex) {}
 
 	return momentExports;
 
