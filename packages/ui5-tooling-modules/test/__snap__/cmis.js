@@ -21399,7 +21399,7 @@ sap.ui.define((function () { 'use strict';
 		} 
 	} (cmis$1));
 
-	Object.defineProperty(cmis$1, "__" + "esModule", { value: true });
+	try { Object.defineProperty(cmis$1, "__" + "esModule", { value: true }); } catch (ex) {}
 
 	return cmis$1;
 

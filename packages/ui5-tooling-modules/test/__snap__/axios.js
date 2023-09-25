@@ -3108,7 +3108,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     mergeConfig
   } = axios;
 
-  Object.defineProperty(axios, "__" + "esModule", { value: true });
+  try { Object.defineProperty(axios, "__" + "esModule", { value: true }); } catch (ex) {}
 
   exports.Axios = Axios;
   exports.AxiosError = AxiosError;

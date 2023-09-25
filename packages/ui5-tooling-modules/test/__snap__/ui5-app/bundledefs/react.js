@@ -22674,7 +22674,7 @@ sap.ui.define((function () { 'use strict';
 
   var defaultExport = { React: reactExports, ReactDOM: client };
 
-  Object.defineProperty(defaultExport, "__" + "esModule", { value: true });
+  try { Object.defineProperty(defaultExport, "__" + "esModule", { value: true }); } catch (ex) {}
 
   return defaultExport;
 

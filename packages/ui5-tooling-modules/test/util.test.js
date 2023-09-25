@@ -296,6 +296,18 @@ test.serial("Verify generation of ui5-app/bundledefs/react", async (t) => {
 	}
 });
 
+test.serial("Verify generation of zod", async (t) => {
+	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
+	const module = await getModule("zod", {
+		tmpDir: t.context.tmpDir,
+		util: t.context.util,
+	});
+	t.true(module.retVal.__esModule);
+	if (platform() !== "win32") {
+		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
+	}
+});
+
 test.serial("Verify generation of @luigi-project/container", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp"));
 	const module = await getModule(

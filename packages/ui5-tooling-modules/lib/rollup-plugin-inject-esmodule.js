@@ -46,7 +46,7 @@ module.exports = function (/* { log } = {} */) {
 				// special handling here
 				if (hasDefaultExport) {
 					code += `import { default as defaultExport } from ${JSON.stringify(entryId)};`;
-					code += `Object.defineProperty(defaultExport, "__" + "esModule", { value: true });`;
+					code += `try { Object.defineProperty(defaultExport, "__" + "esModule", { value: true }); } catch (ex) {}`;
 					code += `export default defaultExport;`;
 				} else {
 					code += `export const __esModule = true;`;
