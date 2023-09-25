@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.0.7...ui5-tooling-modules@3.0.8) (2023-09-25)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** support repackaging of es modules ([#848](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/848)) ([f8d5ea5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f8d5ea59217190b61311cd96ac4adbfaab80bd9a))
+
+
+
+
+
 ## [3.0.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.0.6...ui5-tooling-modules@3.0.7) (2023-09-08)
 
 **Note:** Version bump only for package ui5-tooling-modules

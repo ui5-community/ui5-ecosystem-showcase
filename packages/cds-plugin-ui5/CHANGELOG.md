@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.11](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.6.10...cds-plugin-ui5@0.6.11) (2023-09-25)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** disable view cache for Fiori elements based apps ([#847](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/847)) ([81f6a80](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/81f6a803cff4f0c7323e7dcf5b2a28dc081d3123))
+
+
+
+
+
 ## [0.6.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.6.9...cds-plugin-ui5@0.6.10) (2023-09-15)
 
 
