@@ -36,7 +36,17 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	const config = createConfiguration(options?.configuration || {}, cwd);
 	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: true }, cwd);
 
-	const reader = config.transpileDependencies ? resources.all : resources.rootProject;
+	const reader = config.transpileDependencies
+		? middlewareUtil.resourceFactory.createReaderCollection({
+				name: "Local resource collection",
+				readers: [
+					resources.rootProject,
+					...(resources.dependencies?._readers || []).filter((reader) => {
+						return !reader?._readers?.[0]?._project?.isFrameworkProject();
+					})
+				]
+		  })
+		: resources.rootProject;
 
 	const outputCache = {};
 	const transpileAsync = async (resource) => {
