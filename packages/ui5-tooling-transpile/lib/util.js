@@ -257,7 +257,7 @@ module.exports = function (log) {
 						return false;
 					}
 				});
-				config.transpileDependencies = tsDeps?.length || 0 > 0;
+				config.transpileDependencies = (tsDeps?.length || 0) > 0;
 			}
 
 			// derive whether TypeScript should be transformed or not
