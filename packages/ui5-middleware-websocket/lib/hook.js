@@ -54,9 +54,36 @@ const http = require("http");
 module.exports = function hook(name, callback, middleware) {
 	// simulate a non-express app to get access to the app!
 	if (typeof callback === "function") {
-		const fn = function () {};
+		// when used inside a router, the hook can be only
+		// initialized with the first request for this route
+		let initializedByRouter = false;
+		const fn = function (req, res, next) {
+			if (!initializedByRouter) {
+				const app = req.app,
+					server = app?.server;
+				if (app && server) {
+					callback({
+						app,
+						server,
+						on: server.on.bind(server),
+						options: {
+							mountpath: "/",
+						},
+					});
+				} else {
+					console.error(
+						`\x1b[36m[ui5-middleware-websocket]\x1b[0m \x1b[31m[ERROR]\x1b[0m Failed to install websocket support on current server (most likely it is a connect server, and this only works on express)!`
+					);
+				}
+				initializedByRouter = true;
+			}
+			next();
+		};
+		// when embedding inside the express application, we simulate
+		// an express application function which is being called back
+		// with the application and server information when mounted
 		Object.defineProperty(fn, "name", {
-			value: name || "hook",
+			value: name || "<anonymous_hook>",
 			writable: false,
 		});
 		Object.assign(fn, {
