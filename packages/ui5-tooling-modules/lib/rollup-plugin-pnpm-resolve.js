@@ -1,5 +1,5 @@
 const path = require("path");
-module.exports = function ({ mainFields, resolveModule } = {}) {
+module.exports = function ({ resolveModule } = {}) {
 	return {
 		name: "pnpm-resolve",
 		resolveId(source) {
@@ -8,7 +8,7 @@ module.exports = function ({ mainFields, resolveModule } = {}) {
 				return source;
 			}
 			// needs to be in sync with nodeResolve
-			return resolveModule(source, { mainFields });
+			return resolveModule(source);
 		},
 	};
 };

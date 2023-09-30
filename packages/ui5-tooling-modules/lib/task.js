@@ -29,7 +29,8 @@ const minimatch = require("minimatch");
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ log, workspace, taskUtil, options }) {
-	const { getResource, resolveModule, listResources } = require("./util")(log);
+	const cwd = taskUtil.getProject().getRootPath() || process.cwd();
+	const { getResource, resolveModule, listResources } = require("./util")(log, cwd);
 
 	const config = options.configuration || {};
 	const removeScopePrefix = config?.removeScopePrefix || config?.removeScopePreceder;
