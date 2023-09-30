@@ -12,7 +12,7 @@ module.exports = async function createPatchedRouter() {
 	router.use(function (req, res, next) {
 		// store the original request information
 		const { url, originalUrl, baseUrl } = req;
-		req["cds-plugin-ui5"] = {
+		req["ui5-patched-router"] = req["ui5-patched-router"] || {
 			url,
 			originalUrl,
 			baseUrl,
@@ -37,9 +37,9 @@ module.exports = async function createPatchedRouter() {
 			if (req.headers["x-forwarded-path"]) {
 				// determine the context path by removing the subpath from the forwarded path
 				contextPath = req.headers["x-forwarded-path"].slice(0, -1 * url.length);
-			} else if (req["cds-plugin-ui5"].originalUrl) {
+			} else if (req["ui5-patched-router"].originalUrl) {
 				// determine the context path by removing the subpath from the originalUrl
-				contextPath = req["cds-plugin-ui5"].originalUrl.slice(0, -1 * url.length);
+				contextPath = req["ui5-patched-router"].originalUrl.slice(0, -1 * url.length);
 			}
 			rewriteHTML(
 				req,

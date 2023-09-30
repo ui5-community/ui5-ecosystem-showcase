@@ -7,6 +7,7 @@ const log = require("./log");
 /**
  * @typedef UI5Module
  * @type {object}
+ * @property {string} moduleId package name of the module
  * @property {string} modulePath root path of the module
  * @property {string} mountPath path to mount the module to
  */
