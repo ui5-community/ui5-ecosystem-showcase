@@ -67,15 +67,16 @@ module.exports = function (log) {
 	 * Resolves the node module
 	 *
 	 * @param {string} moduleName name of the module
+	 * @param {string} cwd current working directory
 	 * @returns {string} path of the module if found or undefined
 	 */
-	function resolveNodeModule(moduleName) {
+	function resolveNodeModule(moduleName, cwd = process.cwd()) {
 		let modulePath;
 		// resolve from node_modules via regular lookup
 		try {
 			// try the lookup relative to CWD
 			modulePath = require.resolve(moduleName, {
-				paths: [process.cwd()], // necessary for PNPM and/or DEBUG scenario
+				paths: [cwd], // necessary for PNPM and/or DEBUG scenario
 			});
 		} catch (err) {
 			// use the default lookup
@@ -95,16 +96,20 @@ module.exports = function (log) {
 		 *
 		 * @param {string} moduleName name of the module (e.g. "chart.js/auto")
 		 * @param {object} options configuration options
+		 * @param {string} options.cwd current working directory
 		 * @param {string[]} options.mainFields an order of main fields to check in package.json
 		 * @returns {string} the path of the module in the filesystem
 		 */
 		// ignore module paths starting with a segment from the ignore list (TODO: maybe a better check?)
-		resolveModule: function resolveModule(moduleName, { mainFields } = {}) {
+		resolveModule: function resolveModule(moduleName, { cwd, mainFields } = {}) {
+			// default the current working directory
+			cwd = cwd || process.cwd();
+			// if a module is listed in the negative cache, we ignore it!
 			if (modulesNegativeCache.indexOf(moduleName) !== -1 || /^\./.test(moduleName)) {
 				return undefined;
 			}
 			// package.json of app
-			const pkg = require(path.join(process.cwd(), "package.json"));
+			const pkg = require(path.join(cwd, "package.json"));
 			// default the mainFields
 			mainFields = mainFields || defaultMainFields;
 			// retrieve or create a resolved module
@@ -114,7 +119,7 @@ module.exports = function (log) {
 			// resolve the module path
 			if (moduleName?.startsWith(`${pkg.name}/`)) {
 				// special handling for app-local resources!
-				modulePath = path.join(process.cwd(), moduleName.substring(`${pkg.name}/`.length) + ".js");
+				modulePath = path.join(cwd, moduleName.substring(`${pkg.name}/`.length) + ".js");
 			} else {
 				// derive the module path from the package.json entries browser, module or main
 				try {
@@ -123,7 +128,7 @@ module.exports = function (log) {
 					// resolve the main field from the package.json
 					for (const field of mainFields) {
 						if (typeof pkgJson?.[field] === "string") {
-							modulePath = path.join(path.dirname(resolveNodeModule(pckJsonModuleName)), pkgJson?.[field]);
+							modulePath = path.join(path.dirname(resolveNodeModule(pckJsonModuleName, cwd)), pkgJson?.[field]);
 							break;
 						}
 					}
@@ -137,7 +142,7 @@ module.exports = function (log) {
 				}
 				// resolve from node_modules via regular lookup
 				if (!modulePath) {
-					modulePath = resolveNodeModule(moduleName);
+					modulePath = resolveNodeModule(moduleName, cwd);
 				}
 			}
 			if (modulePath === undefined) {
@@ -154,12 +159,13 @@ module.exports = function (log) {
 		 *
 		 * @param {string} moduleName name of the module (e.g. "chart.js/auto")
 		 * @param {object} options configuration options
+		 * @param {string} options.cwd current working directory
 		 * @param {string[]} options.mainFields an order of main fields to check in package.json
 		 * @param {boolean} [options.beforePlugins] rollup plugins to be executed before
 		 * @param {boolean} [options.afterPlugins] rollup plugins to be executed after
 		 * @returns {string} the bundle
 		 */
-		createBundle: async function createBundle(moduleName, { mainFields, beforePlugins, afterPlugins } = {}) {
+		createBundle: async function createBundle(moduleName, { cwd, mainFields, beforePlugins, afterPlugins } = {}) {
 			// create a bundle
 			const bundle = await rollup.rollup({
 				input: moduleName,
@@ -188,8 +194,13 @@ module.exports = function (log) {
 						preferBuiltins: false,
 					}),
 					pnpmResolve({
-						mainFields,
-						resolveModule: that.resolveModule.bind(that),
+						options: {
+							cwd,
+							mainFields,
+						},
+						resolveModule: function (moduleName) {
+							return that.resolveModule(moduleName, { cwd, mainFields });
+						},
 					}),
 					...(afterPlugins || []),
 				],
@@ -230,19 +241,21 @@ module.exports = function (log) {
 		 * returned.
 		 *
 		 * @param {string} moduleName the module name
+		 * @param {object} [config] configuration
+		 * @param {boolean} [config.skipCache] skip the module cache
+		 * @param {boolean} [config.debug] debug mode
+		 * @param {boolean|string[]} [config.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
 		 * @param {object} [options] additional options
-		 * @param {boolean} [options.skipCache] skip the module cache
-		 * @param {boolean} [options.debug] debug mode
-		 * @param {boolean|string[]} [options.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
-		 * @param {boolean|string[]} [skipTransform] flag or array of globs to verify whether the module transformation should be skipped
+		 * @param {boolean} [options.cwd] current working directory
+		 * @param {boolean|string[]} [options.skipTransform] flag or array of globs to verify whether the module transformation should be skipped
 		 * @returns {object} the output object of the resource (code, chunks?, lastModified)
 		 */
-		getResource: async function getResource(moduleName, { skipCache, debug, keepDynamicImports }, skipTransform) {
+		getResource: async function getResource(moduleName, { skipCache, debug, keepDynamicImports } = {}, { cwd, skipTransform } = {}) {
 			let bundling = false;
 
 			try {
 				// in case of chunks are requested, we lookup the original module
-				const modulePath = chunkToModulePath[moduleName] ?? that.resolveModule(moduleName);
+				const modulePath = chunkToModulePath[moduleName] ?? that.resolveModule(moduleName, { cwd });
 				if (modulePath) {
 					if (!existsSync(modulePath)) {
 						log.error(`Bundle ${moduleName} doesn't exist at the resolved path ${modulePath}!`);
@@ -343,10 +356,11 @@ module.exports = function (log) {
 		 *
 		 * @param {string} npmPackageName name of the module (e.g. "chart.js/auto")
 		 * @param {string[]} ignore list of globs to be ignored
+		 * @param {string} cwd current working directory
 		 * @returns {string[]} a list of resource paths
 		 */
-		listResources: function listResources(npmPackageName, ignore) {
-			const npmPackageJsonPath = that.resolveModule(`${npmPackageName}/package.json`);
+		listResources: function listResources(npmPackageName, ignore, cwd) {
+			const npmPackageJsonPath = that.resolveModule(`${npmPackageName}/package.json`, { cwd });
 			if (typeof npmPackageJsonPath === "string") {
 				const npmPackagePath = path.resolve(npmPackageJsonPath, "../");
 				const resources = walk

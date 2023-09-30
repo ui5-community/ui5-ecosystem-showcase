@@ -15,6 +15,7 @@ const path = require("path");
  * @returns {Function} Middleware function to use
  */
 module.exports = function ({ log, options, middlewareUtil }) {
+	const cwd = middlewareUtil.getProject().getRootPath() || process.cwd();
 	const { getResource } = require("./util")(log);
 
 	const config = options.configuration || {};
@@ -60,13 +61,13 @@ module.exports = function ({ log, options, middlewareUtil }) {
 			}
 
 			// try to resolve the resource from node_modules
-			const resource = await getResource(moduleName, config, skipTransform);
+			const resource = await getResource(moduleName, config, { cwd, skipTransform });
 			if (resource) {
 				try {
 					log.verbose(`Processing resource ${moduleName}...`);
 
-					// determine charset and content-type
-					let { contentType, charset } = middlewareUtil.getMimeInfo(pathname);
+					// determine content-type
+					let { contentType } = middlewareUtil.getMimeInfo(pathname);
 					res.setHeader("Content-Type", contentType);
 
 					// respond the content
