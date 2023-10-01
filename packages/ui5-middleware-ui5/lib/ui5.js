@@ -10,9 +10,11 @@ const createPatchedRouter = require("./createPatchedRouter");
  * @param {@ui5/logger/Logger} parameters.log Logger instance
  * @param {object} parameters.options Options
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
+ * @param {object} parameters.middlewareUtil Specification version dependent interface to a MiddlewareUtil instance
  * @returns {Function} Middleware function to use
  */
-module.exports = async ({ log, options }) => {
+module.exports = async ({ log, options, middlewareUtil }) => {
+	const cwd = middlewareUtil.getProject().getRootPath() || process.cwd();
 	// determine the effective configuration
 	const config = Object.assign(
 		{},
@@ -29,7 +31,6 @@ module.exports = async ({ log, options }) => {
 	if (process.env["cds-plugin-ui5"]) {
 		log.info("Skip middleware as the UI5 application has been started embedded in the CDS server!");
 	} else {
-		const cwd = process.cwd();
 		return hook(
 			"ui5-middleware-ui5",
 			async ({ app }) => {
