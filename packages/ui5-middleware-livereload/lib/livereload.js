@@ -2,6 +2,7 @@
 const connectLivereload = require("connect-livereload");
 const livereload = require("livereload");
 const path = require("path");
+const fs = require("fs");
 const portfinder = require("portfinder");
 
 /**
@@ -71,9 +72,11 @@ const determineSourcePaths = (collection, skipFwkDeps) => {
  *                                        the projects dependencies
  * @param {object} parameters.options Options
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
+ * @param {object} parameters.middlewareUtil Specification version dependent interface to a MiddlewareUtil instance
  * @returns {Function} Middleware function to use
  */
-module.exports = async ({ log, resources, options }) => {
+module.exports = async ({ log, resources, options, middlewareUtil }) => {
+	const cwd = middlewareUtil.getProject().getRootPath() || process.cwd();
 	let port = await getPortForLivereload(options, 35729);
 
 	// due to compatibility reasons we keep the path as watchPath (watchPath has higher precedence than path)
@@ -81,6 +84,35 @@ module.exports = async ({ log, resources, options }) => {
 	// determine all watchpaths from project resources if not predefined
 	if (!watchPath) {
 		watchPath = determineSourcePaths(resources.all, !options.configuration?.includeFwkDeps);
+		if (options.configuration?.includeAppDeps) {
+			// applications are not detected as they are excluded from project dependencies
+			// so we need to manually lookup the source directories for the applications
+			const pkgJson = require(path.join(cwd, "package.json"));
+			const deps = [];
+			deps.push(...Object.keys(pkgJson.dependencies || {}));
+			deps.push(...Object.keys(pkgJson.devDependencies || {}));
+			//deps.push(...Object.keys(pkgJson.peerDependencies || {}));
+			//deps.push(...Object.keys(pkgJson.optionalDependencies || {}));
+			deps.forEach((dep) => {
+				try {
+					const depPath = path.dirname(
+						require.resolve(`${dep}/ui5.yaml`, {
+							paths: [cwd],
+						})
+					);
+					const webappPath = path.join(depPath, "webapp");
+					if (fs.existsSync(webappPath)) {
+						if (watchPath.indexOf(webappPath) === -1) {
+							watchPath.push(webappPath);
+						}
+					} else {
+						debug && log.warn(`The dependency "${dep}" has no "webapp" folder. Ignore for livereload...`);
+					}
+				} catch (e) {
+					// we ignore error, as those dependencies are no UI5 apps
+				}
+			});
+		}
 	}
 
 	let exclusions = options?.configuration?.exclusions;
@@ -126,13 +158,13 @@ module.exports = async ({ log, resources, options }) => {
 	if (Array.isArray(watchPath)) {
 		let watchPaths = [];
 		for (let i = 0; i < watchPath.length; i++) {
-			watchPaths.push(path.resolve(process.cwd(), watchPath[i]));
+			watchPaths.push(path.resolve(cwd, watchPath[i]));
 		}
 		debug ? log.info(`Livereload connecting to port ${port} for paths ${watchPaths}`) : null;
 		livereloadServer.watch(watchPaths);
 	} else {
 		debug ? log.info(`Livereload connecting to port ${port} for path ${watchPath}`) : null;
-		livereloadServer.watch(path.resolve(process.cwd(), watchPath));
+		livereloadServer.watch(path.resolve(cwd, watchPath));
 	}
 
 	// connect-livereload already holds the
