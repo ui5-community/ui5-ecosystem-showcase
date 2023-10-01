@@ -12,8 +12,10 @@ sap.ui.define(
 		"@stomp/stompjs",
 		"ui5-app/bundledefs/react",
 		"zod",
+		"pdfmake/build/pdfmake",
+		"pdfmake/build/vfs_fonts",
 	],
-	(Controller, xlsx, cmis, _firebase, supabase, octokit, axios, temporal, stompjs, _react, zod) => {
+	(Controller, xlsx, cmis, _firebase, supabase, octokit, axios, temporal, stompjs, _react, zod, pdfMake, pdfFonts) => {
 		"use strict";
 
 		console.log(xlsx);
@@ -26,6 +28,9 @@ sap.ui.define(
 		console.log(stompjs);
 		console.log(_react);
 		console.log(zod);
+
+		pdfMake.vfs = pdfFonts.pdfMake.vfs;
+		console.log(pdfMake);
 
 		const { initializeApp, getFirestore } = _firebase;
 		const app = initializeApp({});
