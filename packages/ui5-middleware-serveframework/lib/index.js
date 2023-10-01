@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 const path = require("path");
-const { existsSync } = require("fs");
+const { existsSync, lstatSync } = require("fs");
 const { readFile, writeFile, mkdir, rm, stat } = require("fs").promises;
 const yaml = require("js-yaml");
 
@@ -191,8 +191,9 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 				const pathname = middlewareUtil.getPathname(req);
 				let resource;
 				if (pathname.startsWith("/resources/") || pathname.startsWith("/test-resources/")) {
-					if (existsSync(path.join(frameworkDir, "dist", pathname))) {
-						resource = path.join(frameworkDir, "dist", pathname);
+					const resourcePath = path.join(frameworkDir, "dist", pathname);
+					if (existsSync(resourcePath) && lstatSync(resourcePath).isFile()) {
+						resource = resourcePath;
 					}
 				}
 
