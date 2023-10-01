@@ -24,6 +24,9 @@ The plugin accepts configuration to control the mount path and selected configur
 - debug: `boolean`  
   enable detailed logging
 
+- serveFromNamespace: `boolean` (defaults to `true`)
+  serves the UI5 application from the `/resources/%namespace%` so that the UI5 application can be resolved without any additional `resourceroots` mapping; when disabled (setting option to `false`) the UI5 application will be served from it's `mountPath` (typically the UI5 app `name` or as fallback the `moduleId`); a custom `mountPath` configuration (see below) disables this configuration option!
+
 - modules: `Object`
   modules configuration (key = moduleId, values = object) - details in the following sections about the module configuration
 

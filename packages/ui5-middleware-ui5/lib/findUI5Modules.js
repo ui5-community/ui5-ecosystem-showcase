@@ -89,11 +89,12 @@ module.exports = async function findUI5Modules({ cwd, config, log }) {
 				//     modules:
 				// 	     %moduleId%:
 				// 	       mountPath: "/app"
+				const name = ui5Config?.metadata?.name || moduleId;
 				let mountPath =
 					config?.modules?.[moduleId]?.mountPath ||
 					ui5Config?.customConfiguration?.["ui5-middleware-ui5"]?.mountPath ||
 					ui5Config?.customConfiguration?.mountPath ||
-					ui5Config?.metadata?.name;
+					(config?.serveFromNamespace ? `/resources/${name.replace(/\./g, "/")}` : name);
 				if (!/^\//.test(mountPath)) {
 					mountPath = `/${mountPath}`; // always start with /
 				}

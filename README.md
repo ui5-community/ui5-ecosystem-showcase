@@ -38,6 +38,7 @@ packages
 ├── ui5-middleware-serveframework   // middleware extension: serve resources of a locally built framework
 ├── ui5-middleware-servestatic      // middleware extension: serve static resources
 ├── ui5-middleware-simpleproxy      // middleware extension: simple express proxy
+├── ui5-middleware-ui5              // middleware extension: enable UI5 application dependencies for UI5 dev server
 ├── ui5-middleware-webjars          // middleware extension: deliver content from JAR files
 ├── ui5-middleware-websocket        // middleware extension: enable web sockets for the UI5 Tooling
 ├── ui5-task-cachebuster            // task extension: enables cachebusting for standalone applications
@@ -202,6 +203,7 @@ Available middlewares in this project:
 | [ui5-middleware-servestatic](packages/ui5-middleware-servestatic/README.md) | serve static resources | [![npm version](https://badge.fury.io/js/ui5-middleware-servestatic.svg)](https://badge.fury.io/js/ui5-middleware-servestatic) |
 | [ui5-middleware-onelogin](packages/ui5-middleware-onelogin/README.md) | enable a generic login support | [![npm version](https://badge.fury.io/js/ui5-middleware-onelogin.svg)](https://badge.fury.io/js/ui5-middleware-onelogin) |
 | [ui5-middleware-simpleproxy](packages/ui5-middleware-simpleproxy/README.md) | simple express proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-simpleproxy.svg)](https://badge.fury.io/js/ui5-middleware-simpleproxy) |
+| [ui5-middleware-ui5](packages/ui5-middleware-ui5/README.md) | enable UI5 application dependencies | [![npm version](https://badge.fury.io/js/ui5-middleware-ui5.svg)](https://badge.fury.io/js/ui5-middleware-ui5) |
 | [ui5-middleware-webjars](packages/ui5-middleware-webjars/README.md) | deliver content from JAR files | [![npm version](https://badge.fury.io/js/ui5-middleware-webjars.svg)](https://badge.fury.io/js/ui5-middleware-webjars) |
 | [ui5-middleware-websocket](packages/ui5-middleware-websocket/README.md) | enable web sockets for UI5 tooling | [![npm version](https://badge.fury.io/js/ui5-middleware-websocket.svg)](https://badge.fury.io/js/ui5-middleware-websocket) |
 

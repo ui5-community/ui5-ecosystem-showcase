@@ -13,13 +13,23 @@ const createPatchedRouter = require("./createPatchedRouter");
  * @returns {Function} Middleware function to use
  */
 module.exports = async ({ log, options }) => {
+	// determine the effective configuration
+	const config = Object.assign(
+		{},
+		{
+			debug: false,
+			serveFromNamespace: true,
+			modules: {},
+		},
+		options?.configuration
+	);
+
 	// do not run the middleware in the context of the cds-plugin-ui5
 	// to avoid cyclic requests between the express middlewares
 	if (process.env["cds-plugin-ui5"]) {
 		log.info("Skip middleware as the UI5 application has been started embedded in the CDS server!");
 	} else {
 		const cwd = process.cwd();
-		const config = options.configuration;
 		return hook(
 			"ui5-middleware-ui5",
 			async ({ app }) => {
