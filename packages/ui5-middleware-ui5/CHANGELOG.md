@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-alpha.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-ui5@3.0.0-alpha.1...ui5-middleware-ui5@3.0.0-alpha.2) (2023-10-01)
+
+
+### Bug Fixes
+
+* **ui5-middleware-ui5:** make project root aware ([#860](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/860)) ([6c8536b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6c8536b5ad9a5a093e1be87ac731156ea7b2704c))
+
+
+
+
+
 # 3.0.0-alpha.1 (2023-10-01)
 
 
