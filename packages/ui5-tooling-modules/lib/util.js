@@ -169,6 +169,7 @@ module.exports = function (log) {
 			// create a bundle
 			const bundle = await rollup.rollup({
 				input: moduleName,
+				context: "exports" /* this is normally converted to undefined, but should be exports in our case! */,
 				plugins: [
 					...(beforePlugins || []),
 					replace({
