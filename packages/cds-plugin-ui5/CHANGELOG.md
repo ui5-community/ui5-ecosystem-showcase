@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.12](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.6.11...cds-plugin-ui5@0.6.12) (2023-10-01)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** handle dirs without trailing slash ([#856](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/856)) ([ee0df6b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ee0df6b1cd2242c3a0d49bda4737838f17daef33))
+* **cds-plugin-ui5:** rework collision detection ([#853](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/853)) ([b25fd5c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b25fd5c10600c15e0bd4977e3792c78fea7f366e))
+
+
+
+
+
 ## [0.6.11](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.6.10...cds-plugin-ui5@0.6.11) (2023-09-25)
 
 

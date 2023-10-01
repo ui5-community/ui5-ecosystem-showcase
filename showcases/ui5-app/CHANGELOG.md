@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.32.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.32.4...ui5-app@0.32.5) (2023-10-01)
+
+
+### Bug Fixes
+
+* **ui5-tooling-module:** support this context in modules ([#858](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/858)) ([678f3bd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/678f3bde91f1317ea8d90c8214767ef09d3ce2eb))
+
+
+
+
+
 ## [0.32.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.32.3...ui5-app@0.32.4) (2023-09-30)
 
 
