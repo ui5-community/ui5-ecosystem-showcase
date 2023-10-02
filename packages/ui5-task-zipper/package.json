@@ -1,6 +1,6 @@
 {
   "name": "ui5-task-zipper",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "Task for the UI5 tooling to zip the webapp.",
   "author": "Marius Obert",
   "license": "Apache-2.0",
