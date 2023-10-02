@@ -22,7 +22,7 @@
     "timeout": "20s"
   },
   "dependencies": {
-    "@sap/approuter": "^14.3.1",
+    "@sap/approuter": "^14.3.2",
     "content-type": "^1.0.5",
     "dotenv": "^16.3.1",
     "http-proxy-middleware": "^2.0.6",

@@ -64,4 +64,4 @@ shims:
       resources:
         configuration:
           paths:
-            "/shim/rimraf/": "dist/cjs/src"
+            "/shim/rimraf/": "dist/commonjs/"
