@@ -41,6 +41,10 @@
           "db",
           "srv"
         ]
+      },
+      "Northwind": {
+        "kind": "odata-v2",
+        "model": "srv/external/Northwind"
       }
     },
     "cds-plugin-ui5": {

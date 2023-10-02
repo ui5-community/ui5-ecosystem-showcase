@@ -13,6 +13,13 @@
         "settings": {
           "odataVersion": "4.0"
         }
+      },
+      "northwind": {
+        "uri": "/northwind/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0"
+        }
       }
     }
   },
@@ -40,19 +47,27 @@
           "autoExpandSelect": true
         }
       },
-      "i18n": {
-        "type": "sap.ui.model.resource.ResourceModel",
+      "northwind": {
+        "dataSource": "northwind",
+        "preload": true,
         "settings": {
-          "bundleName": "ui5.bookshop.i18n.i18n"
+          "groupId": "$auto",
+          "synchronizationMode": "None",
+          "operationMode": "Server",
+          "autoExpandSelect": true
         }
       }
     },
-    "resources": {
-      "css": [
-        {
-          "uri": "css/style.css"
-        }
-      ]
+    "i18n": {
+      "type": "sap.ui.model.resource.ResourceModel",
+      "settings": {
+        "bundleName": "ui5.bookshop.i18n.i18n"
+      }
     }
+  },
+  "resources": {
+    "css": [{
+      "uri": "css/style.css"
+    }]
   }
 }
