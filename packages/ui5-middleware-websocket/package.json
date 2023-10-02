@@ -10,7 +10,7 @@
     "directory": "packages/ui5-middleware-websocket"
   },
   "dependencies": {
-    "ws": "^8.14.0"
+    "ws": "^8.14.2"
   },
   "scripts": {
     "lint": "eslint lib"

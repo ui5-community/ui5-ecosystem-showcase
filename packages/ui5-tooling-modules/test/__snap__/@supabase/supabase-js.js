@@ -15,22 +15,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return Object.freeze(n);
     }
 
-    var __awaiter$9 = (exports && exports.__awaiter) || function (thisArg, _arguments, P, generator) {
-        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    };
     const resolveFetch$3 = (customFetch) => {
         let _fetch;
         if (customFetch) {
             _fetch = customFetch;
         }
         else if (typeof fetch === 'undefined') {
-            _fetch = (...args) => __awaiter$9(void 0, void 0, void 0, function* () { return yield (yield Promise.resolve().then(function () { return browserPonyfill; })).fetch(...args); });
+            _fetch = (...args) => Promise.resolve().then(function () { return browser$2; }).then(({ default: fetch }) => fetch(...args));
         }
         else {
             _fetch = fetch;
@@ -61,7 +52,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    var __awaiter$8 = (exports && exports.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$6 = (exports && exports.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -90,7 +81,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          */
         invoke(functionName, options = {}) {
             var _a;
-            return __awaiter$8(this, void 0, void 0, function* () {
+            return __awaiter$6(this, void 0, void 0, function* () {
                 try {
                     const { headers, method, body: functionArgs } = options;
                     let _headers = {};
@@ -195,10 +186,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
     var browserExports = browser$3.exports;
 
-    var browser$2 = /*#__PURE__*/Object.freeze({
+    var browser$2 = /*#__PURE__*/_mergeNamespaces({
         __proto__: null,
         default: browserExports
-    });
+    }, [browserExports]);
 
     // @ts-ignore
     class PostgrestBuilder {
@@ -1491,7 +1482,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         'version'      : websocket_version
     };
 
-    const version$3 = '2.7.4';
+    const version$3 = '2.8.0';
 
     const DEFAULT_HEADERS$3 = { 'X-Client-Info': `realtime-js/${version$3}` };
     const VSN = '1.0.0';
@@ -2140,15 +2131,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return value;
     };
 
-    var __awaiter$7 = (exports && exports.__awaiter) || function (thisArg, _arguments, P, generator) {
-        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    };
     exports.REALTIME_POSTGRES_CHANGES_LISTEN_EVENT = void 0;
     (function (REALTIME_POSTGRES_CHANGES_LISTEN_EVENT) {
         REALTIME_POSTGRES_CHANGES_LISTEN_EVENT["ALL"] = "*";
@@ -2188,6 +2170,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             this.state = CHANNEL_STATES.closed;
             this.joinedOnce = false;
             this.pushBuffer = [];
+            this.subTopic = topic.replace(/^realtime:/i, '');
             this.params.config = Object.assign({
                 broadcast: { ack: false, self: false },
                 presence: { key: '' },
@@ -2227,10 +2210,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 this._trigger(this._replyEventName(ref), payload);
             });
             this.presence = new RealtimePresence(this);
+            this.broadcastEndpointURL = this._broadcastEndpointURL();
         }
         /** Subscribe registers your client with the server */
         subscribe(callback, timeout = this.timeout) {
             var _a, _b;
+            if (!this.socket.isConnected()) {
+                this.socket.connect();
+            }
             if (this.joinedOnce) {
                 throw `tried to subscribe multiple times. 'subscribe' can only be called a single time per channel instance`;
             }
@@ -2301,40 +2288,71 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         presenceState() {
             return this.presence.state;
         }
-        track(payload, opts = {}) {
-            return __awaiter$7(this, void 0, void 0, function* () {
-                return yield this.send({
-                    type: 'presence',
-                    event: 'track',
-                    payload,
-                }, opts.timeout || this.timeout);
-            });
+        async track(payload, opts = {}) {
+            return await this.send({
+                type: 'presence',
+                event: 'track',
+                payload,
+            }, opts.timeout || this.timeout);
         }
-        untrack(opts = {}) {
-            return __awaiter$7(this, void 0, void 0, function* () {
-                return yield this.send({
-                    type: 'presence',
-                    event: 'untrack',
-                }, opts);
-            });
+        async untrack(opts = {}) {
+            return await this.send({
+                type: 'presence',
+                event: 'untrack',
+            }, opts);
         }
         on(type, filter, callback) {
             return this._on(type, filter, callback);
         }
-        send(payload, opts = {}) {
-            return new Promise((resolve) => {
-                var _a, _b, _c;
-                const push = this._push(payload.type, payload, opts.timeout || this.timeout);
-                if (push.rateLimited) {
-                    resolve('rate limited');
+        async send(payload, opts = {}) {
+            var _a, _b;
+            if (!this._canPush() && payload.type === 'broadcast') {
+                const { event, payload: endpoint_payload } = payload;
+                const options = {
+                    method: 'POST',
+                    headers: {
+                        apikey: (_a = this.socket.accessToken) !== null && _a !== void 0 ? _a : '',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        messages: [
+                            { topic: this.subTopic, event, payload: endpoint_payload },
+                        ],
+                    }),
+                };
+                try {
+                    const response = await this._fetchWithTimeout(this.broadcastEndpointURL, options, (_b = opts.timeout) !== null && _b !== void 0 ? _b : this.timeout);
+                    if (response.ok) {
+                        return 'ok';
+                    }
+                    else {
+                        return 'error';
+                    }
                 }
-                if (payload.type === 'broadcast' &&
-                    !((_c = (_b = (_a = this.params) === null || _a === void 0 ? void 0 : _a.config) === null || _b === void 0 ? void 0 : _b.broadcast) === null || _c === void 0 ? void 0 : _c.ack)) {
-                    resolve('ok');
+                catch (error) {
+                    if (error.name === 'AbortError') {
+                        return 'timed out';
+                    }
+                    else {
+                        return 'error';
+                    }
                 }
-                push.receive('ok', () => resolve('ok'));
-                push.receive('timeout', () => resolve('timed out'));
-            });
+            }
+            else {
+                return new Promise((resolve) => {
+                    var _a, _b, _c;
+                    const push = this._push(payload.type, payload, opts.timeout || this.timeout);
+                    if (push.rateLimited) {
+                        resolve('rate limited');
+                    }
+                    if (payload.type === 'broadcast' &&
+                        !((_c = (_b = (_a = this.params) === null || _a === void 0 ? void 0 : _a.config) === null || _b === void 0 ? void 0 : _b.broadcast) === null || _c === void 0 ? void 0 : _c.ack)) {
+                        resolve('ok');
+                    }
+                    push.receive('ok', () => resolve('ok'));
+                    push.receive('timeout', () => resolve('timed out'));
+                });
+            }
         }
         updateJoinPayload(payload) {
             this.joinPush.updatePayload(payload);
@@ -2376,6 +2394,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     leavePush.trigger('ok', {});
                 }
             });
+        }
+        /** @internal */
+        _broadcastEndpointURL() {
+            let url = this.socket.endPoint;
+            url = url.replace(/^ws/i, 'http');
+            url = url.replace(/(\/socket\/websocket|\/socket|\/websocket)\/?$/i, '');
+            return url.replace(/\/+$/, '') + '/api/broadcast';
+        }
+        async _fetchWithTimeout(url, options, timeout) {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            const response = await this.socket.fetch(url, Object.assign(Object.assign({}, options), { signal: controller.signal }));
+            clearTimeout(id);
+            return response;
         }
         /** @internal */
         _push(event, payload, timeout = this.timeout) {
@@ -2586,15 +2618,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    var __awaiter$6 = (exports && exports.__awaiter) || function (thisArg, _arguments, P, generator) {
-        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    };
     const noop = () => { };
     class RealtimeClient {
         /**
@@ -2636,6 +2659,24 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             };
             this.eventsPerSecondLimitMs = 100;
             this.inThrottle = false;
+            /**
+             * Use either custom fetch, if provided, or default fetch to make HTTP requests
+             *
+             * @internal
+             */
+            this._resolveFetch = (customFetch) => {
+                let _fetch;
+                if (customFetch) {
+                    _fetch = customFetch;
+                }
+                else if (typeof fetch === 'undefined') {
+                    _fetch = (...args) => Promise.resolve().then(function () { return browser$2; }).then(({ default: fetch }) => fetch(...args));
+                }
+                else {
+                    _fetch = fetch;
+                }
+                return (...args) => _fetch(...args);
+            };
             this.endPoint = `${endPoint}/${TRANSPORTS.websocket}`;
             if (options === null || options === void 0 ? void 0 : options.params)
                 this.params = options.params;
@@ -2668,10 +2709,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             this.decode = (options === null || options === void 0 ? void 0 : options.decode)
                 ? options.decode
                 : this.serializer.decode.bind(this.serializer);
-            this.reconnectTimer = new Timer(() => __awaiter$6(this, void 0, void 0, function* () {
+            this.reconnectTimer = new Timer(async () => {
                 this.disconnect();
                 this.connect();
-            }), this.reconnectAfterMs);
+            }, this.reconnectAfterMs);
+            this.fetch = this._resolveFetch(options === null || options === void 0 ? void 0 : options.fetch);
         }
         /**
          * Connects the socket, unless already connected.
@@ -2720,24 +2762,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * Unsubscribes and removes a single channel
          * @param channel A RealtimeChannel instance
          */
-        removeChannel(channel) {
-            return __awaiter$6(this, void 0, void 0, function* () {
-                const status = yield channel.unsubscribe();
-                if (this.channels.length === 0) {
-                    this.disconnect();
-                }
-                return status;
-            });
+        async removeChannel(channel) {
+            const status = await channel.unsubscribe();
+            if (this.channels.length === 0) {
+                this.disconnect();
+            }
+            return status;
         }
         /**
          * Unsubscribes and removes all channels
          */
-        removeAllChannels() {
-            return __awaiter$6(this, void 0, void 0, function* () {
-                const values_1 = yield Promise.all(this.channels.map((channel) => channel.unsubscribe()));
-                this.disconnect();
-                return values_1;
-            });
+        async removeAllChannels() {
+            const values_1 = await Promise.all(this.channels.map((channel) => channel.unsubscribe()));
+            this.disconnect();
+            return values_1;
         }
         /**
          * Logs the message.
@@ -2769,9 +2807,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             return this.connectionState() === CONNECTION_STATE.Open;
         }
         channel(topic, params = { config: {} }) {
-            if (!this.isConnected()) {
-                this.connect();
-            }
             const chan = new RealtimeChannel(`realtime:${topic}`, params, this);
             this.channels.push(chan);
             return chan;
@@ -3007,7 +3042,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             _fetch = customFetch;
         }
         else if (typeof fetch === 'undefined') {
-            _fetch = (...args) => __awaiter$5(void 0, void 0, void 0, function* () { return yield (yield Promise.resolve().then(function () { return browserPonyfill; })).fetch(...args); });
+            _fetch = (...args) => Promise.resolve().then(function () { return browser$2; }).then(({ default: fetch }) => fetch(...args));
         }
         else {
             _fetch = fetch;
@@ -3016,7 +3051,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     };
     const resolveResponse = () => __awaiter$5(void 0, void 0, void 0, function* () {
         if (typeof Response === 'undefined') {
-            return (yield Promise.resolve().then(function () { return browserPonyfill; })).Response;
+            // @ts-ignore
+            return (yield Promise.resolve().then(function () { return browser$2; })).Response;
         }
         return Response;
     });
@@ -3555,7 +3591,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
 
     // generated by genversion
-    const version$2 = '2.5.3';
+    const version$2 = '2.5.4';
 
     const DEFAULT_HEADERS$2 = { 'X-Client-Info': `storage-js/${version$2}` };
 
@@ -3732,576 +3768,24 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    const version$1 = '2.33.1';
+    const version$1 = '2.37.0';
 
     // constants.ts
-    const DEFAULT_HEADERS$1 = { 'X-Client-Info': `supabase-js/${version$1}` };
-
-    var browserPonyfill$1 = {exports: {}};
-
-    (function (module, exports) {
-    	var global = typeof self !== 'undefined' ? self : commonjsGlobal;
-    	var __self__ = (function () {
-    	function F() {
-    	this.fetch = false;
-    	this.DOMException = global.DOMException;
-    	}
-    	F.prototype = global;
-    	return new F();
-    	})();
-    	(function(self) {
-
-    	((function (exports) {
-
-    	  var support = {
-    	    searchParams: 'URLSearchParams' in self,
-    	    iterable: 'Symbol' in self && 'iterator' in Symbol,
-    	    blob:
-    	      'FileReader' in self &&
-    	      'Blob' in self &&
-    	      (function() {
-    	        try {
-    	          new Blob();
-    	          return true
-    	        } catch (e) {
-    	          return false
-    	        }
-    	      })(),
-    	    formData: 'FormData' in self,
-    	    arrayBuffer: 'ArrayBuffer' in self
-    	  };
-
-    	  function isDataView(obj) {
-    	    return obj && DataView.prototype.isPrototypeOf(obj)
-    	  }
-
-    	  if (support.arrayBuffer) {
-    	    var viewClasses = [
-    	      '[object Int8Array]',
-    	      '[object Uint8Array]',
-    	      '[object Uint8ClampedArray]',
-    	      '[object Int16Array]',
-    	      '[object Uint16Array]',
-    	      '[object Int32Array]',
-    	      '[object Uint32Array]',
-    	      '[object Float32Array]',
-    	      '[object Float64Array]'
-    	    ];
-
-    	    var isArrayBufferView =
-    	      ArrayBuffer.isView ||
-    	      function(obj) {
-    	        return obj && viewClasses.indexOf(Object.prototype.toString.call(obj)) > -1
-    	      };
-    	  }
-
-    	  function normalizeName(name) {
-    	    if (typeof name !== 'string') {
-    	      name = String(name);
-    	    }
-    	    if (/[^a-z0-9\-#$%&'*+.^_`|~]/i.test(name)) {
-    	      throw new TypeError('Invalid character in header field name')
-    	    }
-    	    return name.toLowerCase()
-    	  }
-
-    	  function normalizeValue(value) {
-    	    if (typeof value !== 'string') {
-    	      value = String(value);
-    	    }
-    	    return value
-    	  }
-
-    	  // Build a destructive iterator for the value list
-    	  function iteratorFor(items) {
-    	    var iterator = {
-    	      next: function() {
-    	        var value = items.shift();
-    	        return {done: value === undefined, value: value}
-    	      }
-    	    };
-
-    	    if (support.iterable) {
-    	      iterator[Symbol.iterator] = function() {
-    	        return iterator
-    	      };
-    	    }
-
-    	    return iterator
-    	  }
-
-    	  function Headers(headers) {
-    	    this.map = {};
-
-    	    if (headers instanceof Headers) {
-    	      headers.forEach(function(value, name) {
-    	        this.append(name, value);
-    	      }, this);
-    	    } else if (Array.isArray(headers)) {
-    	      headers.forEach(function(header) {
-    	        this.append(header[0], header[1]);
-    	      }, this);
-    	    } else if (headers) {
-    	      Object.getOwnPropertyNames(headers).forEach(function(name) {
-    	        this.append(name, headers[name]);
-    	      }, this);
-    	    }
-    	  }
-
-    	  Headers.prototype.append = function(name, value) {
-    	    name = normalizeName(name);
-    	    value = normalizeValue(value);
-    	    var oldValue = this.map[name];
-    	    this.map[name] = oldValue ? oldValue + ', ' + value : value;
-    	  };
-
-    	  Headers.prototype['delete'] = function(name) {
-    	    delete this.map[normalizeName(name)];
-    	  };
-
-    	  Headers.prototype.get = function(name) {
-    	    name = normalizeName(name);
-    	    return this.has(name) ? this.map[name] : null
-    	  };
-
-    	  Headers.prototype.has = function(name) {
-    	    return this.map.hasOwnProperty(normalizeName(name))
-    	  };
-
-    	  Headers.prototype.set = function(name, value) {
-    	    this.map[normalizeName(name)] = normalizeValue(value);
-    	  };
-
-    	  Headers.prototype.forEach = function(callback, thisArg) {
-    	    for (var name in this.map) {
-    	      if (this.map.hasOwnProperty(name)) {
-    	        callback.call(thisArg, this.map[name], name, this);
-    	      }
-    	    }
-    	  };
-
-    	  Headers.prototype.keys = function() {
-    	    var items = [];
-    	    this.forEach(function(value, name) {
-    	      items.push(name);
-    	    });
-    	    return iteratorFor(items)
-    	  };
-
-    	  Headers.prototype.values = function() {
-    	    var items = [];
-    	    this.forEach(function(value) {
-    	      items.push(value);
-    	    });
-    	    return iteratorFor(items)
-    	  };
-
-    	  Headers.prototype.entries = function() {
-    	    var items = [];
-    	    this.forEach(function(value, name) {
-    	      items.push([name, value]);
-    	    });
-    	    return iteratorFor(items)
-    	  };
-
-    	  if (support.iterable) {
-    	    Headers.prototype[Symbol.iterator] = Headers.prototype.entries;
-    	  }
-
-    	  function consumed(body) {
-    	    if (body.bodyUsed) {
-    	      return Promise.reject(new TypeError('Already read'))
-    	    }
-    	    body.bodyUsed = true;
-    	  }
-
-    	  function fileReaderReady(reader) {
-    	    return new Promise(function(resolve, reject) {
-    	      reader.onload = function() {
-    	        resolve(reader.result);
-    	      };
-    	      reader.onerror = function() {
-    	        reject(reader.error);
-    	      };
-    	    })
-    	  }
-
-    	  function readBlobAsArrayBuffer(blob) {
-    	    var reader = new FileReader();
-    	    var promise = fileReaderReady(reader);
-    	    reader.readAsArrayBuffer(blob);
-    	    return promise
-    	  }
-
-    	  function readBlobAsText(blob) {
-    	    var reader = new FileReader();
-    	    var promise = fileReaderReady(reader);
-    	    reader.readAsText(blob);
-    	    return promise
-    	  }
-
-    	  function readArrayBufferAsText(buf) {
-    	    var view = new Uint8Array(buf);
-    	    var chars = new Array(view.length);
-
-    	    for (var i = 0; i < view.length; i++) {
-    	      chars[i] = String.fromCharCode(view[i]);
-    	    }
-    	    return chars.join('')
-    	  }
-
-    	  function bufferClone(buf) {
-    	    if (buf.slice) {
-    	      return buf.slice(0)
-    	    } else {
-    	      var view = new Uint8Array(buf.byteLength);
-    	      view.set(new Uint8Array(buf));
-    	      return view.buffer
-    	    }
-    	  }
-
-    	  function Body() {
-    	    this.bodyUsed = false;
-
-    	    this._initBody = function(body) {
-    	      this._bodyInit = body;
-    	      if (!body) {
-    	        this._bodyText = '';
-    	      } else if (typeof body === 'string') {
-    	        this._bodyText = body;
-    	      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
-    	        this._bodyBlob = body;
-    	      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
-    	        this._bodyFormData = body;
-    	      } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
-    	        this._bodyText = body.toString();
-    	      } else if (support.arrayBuffer && support.blob && isDataView(body)) {
-    	        this._bodyArrayBuffer = bufferClone(body.buffer);
-    	        // IE 10-11 can't handle a DataView body.
-    	        this._bodyInit = new Blob([this._bodyArrayBuffer]);
-    	      } else if (support.arrayBuffer && (ArrayBuffer.prototype.isPrototypeOf(body) || isArrayBufferView(body))) {
-    	        this._bodyArrayBuffer = bufferClone(body);
-    	      } else {
-    	        this._bodyText = body = Object.prototype.toString.call(body);
-    	      }
-
-    	      if (!this.headers.get('content-type')) {
-    	        if (typeof body === 'string') {
-    	          this.headers.set('content-type', 'text/plain;charset=UTF-8');
-    	        } else if (this._bodyBlob && this._bodyBlob.type) {
-    	          this.headers.set('content-type', this._bodyBlob.type);
-    	        } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
-    	          this.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
-    	        }
-    	      }
-    	    };
-
-    	    if (support.blob) {
-    	      this.blob = function() {
-    	        var rejected = consumed(this);
-    	        if (rejected) {
-    	          return rejected
-    	        }
-
-    	        if (this._bodyBlob) {
-    	          return Promise.resolve(this._bodyBlob)
-    	        } else if (this._bodyArrayBuffer) {
-    	          return Promise.resolve(new Blob([this._bodyArrayBuffer]))
-    	        } else if (this._bodyFormData) {
-    	          throw new Error('could not read FormData body as blob')
-    	        } else {
-    	          return Promise.resolve(new Blob([this._bodyText]))
-    	        }
-    	      };
-
-    	      this.arrayBuffer = function() {
-    	        if (this._bodyArrayBuffer) {
-    	          return consumed(this) || Promise.resolve(this._bodyArrayBuffer)
-    	        } else {
-    	          return this.blob().then(readBlobAsArrayBuffer)
-    	        }
-    	      };
-    	    }
-
-    	    this.text = function() {
-    	      var rejected = consumed(this);
-    	      if (rejected) {
-    	        return rejected
-    	      }
-
-    	      if (this._bodyBlob) {
-    	        return readBlobAsText(this._bodyBlob)
-    	      } else if (this._bodyArrayBuffer) {
-    	        return Promise.resolve(readArrayBufferAsText(this._bodyArrayBuffer))
-    	      } else if (this._bodyFormData) {
-    	        throw new Error('could not read FormData body as text')
-    	      } else {
-    	        return Promise.resolve(this._bodyText)
-    	      }
-    	    };
-
-    	    if (support.formData) {
-    	      this.formData = function() {
-    	        return this.text().then(decode)
-    	      };
-    	    }
-
-    	    this.json = function() {
-    	      return this.text().then(JSON.parse)
-    	    };
-
-    	    return this
-    	  }
-
-    	  // HTTP methods whose capitalization should be normalized
-    	  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT'];
-
-    	  function normalizeMethod(method) {
-    	    var upcased = method.toUpperCase();
-    	    return methods.indexOf(upcased) > -1 ? upcased : method
-    	  }
-
-    	  function Request(input, options) {
-    	    options = options || {};
-    	    var body = options.body;
-
-    	    if (input instanceof Request) {
-    	      if (input.bodyUsed) {
-    	        throw new TypeError('Already read')
-    	      }
-    	      this.url = input.url;
-    	      this.credentials = input.credentials;
-    	      if (!options.headers) {
-    	        this.headers = new Headers(input.headers);
-    	      }
-    	      this.method = input.method;
-    	      this.mode = input.mode;
-    	      this.signal = input.signal;
-    	      if (!body && input._bodyInit != null) {
-    	        body = input._bodyInit;
-    	        input.bodyUsed = true;
-    	      }
-    	    } else {
-    	      this.url = String(input);
-    	    }
-
-    	    this.credentials = options.credentials || this.credentials || 'same-origin';
-    	    if (options.headers || !this.headers) {
-    	      this.headers = new Headers(options.headers);
-    	    }
-    	    this.method = normalizeMethod(options.method || this.method || 'GET');
-    	    this.mode = options.mode || this.mode || null;
-    	    this.signal = options.signal || this.signal;
-    	    this.referrer = null;
-
-    	    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
-    	      throw new TypeError('Body not allowed for GET or HEAD requests')
-    	    }
-    	    this._initBody(body);
-    	  }
-
-    	  Request.prototype.clone = function() {
-    	    return new Request(this, {body: this._bodyInit})
-    	  };
-
-    	  function decode(body) {
-    	    var form = new FormData();
-    	    body
-    	      .trim()
-    	      .split('&')
-    	      .forEach(function(bytes) {
-    	        if (bytes) {
-    	          var split = bytes.split('=');
-    	          var name = split.shift().replace(/\+/g, ' ');
-    	          var value = split.join('=').replace(/\+/g, ' ');
-    	          form.append(decodeURIComponent(name), decodeURIComponent(value));
-    	        }
-    	      });
-    	    return form
-    	  }
-
-    	  function parseHeaders(rawHeaders) {
-    	    var headers = new Headers();
-    	    // Replace instances of \r\n and \n followed by at least one space or horizontal tab with a space
-    	    // https://tools.ietf.org/html/rfc7230#section-3.2
-    	    var preProcessedHeaders = rawHeaders.replace(/\r?\n[\t ]+/g, ' ');
-    	    preProcessedHeaders.split(/\r?\n/).forEach(function(line) {
-    	      var parts = line.split(':');
-    	      var key = parts.shift().trim();
-    	      if (key) {
-    	        var value = parts.join(':').trim();
-    	        headers.append(key, value);
-    	      }
-    	    });
-    	    return headers
-    	  }
-
-    	  Body.call(Request.prototype);
-
-    	  function Response(bodyInit, options) {
-    	    if (!options) {
-    	      options = {};
-    	    }
-
-    	    this.type = 'default';
-    	    this.status = options.status === undefined ? 200 : options.status;
-    	    this.ok = this.status >= 200 && this.status < 300;
-    	    this.statusText = 'statusText' in options ? options.statusText : 'OK';
-    	    this.headers = new Headers(options.headers);
-    	    this.url = options.url || '';
-    	    this._initBody(bodyInit);
-    	  }
-
-    	  Body.call(Response.prototype);
-
-    	  Response.prototype.clone = function() {
-    	    return new Response(this._bodyInit, {
-    	      status: this.status,
-    	      statusText: this.statusText,
-    	      headers: new Headers(this.headers),
-    	      url: this.url
-    	    })
-    	  };
-
-    	  Response.error = function() {
-    	    var response = new Response(null, {status: 0, statusText: ''});
-    	    response.type = 'error';
-    	    return response
-    	  };
-
-    	  var redirectStatuses = [301, 302, 303, 307, 308];
-
-    	  Response.redirect = function(url, status) {
-    	    if (redirectStatuses.indexOf(status) === -1) {
-    	      throw new RangeError('Invalid status code')
-    	    }
-
-    	    return new Response(null, {status: status, headers: {location: url}})
-    	  };
-
-    	  exports.DOMException = self.DOMException;
-    	  try {
-    	    new exports.DOMException();
-    	  } catch (err) {
-    	    exports.DOMException = function(message, name) {
-    	      this.message = message;
-    	      this.name = name;
-    	      var error = Error(message);
-    	      this.stack = error.stack;
-    	    };
-    	    exports.DOMException.prototype = Object.create(Error.prototype);
-    	    exports.DOMException.prototype.constructor = exports.DOMException;
-    	  }
-
-    	  function fetch(input, init) {
-    	    return new Promise(function(resolve, reject) {
-    	      var request = new Request(input, init);
-
-    	      if (request.signal && request.signal.aborted) {
-    	        return reject(new exports.DOMException('Aborted', 'AbortError'))
-    	      }
-
-    	      var xhr = new XMLHttpRequest();
-
-    	      function abortXhr() {
-    	        xhr.abort();
-    	      }
-
-    	      xhr.onload = function() {
-    	        var options = {
-    	          status: xhr.status,
-    	          statusText: xhr.statusText,
-    	          headers: parseHeaders(xhr.getAllResponseHeaders() || '')
-    	        };
-    	        options.url = 'responseURL' in xhr ? xhr.responseURL : options.headers.get('X-Request-URL');
-    	        var body = 'response' in xhr ? xhr.response : xhr.responseText;
-    	        resolve(new Response(body, options));
-    	      };
-
-    	      xhr.onerror = function() {
-    	        reject(new TypeError('Network request failed'));
-    	      };
-
-    	      xhr.ontimeout = function() {
-    	        reject(new TypeError('Network request failed'));
-    	      };
-
-    	      xhr.onabort = function() {
-    	        reject(new exports.DOMException('Aborted', 'AbortError'));
-    	      };
-
-    	      xhr.open(request.method, request.url, true);
-
-    	      if (request.credentials === 'include') {
-    	        xhr.withCredentials = true;
-    	      } else if (request.credentials === 'omit') {
-    	        xhr.withCredentials = false;
-    	      }
-
-    	      if ('responseType' in xhr && support.blob) {
-    	        xhr.responseType = 'blob';
-    	      }
-
-    	      request.headers.forEach(function(value, name) {
-    	        xhr.setRequestHeader(name, value);
-    	      });
-
-    	      if (request.signal) {
-    	        request.signal.addEventListener('abort', abortXhr);
-
-    	        xhr.onreadystatechange = function() {
-    	          // DONE (success or failure)
-    	          if (xhr.readyState === 4) {
-    	            request.signal.removeEventListener('abort', abortXhr);
-    	          }
-    	        };
-    	      }
-
-    	      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit);
-    	    })
-    	  }
-
-    	  fetch.polyfill = true;
-
-    	  if (!self.fetch) {
-    	    self.fetch = fetch;
-    	    self.Headers = Headers;
-    	    self.Request = Request;
-    	    self.Response = Response;
-    	  }
-
-    	  exports.Headers = Headers;
-    	  exports.Request = Request;
-    	  exports.Response = Response;
-    	  exports.fetch = fetch;
-
-    	  Object.defineProperty(exports, '__esModule', { value: true });
-
-    	  return exports;
-
-    	}))({});
-    	})(__self__);
-    	__self__.fetch.ponyfill = true;
-    	// Remove "polyfill" property added by whatwg-fetch
-    	delete __self__.fetch.polyfill;
-    	// Choose between native implementation (global) or custom implementation (__self__)
-    	// var ctx = global.fetch ? global : __self__;
-    	var ctx = __self__; // this line disable service worker support temporarily
-    	exports = ctx.fetch; // To enable: import fetch from 'cross-fetch'
-    	exports.default = ctx.fetch; // For TypeScript consumers without esModuleInterop.
-    	exports.fetch = ctx.fetch; // To enable: import {fetch} from 'cross-fetch'
-    	exports.Headers = ctx.Headers;
-    	exports.Request = ctx.Request;
-    	exports.Response = ctx.Response;
-    	module.exports = exports; 
-    } (browserPonyfill$1, browserPonyfill$1.exports));
-
-    var browserPonyfillExports = browserPonyfill$1.exports;
-
-    var browserPonyfill = /*#__PURE__*/_mergeNamespaces({
-        __proto__: null,
-        default: browserPonyfillExports
-    }, [browserPonyfillExports]);
+    let JS_ENV = '';
+    // @ts-ignore
+    if (typeof Deno !== 'undefined') {
+        JS_ENV = 'deno';
+    }
+    else if (typeof document !== 'undefined') {
+        JS_ENV = 'web';
+    }
+    else if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
+        JS_ENV = 'react-native';
+    }
+    else {
+        JS_ENV = 'node';
+    }
+    const DEFAULT_HEADERS$1 = { 'X-Client-Info': `supabase-js-${JS_ENV}/${version$1}` };
 
     var __awaiter$1 = (exports && exports.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -4318,7 +3802,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             _fetch = customFetch;
         }
         else if (typeof fetch === 'undefined') {
-            _fetch = browserPonyfillExports;
+            _fetch = browserExports;
         }
         else {
             _fetch = fetch;
@@ -4327,7 +3811,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     };
     const resolveHeadersConstructor = () => {
         if (typeof Headers === 'undefined') {
-            return browserPonyfillExports.Headers;
+            return browserExports.Headers;
         }
         return Headers;
     };
@@ -5095,13 +4579,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
 
     // Generated by genversion.
-    const version = '2.51.0';
+    const version = '2.54.0';
 
     const GOTRUE_URL = 'http://localhost:9999';
     const STORAGE_KEY = 'supabase.auth.token';
     const DEFAULT_HEADERS = { 'X-Client-Info': `gotrue-js/${version}` };
     const EXPIRY_MARGIN = 10; // in seconds
 
+    /**
+     * Provides safe access to the globalThis.localStorage property.
+     */
     const localStorageAdapter = {
         getItem: (key) => {
             if (!supportsLocalStorage()) {
@@ -5122,6 +4609,23 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             globalThis.localStorage.removeItem(key);
         },
     };
+    /**
+     * Returns a localStorage-like object that stores the key-value pairs in
+     * memory.
+     */
+    function memoryLocalStorageAdapter(store = {}) {
+        return {
+            getItem: (key) => {
+                return store[key] || null;
+            },
+            setItem: (key, value) => {
+                store[key] = value;
+            },
+            removeItem: (key) => {
+                delete store[key];
+            },
+        };
+    }
 
     /**
      * https://mathiasbynens.be/notes/globalthis
@@ -5285,6 +4789,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          */
         constructor(options) {
             var _a;
+            this.memoryStorage = null;
             this.stateChangeEmitters = new Map();
             this.autoRefreshTicker = null;
             this.visibilityChangedCallback = null;
@@ -5303,18 +4808,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
              * Used to broadcast state change events to other tabs listening.
              */
             this.broadcastChannel = null;
+            this.logger = console.log;
             this.instanceID = GoTrueClient.nextInstanceID;
             GoTrueClient.nextInstanceID += 1;
             if (this.instanceID > 0 && isBrowser()) {
                 console.warn('Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.');
             }
             const settings = Object.assign(Object.assign({}, DEFAULT_OPTIONS), options);
-            this.logDebugMessages = settings.debug;
-            this.inMemorySession = null;
+            this.logDebugMessages = !!settings.debug;
+            if (typeof settings.debug === 'function') {
+                this.logger = settings.debug;
+            }
+            this.persistSession = settings.persistSession;
             this.storageKey = settings.storageKey;
             this.autoRefreshToken = settings.autoRefreshToken;
-            this.persistSession = settings.persistSession;
-            this.storage = settings.storage || localStorageAdapter;
             this.admin = new GoTrueAdminApi({
                 url: settings.url,
                 headers: settings.headers,
@@ -5335,9 +4842,23 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 challengeAndVerify: this._challengeAndVerify.bind(this),
                 getAuthenticatorAssuranceLevel: this._getAuthenticatorAssuranceLevel.bind(this),
             };
-            if (this.persistSession && this.storage === localStorageAdapter && !supportsLocalStorage()) {
-                console.warn(`No storage option exists to persist the session, which may result in unexpected behavior when using auth.
-        If you want to set persistSession to true, please provide a storage option or you may set persistSession to false to disable this warning.`);
+            if (this.persistSession) {
+                if (settings.storage) {
+                    this.storage = settings.storage;
+                }
+                else {
+                    if (supportsLocalStorage()) {
+                        this.storage = localStorageAdapter;
+                    }
+                    else {
+                        this.memoryStorage = {};
+                        this.storage = memoryLocalStorageAdapter(this.memoryStorage);
+                    }
+                }
+            }
+            else {
+                this.memoryStorage = {};
+                this.storage = memoryLocalStorageAdapter(this.memoryStorage);
             }
             if (isBrowser() && globalThis.BroadcastChannel && this.persistSession && this.storageKey) {
                 try {
@@ -5355,7 +4876,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
         _debug(...args) {
             if (this.logDebugMessages) {
-                console.log(`GoTrueClient@${this.instanceID} (${version}) ${new Date().toISOString()}`, ...args);
+                this.logger(`GoTrueClient@${this.instanceID} (${version}) ${new Date().toISOString()}`, ...args);
             }
             return this;
         }
@@ -5962,22 +5483,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             }
             try {
                 let currentSession = null;
-                if (this.persistSession) {
-                    const maybeSession = await getItemAsync(this.storage, this.storageKey);
-                    this._debug('#getSession()', 'session from storage', maybeSession);
-                    if (maybeSession !== null) {
-                        if (this._isValidSession(maybeSession)) {
-                            currentSession = maybeSession;
-                        }
-                        else {
-                            this._debug('#getSession()', 'session from storage is not valid');
-                            await this._removeSession();
-                        }
+                const maybeSession = await getItemAsync(this.storage, this.storageKey);
+                this._debug('#getSession()', 'session from storage', maybeSession);
+                if (maybeSession !== null) {
+                    if (this._isValidSession(maybeSession)) {
+                        currentSession = maybeSession;
                     }
-                }
-                else {
-                    currentSession = this.inMemorySession;
-                    this._debug('#getSession()', 'session from memory', currentSession);
+                    else {
+                        this._debug('#getSession()', 'session from storage is not valid');
+                        await this._removeSession();
+                    }
                 }
                 if (!currentSession) {
                     return { data: { session: null }, error: null };
@@ -6587,12 +6102,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          */
         async _saveSession(session) {
             this._debug('#_saveSession()', session);
-            if (!this.persistSession) {
-                this.inMemorySession = session;
-            }
-            if (this.persistSession && session.expires_at) {
-                await this._persistSession(session);
-            }
+            await this._persistSession(session);
         }
         _persistSession(currentSession) {
             this._debug('#_persistSession()', currentSession);
@@ -6600,12 +6110,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
         async _removeSession() {
             this._debug('#_removeSession()');
-            if (this.persistSession) {
-                await removeItemAsync(this.storage, this.storageKey);
-            }
-            else {
-                this.inMemorySession = null;
-            }
+            await removeItemAsync(this.storage, this.storageKey);
         }
         /**
          * Removes any registered visibilitychange callback.
@@ -6904,61 +6409,67 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * {@see GoTrueMFAApi#verify}
          */
         async _verify(params) {
-            try {
-                return await this._useSession(async (result) => {
-                    var _a;
-                    const { data: sessionData, error: sessionError } = result;
-                    if (sessionError) {
-                        return { data: null, error: sessionError };
-                    }
-                    const { data, error } = await _request(this.fetch, 'POST', `${this.url}/factors/${params.factorId}/verify`, {
-                        body: { code: params.code, challenge_id: params.challengeId },
-                        headers: this.headers,
-                        jwt: (_a = sessionData === null || sessionData === void 0 ? void 0 : sessionData.session) === null || _a === void 0 ? void 0 : _a.access_token,
+            return this._acquireLock(-1, async () => {
+                try {
+                    return await this._useSession(async (result) => {
+                        var _a;
+                        const { data: sessionData, error: sessionError } = result;
+                        if (sessionError) {
+                            return { data: null, error: sessionError };
+                        }
+                        const { data, error } = await _request(this.fetch, 'POST', `${this.url}/factors/${params.factorId}/verify`, {
+                            body: { code: params.code, challenge_id: params.challengeId },
+                            headers: this.headers,
+                            jwt: (_a = sessionData === null || sessionData === void 0 ? void 0 : sessionData.session) === null || _a === void 0 ? void 0 : _a.access_token,
+                        });
+                        if (error) {
+                            return { data: null, error };
+                        }
+                        await this._saveSession(Object.assign({ expires_at: Math.round(Date.now() / 1000) + data.expires_in }, data));
+                        await this._notifyAllSubscribers('MFA_CHALLENGE_VERIFIED', data);
+                        return { data, error };
                     });
-                    if (error) {
+                }
+                catch (error) {
+                    if (isAuthError(error)) {
                         return { data: null, error };
                     }
-                    await this._saveSession(Object.assign({ expires_at: Math.round(Date.now() / 1000) + data.expires_in }, data));
-                    await this._notifyAllSubscribers('MFA_CHALLENGE_VERIFIED', data);
-                    return { data, error };
-                });
-            }
-            catch (error) {
-                if (isAuthError(error)) {
-                    return { data: null, error };
+                    throw error;
                 }
-                throw error;
-            }
+            });
         }
         /**
          * {@see GoTrueMFAApi#challenge}
          */
         async _challenge(params) {
-            try {
-                return await this._useSession(async (result) => {
-                    var _a;
-                    const { data: sessionData, error: sessionError } = result;
-                    if (sessionError) {
-                        return { data: null, error: sessionError };
-                    }
-                    return await _request(this.fetch, 'POST', `${this.url}/factors/${params.factorId}/challenge`, {
-                        headers: this.headers,
-                        jwt: (_a = sessionData === null || sessionData === void 0 ? void 0 : sessionData.session) === null || _a === void 0 ? void 0 : _a.access_token,
+            return this._acquireLock(-1, async () => {
+                try {
+                    return await this._useSession(async (result) => {
+                        var _a;
+                        const { data: sessionData, error: sessionError } = result;
+                        if (sessionError) {
+                            return { data: null, error: sessionError };
+                        }
+                        return await _request(this.fetch, 'POST', `${this.url}/factors/${params.factorId}/challenge`, {
+                            headers: this.headers,
+                            jwt: (_a = sessionData === null || sessionData === void 0 ? void 0 : sessionData.session) === null || _a === void 0 ? void 0 : _a.access_token,
+                        });
                     });
-                });
-            }
-            catch (error) {
-                if (isAuthError(error)) {
-                    return { data: null, error };
                 }
-                throw error;
-            }
+                catch (error) {
+                    if (isAuthError(error)) {
+                        return { data: null, error };
+                    }
+                    throw error;
+                }
+            });
         }
         /**
          * {@see GoTrueMFAApi#challengeAndVerify}
          */
         async _challengeAndVerify(params) {
+            // both _challenge and _verify independently acquire the lock, so no need
+            // to acquire it here
             const { data: challengeData, error: challengeError } = await this._challenge({
                 factorId: params.factorId,
             });
@@ -6975,7 +6486,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * {@see GoTrueMFAApi#listFactors}
          */
         async _listFactors() {
-            const { data: { user }, error: userError, } = await this._getUser();
+            // use #getUser instead of #_getUser as the former acquires a lock
+            const { data: { user }, error: userError, } = await this.getUser();
             if (userError) {
                 return { data: null, error: userError };
             }
@@ -6993,30 +6505,32 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * {@see GoTrueMFAApi#getAuthenticatorAssuranceLevel}
          */
         async _getAuthenticatorAssuranceLevel() {
-            return await this._useSession(async (result) => {
-                var _a, _b;
-                const { data: { session }, error: sessionError, } = result;
-                if (sessionError) {
-                    return { data: null, error: sessionError };
-                }
-                if (!session) {
-                    return {
-                        data: { currentLevel: null, nextLevel: null, currentAuthenticationMethods: [] },
-                        error: null,
-                    };
-                }
-                const payload = this._decodeJWT(session.access_token);
-                let currentLevel = null;
-                if (payload.aal) {
-                    currentLevel = payload.aal;
-                }
-                let nextLevel = currentLevel;
-                const verifiedFactors = (_b = (_a = session.user.factors) === null || _a === void 0 ? void 0 : _a.filter((factor) => factor.status === 'verified')) !== null && _b !== void 0 ? _b : [];
-                if (verifiedFactors.length > 0) {
-                    nextLevel = 'aal2';
-                }
-                const currentAuthenticationMethods = payload.amr || [];
-                return { data: { currentLevel, nextLevel, currentAuthenticationMethods }, error: null };
+            return this._acquireLock(-1, async () => {
+                return await this._useSession(async (result) => {
+                    var _a, _b;
+                    const { data: { session }, error: sessionError, } = result;
+                    if (sessionError) {
+                        return { data: null, error: sessionError };
+                    }
+                    if (!session) {
+                        return {
+                            data: { currentLevel: null, nextLevel: null, currentAuthenticationMethods: [] },
+                            error: null,
+                        };
+                    }
+                    const payload = this._decodeJWT(session.access_token);
+                    let currentLevel = null;
+                    if (payload.aal) {
+                        currentLevel = payload.aal;
+                    }
+                    let nextLevel = currentLevel;
+                    const verifiedFactors = (_b = (_a = session.user.factors) === null || _a === void 0 ? void 0 : _a.filter((factor) => factor.status === 'verified')) !== null && _b !== void 0 ? _b : [];
+                    if (verifiedFactors.length > 0) {
+                        nextLevel = 'aal2';
+                    }
+                    const currentAuthenticationMethods = payload.amr || [];
+                    return { data: { currentLevel, nextLevel, currentAuthenticationMethods }, error: null };
+                });
             });
         }
     }

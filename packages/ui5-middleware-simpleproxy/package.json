@@ -38,7 +38,6 @@
     "node-tcp-proxy": "^0.0.28",
     "supertest": "^6.3.3",
     "superwstest": "^2.0.3",
-    "ui5-middleware-websocket": "workspace:^",
-    "ws": "^8.14.0"
+    "ui5-middleware-websocket": "workspace:^"
   }
 }

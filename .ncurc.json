@@ -9,6 +9,7 @@
     "@wdio/local-runner",
     "@wdio/mocha-framework",
     "@wdio/spec-reporter",
+    "wdio-ui5-service",
     "eslint-plugin-wdio",
     "@prettier/plugin-xml",
     "prettier"
