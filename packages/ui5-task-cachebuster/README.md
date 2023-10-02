@@ -47,7 +47,7 @@ What is possible:
 builder:
   customTasks:
   - name: ui5-task-cachebuster
-    afterTask: uglify
+    afterTask: generateResourcesJson
     configuration:
       debug: true | false
       moveResources: true | false
@@ -58,7 +58,7 @@ For app in SAP BTP in Cloud Foundry environment with managed approuter:
 builder:
   customTasks:
   - name: ui5-task-cachebuster
-    afterTask: uglify
+    afterTask: generateResourcesJson
     configuration:
       moveResources: false
 ```
