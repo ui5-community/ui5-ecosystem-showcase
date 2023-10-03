@@ -296,7 +296,7 @@ module.exports = function (log) {
 			// return the normalized configuration object
 			const normalizedConfiguration = {
 				debug: config.debug,
-				babelConfigOptions: config.babelConfigOptions,
+				babelConfig: config.babelConfig,
 				includes,
 				excludes,
 				filePattern,
@@ -478,7 +478,7 @@ module.exports = function (log) {
 			// by default Babel uses the regenerator runtime but this
 			// requires bigger redundant inline code and it is also
 			// not CSP compliant => therefore the Promise is the better
-			// solution than using the regenerator runtime (by default)
+			// solution than using the regenerator runtime
 			if (configuration?.transformAsyncToPromise) {
 				babelConfigOptions.plugins.push([
 					"transform-async-to-promises",
@@ -486,10 +486,6 @@ module.exports = function (log) {
 						inlineHelpers: true
 					}
 				]);
-			} else if (configuration?.targetBrowsers === undefined) {
-				log.warn(
-					"Babel uses regenerator runtime to transpile async/await for older target browsers. As this is not CSP compliant consider the usage of transformAsyncToPromise to convert async/await to Promises!"
-				);
 			}
 
 			// include the source maps
