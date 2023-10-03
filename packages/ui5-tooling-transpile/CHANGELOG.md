@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.2.5...ui5-tooling-transpile@3.2.6) (2023-10-03)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** re-enable inline config in ui5.yaml ([#866](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/866)) ([2cf9812](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2cf9812e2fbc140b628afc41b4fdf8f4542eb358)), closes [#864](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/864)
+
+
+
+
+
 ## [3.2.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.2.4...ui5-tooling-transpile@3.2.5) (2023-10-02)
 
 **Note:** Version bump only for package ui5-tooling-transpile
