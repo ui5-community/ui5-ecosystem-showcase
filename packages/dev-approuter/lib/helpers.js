@@ -43,6 +43,7 @@ const applyDependencyConfig = (config) => {
 		if (route.dependency) {
 			Object.assign(route, config.dependencyRoutes[route.dependency]);
 			delete route.dependency;
+			delete route.options;
 		}
 	});
 	delete config.dependencyRoutes;

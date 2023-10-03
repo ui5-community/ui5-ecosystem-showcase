@@ -104,12 +104,26 @@ class DevApprouter {
 		// start CDS server on different port
 		if (cdsServerConfig) {
 			const { modulePath, moduleId } = cdsServerConfig;
+			const port = process.env.CDS_PORT || 4004;
 
-			// start CDS server on different port
+			// start CDS server on different port (requires to override the
+			// origin listen function to intercept call from CDS server and
+			// ensure to use the port as defined by environment variable or
+			// the default port for the CDS server!)
 			const app = express();
-			const { servicesPaths } = await applyCDSMiddleware(app, { root: modulePath, cwd });
-			app.listen(process.env.CDS_PORT || 4004, () => {
-				console.log(`CDS server started at: http://localhost:${process.env.CDS_PORT || 4004}`);
+			app._listen = app.listen;
+			app.listen = function (port, callback) {
+				return this._listen(process.env.CDS_PORT || 4004, function () {
+					console.log(`CDS server started at: http://localhost:${process.env.CDS_PORT || 4004}`);
+					callback?.apply(callback, arguments);
+				});
+			};
+
+			// apply the CDS server middlewares and keep the welcome page
+			const { servicesPaths } = await applyCDSMiddleware(app, {
+				root: modulePath,
+				options: config.dependencyRoutes[moduleId]?.options,
+				headless: false,
 			});
 
 			// create route if CDS module is not referenced in xs-dev.json/xs-app.json
@@ -125,7 +139,7 @@ class DevApprouter {
 			}
 
 			// add destination for newly configured route
-			addDestination(moduleId, process.env.CDS_PORT || 4004);
+			addDestination(moduleId, port);
 		}
 
 		// create and start the SAP Approuter

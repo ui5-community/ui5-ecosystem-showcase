@@ -9,6 +9,9 @@
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
     "directory": "packages/ui5-middleware-cap"
   },
+  "dependencies": {
+    "ui5-utils-express": "workspace:^"
+  },
   "devDependencies": {
     "@sap/cds": "^6.8.4",
     "@ui5/cli": "^3.6.0",
