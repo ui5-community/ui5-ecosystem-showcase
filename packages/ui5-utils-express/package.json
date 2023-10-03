@@ -1,0 +1,15 @@
+{
+  "name": "ui5-utils-express",
+  "version": "1.0.0",
+  "description": "Utilities for the express web framework (web server)",
+  "author": "Peter Muessig",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
+    "directory": "packages/ui5-util-express"
+  },
+  "scripts": {
+    "lint": "eslint lib"
+  }
+}
