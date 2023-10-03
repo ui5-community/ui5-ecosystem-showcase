@@ -52,6 +52,8 @@ const http = require("http");
  * @returns {Function} Middleware function to use
  */
 module.exports = function hook(name, callback, middleware) {
+	// default the name
+	name = name || "<anonymous_hook>";
 	// simulate a non-express app to get access to the app!
 	if (typeof callback === "function") {
 		// when used inside a router, the hook can be only
@@ -72,7 +74,9 @@ module.exports = function hook(name, callback, middleware) {
 						},
 					});
 				} else {
-					console.error(`\x1b[36m[~~hook~~]\x1b[0m \x1b[31m[ERROR]\x1b[0m Failed to hook into current server (most likely it is a connect server, and this only works on express)!`);
+					console.error(
+						`\x1b[36m[~~hook<${name}>~~]\x1b[0m \x1b[31m[ERROR]\x1b[0m - Failed to hook into current server (most likely it is a connect server, and this only works on express)!`
+					);
 				}
 				initializedByRouter = true;
 			}
@@ -82,7 +86,7 @@ module.exports = function hook(name, callback, middleware) {
 		// an express application function which is being called back
 		// with the application and server information when mounted
 		Object.defineProperty(fn, "name", {
-			value: name || "<anonymous_hook>",
+			value: name,
 			writable: false,
 		});
 		Object.assign(fn, {
