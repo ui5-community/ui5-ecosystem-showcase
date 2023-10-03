@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-alpha.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-ui5@3.0.0-alpha.3...ui5-middleware-ui5@3.0.0-alpha.4) (2023-10-03)
+
+
+### Bug Fixes
+
+* **ui5-middleware-ui5:** ensure middlware stack order when hooking ([#865](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/865)) ([7fd61f2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7fd61f225b619e4b9166402122492844e02e925b))
+
+
+
+
+
 # [3.0.0-alpha.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-ui5@3.0.0-alpha.2...ui5-middleware-ui5@3.0.0-alpha.3) (2023-10-02)
 
 **Note:** Version bump only for package ui5-middleware-ui5

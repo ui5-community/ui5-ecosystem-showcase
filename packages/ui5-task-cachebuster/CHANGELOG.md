@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-cachebuster@3.0.2...ui5-task-cachebuster@3.0.3) (2023-10-03)
+
+
+### Bug Fixes
+
+* **ui5-task-cachebuster:** update docu for afterTask configuration ([#863](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/863)) ([d1b184b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d1b184b1f6baf4870969c1810a17a7703cf3b483))
+
+
+
+
+
 ## [3.0.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-cachebuster@3.0.1...ui5-task-cachebuster@3.0.2) (2023-09-08)
 
 **Note:** Version bump only for package ui5-task-cachebuster

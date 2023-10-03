@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-ui5",
-  "version": "3.0.0-alpha.3",
+  "version": "3.0.0-alpha.4",
   "description": "UI5 middleware to include UI5 application as dependencies",
   "author": "Peter Muessig",
   "license": "Apache-2.0",
