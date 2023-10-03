@@ -54,9 +54,35 @@ const http = require("http");
 module.exports = function hook(name, callback, middleware) {
 	// simulate a non-express app to get access to the app!
 	if (typeof callback === "function") {
-		const fn = function () {};
+		// when used inside a router, the hook can be only
+		// initialized with the first request for this route
+		let initializedByRouter = false;
+		const fn = function (req, res, next) {
+			if (!initializedByRouter) {
+				const app = req.app,
+					server = app?.server;
+				if (app && server) {
+					callback({
+						app,
+						server,
+						on: server.on.bind(server),
+						use: app.use.bind(app),
+						options: {
+							mountpath: "/",
+						},
+					});
+				} else {
+					console.error(`\x1b[36m[~~hook~~]\x1b[0m \x1b[31m[ERROR]\x1b[0m Failed to hook into current server (most likely it is a connect server, and this only works on express)!`);
+				}
+				initializedByRouter = true;
+			}
+			next();
+		};
+		// when embedding inside the express application, we simulate
+		// an express application function which is being called back
+		// with the application and server information when mounted
 		Object.defineProperty(fn, "name", {
-			value: name || "hook",
+			value: name || "<anonymous_hook>",
 			writable: false,
 		});
 		Object.assign(fn, {
@@ -73,6 +99,9 @@ module.exports = function hook(name, callback, middleware) {
 			emit: (event, app) => {
 				// intercept the mount event to get access to the app
 				if (event === "mount") {
+					// store the position into which new custom middlewares should
+					// be placed into when using the "use" function of the callback
+					const middlewareIndex = app?._router?.stack?.length;
 					// intercept the listen call to get access to the server
 					const { listen } = app;
 					app.listen = function () {
@@ -90,6 +119,18 @@ module.exports = function hook(name, callback, middleware) {
 							app: this,
 							server,
 							on: server.on.bind(server),
+							use: function use() {
+								app.use.apply(app, arguments);
+								// move the middleware function just after the mounted
+								// express app in the middleware stack to ensure proper
+								// order and execution in the middleware chain!
+								if (middlewareIndex != null && middlewareIndex !== -1) {
+									const middlewareStack = app?._router?.stack;
+									const cmw = middlewareStack.pop();
+									middlewareStack.splice(middlewareIndex, 0, cmw);
+								}
+								return app;
+							},
 							options,
 						});
 						return server;

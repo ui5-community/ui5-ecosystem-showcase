@@ -1,4 +1,4 @@
-const hook = require("./hook");
+const hook = require("ui5-utils-express/lib/hook");
 const expressws = require("./expressws");
 
 /**

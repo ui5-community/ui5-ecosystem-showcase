@@ -1,4 +1,4 @@
-const hook = require("ui5-middleware-websocket/lib/hook");
+const hook = require("ui5-utils-express/lib/hook");
 const findUI5Modules = require("./findUI5Modules");
 const applyUI5Middleware = require("./applyUI5Middleware");
 const createPatchedRouter = require("./createPatchedRouter");
