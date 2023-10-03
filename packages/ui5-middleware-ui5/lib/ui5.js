@@ -33,7 +33,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	} else {
 		return hook(
 			"ui5-middleware-ui5",
-			async ({ app }) => {
+			async ({ use }) => {
 				const ui5Modules = await findUI5Modules({
 					cwd,
 					log,
@@ -52,7 +52,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 						basePath: modulePath,
 						...(options || {}),
 					});
-					app.use(mountPath, router);
+					use(mountPath, router);
 				}
 			},
 			function (req, res, next) {

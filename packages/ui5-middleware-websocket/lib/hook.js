@@ -66,14 +66,13 @@ module.exports = function hook(name, callback, middleware) {
 						app,
 						server,
 						on: server.on.bind(server),
+						use: app.use.bind(app),
 						options: {
 							mountpath: "/",
 						},
 					});
 				} else {
-					console.error(
-						`\x1b[36m[ui5-middleware-websocket]\x1b[0m \x1b[31m[ERROR]\x1b[0m Failed to install websocket support on current server (most likely it is a connect server, and this only works on express)!`
-					);
+					console.error(`\x1b[36m[~~hook~~]\x1b[0m \x1b[31m[ERROR]\x1b[0m Failed to hook into current server (most likely it is a connect server, and this only works on express)!`);
 				}
 				initializedByRouter = true;
 			}
@@ -100,6 +99,9 @@ module.exports = function hook(name, callback, middleware) {
 			emit: (event, app) => {
 				// intercept the mount event to get access to the app
 				if (event === "mount") {
+					// store the position into which new custom middlewares should
+					// be placed into when using the "use" function of the callback
+					const middlewareIndex = app?._router?.stack?.length;
 					// intercept the listen call to get access to the server
 					const { listen } = app;
 					app.listen = function () {
@@ -117,6 +119,18 @@ module.exports = function hook(name, callback, middleware) {
 							app: this,
 							server,
 							on: server.on.bind(server),
+							use: function use() {
+								app.use.apply(app, arguments);
+								// move the middleware function just after the mounted
+								// express app in the middleware stack to ensure proper
+								// order and execution in the middleware chain!
+								if (middlewareIndex != null && middlewareIndex !== -1) {
+									const middlewareStack = app?._router?.stack;
+									const cmw = middlewareStack.pop();
+									middlewareStack.splice(middlewareIndex, 0, cmw);
+								}
+								return app;
+							},
 							options,
 						});
 						return server;
