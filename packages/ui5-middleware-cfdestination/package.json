@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-cfdestination",
-  "version": "3.3.5",
+  "version": "3.3.6",
   "description": "UI5 middleware for CF destinations",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
@@ -40,7 +40,7 @@
     "nock": "^13.3.3",
     "replace-in-file": "^7.0.1",
     "supertest": "^6.3.3",
-    "wait-on": "^7.0.1",
-    "ui5-middleware-websocket": "workspace:^"
+    "ui5-middleware-websocket": "workspace:^",
+    "wait-on": "^7.0.1"
   }
 }

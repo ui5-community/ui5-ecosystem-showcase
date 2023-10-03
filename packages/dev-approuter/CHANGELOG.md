@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.22...dev-approuter@0.2.0) (2023-10-03)
+
+
+### Features
+
+* **ui5-middleware-cap:** wrap @sap/cds/bin/serve command ([#869](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/869)) ([541e6e6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/541e6e6d8f877e4bf4e472bc576e7e33224f0e03))
+
+
+
+
+
 ## [0.1.22](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.1.21...dev-approuter@0.1.22) (2023-10-02)
 
 **Note:** Version bump only for package dev-approuter

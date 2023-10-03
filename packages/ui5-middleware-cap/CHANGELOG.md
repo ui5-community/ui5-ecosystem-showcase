@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cap@3.1.5...ui5-middleware-cap@3.2.0) (2023-10-03)
+
+
+### Features
+
+* **ui5-middleware-cap:** wrap @sap/cds/bin/serve command ([#869](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/869)) ([541e6e6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/541e6e6d8f877e4bf4e472bc576e7e33224f0e03))
+
+
+
+
+
 ## [3.1.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cap@3.1.4...ui5-middleware-cap@3.1.5) (2023-09-15)
 
 
