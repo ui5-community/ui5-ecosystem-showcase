@@ -37,6 +37,12 @@ That's it!
 
 - `moduleId`: `<string>`
 If specified, the CDS server will be loaded from the NPM package with the given moduleId (package name). If not provided, the middleware will lookup the CDS server from the project `dependencies` or `devDependencies`.
+- `options`: `<object>` (default: `{ "with-mocks": true, "in-memory?": true }` )
+Allows to provide some CLI options for the `cds serve` command which is called internally to create the middleware functions and embed them into the UI5 development server:
+  - `with-mocks`: `<boolean>`
+    It starts in-process mock services for all required services configured in package.json#cds.requires, which don't have external bindings in the current process environment.
+  - `in-memory[?]`: `<boolean>`
+    Automatically adds a transient in-memory database bootstrapped on each (re-)start in the same way cds deploy would do, based on defaults or configuration in package.json#cds.requires.db. Add a question mark to apply a more defensive variant which respects the configured database, if any, and only adds an in-memory database if no persistent one is configured.
 
 ## Support
 

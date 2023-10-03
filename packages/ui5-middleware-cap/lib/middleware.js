@@ -5,6 +5,8 @@ const { Router } = require("express");
 const findCDSModules = require("./findCDSModules");
 const applyCDSMiddleware = require("./applyCDSMiddleware");
 
+const hook = require("ui5-utils-express/lib/hook");
+
 /**
  * Custom UI5 Server middleware for CDS
  *
@@ -52,16 +54,27 @@ module.exports = async ({ log, options }) => {
 
 		// only run if the server root was found!
 		if (cdsModule) {
-			// create the Router for the CDS server
-			const router = new Router();
+			return hook("ui5-middleware-cap", async ({ server, use, options }) => {
+				// create the Router for the CDS server
+				const router = new Router();
+				router.listen =
+					router.listen ||
+					function listen() {
+						return server;
+					};
 
-			// setup the CDS server
-			await applyCDSMiddleware(router, {
-				root: cdsModule.modulePath,
+				// setup the CDS server
+				await applyCDSMiddleware(router, {
+					root: cdsModule.modulePath,
+					options: config.options,
+				});
+
+				// mount the Router with the CDS middlewares
+				use(options.mountpath, router);
+
+				// attach the router to the UI5 server
+				return router;
 			});
-
-			// attach the router to the UI5 server
-			return router;
 		}
 	}
 

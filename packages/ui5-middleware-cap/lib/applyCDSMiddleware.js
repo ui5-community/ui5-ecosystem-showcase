@@ -1,6 +1,3 @@
-const path = require("path");
-const fs = require("fs");
-
 /**
  * @typedef CDSServerInfo
  * @type {object}
@@ -9,77 +6,61 @@ const fs = require("fs");
 
 // inspired by https://cap.cloud.sap/docs/node.js/cds-serve
 /**
- * Applies the middlewares for the CAP server located in the given
- * root directory to the given router.
+ * Applies the middlewares for the CDS server located in the given
+ * root directory to the given router (or express application - but
+ * keep in mind that the CDS serve calls app.listen!).
  * @param {import("express").Router} router Express Router instance
- * @param {object} options configuration options
- * @param {string} options.root root directory of the CAP server
- * @returns {CDSServerInfo} CAP server information
+ * @param {object} params parameters
+ * @param {string} params.root root directory of the CDS server
+ * @param {string} params.options options of the CDS server (overrules the default options)
+ * @param {string} params.headless flag whether the CDS server should run in headless mode (no welcome page!)
+ * @returns {CDSServerInfo} CDS server information
  */
-module.exports = async function applyCDSMiddleware(router, { root }) {
-	const options = Object.assign(
-		{
-			in_memory: true,
-			from: "*",
-			service: "all",
+module.exports = async function applyCDSMiddleware(
+	router,
+	{
+		root,
+		options = {
+			"in-memory?": true,
+			"with-mocks": true,
 		},
-		{
-			root,
-		}
+		headless = true,
+	}
+) {
+	// store the cwd to restore after the CDS server started
+	const cwd = process.cwd();
+
+	// require the CDS serve function (relative to the server root!)
+	const serve = require(require.resolve("@sap/cds/bin/serve", {
+		paths: [root],
+	}));
+
+	// start the CDS server
+	await serve(
+		[root],
+		Object.assign(
+			{},
+			options,
+			{
+				app: router,
+				project: root,
+				livereload: false,
+			},
+			headless
+				? {
+						static: false,
+						favicon: false,
+						index: false,
+				  }
+				: {}
+		)
 	);
 
-	// change dir for cds bootstrap
-	const cwd = process.cwd();
-	process.chdir(options.root);
-
-	// require the CAP server module (locally from the server root!)
+	// require the CDS server module (relative to the server root!)
 	const cdsModule = require.resolve("@sap/cds", {
-		paths: [options.root],
+		paths: [root],
 	});
 	const cds = require(cdsModule);
-
-	// rebuild the same logic as in @sap/cds/bin/server.js (based on v6.8.2):
-	//   * load custom server if exists (to attach hooks)
-	//   * find and register plugins (for extensions)
-	//   ==> ASK: helper to start the server with all configs
-	//let serverModuleId = "@sap/cds";
-	if (fs.existsSync(path.join(options.root, "server.js"))) {
-		require(path.join(options.root, "server.js"));
-	}
-
-	// inpired from @sap/cds/bin/serve.js (based on V7.2.0)
-	// Ensure loading plugins before calling cds.env!
-	await cds.plugins; // load the plugins
-	// dummy express API for Fiori preview
-	if (cds.plugins !== undefined) {
-		cds.app = cds.app || {
-			use: function () {},
-		};
-	}
-
-	cds.emit("bootstrap", router);
-
-	// load model from all sources
-	const csn = await cds.load(options.from || "*", options);
-	cds.model = cds.compile.for.nodejs(csn);
-	cds.emit("loaded", cds.model);
-
-	// bootstrap in-memory db
-	// eslint-disable-next-line jsdoc/require-jsdoc
-	async function _init(db) {
-		if (!options.in_memory || cds.requires.multitenancy) return db;
-		const fts = cds.requires.toggles && cds.resolve(cds.features.folders);
-		const m = !fts ? csn : await cds.load([options.from || "*", ...fts], options).then(cds.minify);
-		return cds.deploy(m).to(db, options);
-	}
-
-	// connect to prominent required services
-	if (cds.requires.db) cds.db = await cds.connect.to("db").then(_init);
-	if (cds.requires.messaging) await cds.connect.to("messaging");
-
-	// serve own services as declared in model
-	await cds.serve(options).from(csn).in(router);
-	await cds.emit("served", cds.services);
 
 	// extract the "odata-v4" service paths from cds services
 	const servicesPaths = [];
@@ -90,6 +71,6 @@ module.exports = async function applyCDSMiddleware(router, { root }) {
 	// change dir back (only needed temporary for cds bootstrap)
 	process.chdir(cwd);
 
-	// return the CAP server information
+	// return the CDS server information
 	return { servicesPaths };
 };
