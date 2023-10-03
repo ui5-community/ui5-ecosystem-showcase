@@ -3,7 +3,7 @@ const path = require("path")
 
 const approuter = require("@sap/approuter")()
 
-const hook = require("ui5-middleware-websocket/lib/hook")
+const hook = require("ui5-utils-express/lib/hook")
 const { createProxyMiddleware, responseInterceptor } = require("http-proxy-middleware")
 const ct = require("content-type")
 const mime = require("mime-types")

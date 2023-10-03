@@ -27,7 +27,7 @@
     "https-proxy-agent": "^7.0.2",
     "minimatch": "^7.4.6",
     "proxy-from-env": "^1.1.0",
-    "ui5-middleware-websocket": "workspace:^"
+    "ui5-utils-express": "workspace:^"
   },
   "devDependencies": {
     "@ui5/project": "^3.7.0",

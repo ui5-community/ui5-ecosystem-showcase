@@ -13,7 +13,7 @@
  * @property {boolean|yo<confirm>} [debug] see output
  */
 
-const hook = require("ui5-middleware-websocket/lib/hook");
+const hook = require("ui5-utils-express/lib/hook");
 const { createProxyMiddleware, responseInterceptor } = require("http-proxy-middleware");
 
 const minimatch = require("minimatch");

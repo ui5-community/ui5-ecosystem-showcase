@@ -10,6 +10,7 @@
     "directory": "packages/ui5-middleware-websocket"
   },
   "dependencies": {
+    "ui5-utils-express": "workspace:^",
     "ws": "^8.14.2"
   },
   "scripts": {

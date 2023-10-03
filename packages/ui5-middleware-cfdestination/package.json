@@ -28,7 +28,7 @@
     "http-proxy-middleware": "^2.0.6",
     "mime-types": "^2.1.35",
     "portfinder": "^1.0.32",
-    "ui5-middleware-websocket": "workspace:^"
+    "ui5-utils-express": "workspace:^"
   },
   "devDependencies": {
     "@ui5/cli": "^3.6.0",
@@ -40,6 +40,7 @@
     "nock": "^13.3.3",
     "replace-in-file": "^7.0.1",
     "supertest": "^6.3.3",
-    "wait-on": "^7.0.1"
+    "wait-on": "^7.0.1",
+    "ui5-middleware-websocket": "workspace:^"
   }
 }
