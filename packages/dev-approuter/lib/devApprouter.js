@@ -58,9 +58,19 @@ class DevApprouter {
 		}
 
 		// find all UI5 modules from the CDS server root and dependencies from the approuter
-		const ui5Modules = [...(await findUI5Modules({ cwd, skipLocalApps: true }))];
+		const ui5Modules = [];
+		let ui5ModulesConfig = {};
+		const approuterUI5Modules = await findUI5Modules({ cwd, skipLocalApps: true });
+		ui5Modules.push(...(approuterUI5Modules || []));
+		const { config: approuterUI5ModulesConfig } = approuterUI5Modules;
+		ui5ModulesConfig = Object.assign(ui5ModulesConfig, approuterUI5ModulesConfig);
+		//const ui5Modules = [...(await findUI5Modules({ cwd, skipLocalApps: true }))];
 		if (cdsServerConfig) {
-			ui5Modules.push(...(await findUI5Modules({ cwd: cdsServerConfig.modulePath, skipDeps: true })));
+			const cdsUI5Modules = await findUI5Modules({ cwd: cdsServerConfig.modulePath, skipLocalApps: true });
+			ui5Modules.push(...(cdsUI5Modules || []));
+			const { config: cdsUI5ModulesConfig } = cdsUI5Modules;
+			ui5ModulesConfig = Object.assign(ui5ModulesConfig, cdsUI5ModulesConfig);
+			//ui5Modules.push(...(await findUI5Modules({ cwd: cdsServerConfig.modulePath, skipDeps: true })));
 		}
 
 		// collect UI5 middlewares
@@ -75,6 +85,7 @@ class DevApprouter {
 			await applyUI5Middleware(router, {
 				cwd,
 				basePath: modulePath,
+				...(ui5ModulesConfig[moduleId] || {}),
 			});
 
 			// mounting the router for the UI5 application to the CDS server
