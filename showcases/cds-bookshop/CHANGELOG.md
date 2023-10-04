@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.15](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-bookshop@0.2.14...cds-bookshop@0.2.15) (2023-10-04)
+
+
+### Bug Fixes
+
+* **dev-approuter:** consider the UI5 middleware config ([#872](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/872)) ([e724aee](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e724aeeee9bbb66d3ee2070474f63f7f4ea57299))
+
+
+
+
+
 ## [0.2.14](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-bookshop@0.2.13...cds-bookshop@0.2.14) (2023-10-02)
 
 **Note:** Version bump only for package cds-bookshop
