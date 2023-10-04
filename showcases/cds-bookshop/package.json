@@ -48,6 +48,10 @@
         "ui5-bookshop": {
           "configFile": "ui5.yaml",
           "_workspaceConfigFile": "ui5-workspace-test.yaml"
+        },
+        "cds-bookshop-ui5-viewer": {
+          "configFile": "ui5.yaml",
+          "_workspaceConfigFile": "ui5-workspace-test.yaml"
         }
       }
     }
