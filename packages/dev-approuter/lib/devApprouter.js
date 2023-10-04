@@ -66,7 +66,7 @@ class DevApprouter {
 		ui5ModulesConfig = Object.assign(ui5ModulesConfig, approuterUI5ModulesConfig);
 		//const ui5Modules = [...(await findUI5Modules({ cwd, skipLocalApps: true }))];
 		if (cdsServerConfig) {
-			const cdsUI5Modules = await findUI5Modules({ cwd: cdsServerConfig.modulePath, skipLocalApps: true });
+			const cdsUI5Modules = await findUI5Modules({ cwd: cdsServerConfig.modulePath, skipDeps: true });
 			ui5Modules.push(...(cdsUI5Modules || []));
 			const { config: cdsUI5ModulesConfig } = cdsUI5Modules;
 			ui5ModulesConfig = Object.assign(ui5ModulesConfig, cdsUI5ModulesConfig);
