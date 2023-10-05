@@ -30,7 +30,12 @@ const minimatch = require("minimatch");
  */
 module.exports = async function ({ log, workspace, taskUtil, options }) {
 	const cwd = taskUtil.getProject().getRootPath() || process.cwd();
-	const { getResource, resolveModule, listResources } = require("./util")(log, cwd);
+	const depPaths = taskUtil
+		.getDependencies()
+		.map((dep) => taskUtil.getProject(dep))
+		.filter((prj) => !prj.isFrameworkProject())
+		.map((prj) => prj.getRootPath());
+	const { getResource, resolveModule, listResources } = require("./util")(log);
 
 	const config = options.configuration || {};
 	const removeScopePrefix = config?.removeScopePrefix || config?.removeScopePreceder;
@@ -75,7 +80,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	// eslint-disable-next-line jsdoc/require-jsdoc
 	/* TODO: keep functionality commented till needed!
 	function addUniqueNPMPackage(npmPackageName) {
-		if (!uniqueNPMPackages.has(npmPackageName) && npmPackageName && !npmPackageName.startsWith(".") && resolveModule(`${npmPackageName}/package.json`)) {
+		if (!uniqueNPMPackages.has(npmPackageName) && npmPackageName && !npmPackageName.startsWith(".") && resolveModule(`${npmPackageName}/package.json`, { cwd, depPaths })) {
 			uniqueNPMPackages.add(npmPackageName);
 		}
 	}
@@ -176,7 +181,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 								// should also be checked for its dependencies to finally handle them
 								// here if they also require to be transpiled by the task
 								try {
-									const depPath = resolveModule(dep);
+									const depPath = resolveModule(dep, { cwd, depPaths });
 									if (existsSync(depPath)) {
 										const depContent = readFileSync(depPath, { encoding: "utf8" });
 										findUniqueJSDeps(depContent, depPath);
@@ -292,7 +297,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 											// should also be checked for its dependencies to finally handle them
 											// here if they also require to be transpiled by the task
 											try {
-												const depPath = resolveModule(dep);
+												const depPath = resolveModule(dep, { cwd, depPaths });
 												if (existsSync(depPath)) {
 													const depContent = readFileSync(depPath, { encoding: "utf8" });
 													findUniqueJSDeps(depContent, depPath);
@@ -398,7 +403,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				if (!ignore || Array.isArray(ignore)) {
 					log.verbose(`Including assets for dependency: ${npmPackageName}`);
 					try {
-						const assets = listResources(npmPackageName, ignore, cwd);
+						const assets = listResources(npmPackageName, { cwd, depPaths, ignore });
 						if (log.isLevelEnabled("verbose")) {
 							assets.forEach((asset) => log.verbose(`  - ${asset}`));
 						}
@@ -422,7 +427,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	await Promise.all(
 		Array.from(uniqueDeps).map(async (dep) => {
 			log.verbose(`Trying to process dependency: ${dep}`);
-			const bundle = await getResource(dep, config, skipTransform);
+			const bundle = await getResource(dep, config, { cwd, depPaths, skipTransform });
 			if (bundle) {
 				config.debug && log.info(`Processing dependency: ${dep}`);
 				const bundleResource = resourceFactory.createResource({
@@ -452,7 +457,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	await Promise.all(
 		Array.from(uniqueResources).map(async (resourceName) => {
 			log.verbose(`Trying to process resource: ${resourceName}`);
-			const resource = await getResource(resourceName, config, true);
+			const resource = await getResource(resourceName, config, { cwd, depPaths, skipTransform: true });
 			if (resource) {
 				config.debug && log.info(`Processing resource: ${resourceName}`);
 				const newResource = resourceFactory.createResource({
