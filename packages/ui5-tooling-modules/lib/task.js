@@ -398,7 +398,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				if (!ignore || Array.isArray(ignore)) {
 					log.verbose(`Including assets for dependency: ${npmPackageName}`);
 					try {
-						const assets = listResources(npmPackageName, ignore);
+						const assets = listResources(npmPackageName, ignore, cwd);
 						if (log.isLevelEnabled("verbose")) {
 							assets.forEach((asset) => log.verbose(`  - ${asset}`));
 						}
