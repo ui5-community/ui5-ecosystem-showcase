@@ -296,7 +296,10 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 			const referrer =
 				req.headers.referrer ||
 				req.headers.referer ||
-				`${req.headers["x-forwarded-proto"]}://${req.headers["x-forwarded-host"]}${req.baseUrl}`
+				// the x-forwarded-proto header can contain multiple values: https,http (we select always the first one or fallback to https)
+				`${(req.headers["x-forwarded-proto"] || "https").split(",")[0]}://${req.headers["x-forwarded-host"]}${
+					req.baseUrl
+				}`
 			const referrerUrl = new URL(route.path, referrer).toString()
 			data = data.replaceAll(route.url, referrerUrl)
 			// in some cases, the odata servers respond http instead of https in the content
