@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.0.10...ui5-tooling-modules@3.1.0) (2023-10-05)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** listResources requires cwd ([#876](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/876)) ([0c94495](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0c94495221215aa91742c07e9a78cfdd847acd96))
+
+
+### Features
+
+* **ui5-middleware-cap:** wrap @sap/cds/bin/serve command ([#869](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/869)) ([541e6e6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/541e6e6d8f877e4bf4e472bc576e7e33224f0e03))
+
+
+
+
+
 ## [3.0.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.0.9...ui5-tooling-modules@3.0.10) (2023-10-02)
 
 **Note:** Version bump only for package ui5-tooling-modules
