@@ -16,6 +16,11 @@ const path = require("path");
  */
 module.exports = function ({ log, options, middlewareUtil }) {
 	const cwd = middlewareUtil.getProject().getRootPath() || process.cwd();
+	const depPaths = middlewareUtil
+		.getDependencies()
+		.map((dep) => middlewareUtil.getProject(dep))
+		.filter((prj) => !prj.isFrameworkProject())
+		.map((prj) => prj.getRootPath());
 	const { getResource } = require("./util")(log);
 
 	const config = options.configuration || {};
@@ -61,7 +66,7 @@ module.exports = function ({ log, options, middlewareUtil }) {
 			}
 
 			// try to resolve the resource from node_modules
-			const resource = await getResource(moduleName, config, { cwd, skipTransform });
+			const resource = await getResource(moduleName, config, { cwd, depPaths, skipTransform });
 			if (resource) {
 				try {
 					log.verbose(`Processing resource ${moduleName}...`);
