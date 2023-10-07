@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.3.8...ui5-middleware-cfdestination@3.3.9) (2023-10-07)
+
+
+### Bug Fixes
+
+* **ui5-middleware-cfdestination:** fix x-forwarded-proto multi protocol issue ([#878](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/878)) ([d25e2eb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d25e2eb5748aa835cce415561f1d690962994c2e))
+
+
+
+
+
 ## [3.3.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.3.7...ui5-middleware-cfdestination@3.3.8) (2023-10-05)
 
 
