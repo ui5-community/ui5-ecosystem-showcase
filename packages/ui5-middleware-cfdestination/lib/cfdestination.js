@@ -49,7 +49,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		allowLocalDir: false,
 		subdomain: null,
 		rewriteContent: true,
-		rewriteContentTypes: ["application/json", "application/atom+xml", "application/xml"],
+		rewriteContentTypes: ["text/html", "application/json", "application/atom+xml", "application/xml"],
 		appendAuthRoute: false,
 		disableWelcomeFile: false,
 		enableWebSocket: false,
@@ -288,6 +288,8 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		const route = routes.find((route) => route.re.test(url))
 		if (
 			route &&
+			route.path &&
+			route.url &&
 			effectiveOptions.rewriteContent &&
 			effectiveOptions.rewriteContentTypes.indexOf(type?.toLowerCase()) >= 0
 		) {
@@ -321,6 +323,12 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		autoRewrite: true, // rewrites the location host/port on (301/302/307/308) redirects based on requested host/port
 		xfwd: true, // adds x-forward headers
 		onProxyReq: (proxyReq, req, res) => {
+			// sanitize the x-forwarded-proto header as it may include an invalid protocol: "https,http"
+			if (req.headers["x-forwarded-proto"]?.indexOf(",") !== -1) {
+				const proto = (req.headers["x-forwarded-proto"] || "https").split(",")[0]
+				req.header["x-forwarded-proto"] = proto
+				proxyReq.setHeader("x-forwarded-proto", proto)
+			}
 			// if the ui5-middleware-index is used and redirects the welcome file
 			// we need to send a redirect to trigger the auth-flow of the approuter
 			if (req["ui5-middleware-index"]?.url === "/") {

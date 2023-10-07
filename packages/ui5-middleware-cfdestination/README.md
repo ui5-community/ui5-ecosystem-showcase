@@ -54,7 +54,7 @@ allow static assets to be picked up by the included `approuter`; defaults to `fa
 - `rewriteContent`: `<boolean>`, default: `true`  
 enables/disables rewriting of the content by replacing the proxied url in the response body with the server url
 
-- `rewriteContentTypes`: `<string[]>`, default: `["application/json", "application/atom+xml", "application/xml"]`  
+- `rewriteContentTypes`: `<string[]>`, default: `["text/html", "application/json", "application/atom+xml", "application/xml"]`  
 defines the content types which are included for rewriting the content by enabling the `rewriteContent` option
 
 - `extensions`: `<string[]>`, default: `[]` - a list of extensions to be required and injected into the local approuter instance
