@@ -4,6 +4,7 @@
   "description": "UI5 tooling middleware embedding the CDS server middlewares (CAP)",
   "author": "Peter Muessig",
   "license": "Apache-2.0",
+  "homepage": "https://github.com/ui5-community/ui5-ecosystem-showcase/tree/main/packages/ui5-middleware-cap#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",

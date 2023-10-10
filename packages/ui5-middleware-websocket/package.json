@@ -4,6 +4,7 @@
   "description": "UI5 middleware utilities to enable WebSockets for Express servers like the UI5 server",
   "author": "Peter Muessig",
   "license": "Apache-2.0",
+  "homepage": "https://github.com/ui5-community/ui5-ecosystem-showcase/tree/main/packages/ui5-middleware-websocket#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",

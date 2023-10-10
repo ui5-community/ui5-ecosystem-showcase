@@ -4,6 +4,7 @@
   "description": "UI5 tooling extensions to load and convert node modules as UI5 AMD-like modules",
   "author": "Peter Muessig",
   "license": "Apache-2.0",
+  "homepage": "https://github.com/ui5-community/ui5-ecosystem-showcase/tree/main/packages/ui5-tooling-modules#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
