@@ -5,9 +5,10 @@
   "author": "Jakob Kjaer",
   "main": "lib/index.js",
   "license": "Apache-2.0",
-  "scripts": {
-    "lint": "eslint src",
-    "test:onelogin": "npx playwright test"
+  "homepage": "https://github.com/ui5-community/ui5-ecosystem-showcase/tree/main/packages/ui5-middleware-onelogin#readme",
+  "repository": {
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
+    "directory": "packages/ui5-middleware-onelogin"
   },
   "keywords": [
     "UI5-tooling",
@@ -15,9 +16,9 @@
     "OPENUI5",
     "Fiori"
   ],
-  "repository": {
-    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
-    "directory": "packages/ui5-middleware-onelogin"
+  "scripts": {
+    "lint": "eslint src",
+    "test:onelogin": "npx playwright test"
   },
   "dependencies": {
     "async-prompt": "^1.0.1",

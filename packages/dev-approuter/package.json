@@ -4,6 +4,7 @@
   "description": "A dev time wrapper for the SAP Application Router that can serve UI5 and CDS modules added as dependencies.",
   "author": "Nico Schoenteich <nicolai.schoenteich@sap.com> (https://github.com/nicoschoenteich)",
   "license": "Apache-2.0",
+  "homepage": "https://github.com/ui5-community/ui5-ecosystem-showcase/tree/main/packages/dev-approuter#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",

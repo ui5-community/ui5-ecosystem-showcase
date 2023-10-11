@@ -4,6 +4,7 @@
   "description": "UI5 middleware for live compiling less files",
   "author": "Sebastian Mahr, Marcel Schork",
   "license": "Apache-2.0",
+  "homepage": "https://github.com/ui5-community/ui5-ecosystem-showcase/tree/main/packages/ui5-middleware-livecompileless#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",

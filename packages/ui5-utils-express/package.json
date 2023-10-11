@@ -4,10 +4,11 @@
   "description": "Utilities for the express web framework (web server)",
   "author": "Peter Muessig",
   "license": "Apache-2.0",
+  "homepage": "https://github.com/ui5-community/ui5-ecosystem-showcase/tree/main/packages/ui5-utils-express#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
-    "directory": "packages/ui5-util-express"
+    "directory": "packages/ui5-utils-express"
   },
   "scripts": {
     "lint": "eslint lib"
