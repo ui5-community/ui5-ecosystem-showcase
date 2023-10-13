@@ -18,3 +18,5 @@
 # config files
 .eslintrc.js
 karma*.conf.js
+
+docs/**

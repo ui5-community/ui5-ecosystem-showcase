@@ -2,6 +2,8 @@
 // intellisense for config options
 import { defineConfig } from "vitepress";
 import { join } from "node:path";
+import fs from "fs";
+import path from "path";
 
 import externalMarkdown, { ExternalMarkdownData } from "./theme/loaders/externalMarkdown";
 
@@ -52,7 +54,7 @@ export default defineConfig({
 		sidebar: [
 			{
 				text: "Packages",
-				items: [{ text: "ui5-middleware-ui5", link: "/ui5-middleware-ui5" }],
+				items: generateSidebar(),
 			},
 		],
 
@@ -172,3 +174,25 @@ export default defineConfig({
 	//   ]
 	// }
 });
+
+function generateSidebar(filepath?: string) {
+	const directoryPath = path.join(__dirname, "../src/packages");
+	const files = fs.readdirSync(directoryPath);
+	return files.map((file) => {
+		const filePath = path.join(directoryPath, file);
+		const isDirectory = fs.statSync(filePath).isDirectory();
+		if (isDirectory) {
+			// if it's a directory, recurse and get sub-items
+			return {
+				text: file,
+				items: generateSidebar(filePath),
+			};
+		} else {
+			// if it's a file, just return a link to the file
+			return {
+				text: file.replace(/\.md$/, ""),
+				link: `/packages/${file}`,
+			};
+		}
+	});
+}
