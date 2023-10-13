@@ -31,6 +31,8 @@
     "dev-cds": "pnpm --filter cds-bookshop watch",
     "dev-bookshop": "pnpm --filter ui5-bookshop-viewer dev",
     "dev-approuter": "pnpm --filter approuter dev",
+    "docs:dev": "pnpm --filter docs docs:dev",
+    "docs:build": "pnpm --filter docs docs:build",
     "start": "pnpm --filter ui5-app start",
     "start:ts": "pnpm --filter ui5-tsapp start",
     "start-cdn": "pnpm --filter ui5-app start-cdn",

@@ -19,6 +19,7 @@ export default defineConfig({
 	cleanUrls: false,
 	srcDir: "src",
 	outDir: "site",
+	base: "/ui5-ecosystem-showcase/",
 	// ignoreDeadLinks: [
 	//   // ignore all localhost links
 	//   /^https?:\/\/localhost/,
@@ -181,18 +182,10 @@ function generateSidebar(filepath?: string) {
 	return files.map((file) => {
 		const filePath = path.join(directoryPath, file);
 		const isDirectory = fs.statSync(filePath).isDirectory();
-		if (isDirectory) {
-			// if it's a directory, recurse and get sub-items
-			return {
-				text: file,
-				items: generateSidebar(filePath),
-			};
-		} else {
-			// if it's a file, just return a link to the file
-			return {
-				text: file.replace(/\.md$/, ""),
-				link: `/packages/${file}`,
-			};
-		}
+		// if it's a file, just return a link to the file
+		return {
+			text: file.replace(/\.md$/, ""),
+			link: `/packages/${file}`,
+		};
 	});
 }
