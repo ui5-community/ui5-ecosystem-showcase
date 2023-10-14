@@ -1,16 +1,9 @@
 /* eslint-disable no-undef */
-const { createReplacePlaceholdersDestination, addPlaceholderString, getMimeInfo, readPlaceholderFromEnv, isPathOnContentTypeExcludeList } = require("./util");
+const { createReplacePlaceholdersDestination, addPlaceholderString, readPlaceholderFromEnv, isPathOnContentTypeExcludeList } = require("./util");
 
+const { Readable } = require("stream");
 const minimatch = require("minimatch");
-const etag = require("etag");
-const fresh = require("fresh");
-
-// eslint-disable-next-line jsdoc/require-jsdoc
-function isFresh(req, res) {
-	return fresh(req.headers, {
-		etag: res.getHeader("ETag"),
-	});
-}
+const intercept = require("ui5-utils-express/lib/intercept");
 
 /**
  * Custom UI5 Server middleware example
@@ -24,11 +17,13 @@ function isFresh(req, res) {
  *                                        the project the server is started in
  * @param {module:@ui5/fs.AbstractReader} parameters.resources.dependencies Reader or Collection to read resources of
  *                                        the projects dependencies
+ * @param {module:@ui5/server.middleware.MiddlewareUtil} parameters.middlewareUtil Specification version dependent
+ *                                                       interface to a MiddlewareUtil instance
  * @param {object} parameters.options Options
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @returns {Function} Middleware function to use
  */
-module.exports = function createMiddleware({ log, resources, options }) {
+module.exports = function createMiddleware({ log, resources, options, middlewareUtil }) {
 	const isDebug = options.configuration && options.configuration.debug;
 
 	// get all environment variables
@@ -59,68 +54,53 @@ module.exports = function createMiddleware({ log, resources, options }) {
 
 	// helper to determine whether to handle the request or not
 	// eslint-disable-next-line jsdoc/require-jsdoc
+	function getPathname(req) {
+		return req.url?.match("^[^?]*")[0];
+	}
+	// eslint-disable-next-line jsdoc/require-jsdoc
 	function handleRequest(path) {
 		return filesToInclude.some((value) => {
 			return minimatch(path, value);
 		});
 	}
 
-	// returns the middleware function
-	return async function stringreplace(req, res, next) {
-		if (!hasStringsToReplace) {
-			// Nothing to do
-			next();
-			return;
-		}
-
-		const pathname = req.url?.match("^[^?]*")[0];
-		const resource = await resources.all.byPath(pathname);
-		if (!resource) {
-			// Resource not found
-			next();
-			return;
-		}
-
-		// never replace strings in these mime types
-		if (isPathOnContentTypeExcludeList(resource.getPath())) {
-			next();
-			return;
-		}
-
-		if (handleRequest(pathname)) {
-			//isDebug && log.info(`handling ${pathname}`);
-
-			// enable ETag caching
-			res.setHeader("ETag", etag(resource.getStatInfo()));
-
-			if (isFresh(req, res)) {
-				// client has a fresh copy of the resource
-				res.statusCode = 304;
-				res.end();
-				return;
+	// returns the middleware function to intercept the response
+	return intercept(
+		"ui5-tooling-stringreplace-middleware",
+		async (req) => {
+			if (!hasStringsToReplace) {
+				return false;
 			}
 
-			// determine charset
-			const { charset, contentType } = getMimeInfo(resource.getPath());
-
-			if (!res.getHeader("Content-Type")) {
-				res.setHeader("Content-Type", contentType);
+			// only handle if a resource could be found
+			const pathname = getPathname(req);
+			const resource = await resources.all.byPath(pathname);
+			if (!resource) {
+				return false;
 			}
 
-			// stream replacement only works for UTF-8 resources!
-			let stream = resource.getStream();
-			if (!charset || charset === "UTF-8") {
-				stream.setEncoding("utf8");
-				stream = stream.pipe(createReplacePlaceholdersDestination(resource, isDebug, log));
-			} else {
-				isDebug && log.warn(`skipping placeholder replacement for non-UTF-8 resource ${pathname}`);
+			// ignore framework project dependencies
+			if (resource.getProject().isFrameworkProject()) {
+				return false;
 			}
-			stream.pipe(res);
 
-			return;
-		} else {
-			next();
-			return;
+			// never replace strings in these mime types
+			if (isPathOnContentTypeExcludeList(resource.getPath())) {
+				return false;
+			}
+
+			// finally check whether to handle the request or not
+			return handleRequest(pathname);
+		},
+		async (body, encoding, req) => {
+			// rewrite the content of the body using the streaming API
+			const buffer = Buffer.from(body, encoding);
+			const readable = Readable.from(buffer);
+			const newResource = middlewareUtil.resourceFactory.createResource({
+				path: getPathname(req),
+			});
+			newResource.setStream(readable.pipe(createReplacePlaceholdersDestination(newResource, isDebug, log)));
+			return await newResource.getString();
 		}
-	};
+	);
 };

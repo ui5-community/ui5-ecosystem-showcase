@@ -195,7 +195,7 @@ server:
         debug: true
         jarRootPath: "META-INF/"
     - name: ui5-tooling-transpile-middleware
-      afterMiddleware: compression
+      afterMiddleware: ui5-tooling-stringreplace-middleware
       configuration:
         <<: *cfgTranspile
     - name: ui5-tooling-modules-middleware
