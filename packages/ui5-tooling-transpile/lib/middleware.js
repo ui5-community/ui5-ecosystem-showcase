@@ -36,13 +36,25 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	const config = createConfiguration(options?.configuration || {}, cwd);
 	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: true }, cwd);
 
+	// in case of local development of framework dependencies, they are not listed as
+	// a framework dependency for the project and this should not be considered as
+	// a framework dependency for this middleware to run it regardless
+	const frameworkDependencies = (middlewareUtil.getProject().getFrameworkDependencies() || []).map((dep) => dep.name);
+	const localFrameworkDependencies = (middlewareUtil.getDependencies() || []).filter((dep) => {
+		return frameworkDependencies.indexOf(dep) === -1; // keep just the not found dependencies
+	});
+
+	// filter the readers for non framework dependencies only
+	const isFrameworkProject = function isFrameworkProject(project) {
+		return project?.isFrameworkProject() && localFrameworkDependencies?.indexOf(project.getName()) === -1;
+	};
 	const reader = config.transpileDependencies
 		? middlewareUtil.resourceFactory.createReaderCollection({
 				name: "Local resource collection",
 				readers: [
 					resources.rootProject,
 					...(resources.dependencies?._readers || []).filter((reader) => {
-						return !reader?._readers?.[0]?._project?.isFrameworkProject();
+						return !isFrameworkProject(reader?._readers?.[0]?._project);
 					})
 				]
 		  })

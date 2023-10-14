@@ -64,6 +64,19 @@ module.exports = function createMiddleware({ log, resources, options, middleware
 		});
 	}
 
+	// in case of local development of framework dependencies, they are not listed as
+	// a framework dependency for the project and this should not be considered as
+	// a framework dependency for this middleware to run it regardless
+	const frameworkDependencies = (middlewareUtil.getProject().getFrameworkDependencies() || []).map((dep) => dep.name);
+	const localFrameworkDependencies = (middlewareUtil.getDependencies() || []).filter((dep) => {
+		return frameworkDependencies.indexOf(dep) === -1; // keep just the not found dependencies
+	});
+
+	// filter the readers for non framework dependencies only
+	const isFrameworkProject = function isFrameworkProject(project) {
+		return project?.isFrameworkProject() && localFrameworkDependencies?.indexOf(project.getName()) === -1;
+	};
+
 	// returns the middleware function to intercept the response
 	return intercept(
 		"ui5-tooling-stringreplace-middleware",
@@ -80,9 +93,10 @@ module.exports = function createMiddleware({ log, resources, options, middleware
 			}
 
 			// ignore framework project dependencies
-			if (resource.getProject().isFrameworkProject()) {
+			if (isFrameworkProject(resource.getProject())) {
 				return false;
 			}
+			console.log(`${resource.getPath()} - ${isFrameworkProject(resource.getProject())}`);
 
 			// never replace strings in these mime types
 			if (isPathOnContentTypeExcludeList(resource.getPath())) {
