@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-stringreplace@3.0.1...ui5-tooling-stringreplace@3.1.0) (2023-10-14)
+
+
+### Bug Fixes
+
+* handle local framework dependencies in middleware ([#884](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/884)) ([fcab7da](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/fcab7dacf0a781812255768923f39da706c1f8e4))
+
+
+### Features
+
+* **ui5-tooling-stringreplace:** allow combination with other middlewares ([#883](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/883)) ([ad5f552](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ad5f552ded641e974675741380f8e6a106c4c172)), closes [#665](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/665)
+
+
+
+
+
 ## [3.0.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-stringreplace@3.0.0...ui5-tooling-stringreplace@3.0.1) (2023-09-07)
 
 

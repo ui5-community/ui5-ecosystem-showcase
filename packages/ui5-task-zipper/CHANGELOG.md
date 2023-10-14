@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@3.0.3...ui5-task-zipper@3.0.4) (2023-10-14)
+
+**Note:** Version bump only for package ui5-task-zipper
+
+
+
+
+
 ## [3.0.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@3.0.2...ui5-task-zipper@3.0.3) (2023-10-02)
 
 **Note:** Version bump only for package ui5-task-zipper
