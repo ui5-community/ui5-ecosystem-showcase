@@ -87,24 +87,23 @@ module.exports = function createMiddleware({ log, resources, options, middleware
 
 			// only handle if a resource could be found
 			const pathname = getPathname(req);
-			const resource = await resources.all.byPath(pathname);
-			if (!resource) {
-				return false;
-			}
-
-			// ignore framework project dependencies
-			if (isFrameworkProject(resource.getProject())) {
-				return false;
-			}
-			console.log(`${resource.getPath()} - ${isFrameworkProject(resource.getProject())}`);
 
 			// never replace strings in these mime types
-			if (isPathOnContentTypeExcludeList(resource.getPath())) {
+			if (isPathOnContentTypeExcludeList(pathname)) {
 				return false;
 			}
 
 			// finally check whether to handle the request or not
-			return handleRequest(pathname);
+			if (!handleRequest(pathname)) {
+				return false;
+			} else {
+				// ignore framework project dependencies (do this as the last check!)
+				const resource = await resources.all.byPath(pathname);
+				if (resource && isFrameworkProject(resource.getProject())) {
+					return false;
+				}
+			}
+			return true;
 		},
 		async (body, encoding, req) => {
 			// rewrite the content of the body using the streaming API
