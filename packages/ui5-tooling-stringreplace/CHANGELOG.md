@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-stringreplace@3.1.0...ui5-tooling-stringreplace@3.1.1) (2023-10-16)
+
+
+### Bug Fixes
+
+* **ui5-tooling-stringreplace:** do not ignore transpiled resources ([#885](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/885)) ([3dbbb8a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3dbbb8a702f0208487bc1062518d964d31c970a5))
+
+
+
+
+
 # [3.1.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-stringreplace@3.0.1...ui5-tooling-stringreplace@3.1.0) (2023-10-14)
 
 
