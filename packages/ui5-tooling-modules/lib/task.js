@@ -203,6 +203,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 		let changed = false;
 		try {
 			const program = espree.parse(content, { range: true, comment: true, tokens: true, ecmaVersion: "latest" });
+			const tokens = {};
 			estraverse.traverse(program, {
 				enter(node, parent) {
 					if (
@@ -215,7 +216,8 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 					) {
 						const elDep = node.arguments[0];
 						if (elDep?.type === "Literal" && (bundledResources.includes(elDep.value) || isAssetIncluded(elDep.value))) {
-							elDep.value = rewriteDep(elDep.value);
+							tokens[elDep.value] = rewriteDep(elDep.value);
+							elDep.value = tokens[elDep.value];
 							changed = true;
 						}
 					} else if (
@@ -229,7 +231,8 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 					) {
 						const elDep = node.arguments[0];
 						if (elDep?.type === "Literal" && bundledResources.includes(elDep.value)) {
-							elDep.value = rewriteDep(elDep.value);
+							tokens[elDep.value] = rewriteDep(elDep.value);
+							elDep.value = tokens[elDep.value];
 							changed = true;
 						}
 					} else if (
@@ -244,14 +247,25 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 							depsArray[0].elements
 								.filter((el) => el.type === "Literal" && bundledResources.includes(el.value))
 								.map((el) => {
-									el.value = rewriteDep(el.value);
+									tokens[el.value] = rewriteDep(el.value);
+									el.value = tokens[el.value];
 									changed = true;
 								});
 						}
 					}
 				},
 			});
-			changed = changed ? escodegen.generate(program) : content;
+			if (changed) {
+				// escodegen removes the sourcemap and changes the source code formatting
+				//changed = escodegen.generate(program, { sourcemap: true });
+				// therefore we use regex to keep source formatting and sourcmap entry!
+				changed = content;
+				Object.keys(tokens).forEach((token) => {
+					changed = changed.replace(new RegExp(`(\\([^)]*["'])${token}(["'][^)]*\\))`, "g"), `$1${tokens[token]}$2`);
+				});
+			} else {
+				changed = content;
+			}
 		} catch (err) {
 			log.error(`Failed to rewrite "${resourcePath}"! Ignoring resource... (maybe an ES module you included as asset by mistake?)`);
 			config.debug && log.error(err);
