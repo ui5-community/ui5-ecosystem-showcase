@@ -21,6 +21,33 @@ const log = require("./log");
  * @returns {Array<UI5Module>} array of UI5 module
  */
 module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps }) {
+	// extract the modules configuration from the package.json
+	const pkgJson = require(path.join(cwd, "package.json"));
+
+	// determine module configuration:
+	//   => env variable: CDS_PLUGIN_UI5_MODULES (JSONObject<string, object>)
+	//   => package.json: cds-plugin-ui5 > modules (JSONObject<string, object>)
+	// JSONObject<string, object>: key = moduleId (folder name, npm package name), object={ configFile: string, ... }
+	let modulesConfig;
+	try {
+		modulesConfig = JSON.parse(process.env.CDS_PLUGIN_UI5_MODULES);
+		log.info(`Using modules configuration from env`);
+	} catch (err) {
+		modulesConfig = pkgJson.cds?.["cds-plugin-ui5"]?.modules;
+	}
+	if (modulesConfig) {
+		log.debug(`Found modules configuration: ${JSON.stringify(modulesConfig, undefined, 2)}`);
+	}
+
+	// helper to determine the ui5.yaml for the dependency or directory
+	const determineUI5Yaml = function determineUI5Yaml(depOrDir) {
+		let module = depOrDir;
+		if (path.isAbsolute(depOrDir)) {
+			module = path.basename(depOrDir);
+		}
+		return modulesConfig?.[module]?.configFile || "ui5.yaml";
+	};
+
 	// lookup the app folder to determine local apps and UI5 apps
 	const localApps = new Set();
 	const appDirs = [];
@@ -28,7 +55,7 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 		const appDir = path.join(cwd, "app");
 		if (fs.existsSync(appDir)) {
 			// is the UI5 app directly in teh app directory?
-			if (!fs.existsSync(path.join(appDir, "ui5.yaml"))) {
+			if (!fs.existsSync(path.join(appDir, determineUI5Yaml(appDir)))) {
 				// lookup all dirs inside the root app directory for
 				// being either a local app or a UI5 application
 				fs.readdirSync(appDir, { withFileTypes: true })
@@ -36,7 +63,7 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 					.forEach((d) => localApps.add(d.name));
 				localApps.forEach((e) => {
 					const d = path.join(appDir, e);
-					if (fs.existsSync(path.join(d, "ui5.yaml"))) {
+					if (fs.existsSync(path.join(d, determineUI5Yaml(d)))) {
 						localApps.delete(e);
 						appDirs.push(d);
 					}
@@ -61,7 +88,6 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 	}
 
 	// lookup the UI5 modules in the project dependencies
-	const pkgJson = require(path.join(cwd, "package.json"));
 	if (!skipDeps) {
 		const deps = [];
 		deps.push(...Object.keys(pkgJson.dependencies || {}));
@@ -71,7 +97,7 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 		appDirs.push(
 			...deps.filter((dep) => {
 				try {
-					require.resolve(`${dep}/ui5.yaml`, {
+					require.resolve(path.join(dep, determineUI5Yaml(dep)), {
 						paths: [cwd],
 					});
 					return true;
@@ -82,21 +108,6 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 		);
 	}
 
-	// determine module configuration:
-	//   => env variable: CDS_PLUGIN_UI5_MODULES (JSONObject<string, object>)
-	//   => package.json: cds-plugin-ui5 > modules (JSONObject<string, object>)
-	// JSONObject<string, object>: key = moduleId (folder name, npm package name), object={ configFile: string, ... }
-	let modulesConfig;
-	try {
-		modulesConfig = JSON.parse(process.env.CDS_PLUGIN_UI5_MODULES);
-		log.info(`Using modules configuration from env`);
-	} catch (err) {
-		modulesConfig = pkgJson.cds?.["cds-plugin-ui5"]?.modules;
-	}
-	if (modulesConfig) {
-		log.debug(`Found modules configuration: ${JSON.stringify(modulesConfig, undefined, 2)}`);
-	}
-
 	// if apps are available, attach the middlewares of the UI5 apps
 	// to the express of the CDS server via a express router
 	const apps = [];
@@ -104,7 +115,7 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 	if (appDirs) {
 		for await (const appDir of appDirs) {
 			// read the ui5.yaml file to extract the configuration
-			const ui5YamlPath = require.resolve(path.join(appDir, "ui5.yaml"), {
+			const ui5YamlPath = require.resolve(path.join(appDir, determineUI5Yaml(appDir)), {
 				paths: [cwd],
 			});
 			let ui5Configs;

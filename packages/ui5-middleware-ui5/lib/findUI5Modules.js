@@ -32,7 +32,7 @@ module.exports = async function findUI5Modules({ cwd, config, log }) {
 	appDirs.push(
 		...deps.filter((dep) => {
 			try {
-				require.resolve(`${dep}/ui5.yaml`, {
+				require.resolve(path.join(dep, config?.modules?.[dep].configFile || "ui5.yaml"), {
 					paths: [cwd],
 				});
 				return true;
@@ -49,7 +49,7 @@ module.exports = async function findUI5Modules({ cwd, config, log }) {
 	if (appDirs) {
 		for await (const appDir of appDirs) {
 			// read the ui5.yaml file to extract the configuration
-			const ui5YamlPath = require.resolve(path.join(appDir, "ui5.yaml"), {
+			const ui5YamlPath = require.resolve(path.join(appDir, config?.modules?.[appDir].configFile || "ui5.yaml"), {
 				paths: [cwd],
 			});
 			let ui5Configs;
