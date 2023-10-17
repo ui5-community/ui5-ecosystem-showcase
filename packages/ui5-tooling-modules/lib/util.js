@@ -166,9 +166,10 @@ module.exports = function (log) {
 		 * @param {string[]} options.mainFields an order of main fields to check in package.json
 		 * @param {boolean} [options.beforePlugins] rollup plugins to be executed before
 		 * @param {boolean} [options.afterPlugins] rollup plugins to be executed after
+		 * @param {boolean} [options.isMiddleware] flag if the getResource is called by the middleware
 		 * @returns {string} the bundle
 		 */
-		createBundle: async function createBundle(moduleName, { cwd, depPaths, mainFields, beforePlugins, afterPlugins } = {}) {
+		createBundle: async function createBundle(moduleName, { cwd, depPaths, mainFields, beforePlugins, afterPlugins, isMiddleware } = {}) {
 			// create a bundle
 			const bundle = await rollup.rollup({
 				input: moduleName,
@@ -233,6 +234,7 @@ module.exports = function (log) {
 				},
 				entryFileNames: `${moduleName}.js`,
 				chunkFileNames: `${moduleName}-[hash].js`,
+				sourcemap: false, // isMiddleware ? "inline" : true
 			});
 
 			return output;
@@ -253,9 +255,10 @@ module.exports = function (log) {
 		 * @param {string} [options.cwd] current working directory
 		 * @param {string[]} [options.depPaths] paths of the dependencies (in addition for cwd)
 		 * @param {boolean|string[]} [options.skipTransform] flag or array of globs to verify whether the module transformation should be skipped
+		 * @param {boolean} [options.isMiddleware] flag if the getResource is called by the middleware
 		 * @returns {object} the output object of the resource (code, chunks?, lastModified)
 		 */
-		getResource: async function getResource(moduleName, { skipCache, debug, keepDynamicImports } = {}, { cwd, depPaths, skipTransform } = {}) {
+		getResource: async function getResource(moduleName, { skipCache, debug, keepDynamicImports } = {}, { cwd, depPaths, skipTransform, isMiddleware } = {}) {
 			let bundling = false;
 
 			try {
@@ -296,6 +299,7 @@ module.exports = function (log) {
 									mainFields: defaultMainFields,
 									beforePlugins: [logger({ log })],
 									afterPlugins: [dynamicImports({ moduleName, keepDynamicImports })],
+									isMiddleware,
 								});
 							} catch (ex) {
 								// related to issue #726 for which the generation of jspdf fails on Windows machines
@@ -308,6 +312,7 @@ module.exports = function (log) {
 									mainFields: ["browser", "main", "module"],
 									beforePlugins: [logger({ log })],
 									afterPlugins: [dynamicImports({ moduleName, keepDynamicImports })],
+									isMiddleware,
 								});
 							}
 
@@ -330,12 +335,21 @@ module.exports = function (log) {
 								// store the individual output chunks as well in the cache
 								cachedOutput.chunks = {};
 								output.slice(1).forEach((chunk) => {
-									const fileName = chunk.fileName.substring(0, chunk.fileName.length - 3);
-									cachedOutput.chunks[fileName] = outputCache[fileName] = {
-										code: chunk.code,
-										lastModified,
-									};
-									chunkToModulePath[fileName] = modulePath;
+									if (chunk.code) {
+										const fileName = chunk.fileName.substring(0, chunk.fileName.length - 3);
+										cachedOutput.chunks[fileName] = outputCache[fileName] = {
+											code: chunk.code,
+											lastModified,
+										};
+										chunkToModulePath[fileName] = modulePath;
+									} else if (chunk.source) {
+										const fileName = chunk.fileName;
+										cachedOutput.chunks[fileName] = outputCache[fileName] = {
+											code: chunk.source,
+											lastModified,
+										};
+										chunkToModulePath[fileName] = modulePath;
+									}
 								});
 							}
 						} else {

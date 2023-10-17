@@ -66,7 +66,7 @@ module.exports = function ({ log, options, middlewareUtil }) {
 			}
 
 			// try to resolve the resource from node_modules
-			const resource = await getResource(moduleName, config, { cwd, depPaths, skipTransform });
+			const resource = await getResource(moduleName, config, { cwd, depPaths, skipTransform, isMiddleware: true });
 			if (resource) {
 				try {
 					log.verbose(`Processing resource ${moduleName}...`);
