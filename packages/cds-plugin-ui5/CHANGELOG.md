@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.7.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.6.14...cds-plugin-ui5@0.7.0) (2023-10-17)
+
+
+### Features
+
+* allow overriding configFile for UI5 app dependencies ([#886](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/886)) ([c736648](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c73664858c6ec67b4d8f2b7733b0d5234a6775db))
+
+
+
+
+
 ## [0.6.14](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.6.13...cds-plugin-ui5@0.6.14) (2023-10-14)
 
 **Note:** Version bump only for package cds-plugin-ui5

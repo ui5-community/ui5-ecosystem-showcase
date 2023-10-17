@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-alpha.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-ui5@3.0.0-alpha.7...ui5-middleware-ui5@3.0.0-alpha.8) (2023-10-17)
+
+
+### Features
+
+* allow overriding configFile for UI5 app dependencies ([#886](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/886)) ([c736648](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c73664858c6ec67b4d8f2b7733b0d5234a6775db))
+
+
+
+
+
 # [3.0.0-alpha.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-ui5@3.0.0-alpha.6...ui5-middleware-ui5@3.0.0-alpha.7) (2023-10-14)
 
 **Note:** Version bump only for package ui5-middleware-ui5
