@@ -1,4 +1,4 @@
-# UI5 task for compiling less files 
+# UI5 task for compiling less files
 
 > :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
 
@@ -21,9 +21,6 @@ npm install ui5-task-compileless --save-dev
 
 - debug: `true|false`  
   verbose logging
-
-- appFolderPath: `String`
-  path to your appfolder (default `webapp`)
 
 - lessToCompile `String<Array>`  
   array of less resources specified as paths or glob patterns which should be compiled 
@@ -49,7 +46,6 @@ builder:
      afterTask: replaceVersion
      configuration:
         debug: true
-        appFolderPath: webapp
         # lessToCompile: (Optional by default css from manifest will be used)
         #   - "css/style.less"
 ```

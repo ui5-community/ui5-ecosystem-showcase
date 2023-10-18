@@ -400,9 +400,6 @@ importers:
       less-openui5:
         specifier: ^0.11.6
         version: 0.11.6
-      minimatch:
-        specifier: ^7.4.6
-        version: 7.4.6
 
   packages/ui5-task-flatten-library: {}
 

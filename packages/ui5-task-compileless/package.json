@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@ui5/fs": "^3.0.4",
-    "less-openui5": "^0.11.6",
-    "minimatch": "^7.4.6"
+    "less-openui5": "^0.11.6"
   }
 }

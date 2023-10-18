@@ -37,7 +37,7 @@ npm install ui5-middleware-livecompileless --save-dev
 2. configure it in `$yourapp/ui5.yaml`:
 
 ```yaml
-builder:
+server:
   customMiddleware:
     - name: ui5-middleware-livecompileless
       beforeMiddleware: serveResources
