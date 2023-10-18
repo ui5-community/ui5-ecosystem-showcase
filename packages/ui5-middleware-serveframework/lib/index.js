@@ -63,7 +63,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 
 			// fetch the version information for the concrete version from CDN
 			const fetch = (await import("node-fetch")).default;
-			await fetch(`${baseUrl}/${frameworkVersion}/resources/sap-ui-version.json`)
+			await fetch(`${baseUrl}/${frameworkVersion}/resources/sap-ui-version.json`, { agent })
 				.then((res) => res.json())
 				.then((json) => writeFile(versionInfoFile, JSON.stringify(json), { encoding: "utf-8" }));
 		}
