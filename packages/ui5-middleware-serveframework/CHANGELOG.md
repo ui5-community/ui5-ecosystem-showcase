@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-alpha.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.0.0-alpha.3...ui5-middleware-serveframework@3.0.0-alpha.4) (2023-10-18)
+
+
+### Bug Fixes
+
+* **ui5-middleware-serveframework:** enable proxy support ([#891](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/891)) ([5933d8e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5933d8ee1f622d4f3e869c069c4a0bbbf3d5b31a)), closes [#890](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/890)
+
+
+
+
+
 # [3.0.0-alpha.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.0.0-alpha.2...ui5-middleware-serveframework@3.0.0-alpha.3) (2023-10-14)
 
 **Note:** Version bump only for package ui5-middleware-serveframework

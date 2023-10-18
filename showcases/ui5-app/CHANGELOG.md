@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.33.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.33.2...ui5-app@0.33.3) (2023-10-18)
+
+
+### Bug Fixes
+
+* **ui5-task-compileless:** improved resource handling ([#892](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/892)) ([f7a7523](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f7a7523d4b41a131d951d2dfc4042462364a067e)), closes [#889](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/889)
+
+
+
+
+
 ## [0.33.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.33.1...ui5-app@0.33.2) (2023-10-17)
 
 **Note:** Version bump only for package ui5-app
