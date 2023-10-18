@@ -2,7 +2,9 @@
 
 > :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
 
-Task and Middleware for [ui5-server](https://github.com/SAP/ui5-server), doing a live string replace on files matched by the includePatterns `files` array configuration option.
+Task and Middleware for [ui5-server](https://github.com/SAP/ui5-server), doing a string replace on files matched by the `files` configuration option.
+
+> :information_source: The middleware hooks into the response to intercept the headers and the data allowing to replace the strings matching the `replace` patterns. Therefore, the middleware must run before other middlewares which end the middleware chain (not calling `next()`).
 
 ## Prerequisites
 
@@ -125,6 +127,8 @@ The task reads all files based on configuration patterns and replaces all string
 ### Middleware
 
 The middleware replaces the placeholders with their values in the files matched by the patterns. All the string placeholders which are maintained in the process environment with prefix 'stringreplace.' will be taken into account. If no environment name is set through the process environment variable UI5_ENV, then by default the file`./.env` is loaded.
+
+Technically, the middleware intercepts the response for all requests matching the `files` glob patterns. The middleware must be inserted very early into the middlware chain as it intercepts the `res.writeHead`, `res.write`, and `res.end` functions to collect the response data and to finally replace the placeholders in that data. When using the middleware in combination with e.g. the `ui5-tooling-transpile`, the `ui5-tooling-stringreplace` must be added before the transpile middleware to inject the response hooks.
 
 ## License
 
