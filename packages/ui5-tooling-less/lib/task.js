@@ -1,5 +1,5 @@
 const path = require("path");
-const less = require("less-openui5");
+const LessBuilder = require("./LessBuilder");
 
 /**
  * Custom task to compile less files in the app folder
@@ -16,11 +16,9 @@ const less = require("less-openui5");
  */
 module.exports = async function ({ log, workspace, dependencies, options, taskUtil }) {
 	const isDebug = options?.configuration?.debug;
+
+	// get rid of project namespace from resource path
 	const localPath = `/resources/${options?.projectNamespace}`;
-
-	let manifest = await (await workspace.byPath(`${localPath}/manifest.json`)).getString();
-	manifest = JSON.parse(manifest);
-
 	const translateResourcePath = function translateResourcePath(path) {
 		if (path?.startsWith(localPath)) {
 			return path.substring(localPath.length);
@@ -29,9 +27,13 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 		}
 	};
 
+	// determine the less files to compile from the ui5.yaml (config)
 	let lessToCompile = options?.configuration?.lessToCompile || [];
-	if (lessToCompile.length === 0 && manifest?.["sap.ui5"]?.resources?.css) {
-		lessToCompile = manifest["sap.ui5"].resources.css
+	if (lessToCompile.length === 0) {
+		// if nothing is specified, we extract the less files to compile from the manifest
+		let manifest = await (await workspace.byPath(`${localPath}/manifest.json`)).getString();
+		manifest = JSON.parse(manifest);
+		lessToCompile = (manifest?.["sap.ui5"]?.resources?.css || [])
 			.map((style) => {
 				const lessFile = style.uri ? style.uri.replace(".css", ".less") : null;
 				if (lessFile) {
@@ -44,40 +46,33 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 			.filter((lessfile) => !!lessfile);
 	}
 
+	// find the less files in the workspace
 	const lessResources = [];
 	for (const glob of lessToCompile) {
 		lessResources.push(...((await workspace.byGlobSource(glob)) || []));
 	}
 
-	const { default: fsInterface } = await import("@ui5/fs/fsInterface");
-
-	const customCombo = taskUtil.resourceFactory.createReaderCollectionPrioritized({
+	// create a new resource collection including the workspance and the dependencies
+	const readerCollection = taskUtil.resourceFactory.createReaderCollectionPrioritized({
 		name: `${options.projectName} - prioritize app folder over dependencies`,
 		readers: [workspace, dependencies],
 	});
 
-	const lessBuilder = new less.Builder({ fs: fsInterface(customCombo) });
-	const compileLess = async function (lessResource) {
-		return {
-			lessResource,
-			output: await lessBuilder.build({
-				lessInputPath: lessResource.getPath(),
-			}),
-		};
-	};
-
+	// compile the found resources with the less builder
+	const lessBuilder = await LessBuilder.create(readerCollection);
 	const compiledResources = await Promise.all(
 		lessResources.map((lessResource) => {
 			isDebug && log.info(`Compiling file ${translateResourcePath(lessResource.getPath())}...`);
-			return compileLess(lessResource);
+			return lessBuilder.build(lessResource);
 		})
 	);
 
+	// finally write the compiled resources back to the workspace
 	return Promise.all(
-		compiledResources.map(({ lessResource, output }) => {
-			isDebug && log.info(`Writing file ${translateResourcePath(lessResource.getPath())}...`);
+		compiledResources.map((output) => {
+			isDebug && log.info(`Writing file ${translateResourcePath(output._path)}...`);
 			const resource = taskUtil.resourceFactory.createResource({
-				path: lessResource.getPath().replace(/(.*).less/, "$1.css"),
+				path: output._path,
 				string: output.css,
 			});
 			return workspace.write(resource);

@@ -32,7 +32,6 @@ packages
 ├── ui5-middleware-cfdestination    // middleware extension: use the approuter as proxy
 ├── ui5-middleware-iasync           // middleware extension: sync UI interaction across browsers (alpha! careful!)
 ├── ui5-middleware-index            // middleware extension: serve an HTML file for / (root)
-├── ui5-middleware-livecompileless  // middleware extension: livecompiling of less files in the app folder
 ├── ui5-middleware-livereload       // middleware extension: usage of livereload for development
 ├── ui5-middleware-onelogin         // middleware extension: enable a generic login support
 ├── ui5-middleware-serveframework   // middleware extension: serve resources of a locally built framework
@@ -42,12 +41,12 @@ packages
 ├── ui5-middleware-webjars          // middleware extension: deliver content from JAR files
 ├── ui5-middleware-websocket        // middleware extension: enable web sockets for the UI5 Tooling
 ├── ui5-task-cachebuster            // task extension: enables cachebusting for standalone applications
-├── ui5-task-compileless            // task extension: compile less files in the app folder
 ├── ui5-task-flatten-library        // task extension: prepares build result for deployment to SAP NetWeaver
 ├── ui5-task-i18ncheck              // task extension: checks for missing i18n texts
 ├── ui5-task-minify-xml             // task extension: minify xml resources
 ├── ui5-task-pwa-enabler            // task extension: enables ui5 app with pwa functionalities
 ├── ui5-task-zipper                 // task extension: bundle the entire webapp in a zip-archive
+├── ui5-tooling-less                // task extension: building less files
 ├── ui5-tooling-modules             // tooling extensions: direct consumption of NPM packages in UI5 apps
 ├── ui5-tooling-stringreplace       // tooling extension: replaces placeholder strings
 ├── ui5-tooling-transpile           // tooling extensions: transpile resources using Babel
@@ -148,7 +147,6 @@ pnpm test:ci # > start ui5 server in background, runs wdi5-tests, shuts down the
 The tasks developed in this monorepo are also publicly available on NPM right here:
 
 * https://www.npmjs.com/package/ui5-task-cachebuster
-* https://www.npmjs.com/package/ui5-task-compileless
 * https://www.npmjs.com/package/ui5-task-flatten-library
 * https://www.npmjs.com/package/ui5-task-i18ncheck 
 * https://www.npmjs.com/package/ui5-task-minify-xml
@@ -161,7 +159,6 @@ The middlewares developed in this monorepo are also publicly available on NPM ri
 * https://www.npmjs.com/package/ui5-middleware-cfdestination
 * https://www.npmjs.com/package/ui5-middleware-iasync (alpha! careful!)
 * https://www.npmjs.com/package/ui5-middleware-index
-* https://www.npmjs.com/package/ui5-middleware-livecompileless
 * https://www.npmjs.com/package/ui5-middleware-livereload
 * https://www.npmjs.com/package/ui5-middleware-onelogin
 * https://www.npmjs.com/package/ui5-middleware-serveframework
@@ -173,6 +170,7 @@ The middlewares developed in this monorepo are also publicly available on NPM ri
 
 The tooling extensions (contains tasks and middlewares) developed in this monorepo are available on NPM right here:
 
+* https://www.npmjs.com/package/ui5-tooling-less
 * https://www.npmjs.com/package/ui5-tooling-modules
 * https://www.npmjs.com/package/ui5-tooling-stringreplace
 * https://www.npmjs.com/package/ui5-tooling-transpile
@@ -184,7 +182,6 @@ Available tasks in this project:
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
 | [ui5-task-cachebuster](https://www.npmjs.com/package/ui5-task-cachebuster) | enables cachebusting for standalone applications | [![npm version](https://badge.fury.io/js/ui5-task-cachebuster.svg)](https://badge.fury.io/js/ui5-task-cachebuster) |
-| [ui5-task-compileless](https://www.npmjs.com/package/ui5-task-compileless) | compile less files in the app folder | [![npm version](https://badge.fury.io/js/ui5-task-compileless.svg)](https://badge.fury.io/js/ui5-task-compileless) |
 | [ui5-task-flatten-library](https://www.npmjs.com/package/ui5-task-flatten-library) | prepares build result for deployment to SAP NetWeaver | [![npm version](https://badge.fury.io/js/ui5-task-flatten-library.svg)](https://badge.fury.io/js/ui5-task-flatten-library) |
 | [ui5-task-i18ncheck](packages/ui5-task-i18ncheck/README.md) | checks for missing i18n texts | [![npm version](https://badge.fury.io/js/ui5-task-i18ncheck.svg)](https://badge.fury.io/js/ui5-task-i18ncheck) |
 | [ui5-task-minify-xml](packages/ui5-task-minify-xml/README.md) | minify xml resources | [![npm version](https://badge.fury.io/js/ui5-task-minify-xml.svg)](https://badge.fury.io/js/ui5-task-minify-xml) |
@@ -199,7 +196,6 @@ Available middlewares in this project:
 | [ui5-middleware-cfdestination](packages/ui5-middleware-cfdestination/README.md) | use the approuter as proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-cfdestination.svg)](https://badge.fury.io/js/ui5-middleware-cfdestination) |
 | [ui5-middleware-iasync](packages/ui5-middleware-iasync/README.md) | sync UI interactions across connected browsers (alpha! careful!) | [![npm version](https://badge.fury.io/js/ui5-middleware-iasync.svg)](https://badge.fury.io/js/ui5-middleware-iasync) |
 | [ui5-middleware-index](packages/ui5-middleware-index/README.md) | serve an HTML file for / (root) | [![npm version](https://badge.fury.io/js/ui5-middleware-index.svg)](https://badge.fury.io/js/ui5-middleware-index) |
-| [ui5-middleware-livecompileless](https://www.npmjs.com/package/ui5-middleware-livecompileless) | livecompiling of less files in the app folder | [![npm version](https://badge.fury.io/js/ui5-middleware-livecompileless.svg)](https://badge.fury.io/js/ui5-middleware-livecompileless) |
 | [ui5-middleware-livereload](packages/ui5-middleware-livereload/README.md) | usage of livereload for development | [![npm version](https://badge.fury.io/js/ui5-middleware-livereload.svg)](https://badge.fury.io/js/ui5-middleware-livereload) |
 | [ui5-middleware-serveframework](packages/ui5-middleware-serveframework/README.md) | serve resources of a locally built framework | [![npm version](https://badge.fury.io/js/ui5-middleware-serveframework.svg)](https://badge.fury.io/js/ui5-middleware-servestatic) |
 | [ui5-middleware-servestatic](packages/ui5-middleware-servestatic/README.md) | serve static resources | [![npm version](https://badge.fury.io/js/ui5-middleware-servestatic.svg)](https://badge.fury.io/js/ui5-middleware-servestatic) |
@@ -213,6 +209,7 @@ Available tooling extensions in this project:
 
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
+| [ui5-tooling-less](packages/ui5-tooling-less/README.md) | build less files | [![npm version](https://badge.fury.io/js/ui5-tooling-less.svg)](https://badge.fury.io/js/ui5-tooling-less) |
 | [ui5-tooling-modules](packages/ui5-tooling-modules/README.md) | direct consumption of NPM packages | [![npm version](https://badge.fury.io/js/ui5-tooling-modules.svg)](https://badge.fury.io/js/ui5-tooling-modules) |
 | [ui5-tooling-stringreplace](packages/ui5-tooling-stringreplace/README.md) | replace placeholder strings | [![npm version](https://badge.fury.io/js/ui5-tooling-stringreplace.svg)](https://badge.fury.io/js/ui5-tooling-stringreplace) |
 | [ui5-tooling-transpile](packages/ui5-tooling-transpile/README.md) | transpile resources using Babel | [![npm version](https://badge.fury.io/js/ui5-tooling-transpile.svg)](https://badge.fury.io/js/ui5-tooling-transpile) |

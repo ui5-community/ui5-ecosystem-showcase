@@ -89,11 +89,10 @@ builder:
         onlyZip: false
         additionalFiles:
           - "xs-app.json"
-    - name: ui5-task-compileless
+    - name: ui5-tooling-less-task
       afterTask: replaceVersion
       configuration:
         debug: true
-        appFolderPath: webapp
         # lessToCompile: (Optional by default css from manifest will be used)
         #   - "css/style.less"
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
@@ -202,7 +201,7 @@ server:
       afterMiddleware: ui5-tooling-transpile-middleware
       configuration:
         #skipCache: true
-    - name: ui5-middleware-livecompileless
+    - name: ui5-tooling-less-middleware
       beforeMiddleware: serveResources
       configuration:
         debug: true

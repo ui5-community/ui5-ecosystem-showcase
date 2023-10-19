@@ -1,8 +1,8 @@
 {
-  "name": "ui5-middleware-livecompileless",
-  "version": "3.0.3",
-  "description": "UI5 middleware for live compiling less files",
-  "author": "Sebastian Mahr, Marcel Schork",
+  "name": "ui5-tooling-less",
+  "version": "3.0.0",
+  "description": "UI5 tooling extension for compiling less files",
+  "author": "Sebastian Mahr, Marcel Schork, Peter Muessig",
   "license": "Apache-2.0",
   "homepage": "https://github.com/ui5-community/ui5-ecosystem-showcase/tree/main/packages/ui5-middleware-livecompileless#readme",
   "repository": {
