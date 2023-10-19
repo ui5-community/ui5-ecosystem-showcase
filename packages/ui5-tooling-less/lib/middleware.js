@@ -1,4 +1,4 @@
-const less = require("less-openui5");
+const LessBuilder = require("./LessBuilder");
 
 /**
  *
@@ -13,29 +13,31 @@ const less = require("less-openui5");
  *                                        the projects dependencies
  * @param {object} parameters.options Options
  * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
+ * @param {object} parameters.middlewareUtil Specification version dependent interface to a
+ *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
  * @returns {Function} Middleware function to use
  */
-module.exports = async ({ log, resources, options }) => {
+module.exports = async ({ log, resources, options, middlewareUtil }) => {
 	const isDebug = options?.configuration?.debug;
 
-	return async function injectLess(req, res, next) {
+	return async function less(req, res, next) {
 		const pathname = req.url?.match("^[^?]*")[0];
-		if (pathname.includes(".css") && !pathname.includes("resources/")) {
+		if (pathname.endsWith(".css")) {
 			let possibleLessFile = await resources.rootProject.byPath(pathname.replace(".css", ".less"));
 			if (possibleLessFile) {
 				isDebug && log.info(`Compiling ${possibleLessFile.getPath()}...`);
-				const { default: fsInterface } = await import("@ui5/fs/fsInterface");
-				const lessBuilder = new less.Builder({ fs: fsInterface(resources.all) });
+				const lessBuilder = await LessBuilder.create(resources.all);
 				try {
-					const output = await lessBuilder.build({
-						lessInputPath: possibleLessFile.getPath(),
-					});
-					res.setHeader("Content-Type", "text/css; charset=utf-8");
-					res.send(output.css);
-					return;
-				} catch (e) {
-					log.error(e);
+					const output = await lessBuilder.build(possibleLessFile);
+					let { contentType /*, charset */ } = middlewareUtil.getMimeInfo(".css");
+					res.setHeader("Content-Type", contentType);
+					res.end(output.css);
+				} catch (err) {
+					res.status(500);
+					log.error(`${err.message}\n${JSON.stringify(err, undefined, 2)}`);
+					res.end(`${err.message} in resource "${err.filename}"`);
 				}
+				return;
 			}
 		}
 		next();
