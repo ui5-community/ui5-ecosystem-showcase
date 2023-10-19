@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.34.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.33.3...ui5-app@0.34.0) (2023-10-19)
+
+
+### Features
+
+* **ui5-tooling-less:** new extension harmonizing less build ([#894](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/894)) ([91ce092](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/91ce0922b83716594b7989046c95fde11ac9bdd8)), closes [#710](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/710)
+
+
+
+
+
 ## [0.33.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.33.2...ui5-app@0.33.3) (2023-10-18)
 
 
