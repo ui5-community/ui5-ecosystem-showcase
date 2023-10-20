@@ -11,7 +11,14 @@ framework:
     - name: sap.ui.layout
     - name: themelib_sap_horizon
 builder:
+  componentPreload:
+    excludes:
+      - "ui5/ecosystem/demo/app/thirdparty/js-temporal/**"
+      - "ui5/ecosystem/demo/app/thirdparty/stomp/**"
+      - "ui5/ecosystem/demo/app/thirdparty/zod.js"
   customTasks:
+    - name: ui5-tooling-less-task
+      afterTask: replaceVersion
     - name: ui5-tooling-transpile-task
       afterTask: replaceVersion
       configuration:
@@ -47,6 +54,7 @@ builder:
         serviceWorker:
           strategy: Advanced-Caching
           offlinePage: offline.html
+          scope: ./
           preCache:
             - "controller/*"
             - "*.html"
@@ -68,7 +76,7 @@ builder:
               type: image/png
               sizes: 512x512
           start_url: /index.html
-          scope: /
+          scope: ./
           background_color: "#EFF4F9"
           theme_color: "#3F5161"
           display: standalone

@@ -15,6 +15,7 @@ builder:
     excludes:
       - "ui5/ecosystem/demo/app/thirdparty/js-temporal/**"
       - "ui5/ecosystem/demo/app/thirdparty/stomp/**"
+      - "ui5/ecosystem/demo/app/thirdparty/zod.js"
   customTasks:
     - name: ui5-tooling-stringreplace-task
       afterTask: replaceVersion
