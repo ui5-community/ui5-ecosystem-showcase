@@ -45,15 +45,13 @@ let default_manifest = {
  *
  * @param {object} parameters Parameters
  * @param {module:@ui5/fs.DuplexCollection} parameters.workspace DuplexCollection to read and write files
- * @param {module:@ui5/fs.AbstractReader} parameters.dependencies Reader or Collection to read dependency files
  * @param {object} parameters.options Options
- * @param {string} parameters.options.projectName Project name
  * @param {string} [parameters.options.projectNamespace] Project namespace if available
  * @param {object} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @param {object} parameters.taskUtil the task utilities
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-module.exports = async function ({ workspace, dependencies, options: { projectName, projectNamespace, configuration }, taskUtil }) {
+module.exports = async function ({ workspace, options: { projectNamespace, configuration }, taskUtil }) {
 	ws = workspace;
 	rootDir = "/resources/" + projectNamespace;
 	createResource = taskUtil.resourceFactory.createResource;
