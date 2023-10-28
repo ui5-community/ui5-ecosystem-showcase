@@ -49,7 +49,11 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 	// find the less files in the workspace
 	const lessResources = [];
 	for (const glob of lessToCompile) {
-		lessResources.push(...((await workspace.byGlobSource(glob)) || []));
+		if (!path.isAbsolute(glob)) {
+			lessResources.push(...((await workspace.byGlobSource(path.join(localPath, glob))) || []));
+		} else {
+			lessResources.push(...((await workspace.byGlobSource(glob)) || []));
+		}
 	}
 
 	// create a new resource collection including the workspance and the dependencies
