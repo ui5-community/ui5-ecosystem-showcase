@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-less@3.1.0...ui5-tooling-less@3.1.1) (2023-10-28)
+
+
+### Bug Fixes
+
+* **ui5-tooling-less:** resolve globs relative to app namespace ([#898](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/898)) ([eb8aca2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/eb8aca21f27412e1d4194fdbcb33b632dca9fc42)), closes [#896](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/896)
+
+
+
+
+
 # 3.1.0 (2023-10-19)
 
 

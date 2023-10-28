@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-alpha.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-ui5@3.0.0-alpha.8...ui5-middleware-ui5@3.0.0-alpha.9) (2023-10-28)
+
+
+### Bug Fixes
+
+* **ui5-middleware-ui5:** make it work without config ([#897](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/897)) ([dd428bf](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/dd428bfd56d4dd73af852f212c11c87b6a098788))
+
+
+
+
+
 # [3.0.0-alpha.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-ui5@3.0.0-alpha.7...ui5-middleware-ui5@3.0.0-alpha.8) (2023-10-17)
 
 
