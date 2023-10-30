@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars, no-empty */
 const path = require("path");
-const { readFileSync, existsSync } = require("fs");
+const { readFileSync, existsSync, createReadStream } = require("fs");
 const espree = require("espree");
 const estraverse = require("estraverse");
 const { XMLParser, XMLBuilder, XMLValidator } = require("fast-xml-parser");
@@ -476,7 +476,8 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				config.debug && log.info(`Processing resource: ${resourceName}`);
 				const newResource = resourceFactory.createResource({
 					path: `/resources/${rewriteDep(resourceName)}`,
-					string: resource.code,
+					stream: resource.path ? createReadStream(resource.path) : undefined,
+					string: !resource.path && resource.code ? resource.code : undefined,
 				});
 				bundledResources.push(resourceName);
 				await workspace.write(newResource);

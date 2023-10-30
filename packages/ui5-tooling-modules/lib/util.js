@@ -34,28 +34,30 @@ const defaultMainFields = ["browser", "module", "main"];
 
 module.exports = function (log) {
 	/**
-	 * Checks whether the given content is a UI5 module or not
+	 * Checks whether the file behind the given path is a UI5 module or not
 	 *
-	 * @param {string} content the content of a JS module
 	 * @param {string} path the path of a JS module
 	 * @returns {boolean} true, if the JS module is a UI5 module
 	 */
-	function isUI5Module(content, path) {
+	async function isUI5Module(path) {
 		try {
-			const program = espree.parse(content, { range: true, comment: true, tokens: true, ecmaVersion: "latest" });
 			let isUI5Module = false;
-			estraverse.traverse(program, {
-				enter(node, parent) {
-					if (
-						node?.type === "CallExpression" &&
-						/require|define/.test(node?.callee?.property?.name) &&
-						node?.callee?.object?.property?.name == "ui" &&
-						node?.callee?.object?.object?.name == "sap"
-					) {
-						isUI5Module = true;
-					}
-				},
-			});
+			const content = await readFile(path, { encoding: "utf8" });
+			if (content) {
+				const program = espree.parse(content, { range: true, comment: true, tokens: true, ecmaVersion: "latest" });
+				estraverse.traverse(program, {
+					enter(node, parent) {
+						if (
+							node?.type === "CallExpression" &&
+							/require|define/.test(node?.callee?.property?.name) &&
+							node?.callee?.object?.property?.name == "ui" &&
+							node?.callee?.object?.object?.name == "sap"
+						) {
+							isUI5Module = true;
+						}
+					},
+				});
+			}
 			return isUI5Module;
 		} catch (err) {
 			log.verbose(`Failed to parse dependency "${path}" with espree!`, err);
@@ -276,9 +278,6 @@ module.exports = function (log) {
 
 					let cachedOutput = outputCache[moduleName];
 					if (!isChunk && (skipCache || !cachedOutput || cachedOutput.lastModified !== lastModified)) {
-						// is the bundle a UI5 module?
-						const moduleContent = await readFile(modulePath, { encoding: "utf8" });
-
 						// check whether the current resource should be skipped or not (based on module name)
 						const shouldSkipTransform = Array.isArray(skipTransform)
 							? skipTransform.some((value) => {
@@ -287,7 +286,7 @@ module.exports = function (log) {
 							: skipTransform;
 
 						// only transform non-UI5 modules (.js, .mjs, .cjs files)
-						if (!shouldSkipTransform && /\.(m|c)?js/.test(moduleExt) && !isUI5Module(moduleContent, modulePath)) {
+						if (!shouldSkipTransform && /\.(m|c)?js/.test(moduleExt) && !(await isUI5Module(modulePath))) {
 							bundling = true;
 
 							// create the bundle
@@ -354,7 +353,8 @@ module.exports = function (log) {
 							}
 						} else {
 							cachedOutput = outputCache[moduleName] = {
-								code: moduleContent,
+								code: await readFile(modulePath, { encoding: "utf8" }),
+								path: modulePath,
 								lastModified,
 							};
 						}
