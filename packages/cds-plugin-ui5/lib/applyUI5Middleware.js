@@ -32,8 +32,18 @@ const log = require("./log");
  * @returns {UI5AppInfo} UI5 application information object
  */
 module.exports = async function applyUI5Middleware(router, options) {
-	const { graphFromPackageDependencies } = await import("@ui5/project/graph");
-	const { createReaderCollection } = await import("@ui5/fs/resourceFactory");
+	let graphFromPackageDependencies;
+ 	let createReaderCollection;
+	
+	// see https://jestjs.io/docs/environment-variables
+	if (process.env.test || process.env.JEST_WORKER_ID || process.env.CI) {
+		let { graphFromPackageDependencies } = require("@ui5/project/graph");
+		let { createReaderCollection } = require("@ui5/fs/resourceFactory");
+
+	} else {
+		let { graphFromPackageDependencies } = await import("@ui5/project/graph");
+		let { createReaderCollection } = await import("@ui5/fs/resourceFactory");
+	}
 
 	options.cwd = options.cwd || process.cwd();
 	options.basePath = options.basePath || process.cwd();
