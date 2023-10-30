@@ -160,12 +160,3 @@ if (!skip) {
 		bootstrapped();
 	});
 }
-
-// return callback for plugin activation
-module.exports = {
-	activate: function activate(conf) {
-		if (!skip) {
-			log.debug("activate", conf);
-		}
-	},
-};
