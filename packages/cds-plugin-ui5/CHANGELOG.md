@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.7.1...cds-plugin-ui5@0.7.2) (2023-10-30)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** disable plugin for JEST test execution ([#906](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/906)) ([b2b3c01](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b2b3c013368a7c87e3ee28972e7207d6bacd2d30)), closes [#901](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/901)
+
+
+
+
+
 ## [0.7.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.7.0...cds-plugin-ui5@0.7.1) (2023-10-30)
 
 
