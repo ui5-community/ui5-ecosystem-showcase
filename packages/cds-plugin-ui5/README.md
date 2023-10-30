@@ -146,6 +146,14 @@ module.exports = async ({ log, resources, options }) => {
 
 The returned app pages will be added to the welcome page within the respective mount path.
 
+## Hints
+
+This section includes hints for the usage of the `cds-plugin-ui5` with other tools.
+
+### JEST
+
+The `cds-plugin-ui5` doesn't work with JEST out of the box as it internally is using dynamic imports to load helpers from the UI5 tooling. JEST fails with a `segmentation fault` error and therefore, the `cds-plugin-ui5` is disabled when running in context of JEST. It can be forcefully enabled by setting the environment variable `CDS_PLUGIN_UI5_ACTIVE=true`. But in this case you need to at least use Node.js 21 (https://github.com/nodejs/node/issues/35889) and you need to enable the experimental support for ES modules (https://jestjs.io/docs/ecmascript-modules). This enables the `cds-plugin-ui5` to run in context of JEST.
+
 ## Support
 
 Please use the GitHub bug tracking system to post questions, bug reports or to create pull requests.

@@ -1,7 +1,32 @@
+const log = require("./lib/log");
+
+// >> IMPORTANT <<
+//
+// JEST has issues with dynamic imports and will fail when they are used,
+// e.g. in the findUI5Modules the UI5 tooling is used which is implemented
+// using ES modules. To avoid issues when running JEST tests, the plugin
+// will be disabled by default but it can be enforced with CDS_PLUGIN_UI5_ACTIVE=true
+// since JEST supports ES modules when using Node.js 21 and the experimental
+// support for VM modules via:
+//
+//   > NODE_OPTIONS=--experimental-vm-modules jest
+//
+// Details can be found in the following issue:
+//   - https://github.com/ui5-community/ui5-ecosystem-showcase/issues/901
+//
+// To disable JEST we rely on env variables (see https://jestjs.io/docs/environment-variables)
+if (process.env.NODE_ENV === "test" && process.env.JEST_WORKER_ID && process.env.CDS_PLUGIN_UI5_ACTIVE !== "true") {
+	log.info("Skip execution of plugin because JEST is running tests! To force the execution of the plugin set env var CDS_PLUGIN_UI5_ACTIVE=true...");
+	return;
+}
+if (process.env.CDS_PLUGIN_UI5_ACTIVE === "false") {
+	log.info("Skip execution of plugin because it has been disabled by env var CDS_PLUGIN_UI5_ACTIVE!");
+	return;
+}
+
 // @sap/cds/lib/index.js#138: global.cds = cds // REVISIT: using global.cds seems wrong
 const cds = global.cds || require("@sap/cds"); // reuse already loaded cds!
 
-const log = require("./lib/log");
 const findUI5Modules = require("./lib/findUI5Modules");
 const createPatchedRouter = require("./lib/createPatchedRouter");
 const applyUI5Middleware = require("./lib/applyUI5Middleware");
