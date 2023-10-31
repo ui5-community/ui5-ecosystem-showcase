@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.2.3...ui5-tooling-modules@3.2.4) (2023-10-31)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** keep non-text content alive using middleware ([#907](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/907)) ([433fa62](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/433fa6282725b819d7e95fe24bba88201fe1c132)), closes [#904](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/904)
+
+
+
+
+
 ## [3.2.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.2.2...ui5-tooling-modules@3.2.3) (2023-10-30)
 
 
