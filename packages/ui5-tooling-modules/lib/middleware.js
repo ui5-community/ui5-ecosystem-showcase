@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 const path = require("path");
+const { createReadStream } = require("fs");
 
 /**
  * Custom middleware to create the UI5 AMD-like bundles for used ES imports from node_modules.
@@ -76,7 +77,12 @@ module.exports = function ({ log, options, middlewareUtil }) {
 					res.setHeader("Content-Type", contentType);
 
 					// respond the content
-					res.end(resource.code);
+					if (!resource.path && resource.code) {
+						res.end(resource.code);
+					} else if (resource.path) {
+						const stream = createReadStream(resource.path);
+						stream.pipe(res);
+					}
 
 					log.verbose(`Processing resource ${moduleName} took ${Date.now() - time} millis`);
 
