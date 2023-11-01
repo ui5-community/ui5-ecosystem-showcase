@@ -188,3 +188,25 @@ test("Some UI5 lib dependencies are included", async (t) => {
   t.true(allDepsFound[1].value);
 });
 
+test("Standalone App Bundle is included in ZIP in self-contained build", async (t) => {
+  const ui5 = {
+    yaml: path.resolve("./test/__assets__/ui5-app/ui5.basic.yaml"),
+  };
+  spawnSync(`ui5 build self-contained --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
+    stdio: "inherit", // > don't include stdout in test output,
+    shell: true,
+    cwd: path.resolve(__dirname, "../../../showcases/ui5-app"),
+  });
+
+  const zip = path.join(t.context.tmpDir, "dist", "ui5ecosystemdemoapp.zip");
+
+  for (const fileName of [
+    "sap-ui-custom.js",
+    "sap-ui-custom-dbg.js",
+    "sap-ui-custom.js.map",
+    "sap-ui-custom-dbg.js.map",
+  ]){
+    const fileFound = await promisifiedNeedleInHaystack(zip, `resources/${fileName}`);
+    t.true(fileFound, `File resources/${fileName} not found in ZIP`);
+  }
+});

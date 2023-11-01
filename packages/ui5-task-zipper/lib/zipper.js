@@ -68,7 +68,7 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 	// get all application related resources
 	let allResources;
 	try {
-		const wsResources = await workspace.byGlob(`${prefixPath}/**`);
+		const wsResources = await workspace.byGlob(`/resources/**`);
 		const depResources = await deps.byGlob(`**`);
 		allResources = [...wsResources, ...depResources];
 	} catch (e) {
