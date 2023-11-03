@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-utils-express@1.2.0...ui5-utils-express@1.2.1) (2023-11-03)
+
+
+### Bug Fixes
+
+* **ui5-utils-express:** support hooking in approuter scenarios ([#911](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/911)) ([1f9ac8e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1f9ac8ee5d3d607c4ed000d22245dfc5f47252cc))
+
+
+
+
+
 # [1.2.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-utils-express@1.1.1...ui5-utils-express@1.2.0) (2023-10-14)
 
 

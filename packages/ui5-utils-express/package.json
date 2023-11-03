@@ -1,6 +1,6 @@
 {
   "name": "ui5-utils-express",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Utilities for the express web framework (web server)",
   "author": "Peter Muessig",
   "license": "Apache-2.0",
