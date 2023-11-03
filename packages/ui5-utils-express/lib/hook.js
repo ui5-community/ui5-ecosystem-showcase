@@ -61,8 +61,11 @@ module.exports = function hook(name, callback, middleware) {
 		let initializedByRouter = false;
 		const fn = function (req, res, next) {
 			if (!initializedByRouter) {
-				const app = req.app,
-					server = app?.server;
+				const app = req.app;
+				// the server is usually derived from the app except in the
+				// approuter scenario, there we need to do the lookup at the
+				// approuter property in the app propery at the request
+				const server = app?.server || app?.approuter?._server?._server;
 				if (app && server) {
 					callback({
 						app,
@@ -75,7 +78,7 @@ module.exports = function hook(name, callback, middleware) {
 					});
 				} else {
 					console.error(
-						`\x1b[36m[~~hook<${name}>~~]\x1b[0m \x1b[31m[ERROR]\x1b[0m - Failed to hook into current server (most likely it is a connect server, and this only works on express)!`
+						`\x1b[36m[~~hook<${name}>~~]\x1b[0m \x1b[31m[ERROR]\x1b[0m - Failed to hook into current server (most likely you are running a connect server which isn't supported by this hook)!`
 					);
 				}
 				initializedByRouter = true;
