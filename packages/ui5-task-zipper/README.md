@@ -35,6 +35,8 @@ Set this to `true` if you also want to generate the unzipped resources in the `d
 - includeDependencies: `true|false` or `String<Array>`
 Set this to `true` if you also want to include the dependencies (UI5 libraries) in the zip archive. Otherwise, it will only include the workspace files (controller, views, etc). In order to select only specific dependencies to be included in the final zip you just need to specify the list of dependencies (value of `ui5.yaml`: `metadata > name`).
 
+**NOTE:** Starting with release `3.0.5`, the `ui5-task-zipper` includes the generated workspace resources such as the self-contained bundles (`sap-ui-custom.*` files). To do so, it is important that the `ui5-task-zipper` is running as last task in the build.
+
 ## Usage
 
 1. Define the dependency in `$yourapp/package.json`:
