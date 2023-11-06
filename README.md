@@ -46,10 +46,10 @@ packages
 ├── ui5-task-minify-xml             // task extension: minify xml resources
 ├── ui5-task-pwa-enabler            // task extension: enables ui5 app with pwa functionalities
 ├── ui5-task-zipper                 // task extension: bundle the entire webapp in a zip-archive
-├── ui5-tooling-less                // task extension: building less files
-├── ui5-tooling-modules             // tooling extensions: direct consumption of NPM packages in UI5 apps
+├── ui5-tooling-less                // tooling extension: serving and building less files
+├── ui5-tooling-modules             // tooling extension: direct consumption of NPM packages in UI5 apps
 ├── ui5-tooling-stringreplace       // tooling extension: replaces placeholder strings
-├── ui5-tooling-transpile           // tooling extensions: transpile resources using Babel
+├── ui5-tooling-transpile           // tooling extension: transpile resources using Babel
 └── ui5-utils-express               // utilities: helper stuff for express
 ```
 
@@ -222,6 +222,67 @@ Other NPM packages in this project:
 | [dev-approuter](packages/dev-approuter/README.md) | dev time wrapper for the SAP Application Router that can serve UI5 and CDS modules added as dependencies | [![npm version](https://badge.fury.io/js/dev-approuter.svg)](https://badge.fury.io/js/dev-approuter) |
 | [karma-ui5-transpile](packages/karma-ui5-transpile/README.md) | Karma preprocessor to transpile sources using `ui5-tooling-transpile` | [![npm version](https://badge.fury.io/js/karma-ui5-transpile.svg)](https://badge.fury.io/js/karma-ui5-transpile) |
 | [ui5-utils-express](packages/ui5-utils-express/README.md) | utilities for express | [![npm version](https://badge.fury.io/js/ui5-utils-express.svg)](https://badge.fury.io/js/ui5-utils-express) |
+
+## Backend Connectivity
+
+The UI5 Ecosystem Showcase provides several tooling extensions which can be used to connect to different backends.
+
+### `cds-plugin-ui5`
+
+[cds-plugin-ui5](packages/cds-plugin-ui5/README.md)
+
+The `cds-plugin-ui5` is a CDS server `cds-plugin` which enables the integration of UI5 tooling based (UI5 freestyle or Fiori elements) projects into the CDS server via the UI5 tooling express middlewares. The UI5 or Fiori elements projects just need to be located in the `app` folder of the CDS server or be dependency of the CDS server.
+
+### `ui5-middleware-cap`
+
+[ui5-middleware-cap](packages/ui5-middleware-cap/README.md)
+
+The `ui5-middleware-cap` is a UI5 tooling middleware which is used to improve the development experience for the [SAP Cloud Application Programming Model (CAP)](https://cap.cloud.sap/docs/about/) and enables the integration of a CDS server into the UI5 development server via the CDS server express middlewares. In addition to the middleware the CDS server project needs to be added as dependency so that the server is detected and attached properly. The pre-defined routes in the CDS server are reused.
+
+### `ui5-middleware-cfdestination`
+
+[ui5-middleware-cfdestination](packages/ui5-middleware-cfdestination/README.md)
+
+Middleware for [ui5-server](https://github.com/SAP/ui5-server), making `destinations` configured in SAP CF available for local development using the [`http-proxy-middleware`](https://www.npmjs.com/package/http-proxy-middleware).
+
+#### `@sap/approuter`
+
+[@sap/approuter](https://www.npmjs.com/package/@sap/approuter)
+
+The application router is designed to work in XS Advanced - Cloud Foundry and XS OnPremise Runtime.
+
+A calling component accesses a target service by means of the application router only if there is no JWT token available, for example, if a user invokes the application from a Web browser. If a JWT token is already available, for example, because the user has already been authenticated, or the calling component uses a JWT token for its own OAuth client, the calling component calls the target service directly; it does not need to use the application router.
+
+#### `dev-approuter`
+
+[dev-approuter](packages/ui5-middleware-simpleproxy/README.md)
+
+The `dev-approuter` is a development time tooling only for the [SAP Application Router](https://www.npmjs.com/package/@sap/approuter) that can serve [UI5](https://ui5.sap.com/) and [SAP Cloud Application Programming Model (CAP)](https://cap.cloud.sap/docs/) apps that are added as (dev)dependencies to the approuter's `package.json`.
+
+### `ui5-middleware-simpleproxy`
+
+[ui5-middleware-simpleproxy](packages/ui5-middleware-simpleproxy/README.md)
+
+Middleware for [ui5-server](https://github.com/SAP/ui5-server), enabling proxy support.
+
+### Comparison
+
+The following table shows a small comparison of the different backend connectivity tooling features:
+
+|                           | cds-plugin-ui5       | ui5-middleware-cap | ui5-middleware-cfdestination | @sap/approuter       | dev-approuter       | ui5-middleware-simpleproxy |
+| ------------------------- | -------------------- | ------------------ | ---------------------------- | -------------------- | ------------------- | -------------------------- |
+| **Productive Usage**      | :x:                  | :x:                | :x:                          | :white_check_mark:   | :x:                 | :x:                        |
+| UAA Support               | (:white_check_mark:) | :x:                | :white_check_mark:           | :white_check_mark:   | :white_check_mark:  | :x:                        |
+| BTP Destinations          | :x:                  | :x:                | :white_check_mark:           | :white_check_mark:   | :white_check_mark:  | :x:                        |
+| WebSockets                | :x:                  | :x:                | :white_check_mark:           | :white_check_mark:   | :white_check_mark:  | :white_check_mark:         |
+| ------------------------- | -------------------- | ------------------ | ---------------------------- | -------------------- | ------------------- | -------------------------- |
+| **Development Usage**     | :white_check_mark:   | :white_check_mark: | :white_check_mark:           | :white_check_mark:   | :white_check_mark:  | :white_check_mark:         |
+| Embedding UI5 Middlewares | :white_check_mark:   | :white_check_mark: | :white_check_mark:           | :x:                  | :white_check_mark:  | :white_check_mark:         |
+| Embedding CAP Server      | :x:                  | :white_check_mark: | (:white_check_mark:)`*`      | :x:                  | :white_check_mark:  | (:white_check_mark:)`*`    |
+| Mock UAA Support          | :white_check_mark:   | :white_check_mark: | (:white_check_mark:)`*`      | :x:                  | :white_check_mark:  | (:white_check_mark:)`*`    |
+| Server processes          | 1                    | 1                  | 2 (UI5 server + AppRouter)   | 1 + required servers | 2 (AppRouter + CAP) | 1 + required servers       |
+
+`*` via Proxy
 
 ## Support, Feedback, Contributing
 
