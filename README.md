@@ -275,7 +275,7 @@ The following table shows a small comparison of the different backend connectivi
 | UAA Support               | (:white_check_mark:) | :x:                | :white_check_mark:           | :white_check_mark:   | :white_check_mark:  | :x:                        |
 | BTP Destinations          | :x:                  | :x:                | :white_check_mark:           | :white_check_mark:   | :white_check_mark:  | :x:                        |
 | WebSockets                | :x:                  | :x:                | :white_check_mark:           | :white_check_mark:   | :white_check_mark:  | :white_check_mark:         |
-| ------------------------- | -------------------- | ------------------ | ---------------------------- | -------------------- | ------------------- | -------------------------- |
+|                           |                      |                    |                              |                      |                     |                            |
 | **Development Usage**     | :white_check_mark:   | :white_check_mark: | :white_check_mark:           | :white_check_mark:   | :white_check_mark:  | :white_check_mark:         |
 | Embedding UI5 Middlewares | :white_check_mark:   | :white_check_mark: | :white_check_mark:           | :x:                  | :white_check_mark:  | :white_check_mark:         |
 | Embedding CAP Server      | :x:                  | :white_check_mark: | (:white_check_mark:)`*`      | :x:                  | :white_check_mark:  | (:white_check_mark:)`*`    |
