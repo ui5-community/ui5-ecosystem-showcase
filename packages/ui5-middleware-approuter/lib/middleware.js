@@ -27,7 +27,7 @@ const nextFreePort = async (basePort) => {
 }
 
 /**
- * Custom UI5 Server middleware "cfdestination"
+ * Custom UI5 Server middleware "approuter"
  *
  * @param {object} parameters Parameters
  * @param {@ui5/logger/Logger} parameters.log Logger instance
@@ -55,7 +55,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		enableWebSocket: false,
 		extensions: []
 	}
-	// config-time options from ui5.yaml for cfdestination take precedence
+	// config-time options from ui5.yaml for approuter take precedence
 	if (options.configuration) {
 		Object.assign(effectiveOptions, options.configuration)
 	}
@@ -171,13 +171,13 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	})
 
 	// resolve the extensions and append the paths / inject parameters into request
-	//   => req["ui5-middleware-cfdestination"]?.parameters provides access to params
+	//   => req["ui5-middleware-approuter"]?.parameters provides access to params
 	const extensionsRoutes = []
 	const createParametersInjector = function (middleware, parameters) {
 		// we always need the injectParameters wrapper to have <= 3 arguments otherwise
 		// the approuter will not call the middleware function when it has a 4th argument!
 		return function injectParameters(req) {
-			req["ui5-middleware-cfdestination"] = {
+			req["ui5-middleware-approuter"] = {
 				parameters
 			}
 			return middleware.apply(this, [...arguments, parameters])
@@ -333,7 +333,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 			// we need to send a redirect to trigger the auth-flow of the approuter
 			if (req["ui5-middleware-index"]?.url === "/") {
 				// mark the response as redirected
-				res["ui5-middleware-cfdestination"] = {
+				res["ui5-middleware-approuter"] = {
 					redirected: true
 				}
 				// redirect the response to baseUrl + url
@@ -351,7 +351,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		onProxyRes: async (proxyRes, req, res) => {
 			// we only handle the response when the request hasn't been
 			// redirected already in the flow above
-			if (!res["ui5-middleware-cfdestination"]?.redirected) {
+			if (!res["ui5-middleware-approuter"]?.redirected) {
 				return intercept(proxyRes, req, res)
 			}
 		}
@@ -360,7 +360,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	// manually install the upgrade function for the websocket (if configured)
 	return effectiveOptions.enableWebSocket
 		? hook(
-				"ui5-middleware-cfdestination",
+				"ui5-middleware-approuter",
 				({ on, options }) => {
 					const { mountpath } = options
 					on("upgrade", (req, socket, head) => {

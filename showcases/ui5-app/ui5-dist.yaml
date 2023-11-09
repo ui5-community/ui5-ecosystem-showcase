@@ -60,7 +60,7 @@ server:
         debug: true
         baseUri: "https://sdk.openui5.org/"
         removeETag: true
-    - name: ui5-middleware-cfdestination
+    - name: ui5-middleware-approuter
       afterMiddleware: compression
       configuration:
         debug: true

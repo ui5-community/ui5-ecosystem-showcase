@@ -104,7 +104,7 @@ sap.ui.define(
 			async testWebSocketCF() {
 				const ws = (await createWebSocket(`ws${location.protocol === "https:" ? "s" : ""}://${location.host}/cfwsecho`))?.[0];
 				if (ws) {
-					ws.send("Hello ui5-middleware-cfdestination! 👋");
+					ws.send("Hello ui5-middleware-approuter! 👋");
 				}
 			},
 		});

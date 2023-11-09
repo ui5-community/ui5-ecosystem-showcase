@@ -155,7 +155,7 @@ server:
         replace:
           - placeholder: "${project.version}"
             value: "1.0.0-SNAPSHOT"
-    - name: ui5-middleware-cfdestination
+    - name: ui5-middleware-approuter
       afterMiddleware: compression
       configuration:
         debug: true

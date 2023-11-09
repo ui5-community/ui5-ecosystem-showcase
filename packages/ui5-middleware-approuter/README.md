@@ -14,7 +14,7 @@ Middleware for [ui5-server](https://github.com/SAP/ui5-server), making `destinat
 ## Install
 
 ```bash
-npm install ui5-middleware-cfdestination --save-dev
+npm install ui5-middleware-approuter --save-dev
 ```
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
@@ -87,7 +87,7 @@ enables support for proxying web sockets, will be also automatically detected fr
 ```json
 "devDependencies": {
     // ...
-    "ui5-middleware-cfdestination": "*"
+    "ui5-middleware-approuter": "*"
     // ...
 }
 ```
@@ -97,7 +97,7 @@ enables support for proxying web sockets, will be also automatically detected fr
 ```yaml
 server:
   customMiddleware:
-    - name: ui5-middleware-cfdestination
+    - name: ui5-middleware-approuter
       afterMiddleware: compression
       configuration:
         authenticationMethod: "none" # "none" || "route", default: "none"
@@ -122,12 +122,12 @@ During development, the `approuter` is started on a configurable port, running a
 
 ### Using `approuter` extensions
 
-The `ui5-middleware-cfdestination` allows using `approuter` extensions. It is possible to pass parameters to handler functions of the extensions as a 4th argument of the handler function.
+The `ui5-middleware-approuter` allows using `approuter` extensions. It is possible to pass parameters to handler functions of the extensions as a 4th argument of the handler function.
 
 The configuration of the extensions in the `ui5.yaml` looks like that:
 
 ```yaml
-    - name: ui5-middleware-cfdestination
+    - name: ui5-middleware-approuter
       afterMiddleware: compression
       configuration:
         extensions:
@@ -163,7 +163,7 @@ Keep in mind that the 4th parameter doesn't work for the regular `approuter` ext
 
 - prerequisite: a `default-env.json` file at the root `/` of your UI5 app
 Bespoken `default-env.json` file can be obtained [via the `Default Env CLI Plugin`](https://github.com/saphanaacademy/DefaultEnv)
-- `ui5.yaml > server > customMiddlware > ui5-middleware-cfdestination`: set `authenticationMethod` to `route` (see config example above)
+- `ui5.yaml > server > customMiddlware > ui5-middleware-approuter`: set `authenticationMethod` to `route` (see config example above)
 - `xs-app.json` (also at the root `/` of your UI5 app):
   - set `authenticationMethod` to `route`
   - in the route with the desired protected authentication, set `authenticationType` to `xsuaa`  

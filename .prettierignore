@@ -12,7 +12,7 @@ pnpm-lock.yaml
 /packages/ui5-middleware-onelogin/lib/**
 
 # Ignore build test folders
-/packages/ui5-middleware-cfdestination/test/*/**
+/packages/ui5-middleware-approuter/test/*/**
 /packages/ui5-task-pwa-enabler/templates/**
 /packages/ui5-task-zipper/test/**
 /packages/ui5-tooling-modules/test/__snap__/**

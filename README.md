@@ -29,7 +29,7 @@ packages
 ├── dev-approuter                   // dev time wrapper for the SAP Application Router that can serve UI5 and CDS modules added as dependencies
 ├── karma-ui5-transpile             // karma preprocessor: transpile sources using ui5-tooling-transpile
 ├── ui5-middleware-cap              // middleware extension: use the CDS server middlewares inside the UI5 tooling
-├── ui5-middleware-cfdestination    // middleware extension: use the approuter as proxy
+├── ui5-middleware-approuter    // middleware extension: use the approuter as proxy
 ├── ui5-middleware-iasync           // middleware extension: sync UI interaction across browsers (alpha! careful!)
 ├── ui5-middleware-index            // middleware extension: serve an HTML file for / (root)
 ├── ui5-middleware-livereload       // middleware extension: usage of livereload for development
@@ -156,7 +156,7 @@ The tasks developed in this monorepo are also publicly available on NPM right he
 The middlewares developed in this monorepo are also publicly available on NPM right here:
 
 * https://www.npmjs.com/package/ui5-middleware-cap
-* https://www.npmjs.com/package/ui5-middleware-cfdestination
+* https://www.npmjs.com/package/ui5-middleware-approuter
 * https://www.npmjs.com/package/ui5-middleware-iasync (alpha! careful!)
 * https://www.npmjs.com/package/ui5-middleware-index
 * https://www.npmjs.com/package/ui5-middleware-livereload
@@ -193,7 +193,7 @@ Available middlewares in this project:
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
 | [ui5-middleware-cap](packages/ui5-middleware-cap/README.md) | use the CDS server middlewares inside the UI5 tooling | [![npm version](https://badge.fury.io/js/ui5-middleware-cap.svg)](https://badge.fury.io/js/ui5-middleware-cap) |
-| [ui5-middleware-cfdestination](packages/ui5-middleware-cfdestination/README.md) | use the approuter as proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-cfdestination.svg)](https://badge.fury.io/js/ui5-middleware-cfdestination) |
+| [ui5-middleware-approuter](packages/ui5-middleware-approuter/README.md) | use the approuter as proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-approuter.svg)](https://badge.fury.io/js/ui5-middleware-approuter) |
 | [ui5-middleware-iasync](packages/ui5-middleware-iasync/README.md) | sync UI interactions across connected browsers (alpha! careful!) | [![npm version](https://badge.fury.io/js/ui5-middleware-iasync.svg)](https://badge.fury.io/js/ui5-middleware-iasync) |
 | [ui5-middleware-index](packages/ui5-middleware-index/README.md) | serve an HTML file for / (root) | [![npm version](https://badge.fury.io/js/ui5-middleware-index.svg)](https://badge.fury.io/js/ui5-middleware-index) |
 | [ui5-middleware-livereload](packages/ui5-middleware-livereload/README.md) | usage of livereload for development | [![npm version](https://badge.fury.io/js/ui5-middleware-livereload.svg)](https://badge.fury.io/js/ui5-middleware-livereload) |
@@ -239,9 +239,9 @@ The `cds-plugin-ui5` is a CDS server `cds-plugin` which enables the integration 
 
 The `ui5-middleware-cap` is a UI5 tooling middleware which is used to improve the development experience for the [SAP Cloud Application Programming Model (CAP)](https://cap.cloud.sap/docs/about/) and enables the integration of a CDS server into the UI5 development server via the CDS server express middlewares. In addition to the middleware the CDS server project needs to be added as dependency so that the server is detected and attached properly. The pre-defined routes in the CDS server are reused.
 
-### `ui5-middleware-cfdestination`
+### `ui5-middleware-approuter`
 
-[ui5-middleware-cfdestination](packages/ui5-middleware-cfdestination/README.md)
+[ui5-middleware-approuter](packages/ui5-middleware-approuter/README.md)
 
 Middleware for [ui5-server](https://github.com/SAP/ui5-server), making `destinations` configured in SAP CF available for local development using the [`http-proxy-middleware`](https://www.npmjs.com/package/http-proxy-middleware).
 
@@ -269,7 +269,7 @@ Middleware for [ui5-server](https://github.com/SAP/ui5-server), enabling proxy s
 
 The following table shows a small comparison of the different backend connectivity tooling features:
 
-|                           | cds-plugin-ui5       | ui5-middleware-cap | ui5-middleware-cfdestination | @sap/approuter       | dev-approuter       | ui5-middleware-simpleproxy |
+|                           | cds-plugin-ui5       | ui5-middleware-cap | ui5-middleware-approuter | @sap/approuter       | dev-approuter       | ui5-middleware-simpleproxy |
 | ------------------------- | -------------------- | ------------------ | ---------------------------- | -------------------- | ------------------- | -------------------------- |
 | **Productive Usage**      | :x:                  | :x:                | :x:                          | :white_check_mark:   | :x:                 | :x:                        |
 | UAA Support               | (:white_check_mark:) | :x:                | :white_check_mark:           | :white_check_mark:   | :white_check_mark:  | :x:                        |
