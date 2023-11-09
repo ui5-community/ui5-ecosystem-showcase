@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-index@3.0.3...ui5-middleware-index@3.0.4) (2023-11-09)
+
+
+### Bug Fixes
+
+* **ui5-middleware-index:** re-enable support for URL parameters ([#914](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/914)) ([5294d42](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5294d4260fab3dec061c330b97eb34e5be644bb8)), closes [#912](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/912)
+
+
+
+
+
 ## [3.0.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-index@3.0.2...ui5-middleware-index@3.0.3) (2023-10-14)
 
 **Note:** Version bump only for package ui5-middleware-index

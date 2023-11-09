@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 3.4.0 (2023-11-09)
+
+
+### Features
+
+* **ui5-middleware-cfdestination:** rename to ui5-middleware-approuter ([#913](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/913)) ([6e45df3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6e45df33df8576aa493e11c73d84203be838d1e9))
+
+
+
+
+
 ## [3.3.11](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cfdestination@3.3.10...ui5-middleware-cfdestination@3.3.11) (2023-11-03)
 
 **Note:** Version bump only for package ui5-middleware-cfdestination
