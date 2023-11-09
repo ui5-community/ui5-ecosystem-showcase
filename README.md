@@ -29,7 +29,7 @@ packages
 ├── dev-approuter                   // dev time wrapper for the SAP Application Router that can serve UI5 and CDS modules added as dependencies
 ├── karma-ui5-transpile             // karma preprocessor: transpile sources using ui5-tooling-transpile
 ├── ui5-middleware-cap              // middleware extension: use the CDS server middlewares inside the UI5 tooling
-├── ui5-middleware-approuter    // middleware extension: use the approuter as proxy
+├── ui5-middleware-approuter        // middleware extension: use the approuter as proxy for SAP Cloud Foundry or SAP XS Advanced backend services
 ├── ui5-middleware-iasync           // middleware extension: sync UI interaction across browsers (alpha! careful!)
 ├── ui5-middleware-index            // middleware extension: serve an HTML file for / (root)
 ├── ui5-middleware-livereload       // middleware extension: usage of livereload for development
@@ -193,7 +193,7 @@ Available middlewares in this project:
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
 | [ui5-middleware-cap](packages/ui5-middleware-cap/README.md) | use the CDS server middlewares inside the UI5 tooling | [![npm version](https://badge.fury.io/js/ui5-middleware-cap.svg)](https://badge.fury.io/js/ui5-middleware-cap) |
-| [ui5-middleware-approuter](packages/ui5-middleware-approuter/README.md) | use the approuter as proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-approuter.svg)](https://badge.fury.io/js/ui5-middleware-approuter) |
+| [ui5-middleware-approuter](packages/ui5-middleware-approuter/README.md) | use the approuter as proxy for SAP Cloud Foundry or SAP XS Advanced backend services | [![npm version](https://badge.fury.io/js/ui5-middleware-approuter.svg)](https://badge.fury.io/js/ui5-middleware-approuter) |
 | [ui5-middleware-iasync](packages/ui5-middleware-iasync/README.md) | sync UI interactions across connected browsers (alpha! careful!) | [![npm version](https://badge.fury.io/js/ui5-middleware-iasync.svg)](https://badge.fury.io/js/ui5-middleware-iasync) |
 | [ui5-middleware-index](packages/ui5-middleware-index/README.md) | serve an HTML file for / (root) | [![npm version](https://badge.fury.io/js/ui5-middleware-index.svg)](https://badge.fury.io/js/ui5-middleware-index) |
 | [ui5-middleware-livereload](packages/ui5-middleware-livereload/README.md) | usage of livereload for development | [![npm version](https://badge.fury.io/js/ui5-middleware-livereload.svg)](https://badge.fury.io/js/ui5-middleware-livereload) |
@@ -243,7 +243,7 @@ The `ui5-middleware-cap` is a UI5 tooling middleware which is used to improve th
 
 [ui5-middleware-approuter](packages/ui5-middleware-approuter/README.md)
 
-Middleware for [ui5-server](https://github.com/SAP/ui5-server), making `destinations` configured in SAP CF available for local development using the [`http-proxy-middleware`](https://www.npmjs.com/package/http-proxy-middleware).
+Middleware for [ui5-server](https://github.com/SAP/ui5-server), making `destinations` configured in SAP Cloud Foundry or SAP XS Advanced available for local development using the [`http-proxy-middleware`](https://www.npmjs.com/package/http-proxy-middleware).
 
 #### `@sap/approuter`
 

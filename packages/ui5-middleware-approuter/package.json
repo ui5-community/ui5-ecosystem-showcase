@@ -1,8 +1,8 @@
 {
   "name": "ui5-middleware-approuter",
   "version": "3.4.0",
-  "description": "UI5 middleware for CF destinations",
-  "author": "Volker Buzek, Peter Muessig",
+  "description": "UI5 middleware using the @sap/approuter to connect against Cloud Foundry or XS Advanced destinations",
+  "author": "Peter Muessig, Volker Buzek",
   "license": "Apache-2.0",
   "homepage": "https://github.com/ui5-community/ui5-ecosystem-showcase/tree/main/packages/ui5-middleware-approuter#readme",
   "repository": {

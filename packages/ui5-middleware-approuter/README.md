@@ -1,8 +1,8 @@
-# UI5 middleware for CF destinations
+# UI5 middleware using `@sap/approuter` for service connectivity
 
 > :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
 
-Middleware for [ui5-server](https://github.com/SAP/ui5-server), making `destinations` configured in SAP CF available for local development using the [`http-proxy-middleware`](https://www.npmjs.com/package/http-proxy-middleware).
+Middleware for [ui5-server](https://github.com/SAP/ui5-server), making `destinations` configured in SAP Cloud Foundry or SAP XS Advanced available for local development using the [`http-proxy-middleware`](https://www.npmjs.com/package/http-proxy-middleware).
 
 ## Prerequisites
 
