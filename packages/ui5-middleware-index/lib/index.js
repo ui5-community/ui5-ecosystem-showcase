@@ -14,10 +14,10 @@ module.exports = ({ log, options }) => {
 	return (req, res, next) => {
 		const sIndexFile = options?.configuration?.welcomeFile || options?.configuration?.index || "index.html"
 		const { url, originalUrl } = req
-		if (url === "/") {
+		if (req.path === "/") {
 			options?.configuration?.debug && log.info(`serving ${sIndexFile}!`)
 			// "redirect" the request
-			req.url = `/${sIndexFile}`
+			req.url = `/${sIndexFile}${req.url.substring(1)}`
 			req.originalUrl = req.url
 			// redirect about original request url
 			req["ui5-middleware-index"] = {
