@@ -76,7 +76,7 @@
     "npm-run-all": "^4.1.5",
     "npm-watch": "^0.11.0",
     "rimraf": "^5.0.5",
-    "ui5-middleware-cfdestination": "workspace:^",
+    "ui5-middleware-approuter": "workspace:^",
     "ui5-middleware-iasync": "workspace:^",
     "ui5-middleware-index": "workspace:^",
     "ui5-middleware-livereload": "workspace:^",

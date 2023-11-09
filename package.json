@@ -47,7 +47,7 @@
     "test:opa5": "pnpm --filter ui5-app test",
     "test:opa5-ci": "pnpm --filter ui5-app test:ci",
     "test:wdi5": "pnpm --filter ui5-app test:wdi5",
-    "test:ui5-middleware-cfdestination": "pnpm --filter ui5-middleware-cfdestination test",
+    "test:ui5-middleware-approuter": "pnpm --filter ui5-middleware-approuter test",
     "test:ui5-task-zipper": "pnpm --filter ui5-task-zipper test",
     "test:all": "pnpm --filter \"./packages/*\" --workspace-concurrency 1 test",
     "watch": "pnpm --filter ui5-app watch",

@@ -36,13 +36,13 @@ test.before(async (t) => {
 		rootConfiguration: {
 			specVersion: "3.0",
 			metadata: {
-				name: "ui5-middleware-cfdestination-test"
+				name: "ui5-middleware-approuter-test"
 			},
 			type: "application",
 			server: {
 				customMiddleware: [
 					{
-						name: "ui5-middleware-cfdestination",
+						name: "ui5-middleware-approuter",
 						afterMiddleware: "compression",
 						configuration: {
 							debug: true,

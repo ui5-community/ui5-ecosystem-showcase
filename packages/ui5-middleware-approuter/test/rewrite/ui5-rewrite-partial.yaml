@@ -12,14 +12,17 @@ framework:
     - name: themelib_sap_horizon
 server:
   customMiddleware:
-  - name: ui5-middleware-cfdestination
+  - name: ui5-middleware-approuter
     afterMiddleware: compression
     configuration:
-      authenticationMethod: "route"
       debug: true
       port: 1091
       xsappJson: "xs-app.json"
+      rewriteContentTypes:
+      - "application/json"
       destinations:
-      # check that the destination name (here: "backend") matches your router in xssppJson
-      - name: "backend"
+      # check that the destination name (here: "backendXX") matches your router in xssppJson
+      - name: "backendv4"
         url: "https://services.odata.org/V4/(S(fdng4tbvlxgzpdtpfap2rqss))/TripPinServiceRW/"
+      - name: "backendv2"
+        url: "https://services.odata.org/V2/Northwind/Northwind.svc/"

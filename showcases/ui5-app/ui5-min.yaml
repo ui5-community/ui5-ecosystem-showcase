@@ -70,7 +70,7 @@ server:
         debug: true
         baseUri: "ws://localhost:1081/wsecho/"
         enableWebSocket: true
-    - name: ui5-middleware-cfdestination
+    - name: ui5-middleware-approuter
       afterMiddleware: compression
       configuration:
         debug: true

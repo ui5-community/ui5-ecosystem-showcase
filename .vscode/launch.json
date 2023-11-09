@@ -59,9 +59,9 @@
         {
           "type": "node",
           "request": "launch",
-          "name": "Debug CFDestination Middleware Test",
+          "name": "Debug App Router Middleware Test",
           "runtimeExecutable": "pnpm",
-          "args": [ "test:ui5-middleware-cfdestination" ],
+          "args": [ "test:ui5-middleware-approuter" ],
           "cwd": "${workspaceFolder}",
           "console": "integratedTerminal",
           "internalConsoleOptions": "neverOpen"

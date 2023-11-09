@@ -41,7 +41,7 @@ This project is implemented using plain ECMAScript without any compilation / tra
 
 ### Testing
 
-There is no consistent testing tooling used for this repository. Some of the sub-packages are using [AVA][ava] (e.g. `ui5-middleware-cfdestination` or `ui5-task-zipper`). Creating tests for your tooling extensions is highly recommended and appreciated.
+There is no consistent testing tooling used for this repository. Some of the sub-packages are using [AVA][ava] (e.g. `ui5-middleware-approuter` or `ui5-task-zipper`). Creating tests for your tooling extensions is highly recommended and appreciated.
 
 The UI5 application is using [QUnit][qunit], [OPA5][opa5] and [WDIO5][wdio5] tests for validation.
 
