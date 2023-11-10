@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-websocket",
-  "version": "2.9.9",
+  "version": "3.0.0",
   "description": "UI5 middleware utilities to enable WebSockets for Express servers like the UI5 server",
   "author": "Peter Muessig",
   "license": "Apache-2.0",
