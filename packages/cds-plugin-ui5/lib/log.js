@@ -15,7 +15,7 @@ function log(type, ...message) {
 	if (!console[type]) {
 		type = "log";
 	}
-	const args = [`\x1b[36m[cds-ui5-plugin]\x1b[0m %s[%s]\x1b[0m %s`, colors[type], type];
+	const args = [`\x1b[36m[cds-plugin-ui5]\x1b[0m %s[%s]\x1b[0m %s`, colors[type], type];
 	message && args.push(...message);
 	console[type].apply(console[type], args);
 }
