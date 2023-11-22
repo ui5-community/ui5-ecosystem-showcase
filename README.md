@@ -1,6 +1,6 @@
 # ui5-ecosystem-showcase
 
-[![OpenUI5 Community Slack (#tooling channel)](https://img.shields.io/badge/slack-join-44cc11.svg)](https://join-ui5-slack.herokuapp.com)
+[![OpenUI5 Community Slack (#tooling channel)](https://img.shields.io/badge/slack-join-44cc11.svg)](https://ui5-slack-invite.cfapps.eu10.hana.ondemand.com/)
 
 The repository is showcasing the ecosystem possibilites of the UI5 Tooling.
 
