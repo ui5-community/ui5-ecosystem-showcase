@@ -31,9 +31,14 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	// derive framework from current project
 	const rootProject = middlewareUtil.getProject();
 	const frameworkName = rootProject.getFrameworkName();
+	const frameworkVersion = rootProject.getFrameworkVersion();
 
-	// only if a framework is specified, the middleware gets active
-	if (frameworkName) {
+	// check if the core library version matches the framework version
+	// which is the indicator for running in the workspace mode
+	const isWorkspace = middlewareUtil.getDependencies().length > 0 && frameworkVersion !== middlewareUtil.getProject("sap.ui.core").getVersion();
+
+	// only if a framework is specified and no workspace, the middleware gets active
+	if (frameworkName && !isWorkspace) {
 		// derive the npm scope and the version
 		const frameworkScope = `@${frameworkName.toLowerCase()}`;
 		const frameworkVersion = rootProject.getFrameworkVersion(); // TODO: how to determine the versionOverride?
@@ -229,7 +234,11 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		};
 	} else {
 		// log what happens now
-		log.warn(`\n\n\n[WARNING] No framework configuration found in ui5.yaml! Disabling ui5-middleware-serveframework!\n\n`);
+		if (isWorkspace) {
+			log.warn(`\n\n\n\t\x1b[33mUI5 workspaces configuration used! Disabling ui5-middleware-serveframework!\x1b[0m\n\n`);
+		} else {
+			log.warn(`\n\n\n\t\x1b[33mNo framework configuration found in ui5.yaml! Disabling ui5-middleware-serveframework!\x1b[0m\n\n`);
+		}
 
 		// in any case, at least register a dummy middleware function
 		return async function (req, res, next) {
