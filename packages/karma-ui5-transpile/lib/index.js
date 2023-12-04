@@ -62,7 +62,7 @@ function createPreprocessor(config, logger) {
 	// determine the ui5-tooling-transpile-task configuration
 	const customTasks = configs?.[0]?.builder?.customTasks;
 	const transpileTask = customTasks?.find((customTask) => customTask.name === "ui5-tooling-transpile-task");
-	const configuration = createConfiguration(transpileTask?.configuration);
+	const configuration = createConfiguration({ configuration: transpileTask?.configuration });
 
 	// create the Babel configuration using the ui5-tooling-tranpile-task util
 	const babelConfigCreated = createBabelConfig({

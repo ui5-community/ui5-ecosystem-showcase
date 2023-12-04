@@ -79,8 +79,10 @@ test("inject configuration options", async (t) => {
 	// typescript, default config
 	let configuration = t.context.util.createConfiguration(
 		{
-			debug: true,
-			skipBabelPresetPluginResolve: true
+			configuration: {
+				debug: true,
+				skipBabelPresetPluginResolve: true
+			}
 		},
 		cwd
 	);
@@ -112,11 +114,13 @@ test("inject configuration options", async (t) => {
 	// typescript, custom transform-ui5 config
 	configuration = t.context.util.createConfiguration(
 		{
-			debug: true,
-			transformModulesToUI5: {
-				overridesToOverride: true
-			},
-			skipBabelPresetPluginResolve: true
+			configuration: {
+				debug: true,
+				transformModulesToUI5: {
+					overridesToOverride: true
+				},
+				skipBabelPresetPluginResolve: true
+			}
 		},
 		cwd
 	);
@@ -153,14 +157,16 @@ test("inject configuration options", async (t) => {
 	// typescript, custom typescript and transform-ui5 config
 	configuration = t.context.util.createConfiguration(
 		{
-			debug: true,
-			transformTypeScript: {
-				optimizeConstEnums: true
-			},
-			transformModulesToUI5: {
-				overridesToOverride: true
-			},
-			skipBabelPresetPluginResolve: true
+			configuration: {
+				debug: true,
+				transformTypeScript: {
+					optimizeConstEnums: true
+				},
+				transformModulesToUI5: {
+					overridesToOverride: true
+				},
+				skipBabelPresetPluginResolve: true
+			}
 		},
 		cwd
 	);

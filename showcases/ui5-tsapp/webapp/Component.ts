@@ -1,5 +1,5 @@
 import UIComponent from "sap/ui/core/UIComponent";
-import { support } from "sap/ui/Device";
+import Device from "sap/ui/Device";
 
 /**
  * @namespace ui5.ecosystem.demo.tsapp
@@ -30,7 +30,7 @@ export default class Component extends UIComponent {
 			// check whether FLP has already set the content density class; do nothing in this case
 			if (document.body.classList.contains("sapUiSizeCozy") || document.body.classList.contains("sapUiSizeCompact")) {
 				this.contentDensityClass = "";
-			} else if (!support.touch) {
+			} else if (!Device.support.touch) {
 				// apply "compact" mode if touch is not supported
 				this.contentDensityClass = "sapUiSizeCompact";
 			} else {

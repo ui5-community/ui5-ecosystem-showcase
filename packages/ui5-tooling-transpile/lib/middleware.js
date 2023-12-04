@@ -33,7 +33,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	} = require("./util")(log);
 
 	const cwd = middlewareUtil.getProject().getRootPath() || process.cwd();
-	const config = createConfiguration(options?.configuration || {}, cwd);
+	const config = createConfiguration({ configuration: options?.configuration || {}, isMiddleware: true }, cwd);
 	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: true }, cwd);
 
 	// in case of local development of framework dependencies, they are not listed as
