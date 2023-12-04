@@ -29,7 +29,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 	} = require("./util")(log);
 
 	const cwd = taskUtil.getProject().getRootPath() || process.cwd();
-	const config = createConfiguration(options?.configuration || {}, cwd);
+	const config = createConfiguration({ configuration: options?.configuration || {}, isMiddleware: false }, cwd);
 	const babelConfig = await createBabelConfig({ configuration: config, isMiddleware: false }, cwd);
 
 	const { resourceFactory } = taskUtil;
@@ -42,6 +42,39 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 	if (allResources.length > 0) {
 		rootProject =
 			typeof allResources[0].getProject === "function" ? allResources[0].getProject() : allResources[0]._project;
+	}
+
+	// if the TypeScript interfaces should be created, launch the ts-interface-generator in watch mode
+	if (config.generateTsInterfaces) {
+		const generateTSInterfacesAPI = resolveNodeModule(
+			"@ui5/ts-interface-generator/dist/generateTSInterfacesAPI",
+			cwd
+		);
+		if (generateTSInterfacesAPI) {
+			const { main } = require(generateTSInterfacesAPI);
+			try {
+				// disable the clearScreen for watchMode for regular build
+				const tsModule = resolveNodeModule("typescript", cwd);
+				const ts = require(tsModule);
+				const originalClearScreen = ts.sys.clearScreen;
+				ts.sys.clearScreen = () => {};
+				// run the interface generator
+				config.debug && log.info(`Executing "@ui5/ts-interface-generator"...`);
+				main({
+					//logLevel: config.debug ? log.constructor.getLevel() : "error",
+					config: path.join(cwd, "tsconfig.json")
+				});
+				// reset the clear screen function
+				ts.sys.clearScreen = originalClearScreen;
+			} catch (e) {
+				log.error(e);
+			}
+		} else {
+			config.debug &&
+				log.warn(
+					`Missing dependency "@ui5/ts-interface-generator"! TypeScript interfaces will not be generated until dependency has been added...`
+				);
+		}
 	}
 
 	// transpile the TypeScript resources and collect the code

@@ -228,11 +228,13 @@ module.exports = function (log) {
 		/**
 		 * Build the configuration for the task and the middleware.
 		 *
-		 * @param {object} configuration task/middleware configuration
+		 * @param {object} cfg configuration object
+		 * @param {object} cfg.configuration task/middleware configuration
+		 * @param {boolean} cfg.isMiddleware true, if the function is called from the middleware
 		 * @param {string} [cwd] the cwd to lookup the configuration (defaults to process.cwd())
 		 * @returns {object} the translated task/middleware configuration
 		 */
-		createConfiguration: function createConfiguration(configuration, cwd = process.cwd()) {
+		createConfiguration: function createConfiguration({ configuration, isMiddleware }, cwd = process.cwd()) {
 			// extract the configuration
 			const config = configuration || {};
 
@@ -265,9 +267,15 @@ module.exports = function (log) {
 
 			// load the pkgJson to determine the existence of the @ui5/ts-interface-generator
 			// to automatically set the config option generateTsInterfaces (if this is a ts project)
+			// in case of running the code inside a middleware
 			let generateTsInterfaces = config.generateTsInterfaces;
 			const pkgJsonPath = path.join(cwd, "package.json");
-			if (transformTypeScript && generateTsInterfaces === undefined && fs.existsSync(pkgJsonPath)) {
+			if (
+				isMiddleware &&
+				transformTypeScript &&
+				generateTsInterfaces === undefined &&
+				fs.existsSync(pkgJsonPath)
+			) {
 				const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, { encoding: "utf8" }));
 				const deps = [
 					...Object.keys(pkgJson?.dependencies || {}),
