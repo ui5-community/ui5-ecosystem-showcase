@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/karma-ui5-transpile@3.2.7...karma-ui5-transpile@3.3.0) (2023-12-04)
+
+
+### Features
+
+* **ui5-tooling-transpile:** support generation of interfaces in task ([#920](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/920)) ([67f277c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/67f277cd095dd9af6fbaeaa0f5f5beeabdfaf6e5)), closes [#919](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/919)
+
+
+
+
+
 ## [3.2.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/karma-ui5-transpile@3.2.6...karma-ui5-transpile@3.2.7) (2023-10-14)
 
 **Note:** Version bump only for package karma-ui5-transpile

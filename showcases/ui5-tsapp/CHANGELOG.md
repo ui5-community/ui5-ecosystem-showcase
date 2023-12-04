@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.10.17...ui5-tsapp@0.11.0) (2023-12-04)
+
+
+### Features
+
+* **ui5-tooling-transpile:** support generation of interfaces in task ([#920](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/920)) ([67f277c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/67f277cd095dd9af6fbaeaa0f5f5beeabdfaf6e5)), closes [#919](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/919)
+
+
+
+
+
 ## [0.10.17](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.10.16...ui5-tsapp@0.10.17) (2023-10-31)
 
 **Note:** Version bump only for package ui5-tsapp

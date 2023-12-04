@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.0.0...ui5-middleware-serveframework@3.0.1) (2023-12-04)
+
+
+### Bug Fixes
+
+* **ui5-middleware-serveframework:** disable for UI5 workspaces ([#917](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/917)) ([e8f726e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e8f726e7e9e8e35476db85d93aef9cc093e1c751))
+
+
+
+
+
 # [3.0.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.0.0-alpha.4...ui5-middleware-serveframework@3.0.0) (2023-11-10)
 
 
