@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.2.4...ui5-tooling-modules@3.2.5) (2023-12-10)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** chunks are stored in module name folder ([#922](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/922)) ([c2ad65d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c2ad65d06cecd7fbcccd39c2179cac079d32aaef)), closes [#915](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/915)
+
+
+
+
+
 ## [3.2.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.2.3...ui5-tooling-modules@3.2.4) (2023-10-31)
 
 
