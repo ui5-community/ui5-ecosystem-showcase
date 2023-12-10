@@ -8,6 +8,8 @@ const { nodeResolve } = require("@rollup/plugin-node-resolve");
 const commonjs = require("@rollup/plugin-commonjs");
 const json = require("@rollup/plugin-json");
 const nodePolyfills = require("rollup-plugin-polyfill-node");
+const nodePolyfillsOverride = require("./rollup-plugin-polyfill-node-override");
+const nodePolyfillsIgnore = require("./rollup-plugin-polyfill-node-ignore");
 const amdCustom = require("./rollup-plugin-amd-custom");
 const skipAssets = require("./rollup-plugin-skip-assets");
 const injectESModule = require("./rollup-plugin-inject-esmodule");
@@ -184,27 +186,24 @@ module.exports = function (log) {
 							"process.env.NODE_ENV": JSON.stringify("development"),
 						},
 					}),
+					nodePolyfillsOverride(),
+					nodePolyfills(),
+					nodePolyfillsIgnore(),
 					injectESModule(),
 					skipAssets({
 						log,
 						extensions: ["css"],
-						modules: ["crypto"],
 					}),
 					commonjs({
 						defaultIsModuleExports: true,
 					}),
 					amdCustom(),
-					nodePolyfills(),
 					json(),
 					nodeResolve({
 						mainFields,
 						preferBuiltins: false,
 					}),
 					pnpmResolve({
-						options: {
-							cwd,
-							mainFields,
-						},
 						resolveModule: function (moduleName) {
 							return that.resolveModule(moduleName, { cwd, depPaths, mainFields });
 						},
@@ -235,7 +234,7 @@ module.exports = function (log) {
 					define: "sap.ui.define",
 				},
 				entryFileNames: `${moduleName}.js`,
-				chunkFileNames: `${moduleName}-[hash].js`,
+				chunkFileNames: `${moduleName}/[hash].js`,
 				sourcemap: false, // isMiddleware ? "inline" : true
 			});
 
