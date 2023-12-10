@@ -24,7 +24,7 @@
     "timeout": "5m"
   },
   "devDependencies": {
-    "@ui5/cli": "^3.6.0",
+    "@ui5/cli": "^3.7.3",
     "ava": "^5.3.1"
   }
 }

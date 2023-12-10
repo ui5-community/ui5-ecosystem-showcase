@@ -666,6 +666,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       return sysLocaleCache;
     }
   }
+  var weekInfoCache = {};
+  function getCachedWeekInfo(locString) {
+    var data = weekInfoCache[locString];
+    if (!data) {
+      var locale = new Intl.Locale(locString);
+      data = ("getWeekInfo" in locale) ? locale.getWeekInfo() : locale.weekInfo;
+      weekInfoCache[locString] = data;
+    }
+    return data;
+  }
   function parseLocaleString(localeStr) {
     var xIndex = localeStr.indexOf("-x-");
     if (xIndex !== -1) {
@@ -862,11 +872,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     };
     return PolyRelFormatter;
   })();
+  var fallbackWeekSettings = {
+    firstDay: 1,
+    minimalDays: 4,
+    weekend: [6, 7]
+  };
   var Locale = (function () {
     Locale.fromOpts = function fromOpts(opts) {
-      return Locale.create(opts.locale, opts.numberingSystem, opts.outputCalendar, opts.defaultToEN);
+      return Locale.create(opts.locale, opts.numberingSystem, opts.outputCalendar, opts.weekSettings, opts.defaultToEN);
     };
-    Locale.create = function create(locale, numberingSystem, outputCalendar, defaultToEN) {
+    Locale.create = function create(locale, numberingSystem, outputCalendar, weekSettings, defaultToEN) {
       if (defaultToEN === void 0) {
         defaultToEN = false;
       }
@@ -874,7 +889,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       var localeR = specifiedLocale || (defaultToEN ? "en-US" : systemLocale());
       var numberingSystemR = numberingSystem || Settings.defaultNumberingSystem;
       var outputCalendarR = outputCalendar || Settings.defaultOutputCalendar;
-      return new Locale(localeR, numberingSystemR, outputCalendarR, specifiedLocale);
+      var weekSettingsR = validateWeekSettings(weekSettings) || Settings.defaultWeekSettings;
+      return new Locale(localeR, numberingSystemR, outputCalendarR, weekSettingsR, specifiedLocale);
     };
     Locale.resetCache = function resetCache() {
       sysLocaleCache = null;
@@ -883,14 +899,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       intlRelCache = {};
     };
     Locale.fromObject = function fromObject(_temp) {
-      var _ref2 = _temp === void 0 ? {} : _temp, locale = _ref2.locale, numberingSystem = _ref2.numberingSystem, outputCalendar = _ref2.outputCalendar;
-      return Locale.create(locale, numberingSystem, outputCalendar);
+      var _ref2 = _temp === void 0 ? {} : _temp, locale = _ref2.locale, numberingSystem = _ref2.numberingSystem, outputCalendar = _ref2.outputCalendar, weekSettings = _ref2.weekSettings;
+      return Locale.create(locale, numberingSystem, outputCalendar, weekSettings);
     };
-    function Locale(locale, numbering, outputCalendar, specifiedLocale) {
+    function Locale(locale, numbering, outputCalendar, weekSettings, specifiedLocale) {
       var _parseLocaleString = parseLocaleString(locale), parsedLocale = _parseLocaleString[0], parsedNumberingSystem = _parseLocaleString[1], parsedOutputCalendar = _parseLocaleString[2];
       this.locale = parsedLocale;
       this.numberingSystem = numbering || parsedNumberingSystem || null;
       this.outputCalendar = outputCalendar || parsedOutputCalendar || null;
+      this.weekSettings = weekSettings;
       this.intl = intlConfigString(this.locale, this.numberingSystem, this.outputCalendar);
       this.weekdaysCache = {
         format: {},
@@ -915,7 +932,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       if (!alts || Object.getOwnPropertyNames(alts).length === 0) {
         return this;
       } else {
-        return Locale.create(alts.locale || this.specifiedLocale, alts.numberingSystem || this.numberingSystem, alts.outputCalendar || this.outputCalendar, alts.defaultToEN || false);
+        return Locale.create(alts.locale || this.specifiedLocale, alts.numberingSystem || this.numberingSystem, alts.outputCalendar || this.outputCalendar, validateWeekSettings(alts.weekSettings) || this.weekSettings, alts.defaultToEN || false);
       }
     };
     _proto4.redefaultToEN = function redefaultToEN(alts) {
@@ -1039,6 +1056,24 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     };
     _proto4.isEnglish = function isEnglish() {
       return this.locale === "en" || this.locale.toLowerCase() === "en-us" || new Intl.DateTimeFormat(this.intl).resolvedOptions().locale.startsWith("en-us");
+    };
+    _proto4.getWeekSettings = function getWeekSettings() {
+      if (this.weekSettings) {
+        return this.weekSettings;
+      } else if (!hasLocaleWeekInfo()) {
+        return fallbackWeekSettings;
+      } else {
+        return getCachedWeekInfo(this.locale);
+      }
+    };
+    _proto4.getStartOfWeek = function getStartOfWeek() {
+      return this.getWeekSettings().firstDay;
+    };
+    _proto4.getMinDaysInFirstWeek = function getMinDaysInFirstWeek() {
+      return this.getWeekSettings().minimalDays;
+    };
+    _proto4.getWeekendDays = function getWeekendDays() {
+      return this.getWeekSettings().weekend;
     };
     _proto4.equals = function equals(other) {
       return this.locale === other.locale && this.numberingSystem === other.numberingSystem && this.outputCalendar === other.outputCalendar;
@@ -1190,7 +1225,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
   var now = function now() {
     return Date.now();
-  }, defaultZone = "system", defaultLocale = null, defaultNumberingSystem = null, defaultOutputCalendar = null, twoDigitCutoffYear = 60, throwOnInvalid;
+  }, defaultZone = "system", defaultLocale = null, defaultNumberingSystem = null, defaultOutputCalendar = null, twoDigitCutoffYear = 60, throwOnInvalid, defaultWeekSettings = null;
   var Settings = (function () {
     function Settings() {}
     Settings.resetCaches = function resetCaches() {
@@ -1238,6 +1273,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         defaultOutputCalendar = outputCalendar;
       }
     }, {
+      key: "defaultWeekSettings",
+      get: function get() {
+        return defaultWeekSettings;
+      },
+      set: function set(weekSettings) {
+        defaultWeekSettings = validateWeekSettings(weekSettings);
+      }
+    }, {
       key: "twoDigitCutoffYear",
       get: function get() {
         return twoDigitCutoffYear;
@@ -1256,6 +1299,185 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }]);
     return Settings;
   })();
+  var Invalid = (function () {
+    function Invalid(reason, explanation) {
+      this.reason = reason;
+      this.explanation = explanation;
+    }
+    var _proto = Invalid.prototype;
+    _proto.toMessage = function toMessage() {
+      if (this.explanation) {
+        return this.reason + ": " + this.explanation;
+      } else {
+        return this.reason;
+      }
+    };
+    return Invalid;
+  })();
+  var nonLeapLadder = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334], leapLadder = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335];
+  function unitOutOfRange(unit, value) {
+    return new Invalid("unit out of range", "you specified " + value + " (of type " + typeof value + ") as a " + unit + ", which is invalid");
+  }
+  function dayOfWeek(year, month, day) {
+    var d = new Date(Date.UTC(year, month - 1, day));
+    if (year < 100 && year >= 0) {
+      d.setUTCFullYear(d.getUTCFullYear() - 1900);
+    }
+    var js = d.getUTCDay();
+    return js === 0 ? 7 : js;
+  }
+  function computeOrdinal(year, month, day) {
+    return day + (isLeapYear(year) ? leapLadder : nonLeapLadder)[month - 1];
+  }
+  function uncomputeOrdinal(year, ordinal) {
+    var table = isLeapYear(year) ? leapLadder : nonLeapLadder, month0 = table.findIndex(function (i) {
+      return i < ordinal;
+    }), day = ordinal - table[month0];
+    return {
+      month: month0 + 1,
+      day: day
+    };
+  }
+  function isoWeekdayToLocal(isoWeekday, startOfWeek) {
+    return (isoWeekday - startOfWeek + 7) % 7 + 1;
+  }
+  function gregorianToWeek(gregObj, minDaysInFirstWeek, startOfWeek) {
+    if (minDaysInFirstWeek === void 0) {
+      minDaysInFirstWeek = 4;
+    }
+    if (startOfWeek === void 0) {
+      startOfWeek = 1;
+    }
+    var year = gregObj.year, month = gregObj.month, day = gregObj.day, ordinal = computeOrdinal(year, month, day), weekday = isoWeekdayToLocal(dayOfWeek(year, month, day), startOfWeek);
+    var weekNumber = Math.floor((ordinal - weekday + 14 - minDaysInFirstWeek) / 7), weekYear;
+    if (weekNumber < 1) {
+      weekYear = year - 1;
+      weekNumber = weeksInWeekYear(weekYear, minDaysInFirstWeek, startOfWeek);
+    } else if (weekNumber > weeksInWeekYear(year, minDaysInFirstWeek, startOfWeek)) {
+      weekYear = year + 1;
+      weekNumber = 1;
+    } else {
+      weekYear = year;
+    }
+    return _extends({
+      weekYear: weekYear,
+      weekNumber: weekNumber,
+      weekday: weekday
+    }, timeObject(gregObj));
+  }
+  function weekToGregorian(weekData, minDaysInFirstWeek, startOfWeek) {
+    if (minDaysInFirstWeek === void 0) {
+      minDaysInFirstWeek = 4;
+    }
+    if (startOfWeek === void 0) {
+      startOfWeek = 1;
+    }
+    var weekYear = weekData.weekYear, weekNumber = weekData.weekNumber, weekday = weekData.weekday, weekdayOfJan4 = isoWeekdayToLocal(dayOfWeek(weekYear, 1, minDaysInFirstWeek), startOfWeek), yearInDays = daysInYear(weekYear);
+    var ordinal = weekNumber * 7 + weekday - weekdayOfJan4 - 7 + minDaysInFirstWeek, year;
+    if (ordinal < 1) {
+      year = weekYear - 1;
+      ordinal += daysInYear(year);
+    } else if (ordinal > yearInDays) {
+      year = weekYear + 1;
+      ordinal -= daysInYear(weekYear);
+    } else {
+      year = weekYear;
+    }
+    var _uncomputeOrdinal = uncomputeOrdinal(year, ordinal), month = _uncomputeOrdinal.month, day = _uncomputeOrdinal.day;
+    return _extends({
+      year: year,
+      month: month,
+      day: day
+    }, timeObject(weekData));
+  }
+  function gregorianToOrdinal(gregData) {
+    var year = gregData.year, month = gregData.month, day = gregData.day;
+    var ordinal = computeOrdinal(year, month, day);
+    return _extends({
+      year: year,
+      ordinal: ordinal
+    }, timeObject(gregData));
+  }
+  function ordinalToGregorian(ordinalData) {
+    var year = ordinalData.year, ordinal = ordinalData.ordinal;
+    var _uncomputeOrdinal2 = uncomputeOrdinal(year, ordinal), month = _uncomputeOrdinal2.month, day = _uncomputeOrdinal2.day;
+    return _extends({
+      year: year,
+      month: month,
+      day: day
+    }, timeObject(ordinalData));
+  }
+  function usesLocalWeekValues(obj, loc) {
+    var hasLocaleWeekData = !isUndefined(obj.localWeekday) || !isUndefined(obj.localWeekNumber) || !isUndefined(obj.localWeekYear);
+    if (hasLocaleWeekData) {
+      var hasIsoWeekData = !isUndefined(obj.weekday) || !isUndefined(obj.weekNumber) || !isUndefined(obj.weekYear);
+      if (hasIsoWeekData) {
+        throw new ConflictingSpecificationError("Cannot mix locale-based week fields with ISO-based week fields");
+      }
+      if (!isUndefined(obj.localWeekday)) obj.weekday = obj.localWeekday;
+      if (!isUndefined(obj.localWeekNumber)) obj.weekNumber = obj.localWeekNumber;
+      if (!isUndefined(obj.localWeekYear)) obj.weekYear = obj.localWeekYear;
+      delete obj.localWeekday;
+      delete obj.localWeekNumber;
+      delete obj.localWeekYear;
+      return {
+        minDaysInFirstWeek: loc.getMinDaysInFirstWeek(),
+        startOfWeek: loc.getStartOfWeek()
+      };
+    } else {
+      return {
+        minDaysInFirstWeek: 4,
+        startOfWeek: 1
+      };
+    }
+  }
+  function hasInvalidWeekData(obj, minDaysInFirstWeek, startOfWeek) {
+    if (minDaysInFirstWeek === void 0) {
+      minDaysInFirstWeek = 4;
+    }
+    if (startOfWeek === void 0) {
+      startOfWeek = 1;
+    }
+    var validYear = isInteger(obj.weekYear), validWeek = integerBetween(obj.weekNumber, 1, weeksInWeekYear(obj.weekYear, minDaysInFirstWeek, startOfWeek)), validWeekday = integerBetween(obj.weekday, 1, 7);
+    if (!validYear) {
+      return unitOutOfRange("weekYear", obj.weekYear);
+    } else if (!validWeek) {
+      return unitOutOfRange("week", obj.weekNumber);
+    } else if (!validWeekday) {
+      return unitOutOfRange("weekday", obj.weekday);
+    } else return false;
+  }
+  function hasInvalidOrdinalData(obj) {
+    var validYear = isInteger(obj.year), validOrdinal = integerBetween(obj.ordinal, 1, daysInYear(obj.year));
+    if (!validYear) {
+      return unitOutOfRange("year", obj.year);
+    } else if (!validOrdinal) {
+      return unitOutOfRange("ordinal", obj.ordinal);
+    } else return false;
+  }
+  function hasInvalidGregorianData(obj) {
+    var validYear = isInteger(obj.year), validMonth = integerBetween(obj.month, 1, 12), validDay = integerBetween(obj.day, 1, daysInMonth(obj.year, obj.month));
+    if (!validYear) {
+      return unitOutOfRange("year", obj.year);
+    } else if (!validMonth) {
+      return unitOutOfRange("month", obj.month);
+    } else if (!validDay) {
+      return unitOutOfRange("day", obj.day);
+    } else return false;
+  }
+  function hasInvalidTimeData(obj) {
+    var hour = obj.hour, minute = obj.minute, second = obj.second, millisecond = obj.millisecond;
+    var validHour = integerBetween(hour, 0, 23) || hour === 24 && minute === 0 && second === 0 && millisecond === 0, validMinute = integerBetween(minute, 0, 59), validSecond = integerBetween(second, 0, 59), validMillisecond = integerBetween(millisecond, 0, 999);
+    if (!validHour) {
+      return unitOutOfRange("hour", hour);
+    } else if (!validMinute) {
+      return unitOutOfRange("minute", minute);
+    } else if (!validSecond) {
+      return unitOutOfRange("second", second);
+    } else if (!validMillisecond) {
+      return unitOutOfRange("millisecond", millisecond);
+    } else return false;
+  }
   function isUndefined(o) {
     return typeof o === "undefined";
   }
@@ -1274,6 +1496,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   function hasRelative() {
     try {
       return typeof Intl !== "undefined" && !!Intl.RelativeTimeFormat;
+    } catch (e) {
+      return false;
+    }
+  }
+  function hasLocaleWeekInfo() {
+    try {
+      return typeof Intl !== "undefined" && !!Intl.Locale && (("weekInfo" in Intl.Locale.prototype) || ("getWeekInfo" in Intl.Locale.prototype));
     } catch (e) {
       return false;
     }
@@ -1304,6 +1533,24 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
   function hasOwnProperty(obj, prop) {
     return Object.prototype.hasOwnProperty.call(obj, prop);
+  }
+  function validateWeekSettings(settings) {
+    if (settings == null) {
+      return null;
+    } else if (typeof settings !== "object") {
+      throw new InvalidArgumentError("Week settings must be an object");
+    } else {
+      if (!integerBetween(settings.firstDay, 1, 7) || !integerBetween(settings.minimalDays, 1, 7) || !Array.isArray(settings.weekend) || settings.weekend.some(function (v) {
+        return !integerBetween(v, 1, 7);
+      })) {
+        throw new InvalidArgumentError("Invalid week settings");
+      }
+      return {
+        firstDay: settings.firstDay,
+        minimalDays: settings.minimalDays,
+        weekend: Array.from(settings.weekend)
+      };
+    }
   }
   function integerBetween(thing, bottom, top) {
     return isInteger(thing) && thing >= bottom && thing <= top;
@@ -1375,9 +1622,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     return +d;
   }
-  function weeksInWeekYear(weekYear) {
-    var p1 = (weekYear + Math.floor(weekYear / 4) - Math.floor(weekYear / 100) + Math.floor(weekYear / 400)) % 7, last = weekYear - 1, p2 = (last + Math.floor(last / 4) - Math.floor(last / 100) + Math.floor(last / 400)) % 7;
-    return p1 === 4 || p2 === 3 ? 53 : 52;
+  function firstWeekOffset(year, minDaysInFirstWeek, startOfWeek) {
+    var fwdlw = isoWeekdayToLocal(dayOfWeek(year, 1, minDaysInFirstWeek), startOfWeek);
+    return -fwdlw + minDaysInFirstWeek - 1;
+  }
+  function weeksInWeekYear(weekYear, minDaysInFirstWeek, startOfWeek) {
+    if (minDaysInFirstWeek === void 0) {
+      minDaysInFirstWeek = 4;
+    }
+    if (startOfWeek === void 0) {
+      startOfWeek = 1;
+    }
+    var weekOffset = firstWeekOffset(weekYear, minDaysInFirstWeek, startOfWeek);
+    var weekOffsetNext = firstWeekOffset(weekYear + 1, minDaysInFirstWeek, startOfWeek);
+    return (daysInYear(weekYear) - weekOffset + weekOffsetNext) / 7;
   }
   function untruncateYear(year) {
     if (year > 99) {
@@ -1850,6 +2108,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             return _this.num(dt.weekNumber);
           case "WW":
             return _this.num(dt.weekNumber, 2);
+          case "n":
+            return _this.num(dt.localWeekNumber);
+          case "nn":
+            return _this.num(dt.localWeekNumber, 2);
+          case "ii":
+            return _this.num(dt.localWeekYear.toString().slice(-2), 2);
+          case "iiii":
+            return _this.num(dt.localWeekYear, 4);
           case "o":
             return _this.num(dt.ordinal);
           case "ooo":
@@ -1909,21 +2175,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       return stringifyTokens(tokens, tokenToString(collapsed));
     };
     return Formatter;
-  })();
-  var Invalid = (function () {
-    function Invalid(reason, explanation) {
-      this.reason = reason;
-      this.explanation = explanation;
-    }
-    var _proto = Invalid.prototype;
-    _proto.toMessage = function toMessage() {
-      if (this.explanation) {
-        return this.reason + ": " + this.explanation;
-      } else {
-        return this.reason;
-      }
-    };
-    return Invalid;
   })();
   var ianaRegex = /[A-Za-z_+-]{1,256}(?::?\/[A-Za-z0-9_+-]{1,256}(?:\/[A-Za-z0-9_+-]{1,256})?)?/;
   function combineRegexes() {
@@ -2269,7 +2520,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     return newVals;
   }
-  var Duration = (function () {
+  var Duration = (function (_Symbol$for) {
     function Duration(config) {
       var accurate = config.conversionAccuracy === "longterm" || false;
       var matrix = accurate ? accurateMatrix : casualMatrix;
@@ -2450,6 +2701,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     };
     _proto.toString = function toString() {
       return this.toISO();
+    };
+    _proto[_Symbol$for] = function () {
+      if (this.isValid) {
+        return "Duration { values: " + JSON.stringify(this.values) + " }";
+      } else {
+        return "Duration { Invalid, reason: " + this.invalidReason + " }";
+      }
     };
     _proto.toMillis = function toMillis() {
       if (!this.isValid) return NaN;
@@ -2676,7 +2934,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
     }]);
     return Duration;
-  })();
+  })(Symbol.for("nodejs.util.inspect.custom"));
   var INVALID$1 = "Invalid Interval";
   function validateStartEnd(start, end) {
     if (!start || !start.isValid) {
@@ -2689,7 +2947,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       return null;
     }
   }
-  var Interval = (function () {
+  var Interval = (function (_Symbol$for) {
     function Interval(config) {
       this.s = config.start;
       this.e = config.end;
@@ -2776,12 +3034,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       return this.isValid ? this.toDuration.apply(this, [unit]).get(unit) : NaN;
     };
-    _proto.count = function count(unit) {
+    _proto.count = function count(unit, opts) {
       if (unit === void 0) {
         unit = "milliseconds";
       }
       if (!this.isValid) return NaN;
-      var start = this.start.startOf(unit), end = this.end.startOf(unit);
+      var start = this.start.startOf(unit, opts);
+      var end;
+      if (opts != null && opts.useLocaleWeeks) {
+        end = this.end.reconfigure({
+          locale: start.locale
+        });
+      } else {
+        end = this.end;
+      }
+      end = end.startOf(unit, opts);
       return Math.floor(end.diff(start, unit).get(unit)) + (end.valueOf() !== this.end.valueOf());
     };
     _proto.hasSame = function hasSame(unit) {
@@ -2815,7 +3082,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       var sorted = dateTimes.map(friendlyDateTime).filter(function (d) {
         return _this.contains(d);
-      }).sort(), results = [];
+      }).sort(function (a, b) {
+        return a.toMillis() - b.toMillis();
+      }), results = [];
       var s = this.s, i = 0;
       while (s < this.e) {
         var added = sorted[i] || this.e, next = +added > +this.e ? this.e : added;
@@ -2943,6 +3212,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       if (!this.isValid) return INVALID$1;
       return "[" + this.s.toISO() + " – " + this.e.toISO() + ")";
     };
+    _proto[_Symbol$for] = function () {
+      if (this.isValid) {
+        return "Interval { start: " + this.s.toISO() + ", end: " + this.e.toISO() + " }";
+      } else {
+        return "Interval { Invalid, reason: " + this.invalidReason + " }";
+      }
+    };
     _proto.toLocaleString = function toLocaleString(formatOpts, opts) {
       if (formatOpts === void 0) {
         formatOpts = DATE_SHORT;
@@ -3005,7 +3281,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
     }]);
     return Interval;
-  })();
+  })(Symbol.for("nodejs.util.inspect.custom"));
   var Info = (function () {
     function Info() {}
     Info.hasDST = function hasDST(zone) {
@@ -3025,48 +3301,61 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     Info.normalizeZone = function normalizeZone$1(input) {
       return normalizeZone(input, Settings.defaultZone);
     };
-    Info.months = function months(length, _temp) {
+    Info.getStartOfWeek = function getStartOfWeek(_temp) {
+      var _ref = _temp === void 0 ? {} : _temp, _ref$locale = _ref.locale, locale = _ref$locale === void 0 ? null : _ref$locale, _ref$locObj = _ref.locObj, locObj = _ref$locObj === void 0 ? null : _ref$locObj;
+      return (locObj || Locale.create(locale)).getStartOfWeek();
+    };
+    Info.getMinimumDaysInFirstWeek = function getMinimumDaysInFirstWeek(_temp2) {
+      var _ref2 = _temp2 === void 0 ? {} : _temp2, _ref2$locale = _ref2.locale, locale = _ref2$locale === void 0 ? null : _ref2$locale, _ref2$locObj = _ref2.locObj, locObj = _ref2$locObj === void 0 ? null : _ref2$locObj;
+      return (locObj || Locale.create(locale)).getMinDaysInFirstWeek();
+    };
+    Info.getWeekendWeekdays = function getWeekendWeekdays(_temp3) {
+      var _ref3 = _temp3 === void 0 ? {} : _temp3, _ref3$locale = _ref3.locale, locale = _ref3$locale === void 0 ? null : _ref3$locale, _ref3$locObj = _ref3.locObj, locObj = _ref3$locObj === void 0 ? null : _ref3$locObj;
+      return (locObj || Locale.create(locale)).getWeekendDays().slice();
+    };
+    Info.months = function months(length, _temp4) {
       if (length === void 0) {
         length = "long";
       }
-      var _ref = _temp === void 0 ? {} : _temp, _ref$locale = _ref.locale, locale = _ref$locale === void 0 ? null : _ref$locale, _ref$numberingSystem = _ref.numberingSystem, numberingSystem = _ref$numberingSystem === void 0 ? null : _ref$numberingSystem, _ref$locObj = _ref.locObj, locObj = _ref$locObj === void 0 ? null : _ref$locObj, _ref$outputCalendar = _ref.outputCalendar, outputCalendar = _ref$outputCalendar === void 0 ? "gregory" : _ref$outputCalendar;
+      var _ref4 = _temp4 === void 0 ? {} : _temp4, _ref4$locale = _ref4.locale, locale = _ref4$locale === void 0 ? null : _ref4$locale, _ref4$numberingSystem = _ref4.numberingSystem, numberingSystem = _ref4$numberingSystem === void 0 ? null : _ref4$numberingSystem, _ref4$locObj = _ref4.locObj, locObj = _ref4$locObj === void 0 ? null : _ref4$locObj, _ref4$outputCalendar = _ref4.outputCalendar, outputCalendar = _ref4$outputCalendar === void 0 ? "gregory" : _ref4$outputCalendar;
       return (locObj || Locale.create(locale, numberingSystem, outputCalendar)).months(length);
     };
-    Info.monthsFormat = function monthsFormat(length, _temp2) {
+    Info.monthsFormat = function monthsFormat(length, _temp5) {
       if (length === void 0) {
         length = "long";
       }
-      var _ref2 = _temp2 === void 0 ? {} : _temp2, _ref2$locale = _ref2.locale, locale = _ref2$locale === void 0 ? null : _ref2$locale, _ref2$numberingSystem = _ref2.numberingSystem, numberingSystem = _ref2$numberingSystem === void 0 ? null : _ref2$numberingSystem, _ref2$locObj = _ref2.locObj, locObj = _ref2$locObj === void 0 ? null : _ref2$locObj, _ref2$outputCalendar = _ref2.outputCalendar, outputCalendar = _ref2$outputCalendar === void 0 ? "gregory" : _ref2$outputCalendar;
+      var _ref5 = _temp5 === void 0 ? {} : _temp5, _ref5$locale = _ref5.locale, locale = _ref5$locale === void 0 ? null : _ref5$locale, _ref5$numberingSystem = _ref5.numberingSystem, numberingSystem = _ref5$numberingSystem === void 0 ? null : _ref5$numberingSystem, _ref5$locObj = _ref5.locObj, locObj = _ref5$locObj === void 0 ? null : _ref5$locObj, _ref5$outputCalendar = _ref5.outputCalendar, outputCalendar = _ref5$outputCalendar === void 0 ? "gregory" : _ref5$outputCalendar;
       return (locObj || Locale.create(locale, numberingSystem, outputCalendar)).months(length, true);
     };
-    Info.weekdays = function weekdays(length, _temp3) {
+    Info.weekdays = function weekdays(length, _temp6) {
       if (length === void 0) {
         length = "long";
       }
-      var _ref3 = _temp3 === void 0 ? {} : _temp3, _ref3$locale = _ref3.locale, locale = _ref3$locale === void 0 ? null : _ref3$locale, _ref3$numberingSystem = _ref3.numberingSystem, numberingSystem = _ref3$numberingSystem === void 0 ? null : _ref3$numberingSystem, _ref3$locObj = _ref3.locObj, locObj = _ref3$locObj === void 0 ? null : _ref3$locObj;
+      var _ref6 = _temp6 === void 0 ? {} : _temp6, _ref6$locale = _ref6.locale, locale = _ref6$locale === void 0 ? null : _ref6$locale, _ref6$numberingSystem = _ref6.numberingSystem, numberingSystem = _ref6$numberingSystem === void 0 ? null : _ref6$numberingSystem, _ref6$locObj = _ref6.locObj, locObj = _ref6$locObj === void 0 ? null : _ref6$locObj;
       return (locObj || Locale.create(locale, numberingSystem, null)).weekdays(length);
     };
-    Info.weekdaysFormat = function weekdaysFormat(length, _temp4) {
+    Info.weekdaysFormat = function weekdaysFormat(length, _temp7) {
       if (length === void 0) {
         length = "long";
       }
-      var _ref4 = _temp4 === void 0 ? {} : _temp4, _ref4$locale = _ref4.locale, locale = _ref4$locale === void 0 ? null : _ref4$locale, _ref4$numberingSystem = _ref4.numberingSystem, numberingSystem = _ref4$numberingSystem === void 0 ? null : _ref4$numberingSystem, _ref4$locObj = _ref4.locObj, locObj = _ref4$locObj === void 0 ? null : _ref4$locObj;
+      var _ref7 = _temp7 === void 0 ? {} : _temp7, _ref7$locale = _ref7.locale, locale = _ref7$locale === void 0 ? null : _ref7$locale, _ref7$numberingSystem = _ref7.numberingSystem, numberingSystem = _ref7$numberingSystem === void 0 ? null : _ref7$numberingSystem, _ref7$locObj = _ref7.locObj, locObj = _ref7$locObj === void 0 ? null : _ref7$locObj;
       return (locObj || Locale.create(locale, numberingSystem, null)).weekdays(length, true);
     };
-    Info.meridiems = function meridiems(_temp5) {
-      var _ref5 = _temp5 === void 0 ? {} : _temp5, _ref5$locale = _ref5.locale, locale = _ref5$locale === void 0 ? null : _ref5$locale;
+    Info.meridiems = function meridiems(_temp8) {
+      var _ref8 = _temp8 === void 0 ? {} : _temp8, _ref8$locale = _ref8.locale, locale = _ref8$locale === void 0 ? null : _ref8$locale;
       return Locale.create(locale).meridiems();
     };
-    Info.eras = function eras(length, _temp6) {
+    Info.eras = function eras(length, _temp9) {
       if (length === void 0) {
         length = "short";
       }
-      var _ref6 = _temp6 === void 0 ? {} : _temp6, _ref6$locale = _ref6.locale, locale = _ref6$locale === void 0 ? null : _ref6$locale;
+      var _ref9 = _temp9 === void 0 ? {} : _temp9, _ref9$locale = _ref9.locale, locale = _ref9$locale === void 0 ? null : _ref9$locale;
       return Locale.create(locale, null, "gregory").eras(length);
     };
     Info.features = function features() {
       return {
-        relative: hasRelative()
+        relative: hasRelative(),
+        localeWeek: hasLocaleWeekInfo()
       };
     };
     return Info;
@@ -3639,125 +3928,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       return tokenForPart(p, formatOpts, resolvedOpts);
     });
   }
-  var nonLeapLadder = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334], leapLadder = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335];
-  function unitOutOfRange(unit, value) {
-    return new Invalid("unit out of range", "you specified " + value + " (of type " + typeof value + ") as a " + unit + ", which is invalid");
-  }
-  function dayOfWeek(year, month, day) {
-    var d = new Date(Date.UTC(year, month - 1, day));
-    if (year < 100 && year >= 0) {
-      d.setUTCFullYear(d.getUTCFullYear() - 1900);
-    }
-    var js = d.getUTCDay();
-    return js === 0 ? 7 : js;
-  }
-  function computeOrdinal(year, month, day) {
-    return day + (isLeapYear(year) ? leapLadder : nonLeapLadder)[month - 1];
-  }
-  function uncomputeOrdinal(year, ordinal) {
-    var table = isLeapYear(year) ? leapLadder : nonLeapLadder, month0 = table.findIndex(function (i) {
-      return i < ordinal;
-    }), day = ordinal - table[month0];
-    return {
-      month: month0 + 1,
-      day: day
-    };
-  }
-  function gregorianToWeek(gregObj) {
-    var year = gregObj.year, month = gregObj.month, day = gregObj.day, ordinal = computeOrdinal(year, month, day), weekday = dayOfWeek(year, month, day);
-    var weekNumber = Math.floor((ordinal - weekday + 10) / 7), weekYear;
-    if (weekNumber < 1) {
-      weekYear = year - 1;
-      weekNumber = weeksInWeekYear(weekYear);
-    } else if (weekNumber > weeksInWeekYear(year)) {
-      weekYear = year + 1;
-      weekNumber = 1;
-    } else {
-      weekYear = year;
-    }
-    return _extends({
-      weekYear: weekYear,
-      weekNumber: weekNumber,
-      weekday: weekday
-    }, timeObject(gregObj));
-  }
-  function weekToGregorian(weekData) {
-    var weekYear = weekData.weekYear, weekNumber = weekData.weekNumber, weekday = weekData.weekday, weekdayOfJan4 = dayOfWeek(weekYear, 1, 4), yearInDays = daysInYear(weekYear);
-    var ordinal = weekNumber * 7 + weekday - weekdayOfJan4 - 3, year;
-    if (ordinal < 1) {
-      year = weekYear - 1;
-      ordinal += daysInYear(year);
-    } else if (ordinal > yearInDays) {
-      year = weekYear + 1;
-      ordinal -= daysInYear(weekYear);
-    } else {
-      year = weekYear;
-    }
-    var _uncomputeOrdinal = uncomputeOrdinal(year, ordinal), month = _uncomputeOrdinal.month, day = _uncomputeOrdinal.day;
-    return _extends({
-      year: year,
-      month: month,
-      day: day
-    }, timeObject(weekData));
-  }
-  function gregorianToOrdinal(gregData) {
-    var year = gregData.year, month = gregData.month, day = gregData.day;
-    var ordinal = computeOrdinal(year, month, day);
-    return _extends({
-      year: year,
-      ordinal: ordinal
-    }, timeObject(gregData));
-  }
-  function ordinalToGregorian(ordinalData) {
-    var year = ordinalData.year, ordinal = ordinalData.ordinal;
-    var _uncomputeOrdinal2 = uncomputeOrdinal(year, ordinal), month = _uncomputeOrdinal2.month, day = _uncomputeOrdinal2.day;
-    return _extends({
-      year: year,
-      month: month,
-      day: day
-    }, timeObject(ordinalData));
-  }
-  function hasInvalidWeekData(obj) {
-    var validYear = isInteger(obj.weekYear), validWeek = integerBetween(obj.weekNumber, 1, weeksInWeekYear(obj.weekYear)), validWeekday = integerBetween(obj.weekday, 1, 7);
-    if (!validYear) {
-      return unitOutOfRange("weekYear", obj.weekYear);
-    } else if (!validWeek) {
-      return unitOutOfRange("week", obj.week);
-    } else if (!validWeekday) {
-      return unitOutOfRange("weekday", obj.weekday);
-    } else return false;
-  }
-  function hasInvalidOrdinalData(obj) {
-    var validYear = isInteger(obj.year), validOrdinal = integerBetween(obj.ordinal, 1, daysInYear(obj.year));
-    if (!validYear) {
-      return unitOutOfRange("year", obj.year);
-    } else if (!validOrdinal) {
-      return unitOutOfRange("ordinal", obj.ordinal);
-    } else return false;
-  }
-  function hasInvalidGregorianData(obj) {
-    var validYear = isInteger(obj.year), validMonth = integerBetween(obj.month, 1, 12), validDay = integerBetween(obj.day, 1, daysInMonth(obj.year, obj.month));
-    if (!validYear) {
-      return unitOutOfRange("year", obj.year);
-    } else if (!validMonth) {
-      return unitOutOfRange("month", obj.month);
-    } else if (!validDay) {
-      return unitOutOfRange("day", obj.day);
-    } else return false;
-  }
-  function hasInvalidTimeData(obj) {
-    var hour = obj.hour, minute = obj.minute, second = obj.second, millisecond = obj.millisecond;
-    var validHour = integerBetween(hour, 0, 23) || hour === 24 && minute === 0 && second === 0 && millisecond === 0, validMinute = integerBetween(minute, 0, 59), validSecond = integerBetween(second, 0, 59), validMillisecond = integerBetween(millisecond, 0, 999);
-    if (!validHour) {
-      return unitOutOfRange("hour", hour);
-    } else if (!validMinute) {
-      return unitOutOfRange("minute", minute);
-    } else if (!validSecond) {
-      return unitOutOfRange("second", second);
-    } else if (!validMillisecond) {
-      return unitOutOfRange("millisecond", millisecond);
-    } else return false;
-  }
   var INVALID = "Invalid DateTime";
   var MAX_DATE = 8640000000000000;
   function unsupportedZone(zone) {
@@ -3768,6 +3938,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       dt.weekData = gregorianToWeek(dt.c);
     }
     return dt.weekData;
+  }
+  function possiblyCachedLocalWeekData(dt) {
+    if (dt.localWeekData === null) {
+      dt.localWeekData = gregorianToWeek(dt.c, dt.loc.getMinDaysInFirstWeek(), dt.loc.getStartOfWeek());
+    }
+    return dt.localWeekData;
   }
   function clone(inst, alts) {
     var current = {
@@ -3964,6 +4140,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     if (!normalized) throw new InvalidUnitError(unit);
     return normalized;
   }
+  function normalizeUnitWithLocalWeeks(unit) {
+    switch (unit.toLowerCase()) {
+      case "localweekday":
+      case "localweekdays":
+        return "localWeekday";
+      case "localweeknumber":
+      case "localweeknumbers":
+        return "localWeekNumber";
+      case "localweekyear":
+      case "localweekyears":
+        return "localWeekYear";
+      default:
+        return normalizeUnit(unit);
+    }
+  }
   function quickDT(obj, opts) {
     var zone = normalizeZone(opts.zone, Settings.defaultZone), loc = Locale.fromObject(opts), tsNow = Settings.now();
     var ts, o;
@@ -4028,7 +4219,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     return [opts, args];
   }
-  var DateTime = (function () {
+  var DateTime = (function (_Symbol$for) {
     function DateTime(config) {
       var zone = config.zone || Settings.defaultZone;
       var invalid = config.invalid || (Number.isNaN(config.ts) ? new Invalid("invalid input") : null) || (!zone.isValid ? unsupportedZone(zone) : null);
@@ -4052,6 +4243,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       this.loc = config.loc || Locale.create();
       this.invalid = invalid;
       this.weekData = null;
+      this.localWeekData = null;
       this.c = c;
       this.o = o;
       this.isLuxonDateTime = true;
@@ -4141,7 +4333,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       if (!zoneToUse.isValid) {
         return DateTime.invalid(unsupportedZone(zoneToUse));
       }
-      var tsNow = Settings.now(), offsetProvis = !isUndefined(opts.specificOffset) ? opts.specificOffset : zoneToUse.offset(tsNow), normalized = normalizeObject(obj, normalizeUnit), containsOrdinal = !isUndefined(normalized.ordinal), containsGregorYear = !isUndefined(normalized.year), containsGregorMD = !isUndefined(normalized.month) || !isUndefined(normalized.day), containsGregor = containsGregorYear || containsGregorMD, definiteWeekDef = normalized.weekYear || normalized.weekNumber, loc = Locale.fromObject(opts);
+      var loc = Locale.fromObject(opts);
+      var normalized = normalizeObject(obj, normalizeUnitWithLocalWeeks);
+      var _usesLocalWeekValues = usesLocalWeekValues(normalized, loc), minDaysInFirstWeek = _usesLocalWeekValues.minDaysInFirstWeek, startOfWeek = _usesLocalWeekValues.startOfWeek;
+      var tsNow = Settings.now(), offsetProvis = !isUndefined(opts.specificOffset) ? opts.specificOffset : zoneToUse.offset(tsNow), containsOrdinal = !isUndefined(normalized.ordinal), containsGregorYear = !isUndefined(normalized.year), containsGregorMD = !isUndefined(normalized.month) || !isUndefined(normalized.day), containsGregor = containsGregorYear || containsGregorMD, definiteWeekDef = normalized.weekYear || normalized.weekNumber;
       if ((containsGregor || containsOrdinal) && definiteWeekDef) {
         throw new ConflictingSpecificationError("Can't mix weekYear/weekNumber units with year/month/day or ordinals");
       }
@@ -4153,7 +4348,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       if (useWeekData) {
         units = orderedWeekUnits;
         defaultValues = defaultWeekUnitValues;
-        objNow = gregorianToWeek(objNow);
+        objNow = gregorianToWeek(objNow, minDaysInFirstWeek, startOfWeek);
       } else if (containsOrdinal) {
         units = orderedOrdinalUnits;
         defaultValues = defaultOrdinalUnitValues;
@@ -4174,11 +4369,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           normalized[u] = objNow[u];
         }
       }
-      var higherOrderInvalid = useWeekData ? hasInvalidWeekData(normalized) : containsOrdinal ? hasInvalidOrdinalData(normalized) : hasInvalidGregorianData(normalized), invalid = higherOrderInvalid || hasInvalidTimeData(normalized);
+      var higherOrderInvalid = useWeekData ? hasInvalidWeekData(normalized, minDaysInFirstWeek, startOfWeek) : containsOrdinal ? hasInvalidOrdinalData(normalized) : hasInvalidGregorianData(normalized), invalid = higherOrderInvalid || hasInvalidTimeData(normalized);
       if (invalid) {
         return DateTime.invalid(invalid);
       }
-      var gregorian = useWeekData ? weekToGregorian(normalized) : containsOrdinal ? ordinalToGregorian(normalized) : normalized, _objToTS2 = objToTS(gregorian, offsetProvis, zoneToUse), tsFinal = _objToTS2[0], offsetFinal = _objToTS2[1], inst = new DateTime({
+      var gregorian = useWeekData ? weekToGregorian(normalized, minDaysInFirstWeek, startOfWeek) : containsOrdinal ? ordinalToGregorian(normalized) : normalized, _objToTS2 = objToTS(gregorian, offsetProvis, zoneToUse), tsFinal = _objToTS2[0], offsetFinal = _objToTS2[1], inst = new DateTime({
         ts: tsFinal,
         zone: zoneToUse,
         o: offsetFinal,
@@ -4371,7 +4566,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     };
     _proto.set = function set(values) {
       if (!this.isValid) return this;
-      var normalized = normalizeObject(values, normalizeUnit), settingWeekStuff = !isUndefined(normalized.weekYear) || !isUndefined(normalized.weekNumber) || !isUndefined(normalized.weekday), containsOrdinal = !isUndefined(normalized.ordinal), containsGregorYear = !isUndefined(normalized.year), containsGregorMD = !isUndefined(normalized.month) || !isUndefined(normalized.day), containsGregor = containsGregorYear || containsGregorMD, definiteWeekDef = normalized.weekYear || normalized.weekNumber;
+      var normalized = normalizeObject(values, normalizeUnitWithLocalWeeks);
+      var _usesLocalWeekValues2 = usesLocalWeekValues(normalized, this.loc), minDaysInFirstWeek = _usesLocalWeekValues2.minDaysInFirstWeek, startOfWeek = _usesLocalWeekValues2.startOfWeek;
+      var settingWeekStuff = !isUndefined(normalized.weekYear) || !isUndefined(normalized.weekNumber) || !isUndefined(normalized.weekday), containsOrdinal = !isUndefined(normalized.ordinal), containsGregorYear = !isUndefined(normalized.year), containsGregorMD = !isUndefined(normalized.month) || !isUndefined(normalized.day), containsGregor = containsGregorYear || containsGregorMD, definiteWeekDef = normalized.weekYear || normalized.weekNumber;
       if ((containsGregor || containsOrdinal) && definiteWeekDef) {
         throw new ConflictingSpecificationError("Can't mix weekYear/weekNumber units with year/month/day or ordinals");
       }
@@ -4380,7 +4577,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       var mixed;
       if (settingWeekStuff) {
-        mixed = weekToGregorian(_extends({}, gregorianToWeek(this.c), normalized));
+        mixed = weekToGregorian(_extends({}, gregorianToWeek(this.c, minDaysInFirstWeek, startOfWeek), normalized), minDaysInFirstWeek, startOfWeek);
       } else if (!isUndefined(normalized.ordinal)) {
         mixed = ordinalToGregorian(_extends({}, gregorianToOrdinal(this.c), normalized));
       } else {
@@ -4405,7 +4602,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       var dur = Duration.fromDurationLike(duration).negate();
       return clone(this, adjustTime(this, dur));
     };
-    _proto.startOf = function startOf(unit) {
+    _proto.startOf = function startOf(unit, _temp3) {
+      var _ref4 = _temp3 === void 0 ? {} : _temp3, _ref4$useLocaleWeeks = _ref4.useLocaleWeeks, useLocaleWeeks = _ref4$useLocaleWeeks === void 0 ? false : _ref4$useLocaleWeeks;
       if (!this.isValid) return this;
       var o = {}, normalizedUnit = Duration.normalizeUnit(unit);
       switch (normalizedUnit) {
@@ -4426,7 +4624,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           break;
       }
       if (normalizedUnit === "weeks") {
-        o.weekday = 1;
+        if (useLocaleWeeks) {
+          var startOfWeek = this.loc.getStartOfWeek();
+          var weekday = this.weekday;
+          if (weekday < startOfWeek) {
+            o.weekNumber = this.weekNumber - 1;
+          }
+          o.weekday = startOfWeek;
+        } else {
+          o.weekday = 1;
+        }
       }
       if (normalizedUnit === "quarters") {
         var q = Math.ceil(this.month / 3);
@@ -4434,9 +4641,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       return this.set(o);
     };
-    _proto.endOf = function endOf(unit) {
+    _proto.endOf = function endOf(unit, opts) {
       var _this$plus;
-      return this.isValid ? this.plus((_this$plus = {}, _this$plus[unit] = 1, _this$plus)).startOf(unit).minus(1) : this;
+      return this.isValid ? this.plus((_this$plus = {}, _this$plus[unit] = 1, _this$plus)).startOf(unit, opts).minus(1) : this;
     };
     _proto.toFormat = function toFormat(fmt, opts) {
       if (opts === void 0) {
@@ -4459,8 +4666,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       return this.isValid ? Formatter.create(this.loc.clone(opts), opts).formatDateTimeParts(this) : [];
     };
-    _proto.toISO = function toISO(_temp3) {
-      var _ref4 = _temp3 === void 0 ? {} : _temp3, _ref4$format = _ref4.format, format = _ref4$format === void 0 ? "extended" : _ref4$format, _ref4$suppressSeconds = _ref4.suppressSeconds, suppressSeconds = _ref4$suppressSeconds === void 0 ? false : _ref4$suppressSeconds, _ref4$suppressMillise = _ref4.suppressMilliseconds, suppressMilliseconds = _ref4$suppressMillise === void 0 ? false : _ref4$suppressMillise, _ref4$includeOffset = _ref4.includeOffset, includeOffset = _ref4$includeOffset === void 0 ? true : _ref4$includeOffset, _ref4$extendedZone = _ref4.extendedZone, extendedZone = _ref4$extendedZone === void 0 ? false : _ref4$extendedZone;
+    _proto.toISO = function toISO(_temp4) {
+      var _ref5 = _temp4 === void 0 ? {} : _temp4, _ref5$format = _ref5.format, format = _ref5$format === void 0 ? "extended" : _ref5$format, _ref5$suppressSeconds = _ref5.suppressSeconds, suppressSeconds = _ref5$suppressSeconds === void 0 ? false : _ref5$suppressSeconds, _ref5$suppressMillise = _ref5.suppressMilliseconds, suppressMilliseconds = _ref5$suppressMillise === void 0 ? false : _ref5$suppressMillise, _ref5$includeOffset = _ref5.includeOffset, includeOffset = _ref5$includeOffset === void 0 ? true : _ref5$includeOffset, _ref5$extendedZone = _ref5.extendedZone, extendedZone = _ref5$extendedZone === void 0 ? false : _ref5$extendedZone;
       if (!this.isValid) {
         return null;
       }
@@ -4470,8 +4677,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       c += _toISOTime(this, ext, suppressSeconds, suppressMilliseconds, includeOffset, extendedZone);
       return c;
     };
-    _proto.toISODate = function toISODate(_temp4) {
-      var _ref5 = _temp4 === void 0 ? {} : _temp4, _ref5$format = _ref5.format, format = _ref5$format === void 0 ? "extended" : _ref5$format;
+    _proto.toISODate = function toISODate(_temp5) {
+      var _ref6 = _temp5 === void 0 ? {} : _temp5, _ref6$format = _ref6.format, format = _ref6$format === void 0 ? "extended" : _ref6$format;
       if (!this.isValid) {
         return null;
       }
@@ -4480,8 +4687,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     _proto.toISOWeekDate = function toISOWeekDate() {
       return toTechFormat(this, "kkkk-'W'WW-c");
     };
-    _proto.toISOTime = function toISOTime(_temp5) {
-      var _ref6 = _temp5 === void 0 ? {} : _temp5, _ref6$suppressMillise = _ref6.suppressMilliseconds, suppressMilliseconds = _ref6$suppressMillise === void 0 ? false : _ref6$suppressMillise, _ref6$suppressSeconds = _ref6.suppressSeconds, suppressSeconds = _ref6$suppressSeconds === void 0 ? false : _ref6$suppressSeconds, _ref6$includeOffset = _ref6.includeOffset, includeOffset = _ref6$includeOffset === void 0 ? true : _ref6$includeOffset, _ref6$includePrefix = _ref6.includePrefix, includePrefix = _ref6$includePrefix === void 0 ? false : _ref6$includePrefix, _ref6$extendedZone = _ref6.extendedZone, extendedZone = _ref6$extendedZone === void 0 ? false : _ref6$extendedZone, _ref6$format = _ref6.format, format = _ref6$format === void 0 ? "extended" : _ref6$format;
+    _proto.toISOTime = function toISOTime(_temp6) {
+      var _ref7 = _temp6 === void 0 ? {} : _temp6, _ref7$suppressMillise = _ref7.suppressMilliseconds, suppressMilliseconds = _ref7$suppressMillise === void 0 ? false : _ref7$suppressMillise, _ref7$suppressSeconds = _ref7.suppressSeconds, suppressSeconds = _ref7$suppressSeconds === void 0 ? false : _ref7$suppressSeconds, _ref7$includeOffset = _ref7.includeOffset, includeOffset = _ref7$includeOffset === void 0 ? true : _ref7$includeOffset, _ref7$includePrefix = _ref7.includePrefix, includePrefix = _ref7$includePrefix === void 0 ? false : _ref7$includePrefix, _ref7$extendedZone = _ref7.extendedZone, extendedZone = _ref7$extendedZone === void 0 ? false : _ref7$extendedZone, _ref7$format = _ref7.format, format = _ref7$format === void 0 ? "extended" : _ref7$format;
       if (!this.isValid) {
         return null;
       }
@@ -4500,8 +4707,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       return _toISODate(this, true);
     };
-    _proto.toSQLTime = function toSQLTime(_temp6) {
-      var _ref7 = _temp6 === void 0 ? {} : _temp6, _ref7$includeOffset = _ref7.includeOffset, includeOffset = _ref7$includeOffset === void 0 ? true : _ref7$includeOffset, _ref7$includeZone = _ref7.includeZone, includeZone = _ref7$includeZone === void 0 ? false : _ref7$includeZone, _ref7$includeOffsetSp = _ref7.includeOffsetSpace, includeOffsetSpace = _ref7$includeOffsetSp === void 0 ? true : _ref7$includeOffsetSp;
+    _proto.toSQLTime = function toSQLTime(_temp7) {
+      var _ref8 = _temp7 === void 0 ? {} : _temp7, _ref8$includeOffset = _ref8.includeOffset, includeOffset = _ref8$includeOffset === void 0 ? true : _ref8$includeOffset, _ref8$includeZone = _ref8.includeZone, includeZone = _ref8$includeZone === void 0 ? false : _ref8$includeZone, _ref8$includeOffsetSp = _ref8.includeOffsetSpace, includeOffsetSpace = _ref8$includeOffsetSp === void 0 ? true : _ref8$includeOffsetSp;
       var fmt = "HH:mm:ss.SSS";
       if (includeZone || includeOffset) {
         if (includeOffsetSpace) {
@@ -4526,6 +4733,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     };
     _proto.toString = function toString() {
       return this.isValid ? this.toISO() : INVALID;
+    };
+    _proto[_Symbol$for] = function () {
+      if (this.isValid) {
+        return "DateTime { ts: " + this.toISO() + ", zone: " + this.zone.name + ", locale: " + this.locale + " }";
+      } else {
+        return "DateTime { Invalid, reason: " + this.invalidReason + " }";
+      }
     };
     _proto.valueOf = function valueOf() {
       return this.toMillis();
@@ -4590,13 +4804,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     _proto.until = function until(otherDateTime) {
       return this.isValid ? Interval.fromDateTimes(this, otherDateTime) : this;
     };
-    _proto.hasSame = function hasSame(otherDateTime, unit) {
+    _proto.hasSame = function hasSame(otherDateTime, unit, opts) {
       if (!this.isValid) return false;
       var inputMs = otherDateTime.valueOf();
       var adjustedToZone = this.setZone(otherDateTime.zone, {
         keepLocalTime: true
       });
-      return adjustedToZone.startOf(unit) <= inputMs && inputMs <= adjustedToZone.endOf(unit);
+      return adjustedToZone.startOf(unit, opts) <= inputMs && inputMs <= adjustedToZone.endOf(unit, opts);
     };
     _proto.equals = function equals(other) {
       return this.isValid && other.isValid && this.valueOf() === other.valueOf() && this.zone.equals(other.zone) && this.loc.equals(other.loc);
@@ -4769,6 +4983,26 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return this.isValid ? possiblyCachedWeekData(this).weekday : NaN;
       }
     }, {
+      key: "isWeekend",
+      get: function get() {
+        return this.isValid && this.loc.getWeekendDays().includes(this.weekday);
+      }
+    }, {
+      key: "localWeekday",
+      get: function get() {
+        return this.isValid ? possiblyCachedLocalWeekData(this).weekday : NaN;
+      }
+    }, {
+      key: "localWeekNumber",
+      get: function get() {
+        return this.isValid ? possiblyCachedLocalWeekData(this).weekNumber : NaN;
+      }
+    }, {
+      key: "localWeekYear",
+      get: function get() {
+        return this.isValid ? possiblyCachedLocalWeekData(this).weekYear : NaN;
+      }
+    }, {
       key: "ordinal",
       get: function get() {
         return this.isValid ? gregorianToOrdinal(this.c).ordinal : NaN;
@@ -4868,6 +5102,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       key: "weeksInWeekYear",
       get: function get() {
         return this.isValid ? weeksInWeekYear(this.weekYear) : NaN;
+      }
+    }, {
+      key: "weeksInLocalWeekYear",
+      get: function get() {
+        return this.isValid ? weeksInWeekYear(this.localWeekYear, this.loc.getMinDaysInFirstWeek(), this.loc.getStartOfWeek()) : NaN;
       }
     }], [{
       key: "DATE_SHORT",
@@ -4981,7 +5220,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
     }]);
     return DateTime;
-  })();
+  })(Symbol.for("nodejs.util.inspect.custom"));
   function friendlyDateTime(dateTimeish) {
     if (DateTime.isDateTime(dateTimeish)) {
       return dateTimeish;
@@ -4993,7 +5232,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       throw new InvalidArgumentError("Unknown datetime argument: " + dateTimeish + ", of type " + typeof dateTimeish);
     }
   }
-  var VERSION = "3.4.3";
+  var VERSION = "3.4.4";
   var DateTime_1 = luxon.DateTime = DateTime;
   var Duration_1 = luxon.Duration = Duration;
   var FixedOffsetZone_1 = luxon.FixedOffsetZone = FixedOffsetZone;

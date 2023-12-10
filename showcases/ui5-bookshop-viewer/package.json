@@ -22,7 +22,7 @@
     "ui5-app-simple": "workspace:^"
   },
   "devDependencies": {
-    "@ui5/cli": "^3.6.0",
+    "@ui5/cli": "^3.7.3",
     "cds-bookshop": "workspace:^",
     "rimraf": "^5.0.5",
     "ui5-middleware-cap": "workspace:^",

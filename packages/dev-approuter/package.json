@@ -11,8 +11,8 @@
     "directory": "packages/dev-approuter"
   },
   "dependencies": {
-    "@sap/approuter": ">=14.3.2",
-    "@sap/xsenv": "4.0.0",
+    "@sap/approuter": ">=14.4.2",
+    "@sap/xsenv": "4.2.0",
     "cds-plugin-ui5": "workspace:^",
     "express": "^4.18.2",
     "ui5-middleware-cap": "workspace:^"

@@ -818,7 +818,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     const cuidRegex = /^c[^\s-]{8,}$/i;
     const cuid2Regex = /^[a-z][a-z0-9]*$/;
-    const ulidRegex = /[0-9A-HJKMNP-TV-Z]{26}/;
+    const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/;
     // const uuidRegex =
     //   /^([a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}|00000000-0000-0000-0000-000000000000)$/i;
     const uuidRegex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
@@ -834,11 +834,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     //   /^[a-zA-Z0-9\.\!\#\$\%\&\'\*\+\/\=\?\^\_\`\{\|\}\~\-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
     // const emailRegex =
     //   /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/i;
-    const emailRegex = /^([A-Z0-9_+-]+\.?)*[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i;
+    const emailRegex = /^(?!\.)(?!.*\.\.)([A-Z0-9_+-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i;
     // const emailRegex =
     //   /^[a-z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-z0-9-]+(?:\.[a-z0-9\-]+)*$/i;
     // from https://thekevinscott.com/emojis-in-javascript/#writing-a-regular-expression
-    const emojiRegex = /^(\p{Extended_Pictographic}|\p{Emoji_Component})+$/u;
+    const _emojiRegex = `^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$`;
+    let emojiRegex;
     const ipv4Regex = /^(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))$/;
     const ipv6Regex = /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/;
     // Adapted from https://stackoverflow.com/a/3143231
@@ -878,31 +879,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return false;
     }
     class ZodString extends ZodType {
-        constructor() {
-            super(...arguments);
-            this._regex = (regex, validation, message) => this.refinement((data) => regex.test(data), {
-                validation,
-                code: ZodIssueCode.invalid_string,
-                ...errorUtil.errToObj(message),
-            });
-            /**
-             * @deprecated Use z.string().min(1) instead.
-             * @see {@link ZodString.min}
-             */
-            this.nonempty = (message) => this.min(1, errorUtil.errToObj(message));
-            this.trim = () => new ZodString({
-                ...this._def,
-                checks: [...this._def.checks, { kind: "trim" }],
-            });
-            this.toLowerCase = () => new ZodString({
-                ...this._def,
-                checks: [...this._def.checks, { kind: "toLowerCase" }],
-            });
-            this.toUpperCase = () => new ZodString({
-                ...this._def,
-                checks: [...this._def.checks, { kind: "toUpperCase" }],
-            });
-        }
         _parse(input) {
             if (this._def.coerce) {
                 input.data = String(input.data);
@@ -990,6 +966,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     }
                 }
                 else if (check.kind === "emoji") {
+                    if (!emojiRegex) {
+                        emojiRegex = new RegExp(_emojiRegex, "u");
+                    }
                     if (!emojiRegex.test(input.data)) {
                         ctx = this._getOrReturnCtx(input, ctx);
                         addIssueToContext(ctx, {
@@ -1142,6 +1121,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             }
             return { status: status.value, value: input.data };
         }
+        _regex(regex, validation, message) {
+            return this.refinement((data) => regex.test(data), {
+                validation,
+                code: ZodIssueCode.invalid_string,
+                ...errorUtil.errToObj(message),
+            });
+        }
         _addCheck(check) {
             return new ZodString({
                 ...this._def,
@@ -1237,6 +1223,31 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 kind: "length",
                 value: len,
                 ...errorUtil.errToObj(message),
+            });
+        }
+        /**
+         * @deprecated Use z.string().min(1) instead.
+         * @see {@link ZodString.min}
+         */
+        nonempty(message) {
+            return this.min(1, errorUtil.errToObj(message));
+        }
+        trim() {
+            return new ZodString({
+                ...this._def,
+                checks: [...this._def.checks, { kind: "trim" }],
+            });
+        }
+        toLowerCase() {
+            return new ZodString({
+                ...this._def,
+                checks: [...this._def.checks, { kind: "toLowerCase" }],
+            });
+        }
+        toUpperCase() {
+            return new ZodString({
+                ...this._def,
+                checks: [...this._def.checks, { kind: "toUpperCase" }],
             });
         }
         get isDatetime() {
@@ -3772,7 +3783,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         });
     };
     const custom = (check, params = {}, 
-    /*
+    /**
      * @deprecated
      *
      * Pass `fatal` into the params object instead:
