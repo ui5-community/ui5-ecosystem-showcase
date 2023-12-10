@@ -34,15 +34,8 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 
 	const { resourceFactory } = taskUtil;
 
-	// TODO: should we accept the full glob pattern as param or just the file pattern?
-	const allResources = await workspace.byGlob(`/**/*${config.filePattern}`);
-
 	// determine root project
-	let rootProject;
-	if (allResources.length > 0) {
-		rootProject =
-			typeof allResources[0].getProject === "function" ? allResources[0].getProject() : allResources[0]._project;
-	}
+	const rootProject = taskUtil.getProject();
 
 	// if the TypeScript interfaces should be created, launch the ts-interface-generator in watch mode
 	if (config.generateTsInterfaces) {
@@ -76,6 +69,9 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 				);
 		}
 	}
+
+	// TODO: should we accept the full glob pattern as param or just the file pattern?
+	const allResources = await workspace.byGlob(`/**/*${config.filePattern}`);
 
 	// transpile the TypeScript resources and collect the code
 	const sourcesMap = {};
@@ -331,12 +327,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 						}
 					}
 					// determine the virtual resource base path
-					let virBasePath;
-					if (typeof rootProject?.getNamespace === "function") {
-						virBasePath = `/resources/${rootProject.getNamespace()}`;
-					} else if (rootProject?.metadata?.namespace) {
-						virBasePath = `/resources/${rootProject.metadata.namespace}`;
-					}
+					let virBasePath = `/resources/${rootProject.getNamespace()}`;
 					// generate the index.d.ts content
 					const indexDtsContent = Object.keys(sourcesMap)
 						.filter((dtsFile) => dtsFile.startsWith("/resources/"))
@@ -356,8 +347,10 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 					});
 					indexDtsContent.unshift(
 						`// Generated with TypeScript ${ts.version || "unknown"} / ${
-							rootProject?.framework?.name || "UI5"
-						} ${rootProject?.framework?.version || "unknown"}${typeDefPkgJsons.length > 0 ? " using:" : ""}`
+							rootProject.getFrameworkName() || "UI5"
+						} ${rootProject.getFrameworkVersion() || "unknown"}${
+							typeDefPkgJsons.length > 0 ? " using:" : ""
+						}`
 					);
 					const indexDtsFile = resourceFactory.createResource({
 						path: `/index.d.ts`,

@@ -8,11 +8,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rimraf dist coverage",
-    "build": "npm run build:controls && ui5 build --clean-dest",
-    "build:controls": "npx @ui5/ts-interface-generator",
-    "dev": "run-p dev:controls dev:server",
-    "dev:controls": "npx @ui5/ts-interface-generator --watch",
-    "dev:server": "ui5 serve --port 8080 -o test-resources/ui5/ecosystem/demo/tslib/Example.html",
+    "build": "ui5 build --clean-dest",
+    "dev": "ui5 serve --port 8080 -o test-resources/ui5/ecosystem/demo/tslib/Example.html",
     "start": "ui5 serve  --port 8080 -o test-resources/ui5/ecosystem/demo/tslib/Example.html --config ui5-dist.yaml",
     "testsuite": "ui5 serve --open test-resources/ui5/ecosystem/demo/tslib/qunit/testsuite.qunit.html",
     "ts-typecheck": "tsc --noEmit",
