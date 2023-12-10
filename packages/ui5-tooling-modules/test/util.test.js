@@ -32,7 +32,7 @@ function writeFile(resourceName, code, ctx) {
 // eslint-disable-next-line jsdoc/require-jsdoc
 async function runModule(resourceName, code, ctx) {
 	const fn = new Function(["scope"], `// ${resourceName}\nObject.keys(scope).forEach(sym => { globalThis[sym] = scope[sym]; });\nconst window = self = global = globalThis;\n${code}`);
-	return new Promise((resolve) => {
+	return new Promise((resolve, reject) => {
 		fn(
 			Object.assign(
 				{},
@@ -50,10 +50,30 @@ async function runModule(resourceName, code, ctx) {
 								}
 								if (Array.isArray(deps)) {
 									const resolvedDeps = await Promise.all(deps.map((dep) => getModule(/exports|require/.test(dep) ? dep : path.join(resourceName, "..", dep), ctx)));
-									let exports = callback.apply(undefined, resolvedDeps);
-									let exportsIndex = deps.indexOf("exports");
-									exports = exportsIndex !== -1 ? resolvedDeps[exportsIndex] : exports;
-									resolve(exports);
+									try {
+										// INFO: put a breakpoint into the next line and the set the breakpoint for
+										//       "Caught Exceptions". This will let you stop where the error occurs!
+										let exports = callback.apply(undefined, resolvedDeps);
+										let exportsIndex = deps.indexOf("exports");
+										exports = exportsIndex !== -1 ? resolvedDeps[exportsIndex] : exports;
+										resolve(exports);
+									} catch (err) {
+										let { row } = /<anonymous>:(?<row>\d+):(?<col>\d+)/.exec(err.stack).groups;
+										row -= 6; // remove the six rows appended above
+										const codeLines = code.split("\n");
+										const beginRow = Math.max(0, row - 10);
+										const endRow = Math.min(codeLines.length - 1, beginRow + 20);
+										const codeSnippet = [];
+										for (let i = beginRow, l = endRow; i < l; i++) {
+											if (i == row) {
+												codeSnippet.push(`[${i}] >>>\t${codeLines[i]}`);
+											} else {
+												codeSnippet.push(`[${i}]\t${codeLines[i]}`);
+											}
+										}
+										console.error(`The following line caused the issue "${err.message}":\n\n${codeSnippet.join("\n")}\n\n`, err);
+										reject(err);
+									}
 								} else {
 									resolve(callback.apply(undefined));
 								}
@@ -112,7 +132,7 @@ test.beforeEach(async (t) => {
 });
 test.afterEach.always(async (t) => {
 	if (!t.passed) {
-		t.log(t.context.log.logs);
+		// TODO: t.log(t.context.log.logs);
 	}
 	if (!generateSnapshots) {
 		rmSync(t.context.tmpDir, { recursive: true, force: true });
@@ -216,6 +236,17 @@ test.serial("Verify generation of ui5-app/bundledefs/firebase", async (t) => {
 		util: t.context.util,
 		scope: {
 			fetch: function () {},
+			XMLHttpRequest: function () {
+				return { open: function () {} };
+			},
+			location: {
+				host: "/",
+			},
+			http2: {
+				constants: {
+					HTTP2_HEADER_AUTHORITY: "HTTP2_HEADER_AUTHORITY",
+				},
+			},
 		},
 	});
 	t.true(module.retVal.__esModule);
@@ -229,6 +260,9 @@ test.serial("Verify generation of @supabase/supabase-js", async (t) => {
 	const module = await getModule("@supabase/supabase-js", {
 		tmpDir: t.context.tmpDir,
 		util: t.context.util,
+		scope: {
+			WebSocket: function () {},
+		},
 	});
 	t.true(module.retVal.__esModule);
 	if (platform() !== "win32") {

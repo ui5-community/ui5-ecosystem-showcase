@@ -14,7 +14,7 @@
     "lint": "eslint lib"
   },
   "dependencies": {
-    "@ui5/fs": "^3.0.4",
+    "@ui5/fs": "^3.0.5",
     "less-openui5": "^0.11.6"
   }
 }

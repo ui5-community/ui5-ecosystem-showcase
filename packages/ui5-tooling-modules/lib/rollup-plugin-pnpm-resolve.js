@@ -5,7 +5,7 @@ module.exports = function ({ resolveModule } = {}) {
 		resolveId(source) {
 			// ignore absolute paths
 			if (path.isAbsolute(source)) {
-				return source;
+				return null;
 			}
 			// needs to be in sync with nodeResolve
 			return resolveModule(source);

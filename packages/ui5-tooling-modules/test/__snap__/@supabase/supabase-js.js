@@ -21,7 +21,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             _fetch = customFetch;
         }
         else if (typeof fetch === 'undefined') {
-            _fetch = (...args) => Promise.resolve().then(function () { return browser$2; }).then(({ default: fetch }) => fetch(...args));
+            _fetch = (...args) => Promise.resolve().then(function () { return browser; }).then(({ default: fetch }) => fetch(...args));
         }
         else {
             _fetch = fetch;
@@ -155,7 +155,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
     var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
-    var browser$3 = {exports: {}};
+    var browser$1 = {exports: {}};
 
     (function (module, exports) {
 
@@ -182,13 +182,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     	exports.Headers = globalObject.Headers;
     	exports.Request = globalObject.Request;
     	exports.Response = globalObject.Response; 
-    } (browser$3, browser$3.exports));
+    } (browser$1, browser$1.exports));
 
-    var browserExports = browser$3.exports;
+    var browserExports = browser$1.exports;
+    var nodeFetch = browserExports;
 
-    var browser$2 = /*#__PURE__*/_mergeNamespaces({
+    var browser = /*#__PURE__*/_mergeNamespaces({
         __proto__: null,
-        default: browserExports
+        default: nodeFetch
     }, [browserExports]);
 
     // @ts-ignore
@@ -207,7 +208,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 this.fetch = builder.fetch;
             }
             else if (typeof fetch === 'undefined') {
-                this.fetch = browserExports;
+                this.fetch = nodeFetch;
             }
             else {
                 this.fetch = fetch;
@@ -318,7 +319,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                             };
                         }
                     }
-                    if (error && this.isMaybeSingle && ((_c = error === null || error === void 0 ? void 0 : error.details) === null || _c === void 0 ? void 0 : _c.includes('Results contain 0 rows'))) {
+                    if (error && this.isMaybeSingle && ((_c = error === null || error === void 0 ? void 0 : error.details) === null || _c === void 0 ? void 0 : _c.includes('0 rows'))) {
                         error = null;
                         status = 200;
                         statusText = 'OK';
@@ -394,19 +395,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          *
          * You can call this method multiple times to order by multiple columns.
          *
-         * You can order foreign tables, but it doesn't affect the ordering of the
-         * current table.
+         * You can order referenced tables, but it only affects the ordering of the
+         * parent table if you use `!inner` in the query.
          *
          * @param column - The column to order by
          * @param options - Named parameters
          * @param options.ascending - If `true`, the result will be in ascending order
          * @param options.nullsFirst - If `true`, `null`s appear first. If `false`,
          * `null`s appear last.
-         * @param options.foreignTable - Set this to order a foreign table by foreign
-         * columns
+         * @param options.referencedTable - Set this to order a referenced table by
+         * its columns
+         * @param options.foreignTable - Deprecated, use `options.referencedTable`
+         * instead
          */
-        order(column, { ascending = true, nullsFirst, foreignTable, } = {}) {
-            const key = foreignTable ? `${foreignTable}.order` : 'order';
+        order(column, { ascending = true, nullsFirst, foreignTable, referencedTable = foreignTable, } = {}) {
+            const key = referencedTable ? `${referencedTable}.order` : 'order';
             const existingOrder = this.url.searchParams.get(key);
             this.url.searchParams.set(key, `${existingOrder ? `${existingOrder},` : ''}${column}.${ascending ? 'asc' : 'desc'}${nullsFirst === undefined ? '' : nullsFirst ? '.nullsfirst' : '.nullslast'}`);
             return this;
@@ -416,11 +419,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          *
          * @param count - The maximum number of rows to return
          * @param options - Named parameters
-         * @param options.foreignTable - Set this to limit rows of foreign tables
-         * instead of the current table
+         * @param options.referencedTable - Set this to limit rows of referenced
+         * tables instead of the parent table
+         * @param options.foreignTable - Deprecated, use `options.referencedTable`
+         * instead
          */
-        limit(count, { foreignTable } = {}) {
-            const key = typeof foreignTable === 'undefined' ? 'limit' : `${foreignTable}.limit`;
+        limit(count, { foreignTable, referencedTable = foreignTable, } = {}) {
+            const key = typeof referencedTable === 'undefined' ? 'limit' : `${referencedTable}.limit`;
             this.url.searchParams.set(key, `${count}`);
             return this;
         }
@@ -434,12 +439,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param from - The starting index from which to limit the result
          * @param to - The last index to which to limit the result
          * @param options - Named parameters
-         * @param options.foreignTable - Set this to limit rows of foreign tables
-         * instead of the current table
+         * @param options.referencedTable - Set this to limit rows of referenced
+         * tables instead of the parent table
+         * @param options.foreignTable - Deprecated, use `options.referencedTable`
+         * instead
          */
-        range(from, to, { foreignTable } = {}) {
-            const keyOffset = typeof foreignTable === 'undefined' ? 'offset' : `${foreignTable}.offset`;
-            const keyLimit = typeof foreignTable === 'undefined' ? 'limit' : `${foreignTable}.limit`;
+        range(from, to, { foreignTable, referencedTable = foreignTable, } = {}) {
+            const keyOffset = typeof referencedTable === 'undefined' ? 'offset' : `${referencedTable}.offset`;
+            const keyLimit = typeof referencedTable === 'undefined' ? 'limit' : `${referencedTable}.limit`;
             this.url.searchParams.set(keyOffset, `${from}`);
             // Range is inclusive, so add 1
             this.url.searchParams.set(keyLimit, `${to - from + 1}`);
@@ -518,6 +525,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * or `"json"`
          */
         explain({ analyze = false, verbose = false, settings = false, buffers = false, wal = false, format = 'text', } = {}) {
+            var _a;
             const options = [
                 analyze ? 'analyze' : null,
                 verbose ? 'verbose' : null,
@@ -528,7 +536,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 .filter(Boolean)
                 .join('|');
             // An Accept header can carry multiple media types but postgrest-js always sends one
-            const forMediatype = this.headers['Accept'];
+            const forMediatype = (_a = this.headers['Accept']) !== null && _a !== void 0 ? _a : 'application/json';
             this.headers['Accept'] = `application/vnd.pgrst.plan+${format}; for="${forMediatype}"; options=${options};`;
             if (format === 'json')
                 return this;
@@ -905,11 +913,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * It's currently not possible to do an `.or()` filter across multiple tables.
          *
          * @param filters - The filters to use, following PostgREST syntax
-         * @param foreignTable - Set this to filter on foreign tables instead of the
-         * current table
+         * @param options - Named parameters
+         * @param options.referencedTable - Set this to filter on referenced tables
+         * instead of the parent table
+         * @param options.foreignTable - Deprecated, use `referencedTable` instead
          */
-        or(filters, { foreignTable } = {}) {
-            const key = foreignTable ? `${foreignTable}.or` : 'or';
+        or(filters, { foreignTable, referencedTable = foreignTable, } = {}) {
+            const key = referencedTable ? `${referencedTable}.or` : 'or';
             this.url.searchParams.append(key, `(${filters})`);
             return this;
         }
@@ -1196,9 +1206,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    const version$6 = '1.8.4';
+    const version$4 = '1.9.0';
 
-    const DEFAULT_HEADERS$4 = { 'X-Client-Info': `postgrest-js/${version$6}` };
+    const DEFAULT_HEADERS$4 = { 'X-Client-Info': `postgrest-js/${version$4}` };
 
     /**
      * PostgREST client.
@@ -1305,184 +1315,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    var global$1;
-    var hasRequiredGlobal;
-
-    function requireGlobal () {
-    	if (hasRequiredGlobal) return global$1;
-    	hasRequiredGlobal = 1;
-    	var naiveFallback = function () {
-    		if (typeof self === "object" && self) return self;
-    		if (typeof window === "object" && window) return window;
-    		throw new Error("Unable to resolve global `this`");
-    	};
-
-    	global$1 = (function () {
-    		if (this) return this;
-
-    		// Unexpected strict mode (may happen if e.g. bundled into ESM module)
-
-    		// Fallback to standard globalThis if available
-    		if (typeof globalThis === "object" && globalThis) return globalThis;
-
-    		// Thanks @mathiasbynens -> https://mathiasbynens.be/notes/globalthis
-    		// In all ES5+ engines global object inherits from Object.prototype
-    		// (if you approached one that doesn't please report)
-    		try {
-    			Object.defineProperty(Object.prototype, "__global__", {
-    				get: function () { return this; },
-    				configurable: true
-    			});
-    		} catch (error) {
-    			// Unfortunate case of updates to Object.prototype being restricted
-    			// via preventExtensions, seal or freeze
-    			return naiveFallback();
-    		}
-    		try {
-    			// Safari case (window.__global__ works, but __global__ does not)
-    			if (!__global__) return naiveFallback();
-    			return __global__;
-    		} finally {
-    			delete Object.prototype.__global__;
-    		}
-    	})();
-    	return global$1;
-    }
-
-    var name = "websocket";
-    var description = "Websocket Client & Server Library implementing the WebSocket protocol as specified in RFC 6455.";
-    var keywords = [
-    	"websocket",
-    	"websockets",
-    	"socket",
-    	"networking",
-    	"comet",
-    	"push",
-    	"RFC-6455",
-    	"realtime",
-    	"server",
-    	"client"
-    ];
-    var author = "Brian McKelvey <theturtle32@gmail.com> (https://github.com/theturtle32)";
-    var contributors = [
-    	"Iñaki Baz Castillo <ibc@aliax.net> (http://dev.sipdoc.net)"
-    ];
-    var version$5 = "1.0.34";
-    var repository = {
-    	type: "git",
-    	url: "https://github.com/theturtle32/WebSocket-Node.git"
-    };
-    var homepage = "https://github.com/theturtle32/WebSocket-Node";
-    var engines = {
-    	node: ">=4.0.0"
-    };
-    var dependencies = {
-    	bufferutil: "^4.0.1",
-    	debug: "^2.2.0",
-    	"es5-ext": "^0.10.50",
-    	"typedarray-to-buffer": "^3.1.5",
-    	"utf-8-validate": "^5.0.2",
-    	yaeti: "^0.0.6"
-    };
-    var devDependencies = {
-    	"buffer-equal": "^1.0.0",
-    	gulp: "^4.0.2",
-    	"gulp-jshint": "^2.0.4",
-    	"jshint-stylish": "^2.2.1",
-    	jshint: "^2.0.0",
-    	tape: "^4.9.1"
-    };
-    var config = {
-    	verbose: false
-    };
-    var scripts = {
-    	test: "tape test/unit/*.js",
-    	gulp: "gulp"
-    };
-    var main = "index";
-    var directories = {
-    	lib: "./lib"
-    };
-    var browser$1 = "lib/browser.js";
-    var license = "Apache-2.0";
-    var require$$0 = {
-    	name: name,
-    	description: description,
-    	keywords: keywords,
-    	author: author,
-    	contributors: contributors,
-    	version: version$5,
-    	repository: repository,
-    	homepage: homepage,
-    	engines: engines,
-    	dependencies: dependencies,
-    	devDependencies: devDependencies,
-    	config: config,
-    	scripts: scripts,
-    	main: main,
-    	directories: directories,
-    	browser: browser$1,
-    	license: license
-    };
-
-    var version$4 = require$$0.version;
-
-    var _globalThis;
-    if (typeof globalThis === 'object') {
-    	_globalThis = globalThis;
-    } else {
-    	try {
-    		_globalThis = requireGlobal();
-    	} catch (error) {
-    	} finally {
-    		if (!_globalThis && typeof window !== 'undefined') { _globalThis = window; }
-    		if (!_globalThis) { throw new Error('Could not determine global this'); }
-    	}
-    }
-
-    var NativeWebSocket = _globalThis.WebSocket || _globalThis.MozWebSocket;
-    var websocket_version = version$4;
-
-
-    /**
-     * Expose a W3C WebSocket class with just one or two arguments.
-     */
-    function W3CWebSocket(uri, protocols) {
-    	var native_instance;
-
-    	if (protocols) {
-    		native_instance = new NativeWebSocket(uri, protocols);
-    	}
-    	else {
-    		native_instance = new NativeWebSocket(uri);
-    	}
-
-    	/**
-    	 * 'native_instance' is an instance of nativeWebSocket (the browser's WebSocket
-    	 * class). Since it is an Object it will be returned as it is when creating an
-    	 * instance of W3CWebSocket via 'new W3CWebSocket()'.
-    	 *
-    	 * ECMAScript 5: http://bclary.com/2004/11/07/#a-13.2.2
-    	 */
-    	return native_instance;
-    }
-    if (NativeWebSocket) {
-    	['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'].forEach(function(prop) {
-    		Object.defineProperty(W3CWebSocket, prop, {
-    			get: function() { return NativeWebSocket[prop]; }
-    		});
-    	});
-    }
-
-    /**
-     * Module exports.
-     */
-    var browser = {
-        'w3cwebsocket' : NativeWebSocket ? W3CWebSocket : null,
-        'version'      : websocket_version
-    };
-
-    const version$3 = '2.8.0';
+    const version$3 = '2.9.0';
 
     const DEFAULT_HEADERS$3 = { 'X-Client-Info': `realtime-js/${version$3}` };
     const VSN = '1.0.0';
@@ -1612,7 +1445,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             this.receivedResp = null;
             this.recHooks = [];
             this.refEvent = null;
-            this.rateLimited = false;
         }
         resend(timeout) {
             this.timeout = timeout;
@@ -1629,16 +1461,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             }
             this.startTimeout();
             this.sent = true;
-            const status = this.channel.socket.push({
+            this.channel.socket.push({
                 topic: this.channel.topic,
                 event: this.event,
                 payload: this.payload,
                 ref: this.ref,
                 join_ref: this.channel._joinRef(),
             });
-            if (status === 'rate limited') {
-                this.rateLimited = true;
-            }
         }
         updatePayload(payload) {
             this.payload = Object.assign(Object.assign({}, this.payload), payload);
@@ -2154,11 +1983,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         REALTIME_SUBSCRIBE_STATES["CLOSED"] = "CLOSED";
         REALTIME_SUBSCRIBE_STATES["CHANNEL_ERROR"] = "CHANNEL_ERROR";
     })(exports.REALTIME_SUBSCRIBE_STATES || (exports.REALTIME_SUBSCRIBE_STATES = {}));
+    const REALTIME_CHANNEL_STATES = CHANNEL_STATES;
     /** A channel is the basic building block of Realtime
      * and narrows the scope of data flow to subscribed clients.
      * You can think of a channel as a chatroom where participants are able to see who's online
      * and send and receive messages.
-     **/
+     */
     class RealtimeChannel {
         constructor(
         /** Topic name can be any string. */
@@ -2304,10 +2134,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         on(type, filter, callback) {
             return this._on(type, filter, callback);
         }
-        async send(payload, opts = {}) {
+        /**
+         * Sends a message into the channel.
+         *
+         * @param args Arguments to send to channel
+         * @param args.type The type of event to send
+         * @param args.event The name of the event being sent
+         * @param args.payload Payload to be sent
+         * @param opts Options to be used during the send process
+         */
+        async send(args, opts = {}) {
             var _a, _b;
-            if (!this._canPush() && payload.type === 'broadcast') {
-                const { event, payload: endpoint_payload } = payload;
+            if (!this._canPush() && args.type === 'broadcast') {
+                const { event, payload: endpoint_payload } = args;
                 const options = {
                     method: 'POST',
                     headers: {
@@ -2341,12 +2180,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             else {
                 return new Promise((resolve) => {
                     var _a, _b, _c;
-                    const push = this._push(payload.type, payload, opts.timeout || this.timeout);
-                    if (push.rateLimited) {
-                        resolve('rate limited');
-                    }
-                    if (payload.type === 'broadcast' &&
-                        !((_c = (_b = (_a = this.params) === null || _a === void 0 ? void 0 : _a.config) === null || _b === void 0 ? void 0 : _b.broadcast) === null || _c === void 0 ? void 0 : _c.ack)) {
+                    const push = this._push(args.type, args, opts.timeout || this.timeout);
+                    if (args.type === 'broadcast' && !((_c = (_b = (_a = this.params) === null || _a === void 0 ? void 0 : _a.config) === null || _b === void 0 ? void 0 : _b.broadcast) === null || _c === void 0 ? void 0 : _c.ack)) {
                         resolve('ok');
                     }
                     push.receive('ok', () => resolve('ok'));
@@ -2619,6 +2454,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
 
     const noop = () => { };
+    const NATIVE_WEBSOCKET_AVAILABLE = typeof WebSocket !== 'undefined';
+    const WebSocketVariant = NATIVE_WEBSOCKET_AVAILABLE
+        ? WebSocket
+        : require('ws');
     class RealtimeClient {
         /**
          * Initializes the Socket.
@@ -2635,14 +2474,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * @param options.reconnectAfterMs he optional function that returns the millsec reconnect interval. Defaults to stepped backoff off.
          */
         constructor(endPoint, options) {
-            var _a, _b;
+            var _a;
             this.accessToken = null;
             this.channels = [];
             this.endPoint = '';
             this.headers = DEFAULT_HEADERS$3;
             this.params = {};
             this.timeout = DEFAULT_TIMEOUT;
-            this.transport = browser.w3cwebsocket;
+            this.transport = WebSocketVariant;
             this.heartbeatIntervalMs = 30000;
             this.heartbeatTimer = undefined;
             this.pendingHeartbeatRef = null;
@@ -2657,8 +2496,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 error: [],
                 message: [],
             };
-            this.eventsPerSecondLimitMs = 100;
-            this.inThrottle = false;
             /**
              * Use either custom fetch, if provided, or default fetch to make HTTP requests
              *
@@ -2670,7 +2507,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     _fetch = customFetch;
                 }
                 else if (typeof fetch === 'undefined') {
-                    _fetch = (...args) => Promise.resolve().then(function () { return browser$2; }).then(({ default: fetch }) => fetch(...args));
+                    _fetch = (...args) => Promise.resolve().then(function () { return browser; }).then(({ default: fetch }) => fetch(...args));
                 }
                 else {
                     _fetch = fetch;
@@ -2690,10 +2527,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 this.transport = options.transport;
             if (options === null || options === void 0 ? void 0 : options.heartbeatIntervalMs)
                 this.heartbeatIntervalMs = options.heartbeatIntervalMs;
-            const eventsPerSecond = (_a = options === null || options === void 0 ? void 0 : options.params) === null || _a === void 0 ? void 0 : _a.eventsPerSecond;
-            if (eventsPerSecond)
-                this.eventsPerSecondLimitMs = Math.floor(1000 / eventsPerSecond);
-            const accessToken = (_b = options === null || options === void 0 ? void 0 : options.params) === null || _b === void 0 ? void 0 : _b.apikey;
+            const accessToken = (_a = options === null || options === void 0 ? void 0 : options.params) === null || _a === void 0 ? void 0 : _a.apikey;
             if (accessToken)
                 this.accessToken = accessToken;
             this.reconnectAfterMs = (options === null || options === void 0 ? void 0 : options.reconnectAfterMs)
@@ -2722,7 +2556,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             if (this.conn) {
                 return;
             }
-            this.conn = new this.transport(this._endPointURL(), [], null, this.headers);
+            if (NATIVE_WEBSOCKET_AVAILABLE) {
+                this.conn = new this.transport(this._endPointURL());
+            }
+            else {
+                this.conn = new this.transport(this._endPointURL(), undefined, {
+                    headers: this.headers,
+                });
+            }
             if (this.conn) {
                 this.conn.binaryType = 'arraybuffer';
                 this.conn.onopen = () => this._onConnOpen();
@@ -2818,7 +2659,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          */
         push(data) {
             const { topic, event, payload, ref } = data;
-            let callback = () => {
+            const callback = () => {
                 this.encode(data, (result) => {
                     var _a;
                     (_a = this.conn) === null || _a === void 0 ? void 0 : _a.send(result);
@@ -2826,15 +2667,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             };
             this.log('push', `${topic} ${event} (${ref})`, payload);
             if (this.isConnected()) {
-                if (['broadcast', 'presence', 'postgres_changes'].includes(event)) {
-                    const isThrottled = this._throttle(callback)();
-                    if (isThrottled) {
-                        return 'rate limited';
-                    }
-                }
-                else {
-                    callback();
-                }
+                callback();
             }
             else {
                 this.sendBuffer.push(callback);
@@ -2978,21 +2811,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             });
             this.setAuth(this.accessToken);
         }
-        /** @internal */
-        _throttle(callback, eventsPerSecondLimitMs = this.eventsPerSecondLimitMs) {
-            return () => {
-                if (this.inThrottle)
-                    return true;
-                callback();
-                if (eventsPerSecondLimitMs > 0) {
-                    this.inThrottle = true;
-                    setTimeout(() => {
-                        this.inThrottle = false;
-                    }, eventsPerSecondLimitMs);
-                }
-                return false;
-            };
-        }
     }
 
     class StorageError extends Error {
@@ -3042,7 +2860,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             _fetch = customFetch;
         }
         else if (typeof fetch === 'undefined') {
-            _fetch = (...args) => Promise.resolve().then(function () { return browser$2; }).then(({ default: fetch }) => fetch(...args));
+            _fetch = (...args) => Promise.resolve().then(function () { return browser; }).then(({ default: fetch }) => fetch(...args));
         }
         else {
             _fetch = fetch;
@@ -3052,7 +2870,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     const resolveResponse = () => __awaiter$5(void 0, void 0, void 0, function* () {
         if (typeof Response === 'undefined') {
             // @ts-ignore
-            return (yield Promise.resolve().then(function () { return browser$2; })).Response;
+            return (yield Promise.resolve().then(function () { return browser; })).Response;
         }
         return Response;
     });
@@ -3802,7 +3620,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             _fetch = customFetch;
         }
         else if (typeof fetch === 'undefined') {
-            _fetch = browserExports;
+            _fetch = nodeFetch;
         }
         else {
             _fetch = fetch;
@@ -3924,7 +3742,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             _fetch = customFetch;
         }
         else if (typeof fetch === 'undefined') {
-            _fetch = (...args) => Promise.resolve().then(function () { return browser$2; }).then(({ default: fetch }) => fetch(...args));
+            _fetch = (...args) => Promise.resolve().then(function () { return browser; }).then(({ default: fetch }) => fetch(...args));
         }
         else {
             _fetch = fetch;
@@ -4078,7 +3896,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     }
     async function generatePKCEChallenge(verifier) {
-        if (typeof crypto === 'undefined') {
+        const hasCryptoSupport = typeof crypto !== 'undefined' &&
+            typeof crypto.subtle !== 'undefined' &&
+            typeof TextEncoder !== 'undefined';
+        if (!hasCryptoSupport) {
             console.warn('WebCrypto API is not supported. Code challenge method will default to use plain instead of sha256.');
             return verifier;
         }
@@ -4579,7 +4400,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
 
     // Generated by genversion.
-    const version = '2.54.1';
+    const version = '2.58.0';
 
     const GOTRUE_URL = 'http://localhost:9999';
     const STORAGE_KEY = 'supabase.auth.token';
@@ -5103,7 +4924,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             });
         }
         async _exchangeCodeForSession(authCode) {
-            const codeVerifier = await getItemAsync(this.storage, `${this.storageKey}-code-verifier`);
+            const [codeVerifier, redirectType] = (await getItemAsync(this.storage, `${this.storageKey}-code-verifier`)).split('/');
             const { data, error } = await _request(this.fetch, 'POST', `${this.url}/token?grant_type=pkce`, {
                 headers: this.headers,
                 body: {
@@ -5114,16 +4935,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             });
             await removeItemAsync(this.storage, `${this.storageKey}-code-verifier`);
             if (error) {
-                return { data: { user: null, session: null }, error };
+                return { data: { user: null, session: null, redirectType: null }, error };
             }
             else if (!data || !data.session || !data.user) {
-                return { data: { user: null, session: null }, error: new AuthInvalidTokenResponseError() };
+                return {
+                    data: { user: null, session: null, redirectType: null },
+                    error: new AuthInvalidTokenResponseError(),
+                };
             }
             if (data.session) {
                 await this._saveSession(data.session);
                 await this._notifyAllSubscribers('SIGNED_IN', data.session);
             }
-            return { data, error };
+            return { data: Object.assign(Object.assign({}, data), { redirectType: redirectType !== null && redirectType !== void 0 ? redirectType : null }), error };
         }
         /**
          * Allows signing in with an OIDC ID token. The authentication provider used
@@ -5296,10 +5120,18 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             var _a, _b, _c;
             try {
                 await this._removeSession();
+                let codeChallenge = null;
+                let codeChallengeMethod = null;
+                if (this.flowType === 'pkce') {
+                    const codeVerifier = generatePKCEVerifier();
+                    await setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
+                    codeChallenge = await generatePKCEChallenge(codeVerifier);
+                    codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
+                }
                 return await _request(this.fetch, 'POST', `${this.url}/sso`, {
                     body: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, ('providerId' in params ? { provider_id: params.providerId } : null)), ('domain' in params ? { domain: params.domain } : null)), { redirect_to: (_b = (_a = params.options) === null || _a === void 0 ? void 0 : _a.redirectTo) !== null && _b !== void 0 ? _b : undefined }), (((_c = params === null || params === void 0 ? void 0 : params.options) === null || _c === void 0 ? void 0 : _c.captchaToken)
                         ? { gotrue_meta_security: { captcha_token: params.options.captchaToken } }
-                        : null)), { skip_http_redirect: true }),
+                        : null)), { skip_http_redirect: true, code_challenge: codeChallenge, code_challenge_method: codeChallengeMethod }),
                     headers: this.headers,
                     xform: _ssoResponse,
                 });
@@ -5417,7 +5249,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                             await result;
                         }
                         catch (e) {
-                            // we jsut care if it finished
+                            // we just care if it finished
                         }
                     })());
                     return result;
@@ -5901,7 +5733,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             let codeChallengeMethod = null;
             if (this.flowType === 'pkce') {
                 const codeVerifier = generatePKCEVerifier();
-                await setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
+                await setItemAsync(this.storage, `${this.storageKey}-code-verifier`, `${codeVerifier}/PASSWORD_RECOVERY`);
                 codeChallenge = await generatePKCEChallenge(codeVerifier);
                 codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
             }
@@ -6057,6 +5889,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 this._debug(debugName, 'error', error);
                 if (isAuthError(error)) {
                     const result = { session: null, error };
+                    if (!isAuthRetryableFetchError(error)) {
+                        await this._removeSession();
+                        await this._notifyAllSubscribers('SIGNED_OUT', null);
+                    }
                     (_a = this.refreshingDeferred) === null || _a === void 0 ? void 0 : _a.resolve(result);
                     return result;
                 }
@@ -6782,6 +6618,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     exports.GoTrueAdminApi = GoTrueAdminApi;
     exports.GoTrueClient = GoTrueClient;
     exports.NavigatorLockAcquireTimeoutError = NavigatorLockAcquireTimeoutError;
+    exports.REALTIME_CHANNEL_STATES = REALTIME_CHANNEL_STATES;
     exports.RealtimeChannel = RealtimeChannel;
     exports.RealtimeClient = RealtimeClient;
     exports.RealtimePresence = RealtimePresence;
