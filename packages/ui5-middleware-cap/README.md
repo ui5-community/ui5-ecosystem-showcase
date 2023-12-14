@@ -29,6 +29,7 @@ server:
   customMiddleware:
   - name: ui5-middleware-cap
     afterMiddleware: compression
+    mountPath: "/cap"
 ```
 
 That's it!
@@ -37,6 +38,8 @@ That's it!
 
 - `moduleId`: `<string>`
 If specified, the CDS server will be loaded from the NPM package with the given moduleId (package name). If not provided, the middleware will lookup the CDS server from the project `dependencies` or `devDependencies`.
+- `mountPath`: `<string>`
+If specified, the CDS server will be available at the specified url.
 - `options`: `<object>` (default: `{ "with-mocks": true, "in-memory?": true }` )
 Allows to provide some CLI options for the `cds serve` command which is called internally to create the middleware functions and embed them into the UI5 development server:
   - `with-mocks`: `<boolean>`
