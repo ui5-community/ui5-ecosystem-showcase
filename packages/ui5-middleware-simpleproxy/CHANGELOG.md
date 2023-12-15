@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@3.2.9...ui5-middleware-simpleproxy@3.2.10) (2023-12-15)
+
+
+### Bug Fixes
+
+* **ui5-middleware-proxy:** handle special case when baseUrl is url ([#926](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/926)) ([4fe2480](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4fe2480a8dec6208d9350dac9264a0e99322d042)), closes [#924](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/924)
+
+
+
+
+
 ## [3.2.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@3.2.8...ui5-middleware-simpleproxy@3.2.9) (2023-12-10)
 
 **Note:** Version bump only for package ui5-middleware-simpleproxy
