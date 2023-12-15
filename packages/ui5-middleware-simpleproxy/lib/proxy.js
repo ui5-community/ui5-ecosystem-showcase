@@ -156,6 +156,10 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 			const baseUrl = req.baseUrl?.length > 1 ? req.baseUrl + "/" : undefined;
 			const url = req.url;
 			let pathname = baseUrl && url?.startsWith(baseUrl) ? url.substring(baseUrl.length - 1) : url;
+			// special case is if the baseUrl is the request URL, then we will completely strip it
+			if (req.baseUrl === url) {
+				pathname = "";
+			}
 			// append the query parameters if available
 			if (query) {
 				const url = new URL(pathname, baseURL);
