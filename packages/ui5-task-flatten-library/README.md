@@ -52,6 +52,17 @@ builder:
 - All `test` files (`/test-resources/`) will be omitted from the build result
 - A warning is logged for `src` files that are not part of the project namespace
 
+## UI5 Tooling Output Style
+
+Starting from `@ui5/cli` version 3.8.0, the tooling introduces a new build option known as "Output Style." This feature allows developers to switch between various output styles when building their projects. Now you have the flexibility to omit both this project namespace and the “resources” directory. Imagine “/resources/sap/m/RangeSlider.js” transforming into “./RangeSlider.js.” This results in a flat build output.  
+The available output styles include:
+
+- `Default`: The default directory structure for every project type. For applications, this is identical to "Flat", and for libraries, it is "Namespace". Other types have a more distinct default output style.
+- `Flat`: Omits the project namespace and the "resources" directory.
+- `Namespace`: Respects the project namespace and the "resources" directory, maintaining the original structure.
+
+To learn more about this feature and to migrate your project to the native Output Style feature instead of using the custom task, refer to the [associated blog post](https://blogs.sap.com/?p=1898173?source=email-global-notification-bp-new-in-tag-followed) or the [CLI documentation page](https://sap.github.io/ui5-tooling/stable/pages/CLI/#ui5-build).
+
 ## License
 
 This work is [dual-licensed](../../LICENSE) under Apache 2.0 and the Derived Beer-ware License. The official license will be Apache 2.0 but finally, you can choose between one of them if you use this work.
