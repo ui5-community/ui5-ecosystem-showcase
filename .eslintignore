@@ -10,6 +10,7 @@
 /**/*.png
 
 # Additionally ignore folders for lint-staged
+/showcases/ui5-app/_polyfill-overrides_/**
 /showcases/ui5-app/bundledefs/**
 /packages/ui5-middleware-onelogin/lib/**
 /packages/ui5-middleware-approuter/test/**

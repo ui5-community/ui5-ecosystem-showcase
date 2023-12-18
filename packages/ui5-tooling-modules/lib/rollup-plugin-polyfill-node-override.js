@@ -1,37 +1,72 @@
 /* eslint-disable no-unused-vars */
+const { existsSync, readFileSync } = require("fs");
+const { join } = require("path");
+
+// reuse logic from polyfill-node plugin
 const nodePolyfills = require("rollup-plugin-polyfill-node");
-module.exports = function ({ log } = {}) {
-	const { resolveId } = nodePolyfills();
+const PREFIX = `\0polyfill-node.`;
+const PREFIX_LENGTH = PREFIX.length;
+const DIRNAME_PATH = "\0node-polyfills:dirname";
+const FILENAME_PATH = "\0node-polyfills:filename";
+const inject = require("@rollup/plugin-inject");
+
+const isBuiltInModule = function isBuiltInModule(module) {
+	try {
+		if (!require("path").isAbsolute(module) && require.resolve(module) === module) {
+			return true;
+		}
+	} catch (ex) {
+		/* */
+	}
+	return false;
+};
+
+module.exports = function nodePolyfillsOverride({ log, cwd } = {}) {
+	const { resolveId, load, transform } = nodePolyfills();
+	const overridesDir = join(cwd, "_polyfill-overrides_");
 	return {
 		name: "polyfill-node-override",
 		resolveId: function (importee, importer, options) {
-			if (importee === "http2") {
-				return { id: "http2?node-polyfill-override", moduleSideEffects: false };
+			if (isBuiltInModule(importee)) {
+				const builtInModule = importee.startsWith("node:") ? importee.substr("node:".length) : importee;
+				if (existsSync(join(overridesDir, `${builtInModule}.js`))) {
+					return { id: `${PREFIX}${builtInModule}.js`, moduleSideEffects: false };
+				}
+				const resolvedId = resolveId.call(this, builtInModule, importer, options);
+				if (resolvedId) {
+					return resolvedId;
+				} else {
+					return { id: `${builtInModule}?polyfill-node-ignore`, moduleSideEffects: false };
+				}
 			}
-			if (importee === "async_hooks") {
-				return { id: "async_hooks?node-polyfill-override", moduleSideEffects: false };
-			}
-			if (importee.startsWith("node:")) {
-				return resolveId.call(this, importee.substr("node:".length), importer, options);
-			}
-			return null;
 		},
-		load: function (source) {
-			if (source === "http2?node-polyfill-override") {
-				return `export const constants = {
-					HTTP2_HEADER_AUTHORITY: "authority",
-					HTTP2_HEADER_METHOD: "method",
-					HTTP2_HEADER_PATH: "path",
-					HTTP2_HEADER_SCHEME: "scheme",
-					HTTP2_HEADER_CONTENT_LENGTH: "content-length",
-					HTTP2_HEADER_EXPECT: "expect",
-					HTTP2_HEADER_STATUS: "status"
-				};`;
-			}
-			if (source === "async_hooks?node-polyfill-override") {
-				return `export class AsyncResource {};`;
+		load: function (importee) {
+			if (importee.startsWith(PREFIX)) {
+				const builtInModule = importee.substr(PREFIX_LENGTH);
+				let content;
+				if (existsSync(join(overridesDir, `${builtInModule}`))) {
+					content = readFileSync(join(overridesDir, `${builtInModule}`), { encoding: "utf8" });
+				} else {
+					content = load.apply(this, arguments);
+				}
+				return content;
+			} else if (importee.endsWith("?polyfill-node-ignore")) {
+				return "";
 			}
 			return null;
 		},
 	};
+};
+
+// prevent the renaming of global, process, Buffer in any module
+// => needs to be used as a standalone rollup plugin in build
+// !!!! KEEP IN SYNC WITH >> rollup-plugin-polyfill-node << !!!!
+module.exports.inject = function nodePolyfillsOverrideInject() {
+	return inject({
+		process: PREFIX + "process",
+		Buffer: [PREFIX + "buffer", "Buffer"],
+		global: PREFIX + "global",
+		__filename: FILENAME_PATH,
+		__dirname: DIRNAME_PATH,
+	});
 };

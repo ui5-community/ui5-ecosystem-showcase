@@ -4,12 +4,10 @@ const { existsSync } = require("fs");
 const { readFile, stat } = require("fs").promises;
 
 const rollup = require("rollup");
-const { nodeResolve } = require("@rollup/plugin-node-resolve");
 const commonjs = require("@rollup/plugin-commonjs");
 const json = require("@rollup/plugin-json");
 const nodePolyfills = require("rollup-plugin-polyfill-node");
 const nodePolyfillsOverride = require("./rollup-plugin-polyfill-node-override");
-const nodePolyfillsIgnore = require("./rollup-plugin-polyfill-node-ignore");
 const amdCustom = require("./rollup-plugin-amd-custom");
 const skipAssets = require("./rollup-plugin-skip-assets");
 const injectESModule = require("./rollup-plugin-inject-esmodule");
@@ -30,6 +28,9 @@ const chunkToModulePath = {};
 
 // local cache of negative modules (avoid additional lookups)
 const modulesNegativeCache = [];
+
+// main field processing order (for resolveModule)
+const defaultExportsFields = ["browser", "import", "require", "default"];
 
 // main field processing order (for nodeResolve and resolveModule)
 const defaultMainFields = ["browser", "module", "main"];
@@ -104,10 +105,11 @@ module.exports = function (log) {
 		 * @param {string} options.cwd current working directory
 		 * @param {string[]} options.depPaths paths of the dependencies (in addition for cwd)
 		 * @param {string[]} options.mainFields an order of main fields to check in package.json
+		 * @param {string[]} options.exportsFields an order of exports fields to check in package.json
 		 * @returns {string} the path of the module in the filesystem
 		 */
 		// ignore module paths starting with a segment from the ignore list (TODO: maybe a better check?)
-		resolveModule: function resolveModule(moduleName, { cwd, depPaths, mainFields } = {}) {
+		resolveModule: function resolveModule(moduleName, { cwd, depPaths, mainFields, exportsFields } = {}) {
 			// default the current working directory
 			cwd = cwd || process.cwd();
 			// if a module is listed in the negative cache, we ignore it!
@@ -116,8 +118,9 @@ module.exports = function (log) {
 			}
 			// package.json of app
 			const pkg = require(path.join(cwd, "package.json"));
-			// default the mainFields
+			// default the mainFields and exportsFields
 			mainFields = mainFields || defaultMainFields;
+			exportsFields = exportsFields || defaultExportsFields;
 			// retrieve or create a resolved module
 			log.verbose(`Resolving ${moduleName} [${mainFields}]...`);
 			// no module found => resolve it
@@ -131,16 +134,42 @@ module.exports = function (log) {
 				try {
 					const pckJsonModuleName = path.join(moduleName, "package.json");
 					const pkgJson = require(pckJsonModuleName);
-					// resolve the main field from the package.json
-					for (const field of mainFields) {
-						if (typeof pkgJson?.[field] === "string") {
-							modulePath = path.join(path.dirname(resolveNodeModule(pckJsonModuleName, cwd, depPaths)), pkgJson?.[field]);
-							break;
+					const resolveModulePath = function (exports, fields) {
+						for (const field of fields) {
+							if (typeof exports[field] === "string") {
+								modulePath = path.join(path.dirname(resolveNodeModule(pckJsonModuleName, cwd, depPaths)), exports[field]);
+								// reset the module path if it doesn't exist
+								if (!existsSync(modulePath)) {
+									modulePath = undefined;
+								} else {
+									return modulePath;
+								}
+							}
+						}
+					};
+					// resolve the module path from exports information
+					// 1.) the browser field in package.json > exports > "."
+					if (typeof pkgJson?.exports?.["."] === "object" && typeof pkgJson?.exports?.["."].browser === "object") {
+						modulePath = resolveModulePath(pkgJson.exports["."].browser, exportsFields);
+					}
+					// 2.) the browser field in package.json
+					if (!modulePath) {
+						modulePath = resolveModulePath(pkgJson, ["browser"]);
+					}
+					// 3.) the fields in package.json > exports > "."
+					if (!modulePath && typeof pkgJson?.exports?.["."] === "object") {
+						Object.values(pkgJson?.exports?.["."]).forEach((entry) => {
+							if (!modulePath && typeof entry === "object") {
+								modulePath = resolveModulePath([entry, exportsFields]);
+							}
+						});
+						if (!modulePath) {
+							modulePath = resolveModulePath([pkgJson?.exports?.["."], exportsFields]);
 						}
 					}
-					// reset the module path if it doesn't exist
-					if (!existsSync(modulePath)) {
-						modulePath = undefined;
+					// 4.) the fields in package.json
+					if (!modulePath) {
+						modulePath = resolveModulePath(pkgJson, mainFields);
 					}
 				} catch (err) {
 					// gracefully ignore the error
@@ -174,7 +203,6 @@ module.exports = function (log) {
 		 * @returns {string} the bundle
 		 */
 		createBundle: async function createBundle(moduleName, { cwd, depPaths, mainFields, beforePlugins, afterPlugins, isMiddleware } = {}) {
-			// create a bundle
 			const bundle = await rollup.rollup({
 				input: moduleName,
 				context: "exports" /* this is normally converted to undefined, but should be exports in our case! */,
@@ -182,27 +210,31 @@ module.exports = function (log) {
 					...(beforePlugins || []),
 					replace({
 						preventAssignment: false,
+						delimiters: ["\\b", "\\b"],
 						values: {
-							"process.env.NODE_ENV": JSON.stringify("development"),
+							"process.env.NODE_ENV": JSON.stringify(isMiddleware ? "development" : "production"),
+							"process.versions.node": JSON.stringify("18.15.0"), // needed for some modules to select features
 						},
 					}),
-					nodePolyfillsOverride(),
-					nodePolyfills(),
-					nodePolyfillsIgnore(),
 					injectESModule(),
 					skipAssets({
 						log,
 						extensions: ["css"],
 					}),
+					json(),
 					commonjs({
 						defaultIsModuleExports: true,
 					}),
 					amdCustom(),
-					json(),
-					nodeResolve({
-						mainFields,
-						preferBuiltins: false,
+					// node polyfills/resolution must happen after
+					// commonjs and amd to ensure e.g. exports is
+					// properly handled by those plugins
+					nodePolyfillsOverride({
+						log,
+						cwd,
 					}),
+					nodePolyfills(),
+					nodePolyfillsOverride.inject(),
 					pnpmResolve({
 						resolveModule: function (moduleName) {
 							return that.resolveModule(moduleName, { cwd, depPaths, mainFields });
@@ -233,6 +265,7 @@ module.exports = function (log) {
 				amd: {
 					define: "sap.ui.define",
 				},
+				//generatedCode: "es2015",
 				entryFileNames: `${moduleName}.js`,
 				chunkFileNames: `${moduleName}/[hash].js`,
 				sourcemap: false, // isMiddleware ? "inline" : true
@@ -261,6 +294,7 @@ module.exports = function (log) {
 		 */
 		getResource: async function getResource(moduleName, { skipCache, debug, keepDynamicImports } = {}, { cwd, depPaths, skipTransform, isMiddleware } = {}) {
 			let bundling = false;
+			cwd = cwd || process.cwd();
 
 			try {
 				// in case of chunks are requested, we lookup the original module
@@ -369,6 +403,7 @@ module.exports = function (log) {
 				if (bundling) {
 					log.error(`Couldn't bundle ${moduleName}: ${err}`, err);
 				}
+				console.error(err);
 			}
 		},
 
