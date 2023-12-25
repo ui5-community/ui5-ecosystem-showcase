@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-flatten-library@3.0.1...ui5-task-flatten-library@3.0.2) (2023-12-25)
+
+
+### Bug Fixes
+
+* **ui5-task-flatten-library:** update readme with ui5 tooling cli information ([5b9d5b7](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5b9d5b7f5e6e714a126ad0c8e8610129a75359e3))
+
+
+
+
+
 ## [3.0.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-flatten-library@3.0.0...ui5-task-flatten-library@3.0.1) (2023-10-14)
 
 **Note:** Version bump only for package ui5-task-flatten-library

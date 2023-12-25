@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.2.5...ui5-tooling-modules@3.2.6) (2023-12-25)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** improved packaging of npm packages ([#929](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/929)) ([b8c6b25](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b8c6b25fd3ded0e5d6f113ffbdb6929729f5d244)), closes [#927](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/927) [#915](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/915)
+
+
+
+
+
 ## [3.2.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.2.4...ui5-tooling-modules@3.2.5) (2023-12-10)
 
 
