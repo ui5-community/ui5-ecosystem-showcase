@@ -185,11 +185,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     } (browser$1, browser$1.exports));
 
     var browserExports = browser$1.exports;
-    var nodeFetch = browserExports;
 
     var browser = /*#__PURE__*/_mergeNamespaces({
         __proto__: null,
-        default: nodeFetch
+        default: browserExports
     }, [browserExports]);
 
     // @ts-ignore
@@ -208,7 +207,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 this.fetch = builder.fetch;
             }
             else if (typeof fetch === 'undefined') {
-                this.fetch = nodeFetch;
+                this.fetch = browserExports;
             }
             else {
                 this.fetch = fetch;
@@ -3586,7 +3585,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    const version$1 = '2.37.0';
+    const version$1 = '2.39.0';
 
     // constants.ts
     let JS_ENV = '';
@@ -3620,7 +3619,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             _fetch = customFetch;
         }
         else if (typeof fetch === 'undefined') {
-            _fetch = nodeFetch;
+            _fetch = browserExports;
         }
         else {
             _fetch = fetch;

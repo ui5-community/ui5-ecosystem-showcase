@@ -42,10 +42,10 @@
     "@js-temporal/polyfill": "^0.4.4",
     "@octokit/core": "^4.2.4",
     "@stomp/stompjs": "^7.0.0",
-    "@supabase/supabase-js": "2.37.0",
+    "@supabase/supabase-js": "^2.39.0",
     "axios": "^1.6.2",
     "cmis": "^1.0.3",
-    "firebase": "10.4.0",
+    "firebase": "^10.7.1",
     "is-plain-object": "^5.0.0",
     "node-fetch": "^2.7.0",
     "pdfmake": "^0.2.8",
@@ -55,6 +55,7 @@
     "ui5-lib": "workspace:^",
     "ui5-module": "workspace:^",
     "xlsx": "^0.18.5",
+    "xml-js": "^1.6.11",
     "zod": "^3.22.4"
   },
   "devDependencies": {

@@ -4,7 +4,6 @@ sap.ui.define(
 		"ui5/ecosystem/demo/app/controller/BaseController",
 		"xlsx",
 		"cmis",
-		"ui5-app/bundledefs/firebase", // requires node-fetch@2
 		"@supabase/supabase-js",
 		"@octokit/core", // requires node-fetch@2 and is-plain-object@5
 		"axios",
@@ -14,13 +13,14 @@ sap.ui.define(
 		"zod",
 		"pdfmake/build/pdfmake",
 		"pdfmake/build/vfs_fonts",
+		"xml-js",
+		"ui5-app/bundledefs/firebase", // requires node-fetch@2
 	],
-	(Controller, xlsx, cmis, _firebase, supabase, octokit, axios, temporal, stompjs, _react, zod, pdfMake, pdfFonts) => {
+	(Controller, xlsx, cmis, supabase, octokit, axios, temporal, stompjs, _react, zod, pdfMake, pdfFonts, xmljs, _firebase) => {
 		"use strict";
 
 		console.log(xlsx);
 		console.log(cmis);
-		console.log(_firebase);
 		console.log(supabase);
 		console.log(octokit);
 		console.log(axios);
@@ -28,10 +28,12 @@ sap.ui.define(
 		console.log(stompjs);
 		console.log(_react);
 		console.log(zod);
+		console.log(xmljs);
 
 		pdfMake.vfs = pdfFonts.pdfMake.vfs;
 		console.log(pdfMake);
 
+		console.log(_firebase);
 		const { initializeApp, getFirestore } = _firebase;
 		const app = initializeApp({});
 		try {

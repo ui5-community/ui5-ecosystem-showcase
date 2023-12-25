@@ -10,7 +10,7 @@ const { platform } = require("os");
 
 // eslint-disable-next-line jsdoc/require-jsdoc
 async function getResource(resourceName, ctx, options = {}) {
-	return ctx.util.getResource(resourceName, { skipCache: true, debug: true, ...options });
+	return ctx.util.getResource(resourceName, { skipCache: true, debug: true, /* isMiddleware: true, */ ...options });
 }
 
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -68,7 +68,7 @@ async function runModule(resourceName, code, ctx) {
 											if (i == row) {
 												codeSnippet.push(`[${i}] >>>\t${codeLines[i]}`);
 											} else {
-												codeSnippet.push(`[${i}]\t${codeLines[i]}`);
+												codeSnippet.push(`[${i}]    \t${codeLines[i]}`);
 											}
 										}
 										console.error(`The following line caused the issue "${err.message}":\n\n${codeSnippet.join("\n")}\n\n`, err);
@@ -387,5 +387,17 @@ test.serial("Verify generation of pdfMake", async (t) => {
 	t.true(Object.keys(moduleFonts.retVal.pdfMake.vfs).length > 0);
 	if (platform() !== "win32") {
 		t.is(moduleFonts.code, readSnapFile(moduleFonts.name, t.context.snapDir));
+	}
+});
+
+test.serial("Verify generation of xml-js", async (t) => {
+	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
+	const module = await getModule("xml-js", {
+		tmpDir: t.context.tmpDir,
+		util: t.context.util,
+	});
+	t.true(module.retVal.__esModule);
+	if (platform() !== "win32") {
+		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
 	}
 });
