@@ -66,7 +66,7 @@ module.exports = async function applyCDSMiddleware(
 	const servicesPaths = [];
 	Object.keys(cds.services)
 		.filter((service) => Array.isArray(cds.services[service].endpoints))
-		.forEach((service) => servicesPaths.push(...cds.services[service].endpoints.filter((endpoint) => endpoint.kind === "odata-v4").map((endpoint) => endpoint.path)));
+		.forEach((service) => servicesPaths.push(...cds.services[service].endpoints.filter((endpoint) => /^odata(-v4)?$/.test(endpoint.kind)).map((endpoint) => endpoint.path)));
 
 	// change dir back (only needed temporary for cds bootstrap)
 	process.chdir(cwd);
