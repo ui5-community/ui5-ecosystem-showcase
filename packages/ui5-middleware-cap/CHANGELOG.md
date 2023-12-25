@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cap@3.2.5...ui5-middleware-cap@3.2.6) (2023-12-25)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** support odata and odata-v4 endpoints ([#930](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/930)) ([249e18d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/249e18dbeae2a2a6c2cb8694b0f2bd6dd9714888))
+
+
+
+
+
 ## [3.2.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-cap@3.2.4...ui5-middleware-cap@3.2.5) (2023-12-15)
 
 **Note:** Version bump only for package ui5-middleware-cap
