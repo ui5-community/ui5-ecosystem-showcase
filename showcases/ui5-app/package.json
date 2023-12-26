@@ -42,7 +42,7 @@
     "@js-temporal/polyfill": "^0.4.4",
     "@octokit/core": "^4.2.4",
     "@stomp/stompjs": "^7.0.0",
-    "@supabase/supabase-js": "^2.39.0",
+    "@supabase/supabase-js": "^2.39.1",
     "axios": "^1.6.2",
     "cmis": "^1.0.3",
     "firebase": "^10.7.1",
@@ -59,7 +59,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@ui5/cli": "^3.7.3",
+    "@ui5/cli": "^3.8.0",
     "@wdio/cli": "^7.32.0",
     "@wdio/local-runner": "^7.32.0",
     "@wdio/mocha-framework": "^7.30.2",
