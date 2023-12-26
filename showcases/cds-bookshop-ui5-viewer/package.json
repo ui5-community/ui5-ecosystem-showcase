@@ -19,7 +19,7 @@
     "lint": "eslint webapp"
   },
   "devDependencies": {
-    "@ui5/cli": "^3.7.3",
+    "@ui5/cli": "^3.8.0",
     "rimraf": "^5.0.5",
     "ui5-middleware-livereload": "workspace:^",
     "ui5-task-zipper": "workspace:^"

@@ -12,10 +12,10 @@
   },
   "dependencies": {
     "@ui5/fs": "^3.0.5",
-    "@ui5/project": "^3.8.0",
-    "@ui5/server": "^3.1.4",
+    "@ui5/project": "^3.9.0",
+    "@ui5/server": "^3.1.5",
     "js-yaml": "^4.1.0",
-    "node-html-parser": "^6.1.11"
+    "node-html-parser": "^6.1.12"
   },
   "devDependencies": {
     "@sap/cds": "^6.8.4",
