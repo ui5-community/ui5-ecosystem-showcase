@@ -39,7 +39,7 @@ describe("interaction", function () {
 		const today = new Date();
 		today.setDate(1); // always use the first day of the month (avoid issues at month end!)
 		today.setMonth(today.getMonth() + 1); // we want next month
-		let month = `${today.getMonth() + 1}`.padStart(2, "0");
+		const month = `${today.getMonth() + 1}`.padStart(2, "0");
 		const year = today.getFullYear().toString();
 
 		// first, input current date to clear value from previous test
@@ -52,7 +52,7 @@ describe("interaction", function () {
 				id: /.*DateTimePicker-icon$/,
 			},
 		};
-		await browser.asControl(popupIcon).firePress();
+		await browser.asControl(popupIcon).press();
 
 		// use wdio + wdi5 mixed up in same test
 		const cal = await $('//*[contains(@id, "DateTimePicker-cal")]'); // wdio-native
