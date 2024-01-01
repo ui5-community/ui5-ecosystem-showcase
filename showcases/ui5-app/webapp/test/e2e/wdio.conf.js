@@ -16,7 +16,7 @@ exports.config = {
 	// NPM script (see https://docs.npmjs.com/cli/run-script) then the current working
 	// directory is where your package.json resides, so `wdio` will be called from there.
 	//
-	specs: ["./webapp/test/e2e/**/*.test.js"],
+	specs: ["**/*.test.js"],
 	// Patterns to exclude.
 	exclude: [
 		// 'path/to/excluded/files'
@@ -110,7 +110,6 @@ exports.config = {
 	// your test setup with almost no effort. Unlike plugins, they don't add new
 	// commands. Instead, they hook themselves up into the test process.
 	services: [
-		"chromedriver", // Webdriver.IO standard
 		"ui5", // this is all that's required to hook up UI5 with Webdriver.IO via wdi5 :)
 	],
 
