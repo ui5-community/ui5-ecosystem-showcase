@@ -93,7 +93,7 @@ exports.config = {
 	// with `/`, the base url gets prepended, not including the path portion of your baseUrl.
 	// If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
 	// gets prepended directly.
-	baseUrl: "http://localhost:1081/",
+	baseUrl: "http://localhost:1081/index.html",
 	//
 	// Default timeout for all waitFor* commands.
 	waitforTimeout: 10000,
@@ -146,9 +146,6 @@ exports.config = {
 	wdi5: {
 		screenshotPath: require("path").join("test", "e2e", "report", "screenshots"),
 		logLevel: process.env.HEADLESS ? "silent" : "error", // error | verbose | silent
-		platform: "browser", // browser | android | ios | electron
-		url: "index.html", // path to your bootstrap html file
-		deviceType: "web", // native | web,
 		waitForUI5Timeout: 30000,
 	},
 	//
