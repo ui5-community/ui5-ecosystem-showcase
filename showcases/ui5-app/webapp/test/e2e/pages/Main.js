@@ -33,7 +33,7 @@ class Main extends Page {
 	}
 
 	async iPressTheNavButton() {
-		await browser.asControl(this._navFwdButton).firePress();
+		await browser.asControl(this._navFwdButton).press();
 	}
 
 	async iShouldSeeTheNavButton() {

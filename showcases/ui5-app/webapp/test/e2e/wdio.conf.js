@@ -16,7 +16,7 @@ exports.config = {
 	// NPM script (see https://docs.npmjs.com/cli/run-script) then the current working
 	// directory is where your package.json resides, so `wdio` will be called from there.
 	//
-	specs: ["./webapp/test/e2e/**/*.test.js"],
+	specs: ["**/*.test.js"],
 	// Patterns to exclude.
 	exclude: [
 		// 'path/to/excluded/files'
@@ -93,7 +93,7 @@ exports.config = {
 	// with `/`, the base url gets prepended, not including the path portion of your baseUrl.
 	// If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
 	// gets prepended directly.
-	baseUrl: "http://localhost:1081/",
+	baseUrl: "http://localhost:1081/index.html",
 	//
 	// Default timeout for all waitFor* commands.
 	waitforTimeout: 10000,
@@ -110,7 +110,6 @@ exports.config = {
 	// your test setup with almost no effort. Unlike plugins, they don't add new
 	// commands. Instead, they hook themselves up into the test process.
 	services: [
-		"chromedriver", // Webdriver.IO standard
 		"ui5", // this is all that's required to hook up UI5 with Webdriver.IO via wdi5 :)
 	],
 
@@ -147,9 +146,6 @@ exports.config = {
 	wdi5: {
 		screenshotPath: require("path").join("test", "e2e", "report", "screenshots"),
 		logLevel: process.env.HEADLESS ? "silent" : "error", // error | verbose | silent
-		platform: "browser", // browser | android | ios | electron
-		url: "index.html", // path to your bootstrap html file
-		deviceType: "web", // native | web,
 		waitForUI5Timeout: 30000,
 	},
 	//

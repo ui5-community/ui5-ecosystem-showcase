@@ -23,7 +23,7 @@ class Other extends Page {
 					id: /.*navButton$/,
 				},
 			})
-			.firePress();
+			.press();
 	}
 }
 

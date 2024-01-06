@@ -1,4 +1,4 @@
-const fs = require("fs-extra")
+const { cp } = require("fs").promises
 const path = require("path")
 const replace = require("replace-in-file")
 
@@ -24,21 +24,21 @@ const replace = require("replace-in-file")
  */
 async function prepUI5ServerConfig({ ui5Yaml, appRouterPort, xsAppJson, defaultEnvJson, tmpDir }) {
 	// replace default port 1091 for app router w/ random port
-	await fs.copyFile(path.resolve(ui5Yaml), `${tmpDir}/ui5.yaml`) // copy orig ui5.yaml test fixture
+	await cp(path.resolve(ui5Yaml), `${tmpDir}/ui5.yaml`) // copy orig ui5.yaml test fixture
 	const _ui5Yaml = await replace({ files: path.resolve(`${tmpDir}/ui5.yaml`), from: "1091", to: appRouterPort }) // replace port config in file
 	const ui5 = { yaml: _ui5Yaml[0].file }
 
 	const _xsapp = { json: path.resolve(xsAppJson) }
 	const xsapp = { json: path.resolve(tmpDir, "xs-app.json") }
 	// we always need the routes
-	const _promises = [fs.copy(_xsapp.json, xsapp.json)]
+	const _promises = [cp(_xsapp.json, xsapp.json)]
 
 	// auth info only on-demand
 	let defaultEnv = {}
 	if (defaultEnvJson) {
 		const _defaultEnv = { json: path.resolve(defaultEnvJson) }
 		defaultEnv = { json: path.resolve(tmpDir, "default-env.json") }
-		_promises.push(fs.copy(_defaultEnv.json, defaultEnv.json))
+		_promises.push(cp(_defaultEnv.json, defaultEnv.json))
 	}
 
 	// prep routes (+ authentication) config
