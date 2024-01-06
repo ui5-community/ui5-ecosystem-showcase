@@ -3949,7 +3949,7 @@ sap.ui.define((function () { 'use strict';
    */
   function combineURLs(baseURL, relativeURL) {
     return relativeURL
-      ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
+      ? baseURL.replace(/\/?\/$/, '') + '/' + relativeURL.replace(/^\/+/, '')
       : baseURL;
   }
 
@@ -4583,7 +4583,7 @@ sap.ui.define((function () { 'use strict';
     return config;
   }
 
-  const VERSION = "1.6.2";
+  const VERSION = "1.6.3";
 
   const validators$1 = {};
 
