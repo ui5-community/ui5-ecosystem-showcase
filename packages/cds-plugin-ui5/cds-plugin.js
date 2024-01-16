@@ -69,7 +69,7 @@ if (!skip) {
 		log.debug("bootstrap");
 
 		const cwd = process.cwd();
-		const ui5Modules = await findUI5Modules({ cwd });
+		const ui5Modules = await findUI5Modules({ cwd, cds });
 		const { localApps, config } = ui5Modules;
 
 		const links = [];

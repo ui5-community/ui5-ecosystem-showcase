@@ -20,7 +20,7 @@ const log = require("./log");
  * @param {string} options.skipDeps skip dependencies
  * @returns {Array<UI5Module>} array of UI5 module
  */
-module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps }) {
+module.exports = async function findUI5Modules({ cwd, cds, skipLocalApps, skipDeps }) {
 	// extract the modules configuration from the package.json
 	const pkgJson = require(path.join(cwd, "package.json"));
 
@@ -52,9 +52,9 @@ module.exports = async function findUI5Modules({ cwd, skipLocalApps, skipDeps })
 	const localApps = new Set();
 	const appDirs = [];
 	if (!skipLocalApps) {
-		const appDir = path.join(cwd, "app");
+		const appDir = path.join(cwd, cds?.env?.folders?.app || "app");
 		if (fs.existsSync(appDir)) {
-			// is the UI5 app directly in teh app directory?
+			// is the UI5 app directly in the app directory?
 			if (!fs.existsSync(path.join(appDir, determineUI5Yaml(appDir)))) {
 				// lookup all dirs inside the root app directory for
 				// being either a local app or a UI5 application
