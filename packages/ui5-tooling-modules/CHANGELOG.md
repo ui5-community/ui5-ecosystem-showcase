@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.2.6...ui5-tooling-modules@3.2.7) (2024-01-17)
+
+**Note:** Version bump only for package ui5-tooling-modules
+
+
+
+
+
 ## [3.2.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.2.5...ui5-tooling-modules@3.2.6) (2023-12-25)
 
 

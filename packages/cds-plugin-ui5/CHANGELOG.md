@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.7.4...cds-plugin-ui5@0.7.5) (2024-01-17)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** support app folders being served from cds.env.folders.app ([#934](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/934)) ([#935](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/935)) ([9cff34d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9cff34d1b39ff2d22b6a8caaf3971306de737fe5))
+
+
+
+
+
 ## [0.7.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.7.3...cds-plugin-ui5@0.7.4) (2023-12-10)
 
 **Note:** Version bump only for package cds-plugin-ui5
