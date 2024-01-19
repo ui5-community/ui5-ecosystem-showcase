@@ -43,6 +43,7 @@
     "@octokit/core": "^4.2.4",
     "@stomp/stompjs": "^7.0.0",
     "@supabase/supabase-js": "^2.39.1",
+    "@ui5/webcomponents": "^1.21.2",
     "axios": "^1.6.3",
     "cmis": "^1.0.3",
     "firebase": "^10.7.1",

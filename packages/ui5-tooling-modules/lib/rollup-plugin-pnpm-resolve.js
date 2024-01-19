@@ -1,5 +1,10 @@
 const path = require("path");
 const fs = require("fs");
+
+const existsAndIsFile = function (file) {
+	return fs.existsSync(file) && fs.statSync(file).isFile();
+};
+
 module.exports = function ({ resolveModule } = {}) {
 	return {
 		name: "pnpm-resolve",
@@ -10,13 +15,13 @@ module.exports = function ({ resolveModule } = {}) {
 			} else if (importee.startsWith("./") || importee.startsWith("../")) {
 				// resolve relative paths
 				const file = path.resolve(path.dirname(importer), importee);
-				if (fs.existsSync(file) && fs.statSync(file).isFile()) {
+				if (existsAndIsFile(file)) {
 					return file;
-				} else if (fs.existsSync(`${file}.js`)) {
+				} else if (existsAndIsFile(`${file}.js`)) {
 					return `${file}.js`;
-				} else if (fs.existsSync(`${file}.cjs`)) {
+				} else if (existsAndIsFile(`${file}.cjs`)) {
 					return `${file}.cjs`;
-				} else if (fs.existsSync(`${file}.mjs`)) {
+				} else if (existsAndIsFile(`${file}.mjs`)) {
 					return `${file}.mjs`;
 				}
 			}

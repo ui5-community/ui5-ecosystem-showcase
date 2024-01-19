@@ -201,6 +201,7 @@ server:
     - name: ui5-tooling-modules-middleware
       afterMiddleware: ui5-tooling-transpile-middleware
       configuration:
+        debug: true
         #skipCache: true
     - name: ui5-tooling-less-middleware
       beforeMiddleware: serveResources

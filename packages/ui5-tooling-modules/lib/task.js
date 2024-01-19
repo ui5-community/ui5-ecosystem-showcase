@@ -1,10 +1,9 @@
 /* eslint-disable no-unused-vars, no-empty */
 const path = require("path");
-const { readFileSync, existsSync, createReadStream } = require("fs");
+const { createReadStream } = require("fs");
 const espree = require("espree");
 const estraverse = require("estraverse");
-const { XMLParser, XMLBuilder, XMLValidator } = require("fast-xml-parser");
-const escodegen = require("@javascript-obfuscator/escodegen"); // escodegen itself isn't released anymore since 2020 => using fork
+const { XMLParser, XMLBuilder } = require("fast-xml-parser");
 const minimatch = require("minimatch");
 
 /**
@@ -12,7 +11,7 @@ const minimatch = require("minimatch");
  *
  * @param {object} parameters Parameters
  * @param {module:@ui5/logger/Logger} parameters.log Logger instance
- * @param {module:@ui5/fs.DuplexCollection} parameters.workspace DuplexCollection to read and write files
+ * @param {module:@ui5/fs/DuplexCollection} parameters.workspace DuplexCollection to read and write files
  * @param {object} parameters.taskUtil Specification Version dependent interface to a
  *                [TaskUtil]{@link module:@ui5/builder.tasks.TaskUtil} instance
  * @param {object} parameters.options Options
@@ -30,19 +29,25 @@ const minimatch = require("minimatch");
  */
 module.exports = async function ({ log, workspace, taskUtil, options }) {
 	const cwd = taskUtil.getProject().getRootPath() || process.cwd();
+	const { scan, getBundleInfo, getResource } = require("./util")(log);
+
+	// determine all paths for the dependencies
 	const depPaths = taskUtil
 		.getDependencies()
 		.map((dep) => taskUtil.getProject(dep))
 		.filter((prj) => !prj.isFrameworkProject())
 		.map((prj) => prj.getRootPath());
-	const { getResource, resolveModule, listResources } = require("./util")(log);
 
-	const config = options.configuration || {};
-	const removeScopePrefix = config?.removeScopePrefix || config?.removeScopePreceder;
-	const providedDependencies = Array.isArray(config?.providedDependencies) ? config?.providedDependencies : [];
+	// derive the configuration and default values
+	const config = Object.assign(
+		{
+			skipTransform: false,
+		},
+		options.configuration
+	);
 
-	// extract the configuration of files to be skipped during transformation
-	const skipTransform = options?.configuration?.skipTransform || false;
+	// scan the content of the project for unique dependencies, resources and more
+	const { uniqueDeps, uniqueResources, uniqueNS, uniqueChunks, addUniqueChunks } = await scan(workspace, config, { cwd, depPaths });
 
 	// list of included assets pattern (required for rewrite)
 	const includedAssets = [];
@@ -63,65 +68,8 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 		});
 	}
 
-	const { resourceFactory } = taskUtil;
-
-	// collector for unique dependencies and resources
-	//const uniqueNPMPackages = new Set();
-	const uniqueDeps = new Set();
-	const uniqueResources = new Set();
-	const uniqueNS = new Set();
-	const uniqueChunks = new Set();
-
-	// eslint-disable-next-line jsdoc/require-jsdoc
-	function isProvided(depOrRes) {
-		return providedDependencies.filter((e) => depOrRes === e || depOrRes.startsWith(`${e}/`)).length > 0;
-	}
-
-	// eslint-disable-next-line jsdoc/require-jsdoc
-	/* TODO: keep functionality commented till needed!
-	function addUniqueNPMPackage(npmPackageName) {
-		if (!uniqueNPMPackages.has(npmPackageName) && npmPackageName && !npmPackageName.startsWith(".") && resolveModule(`${npmPackageName}/package.json`, { cwd, depPaths })) {
-			uniqueNPMPackages.add(npmPackageName);
-		}
-	}
-	*/
-
-	// eslint-disable-next-line jsdoc/require-jsdoc
-	function addUniqueDep(dep) {
-		if (isProvided(dep)) {
-			return false;
-		} else {
-			// add the dependency
-			uniqueDeps.add(dep);
-			// also add the NPM package name
-			const npmPackageName = /((?:@[^/]+\/)?(?:[^/]+)).*/.exec(dep)?.[1];
-			//addUniqueNPMPackage(npmPackageName);
-			return true;
-		}
-	}
-
-	// eslint-disable-next-line jsdoc/require-jsdoc
-	function addUniqueResource(ns) {
-		if (!isProvided(ns)) {
-			uniqueResources.add(ns);
-		}
-	}
-
-	// eslint-disable-next-line jsdoc/require-jsdoc
-	function addUniqueNamespace(ns) {
-		if (!isProvided(ns)) {
-			uniqueNS.add(ns);
-		}
-	}
-
-	// eslint-disable-next-line jsdoc/require-jsdoc
-	function addUniqueChunks(chunk) {
-		if (!isProvided(chunk)) {
-			uniqueChunks.add(chunk);
-		}
-	}
-
 	// utility to rewrite dependency
+	const removeScopePrefix = config?.removeScopePrefix || config?.removeScopePreceder;
 	// eslint-disable-next-line jsdoc/require-jsdoc
 	function rewriteDep(dep, useDottedNamespace) {
 		if (config.addToNamespace && (uniqueDeps.has(dep) || uniqueResources.has(dep) || uniqueNS.has(dep) || uniqueChunks.has(dep) || isAssetIncluded(dep))) {
@@ -133,67 +81,6 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 			return useDottedNamespace ? d.replace(/\//g, ".") : d;
 		} else {
 			return dep;
-		}
-	}
-
-	// utility to lookup unique JS dependencies
-	// eslint-disable-next-line jsdoc/require-jsdoc
-	function findUniqueJSDeps(content, parentDepPath) {
-		// use espree to parse the UI5 modules and extract the UI5 module dependencies
-		try {
-			const program = espree.parse(content, { range: true, comment: true, tokens: true, ecmaVersion: "latest" });
-			estraverse.traverse(program, {
-				enter(node, parent) {
-					if (
-						/* sap.ui.require.toUrl */
-						node?.type === "CallExpression" &&
-						node?.callee?.property?.name == "toUrl" &&
-						node?.callee?.object?.property?.name == "require" &&
-						node?.callee?.object?.object?.property?.name == "ui" &&
-						node?.callee?.object?.object?.object?.name == "sap"
-					) {
-						const elDep = node.arguments[0];
-						if (elDep?.type === "Literal") {
-							addUniqueResource(elDep.value);
-						}
-					} else if (
-						/* sap.ui.(require|define) */
-						(node?.type === "CallExpression" &&
-							/require|define|requireSync/.test(node?.callee?.property?.name) &&
-							node?.callee?.object?.property?.name == "ui" &&
-							node?.callee?.object?.object?.name == "sap") ||
-						/* __ui5_require_async (babel-plugin-transform-modules-ui5) */
-						(node?.type === "CallExpression" && node?.callee?.name == "__ui5_require_async")
-					) {
-						let deps;
-						if (/requireSync/.test(node?.callee?.property?.name) || /__ui5_require_async/.test(node?.callee?.name)) {
-							const elDep = node.arguments[0];
-							if (elDep?.type === "Literal") {
-								deps = [elDep.value];
-							}
-						} else {
-							const depsArray = node.arguments.filter((arg) => arg.type === "ArrayExpression");
-							deps = depsArray?.[0]?.elements.filter((el) => el.type === "Literal").map((el) => el.value);
-						}
-						deps?.forEach((dep) => {
-							if (addUniqueDep(dep)) {
-								// each dependency which can be resolved via the NPM package name
-								// should also be checked for its dependencies to finally handle them
-								// here if they also require to be transpiled by the task
-								try {
-									const depPath = resolveModule(dep, { cwd, depPaths });
-									if (existsSync(depPath)) {
-										const depContent = readFileSync(depPath, { encoding: "utf8" });
-										findUniqueJSDeps(depContent, depPath);
-									}
-								} catch (err) {}
-							}
-						});
-					}
-				},
-			});
-		} catch (err) {
-			config.debug && log.warn(`Failed to analyzed resource "${parentDepPath}"! Most likely an NPM package with reasion: ${err}${config.debug === "verbose" ? `\n${err.stack}` : ""}`);
 		}
 	}
 
@@ -273,60 +160,6 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 		return changed;
 	}
 
-	// utility to lookup unique XML dependencies
-	// eslint-disable-next-line jsdoc/require-jsdoc
-	function findUniqueXMLDeps(node, ns = {}) {
-		if (typeof node === "object") {
-			// attributes
-			Object.keys(node)
-				.filter((key) => key.startsWith("@_"))
-				.forEach((key) => {
-					const nsParts = /@_xmlns(?::(.*))?/.exec(key);
-					if (nsParts) {
-						// namespace (default namespace => "")
-						ns[nsParts[1] || ""] = node[key];
-					}
-				});
-			// nodes
-			Object.keys(node)
-				.filter((key) => !key.startsWith("@_"))
-				.forEach((key) => {
-					const children = Array.isArray(node[key]) ? node[key] : [node[key]];
-					children
-						.filter((child) => typeof child === "object")
-						.forEach((child) => {
-							const nodeParts = /(?:([^:]*):)?(.*)/.exec(key);
-							if (nodeParts) {
-								// skip #text nodes
-								let module = nodeParts[2];
-								if (module !== "#text") {
-									// only add those dependencies whose namespace is known
-									let namespace = ns[nodeParts[1] || ""];
-									if (typeof namespace === "string") {
-										namespace = namespace.replace(/\./g, "/");
-										addUniqueNamespace(namespace);
-										const dep = `${namespace}/${module}`;
-										if (addUniqueDep(dep)) {
-											// each dependency which can be resolved via the NPM package name
-											// should also be checked for its dependencies to finally handle them
-											// here if they also require to be transpiled by the task
-											try {
-												const depPath = resolveModule(dep, { cwd, depPaths });
-												if (existsSync(depPath)) {
-													const depContent = readFileSync(depPath, { encoding: "utf8" });
-													findUniqueJSDeps(depContent, depPath);
-												}
-											} catch (ex) {}
-										}
-									}
-									findUniqueXMLDeps(child, ns);
-								}
-							}
-						});
-				});
-		}
-	}
-
 	// utility to rewrite XML dependencies
 	// eslint-disable-next-line jsdoc/require-jsdoc
 	function rewriteXMLDeps(node, bundledResources) {
@@ -370,100 +203,24 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 		return changed;
 	}
 
-	// find all XML resources to determine their dependencies
-	const allXmlResources = await workspace.byGlob("/**/*.xml");
-
-	// lookup all resources for their dependencies via the above utility
-	if (allXmlResources.length > 0) {
-		const parser = new XMLParser({
-			attributeNamePrefix: "@_",
-			ignoreAttributes: false,
-			ignoreNameSpace: false,
-		});
-
-		await Promise.all(
-			allXmlResources.map(async (resource) => {
-				log.verbose(`Processing XML resource: ${resource.getPath()}`);
-
-				const content = await resource.getString();
-				const xmldom = parser.parse(content);
-				findUniqueXMLDeps(xmldom);
-
-				return resource;
-			})
-		);
-	}
-
-	// find all JS resources to determine their dependencies
-	const allJsResources = await workspace.byGlob("/**/*.js");
-
-	// lookup all resources for their dependencies via the above utility
-	await Promise.all(
-		allJsResources.map(async (resource) => {
-			log.verbose(`Processing JS resource: ${resource.getPath()}`);
-
-			const content = await resource.getString();
-			findUniqueJSDeps(content, resource.getPath());
-
-			return resource;
-		})
-	);
-
-	// lookup the assets to be included which are configured in the ui5.yaml
-	if (config.includeAssets) {
-		if (typeof config.includeAssets === "object") {
-			Object.keys(config.includeAssets).forEach((npmPackageName) => {
-				const ignore = config.includeAssets[npmPackageName];
-				if (!ignore || Array.isArray(ignore)) {
-					log.verbose(`Including assets for dependency: ${npmPackageName}`);
-					try {
-						const assets = listResources(npmPackageName, { cwd, depPaths, ignore });
-						if (log.isLevelEnabled("verbose")) {
-							assets.forEach((asset) => log.verbose(`  - ${asset}`));
-						}
-						assets.forEach((asset) => uniqueResources.add(asset));
-					} catch (ex) {
-						log.error(`The npm package ${npmPackageName} defined in "includeAssets" not found! Skipping assets...`);
-					}
-				} else {
-					log.error(`The option "includeAssets" must be type of map with the key being a npm package name and optionally values being a list of glob patterns!`);
-				}
-			});
-		} else {
-			log.error(`The option "includeAssets" must be type of map with the key being a npm package name!`);
-		}
-	}
-
-	// determine bundled resources
+	// bundle the resources (determine bundled resources and the set of modules to build)
+	const { resourceFactory } = taskUtil;
 	const bundledResources = [];
 
-	// every unique dependency will be tried to be transpiled
+	// every unique dependency will be bundled (entry points will be kept, rest is chunked)
+	const bundleInfo = await getBundleInfo(Array.from(uniqueDeps), config, { cwd, depPaths });
 	await Promise.all(
-		Array.from(uniqueDeps).map(async (dep) => {
-			log.verbose(`Trying to process dependency: ${dep}`);
-			const bundle = await getResource(dep, config, { cwd, depPaths, skipTransform });
-			if (bundle) {
-				config.debug && log.info(`Processing dependency: ${dep}`);
-				const bundleResource = resourceFactory.createResource({
-					path: `/resources/${rewriteDep(dep)}.js`,
-					string: bundle.code,
-				});
-				bundledResources.push(dep);
-				await workspace.write(bundleResource);
-				// attach the chunks
-				if (bundle.chunks) {
-					for await (const chunk of Object.keys(bundle.chunks)) {
-						config.debug && log.info(`  + chunk ${chunk}`);
-						addUniqueChunks(chunk);
-						const chunkResource = resourceFactory.createResource({
-							path: `/resources/${rewriteDep(chunk)}.js`,
-							string: bundle.chunks[chunk].code,
-						});
-						bundledResources.push(chunk);
-						await workspace.write(chunkResource);
-					}
-				}
+		bundleInfo.getEntries().map(async (entry) => {
+			config.debug && log.info(`Processing ${entry.type}: ${entry.name}`);
+			if (entry.type === "chunk") {
+				addUniqueChunks(entry.name);
 			}
+			const newResource = resourceFactory.createResource({
+				path: `/resources/${rewriteDep(entry.name)}.js`,
+				string: entry.code,
+			});
+			bundledResources.push(entry.name);
+			await workspace.write(newResource);
 		})
 	);
 
@@ -471,7 +228,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	await Promise.all(
 		Array.from(uniqueResources).map(async (resourceName) => {
 			log.verbose(`Trying to process resource: ${resourceName}`);
-			const resource = await getResource(resourceName, config, { cwd, depPaths, skipTransform: true });
+			const resource = await getResource(resourceName, { cwd, depPaths });
 			if (resource) {
 				config.debug && log.info(`Processing resource: ${resourceName}`);
 				const newResource = resourceFactory.createResource({
@@ -509,11 +266,11 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 
 		// check whether the current resource should be skipped or not (based on module name)
 		const shouldSkipTransform = function (resourcePath) {
-			return Array.isArray(skipTransform)
-				? skipTransform.some((value) => {
+			return Array.isArray(config.skipTransform)
+				? config.skipTransform.some((value) => {
 						return minimatch(resourcePath, `/resources/${options.projectNamespace}/thirdparty/${value}`);
 				  })
-				: skipTransform;
+				: config.skipTransform;
 		};
 
 		const allJsXmlResources = await workspace.byGlob("/**/*.{js,xml}");

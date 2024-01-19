@@ -5,6 +5,7 @@
   xmlns="sap.m"
   xmlns:mvc="sap.ui.core.mvc"
   xmlns:mod="ui5-module"
+  xmlns:webcc="ui5.ecosystem.demo.app.webcc"
   xmlns:html="http://www.w3.org/1999/xhtml"
 >
   <html:style>
@@ -24,6 +25,13 @@
         <mod:ChartRecord label="Day 4" value="150" />
         <mod:ChartRecord label="Day 5" value="125" />
       </mod:Chart>
+      <webcc:Panel headerText="UI5 Web Components Panel">
+        <VBox alignItems="Center" justifyContent="Center" height="100%">
+          <Button text="Don't press me!" press="onBoo" />
+          <webcc:Button id="webccBtn" text="Don't change this text!" click="onBoo" />
+          <webcc:Input value="Don't change this text!" change="onChange" />
+        </VBox>
+      </webcc:Panel>
     </content>
   </Page>
 </mvc:View>

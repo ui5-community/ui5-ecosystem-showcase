@@ -43,6 +43,10 @@ The following configuration options are relevant for the `task` and the `middlew
   Enables debug logging (defaults to `false`), by setting value to `"verbose"` the extension will log even more detailed
   &nbsp;
 
+- *watch*: `boolean` *experimental feature*
+  For development scenarios, the server is listening to changes of the source files of the project and its dependencies and triggers the generation of the bundle if the used NPM packages have been changed (defaults to `true`)
+  &nbsp;
+
 - *skipCache*: `boolean` *experimental feature*
   For development scenarios, the module cache can be disabled by setting this option to true. Normally, if a module changes (e.g. bundledefs), this change is detected and the bundle is recreated. This just forces the regeneration always (defaults to `false`)
   &nbsp;

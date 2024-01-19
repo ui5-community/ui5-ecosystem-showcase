@@ -52,7 +52,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    var __awaiter$6 = (exports && exports.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$6 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -2844,7 +2844,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    var __awaiter$5 = (exports && exports.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$5 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -2874,7 +2874,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return Response;
     });
 
-    var __awaiter$4 = (exports && exports.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$4 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -2946,7 +2946,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         });
     }
 
-    var __awaiter$3 = (exports && exports.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$3 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -3412,7 +3412,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
     const DEFAULT_HEADERS$2 = { 'X-Client-Info': `storage-js/${version$2}` };
 
-    var __awaiter$2 = (exports && exports.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$2 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -3604,7 +3604,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     const DEFAULT_HEADERS$1 = { 'X-Client-Info': `supabase-js-${JS_ENV}/${version$1}` };
 
-    var __awaiter$1 = (exports && exports.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$1 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -4023,7 +4023,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return isAuthError(error) && error.name === 'AuthWeakPasswordError';
     }
 
-    var __rest$1 = (exports && exports.__rest) || function (s, e) {
+    var __rest$1 = (this && this.__rest) || function (s, e) {
         var t = {};
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
             t[p] = s[p];
@@ -4173,7 +4173,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return data.access_token && data.refresh_token && data.expires_in;
     }
 
-    var __rest = (exports && exports.__rest) || function (s, e) {
+    var __rest = (this && this.__rest) || function (s, e) {
         var t = {};
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
             t[p] = s[p];
@@ -6517,7 +6517,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    var __awaiter = (exports && exports.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
