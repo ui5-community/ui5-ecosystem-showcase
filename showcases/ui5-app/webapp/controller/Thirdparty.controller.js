@@ -2,6 +2,7 @@
 sap.ui.define(
 	[
 		"ui5/ecosystem/demo/app/controller/BaseController",
+		"sap/m/MessageToast",
 		"xlsx",
 		"cmis",
 		"@supabase/supabase-js",
@@ -9,14 +10,16 @@ sap.ui.define(
 		"axios",
 		"@js-temporal/polyfill",
 		"@stomp/stompjs",
-		"ui5-app/bundledefs/react",
+		"react",
+		"react-dom/client",
 		"zod",
 		"pdfmake/build/pdfmake",
 		"pdfmake/build/vfs_fonts",
 		"xml-js",
-		"ui5-app/bundledefs/firebase", // requires node-fetch@2
+		"firebase/app", // requires node-fetch@2
+		"firebase/firestore/lite",
 	],
-	(Controller, xlsx, cmis, supabase, octokit, axios, temporal, stompjs, _react, zod, pdfMake, pdfFonts, xmljs, _firebase) => {
+	(Controller, MessageToast, xlsx, cmis, supabase, octokit, axios, temporal, stompjs, react, reactdom, zod, pdfMake, pdfFonts, xmljs, firebase, firestore) => {
 		"use strict";
 
 		console.log(xlsx);
@@ -26,15 +29,18 @@ sap.ui.define(
 		console.log(axios);
 		console.log(temporal);
 		console.log(stompjs);
-		console.log(_react);
+		console.log(react);
+		console.log(reactdom);
 		console.log(zod);
 		console.log(xmljs);
 
 		pdfMake.vfs = pdfFonts.pdfMake.vfs;
 		console.log(pdfMake);
 
-		console.log(_firebase);
-		const { initializeApp, getFirestore } = _firebase;
+		console.log(firebase);
+		console.log(firestore);
+		const { initializeApp } = firebase;
+		const { getFirestore } = firestore;
 		const app = initializeApp({});
 		try {
 			getFirestore(app);
@@ -52,6 +58,14 @@ sap.ui.define(
 				]);
 				const csv = xlsx.utils.sheet_to_csv(worksheet);
 				console.log(worksheet, csv);
+			},
+			onBoo() {
+				// next line should be removed!
+				console.log(`👻`);
+				MessageToast.show(`👻`);
+			},
+			onChange(event) {
+				this.byId("webccBtn").setText(event.getSource().getValue());
 			},
 		});
 	}

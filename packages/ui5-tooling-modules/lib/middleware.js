@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 const path = require("path");
 const { createReadStream } = require("fs");
+const chokidar = require("chokidar");
 
 /**
  * Custom middleware to create the UI5 AMD-like bundles for used ES imports from node_modules.
@@ -9,26 +10,40 @@ const { createReadStream } = require("fs");
  * @param {module:@ui5/logger/Logger} parameters.log Logger instance
  * @param {object} parameters.middlewareUtil Specification version dependent interface to a
  *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
+ * @param {object} parameters.resources Resource collections
+ * @param {module:@ui5/fs.AbstractReader} parameters.resources.all Reader or Collection to read resources of the
+ *                                        root project and its dependencies
+ * @param {module:@ui5/fs.AbstractReader} parameters.resources.rootProject Reader or Collection to read resources of
+ *                                        the project the server is started in
+ * @param {module:@ui5/fs.AbstractReader} parameters.resources.dependencies Reader or Collection to read resources of
+ *                                        the projects dependencies
  * @param {object} parameters.options Options
  * @param {object} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @param {boolean} [parameters.options.configuration.skipCache] Flag whether the module cache for the bundles should be skipped
  * @param {boolean|string[]} [parameters.options.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
  * @returns {Function} Middleware function to use
  */
-module.exports = function ({ log, options, middlewareUtil }) {
+module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	const cwd = middlewareUtil.getProject().getRootPath() || process.cwd();
 	const depPaths = middlewareUtil
 		.getDependencies()
 		.map((dep) => middlewareUtil.getProject(dep))
 		.filter((prj) => !prj.isFrameworkProject())
 		.map((prj) => prj.getRootPath());
-	const { getResource } = require("./util")(log);
+	const { scan, getBundleInfo, getResource } = require("./util")(log);
 
-	const config = options.configuration || {};
 	log.verbose(`Starting ui5-tooling-modules-middleware`);
 
-	// extract the configuration of files to be skipped during transformation
-	let skipTransform = options?.configuration?.skipTransform || false;
+	// extract the configuration
+	const config = options.configuration || {};
+	let { debug, skipTransform, watch } = Object.assign(
+		{
+			debug: false,
+			skipTransform: false,
+			watch: true,
+		},
+		config
+	);
 
 	// merge the skipTransform configuration from the dependencies if not skipping
 	// the transformation of the whole project (usage of boolean values are overruling!)
@@ -48,6 +63,45 @@ module.exports = function ({ log, options, middlewareUtil }) {
 		});
 	}
 
+	// logic which bundles and watches the modules coming from the
+	// node_modules or dependencies via NPM package names
+	let whenBundled, bundleWatcher, scanTime, bundleTime;
+	const bundleAndWatch = async (force) => {
+		if (force || !whenBundled) {
+			// first, we need to scan for all unique dependencies
+			scanTime = Date.now();
+			// TODO: scan doesn't work with TypeScript!
+			whenBundled = scan(resources.rootProject, config, { cwd, depPaths })
+				.then(({ uniqueDeps }) => {
+					// second, we trigger the bundling of the unique dependencies
+					debug && log.info(`Scanning took ${Date.now() - scanTime} millis`);
+					bundleTime = Date.now();
+					return getBundleInfo(Array.from(uniqueDeps), config, { cwd, depPaths, isMiddleware: true });
+				})
+				.then((bundleInfo) => {
+					// finally, we watch the entries of the bundle
+					debug && log.info(`Bundling took ${Date.now() - bundleTime} millis`);
+					bundleWatcher?.close();
+					const globsToWatch = [cwd, ...depPaths].map((depPath) => `${depPath}/**/*.{js,ts,xml}`);
+					globsToWatch.push(...bundleInfo.getResources().map((res) => res.path));
+					if (debug) {
+						log.info(`Watch files:`);
+						globsToWatch.forEach((file) => log.info(`  - ${file}`));
+					}
+					if (watch) {
+						bundleWatcher = chokidar
+							.watch(globsToWatch, {
+								ignoreInitial: true,
+								ignored: [/node_modules/],
+								awaitWriteFinish: true,
+							})
+							.on("change", () => bundleAndWatch(true));
+					}
+					return bundleInfo;
+				});
+		}
+	};
+
 	// return the middleware
 	return async (req, res, next) => {
 		// determine the request path
@@ -66,8 +120,22 @@ module.exports = function ({ log, options, middlewareUtil }) {
 				moduleName = moduleName.substring(0, moduleName.length - 3);
 			}
 
-			// try to resolve the resource from node_modules
-			const resource = await getResource(moduleName, config, { cwd, depPaths, skipTransform, isMiddleware: true });
+			// check if the resource exists in node_modules
+			let resource = await getResource(moduleName, { cwd, depPaths, isMiddleware: true });
+
+			// if a resource has been found in node_modules, we will
+			// trigger the bundling process and watch the bundled resources
+			if (resource) {
+				bundleAndWatch();
+			}
+
+			// if the resource is a bundled resource, we need to wait for it
+			const bundledResource = whenBundled && (await whenBundled).getEntry(moduleName);
+			if (bundledResource) {
+				resource = bundledResource;
+			}
+
+			// serve the resource
 			if (resource) {
 				try {
 					log.verbose(`Processing resource ${moduleName}...`);
@@ -77,7 +145,8 @@ module.exports = function ({ log, options, middlewareUtil }) {
 					res.setHeader("Content-Type", contentType);
 
 					// respond the content
-					if (!resource.path && resource.code) {
+					// /!\ non-modules and resources with a path are served as stream (encoding!)
+					if (resource.type === "module" || (!resource.path && resource.code)) {
 						res.end(resource.code);
 					} else if (resource.path) {
 						const stream = createReadStream(resource.path);
