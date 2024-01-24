@@ -70,13 +70,12 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 		if (force || !whenBundled) {
 			// first, we need to scan for all unique dependencies
 			scanTime = Date.now();
-			// TODO: scan doesn't work with TypeScript!
 			whenBundled = scan(resources.rootProject, config, { cwd, depPaths })
-				.then(({ uniqueDeps }) => {
+				.then(({ uniqueModules }) => {
 					// second, we trigger the bundling of the unique dependencies
 					debug && log.info(`Scanning took ${Date.now() - scanTime} millis`);
 					bundleTime = Date.now();
-					return getBundleInfo(Array.from(uniqueDeps), config, { cwd, depPaths, isMiddleware: true });
+					return getBundleInfo(Array.from(uniqueModules), config, { cwd, depPaths, isMiddleware: true });
 				})
 				.then((bundleInfo) => {
 					// finally, we watch the entries of the bundle
@@ -93,7 +92,6 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 							.watch(globsToWatch, {
 								ignoreInitial: true,
 								ignored: [/node_modules/],
-								awaitWriteFinish: true,
 							})
 							.on("change", () => bundleAndWatch(true));
 					}
@@ -130,7 +128,8 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 			}
 
 			// if the resource is a bundled resource, we need to wait for it
-			const bundledResource = whenBundled && (await whenBundled).getEntry(moduleName);
+			const bundleInfo = whenBundled && (await whenBundled);
+			const bundledResource = bundleInfo?.getEntry(moduleName);
 			if (bundledResource) {
 				resource = bundledResource;
 			}
