@@ -1,13 +1,13 @@
 sap.ui.define(
 	[
 		"sap/ui/core/UIComponent",
-		"sap/ui/Device",
 		"ui5/ecosystem/demo/app/model/models",
 		"./lib/willNotGetTranspiled", // only for demo purpose
 		"./includes/iWillBeTranspiled", // only for demo purpose
 		"sap/ui/core/ComponentSupport", // make sure to include the ComponentSupport in the bundle
+		"./webc/WebComponentSupport", // support WebComponents natively in XMLViews
 	],
-	(UIComponent, Device, models) => {
+	(UIComponent, models) => {
 		"use strict";
 
 		return UIComponent.extend("ui5.ecosystem.demo.app.Component", {

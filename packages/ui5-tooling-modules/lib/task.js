@@ -47,7 +47,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	);
 
 	// scan the content of the project for unique dependencies, resources and more
-	const { uniqueDeps, uniqueResources, uniqueNS, uniqueChunks, addUniqueChunks } = await scan(workspace, config, { cwd, depPaths });
+	const { uniqueModules, uniqueResources, uniqueNS } = await scan(workspace, config, { cwd, depPaths });
 
 	// list of included assets pattern (required for rewrite)
 	const includedAssets = [];
@@ -71,9 +71,10 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	// utility to rewrite dependency
 	const removeScopePrefix = config?.removeScopePrefix || config?.removeScopePreceder;
 	// eslint-disable-next-line jsdoc/require-jsdoc
-	function rewriteDep(dep, useDottedNamespace) {
-		if (config.addToNamespace && (uniqueDeps.has(dep) || uniqueResources.has(dep) || uniqueNS.has(dep) || uniqueChunks.has(dep) || isAssetIncluded(dep))) {
-			let d = dep;
+	function rewriteDep(dep, bundledResources, useDottedNamespace) {
+		const aDep = dep.replaceAll(/\.?\.\//g, "");
+		if (config.addToNamespace && (bundledResources.indexOf(aDep) !== -1 || uniqueResources.has(aDep) || uniqueNS.has(aDep) || isAssetIncluded(aDep))) {
+			let d = aDep;
 			if (removeScopePrefix && d.startsWith("@")) {
 				d = d.substring(1);
 			}
@@ -102,8 +103,8 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 						node?.callee?.object?.object?.object?.name == "sap"
 					) {
 						const elDep = node.arguments[0];
-						if (elDep?.type === "Literal" && (bundledResources.includes(elDep.value) || isAssetIncluded(elDep.value))) {
-							tokens[elDep.value] = rewriteDep(elDep.value);
+						if (elDep?.type === "Literal" /* && (bundledResources.includes(elDep.value) || isAssetIncluded(elDep.value)) */) {
+							tokens[elDep.value] = rewriteDep(elDep.value, bundledResources);
 							elDep.value = tokens[elDep.value];
 							changed = true;
 						}
@@ -117,8 +118,8 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 						(node?.type === "CallExpression" && node?.callee?.name == "__ui5_require_async")
 					) {
 						const elDep = node.arguments[0];
-						if (elDep?.type === "Literal" && bundledResources.includes(elDep.value)) {
-							tokens[elDep.value] = rewriteDep(elDep.value);
+						if (elDep?.type === "Literal" /* && bundledResources.includes(elDep.value) */) {
+							tokens[elDep.value] = rewriteDep(elDep.value, bundledResources);
 							elDep.value = tokens[elDep.value];
 							changed = true;
 						}
@@ -131,13 +132,13 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 					) {
 						const depsArray = node.arguments.filter((arg) => arg.type === "ArrayExpression");
 						if (depsArray.length > 0) {
-							depsArray[0].elements
-								.filter((el) => el.type === "Literal" && bundledResources.includes(el.value))
-								.map((el) => {
-									tokens[el.value] = rewriteDep(el.value);
-									el.value = tokens[el.value];
+							depsArray[0].elements.forEach((elDep) => {
+								if (elDep?.type === "Literal" /* && bundledResources.includes(elDep.value) */) {
+									tokens[elDep.value] = rewriteDep(elDep.value, bundledResources);
+									elDep.value = tokens[elDep.value];
 									changed = true;
-								});
+								}
+							});
 						}
 					}
 				},
@@ -178,9 +179,16 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 								return res.startsWith(namespace);
 							})
 						) {
-							node[key] = rewriteDep(node[key], true);
+							node[key] = rewriteDep(node[key], bundledResources, true);
 							changed = true;
 						}
+						return;
+					}
+					const importsParts = /@_(.*):import?/.exec(key);
+					if (importsParts) {
+						node[key] = rewriteDep(node[key], bundledResources);
+						changed = true;
+						return;
 					}
 				});
 			// nodes
@@ -205,21 +213,17 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 
 	// bundle the resources (determine bundled resources and the set of modules to build)
 	const { resourceFactory } = taskUtil;
-	const bundledResources = [];
 
 	// every unique dependency will be bundled (entry points will be kept, rest is chunked)
-	const bundleInfo = await getBundleInfo(Array.from(uniqueDeps), config, { cwd, depPaths });
+	const bundleInfo = await getBundleInfo(Array.from(uniqueModules), config, { cwd, depPaths });
+	const bundledResources = bundleInfo.getBundledResources().map((entry) => entry.name);
 	await Promise.all(
 		bundleInfo.getEntries().map(async (entry) => {
 			config.debug && log.info(`Processing ${entry.type}: ${entry.name}`);
-			if (entry.type === "chunk") {
-				addUniqueChunks(entry.name);
-			}
 			const newResource = resourceFactory.createResource({
-				path: `/resources/${rewriteDep(entry.name)}.js`,
-				string: entry.code,
+				path: `/resources/${rewriteDep(entry.name, bundledResources)}.js`,
+				string: rewriteJSDeps(entry.code, bundledResources, entry.name),
 			});
-			bundledResources.push(entry.name);
 			await workspace.write(newResource);
 		})
 	);
@@ -232,11 +236,10 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 			if (resource) {
 				config.debug && log.info(`Processing resource: ${resourceName}`);
 				const newResource = resourceFactory.createResource({
-					path: `/resources/${rewriteDep(resourceName)}`,
+					path: `/resources/${rewriteDep(resourceName, bundledResources)}`,
 					stream: resource.path ? createReadStream(resource.path) : undefined,
 					string: !resource.path && resource.code ? resource.code : undefined,
 				});
-				bundledResources.push(resourceName);
 				await workspace.write(newResource);
 			}
 		})

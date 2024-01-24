@@ -24,6 +24,7 @@ const walk = require("ignore-walk");
 const minimatch = require("minimatch");
 
 const { XMLParser } = require("fast-xml-parser");
+const parseJS = require("./parseJS");
 
 const { createHash } = require("crypto");
 
@@ -54,6 +55,9 @@ class BundleInfo {
 	}
 	getResources() {
 		return this._entries.filter((entry) => entry.type === "resource");
+	}
+	getBundledResources() {
+		return this._entries.filter((entry) => /^(module|chunk|resource)$/.test(entry.type));
 	}
 }
 
@@ -167,9 +171,9 @@ module.exports = function (log) {
 			// collector for unique dependencies and resources
 			//const uniqueNPMPackages = new Set();
 			const uniqueDeps = new Set();
+			const uniqueModules = new Set();
 			const uniqueResources = new Set();
 			const uniqueNS = new Set();
-			const uniqueChunks = new Set();
 
 			// eslint-disable-next-line jsdoc/require-jsdoc
 			function isProvided(depOrRes) {
@@ -191,9 +195,9 @@ module.exports = function (log) {
 					return false;
 				} else {
 					// add the dependency (by default we already filter the UI5 modules we know)
-					if (!dep.startsWith("sap/")) {
-						uniqueDeps.add(dep);
-					}
+					//if (!dep.startsWith("sap/")) {
+					uniqueDeps.add(dep);
+					//}
 					// also add the NPM package name
 					//const npmPackageName = /((?:@[^/]+\/)?(?:[^/]+)).*/.exec(dep)?.[1];
 					//addUniqueNPMPackage(npmPackageName);
@@ -202,9 +206,14 @@ module.exports = function (log) {
 			}
 
 			// eslint-disable-next-line jsdoc/require-jsdoc
-			function addUniqueResource(ns) {
-				if (!isProvided(ns)) {
-					uniqueResources.add(ns);
+			function addUniqueModule(module) {
+				uniqueModules.add(module);
+			}
+
+			// eslint-disable-next-line jsdoc/require-jsdoc
+			function addUniqueResource(res) {
+				if (!isProvided(res)) {
+					uniqueResources.add(res);
 				}
 			}
 
@@ -216,9 +225,21 @@ module.exports = function (log) {
 			}
 
 			// eslint-disable-next-line jsdoc/require-jsdoc
-			function addUniqueChunks(chunk) {
-				if (!isProvided(chunk)) {
-					uniqueChunks.add(chunk);
+			function addDep(dep) {
+				if (addUniqueDep(dep)) {
+					// each dependency which can be resolved via the NPM package name
+					// should also be checked for its dependencies to finally handle them
+					// here if they also require to be transpiled by the task
+					try {
+						const depPath = that.resolveModule(dep, { cwd, depPaths });
+						if (existsSync(depPath)) {
+							addUniqueModule(dep);
+							const depContent = readFileSync(depPath, { encoding: "utf8" });
+							findUniqueJSDeps(depContent, depPath);
+						}
+					} catch (ex) {
+						/* noop */
+					}
 				}
 			}
 
@@ -261,22 +282,7 @@ module.exports = function (log) {
 									const depsArray = node.arguments.filter((arg) => arg.type === "ArrayExpression");
 									deps = depsArray?.[0]?.elements.filter((el) => el.type === "Literal").map((el) => el.value);
 								}
-								deps?.forEach((dep) => {
-									if (addUniqueDep(dep)) {
-										// each dependency which can be resolved via the NPM package name
-										// should also be checked for its dependencies to finally handle them
-										// here if they also require to be transpiled by the task
-										try {
-											const depPath = that.resolveModule(dep, { cwd, depPaths });
-											if (existsSync(depPath)) {
-												const depContent = readFileSync(depPath, { encoding: "utf8" });
-												findUniqueJSDeps(depContent, depPath);
-											}
-										} catch (err) {
-											/* noop */
-										}
-									}
-								});
+								deps?.forEach((dep) => addDep(dep));
 							}
 						},
 					});
@@ -291,7 +297,7 @@ module.exports = function (log) {
 
 			// utility to lookup unique XML dependencies
 			// eslint-disable-next-line jsdoc/require-jsdoc
-			function findUniqueXMLDeps(node, ns = {}) {
+			function findUniqueXMLDeps(node, ns = {}, imports = {}) {
 				if (typeof node === "object") {
 					// attributes
 					Object.keys(node)
@@ -301,6 +307,23 @@ module.exports = function (log) {
 							if (nsParts) {
 								// namespace (default namespace => "")
 								ns[nsParts[1] || ""] = node[key];
+								return;
+							}
+							const requireParts = /@_(?:(.*):)?require/.exec(key);
+							if (requireParts && ns[requireParts[1]] === "sap.ui.core") {
+								try {
+									const requires = parseJS(node[key]);
+									Object.values(requires).forEach((dep) => addDep(dep));
+								} catch (err) {
+									log.error(`Failed to parse the "${node[key]}" as JS object!`);
+								}
+								return;
+							}
+							const importsParts = /@_(.*):import?/.exec(key);
+							if (importsParts) {
+								imports[importsParts[1]] = node[key];
+								addUniqueNamespace(node[key]);
+								return;
 							}
 						});
 					// nodes
@@ -308,39 +331,27 @@ module.exports = function (log) {
 						.filter((key) => !key.startsWith("@_"))
 						.forEach((key) => {
 							const children = Array.isArray(node[key]) ? node[key] : [node[key]];
-							children
-								.filter((child) => typeof child === "object")
-								.forEach((child) => {
-									const nodeParts = /(?:([^:]*):)?(.*)/.exec(key);
-									if (nodeParts) {
-										// skip #text nodes
-										let module = nodeParts[2];
-										if (module !== "#text") {
-											// only add those dependencies whose namespace is known
-											let namespace = ns[nodeParts[1] || ""];
-											if (typeof namespace === "string") {
-												namespace = namespace.replace(/\./g, "/");
-												addUniqueNamespace(namespace);
-												const dep = `${namespace}/${module}`;
-												if (addUniqueDep(dep)) {
-													// each dependency which can be resolved via the NPM package name
-													// should also be checked for its dependencies to finally handle them
-													// here if they also require to be transpiled by the task
-													try {
-														const depPath = that.resolveModule(dep, { cwd, depPaths });
-														if (existsSync(depPath)) {
-															const depContent = readFileSync(depPath, { encoding: "utf8" });
-															findUniqueJSDeps(depContent, depPath);
-														}
-													} catch (ex) {
-														/* noop */
-													}
-												}
-											}
-											findUniqueXMLDeps(child, ns);
+							children.forEach((child) => {
+								const nodeParts = /(?:([^:]*):)?(.*)/.exec(key);
+								if (nodeParts) {
+									// skip #text nodes
+									let module = nodeParts[2];
+									if (module !== "#text") {
+										// only add those dependencies whose namespace is known
+										let namespace = ns[nodeParts[1] || ""];
+										if (typeof namespace === "string") {
+											namespace = namespace.replace(/\./g, "/");
+											addUniqueNamespace(namespace);
+											const importPath = imports[nodeParts[1]];
+											const dep = `${importPath || namespace}/${module}`;
+											addDep(dep);
+										}
+										if (typeof child === "object") {
+											findUniqueXMLDeps(child, ns, imports);
 										}
 									}
-								});
+								}
+							});
 						});
 				}
 			}
@@ -409,16 +420,18 @@ module.exports = function (log) {
 				await init();
 				for (const tsResource of allTsResources) {
 					const imports = parse(await tsResource.getString(), "module", true);
-					imports?.resolutions?.forEach((res) => addUniqueDep(res.input));
+					imports?.resolutions?.forEach((res) => {
+						addUniqueDep(res.input);
+						addUniqueModule(res.input);
+					});
 				}
 			}
 
 			return {
 				uniqueDeps,
+				uniqueModules,
 				uniqueResources,
 				uniqueNS,
-				uniqueChunks,
-				addUniqueChunks,
 				sourceFiles: [].concat(allJsResources, allTsResources, allXmlResources).map((res) => {
 					return res.getSourceMetadata().fsPath;
 				}),
@@ -754,7 +767,7 @@ module.exports = function (log) {
 								bundleInfo.getChunks().forEach((chunk) => {
 									const originalChunkName = chunk.originalName;
 									const chunkName = chunk.name;
-									module.code = module.code.replace(`./${originalChunkName}`, `${relativePath || "."}/${chunkName}`);
+									module.code = module.code.replace(`'./${originalChunkName}'`, `'${relativePath || "."}/${chunkName}'`);
 								});
 							});
 							return bundleInfo;

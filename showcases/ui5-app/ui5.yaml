@@ -11,6 +11,9 @@ framework:
     - name: sap.ui.layout
     - name: themelib_sap_horizon
 builder:
+  settings:
+    includeDependency:
+      - ui5.ecosystem.demo.lib
   componentPreload:
     excludes:
       - "ui5/ecosystem/demo/app/thirdparty/js-temporal/**"

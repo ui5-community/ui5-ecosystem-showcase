@@ -65,7 +65,7 @@ sap.ui.define(
 				MessageToast.show(`👻`);
 			},
 			onChange(event) {
-				this.byId("webccBtn").setText(event.getSource().getValue());
+				this.byId("webcBtn").setText(event.getSource().getValue());
 			},
 		});
 	}
