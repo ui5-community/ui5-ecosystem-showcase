@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.36.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.36.0...ui5-app@0.36.1) (2024-01-24)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** experimental native UI5 WebC support ([#937](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/937)) ([087ac24](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/087ac247b8945277878a3f8087a0d93a548f06b2))
+
+
+
+
+
 # [0.36.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.35.6...ui5-app@0.36.0) (2024-01-21)
 
 
