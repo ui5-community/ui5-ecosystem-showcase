@@ -61,15 +61,22 @@ module.exports = async function rewriteHTML(req, res, rewriteCondition, rewriteC
 		// store the last chunk in the content buffer
 		contentBuffer.push(content instanceof Buffer ? content.toString(encoding) : content);
 
-		// create the html content and parse it
+		// create the html content
 		let htmlContent = contentBuffer.join("");
-		const doc = HTMLParser.parse(htmlContent);
 
-		// now run the callback
-		rewriteContent(doc);
+		// ensure that the request is rewritten only once and not also by the cds-plugin-ui5
+		// therefore we add a marker to the request so that the middlewares can identify this
+		if (!req["ui5-rewriteHTML"]) {
+			// parse the html content
+			const doc = HTMLParser.parse(htmlContent);
 
-		// update the html content
-		htmlContent = doc.toString();
+			// now run the callback
+			rewriteContent(doc);
+
+			// update the html content
+			htmlContent = doc.toString();
+		}
+		req["ui5-rewriteHTML"] = true;
 
 		// the rest is on express
 		end.call(res, htmlContent, encoding);

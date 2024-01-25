@@ -22,6 +22,13 @@ builder:
 # https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
 server:
   customMiddleware:
+    - name: ui5-middleware-ui5
+      afterMiddleware: compression
+      configuration:
+        #serveFromNamespace: false
+        #modules:
+        #  ui5-app-simple: # by default available via: http://localhost:8080/resources/ui5/ecosystem/demo/simpleapp/
+        #    mountPath: "/bookshop"
     # Last middleware (for the same afterMiddleware) comes first!
     - name: ui5-middleware-livereload
       afterMiddleware: compression

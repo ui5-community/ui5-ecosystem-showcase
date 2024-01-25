@@ -73,7 +73,7 @@ module.exports = function hook(name, callback, middleware) {
 						on: server.on.bind(server),
 						use: app.use.bind(app),
 						options: {
-							mountpath: "/",
+							mountpath: `${req["ui5-patched-router"]?.baseUrl || ""}/`,
 						},
 					});
 				} else {
