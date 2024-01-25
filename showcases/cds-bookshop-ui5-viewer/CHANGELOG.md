@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.2.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-bookshop-ui5-viewer@0.1.11...cds-bookshop-ui5-viewer@0.2.0) (2024-01-25)
+
+
+### Features
+
+* **ui5-middleware-ui5:** support nested scenarios in CDS servers ([#938](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/938)) ([5d61f18](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5d61f18f04a624e8f61ec7fa1e8f32e81c43f6b0))
+
+
+
+
+
 ## [0.1.11](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-bookshop-ui5-viewer@0.1.10...cds-bookshop-ui5-viewer@0.1.11) (2024-01-17)
 
 **Note:** Version bump only for package cds-bookshop-ui5-viewer

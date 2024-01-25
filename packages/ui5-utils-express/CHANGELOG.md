@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-utils-express@1.2.1...ui5-utils-express@1.3.0) (2024-01-25)
+
+
+### Features
+
+* **ui5-middleware-ui5:** support nested scenarios in CDS servers ([#938](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/938)) ([5d61f18](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5d61f18f04a624e8f61ec7fa1e8f32e81c43f6b0))
+
+
+
+
+
 ## [1.2.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-utils-express@1.2.0...ui5-utils-express@1.2.1) (2023-11-03)
 
 
