@@ -49,7 +49,7 @@
           <webc:Avatar />
           <webc:Slider />
           <webc:StepInput />
-          <webc:ToggleButton text="Hi Nicolas" />
+          <webc:ToggleButton text="Toggle Me!" />
           <webc:ColorPicker />
           <webc:RangeSlider />
           <webc:CheckBox text="Checked" />

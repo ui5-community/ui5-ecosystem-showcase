@@ -585,6 +585,10 @@ importers:
         version: 5.0.5
 
   showcases/cds-bookshop-ui5-viewer:
+    dependencies:
+      ui5-app-simple:
+        specifier: workspace:^
+        version: link:../ui5-app-simple
     devDependencies:
       '@ui5/cli':
         specifier: ^3.8.0
@@ -595,6 +599,9 @@ importers:
       ui5-middleware-livereload:
         specifier: workspace:^
         version: link:../../packages/ui5-middleware-livereload
+      ui5-middleware-ui5:
+        specifier: workspace:^
+        version: link:../../packages/ui5-middleware-ui5
       ui5-task-zipper:
         specifier: workspace:^
         version: link:../../packages/ui5-task-zipper
