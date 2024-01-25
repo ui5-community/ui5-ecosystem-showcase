@@ -61,12 +61,14 @@ module.exports = function nodePolyfillsOverride({ log, cwd } = {}) {
 // prevent the renaming of global, process, Buffer in any module
 // => needs to be used as a standalone rollup plugin in build
 // !!!! KEEP IN SYNC WITH >> rollup-plugin-polyfill-node << !!!!
-module.exports.inject = function nodePolyfillsOverrideInject() {
-	return inject({
-		process: PREFIX + "process",
-		Buffer: [PREFIX + "buffer", "Buffer"],
-		global: PREFIX + "global",
-		__filename: FILENAME_PATH,
-		__dirname: DIRNAME_PATH,
-	});
+module.exports.inject = function nodePolyfillsOverrideInject(additionalOptions) {
+	return inject(
+		Object.assign({}, additionalOptions, {
+			process: PREFIX + "process",
+			Buffer: [PREFIX + "buffer", "Buffer"],
+			global: PREFIX + "global",
+			__filename: FILENAME_PATH,
+			__dirname: DIRNAME_PATH,
+		})
+	);
 };

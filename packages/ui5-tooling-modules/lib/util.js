@@ -549,10 +549,11 @@ module.exports = function (log) {
 		 * @param {rollup.InputPluginOption[]} [options.beforePlugins] rollup plugins to be executed before
 		 * @param {rollup.InputPluginOption[]} [options.afterPlugins] rollup plugins to be executed after
 		 * @param {string} [options.generatedCode] ES compatibility of the generated code (es5, es2015)
+		 * @param {object} [options.inject] the inject configuration for @rollup/plugin-inject
 		 * @param {boolean} [options.isMiddleware] flag if the getResource is called by the middleware
 		 * @returns {rollup.RollupOutput} the build output of rollup
 		 */
-		createBundle: async function createBundle(moduleNames, { cwd, depPaths, mainFields, beforePlugins, afterPlugins, generatedCode, isMiddleware } = {}) {
+		createBundle: async function createBundle(moduleNames, { cwd, depPaths, mainFields, beforePlugins, afterPlugins, generatedCode, inject, isMiddleware } = {}) {
 			const bundle = await rollup.rollup({
 				input: moduleNames,
 				//context: "exports" /* this is normally converted to undefined, but should be exports in our case! */,
@@ -585,7 +586,7 @@ module.exports = function (log) {
 						cwd,
 					}),
 					nodePolyfills(),
-					nodePolyfillsOverride.inject(),
+					nodePolyfillsOverride.inject(inject),
 					pnpmResolve({
 						resolveModule: function (moduleName) {
 							return that.resolveModule(moduleName, { cwd, depPaths, mainFields });
@@ -643,13 +644,14 @@ module.exports = function (log) {
 		 * @param {boolean|string[]} [config.skipTransform] flag or array of globs to verify whether the module transformation should be skipped
 		 * @param {boolean|string[]} [config.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
 		 * @param {string} [config.generatedCode] ES compatibility of the generated code (es5, es2015)
+		 * @param {object} [config.inject] the inject configuration for @rollup/plugin-inject
 		 * @param {object} [options] additional options
 		 * @param {string} [options.cwd] current working directory
 		 * @param {string[]} [options.depPaths] paths of the dependencies (in addition for cwd)
 		 * @param {boolean} [options.isMiddleware] flag if the getResource is called by the middleware
 		 * @returns {object} the output object of the resource (code, chunks?, lastModified)
 		 */
-		getBundleInfo: async function getBundleInfo(moduleNames, { skipCache, debug, skipTransform, keepDynamicImports, generatedCode } = {}, { cwd, depPaths, isMiddleware } = {}) {
+		getBundleInfo: async function getBundleInfo(moduleNames, { skipCache, debug, skipTransform, keepDynamicImports, generatedCode, inject } = {}, { cwd, depPaths, isMiddleware } = {}) {
 			cwd = cwd || process.cwd();
 
 			let bundling = false;
@@ -714,6 +716,7 @@ module.exports = function (log) {
 							beforePlugins: [logger({ log })],
 							afterPlugins: modules.length === 1 ? [dynamicImports({ moduleName: modules[0].name, keepDynamicImports })] : [],
 							generatedCode,
+							inject,
 							isMiddleware,
 						};
 						const nameOfModules = modules.map((module) => module.name);
