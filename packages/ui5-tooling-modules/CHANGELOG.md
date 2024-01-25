@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.3.1...ui5-tooling-modules@3.3.2) (2024-01-25)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** add support to inject imports for Globals ([#939](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/939)) ([d4657f8](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d4657f8d5aa8eace00a69a19beeea03e9004d053))
+
+
+
+
+
 ## [3.3.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.3.0...ui5-tooling-modules@3.3.1) (2024-01-24)
 
 
