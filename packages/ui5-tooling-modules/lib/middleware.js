@@ -34,16 +34,16 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 
 	log.verbose(`Starting ui5-tooling-modules-middleware`);
 
-	// extract the configuration
-	const config = options.configuration || {};
-	let { debug, skipTransform, watch } = Object.assign(
+	// derive the configuration and default values
+	const config = Object.assign(
 		{
 			debug: false,
 			skipTransform: false,
 			watch: true,
 		},
-		config
+		options.configuration
 	);
+	let { debug, skipTransform, watch } = config;
 
 	// merge the skipTransform configuration from the dependencies if not skipping
 	// the transformation of the whole project (usage of boolean values are overruling!)

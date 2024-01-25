@@ -43,10 +43,6 @@ The following configuration options are relevant for the `task` and the `middlew
   Enables debug logging (defaults to `false`), by setting value to `"verbose"` the extension will log even more detailed
   &nbsp;
 
-- *watch*: `boolean` *experimental feature*
-  For development scenarios, the server is listening to changes of the source files of the project and its dependencies and triggers the generation of the bundle if the used NPM packages have been changed (defaults to `true`)
-  &nbsp;
-
 - *skipCache*: `boolean` *experimental feature*
   For development scenarios, the module cache can be disabled by setting this option to true. Normally, if a module changes (e.g. bundledefs), this change is detected and the bundle is recreated. This just forces the regeneration always (defaults to `false`)
   &nbsp;
@@ -75,6 +71,29 @@ The following configuration options are relevant for the `task` and the `middlew
   ```
   &nbsp;
 
+- *inject*: `Map<String, String|String[]>` *experimental feature*
+  A map of Globals which are injected as imports to an NPM package to handle cases in which functions need to be poly- or ponyfilled. The configuration is aligned with definition of the Globals in the [@rollup/plugin-inject](https://www.npmjs.com/package/@rollup/plugin-inject):
+  ```yaml
+  configuration:
+    inject:
+      # import setImmediate from 'set-immediate-shim'
+      setImmediate: set-immediate-shim
+      # import { Promise } from 'es6-promise'
+      Promise:
+        - es6-promise
+        - Promise
+      # import { Promise as P } from 'es6-promise'
+      P: 
+        - es6-promise
+        - Promise
+      # import $ from 'jquery'
+      $: jquery
+      # import * as fs from 'fs'
+      fs: 
+        - 'fs'
+        - '*'
+  ```
+
 The following configuration options are just relevant for the `task`:
 
 - *prependPathMappings*: `boolean`  
@@ -96,6 +115,12 @@ The following configuration options are just relevant for the `task`:
 
 - *includeAssets*: `Map<String, String[]>` *experimental feature*
   A map of NPM package names to list of glob patterns which defines the assets to be included. The list of glob patterns can be omitted in case of copying all resources of the NPM package.
+  &nbsp;
+
+The following configuration options are just relevant for the `middleware`:
+
+- *watch*: `boolean` *experimental feature*
+  For development scenarios, the server is listening to changes of the source files of the project and its dependencies and triggers the generation of the bundle if the used NPM packages have been changed (defaults to `true`)
   &nbsp;
 
 ## Usage

@@ -41,6 +41,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	// derive the configuration and default values
 	const config = Object.assign(
 		{
+			debug: false,
 			skipTransform: false,
 		},
 		options.configuration
