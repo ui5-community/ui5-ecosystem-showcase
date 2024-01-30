@@ -25,11 +25,15 @@ const chokidar = require("chokidar");
  */
 module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	const cwd = middlewareUtil.getProject().getRootPath() || process.cwd();
-	const depPaths = middlewareUtil
+	const depProjects = middlewareUtil
 		.getDependencies()
 		.map((dep) => middlewareUtil.getProject(dep))
-		.filter((prj) => !prj.isFrameworkProject())
-		.map((prj) => prj.getRootPath());
+		.filter((prj) => !prj.isFrameworkProject());
+	const depPaths = depProjects.map((prj) => prj.getRootPath());
+	const depReaderCollection = middlewareUtil.resourceFactory.createReaderCollection({
+		name: `Reader collection of project ${middlewareUtil.getProject().getName()}`,
+		readers: [resources.rootProject, ...depProjects.map((prj) => prj.getReader())],
+	});
 	const { scan, getBundleInfo, getResource } = require("./util")(log);
 
 	log.verbose(`Starting ui5-tooling-modules-middleware`);
@@ -74,7 +78,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 		if (force || !whenBundled) {
 			// first, we need to scan for all unique dependencies
 			scanTime = Date.now();
-			whenBundled = scan(resources.rootProject, config, { cwd, depPaths })
+			whenBundled = scan(depReaderCollection, config, { cwd, depPaths })
 				.then(({ uniqueModules }) => {
 					// second, we trigger the bundling of the unique dependencies
 					debug && log.info(`Scanning took ${Date.now() - scanTime} millis`);
