@@ -13,7 +13,7 @@ const attrValueRegExp = /(?<=<\/?[^\s\/>]+\b(?:\s+[^=\s>]+\s*=\s*(?:"[^"]*"|'[^'
  * @param {module:@ui5/fs.DuplexCollection} parameters.workspace DuplexCollection to read and write files
  * @param {object} parameters.options Options
  * @param {string} parameters.options.projectName Project name
- * @param {string} [parameters.options.configuration] Task configuration if given in ui5.yaml
+ * @param {object} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @returns {Promise<undefined>} Promise resolving with undefined once data has been written
  */
 module.exports = async ({ log, workspace, options }) => {

@@ -8,7 +8,7 @@ const utils = require("./utils");
  * @param {module:@ui5/logger/Logger} parameters.log Logger instance
  * @param {module:@ui5/fs.DuplexCollection} parameters.workspace DuplexCollection to read and write files
  * @param {object} parameters.options Options
- * @param {string} parameters.options.configuration Configuration object
+ * @param {object} parameters.options.configuration Configuration object
  * @returns {Promise<undefined>} Promise resolving with undefined once data has been written
  */
 module.exports = async function ({ log, workspace, options }) {

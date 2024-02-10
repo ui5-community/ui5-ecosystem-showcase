@@ -9,7 +9,7 @@
  *                [TaskUtil]{@link module:@ui5/builder.tasks.TaskUtil} instance
  * @param {object} parameters.options Options
  * @param {string} [parameters.options.projectNamespace] Project namespace
- * @param {string} [parameters.options.configuration] Task configuration if given in ui5.yaml; possible is debug : true|false
+ * @param {object} [parameters.options.configuration] Task configuration if given in ui5.yaml; possible is debug : true|false
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written or rejecting in case of an error
  */
 module.exports = async function ({ workspace, /* dependencies,*/ taskUtil, options }) {

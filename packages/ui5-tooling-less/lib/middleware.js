@@ -12,7 +12,7 @@ const LessBuilder = require("./LessBuilder");
  * @param {module:@ui5/fs.AbstractReader} parameters.resources.dependencies Reader or Collection to read resources of
  *                                        the projects dependencies
  * @param {object} parameters.options Options
- * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
+ * @param {object} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @param {object} parameters.middlewareUtil Specification version dependent interface to a
  *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
  * @returns {Function} Middleware function to use

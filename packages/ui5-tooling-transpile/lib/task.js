@@ -15,7 +15,7 @@ const JSONC = require("comment-json");
  * @param {object} parameters.options Options
  * @param {string} parameters.options.projectName Project name
  * @param {string} [parameters.options.projectNamespace] Project namespace if available
- * @param {string} [parameters.options.configuration] Task configuration if given in ui5.yaml
+ * @param {object} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, options }) {
