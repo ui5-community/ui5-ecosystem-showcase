@@ -31,8 +31,9 @@ const determineProjectName = (collection) => {
  * @param {object} parameters.options Options
  * @param {string} parameters.options.projectName Project name
  * @param {string} parameters.options.projectNamespace Project namespace
- * @param {string} [parameters.options.archiveName] ZIP archive name (defaults to project namespace)
- * @param {string} [parameters.options.additionalFiles] List of additional files to be included
+ * @param {object} [parameters.options.configuration] Task configuration if given in ui5.yaml
+ * @param {string} [parameters.options.configuration.archiveName] ZIP archive name (defaults to project namespace)
+ * @param {string} [parameters.options.configuration.additionalFiles] List of additional files to be included
  * @param {object} parameters.taskUtil the task utilities
  * @returns {Promise<undefined>} Promise resolving with undefined once data has been written
  */

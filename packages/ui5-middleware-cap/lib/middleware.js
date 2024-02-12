@@ -13,7 +13,7 @@ const hook = require("ui5-utils-express/lib/hook");
  * @param {object} parameters Parameters
  * @param {@ui5/logger/Logger} parameters.log Logger instance for use in the custom middleware
  * @param {object} parameters.options Options
- * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
+ * @param {object} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @returns {Function} Middleware function to use
  */
 module.exports = async ({ log, options }) => {

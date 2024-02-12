@@ -10,7 +10,7 @@ const LessBuilder = require("./LessBuilder");
  * @param {module:@ui5/fs.AbstractReader} parameters.dependencies Reader or Collection to read dependency files
  * @param {object} parameters.options Options
  * @param {string} parameters.options.projectName Project name
- * @param {string} [parameters.options.configuration] Task configuration if given in ui5.yaml
+ * @param {object} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @param {module:@ui5/builder.tasks.TaskUtil} [parameters.taskUtil] TaskUtil
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */

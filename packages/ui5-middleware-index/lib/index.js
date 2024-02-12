@@ -7,7 +7,7 @@
  * @param {object} parameters Parameters
  * @param {@ui5/logger/Logger} parameters.log Logger instance
  * @param {object} parameters.options Options
- * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
+ * @param {object} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @returns {Function} Middleware function to use
  */
 module.exports = ({ log, options }) => {

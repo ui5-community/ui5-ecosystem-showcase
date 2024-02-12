@@ -20,7 +20,7 @@ const intercept = require("ui5-utils-express/lib/intercept");
  * @param {module:@ui5/server.middleware.MiddlewareUtil} parameters.middlewareUtil Specification version dependent
  *                                                       interface to a MiddlewareUtil instance
  * @param {object} parameters.options Options
- * @param {string} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
+ * @param {object} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @returns {Function} Middleware function to use
  */
 module.exports = function createMiddleware({ log, resources, options, middlewareUtil }) {
