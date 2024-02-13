@@ -68,7 +68,7 @@ if (!skip) {
 	cds.on("bootstrap", async function bootstrap(app) {
 		log.debug("bootstrap");
 
-		const cwd = process.cwd();
+		const cwd = cds?.env?._home || process.cwd();
 		const ui5Modules = await findUI5Modules({ cwd, cds });
 		const { localApps, config } = ui5Modules;
 
