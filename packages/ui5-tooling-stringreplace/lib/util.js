@@ -29,9 +29,8 @@ const _self = (module.exports = {
 		// get all environment variables
 		const envVariables = process.env;
 
-		// env variable should start with 'stringreplace' and should in format
-		// e.x. 'stringreplace.placeholder' 'stringreplace__placeholder'
-		const regex = new RegExp(`stringreplace${separator}(${separator}+)`, "i");
+		// env variable should start and should be in format 'stringreplace<separator><placeholder>', e.g. 'stringreplace.variable' or 'stringreplace_variable'
+		const regex = new RegExp(`stringreplace${separator}(.+)`, "i");
 
 		// loop through env variables to find keys which are having prefix 'stringreplace'
 		if (typeof envVariables === "object") {
