@@ -127,7 +127,7 @@ You can define our own separator in `$yourapp/ui5.yaml` using configuration `sep
 
 ### Task
 
-The task reads all files based on configuration patterns and replaces all string placeholders with values for all files. All the string placeholders which are maintained in the process environment with prefix 'stringreplace.' will be taken into account the. If no environment name is set through the process environment variable UI5_ENV, then by default file`./.env` is loaded.
+The task reads all files based on configuration patterns and replaces all string placeholders with values for all files. All the string placeholders which are maintained in the process environment with prefix 'stringreplace.' will be taken into account. If no environment name is set through the process environment variable UI5_ENV, then by default the file`./.env` is loaded.
 
 ### Middleware
 
