@@ -19,7 +19,7 @@ module.exports = function ({ log, workspace, options }) {
 	// get all environment variables
 	const prefix = options.configuration?.prefix ? options.configuration?.prefix : "UI5_ENV"; // default
 	const path = options.configuration?.path ? options.configuration?.path : "./"; // default
-	const separator = options.configuration?.path ? options.configuration?.separator : "."; // default
+	const separator = options.configuration?.separator ? options.configuration?.separator : "."; // default
 	const placeholderStrings = readPlaceholderFromEnv(path, prefix, separator, log);
 
 	// extract the placeholder strings from the configuration
