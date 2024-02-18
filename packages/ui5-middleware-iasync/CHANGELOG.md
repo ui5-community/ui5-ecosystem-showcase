@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0-alpha.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-iasync@3.0.0-alpha.1...ui5-middleware-iasync@3.0.0-alpha.2) (2024-02-18)
+
+**Note:** Version bump only for package ui5-middleware-iasync
+
+
+
+
+
 # [3.0.0-alpha.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-iasync@3.0.0-alpha.0...ui5-middleware-iasync@3.0.0-alpha.1) (2023-10-14)
 
 **Note:** Version bump only for package ui5-middleware-iasync

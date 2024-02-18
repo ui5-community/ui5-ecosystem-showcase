@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.8.0...cds-plugin-ui5@0.8.1) (2024-02-18)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** only start when using "cds serve|watch" ([#951](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/951)) ([7b67bd9](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7b67bd975b5a082e6a33855b12a058ad53d0a433)), closes [#950](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/950)
+* prefere cds.env._home over just current process.cwd ([#947](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/947)) ([ecb6e69](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ecb6e69af178f93a3723c005609c7fefb50c8b41))
+
+
+
+
+
 # [0.8.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.7.5...cds-plugin-ui5@0.8.0) (2024-01-25)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-stringreplace@3.1.4...ui5-tooling-stringreplace@3.2.0) (2024-02-18)
+
+
+### Features
+
+* **ui5-stringreplace:** make separator configurable ([#949](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/949)) ([b986526](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b986526aac360254e2e952c0a38ad719b4edf560))
+
+
+
+
+
 ## [3.1.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-stringreplace@3.1.3...ui5-tooling-stringreplace@3.1.4) (2024-01-25)
 
 **Note:** Version bump only for package ui5-tooling-stringreplace
