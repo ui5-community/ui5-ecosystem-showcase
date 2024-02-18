@@ -34,6 +34,8 @@ yarn add --dev ui5-tooling-stringreplace
   Placeholders will be replaced with their values in files matched by this glob pattern
 - replace: `array`  
   List of placeholder, value pairs
+- separator: `string`
+  separator for stringreplace placeholder
 
 ## Usage
 
@@ -74,6 +76,7 @@ server:
         debug: true
         prefix: UI5_ENV # default
         path: ./ # default
+        separator: "." # default
         files:
           - "**/*.js"
           - "**/*.xml"
@@ -117,6 +120,8 @@ You can specify the `<UI5_ENV>.env` location by setting the `path` property in t
 ```
 
 With `UI5_ENV` set, the strings will be loaded from the `<UI5_ENV>.env` file.
+
+You can define our own separator in `$yourapp/ui5.yaml` using configuration `separator` otherwise will default to `.`. In case of separator set to `_` placeholder will be `stringreplace_`
 
 ## How it works
 

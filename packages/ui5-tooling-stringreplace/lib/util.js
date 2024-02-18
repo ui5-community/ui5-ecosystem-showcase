@@ -15,7 +15,7 @@ const _self = (module.exports = {
 		}
 		return false;
 	},
-	readPlaceholderFromEnv: function readPlaceholderFromEnv(path, prefix, log) {
+	readPlaceholderFromEnv: function readPlaceholderFromEnv(path, prefix, separator, log) {
 		if (process.env[prefix]) {
 			log.info(`${prefix} set to ${process.env[prefix]}: loading ${path}${process.env[prefix]}.env`);
 			const result = require("dotenv").config({ path: `${path}${process.env[prefix]}.env` });
@@ -29,13 +29,15 @@ const _self = (module.exports = {
 		// get all environment variables
 		const envVariables = process.env;
 
+		// env variable should start and should be in format 'stringreplace<separator><placeholder>', e.g. 'stringreplace.variable' or 'stringreplace_variable'
+		const regex = new RegExp(`stringreplace${separator}(.+)`, "i");
+
 		// loop through env variables to find keys which are having prefix 'stringreplace'
 		if (typeof envVariables === "object") {
 			let key;
 			for (key in envVariables) {
-				// env variable should start with 'stringreplace' and should in format 'stringreplace.placeholder'
-				if (/^stringreplace\.(.+)$/i.test(key)) {
-					let placeholderString = /^stringreplace\.(.+)$/i.exec(key)[1];
+				if (regex.test(key)) {
+					let placeholderString = regex.exec(key)[1];
 					_self.addPlaceholderString(placeholderString, envVariables[key]);
 				}
 			}
