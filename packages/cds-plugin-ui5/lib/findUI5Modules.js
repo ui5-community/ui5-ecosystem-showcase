@@ -16,6 +16,7 @@ const log = require("./log");
  * Returns all UI5 modules from local apps and the project dependencies.
  * @param {object} options configuration options
  * @param {string} options.cwd current working directory
+ * @param {string} options.cds reference to cds
  * @param {string} options.skipLocalApps skip local apps
  * @param {string} options.skipDeps skip dependencies
  * @returns {Array<UI5Module>} array of UI5 module
@@ -52,7 +53,7 @@ module.exports = async function findUI5Modules({ cwd, cds, skipLocalApps, skipDe
 	const localApps = new Set();
 	const appDirs = [];
 	if (!skipLocalApps) {
-		const appDir = path.join(cwd, cds?.env?.folders?.app || "app");
+		const appDir = path.join(cwd, cds.env?.folders?.app || "app");
 		if (fs.existsSync(appDir)) {
 			// is the UI5 app directly in the app directory?
 			if (!fs.existsSync(path.join(appDir, determineUI5Yaml(appDir)))) {
