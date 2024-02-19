@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.4.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.3.5...ui5-tooling-modules@3.4.0) (2024-02-19)
+
+
+### Features
+
+* **ui5-tooling-modules:** support minification of generated code ([#953](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/953)) ([4513a36](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4513a360be97c234928fa7b5a91054701a5b5758))
+
+
+
+
+
 ## [3.3.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.3.4...ui5-tooling-modules@3.3.5) (2024-02-18)
 
 **Note:** Version bump only for package ui5-tooling-modules
