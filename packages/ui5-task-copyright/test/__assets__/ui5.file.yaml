@@ -1,0 +1,24 @@
+specVersion: "3.0"
+metadata:
+  name: ui5.ecosystem.demo.tsapp
+type: application
+framework:
+  name: OpenUI5
+  version: "1.120.1"
+  libraries:
+    - name: sap.m
+    - name: sap.ui.core
+    - name: sap.ui.unified
+    - name: themelib_sap_horizon
+builder:
+  customTasks:
+    - name: ui5-tooling-transpile-task
+      afterTask: replaceVersion
+      configuration:
+        generateDts: true
+        generateTsInterfaces: true
+        omitTSFromBuildResult: false
+    - name: ui5-task-copyright
+      beforeTask: replaceCopyright
+      configuration:
+        copyright: ./copyright.txt

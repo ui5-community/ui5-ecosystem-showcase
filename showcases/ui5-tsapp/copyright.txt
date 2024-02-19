@@ -1,0 +1,2 @@
+Copyright ${currentYear} UI5 Community
+All rights reserved.
