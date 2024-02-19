@@ -94,6 +94,9 @@ The following configuration options are relevant for the `task` and the `middlew
         - '*'
   ```
 
+- *minify*: `boolean` *experimental feature*
+  Flag to indicate that the generated code should be minified (in case of excluding thirdparty resources from minification in general, this option can be used to minify just the generated code)
+
 The following configuration options are just relevant for the `task`:
 
 - *prependPathMappings*: `boolean`  
