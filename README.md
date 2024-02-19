@@ -41,6 +41,7 @@ packages
 ├── ui5-middleware-webjars          // middleware extension: deliver content from JAR files
 ├── ui5-middleware-websocket        // middleware extension: enable web sockets for the UI5 Tooling
 ├── ui5-task-cachebuster            // task extension: enables cachebusting for standalone applications
+├── ui5-task-copyright              // task extension: append copyright for TypeScript, JavaScript or XML files
 ├── ui5-task-flatten-library        // task extension: prepares build result for deployment to SAP NetWeaver
 ├── ui5-task-i18ncheck              // task extension: checks for missing i18n texts
 ├── ui5-task-minify-xml             // task extension: minify xml resources
@@ -147,6 +148,7 @@ pnpm test:ci # > start ui5 server in background, runs wdi5-tests, shuts down the
 The tasks developed in this monorepo are also publicly available on NPM right here:
 
 * https://www.npmjs.com/package/ui5-task-cachebuster
+* https://www.npmjs.com/package/ui5-task-copyright
 * https://www.npmjs.com/package/ui5-task-flatten-library
 * https://www.npmjs.com/package/ui5-task-i18ncheck 
 * https://www.npmjs.com/package/ui5-task-minify-xml
@@ -182,6 +184,7 @@ Available tasks in this project:
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
 | [ui5-task-cachebuster](https://www.npmjs.com/package/ui5-task-cachebuster) | enables cachebusting for standalone applications | [![npm version](https://badge.fury.io/js/ui5-task-cachebuster.svg)](https://badge.fury.io/js/ui5-task-cachebuster) |
+| [ui5-task-copyright](https://www.npmjs.com/package/ui5-task-copyright) | append copyright for TypeScript, JavaScript or XML files | [![npm version](https://badge.fury.io/js/ui5-task-copyright.svg)](https://badge.fury.io/js/ui5-task-copyright) |
 | [ui5-task-flatten-library](https://www.npmjs.com/package/ui5-task-flatten-library) | prepares build result for deployment to SAP NetWeaver | [![npm version](https://badge.fury.io/js/ui5-task-flatten-library.svg)](https://badge.fury.io/js/ui5-task-flatten-library) |
 | [ui5-task-i18ncheck](packages/ui5-task-i18ncheck/README.md) | checks for missing i18n texts | [![npm version](https://badge.fury.io/js/ui5-task-i18ncheck.svg)](https://badge.fury.io/js/ui5-task-i18ncheck) |
 | [ui5-task-minify-xml](packages/ui5-task-minify-xml/README.md) | minify xml resources | [![npm version](https://badge.fury.io/js/ui5-task-minify-xml.svg)](https://badge.fury.io/js/ui5-task-minify-xml) |
