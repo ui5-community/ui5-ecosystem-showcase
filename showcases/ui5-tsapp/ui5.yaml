@@ -9,6 +9,7 @@ customConfiguration:
     omitTSFromBuildResult: true
   config-ui5-tooling-modules: &cfgModules
     debug: true
+    minify: true
 type: application
 framework:
   name: OpenUI5
@@ -22,6 +23,9 @@ builder:
   settings:
     includeDependency:
       - ui5.ecosystem.demo.tslib
+  minification:
+    excludes:
+      - "ui5/ecosystem/demo/tsapp/thirdparty/**"
   componentPreload:
     excludes:
       - "ui5/ecosystem/demo/tsapp/thirdparty/@stomp/**"
