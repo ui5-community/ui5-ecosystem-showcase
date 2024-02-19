@@ -1,0 +1,38 @@
+{
+  "name": "ui5-task-copyright",
+  "version": "2.0.0",
+  "description": "UI5 task for appending copyright headers for TypeScript, JavaScript and XML files",
+  "author": "Peter Muessig",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/ui5-community/ui5-ecosystem-showcase/tree/main/packages/ui5-task-copyright#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
+    "directory": "packages/ui5-task-copyright"
+  },
+  "bin": {
+    "uses-ui5-task-copyright": "./bin/uses-ui5-task-copyright.js"
+  },
+  "scripts": {
+    "lint": "eslint lib",
+    "test": "ava"
+  },
+  "ava": {
+    "files": [
+      "test/**/*",
+      "!test/__assets__/**/*",
+      "!test/__dist__/**/*"
+    ],
+    "verbose": true,
+    "timeout": "5m"
+  },
+  "devDependencies": {
+    "@ui5/cli": "^3.8.0",
+    "ava": "^5.3.1"
+  },
+  "dependencies": {
+    "@typescript-eslint/typescript-estree": "^7.0.1",
+    "fast-xml-parser": "^4.3.3",
+    "js-yaml": "^4.1.0"
+  }
+}
