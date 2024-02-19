@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.12.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.11.10...ui5-tsapp@0.12.0) (2024-02-19)
+
+
+### Features
+
+* **ui5-task-copyright:** new task to prepend copyrights to sources ([#952](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/952)) ([d7e8ad6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d7e8ad6a32b6112858b1d7187292df22bc21ad68))
+
+
+### BREAKING CHANGES
+
+* **ui5-task-copyright:** new release
+
+
+
+
+
 ## [0.11.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.11.9...ui5-tsapp@0.11.10) (2024-02-18)
 
 **Note:** Version bump only for package ui5-tsapp
