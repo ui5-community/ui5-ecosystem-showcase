@@ -19,13 +19,13 @@ npm install ui5-task-copyright --save-dev
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
-- copyright: `String` (via env var: `UI5_TASK_COPYRIGHT_FILE` expects file name)
-  the value of the copyright or the path to a file containing the copyright statement - if not given, the task will be skipped - the copyright can also be injected by the environment variable `UI5_TASK_COPYRIGHT_FILE` which must point to an existing file and then the copyright is extracted from this file
+- copyright: `String` (via env var: `ui5_task_copyright__file` expects file name)
+  the value of the copyright or the path to a file containing the copyright statement - if not given, the task will be skipped - the copyright can also be injected by the environment variable `ui5_task_copyright__file` which must point to an existing file and then the copyright is extracted from this file
 
-- copyrightPlaceholder: `String` (defaults to: `copyright`, env var: `UI5_TASK_COPYRIGHT_PLACEHOLDER_COPYRIGHT`)
+- copyrightPlaceholder: `String` (defaults to: `copyright`, env var: `ui5_task_copyright__placeholder_copyright`)
   the name of the copyright placeholder to check for in the copyright comments and to replace with the copyright value (will replace all hits of `${copyright}` or `@copyright@`)
 
-- currentYearPlaceholder: `String` (defaults to: `currentYear`, env var: `UI5_TASK_COPYRIGHT_PLACEHOLDER_CURRENT_YEAR`)
+- currentYearPlaceholder: `String` (defaults to: `currentYear`, env var: `ui5_task_copyright__placeholder_current_year`)
   the name of the currentYear placeholder in the copyright comments which will be replaced with the currentYear value (will replace all hits of `${currentYear}` or `@currentYear@`)
 
 - excludePatterns: `Array<String>`
