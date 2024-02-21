@@ -39,7 +39,8 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 			const { moduleId, mountPath, modulePath } = ui5Module;
 			const options = config?.modules?.[moduleId];
 
-			const absMountPath = path.join(mwMountPath, mountPath);
+			// append the middleware moutpath to the mount path of the module and ensure it is using forward slashes
+			const absMountPath = path.join(mwMountPath, mountPath).replace(/\\/g, "/");
 
 			// mounting the Router for the UI5 application to the CDS server
 			log.info(`Mounting ${absMountPath} to UI5 app ${modulePath} (id=${moduleId})${options ? ` using options=${JSON.stringify(options)}` : ""}`);
