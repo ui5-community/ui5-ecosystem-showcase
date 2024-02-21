@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-copyright@3.0.1...ui5-task-copyright@3.0.2) (2024-02-21)
+
+
+### Bug Fixes
+
+* **ui5-task-copyright:** align env var names ([#958](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/958)) ([7cd4501](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7cd4501eee3131946cfe2dfc4d389453bf76dd09))
+
+
+
+
+
 ## [3.0.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-copyright@3.0.0...ui5-task-copyright@3.0.1) (2024-02-21)
 
 
