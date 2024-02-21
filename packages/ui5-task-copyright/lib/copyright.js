@@ -13,7 +13,7 @@ const { XMLParser } = require("fast-xml-parser");
  */
 module.exports = async ({ log, workspace, options }) => {
 	// disable task if no copyright is configured
-	if (!options?.configuration?.copyright && !process.env.UI5_TASK_COPYRIGHT_FILE) {
+	if (!options?.configuration?.copyright && !process.env.ui5_task_copyright__file) {
 		return Promise.resolve();
 	}
 
@@ -27,13 +27,13 @@ module.exports = async ({ log, workspace, options }) => {
 	);
 
 	// the environment variable UI5_TASK_COPYRIGHT_PLACEHOLDER_* can be used to override the placeholders
-	if (process.env.UI5_TASK_COPYRIGHT_PLACEHOLDER_COPYRIGHT) {
-		copyrightPlaceholder = process.env.UI5_TASK_COPYRIGHT_PLACEHOLDER_COPYRIGHT;
-		log.info(`Using environment variable UI5_TASK_COPYRIGHT_PLACEHOLDER_COPYRIGHT: ${copyrightPlaceholder}`);
+	if (process.env.ui5_task_copyright__placeholder_copyright) {
+		copyrightPlaceholder = process.env.ui5_task_copyright__placeholder_copyright;
+		log.info(`Using environment variable ui5_task_copyright__placeholder_copyright: ${copyrightPlaceholder}`);
 	}
-	if (process.env.UI5_TASK_COPYRIGHT_PLACEHOLDER_CURRENT_YEAR) {
-		currentYearPlaceholder = process.env.UI5_TASK_COPYRIGHT_PLACEHOLDER_CURRENT_YEAR;
-		log.info(`Using environment variable UI5_TASK_COPYRIGHT_PLACEHOLDER_CURRENT_YEAR: ${currentYearPlaceholder}`);
+	if (process.env.ui5_task_copyright__placeholder_current_year) {
+		currentYearPlaceholder = process.env.ui5_task_copyright__placeholder_current_year;
+		log.info(`Using environment variable ui5_task_copyright__placeholder_current_year: ${currentYearPlaceholder}`);
 	}
 
 	// only words are allowed as placeholders
@@ -63,10 +63,10 @@ module.exports = async ({ log, workspace, options }) => {
 		options.configuration
 	);
 
-	// the environment variable UI5_TASK_COPYRIGHT_FILE can be used to specify a file path for the copyright
-	if (process.env.UI5_TASK_COPYRIGHT_FILE) {
-		copyright = process.env.UI5_TASK_COPYRIGHT_FILE;
-		log.info(`Using environment variable UI5_TASK_COPYRIGHT_FILE: ${copyright}`);
+	// the environment variable ui5_task_copyright__file can be used to specify a file path for the copyright
+	if (process.env.ui5_task_copyright__file) {
+		copyright = process.env.ui5_task_copyright__file;
+		log.info(`Using environment variable ui5_task_copyright__file: ${copyright}`);
 	}
 
 	// check if the file exists (if copyright is a file path)

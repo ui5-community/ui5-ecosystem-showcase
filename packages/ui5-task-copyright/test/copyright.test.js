@@ -102,8 +102,8 @@ test("Copyright from file (env)", async (t) => {
 		shell: true,
 		cwd: path.resolve(__dirname, "../../../showcases/ui5-tsapp"),
 		env: Object.assign({}, process.env, {
-			UI5_TASK_COPYRIGHT_FILE: "./copyright-alt.txt",
-			UI5_TASK_COPYRIGHT_PLACEHOLDER_CURRENT_YEAR: "altCurrentYear",
+			ui5_task_copyright__file: "./copyright-alt.txt",
+			ui5_task_copyright__placeholder_current_year: "altCurrentYear",
 		}),
 	});
 
