@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-ui5@3.1.1...ui5-middleware-ui5@3.1.2) (2024-02-21)
+
+
+### Bug Fixes
+
+* **ui5-middleware-ui5:** ensure using forward slashes for mount path ([#956](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/956)) ([92f1362](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/92f1362a27e1be224091bdada5b51a01d4188975)), closes [#955](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/955)
+
+
+
+
+
 ## [3.1.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-ui5@3.1.0...ui5-middleware-ui5@3.1.1) (2024-02-18)
 
 **Note:** Version bump only for package ui5-middleware-ui5

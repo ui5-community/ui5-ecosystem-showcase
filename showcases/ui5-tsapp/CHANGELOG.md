@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.13.0...ui5-tsapp@0.13.1) (2024-02-21)
+
+
+### Bug Fixes
+
+* **ui5-task-copyright:** allow to inject params via env ([#957](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/957)) ([9442880](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9442880fa987052fdab4413c7e87e63f5f258a9b))
+
+
+
+
+
 # [0.13.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.12.0...ui5-tsapp@0.13.0) (2024-02-19)
 
 
