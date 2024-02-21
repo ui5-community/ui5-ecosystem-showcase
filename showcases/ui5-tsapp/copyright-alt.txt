@@ -1,0 +1,2 @@
+Copyright ${altCurrentYear} UI5 Community
+All rights reserved.

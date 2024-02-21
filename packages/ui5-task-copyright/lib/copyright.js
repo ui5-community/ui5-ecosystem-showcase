@@ -13,18 +13,43 @@ const { XMLParser } = require("fast-xml-parser");
  */
 module.exports = async ({ log, workspace, options }) => {
 	// disable task if no copyright is configured
-	if (!options?.configuration?.copyright) {
+	if (!options?.configuration?.copyright && !process.env.UI5_TASK_COPYRIGHT_FILE) {
 		return Promise.resolve();
 	}
 
 	// determine the copyright and current year placeholders
-	const { copyrightPlaceholder, currentYearPlaceholder } = Object.assign(
+	let { copyrightPlaceholder, currentYearPlaceholder } = Object.assign(
 		{
 			copyrightPlaceholder: "copyright",
 			currentYearPlaceholder: "currentYear",
 		},
 		options.configuration
 	);
+
+	// the environment variable UI5_TASK_COPYRIGHT_PLACEHOLDER_* can be used to override the placeholders
+	if (process.env.UI5_TASK_COPYRIGHT_PLACEHOLDER_COPYRIGHT) {
+		copyrightPlaceholder = process.env.UI5_TASK_COPYRIGHT_PLACEHOLDER_COPYRIGHT;
+		log.info(`Using environment variable UI5_TASK_COPYRIGHT_PLACEHOLDER_COPYRIGHT: ${copyrightPlaceholder}`);
+	}
+	if (process.env.UI5_TASK_COPYRIGHT_PLACEHOLDER_CURRENT_YEAR) {
+		currentYearPlaceholder = process.env.UI5_TASK_COPYRIGHT_PLACEHOLDER_CURRENT_YEAR;
+		log.info(`Using environment variable UI5_TASK_COPYRIGHT_PLACEHOLDER_CURRENT_YEAR: ${currentYearPlaceholder}`);
+	}
+
+	// only words are allowed as placeholders
+	if (!/^\w+$/.test(copyrightPlaceholder)) {
+		throw new Error(`Invalid copyright placeholder: ${copyrightPlaceholder}`);
+	}
+	if (!/^\w+$/.test(currentYearPlaceholder)) {
+		throw new Error(`Invalid currentYear placeholder: ${currentYearPlaceholder}`);
+	}
+
+	// escape the placeholder strings for safe usage in regular expressions
+	const escapeStringForRegExp = function escapeStringForRegExp(string) {
+		return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, "\\$&");
+	};
+	copyrightPlaceholder = escapeStringForRegExp(copyrightPlaceholder);
+	currentYearPlaceholder = escapeStringForRegExp(currentYearPlaceholder);
 
 	// create regular expressions for the placeholders
 	const copyrightRegExp = new RegExp(`(?:\\$\\{${copyrightPlaceholder}\\}|@${copyrightPlaceholder}@)`, "g");
@@ -37,6 +62,12 @@ module.exports = async ({ log, workspace, options }) => {
 		},
 		options.configuration
 	);
+
+	// the environment variable UI5_TASK_COPYRIGHT_FILE can be used to specify a file path for the copyright
+	if (process.env.UI5_TASK_COPYRIGHT_FILE) {
+		copyright = process.env.UI5_TASK_COPYRIGHT_FILE;
+		log.info(`Using environment variable UI5_TASK_COPYRIGHT_FILE: ${copyright}`);
+	}
 
 	// check if the file exists (if copyright is a file path)
 	if (fs.existsSync(copyright)) {
