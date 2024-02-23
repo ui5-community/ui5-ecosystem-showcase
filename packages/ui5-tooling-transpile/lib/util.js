@@ -441,16 +441,26 @@ module.exports = function (log) {
 				configuration?.debug && log.info(`Using external browserslist configuration...`);
 			} else {
 				configuration?.debug && log.info(`Using browserslist configuration from ui5.yaml...`);
-				envPreset.push({
-					targets: {
-						// future: consider to read the browserslist config from OpenUI5/SAPUI5?
-						// env variables must not use "-" or "." and therefore we use "_" only
-						browsers:
-							process.env?.["ui5_tooling_transpile__targetBrowsers"] ||
-							configuration?.targetBrowsers ||
-							"defaults"
-					}
-				});
+				if (process.env?.["ui5_tooling_transpile__target_rhino"]) {
+					// necessary to transpile to ES5 for Rhino (to support some legacy Java tools)
+					envPreset.push({
+						targets: {
+							rhino: process.env?.["ui5_tooling_transpile__target_rhino"]
+						}
+					});
+				} else {
+					envPreset.push({
+						targets: {
+							// future: consider to read the browserslist config from OpenUI5/SAPUI5?
+							// env variables must not use "-" or "." and therefore we use "_" only
+							browsers:
+								process.env?.["ui5_tooling_transpile__target_browsers"] ||
+								process.env?.["ui5_tooling_transpile__targetBrowsers"] ||
+								configuration?.targetBrowsers ||
+								"defaults"
+						}
+					});
+				}
 			}
 			babelConfigOptions.presets.push(envPreset);
 
