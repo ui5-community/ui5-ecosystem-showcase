@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.3.4...ui5-tooling-transpile@3.3.5) (2024-02-23)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** support special rhino target via env var ([#959](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/959)) ([3a0cc03](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3a0cc031ca4b5acf0bbcefb3968416b4248eae61))
+
+
+
+
+
 ## [3.3.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.3.3...ui5-tooling-transpile@3.3.4) (2024-02-18)
 
 **Note:** Version bump only for package ui5-tooling-transpile
