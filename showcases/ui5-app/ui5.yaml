@@ -147,6 +147,12 @@ server:
         debug: true
         baseUri: "ws://localhost:1081/wsecho/"
         enableWebSocket: true
+    - name: ui5-middleware-simpleproxy
+      mountPath: /version.json
+      afterMiddleware: compression
+      configuration:
+        debug: true
+        baseUri: "https://sdk.openui5.org/version.json"
     - name: ui5-tooling-stringreplace-middleware
       afterMiddleware: compression
       configuration:

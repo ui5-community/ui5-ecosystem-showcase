@@ -150,24 +150,24 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 		auth: username != null && password != null ? `${username}:${password}` : undefined,
 		headers: httpHeaders,
 		pathRewrite: function (path, req) {
-			// in case of Router scenarios (cds-plugin-ui5) we need to use
-			// the parsed original url to determine the proper target path
-			// as it contains also the mountpath of the proxy middleware
-			const baseUrl = req.baseUrl?.length > 1 ? req.baseUrl + "/" : undefined;
-			const url = req.url;
-			let pathname = baseUrl && url?.startsWith(baseUrl) ? url.substring(baseUrl.length - 1) : url;
-			// special case is if the baseUrl is the request URL, then we will completely strip it
-			if (req.baseUrl === url) {
-				pathname = "";
+			// we first determine the baseUrl to strip off the path
+			let baseUrl = req.baseUrl;
+			if (req["ui5-patched-router"]?.baseUrl) {
+				baseUrl = baseUrl.substring(req["ui5-patched-router"].baseUrl.length);
 			}
+			path = path.substring(baseUrl.length);
 			// append the query parameters if available
 			if (query) {
-				const url = new URL(pathname, baseURL);
+				const url = new URL(path, new URL("/", baseURL));
+				let pathname = url.pathname;
+				if (pathname === "/") {
+					pathname = "";
+				}
 				const search = url.searchParams;
 				Object.keys(query).forEach((key) => search.append(key, query[key]));
-				pathname = `${url.pathname}${url.search}`;
+				path = `${pathname}${url.search}`;
 			}
-			return pathname;
+			return path;
 		},
 		selfHandleResponse: true, // + responseInterceptor: necessary to omit ERR_CONTENT_DECODING_FAILED error when opening OData URls directly
 		onProxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
