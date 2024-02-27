@@ -30,7 +30,7 @@ const minimatch = require("minimatch");
  */
 module.exports = async function ({ log, workspace, taskUtil, options }) {
 	const cwd = taskUtil.getProject().getRootPath() || process.cwd();
-	const { scan, getBundleInfo, getResource } = require("./util")(log);
+	const { scan, getBundleInfo, getResource, existsResource } = require("./util")(log);
 
 	// determine all paths for the dependencies
 	const depPaths = taskUtil
@@ -234,8 +234,8 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	await Promise.all(
 		Array.from(uniqueResources).map(async (resourceName) => {
 			log.verbose(`Trying to process resource: ${resourceName}`);
-			const resource = await getResource(resourceName, { cwd, depPaths });
-			if (resource) {
+			if (existsResource(resourceName, { cwd, depPaths, onlyFiles: true })) {
+				const resource = getResource(resourceName, { cwd, depPaths });
 				config.debug && log.info(`Processing resource: ${resourceName}`);
 				const newResource = resourceFactory.createResource({
 					path: `/resources/${rewriteDep(resourceName, bundledResources)}`,

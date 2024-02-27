@@ -134,7 +134,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 			}
 
 			// check if the resource exists in node_modules
-			let resource = await getResource(moduleName, { cwd, depPaths, isMiddleware: true });
+			let resource = getResource(moduleName, { cwd, depPaths, isMiddleware: true });
 
 			// if a resource has been found in node_modules, we will
 			// trigger the bundling process and watch the bundled resources

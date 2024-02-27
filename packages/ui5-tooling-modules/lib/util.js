@@ -212,7 +212,7 @@ module.exports = function (log) {
 
 			// eslint-disable-next-line jsdoc/require-jsdoc
 			function addUniqueResource(res) {
-				if (!isProvided(res)) {
+				if (!isProvided(res) && that.existsResource(res, { cwd, depPaths })) {
 					uniqueResources.add(res);
 				}
 			}
@@ -824,6 +824,32 @@ module.exports = function (log) {
 			} else if (!isMiddleware) {
 				log.error(`Resource ${resourceName} not found. Ignoring resource...`);
 			}
+		},
+
+		/**
+		 * Check the existence of a resource in the node_modules
+		 *
+		 * @param {string} resourceName the resource name
+		 * @param {object} [options] additional options
+		 * @param {string} [options.cwd] current working directory
+		 * @param {string[]} [options.depPaths] paths of the dependencies (in addition for cwd)
+		 * @param {boolean} [options.onlyFiles] true, if only files should be checked
+		 * @returns {boolean} true, if the resource exists (as a folder or file)
+		 */
+		existsResource: function existsResource(resourceName, { cwd, depPaths, onlyFiles }) {
+			// try to lookup the resource in the node_modules first
+			const parts = /((?:@[^/]+\/)?(?:[^/]+))(.*)/.exec(resourceName);
+			if (parts) {
+				const [, npmPackageName, packagePath] = /((?:@[^/]+\/)?(?:[^/]+))(.*)/.exec(resourceName);
+				const npmPackagePath = that.resolveModule(`${npmPackageName}/package.json`, { cwd, depPaths });
+				if (typeof npmPackagePath === "string") {
+					const resourcePath = path.join(path.dirname(npmPackagePath), packagePath);
+					return existsSync(resourcePath) && (!onlyFiles || statSync(resourcePath).isFile());
+				}
+			}
+			// resolve the module via the default lookup
+			const resourcePath = that.resolveModule(`${resourceName}`, { cwd, depPaths });
+			return typeof resourcePath === "string";
 		},
 
 		/**
