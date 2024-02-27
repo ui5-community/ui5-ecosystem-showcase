@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-bookshop@0.2.8...ui5-bookshop@0.2.9) (2024-02-27)
+
+
+### Bug Fixes
+
+* **ui5-middleware-simpleproxy:** correct handling of mountPath to baseUri mapping ([#962](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/962)) ([2aecff2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2aecff22d7c8600837a217cfe02007b68926ab4f))
+
+
+
+
+
 ## [0.2.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-bookshop@0.2.7...ui5-bookshop@0.2.8) (2024-02-18)
 
 **Note:** Version bump only for package ui5-bookshop
