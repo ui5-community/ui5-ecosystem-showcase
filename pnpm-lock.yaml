@@ -642,6 +642,9 @@ importers:
       ui5-middleware-livereload:
         specifier: workspace:^
         version: link:../../../../packages/ui5-middleware-livereload
+      ui5-middleware-simpleproxy:
+        specifier: workspace:^
+        version: link:../../../../packages/ui5-middleware-simpleproxy
       ui5-task-zipper:
         specifier: workspace:^
         version: link:../../../../packages/ui5-task-zipper

@@ -23,6 +23,7 @@
     "rimraf": "^5.0.5",
     "ui5-middleware-index": "workspace:^",
     "ui5-middleware-livereload": "workspace:^",
+    "ui5-middleware-simpleproxy": "workspace:^",
     "ui5-task-zipper": "workspace:^"
   }
 }
