@@ -15,7 +15,7 @@ builder:
       afterTask: replaceVersion
       configuration: &cfgTranspile
         debug: true
-        generateTsInterfaces: false
+        generateTsInterfaces: true
     - name: ui5-tooling-modules-task
       afterTask: ui5-tooling-transpile-task
       configuration:
