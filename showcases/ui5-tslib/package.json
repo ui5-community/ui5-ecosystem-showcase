@@ -8,7 +8,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rimraf dist coverage",
-    "build": "ui5 build --clean-dest",
+    "build": "ui5 build --clean-dest --exclude-task=minify",
     "dev": "ui5 serve --port 8080 -o test-resources/ui5/ecosystem/demo/tslib/Example.html",
     "start": "ui5 serve  --port 8080 -o test-resources/ui5/ecosystem/demo/tslib/Example.html --config ui5-dist.yaml",
     "testsuite": "ui5 serve --open test-resources/ui5/ecosystem/demo/tslib/qunit/testsuite.qunit.html",
