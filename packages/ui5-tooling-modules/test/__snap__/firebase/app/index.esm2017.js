@@ -647,7 +647,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	  return CONSTANTS.NODE_CLIENT === true || CONSTANTS.NODE_ADMIN === true;
 	}
 	function isSafari() {
-	  return !isNode() && navigator.userAgent.includes("Safari") && !navigator.userAgent.includes("Chrome");
+	  return !isNode() && !!navigator.userAgent && navigator.userAgent.includes("Safari") && !navigator.userAgent.includes("Chrome");
 	}
 	function isIndexedDBAvailable() {
 	  try {
@@ -2938,7 +2938,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	}
 
 	const name$o = "@firebase/app";
-	const version$1 = "0.9.25";
+	const version$1 = "0.9.28";
 
 	/**
 	 * @license
@@ -3005,7 +3005,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	const name$1 = "@firebase/firestore-compat";
 
 	const name = "firebase";
-	const version = "10.7.1";
+	const version = "10.8.1";
 
 	/**
 	 * @license
@@ -3487,7 +3487,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	                // eslint-disable-next-line default-case
 	                switch (oldVersion) {
 	                    case 0:
-	                        db.createObjectStore(STORE_NAME);
+	                        try {
+	                            db.createObjectStore(STORE_NAME);
+	                        }
+	                        catch (e) {
+	                            // Safari/iOS browsers throw occasional exceptions on
+	                            // db.createObjectStore() that may be a bug. Avoid blocking
+	                            // the rest of the app functionality.
+	                            console.warn(e);
+	                        }
 	                }
 	            }
 	        }).catch(e => {
@@ -3501,10 +3509,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	async function readHeartbeatsFromIndexedDB(app) {
 	    try {
 	        const db = await getDbPromise();
-	        const result = await db
-	            .transaction(STORE_NAME)
-	            .objectStore(STORE_NAME)
-	            .get(computeKey(app));
+	        const tx = db.transaction(STORE_NAME);
+	        const result = await tx.objectStore(STORE_NAME).get(computeKey(app));
+	        // We already have the value but tx.done can throw,
+	        // so we need to await it here to catch errors
+	        await tx.done;
 	        return result;
 	    }
 	    catch (e) {
