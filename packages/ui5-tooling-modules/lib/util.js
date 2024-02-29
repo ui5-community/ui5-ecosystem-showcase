@@ -774,7 +774,7 @@ module.exports = function (log) {
 						const fixImports = (bundleInfo) => {
 							bundleInfo.getEntries().forEach((module) => {
 								const moduleName = module.name;
-								const relativePath = path.relative(`/${path.dirname(moduleName)}`, "/");
+								const relativePath = path.relative(`/${path.dirname(moduleName)}`, "/").replace(/\\/g, "/");
 								bundleInfo.getChunks().forEach((chunk) => {
 									const originalChunkName = chunk.originalName;
 									const chunkName = chunk.name;

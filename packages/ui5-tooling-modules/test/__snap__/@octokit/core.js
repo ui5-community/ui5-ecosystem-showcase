@@ -230,7 +230,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       if (typeof navigator === "object" && "userAgent" in navigator) {
           return navigator.userAgent;
       }
-      if (typeof browser$1$1 === "object" && "version" in browser$1$1) {
+      if (typeof browser$1$1 === "object" && browser$1$1.version !== undefined) {
           return `Node.js/${browser$1$1.version.substr(1)} (${browser$1$1.platform}; ${browser$1$1.arch})`;
       }
       return "<environment undetectable>";

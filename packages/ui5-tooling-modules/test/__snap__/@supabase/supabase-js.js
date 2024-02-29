@@ -1,19 +1,4 @@
-sap.ui.define(['exports'], (function (exports) { 'use strict';
-
-    function _mergeNamespaces(n, m) {
-        m.forEach(function (e) {
-            e && typeof e !== 'string' && !Array.isArray(e) && Object.keys(e).forEach(function (k) {
-                if (k !== 'default' && !(k in n)) {
-                    var d = Object.getOwnPropertyDescriptor(e, k);
-                    Object.defineProperty(n, k, d.get ? d : {
-                        enumerable: true,
-                        get: function () { return e[k]; }
-                    });
-                }
-            });
-        });
-        return Object.freeze(n);
-    }
+sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict';
 
     const resolveFetch$3 = (customFetch) => {
         let _fetch;
@@ -153,43 +138,49 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+    var global$1 = (typeof global !== "undefined" ? global :
+      typeof self !== "undefined" ? self :
+      typeof window !== "undefined" ? window : {});
 
-    var browser$1 = {exports: {}};
+    // ref: https://github.com/tc39/proposal-global
+    var getGlobal = function() {
+        // the only reliable means to get the global object is
+        // `Function('return this')()`
+        // However, this causes CSP violations in Chrome apps.
+        if (typeof self !== 'undefined') { return self; }
+        if (typeof window !== 'undefined') { return window; }
+        if (typeof global$1 !== 'undefined') { return global$1; }
+        throw new Error('unable to locate global object');
+    };
 
-    (function (module, exports) {
+    var globalObject = getGlobal();
 
-    	// ref: https://github.com/tc39/proposal-global
-    	var getGlobal = function () {
-    		// the only reliable means to get the global object is
-    		// `Function('return this')()`
-    		// However, this causes CSP violations in Chrome apps.
-    		if (typeof self !== 'undefined') { return self; }
-    		if (typeof window !== 'undefined') { return window; }
-    		if (typeof commonjsGlobal !== 'undefined') { return commonjsGlobal; }
-    		throw new Error('unable to locate global object');
-    	};
+    const fetch$1 = globalObject.fetch;
 
-    	var globalObject = getGlobal();
+    var nodeFetch = globalObject.fetch.bind(globalObject);
 
-    	module.exports = exports = globalObject.fetch;
+    const Headers$1 = globalObject.Headers;
+    const Request = globalObject.Request;
+    const Response$1 = globalObject.Response;
 
-    	// Needed for TypeScript and Webpack.
-    	if (globalObject.fetch) {
-    		exports.default = globalObject.fetch.bind(globalObject);
-    	}
-
-    	exports.Headers = globalObject.Headers;
-    	exports.Request = globalObject.Request;
-    	exports.Response = globalObject.Response; 
-    } (browser$1, browser$1.exports));
-
-    var browserExports = browser$1.exports;
-
-    var browser = /*#__PURE__*/_mergeNamespaces({
+    var browser = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        default: browserExports
-    }, [browserExports]);
+        Headers: Headers$1,
+        Request: Request,
+        Response: Response$1,
+        default: nodeFetch,
+        fetch: fetch$1
+    });
+
+    class PostgrestError extends Error {
+        constructor(context) {
+            super(context.message);
+            this.name = 'PostgrestError';
+            this.details = context.details;
+            this.hint = context.hint;
+            this.code = context.code;
+        }
+    }
 
     // @ts-ignore
     class PostgrestBuilder {
@@ -207,7 +198,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 this.fetch = builder.fetch;
             }
             else if (typeof fetch === 'undefined') {
-                this.fetch = browserExports;
+                this.fetch = nodeFetch;
             }
             else {
                 this.fetch = fetch;
@@ -324,7 +315,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         statusText = 'OK';
                     }
                     if (error && this.shouldThrowOnError) {
-                        throw error;
+                        throw new PostgrestError(error);
                     }
                 }
                 const postgrestResponse = {
@@ -504,6 +495,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
         /**
          * Return `data` as the EXPLAIN plan for the query.
+         *
+         * You need to enable the
+         * [db_plan_enabled](https://supabase.com/docs/guides/database/debugging-performance#enabling-explain)
+         * setting before using this method.
          *
          * @param options - Named parameters
          *
@@ -1205,7 +1200,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    const version$4 = '1.9.0';
+    const version$4 = '1.9.2';
 
     const DEFAULT_HEADERS$4 = { 'X-Client-Info': `postgrest-js/${version$4}` };
 
@@ -1314,7 +1309,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    const version$3 = '2.9.0';
+    const version$3 = '2.9.3';
 
     const DEFAULT_HEADERS$3 = { 'X-Client-Info': `realtime-js/${version$3}` };
     const VSN = '1.0.0';
@@ -2149,7 +2144,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 const options = {
                     method: 'POST',
                     headers: {
-                        apikey: (_a = this.socket.accessToken) !== null && _a !== void 0 ? _a : '',
+                        apikey: (_a = this.socket.apiKey) !== null && _a !== void 0 ? _a : '',
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
@@ -2454,9 +2449,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
     const noop = () => { };
     const NATIVE_WEBSOCKET_AVAILABLE = typeof WebSocket !== 'undefined';
-    const WebSocketVariant = NATIVE_WEBSOCKET_AVAILABLE
-        ? WebSocket
-        : require('ws');
     class RealtimeClient {
         /**
          * Initializes the Socket.
@@ -2475,12 +2467,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         constructor(endPoint, options) {
             var _a;
             this.accessToken = null;
+            this.apiKey = null;
             this.channels = [];
             this.endPoint = '';
             this.headers = DEFAULT_HEADERS$3;
             this.params = {};
             this.timeout = DEFAULT_TIMEOUT;
-            this.transport = WebSocketVariant;
             this.heartbeatIntervalMs = 30000;
             this.heartbeatTimer = undefined;
             this.pendingHeartbeatRef = null;
@@ -2514,6 +2506,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 return (...args) => _fetch(...args);
             };
             this.endPoint = `${endPoint}/${TRANSPORTS.websocket}`;
+            if (options === null || options === void 0 ? void 0 : options.transport) {
+                this.transport = options.transport;
+            }
+            else {
+                this.transport = null;
+            }
             if (options === null || options === void 0 ? void 0 : options.params)
                 this.params = options.params;
             if (options === null || options === void 0 ? void 0 : options.headers)
@@ -2522,13 +2520,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 this.timeout = options.timeout;
             if (options === null || options === void 0 ? void 0 : options.logger)
                 this.logger = options.logger;
-            if (options === null || options === void 0 ? void 0 : options.transport)
-                this.transport = options.transport;
             if (options === null || options === void 0 ? void 0 : options.heartbeatIntervalMs)
                 this.heartbeatIntervalMs = options.heartbeatIntervalMs;
             const accessToken = (_a = options === null || options === void 0 ? void 0 : options.params) === null || _a === void 0 ? void 0 : _a.apikey;
-            if (accessToken)
+            if (accessToken) {
                 this.accessToken = accessToken;
+                this.apiKey = accessToken;
+            }
             this.reconnectAfterMs = (options === null || options === void 0 ? void 0 : options.reconnectAfterMs)
                 ? options.reconnectAfterMs
                 : (tries) => {
@@ -2555,21 +2553,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             if (this.conn) {
                 return;
             }
-            if (NATIVE_WEBSOCKET_AVAILABLE) {
-                this.conn = new this.transport(this._endPointURL());
-            }
-            else {
+            if (this.transport) {
                 this.conn = new this.transport(this._endPointURL(), undefined, {
                     headers: this.headers,
                 });
+                return;
             }
-            if (this.conn) {
-                this.conn.binaryType = 'arraybuffer';
-                this.conn.onopen = () => this._onConnOpen();
-                this.conn.onerror = (error) => this._onConnError(error);
-                this.conn.onmessage = (event) => this._onConnMessage(event);
-                this.conn.onclose = (event) => this._onConnClose(event);
+            if (NATIVE_WEBSOCKET_AVAILABLE) {
+                this.conn = new WebSocket(this._endPointURL());
+                this.setupConnection();
+                return;
             }
+            this.conn = new WSWebSocketDummy(this._endPointURL(), undefined, {
+                close: () => {
+                    this.conn = null;
+                },
+            });
+            new Promise(function (resolve, reject) { require(['../@supabase/supabase-js/browser'], resolve, reject); }).then(function (n) { return n.browser; }).then(({ default: WS }) => {
+                this.conn = new WS(this._endPointURL(), undefined, {
+                    headers: this.headers,
+                });
+                this.setupConnection();
+            });
         }
         /**
          * Disconnects the socket.
@@ -2724,6 +2729,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             this.channels = this.channels.filter((c) => c._joinRef() !== channel._joinRef());
         }
         /**
+         * Sets up connection handlers.
+         *
+         * @internal
+         */
+        setupConnection() {
+            if (this.conn) {
+                this.conn.binaryType = 'arraybuffer';
+                this.conn.onopen = () => this._onConnOpen();
+                this.conn.onerror = (error) => this._onConnError(error);
+                this.conn.onmessage = (event) => this._onConnMessage(event);
+                this.conn.onclose = (event) => this._onConnClose(event);
+            }
+        }
+        /**
          * Returns the URL of the websocket.
          *
          * @internal
@@ -2809,6 +2828,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 ref: this.pendingHeartbeatRef,
             });
             this.setAuth(this.accessToken);
+        }
+    }
+    class WSWebSocketDummy {
+        constructor(address, _protocols, options) {
+            this.binaryType = 'arraybuffer';
+            this.onclose = () => { };
+            this.onerror = () => { };
+            this.onmessage = () => { };
+            this.onopen = () => { };
+            this.readyState = SOCKET_STATES.connecting;
+            this.send = () => { };
+            this.url = null;
+            this.url = address;
+            this.close = options.close;
         }
     }
 
@@ -3005,14 +3038,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     const cleanPath = this._removeEmptyFolders(path);
                     const _path = this._getFinalPath(cleanPath);
                     const res = yield this.fetch(`${this.url}/object/${_path}`, Object.assign({ method, body: body, headers }, ((options === null || options === void 0 ? void 0 : options.duplex) ? { duplex: options.duplex } : {})));
+                    const data = yield res.json();
                     if (res.ok) {
                         return {
-                            data: { path: cleanPath },
+                            data: { path: cleanPath, id: data.Id, fullPath: data.Key },
                             error: null,
                         };
                     }
                     else {
-                        const error = yield res.json();
+                        const error = data;
                         return { data: null, error };
                     }
                 }
@@ -3070,14 +3104,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         body: body,
                         headers,
                     });
+                    const data = yield res.json();
                     if (res.ok) {
                         return {
-                            data: { path: cleanPath },
+                            data: { path: cleanPath, fullPath: data.Key },
                             error: null,
                         };
                     }
                     else {
-                        const error = yield res.json();
+                        const error = data;
                         return { data: null, error };
                     }
                 }
@@ -3408,7 +3443,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
 
     // generated by genversion
-    const version$2 = '2.5.4';
+    const version$2 = '2.5.5';
 
     const DEFAULT_HEADERS$2 = { 'X-Client-Info': `storage-js/${version$2}` };
 
@@ -3585,9 +3620,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     }
 
-    const version$1 = '2.39.1';
+    const version$1 = '2.39.7';
 
-    // constants.ts
     let JS_ENV = '';
     // @ts-ignore
     if (typeof Deno !== 'undefined') {
@@ -3603,6 +3637,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         JS_ENV = 'node';
     }
     const DEFAULT_HEADERS$1 = { 'X-Client-Info': `supabase-js-${JS_ENV}/${version$1}` };
+    const DEFAULT_GLOBAL_OPTIONS = {
+        headers: DEFAULT_HEADERS$1,
+    };
+    const DEFAULT_DB_OPTIONS = {
+        schema: 'public',
+    };
+    const DEFAULT_AUTH_OPTIONS = {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+        flowType: 'implicit',
+    };
+    const DEFAULT_REALTIME_OPTIONS = {};
 
     var __awaiter$1 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -3619,7 +3666,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             _fetch = customFetch;
         }
         else if (typeof fetch === 'undefined') {
-            _fetch = browserExports;
+            _fetch = nodeFetch;
         }
         else {
             _fetch = fetch;
@@ -3628,7 +3675,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     };
     const resolveHeadersConstructor = () => {
         if (typeof Headers === 'undefined') {
-            return browserExports.Headers;
+            return Headers$1;
         }
         return Headers;
     };
@@ -4380,7 +4427,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * Delete a user. Requires a `service_role` key.
          *
          * @param id The user id you want to remove.
-         * @param shouldSoftDelete If true, then the user will be soft-deleted from the auth schema.
+         * @param shouldSoftDelete If true, then the user will be soft-deleted (setting `deleted_at` to the current timestamp and disabling their account while preserving their data) from the auth schema.
          * Defaults to false for backward compatibility.
          *
          * This function should only be called on a server. Never expose your `service_role` key in the browser.
@@ -4436,7 +4483,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
 
     // Generated by genversion.
-    const version = '2.62.0';
+    const version = '0.0.0';
 
     const GOTRUE_URL = 'http://localhost:9999';
     const STORAGE_KEY = 'supabase.auth.token';
@@ -5149,7 +5196,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 const user = data.user;
                 if (session === null || session === void 0 ? void 0 : session.access_token) {
                     await this._saveSession(session);
-                    await this._notifyAllSubscribers('SIGNED_IN', session);
+                    await this._notifyAllSubscribers(params.type == 'recovery' ? 'PASSWORD_RECOVERY' : 'SIGNED_IN', session);
                 }
                 return { data: { user, session }, error: null };
             }
@@ -6526,19 +6573,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
     };
-    const DEFAULT_GLOBAL_OPTIONS = {
-        headers: DEFAULT_HEADERS$1,
-    };
-    const DEFAULT_DB_OPTIONS = {
-        schema: 'public',
-    };
-    const DEFAULT_AUTH_OPTIONS = {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true,
-        flowType: 'implicit',
-    };
-    const DEFAULT_REALTIME_OPTIONS = {};
     /**
      * Supabase Client.
      *
@@ -6614,17 +6648,18 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         from(relation) {
             return this.rest.from(relation);
         }
+        // NOTE: signatures must be kept in sync with PostgrestClient.schema
         /**
-         * Perform a query on a schema distinct from the default schema supplied via
-         * the `options.db.schema` constructor parameter.
+         * Select a schema to query or perform an function (rpc) call.
          *
          * The schema needs to be on the list of exposed schemas inside Supabase.
          *
-         * @param schema - The name of the schema to query
+         * @param schema - The schema to query
          */
         schema(schema) {
             return this.rest.schema(schema);
         }
+        // NOTE: signatures must be kept in sync with PostgrestClient.rpc
         /**
          * Perform a function call.
          *
@@ -6646,7 +6681,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
          * `"estimated"`: Uses exact count for low numbers and planned count for high
          * numbers.
          */
-        rpc(fn, args = {}, options) {
+        rpc(fn, args = {}, options = {}) {
             return this.rest.rpc(fn, args, options);
         }
         /**
