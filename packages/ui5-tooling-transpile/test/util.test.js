@@ -71,6 +71,27 @@ test("usage of external babel config", async (t) => {
 		cwd
 	);
 	t.true(config !== undefined);
+	t.deepEqual(config.presets[0].file.request, "transform-ui5");
+	t.deepEqual(config.presets[1].file.request, "@babel/preset-typescript");
+	t.deepEqual(config.presets[2].file.request, "@babel/preset-env");
+});
+
+test("usage of external js babel config", async (t) => {
+	const cwd = path.join(__dirname, "__assets__/external-js");
+	const config = await t.context.util.createBabelConfig(
+		{
+			configuration: {
+				debug: true,
+				skipBabelPresetPluginResolve: true
+			}
+		},
+		cwd
+	);
+	t.true(config !== undefined);
+	t.deepEqual(config.presets[0].file.request, "transform-ui5");
+	t.deepEqual(config.presets[1].file.request, "@babel/preset-typescript");
+	t.deepEqual(config.presets[2].file.request, "@babel/preset-env");
+	t.deepEqual(config.plugins[0].file.request, "transform-async-to-promises");
 });
 
 test("inject configuration options", async (t) => {

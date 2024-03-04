@@ -63,9 +63,11 @@ async function loadBabelConfigOptions(babelConfigOptions, skipBabelPresetPluginR
 	const partialConfig = await babel.loadPartialConfigAsync(
 		Object.assign(
 			{
+				cwd,
 				configFile: false,
 				babelrc: false,
-				filename: "src/dummy.js" // necessary for ignore/include/exclude
+				filename: "src/dummy.js", // necessary for ignore/include/exclude
+				envName: process.env.BABEL_ENV || process.env.NODE_ENV || "development"
 			},
 			babelConfigOptions
 		)
@@ -112,9 +114,17 @@ async function findBabelConfigOptions(cwd) {
 	} else if (configFile) {
 		// for a babel config file we load it on our own to normalize the plugin/preset paths
 		// => no recursive merging of babel config is possible with this approach
-		babelConfigOptions = JSONC.parse(fs.readFileSync(configFile, { encoding: "utf8" }));
-		// let Babel lookup the configuration file with the Babel API
-		//partialConfig = await loadBabelConfigOptions({ configFile, filename: dir, babelrc: true });
+		try {
+			babelConfigOptions = JSONC.parse(fs.readFileSync(configFile, { encoding: "utf8" }));
+		} catch (err) {
+			// no JSON so we let Babel lookup the configuration file with the Babel API
+			const partialConfig = await babel.loadPartialConfigAsync({ cwd });
+			// but we only extract the presets and plugins and ignore the other properties
+			babelConfigOptions = {
+				plugins: partialConfig?.options?.plugins,
+				presets: partialConfig?.options?.presets
+			};
+		}
 	}
 
 	return babelConfigOptions ? { configFile, babelConfigOptions } : undefined;
