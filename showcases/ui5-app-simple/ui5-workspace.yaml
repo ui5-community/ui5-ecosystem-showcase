@@ -1,0 +1,7 @@
+specVersion: workspace/1.0
+metadata:
+  name: local
+dependencyManagement:
+  resolutions:
+    - path: ../../../../git/openui5
+    - path: ../../../../git/sapui5.runtime
