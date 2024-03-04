@@ -27,11 +27,14 @@ sap.ui.define(["sap/ui/core/webc/WebComponent", "sap/base/strings/camelize"], fu
 						mapping: "textContent",
 					};
 				} else {
+					const aggregationName = slot.propertyName || slotName;
 					if (slotName === "default") {
 						metadata.defaultAggregation = slot.propertyName;
+						slotName = undefined;
+					} else {
+						slotName = aggregationName;
 					}
-					slotName = slot.propertyName || slotName;
-					metadata.aggregations[slotName] = {
+					metadata.aggregations[aggregationName] = {
 						type: "sap.ui.core.Control",
 						multiple: true,
 						slot: slotName,
