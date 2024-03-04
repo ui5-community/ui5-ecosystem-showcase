@@ -33,9 +33,16 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	const frameworkName = rootProject.getFrameworkName();
 	const frameworkVersion = rootProject.getFrameworkVersion();
 
-	// check if the core library version matches the framework version
-	// which is the indicator for running in the workspace mode
-	const isWorkspace = middlewareUtil.getDependencies().length > 0 && frameworkVersion !== middlewareUtil.getProject("sap.ui.core").getVersion();
+	// check if the framework libraries are loaded from the local cache in the user home
+	// by checking the library version to be the last segment of the folder name of the library path
+	const isWorkspace =
+		middlewareUtil
+			.getProject()
+			.getFrameworkDependencies()
+			.filter(({ name }) => {
+				const project = middlewareUtil.getProject(name);
+				return !project.getRootPath().endsWith(`/${project.getVersion()}`);
+			}).length > 0;
 
 	// only if a framework is specified and no workspace, the middleware gets active
 	if (frameworkName && !isWorkspace) {

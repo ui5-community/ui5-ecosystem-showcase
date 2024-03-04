@@ -16,6 +16,7 @@
     "build:sc": "ui5 build self-contained --clean-dest",
     "start": "ui5 serve --config ui5-dist.yaml --port 1337 --open index.html",
     "dev": "ui5 serve --port 1337 --open index.html",
+    "dev-ws": "npm run dev -- --workspace=local",
     "lint": "eslint webapp"
   },
   "dependencies": {
