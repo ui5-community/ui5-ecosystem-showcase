@@ -10,7 +10,8 @@
   xmlns:webc="ui5.ecosystem.demo.app.webc"
   webc:import="@ui5/webcomponents/dist"
   core:require="{
-    Integer: 'sap/ui/model/type/Integer'
+    Integer: 'sap/ui/model/type/Integer',
+    iconActivities: '@ui5/webcomponents-icons/dist/activities'
   }"
 >
   <html:style>
@@ -37,7 +38,11 @@
         <VBox alignItems="Center" justifyContent="Center" height="100%">
           <Button text="Don't press me!" press="onBoo" />
           <webc:Button id="webcBtn" text="Don't change this text!" click="onBoo" />
-          <webc:Input value="Don't change this text!" change="onChange" />
+          <webc:Input value="Don't change this text!" change="onChange">
+            <webc:icon>
+              <webc:Icon name="activities" />
+            </webc:icon>
+          </webc:Input>
           <webc:Label text="TEST" />
           <webc:List>
             <webc:StandardListItem text="Day 1" additionalText="100" />
