@@ -68,8 +68,8 @@ if (!skip) {
 	cds.on("bootstrap", async function bootstrap(app) {
 		log.debug("bootstrap");
 
-		// only for cds serve the cds-plugin-ui5 is active
-		if (cds.cli?.command === "serve") {
+		// only for cds serve or serving all services the cds-plugin-ui5 is active
+		if (cds.cli?.command === "serve" || cds.options?.service === "all") {
 			const cwd = cds.env?._home || process.cwd();
 			const ui5Modules = await findUI5Modules({ cwd, cds });
 			const { localApps, config } = ui5Modules;
