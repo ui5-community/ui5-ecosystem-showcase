@@ -605,6 +605,9 @@ importers:
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
+      ui5-tsapp-simple:
+        specifier: workspace:^
+        version: link:../ui5-tsapp-simple
 
   showcases/cds-bookshop-ui5-viewer:
     dependencies:
