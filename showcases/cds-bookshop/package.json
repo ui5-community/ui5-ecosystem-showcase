@@ -24,7 +24,8 @@
   "devDependencies": {
     "cds-bookshop-ui5-viewer": "workspace:^",
     "cds-plugin-ui5": "workspace:^",
-    "rimraf": "^5.0.5"
+    "rimraf": "^5.0.5",
+    "ui5-tsapp-simple": "workspace:^"
   },
   "scripts": {
     "clean": "rimraf gen",

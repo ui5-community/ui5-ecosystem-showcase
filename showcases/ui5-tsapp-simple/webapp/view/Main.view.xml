@@ -1,5 +1,14 @@
-<mvc:View controllerName="ui5.ecosystem.demo.simpletsapp.controller.Main" displayBlock="true" xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc">
-  <Page id="page" title="{i18n>appTitle}">
+<mvc:View
+  controllerName="ui5.ecosystem.demo.simpletsapp.controller.Main"
+  displayBlock="true"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:mvc="sap.ui.core.mvc"
+  core:require="{
+		Formatter: 'ui5/ecosystem/demo/simpletsapp/model/Formatter'
+	}"
+>
+  <Page id="page" title="{formatter: 'Formatter.formatValue', path: 'i18n>appTitle'}">
     <headerContent>
       <core:Icon color="#1873B4" src="sap-icon://sap-ui5" size="2rem" />
     </headerContent>
