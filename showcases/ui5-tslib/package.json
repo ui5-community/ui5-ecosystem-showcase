@@ -1,6 +1,6 @@
 {
   "name": "ui5-tslib",
-  "version": "0.5.32",
+  "version": "0.5.33",
   "description": "Showcase of a TypeScript setup for developing UI5 libraries",
   "private": true,
   "author": "Peter Muessig",

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.37.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.37.9...ui5-app@0.37.10) (2024-03-04)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** ensure proper handling of aggregations for WebCs ([#968](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/968)) ([9cd1273](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9cd1273ef805e2b2da359c3aa6d986171764fd07))
+
+
+
+
+
 ## [0.37.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.37.8...ui5-app@0.37.9) (2024-02-29)
 
 **Note:** Version bump only for package ui5-app
