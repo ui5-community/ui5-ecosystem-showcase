@@ -27,9 +27,14 @@ sap.ui.define(["sap/ui/core/webc/WebComponent", "sap/base/strings/camelize"], fu
 						mapping: "textContent",
 					};
 				} else {
+					if (slotName === "default") {
+						metadata.defaultAggregation = slot.propertyName;
+					}
+					slotName = slot.propertyName || slotName;
 					metadata.aggregations[slotName] = {
 						type: "sap.ui.core.Control",
 						multiple: true,
+						slot: slotName,
 					};
 				}
 			});
@@ -40,6 +45,14 @@ sap.ui.define(["sap/ui/core/webc/WebComponent", "sap/base/strings/camelize"], fu
 				type: "string",
 				mapping: "textContent",
 			};
+		}
+
+		if (!metadata.defaultAggregation) {
+			metadata.aggregations["default"] = {
+				type: "sap.ui.core.Control",
+				multiple: true,
+			};
+			metadata.defaultAggregation = "default";
 		}
 
 		if (!metadata.properties["width"]) {
@@ -55,14 +68,6 @@ sap.ui.define(["sap/ui/core/webc/WebComponent", "sap/base/strings/camelize"], fu
 				mapping: "style",
 			};
 		}
-
-		if (!metadata.aggregations["default"]) {
-			metadata.aggregations["default"] = {
-				type: "sap.ui.core.Control",
-				multiple: true,
-			};
-		}
-		metadata.defaultAggregation = "default";
 
 		Object.keys(WebComponentClass.metadata.events || {}).forEach((eventName) => {
 			metadata.events[camelize(eventName)] = {};

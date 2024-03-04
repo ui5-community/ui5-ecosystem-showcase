@@ -27,7 +27,7 @@ sap.ui.define(["sap/ui/core/mvc/XMLView", "./createWebComponent"], function (XML
 						const uniqueWebCs = matches
 							.map((entry) => entry[1])
 							.filter(function (item, pos, arr) {
-								return arr.indexOf(item) == pos;
+								return /[A-Z]/.test(item[0]) && arr.indexOf(item) == pos;
 							});
 						if (uniqueWebCs.length > 0) {
 							return new Promise(function (resolve, reject) {
@@ -36,11 +36,14 @@ sap.ui.define(["sap/ui/core/mvc/XMLView", "./createWebComponent"], function (XML
 									for (const i in arguments) {
 										const WebComponentClass = arguments[i];
 										const name = uniqueWebCs[i]; // WebComponentClass.name will be minified!
-										sap.ui.define(`${ui5Namespace.replace(/\./g, "/")}/${name}`, [], function () {
-											return createWebComponent(WebComponentClass, {
-												namespace: ui5Namespace,
+										if (!sap.ui.require(`${ui5Namespace.replace(/\./g, "/")}/${name}`)) {
+											// eslint-disable-next-line max-nested-callbacks
+											sap.ui.define(`${ui5Namespace.replace(/\./g, "/")}/${name}`, [], function () {
+												return createWebComponent(WebComponentClass, {
+													namespace: ui5Namespace,
+												});
 											});
-										});
+										}
 									}
 									resolve();
 								});

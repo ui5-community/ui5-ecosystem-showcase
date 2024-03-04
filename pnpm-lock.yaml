@@ -664,7 +664,10 @@ importers:
         specifier: ^2.39.1
         version: 2.39.7
       '@ui5/webcomponents':
-        specifier: ^1.21.2
+        specifier: ^1.22.0
+        version: 1.22.0
+      '@ui5/webcomponents-icons':
+        specifier: ^1.22.0
         version: 1.22.0
       axios:
         specifier: ^1.6.3
@@ -810,7 +813,7 @@ importers:
         version: link:../../packages/ui5-tooling-transpile
       wdio-ui5-service:
         specifier: latest
-        version: 2.0.6(@wdio/cli@8.32.3)(@wdio/local-runner@8.32.3)(@wdio/mocha-framework@8.32.3)(@wdio/spec-reporter@8.32.2)(@wdio/types@8.32.2)(typescript@5.3.3)(webdriverio@8.32.3)
+        version: 2.0.0-rc.0(@wdio/cli@8.32.3)(@wdio/local-runner@8.32.3)(@wdio/mocha-framework@8.32.3)(@wdio/spec-reporter@8.32.2)(@wdio/types@8.32.2)(typescript@5.3.3)(webdriverio@8.32.3)
 
   showcases/ui5-app-simple:
     dependencies:
@@ -3168,6 +3171,7 @@ packages:
   /@jest/expect-utils@29.7.0:
     resolution: {integrity: sha512-GlsNBWiFQFCVi9QVSx7f5AgMeLxe9YCCs5PuP2O2LdjDAA8Jh9eX7lA1Jq/xdXw3Wb3hyvlFNfZIfcRetSzYcA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    requiresBuild: true
     dependencies:
       jest-get-type: 29.6.3
     dev: true
@@ -3182,6 +3186,7 @@ packages:
   /@jest/types@29.6.3:
     resolution: {integrity: sha512-u3UPsIilWKOM3F9CXtrG8LEJmNxwoCQC/XVj4IKYXvvpx7QIi/Kg1LI5uDmDpKlac62NUtX7eLjRh+jVZcLOzw==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    requiresBuild: true
     dependencies:
       '@jest/schemas': 29.6.3
       '@types/istanbul-lib-coverage': 2.0.6
@@ -4560,16 +4565,19 @@ packages:
 
   /@types/istanbul-lib-coverage@2.0.6:
     resolution: {integrity: sha512-2QF/t/auWm0lsy8XtKVPG19v3sSOQlJe/YHZgfjb/KBBHOGSV+J2q/S671rcq9uTBrLAXmZpqJiaQbMT+zNU1w==}
+    requiresBuild: true
     dev: true
 
   /@types/istanbul-lib-report@3.0.3:
     resolution: {integrity: sha512-NQn7AHQnk/RSLOxrBbGyJM/aVQ+pjj5HCgasFxc0K/KhoATfQ/47AyUl15I2yBUpihjmas+a+VJBOqecrFH+uA==}
+    requiresBuild: true
     dependencies:
       '@types/istanbul-lib-coverage': 2.0.6
     dev: true
 
   /@types/istanbul-reports@3.0.4:
     resolution: {integrity: sha512-pk2B1NWalF9toCRu6gjBzR69syFjP4Od8WRAX+0mmf9lAjCRicLOWc+ZrxZHx/0XRjotgkF9t6iaMJ+aXcOdZQ==}
+    requiresBuild: true
     dependencies:
       '@types/istanbul-lib-report': 3.0.3
     dev: true
@@ -4693,6 +4701,7 @@ packages:
 
   /@types/stack-utils@2.0.3:
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
+    requiresBuild: true
     dev: true
 
   /@types/superagent@8.1.4:
@@ -4729,10 +4738,12 @@ packages:
 
   /@types/yargs-parser@21.0.3:
     resolution: {integrity: sha512-I4q9QU9MQv4oEOz4tAHJtNz1cwuLxn2F3xcc2iV5WdqLPpUnj30aUuxt1mAxYTG+oe8CZMV/+6rU4S4gRDzqtQ==}
+    requiresBuild: true
     dev: true
 
   /@types/yargs@17.0.32:
     resolution: {integrity: sha512-xQ67Yc/laOG5uMfX/093MRlGGCIBzZMarVa+gfNKJxWAIgykYpVGkBdbqEzGDDfCrVUj6Hiff4mTZ5BA6TmAog==}
+    requiresBuild: true
     dependencies:
       '@types/yargs-parser': 21.0.3
     dev: true
@@ -5451,7 +5462,7 @@ packages:
     resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
     engines: {node: '>= 6.0.0'}
     dependencies:
-      debug: 4.3.2
+      debug: 4.3.4(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -8683,7 +8694,7 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       cross-spawn: 7.0.3
-      get-stream: 6.0.0
+      get-stream: 6.0.1
       human-signals: 2.1.0
       is-stream: 2.0.0
       merge-stream: 2.0.0
@@ -8774,6 +8785,7 @@ packages:
   /expect@29.7.0:
     resolution: {integrity: sha512-2Zks0hf1VLFYI1kbh0I5jP3KHHyCHpkfyHBzsSXRFgl/Bg9mWYfMW8oD+PdMPlEwy5HNsR9JutYy6pMeOh61nw==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    requiresBuild: true
     dependencies:
       '@jest/expect-utils': 29.7.0
       jest-get-type: 29.6.3
@@ -9636,7 +9648,7 @@ packages:
       fs.realpath: 1.0.0
       inflight: 1.0.6
       inherits: 2.0.4
-      minimatch: 3.0.8
+      minimatch: 3.1.2
       once: 1.4.0
       path-is-absolute: 1.0.1
     dev: true
@@ -10051,7 +10063,7 @@ packages:
     dependencies:
       '@tootallnate/once': 1.1.2
       agent-base: 6.0.2
-      debug: 4.3.2
+      debug: 4.3.4(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -10128,7 +10140,7 @@ packages:
     engines: {node: '>= 6'}
     dependencies:
       agent-base: 6.0.2
-      debug: 4.3.2
+      debug: 4.3.4(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -10400,7 +10412,7 @@ packages:
     engines: {node: '>=6'}
     dependencies:
       cluster-key-slot: 1.1.2
-      debug: 4.3.2
+      debug: 4.3.4(supports-color@8.1.1)
       denque: 1.5.1
       lodash.defaults: 4.2.0
       lodash.flatten: 4.4.0
@@ -10875,7 +10887,7 @@ packages:
     resolution: {integrity: sha512-LMIgiIrhigmPrs03JHpxUh2yISK3vLFPkAodPeo0+BuF7wA2FoQbkEg1u8gBYBThncu7e1oEDUfIXVuTqLRUjw==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     dependencies:
-      chalk: 4.1.0
+      chalk: 4.1.2
       diff-sequences: 29.6.3
       jest-get-type: 29.6.3
       pretty-format: 29.7.0
@@ -10889,6 +10901,7 @@ packages:
   /jest-matcher-utils@29.7.0:
     resolution: {integrity: sha512-sBkD+Xi9DtcChsI3L3u0+N0opgPYnCRPtGcQYrgXmR+hmt/fYfWAL0xRXYU8eWOdfuLgBe0YCW3AFtnRLagq/g==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    requiresBuild: true
     dependencies:
       chalk: 4.1.2
       jest-diff: 29.7.0
@@ -10899,6 +10912,7 @@ packages:
   /jest-message-util@29.7.0:
     resolution: {integrity: sha512-GBEV4GRADeP+qtB2+6u61stea8mGcOT4mCtrYISZwfu9/ISHFJ/5zOMXYbpBE9RsS5+Gb63DW4FgmnKJ79Kf6w==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    requiresBuild: true
     dependencies:
       '@babel/code-frame': 7.23.5
       '@jest/types': 29.6.3
@@ -10914,6 +10928,7 @@ packages:
   /jest-util@29.7.0:
     resolution: {integrity: sha512-z6EbKajIpqGKU56y5KBUgy1dt1ihhQJgWzUlZHArA/+X2ad7Cb5iF+AK1EWVL/Bo7Rz9uurpqw6SiBCefUbCGA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    requiresBuild: true
     dependencies:
       '@jest/types': 29.6.3
       '@types/node': 20.11.23
@@ -11661,6 +11676,7 @@ packages:
 
   /lodash.isequal@4.5.0:
     resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
+    requiresBuild: true
     dev: true
 
   /lodash.isfinite@3.3.2:
@@ -12418,7 +12434,7 @@ packages:
       array-differ: 3.0.0
       array-union: 2.1.0
       arrify: 2.0.1
-      minimatch: 3.0.5
+      minimatch: 3.1.2
     dev: true
 
   /mustache@2.2.1:
@@ -12931,7 +12947,7 @@ packages:
       '@yarnpkg/parsers': 3.0.0-rc.46
       '@zkochan/js-yaml': 0.0.6
       axios: 1.6.7
-      chalk: 4.1.0
+      chalk: 4.1.2
       cli-cursor: 3.1.0
       cli-spinners: 2.6.1
       cliui: 8.0.1
@@ -13116,7 +13132,7 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       bl: 4.1.0
-      chalk: 4.1.0
+      chalk: 4.1.2
       cli-cursor: 3.1.0
       cli-spinners: 2.6.1
       is-interactive: 1.0.0
@@ -15301,6 +15317,9 @@ packages:
   /sqlite3@5.1.7:
     resolution: {integrity: sha512-GGIyOiFaG+TUra3JIfkI/zGP8yZYLPQ0pl1bH+ODjiX57sPhrLU5sQJn1y9bDKZUFYkX1crlrPfSYt0BKKdkog==}
     requiresBuild: true
+    peerDependenciesMeta:
+      node-gyp:
+        optional: true
     dependencies:
       bindings: 1.5.0
       node-addon-api: 7.1.0
@@ -16528,8 +16547,8 @@ packages:
       defaults: 1.0.4
     dev: true
 
-  /wdio-ui5-service@2.0.6(@wdio/cli@8.32.3)(@wdio/local-runner@8.32.3)(@wdio/mocha-framework@8.32.3)(@wdio/spec-reporter@8.32.2)(@wdio/types@8.32.2)(typescript@5.3.3)(webdriverio@8.32.3):
-    resolution: {integrity: sha512-ys2pxM/tmtZCkEavdYeU4ej23v9Hd9Y82r2xIZItHH6nQRdHzk0eJPbbMsf69ZBf/fFcucT+YmewOOUf7oliBg==}
+  /wdio-ui5-service@2.0.0-rc.0(@wdio/cli@8.32.3)(@wdio/local-runner@8.32.3)(@wdio/mocha-framework@8.32.3)(@wdio/spec-reporter@8.32.2)(@wdio/types@8.32.2)(typescript@5.3.3)(webdriverio@8.32.3):
+    resolution: {integrity: sha512-eBW67lwLtNQa/KbL8GN8JJSmxUuwcCYqkwrc4Hssp2ti1l8beEbPhlXkt1zrPrBRvC1jzLvRkwv/d62KWFqiaQ==}
     engines: {node: '>=18', npm: '>=7'}
     peerDependencies:
       '@wdio/cli': '>=8.14.0'

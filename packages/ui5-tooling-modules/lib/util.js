@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 const path = require("path");
-const { readFileSync, statSync, existsSync } = require("fs");
+const { readFileSync, statSync, readdirSync } = require("fs");
 const { readFile, stat } = require("fs").promises;
 
 const rollup = require("rollup");
@@ -27,6 +27,19 @@ const { XMLParser } = require("fast-xml-parser");
 const parseJS = require("./parseJS");
 
 const { createHash } = require("crypto");
+
+// helper to check the existence of a resource (case-sensitive)
+function existsSyncWithCase(file) {
+	var dir = path.dirname(file);
+	if (dir === path.dirname(dir)) {
+		return true;
+	}
+	var filenames = readdirSync(dir);
+	if (filenames.indexOf(path.basename(file)) === -1) {
+		return false;
+	}
+	return existsSyncWithCase(dir);
+}
 
 // local bundle info cache
 const bundleInfoCache = {};
@@ -232,7 +245,7 @@ module.exports = function (log) {
 					// here if they also require to be transpiled by the task
 					try {
 						const depPath = that.resolveModule(dep, { cwd, depPaths });
-						if (existsSync(depPath)) {
+						if (existsSyncWithCase(depPath)) {
 							addUniqueModule(dep);
 							const depContent = readFileSync(depPath, { encoding: "utf8" });
 							findUniqueJSDeps(depContent, depPath);
@@ -475,7 +488,7 @@ module.exports = function (log) {
 					const pckJsonModuleName = path.join(moduleName, "package.json");
 					const pkgJson = require(pckJsonModuleName);
 					const existsAndIsFile = function (file) {
-						return existsSync(file) && statSync(file).isFile();
+						return existsSyncWithCase(file) && statSync(file).isFile();
 					};
 					const resolveModulePath = function (exports, fields) {
 						for (const field of fields) {
@@ -844,7 +857,7 @@ module.exports = function (log) {
 				const npmPackagePath = that.resolveModule(`${npmPackageName}/package.json`, { cwd, depPaths });
 				if (typeof npmPackagePath === "string") {
 					const resourcePath = path.join(path.dirname(npmPackagePath), packagePath);
-					return existsSync(resourcePath) && (!onlyFiles || statSync(resourcePath).isFile());
+					return existsSyncWithCase(resourcePath) && (!onlyFiles || statSync(resourcePath).isFile());
 				}
 			}
 			// resolve the module via the default lookup
