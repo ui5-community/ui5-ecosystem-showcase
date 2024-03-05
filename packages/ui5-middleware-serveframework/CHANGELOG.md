@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.0.5...ui5-middleware-serveframework@3.0.6) (2024-03-05)
+
+
+### Bug Fixes
+
+* **ui5-middleware-serveframework:** make workspace detection work os independent ([#974](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/974)) ([dfa4e1a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/dfa4e1a847c1c00cd3ad47d55cbf5fca3b2a7cf6))
+
+
+
+
+
 ## [3.0.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.0.4...ui5-middleware-serveframework@3.0.5) (2024-03-04)
 
 
