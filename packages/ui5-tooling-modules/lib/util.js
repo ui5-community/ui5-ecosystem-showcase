@@ -28,7 +28,11 @@ const parseJS = require("./parseJS");
 
 const { createHash } = require("crypto");
 
-// helper to check the existence of a resource (case-sensitive)
+/**
+ * helper to check the existence of a resource (case-sensitive)
+ * @param {string} file file path
+ * @returns {boolean} true if the file exists
+ */
 function existsSyncWithCase(file) {
 	var dir = path.dirname(file);
 	if (dir === path.dirname(dir)) {
