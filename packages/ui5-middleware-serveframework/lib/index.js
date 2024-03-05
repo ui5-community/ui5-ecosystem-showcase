@@ -41,7 +41,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 			.getFrameworkDependencies()
 			.filter(({ name }) => {
 				const project = middlewareUtil.getProject(name);
-				return !project.getRootPath().endsWith(`/${project.getVersion()}`);
+				return !project.getRootPath().endsWith(`${path.sep}${project.getVersion()}`);
 			}).length > 0;
 
 	// only if a framework is specified and no workspace, the middleware gets active
