@@ -791,8 +791,8 @@ module.exports = function (log) {
 								bundleInfo.getChunks().forEach((chunk) => {
 									const originalChunkName = chunk.originalName;
 									const chunkName = chunk.name;
-									module.code = module.code.replace(`'./${originalChunkName}'`, `'${relativePath || "."}/${chunkName}'`);
-									module.code = module.code.replace(`"./${originalChunkName}"`, `"${relativePath || "."}/${chunkName}"`);
+									module.code = module.code?.replace(`'./${originalChunkName}'`, `'${relativePath || "."}/${chunkName}'`);
+									module.code = module.code?.replace(`"./${originalChunkName}"`, `"${relativePath || "."}/${chunkName}"`);
 								});
 							});
 							return bundleInfo;
