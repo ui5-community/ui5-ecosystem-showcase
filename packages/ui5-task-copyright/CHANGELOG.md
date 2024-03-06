@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-copyright@3.0.2...ui5-task-copyright@3.0.3) (2024-03-06)
+
+
+### Bug Fixes
+
+* **ui5-task-copyright:** support to inject of current year (config/env) ([#976](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/976)) ([8b45891](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8b45891b21d8d3a75de7b3a0e07f6ddfe653fbb3))
+
+
+
+
+
 ## [3.0.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-copyright@3.0.1...ui5-task-copyright@3.0.2) (2024-02-21)
 
 

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.13.8...ui5-tsapp@0.13.9) (2024-03-06)
+
+**Note:** Version bump only for package ui5-tsapp
+
+
+
+
+
 ## [0.13.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.13.7...ui5-tsapp@0.13.8) (2024-03-05)
 
 **Note:** Version bump only for package ui5-tsapp
