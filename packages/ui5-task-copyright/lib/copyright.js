@@ -18,10 +18,11 @@ module.exports = async ({ log, workspace, options }) => {
 	}
 
 	// determine the copyright and current year placeholders
-	let { copyrightPlaceholder, currentYearPlaceholder } = Object.assign(
+	let { copyrightPlaceholder, currentYearPlaceholder, currentYear } = Object.assign(
 		{
 			copyrightPlaceholder: "copyright",
 			currentYearPlaceholder: "currentYear",
+			currentYear: new Date().getFullYear(),
 		},
 		options.configuration
 	);
@@ -75,8 +76,14 @@ module.exports = async ({ log, workspace, options }) => {
 		copyright = fs.readFileSync(copyright, "utf-8").trim();
 	}
 
+	// the environment variable ui5_task_copyright__current_year can be used to specify the copyright year
+	if (process.env.ui5_task_copyright__current_year) {
+		currentYear = process.env.ui5_task_copyright__current_year;
+		log.info(`Using environment variable ui5_task_copyright__current_year: ${currentYear}`);
+	}
+
 	// Replace optional placeholder ${currentYear} with the current year
-	const copyrightString = copyright.replace(currentYearRegExp, new Date().getFullYear());
+	const copyrightString = copyright.replace(currentYearRegExp, currentYear);
 
 	// process the script resources
 	const scriptResources = await workspace.byGlob(`**/*.+(ts|js)`);
