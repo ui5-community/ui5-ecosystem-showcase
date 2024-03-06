@@ -118,12 +118,12 @@ async function findBabelConfigOptions(cwd) {
 			babelConfigOptions = JSONC.parse(fs.readFileSync(configFile, { encoding: "utf8" }));
 		} catch (err) {
 			// no JSON so we let Babel lookup the configuration file with the Babel API
-			const partialConfig = await babel.loadPartialConfigAsync({ cwd });
+			const partialConfig = await babel.loadPartialConfigAsync({
+				configFile,
+				cwd
+			});
 			// but we only extract the presets and plugins and ignore the other properties
-			babelConfigOptions = {
-				plugins: partialConfig?.options?.plugins,
-				presets: partialConfig?.options?.presets
-			};
+			babelConfigOptions = partialConfig?.options;
 		}
 	}
 
