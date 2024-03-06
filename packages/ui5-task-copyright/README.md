@@ -28,6 +28,9 @@ npm install ui5-task-copyright --save-dev
 - currentYearPlaceholder: `String` (defaults to: `currentYear`, env var: `ui5_task_copyright__placeholder_current_year`)
   the name of the currentYear placeholder in the copyright comments which will be replaced with the currentYear value (will replace all hits of `${currentYear}` or `@currentYear@`)
 
+- currentYear: `String` (defaults to: `new Date().getFullYear()`, env var: `ui5_task_copyright__current_year`)
+  the value of the currentYear placeholder in the copyright comments
+
 - excludePatterns: `Array<String>`
   array of paths inside `$yourapp/` to exclude from the minification, e.g. 3-rd party libs in `lib/*`. defaults to an empty array `[]`.
 
