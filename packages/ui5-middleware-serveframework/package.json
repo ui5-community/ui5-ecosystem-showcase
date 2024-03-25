@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@ui5/project": "^3.9.0",
+    "dotenv": "^16.3.1",
     "etag": "^1.8.1",
     "fresh": "^0.5.2",
     "https-proxy-agent": "^7.0.2",
