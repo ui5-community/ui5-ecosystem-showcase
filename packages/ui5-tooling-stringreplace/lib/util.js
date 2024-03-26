@@ -78,7 +78,7 @@ const _self = (module.exports = {
 	 * @public
 	 */
 	getMimeInfo: function getMimeInfo(resourcePath) {
-		const type = mime.lookup(resourcePath) || "application/octet-stream";
+		const type = resourcePath.endsWith(".ts") ? "application/javascript" : mime.lookup(resourcePath) || "application/octet-stream";
 		const charset = mime.charset(type);
 		return {
 			type,
