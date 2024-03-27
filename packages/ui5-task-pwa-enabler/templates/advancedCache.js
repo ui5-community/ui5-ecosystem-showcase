@@ -32,15 +32,21 @@ self.addEventListener("install", function (event) {
   console.log("[Service Worker] Skip waiting on install");
   self.skipWaiting();
 
-  event.waitUntil(
-    caches.open(CACHE).then(function (cache) {
-      console.log("[Service Worker] Caching pages during install");
-
-      return cache.addAll(precacheFiles).then(function () {
-        return cache.add(offlineFallbackPage);
-      });
-    })
-  );
+	event.waitUntil(
+	    caches.open(CACHE).then(function (cache) {
+	      console.log("[Service Worker] Caching pages during install");
+	      return Promise.all(
+	        precacheFiles.map(function (file) {
+	          return cache.add(file).catch(function (error) {
+	            console.error(`Failed to cache ${file}: ${error.message}`);
+	            throw error;
+	          });
+	        })
+	      ).then(function () {
+	        return cache.add(offlineFallbackPage);
+	      });
+	    })
+	);
 });
 
 // Allow sw to control of current page
