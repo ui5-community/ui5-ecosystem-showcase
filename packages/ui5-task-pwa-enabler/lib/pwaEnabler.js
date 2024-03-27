@@ -136,7 +136,7 @@ async function addOfflineCopySw() {
  * @returns {Promise<undefined>}
  */
 async function addOfflineCopyBackupSw(parameters) {
-	await renderServiceWorker(path.join("../templates/offlineCopyWithBackup.js"), parameters);
+	await renderServiceWorker(path.join(__dirname, "../templates/offlineCopyWithBackup.js"), parameters);
 }
 
 /**
