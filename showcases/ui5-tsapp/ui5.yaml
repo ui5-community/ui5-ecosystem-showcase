@@ -2,6 +2,11 @@ specVersion: "3.0"
 metadata:
   name: ui5.ecosystem.demo.tsapp
 customConfiguration:
+  config-ui5-tooling-stringreplace: &cfgStringReplace
+    debug: true
+    replace:
+      - placeholder: "${project.version}"
+        value: "1.0.0-SNAPSHOT"
   config-ui5-tooling-transpile: &cfgTranspile
     debug: true
     filePattern: .+(ts|tsx)
@@ -32,8 +37,12 @@ builder:
       - "ui5/ecosystem/demo/tsapp/thirdparty/jspdf*.js"
       - "ui5/ecosystem/demo/tsapp/thirdparty/xlsx.js"
   customTasks:
-    - name: ui5-tooling-transpile-task
+    - name: ui5-tooling-stringreplace-task
       afterTask: replaceVersion
+      configuration:
+        <<: *cfgStringReplace
+    - name: ui5-tooling-transpile-task
+      afterTask: ui5-tooling-stringreplace-task
       configuration:
         <<: *cfgTranspile
         generateTsInterfaces: true
