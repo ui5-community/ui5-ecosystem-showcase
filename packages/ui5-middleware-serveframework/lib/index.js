@@ -31,7 +31,13 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	// derive framework from current project
 	const rootProject = middlewareUtil.getProject();
 	const frameworkName = rootProject.getFrameworkName();
-	const frameworkVersion = rootProject.getFrameworkVersion();
+	const envFilePath = options.configuration?.envFilePath || "./.env";
+	require("dotenv").config({
+		path: envFilePath,
+	});
+	const ui5VersionEnvVariable = options.configuration?.ui5VersionEnvVariable;
+	const frameworkVersion = process.env[ui5VersionEnvVariable] || rootProject.getFrameworkVersion();
+	log.info(`Loading sources for ${frameworkName} version ${frameworkVersion}`);
 
 	// check if the framework libraries are loaded from the local cache in the user home
 	// by checking the library version to be the last segment of the folder name of the library path
@@ -48,7 +54,6 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	if (frameworkName && !isWorkspace) {
 		// derive the npm scope and the version
 		const frameworkScope = `@${frameworkName.toLowerCase()}`;
-		const frameworkVersion = rootProject.getFrameworkVersion(); // TODO: how to determine the versionOverride?
 
 		// all the data is stored in the `.ui5` folder
 		const homeDir = require("os").homedir();

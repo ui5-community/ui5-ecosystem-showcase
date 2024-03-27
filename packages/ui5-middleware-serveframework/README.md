@@ -20,6 +20,10 @@ npm install ui5-middleware-serveframework --save-dev
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
 - `debug`: *`boolean`*, default: `false`
+- `ui5VersionEnvVariable`: *`string`*
+  Name of environment variable that contains ui5 version (in case you want to override framework version from ui5.yaml)
+- `envFilePath`: *`string`*, default: `./.env`
+  Path to file with environment variables
 
 ## Usage
 
@@ -40,6 +44,9 @@ server:
   customMiddleware:
   - name: ui5-middleware-serveframework
     afterMiddleware: compression
+    configuration:
+      ui5VersionEnvVariable: UI5_VERSION
+      envFilePath: "./.dev.env"
 ```
 
 ## How it works
