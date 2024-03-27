@@ -35,7 +35,7 @@ module.exports = function ({ log, workspace, options }) {
 	}
 
 	return workspace
-		.byGlob(options.configuration && options.configuration.files)
+		.byGlob((options.configuration && options.configuration.files) || "**/*")
 		.then((allResources) => {
 			// replaces all files placeholder strings with replacement text values
 			return allResources.map((resource) => {

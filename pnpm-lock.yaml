@@ -979,6 +979,9 @@ importers:
       ui5-tooling-modules:
         specifier: workspace:^
         version: link:../../packages/ui5-tooling-modules
+      ui5-tooling-stringreplace:
+        specifier: workspace:^
+        version: link:../../packages/ui5-tooling-stringreplace
       ui5-tooling-transpile:
         specifier: workspace:^
         version: link:../../packages/ui5-tooling-transpile

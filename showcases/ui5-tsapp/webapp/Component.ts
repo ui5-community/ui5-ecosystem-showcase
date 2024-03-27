@@ -19,6 +19,8 @@ export default class Component extends UIComponent {
 		super.init();
 		// enable routing
 		this.getRouter().initialize();
+		// stringreplace test
+		console.log("${project.version}");
 	}
 
 	/**
