@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-stringreplace@3.2.0...ui5-tooling-stringreplace@3.2.1) (2024-03-27)
+
+
+### Bug Fixes
+
+* **ui5-tooling-stringreplace:** corrected the mime type for ts ([#981](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/981)) ([e777f5a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e777f5a67ad1d81d4c6efd8a3a0af442ecb88266))
+* **ui5-tooling-stringreplace:** support TypeScript files ([#980](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/980)) ([95ec2c5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/95ec2c5a2debcfe172b4ac03f25e05f5192d5010))
+
+
+
+
+
 # [3.2.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-stringreplace@3.1.4...ui5-tooling-stringreplace@3.2.0) (2024-02-18)
 
 

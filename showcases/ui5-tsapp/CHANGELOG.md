@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.13.9...ui5-tsapp@0.13.10) (2024-03-27)
+
+
+### Bug Fixes
+
+* **ui5-tooling-stringreplace:** corrected the mime type for ts ([#981](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/981)) ([e777f5a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e777f5a67ad1d81d4c6efd8a3a0af442ecb88266))
+
+
+
+
+
 ## [0.13.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.13.8...ui5-tsapp@0.13.9) (2024-03-06)
 
 **Note:** Version bump only for package ui5-tsapp

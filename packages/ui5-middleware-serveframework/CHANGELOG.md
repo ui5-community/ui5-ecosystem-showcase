@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.0.6...ui5-middleware-serveframework@3.1.0) (2024-03-27)
+
+
+### Features
+
+* **ui5-middleware-serveframework:** provide custom ui5 version from environment variable ([#978](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/978)) ([ce420af](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ce420af72ad03b12b8c1d497178a9a8ccd7e435e))
+
+
+
+
+
 ## [3.0.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.0.5...ui5-middleware-serveframework@3.0.6) (2024-03-05)
 
 

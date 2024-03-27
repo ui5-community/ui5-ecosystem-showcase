@@ -1,6 +1,6 @@
 {
   "name": "ui5-tsapp",
-  "version": "0.13.9",
+  "version": "0.13.10",
   "description": "Showcase of a TypeScript setup for developing UI5 applications",
   "private": true,
   "author": "Jorge Martins, Peter Muessig",
@@ -51,7 +51,7 @@
     "ui5-middleware-livereload": "workspace:^",
     "ui5-task-copyright": "workspace:^",
     "ui5-tooling-modules": "workspace:^",
-    "ui5-tooling-transpile": "workspace:^",
-    "ui5-tooling-stringreplace": "workspace:^"
+    "ui5-tooling-stringreplace": "workspace:^",
+    "ui5-tooling-transpile": "workspace:^"
   }
 }
