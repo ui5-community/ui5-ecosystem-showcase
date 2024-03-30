@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-ui5@3.1.2...ui5-middleware-ui5@3.1.3) (2024-03-30)
+
+
+### Bug Fixes
+
+* cleanup of dependencies and improved approuter logic ([#984](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/984)) ([65ffaed](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/65ffaedb7968015e008e2eb6aa66ff1e0a03a73a))
+
+
+
+
+
 ## [3.1.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-ui5@3.1.1...ui5-middleware-ui5@3.1.2) (2024-02-21)
 
 
