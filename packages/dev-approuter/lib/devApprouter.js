@@ -47,6 +47,8 @@ class DevApprouter {
 
 		const config = parseConfig();
 		const cwd = process.cwd();
+		const arPort = process.env.PORT || 5000;
+		const cdsPort = process.env.CDS_PORT || 4004;
 
 		// lookup the CDS server root
 		let cdsServerConfig;
@@ -100,7 +102,7 @@ class DevApprouter {
 				middlewareMountPath = "/_" + mountPath;
 
 				// add destination for newly configured route
-				addDestination(moduleId, process.env.PORT, middlewareMountPath);
+				addDestination(moduleId, arPort, middlewareMountPath);
 			} else {
 				middlewareMountPath = mountPath;
 			}
@@ -115,7 +117,6 @@ class DevApprouter {
 		// start CDS server on different port
 		if (cdsServerConfig) {
 			const { modulePath, moduleId } = cdsServerConfig;
-			const port = process.env.CDS_PORT || 4004;
 
 			// start CDS server on different port (requires to override the
 			// origin listen function to intercept call from CDS server and
@@ -124,8 +125,8 @@ class DevApprouter {
 			const app = express();
 			app._listen = app.listen;
 			app.listen = function (port, callback) {
-				return this._listen(process.env.CDS_PORT || 4004, function () {
-					console.log(`CDS server started at: http://localhost:${process.env.CDS_PORT || 4004}`);
+				return this._listen(cdsPort, function () {
+					console.log(`CDS server started at: http://localhost:${cdsPort}`);
 					callback?.apply(callback, arguments);
 				});
 			};
@@ -150,13 +151,13 @@ class DevApprouter {
 			}
 
 			// add destination for newly configured route
-			addDestination(moduleId, port);
+			addDestination(moduleId, cdsPort);
 		}
 
 		// create and start the SAP Approuter
 		// https://help.sap.com/docs/btp/sap-business-technology-platform/extension-api-of-application-router
 		approuter().start({
-			port: process.env.PORT || 5000,
+			port: arPort,
 			xsappConfig: applyDependencyConfig(config),
 			extensions: [
 				{
@@ -166,7 +167,7 @@ class DevApprouter {
 				},
 			].concat(extensions),
 		});
-		console.log(`Approuter started at: http://localhost:${process.env.PORT || 5000}`);
+		console.log(`Approuter started at: http://localhost:${arPort}`);
 	}
 }
 
