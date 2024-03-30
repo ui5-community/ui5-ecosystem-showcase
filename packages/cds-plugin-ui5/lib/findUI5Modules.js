@@ -53,7 +53,7 @@ module.exports = async function findUI5Modules({ cwd, cds, skipLocalApps, skipDe
 	const localApps = new Set();
 	const appDirs = [];
 	if (!skipLocalApps) {
-		const appDir = path.join(cwd, cds.env?.folders?.app || "app");
+		const appDir = path.join(cwd, cds?.env?.folders?.app || "app");
 		if (fs.existsSync(appDir)) {
 			// is the UI5 app directly in the app directory?
 			if (!fs.existsSync(path.join(appDir, determineUI5Yaml(appDir)))) {

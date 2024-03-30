@@ -63,12 +63,7 @@ const addDestination = (moduleId, port, mountPath) => {
 		destinations = JSON.parse(process.env.destinations);
 	}
 
-	let url;
-	if (mountPath) {
-		url = `http://localhost:${process.env.PORT || 5000}${mountPath}`;
-	} else {
-		url = `http://localhost:${port}`;
-	}
+	let url = `http://localhost${port ? `:${port}` : ""}${mountPath || ""}`;
 
 	// only add new destination if it's not already provided
 	const destinationAlreadyExists = destinations.some((destination) => {
