@@ -1,7 +1,7 @@
 {
   "name": "approuter",
   "description": "Showcase for the dev-approuter",
-  "version": "0.0.52",
+  "version": "0.0.53",
   "private": "true",
   "author": "Nicolai Schoenteich, Peter Muessig",
   "license": "Apache-2.0",
