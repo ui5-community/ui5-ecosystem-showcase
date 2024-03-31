@@ -144,6 +144,9 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 
 			// if the resource is a bundled resource, we need to wait for it
 			const bundleInfo = whenBundled && (await whenBundled);
+			if (bundleInfo.error) {
+				log.error(bundleInfo.error);
+			}
 			const bundledResource = bundleInfo?.getEntry(moduleName);
 			if (bundledResource) {
 				resource = bundledResource;

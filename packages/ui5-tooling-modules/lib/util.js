@@ -249,9 +249,9 @@ module.exports = function (log) {
 					// here if they also require to be transpiled by the task
 					try {
 						const depPath = that.resolveModule(dep, { cwd, depPaths });
-						if (existsSyncWithCase(depPath)) {
-							addUniqueModule(dep);
+						if (depPath && existsSyncWithCase(depPath)) {
 							const depContent = readFileSync(depPath, { encoding: "utf8" });
+							addUniqueModule(dep);
 							findUniqueJSDeps(depContent, depPath);
 						}
 					} catch (ex) {
@@ -438,8 +438,7 @@ module.exports = function (log) {
 				for (const tsResource of allTsResources) {
 					const imports = parse(await tsResource.getString(), "module", true);
 					imports?.resolutions?.forEach((res) => {
-						addUniqueDep(res.input);
-						addUniqueModule(res.input);
+						addDep(res.input);
 					});
 				}
 			}
