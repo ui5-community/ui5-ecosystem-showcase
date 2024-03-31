@@ -218,6 +218,10 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 
 	// every unique dependency will be bundled (entry points will be kept, rest is chunked)
 	const bundleInfo = await getBundleInfo(Array.from(uniqueModules), config, { cwd, depPaths });
+	if (bundleInfo.error) {
+		log.error(bundleInfo.error);
+		process.exit(1);
+	}
 	const bundledResources = bundleInfo.getBundledResources().map((entry) => entry.name);
 	await Promise.all(
 		bundleInfo.getEntries().map(async (entry) => {
