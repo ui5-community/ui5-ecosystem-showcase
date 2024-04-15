@@ -88,7 +88,13 @@ async function findBabelConfigOptions(cwd) {
 
 	const findConfigFile = function (cfgFiles, dir) {
 		const configFile = cfgFiles.find((cfgFile) => {
-			return fs.existsSync(path.join(dir, cfgFile));
+			let exists = fs.existsSync(path.join(dir, cfgFile));
+			// for the package.json we need to check if the babel property exists
+			if (exists && cfgFile === "package.json") {
+				const pkgJson = JSON.parse(fs.readFileSync(path.join(dir, cfgFile), { encoding: "utf8" }));
+				exists = pkgJson.babel !== undefined;
+			}
+			return exists;
 		});
 		return configFile && path.join(dir, configFile);
 	};
@@ -103,7 +109,7 @@ async function findBabelConfigOptions(cwd) {
 	}
 
 	let babelConfigOptions;
-	if (path.basename(configFile) === "package.json") {
+	if (configFile && path.basename(configFile) === "package.json") {
 		// for the package.json, we need to extract the babel config
 		const pkgJson = JSON.parse(fs.readFileSync(configFile, { encoding: "utf8" }));
 		if (pkgJson.babel) {
