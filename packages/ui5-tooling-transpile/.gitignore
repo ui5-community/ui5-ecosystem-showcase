@@ -1,0 +1,2 @@
+test/__dist__/*
+!test/__dist__/.keepMe

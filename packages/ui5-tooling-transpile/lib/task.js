@@ -27,6 +27,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 		determineResourceFSPath,
 		transformAsync
 	} = require("./util")(log);
+	const { OmitFromBuildResult } = taskUtil.STANDARD_TAGS;
 
 	const cwd = taskUtil.getProject().getRootPath() || process.cwd();
 	const config = createConfiguration({ configuration: options?.configuration || {}, isMiddleware: false }, cwd);
@@ -162,7 +163,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 			if (omitFromBuildResult) {
 				config.debug && log.verbose(`Omitting resource ${resourcePath}`);
 				const resource = await workspace.byPath(resourcePath);
-				taskUtil.setTag(resource, taskUtil.STANDARD_TAGS.OmitFromBuildResult, true);
+				taskUtil.setTag(resource, OmitFromBuildResult, true);
 			}
 		}
 
