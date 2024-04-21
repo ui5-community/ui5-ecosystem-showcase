@@ -44,14 +44,21 @@ function resolveNodeModule(moduleName, cwd = process.cwd()) {
 // https://babeljs.io/docs/en/config-files
 
 // project-wide configuration
+// https://babeljs.io/docs/config-files#project-wide-configuration
 const PRJ_CFG_FILES = [...multiply("babel.config", [".json", ".js", ".cjs", ".mjs"])];
 
 // file-relative configuration
+// https://babeljs.io/docs/config-files#file-relative-configuration
+// => Babel stops recursive lookup of configuration files at the project root (package.json)
 const CFG_FILES = [...multiply(".babelrc", [".json", ".js", ".cjs", ".mjs"]), ".babelrc", "package.json"];
 
 // helper to load the babel configuration
 // eslint-disable-next-line jsdoc/require-jsdoc
 async function loadBabelConfigOptions(babelConfigOptions, skipBabelPresetPluginResolve, cwd = process.cwd()) {
+	// load the babel configuration file if specified
+	if (typeof babelConfigOptions === "string") {
+		babelConfigOptions = { configFile: babelConfigOptions };
+	}
 	// make the paths of the babel plugins and presets absolute
 	let fileToPresetOrPlugin;
 	if (!skipBabelPresetPluginResolve) {
@@ -518,6 +525,22 @@ module.exports = function (log) {
 
 			// include the source maps
 			babelConfigOptions.sourceMaps = true;
+
+			// create the babel config file in the current working directory if missing
+			if (configuration?.generateBabelConfig) {
+				const babelConfigFile = path.join(
+					cwd,
+					typeof configuration?.generateBabelConfig === "string"
+						? configuration?.generateBabelConfig
+						: "babel.config.json"
+				);
+				if (!fs.existsSync(babelConfigFile)) {
+					fs.mkdirSync(path.dirname(babelConfigFile), { recursive: true });
+					fs.writeFileSync(babelConfigFile, JSON.stringify(babelConfigOptions, null, 2), {
+						encoding: "utf8"
+					});
+				}
+			}
 
 			return updateBabelConfigOptions(babelConfigOptions);
 		},

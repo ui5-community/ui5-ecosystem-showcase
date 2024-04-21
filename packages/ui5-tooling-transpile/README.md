@@ -26,8 +26,8 @@ npm install ui5-tooling-transpile --save-dev
 - debug: `boolean`  
   enable detailed logging (can be even more verbose by using the `--verbose` argument)
 
-- babelConfig: `Object`
-  object to use as configuration for babel instead of the babel configuration from the file system (as described at [Babel config files](https://babeljs.io/docs/en/config-files)), or the default configuration defined in this middleware (just using the `@babel/preset-env`)
+- babelConfig: `String|Object`
+  path to the babel config file or object to use as configuration for babel instead of the babel configuration from the file system (as described at [Babel config files](https://babeljs.io/docs/en/config-files)), or the default configuration defined in this middleware (just using the `@babel/preset-env`)
 
 - includes: `String<Array>` (old alias: includePatterns)
   array of paths your application to include in transpilation, e.g. `/modern-stuff/`
@@ -57,7 +57,10 @@ npm install ui5-tooling-transpile --save-dev
   if enabled, the resources will be transpiled at startup to avoid additional overhead for the first requests to the transpiled resources.
 
 - skipBabelPresetPluginResolve: `boolean` (*experimental feature*)
-  if enabled, the babel presets and plugins will not be resolved by the tooling extension and babel itself will do it. This can cause babel presets or plugins not to be found in case of working in monorepos.
+  if enabled, the babel presets and plugins will not be resolved by the tooling extension and babel itself will do it. This can cause babel presets or plugins not to be found in case of working in monorepos
+
+- generateBabelConfig: `boolean|string` (*experimental feature*)
+  this option allows to generate the babel config file for the current project when the babel config file doesn't exist - this option is useful when you are using babel generation within a different tooling (like a native babel execution inside e.g. jest) to use the same configuration like when running the task or middleware; if the value is a string the tooling extension will assume to generate a file with the provided name
 
 The following configuration options will only be taken into account if no inline babel configuration is maintained in the `ui5.yaml` as `babelConfig` or no external babel configuration exists in any configuration file as described in [Babels configuration section](https://babeljs.io/docs/configuration):
 

@@ -1,5 +1,7 @@
 const test = require("ava");
 const path = require("path");
+const fs = require("fs");
+const crypto = require("crypto");
 
 //const cwd = process.cwd();
 test.beforeEach(async (t) => {
@@ -225,4 +227,56 @@ test("inject configuration options", async (t) => {
 			cwd
 		)
 	);
+});
+
+test("usage of external babel config file", async (t) => {
+	const babelConfig = path.join(__dirname, "__assets__/external/.babelrc");
+	const config = await t.context.util.createBabelConfig({
+		configuration: {
+			debug: true,
+			babelConfig
+		}
+	});
+	t.true(config !== undefined);
+	t.deepEqual(config.presets[0].file.request, "transform-ui5");
+	t.deepEqual(config.presets[1].file.request, "@babel/preset-typescript");
+	t.deepEqual(config.presets[2].file.request, "@babel/preset-env");
+});
+
+test("generate babel config file", async (t) => {
+	const tmpDir = path.resolve(__dirname, `__dist__/${crypto.randomBytes(5).toString("hex")}`);
+	const config = await t.context.util.createBabelConfig(
+		{
+			configuration: {
+				debug: true,
+				generateBabelConfig: true
+			}
+		},
+		tmpDir
+	);
+	t.true(config !== undefined);
+	t.true(fs.existsSync(path.join(tmpDir, "babel.config.json")));
+	t.deepEqual(config.presets[0].file.request, "@babel/preset-env");
+	fs.rmSync(tmpDir, { recursive: true });
+});
+
+test("generate babel config file with a name", async (t) => {
+	const tmpDir = path.resolve(__dirname, `__dist__/${crypto.randomBytes(5).toString("hex")}`);
+	const config = await t.context.util.createBabelConfig(
+		{
+			configuration: {
+				debug: true,
+				generateBabelConfig: ".babelrc",
+				transformModulesToUI5: true,
+				transformTypeScript: true
+			}
+		},
+		tmpDir
+	);
+	t.true(config !== undefined);
+	t.true(fs.existsSync(path.join(tmpDir, ".babelrc")));
+	t.deepEqual(config.presets[0].file.request, "@babel/preset-env");
+	t.deepEqual(config.presets[1].file.request, "transform-ui5");
+	t.deepEqual(config.presets[2].file.request, "@babel/preset-typescript");
+	fs.rmSync(tmpDir, { recursive: true });
 });
