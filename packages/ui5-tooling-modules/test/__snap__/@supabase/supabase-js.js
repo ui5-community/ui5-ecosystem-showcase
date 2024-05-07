@@ -36,6 +36,25 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             super('Edge Function returned a non-2xx status code', 'FunctionsHttpError', context);
         }
     }
+    // Define the enum for the 'region' property
+    var FunctionRegion;
+    (function (FunctionRegion) {
+        FunctionRegion["Any"] = "any";
+        FunctionRegion["ApNortheast1"] = "ap-northeast-1";
+        FunctionRegion["ApNortheast2"] = "ap-northeast-2";
+        FunctionRegion["ApSouth1"] = "ap-south-1";
+        FunctionRegion["ApSoutheast1"] = "ap-southeast-1";
+        FunctionRegion["ApSoutheast2"] = "ap-southeast-2";
+        FunctionRegion["CaCentral1"] = "ca-central-1";
+        FunctionRegion["EuCentral1"] = "eu-central-1";
+        FunctionRegion["EuWest1"] = "eu-west-1";
+        FunctionRegion["EuWest2"] = "eu-west-2";
+        FunctionRegion["EuWest3"] = "eu-west-3";
+        FunctionRegion["SaEast1"] = "sa-east-1";
+        FunctionRegion["UsEast1"] = "us-east-1";
+        FunctionRegion["UsWest1"] = "us-west-1";
+        FunctionRegion["UsWest2"] = "us-west-2";
+    })(FunctionRegion || (FunctionRegion = {}));
 
     var __awaiter$6 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -47,9 +66,10 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         });
     };
     class FunctionsClient {
-        constructor(url, { headers = {}, customFetch, } = {}) {
+        constructor(url, { headers = {}, customFetch, region = FunctionRegion.Any, } = {}) {
             this.url = url;
             this.headers = headers;
+            this.region = region;
             this.fetch = resolveFetch$3(customFetch);
         }
         /**
@@ -70,6 +90,13 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 try {
                     const { headers, method, body: functionArgs } = options;
                     let _headers = {};
+                    let { region } = options;
+                    if (!region) {
+                        region = this.region;
+                    }
+                    if (region && region !== 'any') {
+                        _headers['x-region'] = region;
+                    }
                     let body;
                     if (functionArgs &&
                         ((headers && !Object.prototype.hasOwnProperty.call(headers, 'Content-Type')) || !headers)) {
@@ -121,6 +148,9 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     }
                     else if (responseType === 'application/octet-stream') {
                         data = yield response.blob();
+                    }
+                    else if (responseType === 'text/event-stream') {
+                        data = response;
                     }
                     else if (responseType === 'multipart/form-data') {
                         data = yield response.formData();
@@ -708,7 +738,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param values - The values array to filter with
          */
         in(column, values) {
-            const cleanedValues = values
+            const cleanedValues = Array.from(new Set(values))
                 .map((s) => {
                 // handle postgrest reserved characters
                 // https://postgrest.org/en/v7.0.0/api.html#reserved-characters
@@ -1200,7 +1230,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
     }
 
-    const version$4 = '1.9.2';
+    const version$4 = '1.15.2';
 
     const DEFAULT_HEADERS$4 = { 'X-Client-Info': `postgrest-js/${version$4}` };
 
@@ -1266,6 +1296,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param options - Named parameters
          * @param options.head - When set to `true`, `data` will not be returned.
          * Useful if you only need the count.
+         * @param options.get - When set to `true`, the function will be called with
+         * read-only access mode.
          * @param options.count - Count algorithm to use to count rows returned by the
          * function. Only applicable for [set-returning
          * functions](https://www.postgresql.org/docs/current/functions-srf.html).
@@ -1279,14 +1311,20 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * `"estimated"`: Uses exact count for low numbers and planned count for high
          * numbers.
          */
-        rpc(fn, args = {}, { head = false, count, } = {}) {
+        rpc(fn, args = {}, { head = false, get = false, count, } = {}) {
             let method;
             const url = new URL(`${this.url}/rpc/${fn}`);
             let body;
-            if (head) {
-                method = 'HEAD';
-                Object.entries(args).forEach(([name, value]) => {
-                    url.searchParams.append(name, `${value}`);
+            if (head || get) {
+                method = head ? 'HEAD' : 'GET';
+                Object.entries(args)
+                    // params with undefined value needs to be filtered out, otherwise it'll
+                    // show up as `?param=undefined`
+                    .filter(([_, value]) => value !== undefined)
+                    // array values need special syntax
+                    .map(([name, value]) => [name, Array.isArray(value) ? `{${value.join(',')}}` : `${value}`])
+                    .forEach(([name, value]) => {
+                    url.searchParams.append(name, value);
                 });
             }
             else {
@@ -1309,7 +1347,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
     }
 
-    const version$3 = '2.9.3';
+    const version$3 = '2.9.5';
 
     const DEFAULT_HEADERS$3 = { 'X-Client-Info': `realtime-js/${version$3}` };
     const VSN = '1.0.0';
@@ -2179,6 +2217,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                         resolve('ok');
                     }
                     push.receive('ok', () => resolve('ok'));
+                    push.receive('error', () => resolve('error'));
                     push.receive('timeout', () => resolve('timed out'));
                 });
             }
@@ -3620,8 +3659,9 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
     }
 
-    const version$1 = '2.39.7';
+    const version$1 = '2.39.1';
 
+    // constants.ts
     let JS_ENV = '';
     // @ts-ignore
     if (typeof Deno !== 'undefined') {
@@ -3637,19 +3677,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         JS_ENV = 'node';
     }
     const DEFAULT_HEADERS$1 = { 'X-Client-Info': `supabase-js-${JS_ENV}/${version$1}` };
-    const DEFAULT_GLOBAL_OPTIONS = {
-        headers: DEFAULT_HEADERS$1,
-    };
-    const DEFAULT_DB_OPTIONS = {
-        schema: 'public',
-    };
-    const DEFAULT_AUTH_OPTIONS = {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true,
-        flowType: 'implicit',
-    };
-    const DEFAULT_REALTIME_OPTIONS = {};
 
     var __awaiter$1 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -6573,6 +6600,19 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
     };
+    const DEFAULT_GLOBAL_OPTIONS = {
+        headers: DEFAULT_HEADERS$1,
+    };
+    const DEFAULT_DB_OPTIONS = {
+        schema: 'public',
+    };
+    const DEFAULT_AUTH_OPTIONS = {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+        flowType: 'implicit',
+    };
+    const DEFAULT_REALTIME_OPTIONS = {};
     /**
      * Supabase Client.
      *
@@ -6648,18 +6688,17 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         from(relation) {
             return this.rest.from(relation);
         }
-        // NOTE: signatures must be kept in sync with PostgrestClient.schema
         /**
-         * Select a schema to query or perform an function (rpc) call.
+         * Perform a query on a schema distinct from the default schema supplied via
+         * the `options.db.schema` constructor parameter.
          *
          * The schema needs to be on the list of exposed schemas inside Supabase.
          *
-         * @param schema - The schema to query
+         * @param schema - The name of the schema to query
          */
         schema(schema) {
             return this.rest.schema(schema);
         }
-        // NOTE: signatures must be kept in sync with PostgrestClient.rpc
         /**
          * Perform a function call.
          *
@@ -6681,7 +6720,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * `"estimated"`: Uses exact count for low numbers and planned count for high
          * numbers.
          */
-        rpc(fn, args = {}, options = {}) {
+        rpc(fn, args = {}, options) {
             return this.rest.rpc(fn, args, options);
         }
         /**
