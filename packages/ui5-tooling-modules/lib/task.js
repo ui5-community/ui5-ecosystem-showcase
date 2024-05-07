@@ -1,10 +1,9 @@
 /* eslint-disable no-unused-vars, no-empty */
 const path = require("path");
 const { createReadStream } = require("fs");
-const espree = require("espree");
-const estraverse = require("estraverse");
 const { XMLParser, XMLBuilder } = require("fast-xml-parser");
 const minimatch = require("minimatch");
+const parseJS = require("./parseJS");
 
 /**
  * Custom task to create the UI5 AMD-like bundles for used ES imports from node_modules.
@@ -29,6 +28,9 @@ const minimatch = require("minimatch");
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ log, workspace, taskUtil, options }) {
+	const { parse } = await import("@typescript-eslint/typescript-estree");
+	const { walk } = await import("estree-walker");
+
 	const cwd = taskUtil.getProject().getRootPath() || process.cwd();
 	const { scan, getBundleInfo, getResource, existsResource } = require("./util")(log);
 
@@ -92,10 +94,10 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	function rewriteJSDeps(content, bundledResources, resourcePath) {
 		let changed = false;
 		try {
-			const program = espree.parse(content, { range: true, comment: true, tokens: true, ecmaVersion: "latest" });
+			const program = parse(content, { comment: true, loc: true, range: true, tokens: true });
 			const tokens = {};
-			estraverse.traverse(program, {
-				enter(node, parent) {
+			walk(program, {
+				enter(node, parent, prop, index) {
 					if (
 						/* sap.ui.require.toUrl */
 						node?.type === "CallExpression" &&
@@ -165,7 +167,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 
 	// utility to rewrite XML dependencies
 	// eslint-disable-next-line jsdoc/require-jsdoc
-	function rewriteXMLDeps(node, bundledResources) {
+	function rewriteXMLDeps(node, bundledResources, ns = {}) {
 		let changed = false;
 		if (node) {
 			// attributes
@@ -174,6 +176,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				.forEach((key) => {
 					const nsParts = /@_xmlns(?::(.*))?/.exec(key);
 					if (nsParts) {
+						ns[nsParts[1] || ""] = node[key];
 						// namespace (default namespace => "")
 						const namespace = node[key].replace(/\./g, "/");
 						if (
@@ -183,6 +186,19 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 						) {
 							node[key] = rewriteDep(node[key], bundledResources, true);
 							changed = true;
+						}
+						return;
+					}
+					const requireParts = /@_(?:(.*):)?require/.exec(key);
+					if (requireParts && ns[requireParts[1]] === "sap.ui.core") {
+						try {
+							const requires = parseJS(node[key]);
+							for (const [key, value] of Object.entries(requires)) {
+								requires[key] = rewriteDep(value, bundledResources);
+							}
+							node[key] = JSON.stringify(requires, null, 2).replace(/"/g, "'");
+						} catch (err) {
+							log.error(`Failed to parse the "${node[key]}" as JS object!`);
 						}
 						return;
 					}
@@ -204,7 +220,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 							// skip #text nodes
 							let module = nodeParts[2];
 							if (module !== "#text") {
-								changed = rewriteXMLDeps(child, bundledResources) || changed;
+								changed = rewriteXMLDeps(child, bundledResources, ns) || changed;
 							}
 						}
 					});

@@ -17,9 +17,6 @@ const dynamicImports = require("./rollup-plugin-dynamic-imports");
 const replace = require("@rollup/plugin-replace");
 const transformTopLevelThis = require("./rollup-plugin-transform-top-level-this");
 
-const espree = require("espree");
-const estraverse = require("estraverse");
-
 const walk = require("ignore-walk");
 const minimatch = require("minimatch");
 
@@ -43,6 +40,37 @@ function existsSyncWithCase(file) {
 		return false;
 	}
 	return existsSyncWithCase(dir);
+}
+
+const nodeModulesDirCache = {};
+/**
+ * find the node_modules base directories in the given directory
+ * @param {string} dir directory to start the search
+ * @param {*} folders list of found node_modules base directories
+ * @param {*} recursive flag whether search runs recursively
+ * @returns {string[]} list of found node_modules base directories
+ */
+function findNodeModules(dir, folders = [], recursive) {
+	if (!recursive && nodeModulesDirCache[dir]) {
+		return nodeModulesDirCache[dir];
+	} else {
+		//let millis = new Date().getTime();
+		var filenames = readdirSync(dir);
+		filenames.forEach((filename) => {
+			const file = path.join(dir, filename);
+			if (statSync(file).isDirectory()) {
+				if (filename === "node_modules") {
+					folders.push(path.dirname(file));
+				}
+				findNodeModules(file, folders, true);
+			}
+		});
+		if (!recursive) {
+			nodeModulesDirCache[dir] = folders;
+			//console.log(`findNodeModules(${dir}) took ${new Date().getTime() - millis}ms`);
+		}
+		return folders;
+	}
 }
 
 // local bundle info cache
@@ -99,9 +127,11 @@ module.exports = function (log) {
 			let isUI5Module = false;
 			const content = await readFile(path, { encoding: "utf8" });
 			if (content) {
-				const program = espree.parse(content, { range: true, comment: true, tokens: true, ecmaVersion: "latest" });
-				estraverse.traverse(program, {
-					enter(node, parent) {
+				const { parse } = await import("@typescript-eslint/typescript-estree");
+				const { walk } = await import("estree-walker");
+				const program = parse(content, { jsx: true });
+				walk(program, {
+					enter(node, parent, prop, index) {
 						if (
 							node?.type === "CallExpression" &&
 							/require|define/.test(node?.callee?.property?.name) &&
@@ -115,7 +145,7 @@ module.exports = function (log) {
 			}
 			return isUI5Module;
 		} catch (err) {
-			log.verbose(`Failed to parse dependency "${path}" with espree!`, err);
+			log.verbose(`Failed to parse dependency "${path}"!`, err);
 			return false;
 		}
 	}
@@ -148,6 +178,12 @@ module.exports = function (log) {
 				paths: [cwd, ...depPaths], // necessary for PNPM and/or DEBUG scenario
 			});
 			if (modulePath) break;
+			// 3.) resolve from node_modules via regular lookup (try the lookup relative to the module)
+			const nodeModulePaths = findNodeModules(cwd);
+			modulePath = resolve(`${moduleName}${ext}`, {
+				paths: [cwd, ...nodeModulePaths], // necessary for PNPM and/or DEBUG scenario
+			});
+			if (modulePath) break;
 		}
 		return modulePath;
 	}
@@ -167,6 +203,9 @@ module.exports = function (log) {
 		 * @returns {object} unique dependencies, resources, namespaces, chunks, ...
 		 */
 		scan: async function (reader, config, { cwd, depPaths }) {
+			const { parse } = await import("@typescript-eslint/typescript-estree");
+			const { walk } = await import("estree-walker");
+
 			const providedDependencies = Array.isArray(config?.providedDependencies) ? config?.providedDependencies : [];
 
 			// find all JS resources to determine their dependencies
@@ -181,6 +220,9 @@ module.exports = function (log) {
 				const resourcePath = tsResource.getPath().slice(0, -3);
 				return allJsResources.findIndex((jsResource) => jsResource.getPath().slice(0, -3) === resourcePath) === -1;
 			});
+
+			// combine all JS and TS resources
+			const allJsAndTsResources = [].concat(allJsResources, allTsResources);
 
 			// find all XML resources to determine their dependencies
 			const allXmlResources = await reader.byGlob("/**/*.xml");
@@ -263,11 +305,15 @@ module.exports = function (log) {
 			// utility to lookup unique JS dependencies
 			// eslint-disable-next-line jsdoc/require-jsdoc
 			function findUniqueJSDeps(content, parentDepPath) {
-				// use espree to parse the UI5 modules and extract the UI5 module dependencies
+				// use @typescript-eslint/typescript-estree to parse the UI5 modules
+				// and extract the UI5 module dependencies
+				//   => can parse modern JS, TS, JSX, and TSX syntax
+				//      => supports the ES6 import/export syntax
+				//      => supports the UI5 sap.ui.require.toUrl and sap.ui.require/define/requireSync
 				try {
-					const program = espree.parse(content, { range: true, comment: true, tokens: true, ecmaVersion: "latest" });
-					estraverse.traverse(program, {
-						enter(node, parent) {
+					const program = parse(content, { jsx: true });
+					walk(program, {
+						enter(node, parent, prop, index) {
 							if (
 								/* sap.ui.require.toUrl */
 								node?.type === "CallExpression" &&
@@ -300,15 +346,13 @@ module.exports = function (log) {
 									deps = depsArray?.[0]?.elements.filter((el) => el.type === "Literal").map((el) => el.value);
 								}
 								deps?.forEach((dep) => addDep(dep));
+							} else if (node?.type === "ImportDeclaration") {
+								addDep(node.source.value);
 							}
 						},
 					});
 				} catch (err) {
-					if (err.message === "'import' and 'export' may appear only with 'sourceType: module'") {
-						// skipping/ignoring ES modules
-					} else {
-						config.debug && log.warn(`Failed to analyze resource "${parentDepPath}" (${err})!${config.debug === "verbose" ? `\n${err.stack}` : ""}`);
-					}
+					config.debug && log.warn(`Failed to analyze resource "${parentDepPath}" (${err})!${config.debug === "verbose" ? `\n${err.stack}` : ""}`);
 				}
 			}
 
@@ -396,7 +440,7 @@ module.exports = function (log) {
 
 			// lookup all resources for their dependencies via the above utility
 			await Promise.all(
-				allJsResources.map(async (resource) => {
+				allJsAndTsResources.map(async (resource) => {
 					log.verbose(`Processing JS resource: ${resource.getPath()}`);
 
 					const content = await resource.getString();
@@ -428,18 +472,6 @@ module.exports = function (log) {
 					});
 				} else {
 					log.error(`The option "includeAssets" must be type of map with the key being a npm package name!`);
-				}
-			}
-
-			// lookup all imports of the TypeScript sources (with a quick scan of the files)
-			if (allTsResources.length > 0) {
-				const { init, parse } = require("sloppy-module-parser");
-				await init();
-				for (const tsResource of allTsResources) {
-					const imports = parse(await tsResource.getString(), "module", true);
-					imports?.resolutions?.forEach((res) => {
-						addDep(res.input);
-					});
 				}
 			}
 
