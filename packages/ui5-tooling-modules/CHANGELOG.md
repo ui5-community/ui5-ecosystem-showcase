@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.4.6...ui5-tooling-modules@3.5.0) (2024-05-07)
+
+
+### Features
+
+* **ui5-tooling-modules:** support ESM and TS for dependency scan ([#991](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/991)) ([011c8a6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/011c8a60a7239c215a7b6c843e4017f4cbe1bb90))
+
+
+
+
+
 ## [3.4.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.4.5...ui5-tooling-modules@3.4.6) (2024-03-31)
 
 
