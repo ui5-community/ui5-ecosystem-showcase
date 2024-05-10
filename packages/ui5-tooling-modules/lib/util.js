@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 const path = require("path");
-const { readFileSync, statSync, readdirSync } = require("fs");
+const { readFileSync, statSync, readdirSync, existsSync } = require("fs");
 const { readFile, stat } = require("fs").promises;
 
 const rollup = require("rollup");
@@ -861,7 +861,8 @@ module.exports = function (log) {
 		 */
 		getResource: function getResource(resourceName, { cwd, depPaths, isMiddleware }) {
 			const resourcePath = that.resolveModule(`${resourceName}`, { cwd, depPaths });
-			if (typeof resourcePath === "string") {
+			if (typeof resourcePath === "string" && existsSync(resourcePath)) {
+				let code;
 				return {
 					name: resourceName,
 					path: resourcePath,
