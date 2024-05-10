@@ -39,6 +39,7 @@
     }
   },
   "dependencies": {
+    "@adobe/pdfservices-node-sdk": "^4.0.0",
     "@js-temporal/polyfill": "^0.4.4",
     "@octokit/core": "^4.2.4",
     "@stomp/stompjs": "^7.0.0",
