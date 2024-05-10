@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.5.0...ui5-tooling-modules@3.5.1) (2024-05-10)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** ignore non-existing files in getResource ([#995](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/995)) ([1089355](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1089355e7f14fa0cc37b402a844b2160a037994b))
+
+
+
+
+
 # [3.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.4.6...ui5-tooling-modules@3.5.0) (2024-05-07)
 
 
