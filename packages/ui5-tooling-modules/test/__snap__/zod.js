@@ -4114,7 +4114,7 @@ sap.ui.define((function () { 'use strict';
 		exports.default = z; 
 	} (lib));
 
-	try { Object.defineProperty(lib, "__" + "esModule", { value: true }); } catch (ex) {}
+	try { Object.defineProperty(lib, "__" + "esModule", { value: true }); lib.default = lib; } catch (ex) {}
 
 	return lib;
 

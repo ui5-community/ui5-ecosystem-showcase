@@ -73200,7 +73200,7 @@ sap.ui.define((function () { 'use strict';
 
 	var pdfmakeExports = pdfmake.exports;
 
-	try { Object.defineProperty(pdfmakeExports, "__" + "esModule", { value: true }); } catch (ex) {}
+	try { Object.defineProperty(pdfmakeExports, "__" + "esModule", { value: true }); pdfmakeExports.default = pdfmakeExports; } catch (ex) {}
 
 	return pdfmakeExports;
 

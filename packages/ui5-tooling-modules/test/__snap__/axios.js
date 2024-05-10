@@ -5160,7 +5160,7 @@ sap.ui.define((function () { 'use strict';
 
   var axios_1 = axios;
 
-  try { Object.defineProperty(axios_1, "__" + "esModule", { value: true }); } catch (ex) {}
+  try { Object.defineProperty(axios_1, "__" + "esModule", { value: true }); axios_1.default = axios_1; } catch (ex) {}
 
   return axios_1;
 

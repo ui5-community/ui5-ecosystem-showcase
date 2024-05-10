@@ -1526,7 +1526,7 @@ sap.ui.define((function () { 'use strict';
 		} 
 	} (cmis$1));
 
-	try { Object.defineProperty(cmis$1, "__" + "esModule", { value: true }); } catch (ex) {}
+	try { Object.defineProperty(cmis$1, "__" + "esModule", { value: true }); cmis$1.default = cmis$1; } catch (ex) {}
 
 	return cmis$1;
 

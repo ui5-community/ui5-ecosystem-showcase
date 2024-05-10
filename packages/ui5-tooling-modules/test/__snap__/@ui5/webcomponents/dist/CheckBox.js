@@ -4571,7 +4571,7 @@ sap.ui.define((function () { 'use strict';
     CheckBox.define();
     var defaultExport = CheckBox;
 
-    try { Object.defineProperty(defaultExport, "__" + "esModule", { value: true }); } catch (ex) {}
+    try { Object.defineProperty(defaultExport, "__" + "esModule", { value: true }); defaultExport.default = defaultExport; } catch (ex) {}
 
     return defaultExport;
 
