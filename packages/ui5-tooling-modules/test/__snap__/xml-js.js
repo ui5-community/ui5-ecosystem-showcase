@@ -7459,7 +7459,7 @@ sap.ui.define((function () { 'use strict';
 	  json2xml: json2xml
 	};
 
-	try { Object.defineProperty(lib, "__" + "esModule", { value: true }); } catch (ex) {}
+	try { Object.defineProperty(lib, "__" + "esModule", { value: true }); lib.default = lib; } catch (ex) {}
 
 	return lib;
 

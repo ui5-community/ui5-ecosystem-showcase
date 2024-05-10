@@ -1885,7 +1885,7 @@ sap.ui.define((function () { 'use strict';
 
 	var stomp_umdExports = stomp_umd.exports;
 
-	try { Object.defineProperty(stomp_umdExports, "__" + "esModule", { value: true }); } catch (ex) {}
+	try { Object.defineProperty(stomp_umdExports, "__" + "esModule", { value: true }); stomp_umdExports.default = stomp_umdExports; } catch (ex) {}
 
 	return stomp_umdExports;
 

@@ -395,7 +395,7 @@ sap.ui.define(['exports', '../react/index2'], (function (exports, index) { 'use 
     exports.hydrateRoot = client.hydrateRoot = m.hydrateRoot;
   }
 
-  try { Object.defineProperty(client, "__" + "esModule", { value: true }); } catch (ex) {}
+  try { Object.defineProperty(client, "__" + "esModule", { value: true }); client.default = client; } catch (ex) {}
 
   exports.default = client;
 

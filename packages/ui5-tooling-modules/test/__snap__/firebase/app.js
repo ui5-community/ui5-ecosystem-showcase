@@ -38,7 +38,7 @@ sap.ui.define(['../firebase/app/index.esm2017'], (function (index_esm2017) { 'us
   	
   } (index_cjs));
 
-  try { Object.defineProperty(index_cjs, "__" + "esModule", { value: true }); } catch (ex) {}
+  try { Object.defineProperty(index_cjs, "__" + "esModule", { value: true }); index_cjs.default = index_cjs; } catch (ex) {}
 
   return index_cjs;
 
