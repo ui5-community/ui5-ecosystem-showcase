@@ -265,7 +265,16 @@ module.exports = function (log) {
 			}
 
 			// eslint-disable-next-line jsdoc/require-jsdoc
-			function addUniqueModule(module) {
+			function addUniqueModule(module, modulePath) {
+				const moduleName = module.split("/").pop();
+				const moduleFileName = modulePath.split(path.sep).pop();
+				// identify modules which already provide their file extension in the module name
+				// => this avoids the duplication of the modules specified with and without file
+				//    extension in the uniqueModules set (e.g. "myns/module" and "myns/module.js")
+				if (moduleName === moduleFileName && module.endsWith(".js")) {
+					//console.log(`Module name and file name are equal: ${module} => ${modulePath}`);
+					module = module.slice(0, -3); // remove the file extension
+				}
 				uniqueModules.add(module);
 			}
 
@@ -293,7 +302,7 @@ module.exports = function (log) {
 						const depPath = that.resolveModule(dep, { cwd, depPaths });
 						if (depPath && existsSyncWithCase(depPath)) {
 							const depContent = readFileSync(depPath, { encoding: "utf8" });
-							addUniqueModule(dep);
+							addUniqueModule(dep, depPath);
 							findUniqueJSDeps(depContent, depPath);
 						}
 					} catch (ex) {
