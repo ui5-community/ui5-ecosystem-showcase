@@ -96,7 +96,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 					// finally, we watch the entries of the bundle
 					debug && log.info(`Bundling took ${Date.now() - bundleTime} millis`);
 					bundleWatcher?.close();
-					const globsToWatch = [cwd, ...depPaths].map((depPath) => `${depPath}/**/*.{js,ts,xml}`);
+					const globsToWatch = [cwd, ...depPaths].map((depPath) => `${depPath}/**/*.{js,jsx,ts,tsx,xml}`);
 					globsToWatch.push(...bundleInfo.getResources().map((res) => res.path));
 					if (debug) {
 						log.info(`Watch files:`);
