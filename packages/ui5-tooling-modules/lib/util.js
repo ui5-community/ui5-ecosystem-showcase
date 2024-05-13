@@ -119,17 +119,17 @@ module.exports = function (log) {
 	/**
 	 * Checks whether the file behind the given path is a UI5 module or not
 	 *
-	 * @param {string} path the path of a JS module
+	 * @param {string} source the path of a JS module
 	 * @returns {boolean} true, if the JS module is a UI5 module
 	 */
-	async function isUI5Module(path) {
+	async function isUI5Module(source) {
 		try {
 			let isUI5Module = false;
-			const content = await readFile(path, { encoding: "utf8" });
+			const content = await readFile(source, { encoding: "utf8" });
 			if (content) {
 				const { parse } = await import("@typescript-eslint/typescript-estree");
 				const { walk } = await import("estree-walker");
-				const program = parse(content, { jsx: true });
+				const program = parse(content, { jsx: path.extname(source).endsWith("x"), allowInvalidAST: true });
 				walk(program, {
 					enter(node, parent, prop, index) {
 						if (
@@ -145,7 +145,7 @@ module.exports = function (log) {
 			}
 			return isUI5Module;
 		} catch (err) {
-			log.verbose(`Failed to parse dependency "${path}"!`, err);
+			log.verbose(`Failed to parse dependency "${source}"!`, err);
 			return false;
 		}
 	}
@@ -208,21 +208,23 @@ module.exports = function (log) {
 
 			const providedDependencies = Array.isArray(config?.providedDependencies) ? config?.providedDependencies : [];
 
-			// find all JS resources to determine their dependencies
-			const allJsResources = await reader.byGlob("/**/*.js");
-
-			// find all TS resources to determine their dependencies
-			let allTsResources = await reader.byGlob("/**/*.ts");
+			// find all sources to determine their dependencies
+			let allSources = await reader.byGlob("/**/*.{js,jsx,ts,tsx}");
 
 			// only keep the TS resources for which no parallel JS resource exist
 			// as we assume that the transpiling creates the parallel JS resource
-			allTsResources = allTsResources.filter((tsResource) => {
-				const resourcePath = tsResource.getPath().slice(0, -3);
-				return allJsResources.findIndex((jsResource) => jsResource.getPath().slice(0, -3) === resourcePath) === -1;
+			allSources = allSources.filter((source) => {
+				const sourcePath = source.getPath();
+				const ext = path.extname(sourcePath);
+				if (ext !== ".js") {
+					const foundJSSource = allSources.findIndex((source) => source.getPath() === `${path.basename(source.getPath())}.js`) !== -1;
+					if (foundJSSource) {
+						log.info(`Removing source ${sourcePath} (as a parallel JS resource was found)`);
+						return false;
+					}
+				}
+				return true;
 			});
-
-			// combine all JS and TS resources
-			const allJsAndTsResources = [].concat(allJsResources, allTsResources);
 
 			// find all XML resources to determine their dependencies
 			const allXmlResources = await reader.byGlob("/**/*.xml");
@@ -320,7 +322,7 @@ module.exports = function (log) {
 				//      => supports the ES6 import/export syntax
 				//      => supports the UI5 sap.ui.require.toUrl and sap.ui.require/define/requireSync
 				try {
-					const program = parse(content, { jsx: true });
+					const program = parse(content, { jsx: path.extname(parentDepPath).endsWith("x"), allowInvalidAST: true });
 					walk(program, {
 						enter(node, parent, prop, index) {
 							if (
@@ -355,7 +357,13 @@ module.exports = function (log) {
 									deps = depsArray?.[0]?.elements.filter((el) => el.type === "Literal").map((el) => el.value);
 								}
 								deps?.forEach((dep) => addDep(dep));
+							} else if (
+								/* ES6 dynamic import */
+								node?.type === "ImportExpression"
+							) {
+								addDep(node.source.value);
 							} else if (node?.type === "ImportDeclaration") {
+								/* ES6 import */
 								addDep(node.source.value);
 							}
 						},
@@ -447,10 +455,10 @@ module.exports = function (log) {
 				);
 			}
 
-			// lookup all resources for their dependencies via the above utility
+			// lookup all sources for their dependencies via the above utility
 			await Promise.all(
-				allJsAndTsResources.map(async (resource) => {
-					log.verbose(`Processing JS resource: ${resource.getPath()}`);
+				allSources.map(async (resource) => {
+					log.verbose(`Processing source: ${resource.getPath()}`);
 
 					const content = await resource.getString();
 					findUniqueJSDeps(content, resource.getPath());
@@ -489,7 +497,7 @@ module.exports = function (log) {
 				uniqueModules,
 				uniqueResources,
 				uniqueNS,
-				sourceFiles: [].concat(allJsResources, allTsResources, allXmlResources).map((res) => {
+				sourceFiles: [].concat(allSources, allXmlResources).map((res) => {
 					return res.getSourceMetadata().fsPath;
 				}),
 			};
