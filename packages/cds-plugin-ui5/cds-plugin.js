@@ -190,4 +190,75 @@ if (!skip) {
 		// bootstrap completed, unlock the "served" event
 		bootstrapped();
 	});
+
+	// check if the register function for build tasks is available at the cds object
+	// and if the Plugin class is available to register the cds build task
+	if (typeof cds.build?.register === "function" && typeof cds.build?.Plugin?.constructor === "function") {
+		const { readFile, writeFile } = require("fs").promises;
+		const { existsSync } = require("fs");
+		const { join } = require("path");
+		const { minVersion } = require("semver");
+		const util = require("util");
+		const exec = util.promisify(require("child_process").exec);
+
+		// helper to check whether a semantic version is valid
+		const valid = (version) => {
+			try {
+				return minVersion(version) !== null;
+			} catch (e) {
+				return false;
+			}
+		};
+
+		// register the cds build task to sanitize the package.json and update the package-lock.json
+		cds.build.register(
+			"ui5",
+			class UI5Plugin extends cds.build.Plugin {
+				static taskDefaults = { src: cds.env.folders.srv };
+				static hasTask() {
+					return true;
+				}
+				init() {}
+				clean() {
+					this._priority = -1; // hack to ensure that the clean task is executed last!
+				}
+				get priority() {
+					return this._priority || 1;
+				}
+				async build() {
+					//const model = await this.model();
+					//if (!model) return;
+					log.info("Sanitizing the package.json...");
+					const packageJson = JSON.parse(await readFile(join(this.task.dest, "package.json"), "utf-8"));
+					let modified = false;
+					if (packageJson.workspaces) {
+						delete packageJson.workspaces;
+						modified = true;
+					}
+					if (packageJson.devDependencies) {
+						packageJson.devDependencies = Object.entries(packageJson.devDependencies).reduce((acc, [dep, version]) => {
+							if (valid(version) && dep !== "cds-plugin-ui5") {
+								acc[dep] = version;
+							}
+							return acc;
+						}, {});
+						modified = true;
+					}
+					if (modified) {
+						await writeFile(join(this.task.dest, "package.json"), JSON.stringify(packageJson, null, 2), "utf-8");
+					}
+					if (existsSync(join(this.task.dest, "package-lock.json"))) {
+						log.info("Updating the package-lock.json...");
+						try {
+							/* const { stdout, stderr } = */ await exec("npm install --package-lock-only", { cwd: this.task.dest });
+						} catch (e) {
+							//console.error(e.code);
+						}
+					}
+				}
+			}
+		);
+	} else {
+		log.info("The cds build task requires @sap/cds-dk version >= 7.6.0! Skipping execution as your @sap/cds-dk version is too old...");
+	}
 }
