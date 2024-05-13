@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.9.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.8.3...cds-plugin-ui5@0.9.0) (2024-05-13)
+
+
+### Features
+
+* **cds-plugin-ui5:** sanitizing package.json with cds build task for gen/srv ([#999](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/999)) ([d52386c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d52386c168c62ea4c827cfff65be78117e13fd12))
+
+
+
+
+
 ## [0.8.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.8.2...cds-plugin-ui5@0.8.3) (2024-03-30)
 
 
