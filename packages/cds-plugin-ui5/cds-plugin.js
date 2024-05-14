@@ -192,7 +192,8 @@ if (!skip) {
 	});
 
 	// check if the register function for build tasks is available at the cds object
-	// and if the Plugin class is available to register the cds build task
+	// and if the Plugin class is available to register the cds build task to cover
+	// the tracks of the cds-plugin-ui5 workspace configuration and dependencies
 	if (typeof cds.build?.register === "function" && typeof cds.build?.Plugin?.constructor === "function") {
 		const { readFile, writeFile } = require("fs").promises;
 		const { existsSync } = require("fs");
@@ -213,46 +214,63 @@ if (!skip) {
 		// register the cds build task to sanitize the package.json and update the package-lock.json
 		cds.build.register(
 			"ui5",
+			/**
+			 * CDS Build Plugin to ensure that the workspace configuration and the workspace dev
+			 * dependencies are removed and finally runs the npm install --package-lock-only to
+			 * update the package-lock.json
+			 */
 			class UI5Plugin extends cds.build.Plugin {
 				static taskDefaults = { src: cds.env.folders.srv };
 				static hasTask() {
-					return true;
+					return true; // plugin is a cds build task
 				}
 				init() {}
 				clean() {
-					this._priority = -1; // hack to ensure that the clean task is executed last!
+					this._priority = -1; // hack to ensure that the task is executed last!
 				}
 				get priority() {
 					return this._priority || 1;
 				}
 				async build() {
-					//const model = await this.model();
-					//if (!model) return;
-					log.info("Sanitizing the package.json...");
-					const packageJson = JSON.parse(await readFile(join(this.task.dest, "package.json"), "utf-8"));
-					let modified = false;
-					if (packageJson.workspaces) {
-						delete packageJson.workspaces;
-						modified = true;
+					// determine the namespace from the model
+					const model = await this.model();
+					if (!model) return;
+					const namespace = model.namespace || "<unknown>";
+					// sanitize the package.json if it exists
+					const packageJsonPath = join(this.task.dest, "package.json");
+					if (existsSync(packageJsonPath)) {
+						log.info(`Sanitizing the package.json for "${namespace}"...`);
+						const packageJson = JSON.parse(await readFile(packageJsonPath), "utf-8");
+						let modified = false;
+						// remove the workspace configuration
+						if (packageJson.workspaces) {
+							delete packageJson.workspaces;
+							modified = true;
+						}
+						// remove the workspace dev dependencies and the cds-plugin-ui5
+						if (packageJson.devDependencies) {
+							packageJson.devDependencies = Object.entries(packageJson.devDependencies).reduce((acc, [dep, version]) => {
+								if (valid(version) && dep !== "cds-plugin-ui5") {
+									acc[dep] = version;
+								}
+								return acc;
+							}, {});
+							modified = true;
+						}
+						// overwrite the package.json if it was modified only
+						if (modified) {
+							await writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2), "utf-8");
+						}
 					}
-					if (packageJson.devDependencies) {
-						packageJson.devDependencies = Object.entries(packageJson.devDependencies).reduce((acc, [dep, version]) => {
-							if (valid(version) && dep !== "cds-plugin-ui5") {
-								acc[dep] = version;
-							}
-							return acc;
-						}, {});
-						modified = true;
-					}
-					if (modified) {
-						await writeFile(join(this.task.dest, "package.json"), JSON.stringify(packageJson, null, 2), "utf-8");
-					}
+					// update the package-lock.json if it exists
 					if (existsSync(join(this.task.dest, "package-lock.json"))) {
-						log.info("Updating the package-lock.json...");
+						log.info(`Updating the package-lock.json for "${namespace}"...`);
+						// run the npm install --package-lock-only to only update the package-lock.json
+						// without installing the dependencies to node_modules
 						try {
 							/* const { stdout, stderr } = */ await exec("npm install --package-lock-only", { cwd: this.task.dest });
 						} catch (e) {
-							//console.error(e.code);
+							log.error(`Failed to update the package-lock.json for "${namespace}"! Error: ${e.code} - ${e.message}`);
 						}
 					}
 				}
