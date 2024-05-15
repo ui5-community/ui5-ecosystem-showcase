@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-stringreplace@3.2.1...ui5-tooling-stringreplace@3.2.2) (2024-05-15)
+
+**Note:** Version bump only for package ui5-tooling-stringreplace
+
+
+
+
+
 ## [3.2.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-stringreplace@3.2.0...ui5-tooling-stringreplace@3.2.1) (2024-03-27)
 
 

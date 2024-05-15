@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.5.4...ui5-tooling-modules@3.5.5) (2024-05-15)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** improvement of node_modules lookup logic ([#1001](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1001)) ([e3bc1f6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e3bc1f65299fb52482bfbc9c3b34f2c7648acc71))
+
+
+
+
+
 ## [3.5.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.5.3...ui5-tooling-modules@3.5.4) (2024-05-13)
 
 
