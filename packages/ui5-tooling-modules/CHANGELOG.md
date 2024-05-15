@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.5.5...ui5-tooling-modules@3.5.6) (2024-05-15)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** do not handle ts files as jsx when parsing AST ([#1003](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1003)) ([395da08](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/395da08d04eb121d539b0ee0afb1cf934ef37776))
+
+
+
+
+
 ## [3.5.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.5.4...ui5-tooling-modules@3.5.5) (2024-05-15)
 
 
