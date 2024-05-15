@@ -1,3 +1,5 @@
+/* global globalThis */
+
 const fs = require("fs")
 const path = require("path")
 
@@ -230,6 +232,12 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		workingDir: rootPath,
 		extensions
 	})
+
+	// for testing purposes we centrally register the instances of the approuters
+	// until the UI5 tooling provides a better way to access the approuter instances
+	if (globalThis["ui5-middleware-approuter"]?.approuters) {
+		globalThis["ui5-middleware-approuter"].approuters.push(approuter)
+	}
 
 	// determine base uri based on subdomain info
 	let baseUri

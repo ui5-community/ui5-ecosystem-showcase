@@ -2754,7 +2754,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	// AssertionError's when particular conditions are not met. The
 	// assert module must conform to the following interface.
 
-	function assert$a(value, message) {
+	function assert$b(value, message) {
 	  if (!value) fail$1(value, true, message, '==', ok);
 	}
 
@@ -2776,7 +2776,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  var match = str.match(regex);
 	  return match && match[1];
 	}
-	assert$a.AssertionError = AssertionError;
+	assert$b.AssertionError = AssertionError;
 	function AssertionError(options) {
 	  this.name = 'AssertionError';
 	  this.actual = options.actual;
@@ -2859,7 +2859,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	}
 
 	// EXTENSION! allows for well behaved errors defined elsewhere.
-	assert$a.fail = fail$1;
+	assert$b.fail = fail$1;
 
 	// 4. Pure assertion tests whether a value is truthy, as determined
 	// by !!guard.
@@ -2871,19 +2871,19 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	function ok(value, message) {
 	  if (!value) fail$1(value, true, message, '==', ok);
 	}
-	assert$a.ok = ok;
+	assert$b.ok = ok;
 
 	// 5. The equality assertion tests shallow, coercive equality with
 	// ==.
 	// assert.equal(actual, expected, message_opt);
-	assert$a.equal = equal;
+	assert$b.equal = equal;
 	function equal(actual, expected, message) {
 	  if (actual != expected) fail$1(actual, expected, message, '==', equal);
 	}
 
 	// 6. The non-equality assertion tests for whether two objects are not equal
 	// with != assert.notEqual(actual, expected, message_opt);
-	assert$a.notEqual = notEqual;
+	assert$b.notEqual = notEqual;
 	function notEqual(actual, expected, message) {
 	  if (actual == expected) {
 	    fail$1(actual, expected, message, '!=', notEqual);
@@ -2892,13 +2892,13 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	// 7. The equivalence assertion tests a deep equality relation.
 	// assert.deepEqual(actual, expected, message_opt);
-	assert$a.deepEqual = deepEqual;
+	assert$b.deepEqual = deepEqual;
 	function deepEqual(actual, expected, message) {
 	  if (!_deepEqual(actual, expected, false)) {
 	    fail$1(actual, expected, message, 'deepEqual', deepEqual);
 	  }
 	}
-	assert$a.deepStrictEqual = deepStrictEqual;
+	assert$b.deepStrictEqual = deepStrictEqual;
 	function deepStrictEqual(actual, expected, message) {
 	  if (!_deepEqual(actual, expected, true)) {
 	    fail$1(actual, expected, message, 'deepStrictEqual', deepStrictEqual);
@@ -3019,14 +3019,14 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	// 8. The non-equivalence assertion tests for any deep inequality.
 	// assert.notDeepEqual(actual, expected, message_opt);
-	assert$a.notDeepEqual = notDeepEqual;
+	assert$b.notDeepEqual = notDeepEqual;
 	function notDeepEqual(actual, expected, message) {
 	  if (_deepEqual(actual, expected, false)) {
 	    fail$1(actual, expected, message, 'notDeepEqual', notDeepEqual);
 	  }
 	}
 
-	assert$a.notDeepStrictEqual = notDeepStrictEqual;
+	assert$b.notDeepStrictEqual = notDeepStrictEqual;
 	function notDeepStrictEqual(actual, expected, message) {
 	  if (_deepEqual(actual, expected, true)) {
 	    fail$1(actual, expected, message, 'notDeepStrictEqual', notDeepStrictEqual);
@@ -3036,7 +3036,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	// 9. The strict equality assertion tests strict equality, as determined by ===.
 	// assert.strictEqual(actual, expected, message_opt);
-	assert$a.strictEqual = strictEqual;
+	assert$b.strictEqual = strictEqual;
 	function strictEqual(actual, expected, message) {
 	  if (actual !== expected) {
 	    fail$1(actual, expected, message, '===', strictEqual);
@@ -3045,7 +3045,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	// 10. The strict non-equality assertion tests for strict inequality, as
 	// determined by !==.  assert.notStrictEqual(actual, expected, message_opt);
-	assert$a.notStrictEqual = notStrictEqual;
+	assert$b.notStrictEqual = notStrictEqual;
 	function notStrictEqual(actual, expected, message) {
 	  if (actual === expected) {
 	    fail$1(actual, expected, message, '!==', notStrictEqual);
@@ -3126,18 +3126,18 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	// 11. Expected to throw an error:
 	// assert.throws(block, Error_opt, message_opt);
-	assert$a.throws = throws;
+	assert$b.throws = throws;
 	function throws(block, /*optional*/error, /*optional*/message) {
 	  _throws(true, block, error, message);
 	}
 
 	// EXTENSION! This is annoying to write outside this module.
-	assert$a.doesNotThrow = doesNotThrow;
+	assert$b.doesNotThrow = doesNotThrow;
 	function doesNotThrow(block, /*optional*/error, /*optional*/message) {
 	  _throws(false, block, error, message);
 	}
 
-	assert$a.ifError = ifError;
+	assert$b.ifError = ifError;
 	function ifError(err) {
 	  if (err) throw err;
 	}
@@ -3148,7 +3148,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		assert: ok,
 		deepEqual: deepEqual,
 		deepStrictEqual: deepStrictEqual,
-		default: assert$a,
+		default: assert$b,
 		doesNotThrow: doesNotThrow,
 		equal: equal,
 		fail: fail$1,
@@ -7568,7 +7568,9 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  kHTTP2BuildRequest: Symbol('http2 build request'),
 	  kHTTP1BuildRequest: Symbol('http1 build request'),
 	  kHTTP2CopyHeaders: Symbol('http2 copy headers'),
-	  kHTTPConnVersion: Symbol('http connection version')
+	  kHTTPConnVersion: Symbol('http connection version'),
+	  kRetryHandlerDefaultRetry: Symbol('retry agent default retry'),
+	  kConstruct: Symbol('constructable')
 	};
 
 	let UndiciError$2 = class UndiciError extends Error {
@@ -7764,6 +7766,19 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  }
 	};
 
+	let RequestRetryError$1 = class RequestRetryError extends UndiciError$2 {
+	  constructor (message, code, { headers, data }) {
+	    super(message);
+	    Error.captureStackTrace(this, RequestRetryError);
+	    this.name = 'RequestRetryError';
+	    this.message = message || 'Request retry error';
+	    this.code = 'UND_ERR_REQ_RETRY';
+	    this.statusCode = code;
+	    this.data = data;
+	    this.headers = headers;
+	  }
+	};
+
 	var errors$1 = {
 	  HTTPParserError: HTTPParserError$1,
 	  UndiciError: UndiciError$2,
@@ -7783,12 +7798,130 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  NotSupportedError: NotSupportedError$2,
 	  ResponseContentLengthMismatchError: ResponseContentLengthMismatchError$1,
 	  BalancedPoolMissingUpstreamError: BalancedPoolMissingUpstreamError$1,
-	  ResponseExceededMaxSizeError: ResponseExceededMaxSizeError$1
+	  ResponseExceededMaxSizeError: ResponseExceededMaxSizeError$1,
+	  RequestRetryError: RequestRetryError$1
 	};
 
 	var require$$7 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_buffer);
 
 	var require$$8 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_querystring$1);
+
+	/** @type {Record<string, string | undefined>} */
+	const headerNameLowerCasedRecord$1 = {};
+
+	// https://developer.mozilla.org/docs/Web/HTTP/Headers
+	const wellknownHeaderNames = [
+	  'Accept',
+	  'Accept-Encoding',
+	  'Accept-Language',
+	  'Accept-Ranges',
+	  'Access-Control-Allow-Credentials',
+	  'Access-Control-Allow-Headers',
+	  'Access-Control-Allow-Methods',
+	  'Access-Control-Allow-Origin',
+	  'Access-Control-Expose-Headers',
+	  'Access-Control-Max-Age',
+	  'Access-Control-Request-Headers',
+	  'Access-Control-Request-Method',
+	  'Age',
+	  'Allow',
+	  'Alt-Svc',
+	  'Alt-Used',
+	  'Authorization',
+	  'Cache-Control',
+	  'Clear-Site-Data',
+	  'Connection',
+	  'Content-Disposition',
+	  'Content-Encoding',
+	  'Content-Language',
+	  'Content-Length',
+	  'Content-Location',
+	  'Content-Range',
+	  'Content-Security-Policy',
+	  'Content-Security-Policy-Report-Only',
+	  'Content-Type',
+	  'Cookie',
+	  'Cross-Origin-Embedder-Policy',
+	  'Cross-Origin-Opener-Policy',
+	  'Cross-Origin-Resource-Policy',
+	  'Date',
+	  'Device-Memory',
+	  'Downlink',
+	  'ECT',
+	  'ETag',
+	  'Expect',
+	  'Expect-CT',
+	  'Expires',
+	  'Forwarded',
+	  'From',
+	  'Host',
+	  'If-Match',
+	  'If-Modified-Since',
+	  'If-None-Match',
+	  'If-Range',
+	  'If-Unmodified-Since',
+	  'Keep-Alive',
+	  'Last-Modified',
+	  'Link',
+	  'Location',
+	  'Max-Forwards',
+	  'Origin',
+	  'Permissions-Policy',
+	  'Pragma',
+	  'Proxy-Authenticate',
+	  'Proxy-Authorization',
+	  'RTT',
+	  'Range',
+	  'Referer',
+	  'Referrer-Policy',
+	  'Refresh',
+	  'Retry-After',
+	  'Sec-WebSocket-Accept',
+	  'Sec-WebSocket-Extensions',
+	  'Sec-WebSocket-Key',
+	  'Sec-WebSocket-Protocol',
+	  'Sec-WebSocket-Version',
+	  'Server',
+	  'Server-Timing',
+	  'Service-Worker-Allowed',
+	  'Service-Worker-Navigation-Preload',
+	  'Set-Cookie',
+	  'SourceMap',
+	  'Strict-Transport-Security',
+	  'Supports-Loading-Mode',
+	  'TE',
+	  'Timing-Allow-Origin',
+	  'Trailer',
+	  'Transfer-Encoding',
+	  'Upgrade',
+	  'Upgrade-Insecure-Requests',
+	  'User-Agent',
+	  'Vary',
+	  'Via',
+	  'WWW-Authenticate',
+	  'X-Content-Type-Options',
+	  'X-DNS-Prefetch-Control',
+	  'X-Frame-Options',
+	  'X-Permitted-Cross-Domain-Policies',
+	  'X-Powered-By',
+	  'X-Requested-With',
+	  'X-XSS-Protection'
+	];
+
+	for (let i = 0; i < wellknownHeaderNames.length; ++i) {
+	  const key = wellknownHeaderNames[i];
+	  const lowerCasedKey = key.toLowerCase();
+	  headerNameLowerCasedRecord$1[key] = headerNameLowerCasedRecord$1[lowerCasedKey] =
+	    lowerCasedKey;
+	}
+
+	// Note: object prototypes should not be able to be referenced. e.g. `Object#hasOwnProperty`.
+	Object.setPrototypeOf(headerNameLowerCasedRecord$1, null);
+
+	var constants$6 = {
+	  wellknownHeaderNames,
+	  headerNameLowerCasedRecord: headerNameLowerCasedRecord$1
+	};
 
 	var web_polyfillNodeIgnore = /*#__PURE__*/Object.freeze({
 		__proto__: null
@@ -7796,9 +7929,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	var require$$14 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(web_polyfillNodeIgnore);
 
-	var require$$10$1 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_events);
-
-	const assert$9 = require$$3$1;
+	const assert$a = require$$3$1;
 	const { kDestroyed: kDestroyed$1, kBodyUsed: kBodyUsed$1 } = symbols$4;
 	const { IncomingMessage } = require$$17;
 	const stream$1 = require$$0$1;
@@ -7807,6 +7938,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	const { Blob: Blob$2 } = require$$7;
 	const nodeUtil = require$$3$2;
 	const { stringify } = require$$8;
+	const { headerNameLowerCasedRecord } = constants$6;
 
 	const [nodeMajor, nodeMinor] = "18.15.0".split('.').map(v => Number(v));
 
@@ -7922,14 +8054,14 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  if (host[0] === '[') {
 	    const idx = host.indexOf(']');
 
-	    assert$9(idx !== -1);
-	    return host.substr(1, idx - 1)
+	    assert$a(idx !== -1);
+	    return host.substring(1, idx)
 	  }
 
 	  const idx = host.indexOf(':');
 	  if (idx === -1) return host
 
-	  return host.substr(0, idx)
+	  return host.substring(0, idx)
 	}
 
 	// IP addresses are not valid server names per RFC6066
@@ -7939,7 +8071,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	    return null
 	  }
 
-	  assert$9.strictEqual(typeof host, 'string');
+	  assert$a.strictEqual(typeof host, 'string');
 
 	  const servername = getHostname(host);
 	  if (net$2.isIP(servername)) {
@@ -7988,7 +8120,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	}
 
 	function destroy (stream, err) {
-	  if (!isStream(stream) || isDestroyed(stream)) {
+	  if (stream == null || !isStream(stream) || isDestroyed(stream)) {
 	    return
 	  }
 
@@ -8016,7 +8148,16 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  return m ? parseInt(m[1], 10) * 1000 : null
 	}
 
-	function parseHeaders (headers, obj = {}) {
+	/**
+	 * Retrieves a header name and returns its lowercase value.
+	 * @param {string | Buffer} value Header name
+	 * @returns {string}
+	 */
+	function headerNameToString (value) {
+	  return headerNameLowerCasedRecord[value] || value.toLowerCase()
+	}
+
+	function parseHeaders$1 (headers, obj = {}) {
 	  // For H2 support
 	  if (!Array.isArray(headers)) return headers
 
@@ -8026,7 +8167,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	    if (!val) {
 	      if (Array.isArray(headers[i + 1])) {
-	        obj[key] = headers[i + 1];
+	        obj[key] = headers[i + 1].map(x => x.toString('utf8'));
 	      } else {
 	        obj[key] = headers[i + 1].toString('utf8');
 	      }
@@ -8117,7 +8258,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	// A body is disturbed if it has been read from and it cannot
 	// be re-used without losing state or data.
-	function isDisturbed (body) {
+	function isDisturbed$1 (body) {
 	  return !!(body && (
 	    stream$1.isDisturbed
 	      ? stream$1.isDisturbed(body) || body[kBodyUsed$1] // TODO (fix): Why is body[kBodyUsed] needed?
@@ -8229,16 +8370,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  }
 	}
 
-	let events$1;
 	function addAbortListener$1 (signal, listener) {
-	  if (typeof Symbol.dispose === 'symbol') {
-	    if (!events$1) {
-	      events$1 = require$$10$1;
-	    }
-	    if (typeof events$1.addAbortListener === 'function' && 'aborted' in signal) {
-	      return events$1.addAbortListener(signal, listener)
-	    }
-	  }
 	  if ('addEventListener' in signal) {
 	    signal.addEventListener('abort', listener, { once: true });
 	    return () => signal.removeEventListener('abort', listener)
@@ -8262,13 +8394,28 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  return `${val}`
 	}
 
+	// Parsed accordingly to RFC 9110
+	// https://www.rfc-editor.org/rfc/rfc9110#field.content-range
+	function parseRangeHeader$1 (range) {
+	  if (range == null || range === '') return { start: 0, end: null, size: null }
+
+	  const m = range ? range.match(/^bytes (\d+)-(\d+)\/(\d+)?$/) : null;
+	  return m
+	    ? {
+	        start: parseInt(m[1]),
+	        end: m[2] ? parseInt(m[2]) : null,
+	        size: m[3] ? parseInt(m[3]) : null
+	      }
+	    : null
+	}
+
 	const kEnumerableProperty = Object.create(null);
 	kEnumerableProperty.enumerable = true;
 
 	var util$l = {
 	  kEnumerableProperty,
 	  nop: nop$1,
-	  isDisturbed,
+	  isDisturbed: isDisturbed$1,
 	  isErrored,
 	  isReadable,
 	  toUSVString: toUSVString$2,
@@ -8281,8 +8428,9 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  isIterable,
 	  isAsyncIterable,
 	  isDestroyed,
+	  headerNameToString,
 	  parseRawHeaders,
-	  parseHeaders,
+	  parseHeaders: parseHeaders$1,
 	  parseKeepAliveTimeout,
 	  destroy,
 	  bodyLength,
@@ -8295,9 +8443,11 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  buildURL: buildURL$2,
 	  throwIfAborted,
 	  addAbortListener: addAbortListener$1,
+	  parseRangeHeader: parseRangeHeader$1,
 	  nodeMajor,
 	  nodeMinor,
-	  nodeHasAutoSelectFamily: nodeMajor > 18 || (nodeMajor === 18 && nodeMinor >= 13)
+	  nodeHasAutoSelectFamily: nodeMajor > 18 || (nodeMajor === 18 && nodeMinor >= 13),
+	  safeHTTPMethods: ['GET', 'HEAD', 'OPTIONS', 'TRACE']
 	};
 
 	let fastNow = Date.now();
@@ -8406,6 +8556,8 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	var require$$1$2 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_diagnostics_channel);
 
 	var main = {exports: {}};
+
+	var require$$10$1 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_events);
 
 	var sbmh;
 	var hasRequiredSbmh;
@@ -10048,10 +10200,12 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		const { MessageChannel, receiveMessageOnPort } = require$$2$1;
 
 		const corsSafeListedMethods = ['GET', 'HEAD', 'POST'];
+		const corsSafeListedMethodsSet = new Set(corsSafeListedMethods);
 
 		const nullBodyStatus = [101, 204, 205, 304];
 
 		const redirectStatus = [301, 302, 303, 307, 308];
+		const redirectStatusSet = new Set(redirectStatus);
 
 		// https://fetch.spec.whatwg.org/#block-bad-port
 		const badPorts = [
@@ -10062,6 +10216,8 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		  '2049', '3659', '4045', '5060', '5061', '6000', '6566', '6665', '6666', '6667', '6668', '6669', '6697',
 		  '10080'
 		];
+
+		const badPortsSet = new Set(badPorts);
 
 		// https://w3c.github.io/webappsec-referrer-policy/#referrer-policies
 		const referrerPolicy = [
@@ -10075,10 +10231,12 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		  'strict-origin-when-cross-origin',
 		  'unsafe-url'
 		];
+		const referrerPolicySet = new Set(referrerPolicy);
 
 		const requestRedirect = ['follow', 'manual', 'error'];
 
 		const safeMethods = ['GET', 'HEAD', 'OPTIONS', 'TRACE'];
+		const safeMethodsSet = new Set(safeMethods);
 
 		const requestMode = ['navigate', 'same-origin', 'no-cors', 'cors'];
 
@@ -10113,6 +10271,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 		// http://fetch.spec.whatwg.org/#forbidden-method
 		const forbiddenMethods = ['CONNECT', 'TRACE', 'TRACK'];
+		const forbiddenMethodsSet = new Set(forbiddenMethods);
 
 		const subresource = [
 		  'audio',
@@ -10128,6 +10287,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		  'xslt',
 		  ''
 		];
+		const subresourceSet = new Set(subresource);
 
 		/** @type {globalThis['DOMException']} */
 		const DOMException = globalThis.DOMException ?? (() => {
@@ -10177,7 +10337,14 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		  nullBodyStatus,
 		  safeMethods,
 		  badPorts,
-		  requestDuplex
+		  requestDuplex,
+		  subresourceSet,
+		  badPortsSet,
+		  redirectStatusSet,
+		  corsSafeListedMethodsSet,
+		  safeMethodsSet,
+		  forbiddenMethodsSet,
+		  referrerPolicySet
 		};
 		return constants$5;
 	}
@@ -10261,12 +10428,14 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		if (hasRequiredUtil$4) return util$k;
 		hasRequiredUtil$4 = 1;
 
-		const { redirectStatus, badPorts, referrerPolicy: referrerPolicyTokens } = requireConstants$3();
+		const { redirectStatusSet, referrerPolicySet: referrerPolicyTokens, badPortsSet } = requireConstants$3();
 		const { getGlobalOrigin } = requireGlobal();
 		const { performance } = require$$2;
 		const { isBlobLike, toUSVString, ReadableStreamFrom } = util$l;
 		const assert = require$$3$1;
 		const { isUint8Array } = require$$10;
+
+		let supportedHashes = [];
 
 		// https://nodejs.org/api/crypto.html#determining-if-crypto-support-is-unavailable
 		/** @type {import('crypto')|undefined} */
@@ -10274,8 +10443,10 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 		try {
 		  crypto = require$$6$1;
+		  const possibleRelevantHashes = ['sha256', 'sha384', 'sha512'];
+		  supportedHashes = crypto.getHashes().filter((hash) => possibleRelevantHashes.includes(hash));
+		/* c8 ignore next 3 */
 		} catch {
-
 		}
 
 		function responseURL (response) {
@@ -10290,7 +10461,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		// https://fetch.spec.whatwg.org/#concept-response-location-url
 		function responseLocationURL (response, requestFragment) {
 		  // 1. If response’s status is not a redirect status, then return null.
-		  if (!redirectStatus.includes(response.status)) {
+		  if (!redirectStatusSet.has(response.status)) {
 		    return null
 		  }
 
@@ -10325,7 +10496,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 		  // 2. If url’s scheme is an HTTP(S) scheme and url’s port is a bad port,
 		  // then return blocked.
-		  if (urlIsHttpHttpsScheme(url) && badPorts.includes(url.port)) {
+		  if (urlIsHttpHttpsScheme(url) && badPortsSet.has(url.port)) {
 		    return 'blocked'
 		  }
 
@@ -10364,52 +10535,57 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		  return true
 		}
 
-		function isTokenChar (c) {
-		  return !(
-		    c >= 0x7f ||
-		    c <= 0x20 ||
-		    c === '(' ||
-		    c === ')' ||
-		    c === '<' ||
-		    c === '>' ||
-		    c === '@' ||
-		    c === ',' ||
-		    c === ';' ||
-		    c === ':' ||
-		    c === '\\' ||
-		    c === '"' ||
-		    c === '/' ||
-		    c === '[' ||
-		    c === ']' ||
-		    c === '?' ||
-		    c === '=' ||
-		    c === '{' ||
-		    c === '}'
-		  )
+		/**
+		 * @see https://tools.ietf.org/html/rfc7230#section-3.2.6
+		 * @param {number} c
+		 */
+		function isTokenCharCode (c) {
+		  switch (c) {
+		    case 0x22:
+		    case 0x28:
+		    case 0x29:
+		    case 0x2c:
+		    case 0x2f:
+		    case 0x3a:
+		    case 0x3b:
+		    case 0x3c:
+		    case 0x3d:
+		    case 0x3e:
+		    case 0x3f:
+		    case 0x40:
+		    case 0x5b:
+		    case 0x5c:
+		    case 0x5d:
+		    case 0x7b:
+		    case 0x7d:
+		      // DQUOTE and "(),/:;<=>?@[\]{}"
+		      return false
+		    default:
+		      // VCHAR %x21-7E
+		      return c >= 0x21 && c <= 0x7e
+		  }
 		}
 
-		// See RFC 7230, Section 3.2.6.
-		// https://github.com/chromium/chromium/blob/d7da0240cae77824d1eda25745c4022757499131/third_party/blink/renderer/platform/network/http_parsers.cc#L321
+		/**
+		 * @param {string} characters
+		 */
 		function isValidHTTPToken (characters) {
-		  if (!characters || typeof characters !== 'string') {
+		  if (characters.length === 0) {
 		    return false
 		  }
 		  for (let i = 0; i < characters.length; ++i) {
-		    const c = characters.charCodeAt(i);
-		    if (c > 0x7f || !isTokenChar(c)) {
+		    if (!isTokenCharCode(characters.charCodeAt(i))) {
 		      return false
 		    }
 		  }
 		  return true
 		}
 
-		// https://fetch.spec.whatwg.org/#header-name
-		// https://github.com/chromium/chromium/blob/b3d37e6f94f87d59e44662d6078f6a12de845d17/net/http/http_util.cc#L342
+		/**
+		 * @see https://fetch.spec.whatwg.org/#header-name
+		 * @param {string} potentialValue
+		 */
 		function isValidHeaderName (potentialValue) {
-		  if (potentialValue.length === 0) {
-		    return false
-		  }
-
 		  return isValidHTTPToken(potentialValue)
 		}
 
@@ -10467,7 +10643,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		    // The left-most policy is the fallback.
 		    for (let i = policyHeader.length; i !== 0; i--) {
 		      const token = policyHeader[i - 1].trim();
-		      if (referrerPolicyTokens.includes(token)) {
+		      if (referrerPolicyTokens.has(token)) {
 		        policy = token;
 		        break
 		      }
@@ -10797,66 +10973,56 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		    return true
 		  }
 
-		  // 3. If parsedMetadata is the empty set, return true.
+		  // 3. If response is not eligible for integrity validation, return false.
+		  // TODO
+
+		  // 4. If parsedMetadata is the empty set, return true.
 		  if (parsedMetadata.length === 0) {
 		    return true
 		  }
 
-		  // 4. Let metadata be the result of getting the strongest
+		  // 5. Let metadata be the result of getting the strongest
 		  //    metadata from parsedMetadata.
-		  const list = parsedMetadata.sort((c, d) => d.algo.localeCompare(c.algo));
-		  // get the strongest algorithm
-		  const strongest = list[0].algo;
-		  // get all entries that use the strongest algorithm; ignore weaker
-		  const metadata = list.filter((item) => item.algo === strongest);
+		  const strongest = getStrongestMetadata(parsedMetadata);
+		  const metadata = filterMetadataListByAlgorithm(parsedMetadata, strongest);
 
-		  // 5. For each item in metadata:
+		  // 6. For each item in metadata:
 		  for (const item of metadata) {
 		    // 1. Let algorithm be the alg component of item.
 		    const algorithm = item.algo;
 
 		    // 2. Let expectedValue be the val component of item.
-		    let expectedValue = item.hash;
+		    const expectedValue = item.hash;
 
 		    // See https://github.com/web-platform-tests/wpt/commit/e4c5cc7a5e48093220528dfdd1c4012dc3837a0e
 		    // "be liberal with padding". This is annoying, and it's not even in the spec.
 
-		    if (expectedValue.endsWith('==')) {
-		      expectedValue = expectedValue.slice(0, -2);
-		    }
-
 		    // 3. Let actualValue be the result of applying algorithm to bytes.
 		    let actualValue = crypto.createHash(algorithm).update(bytes).digest('base64');
 
-		    if (actualValue.endsWith('==')) {
-		      actualValue = actualValue.slice(0, -2);
+		    if (actualValue[actualValue.length - 1] === '=') {
+		      if (actualValue[actualValue.length - 2] === '=') {
+		        actualValue = actualValue.slice(0, -2);
+		      } else {
+		        actualValue = actualValue.slice(0, -1);
+		      }
 		    }
 
 		    // 4. If actualValue is a case-sensitive match for expectedValue,
 		    //    return true.
-		    if (actualValue === expectedValue) {
-		      return true
-		    }
-
-		    let actualBase64URL = crypto.createHash(algorithm).update(bytes).digest('base64url');
-
-		    if (actualBase64URL.endsWith('==')) {
-		      actualBase64URL = actualBase64URL.slice(0, -2);
-		    }
-
-		    if (actualBase64URL === expectedValue) {
+		    if (compareBase64Mixed(actualValue, expectedValue)) {
 		      return true
 		    }
 		  }
 
-		  // 6. Return false.
+		  // 7. Return false.
 		  return false
 		}
 
 		// https://w3c.github.io/webappsec-subresource-integrity/#grammardef-hash-with-options
 		// https://www.w3.org/TR/CSP2/#source-list-syntax
 		// https://www.rfc-editor.org/rfc/rfc5234#appendix-B.1
-		const parseHashWithOptions = /((?<algo>sha256|sha384|sha512)-(?<hash>[A-z0-9+/]{1}.*={0,2}))( +[\x21-\x7e]?)?/i;
+		const parseHashWithOptions = /(?<algo>sha256|sha384|sha512)-((?<hash>[A-Za-z0-9+/]+|[A-Za-z0-9_-]+)={0,2}(?:\s|$)( +[!-~]*)?)?/i;
 
 		/**
 		 * @see https://w3c.github.io/webappsec-subresource-integrity/#parse-metadata
@@ -10870,8 +11036,6 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		  // 2. Let empty be equal to true.
 		  let empty = true;
 
-		  const supportedHashes = crypto.getHashes();
-
 		  // 3. For each token returned by splitting metadata on spaces:
 		  for (const token of metadata.split(' ')) {
 		    // 1. Set empty to false.
@@ -10881,7 +11045,11 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		    const parsedToken = parseHashWithOptions.exec(token);
 
 		    // 3. If token does not parse, continue to the next token.
-		    if (parsedToken === null || parsedToken.groups === undefined) {
+		    if (
+		      parsedToken === null ||
+		      parsedToken.groups === undefined ||
+		      parsedToken.groups.algo === undefined
+		    ) {
 		      // Note: Chromium blocks the request at this point, but Firefox
 		      // gives a warning that an invalid integrity was given. The
 		      // correct behavior is to ignore these, and subsequently not
@@ -10890,11 +11058,11 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		    }
 
 		    // 4. Let algorithm be the hash-algo component of token.
-		    const algorithm = parsedToken.groups.algo;
+		    const algorithm = parsedToken.groups.algo.toLowerCase();
 
 		    // 5. If algorithm is a hash function recognized by the user
 		    //    agent, add the parsed token to result.
-		    if (supportedHashes.includes(algorithm.toLowerCase())) {
+		    if (supportedHashes.includes(algorithm)) {
 		      result.push(parsedToken.groups);
 		    }
 		  }
@@ -10905,6 +11073,82 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		  }
 
 		  return result
+		}
+
+		/**
+		 * @param {{ algo: 'sha256' | 'sha384' | 'sha512' }[]} metadataList
+		 */
+		function getStrongestMetadata (metadataList) {
+		  // Let algorithm be the algo component of the first item in metadataList.
+		  // Can be sha256
+		  let algorithm = metadataList[0].algo;
+		  // If the algorithm is sha512, then it is the strongest
+		  // and we can return immediately
+		  if (algorithm[3] === '5') {
+		    return algorithm
+		  }
+
+		  for (let i = 1; i < metadataList.length; ++i) {
+		    const metadata = metadataList[i];
+		    // If the algorithm is sha512, then it is the strongest
+		    // and we can break the loop immediately
+		    if (metadata.algo[3] === '5') {
+		      algorithm = 'sha512';
+		      break
+		    // If the algorithm is sha384, then a potential sha256 or sha384 is ignored
+		    } else if (algorithm[3] === '3') {
+		      continue
+		    // algorithm is sha256, check if algorithm is sha384 and if so, set it as
+		    // the strongest
+		    } else if (metadata.algo[3] === '3') {
+		      algorithm = 'sha384';
+		    }
+		  }
+		  return algorithm
+		}
+
+		function filterMetadataListByAlgorithm (metadataList, algorithm) {
+		  if (metadataList.length === 1) {
+		    return metadataList
+		  }
+
+		  let pos = 0;
+		  for (let i = 0; i < metadataList.length; ++i) {
+		    if (metadataList[i].algo === algorithm) {
+		      metadataList[pos++] = metadataList[i];
+		    }
+		  }
+
+		  metadataList.length = pos;
+
+		  return metadataList
+		}
+
+		/**
+		 * Compares two base64 strings, allowing for base64url
+		 * in the second string.
+		 *
+		* @param {string} actualValue always base64
+		 * @param {string} expectedValue base64 or base64url
+		 * @returns {boolean}
+		 */
+		function compareBase64Mixed (actualValue, expectedValue) {
+		  if (actualValue.length !== expectedValue.length) {
+		    return false
+		  }
+		  for (let i = 0; i < actualValue.length; ++i) {
+		    if (actualValue[i] !== expectedValue[i]) {
+		      if (
+		        (actualValue[i] === '+' && expectedValue[i] === '-') ||
+		        (actualValue[i] === '/' && expectedValue[i] === '_')
+		      ) {
+		        continue
+		      }
+		      return false
+		    }
+		  }
+
+		  return true
 		}
 
 		// https://w3c.github.io/webappsec-upgrade-insecure-requests/#upgrade-request
@@ -10953,11 +11197,30 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		    fetchParams.controller.state === 'terminated'
 		}
 
-		// https://fetch.spec.whatwg.org/#concept-method-normalize
+		const normalizeMethodRecord = {
+		  delete: 'DELETE',
+		  DELETE: 'DELETE',
+		  get: 'GET',
+		  GET: 'GET',
+		  head: 'HEAD',
+		  HEAD: 'HEAD',
+		  options: 'OPTIONS',
+		  OPTIONS: 'OPTIONS',
+		  post: 'POST',
+		  POST: 'POST',
+		  put: 'PUT',
+		  PUT: 'PUT'
+		};
+
+		// Note: object prototypes should not be able to be referenced. e.g. `Object#hasOwnProperty`.
+		Object.setPrototypeOf(normalizeMethodRecord, null);
+
+		/**
+		 * @see https://fetch.spec.whatwg.org/#concept-method-normalize
+		 * @param {string} method
+		 */
 		function normalizeMethod (method) {
-		  return /^(DELETE|GET|HEAD|OPTIONS|POST|PUT)$/i.test(method)
-		    ? method.toUpperCase()
-		    : method
+		  return normalizeMethodRecord[method.toLowerCase()] ?? method
 		}
 
 		// https://infra.spec.whatwg.org/#serialize-a-javascript-value-to-a-json-string
@@ -11302,7 +11565,9 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		  urlIsLocal,
 		  urlHasHttpsScheme,
 		  urlIsHttpHttpsScheme,
-		  readAllBytes
+		  readAllBytes,
+		  normalizeMethodRecord,
+		  parseMetadata
 		};
 		return util$k;
 	}
@@ -11759,12 +12024,10 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		  // 2. If the value of any element of x is greater than
 		  //    255, then throw a TypeError.
 		  for (let index = 0; index < x.length; index++) {
-		    const charCode = x.charCodeAt(index);
-
-		    if (charCode > 255) {
+		    if (x.charCodeAt(index) > 255) {
 		      throw new TypeError(
 		        'Cannot convert argument to a ByteString because the character at ' +
-		        `index ${index} has a value of ${charCode} which is greater than 255.`
+		        `index ${index} has a value of ${x.charCodeAt(index)} which is greater than 255.`
 		      )
 		    }
 		  }
@@ -12108,17 +12371,14 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		 * @param {boolean} excludeFragment
 		 */
 		function URLSerializer (url, excludeFragment = false) {
-		  const href = url.href;
-
 		  if (!excludeFragment) {
-		    return href
+		    return url.href
 		  }
 
-		  const hash = href.lastIndexOf('#');
-		  if (hash === -1) {
-		    return href
-		  }
-		  return href.slice(0, hash)
+		  const href = url.href;
+		  const hashLength = url.hash.length;
+
+		  return hashLength === 0 ? href : href.substring(0, href.length - hashLength)
 		}
 
 		// https://infra.spec.whatwg.org/#collect-a-sequence-of-code-points
@@ -12634,6 +12894,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		const { webidl } = requireWebidl();
 		const { parseMIMEType, serializeAMimeType } = requireDataURL();
 		const { kEnumerableProperty } = util$l;
+		const encoder = new TextEncoder();
 
 		class File extends Blob {
 		  constructor (fileBits, fileName, options = {}) {
@@ -12907,7 +13168,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		      }
 
 		      // 3. Append the result of UTF-8 encoding s to bytes.
-		      bytes.push(new TextEncoder().encode(s));
+		      bytes.push(encoder.encode(s));
 		    } else if (
 		      types.isAnyArrayBuffer(element) ||
 		      types.isTypedArray(element)
@@ -13277,6 +13538,8 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 		/** @type {globalThis['File']} */
 		const File = NativeFile ?? UndiciFile;
+		const textEncoder = new TextEncoder();
+		const textDecoder = new TextDecoder();
 
 		// https://fetch.spec.whatwg.org/#concept-bodyinit-extract
 		function extractBody (object, keepalive = false) {
@@ -13300,7 +13563,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		    stream = new ReadableStream({
 		      async pull (controller) {
 		        controller.enqueue(
-		          typeof source === 'string' ? new TextEncoder().encode(source) : source
+		          typeof source === 'string' ? textEncoder.encode(source) : source
 		        );
 		        queueMicrotask(() => readableStreamClose(controller));
 		      },
@@ -13370,7 +13633,6 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		    // - That the content-length is calculated in advance.
 		    // - And that all parts are pre-encoded and ready to be sent.
 
-		    const enc = new TextEncoder();
 		    const blobParts = [];
 		    const rn = new Uint8Array([13, 10]); // '\r\n'
 		    length = 0;
@@ -13378,13 +13640,13 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 		    for (const [name, value] of object) {
 		      if (typeof value === 'string') {
-		        const chunk = enc.encode(prefix +
+		        const chunk = textEncoder.encode(prefix +
 		          `; name="${escape(normalizeLinefeeds(name))}"` +
 		          `\r\n\r\n${normalizeLinefeeds(value)}\r\n`);
 		        blobParts.push(chunk);
 		        length += chunk.byteLength;
 		      } else {
-		        const chunk = enc.encode(`${prefix}; name="${escape(normalizeLinefeeds(name))}"` +
+		        const chunk = textEncoder.encode(`${prefix}; name="${escape(normalizeLinefeeds(name))}"` +
 		          (value.name ? `; filename="${escape(value.name)}"` : '') + '\r\n' +
 		          `Content-Type: ${
 	            value.type || 'application/octet-stream'
@@ -13398,7 +13660,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		      }
 		    }
 
-		    const chunk = enc.encode(`--${boundary}--`);
+		    const chunk = textEncoder.encode(`--${boundary}--`);
 		    blobParts.push(chunk);
 		    length += chunk.byteLength;
 		    if (hasUnknownSizeValue) {
@@ -13694,14 +13956,16 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 		          let text = '';
 		          // application/x-www-form-urlencoded parser will keep the BOM.
 		          // https://url.spec.whatwg.org/#concept-urlencoded-parser
-		          const textDecoder = new TextDecoder('utf-8', { ignoreBOM: true });
+		          // Note that streaming decoder is stateful and cannot be reused
+		          const streamingDecoder = new TextDecoder('utf-8', { ignoreBOM: true });
+
 		          for await (const chunk of consumeBody(this[kState].body)) {
 		            if (!isUint8Array(chunk)) {
 		              throw new TypeError('Expected Uint8Array chunk')
 		            }
-		            text += textDecoder.decode(chunk, { stream: true });
+		            text += streamingDecoder.decode(chunk, { stream: true });
 		          }
-		          text += textDecoder.decode();
+		          text += streamingDecoder.decode();
 		          entries = new URLSearchParams(text);
 		        } catch (err) {
 		          // istanbul ignore next: Unclear when new URLSearchParams can fail on a string.
@@ -13816,7 +14080,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 		  // 3. Process a queue with an instance of UTF-8’s
 		  //    decoder, ioQueue, output, and "replacement".
-		  const output = new TextDecoder().decode(buffer);
+		  const output = textDecoder.decode(buffer);
 
 		  // 4. Return output.
 		  return output
@@ -13858,7 +14122,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  InvalidArgumentError: InvalidArgumentError$k,
 	  NotSupportedError: NotSupportedError$1
 	} = errors$1;
-	const assert$8 = require$$3$1;
+	const assert$9 = require$$3$1;
 	const { kHTTP2BuildRequest: kHTTP2BuildRequest$1, kHTTP2CopyHeaders: kHTTP2CopyHeaders$1, kHTTP1BuildRequest: kHTTP1BuildRequest$1 } = symbols$4;
 	const util$j = util$l;
 
@@ -13966,10 +14230,29 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	    this.method = method;
 
+	    this.abort = null;
+
 	    if (body == null) {
 	      this.body = null;
 	    } else if (util$j.isStream(body)) {
 	      this.body = body;
+
+	      const rState = this.body._readableState;
+	      if (!rState || !rState.autoDestroy) {
+	        this.endHandler = function autoDestroy () {
+	          util$j.destroy(this);
+	        };
+	        this.body.on('end', this.endHandler);
+	      }
+
+	      this.errorHandler = err => {
+	        if (this.abort) {
+	          this.abort(err);
+	        } else {
+	          this.error = err;
+	        }
+	      };
+	      this.body.on('error', this.errorHandler);
 	    } else if (util$j.isBuffer(body)) {
 	      this.body = body.byteLength ? body : null;
 	    } else if (ArrayBuffer.isView(body)) {
@@ -14065,9 +14348,9 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  onBodySent (chunk) {
 	    if (this[kHandler].onBodySent) {
 	      try {
-	        this[kHandler].onBodySent(chunk);
+	        return this[kHandler].onBodySent(chunk)
 	      } catch (err) {
-	        this.onError(err);
+	        this.abort(err);
 	      }
 	    }
 	  }
@@ -14076,51 +14359,83 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	    if (channels$1.bodySent.hasSubscribers) {
 	      channels$1.bodySent.publish({ request: this });
 	    }
+
+	    if (this[kHandler].onRequestSent) {
+	      try {
+	        return this[kHandler].onRequestSent()
+	      } catch (err) {
+	        this.abort(err);
+	      }
+	    }
 	  }
 
 	  onConnect (abort) {
-	    assert$8(!this.aborted);
-	    assert$8(!this.completed);
+	    assert$9(!this.aborted);
+	    assert$9(!this.completed);
 
-	    return this[kHandler].onConnect(abort)
+	    if (this.error) {
+	      abort(this.error);
+	    } else {
+	      this.abort = abort;
+	      return this[kHandler].onConnect(abort)
+	    }
 	  }
 
 	  onHeaders (statusCode, headers, resume, statusText) {
-	    assert$8(!this.aborted);
-	    assert$8(!this.completed);
+	    assert$9(!this.aborted);
+	    assert$9(!this.completed);
 
 	    if (channels$1.headers.hasSubscribers) {
 	      channels$1.headers.publish({ request: this, response: { statusCode, headers, statusText } });
 	    }
 
-	    return this[kHandler].onHeaders(statusCode, headers, resume, statusText)
+	    try {
+	      return this[kHandler].onHeaders(statusCode, headers, resume, statusText)
+	    } catch (err) {
+	      this.abort(err);
+	    }
 	  }
 
 	  onData (chunk) {
-	    assert$8(!this.aborted);
-	    assert$8(!this.completed);
+	    assert$9(!this.aborted);
+	    assert$9(!this.completed);
 
-	    return this[kHandler].onData(chunk)
+	    try {
+	      return this[kHandler].onData(chunk)
+	    } catch (err) {
+	      this.abort(err);
+	      return false
+	    }
 	  }
 
 	  onUpgrade (statusCode, headers, socket) {
-	    assert$8(!this.aborted);
-	    assert$8(!this.completed);
+	    assert$9(!this.aborted);
+	    assert$9(!this.completed);
 
 	    return this[kHandler].onUpgrade(statusCode, headers, socket)
 	  }
 
 	  onComplete (trailers) {
-	    assert$8(!this.aborted);
+	    this.onFinally();
+
+	    assert$9(!this.aborted);
 
 	    this.completed = true;
 	    if (channels$1.trailers.hasSubscribers) {
 	      channels$1.trailers.publish({ request: this, trailers });
 	    }
-	    return this[kHandler].onComplete(trailers)
+
+	    try {
+	      return this[kHandler].onComplete(trailers)
+	    } catch (err) {
+	      // TODO (fix): This might be a bad idea?
+	      this.onError(err);
+	    }
 	  }
 
 	  onError (error) {
+	    this.onFinally();
+
 	    if (channels$1.error.hasSubscribers) {
 	      channels$1.error.publish({ request: this, error });
 	    }
@@ -14129,7 +14444,20 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	      return
 	    }
 	    this.aborted = true;
+
 	    return this[kHandler].onError(error)
+	  }
+
+	  onFinally () {
+	    if (this.errorHandler) {
+	      this.body.off('error', this.errorHandler);
+	      this.errorHandler = null;
+	    }
+
+	    if (this.endHandler) {
+	      this.body.off('end', this.endHandler);
+	      this.endHandler = null;
+	    }
 	  }
 
 	  // TODO: adjust to support H2
@@ -14507,7 +14835,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	var require$$4 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_tls$1);
 
 	const net$1 = require$$1$3;
-	const assert$7 = require$$3$1;
+	const assert$8 = require$$3$1;
 	const util$i = util$l;
 	const { InvalidArgumentError: InvalidArgumentError$i, ConnectTimeoutError } = errors$1;
 
@@ -14599,7 +14927,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	      const sessionKey = servername || hostname;
 	      const session = sessionCache.get(sessionKey) || null;
 
-	      assert$7(sessionKey);
+	      assert$8(sessionKey);
 
 	      socket = tls.connect({
 	        highWaterMark: 16384, // TLS in node can't have bigger HWM anyway...
@@ -14620,7 +14948,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	          sessionCache.set(sessionKey, session);
 	        });
 	    } else {
-	      assert$7(!httpSocket, 'httpSocket can only be sent on TLS update');
+	      assert$8(!httpSocket, 'httpSocket can only be sent on TLS update');
 	      socket = net$1.connect({
 	        highWaterMark: 64 * 1024, // Same as nodejs fs streams.
 	        ...options,
@@ -15020,7 +15348,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	const util$h = util$l;
 	const { kBodyUsed } = symbols$4;
-	const assert$6 = require$$3$1;
+	const assert$7 = require$$3$1;
 	const { InvalidArgumentError: InvalidArgumentError$h } = errors$1;
 	const EE = require$$10$1;
 
@@ -15035,7 +15363,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  }
 
 	  async * [Symbol.asyncIterator] () {
-	    assert$6(!this[kBodyUsed], 'disturbed');
+	    assert$7(!this[kBodyUsed], 'disturbed');
 	    this[kBodyUsed] = true;
 	    yield * this[kBody$1];
 	  }
@@ -15064,7 +15392,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	      if (util$h.bodyLength(this.opts.body) === 0) {
 	        this.opts.body
 	          .on('data', function () {
-	            assert$6(false);
+	            assert$7(false);
 	          });
 	      }
 
@@ -15184,12 +15512,17 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	// https://tools.ietf.org/html/rfc7231#section-6.4.4
 	function shouldRemoveHeader (header, removeContent, unknownOrigin) {
-	  return (
-	    (header.length === 4 && header.toString().toLowerCase() === 'host') ||
-	    (removeContent && header.toString().toLowerCase().indexOf('content-') === 0) ||
-	    (unknownOrigin && header.length === 13 && header.toString().toLowerCase() === 'authorization') ||
-	    (unknownOrigin && header.length === 6 && header.toString().toLowerCase() === 'cookie')
-	  )
+	  if (header.length === 4) {
+	    return util$h.headerNameToString(header) === 'host'
+	  }
+	  if (removeContent && util$h.headerNameToString(header).startsWith('content-')) {
+	    return true
+	  }
+	  if (unknownOrigin && (header.length === 13 || header.length === 6 || header.length === 19)) {
+	    const name = util$h.headerNameToString(header);
+	    return name === 'authorization' || name === 'cookie' || name === 'proxy-authorization'
+	  }
+	  return false
 	}
 
 	// https://tools.ietf.org/html/rfc7231#section-6.4
@@ -15208,7 +15541,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	      }
 	    }
 	  } else {
-	    assert$6(headers == null, 'headers must be an object or an array');
+	    assert$7(headers == null, 'headers must be an object or an array');
 	  }
 	  return ret
 	}
@@ -15257,7 +15590,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	/* global WebAssembly */
 
-	const assert$5 = require$$3$1;
+	const assert$6 = require$$3$1;
 	const net = require$$1$3;
 	const http = require$$17;
 	const { pipeline: pipeline$1 } = require$$0$1;
@@ -15678,7 +16011,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	};
 
 	function onHttp2SessionError (err) {
-	  assert$5(err.code !== 'ERR_TLS_CERT_ALTNAME_INVALID');
+	  assert$6(err.code !== 'ERR_TLS_CERT_ALTNAME_INVALID');
 
 	  this[kSocket][kError] = err;
 
@@ -15706,7 +16039,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  client[kHTTP2Session] = null;
 
 	  if (client.destroyed) {
-	    assert$5(this[kPending$2] === 0);
+	    assert$6(this[kPending$2] === 0);
 
 	    // Fail entire queue.
 	    const requests = client[kQueue$1].splice(client[kRunningIdx]);
@@ -15724,7 +16057,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	  client[kPendingIdx] = client[kRunningIdx];
 
-	  assert$5(client[kRunning$3] === 0);
+	  assert$6(client[kRunning$3] === 0);
 
 	  client.emit('disconnect',
 	    client[kUrl$3],
@@ -15764,35 +16097,35 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	        return 0
 	      },
 	      wasm_on_status: (p, at, len) => {
-	        assert$5.strictEqual(currentParser.ptr, p);
+	        assert$6.strictEqual(currentParser.ptr, p);
 	        const start = at - currentBufferPtr + currentBufferRef.byteOffset;
 	        return currentParser.onStatus(new FastBuffer(currentBufferRef.buffer, start, len)) || 0
 	      },
 	      wasm_on_message_begin: (p) => {
-	        assert$5.strictEqual(currentParser.ptr, p);
+	        assert$6.strictEqual(currentParser.ptr, p);
 	        return currentParser.onMessageBegin() || 0
 	      },
 	      wasm_on_header_field: (p, at, len) => {
-	        assert$5.strictEqual(currentParser.ptr, p);
+	        assert$6.strictEqual(currentParser.ptr, p);
 	        const start = at - currentBufferPtr + currentBufferRef.byteOffset;
 	        return currentParser.onHeaderField(new FastBuffer(currentBufferRef.buffer, start, len)) || 0
 	      },
 	      wasm_on_header_value: (p, at, len) => {
-	        assert$5.strictEqual(currentParser.ptr, p);
+	        assert$6.strictEqual(currentParser.ptr, p);
 	        const start = at - currentBufferPtr + currentBufferRef.byteOffset;
 	        return currentParser.onHeaderValue(new FastBuffer(currentBufferRef.buffer, start, len)) || 0
 	      },
 	      wasm_on_headers_complete: (p, statusCode, upgrade, shouldKeepAlive) => {
-	        assert$5.strictEqual(currentParser.ptr, p);
+	        assert$6.strictEqual(currentParser.ptr, p);
 	        return currentParser.onHeadersComplete(statusCode, Boolean(upgrade), Boolean(shouldKeepAlive)) || 0
 	      },
 	      wasm_on_body: (p, at, len) => {
-	        assert$5.strictEqual(currentParser.ptr, p);
+	        assert$6.strictEqual(currentParser.ptr, p);
 	        const start = at - currentBufferPtr + currentBufferRef.byteOffset;
 	        return currentParser.onBody(new FastBuffer(currentBufferRef.buffer, start, len)) || 0
 	      },
 	      wasm_on_message_complete: (p) => {
-	        assert$5.strictEqual(currentParser.ptr, p);
+	        assert$6.strictEqual(currentParser.ptr, p);
 	        return currentParser.onMessageComplete() || 0
 	      }
 
@@ -15816,7 +16149,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	class Parser {
 	  constructor (client, socket, { exports }) {
-	    assert$5(Number.isFinite(client[kMaxHeadersSize]) && client[kMaxHeadersSize] > 0);
+	    assert$6(Number.isFinite(client[kMaxHeadersSize]) && client[kMaxHeadersSize] > 0);
 
 	    this.llhttp = exports;
 	    this.ptr = this.llhttp.llhttp_alloc(constants$2.TYPE.RESPONSE);
@@ -15870,12 +16203,12 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	      return
 	    }
 
-	    assert$5(this.ptr != null);
-	    assert$5(currentParser == null);
+	    assert$6(this.ptr != null);
+	    assert$6(currentParser == null);
 
 	    this.llhttp.llhttp_resume(this.ptr);
 
-	    assert$5(this.timeoutType === TIMEOUT_BODY);
+	    assert$6(this.timeoutType === TIMEOUT_BODY);
 	    if (this.timeout) {
 	      // istanbul ignore else: only for jest
 	      if (this.timeout.refresh) {
@@ -15899,9 +16232,9 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  }
 
 	  execute (data) {
-	    assert$5(this.ptr != null);
-	    assert$5(currentParser == null);
-	    assert$5(!this.paused);
+	    assert$6(this.ptr != null);
+	    assert$6(currentParser == null);
+	    assert$6(!this.paused);
 
 	    const { socket, llhttp } = this;
 
@@ -15961,8 +16294,8 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  }
 
 	  destroy () {
-	    assert$5(this.ptr != null);
-	    assert$5(currentParser == null);
+	    assert$6(this.ptr != null);
+	    assert$6(currentParser == null);
 
 	    this.llhttp.llhttp_free(this.ptr);
 	    this.ptr = null;
@@ -16037,21 +16370,21 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  onUpgrade (head) {
 	    const { upgrade, client, socket, headers, statusCode } = this;
 
-	    assert$5(upgrade);
+	    assert$6(upgrade);
 
 	    const request = client[kQueue$1][client[kRunningIdx]];
-	    assert$5(request);
+	    assert$6(request);
 
-	    assert$5(!socket.destroyed);
-	    assert$5(socket === client[kSocket]);
-	    assert$5(!this.paused);
-	    assert$5(request.upgrade || request.method === 'CONNECT');
+	    assert$6(!socket.destroyed);
+	    assert$6(socket === client[kSocket]);
+	    assert$6(!this.paused);
+	    assert$6(request.upgrade || request.method === 'CONNECT');
 
 	    this.statusCode = null;
 	    this.statusText = '';
 	    this.shouldKeepAlive = null;
 
-	    assert$5(this.headers.length % 2 === 0);
+	    assert$6(this.headers.length % 2 === 0);
 	    this.headers = [];
 	    this.headersSize = 0;
 
@@ -16096,8 +16429,8 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	      return -1
 	    }
 
-	    assert$5(!this.upgrade);
-	    assert$5(this.statusCode < 200);
+	    assert$6(!this.upgrade);
+	    assert$6(this.statusCode < 200);
 
 	    if (statusCode === 100) {
 	      util$g.destroy(socket, new SocketError$2('bad response', util$g.getSocketInfo(socket)));
@@ -16110,7 +16443,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	      return -1
 	    }
 
-	    assert$5.strictEqual(this.timeoutType, TIMEOUT_HEADERS);
+	    assert$6.strictEqual(this.timeoutType, TIMEOUT_HEADERS);
 
 	    this.statusCode = statusCode;
 	    this.shouldKeepAlive = (
@@ -16132,18 +16465,18 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	    }
 
 	    if (request.method === 'CONNECT') {
-	      assert$5(client[kRunning$3] === 1);
+	      assert$6(client[kRunning$3] === 1);
 	      this.upgrade = true;
 	      return 2
 	    }
 
 	    if (upgrade) {
-	      assert$5(client[kRunning$3] === 1);
+	      assert$6(client[kRunning$3] === 1);
 	      this.upgrade = true;
 	      return 2
 	    }
 
-	    assert$5(this.headers.length % 2 === 0);
+	    assert$6(this.headers.length % 2 === 0);
 	    this.headers = [];
 	    this.headersSize = 0;
 
@@ -16168,11 +16501,9 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	      socket[kReset] = true;
 	    }
 
-	    let pause;
-	    try {
-	      pause = request.onHeaders(statusCode, headers, this.resume, statusText) === false;
-	    } catch (err) {
-	      util$g.destroy(socket, err);
+	    const pause = request.onHeaders(statusCode, headers, this.resume, statusText) === false;
+
+	    if (request.aborted) {
 	      return -1
 	    }
 
@@ -16200,9 +16531,9 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	    }
 
 	    const request = client[kQueue$1][client[kRunningIdx]];
-	    assert$5(request);
+	    assert$6(request);
 
-	    assert$5.strictEqual(this.timeoutType, TIMEOUT_BODY);
+	    assert$6.strictEqual(this.timeoutType, TIMEOUT_BODY);
 	    if (this.timeout) {
 	      // istanbul ignore else: only for jest
 	      if (this.timeout.refresh) {
@@ -16210,7 +16541,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	      }
 	    }
 
-	    assert$5(statusCode >= 200);
+	    assert$6(statusCode >= 200);
 
 	    if (maxResponseSize > -1 && this.bytesRead + buf.length > maxResponseSize) {
 	      util$g.destroy(socket, new ResponseExceededMaxSizeError());
@@ -16219,13 +16550,8 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	    this.bytesRead += buf.length;
 
-	    try {
-	      if (request.onData(buf) === false) {
-	        return constants$2.ERROR.PAUSED
-	      }
-	    } catch (err) {
-	      util$g.destroy(socket, err);
-	      return -1
+	    if (request.onData(buf) === false) {
+	      return constants$2.ERROR.PAUSED
 	    }
 	  }
 
@@ -16241,9 +16567,9 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	    }
 
 	    const request = client[kQueue$1][client[kRunningIdx]];
-	    assert$5(request);
+	    assert$6(request);
 
-	    assert$5(statusCode >= 100);
+	    assert$6(statusCode >= 100);
 
 	    this.statusCode = null;
 	    this.statusText = '';
@@ -16252,7 +16578,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	    this.keepAlive = '';
 	    this.connection = '';
 
-	    assert$5(this.headers.length % 2 === 0);
+	    assert$6(this.headers.length % 2 === 0);
 	    this.headers = [];
 	    this.headersSize = 0;
 
@@ -16266,16 +16592,12 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	      return -1
 	    }
 
-	    try {
-	      request.onComplete(headers);
-	    } catch (err) {
-	      errorRequest(client, request, err);
-	    }
+	    request.onComplete(headers);
 
 	    client[kQueue$1][client[kRunningIdx]++] = null;
 
 	    if (socket[kWriting]) {
-	      assert$5.strictEqual(client[kRunning$3], 0);
+	      assert$6.strictEqual(client[kRunning$3], 0);
 	      // Response completed before request.
 	      util$g.destroy(socket, new InformationalError('reset'));
 	      return constants$2.ERROR.PAUSED
@@ -16306,7 +16628,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  /* istanbul ignore else */
 	  if (timeoutType === TIMEOUT_HEADERS) {
 	    if (!socket[kWriting] || socket.writableNeedDrain || client[kRunning$3] > 1) {
-	      assert$5(!parser.paused, 'cannot be paused while waiting for headers');
+	      assert$6(!parser.paused, 'cannot be paused while waiting for headers');
 	      util$g.destroy(socket, new HeadersTimeoutError());
 	    }
 	  } else if (timeoutType === TIMEOUT_BODY) {
@@ -16314,7 +16636,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	      util$g.destroy(socket, new BodyTimeoutError());
 	    }
 	  } else if (timeoutType === TIMEOUT_IDLE) {
-	    assert$5(client[kRunning$3] === 0 && client[kKeepAliveTimeoutValue]);
+	    assert$6(client[kRunning$3] === 0 && client[kKeepAliveTimeoutValue]);
 	    util$g.destroy(socket, new InformationalError('socket idle timeout'));
 	  }
 	}
@@ -16329,7 +16651,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	function onSocketError (err) {
 	  const { [kClient$1]: client, [kParser]: parser } = this;
 
-	  assert$5(err.code !== 'ERR_TLS_CERT_ALTNAME_INVALID');
+	  assert$6(err.code !== 'ERR_TLS_CERT_ALTNAME_INVALID');
 
 	  if (client[kHTTPConnVersion] !== 'h2') {
 	    // On Mac OS, we get an ECONNRESET even if there is a full body to be forwarded
@@ -16355,14 +16677,14 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	    // Error is not caused by running request and not a recoverable
 	    // socket error.
 
-	    assert$5(client[kPendingIdx] === client[kRunningIdx]);
+	    assert$6(client[kPendingIdx] === client[kRunningIdx]);
 
 	    const requests = client[kQueue$1].splice(client[kRunningIdx]);
 	    for (let i = 0; i < requests.length; i++) {
 	      const request = requests[i];
 	      errorRequest(client, request, err);
 	    }
-	    assert$5(client[kSize$4] === 0);
+	    assert$6(client[kSize$4] === 0);
 	  }
 	}
 
@@ -16398,7 +16720,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  client[kSocket] = null;
 
 	  if (client.destroyed) {
-	    assert$5(client[kPending$2] === 0);
+	    assert$6(client[kPending$2] === 0);
 
 	    // Fail entire queue.
 	    const requests = client[kQueue$1].splice(client[kRunningIdx]);
@@ -16416,7 +16738,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	  client[kPendingIdx] = client[kRunningIdx];
 
-	  assert$5(client[kRunning$3] === 0);
+	  assert$6(client[kRunning$3] === 0);
 
 	  client.emit('disconnect', client[kUrl$3], [client], err);
 
@@ -16424,8 +16746,8 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	}
 
 	async function connect$1 (client) {
-	  assert$5(!client[kConnecting]);
-	  assert$5(!client[kSocket]);
+	  assert$6(!client[kConnecting]);
+	  assert$6(!client[kSocket]);
 
 	  let { host, hostname, protocol, port } = client[kUrl$3];
 
@@ -16433,10 +16755,10 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  if (hostname[0] === '[') {
 	    const idx = hostname.indexOf(']');
 
-	    assert$5(idx !== -1);
-	    const ip = hostname.substr(1, idx - 1);
+	    assert$6(idx !== -1);
+	    const ip = hostname.substring(1, idx);
 
-	    assert$5(net.isIP(ip));
+	    assert$6(net.isIP(ip));
 	    hostname = ip;
 	  }
 
@@ -16481,7 +16803,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	    client[kConnecting] = false;
 
-	    assert$5(socket);
+	    assert$6(socket);
 
 	    const isH2 = socket.alpnProtocol === 'h2';
 	    if (isH2) {
@@ -16573,7 +16895,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	    }
 
 	    if (err.code === 'ERR_TLS_CERT_ALTNAME_INVALID') {
-	      assert$5(client[kRunning$3] === 0);
+	      assert$6(client[kRunning$3] === 0);
 	      while (client[kPending$2] > 0 && client[kQueue$1][client[kPendingIdx]].servername === client[kServerName]) {
 	        const request = client[kQueue$1][client[kPendingIdx]++];
 	        errorRequest(client, request, err);
@@ -16613,7 +16935,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	function _resume (client, sync) {
 	  while (true) {
 	    if (client.destroyed) {
-	      assert$5(client[kPending$2] === 0);
+	      assert$6(client[kPending$2] === 0);
 	      return
 	    }
 
@@ -16713,23 +17035,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	      return
 	    }
 
-	    if (util$g.isStream(request.body) && util$g.bodyLength(request.body) === 0) {
-	      request.body
-	        .on('data', /* istanbul ignore next */ function () {
-	          /* istanbul ignore next */
-	          assert$5(false);
-	        })
-	        .on('error', function (err) {
-	          errorRequest(client, request, err);
-	        })
-	        .on('end', function () {
-	          util$g.destroy(this);
-	        });
-
-	      request.body = null;
-	    }
-
-	    if (client[kRunning$3] > 0 &&
+	    if (client[kRunning$3] > 0 && util$g.bodyLength(request.body) !== 0 &&
 	      (util$g.isStream(request.body) || util$g.isAsyncIterable(request.body))) {
 	      // Request with stream or iterator body can error while other requests
 	      // are inflight and indirectly error those as well.
@@ -16748,6 +17054,11 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	      client[kQueue$1].splice(client[kPendingIdx], 1);
 	    }
 	  }
+	}
+
+	// https://www.rfc-editor.org/rfc/rfc7230#section-3.3.2
+	function shouldSendContentLength (method) {
+	  return method !== 'GET' && method !== 'HEAD' && method !== 'OPTIONS' && method !== 'TRACE' && method !== 'CONNECT'
 	}
 
 	function write (client, request) {
@@ -16778,7 +17089,9 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	    body.read(0);
 	  }
 
-	  let contentLength = util$g.bodyLength(body);
+	  const bodyLength = util$g.bodyLength(body);
+
+	  let contentLength = bodyLength;
 
 	  if (contentLength === null) {
 	    contentLength = request.contentLength;
@@ -16793,7 +17106,9 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	    contentLength = null;
 	  }
 
-	  if (request.contentLength !== null && request.contentLength !== contentLength) {
+	  // https://github.com/nodejs/undici/issues/2046
+	  // A user agent may send a Content-Length header with 0 value, this should be allowed.
+	  if (shouldSendContentLength(method) && contentLength > 0 && request.contentLength !== null && request.contentLength !== contentLength) {
 	    if (client[kStrictContentLength]) {
 	      errorRequest(client, request, new RequestContentLengthMismatchError());
 	      return false
@@ -16874,16 +17189,16 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  }
 
 	  /* istanbul ignore else: assertion */
-	  if (!body) {
+	  if (!body || bodyLength === 0) {
 	    if (contentLength === 0) {
 	      socket.write(`${header}content-length: 0\r\n\r\n`, 'latin1');
 	    } else {
-	      assert$5(contentLength === null, 'no body must not have content length');
+	      assert$6(contentLength === null, 'no body must not have content length');
 	      socket.write(`${header}\r\n`, 'latin1');
 	    }
 	    request.onRequestSent();
 	  } else if (util$g.isBuffer(body)) {
-	    assert$5(contentLength === body.byteLength, 'buffer body must have content length');
+	    assert$6(contentLength === body.byteLength, 'buffer body must have content length');
 
 	    socket.cork();
 	    socket.write(`${header}content-length: ${contentLength}\r\n\r\n`, 'latin1');
@@ -16905,7 +17220,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  } else if (util$g.isIterable(body)) {
 	    writeIterable({ body, client, request, socket, contentLength, header, expectsPayload });
 	  } else {
-	    assert$5(false);
+	    assert$6(false);
 	  }
 
 	  return true
@@ -16940,6 +17255,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	    return false
 	  }
 
+	  /** @type {import('node:http2').ClientHttp2Stream} */
 	  let stream;
 	  const h2State = client[kHTTP2SessionState];
 
@@ -17014,7 +17330,9 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	    contentLength = null;
 	  }
 
-	  if (request.contentLength != null && request.contentLength !== contentLength) {
+	  // https://github.com/nodejs/undici/issues/2046
+	  // A user agent may send a Content-Length header with 0 value, this should be allowed.
+	  if (shouldSendContentLength(method) && contentLength > 0 && request.contentLength != null && request.contentLength !== contentLength) {
 	    if (client[kStrictContentLength]) {
 	      errorRequest(client, request, new RequestContentLengthMismatchError());
 	      return false
@@ -17024,7 +17342,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  }
 
 	  if (contentLength != null) {
-	    assert$5(body, 'no body must not have content length');
+	    assert$6(body, 'no body must not have content length');
 	    headers[HTTP2_HEADER_CONTENT_LENGTH] = `${contentLength}`;
 	  }
 
@@ -17033,14 +17351,10 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  const shouldEndStream = method === 'GET' || method === 'HEAD';
 	  if (expectContinue) {
 	    headers[HTTP2_HEADER_EXPECT] = '100-continue';
-	    /**
-	     * @type {import('node:http2').ClientHttp2Stream}
-	     */
 	    stream = session.request(headers, { endStream: shouldEndStream, signal });
 
 	    stream.once('continue', writeBodyH2);
 	  } else {
-	    /** @type {import('node:http2').ClientHttp2Stream} */
 	    stream = session.request(headers, {
 	      endStream: shouldEndStream,
 	      signal
@@ -17052,7 +17366,9 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  ++h2State.openStreams;
 
 	  stream.once('response', headers => {
-	    if (request.onHeaders(Number(headers[HTTP2_HEADER_STATUS]), headers, stream.resume.bind(stream), '') === false) {
+	    const { [HTTP2_HEADER_STATUS]: statusCode, ...realHeaders } = headers;
+
+	    if (request.onHeaders(Number(statusCode), realHeaders, stream.resume.bind(stream), '') === false) {
 	      stream.pause();
 	    }
 	  });
@@ -17062,13 +17378,17 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  });
 
 	  stream.on('data', (chunk) => {
-	    if (request.onData(chunk) === false) stream.pause();
+	    if (request.onData(chunk) === false) {
+	      stream.pause();
+	    }
 	  });
 
 	  stream.once('close', () => {
 	    h2State.openStreams -= 1;
 	    // TODO(HTTP/2): unref only if current streams count is 0
-	    if (h2State.openStreams === 0) session.unref();
+	    if (h2State.openStreams === 0) {
+	      session.unref();
+	    }
 	  });
 
 	  stream.once('error', function (err) {
@@ -17111,7 +17431,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	    if (!body) {
 	      request.onRequestSent();
 	    } else if (util$g.isBuffer(body)) {
-	      assert$5(contentLength === body.byteLength, 'buffer body must have content length');
+	      assert$6(contentLength === body.byteLength, 'buffer body must have content length');
 	      stream.cork();
 	      stream.write(body);
 	      stream.uncork();
@@ -17165,13 +17485,13 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	        socket: client[kSocket]
 	      });
 	    } else {
-	      assert$5(false);
+	      assert$6(false);
 	    }
 	  }
 	}
 
 	function writeStream ({ h2stream, body, client, request, socket, contentLength, header, expectsPayload }) {
-	  assert$5(contentLength !== 0 || client[kRunning$3] === 0, 'stream body cannot be pipelined');
+	  assert$6(contentLength !== 0 || client[kRunning$3] === 0, 'stream body cannot be pipelined');
 
 	  if (client[kHTTPConnVersion] === 'h2') {
 	    // For HTTP/2, is enough to pipe the stream
@@ -17228,7 +17548,11 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	    }
 	  };
 	  const onAbort = function () {
-	    onFinished(new RequestAbortedError$8());
+	    if (finished) {
+	      return
+	    }
+	    const err = new RequestAbortedError$8();
+	    queueMicrotask(() => onFinished(err));
 	  };
 	  const onFinished = function (err) {
 	    if (finished) {
@@ -17237,7 +17561,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	    finished = true;
 
-	    assert$5(socket.destroyed || (socket[kWriting] && client[kRunning$3] <= 1));
+	    assert$6(socket.destroyed || (socket[kWriting] && client[kRunning$3] <= 1));
 
 	    socket
 	      .off('drain', onDrain)
@@ -17282,7 +17606,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	}
 
 	async function writeBlob ({ h2stream, body, client, request, socket, contentLength, header, expectsPayload }) {
-	  assert$5(contentLength === body.size, 'blob body must have content length');
+	  assert$6(contentLength === body.size, 'blob body must have content length');
 
 	  const isH2 = client[kHTTPConnVersion] === 'h2';
 	  try {
@@ -17317,7 +17641,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	}
 
 	async function writeIterable ({ h2stream, body, client, request, socket, contentLength, header, expectsPayload }) {
-	  assert$5(contentLength !== 0 || client[kRunning$3] === 0, 'iterator body cannot be pipelined');
+	  assert$6(contentLength !== 0 || client[kRunning$3] === 0, 'iterator body cannot be pipelined');
 
 	  let callback = null;
 	  function onDrain () {
@@ -17329,7 +17653,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  }
 
 	  const waitForDrain = () => new Promise((resolve, reject) => {
-	    assert$5(callback === null);
+	    assert$6(callback === null);
 
 	    if (socket[kError]) {
 	      reject(socket[kError]);
@@ -17525,7 +17849,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	    socket[kWriting] = false;
 
 	    if (err) {
-	      assert$5(client[kRunning$3] <= 1, 'pipeline should only contain this request');
+	      assert$6(client[kRunning$3] <= 1, 'pipeline should only contain this request');
 	      util$g.destroy(socket, err);
 	    }
 	  }
@@ -17534,7 +17858,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	function errorRequest (client, request, err) {
 	  try {
 	    request.onError(err);
-	    assert$5(request.aborted);
+	    assert$6(request.aborted);
 	  } catch (err) {
 	    client.emit('error', err);
 	  }
@@ -17943,7 +18267,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	        maxCachedSessions,
 	        allowH2,
 	        socketPath,
-	        timeout: connectTimeout == null ? 10e3 : connectTimeout,
+	        timeout: connectTimeout,
 	        ...(util$f.nodeHasAutoSelectFamily && autoSelectFamily ? { autoSelectFamily, autoSelectFamilyAttemptTimeout } : undefined),
 	        ...connect
 	      });
@@ -18364,7 +18688,9 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	var api$1 = {};
 
-	const assert$4 = require$$3$1;
+	var apiRequest = {exports: {}};
+
+	const assert$5 = require$$3$1;
 	const { Readable: Readable$2 } = require$$0$1;
 	const { RequestAbortedError: RequestAbortedError$7, NotSupportedError, InvalidArgumentError: InvalidArgumentError$c } = errors$1;
 	const util$d = util$l;
@@ -18377,6 +18703,8 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	const kBody = Symbol('kBody');
 	const kAbort = Symbol('abort');
 	const kContentType = Symbol('kContentType');
+
+	const noop$1 = () => {};
 
 	var readable = class BodyReadable extends Readable$2 {
 	  constructor ({
@@ -18505,43 +18833,56 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	      if (this[kConsume]) {
 	        // TODO: Is this the best way to force a lock?
 	        this[kBody].getReader(); // Ensure stream is locked.
-	        assert$4(this[kBody].locked);
+	        assert$5(this[kBody].locked);
 	      }
 	    }
 	    return this[kBody]
 	  }
 
-	  async dump (opts) {
+	  dump (opts) {
 	    let limit = opts && Number.isFinite(opts.limit) ? opts.limit : 262144;
 	    const signal = opts && opts.signal;
-	    const abortFn = () => {
-	      this.destroy();
-	    };
-	    let signalListenerCleanup;
+
 	    if (signal) {
-	      if (typeof signal !== 'object' || !('aborted' in signal)) {
-	        throw new InvalidArgumentError$c('signal must be an AbortSignal')
-	      }
-	      util$d.throwIfAborted(signal);
-	      signalListenerCleanup = util$d.addAbortListener(signal, abortFn);
-	    }
-	    try {
-	      for await (const chunk of this) {
-	        util$d.throwIfAborted(signal);
-	        limit -= Buffer.byteLength(chunk);
-	        if (limit < 0) {
-	          return
+	      try {
+	        if (typeof signal !== 'object' || !('aborted' in signal)) {
+	          throw new InvalidArgumentError$c('signal must be an AbortSignal')
 	        }
-	      }
-	    } catch {
-	      util$d.throwIfAborted(signal);
-	    } finally {
-	      if (typeof signalListenerCleanup === 'function') {
-	        signalListenerCleanup();
-	      } else if (signalListenerCleanup) {
-	        signalListenerCleanup[Symbol.dispose]();
+	        util$d.throwIfAborted(signal);
+	      } catch (err) {
+	        return Promise.reject(err)
 	      }
 	    }
+
+	    if (this.closed) {
+	      return Promise.resolve(null)
+	    }
+
+	    return new Promise((resolve, reject) => {
+	      const signalListenerCleanup = signal
+	        ? util$d.addAbortListener(signal, () => {
+	          this.destroy();
+	        })
+	        : noop$1;
+
+	      this
+	        .on('close', function () {
+	          signalListenerCleanup();
+	          if (signal && signal.aborted) {
+	            reject(signal.reason || Object.assign(new Error('The operation was aborted'), { name: 'AbortError' }));
+	          } else {
+	            resolve(null);
+	          }
+	        })
+	        .on('error', noop$1)
+	        .on('data', function (chunk) {
+	          limit -= chunk.length;
+	          if (limit <= 0) {
+	            this.destroy();
+	          }
+	        })
+	        .resume();
+	    })
 	  }
 	};
 
@@ -18561,7 +18902,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	    throw new TypeError('unusable')
 	  }
 
-	  assert$4(!stream[kConsume]);
+	  assert$5(!stream[kConsume]);
 
 	  return new Promise((resolve, reject) => {
 	    stream[kConsume] = {
@@ -18668,14 +19009,14 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  consume.body = null;
 	}
 
-	const assert$3 = require$$3$1;
+	const assert$4 = require$$3$1;
 	const {
 	  ResponseStatusCodeError
 	} = errors$1;
 	const { toUSVString } = util$l;
 
 	async function getResolveErrorBodyCallback$2 ({ callback, body, contentType, statusCode, statusMessage, headers }) {
-	  assert$3(body);
+	  assert$4(body);
 
 	  let chunks = [];
 	  let limit = 0;
@@ -18955,7 +19296,10 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  }
 	}
 
-	var apiRequest = request$1;
+	apiRequest.exports = request$1;
+	apiRequest.exports.RequestHandler = RequestHandler;
+
+	var apiRequestExports = apiRequest.exports;
 
 	const { finished, PassThrough: PassThrough$1 } = require$$0$1;
 	const {
@@ -19189,7 +19533,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	const util$9 = util$l;
 	const { AsyncResource: AsyncResource$2 } = require$$0;
 	const { addSignal: addSignal$2, removeSignal: removeSignal$2 } = abortSignal;
-	const assert$2 = require$$3$1;
+	const assert$3 = require$$3$1;
 
 	const kResume = Symbol('resume');
 
@@ -19323,7 +19667,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  onConnect (abort, context) {
 	    const { ret, res } = this;
 
-	    assert$2(!res, 'pipeline cannot be retried');
+	    assert$3(!res, 'pipeline cannot be retried');
 
 	    if (ret.destroyed) {
 	      throw new RequestAbortedError$3()
@@ -19428,7 +19772,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	const { AsyncResource: AsyncResource$1 } = require$$0;
 	const util$8 = util$l;
 	const { addSignal: addSignal$1, removeSignal: removeSignal$1 } = abortSignal;
-	const assert$1 = require$$3$1;
+	const assert$2 = require$$3$1;
 
 	class UpgradeHandler extends AsyncResource$1 {
 	  constructor (opts, callback) {
@@ -19473,7 +19817,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 	  onUpgrade (statusCode, rawHeaders, socket) {
 	    const { callback, opaque, context } = this;
 
-	    assert$1.strictEqual(statusCode, 101);
+	    assert$2.strictEqual(statusCode, 101);
 
 	    removeSignal$1(this);
 
@@ -19631,7 +19975,7 @@ sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 
 
 	var apiConnect = connect;
 
-	api$1.request = apiRequest;
+	api$1.request = apiRequestExports;
 	api$1.stream = apiStream;
 	api$1.pipeline = apiPipeline;
 	api$1.upgrade = apiUpgrade;
@@ -20608,6 +20952,9 @@ ${pendingInterceptorsFormatter.format(pending)}
 	    this[kProxyTls] = opts.proxyTls;
 	    this[kProxyHeaders] = opts.headers || {};
 
+	    const resolvedUrl = new URL$1(opts.uri);
+	    const { origin, port, host, username, password } = resolvedUrl;
+
 	    if (opts.auth && opts.token) {
 	      throw new InvalidArgumentError$2('opts.auth cannot be used in combination with opts.token')
 	    } else if (opts.auth) {
@@ -20615,10 +20962,9 @@ ${pendingInterceptorsFormatter.format(pending)}
 	      this[kProxyHeaders]['proxy-authorization'] = `Basic ${opts.auth}`;
 	    } else if (opts.token) {
 	      this[kProxyHeaders]['proxy-authorization'] = opts.token;
+	    } else if (username && password) {
+	      this[kProxyHeaders]['proxy-authorization'] = `Basic ${Buffer.from(`${decodeURIComponent(username)}:${decodeURIComponent(password)}`).toString('base64')}`;
 	    }
-
-	    const resolvedUrl = new URL$1(opts.uri);
-	    const { origin, port, host } = resolvedUrl;
 
 	    const connect = buildConnector$1({ ...opts.proxyTls });
 	    this[kConnectEndpoint] = buildConnector$1({ ...opts.requestTls });
@@ -20643,7 +20989,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	          });
 	          if (statusCode !== 200) {
 	            socket.on('error', () => {}).destroy();
-	            callback(new RequestAbortedError('Proxy response !== 200 when HTTP Tunneling'));
+	            callback(new RequestAbortedError(`Proxy response (${statusCode}) !== 200 when HTTP Tunneling`));
 	          }
 	          if (opts.protocol !== 'https:') {
 	            callback(null, socket);
@@ -20729,6 +21075,343 @@ ${pendingInterceptorsFormatter.format(pending)}
 
 	var proxyAgent = ProxyAgent$1;
 
+	const assert$1 = require$$3$1;
+
+	const { kRetryHandlerDefaultRetry } = symbols$4;
+	const { RequestRetryError } = errors$1;
+	const { isDisturbed, parseHeaders, parseRangeHeader } = util$l;
+
+	function calculateRetryAfterHeader (retryAfter) {
+	  const current = Date.now();
+	  const diff = new Date(retryAfter).getTime() - current;
+
+	  return diff
+	}
+
+	let RetryHandler$1 = class RetryHandler {
+	  constructor (opts, handlers) {
+	    const { retryOptions, ...dispatchOpts } = opts;
+	    const {
+	      // Retry scoped
+	      retry: retryFn,
+	      maxRetries,
+	      maxTimeout,
+	      minTimeout,
+	      timeoutFactor,
+	      // Response scoped
+	      methods,
+	      errorCodes,
+	      retryAfter,
+	      statusCodes
+	    } = retryOptions ?? {};
+
+	    this.dispatch = handlers.dispatch;
+	    this.handler = handlers.handler;
+	    this.opts = dispatchOpts;
+	    this.abort = null;
+	    this.aborted = false;
+	    this.retryOpts = {
+	      retry: retryFn ?? RetryHandler[kRetryHandlerDefaultRetry],
+	      retryAfter: retryAfter ?? true,
+	      maxTimeout: maxTimeout ?? 30 * 1000, // 30s,
+	      timeout: minTimeout ?? 500, // .5s
+	      timeoutFactor: timeoutFactor ?? 2,
+	      maxRetries: maxRetries ?? 5,
+	      // What errors we should retry
+	      methods: methods ?? ['GET', 'HEAD', 'OPTIONS', 'PUT', 'DELETE', 'TRACE'],
+	      // Indicates which errors to retry
+	      statusCodes: statusCodes ?? [500, 502, 503, 504, 429],
+	      // List of errors to retry
+	      errorCodes: errorCodes ?? [
+	        'ECONNRESET',
+	        'ECONNREFUSED',
+	        'ENOTFOUND',
+	        'ENETDOWN',
+	        'ENETUNREACH',
+	        'EHOSTDOWN',
+	        'EHOSTUNREACH',
+	        'EPIPE'
+	      ]
+	    };
+
+	    this.retryCount = 0;
+	    this.start = 0;
+	    this.end = null;
+	    this.etag = null;
+	    this.resume = null;
+
+	    // Handle possible onConnect duplication
+	    this.handler.onConnect(reason => {
+	      this.aborted = true;
+	      if (this.abort) {
+	        this.abort(reason);
+	      } else {
+	        this.reason = reason;
+	      }
+	    });
+	  }
+
+	  onRequestSent () {
+	    if (this.handler.onRequestSent) {
+	      this.handler.onRequestSent();
+	    }
+	  }
+
+	  onUpgrade (statusCode, headers, socket) {
+	    if (this.handler.onUpgrade) {
+	      this.handler.onUpgrade(statusCode, headers, socket);
+	    }
+	  }
+
+	  onConnect (abort) {
+	    if (this.aborted) {
+	      abort(this.reason);
+	    } else {
+	      this.abort = abort;
+	    }
+	  }
+
+	  onBodySent (chunk) {
+	    if (this.handler.onBodySent) return this.handler.onBodySent(chunk)
+	  }
+
+	  static [kRetryHandlerDefaultRetry] (err, { state, opts }, cb) {
+	    const { statusCode, code, headers } = err;
+	    const { method, retryOptions } = opts;
+	    const {
+	      maxRetries,
+	      timeout,
+	      maxTimeout,
+	      timeoutFactor,
+	      statusCodes,
+	      errorCodes,
+	      methods
+	    } = retryOptions;
+	    let { counter, currentTimeout } = state;
+
+	    currentTimeout =
+	      currentTimeout != null && currentTimeout > 0 ? currentTimeout : timeout;
+
+	    // Any code that is not a Undici's originated and allowed to retry
+	    if (
+	      code &&
+	      code !== 'UND_ERR_REQ_RETRY' &&
+	      code !== 'UND_ERR_SOCKET' &&
+	      !errorCodes.includes(code)
+	    ) {
+	      cb(err);
+	      return
+	    }
+
+	    // If a set of method are provided and the current method is not in the list
+	    if (Array.isArray(methods) && !methods.includes(method)) {
+	      cb(err);
+	      return
+	    }
+
+	    // If a set of status code are provided and the current status code is not in the list
+	    if (
+	      statusCode != null &&
+	      Array.isArray(statusCodes) &&
+	      !statusCodes.includes(statusCode)
+	    ) {
+	      cb(err);
+	      return
+	    }
+
+	    // If we reached the max number of retries
+	    if (counter > maxRetries) {
+	      cb(err);
+	      return
+	    }
+
+	    let retryAfterHeader = headers != null && headers['retry-after'];
+	    if (retryAfterHeader) {
+	      retryAfterHeader = Number(retryAfterHeader);
+	      retryAfterHeader = isNaN(retryAfterHeader)
+	        ? calculateRetryAfterHeader(retryAfterHeader)
+	        : retryAfterHeader * 1e3; // Retry-After is in seconds
+	    }
+
+	    const retryTimeout =
+	      retryAfterHeader > 0
+	        ? Math.min(retryAfterHeader, maxTimeout)
+	        : Math.min(currentTimeout * timeoutFactor ** counter, maxTimeout);
+
+	    state.currentTimeout = retryTimeout;
+
+	    setTimeout(() => cb(null), retryTimeout);
+	  }
+
+	  onHeaders (statusCode, rawHeaders, resume, statusMessage) {
+	    const headers = parseHeaders(rawHeaders);
+
+	    this.retryCount += 1;
+
+	    if (statusCode >= 300) {
+	      this.abort(
+	        new RequestRetryError('Request failed', statusCode, {
+	          headers,
+	          count: this.retryCount
+	        })
+	      );
+	      return false
+	    }
+
+	    // Checkpoint for resume from where we left it
+	    if (this.resume != null) {
+	      this.resume = null;
+
+	      if (statusCode !== 206) {
+	        return true
+	      }
+
+	      const contentRange = parseRangeHeader(headers['content-range']);
+	      // If no content range
+	      if (!contentRange) {
+	        this.abort(
+	          new RequestRetryError('Content-Range mismatch', statusCode, {
+	            headers,
+	            count: this.retryCount
+	          })
+	        );
+	        return false
+	      }
+
+	      // Let's start with a weak etag check
+	      if (this.etag != null && this.etag !== headers.etag) {
+	        this.abort(
+	          new RequestRetryError('ETag mismatch', statusCode, {
+	            headers,
+	            count: this.retryCount
+	          })
+	        );
+	        return false
+	      }
+
+	      const { start, size, end = size } = contentRange;
+
+	      assert$1(this.start === start, 'content-range mismatch');
+	      assert$1(this.end == null || this.end === end, 'content-range mismatch');
+
+	      this.resume = resume;
+	      return true
+	    }
+
+	    if (this.end == null) {
+	      if (statusCode === 206) {
+	        // First time we receive 206
+	        const range = parseRangeHeader(headers['content-range']);
+
+	        if (range == null) {
+	          return this.handler.onHeaders(
+	            statusCode,
+	            rawHeaders,
+	            resume,
+	            statusMessage
+	          )
+	        }
+
+	        const { start, size, end = size } = range;
+
+	        assert$1(
+	          start != null && Number.isFinite(start) && this.start !== start,
+	          'content-range mismatch'
+	        );
+	        assert$1(Number.isFinite(start));
+	        assert$1(
+	          end != null && Number.isFinite(end) && this.end !== end,
+	          'invalid content-length'
+	        );
+
+	        this.start = start;
+	        this.end = end;
+	      }
+
+	      // We make our best to checkpoint the body for further range headers
+	      if (this.end == null) {
+	        const contentLength = headers['content-length'];
+	        this.end = contentLength != null ? Number(contentLength) : null;
+	      }
+
+	      assert$1(Number.isFinite(this.start));
+	      assert$1(
+	        this.end == null || Number.isFinite(this.end),
+	        'invalid content-length'
+	      );
+
+	      this.resume = resume;
+	      this.etag = headers.etag != null ? headers.etag : null;
+
+	      return this.handler.onHeaders(
+	        statusCode,
+	        rawHeaders,
+	        resume,
+	        statusMessage
+	      )
+	    }
+
+	    const err = new RequestRetryError('Request failed', statusCode, {
+	      headers,
+	      count: this.retryCount
+	    });
+
+	    this.abort(err);
+
+	    return false
+	  }
+
+	  onData (chunk) {
+	    this.start += chunk.length;
+
+	    return this.handler.onData(chunk)
+	  }
+
+	  onComplete (rawTrailers) {
+	    this.retryCount = 0;
+	    return this.handler.onComplete(rawTrailers)
+	  }
+
+	  onError (err) {
+	    if (this.aborted || isDisturbed(this.opts.body)) {
+	      return this.handler.onError(err)
+	    }
+
+	    this.retryOpts.retry(
+	      err,
+	      {
+	        state: { counter: this.retryCount++, currentTimeout: this.retryAfter },
+	        opts: { retryOptions: this.retryOpts, ...this.opts }
+	      },
+	      onRetry.bind(this)
+	    );
+
+	    function onRetry (err) {
+	      if (err != null || this.aborted || isDisturbed(this.opts.body)) {
+	        return this.handler.onError(err)
+	      }
+
+	      if (this.start !== 0) {
+	        this.opts = {
+	          ...this.opts,
+	          headers: {
+	            ...this.opts.headers,
+	            range: `bytes=${this.start}-${this.end ?? ''}`
+	          }
+	        };
+	      }
+
+	      try {
+	        this.dispatch(this.opts, this);
+	      } catch (err) {
+	        this.handler.onError(err);
+	      }
+	    }
+	  }
+	};
+
+	var RetryHandler_1 = RetryHandler$1;
+
 	// We include a version number for the Dispatcher API. In case of breaking changes,
 	// this version number must be increased to avoid conflicts.
 	const globalDispatcher = Symbol.for('undici.globalDispatcher.1');
@@ -20801,7 +21484,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		if (hasRequiredHeaders) return headers;
 		hasRequiredHeaders = 1;
 
-		const { kHeadersList } = symbols$4;
+		const { kHeadersList, kConstruct } = symbols$4;
 		const { kGuard } = requireSymbols$3();
 		const { kEnumerableProperty } = util$l;
 		const {
@@ -20816,6 +21499,13 @@ ${pendingInterceptorsFormatter.format(pending)}
 		const kHeadersSortedMap = Symbol('headers map sorted');
 
 		/**
+		 * @param {number} code
+		 */
+		function isHTTPWhiteSpaceCharCode (code) {
+		  return code === 0x00a || code === 0x00d || code === 0x009 || code === 0x020
+		}
+
+		/**
 		 * @see https://fetch.spec.whatwg.org/#concept-header-value-normalize
 		 * @param {string} potentialValue
 		 */
@@ -20823,12 +21513,12 @@ ${pendingInterceptorsFormatter.format(pending)}
 		  //  To normalize a byte sequence potentialValue, remove
 		  //  any leading and trailing HTTP whitespace bytes from
 		  //  potentialValue.
+		  let i = 0; let j = potentialValue.length;
 
-		  // Trimming the end with `.replace()` and a RegExp is typically subject to
-		  // ReDoS. This is safer and faster.
-		  let i = potentialValue.length;
-		  while (/[\r\n\t ]/.test(potentialValue.charAt(--i)));
-		  return potentialValue.slice(0, i + 1).replace(/^[\r\n\t ]+/, '')
+		  while (j > i && isHTTPWhiteSpaceCharCode(potentialValue.charCodeAt(j - 1))) --j;
+		  while (j > i && isHTTPWhiteSpaceCharCode(potentialValue.charCodeAt(i))) ++i;
+
+		  return i === 0 && j === potentialValue.length ? potentialValue : potentialValue.substring(i, j)
 		}
 
 		function fill (headers, object) {
@@ -20837,7 +21527,8 @@ ${pendingInterceptorsFormatter.format(pending)}
 		  // 1. If object is a sequence, then for each header in object:
 		  // Note: webidl conversion to array has already been done.
 		  if (Array.isArray(object)) {
-		    for (const header of object) {
+		    for (let i = 0; i < object.length; ++i) {
+		      const header = object[i];
 		      // 1. If header does not contain exactly two items, then throw a TypeError.
 		      if (header.length !== 2) {
 		        throw webidl.errors.exception({
@@ -20847,15 +21538,16 @@ ${pendingInterceptorsFormatter.format(pending)}
 		      }
 
 		      // 2. Append (header’s first item, header’s second item) to headers.
-		      headers.append(header[0], header[1]);
+		      appendHeader(headers, header[0], header[1]);
 		    }
 		  } else if (typeof object === 'object' && object !== null) {
 		    // Note: null should throw
 
 		    // 2. Otherwise, object is a record, then for each key → value in object,
 		    //    append (key, value) to headers
-		    for (const [key, value] of Object.entries(object)) {
-		      headers.append(key, value);
+		    const keys = Object.keys(object);
+		    for (let i = 0; i < keys.length; ++i) {
+		      appendHeader(headers, keys[i], object[keys[i]]);
 		    }
 		  } else {
 		    throw webidl.errors.conversionFailed({
@@ -20866,6 +21558,47 @@ ${pendingInterceptorsFormatter.format(pending)}
 		  }
 		}
 
+		/**
+		 * @see https://fetch.spec.whatwg.org/#concept-headers-append
+		 */
+		function appendHeader (headers, name, value) {
+		  // 1. Normalize value.
+		  value = headerValueNormalize(value);
+
+		  // 2. If name is not a header name or value is not a
+		  //    header value, then throw a TypeError.
+		  if (!isValidHeaderName(name)) {
+		    throw webidl.errors.invalidArgument({
+		      prefix: 'Headers.append',
+		      value: name,
+		      type: 'header name'
+		    })
+		  } else if (!isValidHeaderValue(value)) {
+		    throw webidl.errors.invalidArgument({
+		      prefix: 'Headers.append',
+		      value,
+		      type: 'header value'
+		    })
+		  }
+
+		  // 3. If headers’s guard is "immutable", then throw a TypeError.
+		  // 4. Otherwise, if headers’s guard is "request" and name is a
+		  //    forbidden header name, return.
+		  // Note: undici does not implement forbidden header names
+		  if (headers[kGuard] === 'immutable') {
+		    throw new TypeError('immutable')
+		  } else if (headers[kGuard] === 'request-no-cors') ;
+
+		  // 6. Otherwise, if headers’s guard is "response" and name is a
+		  //    forbidden response-header name, return.
+
+		  // 7. Append (name, value) to headers’s header list.
+		  return headers[kHeadersList].append(name, value)
+
+		  // 8. If headers’s guard is "request-no-cors", then remove
+		  //    privileged no-CORS request headers from headers
+		}
+
 		class HeadersList {
 		  /** @type {[string, string][]|null} */
 		  cookies = null
@@ -20874,7 +21607,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		    if (init instanceof HeadersList) {
 		      this[kHeadersMap] = new Map(init[kHeadersMap]);
 		      this[kHeadersSortedMap] = init[kHeadersSortedMap];
-		      this.cookies = init.cookies;
+		      this.cookies = init.cookies === null ? null : [...init.cookies];
 		    } else {
 		      this[kHeadersMap] = new Map(init);
 		      this[kHeadersSortedMap] = null;
@@ -20936,7 +21669,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		    //    the first such header to value and remove the
 		    //    others.
 		    // 2. Otherwise, append header (name, value) to list.
-		    return this[kHeadersMap].set(lowercaseName, { name, value })
+		    this[kHeadersMap].set(lowercaseName, { name, value });
 		  }
 
 		  // https://fetch.spec.whatwg.org/#concept-header-list-delete
@@ -20949,20 +21682,18 @@ ${pendingInterceptorsFormatter.format(pending)}
 		      this.cookies = null;
 		    }
 
-		    return this[kHeadersMap].delete(name)
+		    this[kHeadersMap].delete(name);
 		  }
 
 		  // https://fetch.spec.whatwg.org/#concept-header-list-get
 		  get (name) {
-		    // 1. If list does not contain name, then return null.
-		    if (!this.contains(name)) {
-		      return null
-		    }
+		    const value = this[kHeadersMap].get(name.toLowerCase());
 
+		    // 1. If list does not contain name, then return null.
 		    // 2. Return the values of all headers in list whose name
 		    //    is a byte-case-insensitive match for name,
 		    //    separated from each other by 0x2C 0x20, in order.
-		    return this[kHeadersMap].get(name.toLowerCase())?.value ?? null
+		    return value === undefined ? null : value.value
 		  }
 
 		  * [Symbol.iterator] () {
@@ -20988,6 +21719,9 @@ ${pendingInterceptorsFormatter.format(pending)}
 		// https://fetch.spec.whatwg.org/#headers-class
 		class Headers {
 		  constructor (init = undefined) {
+		    if (init === kConstruct) {
+		      return
+		    }
 		    this[kHeadersList] = new HeadersList();
 
 		    // The new Headers(init) constructor steps are:
@@ -21011,40 +21745,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		    name = webidl.converters.ByteString(name);
 		    value = webidl.converters.ByteString(value);
 
-		    // 1. Normalize value.
-		    value = headerValueNormalize(value);
-
-		    // 2. If name is not a header name or value is not a
-		    //    header value, then throw a TypeError.
-		    if (!isValidHeaderName(name)) {
-		      throw webidl.errors.invalidArgument({
-		        prefix: 'Headers.append',
-		        value: name,
-		        type: 'header name'
-		      })
-		    } else if (!isValidHeaderValue(value)) {
-		      throw webidl.errors.invalidArgument({
-		        prefix: 'Headers.append',
-		        value,
-		        type: 'header value'
-		      })
-		    }
-
-		    // 3. If headers’s guard is "immutable", then throw a TypeError.
-		    // 4. Otherwise, if headers’s guard is "request" and name is a
-		    //    forbidden header name, return.
-		    // Note: undici does not implement forbidden header names
-		    if (this[kGuard] === 'immutable') {
-		      throw new TypeError('immutable')
-		    } else if (this[kGuard] === 'request-no-cors') ;
-
-		    // 6. Otherwise, if headers’s guard is "response" and name is a
-		    //    forbidden response-header name, return.
-
-		    // 7. Append (name, value) to headers’s header list.
-		    // 8. If headers’s guard is "request-no-cors", then remove
-		    //    privileged no-CORS request headers from headers
-		    return this[kHeadersList].append(name, value)
+		    return appendHeader(this, name, value)
 		  }
 
 		  // https://fetch.spec.whatwg.org/#dom-headers-delete
@@ -21087,7 +21788,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		    // 7. Delete name from this’s header list.
 		    // 8. If this’s guard is "request-no-cors", then remove
 		    //    privileged no-CORS request headers from this.
-		    return this[kHeadersList].delete(name)
+		    this[kHeadersList].delete(name);
 		  }
 
 		  // https://fetch.spec.whatwg.org/#dom-headers-get
@@ -21178,7 +21879,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		    // 7. Set (name, value) in this’s header list.
 		    // 8. If this’s guard is "request-no-cors", then remove
 		    //    privileged no-CORS request headers from this
-		    return this[kHeadersList].set(name, value)
+		    this[kHeadersList].set(name, value);
 		  }
 
 		  // https://fetch.spec.whatwg.org/#dom-headers-getsetcookie
@@ -21214,7 +21915,8 @@ ${pendingInterceptorsFormatter.format(pending)}
 		    const cookies = this[kHeadersList].cookies;
 
 		    // 3. For each name of names:
-		    for (const [name, value] of names) {
+		    for (let i = 0; i < names.length; ++i) {
+		      const [name, value] = names[i];
 		      // 1. If name is `set-cookie`, then:
 		      if (name === 'set-cookie') {
 		        // 1. Let values be a list of all values of headers in list whose name
@@ -21222,8 +21924,8 @@ ${pendingInterceptorsFormatter.format(pending)}
 
 		        // 2. For each value of values:
 		        // 1. Append (name, value) to headers.
-		        for (const value of cookies) {
-		          headers.push([name, value]);
+		        for (let j = 0; j < cookies.length; ++j) {
+		          headers.push([name, cookies[j]]);
 		        }
 		      } else {
 		        // 2. Otherwise:
@@ -21247,6 +21949,12 @@ ${pendingInterceptorsFormatter.format(pending)}
 		  keys () {
 		    webidl.brandCheck(this, Headers);
 
+		    if (this[kGuard] === 'immutable') {
+		      const value = this[kHeadersSortedMap];
+		      return makeIterator(() => value, 'Headers',
+		        'key')
+		    }
+
 		    return makeIterator(
 		      () => [...this[kHeadersSortedMap].values()],
 		      'Headers',
@@ -21257,6 +21965,12 @@ ${pendingInterceptorsFormatter.format(pending)}
 		  values () {
 		    webidl.brandCheck(this, Headers);
 
+		    if (this[kGuard] === 'immutable') {
+		      const value = this[kHeadersSortedMap];
+		      return makeIterator(() => value, 'Headers',
+		        'value')
+		    }
+
 		    return makeIterator(
 		      () => [...this[kHeadersSortedMap].values()],
 		      'Headers',
@@ -21266,6 +21980,12 @@ ${pendingInterceptorsFormatter.format(pending)}
 
 		  entries () {
 		    webidl.brandCheck(this, Headers);
+
+		    if (this[kGuard] === 'immutable') {
+		      const value = this[kHeadersSortedMap];
+		      return makeIterator(() => value, 'Headers',
+		        'key+value')
+		    }
 
 		    return makeIterator(
 		      () => [...this[kHeadersSortedMap].values()],
@@ -21366,7 +22086,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		  isomorphicEncode
 		} = requireUtil$4();
 		const {
-		  redirectStatus,
+		  redirectStatusSet,
 		  nullBodyStatus,
 		  DOMException
 		} = requireConstants$3();
@@ -21375,11 +22095,12 @@ ${pendingInterceptorsFormatter.format(pending)}
 		const { FormData } = requireFormdata();
 		const { getGlobalOrigin } = requireGlobal();
 		const { URLSerializer } = requireDataURL();
-		const { kHeadersList } = symbols$4;
+		const { kHeadersList, kConstruct } = symbols$4;
 		const assert = require$$3$1;
 		const { types } = require$$3$2;
 
 		const ReadableStream = globalThis.ReadableStream || require$$14.ReadableStream;
+		const textEncoder = new TextEncoder('utf-8');
 
 		// https://fetch.spec.whatwg.org/#response-class
 		class Response {
@@ -21409,7 +22130,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		    }
 
 		    // 1. Let bytes the result of running serialize a JavaScript value to JSON bytes on data.
-		    const bytes = new TextEncoder('utf-8').encode(
+		    const bytes = textEncoder.encode(
 		      serializeJavascriptValueToJSONString(data)
 		    );
 
@@ -21454,7 +22175,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		    }
 
 		    // 3. If status is not a redirect status, then throw a RangeError.
-		    if (!redirectStatus.includes(status)) {
+		    if (!redirectStatusSet.has(status)) {
 		      throw new RangeError('Invalid status code ' + status)
 		    }
 
@@ -21495,7 +22216,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		    // 2. Set this’s headers to a new Headers object with this’s relevant
 		    // Realm, whose header list is this’s response’s header list and guard
 		    // is "response".
-		    this[kHeaders] = new Headers();
+		    this[kHeaders] = new Headers(kConstruct);
 		    this[kHeaders][kGuard] = 'response';
 		    this[kHeaders][kHeadersList] = this[kState].headersList;
 		    this[kHeaders][kRealm] = this[kRealm];
@@ -21865,11 +22586,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		    return webidl.converters.Blob(V, { strict: false })
 		  }
 
-		  if (
-		    types.isAnyArrayBuffer(V) ||
-		    types.isTypedArray(V) ||
-		    types.isDataView(V)
-		  ) {
+		  if (types.isArrayBuffer(V) || types.isTypedArray(V) || types.isDataView(V)) {
 		    return webidl.converters.BufferSource(V)
 		  }
 
@@ -21944,11 +22661,12 @@ ${pendingInterceptorsFormatter.format(pending)}
 		  isValidHTTPToken,
 		  sameOrigin,
 		  normalizeMethod,
-		  makePolicyContainer
+		  makePolicyContainer,
+		  normalizeMethodRecord
 		} = requireUtil$4();
 		const {
-		  forbiddenMethods,
-		  corsSafeListedMethods,
+		  forbiddenMethodsSet,
+		  corsSafeListedMethodsSet,
 		  referrerPolicy,
 		  requestRedirect,
 		  requestMode,
@@ -21961,13 +22679,12 @@ ${pendingInterceptorsFormatter.format(pending)}
 		const { webidl } = requireWebidl();
 		const { getGlobalOrigin } = requireGlobal();
 		const { URLSerializer } = requireDataURL();
-		const { kHeadersList } = symbols$4;
+		const { kHeadersList, kConstruct } = symbols$4;
 		const assert = require$$3$1;
 		const { getMaxListeners, setMaxListeners, getEventListeners, defaultMaxListeners } = require$$10$1;
 
 		let TransformStream = globalThis.TransformStream;
 
-		const kInit = Symbol('init');
 		const kAbortController = Symbol('abortController');
 
 		const requestFinalizer = new FinalizationRegistry(({ signal, abort }) => {
@@ -21978,7 +22695,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		class Request {
 		  // https://fetch.spec.whatwg.org/#dom-request
 		  constructor (input, init = {}) {
-		    if (input === kInit) {
+		    if (input === kConstruct) {
 		      return
 		    }
 
@@ -22117,8 +22834,10 @@ ${pendingInterceptorsFormatter.format(pending)}
 		      urlList: [...request.urlList]
 		    });
 
+		    const initHasKey = Object.keys(init).length !== 0;
+
 		    // 13. If init is not empty, then:
-		    if (Object.keys(init).length > 0) {
+		    if (initHasKey) {
 		      // 1. If request’s mode is "navigate", then set it to "same-origin".
 		      if (request.mode === 'navigate') {
 		        request.mode = 'same-origin';
@@ -22233,7 +22952,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		    }
 
 		    // 23. If init["integrity"] exists, then set request’s integrity metadata to it.
-		    if (init.integrity !== undefined && init.integrity != null) {
+		    if (init.integrity != null) {
 		      request.integrity = String(init.integrity);
 		    }
 
@@ -22249,16 +22968,16 @@ ${pendingInterceptorsFormatter.format(pending)}
 
 		      // 2. If method is not a method or method is a forbidden method, then
 		      // throw a TypeError.
-		      if (!isValidHTTPToken(init.method)) {
-		        throw TypeError(`'${init.method}' is not a valid HTTP method.`)
+		      if (!isValidHTTPToken(method)) {
+		        throw new TypeError(`'${method}' is not a valid HTTP method.`)
 		      }
 
-		      if (forbiddenMethods.indexOf(method.toUpperCase()) !== -1) {
-		        throw TypeError(`'${init.method}' HTTP method is unsupported.`)
+		      if (forbiddenMethodsSet.has(method.toUpperCase())) {
+		        throw new TypeError(`'${method}' HTTP method is unsupported.`)
 		      }
 
 		      // 3. Normalize method.
-		      method = normalizeMethod(init.method);
+		      method = normalizeMethodRecord[method] ?? normalizeMethod(method);
 
 		      // 4. Set request’s method to method.
 		      request.method = method;
@@ -22329,7 +23048,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		    // 30. Set this’s headers to a new Headers object with this’s relevant
 		    // Realm, whose header list is request’s header list and guard is
 		    // "request".
-		    this[kHeaders] = new Headers();
+		    this[kHeaders] = new Headers(kConstruct);
 		    this[kHeaders][kHeadersList] = request.headersList;
 		    this[kHeaders][kGuard] = 'request';
 		    this[kHeaders][kRealm] = this[kRealm];
@@ -22338,7 +23057,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		    if (mode === 'no-cors') {
 		      // 1. If this’s request’s method is not a CORS-safelisted method,
 		      // then throw a TypeError.
-		      if (!corsSafeListedMethods.includes(request.method)) {
+		      if (!corsSafeListedMethodsSet.has(request.method)) {
 		        throw new TypeError(
 		          `'${request.method} is unsupported in no-cors mode.`
 		        )
@@ -22349,25 +23068,25 @@ ${pendingInterceptorsFormatter.format(pending)}
 		    }
 
 		    // 32. If init is not empty, then:
-		    if (Object.keys(init).length !== 0) {
+		    if (initHasKey) {
+		      /** @type {HeadersList} */
+		      const headersList = this[kHeaders][kHeadersList];
 		      // 1. Let headers be a copy of this’s headers and its associated header
 		      // list.
-		      let headers = new Headers(this[kHeaders]);
-
 		      // 2. If init["headers"] exists, then set headers to init["headers"].
-		      if (init.headers !== undefined) {
-		        headers = init.headers;
-		      }
+		      const headers = init.headers !== undefined ? init.headers : new HeadersList(headersList);
 
 		      // 3. Empty this’s headers’s header list.
-		      this[kHeaders][kHeadersList].clear();
+		      headersList.clear();
 
 		      // 4. If headers is a Headers object, then for each header in its header
 		      // list, append header’s name/header’s value to this’s headers.
-		      if (headers.constructor.name === 'Headers') {
+		      if (headers instanceof HeadersList) {
 		        for (const [key, val] of headers) {
-		          this[kHeaders].append(key, val);
+		          headersList.append(key, val);
 		        }
+		        // Note: Copy the `set-cookie` meta-data.
+		        headersList.cookies = headers.cookies;
 		      } else {
 		        // 5. Otherwise, fill this’s headers with headers.
 		        fillHeaders(this[kHeaders], headers);
@@ -22656,10 +23375,10 @@ ${pendingInterceptorsFormatter.format(pending)}
 
 		    // 3. Let clonedRequestObject be the result of creating a Request object,
 		    // given clonedRequest, this’s headers’s guard, and this’s relevant Realm.
-		    const clonedRequestObject = new Request(kInit);
+		    const clonedRequestObject = new Request(kConstruct);
 		    clonedRequestObject[kState] = clonedRequest;
 		    clonedRequestObject[kRealm] = this[kRealm];
-		    clonedRequestObject[kHeaders] = new Headers();
+		    clonedRequestObject[kHeaders] = new Headers(kConstruct);
 		    clonedRequestObject[kHeaders][kHeadersList] = clonedRequest.headersList;
 		    clonedRequestObject[kHeaders][kGuard] = this[kHeaders][kGuard];
 		    clonedRequestObject[kHeaders][kRealm] = this[kHeaders][kRealm];
@@ -23479,7 +24198,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 
 	  bi_windup(s); /* align on byte boundary */
 
-	  if (header) {
+	  {
 	    put_short(s, len);
 	    put_short(s, ~len);
 	  }
@@ -23985,7 +24704,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	//int last;         /* one if this is the last block for a file */
 	{
 	  send_bits(s, (STORED_BLOCK << 1) + (last ? 1 : 0), 3); /* send block type */
-	  copy_block(s, buf, stored_len, true); /* with header */
+	  copy_block(s, buf, stored_len); /* with header */
 	}
 
 
@@ -29211,11 +29930,11 @@ ${pendingInterceptorsFormatter.format(pending)}
 		const assert = require$$3$1;
 		const { safelyExtractBody } = requireBody();
 		const {
-		  redirectStatus,
+		  redirectStatusSet,
 		  nullBodyStatus,
-		  safeMethods,
+		  safeMethodsSet,
 		  requestBodyHeader,
-		  subresource,
+		  subresourceSet,
 		  DOMException
 		} = requireConstants$3();
 		const { kHeadersList } = symbols$4;
@@ -29227,6 +29946,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		const { getGlobalDispatcher } = global;
 		const { webidl } = requireWebidl();
 		const { STATUS_CODES } = require$$17;
+		const GET_OR_HEAD = ['GET', 'HEAD'];
 
 		/** @type {import('buffer').resolveObjectURL} */
 		let resolveObjectURL;
@@ -29450,7 +30170,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		  }
 
 		  // 8. If response’s timing allow passed flag is not set, then:
-		  if (!timingInfo.timingAllowPassed) {
+		  if (!response.timingAllowPassed) {
 		    //  1. Set timingInfo to a the result of creating an opaque timing info for timingInfo.
 		    timingInfo = createOpaqueTimingInfo({
 		      startTime: timingInfo.startTime
@@ -29672,7 +30392,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		  if (request.priority === null) ;
 
 		  // 15. If request is a subresource request, then:
-		  if (subresource.includes(request.destination)) ;
+		  if (subresourceSet.has(request.destination)) ;
 
 		  // 16. Run main fetch given fetchParams.
 		  mainFetch(fetchParams)
@@ -30211,7 +30931,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		  }
 
 		  // 8. If actualResponse’s status is a redirect status, then:
-		  if (redirectStatus.includes(actualResponse.status)) {
+		  if (redirectStatusSet.has(actualResponse.status)) {
 		    // 1. If actualResponse’s status is not 303, request’s body is not null,
 		    // and the connection uses HTTP/2, then user agents may, and are even
 		    // encouraged to, transmit an RST_STREAM frame.
@@ -30329,7 +31049,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		  if (
 		    ([301, 302].includes(actualResponse.status) && request.method === 'POST') ||
 		    (actualResponse.status === 303 &&
-		      !['GET', 'HEAD'].includes(request.method))
+		      !GET_OR_HEAD.includes(request.method))
 		  ) {
 		    // then:
 		    // 1. Set request’s method to `GET` and request’s body to null.
@@ -30349,6 +31069,9 @@ ${pendingInterceptorsFormatter.format(pending)}
 		  if (!sameOrigin(requestCurrentURL(request), locationURL)) {
 		    // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name
 		    request.headersList.delete('authorization');
+
+		    // https://fetch.spec.whatwg.org/#authentication-entries
+		    request.headersList.delete('proxy-authorization', true);
 
 		    // "Cookie" and "Host" are forbidden request-headers, which undici doesn't implement.
 		    request.headersList.delete('cookie');
@@ -30591,7 +31314,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		    // responses in httpCache, as per the "Invalidation" chapter of HTTP
 		    // Caching, and set storedResponse to null. [HTTP-CACHING]
 		    if (
-		      !safeMethods.includes(httpRequest.method) &&
+		      !safeMethodsSet.has(httpRequest.method) &&
 		      forwardResponse.status >= 200 &&
 		      forwardResponse.status <= 399
 		    ) ;
@@ -31047,7 +31770,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		        path: url.pathname + url.search,
 		        origin: url.origin,
 		        method: request.method,
-		        body: fetchParams.controller.dispatcher.isMockActive ? request.body && request.body.source : body,
+		        body: fetchParams.controller.dispatcher.isMockActive ? request.body && (request.body.source || request.body.stream) : body,
 		        headers: request.headersList.entries,
 		        maxRedirections: 0,
 		        upgrade: request.mode === 'websocket' ? 'websocket' : undefined
@@ -31092,7 +31815,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		                location = val;
 		              }
 
-		              headers.append(key, val);
+		              headers[kHeadersList].append(key, val);
 		            }
 		          } else {
 		            const keys = Object.keys(headersList);
@@ -31106,7 +31829,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		                location = val;
 		              }
 
-		              headers.append(key, val);
+		              headers[kHeadersList].append(key, val);
 		            }
 		          }
 
@@ -31116,7 +31839,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 
 		          const willFollow = request.redirect === 'follow' &&
 		            location &&
-		            redirectStatus.includes(status);
+		            redirectStatusSet.has(status);
 
 		          // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding
 		          if (request.method !== 'HEAD' && request.method !== 'CONNECT' && !nullBodyStatus.includes(status) && !willFollow) {
@@ -31210,7 +31933,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		            const key = headersList[n + 0].toString('latin1');
 		            const val = headersList[n + 1].toString('latin1');
 
-		            headers.append(key, val);
+		            headers[kHeadersList].append(key, val);
 		          }
 
 		          resolve({
@@ -32400,7 +33123,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		hasRequiredSymbols$1 = 1;
 
 		symbols$1 = {
-		  kConstruct: Symbol('constructable')
+		  kConstruct: symbols$4.kConstruct
 		};
 		return symbols$1;
 	}
@@ -36287,6 +37010,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	const MockPool = mockPool;
 	const mockErrors = mockErrors$1;
 	const ProxyAgent = proxyAgent;
+	const RetryHandler = RetryHandler_1;
 	const { getGlobalDispatcher, setGlobalDispatcher } = global;
 	const DecoratorHandler = DecoratorHandler_1;
 	const RedirectHandler = RedirectHandler_1;
@@ -36308,6 +37032,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	undici$1.BalancedPool = BalancedPool;
 	undici$1.Agent = Agent;
 	undici$1.ProxyAgent = ProxyAgent;
+	undici$1.RetryHandler = RetryHandler;
 
 	undici$1.DecoratorHandler = DecoratorHandler;
 	undici$1.RedirectHandler = RedirectHandler;
@@ -36446,7 +37171,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	var undici = undici$1;
 	var crypto = require$$6$1;
 
-	const version$1 = "4.4.0";
+	const version$1 = "4.6.2";
 
 	/**
 	 * @license
@@ -36499,7 +37224,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	User.FIRST_PARTY = new User('first-party-uid');
 	User.MOCK_USER = new User('mock-user');
 
-	const version = "10.7.0";
+	const version = "10.12.0";
 
 	/**
 	 * @license
@@ -37282,6 +38007,14 @@ ${pendingInterceptorsFormatter.format(pending)}
 	        return this.canonicalString();
 	    }
 	    /**
+	     * Returns a string representation of this path
+	     * where each path segment has been encoded with
+	     * `encodeURIComponent`.
+	     */
+	    toUriEncodedString() {
+	        return this.toArray().map(encodeURIComponent).join('/');
+	    }
+	    /**
 	     * Creates a resource path from the given slash-delimited string. If multiple
 	     * arguments are provided, all components are combined. Leading and trailing
 	     * slashes from all components are ignored.
@@ -37766,7 +38499,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	    }
 	    invokeRPC(rpcName, path, req, authToken, appCheckToken) {
 	        const streamId = generateUniqueDebugId();
-	        const url = this.makeUrl(rpcName, path);
+	        const url = this.makeUrl(rpcName, path.toUriEncodedString());
 	        logDebug(LOG_TAG$3, `Sending RPC '${rpcName}' ${streamId}:`, url, req);
 	        const headers = {
 	            'google-cloud-resource-prefix': this.databasePath,
@@ -37810,6 +38543,14 @@ ${pendingInterceptorsFormatter.format(pending)}
 	    makeUrl(rpcName, path) {
 	        const urlRpcName = RPC_NAME_URL_MAPPING[rpcName];
 	        return `${this.baseUrl}/${RPC_URL_VERSION}/${path}:${urlRpcName}`;
+	    }
+	    /**
+	     * Closes and cleans up any resources associated with the connection. This
+	     * implementation is a no-op because there are no resources associated
+	     * with the RestConnection that need to be cleaned up.
+	     */
+	    terminate() {
+	        // No-op
 	    }
 	}
 
@@ -41071,10 +41812,11 @@ ${pendingInterceptorsFormatter.format(pending)}
 	    return SnapshotVersion.fromTimestamp(fromTimestamp(version));
 	}
 	function toResourceName(databaseId, path) {
-	    return fullyQualifiedPrefixPath(databaseId)
-	        .child('documents')
-	        .child(path)
-	        .canonicalString();
+	    return toResourcePath(databaseId, path).canonicalString();
+	}
+	function toResourcePath(databaseId, path) {
+	    const resourcePath = fullyQualifiedPrefixPath(databaseId).child('documents');
+	    return path === undefined ? resourcePath : resourcePath.child(path);
 	}
 	function fromResourceName(name) {
 	    const resource = ResourcePath.fromString(name);
@@ -41102,15 +41844,6 @@ ${pendingInterceptorsFormatter.format(pending)}
 	}
 	function toQueryPath(serializer, path) {
 	    return toResourceName(serializer.databaseId, path);
-	}
-	function getEncodedDatabaseId(serializer) {
-	    const path = new ResourcePath([
-	        'projects',
-	        serializer.databaseId.projectId,
-	        'databases',
-	        serializer.databaseId.database
-	    ]);
-	    return path.canonicalString();
 	}
 	function fullyQualifiedPrefixPath(databaseId) {
 	    return new ResourcePath([
@@ -41256,11 +41989,12 @@ ${pendingInterceptorsFormatter.format(pending)}
 	}
 	function toQueryTarget(serializer, target) {
 	    // Dissect the path into parent, collectionId, and optional key filter.
-	    const result = { structuredQuery: {} };
+	    const queryTarget = { structuredQuery: {} };
 	    const path = target.path;
+	    let parent;
 	    if (target.collectionGroup !== null) {
-	        result.parent = toQueryPath(serializer, path);
-	        result.structuredQuery.from = [
+	        parent = path;
+	        queryTarget.structuredQuery.from = [
 	            {
 	                collectionId: target.collectionGroup,
 	                allDescendants: true
@@ -41268,31 +42002,32 @@ ${pendingInterceptorsFormatter.format(pending)}
 	        ];
 	    }
 	    else {
-	        result.parent = toQueryPath(serializer, path.popLast());
-	        result.structuredQuery.from = [{ collectionId: path.lastSegment() }];
+	        parent = path.popLast();
+	        queryTarget.structuredQuery.from = [{ collectionId: path.lastSegment() }];
 	    }
+	    queryTarget.parent = toQueryPath(serializer, parent);
 	    const where = toFilters(target.filters);
 	    if (where) {
-	        result.structuredQuery.where = where;
+	        queryTarget.structuredQuery.where = where;
 	    }
 	    const orderBy = toOrder(target.orderBy);
 	    if (orderBy) {
-	        result.structuredQuery.orderBy = orderBy;
+	        queryTarget.structuredQuery.orderBy = orderBy;
 	    }
 	    const limit = toInt32Proto(serializer, target.limit);
 	    if (limit !== null) {
-	        result.structuredQuery.limit = limit;
+	        queryTarget.structuredQuery.limit = limit;
 	    }
 	    if (target.startAt) {
-	        result.structuredQuery.startAt = toStartAtCursor(target.startAt);
+	        queryTarget.structuredQuery.startAt = toStartAtCursor(target.startAt);
 	    }
 	    if (target.endAt) {
-	        result.structuredQuery.endAt = toEndAtCursor(target.endAt);
+	        queryTarget.structuredQuery.endAt = toEndAtCursor(target.endAt);
 	    }
-	    return result;
+	    return { queryTarget, parent };
 	}
-	function toRunAggregationQueryRequest(serializer, target, aggregates) {
-	    const queryTarget = toQueryTarget(serializer, target);
+	function toRunAggregationQueryRequest(serializer, target, aggregates, skipAliasing) {
+	    const { queryTarget, parent } = toQueryTarget(serializer, target);
 	    const aliasMap = {};
 	    const aggregations = [];
 	    let aggregationNum = 0;
@@ -41333,7 +42068,8 @@ ${pendingInterceptorsFormatter.format(pending)}
 	            },
 	            parent: queryTarget.parent
 	        },
-	        aliasMap
+	        aliasMap,
+	        parent
 	    };
 	}
 	function toFilters(filters) {
@@ -41668,14 +42404,14 @@ ${pendingInterceptorsFormatter.format(pending)}
 	        }
 	    }
 	    /** Invokes the provided RPC with auth and AppCheck tokens. */
-	    invokeRPC(rpcName, path, request) {
+	    invokeRPC(rpcName, databaseId, resourcePath, request) {
 	        this.verifyInitialized();
 	        return Promise.all([
 	            this.authCredentials.getToken(),
 	            this.appCheckCredentials.getToken()
 	        ])
 	            .then(([authToken, appCheckToken]) => {
-	            return this.connection.invokeRPC(rpcName, path, request, authToken, appCheckToken);
+	            return this.connection.invokeRPC(rpcName, toResourcePath(databaseId, resourcePath), request, authToken, appCheckToken);
 	        })
 	            .catch((error) => {
 	            if (error.name === 'FirebaseError') {
@@ -41691,14 +42427,14 @@ ${pendingInterceptorsFormatter.format(pending)}
 	        });
 	    }
 	    /** Invokes the provided RPC with streamed results with auth and AppCheck tokens. */
-	    invokeStreamingRPC(rpcName, path, request, expectedResponseCount) {
+	    invokeStreamingRPC(rpcName, databaseId, resourcePath, request, expectedResponseCount) {
 	        this.verifyInitialized();
 	        return Promise.all([
 	            this.authCredentials.getToken(),
 	            this.appCheckCredentials.getToken()
 	        ])
 	            .then(([authToken, appCheckToken]) => {
-	            return this.connection.invokeStreamingRPC(rpcName, path, request, authToken, appCheckToken, expectedResponseCount);
+	            return this.connection.invokeStreamingRPC(rpcName, toResourcePath(databaseId, resourcePath), request, authToken, appCheckToken, expectedResponseCount);
 	        })
 	            .catch((error) => {
 	            if (error.name === 'FirebaseError') {
@@ -41715,6 +42451,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	    }
 	    terminate() {
 	        this.terminated = true;
+	        this.connection.terminate();
 	    }
 	}
 	// TODO(firestorexp): Make sure there is only one Datastore instance per
@@ -41724,19 +42461,17 @@ ${pendingInterceptorsFormatter.format(pending)}
 	}
 	async function invokeCommitRpc(datastore, mutations) {
 	    const datastoreImpl = debugCast(datastore);
-	    const path = getEncodedDatabaseId(datastoreImpl.serializer) + '/documents';
 	    const request = {
 	        writes: mutations.map(m => toMutation(datastoreImpl.serializer, m))
 	    };
-	    await datastoreImpl.invokeRPC('Commit', path, request);
+	    await datastoreImpl.invokeRPC('Commit', datastoreImpl.serializer.databaseId, ResourcePath.emptyPath(), request);
 	}
 	async function invokeBatchGetDocumentsRpc(datastore, keys) {
 	    const datastoreImpl = debugCast(datastore);
-	    const path = getEncodedDatabaseId(datastoreImpl.serializer) + '/documents';
 	    const request = {
 	        documents: keys.map(k => toName(datastoreImpl.serializer, k))
 	    };
-	    const response = await datastoreImpl.invokeStreamingRPC('BatchGetDocuments', path, request, keys.length);
+	    const response = await datastoreImpl.invokeStreamingRPC('BatchGetDocuments', datastoreImpl.serializer.databaseId, ResourcePath.emptyPath(), request, keys.length);
 	    const docs = new Map();
 	    response.forEach(proto => {
 	        const doc = fromBatchGetDocumentsResponse(datastoreImpl.serializer, proto);
@@ -41752,8 +42487,10 @@ ${pendingInterceptorsFormatter.format(pending)}
 	}
 	async function invokeRunQueryRpc(datastore, query) {
 	    const datastoreImpl = debugCast(datastore);
-	    const request = toQueryTarget(datastoreImpl.serializer, queryToTarget(query));
-	    const response = await datastoreImpl.invokeStreamingRPC('RunQuery', request.parent, { structuredQuery: request.structuredQuery });
+	    const { queryTarget, parent } = toQueryTarget(datastoreImpl.serializer, queryToTarget(query));
+	    const response = await datastoreImpl.invokeStreamingRPC('RunQuery', datastoreImpl.serializer.databaseId, parent, {
+	        structuredQuery: queryTarget.structuredQuery
+	    });
 	    return (response
 	        // Omit RunQueryResponses that only contain readTimes.
 	        .filter(proto => !!proto.document)
@@ -41762,12 +42499,12 @@ ${pendingInterceptorsFormatter.format(pending)}
 	async function invokeRunAggregationQueryRpc(datastore, query, aggregates) {
 	    var _a;
 	    const datastoreImpl = debugCast(datastore);
-	    const { request, aliasMap } = toRunAggregationQueryRequest(datastoreImpl.serializer, queryToAggregateTarget(query), aggregates);
-	    const parent = request.parent;
+	    const { request, aliasMap, parent } = toRunAggregationQueryRequest(datastoreImpl.serializer, queryToAggregateTarget(query), aggregates);
 	    if (!datastoreImpl.connection.shouldResourcePathBeIncludedInRequest) {
 	        delete request.parent;
 	    }
-	    const response = await datastoreImpl.invokeStreamingRPC('RunAggregationQuery', parent, request, /*expectedResponseCount=*/ 1);
+	    const response = await datastoreImpl.invokeStreamingRPC('RunAggregationQuery', datastoreImpl.serializer.databaseId, parent, request, 
+	    /*expectedResponseCount=*/ 1);
 	    // Omit RunAggregationQueryResponse that only contain readTimes.
 	    const filteredResult = response.filter(proto => !!proto.result);
 	    hardAssert(filteredResult.length === 1);
@@ -43078,8 +43815,8 @@ ${pendingInterceptorsFormatter.format(pending)}
 	        return new FieldTransform(context.path, arrayUnion);
 	    }
 	    isEqual(other) {
-	        // TODO(mrschmidt): Implement isEquals
-	        return this === other;
+	        return (other instanceof ArrayUnionFieldValueImpl &&
+	            util.deepEqual(this._elements, other._elements));
 	    }
 	}
 	class ArrayRemoveFieldValueImpl extends FieldValue {
@@ -43095,8 +43832,8 @@ ${pendingInterceptorsFormatter.format(pending)}
 	        return new FieldTransform(context.path, arrayUnion);
 	    }
 	    isEqual(other) {
-	        // TODO(mrschmidt): Implement isEquals
-	        return this === other;
+	        return (other instanceof ArrayRemoveFieldValueImpl &&
+	            util.deepEqual(this._elements, other._elements));
 	    }
 	}
 	class NumericIncrementFieldValueImpl extends FieldValue {
@@ -43109,8 +43846,8 @@ ${pendingInterceptorsFormatter.format(pending)}
 	        return new FieldTransform(context.path, numericIncrement);
 	    }
 	    isEqual(other) {
-	        // TODO(mrschmidt): Implement isEquals
-	        return this === other;
+	        return (other instanceof NumericIncrementFieldValueImpl &&
+	            this._operand === other._operand);
 	    }
 	}
 	/** Parse update data from an update() call. */
@@ -44584,15 +45321,15 @@ ${pendingInterceptorsFormatter.format(pending)}
 	 * limitations under the License.
 	 */
 	/**
-	 * Calculates the number of documents in the result set of the given query,
+	 * Calculates the number of documents in the result set of the given query
 	 * without actually downloading the documents.
 	 *
 	 * Using this function to count the documents is efficient because only the
-	 * final count, not the documents' data, is downloaded. This function can even
-	 * count the documents if the result set would be prohibitively large to
-	 * download entirely (e.g. thousands of documents).
+	 * final count, not the documents' data, is downloaded. This function can
+	 * count the documents in cases where the result set is prohibitively large to
+	 * download entirely (thousands of documents).
 	 *
-	 * @param query - The query whose result set size to calculate.
+	 * @param query The query whose result set size is calculated.
 	 * @returns A Promise that will be resolved with the count; the count can be
 	 * retrieved from `snapshot.data().count`, where `snapshot` is the
 	 * `AggregateQuerySnapshot` to which the returned Promise resolves.
@@ -44605,14 +45342,14 @@ ${pendingInterceptorsFormatter.format(pending)}
 	}
 	/**
 	 * Calculates the specified aggregations over the documents in the result
-	 * set of the given query, without actually downloading the documents.
+	 * set of the given query without actually downloading the documents.
 	 *
 	 * Using this function to perform aggregations is efficient because only the
 	 * final aggregation values, not the documents' data, are downloaded. This
-	 * function can even perform aggregations of the documents if the result set
-	 * would be prohibitively large to download entirely (e.g. thousands of documents).
+	 * function can perform aggregations of the documents in cases where the result
+	 * set is prohibitively large to download entirely (thousands of documents).
 	 *
-	 * @param query The query whose result set to aggregate over.
+	 * @param query The query whose result set is aggregated over.
 	 * @param aggregateSpec An `AggregateSpec` object that specifies the aggregates
 	 * to perform over the result set. The AggregateSpec specifies aliases for each
 	 * aggregate, which can be used to retrieve the aggregate result.
@@ -44963,7 +45700,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	         * A deferred usage error that occurred previously in this transaction that
 	         * will cause the transaction to fail once it actually commits.
 	         */
-	        this.lastWriteError = null;
+	        this.lastTransactionError = null;
 	        /**
 	         * Set of documents that have been written in the transaction.
 	         *
@@ -44975,7 +45712,8 @@ ${pendingInterceptorsFormatter.format(pending)}
 	    async lookup(keys) {
 	        this.ensureCommitNotCalled();
 	        if (this.mutations.length > 0) {
-	            throw new FirestoreError(Code.INVALID_ARGUMENT, 'Firestore transactions require all reads to be executed before all writes.');
+	            this.lastTransactionError = new FirestoreError(Code.INVALID_ARGUMENT, 'Firestore transactions require all reads to be executed before all writes.');
+	            throw this.lastTransactionError;
 	        }
 	        const docs = await invokeBatchGetDocumentsRpc(this.datastore, keys);
 	        docs.forEach(doc => this.recordVersion(doc));
@@ -44990,7 +45728,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	            this.write(data.toMutation(key, this.preconditionForUpdate(key)));
 	        }
 	        catch (e) {
-	            this.lastWriteError = e;
+	            this.lastTransactionError = e;
 	        }
 	        this.writtenDocs.add(key.toString());
 	    }
@@ -45000,8 +45738,8 @@ ${pendingInterceptorsFormatter.format(pending)}
 	    }
 	    async commit() {
 	        this.ensureCommitNotCalled();
-	        if (this.lastWriteError) {
-	            throw this.lastWriteError;
+	        if (this.lastTransactionError) {
+	            throw this.lastTransactionError;
 	        }
 	        const unwritten = this.readVersions;
 	        // For each mutation, note that the doc was written.

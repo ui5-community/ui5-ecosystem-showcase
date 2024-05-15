@@ -647,7 +647,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	  return CONSTANTS.NODE_CLIENT === true || CONSTANTS.NODE_ADMIN === true;
 	}
 	function isSafari() {
-	  return !isNode() && navigator.userAgent.includes("Safari") && !navigator.userAgent.includes("Chrome");
+	  return !isNode() && !!navigator.userAgent && navigator.userAgent.includes("Safari") && !navigator.userAgent.includes("Chrome");
 	}
 	function isIndexedDBAvailable() {
 	  try {
@@ -2937,8 +2937,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    return (component === null || component === void 0 ? void 0 : component.type) === "VERSION" /* ComponentType.VERSION */;
 	}
 
-	const name$o = "@firebase/app";
-	const version$1 = "0.9.25";
+	const name$p = "@firebase/app";
+	const version$1 = "0.10.3";
 
 	/**
 	 * @license
@@ -2958,54 +2958,56 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	 */
 	const logger = new index_cjs.Logger('@firebase/app');
 
-	const name$n = "@firebase/app-compat";
+	const name$o = "@firebase/app-compat";
 
-	const name$m = "@firebase/analytics-compat";
+	const name$n = "@firebase/analytics-compat";
 
-	const name$l = "@firebase/analytics";
+	const name$m = "@firebase/analytics";
 
-	const name$k = "@firebase/app-check-compat";
+	const name$l = "@firebase/app-check-compat";
 
-	const name$j = "@firebase/app-check";
+	const name$k = "@firebase/app-check";
 
-	const name$i = "@firebase/auth";
+	const name$j = "@firebase/auth";
 
-	const name$h = "@firebase/auth-compat";
+	const name$i = "@firebase/auth-compat";
 
-	const name$g = "@firebase/database";
+	const name$h = "@firebase/database";
 
-	const name$f = "@firebase/database-compat";
+	const name$g = "@firebase/database-compat";
 
-	const name$e = "@firebase/functions";
+	const name$f = "@firebase/functions";
 
-	const name$d = "@firebase/functions-compat";
+	const name$e = "@firebase/functions-compat";
 
-	const name$c = "@firebase/installations";
+	const name$d = "@firebase/installations";
 
-	const name$b = "@firebase/installations-compat";
+	const name$c = "@firebase/installations-compat";
 
-	const name$a = "@firebase/messaging";
+	const name$b = "@firebase/messaging";
 
-	const name$9 = "@firebase/messaging-compat";
+	const name$a = "@firebase/messaging-compat";
 
-	const name$8 = "@firebase/performance";
+	const name$9 = "@firebase/performance";
 
-	const name$7 = "@firebase/performance-compat";
+	const name$8 = "@firebase/performance-compat";
 
-	const name$6 = "@firebase/remote-config";
+	const name$7 = "@firebase/remote-config";
 
-	const name$5 = "@firebase/remote-config-compat";
+	const name$6 = "@firebase/remote-config-compat";
 
-	const name$4 = "@firebase/storage";
+	const name$5 = "@firebase/storage";
 
-	const name$3 = "@firebase/storage-compat";
+	const name$4 = "@firebase/storage-compat";
 
-	const name$2 = "@firebase/firestore";
+	const name$3 = "@firebase/firestore";
+
+	const name$2 = "@firebase/vertexai-preview";
 
 	const name$1 = "@firebase/firestore-compat";
 
 	const name = "firebase";
-	const version = "10.7.1";
+	const version = "10.12.0";
 
 	/**
 	 * @license
@@ -3030,30 +3032,31 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	 */
 	const DEFAULT_ENTRY_NAME = '[DEFAULT]';
 	const PLATFORM_LOG_STRING = {
-	    [name$o]: 'fire-core',
-	    [name$n]: 'fire-core-compat',
-	    [name$l]: 'fire-analytics',
-	    [name$m]: 'fire-analytics-compat',
-	    [name$j]: 'fire-app-check',
-	    [name$k]: 'fire-app-check-compat',
-	    [name$i]: 'fire-auth',
-	    [name$h]: 'fire-auth-compat',
-	    [name$g]: 'fire-rtdb',
-	    [name$f]: 'fire-rtdb-compat',
-	    [name$e]: 'fire-fn',
-	    [name$d]: 'fire-fn-compat',
-	    [name$c]: 'fire-iid',
-	    [name$b]: 'fire-iid-compat',
-	    [name$a]: 'fire-fcm',
-	    [name$9]: 'fire-fcm-compat',
-	    [name$8]: 'fire-perf',
-	    [name$7]: 'fire-perf-compat',
-	    [name$6]: 'fire-rc',
-	    [name$5]: 'fire-rc-compat',
-	    [name$4]: 'fire-gcs',
-	    [name$3]: 'fire-gcs-compat',
-	    [name$2]: 'fire-fst',
+	    [name$p]: 'fire-core',
+	    [name$o]: 'fire-core-compat',
+	    [name$m]: 'fire-analytics',
+	    [name$n]: 'fire-analytics-compat',
+	    [name$k]: 'fire-app-check',
+	    [name$l]: 'fire-app-check-compat',
+	    [name$j]: 'fire-auth',
+	    [name$i]: 'fire-auth-compat',
+	    [name$h]: 'fire-rtdb',
+	    [name$g]: 'fire-rtdb-compat',
+	    [name$f]: 'fire-fn',
+	    [name$e]: 'fire-fn-compat',
+	    [name$d]: 'fire-iid',
+	    [name$c]: 'fire-iid-compat',
+	    [name$b]: 'fire-fcm',
+	    [name$a]: 'fire-fcm-compat',
+	    [name$9]: 'fire-perf',
+	    [name$8]: 'fire-perf-compat',
+	    [name$7]: 'fire-rc',
+	    [name$6]: 'fire-rc-compat',
+	    [name$5]: 'fire-gcs',
+	    [name$4]: 'fire-gcs-compat',
+	    [name$3]: 'fire-fst',
 	    [name$1]: 'fire-fst-compat',
+	    [name$2]: 'fire-vertex',
 	    'fire-js': 'fire-js',
 	    [name]: 'fire-js-all'
 	};
@@ -3078,6 +3081,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	 * @internal
 	 */
 	const _apps = new Map();
+	/**
+	 * @internal
+	 */
+	const _serverApps = new Map();
 	/**
 	 * Registered components.
 	 *
@@ -3123,6 +3130,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    for (const app of _apps.values()) {
 	        _addComponent(app, component);
 	    }
+	    for (const serverApp of _serverApps.values()) {
+	        _addComponent(serverApp, component);
+	    }
 	    return true;
 	}
 	/**
@@ -3155,6 +3165,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    _getProvider(app, name).clearInstance(instanceIdentifier);
 	}
 	/**
+	 *
+	 * @param obj - an object of type FirebaseApp or FirebaseOptions.
+	 *
+	 * @returns true if the provide object is of type FirebaseApp.
+	 *
+	 * @internal
+	 */
+	function _isFirebaseApp(obj) {
+	    return obj.options !== undefined;
+	}
+	/**
+	 *
+	 * @param obj - an object of type FirebaseApp.
+	 *
+	 * @returns true if the provided object is of type FirebaseServerAppImpl.
+	 *
+	 * @internal
+	 */
+	function _isFirebaseServerApp(obj) {
+	    return obj.settings !== undefined;
+	}
+	/**
 	 * Test only
 	 *
 	 * @internal
@@ -3182,9 +3214,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	const ERRORS = {
 	    ["no-app" /* AppError.NO_APP */]: "No Firebase App '{$appName}' has been created - " +
 	        'call initializeApp() first',
-	    ["bad-app-name" /* AppError.BAD_APP_NAME */]: "Illegal App name: '{$appName}",
+	    ["bad-app-name" /* AppError.BAD_APP_NAME */]: "Illegal App name: '{$appName}'",
 	    ["duplicate-app" /* AppError.DUPLICATE_APP */]: "Firebase App named '{$appName}' already exists with different options or config",
 	    ["app-deleted" /* AppError.APP_DELETED */]: "Firebase App named '{$appName}' already deleted",
+	    ["server-app-deleted" /* AppError.SERVER_APP_DELETED */]: 'Firebase Server App has been deleted',
 	    ["no-options" /* AppError.NO_OPTIONS */]: 'Need to provide options, when not being deployed to hosting via source.',
 	    ["invalid-app-argument" /* AppError.INVALID_APP_ARGUMENT */]: 'firebase.{$appName}() takes either no argument or a ' +
 	        'Firebase App instance.',
@@ -3192,7 +3225,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    ["idb-open" /* AppError.IDB_OPEN */]: 'Error thrown when opening IndexedDB. Original error: {$originalErrorMessage}.',
 	    ["idb-get" /* AppError.IDB_GET */]: 'Error thrown when reading from IndexedDB. Original error: {$originalErrorMessage}.',
 	    ["idb-set" /* AppError.IDB_WRITE */]: 'Error thrown when writing to IndexedDB. Original error: {$originalErrorMessage}.',
-	    ["idb-delete" /* AppError.IDB_DELETE */]: 'Error thrown when deleting from IndexedDB. Original error: {$originalErrorMessage}.'
+	    ["idb-delete" /* AppError.IDB_DELETE */]: 'Error thrown when deleting from IndexedDB. Original error: {$originalErrorMessage}.',
+	    ["finalization-registry-not-supported" /* AppError.FINALIZATION_REGISTRY_NOT_SUPPORTED */]: 'FirebaseServerApp deleteOnDeref field defined but the JS runtime does not support FinalizationRegistry.',
+	    ["invalid-server-app-environment" /* AppError.INVALID_SERVER_APP_ENVIRONMENT */]: 'FirebaseServerApp is not for use in browser environments.'
 	};
 	const ERROR_FACTORY = new ErrorFactory('app', 'Firebase', ERRORS);
 
@@ -3265,6 +3300,99 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
 	/**
 	 * @license
+	 * Copyright 2023 Google LLC
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *   http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	class FirebaseServerAppImpl extends FirebaseAppImpl {
+	    constructor(options, serverConfig, name, container) {
+	        // Build configuration parameters for the FirebaseAppImpl base class.
+	        const automaticDataCollectionEnabled = serverConfig.automaticDataCollectionEnabled !== undefined
+	            ? serverConfig.automaticDataCollectionEnabled
+	            : false;
+	        // Create the FirebaseAppSettings object for the FirebaseAppImp constructor.
+	        const config = {
+	            name,
+	            automaticDataCollectionEnabled
+	        };
+	        if (options.apiKey !== undefined) {
+	            // Construct the parent FirebaseAppImp object.
+	            super(options, config, container);
+	        }
+	        else {
+	            const appImpl = options;
+	            super(appImpl.options, config, container);
+	        }
+	        // Now construct the data for the FirebaseServerAppImpl.
+	        this._serverConfig = Object.assign({ automaticDataCollectionEnabled }, serverConfig);
+	        this._finalizationRegistry = new FinalizationRegistry(() => {
+	            this.automaticCleanup();
+	        });
+	        this._refCount = 0;
+	        this.incRefCount(this._serverConfig.releaseOnDeref);
+	        // Do not retain a hard reference to the dref object, otherwise the FinalizationRegisry
+	        // will never trigger.
+	        this._serverConfig.releaseOnDeref = undefined;
+	        serverConfig.releaseOnDeref = undefined;
+	        registerVersion(name$p, version$1, 'serverapp');
+	    }
+	    toJSON() {
+	        return undefined;
+	    }
+	    get refCount() {
+	        return this._refCount;
+	    }
+	    // Increment the reference count of this server app. If an object is provided, register it
+	    // with the finalization registry.
+	    incRefCount(obj) {
+	        if (this.isDeleted) {
+	            return;
+	        }
+	        this._refCount++;
+	        if (obj !== undefined) {
+	            this._finalizationRegistry.register(obj, this);
+	        }
+	    }
+	    // Decrement the reference count.
+	    decRefCount() {
+	        if (this.isDeleted) {
+	            return 0;
+	        }
+	        return --this._refCount;
+	    }
+	    // Invoked by the FinalizationRegistry callback to note that this app should go through its
+	    // reference counts and delete itself if no reference count remain. The coordinating logic that
+	    // handles this is in deleteApp(...).
+	    automaticCleanup() {
+	        void deleteApp(this);
+	    }
+	    get settings() {
+	        this.checkDestroyed();
+	        return this._serverConfig;
+	    }
+	    /**
+	     * This function will throw an Error if the App has already been deleted -
+	     * use before performing API actions on the App.
+	     */
+	    checkDestroyed() {
+	        if (this.isDeleted) {
+	            throw ERROR_FACTORY.create("server-app-deleted" /* AppError.SERVER_APP_DELETED */);
+	        }
+	    }
+	}
+
+	/**
+	 * @license
 	 * Copyright 2019 Google LLC
 	 *
 	 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -3319,6 +3447,50 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    }
 	    const newApp = new FirebaseAppImpl(options, config, container);
 	    _apps.set(name, newApp);
+	    return newApp;
+	}
+	function initializeServerApp(_options, _serverAppConfig) {
+	    if (isBrowser()) {
+	        // FirebaseServerApp isn't designed to be run in browsers.
+	        throw ERROR_FACTORY.create("invalid-server-app-environment" /* AppError.INVALID_SERVER_APP_ENVIRONMENT */);
+	    }
+	    if (_serverAppConfig.automaticDataCollectionEnabled === undefined) {
+	        _serverAppConfig.automaticDataCollectionEnabled = false;
+	    }
+	    let appOptions;
+	    if (_isFirebaseApp(_options)) {
+	        appOptions = _options.options;
+	    }
+	    else {
+	        appOptions = _options;
+	    }
+	    // Build an app name based on a hash of the configuration options.
+	    const nameObj = Object.assign(Object.assign({}, _serverAppConfig), appOptions);
+	    // However, Do not mangle the name based on releaseOnDeref, since it will vary between the
+	    // construction of FirebaseServerApp instances. For example, if the object is the request headers.
+	    if (nameObj.releaseOnDeref !== undefined) {
+	        delete nameObj.releaseOnDeref;
+	    }
+	    const hashCode = (s) => {
+	        return [...s].reduce((hash, c) => (Math.imul(31, hash) + c.charCodeAt(0)) | 0, 0);
+	    };
+	    if (_serverAppConfig.releaseOnDeref !== undefined) {
+	        if (typeof FinalizationRegistry === 'undefined') {
+	            throw ERROR_FACTORY.create("finalization-registry-not-supported" /* AppError.FINALIZATION_REGISTRY_NOT_SUPPORTED */, {});
+	        }
+	    }
+	    const nameString = '' + hashCode(JSON.stringify(nameObj));
+	    const existingApp = _serverApps.get(nameString);
+	    if (existingApp) {
+	        existingApp.incRefCount(_serverAppConfig.releaseOnDeref);
+	        return existingApp;
+	    }
+	    const container = new ComponentContainer(nameString);
+	    for (const component of _components.values()) {
+	        container.addComponent(component);
+	    }
+	    const newApp = new FirebaseServerAppImpl(appOptions, _serverAppConfig, nameString, container);
+	    _serverApps.set(nameString, newApp);
 	    return newApp;
 	}
 	/**
@@ -3385,9 +3557,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	 * @public
 	 */
 	async function deleteApp(app) {
+	    let cleanupProviders = false;
 	    const name = app.name;
 	    if (_apps.has(name)) {
+	        cleanupProviders = true;
 	        _apps.delete(name);
+	    }
+	    else if (_serverApps.has(name)) {
+	        const firebaseServerApp = app;
+	        if (firebaseServerApp.decRefCount() <= 0) {
+	            _serverApps.delete(name);
+	            cleanupProviders = true;
+	        }
+	    }
+	    if (cleanupProviders) {
 	        await Promise.all(app.container
 	            .getProviders()
 	            .map(provider => provider.delete()));
@@ -3487,7 +3670,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	                // eslint-disable-next-line default-case
 	                switch (oldVersion) {
 	                    case 0:
-	                        db.createObjectStore(STORE_NAME);
+	                        try {
+	                            db.createObjectStore(STORE_NAME);
+	                        }
+	                        catch (e) {
+	                            // Safari/iOS browsers throw occasional exceptions on
+	                            // db.createObjectStore() that may be a bug. Avoid blocking
+	                            // the rest of the app functionality.
+	                            console.warn(e);
+	                        }
 	                }
 	            }
 	        }).catch(e => {
@@ -3501,10 +3692,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	async function readHeartbeatsFromIndexedDB(app) {
 	    try {
 	        const db = await getDbPromise();
-	        const result = await db
-	            .transaction(STORE_NAME)
-	            .objectStore(STORE_NAME)
-	            .get(computeKey(app));
+	        const tx = db.transaction(STORE_NAME);
+	        const result = await tx.objectStore(STORE_NAME).get(computeKey(app));
+	        // We already have the value but tx.done can throw,
+	        // so we need to await it here to catch errors
+	        await tx.done;
 	        return result;
 	    }
 	    catch (e) {
@@ -3806,9 +3998,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    _registerComponent(new Component('platform-logger', container => new PlatformLoggerServiceImpl(container), "PRIVATE" /* ComponentType.PRIVATE */));
 	    _registerComponent(new Component('heartbeat', container => new HeartbeatServiceImpl(container), "PRIVATE" /* ComponentType.PRIVATE */));
 	    // Register `app` package.
-	    registerVersion(name$o, version$1, variant);
+	    registerVersion(name$p, version$1, variant);
 	    // BUILD_TARGET will be replaced by values like esm5, esm2017, cjs5, etc during the compilation
-	    registerVersion(name$o, version$1, 'esm2017');
+	    registerVersion(name$p, version$1, 'esm2017');
 	    // Register platform SDK identifier (no version).
 	    registerVersion('fire-js', '');
 	}
@@ -3832,12 +4024,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		_clearComponents: _clearComponents,
 		_components: _components,
 		_getProvider: _getProvider,
+		_isFirebaseApp: _isFirebaseApp,
+		_isFirebaseServerApp: _isFirebaseServerApp,
 		_registerComponent: _registerComponent,
 		_removeServiceInstance: _removeServiceInstance,
+		_serverApps: _serverApps,
 		deleteApp: deleteApp,
 		getApp: getApp,
 		getApps: getApps,
 		initializeApp: initializeApp,
+		initializeServerApp: initializeServerApp,
 		onLog: onLog,
 		registerVersion: registerVersion,
 		setLogLevel: setLogLevel

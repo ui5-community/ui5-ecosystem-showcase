@@ -27,12 +27,12 @@
     "timeout": "5m"
   },
   "devDependencies": {
-    "@ui5/cli": "^3.8.0",
-    "ava": "^5.3.1"
+    "@ui5/cli": "^3.10.1",
+    "ava": "^6.1.3"
   },
   "dependencies": {
-    "@typescript-eslint/typescript-estree": "^7.0.1",
-    "fast-xml-parser": "^4.3.3",
+    "@typescript-eslint/typescript-estree": "^7.9.0",
+    "fast-xml-parser": "^4.3.6",
     "js-yaml": "^4.1.0"
   }
 }

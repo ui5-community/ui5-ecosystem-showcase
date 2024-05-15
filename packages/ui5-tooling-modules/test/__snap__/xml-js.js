@@ -2671,7 +2671,6 @@ sap.ui.define((function () { 'use strict';
 	    ctor.prototype.constructor = ctor;
 	  };
 	}
-	var inherits$1 = inherits;
 
 	var formatRegExp = /%[sdj%]/g;
 	function format(f) {
@@ -3431,7 +3430,7 @@ sap.ui.define((function () { 'use strict';
 	Readable.ReadableState = ReadableState;
 
 	var debug = debuglog('stream');
-	inherits$1(Readable, EventEmitter);
+	inherits(Readable, EventEmitter);
 
 	function prependListener(emitter, event, fn) {
 	  // Sadly this is not cacheable as some libraries bundle their own
@@ -4320,7 +4319,7 @@ sap.ui.define((function () { 'use strict';
 	// the drain event emission and buffering.
 
 	Writable.WritableState = WritableState;
-	inherits$1(Writable, EventEmitter);
+	inherits(Writable, EventEmitter);
 
 	function nop() {}
 
@@ -4791,7 +4790,7 @@ sap.ui.define((function () { 'use strict';
 	  };
 	}
 
-	inherits$1(Duplex, Readable);
+	inherits(Duplex, Readable);
 
 	var keys = Object.keys(Writable.prototype);
 	for (var v = 0; v < keys.length; v++) {
@@ -4871,7 +4870,7 @@ sap.ui.define((function () { 'use strict';
 	// would be consumed, and then the rest would wait (un-transformed) until
 	// the results of the previous transformed chunk were consumed.
 
-	inherits$1(Transform, Duplex);
+	inherits(Transform, Duplex);
 
 	function TransformState(stream) {
 	  this.afterTransform = function (er, data) {
@@ -4998,7 +4997,7 @@ sap.ui.define((function () { 'use strict';
 	  return stream.push(null);
 	}
 
-	inherits$1(PassThrough, Transform);
+	inherits(PassThrough, Transform);
 	function PassThrough(options) {
 	  if (!(this instanceof PassThrough)) return new PassThrough(options);
 
@@ -5009,7 +5008,7 @@ sap.ui.define((function () { 'use strict';
 	  cb(null, chunk);
 	};
 
-	inherits$1(Stream, EventEmitter);
+	inherits(Stream, EventEmitter);
 	Stream.Readable = Readable;
 	Stream.Writable = Writable;
 	Stream.Duplex = Duplex;
