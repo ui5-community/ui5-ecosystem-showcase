@@ -164,8 +164,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
   // typed array slice - allows garbage collector to free original reference,
   // while being more compatible than .slice
   var slc = function (v, s, e) {
-      if (s == null || s < 0)
-          s = 0;
       if (e == null || e > v.length)
           e = v.length;
       // can't use .constructor in case user-supplied
@@ -568,8 +566,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
   };
   // deflate options (nice << 13) | chain
   var deo = /*#__PURE__*/ new u32([65540, 131080, 131088, 131104, 262176, 1048704, 1048832, 2114560, 2117632]);
-  // empty
-  var et$1 = /*#__PURE__*/ new u8(0);
   // compresses data into a raw DEFLATE buffer
   var dflt = function (dat, lvl, plvl, pre, post, lst) {
       var s = dat.length;
@@ -685,9 +681,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
               }
           }
           pos = wblk(dat, w, lst, syms, lf, df, eb, li, bs, i - bs, pos);
-          // this is the easiest way to avoid needing to maintain state
-          if (!lst)
-              pos = wfblk(w, pos, et$1);
       }
       return slc(o, 0, pre + shft(pos) + post);
   };

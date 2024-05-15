@@ -5456,7 +5456,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   var basedate = /*#__PURE__*/new Date(1899, 11, 30, 0, 0, 0); // 2209161600000
   function datenum(v/*:Date*/, date1904/*:?boolean*/)/*:number*/ {
   	var epoch = /*#__PURE__*/v.getTime();
-  	if(date1904) epoch -= 1462*24*60*60*1000;
   	var dnthresh = /*#__PURE__*/basedate.getTime() + (/*#__PURE__*/v.getTimezoneOffset() - /*#__PURE__*/basedate.getTimezoneOffset()) * 60000;
   	return (epoch - dnthresh) / (24 * 60 * 60 * 1000);
   }
@@ -5657,9 +5656,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   function getzipbin(zip, file/*:string*/, safe/*:?boolean*/)/*:any*/ {
-  	if(!safe) return getdatabin(getzipfile(zip, file));
-  	if(!file) return null;
-  	try { return getzipbin(zip, file); } catch(e) { return null; }
+  	return getdatabin(getzipfile(zip, file));
   }
 
   function zipentries(zip) {
@@ -5729,13 +5726,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   		if(j===q.length) {
   			if(q.indexOf("_") > 0) q = q.slice(0, q.indexOf("_")); // from ods
   			z[q] = v;
-  			if(!skip_LC) z[q.toLowerCase()] = v;
+  			z[q.toLowerCase()] = v;
   		}
   		else {
   			var k = (j===5 && q.slice(0,5)==="xmlns"?"xmlns":"")+q.slice(j+1);
   			if(z[k] && q.slice(j-3,j) == "ext") continue; // from ods
   			z[k] = v;
-  			if(!skip_LC) z[k.toLowerCase()] = v;
+  			z[k.toLowerCase()] = v;
   		}
   	}
   	return z;
@@ -5931,7 +5928,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	switch(typeof s) {
   		case 'string':
   			var o = writextag('vt:lpwstr', escapexml(s));
-  			if(xlsx) o = o.replace(/&quot;/g, "_x0022_");
+  			o = o.replace(/&quot;/g, "_x0022_");
   			return o;
   		case 'number': return writextag((s|0)==s?'vt:i4':'vt:r8', escapexml(String(s)));
   		case 'boolean': return writextag('vt:bool',s?'true':'false');
@@ -6551,8 +6548,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
   function write_StrRun(run, o) {
   	if (!o) o = new_buf(4);
-  	o.write_shift(2, run.ich || 0);
-  	o.write_shift(2, run.ifnt || 0);
+  	o.write_shift(2, 0);
+  	o.write_shift(2, 0);
   	return o;
   }
 
@@ -7543,8 +7540,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	relobj.Id = 'rId' + rId;
   	relobj.Type = type;
   	relobj.Target = f;
-  	if(targetmode) relobj.TargetMode = targetmode;
-  	else if([RELS.HLINK, RELS.XPATH, RELS.XMISS].indexOf(relobj.Type) > -1) relobj.TargetMode = "External";
+  	if([RELS.HLINK, RELS.XPATH, RELS.XMISS].indexOf(relobj.Type) > -1) relobj.TargetMode = "External";
   	if(rels['!id'][relobj.Id]) throw new Error("Cannot rewrite rId " + rId);
   	rels['!id'][relobj.Id] = relobj;
   	rels[('/' + relobj.Target).replace("//","/")] = relobj;
@@ -7858,7 +7854,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	if(!cp) return o.join("");
   	var pid = 1;
   	keys(cp).forEach(function custprop(k) { ++pid;
-  		o[o.length] = (writextag('property', write_vt(cp[k], true), {
+  		o[o.length] = (writextag('property', write_vt(cp[k]), {
   			'fmtid': '{D5CDD505-2E9C-101B-9397-08002B2CF9AE}',
   			'pid': pid,
   			'name': escapexml(k)
@@ -7987,7 +7983,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   /* [MS-OSHARED] 2.3.3.1.6 Lpwstr */
   function parse_lpwstr(blob, type, pad) {
   	var str = blob.read_shift(0, 'lpwstr');
-  	if(pad) blob.l += (4 - ((str.length+1) & 3)) & 3;
   	return str;
   }
 
@@ -9191,8 +9186,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   function write_Guts(guts/*:Array<number>*/) {
   	var o = new_buf(8);
   	o.write_shift(4, 0);
-  	o.write_shift(2, guts[0] ? guts[0] + 1 : 0);
-  	o.write_shift(2, guts[1] ? guts[1] + 1 : 0);
+  	o.write_shift(2, 0);
+  	o.write_shift(2, 0);
   	return o;
   }
 
@@ -13546,7 +13541,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   function write_BrtBeginEsmdb(cnt, cm) {
     var o = new_buf(8);
     o.write_shift(4, cnt);
-    o.write_shift(4, cm ? 1 : 0);
+    o.write_shift(4, 1 );
     return o;
   }
   function parse_xlmeta_bin(data, name, _opts) {
@@ -13607,7 +13602,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     write_record(ba, 36);
     write_record(ba, 53);
     write_record(ba, 340);
-    write_record(ba, 337, write_BrtBeginEsmdb(1, true));
+    write_record(ba, 337, write_BrtBeginEsmdb(1));
     write_record(ba, 51, write_BrtMdb([[1, 0]]));
     write_record(ba, 338);
     write_record(ba, 333);
@@ -14274,7 +14269,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   /* [MS-XLS] 2.5.51 */
   function parse_ColRelU(blob, length) {
-  	var c = blob.read_shift(length == 1 ? 1 : 2);
+  	var c = blob.read_shift(2);
   	return [c & 0x3FFF, (c >> 14) & 1, (c >> 15) & 1];
   }
 
@@ -14286,13 +14281,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   		else if(opts.biff == 12) w = 4;
   	}
   	var r=blob.read_shift(w), R=blob.read_shift(w);
-  	var c=parse_ColRelU(blob, 2);
-  	var C=parse_ColRelU(blob, 2);
+  	var c=parse_ColRelU(blob);
+  	var C=parse_ColRelU(blob);
   	return { s:{r:r, c:c[0], cRel:c[1], rRel:c[2]}, e:{r:R, c:C[0], cRel:C[1], rRel:C[2]} };
   }
   /* BIFF 2-5 encodes flags in the row field */
   function parse_RgceArea_BIFF2(blob/*::, length, opts*/) {
-  	var r=parse_ColRelU(blob, 2), R=parse_ColRelU(blob, 2);
+  	var r=parse_ColRelU(blob), R=parse_ColRelU(blob);
   	var c=blob.read_shift(1);
   	var C=blob.read_shift(1);
   	return { s:{r:r[0], c:c, cRel:r[1], rRel:r[2]}, e:{r:R[0], c:C, cRel:R[1], rRel:R[2]} };
@@ -14302,8 +14297,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   function parse_RgceAreaRel(blob, length, opts) {
   	if(opts.biff < 8) return parse_RgceArea_BIFF2(blob);
   	var r=blob.read_shift(opts.biff == 12 ? 4 : 2), R=blob.read_shift(opts.biff == 12 ? 4 : 2);
-  	var c=parse_ColRelU(blob, 2);
-  	var C=parse_ColRelU(blob, 2);
+  	var c=parse_ColRelU(blob);
+  	var C=parse_ColRelU(blob);
   	return { s:{r:r, c:c[0], cRel:c[1], rRel:c[2]}, e:{r:R, c:C[0], cRel:C[1], rRel:C[2]} };
   }
 
@@ -14311,11 +14306,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   function parse_RgceLoc(blob, length, opts) {
   	if(opts && opts.biff >= 2 && opts.biff <= 5) return parse_RgceLoc_BIFF2(blob);
   	var r = blob.read_shift(opts && opts.biff == 12 ? 4 : 2);
-  	var c = parse_ColRelU(blob, 2);
+  	var c = parse_ColRelU(blob);
   	return {r:r, c:c[0], cRel:c[1], rRel:c[2]};
   }
   function parse_RgceLoc_BIFF2(blob/*::, length, opts*/) {
-  	var r = parse_ColRelU(blob, 2);
+  	var r = parse_ColRelU(blob);
   	var c = blob.read_shift(1);
   	return {r:r[0], c:c, cRel:r[1], rRel:r[2]};
   }
@@ -18639,12 +18634,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   var badchars = /*#__PURE__*/"][*?\/\\".split("");
   function check_ws_name(n/*:string*/, safe/*:?boolean*/)/*:boolean*/ {
-  	if(n.length > 31) { if(safe) return false; throw new Error("Sheet names cannot exceed 31 chars"); }
+  	if(n.length > 31) { throw new Error("Sheet names cannot exceed 31 chars"); }
   	var _good = true;
   	badchars.forEach(function(c) {
   		if(n.indexOf(c) == -1) return;
-  		if(!safe) throw new Error("Sheet name cannot contain : \\ / ? * [ ]");
-  		_good = false;
+  		throw new Error("Sheet name cannot contain : \\ / ? * [ ]");
   	});
   	return _good;
   }
@@ -19301,7 +19295,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   var attregex2=/([\w:]+)=((?:")(?:[^"]*)(?:")|(?:')(?:[^']*)(?:'))/;
   function xlml_parsexmltag(tag/*:string*/, skip_root/*:?boolean*/) {
   	var words = tag.split(/\s+/);
-  	var z/*:any*/ = ([]/*:any*/); if(!skip_root) z[0] = words[0];
+  	var z/*:any*/ = ([]/*:any*/); z[0] = words[0];
   	if(words.length === 1) return z;
   	var m = tag.match(attregexg2), y, j, w, i;
   	if(m) for(i = 0; i != m.length; ++i) {
@@ -22597,7 +22591,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   function write_biff_continue(ba/*:BufArray*/, type/*:number*/, payload, length/*:?number*/)/*:void*/ {
-  	var len = length || (payload||[]).length || 0;
+  	var len = (payload||[]).length || 0;
   	if(len <= 8224) return write_biff_rec(ba, type, payload, len);
   	var t = type;
   	if(isNaN(t)) return;
@@ -22816,7 +22810,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	write_biff_rec(ba, 0x002a /* PrintRowCol */, writebool(false));
   	write_biff_rec(ba, 0x002b /* PrintGrid */, writebool(false));
   	write_biff_rec(ba, 0x0082 /* GridSet */, writeuint16(1));
-  	write_biff_rec(ba, 0x0080 /* Guts */, write_Guts([0,0]));
+  	write_biff_rec(ba, 0x0080 /* Guts */, write_Guts());
   	/* DefaultRowHeight WsBool [Sync] [LPr] [HorizontalPageBreaks] [VerticalPageBreaks] */
   	/* Header (string) */
   	/* Footer (string) */

@@ -29,7 +29,7 @@
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
-    "karma": "^6.4.2",
+    "karma": "^6.4.3",
     "ui5-tooling-transpile": "workspace:^"
   },
   "peerDependencies": {

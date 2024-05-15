@@ -14,11 +14,11 @@
     "lint": "eslint lib"
   },
   "dependencies": {
-    "@ui5/project": "^3.9.0",
-    "dotenv": "^16.3.1",
+    "@ui5/project": "^3.9.1",
+    "dotenv": "^16.4.5",
     "etag": "^1.8.1",
     "fresh": "^0.5.2",
-    "https-proxy-agent": "^7.0.2",
+    "https-proxy-agent": "^7.0.4",
     "js-yaml": "^4.1.0",
     "node-fetch": "^2.7.0",
     "proxy-from-env": "^1.1.0"

@@ -3280,6 +3280,9 @@ sap.ui.define((function () { 'use strict';
   function formDataToJSON(formData) {
     function buildPath(path, value, target, index) {
       let name = path[index++];
+
+      if (name === '__proto__') return true;
+
       const isNumericKey = Number.isFinite(+name);
       const isLast = index >= path.length;
       name = !name && utils$1.isArray(target) ? target.length : name;
@@ -3342,7 +3345,7 @@ sap.ui.define((function () { 'use strict';
       }
     }
 
-    return (encoder || JSON.stringify)(rawValue);
+    return (0, JSON.stringify)(rawValue);
   }
 
   const defaults = {
@@ -3363,9 +3366,6 @@ sap.ui.define((function () { 'use strict';
       const isFormData = utils$1.isFormData(data);
 
       if (isFormData) {
-        if (!hasJSONContentType) {
-          return data;
-        }
         return hasJSONContentType ? JSON.stringify(formDataToJSON(data)) : data;
       }
 
@@ -4481,7 +4481,7 @@ sap.ui.define((function () { 'use strict';
     });
   }
 
-  const headersToObject = (thing) => thing instanceof AxiosHeaders$1 ? thing.toJSON() : thing;
+  const headersToObject = (thing) => thing instanceof AxiosHeaders$1 ? { ...thing } : thing;
 
   /**
    * Config-specific merge-function which creates a new config-object
@@ -4583,7 +4583,7 @@ sap.ui.define((function () { 'use strict';
     return config;
   }
 
-  const VERSION = "1.6.3";
+  const VERSION = "1.6.8";
 
   const validators$1 = {};
 
@@ -4698,7 +4698,31 @@ sap.ui.define((function () { 'use strict';
      *
      * @returns {Promise} The Promise to be fulfilled
      */
-    request(configOrUrl, config) {
+    async request(configOrUrl, config) {
+      try {
+        return await this._request(configOrUrl, config);
+      } catch (err) {
+        if (err instanceof Error) {
+          let dummy;
+
+          Error.captureStackTrace ? Error.captureStackTrace(dummy = {}) : (dummy = new Error());
+
+          // slice off the Error: ... line
+          const stack = dummy.stack ? dummy.stack.replace(/^.+\n/, '') : '';
+
+          if (!err.stack) {
+            err.stack = stack;
+            // match without the 2 top stack lines
+          } else if (stack && !String(err.stack).endsWith(stack.replace(/^.+\n.+\n/, ''))) {
+            err.stack += '\n' + stack;
+          }
+        }
+
+        throw err;
+      }
+    }
+
+    _request(configOrUrl, config) {
       /*eslint no-param-reassign:0*/
       // Allow for axios('example/url'[, config]) a la fetch API
       if (typeof configOrUrl === 'string') {

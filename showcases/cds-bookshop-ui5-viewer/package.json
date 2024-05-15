@@ -22,8 +22,8 @@
     "ui5-app-simple": "workspace:^"
   },
   "devDependencies": {
-    "@ui5/cli": "^3.8.0",
-    "rimraf": "^5.0.5",
+    "@ui5/cli": "^3.10.1",
+    "rimraf": "^5.0.7",
     "ui5-middleware-livereload": "workspace:^",
     "ui5-middleware-ui5": "workspace:^",
     "ui5-task-zipper": "workspace:^"

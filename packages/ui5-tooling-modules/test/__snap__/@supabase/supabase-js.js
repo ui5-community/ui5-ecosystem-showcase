@@ -37,7 +37,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
     }
     // Define the enum for the 'region' property
-    var FunctionRegion;
+    exports.FunctionRegion = void 0;
     (function (FunctionRegion) {
         FunctionRegion["Any"] = "any";
         FunctionRegion["ApNortheast1"] = "ap-northeast-1";
@@ -54,7 +54,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         FunctionRegion["UsEast1"] = "us-east-1";
         FunctionRegion["UsWest1"] = "us-west-1";
         FunctionRegion["UsWest2"] = "us-west-2";
-    })(FunctionRegion || (FunctionRegion = {}));
+    })(exports.FunctionRegion || (exports.FunctionRegion = {}));
 
     var __awaiter$6 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -66,7 +66,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         });
     };
     class FunctionsClient {
-        constructor(url, { headers = {}, customFetch, region = FunctionRegion.Any, } = {}) {
+        constructor(url, { headers = {}, customFetch, region = exports.FunctionRegion.Any, } = {}) {
             this.url = url;
             this.headers = headers;
             this.region = region;
@@ -3659,9 +3659,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
     }
 
-    const version$1 = '2.39.1';
+    const version$1 = '2.43.2';
 
-    // constants.ts
     let JS_ENV = '';
     // @ts-ignore
     if (typeof Deno !== 'undefined') {
@@ -3677,6 +3676,19 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         JS_ENV = 'node';
     }
     const DEFAULT_HEADERS$1 = { 'X-Client-Info': `supabase-js-${JS_ENV}/${version$1}` };
+    const DEFAULT_GLOBAL_OPTIONS = {
+        headers: DEFAULT_HEADERS$1,
+    };
+    const DEFAULT_DB_OPTIONS = {
+        schema: 'public',
+    };
+    const DEFAULT_AUTH_OPTIONS = {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+        flowType: 'implicit',
+    };
+    const DEFAULT_REALTIME_OPTIONS = {};
 
     var __awaiter$1 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -3736,6 +3748,20 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             global: Object.assign(Object.assign({}, DEFAULT_GLOBAL_OPTIONS), globalOptions),
         };
     }
+
+    const version = '2.64.2';
+
+    const GOTRUE_URL = 'http://localhost:9999';
+    const STORAGE_KEY = 'supabase.auth.token';
+    const DEFAULT_HEADERS = { 'X-Client-Info': `gotrue-js/${version}` };
+    const EXPIRY_MARGIN = 10; // in seconds
+    const API_VERSION_HEADER_NAME = 'X-Supabase-Api-Version';
+    const API_VERSIONS = {
+        '2024-01-01': {
+            timestamp: Date.parse('2024-01-01T00:00:00.0Z'),
+            name: '2024-01-01',
+        },
+    };
 
     function expiresAt(expiresIn) {
         const timeNow = Math.round(Date.now() / 1000);
@@ -3979,30 +4005,54 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         const hashed = await sha256(verifier);
         return base64urlencode(hashed);
     }
+    async function getCodeChallengeAndMethod(storage, storageKey, isPasswordRecovery = false) {
+        const codeVerifier = generatePKCEVerifier();
+        let storedCodeVerifier = codeVerifier;
+        if (isPasswordRecovery) {
+            storedCodeVerifier += '/PASSWORD_RECOVERY';
+        }
+        await setItemAsync(storage, `${storageKey}-code-verifier`, storedCodeVerifier);
+        const codeChallenge = await generatePKCEChallenge(codeVerifier);
+        const codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
+        return [codeChallenge, codeChallengeMethod];
+    }
+    /** Parses the API version which is 2YYY-MM-DD. */
+    const API_VERSION_REGEX = /^2[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|1[0-9]|2[0-9]|3[0-1])$/i;
+    function parseResponseAPIVersion(response) {
+        const apiVersion = response.headers.get(API_VERSION_HEADER_NAME);
+        if (!apiVersion) {
+            return null;
+        }
+        if (!apiVersion.match(API_VERSION_REGEX)) {
+            return null;
+        }
+        try {
+            const date = new Date(`${apiVersion}T00:00:00.0Z`);
+            return date;
+        }
+        catch (e) {
+            return null;
+        }
+    }
 
     class AuthError extends Error {
-        constructor(message, status) {
+        constructor(message, status, code) {
             super(message);
             this.__isAuthError = true;
             this.name = 'AuthError';
             this.status = status;
+            this.code = code;
         }
     }
     function isAuthError(error) {
         return typeof error === 'object' && error !== null && '__isAuthError' in error;
     }
     class AuthApiError extends AuthError {
-        constructor(message, status) {
-            super(message, status);
+        constructor(message, status, code) {
+            super(message, status, code);
             this.name = 'AuthApiError';
             this.status = status;
-        }
-        toJSON() {
-            return {
-                name: this.name,
-                message: this.message,
-                status: this.status,
-            };
+            this.code = code;
         }
     }
     function isAuthApiError(error) {
@@ -4016,37 +4066,30 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
     }
     class CustomAuthError extends AuthError {
-        constructor(message, name, status) {
-            super(message);
+        constructor(message, name, status, code) {
+            super(message, status, code);
             this.name = name;
             this.status = status;
-        }
-        toJSON() {
-            return {
-                name: this.name,
-                message: this.message,
-                status: this.status,
-            };
         }
     }
     class AuthSessionMissingError extends CustomAuthError {
         constructor() {
-            super('Auth session missing!', 'AuthSessionMissingError', 400);
+            super('Auth session missing!', 'AuthSessionMissingError', 400, undefined);
         }
     }
     class AuthInvalidTokenResponseError extends CustomAuthError {
         constructor() {
-            super('Auth session or user missing', 'AuthInvalidTokenResponseError', 500);
+            super('Auth session or user missing', 'AuthInvalidTokenResponseError', 500, undefined);
         }
     }
     class AuthInvalidCredentialsError extends CustomAuthError {
         constructor(message) {
-            super(message, 'AuthInvalidCredentialsError', 400);
+            super(message, 'AuthInvalidCredentialsError', 400, undefined);
         }
     }
     class AuthImplicitGrantRedirectError extends CustomAuthError {
         constructor(message, details = null) {
-            super(message, 'AuthImplicitGrantRedirectError', 500);
+            super(message, 'AuthImplicitGrantRedirectError', 500, undefined);
             this.details = null;
             this.details = details;
         }
@@ -4061,7 +4104,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     }
     class AuthPKCEGrantCodeExchangeError extends CustomAuthError {
         constructor(message, details = null) {
-            super(message, 'AuthPKCEGrantCodeExchangeError', 500);
+            super(message, 'AuthPKCEGrantCodeExchangeError', 500, undefined);
             this.details = null;
             this.details = details;
         }
@@ -4076,7 +4119,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     }
     class AuthRetryableFetchError extends CustomAuthError {
         constructor(message, status) {
-            super(message, 'AuthRetryableFetchError', status);
+            super(message, 'AuthRetryableFetchError', status, undefined);
         }
     }
     function isAuthRetryableFetchError(error) {
@@ -4089,7 +4132,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
      */
     class AuthWeakPasswordError extends CustomAuthError {
         constructor(message, status, reasons) {
-            super(message, 'AuthWeakPasswordError', status);
+            super(message, 'AuthWeakPasswordError', status, 'weak_password');
             this.reasons = reasons;
         }
     }
@@ -4111,6 +4154,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     const _getErrorMessage = (err) => err.msg || err.message || err.error_description || err.error || JSON.stringify(err);
     const NETWORK_ERROR_CODES = [502, 503, 504];
     async function handleError(error) {
+        var _a;
         if (!looksLikeFetchResponse(error)) {
             throw new AuthRetryableFetchError(_getErrorMessage(error), 0);
         }
@@ -4125,16 +4169,34 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         catch (e) {
             throw new AuthUnknownError(_getErrorMessage(e), e);
         }
-        if (typeof data === 'object' &&
+        let errorCode = undefined;
+        const responseAPIVersion = parseResponseAPIVersion(error);
+        if (responseAPIVersion &&
+            responseAPIVersion.getTime() >= API_VERSIONS['2024-01-01'].timestamp &&
+            typeof data === 'object' &&
             data &&
-            typeof data.weak_password === 'object' &&
-            data.weak_password &&
-            Array.isArray(data.weak_password.reasons) &&
-            data.weak_password.reasons.length &&
-            data.weak_password.reasons.reduce((a, i) => a && typeof i === 'string', true)) {
-            throw new AuthWeakPasswordError(_getErrorMessage(data), error.status, data.weak_password.reasons);
+            typeof data.code === 'string') {
+            errorCode = data.code;
         }
-        throw new AuthApiError(_getErrorMessage(data), error.status || 500);
+        else if (typeof data === 'object' && data && typeof data.error_code === 'string') {
+            errorCode = data.error_code;
+        }
+        if (!errorCode) {
+            // Legacy support for weak password errors, when there were no error codes
+            if (typeof data === 'object' &&
+                data &&
+                typeof data.weak_password === 'object' &&
+                data.weak_password &&
+                Array.isArray(data.weak_password.reasons) &&
+                data.weak_password.reasons.length &&
+                data.weak_password.reasons.reduce((a, i) => a && typeof i === 'string', true)) {
+                throw new AuthWeakPasswordError(_getErrorMessage(data), error.status, data.weak_password.reasons);
+            }
+        }
+        else if (errorCode === 'weak_password') {
+            throw new AuthWeakPasswordError(_getErrorMessage(data), error.status, ((_a = data.weak_password) === null || _a === void 0 ? void 0 : _a.reasons) || []);
+        }
+        throw new AuthApiError(_getErrorMessage(data), error.status || 500, errorCode);
     }
     const _getRequestParams = (method, options, parameters, body) => {
         const params = { method, headers: (options === null || options === void 0 ? void 0 : options.headers) || {} };
@@ -4148,6 +4210,9 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     async function _request(fetcher, method, url, options) {
         var _a;
         const headers = Object.assign({}, options === null || options === void 0 ? void 0 : options.headers);
+        if (!headers[API_VERSION_HEADER_NAME]) {
+            headers[API_VERSION_HEADER_NAME] = API_VERSIONS['2024-01-01'].name;
+        }
         if (options === null || options === void 0 ? void 0 : options.jwt) {
             headers['Authorization'] = `Bearer ${options.jwt}`;
         }
@@ -4156,14 +4221,17 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             qs['redirect_to'] = options.redirectTo;
         }
         const queryString = Object.keys(qs).length ? '?' + new URLSearchParams(qs).toString() : '';
-        const data = await _handleRequest(fetcher, method, url + queryString, { headers, noResolveJson: options === null || options === void 0 ? void 0 : options.noResolveJson }, {}, options === null || options === void 0 ? void 0 : options.body);
+        const data = await _handleRequest(fetcher, method, url + queryString, {
+            headers,
+            noResolveJson: options === null || options === void 0 ? void 0 : options.noResolveJson,
+        }, {}, options === null || options === void 0 ? void 0 : options.body);
         return (options === null || options === void 0 ? void 0 : options.xform) ? options === null || options === void 0 ? void 0 : options.xform(data) : { data: Object.assign({}, data), error: null };
     }
     async function _handleRequest(fetcher, method, url, options, parameters, body) {
         const requestParams = _getRequestParams(method, options, parameters, body);
         let result;
         try {
-            result = await fetcher(url, requestParams);
+            result = await fetcher(url, Object.assign({}, requestParams));
         }
         catch (e) {
             console.error(e);
@@ -4509,14 +4577,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
     }
 
-    // Generated by genversion.
-    const version = '0.0.0';
-
-    const GOTRUE_URL = 'http://localhost:9999';
-    const STORAGE_KEY = 'supabase.auth.token';
-    const DEFAULT_HEADERS = { 'X-Client-Info': `gotrue-js/${version}` };
-    const EXPIRY_MARGIN = 10; // in seconds
-
     /**
      * Provides safe access to the globalThis.localStorage property.
      */
@@ -4708,6 +4768,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         headers: DEFAULT_HEADERS,
         flowType: 'implicit',
         debug: false,
+        hasCustomAuthorizationHeader: false,
     };
     /** Current session will be checked for refresh at this interval. */
     const AUTO_REFRESH_TICK_DURATION = 30 * 1000;
@@ -4736,6 +4797,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
              */
             this.initializePromise = null;
             this.detectSessionInUrl = true;
+            this.hasCustomAuthorizationHeader = false;
+            this.suppressGetSessionWarning = false;
             this.lockAcquired = false;
             this.pendingInLock = [];
             /**
@@ -4767,6 +4830,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             this.lock = settings.lock || lockNoOp;
             this.detectSessionInUrl = settings.detectSessionInUrl;
             this.flowType = settings.flowType;
+            this.hasCustomAuthorizationHeader = settings.hasCustomAuthorizationHeader;
             if (settings.lock) {
                 this.lock = settings.lock;
             }
@@ -4895,6 +4959,42 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             }
         }
         /**
+         * Creates a new anonymous user.
+         *
+         * @returns A session where the is_anonymous claim in the access token JWT set to true
+         */
+        async signInAnonymously(credentials) {
+            var _a, _b, _c;
+            try {
+                await this._removeSession();
+                const res = await _request(this.fetch, 'POST', `${this.url}/signup`, {
+                    headers: this.headers,
+                    body: {
+                        data: (_b = (_a = credentials === null || credentials === void 0 ? void 0 : credentials.options) === null || _a === void 0 ? void 0 : _a.data) !== null && _b !== void 0 ? _b : {},
+                        gotrue_meta_security: { captcha_token: (_c = credentials === null || credentials === void 0 ? void 0 : credentials.options) === null || _c === void 0 ? void 0 : _c.captchaToken },
+                    },
+                    xform: _sessionResponse,
+                });
+                const { data, error } = res;
+                if (error || !data) {
+                    return { data: { user: null, session: null }, error: error };
+                }
+                const session = data.session;
+                const user = data.user;
+                if (data.session) {
+                    await this._saveSession(data.session);
+                    await this._notifyAllSubscribers('SIGNED_IN', session);
+                }
+                return { data: { user, session }, error: null };
+            }
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { user: null, session: null }, error };
+                }
+                throw error;
+            }
+        }
+        /**
          * Creates a new user.
          *
          * Be aware that if a user account exists in the system you may get back an
@@ -4914,10 +5014,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     let codeChallenge = null;
                     let codeChallengeMethod = null;
                     if (this.flowType === 'pkce') {
-                        const codeVerifier = generatePKCEVerifier();
-                        await setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
-                        codeChallenge = await generatePKCEChallenge(codeVerifier);
-                        codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
+                        ;
+                        [codeChallenge, codeChallengeMethod] = await getCodeChallengeAndMethod(this.storage, this.storageKey);
                     }
                     res = await _request(this.fetch, 'POST', `${this.url}/signup`, {
                         headers: this.headers,
@@ -5149,10 +5247,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     let codeChallenge = null;
                     let codeChallengeMethod = null;
                     if (this.flowType === 'pkce') {
-                        const codeVerifier = generatePKCEVerifier();
-                        await setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
-                        codeChallenge = await generatePKCEChallenge(codeVerifier);
-                        codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
+                        ;
+                        [codeChallenge, codeChallengeMethod] = await getCodeChallengeAndMethod(this.storage, this.storageKey);
                     }
                     const { error } = await _request(this.fetch, 'POST', `${this.url}/otp`, {
                         headers: this.headers,
@@ -5255,10 +5351,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 let codeChallenge = null;
                 let codeChallengeMethod = null;
                 if (this.flowType === 'pkce') {
-                    const codeVerifier = generatePKCEVerifier();
-                    await setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
-                    codeChallenge = await generatePKCEChallenge(codeVerifier);
-                    codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
+                    ;
+                    [codeChallenge, codeChallengeMethod] = await getCodeChallengeAndMethod(this.storage, this.storageKey);
                 }
                 return await _request(this.fetch, 'POST', `${this.url}/sso`, {
                     body: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, ('providerId' in params ? { provider_id: params.providerId } : null)), ('domain' in params ? { domain: params.domain } : null)), { redirect_to: (_b = (_a = params.options) === null || _a === void 0 ? void 0 : _a.redirectTo) !== null && _b !== void 0 ? _b : undefined }), (((_c = params === null || params === void 0 ? void 0 : params.options) === null || _c === void 0 ? void 0 : _c.captchaToken)
@@ -5352,15 +5446,23 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
         /**
          * Returns the session, refreshing it if necessary.
+         *
          * The session returned can be null if the session is not detected which can happen in the event a user is not signed-in or has logged out.
+         *
+         * **IMPORTANT:** This method loads values directly from the storage attached
+         * to the client. If that storage is based on request cookies for example,
+         * the values in it may not be authentic and therefore it's strongly advised
+         * against using this method and its results in such circumstances. A warning
+         * will be emitted if this is detected. Use {@link #getUser()} instead.
          */
         async getSession() {
             await this.initializePromise;
-            return this._acquireLock(-1, async () => {
+            const result = await this._acquireLock(-1, async () => {
                 return this._useSession(async (result) => {
                     return result;
                 });
             });
+            return result;
         }
         /**
          * Acquires a global lock based on the storage key.
@@ -5466,6 +5568,19 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     : false;
                 this._debug('#__loadSession()', `session has${hasExpired ? '' : ' not'} expired`, 'expires_at', currentSession.expires_at);
                 if (!hasExpired) {
+                    if (this.storage.isServer) {
+                        const suppressWarning = this.suppressGetSessionWarning;
+                        const proxySession = new Proxy(currentSession, {
+                            get(target, prop, receiver) {
+                                if (!suppressWarning && prop === 'user') {
+                                    // only show warning when the user object is being accessed from the server
+                                    console.warn('Using the user object as returned from supabase.auth.getSession() or from some supabase.auth.onAuthStateChange() events could be insecure! This value comes directly from the storage medium (usually cookies on the server) and many not be authentic. Use supabase.auth.getUser() instead which authenticates the data by contacting the Supabase Auth server.');
+                                }
+                                return Reflect.get(target, prop, receiver);
+                            },
+                        });
+                        currentSession = proxySession;
+                    }
                     return { data: { session: currentSession }, error: null };
                 }
                 const { session, error } = await this._callRefreshToken(currentSession.refresh_token);
@@ -5479,17 +5594,21 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             }
         }
         /**
-         * Gets the current user details if there is an existing session.
-         * @param jwt Takes in an optional access token jwt. If no jwt is provided, getUser() will attempt to get the jwt from the current session.
+         * Gets the current user details if there is an existing session. This method
+         * performs a network request to the Supabase Auth server, so the returned
+         * value is authentic and can be used to base authorization rules on.
+         *
+         * @param jwt Takes in an optional access token JWT. If no JWT is provided, the JWT from the current session is used.
          */
         async getUser(jwt) {
             if (jwt) {
                 return await this._getUser(jwt);
             }
             await this.initializePromise;
-            return this._acquireLock(-1, async () => {
+            const result = await this._acquireLock(-1, async () => {
                 return await this._getUser();
             });
+            return result;
         }
         async _getUser(jwt) {
             try {
@@ -5501,14 +5620,18 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     });
                 }
                 return await this._useSession(async (result) => {
-                    var _a, _b;
+                    var _a, _b, _c;
                     const { data, error } = result;
                     if (error) {
                         throw error;
                     }
+                    // returns an error if there is no access_token or custom authorization header
+                    if (!((_a = data.session) === null || _a === void 0 ? void 0 : _a.access_token) && !this.hasCustomAuthorizationHeader) {
+                        return { data: { user: null }, error: new AuthSessionMissingError() };
+                    }
                     return await _request(this.fetch, 'GET', `${this.url}/user`, {
                         headers: this.headers,
-                        jwt: (_b = (_a = data.session) === null || _a === void 0 ? void 0 : _a.access_token) !== null && _b !== void 0 ? _b : undefined,
+                        jwt: (_c = (_b = data.session) === null || _b === void 0 ? void 0 : _b.access_token) !== null && _c !== void 0 ? _c : undefined,
                         xform: _userResponse,
                     });
                 });
@@ -5543,10 +5666,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     let codeChallenge = null;
                     let codeChallengeMethod = null;
                     if (this.flowType === 'pkce' && attributes.email != null) {
-                        const codeVerifier = generatePKCEVerifier();
-                        await setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
-                        codeChallenge = await generatePKCEChallenge(codeVerifier);
-                        codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
+                        ;
+                        [codeChallenge, codeChallengeMethod] = await getCodeChallengeAndMethod(this.storage, this.storageKey);
                     }
                     const { data, error: userError } = await _request(this.fetch, 'PUT', `${this.url}/user`, {
                         headers: this.headers,
@@ -5798,7 +5919,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     if (error) {
                         // ignore 404s since user might not exist anymore
                         // ignore 401s since an invalid or expired JWT should sign out the current session
-                        if (!(isAuthApiError(error) && (error.status === 404 || error.status === 401))) {
+                        if (!(isAuthApiError(error) &&
+                            (error.status === 404 || error.status === 401 || error.status === 403))) {
                             return { error };
                         }
                     }
@@ -5863,10 +5985,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             let codeChallenge = null;
             let codeChallengeMethod = null;
             if (this.flowType === 'pkce') {
-                const codeVerifier = generatePKCEVerifier();
-                await setItemAsync(this.storage, `${this.storageKey}-code-verifier`, `${codeVerifier}/PASSWORD_RECOVERY`);
-                codeChallenge = await generatePKCEChallenge(codeVerifier);
-                codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
+                [codeChallenge, codeChallengeMethod] = await getCodeChallengeAndMethod(this.storage, this.storageKey, true // isPasswordRecovery
+                );
             }
             try {
                 return await _request(this.fetch, 'POST', `${this.url}/recover`, {
@@ -5977,18 +6097,22 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 const startedAt = Date.now();
                 // will attempt to refresh the token with exponential backoff
                 return await retryable(async (attempt) => {
-                    await sleep(attempt * 200); // 0, 200, 400, 800, ...
+                    if (attempt > 0) {
+                        await sleep(200 * Math.pow(2, attempt - 1)); // 200, 400, 800, ...
+                    }
                     this._debug(debugName, 'refreshing attempt', attempt);
                     return await _request(this.fetch, 'POST', `${this.url}/token?grant_type=refresh_token`, {
                         body: { refresh_token: refreshToken },
                         headers: this.headers,
                         xform: _sessionResponse,
                     });
-                }, (attempt, _, result) => result &&
-                    result.error &&
-                    isAuthRetryableFetchError(result.error) &&
-                    // retryable only if the request can be sent before the backoff overflows the tick duration
-                    Date.now() + (attempt + 1) * 200 - startedAt < AUTO_REFRESH_TICK_DURATION);
+                }, (attempt, error) => {
+                    const nextBackOffInterval = 200 * Math.pow(2, attempt);
+                    return (error &&
+                        isAuthRetryableFetchError(error) &&
+                        // retryable only if the request can be sent before the backoff overflows the tick duration
+                        Date.now() + nextBackOffInterval - startedAt < AUTO_REFRESH_TICK_DURATION);
+                });
             }
             catch (error) {
                 this._debug(debugName, 'error', error);
@@ -6148,6 +6272,9 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          */
         async _saveSession(session) {
             this._debug('#_saveSession()', session);
+            // _saveSession is always called whenever a new session has been acquired
+            // so we can safely suppress the warning returned by future getSession calls
+            this.suppressGetSessionWarning = true;
             await setItemAsync(this.storage, this.storageKey, session);
         }
         async _removeSession() {
@@ -6373,11 +6500,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 urlParams.push(`scopes=${encodeURIComponent(options.scopes)}`);
             }
             if (this.flowType === 'pkce') {
-                const codeVerifier = generatePKCEVerifier();
-                await setItemAsync(this.storage, `${this.storageKey}-code-verifier`, codeVerifier);
-                const codeChallenge = await generatePKCEChallenge(codeVerifier);
-                const codeChallengeMethod = codeVerifier === codeChallenge ? 'plain' : 's256';
-                this._debug('PKCE', 'code verifier', `${codeVerifier.substring(0, 5)}...`, 'code challenge', codeChallenge, 'method', codeChallengeMethod);
+                const [codeChallenge, codeChallengeMethod] = await getCodeChallengeAndMethod(this.storage, this.storageKey);
                 const flowParams = new URLSearchParams({
                     code_challenge: `${encodeURIComponent(codeChallenge)}`,
                     code_challenge_method: `${encodeURIComponent(codeChallengeMethod)}`,
@@ -6585,7 +6708,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
 
     const AuthClient = GoTrueClient;
 
-    class SupabaseAuthClient extends GoTrueClient {
+    class SupabaseAuthClient extends AuthClient {
         constructor(options) {
             super(options);
         }
@@ -6600,19 +6723,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
     };
-    const DEFAULT_GLOBAL_OPTIONS = {
-        headers: DEFAULT_HEADERS$1,
-    };
-    const DEFAULT_DB_OPTIONS = {
-        schema: 'public',
-    };
-    const DEFAULT_AUTH_OPTIONS = {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true,
-        flowType: 'implicit',
-    };
-    const DEFAULT_REALTIME_OPTIONS = {};
     /**
      * Supabase Client.
      *
@@ -6688,17 +6798,18 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         from(relation) {
             return this.rest.from(relation);
         }
+        // NOTE: signatures must be kept in sync with PostgrestClient.schema
         /**
-         * Perform a query on a schema distinct from the default schema supplied via
-         * the `options.db.schema` constructor parameter.
+         * Select a schema to query or perform an function (rpc) call.
          *
          * The schema needs to be on the list of exposed schemas inside Supabase.
          *
-         * @param schema - The name of the schema to query
+         * @param schema - The schema to query
          */
         schema(schema) {
             return this.rest.schema(schema);
         }
+        // NOTE: signatures must be kept in sync with PostgrestClient.rpc
         /**
          * Perform a function call.
          *
@@ -6707,6 +6818,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param options - Named parameters
          * @param options.head - When set to `true`, `data` will not be returned.
          * Useful if you only need the count.
+         * @param options.get - When set to `true`, the function will be called with
+         * read-only access mode.
          * @param options.count - Count algorithm to use to count rows returned by the
          * function. Only applicable for [set-returning
          * functions](https://www.postgresql.org/docs/current/functions-srf.html).
@@ -6720,7 +6833,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * `"estimated"`: Uses exact count for low numbers and planned count for high
          * numbers.
          */
-        rpc(fn, args = {}, options) {
+        rpc(fn, args = {}, options = {}) {
             return this.rest.rpc(fn, args, options);
         }
         /**
@@ -6762,6 +6875,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             });
         }
         _initSupabaseAuthClient({ autoRefreshToken, persistSession, detectSessionInUrl, storage, storageKey, flowType, debug, }, headers, fetch) {
+            var _a;
             const authHeaders = {
                 Authorization: `Bearer ${this.supabaseKey}`,
                 apikey: `${this.supabaseKey}`,
@@ -6777,6 +6891,9 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 flowType,
                 debug,
                 fetch,
+                // auth checks if there is a custom authorizaiton header using this flag
+                // so it knows whether to return an error when getUser is called with no session
+                hasCustomAuthorizationHeader: (_a = 'Authorization' in this.headers) !== null && _a !== void 0 ? _a : false,
             });
         }
         _initRealtimeClient(options) {

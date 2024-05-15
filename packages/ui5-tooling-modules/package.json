@@ -32,16 +32,16 @@
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/pluginutils": "^5.1.0",
-    "@typescript-eslint/typescript-estree": "^7.8.0",
-    "chokidar": "^3.5.3",
+    "@typescript-eslint/typescript-estree": "^7.9.0",
+    "chokidar": "^3.6.0",
     "estree-walker": "^3.0.3",
-    "fast-xml-parser": "^4.3.3",
-    "ignore-walk": "^6.0.4",
+    "fast-xml-parser": "^4.3.6",
+    "ignore-walk": "^6.0.5",
     "minimatch": "^7.4.6",
-    "rollup": "^4.9.6",
+    "rollup": "^4.17.2",
     "rollup-plugin-polyfill-node": "^0.13.0"
   },
   "devDependencies": {
-    "ava": "^5.3.1"
+    "ava": "^6.1.3"
   }
 }
