@@ -113,6 +113,9 @@ async function getModule(resourceName, ctx) {
 // eslint-disable-next-line jsdoc/require-jsdoc
 async function setupEnv(resourceName, ctx, options = {}) {
 	const bundleInfo = await ctx.util.getBundleInfo(resourceName, { skipCache: true, debug: true }, options);
+	if (bundleInfo.error) {
+		throw new Error(bundleInfo.error);
+	}
 	return {
 		getModule: function (resourceName) {
 			return getModule(resourceName, Object.assign({ bundleInfo }, ctx));
