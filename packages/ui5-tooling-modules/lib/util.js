@@ -138,7 +138,7 @@ module.exports = function (log) {
 			if (content) {
 				const { parse } = await import("@typescript-eslint/typescript-estree");
 				const { walk } = await import("estree-walker");
-				const program = parse(content, { jsx: path.extname(source).endsWith("x"), allowInvalidAST: true });
+				const program = parse(content, { jsx: path.extname(source) !== ".ts", allowInvalidAST: true });
 				walk(program, {
 					enter(node, parent, prop, index) {
 						if (
@@ -331,7 +331,7 @@ module.exports = function (log) {
 				//      => supports the ES6 import/export syntax
 				//      => supports the UI5 sap.ui.require.toUrl and sap.ui.require/define/requireSync
 				try {
-					const program = parse(content, { jsx: path.extname(parentDepPath).endsWith("x"), allowInvalidAST: true });
+					const program = parse(content, { jsx: path.extname(parentDepPath) !== ".ts", allowInvalidAST: true });
 					walk(program, {
 						enter(node, parent, prop, index) {
 							if (
