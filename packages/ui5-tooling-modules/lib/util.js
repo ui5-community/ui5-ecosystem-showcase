@@ -54,17 +54,26 @@ function findNodeModules(dir, folders = [], recursive) {
 	if (!recursive && nodeModulesDirCache[dir]) {
 		return nodeModulesDirCache[dir];
 	} else {
-		//let millis = new Date().getTime();
-		var filenames = readdirSync(dir);
-		filenames.forEach((filename) => {
-			const file = path.join(dir, filename);
-			if (statSync(file).isDirectory()) {
-				if (filename === "node_modules") {
-					folders.push(path.dirname(file));
+		//const millis = new Date().getTime();
+		const nodeModulesDir = path.join(dir, "node_modules");
+		if (existsSync(nodeModulesDir)) {
+			folders.push(nodeModulesDir);
+			//console.log("found node_modules in " + nodeModulesDir);
+			readdirSync(nodeModulesDir, { withFileTypes: true }).forEach((nodeModule) => {
+				const nodeModuleName = nodeModule.name;
+				const nodeModuleDir = path.join(nodeModulesDir, nodeModuleName);
+				if (nodeModuleName.startsWith("@")) {
+					readdirSync(nodeModuleDir, { withFileTypes: true }).forEach((scopedNodeModule) => {
+						const scopedNodeModuleDir = path.join(nodeModuleDir, scopedNodeModule.name);
+						if (existsSync(path.join(scopedNodeModuleDir, "package.json"))) {
+							findNodeModules(scopedNodeModuleDir, folders, true);
+						}
+					});
+				} else if (existsSync(path.join(nodeModuleDir, "package.json"))) {
+					findNodeModules(nodeModuleDir, folders, true);
 				}
-				findNodeModules(file, folders, true);
-			}
-		});
+			});
+		}
 		if (!recursive) {
 			nodeModulesDirCache[dir] = folders;
 			//console.log(`findNodeModules(${dir}) took ${new Date().getTime() - millis}ms`);
