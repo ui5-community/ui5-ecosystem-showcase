@@ -17,6 +17,26 @@ const sleep_promise_1 = __importDefault(require("sleep-promise"));
 const prompt = require("async-prompt");
 const playwright_chromium_1 = require("playwright-chromium");
 class CookieGetter {
+    /**
+     * Removes undefined properties from the object. The object is mutated. This is a deep check.
+     * @param obj The object.
+     * @returns The mutated object.
+     */
+    sanitizeObject(obj) {
+        Object.keys(obj).forEach((key) => {
+            if (typeof obj[key] === "object" && !Array.isArray(obj[key])) {
+                this.sanitizeObject(obj[key]);
+            }
+            else {
+                obj[key] === undefined && delete obj[key];
+            }
+        });
+        return obj;
+    }
+    /**
+     * @param value a (in-)valid json string or undefined.
+     * @returns the parsed JSON object or undefined.
+     */
     parseJSON(value) {
         if (value === undefined)
             return undefined;
@@ -29,14 +49,15 @@ class CookieGetter {
     }
     getCookie(log, options) {
         return __awaiter(this, void 0, void 0, function* () {
-            const defaultOptions = {
+            options = this.sanitizeObject(options);
+            const defaultOptions = this.sanitizeObject({
                 configuration: {
                     path: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI,
                     useCertificate: false,
                     query: this.parseJSON(process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_QUERY),
-                }
-            };
-            const envOptions = {
+                },
+            });
+            const envOptions = this.sanitizeObject({
                 configuration: {
                     path: process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL,
                     username: process.env.UI5_MIDDLEWARE_ONELOGIN_USERNAME,
@@ -44,10 +65,21 @@ class CookieGetter {
                     useCertificate: process.env.UI5_MIDDLEWARE_ONELOGIN_USE_CERTIFICATE === "true",
                     debug: process.env.UI5_MIDDLEWARE_ONELOGIN_DEBUG === "true",
                     query: this.parseJSON(process.env.UI5_MIDDLEWARE_ONELOGIN_QUERY),
-                }
-            };
-            const effectiveOptions = Object.assign(defaultOptions, envOptions, options);
-            let attr = {
+                },
+            });
+            const effectiveOptions = Object.assign({}, options);
+            effectiveOptions.configuration = Object.assign({}, defaultOptions.configuration, envOptions.configuration, options.configuration);
+            if (effectiveOptions.configuration.debug) {
+                log.info("Default options:");
+                log.info(defaultOptions);
+                log.info("Env options:");
+                log.info(envOptions);
+                log.info("Yaml options:");
+                log.info(options);
+                log.info("Effective options:");
+                log.info(effectiveOptions);
+            }
+            const attr = {
                 url: effectiveOptions.configuration.path,
                 username: effectiveOptions.configuration.username,
                 password: effectiveOptions.configuration.password,
@@ -68,8 +100,10 @@ class CookieGetter {
                 if (query) {
                     Object.keys(query).forEach((key) => search.append(key, query[key]));
                 }
-                attr.url = `${urlWithTrailingSlash}sap/bc/ui2/flp/?${search.toString()}`;
-                log.verbose(`Trying to fetch cookie from "${attr.url}"`);
+                const searchParams = search.size > 0 ? `?${search.toString()}` : "";
+                attr.url = `${urlWithTrailingSlash}sap/bc/ui2/flp/${searchParams}`;
+                if (effectiveOptions.configuration.debug)
+                    log.info(`Trying to fetch cookie from "${attr.url}"`);
             }
             const playwrightOpt = {
                 headless: options ? !effectiveOptions.configuration.debug : true,
@@ -89,7 +123,7 @@ class CookieGetter {
                     catch (oError) {
                         elem = yield page.waitForSelector('input[type="text"]');
                     }
-                    let password = page.locator('input[type="password"]');
+                    const password = page.locator('input[type="password"]');
                     let isHidden = yield password.getAttribute("aria-hidden");
                     yield elem.type(attr.username);
                     if (!!isHidden && isHidden !== null) {
