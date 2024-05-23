@@ -72,7 +72,23 @@ sap.ui.define(
 				try {
 					const helloResponse = await fetch("/proxy/local/hello.txt");
 					const helloContent = await helloResponse.text();
-					console.log(helloContent);
+					console.log("simpleproxy", "local", helloContent);
+				} catch (err) {
+					console.error(err);
+				}
+
+				try {
+					const webcResponse = await fetch("/sst/@ui5/webcomponents-icons/v5/SAP-icons.json");
+					const webcContent = await webcResponse.json();
+					console.log("servestatic", "@ui5/webcomponents-icons", webcContent);
+				} catch (err) {
+					console.error(err);
+				}
+
+				try {
+					const tuiResponse = await fetch("/sst/tui-image-editor/icon-a.svg");
+					const tuiContent = await tuiResponse.text();
+					console.log("servestatic", "tui-image-editor", tuiContent.substring(0, 50) + "...");
 				} catch (err) {
 					console.error(err);
 				}

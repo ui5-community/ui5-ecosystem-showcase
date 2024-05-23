@@ -19,8 +19,16 @@ npm install ui5-middleware-servestatic --save-dev
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
+- debug: `boolean`
+  debug logging
 - rootPath: `string`
-  the root path to the static resources on your system
+  the root path to the static resources on your system (absolute or relative path to app)
+- npmPackagePath: `string`
+  the npm package path pointing to the root path for the static resources (e.g. "`@scope/packageName/path`", "`packageName/path`", "`packageName`")
+
+> Hints:
+> * If a `rootPath` is given, the `npmPackagePath` will be ignored
+> * Values for `rootPath` or `npmPackagePath` can be also provided by environment variables by using the prefix `env.` e.g. `rootPath: env.MY_ENV_VAR`
 
 ## Usage
 

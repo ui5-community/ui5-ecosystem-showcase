@@ -108,6 +108,18 @@ server:
       configuration:
         debug: true
         rootPath: ../../docs
+    - name: ui5-middleware-servestatic
+      mountPath: "/sst/@ui5/webcomponents-icons"
+      afterMiddleware: compression
+      configuration:
+        debug: true
+        npmPackagePath: "@ui5/webcomponents-icons/dist/generated/assets"
+    - name: ui5-middleware-servestatic
+      mountPath: /sst/tui-image-editor
+      afterMiddleware: compression
+      configuration:
+        debug: true
+        npmPackagePath: "tui-image-editor/dist/svg"
     - name: ui5-middleware-simpleproxy
       mountPath: /versioninfo
       afterMiddleware: compression
