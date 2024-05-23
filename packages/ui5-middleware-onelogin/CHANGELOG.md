@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.4.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-onelogin@3.3.8...ui5-middleware-onelogin@3.4.0) (2024-05-23)
+
+
+### Features
+
+* login url query parameter support ([#1004](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1004)) ([a9ffbd0](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/a9ffbd01d388af237bf374552c83574b968a707a))
+
+
+
+
+
 ## [3.3.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-onelogin@3.3.7...ui5-middleware-onelogin@3.3.8) (2024-05-15)
 
 **Note:** Version bump only for package ui5-middleware-onelogin
