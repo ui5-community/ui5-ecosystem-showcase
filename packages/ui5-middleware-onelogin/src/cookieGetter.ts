@@ -16,19 +16,78 @@ interface PlaywrightOpt {
 	channel?: "chrome";
 }
 export default class CookieGetter {
+	/**
+	 * Removes undefined properties from the object. The object is mutated. This is a deep check.
+	 * @param obj The object.
+	 * @returns The mutated object.
+	 */
+	private sanitizeObject(obj?: any): any {
+		Object.keys(obj).forEach((key) => {
+			if (typeof obj[key] === "object" && !Array.isArray(obj[key])) {
+				this.sanitizeObject(obj[key]);
+			} else {
+				obj[key] === undefined && delete obj[key];
+			}
+		});
+		return obj;
+	}
+
+	/**
+	 * @param value a (in-)valid json string or undefined.
+	 * @returns the parsed JSON object or undefined.
+	 */
+	private parseJSON(value?: string): any {
+		if (value === undefined) return undefined;
+		try {
+			return JSON.parse(value);
+		} catch (e) {
+			return undefined;
+		}
+	}
+
 	async getCookie(log: any, options: Options): Promise<string> {
-		let attr: Attributes = {
-			url:
-				options.configuration && options.configuration.path
-					? options.configuration.path
-					: process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL
-					? process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL
-					: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI!,
-			username: options.configuration && options.configuration.username ? options.configuration.username : process.env.UI5_MIDDLEWARE_ONELOGIN_USERNAME!,
-			password: options.configuration && options.configuration.password ? options.configuration.password : process.env.UI5_MIDDLEWARE_ONELOGIN_PASSWORD!,
+		options = this.sanitizeObject(options);
+
+		const defaultOptions: Options = this.sanitizeObject({
+			configuration: {
+				path: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI,
+				useCertificate: false,
+				query: this.parseJSON(process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_QUERY),
+			},
+		});
+
+		const envOptions: Options = this.sanitizeObject({
+			configuration: {
+				path: process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL,
+				username: process.env.UI5_MIDDLEWARE_ONELOGIN_USERNAME,
+				password: process.env.UI5_MIDDLEWARE_ONELOGIN_PASSWORD,
+				useCertificate: process.env.UI5_MIDDLEWARE_ONELOGIN_USE_CERTIFICATE === "true",
+				debug: process.env.UI5_MIDDLEWARE_ONELOGIN_DEBUG === "true",
+				query: this.parseJSON(process.env.UI5_MIDDLEWARE_ONELOGIN_QUERY),
+			},
+		});
+
+		const effectiveOptions = Object.assign({}, options);
+		effectiveOptions.configuration = Object.assign({}, defaultOptions.configuration, envOptions.configuration, options.configuration);
+
+		if (effectiveOptions.configuration.debug) {
+			log.info("Default options:");
+			log.info(defaultOptions);
+			log.info("Env options:");
+			log.info(envOptions);
+			log.info("Yaml options:");
+			log.info(options);
+			log.info("Effective options:");
+			log.info(effectiveOptions);
+		}
+
+		const attr: Attributes = {
+			url: effectiveOptions.configuration.path!,
+			username: effectiveOptions.configuration.username!,
+			password: effectiveOptions.configuration.password!,
 		};
 
-		if ((!attr.username || !attr.password) && !options.configuration.useCertificate) {
+		if ((!attr.username || !attr.password) && !effectiveOptions.configuration.useCertificate) {
 			log.warn("No credentials provided. Please answer the following prompts");
 			if (!attr.username) {
 				attr.username = await prompt("Username: ");
@@ -39,11 +98,19 @@ export default class CookieGetter {
 		}
 
 		if ((attr.url.match(new RegExp("/", "g")) || []).length === 2 || attr.url.lastIndexOf("/") === attr.url.length - 1) {
-			attr.url = `${attr.url.lastIndexOf("/") === attr.url.length - 1 ? attr.url : attr.url + "/"}sap/bc/ui2/flp`;
+			const urlWithTrailingSlash = attr.url.lastIndexOf("/") === attr.url.length - 1 ? attr.url : attr.url + "/";
+			const search = new URLSearchParams();
+			const query = effectiveOptions.configuration.query;
+			if (query) {
+				Object.keys(query).forEach((key) => search.append(key, query[key]));
+			}
+			const searchParams = search.size > 0 ? `?${search.toString()}` : "";
+			attr.url = `${urlWithTrailingSlash}sap/bc/ui2/flp/${searchParams}`;
+			if (effectiveOptions.configuration.debug) log.info(`Trying to fetch cookie from "${attr.url}"`);
 		}
 
 		const playwrightOpt: PlaywrightOpt = {
-			headless: options ? !options.configuration.debug : true,
+			headless: options ? !effectiveOptions.configuration.debug : true,
 			args: ["--disable-dev-shm-usage"],
 			channel: "chrome",
 		};
@@ -53,7 +120,7 @@ export default class CookieGetter {
 			const context = await browser.newContext({ ignoreHTTPSErrors: true });
 
 			const page = await context.newPage();
-			if (!options.configuration.useCertificate) {
+			if (!effectiveOptions.configuration.useCertificate) {
 				await page.goto(attr.url, { waitUntil: "domcontentloaded" });
 
 				let elem;
@@ -63,7 +130,7 @@ export default class CookieGetter {
 					elem = await page.waitForSelector('input[type="text"]');
 				}
 
-				let password = page.locator('input[type="password"]');
+				const password = page.locator('input[type="password"]');
 				let isHidden = await password.getAttribute("aria-hidden");
 				await elem.type(attr.username);
 				if (!!isHidden && isHidden !== null) {

@@ -42,6 +42,9 @@ You can either add the following properties to your .env file, remember to add t
 - UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL or UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI
 - UI5_MIDDLEWARE_ONELOGIN_USERNAME
 - UI5_MIDDLEWARE_ONELOGIN_PASSWORD
+- UI5_MIDDLEWARE_ONELOGIN_USE_CERTIFICATE
+- UI5_MIDDLEWARE_ONELOGIN_QUERY or UI5_MIDDLEWARE_SIMPLE_PROXY_QUERY
+- UI5_MIDDLEWARE_ONELOGIN_DEBUG
 
 Use of environment variables or values set in a `.env` file will be used.
 
@@ -75,6 +78,8 @@ server:
         password: <Login Password>
         useCertificate: true / false (use a certificate to login instead of username and password)
         debug: true / false (true will open up the playwright browser so you can see what's going on)
+        query:
+          sap-client: '206'
 ```
 
 ## License
