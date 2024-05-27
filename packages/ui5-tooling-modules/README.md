@@ -94,6 +94,9 @@ The following configuration options are relevant for the `task` and the `middlew
         - '*'
   ```
 
+- *chunksPath*: `boolean|string`
+  Relative path for the chunks to be stored into (if value is `true`, chunks are put into the closest modules folder which was the default behavior in the `3.5.x` release of the tooling extension)
+
 - *minify*: `boolean` *experimental feature*
   Flag to indicate that the generated code should be minified (in case of excluding thirdparty resources from minification in general, this option can be used to minify just the generated code)
 

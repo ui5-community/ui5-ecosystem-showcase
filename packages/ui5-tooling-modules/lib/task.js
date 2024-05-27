@@ -25,6 +25,7 @@ const parseJS = require("./parseJS");
  * @param {boolean|string[]} [parameters.options.configuration.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
  * @param {boolean|string[]} [parameters.options.configuration.skipTransform] flag or array of globs to verify whether the module transformation should be skipped
  * @param {boolean} [parameters.options.configuration.minify] minify the generated code
+ * @param {boolean|string} [parameters.options.configuration.chunksPath] the relative path for the chunks to be stored (defaults to "chunks", if value is true, chunks are put into the closest modules folder)
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ log, workspace, taskUtil, options }) {

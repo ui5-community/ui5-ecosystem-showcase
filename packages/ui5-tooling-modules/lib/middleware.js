@@ -20,7 +20,8 @@ const chokidar = require("chokidar");
  * @param {object} parameters.options Options
  * @param {object} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
  * @param {boolean} [parameters.options.configuration.skipCache] Flag whether the module cache for the bundles should be skipped
- * @param {boolean|string[]} [parameters.options.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
+ * @param {boolean|string[]} [parameters.options.configuration.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
+ * @param {boolean|string} [parameters.options.configuration.chunksPath] the relative path for the chunks to be stored (defaults to "chunks", if value is true, chunks are put into the closest modules folder)
  * @returns {Function} Middleware function to use
  */
 module.exports = async function ({ log, resources, options, middlewareUtil }) {

@@ -1,4 +1,4 @@
-sap.ui.define(['../../firebase/app/index.esm2017'], (function (index_esm2017) { 'use strict';
+sap.ui.define(['../../index.esm2017'], (function (index_esm2017) { 'use strict';
 
 	var index_cjs = {};
 

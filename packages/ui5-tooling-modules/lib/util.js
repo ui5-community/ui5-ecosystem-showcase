@@ -24,6 +24,7 @@ const { XMLParser } = require("fast-xml-parser");
 const parseJS = require("./parseJS");
 
 const { createHash } = require("crypto");
+const sanitize = require("sanitize-filename");
 
 /**
  * helper to check the existence of a resource (case-sensitive)
@@ -715,6 +716,7 @@ module.exports = function (log) {
 		 * @param {object} [config] configuration
 		 * @param {boolean} [config.skipCache] skip the module cache
 		 * @param {boolean} [config.debug] debug mode
+		 * @param {boolean|string} [config.chunksPath] the relative path for the chunks to be stored (defaults to "chunks", if value is true, chunks are put into the closest modules folder)
 		 * @param {boolean|string[]} [config.skipTransform] flag or array of globs to verify whether the module transformation should be skipped
 		 * @param {boolean|string[]} [config.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
 		 * @param {string} [config.generatedCode] ES compatibility of the generated code (es5, es2015)
@@ -726,7 +728,11 @@ module.exports = function (log) {
 		 * @param {boolean} [options.isMiddleware] flag if the getResource is called by the middleware
 		 * @returns {object} the output object of the resource (code, chunks?, lastModified)
 		 */
-		getBundleInfo: async function getBundleInfo(moduleNames, { skipCache, debug, skipTransform, keepDynamicImports, generatedCode, minify, inject } = {}, { cwd, depPaths, isMiddleware } = {}) {
+		getBundleInfo: async function getBundleInfo(
+			moduleNames,
+			{ skipCache, debug, chunksPath, skipTransform, keepDynamicImports, generatedCode, minify, inject } = {},
+			{ cwd, depPaths, isMiddleware } = {}
+		) {
 			cwd = cwd || process.cwd();
 
 			let bundling = false;
@@ -829,11 +835,23 @@ module.exports = function (log) {
 								// chunk module
 								if (module.code) {
 									// find the module to which the chunk primarily belongs
-									const referencedModuleIndex = output.findIndex((m) => m.isEntry && m.imports?.indexOf(module.fileName) !== -1);
-									const referencedModule = modules[Math.max(referencedModuleIndex, 0)];
+									let filePath = chunksPath || "";
+									if (chunksPath === true) {
+										const referencedModuleIndex = output.findIndex((m) => m.isEntry && m.imports?.indexOf(module.fileName) !== -1);
+										const referencedModule = modules[Math.max(referencedModuleIndex, 0)];
+										filePath = referencedModule.name;
+									} else if (typeof filePath === "string") {
+										filePath = filePath
+											.split(/[\\/]/)
+											.map(sanitize)
+											.filter((s) => !/^\.*$/.test(s))
+											.join("/");
+									} else {
+										filePath = "";
+									}
 									const fileName = module.fileName.substring(0, module.fileName.length - 3);
 									bundleInfo.addChunk({
-										name: `${referencedModule.name}/${fileName}`,
+										name: path.posix.join(filePath, fileName),
 										originalName: fileName,
 										code: module.code,
 									});

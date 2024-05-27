@@ -111,8 +111,8 @@ async function getModule(resourceName, ctx) {
 }
 
 // eslint-disable-next-line jsdoc/require-jsdoc
-async function setupEnv(resourceName, ctx, options = {}) {
-	const bundleInfo = await ctx.util.getBundleInfo(resourceName, { skipCache: true, debug: true }, options);
+async function setupEnv(resourceName, ctx, config = {}, options = {}) {
+	const bundleInfo = await ctx.util.getBundleInfo(resourceName, Object.assign({ skipCache: true, debug: true }, config), options);
 	if (bundleInfo.error) {
 		throw new Error(bundleInfo.error);
 	}
@@ -170,13 +170,19 @@ test.serial("Verify generation of @stomp/stompjs", async (t) => {
 
 test.serial("Verify generation of jspdf", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp"));
-	const env = await setupEnv(["jspdf"], {
-		tmpDir: t.context.tmpDir,
-		util: t.context.util,
-		scope: {
-			navigator: {},
+	const env = await setupEnv(
+		["jspdf"],
+		{
+			tmpDir: t.context.tmpDir,
+			util: t.context.util,
+			scope: {
+				navigator: {},
+			},
 		},
-	});
+		{
+			chunksPath: "../_chunks_/../",
+		}
+	);
 	const module = await env.getModule("jspdf");
 	t.true(module.retVal.__esModule);
 	if (platform() !== "win32") {
@@ -388,10 +394,16 @@ test.serial("Verify generation of @js-temporal/polyfill", async (t) => {
 
 test.serial("Verify generation of react/reactdom", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
-	const env = await setupEnv(["react", "react-dom/client"], {
-		tmpDir: t.context.tmpDir,
-		util: t.context.util,
-	});
+	const env = await setupEnv(
+		["react", "react-dom/client"],
+		{
+			tmpDir: t.context.tmpDir,
+			util: t.context.util,
+		},
+		{
+			chunksPath: true,
+		}
+	);
 	const react = await env.getModule("react");
 	t.true(react.retVal.__esModule);
 	if (platform() !== "win32") {
