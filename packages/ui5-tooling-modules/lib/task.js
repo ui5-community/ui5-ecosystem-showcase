@@ -4,6 +4,7 @@ const { createReadStream } = require("fs");
 const { XMLParser, XMLBuilder } = require("fast-xml-parser");
 const minimatch = require("minimatch");
 const parseJS = require("./parseJS");
+const sanitize = require("sanitize-filename");
 
 /**
  * Custom task to create the UI5 AMD-like bundles for used ES imports from node_modules.
@@ -18,7 +19,7 @@ const parseJS = require("./parseJS");
  * @param {string} [parameters.options.projectNamespace] Project namespace if available
  * @param {object} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @param {boolean} [parameters.options.configuration.prependPathMappings] Prepend the path mappings for the UI5 loader to Component.js
- * @param {boolean} [parameters.options.configuration.addToNamespace] Adds modules into the sub-namespace thirdparty of the Component
+ * @param {boolean|string} [parameters.options.configuration.addToNamespace] Adds modules into the sub-namespace thirdparty of the Component
  * @param {boolean} [parameters.options.configuration.removeScopePrefix] Remove the @ prefix for the scope in the namespace/path
  * @param {boolean} [parameters.options.configuration.providedDependencies] List of provided dependencies which should not be processed
  * @param {object<string, string[]>} [parameters.options.configuration.includeAssets] Map of assets (key: npm package name, value: local paths) to be included (embedded)
@@ -51,8 +52,21 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 		options.configuration
 	);
 
+	// derive the custom thirdparty namespace
+	let thirdpartyNamespace = "thirdparty";
+	if (typeof config.addToNamespace === "string") {
+		thirdpartyNamespace = config.addToNamespace
+			.split(/[\\/]/)
+			.map(sanitize)
+			.filter((s) => !/^\.*$/.test(s))
+			.join("/");
+		config.addToNamespace = true;
+	}
+
 	// scan the content of the project for unique dependencies, resources and more
+	const scanTime = Date.now();
 	const { uniqueModules, uniqueResources, uniqueNS } = await scan(workspace, config, { cwd, depPaths });
+	config.debug && log.info(`Scanning took ${Date.now() - scanTime} millis`);
 
 	// list of included assets pattern (required for rewrite)
 	const includedAssets = [];
@@ -83,7 +97,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 			if (removeScopePrefix && d.startsWith("@")) {
 				d = d.substring(1);
 			}
-			d = `${options.projectNamespace}/thirdparty/${d}`;
+			d = `${options.projectNamespace}/${thirdpartyNamespace}/${d}`;
 			return useDottedNamespace ? d.replace(/\//g, ".") : d;
 		} else {
 			return dep;
@@ -234,6 +248,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	const { resourceFactory } = taskUtil;
 
 	// every unique dependency will be bundled (entry points will be kept, rest is chunked)
+	const bundleTime = Date.now();
 	const bundleInfo = await getBundleInfo(Array.from(uniqueModules), config, { cwd, depPaths });
 	if (bundleInfo.error) {
 		log.error(bundleInfo.error);
@@ -250,8 +265,10 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 			await workspace.write(newResource);
 		})
 	);
+	config.debug && log.info(`Bundling took ${Date.now() - bundleTime} millis`);
 
 	// every unique resource will be copied
+	const copyTime = Date.now();
 	await Promise.all(
 		Array.from(uniqueResources).map(async (resourceName) => {
 			log.verbose(`Trying to process resource: ${resourceName}`);
@@ -267,9 +284,11 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 			}
 		})
 	);
+	config.debug && log.info(`Copying resources took ${Date.now() - copyTime} millis`);
 
 	// process all XML and JS files in workspace and rewrite the module names
 	if (config?.addToNamespace) {
+		const rewriteTime = Date.now();
 		const parser = new XMLParser({
 			attributeNamePrefix: "@_",
 			ignoreAttributes: false,
@@ -294,7 +313,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 		const shouldSkipTransform = function (resourcePath) {
 			return Array.isArray(config.skipTransform)
 				? config.skipTransform.some((value) => {
-						return minimatch(resourcePath, `/resources/${options.projectNamespace}/thirdparty/${value}`);
+						return minimatch(resourcePath, `/resources/${options.projectNamespace}/${thirdpartyNamespace}/${value}`);
 				  })
 				: config.skipTransform;
 		};
@@ -327,6 +346,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				}
 			})
 		);
+		config.debug && log.info(`Rewriting took ${Date.now() - copyTime} millis`);
 	}
 
 	// create path mappings for bundled resources in Component.js
