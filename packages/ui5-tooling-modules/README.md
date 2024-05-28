@@ -106,8 +106,8 @@ The following configuration options are just relevant for the `task`:
   Prepends the path mappings for the UI5 loader to the `Component.js` which allows to run the Component using 3rd party modules in e.g. Fiori launchpad environments (defaults to `false`)
   &nbsp;
 
-- *addToNamespace*: `boolean`
-  Puts 3rd party modules into the namespace of the Component to make them Component-local. All used 3rd party modules will be moved into the sub-namespace `thirdparty` of the Component namespace at build time. With that option you can run your application using 3rd party modules in a Fiori launchpad environment. (defaults to `false`, disables *prependPathMappings* when set to `true`)
+- *addToNamespace*: `boolean|string`
+  Puts 3rd party modules into the namespace of the Component to make them Component-local. All used 3rd party modules will be moved by default into the sub-namespace `thirdparty` of the Component namespace at build time. If you use a string as value of `addToNamespace` you can define a custom namespace, e.g. `my/namespace/for/libs` which will be nested in the Components' namespace. With that option you can run your application using 3rd party modules in a Fiori launchpad environment. (defaults to `false`, disables *prependPathMappings* when set to `true`)
   &nbsp;
   > :warning: While this works great for any non-UI5 3rd party module, there are limitations for the consumption of UI5 modules from custom control 3rd party modules (NPM packages). The UI5 module names (used for `Object.extend(...)`, aggregation types, ...) are not rewritten and this may cause issues. UI5 assumes that the used module path (slash syntax) is matching the module name (dot syntax). This can lead to issues for `Object.isA(...)` checks, Renderer lookups (when not inlined or referenced by module), or for any other API which derives the module name from the module path or vice versa.
 
