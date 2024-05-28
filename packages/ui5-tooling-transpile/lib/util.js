@@ -322,6 +322,7 @@ module.exports = function (log) {
 			const normalizedConfiguration = {
 				debug: config.debug,
 				babelConfig: config.babelConfig,
+				generateBabelConfig: config.generateBabelConfig,
 				includes,
 				excludes,
 				filePattern,
