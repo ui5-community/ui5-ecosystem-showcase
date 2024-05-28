@@ -39,7 +39,8 @@
     "ignore-walk": "^6.0.5",
     "minimatch": "^7.4.6",
     "rollup": "^4.17.2",
-    "rollup-plugin-polyfill-node": "^0.13.0"
+    "rollup-plugin-polyfill-node": "^0.13.0",
+    "sanitize-filename": "^1.6.3"
   },
   "devDependencies": {
     "ava": "^6.1.3"
