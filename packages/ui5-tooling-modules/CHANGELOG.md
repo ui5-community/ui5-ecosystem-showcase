@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.6.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.5.6...ui5-tooling-modules@3.6.0) (2024-05-31)
+
+
+### Features
+
+* **ui5-tooling-modules:** improved handling of chunks ([#1009](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1009)) ([8f35651](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8f356514367d47a68b4517ecbd5fec46fb6444c7)), closes [#915](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/915)
+* **ui5-tooling-modules:** support alternative thirdparty namespace ([#1010](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1010)) ([eb7556f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/eb7556fd24ec82b1160ff219374e8f95bf5562c5))
+
+
+
+
+
 ## [3.5.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.5.5...ui5-tooling-modules@3.5.6) (2024-05-15)
 
 

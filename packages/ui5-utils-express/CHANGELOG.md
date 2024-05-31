@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-utils-express@1.3.0...ui5-utils-express@1.3.1) (2024-05-31)
+
+
+### Bug Fixes
+
+* **ui5-utils-express:** await the registration of middleware functions ([#1012](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1012)) ([4348f6e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4348f6eb9a857a7e900216fda30319e584ea2a3b))
+
+
+
+
+
 # [1.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-utils-express@1.2.1...ui5-utils-express@1.3.0) (2024-01-25)
 
 

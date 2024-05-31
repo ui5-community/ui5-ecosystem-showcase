@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.4.1...ui5-tooling-transpile@3.4.2) (2024-05-31)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** forward the generateBabelConfig option ([#1011](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1011)) ([e4b6cab](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e4b6cab2f6d864458ab7ae33165e1b94a3f27678))
+
+
+
+
+
 ## [3.4.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.4.0...ui5-tooling-transpile@3.4.1) (2024-05-15)
 
 **Note:** Version bump only for package ui5-tooling-transpile
