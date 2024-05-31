@@ -59,7 +59,7 @@ module.exports = function hook(name, callback, middleware) {
 		// when used inside a router, the hook can be only
 		// initialized with the first request for this route
 		let initializedByRouter = false;
-		const fn = function (req, res, next) {
+		const fn = async function (req, res, next) {
 			if (!initializedByRouter) {
 				const app = req.app;
 				// the server is usually derived from the app except in the
@@ -67,7 +67,7 @@ module.exports = function hook(name, callback, middleware) {
 				// approuter property in the app propery at the request
 				const server = app?.server || app?.approuter?._server?._server;
 				if (app && server) {
-					callback({
+					await callback({
 						app,
 						server,
 						on: server.on.bind(server),
