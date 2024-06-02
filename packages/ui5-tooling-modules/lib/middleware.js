@@ -85,6 +85,10 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 					debug && log.info(`Scanning took ${Date.now() - scanTime} millis`);
 					bundleTime = Date.now();
 					const modules = Array.from(uniqueModules);
+					// TODO: check whether we should really include the requested modules into the bundle
+					//       because this could also be a negative side-effect when running the build task
+					//       which wouldn't include the requested modules into the build - but in this case
+					//       we need it since new modules are added dynamically during development
 					Array.from(requestedModules)
 						.filter((mod) => !uniqueModules.has(mod))
 						.forEach((mod) => {

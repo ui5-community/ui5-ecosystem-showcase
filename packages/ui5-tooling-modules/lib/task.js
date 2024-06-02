@@ -271,16 +271,21 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	const copyTime = Date.now();
 	await Promise.all(
 		Array.from(uniqueResources).map(async (resourceName) => {
-			log.verbose(`Trying to process resource: ${resourceName}`);
-			if (existsResource(resourceName, { cwd, depPaths, onlyFiles: true })) {
-				const resource = getResource(resourceName, { cwd, depPaths });
-				config.debug && log.info(`Processing resource: ${resourceName}`);
-				const newResource = resourceFactory.createResource({
-					path: `/resources/${rewriteDep(resourceName, bundledResources)}`,
-					stream: resource.path ? createReadStream(resource.path) : undefined,
-					string: !resource.path && resource.code ? resource.code : undefined,
-				});
-				await workspace.write(newResource);
+			const resourcePath = `/resources/${rewriteDep(resourceName, bundledResources)}`;
+			if (!(await workspace.byPath(resourcePath))) {
+				log.verbose(`Trying to process resource: ${resourceName}`);
+				if (existsResource(resourceName, { cwd, depPaths, onlyFiles: true })) {
+					const resource = getResource(resourceName, { cwd, depPaths });
+					config.debug && log.info(`Processing resource: ${resourceName}`);
+					const newResource = resourceFactory.createResource({
+						path: resourcePath,
+						stream: resource.path ? createReadStream(resource.path) : undefined,
+						string: !resource.path && resource.code ? resource.code : undefined,
+					});
+					await workspace.write(newResource);
+				}
+			} else {
+				log.verbose(`Skipping copy of existing resource: ${resourceName}`);
 			}
 		})
 	);

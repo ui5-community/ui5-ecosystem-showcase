@@ -924,6 +924,9 @@ importers:
       '@stomp/stompjs':
         specifier: ^7.0.0
         version: 7.0.0
+      chart.js:
+        specifier: ^3.9.1
+        version: 3.9.1
       jspdf:
         specifier: ^2.5.1
         version: 2.5.1
