@@ -4,6 +4,7 @@ import MessageBox from "sap/m/MessageBox";
 import { version, utils, write } from "xlsx";
 import { Info } from "luxon";
 import { Client } from "@stomp/stompjs";
+import { Chart } from "chart.js";
 import capitalize from "ui5/ecosystem/demo/tslib/util/capitalize";
 
 function limitString(string = "", limit = 40) {
@@ -14,6 +15,7 @@ console.log(`[STATIC IMPORT] XLSX loaded: ${version}`);
 // eslint-disable-next-line @typescript-eslint/no-base-to-string
 console.log(`[STATIC IMPORT] Luxon loaded: ${limitString(Info.toString())}`);
 console.log(`[STATIC IMPORT] STOMP loaded: ${limitString(Client.toString())}`);
+console.log(`[STATIC IMPORT] Chart.js loaded: ${Chart.version}`);
 
 // dynamic import of xlsx (just named exports)
 import("xlsx")

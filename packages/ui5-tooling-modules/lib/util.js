@@ -127,35 +127,47 @@ const defaultMainFields = ["browser", "module", "main"];
 
 module.exports = function (log) {
 	/**
-	 * Checks whether the file behind the given path is a UI5 module or not
+	 * Checks whether the file behind the given path is a module to skip for transformation or not
 	 *
 	 * @param {string} source the path of a JS module
-	 * @returns {boolean} true, if the JS module is a UI5 module
+	 * @returns {boolean} true, if the module should be skipped for transformation
 	 */
-	async function isUI5Module(source) {
+	async function shouldSkipModule(source) {
 		try {
 			let isUI5Module = false;
+			let isSystemJSModule = false;
 			const content = await readFile(source, { encoding: "utf8" });
 			if (content) {
 				const { parse } = await import("@typescript-eslint/typescript-estree");
 				const { walk } = await import("estree-walker");
 				const program = parse(content, { jsx: path.extname(source) !== ".ts", allowInvalidAST: true });
-				walk(program, {
-					enter(node, parent, prop, index) {
-						if (
-							node?.type === "CallExpression" &&
-							/require|define/.test(node?.callee?.property?.name) &&
-							node?.callee?.object?.property?.name == "ui" &&
-							node?.callee?.object?.object?.name == "sap"
-						) {
-							isUI5Module = true;
+				// SystemJS modules start with "System.register(...)"
+				program.body
+					.filter((node) => node.type === "ExpressionStatement")
+					.forEach((node) => {
+						if (node.expression.type === "CallExpression" && node.expression.callee?.property?.name == "register" && node.expression.callee?.object?.name == "System") {
+							isSystemJSModule = true;
 						}
-					},
-				});
+					});
+				if (!isSystemJSModule) {
+					// for UI5 modules we need to check for sap.ui.require/define
+					walk(program, {
+						enter(node, parent, prop, index) {
+							if (
+								node?.type === "CallExpression" &&
+								/require|define/.test(node?.callee?.property?.name) &&
+								node?.callee?.object?.property?.name == "ui" &&
+								node?.callee?.object?.object?.name == "sap"
+							) {
+								isUI5Module = true;
+							}
+						},
+					});
+				}
 			}
-			return isUI5Module;
+			return isUI5Module || isSystemJSModule;
 		} catch (err) {
-			log.verbose(`Failed to parse dependency "${source}"!`, err);
+			log.verbose(`Failed to parse module "${source}"!`, err);
 			return false;
 		}
 	}
@@ -764,7 +776,7 @@ module.exports = function (log) {
 					//   3) should not be skipped from transformation
 					//   4) is no UI5 module
 					if (modulePath) {
-						if (/\.(m|c)?js/.test(path.extname(modulePath).toLowerCase()) && !shouldSkipTransform(moduleName) && !(await isUI5Module(modulePath))) {
+						if (/\.(m|c)?js/.test(path.extname(modulePath).toLowerCase()) && !shouldSkipTransform(moduleName) && !(await shouldSkipModule(modulePath))) {
 							const module = bundleInfo.addModule({
 								name: moduleName,
 								path: modulePath,
