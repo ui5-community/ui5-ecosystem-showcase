@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.6.0...ui5-tooling-modules@3.6.1) (2024-06-02)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** skip transpile of SystemJS modules ([#1013](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1013)) ([199750e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/199750ef1c14a9ad840be2e159fd2186a0051889))
+
+
+
+
+
 # [3.6.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.5.6...ui5-tooling-modules@3.6.0) (2024-05-31)
 
 

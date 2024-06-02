@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.22](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.13.21...ui5-tsapp@0.13.22) (2024-06-02)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** skip transpile of SystemJS modules ([#1013](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1013)) ([199750e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/199750ef1c14a9ad840be2e159fd2186a0051889))
+
+
+
+
+
 ## [0.13.21](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.13.20...ui5-tsapp@0.13.21) (2024-05-31)
 
 **Note:** Version bump only for package ui5-tsapp
