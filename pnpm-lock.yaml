@@ -559,8 +559,8 @@ importers:
         specifier: ^6.9.4
         version: 6.9.4
       babel-preset-transform-ui5:
-        specifier: ^7.3.1
-        version: 7.3.1
+        specifier: ^7.4.1
+        version: 7.4.1
       browserslist:
         specifier: ^4.23.0
         version: 4.23.0
@@ -3421,15 +3421,15 @@ packages:
   babel-plugin-transform-async-to-promises@0.8.18:
     resolution: {integrity: sha512-WpOrF76nUHijnNn10eBGOHZmXQC8JYRME9rOLxStOga7Av2VO53ehVFvVNImMksVtQuL2/7ZNxEgxnx7oo/3Hw==}
 
-  babel-plugin-transform-modules-ui5@7.3.1:
-    resolution: {integrity: sha512-dPa0zMfe3b4oYZCM9eq8YoiuVHogIJVHkibBQkzYlQ0YDNNIKMSLrdSIDyUStiNwCNOBS2YxFooc+4vpNsu5tg==}
+  babel-plugin-transform-modules-ui5@7.4.1:
+    resolution: {integrity: sha512-FqFK7EOq34s3zTi/cVX2ZUgOcSA+dcFIv7JKvekxXVdLwoIzlwU46MhJAbCiPm/O4cqKB8iu+uB1FkURPiZr/Q==}
     engines: {node: '>=6'}
 
   babel-plugin-transform-remove-console@6.9.4:
     resolution: {integrity: sha512-88blrUrMX3SPiGkT1GnvVY8E/7A+k6oj3MNvUtTIxJflFzXTw1bHkuJ/y039ouhFMp2prRn5cQGzokViYi1dsg==}
 
-  babel-preset-transform-ui5@7.3.1:
-    resolution: {integrity: sha512-18s55md9AZUcX6DZ38uF1wlWTMG50S0hX3XDWSEPlm7+qGBwHeV/DNbE0GJCz7ZMo1iLiYqeBJexGePl6SRHNg==}
+  babel-preset-transform-ui5@7.4.1:
+    resolution: {integrity: sha512-w71pn2YFbTK35qAh7vrFd5goTE0jgE+MKFx0THAOKIbWroon0ocx0wa/r3tK+bjitTFZgsu37Mp7TL/Tg9eP3Q==}
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -12452,7 +12452,7 @@ snapshots:
 
   babel-plugin-transform-async-to-promises@0.8.18: {}
 
-  babel-plugin-transform-modules-ui5@7.3.1:
+  babel-plugin-transform-modules-ui5@7.4.1:
     dependencies:
       array-flatten: 3.0.0
       doctrine: 3.0.0
@@ -12461,9 +12461,9 @@ snapshots:
 
   babel-plugin-transform-remove-console@6.9.4: {}
 
-  babel-preset-transform-ui5@7.3.1:
+  babel-preset-transform-ui5@7.4.1:
     dependencies:
-      babel-plugin-transform-modules-ui5: 7.3.1
+      babel-plugin-transform-modules-ui5: 7.4.1
 
   balanced-match@1.0.2: {}
 
