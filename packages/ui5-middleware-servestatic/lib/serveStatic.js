@@ -45,7 +45,7 @@ module.exports = function ({ log, options }) {
 	// if no rootPath is given, we first check if an npm package path is given
 	if (!rootPath) {
 		// derive the scope and package name from the package name
-		const npmPackageScopeRegEx = /^(?:(@[^/]+)\/)?([^/]+)\/(.*)$/;
+		const npmPackageScopeRegEx = /^(?:(@[^/]+)\/)?([^/]+)(?:\/(.*))?$/;
 		let npmPackagePath = parseConfigOption(effectiveConfig.npmPackagePath);
 		const parts = npmPackageScopeRegEx.exec(npmPackagePath);
 		if (parts) {
@@ -54,9 +54,9 @@ module.exports = function ({ log, options }) {
 			const packagePath = parts[3];
 			try {
 				const packageRoot = require.resolve(`${scope ? `${scope}/` : ""}${packageName}/package.json`);
-				rootPath = path.join(path.dirname(packageRoot), packagePath);
+				rootPath = path.join(path.dirname(packageRoot), packagePath || "");
 			} catch (error) {
-				log.error(`Could not resolve npm package path ${npmPackagePath}`);
+				throw new Error(`Could not resolve npm package path ${npmPackagePath}`);
 			}
 		}
 	}
