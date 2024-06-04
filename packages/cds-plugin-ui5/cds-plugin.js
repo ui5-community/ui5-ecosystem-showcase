@@ -277,6 +277,8 @@ if (!skip) {
 			}
 		);
 	} else {
-		log.info("The cds build task requires @sap/cds-dk version >= 7.6.0! Skipping execution as your @sap/cds-dk version is too old...");
+		// TODO: add error message to inform the user that the cds build task is not available
+		//       and that the @sap/cds-dk version is too old to support the cds build task
+		//log.info("The cds build task requires @sap/cds-dk version >= 7.6.0! Skipping execution as your @sap/cds-dk version is too old...");
 	}
 }
