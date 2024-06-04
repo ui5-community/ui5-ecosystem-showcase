@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-servestatic@3.1.0...ui5-middleware-servestatic@3.1.1) (2024-06-04)
+
+
+### Bug Fixes
+
+* **ui5-middleware-servestatic:** support npm packages without a nested path ([#1016](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1016)) ([d7d2856](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d7d2856cf469be559629759a30fabd537b7a7f04))
+
+
+
+
+
 # [3.1.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-servestatic@3.0.3...ui5-middleware-servestatic@3.1.0) (2024-05-23)
 
 

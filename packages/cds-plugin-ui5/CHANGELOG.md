@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.9.2...cds-plugin-ui5@0.9.3) (2024-06-04)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** silently skip build plugin if not supported ([ca4745b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ca4745b8e7da2ca95c8ba504d0aa2952bcf3f440))
+
+
+
+
+
 ## [0.9.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.9.1...cds-plugin-ui5@0.9.2) (2024-05-15)
 
 **Note:** Version bump only for package cds-plugin-ui5
