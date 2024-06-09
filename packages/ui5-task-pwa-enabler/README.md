@@ -35,6 +35,8 @@ Defines how the service worker should behave. Possible values are
 
 `preCache`: List of [glob pattern](https://en.wikipedia.org/wiki/Glob_(programming)) that match the files that will be pre cached when the application starts. Only required for `Cache-First` and `Advanced-Caching` strategies.
 
+`preCachePrefix`:  Prefix for all the files determined using `preCache`. Useful in scenario where application is deployed at a centralized runtime infrastructure e.g. Mangaged Approuter provided by SAP Build Work Zone. Only applicable for `Advanced-Caching` & `Cache-First` strategies.
+
 `networkFirst`: List of regular expressions, everything that matches any of the expressions will be fetched from the network first and only served from cache when there is no network available. Only required for `Advanced-Caching`.
 
 `avoidCaching`: List of regular expressions, everything that matches any of the expressions won't be cached. Only required for `Advanced-Caching`
@@ -42,6 +44,10 @@ Defines how the service worker should behave. Possible values are
 ### `manifest`
 
 Whatever you supply here will be copied to the `manifest.webmanifest` file, you can read more about it at [web.dev](https://web.dev/add-manifest/). If a required parameter is missing a default value will be provided.
+
+Another special parameter `crossOrigin` is supported as part of `manifest` configuration. However, it is not copied to `manifest.webmanifest`, instead added to  `<link>` while changing the `index.html`.
+
+  `crossOrigin`: The request for the manifest is made without credentials, even if it's on the same domain. If the manifest requires credentials, add this parameter and provide value **use-credentials**.
 
 ## Usage
 
