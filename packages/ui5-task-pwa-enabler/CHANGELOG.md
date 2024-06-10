@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-pwa-enabler@3.0.8...ui5-task-pwa-enabler@3.1.0) (2024-06-10)
+
+
+### Features
+
+* **ui5-task-pwa-enabler:** add support for path prefix for file caching ([#1018](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1018)) ([43aa428](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/43aa428911bada9e1160b39fdb97aa2c89fcda62)), closes [#1017](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1017)
+
+
+
+
+
 ## [3.0.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-pwa-enabler@3.0.7...ui5-task-pwa-enabler@3.0.8) (2024-05-15)
 
 **Note:** Version bump only for package ui5-task-pwa-enabler
