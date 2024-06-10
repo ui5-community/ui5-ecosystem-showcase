@@ -641,6 +641,7 @@ module.exports = function (log) {
 		 * @returns {rollup.RollupOutput} the build output of rollup
 		 */
 		createBundle: async function createBundle(moduleNames, { cwd, depPaths, mainFields, beforePlugins, afterPlugins, generatedCode, inject, isMiddleware } = {}) {
+			const { walk } = await import("estree-walker");
 			const bundle = await rollup.rollup({
 				input: moduleNames,
 				//context: "exports" /* this is normally converted to undefined, but should be exports in our case! */,
@@ -679,7 +680,7 @@ module.exports = function (log) {
 							return that.resolveModule(moduleName, { cwd, depPaths, mainFields });
 						},
 					}),
-					transformTopLevelThis({ log }),
+					transformTopLevelThis({ log, walk }),
 					...(afterPlugins || []),
 				],
 				onwarn: function ({ loc, frame, code, message }) {
