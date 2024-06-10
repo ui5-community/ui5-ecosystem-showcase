@@ -38,7 +38,7 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 				const lessFile = style.uri ? style.uri.replace(".css", ".less") : null;
 				if (lessFile) {
 					if (!path.isAbsolute(lessFile)) {
-						return path.join(localPath, lessFile);
+						return path.posix.join(localPath, lessFile);
 					}
 				}
 				return lessFile;
@@ -50,7 +50,7 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 	const lessResources = [];
 	for (const glob of lessToCompile) {
 		if (!path.isAbsolute(glob)) {
-			lessResources.push(...((await workspace.byGlobSource(path.join(localPath, glob))) || []));
+			lessResources.push(...((await workspace.byGlobSource(path.posix.join(localPath, glob))) || []));
 		} else {
 			lessResources.push(...((await workspace.byGlobSource(glob)) || []));
 		}
