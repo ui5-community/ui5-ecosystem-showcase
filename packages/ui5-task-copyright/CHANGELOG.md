@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-copyright@3.0.4...ui5-task-copyright@3.0.5) (2024-06-25)
+
+
+### Bug Fixes
+
+* **ui5-task-copyright:** xml declaration/preable must be before comment ([#1022](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1022)) ([12834b8](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/12834b851dd3146266f6392d2b500dfa9c768d0a))
+
+
+
+
+
 ## [3.0.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-copyright@3.0.3...ui5-task-copyright@3.0.4) (2024-05-15)
 
 **Note:** Version bump only for package ui5-task-copyright
