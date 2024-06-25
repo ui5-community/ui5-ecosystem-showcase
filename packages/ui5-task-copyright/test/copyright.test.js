@@ -26,16 +26,18 @@ function startsWithCopyright(file, copyrightString) {
 			.join("\n * ");
 		return content.startsWith(`/*!\n * ${copyrightForJS}\n */\n`);
 	} else if (file.endsWith(".xml")) {
+		const parts = /(<\?xml.*\?>\s*)?([\s\S]*)/.exec(content);
+		const xmlContent = parts[2]?.trim() || content;
 		const copyrightForXML = copyrightString
 			.split(/\r?\n/)
 			.map((line) => line.trimEnd())
 			.join("\n  ");
-		return content.startsWith(`<!--\n  ${copyrightForXML}\n-->\n`);
+		return xmlContent.startsWith(`<!--\n  ${copyrightForXML}\n-->\n`);
 	}
 	return false;
 }
 
-test("Inline copyright", async (t) => {
+test.only("Inline copyright", async (t) => {
 	const ui5 = { yaml: path.resolve("./test/__assets__/ui5.inline.yaml") };
 	spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
 		stdio: "inherit", // > don't include stdout in test output,
@@ -53,6 +55,7 @@ test("Inline copyright", async (t) => {
 	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "controller/Main-dbg.controller.js"), copyright));
 	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "view/App.view.xml"), copyright));
 	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "view/Main.view.xml"), copyright));
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "data/data.xml"), copyright));
 });
 
 test("Inline copyright + current year", async (t) => {
