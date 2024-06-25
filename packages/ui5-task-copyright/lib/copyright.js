@@ -160,7 +160,16 @@ module.exports = async ({ log, workspace, options }) => {
 					.map((line) => line.trimEnd())
 					.join("\n  ");
 				if (!(xml["#comment"] && copyrightRegExp.test(xml["#comment"]))) {
-					await resource.setString(`<!--\n  ${copyrightForXML}\n-->\n${code}`);
+					const copyrightString = `<!--\n  ${copyrightForXML}\n-->`;
+					// split the xml into the xml declaration and the content
+					const parts = /(<\?xml.*\?>\s*)?([\s\S]*)/.exec(code);
+					if (parts?.length === 3 && typeof parts[1] === "string") {
+						// copyright comment is inserted after the xml declaration and before the content
+						await resource.setString(`${parts[1].trim()}\n${copyrightString}\n${parts[2]?.trim() || ""}`);
+					} else {
+						// no xml declaration found
+						await resource.setString(`${copyrightString}\n${code}`);
+					}
 				} else {
 					await resource.setString(code.replace(copyrightRegExp, copyrightForXML));
 				}
