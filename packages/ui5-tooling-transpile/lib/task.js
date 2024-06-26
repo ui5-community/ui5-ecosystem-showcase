@@ -71,6 +71,26 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 		}
 	}
 
+	// replace the version in all files handled by this task because this plugin handles additional file types
+	// which are not supported by the replaceVersion task of the UI5 Tooling (hardcoded some selected file types)
+	// (HINT: do this a bit loosly coupled for now to avoid tight dependencies to UI5 Tooling)
+	try {
+		// dynamically require the replaceVersion task
+		// (using the absolute path to the module to avoid issues with the module resolution)
+		const replaceVersion = (await import(require.resolve("@ui5/builder/tasks/replaceVersion"))).default;
+		// replace the versions for all supported file types
+		// using the central replaceVersion task of the UI5 Tooling
+		await replaceVersion({
+			workspace,
+			options: {
+				pattern: `**/*${config.filePattern}`,
+				version: rootProject.getVersion()
+			}
+		});
+	} catch (e) {
+		log.error(`Failed to replace the version in the TypeScript files!\nReason: ${e}`);
+	}
+
 	// TODO: should we accept the full glob pattern as param or just the file pattern?
 	const allResources = await workspace.byGlob(`/**/*${config.filePattern}`);
 
