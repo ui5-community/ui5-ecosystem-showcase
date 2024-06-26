@@ -24,10 +24,12 @@ export default class SimpleControl extends Control {
 		render: (rm: RenderManager, control: SimpleControl) => {
 			rm.openStart("div", control);
 			rm.style("font-size", "2rem");
-			rm.style("width", "2rem");
 			rm.style("height", "2rem");
 			rm.style("display", "inline-block");
 			rm.style("color", "blue");
+			rm.style("padding", ".5rem");
+			rm.style("border", "1px dashed lightblue");
+			rm.attr("title", "${project.version}");
 			rm.openEnd();
 			rm.text(control.getText());
 			rm.close("div");

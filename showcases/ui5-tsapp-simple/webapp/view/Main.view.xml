@@ -4,6 +4,7 @@
   xmlns="sap.m"
   xmlns:core="sap.ui.core"
   xmlns:mvc="sap.ui.core.mvc"
+  xmlns:control="ui5.ecosystem.demo.simpletsapp.control"
   core:require="{
 		Formatter: 'ui5/ecosystem/demo/simpletsapp/model/Formatter'
 	}"
@@ -14,6 +15,7 @@
     </headerContent>
     <content>
       <VBox alignItems="Center" justifyContent="Center" height="100%">
+        <control:SimpleControl text="Hello World" />
         <Button text="Don't press me!" press="onBoo" />
       </VBox>
     </content>
