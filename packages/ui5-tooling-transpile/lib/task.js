@@ -2,6 +2,7 @@
 const path = require("path");
 const fs = require("fs");
 const JSONC = require("comment-json");
+const { pathToFileURL } = require("url");
 
 /**
  * Custom task to transpile resources to JavaScript modules.
@@ -77,7 +78,8 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 	try {
 		// dynamically require the replaceVersion task
 		// (using the absolute path to the module to avoid issues with the module resolution)
-		const replaceVersion = (await import(require.resolve("@ui5/builder/tasks/replaceVersion"))).default;
+		const replaceVersion = (await import(pathToFileURL(require.resolve("@ui5/builder/tasks/replaceVersion"))))
+			.default;
 		// replace the versions for all supported file types
 		// using the central replaceVersion task of the UI5 Tooling
 		await replaceVersion({
