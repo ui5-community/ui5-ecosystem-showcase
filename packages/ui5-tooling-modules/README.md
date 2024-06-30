@@ -97,6 +97,9 @@ The following configuration options are relevant for the `task` and the `middlew
 - *chunksPath*: `boolean|string`
   Relative path for the chunks to be stored into (if value is `true`, chunks are put into the closest modules folder which was the default behavior in the `3.5.x` release of the tooling extension)
 
+- *legacyDependencyResolution*: `boolean`
+  Re-enables the legacy dependency resolution of the tooling extension which allows to use entry points from `devDependencies` of the project. By default, only the `dependencies` maintained in the projects' `package.json` and the transitive dependencies are considered for the entry points and all other entry points are ignored. (available since new minor version `3.7.0` which introduces a new dependency resolution for `dependencies` only)
+
 - *minify*: `boolean` *experimental feature*
   Flag to indicate that the generated code should be minified (in case of excluding thirdparty resources from minification in general, this option can be used to minify just the generated code)
 
