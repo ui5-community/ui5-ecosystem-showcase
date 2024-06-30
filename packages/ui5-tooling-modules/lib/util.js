@@ -210,6 +210,45 @@ module.exports = function (log) {
 		return modulePath;
 	}
 
+	// regex to extract the NPM package name from a dependency
+	const npmPackageScopeRegEx = /^((?:(@[^/]+)\/)?([^/]+))(?:\/(.*))?$/;
+
+	/**
+	 * find the dependencies of the current project and its transitive dependencies
+	 * (excluding devDependencies and providedDependencies)
+	 * @param {*} cwd current working directory
+	 * @param {*} depPaths paths of the dependencies (in addition for cwd)
+	 * @returns array of dependency root directories
+	 */
+	function findDependencies(cwd = process.cwd(), depPaths = []) {
+		const pkgJson = JSON.parse(readFileSync(path.join(cwd, "package.json"), { encoding: "utf8" }));
+		const dependencies = Object.keys(pkgJson.dependencies || {});
+		const depRoots = [];
+		dependencies.forEach((dep) => {
+			const npmPackage = npmPackageScopeRegEx.exec(dep)?.[1];
+			let depRoot;
+			try {
+				const depPath = resolveNodeModule(dep, cwd, depPaths);
+				depRoot = depPath.substring(0, depPath.lastIndexOf("node_modules") + "node_modules".length + 1 + npmPackage.length);
+			} catch (ex) {
+				/* noop */
+			}
+			if (!depRoot) {
+				try {
+					const depPath = resolveNodeModule(`${npmPackage}/package.json`, cwd, depPaths);
+					depRoot = path.dirname(depPath);
+				} catch (ex) {
+					/* noop */
+				}
+			}
+			if (depRoots.indexOf(depRoot) === -1) {
+				depRoots.push(depRoot);
+				depRoots.push(...findDependencies(depRoot, [...depPaths, cwd]));
+			}
+		});
+		return depRoots;
+	}
+
 	const that = {
 		/**
 		 * scans the project resources
@@ -219,6 +258,7 @@ module.exports = function (log) {
 		 * @param {boolean} [config.debug] debug mode
 		 * @param {boolean} [config.providedDependencies] list of provided dependencies which should not be processed
 		 * @param {object<string, string[]>} [config.includeAssets] map of assets (key: npm package name, value: local paths) to be included (embedded)
+		 * @param {boolean} [config.legacyDependencyResolution] includes all dependencies (including devDependencies) for entry point resolution
 		 * @param {object} [options] additional options
 		 * @param {string} [options.cwd] current working directory
 		 * @param {string[]} [options.depPaths] paths of the dependencies (in addition for cwd)
@@ -229,6 +269,10 @@ module.exports = function (log) {
 			const { walk } = await import("estree-walker");
 
 			const providedDependencies = Array.isArray(config?.providedDependencies) ? config?.providedDependencies : [];
+
+			// find the root directories of the dependencies (excludes devDependencies)
+			// since all modules should be declared as dependencies in the package.json
+			const dependencyRoots = !config?.legacyDependencyResolution && findDependencies(cwd, depPaths);
 
 			// find all sources to determine their dependencies
 			let allSources = await reader.byGlob("/**/*.{js,jsx,ts,tsx}");
@@ -324,10 +368,14 @@ module.exports = function (log) {
 					// here if they also require to be transpiled by the task
 					try {
 						const depPath = that.resolveModule(dep, { cwd, depPaths });
-						if (depPath && existsSyncWithCase(depPath)) {
+						const existsDep = depPath && existsSyncWithCase(depPath);
+						const allowedDep = existsDep && (!dependencyRoots || dependencyRoots.some((root) => depPath.startsWith(root)));
+						if (allowedDep) {
 							const depContent = readFileSync(depPath, { encoding: "utf8" });
 							addUniqueModule(dep, depPath);
 							findUniqueJSDeps(depContent, depPath);
+						} else if (existsDep) {
+							log.warn(`Skipping dependency "${dep}" as it is not part of the dependencies in package.json!`);
 						}
 					} catch (ex) {
 						/* noop */
