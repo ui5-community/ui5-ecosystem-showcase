@@ -18,7 +18,7 @@ npm install ui5-middleware-simpleproxy --save-dev
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
 - `baseUri`: `string`
-  The baseUri to proxy. Can also be set using the `UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI` environment variable. To proxy WebSockets just use a WebSocket URL, e.g. `ws://echo.websocket.org`
+  The baseUri to proxy. Can also be set using the `UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI` environment variable. To proxy WebSockets just use a WebSocket URL, e.g. `ws://echo.websocket.org`. *Hint: the `mountPath` of the middleware is not considered for the baseUri. It's just used as is!*
 - `strictSSL`: `boolean`
   Ignore strict SSL checks. Default value `true`. Can also be set using the `UI5_MIDDLEWARE_SIMPLE_PROXY_STRICT_SSL` environment variable.
 - `removeETag`:  `boolean`
