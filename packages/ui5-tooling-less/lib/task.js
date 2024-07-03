@@ -29,6 +29,12 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 
 	// determine the less files to compile from the ui5.yaml (config)
 	let lessToCompile = options?.configuration?.lessToCompile || [];
+
+	// handle case when the parameter is a string, e.g. lessToCompile: 'theme/style.less'
+	if (typeof lessToCompile === "string") {
+		lessToCompile = [lessToCompile];
+	}
+
 	if (lessToCompile.length === 0) {
 		// if nothing is specified, we extract the less files to compile from the manifest
 		let manifest = await (await workspace.byPath(`${localPath}/manifest.json`)).getString();
