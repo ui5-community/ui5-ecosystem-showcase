@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-simpleproxy",
-  "version": "3.2.16",
+  "version": "3.2.17",
   "description": "UI5 simple proxy middleware",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",

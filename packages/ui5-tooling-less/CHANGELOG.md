@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-less@3.1.4...ui5-tooling-less@3.1.5) (2024-07-10)
+
+
+### Bug Fixes
+
+* handle case when lessToCompile is provided as a string value ([#1027](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1027)) ([cad15b0](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/cad15b025137fecd744796cc1dcf12e1a7893dcc))
+
+
+
+
+
 ## [3.1.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-less@3.1.3...ui5-tooling-less@3.1.4) (2024-06-10)
 
 
