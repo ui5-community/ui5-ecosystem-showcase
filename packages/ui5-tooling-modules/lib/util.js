@@ -191,7 +191,7 @@ module.exports = function (log) {
 			}
 		};
 		// try to resolve the module with different file extensions
-		for (const ext of ["", ".js", ".cjs", ".mjs"]) {
+		for (const ext of [".js", ".cjs", ".mjs", ""]) {
 			// 1.) use default lookup
 			modulePath = resolve(`${moduleName}${ext}`);
 			if (modulePath) break;
