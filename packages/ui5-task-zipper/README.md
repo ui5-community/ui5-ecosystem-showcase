@@ -30,7 +30,7 @@ Default value: `<app-id.zip>`
 List of files to be included in the ZIP archive relative to the project root or Map of of files to be included in the ZIP archive relative to the project root and target path in the ZIP archive.
 
 - onlyZip: `true|false`
-Set this to `true` if you also want to generate the unzipped resources in the `dist` folder. Otherwise, it will only create the zipped archive.
+Set this to `false` if you also want to generate the unzipped resources in the `dist` folder. Otherwise, it will only create the zipped archive.
 
 - includeDependencies: `true|false` or `String<Array>`
 Set this to `true` if you also want to include the dependencies (UI5 libraries) in the zip archive. Otherwise, it will only include the workspace files (controller, views, etc). In order to select only specific dependencies to be included in the final zip you just need to specify the list of dependencies (value of `ui5.yaml`: `metadata > name`).
