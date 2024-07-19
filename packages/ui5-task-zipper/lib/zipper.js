@@ -80,19 +80,26 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 	const zip = new yazl.ZipFile();
 	try {
 		// include the application related resources
+		const zipEntries = [];
 		await Promise.all(
 			allResources.map((resource) => {
-				if (taskUtil.getTag(resource, taskUtil.STANDARD_TAGS.OmitFromBuildResult)) {
+				if (taskUtil.getTag(resource, OmitFromBuildResult)) {
 					// resource should not be part of the build result -> no need to include it in the zip
 					return;
 				}
 				if (onlyZip) {
 					taskUtil.setTag(resource, OmitFromBuildResult, true);
 				}
-				return resource.getBuffer().then((buffer) => {
-					isDebug && log.info(`Adding ${resource.getPath()} to archive.`);
-					zip.addBuffer(buffer, resource.getPath().replace(prefixPath, "").replace(/^\//, "")); // Replace first forward slash at the start of the path
-				});
+				const resourcePath = resource.getPath().replace(prefixPath, "").replace(/^\//, "");
+				if (!zipEntries.includes(resourcePath)) {
+					zipEntries.push(resourcePath);
+					return resource.getBuffer().then((buffer) => {
+						isDebug && log.info(`Adding ${resource.getPath()} to archive.`);
+						zip.addBuffer(buffer, resourcePath); // Replace first forward slash at the start of the path
+					});
+				} else {
+					log.warn(`Duplicate resource path found: ${resourcePath}! Skipping...`);
+				}
 			})
 		);
 		// include the additional files from the project
