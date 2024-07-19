@@ -130,7 +130,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 
 					// create the ts file in the workspace
 					config.debug && log.info(`  + [.js] ${filePath}`);
-					let string = normalizeLineFeeds(result.code);
+					let string = result.code;
 
 					// create sourcemap resource if available
 					if (result.map) {
@@ -139,7 +139,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 
 						const resourceMap = resourceFactory.createResource({
 							path: `${filePath}.map`,
-							string: JSON.stringify(result.map)
+							string: normalizeLineFeeds(JSON.stringify(result.map))
 						});
 
 						await workspace.write(resourceMap);
@@ -150,7 +150,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 
 					const transpiledResource = resourceFactory.createResource({
 						path: filePath,
-						string
+						string: normalizeLineFeeds(string)
 					});
 					await workspace.write(transpiledResource);
 				}
