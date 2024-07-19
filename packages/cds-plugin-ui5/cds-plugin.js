@@ -48,6 +48,35 @@ if (!skip) {
 	// to disable the ui5-middleware-cap if used in apps
 	process.env["cds-plugin-ui5"] = true;
 
+	const { execSync } = require("child_process");
+	const { readFileSync } = require("fs");
+
+	// function to resolve a module with the given paths without throwing an error
+	const resolveModule = function resolveModule(moduleName, paths) {
+		try {
+			return require.resolve(moduleName, { paths });
+		} catch (error) {
+			return null;
+		}
+	};
+
+	// find out the CDS-DK version to control the behavior of the plugin
+	const getCDSDKVersion = function getCDSDKVersion() {
+		const moduleName = "@sap/cds-dk";
+		const globalModulesPath = execSync("npm root -g").toString().trim();
+		let resolvedPath = resolveModule(`${moduleName}/package.json`);
+		if (!resolvedPath) {
+			resolvedPath = resolveModule(`${moduleName}/package.json`, [globalModulesPath]);
+		}
+		if (resolvedPath) {
+			const packageJson = JSON.parse(readFileSync(resolvedPath, { encoding: "utf-8" }));
+			return packageJson.version;
+		}
+	};
+
+	// get the CDS-DK version to control the behavior of the plugin
+	const cdsdkVersion = getCDSDKVersion();
+
 	// promise to await the bootstrap and lock the
 	// served event to delay the startup a bit
 	let bootstrapped;
@@ -194,11 +223,11 @@ if (!skip) {
 	// check if the register function for build tasks is available at the cds object
 	// and if the Plugin class is available to register the cds build task to cover
 	// the tracks of the cds-plugin-ui5 workspace configuration and dependencies
+	const { minVersion, satisfies } = require("semver");
 	if (typeof cds.build?.register === "function" && typeof cds.build?.Plugin?.constructor === "function") {
 		const { readFile, writeFile } = require("fs").promises;
 		const { existsSync } = require("fs");
 		const { join } = require("path");
-		const { minVersion } = require("semver");
 		const util = require("util");
 		const exec = util.promisify(require("child_process").exec);
 
@@ -226,10 +255,16 @@ if (!skip) {
 				}
 				init() {}
 				clean() {
-					this._priority = -1; // hack to ensure that the task is executed last!
+					if (!satisfies(cdsdkVersion, ">=8")) {
+						this._priority = -1; // hack to ensure that the task is executed last!
+					}
 				}
 				get priority() {
-					return this._priority || 1;
+					if (!satisfies(cdsdkVersion, ">=8")) {
+						return this._priority || 1;
+					} else {
+						return -1;
+					}
 				}
 				async build() {
 					// determine the namespace from the model
@@ -277,8 +312,10 @@ if (!skip) {
 			}
 		);
 	} else {
-		// TODO: add error message to inform the user that the cds build task is not available
-		//       and that the @sap/cds-dk version is too old to support the cds build task
-		//log.info("The cds build task requires @sap/cds-dk version >= 7.6.0! Skipping execution as your @sap/cds-dk version is too old...");
+		if (!satisfies(cdsdkVersion, ">=7.5.0")) {
+			// TODO: add error message to inform the user that the cds build task is not available
+			//       and that the @sap/cds-dk version is too old to support the cds build task
+			log.warn("The cds build task requires @sap/cds-dk version >= 7.5.0! Skipping execution as your @sap/cds-dk version is too old...");
+		}
 	}
 }
