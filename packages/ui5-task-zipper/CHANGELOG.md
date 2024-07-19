@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@3.1.4...ui5-task-zipper@3.1.5) (2024-07-19)
+
+
+### Bug Fixes
+
+* **ui5-task-zipper:** avoid duplicate entries, show warning and skip ([#1036](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1036)) ([87eb7c8](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/87eb7c8b3673c1c771ec5cd40ae5af7b00e7ff11))
+
+
+
+
+
 ## [3.1.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@3.1.3...ui5-task-zipper@3.1.4) (2024-05-15)
 
 **Note:** Version bump only for package ui5-task-zipper
