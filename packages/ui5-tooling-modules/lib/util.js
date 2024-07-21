@@ -843,7 +843,7 @@ module.exports = function (log) {
 					//   3) should not be skipped from transformation
 					//   4) is no UI5 module
 					if (modulePath) {
-						if (/\.(m|c)?js/.test(path.extname(modulePath).toLowerCase()) && !shouldSkipTransform(moduleName) && !(await shouldSkipModule(modulePath))) {
+						if (/\.(m|c)?js$/.test(path.extname(modulePath).toLowerCase()) && !shouldSkipTransform(moduleName) && !(await shouldSkipModule(modulePath))) {
 							const module = bundleInfo.addModule({
 								name: moduleName,
 								path: modulePath,
