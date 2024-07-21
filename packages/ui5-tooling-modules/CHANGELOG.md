@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.7.0...ui5-tooling-modules@3.8.0) (2024-07-21)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** only consider js, cjs or mjs files as bundle entry points ([#1040](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1040)) ([87ec01e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/87ec01ed5987d84e8bdcff3a9a8485f52958bdaa))
+* **ui5-tooling-modules:** perf-opt to avoid bundling without changes ([#1042](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1042)) ([65e30aa](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/65e30aab5744a4144f8b745ce0692f1e27df3d14))
+
+
+### Features
+
+* **ui5-tooling-modules:** improved dependency resolution ([#1039](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1039)) ([b3695cb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b3695cbb1df87c0cb4af3819198f40aa6d816a11)), closes [#1032](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1032)
+* **ui5-tooling-modules:** support instructions ?url, ?inline in modules ([#1041](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1041)) ([71677eb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/71677ebaebbd19bc35494be80e04bce1c340e932))
+
+
+
+
+
 # [3.7.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.6.2...ui5-tooling-modules@3.7.0) (2024-06-30)
 
 

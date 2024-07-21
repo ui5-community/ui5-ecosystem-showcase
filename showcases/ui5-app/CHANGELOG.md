@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.39.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.38.10...ui5-app@0.39.0) (2024-07-21)
+
+
+### Features
+
+* **ui5-tooling-modules:** improved dependency resolution ([#1039](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1039)) ([b3695cb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b3695cbb1df87c0cb4af3819198f40aa6d816a11)), closes [#1032](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1032)
+
+
+
+
+
 ## [0.38.10](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.38.9...ui5-app@0.38.10) (2024-07-19)
 
 **Note:** Version bump only for package ui5-app
