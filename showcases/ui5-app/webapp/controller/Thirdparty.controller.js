@@ -3,6 +3,7 @@ sap.ui.define(
 	[
 		"ui5/ecosystem/demo/app/controller/BaseController",
 		"sap/m/MessageToast",
+		"sap/ui/thirdparty/jquery",
 		"xlsx",
 		"cmis",
 		"@supabase/supabase-js",
@@ -18,8 +19,9 @@ sap.ui.define(
 		"xml-js",
 		"firebase/app", // requires node-fetch@2
 		"firebase/firestore/lite",
+		"signalr",
 	],
-	(Controller, MessageToast, xlsx, cmis, supabase, octokit, axios, temporal, stompjs, react, reactdom, zod, pdfMake, pdfFonts, xmljs, firebase, firestore) => {
+	(Controller, MessageToast, jQuery, xlsx, cmis, supabase, octokit, axios, temporal, stompjs, react, reactdom, zod, pdfMake, pdfFonts, xmljs, firebase, firestore, signalr) => {
 		"use strict";
 
 		console.log(xlsx);
@@ -47,6 +49,8 @@ sap.ui.define(
 		} catch (ex) {
 			console.error(ex);
 		}
+
+		console.log(signalr, jQuery.connection.hub);
 
 		return Controller.extend("ui5.ecosystem.demo.app.controller.Thirdparty", {
 			onInit() {

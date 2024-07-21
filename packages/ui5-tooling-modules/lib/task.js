@@ -36,6 +36,8 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	const cwd = taskUtil.getProject().getRootPath() || process.cwd();
 	const { scan, getBundleInfo, getResource, existsResource } = require("./util")(log);
 
+	const projectNamespace = options.projectNamespace || taskUtil.getProject().getNamespace();
+
 	// determine all paths for the dependencies
 	const depPaths = taskUtil
 		.getDependencies()
@@ -91,7 +93,8 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	const removeScopePrefix = config?.removeScopePrefix || config?.removeScopePreceder;
 	// eslint-disable-next-line jsdoc/require-jsdoc
 	function rewriteDep(dep, bundledResources, useDottedNamespace) {
-		const aDep = dep.replaceAll(/\.?\.\//g, "");
+		// remove the relative path and the project namespace
+		const aDep = dep.replaceAll(`${options.projectNamespace}/resources/`, "").replaceAll(/\.?\.\//g, "");
 		if (config.addToNamespace && (bundledResources.indexOf(aDep) !== -1 || uniqueResources.has(aDep) || uniqueNS.has(aDep) || isAssetIncluded(aDep))) {
 			let d = aDep;
 			if (removeScopePrefix && d.startsWith("@")) {
@@ -249,7 +252,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 
 	// every unique dependency will be bundled (entry points will be kept, rest is chunked)
 	const bundleTime = Date.now();
-	const bundleInfo = await getBundleInfo(Array.from(uniqueModules), config, { cwd, depPaths });
+	const bundleInfo = await getBundleInfo(Array.from(uniqueModules), config, { cwd, projectNamespace, depPaths });
 	if (bundleInfo.error) {
 		log.error(bundleInfo.error);
 		process.exit(1);

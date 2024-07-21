@@ -26,7 +26,9 @@ module.exports = function ({ resolveModule } = {}) {
 				}
 			}
 			// needs to be in sync with nodeResolve
-			return resolveModule(importee);
+			const resolvedModule = resolveModule(importee);
+			//console.log(`Resolved ${importee} to ${resolvedModule}`);
+			return resolvedModule;
 		},
 	};
 };

@@ -229,7 +229,13 @@ module.exports = function (log) {
 			let depRoot;
 			try {
 				const depPath = resolveNodeModule(dep, cwd, depPaths);
-				depRoot = depPath.substring(0, depPath.lastIndexOf("node_modules") + "node_modules".length + 1 + npmPackage.length);
+				if (depPath !== dep) {
+					depRoot = depPath.substring(0, depPath.lastIndexOf("node_modules") + "node_modules".length + 1 + npmPackage.length);
+				} else {
+					// native modules are not part of the node_modules directory
+					// so we need to resolve it late with the package.json
+					depRoot = undefined;
+				}
 			} catch (ex) {
 				/* noop */
 			}
@@ -607,15 +613,15 @@ module.exports = function (log) {
 			} else {
 				// derive the module path from the package.json entries browser, module or main
 				try {
-					const pckJsonModuleName = path.join(moduleName, "package.json");
-					const pkgJson = require(pckJsonModuleName);
+					const pkgJsonModuleName = path.join(moduleName, "package.json");
+					const pkgJson = require(pkgJsonModuleName);
 					const existsAndIsFile = function (file) {
 						return existsSyncWithCase(file) && statSync(file).isFile();
 					};
 					const resolveModulePath = function (exports, fields) {
 						for (const field of fields) {
 							if (typeof exports[field] === "string") {
-								modulePath = path.join(path.dirname(resolveNodeModule(pckJsonModuleName, cwd, depPaths)), exports[field]);
+								modulePath = path.join(path.dirname(resolveNodeModule(pkgJsonModuleName, cwd, depPaths)), exports[field]);
 								// check for the module path exists and to be a file
 								if (existsAndIsFile(modulePath)) {
 									return modulePath;
@@ -667,6 +673,10 @@ module.exports = function (log) {
 			if (modulePath === undefined) {
 				modulesNegativeCache.push(moduleName);
 				log.verbose(`  => not found!`);
+			} else if (modulePath === moduleName) {
+				modulePath = undefined;
+				modulesNegativeCache.push(moduleName);
+				log.verbose(`  => found but ignored (identified as native node module)!`);
 			} else {
 				log.verbose(`  => found at ${modulePath}`);
 			}
@@ -720,14 +730,20 @@ module.exports = function (log) {
 					nodePolyfillsOverride({
 						log,
 						cwd,
+						moduleNames,
 					}),
-					nodePolyfills(),
-					nodePolyfillsOverride.inject(inject),
+					// once the node polyfills are injected, we can
+					// resolve the modules from node_modules
 					pnpmResolve({
 						resolveModule: function (moduleName) {
 							return that.resolveModule(moduleName, { cwd, depPaths, mainFields });
 						},
 					}),
+					// the following plugins must be executed after the
+					// node polyfills are injected and the modules are resolved
+					// to ensure that the modules are properly transformed
+					nodePolyfills(),
+					nodePolyfillsOverride.inject(inject),
 					transformTopLevelThis({ log, walk }),
 					...(afterPlugins || []),
 				],
@@ -785,6 +801,8 @@ module.exports = function (log) {
 		 * @param {object} [config.inject] the inject configuration for @rollup/plugin-inject
 		 * @param {object} [options] additional options
 		 * @param {string} [options.cwd] current working directory
+		 * @param {string} [options.projectNamespace] namespace of the project to use for the module names
+		 * @param {string} [options.projectType] type of the project (e.g. for applications we resolve the modules differently)
 		 * @param {string[]} [options.depPaths] paths of the dependencies (in addition for cwd)
 		 * @param {boolean} [options.isMiddleware] flag if the getResource is called by the middleware
 		 * @returns {object} the output object of the resource (code, chunks?, lastModified)
@@ -792,7 +810,7 @@ module.exports = function (log) {
 		getBundleInfo: async function getBundleInfo(
 			moduleNames,
 			{ skipCache, debug, chunksPath, skipTransform, keepDynamicImports, generatedCode, minify, inject } = {},
-			{ cwd, depPaths, isMiddleware } = {}
+			{ cwd, projectNamespace, projectType, depPaths, isMiddleware } = {}
 		) {
 			cwd = cwd || process.cwd();
 
@@ -927,12 +945,22 @@ module.exports = function (log) {
 						const fixImports = (bundleInfo) => {
 							bundleInfo.getEntries().forEach((module) => {
 								const moduleName = module.name;
-								const relativePath = path.relative(`/${path.dirname(moduleName)}`, "/").replace(/\\/g, "/");
+								let moduleBasePath;
+								if (projectType === "application" && projectNamespace) {
+									// for applications we need to adjust the module base path so that the
+									// modules are resolved relative to the project namespace (to support CDN cases)
+									moduleBasePath = path.posix.join(projectNamespace, "resources");
+								} else {
+									// HINT: UI5 module loader first resolves the paths of modules and then match
+									//       it against the central modules =>
+									//       in CDN cases, root resources are resolved against the CDN
+									moduleBasePath = path.posix.relative(`/${path.dirname(moduleName)}`, "/");
+								}
 								bundleInfo.getChunks().forEach((chunk) => {
 									const originalChunkName = chunk.originalName;
 									const chunkName = chunk.name;
-									module.code = module.code?.replace(`'./${originalChunkName}'`, `'${relativePath || "."}/${chunkName}'`);
-									module.code = module.code?.replace(`"./${originalChunkName}"`, `"${relativePath || "."}/${chunkName}"`);
+									module.code = module.code?.replace(`'./${originalChunkName}'`, `'${moduleBasePath || "."}/${chunkName}'`);
+									module.code = module.code?.replace(`"./${originalChunkName}"`, `"${moduleBasePath || "."}/${chunkName}"`);
 								});
 							});
 							return bundleInfo;
@@ -967,13 +995,13 @@ module.exports = function (log) {
 		getResource: function getResource(resourceName, { cwd, depPaths, isMiddleware }) {
 			const resourcePath = that.resolveModule(`${resourceName}`, { cwd, depPaths });
 			if (typeof resourcePath === "string" && existsSync(resourcePath)) {
-				let code;
+				let code = readFileSync(resourcePath, {
+					encoding: "utf8",
+				});
 				return {
 					name: resourceName,
 					path: resourcePath,
-					code: readFileSync(resourcePath, {
-						encoding: "utf8",
-					}),
+					code,
 				};
 			} else if (!isMiddleware) {
 				log.error(`Resource ${resourceName} not found. Ignoring resource...`);
