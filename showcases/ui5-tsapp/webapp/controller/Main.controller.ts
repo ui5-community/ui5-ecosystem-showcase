@@ -6,10 +6,13 @@ import { Info } from "luxon";
 import { Client } from "@stomp/stompjs";
 import { Chart } from "chart.js";
 import capitalize from "ui5/ecosystem/demo/tslib/util/capitalize";
+import camelizeSomething from "../utils/camelizeSomething";
 
 function limitString(string = "", limit = 40) {
 	return string.substring(0, limit);
 }
+
+console.log(camelizeSomething());
 
 console.log(`[STATIC IMPORT] XLSX loaded: ${version}`);
 // eslint-disable-next-line @typescript-eslint/no-base-to-string
