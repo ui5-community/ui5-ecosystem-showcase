@@ -101,6 +101,15 @@ async function getModule(resourceName, ctx) {
 		return { retVal: function () {} };
 	}
 	const resource = ctx.bundleInfo.getEntry(resourceName);
+	if (!existsSync(path.join(snapDir, `${resourceName}.js`))) {
+		writeFile(
+			resourceName,
+			resource.code,
+			Object.assign(ctx, {
+				tmpDir: snapDir,
+			})
+		);
+	}
 	writeFile(resourceName, resource.code, ctx);
 	const retVal = await runModule(resourceName, resource.code, ctx);
 	return {
@@ -543,5 +552,34 @@ test.serial("Verify generation of @ui5/webcomponents/dist/CheckBox", async (t) =
 	t.true(module.retVal.__esModule);
 	if (platform() !== "win32") {
 		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
+	}
+});
+
+test.serial("Verify generation of signalr/punycode", async (t) => {
+	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
+	const jQuery = function () {
+		return { on: function () {} };
+	};
+	const env = await setupEnv(["signalr", "punycode"], {
+		tmpDir: t.context.tmpDir,
+		util: t.context.util,
+		scope: {
+			document: {
+				readyState: "",
+			},
+			navigator: {
+				appName: "",
+			},
+			jQuery,
+		},
+	});
+	const moduleS = await env.getModule("signalr");
+	t.true(moduleS.retVal.__esModule);
+	t.is(jQuery.connection.name, "signalR");
+	const moduleP = await env.getModule("punycode");
+	t.true(moduleP.retVal.__esModule);
+	if (platform() !== "win32") {
+		t.is(moduleS.code, readSnapFile(moduleS.name, t.context.snapDir));
+		t.is(moduleP.code, readSnapFile(moduleP.name, t.context.snapDir));
 	}
 });

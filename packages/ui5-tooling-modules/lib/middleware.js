@@ -26,6 +26,8 @@ const chokidar = require("chokidar");
  */
 module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	const cwd = middlewareUtil.getProject().getRootPath() || process.cwd();
+	const projectNamespace = middlewareUtil.getProject().getNamespace();
+	const projectType = middlewareUtil.getProject().getType();
 	const depProjects = middlewareUtil
 		.getDependencies()
 		.map((dep) => middlewareUtil.getProject(dep))
@@ -95,7 +97,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 							log.warn(`Including module "${mod}" to bundle which has been requested dynamically! This module may not be packaged during the build!`);
 							modules.push(mod);
 						});
-					return getBundleInfo(modules, config, { cwd, depPaths, isMiddleware: true });
+					return getBundleInfo(modules, config, { cwd, projectNamespace, projectType, depPaths, isMiddleware: true });
 				})
 				.then((bundleInfo) => {
 					// finally, we watch the entries of the bundle

@@ -10,24 +10,25 @@ const DIRNAME_PATH = "\0node-polyfills:dirname";
 const FILENAME_PATH = "\0node-polyfills:filename";
 const inject = require("@rollup/plugin-inject");
 
-const isBuiltInModule = function isBuiltInModule(module) {
+const isBuiltInModule = function isBuiltInModule(module, entryPoints) {
 	try {
-		if (!require("path").isAbsolute(module) && require.resolve(module) === module) {
+		const isEntryPoint = entryPoints?.includes(module);
+		if (!isEntryPoint && !require("path").isAbsolute(module) && require.resolve(module) === module) {
 			return true;
 		}
 	} catch (ex) {
-		/* */
+		/* ignore */
 	}
 	return false;
 };
 
-module.exports = function nodePolyfillsOverride({ log, cwd } = {}) {
+module.exports = function nodePolyfillsOverride({ log, cwd, moduleNames } = {}) {
 	const { resolveId, load, transform } = nodePolyfills();
 	const overridesDir = join(cwd, "_polyfill-overrides_");
 	return {
 		name: "polyfill-node-override",
 		resolveId: function (importee, importer, options) {
-			if (isBuiltInModule(importee)) {
+			if (isBuiltInModule(importee, moduleNames)) {
 				const builtInModule = importee.startsWith("node:") ? importee.substr("node:".length) : importee;
 				if (existsSync(join(overridesDir, `${builtInModule}.js`))) {
 					return { id: `${PREFIX}${builtInModule}.js`, moduleSideEffects: false };
