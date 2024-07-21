@@ -4,6 +4,7 @@ const { readFileSync, statSync, readdirSync, existsSync } = require("fs");
 const { readFile, stat } = require("fs").promises;
 
 const rollup = require("rollup");
+const instructions = require("./rollup-plugin-instructions");
 const commonjs = require("@rollup/plugin-commonjs");
 const json = require("@rollup/plugin-json");
 const nodePolyfills = require("rollup-plugin-polyfill-node");
@@ -720,6 +721,7 @@ module.exports = function (log) {
 						extensions: ["css"],
 					}),
 					json(),
+					instructions(),
 					commonjs({
 						defaultIsModuleExports: true,
 					}),
