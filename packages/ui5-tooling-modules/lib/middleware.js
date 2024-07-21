@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 const path = require("path");
 const { createReadStream } = require("fs");
+const { createHash } = require("crypto");
 const chokidar = require("chokidar");
 
 /**
@@ -73,7 +74,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	// logic which bundles and watches the modules coming from the
 	// node_modules or dependencies via NPM package names
 	const requestedModules = new Set();
-	let whenBundled, bundleWatcher, scanTime, bundleTime;
+	let whenBundled, bundleWatcher, scanTime, bundleTime, bundleHash;
 	const bundleAndWatch = async ({ moduleName, force }) => {
 		if (moduleName && !requestedModules.has(moduleName)) {
 			requestedModules.add(moduleName);
@@ -81,23 +82,31 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 		if (force || !whenBundled) {
 			// first, we need to scan for all unique dependencies
 			scanTime = Date.now();
+			const oldWhenBundled = whenBundled;
 			whenBundled = scan(depReaderCollection, config, { cwd, depPaths })
 				.then(({ uniqueModules }) => {
 					// second, we trigger the bundling of the unique dependencies
 					debug && log.info(`Scanning took ${Date.now() - scanTime} millis`);
 					bundleTime = Date.now();
 					const modules = Array.from(uniqueModules);
-					// TODO: check whether we should really include the requested modules into the bundle
-					//       because this could also be a negative side-effect when running the build task
-					//       which wouldn't include the requested modules into the build - but in this case
-					//       we need it since new modules are added dynamically during development
-					Array.from(requestedModules)
-						.filter((mod) => !uniqueModules.has(mod))
-						.forEach((mod) => {
-							log.warn(`Including module "${mod}" to bundle which has been requested dynamically! This module may not be packaged during the build!`);
-							modules.push(mod);
-						});
-					return getBundleInfo(modules, config, { cwd, projectNamespace, projectType, depPaths, isMiddleware: true });
+					const hash = createHash("md5").update(modules.sort().join(",")).digest("hex");
+					if (bundleHash === hash) {
+						debug && log.info(`BundleInfo is up-to-date! Skipping bundle generation...`);
+						return oldWhenBundled;
+					} else {
+						bundleHash = hash;
+						// TODO: check whether we should really include the requested modules into the bundle
+						//       because this could also be a negative side-effect when running the build task
+						//       which wouldn't include the requested modules into the build - but in this case
+						//       we need it since new modules are added dynamically during development
+						Array.from(requestedModules)
+							.filter((mod) => !uniqueModules.has(mod))
+							.forEach((mod) => {
+								log.warn(`Including module "${mod}" to bundle which has been requested dynamically! This module may not be packaged during the build!`);
+								modules.push(mod);
+							});
+						return getBundleInfo(modules, config, { cwd, projectNamespace, projectType, depPaths, isMiddleware: true });
+					}
 				})
 				.then((bundleInfo) => {
 					// finally, we watch the entries of the bundle
