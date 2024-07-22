@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.9.4...cds-plugin-ui5@0.9.5) (2024-07-22)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** report versions of the plugin and @sap/cds-dk, @sap/cds ([#1045](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1045)) ([8db7560](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8db7560da65d2d042a5e71887b885c8d102714db))
+
+
+
+
+
 ## [0.9.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.9.3...cds-plugin-ui5@0.9.4) (2024-07-19)
 
 
