@@ -1,7 +1,5 @@
 const path = require("path");
 const yazl = require("yazl");
-const { Buffer } = require("node:buffer");
-const fs = require("fs");
 
 /**
  * Determines the project name from the given resource collection.
@@ -25,7 +23,6 @@ const determineProjectName = (collection) => {
 
 /**
   * Turn absolute data source paths in the manifest.json into relative paths
-  * Only works if manifest.json is located in the `webapp/` directory
   *
   * @param {Buffer} buffer Buffer of the manifest.json file
   * @param {object} zip ZipFile instance

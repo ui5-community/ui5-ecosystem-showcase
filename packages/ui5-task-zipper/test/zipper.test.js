@@ -1,5 +1,5 @@
 const path = require("path");
-const { rmSync, existsSync, readdirSync, readFile } = require("fs");
+const { rmSync, existsSync, readdirSync } = require("fs");
 const { spawnSync } = require("child_process");
 const crypto = require("crypto");
 const yauzl = require("yauzl");
