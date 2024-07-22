@@ -4,6 +4,6 @@
 QUnit.config.autostart = false;
 
 // import all your QUnit tests here
-void Promise.all([import("unit/controller/App.qunit")]).then(() => {
+void Promise.all([import("ui5/ecosystem/demo/tsapp/test/integration/HelloJourney")]).then(() => {
 	QUnit.start();
 });
