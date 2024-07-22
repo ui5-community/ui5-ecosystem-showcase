@@ -45,10 +45,10 @@
           </webc:Input>
           <webc:Label text="TEST" />
           <webc:List>
-            <webc:StandardListItem text="Day 1" additionalText="100" />
-            <webc:StandardListItem text="Day 2" additionalText="50" />
-            <webc:StandardListItem text="Day 3" additionalText="200" />
-            <webc:StandardListItem text="Day 4" additionalText="150" />
+            <webc:ListItemStandard text="Day 1" additionalText="100" />
+            <webc:ListItemStandard text="Day 2" additionalText="50" />
+            <webc:ListItemStandard text="Day 3" additionalText="200" />
+            <webc:ListItemStandard text="Day 4" additionalText="150" />
           </webc:List>
           <webc:DatePicker />
           <webc:Avatar />

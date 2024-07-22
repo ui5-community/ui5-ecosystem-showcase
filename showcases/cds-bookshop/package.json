@@ -16,7 +16,7 @@
     "db"
   ],
   "dependencies": {
-    "@sap/cds": "^7.1.1",
+    "@sap/cds": "^8",
     "express": "^4.19.2",
     "passport": "^0.7.0",
     "sqlite3": "^5.1.7"
@@ -24,7 +24,7 @@
   "devDependencies": {
     "cds-bookshop-ui5-viewer": "workspace:^",
     "cds-plugin-ui5": "workspace:^",
-    "rimraf": "^5.0.7",
+    "rimraf": "^6.0.1",
     "ui5-tsapp-simple": "workspace:^"
   },
   "scripts": {

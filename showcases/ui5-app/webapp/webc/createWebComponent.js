@@ -16,6 +16,7 @@ sap.ui.define(["sap/ui/core/webc/WebComponent", "sap/base/strings/camelize"], fu
 				mapping: "property",
 				defaultValue: prop.defaultValue,
 			};
+			metadata.properties[propName].type = metadata.properties[propName].type === "number" ? "float" : metadata.properties[propName].type;
 		});
 
 		if (WebComponentClass.metadata.slots) {

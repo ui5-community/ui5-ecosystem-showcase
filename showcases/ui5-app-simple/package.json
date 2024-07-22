@@ -23,8 +23,8 @@
     "ui5-module": "workspace:^"
   },
   "devDependencies": {
-    "@ui5/cli": "^3.10.1",
-    "rimraf": "^5.0.7",
+    "@ui5/cli": "^3.11.0",
+    "rimraf": "^6.0.1",
     "ui5-middleware-livereload": "workspace:^",
     "ui5-middleware-serveframework": "workspace:^",
     "ui5-task-zipper": "workspace:^",

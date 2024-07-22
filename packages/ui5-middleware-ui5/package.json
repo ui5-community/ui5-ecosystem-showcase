@@ -15,8 +15,8 @@
   },
   "dependencies": {
     "@ui5/fs": "^3.0.5",
-    "@ui5/project": "^3.9.1",
-    "@ui5/server": "^3.2.0",
+    "@ui5/project": "^3.9.2",
+    "@ui5/server": "^3.2.1",
     "express": "^4.19.2",
     "js-yaml": "^4.1.0",
     "node-html-parser": "^6.1.13",
