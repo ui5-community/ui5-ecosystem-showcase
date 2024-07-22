@@ -51,6 +51,8 @@ if (!skip) {
 	const { execSync } = require("child_process");
 	const { readFileSync } = require("fs");
 
+	const { version: cdsPluginUI5Version } = require(`${__dirname}/package.json`);
+
 	// function to resolve a module with the given paths without throwing an error
 	const resolveModule = function resolveModule(moduleName, paths) {
 		try {
@@ -63,9 +65,9 @@ if (!skip) {
 	// find out the CDS-DK version to control the behavior of the plugin
 	const getCDSDKVersion = function getCDSDKVersion() {
 		const moduleName = "@sap/cds-dk";
-		const globalModulesPath = execSync("npm root -g").toString().trim();
 		let resolvedPath = resolveModule(`${moduleName}/package.json`);
 		if (!resolvedPath) {
+			const globalModulesPath = execSync("npm root -g").toString().trim();
 			resolvedPath = resolveModule(`${moduleName}/package.json`, [globalModulesPath]);
 		}
 		if (resolvedPath) {
@@ -76,6 +78,15 @@ if (!skip) {
 
 	// get the CDS-DK version to control the behavior of the plugin
 	const cdsdkVersion = getCDSDKVersion();
+
+	// logging the version of the cds-plugin-ui5
+	log.info(`Running cds-plugin-ui5@${cdsPluginUI5Version} (@sap/cds-dk@${cdsdkVersion}, @sap/cds@${cds.version})`);
+	if (global.__cds_loaded_from?.size > 1) {
+		log.warn("  !! Multiple versions of @sap/cds loaded !!");
+		global.__cds_loaded_from.forEach((cdsPath) => {
+			log.warn(`    => ${cdsPath}`);
+		});
+	}
 
 	// promise to await the bootstrap and lock the
 	// served event to delay the startup a bit
