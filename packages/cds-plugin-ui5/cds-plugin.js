@@ -48,8 +48,9 @@ if (!skip) {
 	// to disable the ui5-middleware-cap if used in apps
 	process.env["cds-plugin-ui5"] = true;
 
+	const { dirname, join, resolve } = require("path");
+	const { readFileSync, existsSync, realpathSync } = require("fs");
 	const { execSync } = require("child_process");
-	const { readFileSync } = require("fs");
 
 	const { version: cdsPluginUI5Version } = require(`${__dirname}/package.json`);
 
@@ -62,18 +63,40 @@ if (!skip) {
 		}
 	};
 
+	// helper to find the package.json in the current dir or upwards
+	const findPackageJson = function findPackageJson(dir) {
+		let currentDir = dir;
+		while (currentDir !== resolve(currentDir, "..")) {
+			const packageJsonPath = join(currentDir, "package.json");
+			if (existsSync(packageJsonPath)) {
+				return packageJsonPath;
+			}
+			currentDir = resolve(currentDir, "..");
+		}
+		return undefined;
+	};
+
 	// find out the CDS-DK version to control the behavior of the plugin
 	const getCDSDKVersion = function getCDSDKVersion() {
-		const moduleName = "@sap/cds-dk";
-		let resolvedPath = resolveModule(`${moduleName}/package.json`);
-		if (!resolvedPath) {
-			const globalModulesPath = execSync("npm root -g").toString().trim();
-			resolvedPath = resolveModule(`${moduleName}/package.json`, [globalModulesPath]);
-		}
-		if (resolvedPath) {
-			const packageJson = JSON.parse(readFileSync(resolvedPath, { encoding: "utf-8" }));
+		const cdsDkPath = realpathSync(process.argv[1]);
+		const cdsDkDir = dirname(cdsDkPath);
+		const packageJsonPath = findPackageJson(cdsDkDir);
+		if (packageJsonPath) {
+			const packageJson = JSON.parse(readFileSync(packageJsonPath, { encoding: "utf-8" }));
 			return packageJson.version;
+		} else {
+			const moduleName = "@sap/cds-dk";
+			let resolvedPath = resolveModule(`${moduleName}/package.json`);
+			if (!resolvedPath) {
+				const globalModulesPath = execSync("npm root -g").toString().trim();
+				resolvedPath = resolveModule(`${moduleName}/package.json`, [globalModulesPath]);
+			}
+			if (resolvedPath) {
+				const packageJson = JSON.parse(readFileSync(resolvedPath, { encoding: "utf-8" }));
+				return packageJson.version;
+			}
 		}
+		return undefined;
 	};
 
 	// get the CDS-DK version to control the behavior of the plugin
