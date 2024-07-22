@@ -4,7 +4,7 @@ metadata:
 type: library
 framework:
   name: OpenUI5
-  version: "1.124.0"
+  version: "1.126.0"
   libraries:
     - name: sap.ui.core
     - name: themelib_sap_fiori_3

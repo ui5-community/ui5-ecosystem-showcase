@@ -168,6 +168,45 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
     }
 
+    var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+    function getAugmentedNamespace(n) {
+      if (n.__esModule) return n;
+      var f = n.default;
+    	if (typeof f == "function") {
+    		var a = function a () {
+    			if (this instanceof a) {
+            return Reflect.construct(f, arguments, this.constructor);
+    			}
+    			return f.apply(this, arguments);
+    		};
+    		a.prototype = f.prototype;
+      } else a = {};
+      Object.defineProperty(a, '__esModule', {value: true});
+    	Object.keys(n).forEach(function (k) {
+    		var d = Object.getOwnPropertyDescriptor(n, k);
+    		Object.defineProperty(a, k, d.get ? d : {
+    			enumerable: true,
+    			get: function () {
+    				return n[k];
+    			}
+    		});
+    	});
+    	return a;
+    }
+
+    var cjs = {};
+
+    var PostgrestClient$2 = {};
+
+    var PostgrestQueryBuilder$1 = {};
+
+    var PostgrestFilterBuilder$1 = {};
+
+    var PostgrestTransformBuilder$1 = {};
+
+    var PostgrestBuilder$1 = {};
+
     var global$1 = (typeof global !== "undefined" ? global :
       typeof self !== "undefined" ? self :
       typeof window !== "undefined" ? window : {});
@@ -202,6 +241,11 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         fetch: fetch$1
     });
 
+    var require$$0 = /*@__PURE__*/getAugmentedNamespace(browser);
+
+    var PostgrestError$1 = {};
+
+    Object.defineProperty(PostgrestError$1, "__esModule", { value: true });
     class PostgrestError extends Error {
         constructor(context) {
             super(context.message);
@@ -211,8 +255,15 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             this.code = context.code;
         }
     }
+    PostgrestError$1.default = PostgrestError;
 
+    var __importDefault$5 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+        return (mod && mod.__esModule) ? mod : { "default": mod };
+    };
+    Object.defineProperty(PostgrestBuilder$1, "__esModule", { value: true });
     // @ts-ignore
+    const node_fetch_1 = __importDefault$5(require$$0);
+    const PostgrestError_1 = __importDefault$5(PostgrestError$1);
     class PostgrestBuilder {
         constructor(builder) {
             this.shouldThrowOnError = false;
@@ -228,7 +279,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 this.fetch = builder.fetch;
             }
             else if (typeof fetch === 'undefined') {
-                this.fetch = nodeFetch;
+                this.fetch = node_fetch_1.default;
             }
             else {
                 this.fetch = fetch;
@@ -345,7 +396,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                         statusText = 'OK';
                     }
                     if (error && this.shouldThrowOnError) {
-                        throw new PostgrestError(error);
+                        throw new PostgrestError_1.default(error);
                     }
                 }
                 const postgrestResponse = {
@@ -377,8 +428,14 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             return res.then(onfulfilled, onrejected);
         }
     }
+    PostgrestBuilder$1.default = PostgrestBuilder;
 
-    class PostgrestTransformBuilder extends PostgrestBuilder {
+    var __importDefault$4 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+        return (mod && mod.__esModule) ? mod : { "default": mod };
+    };
+    Object.defineProperty(PostgrestTransformBuilder$1, "__esModule", { value: true });
+    const PostgrestBuilder_1$1 = __importDefault$4(PostgrestBuilder$1);
+    class PostgrestTransformBuilder extends PostgrestBuilder_1$1.default {
         /**
          * Perform a SELECT on the query result.
          *
@@ -450,7 +507,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             return this;
         }
         /**
-         * Limit the query result by starting at an offset (`from`) and ending at the offset (`from + to`).
+         * Limit the query result by starting at an offset `from` and ending at the offset `to`.
          * Only records within this range are returned.
          * This respects the query order and if there is no order clause the range could behave unexpectedly.
          * The `from` and `to` values are 0-based and inclusive: `range(1, 3)` will include the second, third
@@ -591,8 +648,14 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             return this;
         }
     }
+    PostgrestTransformBuilder$1.default = PostgrestTransformBuilder;
 
-    class PostgrestFilterBuilder extends PostgrestTransformBuilder {
+    var __importDefault$3 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+        return (mod && mod.__esModule) ? mod : { "default": mod };
+    };
+    Object.defineProperty(PostgrestFilterBuilder$1, "__esModule", { value: true });
+    const PostgrestTransformBuilder_1$1 = __importDefault$3(PostgrestTransformBuilder$1);
+    class PostgrestFilterBuilder extends PostgrestTransformBuilder_1$1.default {
         /**
          * Match only rows where `column` is equal to `value`.
          *
@@ -965,7 +1028,13 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             return this;
         }
     }
+    PostgrestFilterBuilder$1.default = PostgrestFilterBuilder;
 
+    var __importDefault$2 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+        return (mod && mod.__esModule) ? mod : { "default": mod };
+    };
+    Object.defineProperty(PostgrestQueryBuilder$1, "__esModule", { value: true });
+    const PostgrestFilterBuilder_1$2 = __importDefault$2(PostgrestFilterBuilder$1);
     class PostgrestQueryBuilder {
         constructor(url, { headers = {}, schema, fetch, }) {
             this.url = url;
@@ -1014,7 +1083,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             if (count) {
                 this.headers['Prefer'] = `count=${count}`;
             }
-            return new PostgrestFilterBuilder({
+            return new PostgrestFilterBuilder_1$2.default({
                 method,
                 url: this.url,
                 headers: this.headers,
@@ -1069,7 +1138,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     this.url.searchParams.set('columns', uniqueColumns.join(','));
                 }
             }
-            return new PostgrestFilterBuilder({
+            return new PostgrestFilterBuilder_1$2.default({
                 method,
                 url: this.url,
                 headers: this.headers,
@@ -1139,7 +1208,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     this.url.searchParams.set('columns', uniqueColumns.join(','));
                 }
             }
-            return new PostgrestFilterBuilder({
+            return new PostgrestFilterBuilder_1$2.default({
                 method,
                 url: this.url,
                 headers: this.headers,
@@ -1180,7 +1249,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 prefersHeaders.push(`count=${count}`);
             }
             this.headers['Prefer'] = prefersHeaders.join(',');
-            return new PostgrestFilterBuilder({
+            return new PostgrestFilterBuilder_1$2.default({
                 method,
                 url: this.url,
                 headers: this.headers,
@@ -1219,7 +1288,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 prefersHeaders.unshift(this.headers['Prefer']);
             }
             this.headers['Prefer'] = prefersHeaders.join(',');
-            return new PostgrestFilterBuilder({
+            return new PostgrestFilterBuilder_1$2.default({
                 method,
                 url: this.url,
                 headers: this.headers,
@@ -1229,11 +1298,28 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             });
         }
     }
+    PostgrestQueryBuilder$1.default = PostgrestQueryBuilder;
 
-    const version$4 = '1.15.2';
+    var constants = {};
 
-    const DEFAULT_HEADERS$4 = { 'X-Client-Info': `postgrest-js/${version$4}` };
+    var version$4 = {};
 
+    Object.defineProperty(version$4, "__esModule", { value: true });
+    version$4.version = void 0;
+    version$4.version = '0.0.0-automated';
+
+    Object.defineProperty(constants, "__esModule", { value: true });
+    constants.DEFAULT_HEADERS = void 0;
+    const version_1 = version$4;
+    constants.DEFAULT_HEADERS = { 'X-Client-Info': `postgrest-js/${version_1.version}` };
+
+    var __importDefault$1 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+        return (mod && mod.__esModule) ? mod : { "default": mod };
+    };
+    Object.defineProperty(PostgrestClient$2, "__esModule", { value: true });
+    const PostgrestQueryBuilder_1$1 = __importDefault$1(PostgrestQueryBuilder$1);
+    const PostgrestFilterBuilder_1$1 = __importDefault$1(PostgrestFilterBuilder$1);
+    const constants_1 = constants;
     /**
      * PostgREST client.
      *
@@ -1244,7 +1330,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
      * literal, the same one passed to the constructor. If the schema is not
      * `"public"`, this must be supplied manually.
      */
-    class PostgrestClient {
+    let PostgrestClient$1 = class PostgrestClient {
         // TODO: Add back shouldThrowOnError once we figure out the typings
         /**
          * Creates a PostgREST client.
@@ -1257,7 +1343,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          */
         constructor(url, { headers = {}, schema, fetch, } = {}) {
             this.url = url;
-            this.headers = Object.assign(Object.assign({}, DEFAULT_HEADERS$4), headers);
+            this.headers = Object.assign(Object.assign({}, constants_1.DEFAULT_HEADERS), headers);
             this.schemaName = schema;
             this.fetch = fetch;
         }
@@ -1268,7 +1354,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          */
         from(relation) {
             const url = new URL(`${this.url}/${relation}`);
-            return new PostgrestQueryBuilder(url, {
+            return new PostgrestQueryBuilder_1$1.default(url, {
                 headers: Object.assign({}, this.headers),
                 schema: this.schemaName,
                 fetch: this.fetch,
@@ -1335,7 +1421,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             if (count) {
                 headers['Prefer'] = `count=${count}`;
             }
-            return new PostgrestFilterBuilder({
+            return new PostgrestFilterBuilder_1$1.default({
                 method,
                 url,
                 headers,
@@ -1345,9 +1431,34 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 allowEmpty: false,
             });
         }
-    }
+    };
+    PostgrestClient$2.default = PostgrestClient$1;
 
-    const version$3 = '2.9.5';
+    var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+        return (mod && mod.__esModule) ? mod : { "default": mod };
+    };
+    Object.defineProperty(cjs, "__esModule", { value: true });
+    cjs.PostgrestBuilder = cjs.PostgrestTransformBuilder = cjs.PostgrestFilterBuilder = cjs.PostgrestQueryBuilder = PostgrestClient = cjs.PostgrestClient = void 0;
+    // Always update wrapper.mjs when updating this file.
+    const PostgrestClient_1 = __importDefault(PostgrestClient$2);
+    var PostgrestClient = cjs.PostgrestClient = PostgrestClient_1.default;
+    const PostgrestQueryBuilder_1 = __importDefault(PostgrestQueryBuilder$1);
+    cjs.PostgrestQueryBuilder = PostgrestQueryBuilder_1.default;
+    const PostgrestFilterBuilder_1 = __importDefault(PostgrestFilterBuilder$1);
+    cjs.PostgrestFilterBuilder = PostgrestFilterBuilder_1.default;
+    const PostgrestTransformBuilder_1 = __importDefault(PostgrestTransformBuilder$1);
+    cjs.PostgrestTransformBuilder = PostgrestTransformBuilder_1.default;
+    const PostgrestBuilder_1 = __importDefault(PostgrestBuilder$1);
+    cjs.PostgrestBuilder = PostgrestBuilder_1.default;
+    cjs.default = {
+        PostgrestClient: PostgrestClient_1.default,
+        PostgrestQueryBuilder: PostgrestQueryBuilder_1.default,
+        PostgrestFilterBuilder: PostgrestFilterBuilder_1.default,
+        PostgrestTransformBuilder: PostgrestTransformBuilder_1.default,
+        PostgrestBuilder: PostgrestBuilder_1.default,
+    };
+
+    const version$3 = '2.10.2';
 
     const DEFAULT_HEADERS$3 = { 'X-Client-Info': `realtime-js/${version$3}` };
     const VSN = '1.0.0';
@@ -1389,6 +1500,39 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         CONNECTION_STATE["Closed"] = "closed";
     })(CONNECTION_STATE || (CONNECTION_STATE = {}));
 
+    // This file draws heavily from https://github.com/phoenixframework/phoenix/commit/cf098e9cf7a44ee6479d31d911a97d3c7430c6fe
+    // License: https://github.com/phoenixframework/phoenix/blob/master/LICENSE.md
+    class Serializer {
+        constructor() {
+            this.HEADER_LENGTH = 1;
+        }
+        decode(rawPayload, callback) {
+            if (rawPayload.constructor === ArrayBuffer) {
+                return callback(this._binaryDecode(rawPayload));
+            }
+            if (typeof rawPayload === 'string') {
+                return callback(JSON.parse(rawPayload));
+            }
+            return callback({});
+        }
+        _binaryDecode(buffer) {
+            const view = new DataView(buffer);
+            const decoder = new TextDecoder();
+            return this._decodeBroadcast(buffer, view, decoder);
+        }
+        _decodeBroadcast(buffer, view, decoder) {
+            const topicSize = view.getUint8(1);
+            const eventSize = view.getUint8(2);
+            let offset = this.HEADER_LENGTH + 2;
+            const topic = decoder.decode(buffer.slice(offset, offset + topicSize));
+            offset = offset + topicSize;
+            const event = decoder.decode(buffer.slice(offset, offset + eventSize));
+            offset = offset + eventSize;
+            const data = JSON.parse(decoder.decode(buffer.slice(offset, buffer.byteLength)));
+            return { ref: null, topic: topic, event: event, payload: data };
+        }
+    }
+
     /**
      * Creates a timer that accepts a `timerCalc` function to perform calculated timeout retries, such as exponential backoff.
      *
@@ -1424,38 +1568,222 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
     }
 
-    // This file draws heavily from https://github.com/phoenixframework/phoenix/commit/cf098e9cf7a44ee6479d31d911a97d3c7430c6fe
-    // License: https://github.com/phoenixframework/phoenix/blob/master/LICENSE.md
-    class Serializer {
-        constructor() {
-            this.HEADER_LENGTH = 1;
+    /**
+     * Helpers to convert the change Payload into native JS types.
+     */
+    // Adapted from epgsql (src/epgsql_binary.erl), this module licensed under
+    // 3-clause BSD found here: https://raw.githubusercontent.com/epgsql/epgsql/devel/LICENSE
+    var PostgresTypes;
+    (function (PostgresTypes) {
+        PostgresTypes["abstime"] = "abstime";
+        PostgresTypes["bool"] = "bool";
+        PostgresTypes["date"] = "date";
+        PostgresTypes["daterange"] = "daterange";
+        PostgresTypes["float4"] = "float4";
+        PostgresTypes["float8"] = "float8";
+        PostgresTypes["int2"] = "int2";
+        PostgresTypes["int4"] = "int4";
+        PostgresTypes["int4range"] = "int4range";
+        PostgresTypes["int8"] = "int8";
+        PostgresTypes["int8range"] = "int8range";
+        PostgresTypes["json"] = "json";
+        PostgresTypes["jsonb"] = "jsonb";
+        PostgresTypes["money"] = "money";
+        PostgresTypes["numeric"] = "numeric";
+        PostgresTypes["oid"] = "oid";
+        PostgresTypes["reltime"] = "reltime";
+        PostgresTypes["text"] = "text";
+        PostgresTypes["time"] = "time";
+        PostgresTypes["timestamp"] = "timestamp";
+        PostgresTypes["timestamptz"] = "timestamptz";
+        PostgresTypes["timetz"] = "timetz";
+        PostgresTypes["tsrange"] = "tsrange";
+        PostgresTypes["tstzrange"] = "tstzrange";
+    })(PostgresTypes || (PostgresTypes = {}));
+    /**
+     * Takes an array of columns and an object of string values then converts each string value
+     * to its mapped type.
+     *
+     * @param {{name: String, type: String}[]} columns
+     * @param {Object} record
+     * @param {Object} options The map of various options that can be applied to the mapper
+     * @param {Array} options.skipTypes The array of types that should not be converted
+     *
+     * @example convertChangeData([{name: 'first_name', type: 'text'}, {name: 'age', type: 'int4'}], {first_name: 'Paul', age:'33'}, {})
+     * //=>{ first_name: 'Paul', age: 33 }
+     */
+    const convertChangeData = (columns, record, options = {}) => {
+        var _a;
+        const skipTypes = (_a = options.skipTypes) !== null && _a !== void 0 ? _a : [];
+        return Object.keys(record).reduce((acc, rec_key) => {
+            acc[rec_key] = convertColumn(rec_key, columns, record, skipTypes);
+            return acc;
+        }, {});
+    };
+    /**
+     * Converts the value of an individual column.
+     *
+     * @param {String} columnName The column that you want to convert
+     * @param {{name: String, type: String}[]} columns All of the columns
+     * @param {Object} record The map of string values
+     * @param {Array} skipTypes An array of types that should not be converted
+     * @return {object} Useless information
+     *
+     * @example convertColumn('age', [{name: 'first_name', type: 'text'}, {name: 'age', type: 'int4'}], {first_name: 'Paul', age: '33'}, [])
+     * //=> 33
+     * @example convertColumn('age', [{name: 'first_name', type: 'text'}, {name: 'age', type: 'int4'}], {first_name: 'Paul', age: '33'}, ['int4'])
+     * //=> "33"
+     */
+    const convertColumn = (columnName, columns, record, skipTypes) => {
+        const column = columns.find((x) => x.name === columnName);
+        const colType = column === null || column === void 0 ? void 0 : column.type;
+        const value = record[columnName];
+        if (colType && !skipTypes.includes(colType)) {
+            return convertCell(colType, value);
         }
-        decode(rawPayload, callback) {
-            if (rawPayload.constructor === ArrayBuffer) {
-                return callback(this._binaryDecode(rawPayload));
+        return noop$1(value);
+    };
+    /**
+     * If the value of the cell is `null`, returns null.
+     * Otherwise converts the string value to the correct type.
+     * @param {String} type A postgres column type
+     * @param {String} value The cell value
+     *
+     * @example convertCell('bool', 't')
+     * //=> true
+     * @example convertCell('int8', '10')
+     * //=> 10
+     * @example convertCell('_int4', '{1,2,3,4}')
+     * //=> [1,2,3,4]
+     */
+    const convertCell = (type, value) => {
+        // if data type is an array
+        if (type.charAt(0) === '_') {
+            const dataType = type.slice(1, type.length);
+            return toArray(value, dataType);
+        }
+        // If not null, convert to correct type.
+        switch (type) {
+            case PostgresTypes.bool:
+                return toBoolean(value);
+            case PostgresTypes.float4:
+            case PostgresTypes.float8:
+            case PostgresTypes.int2:
+            case PostgresTypes.int4:
+            case PostgresTypes.int8:
+            case PostgresTypes.numeric:
+            case PostgresTypes.oid:
+                return toNumber(value);
+            case PostgresTypes.json:
+            case PostgresTypes.jsonb:
+                return toJson(value);
+            case PostgresTypes.timestamp:
+                return toTimestampString(value); // Format to be consistent with PostgREST
+            case PostgresTypes.abstime: // To allow users to cast it based on Timezone
+            case PostgresTypes.date: // To allow users to cast it based on Timezone
+            case PostgresTypes.daterange:
+            case PostgresTypes.int4range:
+            case PostgresTypes.int8range:
+            case PostgresTypes.money:
+            case PostgresTypes.reltime: // To allow users to cast it based on Timezone
+            case PostgresTypes.text:
+            case PostgresTypes.time: // To allow users to cast it based on Timezone
+            case PostgresTypes.timestamptz: // To allow users to cast it based on Timezone
+            case PostgresTypes.timetz: // To allow users to cast it based on Timezone
+            case PostgresTypes.tsrange:
+            case PostgresTypes.tstzrange:
+                return noop$1(value);
+            default:
+                // Return the value for remaining types
+                return noop$1(value);
+        }
+    };
+    const noop$1 = (value) => {
+        return value;
+    };
+    const toBoolean = (value) => {
+        switch (value) {
+            case 't':
+                return true;
+            case 'f':
+                return false;
+            default:
+                return value;
+        }
+    };
+    const toNumber = (value) => {
+        if (typeof value === 'string') {
+            const parsedValue = parseFloat(value);
+            if (!Number.isNaN(parsedValue)) {
+                return parsedValue;
             }
-            if (typeof rawPayload === 'string') {
-                return callback(JSON.parse(rawPayload));
+        }
+        return value;
+    };
+    const toJson = (value) => {
+        if (typeof value === 'string') {
+            try {
+                return JSON.parse(value);
             }
-            return callback({});
+            catch (error) {
+                console.log(`JSON parse error: ${error}`);
+                return value;
+            }
         }
-        _binaryDecode(buffer) {
-            const view = new DataView(buffer);
-            const decoder = new TextDecoder();
-            return this._decodeBroadcast(buffer, view, decoder);
+        return value;
+    };
+    /**
+     * Converts a Postgres Array into a native JS array
+     *
+     * @example toArray('{}', 'int4')
+     * //=> []
+     * @example toArray('{"[2021-01-01,2021-12-31)","(2021-01-01,2021-12-32]"}', 'daterange')
+     * //=> ['[2021-01-01,2021-12-31)', '(2021-01-01,2021-12-32]']
+     * @example toArray([1,2,3,4], 'int4')
+     * //=> [1,2,3,4]
+     */
+    const toArray = (value, type) => {
+        if (typeof value !== 'string') {
+            return value;
         }
-        _decodeBroadcast(buffer, view, decoder) {
-            const topicSize = view.getUint8(1);
-            const eventSize = view.getUint8(2);
-            let offset = this.HEADER_LENGTH + 2;
-            const topic = decoder.decode(buffer.slice(offset, offset + topicSize));
-            offset = offset + topicSize;
-            const event = decoder.decode(buffer.slice(offset, offset + eventSize));
-            offset = offset + eventSize;
-            const data = JSON.parse(decoder.decode(buffer.slice(offset, buffer.byteLength)));
-            return { ref: null, topic: topic, event: event, payload: data };
+        const lastIdx = value.length - 1;
+        const closeBrace = value[lastIdx];
+        const openBrace = value[0];
+        // Confirm value is a Postgres array by checking curly brackets
+        if (openBrace === '{' && closeBrace === '}') {
+            let arr;
+            const valTrim = value.slice(1, lastIdx);
+            // TODO: find a better solution to separate Postgres array data
+            try {
+                arr = JSON.parse('[' + valTrim + ']');
+            }
+            catch (_) {
+                // WARNING: splitting on comma does not cover all edge cases
+                arr = valTrim ? valTrim.split(',') : [];
+            }
+            return arr.map((val) => convertCell(type, val));
         }
-    }
+        return value;
+    };
+    /**
+     * Fixes timestamp to be ISO-8601. Swaps the space between the date and time for a 'T'
+     * See https://github.com/supabase/supabase/issues/18
+     *
+     * @example toTimestampString('2019-09-10 00:00:00')
+     * //=> '2019-09-10T00:00:00'
+     */
+    const toTimestampString = (value) => {
+        if (typeof value === 'string') {
+            return value.replace(' ', 'T');
+        }
+        return value;
+    };
+    const httpEndpointURL = (socketUrl) => {
+        let url = socketUrl;
+        url = url.replace(/^ws/i, 'http');
+        url = url.replace(/(\/socket\/websocket|\/socket|\/websocket)\/?$/i, '');
+        return url.replace(/\/+$/, '');
+    };
 
     class Push {
         /**
@@ -1781,217 +2109,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
     }
 
-    /**
-     * Helpers to convert the change Payload into native JS types.
-     */
-    // Adapted from epgsql (src/epgsql_binary.erl), this module licensed under
-    // 3-clause BSD found here: https://raw.githubusercontent.com/epgsql/epgsql/devel/LICENSE
-    var PostgresTypes;
-    (function (PostgresTypes) {
-        PostgresTypes["abstime"] = "abstime";
-        PostgresTypes["bool"] = "bool";
-        PostgresTypes["date"] = "date";
-        PostgresTypes["daterange"] = "daterange";
-        PostgresTypes["float4"] = "float4";
-        PostgresTypes["float8"] = "float8";
-        PostgresTypes["int2"] = "int2";
-        PostgresTypes["int4"] = "int4";
-        PostgresTypes["int4range"] = "int4range";
-        PostgresTypes["int8"] = "int8";
-        PostgresTypes["int8range"] = "int8range";
-        PostgresTypes["json"] = "json";
-        PostgresTypes["jsonb"] = "jsonb";
-        PostgresTypes["money"] = "money";
-        PostgresTypes["numeric"] = "numeric";
-        PostgresTypes["oid"] = "oid";
-        PostgresTypes["reltime"] = "reltime";
-        PostgresTypes["text"] = "text";
-        PostgresTypes["time"] = "time";
-        PostgresTypes["timestamp"] = "timestamp";
-        PostgresTypes["timestamptz"] = "timestamptz";
-        PostgresTypes["timetz"] = "timetz";
-        PostgresTypes["tsrange"] = "tsrange";
-        PostgresTypes["tstzrange"] = "tstzrange";
-    })(PostgresTypes || (PostgresTypes = {}));
-    /**
-     * Takes an array of columns and an object of string values then converts each string value
-     * to its mapped type.
-     *
-     * @param {{name: String, type: String}[]} columns
-     * @param {Object} record
-     * @param {Object} options The map of various options that can be applied to the mapper
-     * @param {Array} options.skipTypes The array of types that should not be converted
-     *
-     * @example convertChangeData([{name: 'first_name', type: 'text'}, {name: 'age', type: 'int4'}], {first_name: 'Paul', age:'33'}, {})
-     * //=>{ first_name: 'Paul', age: 33 }
-     */
-    const convertChangeData = (columns, record, options = {}) => {
-        var _a;
-        const skipTypes = (_a = options.skipTypes) !== null && _a !== void 0 ? _a : [];
-        return Object.keys(record).reduce((acc, rec_key) => {
-            acc[rec_key] = convertColumn(rec_key, columns, record, skipTypes);
-            return acc;
-        }, {});
-    };
-    /**
-     * Converts the value of an individual column.
-     *
-     * @param {String} columnName The column that you want to convert
-     * @param {{name: String, type: String}[]} columns All of the columns
-     * @param {Object} record The map of string values
-     * @param {Array} skipTypes An array of types that should not be converted
-     * @return {object} Useless information
-     *
-     * @example convertColumn('age', [{name: 'first_name', type: 'text'}, {name: 'age', type: 'int4'}], {first_name: 'Paul', age: '33'}, [])
-     * //=> 33
-     * @example convertColumn('age', [{name: 'first_name', type: 'text'}, {name: 'age', type: 'int4'}], {first_name: 'Paul', age: '33'}, ['int4'])
-     * //=> "33"
-     */
-    const convertColumn = (columnName, columns, record, skipTypes) => {
-        const column = columns.find((x) => x.name === columnName);
-        const colType = column === null || column === void 0 ? void 0 : column.type;
-        const value = record[columnName];
-        if (colType && !skipTypes.includes(colType)) {
-            return convertCell(colType, value);
-        }
-        return noop$1(value);
-    };
-    /**
-     * If the value of the cell is `null`, returns null.
-     * Otherwise converts the string value to the correct type.
-     * @param {String} type A postgres column type
-     * @param {String} value The cell value
-     *
-     * @example convertCell('bool', 't')
-     * //=> true
-     * @example convertCell('int8', '10')
-     * //=> 10
-     * @example convertCell('_int4', '{1,2,3,4}')
-     * //=> [1,2,3,4]
-     */
-    const convertCell = (type, value) => {
-        // if data type is an array
-        if (type.charAt(0) === '_') {
-            const dataType = type.slice(1, type.length);
-            return toArray(value, dataType);
-        }
-        // If not null, convert to correct type.
-        switch (type) {
-            case PostgresTypes.bool:
-                return toBoolean(value);
-            case PostgresTypes.float4:
-            case PostgresTypes.float8:
-            case PostgresTypes.int2:
-            case PostgresTypes.int4:
-            case PostgresTypes.int8:
-            case PostgresTypes.numeric:
-            case PostgresTypes.oid:
-                return toNumber(value);
-            case PostgresTypes.json:
-            case PostgresTypes.jsonb:
-                return toJson(value);
-            case PostgresTypes.timestamp:
-                return toTimestampString(value); // Format to be consistent with PostgREST
-            case PostgresTypes.abstime: // To allow users to cast it based on Timezone
-            case PostgresTypes.date: // To allow users to cast it based on Timezone
-            case PostgresTypes.daterange:
-            case PostgresTypes.int4range:
-            case PostgresTypes.int8range:
-            case PostgresTypes.money:
-            case PostgresTypes.reltime: // To allow users to cast it based on Timezone
-            case PostgresTypes.text:
-            case PostgresTypes.time: // To allow users to cast it based on Timezone
-            case PostgresTypes.timestamptz: // To allow users to cast it based on Timezone
-            case PostgresTypes.timetz: // To allow users to cast it based on Timezone
-            case PostgresTypes.tsrange:
-            case PostgresTypes.tstzrange:
-                return noop$1(value);
-            default:
-                // Return the value for remaining types
-                return noop$1(value);
-        }
-    };
-    const noop$1 = (value) => {
-        return value;
-    };
-    const toBoolean = (value) => {
-        switch (value) {
-            case 't':
-                return true;
-            case 'f':
-                return false;
-            default:
-                return value;
-        }
-    };
-    const toNumber = (value) => {
-        if (typeof value === 'string') {
-            const parsedValue = parseFloat(value);
-            if (!Number.isNaN(parsedValue)) {
-                return parsedValue;
-            }
-        }
-        return value;
-    };
-    const toJson = (value) => {
-        if (typeof value === 'string') {
-            try {
-                return JSON.parse(value);
-            }
-            catch (error) {
-                console.log(`JSON parse error: ${error}`);
-                return value;
-            }
-        }
-        return value;
-    };
-    /**
-     * Converts a Postgres Array into a native JS array
-     *
-     * @example toArray('{}', 'int4')
-     * //=> []
-     * @example toArray('{"[2021-01-01,2021-12-31)","(2021-01-01,2021-12-32]"}', 'daterange')
-     * //=> ['[2021-01-01,2021-12-31)', '(2021-01-01,2021-12-32]']
-     * @example toArray([1,2,3,4], 'int4')
-     * //=> [1,2,3,4]
-     */
-    const toArray = (value, type) => {
-        if (typeof value !== 'string') {
-            return value;
-        }
-        const lastIdx = value.length - 1;
-        const closeBrace = value[lastIdx];
-        const openBrace = value[0];
-        // Confirm value is a Postgres array by checking curly brackets
-        if (openBrace === '{' && closeBrace === '}') {
-            let arr;
-            const valTrim = value.slice(1, lastIdx);
-            // TODO: find a better solution to separate Postgres array data
-            try {
-                arr = JSON.parse('[' + valTrim + ']');
-            }
-            catch (_) {
-                // WARNING: splitting on comma does not cover all edge cases
-                arr = valTrim ? valTrim.split(',') : [];
-            }
-            return arr.map((val) => convertCell(type, val));
-        }
-        return value;
-    };
-    /**
-     * Fixes timestamp to be ISO-8601. Swaps the space between the date and time for a 'T'
-     * See https://github.com/supabase/supabase/issues/18
-     *
-     * @example toTimestampString('2019-09-10 00:00:00')
-     * //=> '2019-09-10T00:00:00'
-     */
-    const toTimestampString = (value) => {
-        if (typeof value === 'string') {
-            return value.replace(' ', 'T');
-        }
-        return value;
-    };
-
     exports.REALTIME_POSTGRES_CHANGES_LISTEN_EVENT = void 0;
     (function (REALTIME_POSTGRES_CHANGES_LISTEN_EVENT) {
         REALTIME_POSTGRES_CHANGES_LISTEN_EVENT["ALL"] = "*";
@@ -2036,6 +2153,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             this.params.config = Object.assign({
                 broadcast: { ack: false, self: false },
                 presence: { key: '' },
+                private: false,
             }, params.config);
             this.timeout = this.socket.timeout;
             this.joinPush = new Push(this, CHANNEL_EVENTS.join, this.params, this.timeout);
@@ -2072,7 +2190,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 this._trigger(this._replyEventName(ref), payload);
             });
             this.presence = new RealtimePresence(this);
-            this.broadcastEndpointURL = this._broadcastEndpointURL();
+            this.broadcastEndpointURL =
+                httpEndpointURL(this.socket.endPoint) + '/api/broadcast';
         }
         /** Subscribe registers your client with the server */
         subscribe(callback, timeout = this.timeout) {
@@ -2084,7 +2203,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 throw `tried to subscribe multiple times. 'subscribe' can only be called a single time per channel instance`;
             }
             else {
-                const { config: { broadcast, presence }, } = this.params;
+                const { config: { broadcast, presence, private: isPrivate }, } = this.params;
                 this._onError((e) => callback && callback('CHANNEL_ERROR', e));
                 this._onClose(() => callback && callback('CLOSED'));
                 const accessTokenPayload = {};
@@ -2092,6 +2211,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     broadcast,
                     presence,
                     postgres_changes: (_b = (_a = this.bindings.postgres_changes) === null || _a === void 0 ? void 0 : _a.map((r) => r.filter)) !== null && _b !== void 0 ? _b : [],
+                    private: isPrivate,
                 };
                 if (this.socket.accessToken) {
                     accessTokenPayload.access_token = this.socket.accessToken;
@@ -2182,7 +2302,10 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 const options = {
                     method: 'POST',
                     headers: {
-                        apikey: (_a = this.socket.apiKey) !== null && _a !== void 0 ? _a : '',
+                        Authorization: this.socket.accessToken
+                            ? `Bearer ${this.socket.accessToken}`
+                            : '',
+                        apikey: this.socket.apiKey ? this.socket.apiKey : '',
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
@@ -2192,13 +2315,9 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     }),
                 };
                 try {
-                    const response = await this._fetchWithTimeout(this.broadcastEndpointURL, options, (_b = opts.timeout) !== null && _b !== void 0 ? _b : this.timeout);
-                    if (response.ok) {
-                        return 'ok';
-                    }
-                    else {
-                        return 'error';
-                    }
+                    const response = await this._fetchWithTimeout(this.broadcastEndpointURL, options, (_a = opts.timeout) !== null && _a !== void 0 ? _a : this.timeout);
+                    await ((_b = response.body) === null || _b === void 0 ? void 0 : _b.cancel());
+                    return response.ok ? 'ok' : 'error';
                 }
                 catch (error) {
                     if (error.name === 'AbortError') {
@@ -2264,12 +2383,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             });
         }
         /** @internal */
-        _broadcastEndpointURL() {
-            let url = this.socket.endPoint;
-            url = url.replace(/^ws/i, 'http');
-            url = url.replace(/(\/socket\/websocket|\/socket|\/websocket)\/?$/i, '');
-            return url.replace(/\/+$/, '') + '/api/broadcast';
-        }
         async _fetchWithTimeout(url, options, timeout) {
             const controller = new AbortController();
             const id = setTimeout(() => controller.abort(), timeout);
@@ -2493,6 +2606,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * Initializes the Socket.
          *
          * @param endPoint The string WebSocket endpoint, ie, "ws://example.com/socket", "wss://example.com", "/socket" (inherited host & protocol)
+         * @param httpEndpoint The string HTTP endpoint, ie, "https://example.com", "/" (inherited host & protocol)
          * @param options.transport The Websocket Transport, for example WebSocket.
          * @param options.timeout The default timeout in milliseconds to trigger push timeouts.
          * @param options.params The optional params to pass when connecting.
@@ -2509,6 +2623,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             this.apiKey = null;
             this.channels = [];
             this.endPoint = '';
+            this.httpEndpoint = '';
             this.headers = DEFAULT_HEADERS$3;
             this.params = {};
             this.timeout = DEFAULT_TIMEOUT;
@@ -2545,6 +2660,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 return (...args) => _fetch(...args);
             };
             this.endPoint = `${endPoint}/${TRANSPORTS.websocket}`;
+            this.httpEndpoint = httpEndpointURL(endPoint);
             if (options === null || options === void 0 ? void 0 : options.transport) {
                 this.transport = options.transport;
             }
@@ -3168,12 +3284,17 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * Signed upload URLs can be used to upload files to the bucket without further authentication.
          * They are valid for 2 hours.
          * @param path The file path, including the current file name. For example `folder/image.png`.
+         * @param options.upsert If set to true, allows the file to be overwritten if it already exists.
          */
-        createSignedUploadUrl(path) {
+        createSignedUploadUrl(path, options) {
             return __awaiter$3(this, void 0, void 0, function* () {
                 try {
                     let _path = this._getFinalPath(path);
-                    const data = yield post(this.fetch, `${this.url}/object/upload/sign/${_path}`, {}, { headers: this.headers });
+                    const headers = Object.assign({}, this.headers);
+                    if (options === null || options === void 0 ? void 0 : options.upsert) {
+                        headers['x-upsert'] = 'true';
+                    }
+                    const data = yield post(this.fetch, `${this.url}/object/upload/sign/${_path}`, {}, { headers });
                     const url = new URL(this.url + data.url);
                     const token = url.searchParams.get('token');
                     if (!token) {
@@ -3205,11 +3326,17 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          *
          * @param fromPath The original file path, including the current file name. For example `folder/image.png`.
          * @param toPath The new file path, including the new file name. For example `folder/image-new.png`.
+         * @param options The destination options.
          */
-        move(fromPath, toPath) {
+        move(fromPath, toPath, options) {
             return __awaiter$3(this, void 0, void 0, function* () {
                 try {
-                    const data = yield post(this.fetch, `${this.url}/object/move`, { bucketId: this.bucketId, sourceKey: fromPath, destinationKey: toPath }, { headers: this.headers });
+                    const data = yield post(this.fetch, `${this.url}/object/move`, {
+                        bucketId: this.bucketId,
+                        sourceKey: fromPath,
+                        destinationKey: toPath,
+                        destinationBucket: options === null || options === void 0 ? void 0 : options.destinationBucket,
+                    }, { headers: this.headers });
                     return { data, error: null };
                 }
                 catch (error) {
@@ -3225,11 +3352,17 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          *
          * @param fromPath The original file path, including the current file name. For example `folder/image.png`.
          * @param toPath The new file path, including the new file name. For example `folder/image-copy.png`.
+         * @param options The destination options.
          */
-        copy(fromPath, toPath) {
+        copy(fromPath, toPath, options) {
             return __awaiter$3(this, void 0, void 0, function* () {
                 try {
-                    const data = yield post(this.fetch, `${this.url}/object/copy`, { bucketId: this.bucketId, sourceKey: fromPath, destinationKey: toPath }, { headers: this.headers });
+                    const data = yield post(this.fetch, `${this.url}/object/copy`, {
+                        bucketId: this.bucketId,
+                        sourceKey: fromPath,
+                        destinationKey: toPath,
+                        destinationBucket: options === null || options === void 0 ? void 0 : options.destinationBucket,
+                    }, { headers: this.headers });
                     return { data: { path: data.Key }, error: null };
                 }
                 catch (error) {
@@ -3482,7 +3615,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     }
 
     // generated by genversion
-    const version$2 = '2.5.5';
+    const version$2 = '2.6.0';
 
     const DEFAULT_HEADERS$2 = { 'X-Client-Info': `storage-js/${version$2}` };
 
@@ -3659,7 +3792,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
     }
 
-    const version$1 = '2.43.2';
+    const version$1 = '2.44.4';
 
     let JS_ENV = '';
     // @ts-ignore
@@ -3749,7 +3882,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         };
     }
 
-    const version = '2.64.2';
+    const version = '2.64.4';
 
     const GOTRUE_URL = 'http://localhost:9999';
     const STORAGE_KEY = 'supabase.auth.token';
@@ -4966,7 +5099,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         async signInAnonymously(credentials) {
             var _a, _b, _c;
             try {
-                await this._removeSession();
                 const res = await _request(this.fetch, 'POST', `${this.url}/signup`, {
                     headers: this.headers,
                     body: {
@@ -5007,7 +5139,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         async signUp(credentials) {
             var _a, _b, _c;
             try {
-                await this._removeSession();
                 let res;
                 if ('email' in credentials) {
                     const { email, password, options } = credentials;
@@ -5077,7 +5208,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          */
         async signInWithPassword(credentials) {
             try {
-                await this._removeSession();
                 let res;
                 if ('email' in credentials) {
                     const { email, password, options } = credentials;
@@ -5135,7 +5265,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          */
         async signInWithOAuth(credentials) {
             var _a, _b, _c, _d;
-            await this._removeSession();
             return await this._handleProviderSignIn(credentials.provider, {
                 redirectTo: (_a = credentials.options) === null || _a === void 0 ? void 0 : _a.redirectTo,
                 scopes: (_b = credentials.options) === null || _b === void 0 ? void 0 : _b.scopes,
@@ -5184,7 +5313,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * should be enabled and configured.
          */
         async signInWithIdToken(credentials) {
-            await this._removeSession();
             try {
                 const { options, provider, token, access_token, nonce } = credentials;
                 const res = await _request(this.fetch, 'POST', `${this.url}/token?grant_type=id_token`, {
@@ -5241,7 +5369,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         async signInWithOtp(credentials) {
             var _a, _b, _c, _d, _e;
             try {
-                await this._removeSession();
                 if ('email' in credentials) {
                     const { email, options } = credentials;
                     let codeChallenge = null;
@@ -5293,10 +5420,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         async verifyOtp(params) {
             var _a, _b;
             try {
-                if (params.type !== 'email_change' && params.type !== 'phone_change') {
-                    // we don't want to remove the authenticated session if the user is performing an email_change or phone_change verification
-                    await this._removeSession();
-                }
                 let redirectTo = undefined;
                 let captchaToken = undefined;
                 if ('options' in params) {
@@ -5347,7 +5470,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         async signInWithSSO(params) {
             var _a, _b, _c;
             try {
-                await this._removeSession();
                 let codeChallenge = null;
                 let codeChallengeMethod = null;
                 if (this.flowType === 'pkce') {
@@ -5406,9 +5528,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          */
         async resend(credentials) {
             try {
-                if (credentials.type != 'email_change' && credentials.type != 'phone_change') {
-                    await this._removeSession();
-                }
                 const endpoint = `${this.url}/resend`;
                 if ('email' in credentials) {
                     const { email, type, options } = credentials;
@@ -5569,12 +5688,14 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 this._debug('#__loadSession()', `session has${hasExpired ? '' : ' not'} expired`, 'expires_at', currentSession.expires_at);
                 if (!hasExpired) {
                     if (this.storage.isServer) {
-                        const suppressWarning = this.suppressGetSessionWarning;
+                        let suppressWarning = this.suppressGetSessionWarning;
                         const proxySession = new Proxy(currentSession, {
-                            get(target, prop, receiver) {
+                            get: (target, prop, receiver) => {
                                 if (!suppressWarning && prop === 'user') {
                                     // only show warning when the user object is being accessed from the server
                                     console.warn('Using the user object as returned from supabase.auth.getSession() or from some supabase.auth.onAuthStateChange() events could be insecure! This value comes directly from the storage medium (usually cookies on the server) and many not be authentic. Use supabase.auth.getUser() instead which authenticates the data by contacting the Supabase Auth server.');
+                                    suppressWarning = true; // keeps this proxy instance from logging additional warnings
+                                    this.suppressGetSessionWarning = true; // keeps this client's future proxy instances from warning
                                 }
                                 return Reflect.get(target, prop, receiver);
                             },
@@ -6742,7 +6863,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param options.global.headers Any additional headers to send with each network request.
          */
         constructor(supabaseUrl, supabaseKey, options) {
-            var _a, _b, _c, _d, _e, _f, _g, _h;
+            var _a, _b, _c;
             this.supabaseUrl = supabaseUrl;
             this.supabaseKey = supabaseKey;
             if (!supabaseUrl)
@@ -6763,14 +6884,14 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 global: DEFAULT_GLOBAL_OPTIONS,
             };
             const settings = applySettingDefaults(options !== null && options !== void 0 ? options : {}, DEFAULTS);
-            this.storageKey = (_b = (_a = settings.auth) === null || _a === void 0 ? void 0 : _a.storageKey) !== null && _b !== void 0 ? _b : '';
-            this.headers = (_d = (_c = settings.global) === null || _c === void 0 ? void 0 : _c.headers) !== null && _d !== void 0 ? _d : {};
-            this.auth = this._initSupabaseAuthClient((_e = settings.auth) !== null && _e !== void 0 ? _e : {}, this.headers, (_f = settings.global) === null || _f === void 0 ? void 0 : _f.fetch);
-            this.fetch = fetchWithAuth(supabaseKey, this._getAccessToken.bind(this), (_g = settings.global) === null || _g === void 0 ? void 0 : _g.fetch);
+            this.storageKey = (_a = settings.auth.storageKey) !== null && _a !== void 0 ? _a : '';
+            this.headers = (_b = settings.global.headers) !== null && _b !== void 0 ? _b : {};
+            this.auth = this._initSupabaseAuthClient((_c = settings.auth) !== null && _c !== void 0 ? _c : {}, this.headers, settings.global.fetch);
+            this.fetch = fetchWithAuth(supabaseKey, this._getAccessToken.bind(this), settings.global.fetch);
             this.realtime = this._initRealtimeClient(Object.assign({ headers: this.headers }, settings.realtime));
             this.rest = new PostgrestClient(`${_supabaseUrl}/rest/v1`, {
                 headers: this.headers,
-                schema: (_h = settings.db) === null || _h === void 0 ? void 0 : _h.schema,
+                schema: settings.db.schema,
                 fetch: this.fetch,
             });
             this._listenForAuthEvents();

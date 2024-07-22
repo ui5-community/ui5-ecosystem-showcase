@@ -3256,7 +3256,7 @@ sap.ui.define(['../../index.esm2017'], (function (index_esm2017) { 'use strict';
 	  this.domain = null;
 	  if (EventEmitter$1.usingDomains) {
 	    // if there is an active domain, then attach to it.
-	    if (domain.active ) ;
+	    if (domain.active) ;
 	  }
 
 	  if (!this._events || this._events === Object.getPrototypeOf(this)._events) {
@@ -37171,7 +37171,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	var undici = undici$1;
 	var crypto = require$$6$1;
 
-	const version$1 = "4.6.2";
+	const version$1 = "4.6.4";
 
 	/**
 	 * @license
@@ -37224,7 +37224,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	User.FIRST_PARTY = new User('first-party-uid');
 	User.MOCK_USER = new User('mock-user');
 
-	const version = "10.12.0";
+	const version = "10.12.3";
 
 	/**
 	 * @license

@@ -137,7 +137,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   function _createForOfIteratorHelperLoose(o, allowArrayLike) {
     var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"];
     if (it) return (it = it.call(o)).next.bind(it);
-    if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike  ) {
+    if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike) {
       if (it) o = it;
       var i = 0;
       return function () {
@@ -156,7 +156,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     if (typeof input !== "object" || input === null) return input;
     var prim = input[Symbol.toPrimitive];
     if (prim !== undefined) {
-      var res = prim.call(input, hint );
+      var res = prim.call(input, hint);
       if (typeof res !== "object") return res;
       throw new TypeError("@@toPrimitive must return a primitive value.");
     }

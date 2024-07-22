@@ -626,7 +626,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	  }
 	}
 	function isBrowser() {
-	  return typeof self === "object" && self.self === self;
+	  return typeof window !== "undefined" || isWebWorker();
+	}
+	function isWebWorker() {
+	  return typeof WorkerGlobalScope !== "undefined" && typeof self !== "undefined" && self instanceof WorkerGlobalScope;
 	}
 	function isBrowserExtension() {
 	  const runtime = typeof chrome === "object" ? chrome.runtime : typeof browser === "object" ? browser.runtime : undefined;
@@ -1351,6 +1354,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		isUWP: isUWP,
 		isValidFormat: isValidFormat,
 		isValidTimestamp: isValidTimestamp,
+		isWebWorker: isWebWorker,
 		issuedAtTime: issuedAtTime,
 		jsonEval: jsonEval,
 		map: map$2,
@@ -2119,15 +2123,23 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    __asyncGenerator = function (thisArg, _arguments, generator) {
 	      if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
 	      var g = generator.apply(thisArg, _arguments || []), i, q = [];
-	      return (i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () {
+	      return (i = {}, verb("next"), verb("throw"), verb("return", awaitReturn), i[Symbol.asyncIterator] = function () {
 	        return this;
 	      }, i);
-	      function verb(n) {
-	        if (g[n]) i[n] = function (v) {
-	          return new Promise(function (a, b) {
-	            q.push([n, v, a, b]) > 1 || resume(n, v);
-	          });
+	      function awaitReturn(f) {
+	        return function (v) {
+	          return Promise.resolve(v).then(f, reject);
 	        };
+	      }
+	      function verb(n, f) {
+	        if (g[n]) {
+	          i[n] = function (v) {
+	            return new Promise(function (a, b) {
+	              q.push([n, v, a, b]) > 1 || resume(n, v);
+	            });
+	          };
+	          if (f) i[n] = f(i[n]);
+	        }
 	      }
 	      function resume(n, v) {
 	        try {
@@ -2235,7 +2247,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    __addDisposableResource = function (env, value, async) {
 	      if (value !== null && value !== void 0) {
 	        if (typeof value !== "object" && typeof value !== "function") throw new TypeError("Object expected.");
-	        var dispose;
+	        var dispose, inner;
 	        if (async) {
 	          if (!Symbol.asyncDispose) throw new TypeError("Symbol.asyncDispose is not defined.");
 	          dispose = value[Symbol.asyncDispose];
@@ -2243,8 +2255,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	        if (dispose === void 0) {
 	          if (!Symbol.dispose) throw new TypeError("Symbol.dispose is not defined.");
 	          dispose = value[Symbol.dispose];
+	          if (async) inner = dispose;
 	        }
 	        if (typeof dispose !== "function") throw new TypeError("Object not disposable.");
+	        if (inner) dispose = function () {
+	          try {
+	            inner.call(this);
+	          } catch (e) {
+	            return Promise.reject(e);
+	          }
+	        };
 	        env.stack.push({
 	          value: value,
 	          dispose: dispose,
@@ -2940,7 +2960,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	}
 
 	const name$p = "@firebase/app";
-	const version$1$1 = "0.10.3";
+	const version$1$1 = "0.10.7";
 
 	/**
 	 * @license
@@ -3009,7 +3029,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	const name$1 = "@firebase/firestore-compat";
 
 	const name = "firebase";
-	const version$2 = "10.12.0";
+	const version$2 = "10.12.4";
 
 	/**
 	 * @license
@@ -3337,9 +3357,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	        }
 	        // Now construct the data for the FirebaseServerAppImpl.
 	        this._serverConfig = Object.assign({ automaticDataCollectionEnabled }, serverConfig);
-	        this._finalizationRegistry = new FinalizationRegistry(() => {
-	            this.automaticCleanup();
-	        });
+	        this._finalizationRegistry = null;
+	        if (typeof FinalizationRegistry !== 'undefined') {
+	            this._finalizationRegistry = new FinalizationRegistry(() => {
+	                this.automaticCleanup();
+	            });
+	        }
 	        this._refCount = 0;
 	        this.incRefCount(this._serverConfig.releaseOnDeref);
 	        // Do not retain a hard reference to the dref object, otherwise the FinalizationRegisry
@@ -3361,7 +3384,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	            return;
 	        }
 	        this._refCount++;
-	        if (obj !== undefined) {
+	        if (obj !== undefined && this._finalizationRegistry !== null) {
 	            this._finalizationRegistry.register(obj, this);
 	        }
 	    }
@@ -3452,7 +3475,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    return newApp;
 	}
 	function initializeServerApp(_options, _serverAppConfig) {
-	    if (isBrowser()) {
+	    if (isBrowser() && !isWebWorker()) {
 	        // FirebaseServerApp isn't designed to be run in browsers.
 	        throw ERROR_FACTORY.create("invalid-server-app-environment" /* AppError.INVALID_SERVER_APP_ENVIRONMENT */);
 	    }
@@ -4050,7 +4073,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		var app = require$$0$2;
 
 		var name = "firebase";
-		var version = "10.12.0";
+		var version = "10.12.4";
 
 		/**
 		 * @license
@@ -7335,7 +7358,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	  this.domain = null;
 	  if (EventEmitter$1.usingDomains) {
 	    // if there is an active domain, then attach to it.
-	    if (domain.active ) ;
+	    if (domain.active) ;
 	  }
 
 	  if (!this._events || this._events === Object.getPrototypeOf(this)._events) {
@@ -41250,7 +41273,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	var undici = undici$1;
 	var crypto = require$$6$1;
 
-	const version$1 = "4.6.2";
+	const version$1 = "4.6.4";
 
 	/**
 	 * @license
@@ -41303,7 +41326,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	User.FIRST_PARTY = new User('first-party-uid');
 	User.MOCK_USER = new User('mock-user');
 
-	const version = "10.12.0";
+	const version = "10.12.3";
 
 	/**
 	 * @license
