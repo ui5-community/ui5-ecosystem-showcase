@@ -1,5 +1,5 @@
 const path = require("path");
-const { rmSync, existsSync, readdirSync } = require("fs");
+const { rmSync, existsSync, readdirSync, readFile } = require("fs");
 const { spawnSync } = require("child_process");
 const crypto = require("crypto");
 const yauzl = require("yauzl");
@@ -11,9 +11,10 @@ const test = require("ava");
  *
  * @param {string} zip path to a zip file
  * @param {string} needle path/file to find in the zip
- * @returns {Promise<true|false>} true when needle is found in zip, false otherwise
+ * @param {boolean} readFileContent whether to read the file content
+ * @returns {Promise<true|string|false>} true when needle is found in zip, string if file content could be read, false otherwise
  */
-async function promisifiedNeedleInHaystack(zip, needle) {
+async function promisifiedNeedleInHaystack(zip, needle, readFileContent = false) {
   return new Promise((resolve, reject) => {
     let additionalFileFound = false;
     yauzl.open(zip, { lazyEntries: true }, (err, zipfile) => {
@@ -22,8 +23,24 @@ async function promisifiedNeedleInHaystack(zip, needle) {
       }
       zipfile.readEntry();
       zipfile.on("entry", (entry) => {
+
+		let fileContent
         if (entry.fileName.includes(needle)) {
-          resolve(true);
+		  if (readFileContent) {
+			  zipfile.openReadStream(entry, async (err, readStream) => {
+				  if (err) {
+					  reject(err)
+				  }
+				  const chunks = []
+				  for await (const chunk of readStream) {
+					  chunks.push(Buffer.from(chunk));
+				  }
+				  fileContent = Buffer.concat(chunks).toString("utf-8")
+				  resolve(fileContent)
+		  	  })
+		  } else {
+			  resolve(true)
+		  }
         } else {
           zipfile.readEntry();
         }
@@ -209,4 +226,21 @@ test("Standalone App Bundle is included in ZIP in self-contained build", async (
     const fileFound = await promisifiedNeedleInHaystack(zip, `resources/${fileName}`);
     t.true(fileFound, `File resources/${fileName} not found in ZIP`);
   }
+});
+
+test("Absolute paths for data sources in manifest.json are turned into relative paths", async (t) => {
+  const ui5 = {
+    yaml: path.resolve("./test/__assets__/ui5-app/ui5.relativePaths.yaml"),
+  };
+  spawnSync(`ui5 build self-contained --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
+    stdio: "inherit", // > don't include stdout in test output,
+    shell: true,
+    cwd: path.resolve(__dirname, "../../../showcases/ui5-app"),
+  });
+
+  const zip = path.join(t.context.tmpDir, "dist", "ui5ecosystemdemoapp.zip");
+
+  const fileContent = await promisifiedNeedleInHaystack(zip, "manifest.json", true);
+  t.regex(fileContent, new RegExp("\"uri\": \"backend\/\","), "Manifest.json does not include relative path for the backend data source");
+
 });

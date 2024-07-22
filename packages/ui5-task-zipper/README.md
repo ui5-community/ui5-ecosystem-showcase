@@ -35,6 +35,9 @@ Set this to `true` if you also want to generate the unzipped resources in the `d
 - includeDependencies: `true|false` or `String<Array>`
 Set this to `true` if you also want to include the dependencies (UI5 libraries) in the zip archive. Otherwise, it will only include the workspace files (controller, views, etc). In order to select only specific dependencies to be included in the final zip you just need to specify the list of dependencies (value of `ui5.yaml`: `metadata > name`).
 
+- relativePaths `true|false`
+Set this to `true` if you want to turn absolute data source paths in the `manifest.json` into relative paths, e.g. `"uri": "/backend/"` will be turned into `"uri": "backend/"` upon ZIP creation. This is useful when deploying the ZIP to the HTML Application Repository on SAP BTP, Cloud Foundry environment to later consume it in SAP Build Work Zone, standard edition, which only supports relative paths.
+
 **NOTE:** Starting with release `3.0.5`, the `ui5-task-zipper` includes the generated workspace resources such as the self-contained bundles (`sap-ui-custom.*` files). To do so, it is important that the `ui5-task-zipper` is running as last task in the build.
 
 ## Usage
