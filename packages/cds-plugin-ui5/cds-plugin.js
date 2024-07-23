@@ -78,7 +78,12 @@ if (!skip) {
 
 	// find out the CDS-DK version to control the behavior of the plugin
 	const getCDSDKVersion = function getCDSDKVersion() {
-		const cdsDkPath = realpathSync(process.argv[1]);
+		let cdsDkPath = process.argv[1];
+		try {
+			cdsDkPath = realpathSync(cdsDkPath);
+		} catch (err) {
+			// ignore
+		}
 		const cdsDkDir = dirname(cdsDkPath);
 		const packageJsonPath = findPackageJson(cdsDkDir);
 		if (packageJsonPath) {
