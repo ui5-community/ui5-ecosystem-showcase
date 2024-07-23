@@ -116,7 +116,7 @@ module.exports = async function({ log, workspace, dependencies, options, taskUti
 					zipEntries.push(resourcePath);
 					return resource.getBuffer().then((buffer) => {
 						isDebug && log.info(`Adding ${resource.getPath()} to archive.`);
-						if (relativePaths && resourcePath.includes("manifest.json")) {
+						if (relativePaths && resourcePath === "manifest.json") {
 							absoluteToRelativePaths(buffer, zip);
 						} else {
 							zip.addBuffer(buffer, resourcePath); // Replace first forward slash at the start of the path
