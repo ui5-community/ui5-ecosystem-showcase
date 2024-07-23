@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.9.6...cds-plugin-ui5@0.9.7) (2024-07-23)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** fix error when resolving symlinks for CDS-DK root ([#1048](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1048)) ([3b05ada](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3b05ada1fe2bfac2ecc962af700646030d8c39d8)), closes [#1033](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1033)
+
+
+
+
+
 ## [0.9.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.9.5...cds-plugin-ui5@0.9.6) (2024-07-22)
 
 
