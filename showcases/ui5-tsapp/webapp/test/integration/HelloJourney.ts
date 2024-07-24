@@ -7,7 +7,7 @@ QUnit.module("Hello");
 
 opaTest("Should open the Hello dialog", function () {
 	// Arrangements
-	onTheMainPage.iStartMyUIComponent({
+	void onTheMainPage.iStartMyUIComponent({
 		componentConfig: {
 			name: "ui5.ecosystem.demo.tsapp",
 		},
@@ -26,12 +26,12 @@ opaTest("Should open the Hello dialog", function () {
 	onTheMainPage.iShouldNotSeeTheHelloDialog();
 
 	// Cleanup
-	onTheMainPage.iTeardownMyApp();
+	void onTheMainPage.iTeardownMyApp();
 });
 
-opaTest("Should close the Hello dialog", function (Given, When, Then) {
+opaTest("Should close the Hello dialog", function () {
 	// Arrangements
-	onTheMainPage.iStartMyUIComponent({
+	void onTheMainPage.iStartMyUIComponent({
 		componentConfig: {
 			name: "ui5.ecosystem.demo.tsapp",
 		},
@@ -44,5 +44,5 @@ opaTest("Should close the Hello dialog", function (Given, When, Then) {
 	onTheMainPage.iShouldNotSeeTheHelloDialog();
 
 	// Cleanup
-	onTheMainPage.iTeardownMyApp();
+	void onTheMainPage.iTeardownMyApp();
 });
