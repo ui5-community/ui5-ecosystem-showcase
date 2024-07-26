@@ -17,6 +17,7 @@ const pnpmResolve = require("./rollup-plugin-pnpm-resolve");
 const dynamicImports = require("./rollup-plugin-dynamic-imports");
 const replace = require("@rollup/plugin-replace");
 const transformTopLevelThis = require("./rollup-plugin-transform-top-level-this");
+const webcomponents = require("./rollup-plugin-webcomponents");
 
 const walk = require("ignore-walk");
 const minimatch = require("minimatch");
@@ -747,6 +748,7 @@ module.exports = function (log) {
 					nodePolyfills(),
 					nodePolyfillsOverride.inject(inject),
 					transformTopLevelThis({ log, walk }),
+					webcomponents(),
 					...(afterPlugins || []),
 				],
 				onwarn: function ({ loc, frame, code, message }) {
