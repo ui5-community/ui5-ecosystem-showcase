@@ -1,5 +1,6 @@
 import UIComponent from "sap/ui/core/UIComponent";
 import { createDeviceModel } from "./model/models";
+import "./webc/WebComponentPolyfill";
 
 /**
  * @namespace ui5.ecosystem.demo.simpletsapp

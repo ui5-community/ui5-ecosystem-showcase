@@ -735,6 +735,12 @@ module.exports = function (log) {
 						cwd,
 						moduleNames,
 					}),
+					// handle the webcomponents
+					webcomponents({
+						resolveModule: function (moduleName) {
+							return that.resolveModule(moduleName, { cwd, depPaths, mainFields });
+						},
+					}),
 					// once the node polyfills are injected, we can
 					// resolve the modules from node_modules
 					pnpmResolve({
@@ -748,7 +754,6 @@ module.exports = function (log) {
 					nodePolyfills(),
 					nodePolyfillsOverride.inject(inject),
 					transformTopLevelThis({ log, walk }),
-					webcomponents(),
 					...(afterPlugins || []),
 				],
 				onwarn: function ({ loc, frame, code, message }) {

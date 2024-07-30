@@ -20,6 +20,9 @@
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
     "directory": "showcases/ui5-tsapp-simple"
   },
+  "dependencies": {
+    "@ui5/webcomponents": "^2.0.1"
+  },
   "devDependencies": {
     "@types/openui5": "1.126.0",
     "@typescript-eslint/eslint-plugin": "^7.16.1",
