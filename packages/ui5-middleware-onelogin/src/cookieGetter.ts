@@ -2,7 +2,7 @@
 import sleep from "sleep-promise";
 import { Options } from "./types";
 const prompt = require("async-prompt");
-import { chromium } from "playwright-chromium";
+import { chromium, ElementHandle, Page } from "playwright-chromium";
 
 interface Attributes {
 	url: string;
@@ -43,6 +43,26 @@ export default class CookieGetter {
 		} catch (e) {
 			return undefined;
 		}
+	}
+
+	/**
+	 * @param page a page that is searched.
+	 * @returns an input element from the page.
+	 */
+	async getUsernameInput(page: Page): Promise<ElementHandle<SVGElement | HTMLElement>> {
+		return Promise.race([page.waitForSelector('input[type="email"]'), page.waitForSelector('input[type="username"]'), page.waitForSelector('input[name="sap-user"]')]).catch(() =>
+			page.waitForSelector('input[type="text"]')
+		);
+	}
+
+	/**
+	 * @param page a page.
+	 * @returns whether the provided page is a login page.
+	 */
+	async isLoginPage(page: Page): Promise<boolean> {
+		return await this.getUsernameInput(page)
+			.then(() => true)
+			.catch(() => false);
 	}
 
 	async getCookie(log: any, options: Options): Promise<string> {
@@ -101,13 +121,12 @@ export default class CookieGetter {
 
 		if ((attr.url.match(new RegExp("/", "g")) || []).length === 2 || attr.url.lastIndexOf("/") === attr.url.length - 1) {
 			const urlWithTrailingSlash = attr.url.lastIndexOf("/") === attr.url.length - 1 ? attr.url : attr.url + "/";
-			const search = new URLSearchParams();
+			const url = new URL(`${urlWithTrailingSlash}${effectiveOptions.configuration.subdirectory}`);
 			const query = effectiveOptions.configuration.query;
 			if (query) {
-				Object.keys(query).forEach((key) => search.append(key, query[key]));
+				Object.keys(query).forEach((key) => url.searchParams.append(key, query[key]));
 			}
-			const searchParams = search.size > 0 ? `?${search.toString()}` : "";
-			attr.url = `${urlWithTrailingSlash}${effectiveOptions.configuration.subdirectory}${searchParams}`;
+			attr.url = url.href;
 			if (effectiveOptions.configuration.debug) log.info(`Trying to fetch cookie from "${attr.url}"`);
 		}
 
@@ -125,12 +144,7 @@ export default class CookieGetter {
 			if (!effectiveOptions.configuration.useCertificate) {
 				await page.goto(attr.url, { waitUntil: "domcontentloaded" });
 
-				let elem;
-				try {
-					elem = await Promise.race([page.waitForSelector('input[type="email"]'), page.waitForSelector('input[type="username"]'), page.waitForSelector('input[name="sap-user"]')]);
-				} catch (oError) {
-					elem = await page.waitForSelector('input[type="text"]');
-				}
+				const elem = await this.getUsernameInput(page);
 
 				const password = page.locator('input[type="password"]');
 				let isHidden = await password.getAttribute("aria-hidden");
@@ -186,6 +200,26 @@ export default class CookieGetter {
 				}
 			} else {
 				await page.goto(attr.url, { waitUntil: "networkidle" });
+
+				let isLoginPage = true;
+				for (let attempt = 0; attempt < 3; attempt++) {
+					if (attempt > 0) {
+						await page.reload({ waitUntil: "networkidle" });
+						await page.waitForTimeout(attempt * 1000);
+					}
+					isLoginPage = await this.isLoginPage(page);
+					if (!isLoginPage) {
+						if (effectiveOptions.configuration.debug) {
+							log.info(`"${attr.url}" looks like a login page, reloading...`);
+						}
+						break;
+					}
+				}
+				if (isLoginPage) {
+					if (effectiveOptions.configuration.debug) {
+						log.info(`Couldn't login using a certificate!`);
+					}
+				}
 			}
 
 			const cookies = await context.cookies();

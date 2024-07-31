@@ -47,6 +47,26 @@ class CookieGetter {
             return undefined;
         }
     }
+    /**
+     * @param page a page that is searched.
+     * @returns an input element from the page.
+     */
+    getUsernameInput(page) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return Promise.race([page.waitForSelector('input[type="email"]'), page.waitForSelector('input[type="username"]'), page.waitForSelector('input[name="sap-user"]')]).catch(() => page.waitForSelector('input[type="text"]'));
+        });
+    }
+    /**
+     * @param page a page.
+     * @returns whether the provided page is a login page.
+     */
+    isLoginPage(page) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.getUsernameInput(page)
+                .then(() => true)
+                .catch(() => false);
+        });
+    }
     getCookie(log, options) {
         return __awaiter(this, void 0, void 0, function* () {
             options = this.sanitizeObject(options);
@@ -97,13 +117,12 @@ class CookieGetter {
             }
             if ((attr.url.match(new RegExp("/", "g")) || []).length === 2 || attr.url.lastIndexOf("/") === attr.url.length - 1) {
                 const urlWithTrailingSlash = attr.url.lastIndexOf("/") === attr.url.length - 1 ? attr.url : attr.url + "/";
-                const search = new URLSearchParams();
+                const url = new URL(`${urlWithTrailingSlash}${effectiveOptions.configuration.subdirectory}`);
                 const query = effectiveOptions.configuration.query;
                 if (query) {
-                    Object.keys(query).forEach((key) => search.append(key, query[key]));
+                    Object.keys(query).forEach((key) => url.searchParams.append(key, query[key]));
                 }
-                const searchParams = search.size > 0 ? `?${search.toString()}` : "";
-                attr.url = `${urlWithTrailingSlash}${effectiveOptions.configuration.subdirectory}${searchParams}`;
+                attr.url = url.href;
                 if (effectiveOptions.configuration.debug)
                     log.info(`Trying to fetch cookie from "${attr.url}"`);
             }
@@ -118,13 +137,7 @@ class CookieGetter {
                 const page = yield context.newPage();
                 if (!effectiveOptions.configuration.useCertificate) {
                     yield page.goto(attr.url, { waitUntil: "domcontentloaded" });
-                    let elem;
-                    try {
-                        elem = yield Promise.race([page.waitForSelector('input[type="email"]'), page.waitForSelector('input[type="username"]'), page.waitForSelector('input[name="sap-user"]')]);
-                    }
-                    catch (oError) {
-                        elem = yield page.waitForSelector('input[type="text"]');
-                    }
+                    const elem = yield this.getUsernameInput(page);
                     const password = page.locator('input[type="password"]');
                     let isHidden = yield password.getAttribute("aria-hidden");
                     yield elem.type(attr.username);
@@ -179,6 +192,25 @@ class CookieGetter {
                 }
                 else {
                     yield page.goto(attr.url, { waitUntil: "networkidle" });
+                    let isLoginPage = true;
+                    for (let attempt = 0; attempt < 3; attempt++) {
+                        if (attempt > 0) {
+                            yield page.reload({ waitUntil: "networkidle" });
+                            yield page.waitForTimeout(attempt * 1000);
+                        }
+                        isLoginPage = yield this.isLoginPage(page);
+                        if (!isLoginPage) {
+                            if (effectiveOptions.configuration.debug) {
+                                log.info(`"${attr.url}" looks like a login page, reloading...`);
+                            }
+                            break;
+                        }
+                    }
+                    if (isLoginPage) {
+                        if (effectiveOptions.configuration.debug) {
+                            log.info(`Couldn't login using a certificate!`);
+                        }
+                    }
                 }
                 const cookies = yield context.cookies();
                 if (cookies.length === 0) {
