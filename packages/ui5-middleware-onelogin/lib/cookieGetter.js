@@ -53,6 +53,7 @@ class CookieGetter {
             const defaultOptions = this.sanitizeObject({
                 configuration: {
                     path: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI,
+                    subdirectory: "sap/bc/ui2/flp/",
                     useCertificate: false,
                     query: this.parseJSON(process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_QUERY),
                 },
@@ -60,6 +61,7 @@ class CookieGetter {
             const envOptions = this.sanitizeObject({
                 configuration: {
                     path: process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL,
+                    subdirectory: process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_SUBDIRECTORY,
                     username: process.env.UI5_MIDDLEWARE_ONELOGIN_USERNAME,
                     password: process.env.UI5_MIDDLEWARE_ONELOGIN_PASSWORD,
                     useCertificate: process.env.UI5_MIDDLEWARE_ONELOGIN_USE_CERTIFICATE === "true",
@@ -101,7 +103,7 @@ class CookieGetter {
                     Object.keys(query).forEach((key) => search.append(key, query[key]));
                 }
                 const searchParams = search.size > 0 ? `?${search.toString()}` : "";
-                attr.url = `${urlWithTrailingSlash}sap/bc/ui2/flp/${searchParams}`;
+                attr.url = `${urlWithTrailingSlash}${effectiveOptions.configuration.subdirectory}${searchParams}`;
                 if (effectiveOptions.configuration.debug)
                     log.info(`Trying to fetch cookie from "${attr.url}"`);
             }
@@ -179,6 +181,9 @@ class CookieGetter {
                     yield page.goto(attr.url, { waitUntil: "networkidle" });
                 }
                 const cookies = yield context.cookies();
+                if (cookies.length === 0) {
+                    throw new Error(`No cookies could be found for "${attr.url}". This usually indicates that the url points to a location that does not require a login!`);
+                }
                 browser.close();
                 return JSON.stringify(cookies);
             }
