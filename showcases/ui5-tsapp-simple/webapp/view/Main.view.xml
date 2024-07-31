@@ -19,8 +19,9 @@
         <control:SimpleControl text="Hello World" />
         <Button text="Don't press me!" press="onBoo" />
         <webc:Button text="Hello World 123"></webc:Button>
-        <webc:Text text="Hello World 123"></webc:Text>
-        <webc:Input value="Hello World 123"></webc:Input>
+        <webc:Input value="Hello World 123" change="onBoo"></webc:Input>
+        <webc:Avatar initials="PM"></webc:Avatar>
+        <webc:DateRangePicker></webc:DateRangePicker>
         <webc:CheckBox></webc:CheckBox>
         <webc:RadioButton></webc:RadioButton>
         <webc:List>
@@ -28,7 +29,6 @@
           <webc:ListItemStandard text="Item 2"></webc:ListItemStandard>
           <webc:ListItemStandard text="Item 3"></webc:ListItemStandard>
         </webc:List>
-        <Button text="Don't press me!" press="onBoo" />
       </VBox>
     </content>
   </Page>
