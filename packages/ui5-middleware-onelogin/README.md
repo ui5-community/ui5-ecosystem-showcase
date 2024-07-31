@@ -38,7 +38,7 @@ Currently you can define the properties in the configuration (see below) or the 
 
 **NB1:** If you choose to use the certificate login then check the property AutoSelectCertificateForUrls in chrome://policy if it holds the url pattern for your system. [Playwright](https://github.com/microsoft/playwright/issues/1799) has an issue to handle the certificate prompt. Another workaround is to set debug and useCertificate to true in the configuration and press ok when the prompt opens
 
-**NB2:** If your system does not host a fiori launchpad, you will have to adjust the subdirectory to point to a different login protected page. In the case of a MII java stack that hosts an OData service, try setting subdirectory to XMII/PropertyAccessServlet/
+**NB2:** If your system does not host a fiori launchpad, you will have to adjust the subdirectory to point to a different login protected page. In the case of a MII java stack that hosts an OData service, try setting subdirectory to XMII/PropertyAccessServlet?Mode=List
 
 You can either add the following properties to your .env file, remember to add that to your .gitignore
 
