@@ -2,7 +2,7 @@
 import sleep from "sleep-promise";
 import { Options } from "./types";
 const prompt = require("async-prompt");
-import { chromium, ElementHandle, Page } from "playwright-chromium";
+import { chromium, Locator, Page } from "playwright-chromium";
 
 interface Attributes {
 	url: string;
@@ -49,10 +49,9 @@ export default class CookieGetter {
 	 * @param page a page that is searched.
 	 * @returns an input element from the page.
 	 */
-	async getUsernameInput(page: Page): Promise<ElementHandle<SVGElement | HTMLElement>> {
-		return Promise.race([page.waitForSelector('input[type="email"]'), page.waitForSelector('input[type="username"]'), page.waitForSelector('input[name="sap-user"]')]).catch(() =>
-			page.waitForSelector('input[type="text"]')
-		);
+	async getUserInput(page: Page): Promise<Locator> {
+		const preferred = page.locator('input[type="email"]').or(page.locator('input[type="username"]')).or(page.locator('input[name="sap-user"]')).nth(0);
+		return (await preferred.count()) > 0 ? preferred : page.locator('input[type="text"]');
 	}
 
 	/**
@@ -60,9 +59,7 @@ export default class CookieGetter {
 	 * @returns whether the provided page is a login page.
 	 */
 	async isLoginPage(page: Page): Promise<boolean> {
-		return await this.getUsernameInput(page)
-			.then(() => true)
-			.catch(() => false);
+		return (await (await this.getUserInput(page)).count()) > 0;
 	}
 
 	async getCookie(log: any, options: Options): Promise<string> {
@@ -144,11 +141,11 @@ export default class CookieGetter {
 			if (!effectiveOptions.configuration.useCertificate) {
 				await page.goto(attr.url, { waitUntil: "domcontentloaded" });
 
-				const elem = await this.getUsernameInput(page);
+				const elem = await this.getUserInput(page);
 
 				const password = page.locator('input[type="password"]');
 				let isHidden = await password.getAttribute("aria-hidden");
-				await elem.type(attr.username);
+				await elem.fill(attr.username);
 				if (!!isHidden && isHidden !== null) {
 					try {
 						await page.click('input[type="submit"]', { timeout: 500 });
@@ -209,10 +206,11 @@ export default class CookieGetter {
 					}
 					isLoginPage = await this.isLoginPage(page);
 					if (!isLoginPage) {
+						break;
+					} else {
 						if (effectiveOptions.configuration.debug) {
 							log.info(`"${attr.url}" looks like a login page, reloading...`);
 						}
-						break;
 					}
 				}
 				if (isLoginPage) {

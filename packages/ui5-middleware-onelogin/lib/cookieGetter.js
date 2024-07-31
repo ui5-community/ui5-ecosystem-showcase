@@ -51,9 +51,10 @@ class CookieGetter {
      * @param page a page that is searched.
      * @returns an input element from the page.
      */
-    getUsernameInput(page) {
+    getUserInput(page) {
         return __awaiter(this, void 0, void 0, function* () {
-            return Promise.race([page.waitForSelector('input[type="email"]'), page.waitForSelector('input[type="username"]'), page.waitForSelector('input[name="sap-user"]')]).catch(() => page.waitForSelector('input[type="text"]'));
+            const preferred = page.locator('input[type="email"]').or(page.locator('input[type="username"]')).or(page.locator('input[name="sap-user"]')).nth(0);
+            return (yield preferred.count()) > 0 ? preferred : page.locator('input[type="text"]');
         });
     }
     /**
@@ -62,9 +63,7 @@ class CookieGetter {
      */
     isLoginPage(page) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.getUsernameInput(page)
-                .then(() => true)
-                .catch(() => false);
+            return (yield (yield this.getUserInput(page)).count()) > 0;
         });
     }
     getCookie(log, options) {
@@ -137,10 +136,10 @@ class CookieGetter {
                 const page = yield context.newPage();
                 if (!effectiveOptions.configuration.useCertificate) {
                     yield page.goto(attr.url, { waitUntil: "domcontentloaded" });
-                    const elem = yield this.getUsernameInput(page);
+                    const elem = yield this.getUserInput(page);
                     const password = page.locator('input[type="password"]');
                     let isHidden = yield password.getAttribute("aria-hidden");
-                    yield elem.type(attr.username);
+                    yield elem.fill(attr.username);
                     if (!!isHidden && isHidden !== null) {
                         try {
                             yield page.click('input[type="submit"]', { timeout: 500 });
@@ -200,10 +199,12 @@ class CookieGetter {
                         }
                         isLoginPage = yield this.isLoginPage(page);
                         if (!isLoginPage) {
+                            break;
+                        }
+                        else {
                             if (effectiveOptions.configuration.debug) {
                                 log.info(`"${attr.url}" looks like a login page, reloading...`);
                             }
-                            break;
                         }
                     }
                     if (isLoginPage) {
