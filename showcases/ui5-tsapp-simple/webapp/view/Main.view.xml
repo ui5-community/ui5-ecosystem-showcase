@@ -7,7 +7,10 @@
   xmlns:control="ui5.ecosystem.demo.simpletsapp.control"
   xmlns:webc="@ui5/webcomponents"
   core:require="{
-		Formatter: 'ui5/ecosystem/demo/simpletsapp/model/Formatter'
+		Formatter: 'ui5/ecosystem/demo/simpletsapp/model/Formatter',
+    iconAI: '@ui5/webcomponents-icons/dist/ai',
+    iconBiometric: '@ui5/webcomponents-icons/dist/biometric-face',
+    iconBadge: '@ui5/webcomponents-icons/dist/badge'
 	}"
 >
   <Page id="page" title="{formatter: 'Formatter.formatValue', path: 'i18n>appTitle'}">
@@ -20,13 +23,22 @@
         <Button text="Don't press me!" press="onBoo" />
         <webc:Button text="Hello World 123"></webc:Button>
         <webc:Input value="Hello World 123" change="onBoo"></webc:Input>
-        <webc:Avatar initials="PM"></webc:Avatar>
+        <webc:AvatarGroup type="Individual">
+          <webc:Avatar initials="PM" colorScheme="Accent1"></webc:Avatar>
+          <webc:Avatar initials="XX" colorScheme="Accent4" shape="Square"></webc:Avatar>
+          <webc:Avatar icon="ai" colorScheme="Accent7"></webc:Avatar>
+        </webc:AvatarGroup>
         <webc:DateRangePicker></webc:DateRangePicker>
         <webc:List>
           <webc:ListItemStandard text="Item 1"></webc:ListItemStandard>
           <webc:ListItemStandard text="Item 2"></webc:ListItemStandard>
           <webc:ListItemStandard text="Item 3"></webc:ListItemStandard>
         </webc:List>
+        <webc:Select liveChange=".onLiveChange">
+          <webc:Option text="AI" icon="ai" />
+          <webc:Option text="Biometric" icon="biometric-face" />
+          <webc:Option text="Security" icon="badge" />
+        </webc:Select>
       </VBox>
     </content>
   </Page>

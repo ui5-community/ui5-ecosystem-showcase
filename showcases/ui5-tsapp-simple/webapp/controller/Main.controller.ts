@@ -3,6 +3,8 @@ import MessageToast from "sap/m/MessageToast";
 import Button from "@ui5/webcomponents/Button";
 import Control from "sap/ui/core/Control";
 import VBox from "sap/m/VBox";
+import Popup from "sap/ui/core/Popup";
+import Event from "sap/ui/base/Event";
 
 /*
 
@@ -47,5 +49,8 @@ export default class Main extends Controller {
 	}
 	public onBoo(): void {
 		MessageToast.show(`👻`);
+	}
+	public onLiveChange(e:Event): void {
+		MessageToast.show(`🛠️ liveChange: ${e.getParameter("selectedOption").getText()}`, { at: Popup.Dock.CenterCenter });
 	}
 }
