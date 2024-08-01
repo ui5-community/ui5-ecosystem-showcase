@@ -1,7 +1,8 @@
 const { join, dirname, extname } = require("path");
 
 // Inspired by https://rollupjs.org/plugin-development/#resolveid (the Polyfill Injection)
-const SUFFIX = "?webcomponent";
+const SUFFIX_WEBC = "?webcomponent";
+const SUFFIX_WEBC_LIB = "?webcomponent-library";
 
 const registry = {};
 
@@ -292,26 +293,6 @@ module.exports = function ({ resolveModule } = {}) {
 			ensureDefaults();
 		}
 
-		/**
-		 * Needed by the runtime to validate properties with enum typing.
-		 */
-		/* TODO: must go into code generation
-		function processEnums() {
-			Object.keys(registryEntry.enums).forEach((enumName) => {
-				registerEnum(enumName, registryEntry.enums[enumName]);
-			});
-		}
-
-		function registerEnum(enumName, enumDef) {
-			const enumValues = {};
-			enumDef.members.forEach((entry) => {
-				enumValues[entry.name] = entry.name;
-			});
-			DataType.registerEnum(prefixns(enumName), enumValues);
-		}
-		*/
-
-
 		registryEntry.modules?.forEach((module) => {
 			module.declarations?.forEach(parseDeclaration);
 			module.exports?.forEach(parseExports);
@@ -323,10 +304,6 @@ module.exports = function ({ resolveModule } = {}) {
 
 			createUI5Metadata(classDef);
 		});
-
-		// TODO: This is definitely something we have to do at runtime.
-		//       The enums need to be registered, but that could also be done in the server via a generated DataType.registerEnum() call.
-		//processEnums();
 
 	};
 
@@ -371,24 +348,60 @@ module.exports = function ({ resolveModule } = {}) {
 	return {
 		name: "webcomponents",
 		async resolveId(source/*, importer, options*/) {
-			if (source === "sap/ui/core/webc/WebComponent") {
+			if (
+				source === "sap/ui/core/webc/WebComponent" ||
+				source === "sap/ui/base/DataType"
+			) {
 				// mark Ui5 runtime dependencies as external
 				// to avoid warnings about missing dependencies
 				return {
 					id: source,
 					external: true
 				};
+			} else if (source.endsWith("/library")) {
+				// remove /library using regex
+				const parts = /^(.*)\/library(?:.js)?$/.exec(source);
+				if (parts && registry[parts[1]]) {
+					return `${source}${SUFFIX_WEBC_LIB}`;
+				}
 			} else {
 				// find the Web Components class for the given module
 				const clazz = lookupWebComponentsClass(source);
 				if (clazz) {
-					return `${clazz.modulePath}${SUFFIX}`;
+					return `${clazz.modulePath}${SUFFIX_WEBC}`;
 				}
 			}
 		},
 		async load(id) {
-			if (id.endsWith(SUFFIX)) {
-				const entryId = id.slice(0, -SUFFIX.length);
+			// TODO:
+			// - @ui5/webcomponents/Button should re-export @ui5/webcomponents/dist/Button
+			if (id.endsWith(SUFFIX_WEBC_LIB)) {
+				const entryId = id.slice(0, -SUFFIX_WEBC_LIB.length);
+				const parts = /^(.*)\/library(?:.js)?$/.exec(entryId);
+				if (parts && registry[parts[1]]) {
+					const namespace = parts[1];
+					const metadata = registry[namespace];
+
+					let code = `import { registerEnum } from "sap/ui/base/DataType";\n`;
+
+					const registerEnum = (enumName, enumDef) => {
+						const enumValues = {};
+						enumDef.members.forEach((entry) => {
+							enumValues[entry.name] = entry.name;
+						});
+						code += `registerEnum(${JSON.stringify(`${namespace}.${enumName}`)}, ${JSON.stringify(enumValues)});\n`;
+					}
+
+					// register the enums
+					Object.keys(metadata.enums).forEach((enumName) => {
+						registerEnum(enumName, metadata.enums[enumName]);
+					});
+
+					return code;
+				}
+
+			} else if (id.endsWith(SUFFIX_WEBC)) {
+				const entryId = id.slice(0, -SUFFIX_WEBC.length);
 				const clazz = registry[entryId];
 				if (!clazz) {
 					return null;
@@ -396,6 +409,7 @@ module.exports = function ({ resolveModule } = {}) {
 
 				// Import the original WebComponent class (which should be wrapped!)
 				let code = `import WebComponentClass from ${JSON.stringify(entryId)};\n`;
+				code += `import ${JSON.stringify(`${clazz._ui5metadata.namespace}/library`)};\n`;
 				// Determine the superclass UI5 module name and import it
 				let superclassModule = "sap/ui/core/webc/WebComponent";
 				if (clazz.superclass._ui5metadata) {
