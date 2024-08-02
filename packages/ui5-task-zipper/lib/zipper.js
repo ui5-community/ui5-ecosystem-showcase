@@ -22,6 +22,24 @@ const determineProjectName = (collection) => {
 };
 
 /**
+  * Turn absolute data source paths in the manifest.json into relative paths
+  *
+  * @param {Buffer} buffer Buffer of the manifest.json file
+  * @param {object} zip ZipFile instance
+  * returns {void}
+*/
+const absoluteToRelativePaths = (buffer, zip) => {
+	const manifest = JSON.parse(buffer.toString("utf-8"));
+	if (!manifest["sap.app"]["dataSources"]) return;
+	for (const [dataSourceName, dataSource] of Object.entries(manifest["sap.app"]["dataSources"])) {
+		if (dataSource.uri?.substring(0, 1) === "/") {
+			manifest["sap.app"]["dataSources"][dataSourceName].uri = dataSource.uri.substring(1);
+		}
+	}
+	zip.addBuffer(Buffer.from(JSON.stringify(manifest, null, 4), "utf-8"), "manifest.json");
+}
+
+/**
  * Zips the application content of the output folder
  *
  * @param {object} parameters Parameters
@@ -37,11 +55,14 @@ const determineProjectName = (collection) => {
  * @param {object} parameters.taskUtil the task utilities
  * @returns {Promise<undefined>} Promise resolving with undefined once data has been written
  */
-module.exports = async function ({ log, workspace, dependencies, options, taskUtil }) {
+module.exports = async function({ log, workspace, dependencies, options, taskUtil }) {
 	const { OmitFromBuildResult } = taskUtil.STANDARD_TAGS;
 
 	// debug mode?
 	const isDebug = options?.configuration?.debug;
+
+	// turn absolute paths into relative paths?
+	const relativePaths = options?.configuration?.relativePaths;
 
 	// determine the name of the ZIP archive (either from config or from project namespace)
 	const defaultName = options && options.configuration && options.configuration.archiveName;
@@ -54,14 +75,14 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 		includeDependencies === true
 			? dependencies
 			: taskUtil.resourceFactory.createReaderCollection({
-					readers: !includeDependencies
-						? []
-						: dependencies._readers.filter((reader) => {
-								const projectName = determineProjectName(reader);
-								return includeDependencies.indexOf(projectName) !== -1;
-						  }),
-					name: "Filtered reader collection of ui5-task-zipper",
-			  });
+				readers: !includeDependencies
+					? []
+					: dependencies._readers.filter((reader) => {
+						const projectName = determineProjectName(reader);
+						return includeDependencies.indexOf(projectName) !== -1;
+					}),
+				name: "Filtered reader collection of ui5-task-zipper",
+			});
 
 	// retrieve the resource path prefix (to get all application resources)
 	const prefixPath = `/resources/${options.projectNamespace}/`;
@@ -95,7 +116,11 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 					zipEntries.push(resourcePath);
 					return resource.getBuffer().then((buffer) => {
 						isDebug && log.info(`Adding ${resource.getPath()} to archive.`);
-						zip.addBuffer(buffer, resourcePath); // Replace first forward slash at the start of the path
+						if (relativePaths && resourcePath === "manifest.json") {
+							absoluteToRelativePaths(buffer, zip);
+						} else {
+							zip.addBuffer(buffer, resourcePath); // Replace first forward slash at the start of the path
+						}
 					});
 				} else {
 					log.warn(`Duplicate resource path found: ${resourcePath}! Skipping...`);
@@ -147,7 +172,7 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
  *      UI5 Tooling will ensure that those dependencies have been
  *      built before executing the task.
  */
-module.exports.determineRequiredDependencies = async function ({ availableDependencies, options }) {
+module.exports.determineRequiredDependencies = async function({ availableDependencies, options }) {
 	const includeDependencies = options?.configuration?.includeDependencies;
 	if (includeDependencies) {
 		if (Array.isArray(includeDependencies)) {
