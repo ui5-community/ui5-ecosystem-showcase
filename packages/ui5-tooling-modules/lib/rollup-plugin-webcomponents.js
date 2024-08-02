@@ -169,7 +169,7 @@ module.exports = function ({ resolveModule } = {}) {
 						ui5metadata.properties[propDef.name] = {
 							type: `${ui5TypeInfo.ui5Type}${ui5TypeInfo.multiple ? "[]" : ""}`,
 							mapping: "property",
-							defaultValue: defaultValue,
+							defaultValue: defaultValue === "undefined" ? undefined : defaultValue,
 						};
 					}
 
@@ -350,6 +350,7 @@ module.exports = function ({ resolveModule } = {}) {
 		async resolveId(source/*, importer, options*/) {
 			if (
 				source === "sap/ui/core/webc/WebComponent" ||
+				source === "sap/ui/core/Lib" ||
 				source === "sap/ui/base/DataType"
 			) {
 				// mark Ui5 runtime dependencies as external
@@ -358,7 +359,7 @@ module.exports = function ({ resolveModule } = {}) {
 					id: source,
 					external: true
 				};
-			} else if (source.endsWith("/library")) {
+			} else if (/^(.*)\/library(?:.js)?$/.test(source)) {
 				// remove /library using regex
 				const parts = /^(.*)\/library(?:.js)?$/.exec(source);
 				if (parts && registry[parts[1]]) {
@@ -382,20 +383,45 @@ module.exports = function ({ resolveModule } = {}) {
 					const namespace = parts[1];
 					const metadata = registry[namespace];
 
-					let code = `import { registerEnum } from "sap/ui/base/DataType";\n`;
+					let code = `import Library from "sap/ui/core/Lib";\n`;
+					code += `import { registerEnum } from "sap/ui/base/DataType";\n`;
+
+					code += `const theLibrary = Library.init(${JSON.stringify({
+						apiVersion: 2,
+						name: `${namespace}`,
+						//version: metadata.version,
+						dependencies: ["sap.ui.core"],
+						designtime: `${namespace}/designtime/library.designtime`,
+						types:	Object.keys(metadata.enums).map((enumName) => `${namespace}.${enumName}`),
+						elements: [],
+						controls: [ /* TODO */ ],
+						extensions: {
+							flChangeHandlers: {
+								"@ui5/webcomponents/dist/Avatar": {
+									"hideControl": "default",
+									"unhideControl": "default"
+								},
+								"@ui5/webcomponents/dist/Button": "@ui5/webcomponents-flexibility/dist/Button",
+							}
+						},
+						noLibraryCSS: true,
+					}, undefined, 2)});\n`;
 
 					const registerEnum = (enumName, enumDef) => {
 						const enumValues = {};
 						enumDef.members.forEach((entry) => {
 							enumValues[entry.name] = entry.name;
 						});
-						code += `registerEnum(${JSON.stringify(`${namespace}.${enumName}`)}, ${JSON.stringify(enumValues)});\n`;
+						code += `theLibrary["${enumName}"] = ${JSON.stringify(enumValues)};\n`;
+						code += `registerEnum(${JSON.stringify(`${namespace}.${enumName}`)}, theLibrary["${enumName}"]);\n`;
 					}
 
 					// register the enums
 					Object.keys(metadata.enums).forEach((enumName) => {
 						registerEnum(enumName, metadata.enums[enumName]);
 					});
+
+					code += `export default theLibrary;\n`;
 
 					return code;
 				}
@@ -418,14 +444,12 @@ module.exports = function ({ resolveModule } = {}) {
 					superclassModule = `${namespace}/${module}`;
 				}
 				code += `import WebComponentBaseClass from ${JSON.stringify(superclassModule)};\n`;
-				// Import all required types
-				/*
-				Object.entries(clazzTypes).forEach(([name, type]) => {
-					code += `import ${name} from ${JSON.stringify(type.modulePath)};\n`;
-				});
-				*/
 				// Extend the superclass with the WebComponent class and export it
-				code += `export default WebComponentBaseClass.extend(${JSON.stringify(clazz.moduleName)}, { metadata: ${JSON.stringify(clazz._ui5metadata, undefined, 2)} });\n`;
+				const moduleName = clazz.moduleName;
+				const metadata = Object.assign({}, clazz._ui5metadata, {
+					library: `${clazz._ui5metadata.namespace}.library`,
+				});
+				code += `export default WebComponentBaseClass.extend(${JSON.stringify(moduleName)}, { metadata: ${JSON.stringify(metadata, undefined, 2)} });\n`;
 				return code;
 			}
 			return null;

@@ -29,6 +29,7 @@
           <webc:Avatar icon="ai" colorScheme="Accent7"></webc:Avatar>
         </webc:AvatarGroup>
         <webc:DateRangePicker></webc:DateRangePicker>
+        <webc:CheckBox text="Hello World 123"></webc:CheckBox>
         <webc:List>
           <webc:ListItemStandard text="Item 1"></webc:ListItemStandard>
           <webc:ListItemStandard text="Item 2"></webc:ListItemStandard>
