@@ -1,11 +1,25 @@
-const { join, dirname, extname } = require("path");
+const { join, dirname } = require("path");
+const { readFileSync } = require("fs");
 const WebComponentRegistry = require('./utils/WebComponentRegistry');
+
+const { compile } = require("handlebars");
 
 // Inspired by https://rollupjs.org/plugin-development/#resolveid (the Polyfill Injection)
 const SUFFIX_WEBC = "?webcomponent";
-const SUFFIX_WEBC_LIB = "?webcomponent-library";
+const SUFFIX_WEBC_LIB = "?webcomponentlibrary";
 
 module.exports = function ({ resolveModule } = {}) {
+
+	const loadAndCompileTemplate = (templatePath) => {
+		const templateFile = readFileSync(join(__dirname, templatePath), { encoding: "utf-8" });
+		return compile(templateFile);
+	};
+
+	const libTemplateFn = loadAndCompileTemplate("templates/Library.hbs");
+	const webccTemplateFn = loadAndCompileTemplate("templates/WebComponentControl.hbs");
+
+	const absToRelPathLib = {};
+	const absToRelPathWebC = {};
 
 	const lookupWebComponentsClass = (source) => {
 		const absModulePath = resolveModule(source);
@@ -25,15 +39,21 @@ module.exports = function ({ resolveModule } = {}) {
 				const packageJson = require(packageJsonPath);
 				if (!registryEntry && packageJson.customElements) {
 					// load custom elements metadata
-					const metadataPath = resolveModule(join(npmPackage, packageJson.customElements.replace("custom-elements.json", "custom-elements-internal.json")));
+					// load custom elements metadata (custom-elements-internal.json > custom-elements.json)
+					let metadataPath = resolveModule(join(npmPackage, packageJson.customElements.replace("custom-elements.json", "custom-elements-internal.json")));
+					if (!metadataPath) {
+						metadataPath = resolveModule(join(npmPackage, packageJson.customElements));
+					}
 					const customElementsMetadata = require(metadataPath);
 
 					// first time registering a new Web Component package
+					const npmPackagePath = dirname(packageJsonPath);
 					registryEntry = WebComponentRegistry.register({
 						customElementsMetadata,
 						namespace: npmPackage,
-						npmPackagePath: dirname(packageJsonPath)
+						npmPackagePath
 					});
+					absToRelPathLib[npmPackagePath] = npmPackage;
 				}
 			}
 		}
@@ -41,13 +61,12 @@ module.exports = function ({ resolveModule } = {}) {
 		if (registryEntry) {
 			const metadata = registryEntry;
 			const modulePath = absModulePath.substr(metadata.npmPackagePath.length + 1);
+			const moduleName = `${npmPackage}/${modulePath}`;
 
-			const clazz = WebComponentRegistry.getClassDefinition(modulePath);
+			const clazz = WebComponentRegistry.getClassDefinition(moduleName);
 			clazz.modulePath = absModulePath;
-			clazz.moduleName = `${npmPackage}/${modulePath.substr(0, modulePath.length - extname(modulePath).length)}`;
-			// add th absolute module path as an alias for the class,
-			// so we can look it up faster the next time around
-			WebComponentRegistry.addClassAlias(absModulePath, clazz);
+			clazz.moduleName = moduleName;
+			absToRelPathWebC[absModulePath] = moduleName;
 			return clazz;
 		}
 	}
@@ -69,8 +88,9 @@ module.exports = function ({ resolveModule } = {}) {
 			} else if (/^(.*)\/library(?:.js)?$/.test(source)) {
 				// remove /library using regex
 				const parts = /^(.*)\/library(?:.js)?$/.exec(source);
-				if (parts && WebComponentRegistry.getPackage(parts[1])) {
-					return `${source}${SUFFIX_WEBC_LIB}`;
+				const package = parts && WebComponentRegistry.getPackage(parts[1]);
+				if (package) {
+					return `${package.npmPackagePath}/library${SUFFIX_WEBC_LIB}`;
 				}
 			} else {
 				// find the Web Components class for the given module
@@ -80,83 +100,85 @@ module.exports = function ({ resolveModule } = {}) {
 				}
 			}
 		},
+
 		async load(id) {
 			// TODO:
 			// - @ui5/webcomponents/Button should re-export @ui5/webcomponents/dist/Button
-			if (id.endsWith(SUFFIX_WEBC_LIB)) {
-				const entryId = id.slice(0, -SUFFIX_WEBC_LIB.length);
+			if (id.indexOf(SUFFIX_WEBC_LIB) !== -1) {
+				const entryId = id.slice(0, id.indexOf(SUFFIX_WEBC_LIB));
 				const parts = /^(.*)\/library(?:.js)?$/.exec(entryId);
-				if (parts && WebComponentRegistry.getPackage(parts[1])) {
-					const namespace = parts[1];
-					const metadata = WebComponentRegistry.getPackage(namespace);
+				const packageName = parts && absToRelPathLib[parts[1]];
+				const package = WebComponentRegistry.getPackage(packageName);
+				if (package) {
+					const { namespace } = package;
 
-					let code = `import Library from "sap/ui/core/Lib";\n`;
-					code += `import { registerEnum } from "sap/ui/base/DataType";\n`;
-
-					code += `const theLibrary = Library.init(${JSON.stringify({
+					// compile the library metadata
+					const metadataObject = {
 						apiVersion: 2,
-						name: `${namespace}`,
-						//version: metadata.version,
+						name: namespace,
 						dependencies: ["sap.ui.core"],
+						types:	Object.keys(package.enums).map((enumName) => `${namespace}.${enumName}`),
+						elements: [ /* do we have any? */ ],
+						controls: Object.keys(package.customElements).map((elementName) => `${namespace}.${elementName}`),
+						interfaces: Object.keys(package.interfaces).map((interfaceName) => `${namespace}.${interfaceName}`),
 						designtime: `${namespace}/designtime/library.designtime`,
-						types:	Object.keys(metadata.enums).map((enumName) => `${namespace}.${enumName}`),
-						elements: [],
-						controls: [ /* TODO */ ],
 						extensions: {
 							flChangeHandlers: {
-								"@ui5/webcomponents/dist/Avatar": {
+								"@ui5/webcomponents.Avatar": {
 									"hideControl": "default",
 									"unhideControl": "default"
 								},
-								"@ui5/webcomponents/dist/Button": "@ui5/webcomponents-flexibility/dist/Button",
+								"@ui5/webcomponents.Button": "@ui5/webcomponents-flexibility.Button",
 							}
 						},
 						noLibraryCSS: true,
-					}, undefined, 2)});\n`;
+					};
+					const metadata = JSON.stringify(metadataObject, undefined, 2);
 
-					const registerEnum = (enumName, enumDef) => {
-						const enumValues = {};
-						enumDef.members.forEach((entry) => {
-							enumValues[entry.name] = entry.name;
-						});
-						code += `theLibrary["${enumName}"] = ${JSON.stringify(enumValues)};\n`;
-						code += `registerEnum(${JSON.stringify(`${namespace}.${enumName}`)}, theLibrary["${enumName}"]);\n`;
-					}
-
-					// register the enums
-					Object.keys(metadata.enums).forEach((enumName) => {
-						registerEnum(enumName, metadata.enums[enumName]);
+					// generate the library code
+					const code = libTemplateFn({
+						metadata,
+						namespace,
+						enums: package.enums,
 					});
-
-					code += `export default theLibrary;\n`;
-
 					return code;
 				}
 
-			} else if (id.endsWith(SUFFIX_WEBC)) {
-				const entryId = id.slice(0, -SUFFIX_WEBC.length);
-				const clazz = WebComponentRegistry.getClassDefinition(entryId);
+			} else if (id.indexOf(SUFFIX_WEBC) !== -1) {
+				// get the WebComponent class definition
+				const entryId = id.slice(0, id.indexOf(SUFFIX_WEBC));
+				const moduleName = absToRelPathWebC[entryId];
+				const clazz = WebComponentRegistry.getClassDefinition(moduleName);
 				if (!clazz) {
 					return null;
 				}
 
-				// Import the original WebComponent class (which should be wrapped!)
-				let code = `import WebComponentClass from ${JSON.stringify(entryId)};\n`;
-				code += `import ${JSON.stringify(`${clazz._ui5metadata.namespace}/library`)};\n`;
+				// Extend the superclass with the WebComponent class and export it
+				const ui5Metadata = clazz._ui5metadata;
+				const ui5Class = `${ui5Metadata.namespace}.${clazz.name}`;
+				const namespace = ui5Metadata.namespace;
+				const metadataObject = Object.assign({}, ui5Metadata, {
+					library: `${ui5Metadata.namespace}.library`,
+				});
+				const metadata = JSON.stringify(metadataObject, undefined, 2);
+				const webcClass = clazz.modulePath;
+
 				// Determine the superclass UI5 module name and import it
-				let superclassModule = "sap/ui/core/webc/WebComponent";
-				if (clazz.superclass._ui5metadata) {
+				let webcBaseClass = "sap/ui/core/webc/WebComponent";
+				if (clazz.superclass?._ui5metadata) {
 					const { module } = clazz.superclass;
 					const { namespace } = clazz.superclass._ui5metadata;
-					superclassModule = `${namespace}/${module}`;
+					webcBaseClass = `${namespace}/${module}`;
 				}
-				code += `import WebComponentBaseClass from ${JSON.stringify(superclassModule)};\n`;
-				// Extend the superclass with the WebComponent class and export it
-				const moduleName = clazz.moduleName;
-				const metadata = Object.assign({}, clazz._ui5metadata, {
-					library: `${clazz._ui5metadata.namespace}.library`,
+
+				// generate the WebComponentControl code
+				const code = webccTemplateFn({
+					ui5Class,
+					namespace,
+					metadata,
+					webcClass,
+					webcBaseClass,
 				});
-				code += `export default WebComponentBaseClass.extend(${JSON.stringify(moduleName)}, { metadata: ${JSON.stringify(metadata, undefined, 2)} });\n`;
 				return code;
 			}
 			return null;

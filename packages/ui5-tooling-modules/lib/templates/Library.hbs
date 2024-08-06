@@ -1,0 +1,15 @@
+import Library from "sap/ui/core/Lib";
+import { registerEnum } from "sap/ui/base/DataType";
+
+const theLibrary = Library.init({{{metadata}}});
+
+{{#each enums}}
+theLibrary["{{name}}"] = {
+{{#each members}}
+	"{{name}}": "{{name}}",
+{{/each}}
+};
+registerEnum("{{../namespace}}.{{name}}", theLibrary["{{name}}"]);
+{{/each}}
+
+export default theLibrary;

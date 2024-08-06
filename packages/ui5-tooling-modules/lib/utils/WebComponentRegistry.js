@@ -1,4 +1,3 @@
-
 /**
  * Camelize the dashes.
  * Used to transform event names.
@@ -10,6 +9,9 @@ const camelize = (str) => {
 const _registry = {};
 
 const _classAliases = {};
+
+const _classes = {};
+
 
 // TODO: Make "classes" into... a class :)
 //       Get's rid of passing the "classDef" and the "ui5metadata" around.
@@ -331,7 +333,7 @@ const WebComponentRegistry = {
 			// so we can access them faster during resource resolution later on
 			Object.keys(entry.classes).forEach((className) => {
 				const classDef = entry.classes[className];
-				this.addClassAlias(classDef.module, classDef);
+				this.addClassAlias(`${namespace}/${classDef.module}`, classDef);
 			});
 		}
 		return entry;
@@ -356,6 +358,16 @@ const WebComponentRegistry = {
 	addClassAlias(alias, obj) {
 		if (!_classAliases[alias]) {
 			_classAliases[alias] = obj;
+		}
+	},
+
+	getClassDef(id) {
+		return _classes[id];
+	},
+
+	addClassDef(alias, obj) {
+		if (!_classes[alias]) {
+			_classes[alias] = obj;
 		}
 	}
 }

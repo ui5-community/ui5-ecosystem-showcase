@@ -1,6 +1,7 @@
 import Controller from "sap/ui/core/mvc/Controller";
 import MessageToast from "sap/m/MessageToast";
 import Button from "@ui5/webcomponents/Button";
+import DatePicker from "@ui5/webcomponents/DatePicker";
 import Control from "sap/ui/core/Control";
 import VBox from "sap/m/VBox";
 import Popup from "sap/ui/core/Popup";
@@ -45,6 +46,10 @@ export default class Main extends Controller {
 		const button = new Button({ text: "👻", click: this.onBoo });
 		if (button instanceof Control) {
 			(this.getView()?.byId("contentArea") as VBox).addItem(button);
+		}
+		const datePicker = new DatePicker({ placeholder: "📅" });
+		if (datePicker instanceof Control) {
+				(this.getView()?.byId("contentArea") as VBox).addItem(datePicker);
 		}
 	}
 	public onBoo(): void {
