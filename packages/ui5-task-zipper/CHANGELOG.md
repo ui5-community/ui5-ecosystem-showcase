@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@3.1.7...ui5-task-zipper@3.2.0) (2024-08-07)
+
+
+### Features
+
+* **ui5-task-zipper:** optional  parameter to turn absolute data sour… ([#1046](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1046)) ([f9ceb6d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f9ceb6d836cf60ce16290f930a0972df5f33d21b))
+
+
+
+
+
 ## [3.1.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@3.1.6...ui5-task-zipper@3.1.7) (2024-07-22)
 
 **Note:** Version bump only for package ui5-task-zipper
