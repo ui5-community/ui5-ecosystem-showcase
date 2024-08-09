@@ -2,7 +2,7 @@
 import sleep from "sleep-promise";
 import { Options } from "./types";
 const prompt = require("async-prompt");
-import { chromium } from "playwright-chromium";
+import { chromium, Locator, Page } from "playwright-chromium";
 
 interface Attributes {
 	url: string;
@@ -45,12 +45,30 @@ export default class CookieGetter {
 		}
 	}
 
+	/**
+	 * @param page a page that is searched.
+	 * @returns an input element from the page.
+	 */
+	async getUserInput(page: Page): Promise<Locator> {
+		const preferred = page.locator('input[type="email"]').or(page.locator('input[type="username"]')).or(page.locator('input[name="sap-user"]')).nth(0);
+		return (await preferred.count()) > 0 ? preferred : page.locator('input[type="text"]');
+	}
+
+	/**
+	 * @param page a page.
+	 * @returns whether the provided page is a login page.
+	 */
+	async isLoginPage(page: Page): Promise<boolean> {
+		return (await (await this.getUserInput(page)).count()) > 0;
+	}
+
 	async getCookie(log: any, options: Options): Promise<string> {
 		options = this.sanitizeObject(options);
 
 		const defaultOptions: Options = this.sanitizeObject({
 			configuration: {
 				path: process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI,
+				subdirectory: "sap/bc/ui2/flp/",
 				useCertificate: false,
 				query: this.parseJSON(process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_QUERY),
 			},
@@ -59,6 +77,7 @@ export default class CookieGetter {
 		const envOptions: Options = this.sanitizeObject({
 			configuration: {
 				path: process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL,
+				subdirectory: process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_SUBDIRECTORY,
 				username: process.env.UI5_MIDDLEWARE_ONELOGIN_USERNAME,
 				password: process.env.UI5_MIDDLEWARE_ONELOGIN_PASSWORD,
 				useCertificate: process.env.UI5_MIDDLEWARE_ONELOGIN_USE_CERTIFICATE === "true",
@@ -99,13 +118,12 @@ export default class CookieGetter {
 
 		if ((attr.url.match(new RegExp("/", "g")) || []).length === 2 || attr.url.lastIndexOf("/") === attr.url.length - 1) {
 			const urlWithTrailingSlash = attr.url.lastIndexOf("/") === attr.url.length - 1 ? attr.url : attr.url + "/";
-			const search = new URLSearchParams();
+			const url = new URL(`${urlWithTrailingSlash}${effectiveOptions.configuration.subdirectory}`);
 			const query = effectiveOptions.configuration.query;
 			if (query) {
-				Object.keys(query).forEach((key) => search.append(key, query[key]));
+				Object.keys(query).forEach((key) => url.searchParams.append(key, query[key]));
 			}
-			const searchParams = search.size > 0 ? `?${search.toString()}` : "";
-			attr.url = `${urlWithTrailingSlash}sap/bc/ui2/flp/${searchParams}`;
+			attr.url = url.href;
 			if (effectiveOptions.configuration.debug) log.info(`Trying to fetch cookie from "${attr.url}"`);
 		}
 
@@ -123,16 +141,11 @@ export default class CookieGetter {
 			if (!effectiveOptions.configuration.useCertificate) {
 				await page.goto(attr.url, { waitUntil: "domcontentloaded" });
 
-				let elem;
-				try {
-					elem = await Promise.race([page.waitForSelector('input[type="email"]'), page.waitForSelector('input[type="username"]'), page.waitForSelector('input[name="sap-user"]')]);
-				} catch (oError) {
-					elem = await page.waitForSelector('input[type="text"]');
-				}
+				const elem = await this.getUserInput(page);
 
 				const password = page.locator('input[type="password"]');
 				let isHidden = await password.getAttribute("aria-hidden");
-				await elem.type(attr.username);
+				await elem.fill(attr.username);
 				if (!!isHidden && isHidden !== null) {
 					try {
 						await page.click('input[type="submit"]', { timeout: 500 });
@@ -184,9 +197,33 @@ export default class CookieGetter {
 				}
 			} else {
 				await page.goto(attr.url, { waitUntil: "networkidle" });
+
+				let isLoginPage = true;
+				for (let attempt = 0; attempt < 3; attempt++) {
+					if (attempt > 0) {
+						await page.reload({ waitUntil: "networkidle" });
+						await page.waitForTimeout(attempt * 1000);
+					}
+					isLoginPage = await this.isLoginPage(page);
+					if (!isLoginPage) {
+						break;
+					} else {
+						if (effectiveOptions.configuration.debug) {
+							log.info(`"${attr.url}" looks like a login page, reloading...`);
+						}
+					}
+				}
+				if (isLoginPage) {
+					if (effectiveOptions.configuration.debug) {
+						log.info(`Couldn't login using a certificate!`);
+					}
+				}
 			}
 
 			const cookies = await context.cookies();
+			if (cookies.length === 0) {
+				throw new Error(`No cookies could be found for "${attr.url}". This usually indicates that the url points to a location that does not require a login!`);
+			}
 			browser.close();
 			return JSON.stringify(cookies);
 		} catch (oError) {
