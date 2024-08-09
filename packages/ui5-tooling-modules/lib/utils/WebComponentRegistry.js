@@ -28,6 +28,9 @@ class RegistryEntry {
 		this.enums = {};
 		this.interfaces = new Set();
 
+		// TODO: Should not be needed later!
+		this.#patchMissingEnums();
+
 		this.#processMetadata();
 	}
 
@@ -86,6 +89,26 @@ class RegistryEntry {
 
 	#prefixns(str) {
 		return `${this.namespace}.${str}`
+	}
+
+	/**
+	 * TODO: We patch some enums as a workaround so that the wrapper controls behave correctly.
+	 *       We need to find out why some enums are not contained in the custom elements manifest.
+	 */
+	#patchMissingEnums() {
+		if (this.namespace === "@ui5/webcomponents") {
+			this.enums["ValueState"] = {
+				kind: "enum",
+				name: "ValueState",
+				members: [
+					{name: "None" },
+					{name: "Positive" },
+					{name: "Critical" },
+					{name: "Negative" },
+					{name: "Information" }
+				]
+			};
+		}
 	}
 
 	// --- UI5 Metadata transformer below ---

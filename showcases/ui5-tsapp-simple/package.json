@@ -21,7 +21,7 @@
     "directory": "showcases/ui5-tsapp-simple"
   },
   "dependencies": {
-    "@ui5/webcomponents": "^2.0.1"
+    "@ui5/webcomponents": "^2.1.1"
   },
   "devDependencies": {
     "@types/openui5": "1.126.0",
