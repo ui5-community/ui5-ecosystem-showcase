@@ -74,3 +74,6 @@ dist
 
 # vscode settings - to each her/his own
 .vscode/settings.json
+
+# local workspace configs
+ui5-workspace.yaml

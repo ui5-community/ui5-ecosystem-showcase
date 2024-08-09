@@ -17,6 +17,7 @@ const pnpmResolve = require("./rollup-plugin-pnpm-resolve");
 const dynamicImports = require("./rollup-plugin-dynamic-imports");
 const replace = require("@rollup/plugin-replace");
 const transformTopLevelThis = require("./rollup-plugin-transform-top-level-this");
+const webcomponents = require("./rollup-plugin-webcomponents");
 
 const walk = require("ignore-walk");
 const minimatch = require("minimatch");
@@ -734,6 +735,12 @@ module.exports = function (log) {
 						cwd,
 						moduleNames,
 					}),
+					// handle the webcomponents
+					webcomponents({
+						resolveModule: function (moduleName) {
+							return that.resolveModule(moduleName, { cwd, depPaths, mainFields });
+						},
+					}),
 					// once the node polyfills are injected, we can
 					// resolve the modules from node_modules
 					pnpmResolve({
@@ -908,7 +915,7 @@ module.exports = function (log) {
 						// parse the rollup build result
 						output.forEach((module, i) => {
 							// lookup the output module in the list of input modules
-							const resolvedModule = modules.find((mod) => mod.path === module?.facadeModuleId?.replace(/\?.*$/, ""));
+							const resolvedModule = modules.find((mod) => module?.facadeModuleId?.startsWith(mod.path));
 							if (resolvedModule) {
 								// entry module
 								resolvedModule.code = module.code;

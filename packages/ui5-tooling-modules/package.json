@@ -36,6 +36,7 @@
     "chokidar": "^3.6.0",
     "estree-walker": "^3.0.3",
     "fast-xml-parser": "^4.4.0",
+    "handlebars": "^4.7.8",
     "ignore-walk": "^6.0.5",
     "minimatch": "^7.4.6",
     "rollup": "^4.19.0",
