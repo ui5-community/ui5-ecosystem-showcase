@@ -186,6 +186,19 @@ class RegistryEntry {
 		}
 	}
 
+	#castDefaultValue(defaultValue, ui5TypeInfo) {
+		if (defaultValue === "undefined") {
+			return undefined;
+		}
+
+		switch(ui5TypeInfo.ui5Type) {
+			case "float": return parseFloat(defaultValue);
+			case "boolean": return /true/.test(defaultValue);
+			case "object": return JSON.parse(defaultValue);
+			default: return defaultValue;
+		}
+	}
+
 	#processMembers(classDef, ui5metadata, propDef) {
 		// field -> property
 		if (propDef.kind === "field") {
@@ -210,10 +223,12 @@ class RegistryEntry {
 					defaultValue = defaultValue.replace(/"/g, "");
 				}
 
+				defaultValue = this.#castDefaultValue(defaultValue, ui5TypeInfo);
+
 				ui5metadata.properties[propDef.name] = {
 					type: `${ui5TypeInfo.ui5Type}${ui5TypeInfo.multiple ? "[]" : ""}`,
 					mapping: "property",
-					defaultValue: defaultValue === "undefined" ? undefined : defaultValue,
+					defaultValue: defaultValue
 				};
 			}
 
