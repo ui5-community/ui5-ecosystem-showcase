@@ -1010,8 +1010,8 @@ importers:
   showcases/ui5-tsapp-simple:
     dependencies:
       '@ui5/webcomponents':
-        specifier: ^2.0.1
-        version: 2.0.1
+        specifier: ^2.1.1
+        version: 2.1.1
     devDependencies:
       '@types/openui5':
         specifier: 1.126.0
@@ -2589,6 +2589,9 @@ packages:
   '@sap-theming/theming-base-content@11.12.0':
     resolution: {integrity: sha512-kPHlziH8e6W8VjzljOiNjgBz81GuvC8WUAi7K6F5k+ZaRc1DUkDU12x9k6B0l4u9nPtprdZTse55r3PFGuELdQ==}
 
+  '@sap-theming/theming-base-content@11.17.1':
+    resolution: {integrity: sha512-C13DbCBGkLYRZtQU7d6TmDHChA+S7bs26xk+fqHL0pBJTOm4V8NP1sj1SPfI9mbkUp+f5QLcWaENwUoTF00ElA==}
+
   '@sap/approuter@16.6.0':
     resolution: {integrity: sha512-nX/je3RPRqc4pUd9BMJRyt2JBl0kf3TKYEDnt467LzQWXmKPTto4TFhKgYfbjHYLvnYeMWNXhO88+YA9tGqsiA==}
     engines: {node: ^18.0.0 || ^20.0.0}
@@ -2993,23 +2996,44 @@ packages:
   '@ui5/webcomponents-base@2.0.1':
     resolution: {integrity: sha512-jdoUmPbZxMTjyx4MOjCFrxz1OCV/dIBiB/4mas4BkiZLV+jYc/jrPSckdko39KR1m152pIN1n1RxtxWa3S1cPA==}
 
+  '@ui5/webcomponents-base@2.1.1':
+    resolution: {integrity: sha512-DtE7+0LRueO5TzVyldX51sZl2xhBgDZBt5fUeqwjTk09BRD9JKY97PwwSoxoHZrqbKNYxhM5pC8EKFP4fHXSwg==}
+
   '@ui5/webcomponents-icons-business-suite@2.0.1':
     resolution: {integrity: sha512-OQsLFFMlJWuj7ENFg7ZT1fiEpEqSWPnQ7I/EIIqPyBWjpgvDb84vzOv+c2Hou2DpNB/dGH0gAGmkWJnDHealYw==}
+
+  '@ui5/webcomponents-icons-business-suite@2.1.1':
+    resolution: {integrity: sha512-cAMcKC/OoYm9oaWRSibjsW9L5mTSo7e7KS7zEV9d3qdZflfCx+lp5/9ywIqpB7PN73RkJyN0oa8Jc8rnvpjEzg==}
 
   '@ui5/webcomponents-icons-tnt@2.0.1':
     resolution: {integrity: sha512-/4QwEYZ0UfJRrRhG7o4kAjoFZ2Wy8bEThq+ZTV1afqJWCiPDcrKZKhPqIEOCHIE1y2TMjmo/w7UIZSIBGF81oQ==}
 
+  '@ui5/webcomponents-icons-tnt@2.1.1':
+    resolution: {integrity: sha512-BAQKuh7vmiRP0XNmpKb/aIAT5Ctd5Lh+2WG9LmWMFWs9jN0WfbjHaJHafob8KSycwFrFKMG7UPCW7cuUINYPxQ==}
+
   '@ui5/webcomponents-icons@2.0.1':
     resolution: {integrity: sha512-dRSB3722pdQG3+ciKhGlJpU/nlnAQ63SgJ2PKXlIXvcbgc8BMRprasfz7Y7l9ZRsAMZZ2TVO3PUhLNMkZS6vlg==}
+
+  '@ui5/webcomponents-icons@2.1.1':
+    resolution: {integrity: sha512-5CUG2G2p5kX+7l5IQsolJR9NscprI81CKGGWVilRGPdPs3d/jNLJ7G8BLLJWoVv4ydbYEh0xJ9IPL64FdFKhrw==}
 
   '@ui5/webcomponents-localization@2.0.1':
     resolution: {integrity: sha512-GHtpC9Ayo4Nha2nRgUfc6dnz8qAmj73ldCfWBh2arcDQ6VY7ZdI5d6mSTPQeNn9/5ZzvtDccJScN+IMO1z169g==}
 
+  '@ui5/webcomponents-localization@2.1.1':
+    resolution: {integrity: sha512-okg65SEUWn16TJ5UTTFMCc+hM2aCfhzPIs5f3xwlEFMaMfR/QbgKHqlKaov3UTmnTAe9oZS5sQPRsJyfCoiQgA==}
+
   '@ui5/webcomponents-theming@2.0.1':
     resolution: {integrity: sha512-HdofJMU8xPDWReq3zjj6kW0HM3rvXfDm5lhIi3cFkqxZJN0nxY4nVCdIIrwzROxYNupeMmYvnj776B3GsAoAwQ==}
 
+  '@ui5/webcomponents-theming@2.1.1':
+    resolution: {integrity: sha512-e5nsS54hboBtvJ+Z+TNMWC5IqFFYqLGqwp5QHa56bbfUyyhdHrWqPCZECQx4fZ/VY/rhZQoI9Ys1gWSPL+bdPg==}
+
   '@ui5/webcomponents@2.0.1':
     resolution: {integrity: sha512-+TLTH7PUYbThx/47NIEJLrMo/NnaIUIbgTQnWEkPjWH92YGnCQQh/je6Ml4E+vkUVwcEGzb1fTDIB3alHhVctQ==}
+
+  '@ui5/webcomponents@2.1.1':
+    resolution: {integrity: sha512-NfUMwOLVFFKH2r7iADhrTi7/tFB37G2qwgdksk3sv4+koioxzv0W/RvTHFIA9xbQOHuEtVHK75pQPQd1YnwaNg==}
 
   '@ungap/structured-clone@1.2.0':
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
@@ -11326,6 +11350,8 @@ snapshots:
 
   '@sap-theming/theming-base-content@11.12.0': {}
 
+  '@sap-theming/theming-base-content@11.17.1': {}
+
   '@sap/approuter@16.6.0(encoding@0.1.13)':
     dependencies:
       '@sap/audit-logging': 6.1.0(encoding@0.1.13)
@@ -11945,27 +11971,54 @@ snapshots:
       '@lit-labs/ssr-dom-shim': 1.2.0
       lit-html: 2.8.0
 
+  '@ui5/webcomponents-base@2.1.1':
+    dependencies:
+      '@lit-labs/ssr-dom-shim': 1.2.0
+      lit-html: 2.8.0
+
   '@ui5/webcomponents-icons-business-suite@2.0.1':
     dependencies:
       '@ui5/webcomponents-base': 2.0.1
+
+  '@ui5/webcomponents-icons-business-suite@2.1.1':
+    dependencies:
+      '@ui5/webcomponents-base': 2.1.1
 
   '@ui5/webcomponents-icons-tnt@2.0.1':
     dependencies:
       '@ui5/webcomponents-base': 2.0.1
 
+  '@ui5/webcomponents-icons-tnt@2.1.1':
+    dependencies:
+      '@ui5/webcomponents-base': 2.1.1
+
   '@ui5/webcomponents-icons@2.0.1':
     dependencies:
       '@ui5/webcomponents-base': 2.0.1
+
+  '@ui5/webcomponents-icons@2.1.1':
+    dependencies:
+      '@ui5/webcomponents-base': 2.1.1
 
   '@ui5/webcomponents-localization@2.0.1':
     dependencies:
       '@types/openui5': 1.126.0
       '@ui5/webcomponents-base': 2.0.1
 
+  '@ui5/webcomponents-localization@2.1.1':
+    dependencies:
+      '@types/openui5': 1.126.0
+      '@ui5/webcomponents-base': 2.1.1
+
   '@ui5/webcomponents-theming@2.0.1':
     dependencies:
       '@sap-theming/theming-base-content': 11.12.0
       '@ui5/webcomponents-base': 2.0.1
+
+  '@ui5/webcomponents-theming@2.1.1':
+    dependencies:
+      '@sap-theming/theming-base-content': 11.17.1
+      '@ui5/webcomponents-base': 2.1.1
 
   '@ui5/webcomponents@2.0.1':
     dependencies:
@@ -11975,6 +12028,15 @@ snapshots:
       '@ui5/webcomponents-icons-tnt': 2.0.1
       '@ui5/webcomponents-localization': 2.0.1
       '@ui5/webcomponents-theming': 2.0.1
+
+  '@ui5/webcomponents@2.1.1':
+    dependencies:
+      '@ui5/webcomponents-base': 2.1.1
+      '@ui5/webcomponents-icons': 2.1.1
+      '@ui5/webcomponents-icons-business-suite': 2.1.1
+      '@ui5/webcomponents-icons-tnt': 2.1.1
+      '@ui5/webcomponents-localization': 2.1.1
+      '@ui5/webcomponents-theming': 2.1.1
 
   '@ungap/structured-clone@1.2.0': {}
 
