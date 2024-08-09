@@ -76,7 +76,8 @@ module.exports = function ({ resolveModule } = {}) {
 			const moduleName = `${npmPackage}/${modulePath}`;
 
 			const clazz = WebComponentRegistry.getClassDefinition(moduleName);
-			if (clazz) {
+			// TODO: base classes must be ignored as UI5Element is flagged as custom element although it is a base class
+			if (clazz && clazz.customElement && npmPackage !== "@ui5/webcomponents-base") {
 				clazz.modulePath = absModulePath;
 				clazz.moduleName = moduleName;
 				absToRelPathWebC[absModulePath] = moduleName;
@@ -101,7 +102,7 @@ module.exports = function ({ resolveModule } = {}) {
 				};
 			}
 
-			const npmPackageScopeRegEx = /^((?:(@[^/]+)\/)?([^/]+))(?:\/(.*))?$/;
+			const npmPackageScopeRegEx = /^((?:(@[^/]+)\/)?([^/]+))(?:\/(.*))?\/library(\.js)?$/;
 			const npmPackage = npmPackageScopeRegEx.exec(source)?.[1];
 
 			let clazz, lib;
