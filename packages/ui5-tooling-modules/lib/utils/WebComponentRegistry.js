@@ -87,7 +87,7 @@ class RegistryEntry {
 		}
 	}
 
-	#prefixns(str) {
+	prefixns(str) {
 		return `${this.namespace}.${str}`
 	}
 
@@ -126,7 +126,7 @@ class RegistryEntry {
 
 	#checkForInterfaceOrClassType(type) {
 		if (this.interfaces.has(type) || this.classes[type]) {
-			return this.#prefixns(type);
+			return this.prefixns(type);
 		}
 	}
 
@@ -150,7 +150,7 @@ class RegistryEntry {
 			if (this.enums[parsedType]) {
 				return {
 					origType: parsedType,
-					ui5Type: this.#prefixns(parsedType),
+					ui5Type: this.prefixns(parsedType),
 					multiple
 				}
 			}
@@ -170,6 +170,15 @@ class RegistryEntry {
 			}
 
 			// case 3: hm... neither primitive, nor enum or interface/class type
+			const refPackage = WebComponentRegistry.getPackage(typeInfo.references[0]?.package);
+			if (refPackage?.enums?.[parsedType]) {
+				return {
+					origType: parsedType,
+					ui5Type: refPackage.prefixns(parsedType),
+					multiple
+				}
+			}
+
 			return {
 				isUnclear: true,
 				origType: parsedType,
@@ -288,7 +297,7 @@ class RegistryEntry {
 		if (Array.isArray(classDef._ui5implements)) {
 			classDef._ui5implements.forEach((interfaceDef) => {
 				if (this.interfaces.has(interfaceDef.name)) {
-					ui5metadata.interfaces.push(this.#prefixns(interfaceDef.name));
+					ui5metadata.interfaces.push(this.prefixns(interfaceDef.name));
 				}
 			});
 		}
