@@ -30,10 +30,11 @@ const determineProjectName = (collection) => {
 */
 const absoluteToRelativePaths = (buffer, zip) => {
 	const manifest = JSON.parse(buffer.toString("utf-8"));
-	if (!manifest["sap.app"]["dataSources"]) return;
-	for (const [dataSourceName, dataSource] of Object.entries(manifest["sap.app"]["dataSources"])) {
-		if (dataSource.uri?.substring(0, 1) === "/") {
-			manifest["sap.app"]["dataSources"][dataSourceName].uri = dataSource.uri.substring(1);
+	if (manifest["sap.app"]["dataSources"]) {
+		for (const [dataSourceName, dataSource] of Object.entries(manifest["sap.app"]["dataSources"])) {
+			if (dataSource.uri?.substring(0, 1) === "/") {
+				manifest["sap.app"]["dataSources"][dataSourceName].uri = dataSource.uri.substring(1);
+			}
 		}
 	}
 	zip.addBuffer(Buffer.from(JSON.stringify(manifest, null, 4), "utf-8"), "manifest.json");
