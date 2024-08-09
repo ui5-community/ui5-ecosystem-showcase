@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@3.2.0...ui5-task-zipper@3.2.1) (2024-08-09)
+
+
+### Bug Fixes
+
+* **ui5-task-zipper:** make sure manifest gets zipped if no data sources exist ([#1055](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1055)) ([9758e76](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9758e7699af005aedb4e1b8885bffa700890fe9b))
+
+
+
+
+
 # [3.2.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@3.1.7...ui5-task-zipper@3.2.0) (2024-08-07)
 
 
