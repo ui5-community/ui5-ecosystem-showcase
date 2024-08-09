@@ -29,7 +29,7 @@ module.exports = function ({ resolveModule } = {}) {
 			if (packageJsonPath) {
 				const packageJson = require(packageJsonPath);
 				if (/^@ui5\/webcomponents/.test(packageJson.name)) {
-					packageJson.customElements = packageJson.customElements || "dist/custom-elements-internal.json";
+					packageJson.customElements = /* packageJson.customElements || */ "dist/custom-elements-internal.json";
 				}
 				if (!registryEntry && packageJson.customElements) {
 					Object.keys(packageJson.dependencies || {}).forEach((dep) => {
