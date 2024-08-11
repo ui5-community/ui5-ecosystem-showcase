@@ -56,7 +56,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         FunctionRegion["UsWest2"] = "us-west-2";
     })(exports.FunctionRegion || (exports.FunctionRegion = {}));
 
-    var __awaiter$6 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$7 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -86,7 +86,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          */
         invoke(functionName, options = {}) {
             var _a;
-            return __awaiter$6(this, void 0, void 0, function* () {
+            return __awaiter$7(this, void 0, void 0, function* () {
                 try {
                     const { headers, method, body: functionArgs } = options;
                     let _headers = {};
@@ -3032,7 +3032,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
     }
 
-    var __awaiter$5 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$6 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -3054,7 +3054,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
         return (...args) => _fetch(...args);
     };
-    const resolveResponse = () => __awaiter$5(void 0, void 0, void 0, function* () {
+    const resolveResponse = () => __awaiter$6(void 0, void 0, void 0, function* () {
         if (typeof Response === 'undefined') {
             // @ts-ignore
             return (yield Promise.resolve().then(function () { return browser; })).Response;
@@ -3062,7 +3062,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         return Response;
     });
 
-    var __awaiter$4 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$5 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -3072,7 +3072,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         });
     };
     const _getErrorMessage$1 = (err) => err.msg || err.message || err.error_description || err.error || JSON.stringify(err);
-    const handleError$1 = (error, reject) => __awaiter$4(void 0, void 0, void 0, function* () {
+    const handleError$1 = (error, reject) => __awaiter$5(void 0, void 0, void 0, function* () {
         const Res = yield resolveResponse();
         if (error instanceof Res) {
             error
@@ -3098,7 +3098,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         return Object.assign(Object.assign({}, params), parameters);
     };
     function _handleRequest$1(fetcher, method, url, options, parameters, body) {
-        return __awaiter$4(this, void 0, void 0, function* () {
+        return __awaiter$5(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => {
                 fetcher(url, _getRequestParams$1(method, options, parameters, body))
                     .then((result) => {
@@ -3114,27 +3114,27 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         });
     }
     function get(fetcher, url, options, parameters) {
-        return __awaiter$4(this, void 0, void 0, function* () {
+        return __awaiter$5(this, void 0, void 0, function* () {
             return _handleRequest$1(fetcher, 'GET', url, options, parameters);
         });
     }
     function post(fetcher, url, body, options, parameters) {
-        return __awaiter$4(this, void 0, void 0, function* () {
+        return __awaiter$5(this, void 0, void 0, function* () {
             return _handleRequest$1(fetcher, 'POST', url, options, parameters, body);
         });
     }
     function put(fetcher, url, body, options, parameters) {
-        return __awaiter$4(this, void 0, void 0, function* () {
+        return __awaiter$5(this, void 0, void 0, function* () {
             return _handleRequest$1(fetcher, 'PUT', url, options, parameters, body);
         });
     }
     function remove(fetcher, url, body, options, parameters) {
-        return __awaiter$4(this, void 0, void 0, function* () {
+        return __awaiter$5(this, void 0, void 0, function* () {
             return _handleRequest$1(fetcher, 'DELETE', url, options, parameters, body);
         });
     }
 
-    var __awaiter$3 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$4 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -3171,7 +3171,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param fileBody The body of the file to be stored in the bucket.
          */
         uploadOrUpdate(method, path, fileBody, fileOptions) {
-            return __awaiter$3(this, void 0, void 0, function* () {
+            return __awaiter$4(this, void 0, void 0, function* () {
                 try {
                     let body;
                     const options = Object.assign(Object.assign({}, DEFAULT_FILE_OPTIONS), fileOptions);
@@ -3220,7 +3220,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param fileBody The body of the file to be stored in the bucket.
          */
         upload(path, fileBody, fileOptions) {
-            return __awaiter$3(this, void 0, void 0, function* () {
+            return __awaiter$4(this, void 0, void 0, function* () {
                 return this.uploadOrUpdate('POST', path, fileBody, fileOptions);
             });
         }
@@ -3231,7 +3231,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param fileBody The body of the file to be stored in the bucket.
          */
         uploadToSignedUrl(path, token, fileBody, fileOptions) {
-            return __awaiter$3(this, void 0, void 0, function* () {
+            return __awaiter$4(this, void 0, void 0, function* () {
                 const cleanPath = this._removeEmptyFolders(path);
                 const _path = this._getFinalPath(cleanPath);
                 const url = new URL(this.url + `/object/upload/sign/${_path}`);
@@ -3287,7 +3287,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param options.upsert If set to true, allows the file to be overwritten if it already exists.
          */
         createSignedUploadUrl(path, options) {
-            return __awaiter$3(this, void 0, void 0, function* () {
+            return __awaiter$4(this, void 0, void 0, function* () {
                 try {
                     let _path = this._getFinalPath(path);
                     const headers = Object.assign({}, this.headers);
@@ -3317,7 +3317,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param fileBody The body of the file to be stored in the bucket.
          */
         update(path, fileBody, fileOptions) {
-            return __awaiter$3(this, void 0, void 0, function* () {
+            return __awaiter$4(this, void 0, void 0, function* () {
                 return this.uploadOrUpdate('PUT', path, fileBody, fileOptions);
             });
         }
@@ -3329,7 +3329,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param options The destination options.
          */
         move(fromPath, toPath, options) {
-            return __awaiter$3(this, void 0, void 0, function* () {
+            return __awaiter$4(this, void 0, void 0, function* () {
                 try {
                     const data = yield post(this.fetch, `${this.url}/object/move`, {
                         bucketId: this.bucketId,
@@ -3355,7 +3355,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param options The destination options.
          */
         copy(fromPath, toPath, options) {
-            return __awaiter$3(this, void 0, void 0, function* () {
+            return __awaiter$4(this, void 0, void 0, function* () {
                 try {
                     const data = yield post(this.fetch, `${this.url}/object/copy`, {
                         bucketId: this.bucketId,
@@ -3382,7 +3382,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param options.transform Transform the asset before serving it to the client.
          */
         createSignedUrl(path, expiresIn, options) {
-            return __awaiter$3(this, void 0, void 0, function* () {
+            return __awaiter$4(this, void 0, void 0, function* () {
                 try {
                     let _path = this._getFinalPath(path);
                     let data = yield post(this.fetch, `${this.url}/object/sign/${_path}`, Object.assign({ expiresIn }, ((options === null || options === void 0 ? void 0 : options.transform) ? { transform: options.transform } : {})), { headers: this.headers });
@@ -3409,7 +3409,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param options.download triggers the file as a download if set to true. Set this parameter as the name of the file if you want to trigger the download with a different filename.
          */
         createSignedUrls(paths, expiresIn, options) {
-            return __awaiter$3(this, void 0, void 0, function* () {
+            return __awaiter$4(this, void 0, void 0, function* () {
                 try {
                     const data = yield post(this.fetch, `${this.url}/object/sign/${this.bucketId}`, { expiresIn, paths }, { headers: this.headers });
                     const downloadQueryParam = (options === null || options === void 0 ? void 0 : options.download)
@@ -3437,7 +3437,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param options.transform Transform the asset before serving it to the client.
          */
         download(path, options) {
-            return __awaiter$3(this, void 0, void 0, function* () {
+            return __awaiter$4(this, void 0, void 0, function* () {
                 const wantsTransformation = typeof (options === null || options === void 0 ? void 0 : options.transform) !== 'undefined';
                 const renderPath = wantsTransformation ? 'render/image/authenticated' : 'object';
                 const transformationQuery = this.transformOptsToQueryString((options === null || options === void 0 ? void 0 : options.transform) || {});
@@ -3496,7 +3496,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param paths An array of files to delete, including the path and file name. For example [`'folder/image.png'`].
          */
         remove(paths) {
-            return __awaiter$3(this, void 0, void 0, function* () {
+            return __awaiter$4(this, void 0, void 0, function* () {
                 try {
                     const data = yield remove(this.fetch, `${this.url}/object/${this.bucketId}`, { prefixes: paths }, { headers: this.headers });
                     return { data, error: null };
@@ -3573,7 +3573,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param path The folder path.
          */
         list(path, options, parameters) {
-            return __awaiter$3(this, void 0, void 0, function* () {
+            return __awaiter$4(this, void 0, void 0, function* () {
                 try {
                     const body = Object.assign(Object.assign(Object.assign({}, DEFAULT_SEARCH_OPTIONS), options), { prefix: path || '' });
                     const data = yield post(this.fetch, `${this.url}/object/list/${this.bucketId}`, body, { headers: this.headers }, parameters);
@@ -3619,7 +3619,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
 
     const DEFAULT_HEADERS$2 = { 'X-Client-Info': `storage-js/${version$2}` };
 
-    var __awaiter$2 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$3 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -3638,7 +3638,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * Retrieves the details of all Storage buckets within an existing project.
          */
         listBuckets() {
-            return __awaiter$2(this, void 0, void 0, function* () {
+            return __awaiter$3(this, void 0, void 0, function* () {
                 try {
                     const data = yield get(this.fetch, `${this.url}/bucket`, { headers: this.headers });
                     return { data, error: null };
@@ -3657,7 +3657,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param id The unique identifier of the bucket you would like to retrieve.
          */
         getBucket(id) {
-            return __awaiter$2(this, void 0, void 0, function* () {
+            return __awaiter$3(this, void 0, void 0, function* () {
                 try {
                     const data = yield get(this.fetch, `${this.url}/bucket/${id}`, { headers: this.headers });
                     return { data, error: null };
@@ -3686,7 +3686,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         createBucket(id, options = {
             public: false,
         }) {
-            return __awaiter$2(this, void 0, void 0, function* () {
+            return __awaiter$3(this, void 0, void 0, function* () {
                 try {
                     const data = yield post(this.fetch, `${this.url}/bucket`, {
                         id,
@@ -3718,7 +3718,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * Each mime type specified can be a wildcard, e.g. image/*, or a specific mime type, e.g. image/png.
          */
         updateBucket(id, options) {
-            return __awaiter$2(this, void 0, void 0, function* () {
+            return __awaiter$3(this, void 0, void 0, function* () {
                 try {
                     const data = yield put(this.fetch, `${this.url}/bucket/${id}`, {
                         id,
@@ -3743,7 +3743,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param id The unique identifier of the bucket you would like to empty.
          */
         emptyBucket(id) {
-            return __awaiter$2(this, void 0, void 0, function* () {
+            return __awaiter$3(this, void 0, void 0, function* () {
                 try {
                     const data = yield post(this.fetch, `${this.url}/bucket/${id}/empty`, {}, { headers: this.headers });
                     return { data, error: null };
@@ -3763,7 +3763,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param id The unique identifier of the bucket you would like to delete.
          */
         deleteBucket(id) {
-            return __awaiter$2(this, void 0, void 0, function* () {
+            return __awaiter$3(this, void 0, void 0, function* () {
                 try {
                     const data = yield remove(this.fetch, `${this.url}/bucket/${id}`, {}, { headers: this.headers });
                     return { data, error: null };
@@ -3792,7 +3792,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
     }
 
-    const version$1 = '2.44.4';
+    const version$1 = '2.45.1';
 
     let JS_ENV = '';
     // @ts-ignore
@@ -3823,7 +3823,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     };
     const DEFAULT_REALTIME_OPTIONS = {};
 
-    var __awaiter$1 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    var __awaiter$2 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
         function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -3854,7 +3854,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     const fetchWithAuth = (supabaseKey, getAccessToken, customFetch) => {
         const fetch = resolveFetch$1(customFetch);
         const HeadersConstructor = resolveHeadersConstructor();
-        return (input, init) => __awaiter$1(void 0, void 0, void 0, function* () {
+        return (input, init) => __awaiter$2(void 0, void 0, void 0, function* () {
             var _a;
             const accessToken = (_a = (yield getAccessToken())) !== null && _a !== void 0 ? _a : supabaseKey;
             let headers = new HeadersConstructor(init === null || init === void 0 ? void 0 : init.headers);
@@ -3868,18 +3868,36 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         });
     };
 
+    var __awaiter$1 = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    };
     function stripTrailingSlash(url) {
         return url.replace(/\/$/, '');
     }
     function applySettingDefaults(options, defaults) {
         const { db: dbOptions, auth: authOptions, realtime: realtimeOptions, global: globalOptions, } = options;
         const { db: DEFAULT_DB_OPTIONS, auth: DEFAULT_AUTH_OPTIONS, realtime: DEFAULT_REALTIME_OPTIONS, global: DEFAULT_GLOBAL_OPTIONS, } = defaults;
-        return {
+        const result = {
             db: Object.assign(Object.assign({}, DEFAULT_DB_OPTIONS), dbOptions),
             auth: Object.assign(Object.assign({}, DEFAULT_AUTH_OPTIONS), authOptions),
             realtime: Object.assign(Object.assign({}, DEFAULT_REALTIME_OPTIONS), realtimeOptions),
             global: Object.assign(Object.assign({}, DEFAULT_GLOBAL_OPTIONS), globalOptions),
+            accessToken: () => __awaiter$1(this, void 0, void 0, function* () { return ''; }),
         };
+        if (options.accessToken) {
+            result.accessToken = options.accessToken;
+        }
+        else {
+            // hack around Required<>
+            delete result.accessToken;
+        }
+        return result;
     }
 
     const version = '2.64.4';
@@ -6886,7 +6904,17 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             const settings = applySettingDefaults(options !== null && options !== void 0 ? options : {}, DEFAULTS);
             this.storageKey = (_a = settings.auth.storageKey) !== null && _a !== void 0 ? _a : '';
             this.headers = (_b = settings.global.headers) !== null && _b !== void 0 ? _b : {};
-            this.auth = this._initSupabaseAuthClient((_c = settings.auth) !== null && _c !== void 0 ? _c : {}, this.headers, settings.global.fetch);
+            if (!settings.accessToken) {
+                this.auth = this._initSupabaseAuthClient((_c = settings.auth) !== null && _c !== void 0 ? _c : {}, this.headers, settings.global.fetch);
+            }
+            else {
+                this.accessToken = settings.accessToken;
+                this.auth = new Proxy({}, {
+                    get: (_, prop) => {
+                        throw new Error(`@supabase/supabase-js: Supabase Client is configured with the accessToken option, accessing supabase.auth.${String(prop)} is not possible`);
+                    },
+                });
+            }
             this.fetch = fetchWithAuth(supabaseKey, this._getAccessToken.bind(this), settings.global.fetch);
             this.realtime = this._initRealtimeClient(Object.assign({ headers: this.headers }, settings.realtime));
             this.rest = new PostgrestClient(`${_supabaseUrl}/rest/v1`, {
@@ -6894,7 +6922,9 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 schema: settings.db.schema,
                 fetch: this.fetch,
             });
-            this._listenForAuthEvents();
+            if (!settings.accessToken) {
+                this._listenForAuthEvents();
+            }
         }
         /**
          * Supabase Functions allows you to deploy and invoke edge functions.
@@ -6991,11 +7021,14 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         _getAccessToken() {
             var _a, _b;
             return __awaiter(this, void 0, void 0, function* () {
+                if (this.accessToken) {
+                    return yield this.accessToken();
+                }
                 const { data } = yield this.auth.getSession();
                 return (_b = (_a = data.session) === null || _a === void 0 ? void 0 : _a.access_token) !== null && _b !== void 0 ? _b : null;
             });
         }
-        _initSupabaseAuthClient({ autoRefreshToken, persistSession, detectSessionInUrl, storage, storageKey, flowType, debug, }, headers, fetch) {
+        _initSupabaseAuthClient({ autoRefreshToken, persistSession, detectSessionInUrl, storage, storageKey, flowType, lock, debug, }, headers, fetch) {
             var _a;
             const authHeaders = {
                 Authorization: `Bearer ${this.supabaseKey}`,
@@ -7010,6 +7043,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 detectSessionInUrl,
                 storage,
                 flowType,
+                lock,
                 debug,
                 fetch,
                 // auth checks if there is a custom authorizaiton header using this flag

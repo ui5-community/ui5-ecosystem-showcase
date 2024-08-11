@@ -4,6 +4,228 @@ sap.ui.define((function () { 'use strict';
     typeof self !== "undefined" ? self :
     typeof window !== "undefined" ? window : {});
 
+  // shim for using process in browser
+  // based off https://github.com/defunctzombie/node-process/blob/master/browser.js
+
+  function defaultSetTimout() {
+      throw new Error('setTimeout has not been defined');
+  }
+  function defaultClearTimeout () {
+      throw new Error('clearTimeout has not been defined');
+  }
+  var cachedSetTimeout = defaultSetTimout;
+  var cachedClearTimeout = defaultClearTimeout;
+  if (typeof global$1.setTimeout === 'function') {
+      cachedSetTimeout = setTimeout;
+  }
+  if (typeof global$1.clearTimeout === 'function') {
+      cachedClearTimeout = clearTimeout;
+  }
+
+  function runTimeout(fun) {
+      if (cachedSetTimeout === setTimeout) {
+          //normal enviroments in sane situations
+          return setTimeout(fun, 0);
+      }
+      // if setTimeout wasn't available but was latter defined
+      if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+          cachedSetTimeout = setTimeout;
+          return setTimeout(fun, 0);
+      }
+      try {
+          // when when somebody has screwed with setTimeout but no I.E. maddness
+          return cachedSetTimeout(fun, 0);
+      } catch(e){
+          try {
+              // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+              return cachedSetTimeout.call(null, fun, 0);
+          } catch(e){
+              // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+              return cachedSetTimeout.call(this, fun, 0);
+          }
+      }
+
+
+  }
+  function runClearTimeout(marker) {
+      if (cachedClearTimeout === clearTimeout) {
+          //normal enviroments in sane situations
+          return clearTimeout(marker);
+      }
+      // if clearTimeout wasn't available but was latter defined
+      if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+          cachedClearTimeout = clearTimeout;
+          return clearTimeout(marker);
+      }
+      try {
+          // when when somebody has screwed with setTimeout but no I.E. maddness
+          return cachedClearTimeout(marker);
+      } catch (e){
+          try {
+              // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+              return cachedClearTimeout.call(null, marker);
+          } catch (e){
+              // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+              // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+              return cachedClearTimeout.call(this, marker);
+          }
+      }
+
+
+
+  }
+  var queue = [];
+  var draining = false;
+  var currentQueue;
+  var queueIndex = -1;
+
+  function cleanUpNextTick() {
+      if (!draining || !currentQueue) {
+          return;
+      }
+      draining = false;
+      if (currentQueue.length) {
+          queue = currentQueue.concat(queue);
+      } else {
+          queueIndex = -1;
+      }
+      if (queue.length) {
+          drainQueue();
+      }
+  }
+
+  function drainQueue() {
+      if (draining) {
+          return;
+      }
+      var timeout = runTimeout(cleanUpNextTick);
+      draining = true;
+
+      var len = queue.length;
+      while(len) {
+          currentQueue = queue;
+          queue = [];
+          while (++queueIndex < len) {
+              if (currentQueue) {
+                  currentQueue[queueIndex].run();
+              }
+          }
+          queueIndex = -1;
+          len = queue.length;
+      }
+      currentQueue = null;
+      draining = false;
+      runClearTimeout(timeout);
+  }
+  function nextTick(fun) {
+      var args = new Array(arguments.length - 1);
+      if (arguments.length > 1) {
+          for (var i = 1; i < arguments.length; i++) {
+              args[i - 1] = arguments[i];
+          }
+      }
+      queue.push(new Item(fun, args));
+      if (queue.length === 1 && !draining) {
+          runTimeout(drainQueue);
+      }
+  }
+  // v8 likes predictible objects
+  function Item(fun, array) {
+      this.fun = fun;
+      this.array = array;
+  }
+  Item.prototype.run = function () {
+      this.fun.apply(null, this.array);
+  };
+  var title = 'browser';
+  var platform$2 = 'browser';
+  var browser = true;
+  var env = {};
+  var argv = [];
+  var version = ''; // empty string to avoid regexp issues
+  var versions = {};
+  var release = {};
+  var config = {};
+
+  function noop$1() {}
+
+  var on = noop$1;
+  var addListener = noop$1;
+  var once = noop$1;
+  var off = noop$1;
+  var removeListener = noop$1;
+  var removeAllListeners = noop$1;
+  var emit = noop$1;
+
+  function binding(name) {
+      throw new Error('process.binding is not supported');
+  }
+
+  function cwd () { return '/' }
+  function chdir (dir) {
+      throw new Error('process.chdir is not supported');
+  }function umask() { return 0; }
+
+  // from https://github.com/kumavis/browser-process-hrtime/blob/master/index.js
+  var performance = global$1.performance || {};
+  var performanceNow =
+    performance.now        ||
+    performance.mozNow     ||
+    performance.msNow      ||
+    performance.oNow       ||
+    performance.webkitNow  ||
+    function(){ return (new Date()).getTime() };
+
+  // generate timestamp or delta
+  // see http://nodejs.org/api/process.html#process_process_hrtime
+  function hrtime(previousTimestamp){
+    var clocktime = performanceNow.call(performance)*1e-3;
+    var seconds = Math.floor(clocktime);
+    var nanoseconds = Math.floor((clocktime%1)*1e9);
+    if (previousTimestamp) {
+      seconds = seconds - previousTimestamp[0];
+      nanoseconds = nanoseconds - previousTimestamp[1];
+      if (nanoseconds<0) {
+        seconds--;
+        nanoseconds += 1e9;
+      }
+    }
+    return [seconds,nanoseconds]
+  }
+
+  var startTime = new Date();
+  function uptime() {
+    var currentTime = new Date();
+    var dif = currentTime - startTime;
+    return dif / 1000;
+  }
+
+  var browser$1 = {
+    nextTick: nextTick,
+    title: title,
+    browser: browser,
+    env: env,
+    argv: argv,
+    version: version,
+    versions: versions,
+    on: on,
+    addListener: addListener,
+    once: once,
+    off: off,
+    removeListener: removeListener,
+    removeAllListeners: removeAllListeners,
+    emit: emit,
+    binding: binding,
+    cwd: cwd,
+    chdir: chdir,
+    umask: umask,
+    hrtime: hrtime,
+    platform: platform$2,
+    release: release,
+    config: config,
+    uptime: uptime
+  };
+
   var lookup = [];
   var revLookup = [];
   var Arr = typeof Uint8Array !== "undefined" ? Uint8Array : Array;
@@ -2602,6 +2824,36 @@ sap.ui.define((function () { 'use strict';
   const isThenable = (thing) =>
     thing && (isObject(thing) || isFunction(thing)) && isFunction(thing.then) && isFunction(thing.catch);
 
+  // original code
+  // https://github.com/DigitalBrainJS/AxiosPromise/blob/16deab13710ec09779922131f3fa5954320f83ab/lib/utils.js#L11-L34
+
+  const _setImmediate = ((setImmediateSupported, postMessageSupported) => {
+    if (setImmediateSupported) {
+      return setImmediate;
+    }
+
+    return postMessageSupported ? ((token, callbacks) => {
+      _global.addEventListener("message", ({source, data}) => {
+        if (source === _global && data === token) {
+          callbacks.length && callbacks.shift()();
+        }
+      }, false);
+
+      return (cb) => {
+        callbacks.push(cb);
+        _global.postMessage(token, "*");
+      }
+    })(`axios@${Math.random()}`, []) : (cb) => setTimeout(cb);
+  })(
+    typeof setImmediate === 'function',
+    isFunction(_global.postMessage)
+  );
+
+  const asap = typeof queueMicrotask !== 'undefined' ?
+    queueMicrotask.bind(_global) : ( typeof browser$1 !== 'undefined' && browser$1.nextTick || _setImmediate);
+
+  // *********************
+
   var utils$1 = {
     isArray,
     isArrayBuffer,
@@ -2657,7 +2909,9 @@ sap.ui.define((function () { 'use strict';
     isSpecCompliantForm,
     toJSONObject,
     isAsyncFn,
-    isThenable
+    isThenable,
+    setImmediate: _setImmediate,
+    asap
   };
 
   /**
@@ -3968,31 +4222,42 @@ sap.ui.define((function () { 'use strict';
    */
   function throttle(fn, freq) {
     let timestamp = 0;
-    const threshold = 1000 / freq;
-    let timer = null;
-    return function throttled() {
-      const force = this === true;
+    let threshold = 1000 / freq;
+    let lastArgs;
+    let timer;
 
-      const now = Date.now();
-      if (force || now - timestamp > threshold) {
-        if (timer) {
-          clearTimeout(timer);
-          timer = null;
-        }
-        timestamp = now;
-        return fn.apply(null, arguments);
+    const invoke = (args, now = Date.now()) => {
+      timestamp = now;
+      lastArgs = null;
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
       }
-      if (!timer) {
-        timer = setTimeout(() => {
-          timer = null;
-          timestamp = Date.now();
-          return fn.apply(null, arguments);
-        }, threshold - (now - timestamp));
+      fn.apply(null, args);
+    };
+
+    const throttled = (...args) => {
+      const now = Date.now();
+      const passed = now - timestamp;
+      if ( passed >= threshold) {
+        invoke(args, now);
+      } else {
+        lastArgs = args;
+        if (!timer) {
+          timer = setTimeout(() => {
+            timer = null;
+            invoke(lastArgs);
+          }, threshold - passed);
+        }
       }
     };
+
+    const flush = () => lastArgs && invoke(lastArgs);
+
+    return [throttled, flush];
   }
 
-  var progressEventReducer = (listener, isDownloadStream, freq = 3) => {
+  const progressEventReducer = (listener, isDownloadStream, freq = 3) => {
     let bytesNotified = 0;
     const _speedometer = speedometer(50, 250);
 
@@ -4013,14 +4278,25 @@ sap.ui.define((function () { 'use strict';
         rate: rate ? rate : undefined,
         estimated: rate && total && inRange ? (total - loaded) / rate : undefined,
         event: e,
-        lengthComputable: total != null
+        lengthComputable: total != null,
+        [isDownloadStream ? 'download' : 'upload']: true
       };
-
-      data[isDownloadStream ? 'download' : 'upload'] = true;
 
       listener(data);
     }, freq);
   };
+
+  const progressEventDecorator = (total, throttled) => {
+    const lengthComputable = total != null;
+
+    return [(loaded) => throttled[0]({
+      lengthComputable,
+      total,
+      loaded
+    }), throttled[1]];
+  };
+
+  const asyncDecorator = (fn) => (...args) => utils$1.asap(() => fn(...args));
 
   var isURLSameOrigin = platform.hasStandardBrowserEnv ?
 
@@ -4326,16 +4602,18 @@ sap.ui.define((function () { 'use strict';
       const _config = resolveConfig(config);
       let requestData = _config.data;
       const requestHeaders = AxiosHeaders$1.from(_config.headers).normalize();
-      let {responseType} = _config;
+      let {responseType, onUploadProgress, onDownloadProgress} = _config;
       let onCanceled;
-      function done() {
-        if (_config.cancelToken) {
-          _config.cancelToken.unsubscribe(onCanceled);
-        }
+      let uploadThrottled, downloadThrottled;
+      let flushUpload, flushDownload;
 
-        if (_config.signal) {
-          _config.signal.removeEventListener('abort', onCanceled);
-        }
+      function done() {
+        flushUpload && flushUpload(); // flush events
+        flushDownload && flushDownload(); // flush events
+
+        _config.cancelToken && _config.cancelToken.unsubscribe(onCanceled);
+
+        _config.signal && _config.signal.removeEventListener('abort', onCanceled);
       }
 
       let request = new XMLHttpRequest();
@@ -4405,7 +4683,7 @@ sap.ui.define((function () { 'use strict';
           return;
         }
 
-        reject(new AxiosError('Request aborted', AxiosError.ECONNABORTED, _config, request));
+        reject(new AxiosError('Request aborted', AxiosError.ECONNABORTED, config, request));
 
         // Clean up request
         request = null;
@@ -4415,7 +4693,7 @@ sap.ui.define((function () { 'use strict';
       request.onerror = function handleError() {
         // Real errors are hidden from us by the browser
         // onerror should only fire if it's a network error
-        reject(new AxiosError('Network Error', AxiosError.ERR_NETWORK, _config, request));
+        reject(new AxiosError('Network Error', AxiosError.ERR_NETWORK, config, request));
 
         // Clean up request
         request = null;
@@ -4431,7 +4709,7 @@ sap.ui.define((function () { 'use strict';
         reject(new AxiosError(
           timeoutErrorMessage,
           transitional.clarifyTimeoutError ? AxiosError.ETIMEDOUT : AxiosError.ECONNABORTED,
-          _config,
+          config,
           request));
 
         // Clean up request
@@ -4459,13 +4737,18 @@ sap.ui.define((function () { 'use strict';
       }
 
       // Handle progress if needed
-      if (typeof _config.onDownloadProgress === 'function') {
-        request.addEventListener('progress', progressEventReducer(_config.onDownloadProgress, true));
+      if (onDownloadProgress) {
+        ([downloadThrottled, flushDownload] = progressEventReducer(onDownloadProgress, true));
+        request.addEventListener('progress', downloadThrottled);
       }
 
       // Not all browsers support upload events
-      if (typeof _config.onUploadProgress === 'function' && request.upload) {
-        request.upload.addEventListener('progress', progressEventReducer(_config.onUploadProgress));
+      if (onUploadProgress && request.upload) {
+        ([uploadThrottled, flushUpload] = progressEventReducer(onUploadProgress));
+
+        request.upload.addEventListener('progress', uploadThrottled);
+
+        request.upload.addEventListener('loadend', flushUpload);
       }
 
       if (_config.cancelToken || _config.signal) {
@@ -4571,39 +4854,43 @@ sap.ui.define((function () { 'use strict';
     const iterator = readBytes(stream, chunkSize, encode);
 
     let bytes = 0;
+    let done;
+    let _onFinish = (e) => {
+      if (!done) {
+        done = true;
+        onFinish && onFinish(e);
+      }
+    };
 
     return new ReadableStream({
-      type: 'bytes',
-
       async pull(controller) {
-        const {done, value} = await iterator.next();
+        try {
+          const {done, value} = await iterator.next();
 
-        if (done) {
-          controller.close();
-          onFinish();
-          return;
+          if (done) {
+           _onFinish();
+            controller.close();
+            return;
+          }
+
+          let len = value.byteLength;
+          if (onProgress) {
+            let loadedBytes = bytes += len;
+            onProgress(loadedBytes);
+          }
+          controller.enqueue(new Uint8Array(value));
+        } catch (err) {
+          _onFinish(err);
+          throw err;
         }
-
-        let len = value.byteLength;
-        onProgress && onProgress(bytes += len);
-        controller.enqueue(new Uint8Array(value));
       },
       cancel(reason) {
-        onFinish(reason);
+        _onFinish(reason);
         return iterator.return();
       }
     }, {
       highWaterMark: 2
     })
-  };
-
-  const fetchProgressDecorator = (total, fn) => {
-    const lengthComputable = total != null;
-    return (loaded) => setTimeout(() => fn({
-      lengthComputable,
-      total,
-      loaded
-    }));
   };
 
   const isFetchSupported = typeof fetch === 'function' && typeof Request === 'function' && typeof Response === 'function';
@@ -4615,7 +4902,15 @@ sap.ui.define((function () { 'use strict';
       async (str) => new Uint8Array(await new Response(str).arrayBuffer())
   );
 
-  const supportsRequestStream = isReadableStreamSupported && (() => {
+  const test = (fn, ...args) => {
+    try {
+      return !!fn(...args);
+    } catch (e) {
+      return false
+    }
+  };
+
+  const supportsRequestStream = isReadableStreamSupported && test(() => {
     let duplexAccessed = false;
 
     const hasContentType = new Request(platform.origin, {
@@ -4628,17 +4923,13 @@ sap.ui.define((function () { 'use strict';
     }).headers.has('Content-Type');
 
     return duplexAccessed && !hasContentType;
-  })();
+  });
 
   const DEFAULT_CHUNK_SIZE = 64 * 1024;
 
-  const supportsResponseStream = isReadableStreamSupported && !!(()=> {
-    try {
-      return utils$1.isReadableStream(new Response('').body);
-    } catch(err) {
-      // return undefined
-    }
-  })();
+  const supportsResponseStream = isReadableStreamSupported &&
+    test(() => utils$1.isReadableStream(new Response('').body));
+
 
   const resolvers = {
     stream: supportsResponseStream && ((res) => res.body)
@@ -4666,7 +4957,7 @@ sap.ui.define((function () { 'use strict';
       return (await new Request(body).arrayBuffer()).byteLength;
     }
 
-    if(utils$1.isArrayBufferView(body)) {
+    if(utils$1.isArrayBufferView(body) || utils$1.isArrayBuffer(body)) {
       return body.byteLength;
     }
 
@@ -4736,15 +5027,17 @@ sap.ui.define((function () { 'use strict';
         }
 
         if (_request.body) {
-          data = trackStream(_request.body, DEFAULT_CHUNK_SIZE, fetchProgressDecorator(
+          const [onProgress, flush] = progressEventDecorator(
             requestContentLength,
-            progressEventReducer(onUploadProgress)
-          ), null, encodeText);
+            progressEventReducer(asyncDecorator(onUploadProgress))
+          );
+
+          data = trackStream(_request.body, DEFAULT_CHUNK_SIZE, onProgress, flush, encodeText);
         }
       }
 
       if (!utils$1.isString(withCredentials)) {
-        withCredentials = withCredentials ? 'cors' : 'omit';
+        withCredentials = withCredentials ? 'include' : 'omit';
       }
 
       request = new Request(url, {
@@ -4754,7 +5047,7 @@ sap.ui.define((function () { 'use strict';
         headers: headers.normalize().toJSON(),
         body: data,
         duplex: "half",
-        withCredentials
+        credentials: withCredentials
       });
 
       let response = await fetch(request);
@@ -4770,11 +5063,16 @@ sap.ui.define((function () { 'use strict';
 
         const responseContentLength = utils$1.toFiniteNumber(response.headers.get('content-length'));
 
+        const [onProgress, flush] = onDownloadProgress && progressEventDecorator(
+          responseContentLength,
+          progressEventReducer(asyncDecorator(onDownloadProgress), true)
+        ) || [];
+
         response = new Response(
-          trackStream(response.body, DEFAULT_CHUNK_SIZE, onDownloadProgress && fetchProgressDecorator(
-            responseContentLength,
-            progressEventReducer(onDownloadProgress, true)
-          ), isStreamResponse && onFinish, encodeText),
+          trackStream(response.body, DEFAULT_CHUNK_SIZE, onProgress, () => {
+            flush && flush();
+            isStreamResponse && onFinish();
+          }, encodeText),
           options
         );
       }
@@ -4960,7 +5258,7 @@ sap.ui.define((function () { 'use strict';
     });
   }
 
-  const VERSION = "1.7.2";
+  const VERSION = "1.7.3";
 
   const validators$1 = {};
 

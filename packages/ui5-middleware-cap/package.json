@@ -14,9 +14,9 @@
     "ui5-utils-express": "workspace:^"
   },
   "devDependencies": {
-    "@sap/cds": "^6.8.4",
-    "@ui5/cli": "^3.11.0",
-    "express": "^4.19.2"
+    "@sap/cds": "*",
+    "@ui5/cli": "*",
+    "express": "*"
   },
   "peerDependencies": {
     "@sap/cds": ">=6.8.1",
