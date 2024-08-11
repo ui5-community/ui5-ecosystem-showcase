@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.9.7...cds-plugin-ui5@0.9.8) (2024-08-11)
+
+
+### Bug Fixes
+
+* decouple tooling extensions from UI5 tooling version ([#1058](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1058)) ([6694c59](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6694c59422ac37d9aea971679de46f5f59b8025c)), closes [#1054](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1054)
+
+
+
+
+
 ## [0.9.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.9.6...cds-plugin-ui5@0.9.7) (2024-07-23)
 
 

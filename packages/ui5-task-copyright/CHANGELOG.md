@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-copyright@3.0.6...ui5-task-copyright@3.0.7) (2024-08-11)
+
+
+### Bug Fixes
+
+* **ui5-task-copyright:** detect task being the first entry ([#1057](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1057)) ([f982084](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f982084ee43bbcfac5f9cd78b9809925a5ec0a7c)), closes [#1056](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1056)
+
+
+
+
+
 ## [3.0.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-copyright@3.0.5...ui5-task-copyright@3.0.6) (2024-07-22)
 
 **Note:** Version bump only for package ui5-task-copyright
