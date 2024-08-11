@@ -17,7 +17,7 @@ if (!fs.existsSync(ui5YamlPath) || !fs.statSync(ui5YamlPath).isFile()) {
 try {
 	const content = fs.readFileSync(ui5YamlPath, "utf-8");
 	const ui5Configs = yaml.loadAll(content);
-	const notFound = (ui5Configs[0]?.builder?.customTasks?.findIndex((task) => task.name === "ui5-task-copyright") || -1) === -1;
+	const notFound = (ui5Configs[0]?.builder?.customTasks || []).findIndex((task) => task.name === "ui5-task-copyright") === -1;
 	if (notFound) {
 		console.error(`\x1b[31m[ERROR]\x1b[0m ui5-task-copyright is not registered in ${ui5YamlPath}!`);
 		process.exit(1);
