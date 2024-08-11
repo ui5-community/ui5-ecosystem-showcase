@@ -2958,7 +2958,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	}
 
 	const name$p = "@firebase/app";
-	const version$1 = "0.10.7";
+	const version$1 = "0.10.8";
 
 	/**
 	 * @license
@@ -3027,7 +3027,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	const name$1 = "@firebase/firestore-compat";
 
 	const name = "firebase";
-	const version = "10.12.4";
+	const version = "10.12.5";
 
 	/**
 	 * @license
@@ -3363,7 +3363,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	        }
 	        this._refCount = 0;
 	        this.incRefCount(this._serverConfig.releaseOnDeref);
-	        // Do not retain a hard reference to the dref object, otherwise the FinalizationRegisry
+	        // Do not retain a hard reference to the dref object, otherwise the FinalizationRegistry
 	        // will never trigger.
 	        this._serverConfig.releaseOnDeref = undefined;
 	        serverConfig.releaseOnDeref = undefined;

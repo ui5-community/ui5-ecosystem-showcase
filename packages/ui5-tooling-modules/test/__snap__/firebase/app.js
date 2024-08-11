@@ -9,7 +9,7 @@ sap.ui.define(['../index.esm2017'], (function (index_esm2017) { 'use strict';
   	var app = index_esm2017.require$$0;
 
   	var name = "firebase";
-  	var version = "10.12.4";
+  	var version = "10.12.5";
 
   	/**
   	 * @license

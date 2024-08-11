@@ -14,7 +14,6 @@
     "lint": "eslint lib"
   },
   "dependencies": {
-    "@ui5/project": "^3.9.2",
     "dotenv": "^16.4.5",
     "etag": "^1.8.1",
     "fresh": "^0.5.2",
@@ -22,5 +21,11 @@
     "js-yaml": "^4.1.0",
     "node-fetch": "^2.7.0",
     "proxy-from-env": "^1.1.0"
+  },
+  "devDependencies": {
+    "@ui5/project": "*"
+  },
+  "peerDependencies": {
+    "@ui5/project": ">=3.9.2 <5"
   }
 }
