@@ -6,6 +6,6 @@ export interface Options {
 		password?: string;
 		useCertificate: boolean;
 		debug?: boolean;
-		query?: any;
+		query?: unknown;
 	};
 }
