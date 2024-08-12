@@ -5,6 +5,9 @@
 package-lock.json
 yarn.lock
 
+# ignore ui5-tooling-modules cache
+showcases/*/.ui5-tooling-modules
+
 # wdi5 screenshots
 packages/ui5-app/webapp/test/e2e/report/*
 

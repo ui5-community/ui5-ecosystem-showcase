@@ -37171,7 +37171,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	var undici = undici$1;
 	var crypto = require$$6$1;
 
-	const version$1 = "4.6.4";
+	const version$1 = "4.6.5";
 
 	/**
 	 * @license
@@ -37224,7 +37224,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	User.FIRST_PARTY = new User('first-party-uid');
 	User.MOCK_USER = new User('mock-user');
 
-	const version = "10.12.3";
+	const version = "10.12.5";
 
 	/**
 	 * @license
@@ -37447,7 +37447,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	     * The caller does not have permission to execute the specified operation.
 	     * PERMISSION_DENIED must not be used for rejections caused by exhausting
 	     * some resource (use RESOURCE_EXHAUSTED instead for those errors).
-	     * PERMISSION_DENIED must not be used if the caller can not be identified
+	     * PERMISSION_DENIED must not be used if the caller cannot be identified
 	     * (use UNAUTHENTICATED instead for those errors).
 	     */
 	    PERMISSION_DENIED: 'permission-denied',
@@ -38028,7 +38028,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	            if (path.indexOf('//') >= 0) {
 	                throw new FirestoreError(Code.INVALID_ARGUMENT, `Invalid segment (${path}). Paths must not contain // in them.`);
 	            }
-	            // Strip leading and traling slashed.
+	            // Strip leading and trailing slashed.
 	            segments.push(...path.split('/').filter(segment => segment.length > 0));
 	        }
 	        return new ResourcePath(segments);
@@ -38625,7 +38625,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	        case Code.ALREADY_EXISTS:
 	        case Code.PERMISSION_DENIED:
 	        case Code.FAILED_PRECONDITION:
-	        // Aborted might be retried in some scenarios, but that is dependant on
+	        // Aborted might be retried in some scenarios, but that is dependent on
 	        // the context and should handled individually by the calling code.
 	        // See https://cloud.google.com/apis/design/errors.
 	        case Code.ABORTED:
@@ -39317,10 +39317,10 @@ ${pendingInterceptorsFormatter.format(pending)}
 	        // This method returns a string of the form <seconds>.<nanoseconds> where
 	        // <seconds> is translated to have a non-negative value and both <seconds>
 	        // and <nanoseconds> are left-padded with zeroes to be a consistent length.
-	        // Strings with this format then have a lexiographical ordering that matches
+	        // Strings with this format then have a lexicographical ordering that matches
 	        // the expected ordering. The <seconds> translation is done to avoid having
 	        // a leading negative sign (i.e. a leading '-' character) in its string
-	        // representation, which would affect its lexiographical ordering.
+	        // representation, which would affect its lexicographical ordering.
 	        const adjustedSeconds = this.seconds - MIN_SECONDS;
 	        // Note: Up to 12 decimal digits are required to represent all valid
 	        // 'seconds' values.
@@ -44132,7 +44132,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	 * Helper that calls fromDotSeparatedString() but wraps any error thrown.
 	 */
 	function fieldPathFromArgument$1(methodName, path, targetDoc) {
-	    // If required, replace the FieldPath Compat class with with the firestore-exp
+	    // If required, replace the FieldPath Compat class with the firestore-exp
 	    // FieldPath.
 	    path = util.getModularInstance(path);
 	    if (path instanceof FieldPath) {
@@ -45204,7 +45204,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	/**
 	 * Executes the query and returns the results as a {@link QuerySnapshot}.
 	 *
-	 * All queries are executed directly by the server, even if the the query was
+	 * All queries are executed directly by the server, even if the query was
 	 * previously executed. Recent modifications are only reflected in the retrieved
 	 * results if they have already been applied by the backend. If the client is
 	 * offline, the operation fails. To see previously cached result and local
@@ -46202,7 +46202,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	    }
 	    enqueueAfterDelay(timerId, delayMs, op) {
 	        this.verifyNotFailed();
-	        // Fast-forward delays for timerIds that have been overriden.
+	        // Fast-forward delays for timerIds that have been overridden.
 	        if (this.timerIdsToSkip.indexOf(timerId) > -1) {
 	            delayMs = 0;
 	        }
@@ -46255,6 +46255,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	        // Note that draining may generate more delayed ops, so we do that first.
 	        return this.drain().then(() => {
 	            // Run ops in the same order they'd run if they ran naturally.
+	            /* eslint-disable-next-line @typescript-eslint/no-floating-promises */
 	            this.delayedOperations.sort((a, b) => a.targetTimeMs - b.targetTimeMs);
 	            for (const op of this.delayedOperations) {
 	                op.skipDelay();
@@ -46275,6 +46276,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 	    removeDelayedOperation(op) {
 	        // NOTE: indexOf / slice are O(n), but delayedOperations is expected to be small.
 	        const index = this.delayedOperations.indexOf(op);
+	        /* eslint-disable-next-line @typescript-eslint/no-floating-promises */
 	        this.delayedOperations.splice(index, 1);
 	    }
 	}

@@ -4,7 +4,7 @@ sap.ui.define((function () { 'use strict';
 
 	var pdfmake = {exports: {}};
 
-	/*! pdfmake v0.2.10, @license MIT, @link http://pdfmake.org */
+	/*! pdfmake v0.2.11, @license MIT, @link http://pdfmake.org */
 
 	(function (module, exports) {
 		(function webpackUniversalModuleDefinition(root, factory) {
@@ -193,9 +193,9 @@ sap.ui.define((function () { 'use strict';
 		__webpack_require__(57114);
 		__webpack_require__(58281);
 		__webpack_require__(94712);
-		function _createForOfIteratorHelperLoose(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (it) return (it = it.call(o)).next.bind(it); if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike) { if (it) o = it; var i = 0; return function () { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-		function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-		function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+		function _createForOfIteratorHelperLoose(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (t) return (t = t.call(r)).next.bind(t); if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e) { t && (r = t); var o = 0; return function () { return o >= r.length ? { done: !0 } : { done: !1, value: r[o++] }; }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+		function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+		function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 		var _require = __webpack_require__(63787),
 		  NumberT = _require.Number;
 		var utils = __webpack_require__(76949);
@@ -504,8 +504,8 @@ sap.ui.define((function () { 'use strict';
 		__webpack_require__(20731);
 		__webpack_require__(61726);
 		__webpack_require__(46467);
-		function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; _setPrototypeOf(subClass, superClass); }
-		function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+		function _inheritsLoose(t, o) { t.prototype = Object.create(o.prototype), t.prototype.constructor = t, _setPrototypeOf(t, o); }
+		function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
 		var iconv;
 		var stream = __webpack_require__(9760);
 		var DecodeStream = __webpack_require__(78984);
@@ -513,7 +513,6 @@ sap.ui.define((function () { 'use strict';
 		  iconv = __webpack_require__(54171);
 		} catch (error) {}
 		var EncodeStream = /*#__PURE__*/function (_stream$Readable) {
-		  _inheritsLoose(EncodeStream, _stream$Readable);
 		  function EncodeStream(bufferSize) {
 		    var _this;
 		    if (bufferSize === void 0) {
@@ -527,6 +526,7 @@ sap.ui.define((function () { 'use strict';
 		  }
 
 		  // do nothing, required by node
+		  _inheritsLoose(EncodeStream, _stream$Readable);
 		  var _proto = EncodeStream.prototype;
 		  _proto._read = function _read() {};
 		  _proto.ensure = function ensure(bytes) {
@@ -676,8 +676,8 @@ sap.ui.define((function () { 'use strict';
 
 		__webpack_require__(14032);
 		__webpack_require__(68067);
-		function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; _setPrototypeOf(subClass, superClass); }
-		function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+		function _inheritsLoose(t, o) { t.prototype = Object.create(o.prototype), t.prototype.constructor = t, _setPrototypeOf(t, o); }
+		function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
 		var ArrayT = __webpack_require__(38637);
 		var _require = __webpack_require__(63787),
 		  NumberT = _require.Number;
@@ -685,10 +685,10 @@ sap.ui.define((function () { 'use strict';
 		var _require2 = __webpack_require__(7187),
 		  _inspect = _require2.inspect;
 		var LazyArrayT = /*#__PURE__*/function (_ArrayT) {
-		  _inheritsLoose(LazyArrayT, _ArrayT);
 		  function LazyArrayT() {
 		    return _ArrayT.apply(this, arguments) || this;
 		  }
+		  _inheritsLoose(LazyArrayT, _ArrayT);
 		  var _proto = LazyArrayT.prototype;
 		  _proto.decode = function decode(stream, parent) {
 		    var pos = stream.pos;
@@ -761,8 +761,8 @@ sap.ui.define((function () { 'use strict';
 		/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
-		function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; _setPrototypeOf(subClass, superClass); }
-		function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+		function _inheritsLoose(t, o) { t.prototype = Object.create(o.prototype), t.prototype.constructor = t, _setPrototypeOf(t, o); }
+		function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
 		var DecodeStream = __webpack_require__(78984);
 		var NumberT = /*#__PURE__*/function () {
 		  function NumberT(type, endian) {
@@ -808,7 +808,6 @@ sap.ui.define((function () { 'use strict';
 		exports.doublebe = exports.double = new NumberT('Double', 'BE');
 		exports.doublele = new NumberT('Double', 'LE');
 		var Fixed = /*#__PURE__*/function (_NumberT) {
-		  _inheritsLoose(Fixed, _NumberT);
 		  function Fixed(size, endian, fracBits) {
 		    var _this;
 		    if (fracBits === void 0) {
@@ -818,6 +817,7 @@ sap.ui.define((function () { 'use strict';
 		    _this._point = 1 << fracBits;
 		    return _this;
 		  }
+		  _inheritsLoose(Fixed, _NumberT);
 		  var _proto2 = Fixed.prototype;
 		  _proto2.decode = function decode(stream) {
 		    return _NumberT.prototype.decode.call(this, stream) / this._point;
@@ -1296,8 +1296,8 @@ sap.ui.define((function () { 'use strict';
 
 
 		__webpack_require__(14032);
-		function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; _setPrototypeOf(subClass, superClass); }
-		function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+		function _inheritsLoose(t, o) { t.prototype = Object.create(o.prototype), t.prototype.constructor = t, _setPrototypeOf(t, o); }
+		function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
 		var Struct = __webpack_require__(2731);
 		var getPath = function getPath(object, pathArray) {
 		  return pathArray.reduce(function (prevObj, key) {
@@ -1305,7 +1305,6 @@ sap.ui.define((function () { 'use strict';
 		  }, object);
 		};
 		var VersionedStruct = /*#__PURE__*/function (_Struct) {
-		  _inheritsLoose(VersionedStruct, _Struct);
 		  function VersionedStruct(type, versions) {
 		    var _this;
 		    if (versions === void 0) {
@@ -1319,6 +1318,7 @@ sap.ui.define((function () { 'use strict';
 		    }
 		    return _this;
 		  }
+		  _inheritsLoose(VersionedStruct, _Struct);
 		  var _proto = VersionedStruct.prototype;
 		  _proto.decode = function decode(stream, parent, length) {
 		    if (length === void 0) {
@@ -1522,14 +1522,12 @@ sap.ui.define((function () { 'use strict';
 		__webpack_require__(64793);
 		__webpack_require__(74202);
 		__webpack_require__(52529);
-		__webpack_require__(41863);
-		function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
-		function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-		function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : String(i); }
+		function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+		function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+		function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
 		function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return (String )(t); }
-		function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-		function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; _setPrototypeOf(subClass, superClass); }
-		function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+		function _inheritsLoose(t, o) { t.prototype = Object.create(o.prototype), t.prototype.constructor = t, _setPrototypeOf(t, o); }
+		function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
 		var base64 = __webpack_require__(32504);
 		var ieee754 = __webpack_require__(89029);
 		var customInspectSymbol = typeof Symbol === 'function' && typeof Symbol['for'] === 'function' // eslint-disable-line dot-notation
@@ -3016,12 +3014,11 @@ sap.ui.define((function () { 'use strict';
 		var errors = {};
 		function E(sym, getMessage, Base) {
 		  errors[sym] = /*#__PURE__*/function (_Base) {
-		    _inheritsLoose(NodeError, _Base);
 		    function NodeError() {
 		      var _this;
 		      _this = _Base.call(this) || this;
-		      Object.defineProperty(_assertThisInitialized(_this), 'message', {
-		        value: getMessage.apply(_assertThisInitialized(_this), arguments),
+		      Object.defineProperty(_this, 'message', {
+		        value: getMessage.apply(_this, arguments),
 		        writable: true,
 		        configurable: true
 		      });
@@ -3035,11 +3032,12 @@ sap.ui.define((function () { 'use strict';
 		      delete _this.name;
 		      return _this;
 		    }
+		    _inheritsLoose(NodeError, _Base);
 		    var _proto = NodeError.prototype;
 		    _proto.toString = function toString() {
 		      return this.name + " [" + sym + "]: " + this.message;
 		    };
-		    _createClass(NodeError, [{
+		    return _createClass(NodeError, [{
 		      key: "code",
 		      get: function get() {
 		        return sym;
@@ -3053,7 +3051,6 @@ sap.ui.define((function () { 'use strict';
 		        });
 		      }
 		    }]);
-		    return NodeError;
 		  }(Base);
 		}
 		E('ERR_BUFFER_OUT_OF_BOUNDS', function (name) {
@@ -4980,6 +4977,7 @@ sap.ui.define((function () { 'use strict';
 		__webpack_require__(94845);
 		__webpack_require__(20731);
 		__webpack_require__(23913);
+		__webpack_require__(10720);
 		__webpack_require__(14032);
 		__webpack_require__(57114);
 		__webpack_require__(59735);
@@ -10130,6 +10128,8 @@ sap.ui.define((function () { 'use strict';
 		/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 
+		__webpack_require__(65292);
+		__webpack_require__(73844);
 		__webpack_require__(35877);
 		__webpack_require__(38178);
 		__webpack_require__(11765);
@@ -10140,8 +10140,6 @@ sap.ui.define((function () { 'use strict';
 		__webpack_require__(68067);
 		__webpack_require__(57114);
 		__webpack_require__(42437);
-		__webpack_require__(65292);
-		__webpack_require__(73844);
 		__webpack_require__(69330);
 		__webpack_require__(81755);
 		__webpack_require__(20731);
@@ -10150,10 +10148,10 @@ sap.ui.define((function () { 'use strict';
 		__webpack_require__(58281);
 		__webpack_require__(6422);
 		__webpack_require__(94712);
-		function _createForOfIteratorHelperLoose(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (it) return (it = it.call(o)).next.bind(it); if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike) { if (it) o = it; var i = 0; return function () { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-		function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-		function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-		function _regeneratorRuntime() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == typeof h && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw new Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator.return && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(typeof e + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw new Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, catch: function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
+		function _createForOfIteratorHelperLoose(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (t) return (t = t.call(r)).next.bind(t); if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e) { t && (r = t); var o = 0; return function () { return o >= r.length ? { done: !0 } : { done: !1, value: r[o++] }; }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+		function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+		function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+		function _regeneratorRuntime() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == typeof h && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator.return && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(typeof e + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, catch: function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
 		var INITIAL_STATE = 1;
 		var FAIL_STATE = 0;
 		/**
@@ -10296,18 +10294,6 @@ sap.ui.define((function () { 'use strict';
 		var fs = __webpack_require__(48181);
 		var zlib = __webpack_require__(6729);
 		module.exports = /*#__PURE__*/function () {
-		  PNG.decode = function decode(path, fn) {
-		    return fs.readFile(path, function (err, file) {
-		      var png = new PNG(file);
-		      return png.decode(function (pixels) {
-		        return fn(pixels);
-		      });
-		    });
-		  };
-		  PNG.load = function load(path) {
-		    var file = fs.readFileSync(path);
-		    return new PNG(file);
-		  };
 		  function PNG(data) {
 		    var i;
 		    this.data = data;
@@ -10414,6 +10400,18 @@ sap.ui.define((function () { 'use strict';
 		      }
 		    }
 		  }
+		  PNG.decode = function decode(path, fn) {
+		    return fs.readFile(path, function (err, file) {
+		      var png = new PNG(file);
+		      return png.decode(function (pixels) {
+		        return fn(pixels);
+		      });
+		    });
+		  };
+		  PNG.load = function load(path) {
+		    var file = fs.readFileSync(path);
+		    return new PNG(file);
+		  };
 		  var _proto = PNG.prototype;
 		  _proto.read = function read(bytes) {
 		    var result = new Array(bytes);
@@ -10630,6 +10628,7 @@ sap.ui.define((function () { 'use strict';
 
 		__webpack_require__(41584);
 		__webpack_require__(81755);
+		__webpack_require__(10720);
 		__webpack_require__(14032);
 		__webpack_require__(56912);
 		__webpack_require__(73663);
@@ -10727,7 +10726,6 @@ sap.ui.define((function () { 'use strict';
 
 
 		__webpack_require__(65292);
-		__webpack_require__(73844);
 		__webpack_require__(5597);
 		__webpack_require__(49063);
 		__webpack_require__(20731);
@@ -11055,6 +11053,7 @@ sap.ui.define((function () { 'use strict';
 
 		__webpack_require__(81755);
 		__webpack_require__(20731);
+		__webpack_require__(10720);
 		__webpack_require__(14032);
 		__webpack_require__(56912);
 		__webpack_require__(59735);
@@ -11221,6 +11220,7 @@ sap.ui.define((function () { 'use strict';
 
 
 		__webpack_require__(81755);
+		__webpack_require__(10720);
 		__webpack_require__(14032);
 		__webpack_require__(56912);
 		__webpack_require__(59735);
@@ -12235,7 +12235,7 @@ sap.ui.define((function () { 'use strict';
 		      result,
 		      child,
 		      error = false;
-		    var recursive = function recursive() {
+		    var _recursive = function recursive() {
 		      var temp, child;
 		      if (temp = parser.match(/^<([\w:.-]+)\s*/, true)) {
 		        // Opening tag
@@ -12259,7 +12259,7 @@ sap.ui.define((function () { 'use strict';
 		        }
 		        if (parser.match(/^>/)) {
 		          // End of opening tag
-		          while (child = recursive()) {
+		          while (child = _recursive()) {
 		            node.childNodes.push(child);
 		            child.parentNode = node;
 		            node.textContent += child.nodeType === 3 || child.nodeType === 4 ? child.nodeValue : child.textContent;
@@ -12302,7 +12302,7 @@ sap.ui.define((function () { 'use strict';
 		        return new SvgNode('#text', 3, decodeEntities(temp[1]), error);
 		      }
 		    };
-		    while (child = recursive()) {
+		    while (child = _recursive()) {
 		      if (child.nodeType === 1 && !result) {
 		        result = child;
 		      } else if (child.nodeType === 1 || child.nodeType === 3 && child.nodeValue.trim() !== '') {
@@ -12394,7 +12394,7 @@ sap.ui.define((function () { 'use strict';
 		    return ctm;
 		  }
 		  function getPageBBox() {
-		    return new SvgShape().M(0, 0).L(doc.page.width, 0).L(doc.page.width, doc.page.height).L(0, doc.page.height).transform(inverseMatrix(getGlobalMatrix())).getBoundingBox();
+		    return new _SvgShape().M(0, 0).L(doc.page.width, 0).L(doc.page.width, doc.page.height).L(0, doc.page.height).transform(inverseMatrix(getGlobalMatrix())).getBoundingBox();
 		  }
 		  function inverseMatrix(m) {
 		    var dt = m[0] * m[3] - m[1] * m[2];
@@ -12922,7 +12922,7 @@ sap.ui.define((function () { 'use strict';
 		      }
 		    };
 		  };
-		  var SvgShape = function SvgShape() {
+		  var _SvgShape = function SvgShape() {
 		    this.pathCommands = [];
 		    this.pathSegments = [];
 		    this.startPoint = null;
@@ -13188,7 +13188,7 @@ sap.ui.define((function () { 'use strict';
 		      return this;
 		    };
 		    this.clone = function () {
-		      return new SvgShape().mergeShape(this);
+		      return new _SvgShape().mergeShape(this);
 		    };
 		    this.insertInDocument = function () {
 		      for (var i = 0; i < this.pathCommands.length; i++) {
@@ -13212,13 +13212,13 @@ sap.ui.define((function () { 'use strict';
 		    };
 		    this.getSubPaths = function () {
 		      var subPaths = [],
-		        shape = new SvgShape();
+		        shape = new _SvgShape();
 		      for (var i = 0; i < this.pathCommands.length; i++) {
 		        var data = this.pathCommands[i],
 		          command = this.pathCommands[i][0];
 		        if (command === 'move' && i !== 0) {
 		          subPaths.push(shape);
-		          shape = new SvgShape();
+		          shape = new _SvgShape();
 		        }
 		        shape.addCommand(data);
 		      }
@@ -13504,9 +13504,9 @@ sap.ui.define((function () { 'use strict';
 		                if (object == null) {
 		                  result = fallbackColor;
 		                } else if (object.nodeName === 'linearGradient' || object.nodeName === 'radialGradient') {
-		                  result = new SvgElemGradient(object, null, fallbackColor);
+		                  result = new _SvgElemGradient(object, null, fallbackColor);
 		                } else if (object.nodeName === 'pattern') {
-		                  result = new SvgElemPattern(object, null, fallbackColor);
+		                  result = new _SvgElemPattern(object, null, fallbackColor);
 		                } else {
 		                  result = fallbackColor;
 		                }
@@ -13631,7 +13631,7 @@ sap.ui.define((function () { 'use strict';
 		        return DefaultColors.white;
 		      }
 		      if (fill !== 'none' && opacity && fillOpacity) {
-		        if (fill instanceof SvgElemGradient || fill instanceof SvgElemPattern) {
+		        if (fill instanceof _SvgElemGradient || fill instanceof _SvgElemPattern) {
 		          return fill.getPaint(this.getBoundingBox(), fillOpacity * opacity, isClip, isMask);
 		        }
 		        return opacityToColor(fill, fillOpacity * opacity, isMask);
@@ -13645,7 +13645,7 @@ sap.ui.define((function () { 'use strict';
 		        return;
 		      }
 		      if (stroke !== 'none' && opacity && strokeOpacity) {
-		        if (stroke instanceof SvgElemGradient || stroke instanceof SvgElemPattern) {
+		        if (stroke instanceof _SvgElemGradient || stroke instanceof _SvgElemPattern) {
 		          return stroke.getPaint(this.getBoundingBox(), strokeOpacity * opacity, isClip, isMask);
 		        }
 		        return opacityToColor(stroke, strokeOpacity * opacity, isMask);
@@ -13656,7 +13656,7 @@ sap.ui.define((function () { 'use strict';
 		    SvgElemStylable.call(this, obj, inherits);
 		    this.allowedChildren = ['use', 'g', 'a', 'svg', 'image', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon', 'path', 'text'];
 		    this.getBoundingShape = function () {
-		      var shape = new SvgShape(),
+		      var shape = new _SvgShape(),
 		        children = this.getChildren();
 		      for (var i = 0; i < children.length; i++) {
 		        if (children[i].get('display') !== 'none') {
@@ -13801,7 +13801,7 @@ sap.ui.define((function () { 'use strict';
 		    this.drawInDocument = function (isClip, isMask) {
 		      doc.save();
 		      if (this.get('overflow') === 'hidden') {
-		        new SvgShape().M(x, y).L(x + width, y).L(x + width, y + height).L(x, y + height).Z().transform(this.get('transform')).insertInDocument();
+		        new _SvgShape().M(x, y).L(x + width, y).L(x + width, y + height).L(x, y + height).Z().transform(this.get('transform')).insertInDocument();
 		        doc.clip();
 		      }
 		      this.drawContent(isClip, isMask);
@@ -13844,7 +13844,7 @@ sap.ui.define((function () { 'use strict';
 		      return this.get('transform');
 		    };
 		    this.getBoundingShape = function () {
-		      return new SvgShape().M(x, y).L(x + width, y).M(x + width, y + height).L(x, y + height);
+		      return new _SvgShape().M(x, y).L(x + width, y).M(x + width, y + height).L(x, y + height);
 		    };
 		    this.drawInDocument = function (isClip, isMask) {
 		      if (this.get('visibility') === 'hidden' || !image) {
@@ -13869,12 +13869,12 @@ sap.ui.define((function () { 'use strict';
 		      doc.restore();
 		    };
 		  };
-		  var SvgElemPattern = function SvgElemPattern(obj, inherits, fallback) {
+		  var _SvgElemPattern = function SvgElemPattern(obj, inherits, fallback) {
 		    SvgElemHasChildren.call(this, obj, inherits);
 		    this.ref = function () {
 		      var ref = this.getUrl('href') || this.getUrl('xlink:href');
 		      if (ref && ref.nodeName === obj.nodeName) {
-		        return new SvgElemPattern(ref, inherits, fallback);
+		        return new _SvgElemPattern(ref, inherits, fallback);
 		      }
 		    }.call(this);
 		    var _attr = this.attr;
@@ -13941,13 +13941,13 @@ sap.ui.define((function () { 'use strict';
 		      return this.getViewbox('viewBox', [0, 0, 0, height])[3];
 		    };
 		  };
-		  var SvgElemGradient = function SvgElemGradient(obj, inherits, fallback) {
+		  var _SvgElemGradient = function SvgElemGradient(obj, inherits, fallback) {
 		    SvgElem.call(this, obj, inherits);
 		    this.allowedChildren = ['stop'];
 		    this.ref = function () {
 		      var ref = this.getUrl('href') || this.getUrl('xlink:href');
 		      if (ref && ref.nodeName === obj.nodeName) {
-		        return new SvgElemGradient(ref, inherits, fallback);
+		        return new _SvgElemGradient(ref, inherits, fallback);
 		      }
 		    }.call(this);
 		    var _attr = this.attr;
@@ -14197,12 +14197,12 @@ sap.ui.define((function () { 'use strict';
 		      if (rx && ry) {
 		        rx = Math.min(rx, 0.5 * w);
 		        ry = Math.min(ry, 0.5 * h);
-		        this.shape = new SvgShape().M(x + rx, y).L(x + w - rx, y).A(rx, ry, 0, 0, 1, x + w, y + ry).L(x + w, y + h - ry).A(rx, ry, 0, 0, 1, x + w - rx, y + h).L(x + rx, y + h).A(rx, ry, 0, 0, 1, x, y + h - ry).L(x, y + ry).A(rx, ry, 0, 0, 1, x + rx, y).Z();
+		        this.shape = new _SvgShape().M(x + rx, y).L(x + w - rx, y).A(rx, ry, 0, 0, 1, x + w, y + ry).L(x + w, y + h - ry).A(rx, ry, 0, 0, 1, x + w - rx, y + h).L(x + rx, y + h).A(rx, ry, 0, 0, 1, x, y + h - ry).L(x, y + ry).A(rx, ry, 0, 0, 1, x + rx, y).Z();
 		      } else {
-		        this.shape = new SvgShape().M(x, y).L(x + w, y).L(x + w, y + h).L(x, y + h).Z();
+		        this.shape = new _SvgShape().M(x, y).L(x + w, y).L(x + w, y + h).L(x, y + h).Z();
 		      }
 		    } else {
-		      this.shape = new SvgShape();
+		      this.shape = new _SvgShape();
 		    }
 		  };
 		  var SvgElemCircle = function SvgElemCircle(obj, inherits) {
@@ -14211,9 +14211,9 @@ sap.ui.define((function () { 'use strict';
 		      cy = this.getLength('cy', this.getVHeight(), 0),
 		      r = this.getLength('r', this.getViewport(), 0);
 		    if (r > 0) {
-		      this.shape = new SvgShape().M(cx + r, cy).A(r, r, 0, 0, 1, cx - r, cy).A(r, r, 0, 0, 1, cx + r, cy).Z();
+		      this.shape = new _SvgShape().M(cx + r, cy).A(r, r, 0, 0, 1, cx - r, cy).A(r, r, 0, 0, 1, cx + r, cy).Z();
 		    } else {
-		      this.shape = new SvgShape();
+		      this.shape = new _SvgShape();
 		    }
 		  };
 		  var SvgElemEllipse = function SvgElemEllipse(obj, inherits) {
@@ -14223,9 +14223,9 @@ sap.ui.define((function () { 'use strict';
 		      rx = this.getLength('rx', this.getVWidth(), 0),
 		      ry = this.getLength('ry', this.getVHeight(), 0);
 		    if (rx > 0 && ry > 0) {
-		      this.shape = new SvgShape().M(cx + rx, cy).A(rx, ry, 0, 0, 1, cx - rx, cy).A(rx, ry, 0, 0, 1, cx + rx, cy).Z();
+		      this.shape = new _SvgShape().M(cx + rx, cy).A(rx, ry, 0, 0, 1, cx - rx, cy).A(rx, ry, 0, 0, 1, cx + rx, cy).Z();
 		    } else {
-		      this.shape = new SvgShape();
+		      this.shape = new _SvgShape();
 		    }
 		  };
 		  var SvgElemLine = function SvgElemLine(obj, inherits) {
@@ -14234,12 +14234,12 @@ sap.ui.define((function () { 'use strict';
 		      y1 = this.getLength('y1', this.getVHeight(), 0),
 		      x2 = this.getLength('x2', this.getVWidth(), 0),
 		      y2 = this.getLength('y2', this.getVHeight(), 0);
-		    this.shape = new SvgShape().M(x1, y1).L(x2, y2);
+		    this.shape = new _SvgShape().M(x1, y1).L(x2, y2);
 		  };
 		  var SvgElemPolyline = function SvgElemPolyline(obj, inherits) {
 		    SvgElemBasicShape.call(this, obj, inherits);
 		    var points = this.getNumberList('points');
-		    this.shape = new SvgShape();
+		    this.shape = new _SvgShape();
 		    for (var i = 0; i < points.length - 1; i += 2) {
 		      if (i === 0) {
 		        this.shape.M(points[i], points[i + 1]);
@@ -14257,7 +14257,7 @@ sap.ui.define((function () { 'use strict';
 		  var SvgElemPolygon = function SvgElemPolygon(obj, inherits) {
 		    SvgElemBasicShape.call(this, obj, inherits);
 		    var points = this.getNumberList('points');
-		    this.shape = new SvgShape();
+		    this.shape = new _SvgShape();
 		    for (var i = 0; i < points.length - 1; i += 2) {
 		      if (i === 0) {
 		        this.shape.M(points[i], points[i + 1]);
@@ -14275,7 +14275,7 @@ sap.ui.define((function () { 'use strict';
 		  };
 		  var SvgElemPath = function SvgElemPath(obj, inherits) {
 		    SvgElemBasicShape.call(this, obj, inherits);
-		    this.shape = new SvgShape().path(this.attr('d'));
+		    this.shape = new _SvgShape().path(this.attr('d'));
 		    var pathLength = this.getLength('pathLength', this.getViewport());
 		    this.pathLength = pathLength > 0 ? pathLength : undefined;
 		    this.dashScale = this.pathLength !== undefined ? this.shape.totalLength / this.pathLength : 1;
@@ -14367,7 +14367,7 @@ sap.ui.define((function () { 'use strict';
 		    this.allowedChildren = ['tspan', '#text', '#cdata-section', 'a'];
 		    this.isText = true;
 		    this.getBoundingShape = function () {
-		      var shape = new SvgShape();
+		      var shape = new _SvgShape();
 		      for (var i = 0; i < this._pos.length; i++) {
 		        var pos = this._pos[i];
 		        if (!pos.hidden) {
@@ -14469,7 +14469,7 @@ sap.ui.define((function () { 'use strict';
 		            dy1 = -(linePosition - lineWidth / 2) * Math.cos(pos[j].rotate),
 		            dx2 = pos[j].width * Math.cos(pos[j].rotate),
 		            dy2 = pos[j].width * Math.sin(pos[j].rotate);
-		          new SvgShape().M(pos[j].x + dx0, pos[j].y + dy0).L(pos[j].x + dx0 + dx2, pos[j].y + dy0 + dy2).L(pos[j].x + dx1 + dx2, pos[j].y + dy1 + dy2).L(pos[j].x + dx1, pos[j].y + dy1).Z().insertInDocument();
+		          new _SvgShape().M(pos[j].x + dx0, pos[j].y + dy0).L(pos[j].x + dx0 + dx2, pos[j].y + dy0 + dy2).L(pos[j].x + dx1 + dx2, pos[j].y + dy1 + dy2).L(pos[j].x + dx1, pos[j].y + dy1).Z().insertInDocument();
 		          if (fill && stroke) {
 		            doc.fillAndStroke();
 		          } else if (fill) {
@@ -14493,7 +14493,7 @@ sap.ui.define((function () { 'use strict';
 		    var temp;
 		    if ((temp = this.attr('path')) && temp.trim() !== '') {
 		      var _pathLength = this.getLength('pathLength', this.getViewport());
-		      this.pathObject = new SvgShape().path(temp);
+		      this.pathObject = new _SvgShape().path(temp);
 		      this.pathLength = _pathLength > 0 ? _pathLength : this.pathObject.totalLength;
 		      this.pathScale = this.pathObject.totalLength / this.pathLength;
 		    } else if ((temp = this.getUrl('href') || this.getUrl('xlink:href')) && temp.nodeName === 'path') {
@@ -14924,7 +14924,7 @@ sap.ui.define((function () { 'use strict';
 
 		/***/ }),
 
-		/***/ 48585:
+		/***/ 21408:
 		/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 		var __dirname = "/";
 		/* provided dependency */ var Buffer = __webpack_require__(50621)["Buffer"];
@@ -14949,7 +14949,6 @@ sap.ui.define((function () { 'use strict';
 		__webpack_require__(45337);
 		__webpack_require__(10720);
 		__webpack_require__(24863);
-		__webpack_require__(7283);
 		__webpack_require__(70095);
 		__webpack_require__(10849);
 		__webpack_require__(18756);
@@ -15005,7 +15004,7 @@ sap.ui.define((function () { 'use strict';
 		var _events = __webpack_require__(64785);
 		var _linebreak = _interopRequireDefault(__webpack_require__(19304));
 		var _pngJs = _interopRequireDefault(__webpack_require__(80646));
-		function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+		function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 		var fs = __webpack_require__(48181);
 		function _classCallCheck(instance, Constructor) {
 		  if (!(instance instanceof Constructor)) {
@@ -35142,23 +35141,6 @@ sap.ui.define((function () { 'use strict';
 
 		/***/ }),
 
-		/***/ 41863:
-		/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
-
-		var $ = __webpack_require__(56475);
-		var call = __webpack_require__(2834);
-
-		// `URL.prototype.toJSON` method
-		// https://url.spec.whatwg.org/#dom-url-tojson
-		$({ target: 'URL', proto: true, enumerable: true }, {
-		  toJSON: function toJSON() {
-		    return call(URL.prototype.toString, this);
-		  }
-		});
-
-
-		/***/ }),
-
 		/***/ 90780:
 		/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
@@ -46770,6 +46752,12 @@ sap.ui.define((function () { 'use strict';
 		      parser.ns = Object.create(rootNS);
 		    }
 
+		    // disallow unquoted attribute values if not otherwise configured
+		    // and strict mode is true
+		    if (parser.opt.unquotedAttributeValues === undefined) {
+		      parser.opt.unquotedAttributeValues = !strict;
+		    }
+
 		    // mostly just for error reporting
 		    parser.trackPosition = parser.opt.position !== false;
 		    if (parser.trackPosition) {
@@ -47787,15 +47775,22 @@ sap.ui.define((function () { 'use strict';
 		          continue
 
 		        case S.SGML_DECL:
-		          if ((parser.sgmlDecl + c).toUpperCase() === CDATA) {
+		          if (parser.sgmlDecl + c === '--') {
+		            parser.state = S.COMMENT;
+		            parser.comment = '';
+		            parser.sgmlDecl = '';
+		            continue;
+		          }
+
+		          if (parser.doctype && parser.doctype !== true && parser.sgmlDecl) {
+		            parser.state = S.DOCTYPE_DTD;
+		            parser.doctype += '<!' + parser.sgmlDecl + c;
+		            parser.sgmlDecl = '';
+		          } else if ((parser.sgmlDecl + c).toUpperCase() === CDATA) {
 		            emitNode(parser, 'onopencdata');
 		            parser.state = S.CDATA;
 		            parser.sgmlDecl = '';
 		            parser.cdata = '';
-		          } else if (parser.sgmlDecl + c === '--') {
-		            parser.state = S.COMMENT;
-		            parser.comment = '';
-		            parser.sgmlDecl = '';
 		          } else if ((parser.sgmlDecl + c).toUpperCase() === DOCTYPE) {
 		            parser.state = S.DOCTYPE;
 		            if (parser.doctype || parser.sawRoot) {
@@ -47849,12 +47844,18 @@ sap.ui.define((function () { 'use strict';
 		          continue
 
 		        case S.DOCTYPE_DTD:
-		          parser.doctype += c;
 		          if (c === ']') {
+		            parser.doctype += c;
 		            parser.state = S.DOCTYPE;
+		          } else if (c === '<') {
+		            parser.state = S.OPEN_WAKA;
+		            parser.startTagPosition = parser.position;
 		          } else if (isQuote(c)) {
+		            parser.doctype += c;
 		            parser.state = S.DOCTYPE_DTD_QUOTED;
 		            parser.q = c;
+		          } else {
+		            parser.doctype += c;
 		          }
 		          continue
 
@@ -47895,6 +47896,8 @@ sap.ui.define((function () { 'use strict';
 		            // which is a comment of " blah -- bloo "
 		            parser.comment += '--' + c;
 		            parser.state = S.COMMENT;
+		          } else if (parser.doctype && parser.doctype !== true) {
+		            parser.state = S.DOCTYPE_DTD;
 		          } else {
 		            parser.state = S.TEXT;
 		          }
@@ -48062,7 +48065,9 @@ sap.ui.define((function () { 'use strict';
 		            parser.q = c;
 		            parser.state = S.ATTRIB_VALUE_QUOTED;
 		          } else {
-		            strictFail(parser, 'Unquoted attribute value');
+		            if (!parser.opt.unquotedAttributeValues) {
+		              error(parser, 'Unquoted attribute value');
+		            }
 		            parser.state = S.ATTRIB_VALUE_UNQUOTED;
 		            parser.attribValue = c;
 		          }
@@ -48180,13 +48185,13 @@ sap.ui.define((function () { 'use strict';
 		          }
 
 		          if (c === ';') {
-		            if (parser.opt.unparsedEntities) {
-		              var parsedEntity = parseEntity(parser);
+		            var parsedEntity = parseEntity(parser);
+		            if (parser.opt.unparsedEntities && !Object.values(sax.XML_ENTITIES).includes(parsedEntity)) {
 		              parser.entity = '';
 		              parser.state = returnState;
 		              parser.write(parsedEntity);
 		            } else {
-		              parser[buffer] += parseEntity(parser);
+		              parser[buffer] += parsedEntity;
 		              parser.entity = '';
 		              parser.state = returnState;
 		            }
@@ -48285,9 +48290,7 @@ sap.ui.define((function () { 'use strict';
 		var $TypeError = __webpack_require__(96785);
 		var $floor = GetIntrinsic('%Math.floor%');
 
-		/** @typedef {(...args: unknown[]) => unknown} Func */
-
-		/** @type {<T extends Func = Func>(fn: T, length: number, loose?: boolean) => T} */
+		/** @type {import('.')} */
 		module.exports = function setFunctionLength(fn, length) {
 			if (typeof fn !== 'function') {
 				throw new $TypeError('`fn` is not a function');
@@ -53016,6 +53019,7 @@ sap.ui.define((function () { 'use strict';
 		var callBound = __webpack_require__(67913);
 		var gOPD = __webpack_require__(68109);
 
+		/** @type {(O: object) => string} */
 		var $toString = callBound('Object.prototype.toString');
 		var hasToStringTag = __webpack_require__(26626)();
 
@@ -53025,7 +53029,8 @@ sap.ui.define((function () { 'use strict';
 		var $slice = callBound('String.prototype.slice');
 		var getPrototypeOf = Object.getPrototypeOf; // require('getprototypeof');
 
-		var $indexOf = callBound('Array.prototype.indexOf', true) || /** @type {(array: readonly unknown[], value: unknown) => keyof array} */ function indexOf(array, value) {
+		/** @type {<T = unknown>(array: readonly T[], value: unknown) => number} */
+		var $indexOf = callBound('Array.prototype.indexOf', true) || function indexOf(array, value) {
 			for (var i = 0; i < array.length; i += 1) {
 				if (array[i] === value) {
 					return i;
@@ -53034,9 +53039,8 @@ sap.ui.define((function () { 'use strict';
 			return -1;
 		};
 
-		/** @typedef {Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array | Uint32Array | Float32Array | Float64Array | BigInt64Array | BigUint64Array} TypedArray */
-		/** @typedef {'Int8Array' | 'Uint8Array' | 'Uint8ClampedArray' | 'Int16Array' | 'Uint16Array' | 'Int32Array' | 'Uint32Array' | 'Float32Array' | 'Float64Array' | 'BigInt64Array' | 'BigUint64Array'} TypedArrayName */
-		/** @type {{ [k in `\$${TypedArrayName}`]?: (receiver: TypedArray) => string | typeof Uint8Array.prototype.slice.call | typeof Uint8Array.prototype.set.call } & { __proto__: null }} */
+		/** @typedef {(receiver: import('.').TypedArray) => string | typeof Uint8Array.prototype.slice.call | typeof Uint8Array.prototype.set.call} Getter */
+		/** @type {{ [k in `\$${import('.').TypedArrayName}`]?: Getter } & { __proto__: null }} */
 		var cache = { __proto__: null };
 		if (hasToStringTag && gOPD && getPrototypeOf) {
 			forEach(typedArrays, function (typedArray) {
@@ -53065,13 +53069,14 @@ sap.ui.define((function () { 'use strict';
 			});
 		}
 
-		/** @type {import('.')} */
+		/** @type {(value: object) => false | import('.').TypedArrayName} */
 		var tryTypedArrays = function tryAllTypedArrays(value) {
-			/** @type {ReturnType<tryAllTypedArrays>} */ var found = false;
+			/** @type {ReturnType<typeof tryAllTypedArrays>} */ var found = false;
 			forEach(
 				// eslint-disable-next-line no-extra-parens
-				/** @type {Record<`\$${TypedArrayName}`, typeof cache>} */ /** @type {any} */ (cache),
-				/** @type {(getter: typeof cache, name: `\$${TypedArrayName}`) => void} */ function (getter, typedArray) {
+				/** @type {Record<`\$${TypedArrayName}`, Getter>} */ /** @type {any} */ (cache),
+				/** @type {(getter: Getter, name: `\$${import('.').TypedArrayName}`) => void} */
+				function (getter, typedArray) {
 					if (!found) {
 						try {
 						// @ts-expect-error TODO: fix
@@ -53085,16 +53090,16 @@ sap.ui.define((function () { 'use strict';
 			return found;
 		};
 
-		/** @type {import('.')} */
+		/** @type {(value: object) => false | import('.').TypedArrayName} */
 		var trySlices = function tryAllSlices(value) {
-			/** @type {ReturnType<tryAllSlices>} */ var found = false;
+			/** @type {ReturnType<typeof tryAllSlices>} */ var found = false;
 			forEach(
 				// eslint-disable-next-line no-extra-parens
-				/** @type {any} */ (cache),
-				/** @type {(getter: typeof cache, name: `\$${TypedArrayName}`) => void} */ function (getter, name) {
+				/** @type {Record<`\$${TypedArrayName}`, Getter>} */ /** @type {any} */ (cache),
+				/** @type {(getter: typeof cache, name: `\$${import('.').TypedArrayName}`) => void} */ function (getter, name) {
 					if (!found) {
 						try {
-						// @ts-expect-error TODO: fix
+							// @ts-expect-error TODO: fix
 							getter(value);
 							found = $slice(name, 1);
 						} catch (e) { /**/ }
@@ -53108,6 +53113,7 @@ sap.ui.define((function () { 'use strict';
 		module.exports = function whichTypedArray(value) {
 			if (!value || typeof value !== 'object') { return false; }
 			if (!hasToStringTag) {
+				/** @type {string} */
 				var tag = $slice($toString(value), 8, -1);
 				if ($indexOf(typedArrays, tag) > -1) {
 					return tag;
@@ -53663,7 +53669,7 @@ sap.ui.define((function () { 'use strict';
 		var isFunction = (__webpack_require__(91867).isFunction);
 		var isUndefined = (__webpack_require__(91867).isUndefined);
 		(__webpack_require__(91867).isNull);
-		var FileSaver = __webpack_require__(44134);
+		var FileSaver = __webpack_require__(12615);
 		var saveAs = FileSaver.saveAs;
 
 		var defaultClientFonts = {
@@ -54060,7 +54066,7 @@ sap.ui.define((function () { 'use strict';
 
 		var isString = (__webpack_require__(91867).isString);
 
-		function buildColumnWidths(columns, availableWidth) {
+		function buildColumnWidths(columns, availableWidth, offsetTotal = 0, tableNode) {
 			var autoColumns = [],
 				autoMin = 0, autoMax = 0,
 				starColumns = [],
@@ -54083,10 +54089,31 @@ sap.ui.define((function () { 'use strict';
 				}
 			});
 
-			fixedColumns.forEach(function (col) {
+			fixedColumns.forEach(function (col, colIndex) {
 				// width specified as %
 				if (isString(col.width) && /\d+%/.test(col.width)) {
-					col.width = parseFloat(col.width) * initial_availableWidth / 100;
+					// In tables we have to take into consideration the reserved width for paddings and borders
+					var reservedWidth = 0;
+					if (tableNode) {
+						var paddingLeft = tableNode._layout.paddingLeft(colIndex, tableNode);
+						var paddingRight = tableNode._layout.paddingRight(colIndex, tableNode);
+						var borderLeft = tableNode._layout.vLineWidth(colIndex, tableNode);
+						var borderRight = tableNode._layout.vLineWidth(colIndex + 1, tableNode);
+						if (colIndex === 0) {
+							// first column assumes whole borderLeft and half of border right
+							reservedWidth = paddingLeft + paddingRight + borderLeft + (borderRight / 2);
+
+						} else if (colIndex === fixedColumns.length - 1) {
+							// last column assumes whole borderRight and half of border left
+							reservedWidth = paddingLeft + paddingRight + (borderLeft / 2) + borderRight;
+
+						} else {
+							// Columns in the middle assume half of each border
+							reservedWidth = paddingLeft + paddingRight + (borderLeft / 2) + (borderRight / 2);
+						}
+					}
+					var totalAvailableWidth = initial_availableWidth + offsetTotal;
+					col.width = (parseFloat(col.width) * totalAvailableWidth / 100) - reservedWidth;
 				}
 				if (col.width < (col._minWidth) && col.elasticWidth) {
 					col._calcWidth = col._minWidth;
@@ -54709,16 +54736,16 @@ sap.ui.define((function () { 'use strict';
 					if (item.listMarker._inlines) {
 						node._gapSize.width = Math.max(node._gapSize.width, item.listMarker._inlines[0].width);
 					}
-				}  // TODO: else - nested lists numbering
+
+					if (node.reversed) {
+						counter--;
+					} else {
+						counter++;
+					}
+				}
 
 				node._minWidth = Math.max(node._minWidth, items[i]._minWidth);
 				node._maxWidth = Math.max(node._maxWidth, items[i]._maxWidth);
-
-				if (node.reversed) {
-					counter--;
-				} else {
-					counter++;
-				}
 			}
 
 			node._minWidth += node._gapSize.width;
@@ -55297,8 +55324,6 @@ sap.ui.define((function () { 'use strict';
 
 			this.snapshots = [];
 
-			this.endingCell = null;
-
 			this.tracker = new TraversalTracker();
 
 			this.backgroundLength = [];
@@ -55320,7 +55345,6 @@ sap.ui.define((function () { 'use strict';
 					availableWidth: this.availableWidth,
 					page: this.page
 				},
-				endingCell: this.endingCell,
 				lastColumnWidth: this.lastColumnWidth
 			});
 
@@ -55330,9 +55354,8 @@ sap.ui.define((function () { 'use strict';
 		DocumentContext.prototype.beginColumn = function (width, offset, endingCell) {
 			var saved = this.snapshots[this.snapshots.length - 1];
 
-			this.calculateBottomMost(saved);
+			this.calculateBottomMost(saved, endingCell);
 
-			this.endingCell = endingCell;
 			this.page = saved.page;
 			this.x = this.x + this.lastColumnWidth + (offset || 0);
 			this.y = saved.y;
@@ -55342,10 +55365,9 @@ sap.ui.define((function () { 'use strict';
 			this.lastColumnWidth = width;
 		};
 
-		DocumentContext.prototype.calculateBottomMost = function (destContext) {
-			if (this.endingCell) {
-				this.saveContextInEndingCell(this.endingCell);
-				this.endingCell = null;
+		DocumentContext.prototype.calculateBottomMost = function (destContext, endingCell) {
+			if (endingCell) {
+				this.saveContextInEndingCell(endingCell);
 			} else {
 				destContext.bottomMost = bottomMostContext(this, destContext.bottomMost);
 			}
@@ -55371,12 +55393,11 @@ sap.ui.define((function () { 'use strict';
 			};
 		};
 
-		DocumentContext.prototype.completeColumnGroup = function (height) {
+		DocumentContext.prototype.completeColumnGroup = function (height, endingCell) {
 			var saved = this.snapshots.pop();
 
-			this.calculateBottomMost(saved);
+			this.calculateBottomMost(saved, endingCell);
 
-			this.endingCell = null;
 			this.x = saved.x;
 
 			var y = saved.bottomMost.y;
@@ -55453,7 +55474,6 @@ sap.ui.define((function () { 'use strict';
 				availableHeight: this.availableHeight,
 				availableWidth: this.availableWidth,
 				page: this.page,
-				endingCell: this.endingCell,
 				lastColumnWidth: this.lastColumnWidth
 			});
 		};
@@ -55466,7 +55486,6 @@ sap.ui.define((function () { 'use strict';
 			this.availableWidth = saved.availableWidth;
 			this.availableHeight = saved.availableHeight;
 			this.page = saved.page;
-			this.endingCell = saved.endingCell;
 			this.lastColumnWidth = saved.lastColumnWidth;
 		};
 
@@ -56032,6 +56051,17 @@ sap.ui.define((function () { 'use strict';
 			return variable === undefined;
 		}
 
+		/**
+		 * @param {any} variable
+		 * @returns {boolean}
+		 */
+		function isPositiveInteger(variable) {
+			if (!isNumber(variable) || !Number.isInteger(variable) || variable <= 0) {
+					return false;
+			}
+			return true;
+		}
+
 		function pack() {
 			var result = {};
 
@@ -56117,6 +56147,7 @@ sap.ui.define((function () { 'use strict';
 			isObject: isObject,
 			isNull: isNull,
 			isUndefined: isUndefined,
+			isPositiveInteger: isPositiveInteger,
 			pack: pack,
 			fontStringify: fontStringify,
 			offsetVector: offsetVector,
@@ -56701,6 +56732,21 @@ sap.ui.define((function () { 'use strict';
 			}
 		};
 
+		LayoutBuilder.prototype.findStartingSpanCell = function (arr, i) {
+			let requiredColspan = 1;
+			for (let index = i - 1; index >= 0; index--) {
+					if (!arr[index]._span) {
+						if (arr[index].rowSpan > 1 && (arr[index].colSpan || 1) === requiredColspan) {
+							return arr[index];
+						} else {
+							return null;
+						}
+					}
+					requiredColspan++;
+			}
+			return null;
+		};
+
 		LayoutBuilder.prototype.processRow = function (columns, widths, gaps, tableBody, tableRow, height) {
 			var self = this;
 			var pageBreaks = [], positions = [];
@@ -56721,17 +56767,52 @@ sap.ui.define((function () { 'use strict';
 						}
 					}
 
-					self.writer.context().beginColumn(width, leftOffset, getEndingCell(column, i));
+					// if rowspan starts in this cell, we retrieve the last cell affected by the rowspan
+					var endingCell = getEndingCell(column, i);
+					if (endingCell) {
+						// We store a reference of the ending cell in the first cell of the rowspan
+						column._endingCell = endingCell;
+					}
+
+					// Check if exists and retrieve the cell that started the rowspan in case we are in the cell just after
+					var startingSpanCell = self.findStartingSpanCell(columns, i);
+					var endingSpanCell = null;
+					if (startingSpanCell && startingSpanCell._endingCell) {
+						// Reference to the last cell of the rowspan
+						endingSpanCell = startingSpanCell._endingCell;
+					}
+
+					// We pass the endingSpanCell reference to store the context just after processing rowspan cell
+					self.writer.context().beginColumn(width, leftOffset, endingSpanCell);
 					if (!column._span) {
 						self.processNode(column);
 						addAll(positions, column.positions);
 					} else if (column._columnEndingContext) {
 						// row-span ending
+						// Recover the context after processing the rowspanned cell
 						self.writer.context().markEnding(column);
 					}
 				}
 
-				self.writer.context().completeColumnGroup(height);
+				// Check if last cell is part of a span
+				var endingSpanCell = null;
+				var lastColumn = columns.length > 0 ? columns[columns.length - 1] : null;
+				if (lastColumn) {
+					// Previous column cell has a rowspan
+					if (lastColumn._endingCell) {
+						endingSpanCell = lastColumn._endingCell;
+					// Previous column cell is part of a span
+					} else if (lastColumn._span === true) {
+						// We get the cell that started the span where we set a reference to the ending cell
+						var startingSpanCell = self.findStartingSpanCell(columns, columns.length);
+						if (startingSpanCell) {
+							// Context will be stored here (ending cell)
+							endingSpanCell = startingSpanCell._endingCell;
+						}
+					}
+				}
+
+				self.writer.context().completeColumnGroup(height, endingSpanCell);
 			});
 
 			return { pageBreaks: pageBreaks, positions: positions };
@@ -57284,7 +57365,7 @@ sap.ui.define((function () { 'use strict';
 			return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex;
 		}
 
-		var PdfKit = _interopDefault(__webpack_require__(48585));
+		var PdfKit = _interopDefault(__webpack_require__(21408));
 
 		function getEngineInstance() {
 			return PdfKit;
@@ -58963,50 +59044,9 @@ sap.ui.define((function () { 'use strict';
 				this.push(styleNames[i]);
 			}
 
-			var styleProperties = [
-				'font',
-				'fontSize',
-				'fontFeatures',
-				'bold',
-				'italics',
-				'alignment',
-				'color',
-				'columnGap',
-				'fillColor',
-				'fillOpacity',
-				'decoration',
-				'decorationStyle',
-				'decorationColor',
-				'background',
-				'lineHeight',
-				'characterSpacing',
-				'noWrap',
-				'markerColor',
-				'leadingIndent',
-				'sup',
-				'sub'
-				//'tableCellPadding'
-				// 'cellBorder',
-				// 'headerCellBorder',
-				// 'oddRowCellBorder',
-				// 'evenRowCellBorder',
-				// 'tableBorder'
-			];
-			var styleOverrideObject = {};
-			var pushStyleOverrideObject = false;
-
-			styleProperties.forEach(function (key) {
-				if (!isUndefined(item[key]) && !isNull(item[key])) {
-					styleOverrideObject[key] = item[key];
-					pushStyleOverrideObject = true;
-				}
-			});
-
-			if (pushStyleOverrideObject) {
-				this.push(styleOverrideObject);
-			}
-
-			return styleNames.length + (pushStyleOverrideObject ? 1 : 0);
+			// rather than spend significant time making a styleOverrideObject, just add item
+			this.push(item);
+			return styleNames.length + 1;
 		};
 
 		/**
@@ -59143,6 +59183,7 @@ sap.ui.define((function () { 'use strict';
 		var ColumnCalculator = __webpack_require__(77530);
 		var isFunction = (__webpack_require__(91867).isFunction);
 		var isNumber = (__webpack_require__(91867).isNumber);
+		var isPositiveInteger = (__webpack_require__(91867).isPositiveInteger);
 
 		function TableProcessor(tableNode) {
 			this.tableNode = tableNode;
@@ -59158,18 +59199,34 @@ sap.ui.define((function () { 'use strict';
 			this.layout = tableNode._layout;
 
 			availableWidth = writer.context().availableWidth - this.offsets.total;
-			ColumnCalculator.buildColumnWidths(tableNode.table.widths, availableWidth);
+			ColumnCalculator.buildColumnWidths(tableNode.table.widths, availableWidth, this.offsets.total, tableNode);
 
 			this.tableWidth = tableNode._offsets.total + getTableInnerContentWidth();
 			this.rowSpanData = prepareRowSpanData();
 			this.cleanUpRepeatables = false;
 
-			this.headerRows = tableNode.table.headerRows || 0;
-			if (this.headerRows > tableNode.table.body.length) {
-				throw new Error(`Too few rows in the table. Property headerRows requires at least ${this.headerRows}, contains only ${tableNode.table.body.length}`);
+			// headersRows and rowsWithoutPageBreak (headerRows + keepWithHeaderRows)
+			this.headerRows = 0;
+			this.rowsWithoutPageBreak = 0;
+
+			var headerRows = tableNode.table.headerRows;
+
+			if (isPositiveInteger(headerRows)) {
+				this.headerRows = headerRows;
+
+				if (this.headerRows > tableNode.table.body.length) {
+					throw new Error(`Too few rows in the table. Property headerRows requires at least ${this.headerRows}, contains only ${tableNode.table.body.length}`);
+				}
+
+				this.rowsWithoutPageBreak = this.headerRows;
+
+				const keepWithHeaderRows = tableNode.table.keepWithHeaderRows;
+
+				if (isPositiveInteger(keepWithHeaderRows)) {
+						this.rowsWithoutPageBreak += keepWithHeaderRows;
+				}
 			}
 
-			this.rowsWithoutPageBreak = this.headerRows + (tableNode.table.keepWithHeaderRows || 0);
 			this.dontBreakRows = tableNode.table.dontBreakRows || false;
 
 			if (this.rowsWithoutPageBreak) {
@@ -60302,7 +60359,7 @@ sap.ui.define((function () { 'use strict';
 
 		/***/ }),
 
-		/***/ 44134:
+		/***/ 12615:
 		/***/ (function(module, exports, __webpack_require__) {
 
 		var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function(a,b){!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (b),
@@ -60333,6 +60390,7 @@ sap.ui.define((function () { 'use strict';
 		__webpack_require__(20731);
 		__webpack_require__(45337);
 		__webpack_require__(23913);
+		__webpack_require__(10720);
 		__webpack_require__(24863);
 		__webpack_require__(18828);
 		__webpack_require__(7283);
@@ -60380,15 +60438,15 @@ sap.ui.define((function () { 'use strict';
 		__webpack_require__(42437);
 		__webpack_require__(94712);
 		var _;
-		function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
-		function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-		function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : String(i); }
+		function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+		function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+		function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
 		function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return (String )(t); }
-		function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; _setPrototypeOf(subClass, superClass); }
-		function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-		function _createForOfIteratorHelperLoose(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (it) return (it = it.call(o)).next.bind(it); if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike) { if (it) o = it; var i = 0; return function () { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-		function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-		function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+		function _inheritsLoose(t, o) { t.prototype = Object.create(o.prototype), t.prototype.constructor = t, _setPrototypeOf(t, o); }
+		function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
+		function _createForOfIteratorHelperLoose(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (t) return (t = t.call(r)).next.bind(t); if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e) { t && (r = t); var o = 0; return function () { return o >= r.length ? { done: !0 } : { done: !1, value: r[o++] }; }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+		function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+		function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 		function _interopDefault(ex) {
 		  return ex && typeof ex === 'object' && 'default' in ex ? ex['default'] : ex;
 		}
@@ -61818,7 +61876,6 @@ sap.ui.define((function () { 'use strict';
 		  return CFFDict;
 		}();
 		var CFFPointer = /*#__PURE__*/function (_r$Pointer) {
-		  _inheritsLoose(CFFPointer, _r$Pointer);
 		  function CFFPointer(type, options) {
 		    if (options === void 0) {
 		      options = {};
@@ -61828,6 +61885,7 @@ sap.ui.define((function () { 'use strict';
 		    }
 		    return _r$Pointer.call(this, null, type, options) || this;
 		  }
+		  _inheritsLoose(CFFPointer, _r$Pointer);
 		  var _proto3 = CFFPointer.prototype;
 		  _proto3.decode = function decode(stream, parent, operands) {
 		    this.offsetType = {
@@ -62200,10 +62258,10 @@ sap.ui.define((function () { 'use strict';
 		  return PredefinedOp;
 		}();
 		var CFFEncodingVersion = /*#__PURE__*/function (_r$Number) {
-		  _inheritsLoose(CFFEncodingVersion, _r$Number);
 		  function CFFEncodingVersion() {
 		    return _r$Number.call(this, 'UInt8') || this;
 		  }
+		  _inheritsLoose(CFFEncodingVersion, _r$Number);
 		  var _proto6 = CFFEncodingVersion.prototype;
 		  _proto6.decode = function decode(stream) {
 		    return r.uint8.decode(stream) & 0x7f;
@@ -62233,10 +62291,10 @@ sap.ui.define((function () { 'use strict';
 		})); // Decodes an array of ranges until the total
 		// length is equal to the provided length.
 		var RangeArray = /*#__PURE__*/function (_r$Array) {
-		  _inheritsLoose(RangeArray, _r$Array);
 		  function RangeArray() {
 		    return _r$Array.apply(this, arguments) || this;
 		  }
+		  _inheritsLoose(RangeArray, _r$Array);
 		  var _proto7 = RangeArray.prototype;
 		  _proto7.decode = function decode(stream, parent) {
 		    var length = utils.resolveLength(this.length, stream, parent);
@@ -62451,7 +62509,7 @@ sap.ui.define((function () { 'use strict';
 		    }
 		    return this.topDict.FDArray[0].Private;
 		  };
-		  _createClass(CFFFont, [{
+		  return _createClass(CFFFont, [{
 		    key: "postscriptName",
 		    get: function get() {
 		      if (this.version < 2) {
@@ -62470,7 +62528,6 @@ sap.ui.define((function () { 'use strict';
 		      return this.string(this.topDict.FamilyName);
 		    }
 		  }]);
-		  return CFFFont;
 		}();
 		var VerticalOrigin = new r.Struct({
 		  glyphIndex: r.uint16,
@@ -63519,10 +63576,10 @@ sap.ui.define((function () { 'use strict';
 		  return UnboundedArrayAccessor;
 		}();
 		var UnboundedArray = /*#__PURE__*/function (_r$Array2) {
-		  _inheritsLoose(UnboundedArray, _r$Array2);
 		  function UnboundedArray(type) {
 		    return _r$Array2.call(this, type, 0) || this;
 		  }
+		  _inheritsLoose(UnboundedArray, _r$Array2);
 		  var _proto13 = UnboundedArray.prototype;
 		  _proto13.decode = function decode(stream, parent) {
 		    return new UnboundedArrayAccessor(this.type, stream, parent);
@@ -64712,7 +64769,7 @@ sap.ui.define((function () { 'use strict';
 		  _proto18.copy = function copy() {
 		    return new BBox(this.minX, this.minY, this.maxX, this.maxY);
 		  };
-		  _createClass(BBox, [{
+		  return _createClass(BBox, [{
 		    key: "width",
 		    get: function get() {
 		      return this.maxX - this.minX;
@@ -64727,7 +64784,6 @@ sap.ui.define((function () { 'use strict';
 		      return this.maxY - this.minY;
 		    }
 		  }]);
-		  return BBox;
 		}(); // Data from http://www.microsoft.com/typography/otspec/scripttags.htm
 		// and http://www.unicode.org/Public/UNIDATA/PropertyValueAliases.txt.
 		var UNICODE_SCRIPTS = {
@@ -65023,7 +65079,7 @@ sap.ui.define((function () { 'use strict';
 		   * The total advance width of the run.
 		   * @type {number}
 		   */
-		  _createClass(GlyphRun, [{
+		  return _createClass(GlyphRun, [{
 		    key: "advanceWidth",
 		    get: function get() {
 		      var width = 0;
@@ -65069,7 +65125,6 @@ sap.ui.define((function () { 'use strict';
 		      return bbox;
 		    }
 		  }]);
-		  return GlyphRun;
 		}();
 		/**
 		 * Represents positioning information for a glyph in a GlyphRun.
@@ -66502,10 +66557,10 @@ sap.ui.define((function () { 'use strict';
 		 * https://github.com/behdad/harfbuzz/blob/master/src/hb-ot-shape-complex-arabic.cc
 		 */
 		var ArabicShaper = /*#__PURE__*/function (_DefaultShaper) {
-		  _inheritsLoose(ArabicShaper, _DefaultShaper);
 		  function ArabicShaper() {
 		    return _DefaultShaper.apply(this, arguments) || this;
 		  }
+		  _inheritsLoose(ArabicShaper, _DefaultShaper);
 		  ArabicShaper.planFeatures = function planFeatures(plan) {
 		    plan.add(['ccmp', 'locl']);
 		    for (var i = 0; i < FEATURES.length; i++) {
@@ -66628,13 +66683,12 @@ sap.ui.define((function () { 'use strict';
 		    }
 		    return this.glyphs[this.index];
 		  };
-		  _createClass(GlyphIterator, [{
+		  return _createClass(GlyphIterator, [{
 		    key: "cur",
 		    get: function get() {
 		      return this.glyphs[this.index] || null;
 		    }
 		  }]);
-		  return GlyphIterator;
 		}();
 		var DEFAULT_SCRIPTS = ['DFLT', 'dflt', 'latn'];
 		var OTProcessor = /*#__PURE__*/function () {
@@ -67039,7 +67093,7 @@ sap.ui.define((function () { 'use strict';
 		  _proto26.copy = function copy() {
 		    return new GlyphInfo(this._font, this.id, this.codePoints, this.features);
 		  };
-		  _createClass(GlyphInfo, [{
+		  return _createClass(GlyphInfo, [{
 		    key: "id",
 		    get: function get() {
 		      return this._id;
@@ -67063,7 +67117,6 @@ sap.ui.define((function () { 'use strict';
 		      }
 		    }
 		  }]);
-		  return GlyphInfo;
 		}();
 		/**
 		 * This is a shaper for the Hangul script, used by the Korean language.
@@ -67088,10 +67141,10 @@ sap.ui.define((function () { 'use strict';
 		 *   - http://ktug.org/~nomos/harfbuzz-hangul/hangulshaper.pdf
 		 */
 		var HangulShaper = /*#__PURE__*/function (_DefaultShaper2) {
-		  _inheritsLoose(HangulShaper, _DefaultShaper2);
 		  function HangulShaper() {
 		    return _DefaultShaper2.apply(this, arguments) || this;
 		  }
+		  _inheritsLoose(HangulShaper, _DefaultShaper2);
 		  HangulShaper.planFeatures = function planFeatures(plan) {
 		    plan.add(['ljmo', 'vjmo', 'tjmo'], false);
 		  };
@@ -67586,10 +67639,10 @@ sap.ui.define((function () { 'use strict';
 		 * Based on code from Harfbuzz: https://github.com/behdad/harfbuzz/blob/master/src/hb-ot-shape-complex-indic.cc
 		 */
 		var IndicShaper = /*#__PURE__*/function (_DefaultShaper3) {
-		  _inheritsLoose(IndicShaper, _DefaultShaper3);
 		  function IndicShaper() {
 		    return _DefaultShaper3.apply(this, arguments) || this;
 		  }
+		  _inheritsLoose(IndicShaper, _DefaultShaper3);
 		  IndicShaper.planFeatures = function planFeatures(plan) {
 		    plan.addStage(setupSyllables);
 		    plan.addStage(['locl', 'ccmp']);
@@ -68365,10 +68418,10 @@ sap.ui.define((function () { 'use strict';
 		 * See https://www.microsoft.com/typography/OpenTypeDev/USE/intro.htm.
 		 */
 		var UniversalShaper = /*#__PURE__*/function (_DefaultShaper4) {
-		  _inheritsLoose(UniversalShaper, _DefaultShaper4);
 		  function UniversalShaper() {
 		    return _DefaultShaper4.apply(this, arguments) || this;
 		  }
+		  _inheritsLoose(UniversalShaper, _DefaultShaper4);
 		  UniversalShaper.planFeatures = function planFeatures(plan) {
 		    plan.addStage(setupSyllables$1); // Default glyph pre-processing group
 
@@ -68681,10 +68734,10 @@ sap.ui.define((function () { 'use strict';
 		  return DefaultShaper;
 		}
 		var GSUBProcessor = /*#__PURE__*/function (_OTProcessor) {
-		  _inheritsLoose(GSUBProcessor, _OTProcessor);
 		  function GSUBProcessor() {
 		    return _OTProcessor.apply(this, arguments) || this;
 		  }
+		  _inheritsLoose(GSUBProcessor, _OTProcessor);
 		  var _proto27 = GSUBProcessor.prototype;
 		  _proto27.applyLookup = function applyLookup(lookupType, table) {
 		    var _this7 = this;
@@ -68865,10 +68918,10 @@ sap.ui.define((function () { 'use strict';
 		  return GSUBProcessor;
 		}(OTProcessor);
 		var GPOSProcessor = /*#__PURE__*/function (_OTProcessor2) {
-		  _inheritsLoose(GPOSProcessor, _OTProcessor2);
 		  function GPOSProcessor() {
 		    return _OTProcessor2.apply(this, arguments) || this;
 		  }
+		  _inheritsLoose(GPOSProcessor, _OTProcessor2);
 		  var _proto28 = GPOSProcessor.prototype;
 		  _proto28.applyPositionValue = function applyPositionValue(sequenceIndex, value) {
 		    var position = this.positions[this.glyphIterator.peekIndex(sequenceIndex)];
@@ -69543,7 +69596,7 @@ sap.ui.define((function () { 'use strict';
 		    }
 		    return this.transform(scaleX, 0, 0, scaleY, 0, 0);
 		  };
-		  _createClass(Path, [{
+		  return _createClass(Path, [{
 		    key: "cbox",
 		    get: function get() {
 		      if (!this._cbox) {
@@ -69664,7 +69717,6 @@ sap.ui.define((function () { 'use strict';
 		      return this._bbox = Object.freeze(bbox);
 		    }
 		  }]);
-		  return Path;
 		}();
 		var _loop = function _loop(command) {
 		  Path.prototype[command] = function () {
@@ -69833,7 +69885,7 @@ sap.ui.define((function () { 'use strict';
 		    ctx.fill();
 		    ctx.restore();
 		  };
-		  _createClass(Glyph, [{
+		  return _createClass(Glyph, [{
 		    key: "cbox",
 		    get: function get() {
 		      return this._getCBox();
@@ -69882,7 +69934,6 @@ sap.ui.define((function () { 'use strict';
 		      return this._getName();
 		    }
 		  }]);
-		  return Glyph;
 		}(), (_applyDecoratedDescriptor(_class$3.prototype, "cbox", [cache], Object.getOwnPropertyDescriptor(_class$3.prototype, "cbox"), _class$3.prototype), _applyDecoratedDescriptor(_class$3.prototype, "bbox", [cache], Object.getOwnPropertyDescriptor(_class$3.prototype, "bbox"), _class$3.prototype), _applyDecoratedDescriptor(_class$3.prototype, "path", [cache], Object.getOwnPropertyDescriptor(_class$3.prototype, "path"), _class$3.prototype), _applyDecoratedDescriptor(_class$3.prototype, "advanceWidth", [cache], Object.getOwnPropertyDescriptor(_class$3.prototype, "advanceWidth"), _class$3.prototype), _applyDecoratedDescriptor(_class$3.prototype, "advanceHeight", [cache], Object.getOwnPropertyDescriptor(_class$3.prototype, "advanceHeight"), _class$3.prototype), _applyDecoratedDescriptor(_class$3.prototype, "name", [cache], Object.getOwnPropertyDescriptor(_class$3.prototype, "name"), _class$3.prototype)), _class$3);
 		var GlyfHeader = new r.Struct({
 		  numberOfContours: r.int16,
@@ -69937,10 +69988,10 @@ sap.ui.define((function () { 'use strict';
 		 * Represents a TrueType glyph.
 		 */
 		var TTFGlyph = /*#__PURE__*/function (_Glyph) {
-		  _inheritsLoose(TTFGlyph, _Glyph);
 		  function TTFGlyph() {
 		    return _Glyph.apply(this, arguments) || this;
 		  }
+		  _inheritsLoose(TTFGlyph, _Glyph);
 		  var _proto34 = TTFGlyph.prototype;
 		  // Parses just the glyph header and returns the bounding box
 		  _proto34._getCBox = function _getCBox(internal) {
@@ -70213,10 +70264,10 @@ sap.ui.define((function () { 'use strict';
 		 * Represents an OpenType PostScript glyph, in the Compact Font Format.
 		 */
 		var CFFGlyph = /*#__PURE__*/function (_Glyph2) {
-		  _inheritsLoose(CFFGlyph, _Glyph2);
 		  function CFFGlyph() {
 		    return _Glyph2.apply(this, arguments) || this;
 		  }
+		  _inheritsLoose(CFFGlyph, _Glyph2);
 		  var _proto35 = CFFGlyph.prototype;
 		  _proto35._getName = function _getName() {
 		    if (this._font.CFF2) {
@@ -70278,7 +70329,7 @@ sap.ui.define((function () { 'use strict';
 		      path.moveTo(x, y);
 		      open = true;
 		    }
-		    var parse = function parse() {
+		    var _parse = function parse() {
 		      while (stream.pos < end) {
 		        var op = stream.readUInt8();
 		        if (op < 32) {
@@ -70346,7 +70397,7 @@ sap.ui.define((function () { 'use strict';
 		                var e = end;
 		                stream.pos = subr.offset;
 		                end = subr.offset + subr.length;
-		                parse();
+		                _parse();
 		                stream.pos = p;
 		                end = e;
 		              }
@@ -70503,7 +70554,7 @@ sap.ui.define((function () { 'use strict';
 		                var e = end;
 		                stream.pos = subr.offset;
 		                end = subr.offset + subr.length;
-		                parse();
+		                _parse();
 		                stream.pos = p;
 		                end = e;
 		              }
@@ -70763,7 +70814,7 @@ sap.ui.define((function () { 'use strict';
 		        }
 		      }
 		    };
-		    parse();
+		    _parse();
 		    if (open) {
 		      path.closePath();
 		    }
@@ -70783,10 +70834,10 @@ sap.ui.define((function () { 'use strict';
 		 * Represents a color (e.g. emoji) glyph in Apple's SBIX format.
 		 */
 		var SBIXGlyph = /*#__PURE__*/function (_TTFGlyph) {
-		  _inheritsLoose(SBIXGlyph, _TTFGlyph);
 		  function SBIXGlyph() {
 		    return _TTFGlyph.apply(this, arguments) || this;
 		  }
+		  _inheritsLoose(SBIXGlyph, _TTFGlyph);
 		  var _proto36 = SBIXGlyph.prototype;
 		  /**
 		   * Returns an object representing a glyph image at the given point size.
@@ -70840,10 +70891,10 @@ sap.ui.define((function () { 'use strict';
 		 * of which  is another vector glyph.
 		 */
 		var COLRGlyph = /*#__PURE__*/function (_Glyph3) {
-		  _inheritsLoose(COLRGlyph, _Glyph3);
 		  function COLRGlyph() {
 		    return _Glyph3.apply(this, arguments) || this;
 		  }
+		  _inheritsLoose(COLRGlyph, _Glyph3);
 		  var _proto37 = COLRGlyph.prototype;
 		  _proto37._getBBox = function _getBBox() {
 		    var bbox = new BBox();
@@ -70870,7 +70921,7 @@ sap.ui.define((function () { 'use strict';
 		    }
 		    return;
 		  };
-		  _createClass(COLRGlyph, [{
+		  return _createClass(COLRGlyph, [{
 		    key: "layers",
 		    get: function get() {
 		      var cpal = this._font.CPAL;
@@ -70912,7 +70963,6 @@ sap.ui.define((function () { 'use strict';
 		      return layers;
 		    }
 		  }]);
-		  return COLRGlyph;
 		}(Glyph);
 		var TUPLES_SHARE_POINT_NUMBERS = 0x8000;
 		var TUPLE_COUNT_MASK = 0x0fff;
@@ -71493,13 +71543,13 @@ sap.ui.define((function () { 'use strict';
 		  return TTFGlyphEncoder;
 		}();
 		var TTFSubset = /*#__PURE__*/function (_Subset) {
-		  _inheritsLoose(TTFSubset, _Subset);
 		  function TTFSubset(font) {
 		    var _this12;
 		    _this12 = _Subset.call(this, font) || this;
 		    _this12.glyphEncoder = new TTFGlyphEncoder();
 		    return _this12;
 		  }
+		  _inheritsLoose(TTFSubset, _Subset);
 		  var _proto41 = TTFSubset.prototype;
 		  _proto41._addGlyph = function _addGlyph(gid) {
 		    var glyph = this.font.getGlyph(gid);
@@ -71603,7 +71653,6 @@ sap.ui.define((function () { 'use strict';
 		  return TTFSubset;
 		}(Subset);
 		var CFFSubset = /*#__PURE__*/function (_Subset2) {
-		  _inheritsLoose(CFFSubset, _Subset2);
 		  function CFFSubset(font) {
 		    var _this13;
 		    _this13 = _Subset2.call(this, font) || this;
@@ -71613,6 +71662,7 @@ sap.ui.define((function () { 'use strict';
 		    }
 		    return _this13;
 		  }
+		  _inheritsLoose(CFFSubset, _Subset2);
 		  var _proto42 = CFFSubset.prototype;
 		  _proto42.subsetCharstrings = function subsetCharstrings() {
 		    this.charstrings = [];
@@ -71765,10 +71815,6 @@ sap.ui.define((function () { 'use strict';
 		 */
 
 		var TTFFont = (_class$4 = /*#__PURE__*/function () {
-		  TTFFont.probe = function probe(buffer) {
-		    var format = buffer.toString('ascii', 0, 4);
-		    return format === 'true' || format === 'OTTO' || format === String.fromCharCode(0, 1, 0, 0);
-		  };
 		  function TTFFont(stream, variationCoords) {
 		    if (variationCoords === void 0) {
 		      variationCoords = null;
@@ -71790,6 +71836,10 @@ sap.ui.define((function () { 'use strict';
 		      }
 		    }
 		  }
+		  TTFFont.probe = function probe(buffer) {
+		    var format = buffer.toString('ascii', 0, 4);
+		    return format === 'true' || format === 'OTTO' || format === String.fromCharCode(0, 1, 0, 0);
+		  };
 		  var _proto43 = TTFFont.prototype;
 		  _proto43.setDefaultLanguage = function setDefaultLanguage(lang) {
 		    if (lang === void 0) {
@@ -72037,7 +72087,7 @@ sap.ui.define((function () { 'use strict';
 		  _proto43.getFont = function getFont(name) {
 		    return this.getVariation(name);
 		  };
-		  _createClass(TTFFont, [{
+		  return _createClass(TTFFont, [{
 		    key: "postscriptName",
 		    get: function get() {
 		      return this.getName('postscriptName');
@@ -72276,7 +72326,6 @@ sap.ui.define((function () { 'use strict';
 		      return new GlyphVariationProcessor(this, variationCoords);
 		    }
 		  }]);
-		  return TTFFont;
 		}(), (_applyDecoratedDescriptor(_class$4.prototype, "bbox", [cache], Object.getOwnPropertyDescriptor(_class$4.prototype, "bbox"), _class$4.prototype), _applyDecoratedDescriptor(_class$4.prototype, "_cmapProcessor", [cache], Object.getOwnPropertyDescriptor(_class$4.prototype, "_cmapProcessor"), _class$4.prototype), _applyDecoratedDescriptor(_class$4.prototype, "characterSet", [cache], Object.getOwnPropertyDescriptor(_class$4.prototype, "characterSet"), _class$4.prototype), _applyDecoratedDescriptor(_class$4.prototype, "_layoutEngine", [cache], Object.getOwnPropertyDescriptor(_class$4.prototype, "_layoutEngine"), _class$4.prototype), _applyDecoratedDescriptor(_class$4.prototype, "variationAxes", [cache], Object.getOwnPropertyDescriptor(_class$4.prototype, "variationAxes"), _class$4.prototype), _applyDecoratedDescriptor(_class$4.prototype, "namedVariations", [cache], Object.getOwnPropertyDescriptor(_class$4.prototype, "namedVariations"), _class$4.prototype), _applyDecoratedDescriptor(_class$4.prototype, "_variationProcessor", [cache], Object.getOwnPropertyDescriptor(_class$4.prototype, "_variationProcessor"), _class$4.prototype)), _class$4);
 		var WOFFDirectoryEntry = new r.Struct({
 		  tag: new r.String(4),
@@ -72313,10 +72362,10 @@ sap.ui.define((function () { 'use strict';
 		  this.tables = tables;
 		};
 		var WOFFFont = /*#__PURE__*/function (_TTFFont) {
-		  _inheritsLoose(WOFFFont, _TTFFont);
 		  function WOFFFont() {
 		    return _TTFFont.apply(this, arguments) || this;
 		  }
+		  _inheritsLoose(WOFFFont, _TTFFont);
 		  WOFFFont.probe = function probe(buffer) {
 		    return buffer.toString('ascii', 0, 4) === 'wOFF';
 		  };
@@ -72348,10 +72397,10 @@ sap.ui.define((function () { 'use strict';
 		 * Represents a TrueType glyph in the WOFF2 format, which compresses glyphs differently.
 		 */
 		var WOFF2Glyph = /*#__PURE__*/function (_TTFGlyph2) {
-		  _inheritsLoose(WOFF2Glyph, _TTFGlyph2);
 		  function WOFF2Glyph() {
 		    return _TTFGlyph2.apply(this, arguments) || this;
 		  }
+		  _inheritsLoose(WOFF2Glyph, _TTFGlyph2);
 		  var _proto45 = WOFF2Glyph.prototype;
 		  _proto45._decode = function _decode() {
 		    // We have to decode in advance (in WOFF2Font), so just return the pre-decoded data.
@@ -72433,10 +72482,10 @@ sap.ui.define((function () { 'use strict';
 		 * See spec here: http://www.w3.org/TR/WOFF2/
 		 */
 		var WOFF2Font = /*#__PURE__*/function (_TTFFont2) {
-		  _inheritsLoose(WOFF2Font, _TTFFont2);
 		  function WOFF2Font() {
 		    return _TTFFont2.apply(this, arguments) || this;
 		  }
+		  _inheritsLoose(WOFF2Font, _TTFFont2);
 		  WOFF2Font.probe = function probe(buffer) {
 		    return buffer.toString('ascii', 0, 4) === 'wOF2';
 		  };
@@ -72627,9 +72676,6 @@ sap.ui.define((function () { 'use strict';
 		  }
 		});
 		var TrueTypeCollection = /*#__PURE__*/function () {
-		  TrueTypeCollection.probe = function probe(buffer) {
-		    return buffer.toString('ascii', 0, 4) === 'ttcf';
-		  };
 		  function TrueTypeCollection(stream) {
 		    this.stream = stream;
 		    if (stream.readString(4) !== 'ttcf') {
@@ -72637,6 +72683,9 @@ sap.ui.define((function () { 'use strict';
 		    }
 		    this.header = TTCHeader.decode(stream);
 		  }
+		  TrueTypeCollection.probe = function probe(buffer) {
+		    return buffer.toString('ascii', 0, 4) === 'ttcf';
+		  };
 		  var _proto48 = TrueTypeCollection.prototype;
 		  _proto48.getFont = function getFont(name) {
 		    for (var _iterator79 = _createForOfIteratorHelperLoose(this.header.offsets), _step79; !(_step79 = _iterator79()).done;) {
@@ -72650,7 +72699,7 @@ sap.ui.define((function () { 'use strict';
 		    }
 		    return null;
 		  };
-		  _createClass(TrueTypeCollection, [{
+		  return _createClass(TrueTypeCollection, [{
 		    key: "fonts",
 		    get: function get() {
 		      var fonts = [];
@@ -72663,7 +72712,6 @@ sap.ui.define((function () { 'use strict';
 		      return fonts;
 		    }
 		  }]);
-		  return TrueTypeCollection;
 		}();
 		var DFontName = new r.String(r.uint8);
 		new r.Struct({
@@ -72704,28 +72752,13 @@ sap.ui.define((function () { 'use strict';
 		  mapLength: r.uint32
 		});
 		var DFont = /*#__PURE__*/function () {
-		  DFont.probe = function probe(buffer) {
-		    var stream = new r.DecodeStream(buffer);
-		    try {
-		      var header = DFontHeader.decode(stream);
-		    } catch (e) {
-		      return false;
-		    }
-		    for (var _iterator81 = _createForOfIteratorHelperLoose(header.map.typeList.types), _step81; !(_step81 = _iterator81()).done;) {
-		      var type = _step81.value;
-		      if (type.name === 'sfnt') {
-		        return true;
-		      }
-		    }
-		    return false;
-		  };
 		  function DFont(stream) {
 		    this.stream = stream;
 		    this.header = DFontHeader.decode(this.stream);
-		    for (var _iterator82 = _createForOfIteratorHelperLoose(this.header.map.typeList.types), _step82; !(_step82 = _iterator82()).done;) {
-		      var type = _step82.value;
-		      for (var _iterator83 = _createForOfIteratorHelperLoose(type.refList), _step83; !(_step83 = _iterator83()).done;) {
-		        var ref = _step83.value;
+		    for (var _iterator81 = _createForOfIteratorHelperLoose(this.header.map.typeList.types), _step81; !(_step81 = _iterator81()).done;) {
+		      var type = _step81.value;
+		      for (var _iterator82 = _createForOfIteratorHelperLoose(type.refList), _step82; !(_step82 = _iterator82()).done;) {
+		        var ref = _step82.value;
 		        if (ref.nameOffset >= 0) {
 		          this.stream.pos = ref.nameOffset + this.header.map.nameListOffset;
 		          ref.name = DFontName.decode(this.stream);
@@ -72738,6 +72771,21 @@ sap.ui.define((function () { 'use strict';
 		      }
 		    }
 		  }
+		  DFont.probe = function probe(buffer) {
+		    var stream = new r.DecodeStream(buffer);
+		    try {
+		      var header = DFontHeader.decode(stream);
+		    } catch (e) {
+		      return false;
+		    }
+		    for (var _iterator83 = _createForOfIteratorHelperLoose(header.map.typeList.types), _step83; !(_step83 = _iterator83()).done;) {
+		      var type = _step83.value;
+		      if (type.name === 'sfnt') {
+		        return true;
+		      }
+		    }
+		    return false;
+		  };
 		  var _proto49 = DFont.prototype;
 		  _proto49.getFont = function getFont(name) {
 		    if (!this.sfnt) {
@@ -72754,7 +72802,7 @@ sap.ui.define((function () { 'use strict';
 		    }
 		    return null;
 		  };
-		  _createClass(DFont, [{
+		  return _createClass(DFont, [{
 		    key: "fonts",
 		    get: function get() {
 		      var fonts = [];
@@ -72767,7 +72815,6 @@ sap.ui.define((function () { 'use strict';
 		      return fonts;
 		    }
 		  }]);
-		  return DFont;
 		}();
 		fontkit.registerFormat(TTFFont);
 		fontkit.registerFormat(WOFFFont);

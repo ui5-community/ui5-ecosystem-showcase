@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-cap",
-  "version": "3.2.13",
+  "version": "3.2.14",
   "description": "UI5 tooling middleware embedding the CDS server middlewares (CAP)",
   "author": "Peter Muessig",
   "license": "Apache-2.0",
@@ -14,9 +14,9 @@
     "ui5-utils-express": "workspace:^"
   },
   "devDependencies": {
-    "@sap/cds": "^6.8.4",
-    "@ui5/cli": "^3.11.0",
-    "express": "^4.19.2"
+    "@sap/cds": "*",
+    "@ui5/cli": "*",
+    "express": "*"
   },
   "peerDependencies": {
     "@sap/cds": ">=6.8.1",

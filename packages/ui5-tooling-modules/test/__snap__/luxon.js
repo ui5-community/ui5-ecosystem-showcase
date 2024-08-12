@@ -1078,6 +1078,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     _proto4.equals = function equals(other) {
       return this.locale === other.locale && this.numberingSystem === other.numberingSystem && this.outputCalendar === other.outputCalendar;
     };
+    _proto4.toString = function toString() {
+      return "Locale(" + this.locale + ", " + this.numberingSystem + ", " + this.outputCalendar + ")";
+    };
     _createClass(Locale, [{
       key: "fastNumbers",
       get: function get() {
@@ -1223,6 +1226,91 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       return new InvalidZone(input);
     }
   }
+  var numberingSystems = {
+    arab: "[٠-٩]",
+    arabext: "[۰-۹]",
+    bali: "[᭐-᭙]",
+    beng: "[০-৯]",
+    deva: "[०-९]",
+    fullwide: "[０-９]",
+    gujr: "[૦-૯]",
+    hanidec: "[〇|一|二|三|四|五|六|七|八|九]",
+    khmr: "[០-៩]",
+    knda: "[೦-೯]",
+    laoo: "[໐-໙]",
+    limb: "[᥆-᥏]",
+    mlym: "[൦-൯]",
+    mong: "[᠐-᠙]",
+    mymr: "[၀-၉]",
+    orya: "[୦-୯]",
+    tamldec: "[௦-௯]",
+    telu: "[౦-౯]",
+    thai: "[๐-๙]",
+    tibt: "[༠-༩]",
+    latn: "\\d"
+  };
+  var numberingSystemsUTF16 = {
+    arab: [1632, 1641],
+    arabext: [1776, 1785],
+    bali: [6992, 7001],
+    beng: [2534, 2543],
+    deva: [2406, 2415],
+    fullwide: [65296, 65303],
+    gujr: [2790, 2799],
+    khmr: [6112, 6121],
+    knda: [3302, 3311],
+    laoo: [3792, 3801],
+    limb: [6470, 6479],
+    mlym: [3430, 3439],
+    mong: [6160, 6169],
+    mymr: [4160, 4169],
+    orya: [2918, 2927],
+    tamldec: [3046, 3055],
+    telu: [3174, 3183],
+    thai: [3664, 3673],
+    tibt: [3872, 3881]
+  };
+  var hanidecChars = numberingSystems.hanidec.replace(/[\[|\]]/g, "").split("");
+  function parseDigits(str) {
+    var value = parseInt(str, 10);
+    if (isNaN(value)) {
+      value = "";
+      for (var i = 0; i < str.length; i++) {
+        var code = str.charCodeAt(i);
+        if (str[i].search(numberingSystems.hanidec) !== -1) {
+          value += hanidecChars.indexOf(str[i]);
+        } else {
+          for (var key in numberingSystemsUTF16) {
+            var _numberingSystemsUTF = numberingSystemsUTF16[key], min = _numberingSystemsUTF[0], max = _numberingSystemsUTF[1];
+            if (code >= min && code <= max) {
+              value += code - min;
+            }
+          }
+        }
+      }
+      return parseInt(value, 10);
+    } else {
+      return value;
+    }
+  }
+  var digitRegexCache = {};
+  function resetDigitRegexCache() {
+    digitRegexCache = {};
+  }
+  function digitRegex(_ref, append) {
+    var numberingSystem = _ref.numberingSystem;
+    if (append === void 0) {
+      append = "";
+    }
+    var ns = numberingSystem || "latn";
+    if (!digitRegexCache[ns]) {
+      digitRegexCache[ns] = {};
+    }
+    if (!digitRegexCache[ns][append]) {
+      digitRegexCache[ns][append] = new RegExp("" + numberingSystems[ns] + append);
+    }
+    return digitRegexCache[ns][append];
+  }
   var now = function now() {
     return Date.now();
   }, defaultZone = "system", defaultLocale = null, defaultNumberingSystem = null, defaultOutputCalendar = null, twoDigitCutoffYear = 60, throwOnInvalid, defaultWeekSettings = null;
@@ -1231,6 +1319,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     Settings.resetCaches = function resetCaches() {
       Locale.resetCache();
       IANAZone.resetCache();
+      DateTime.resetCache();
+      resetDigitRegexCache();
     };
     _createClass(Settings, null, [{
       key: "now",
@@ -3426,80 +3516,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       return duration;
     }
   }
-  var numberingSystems = {
-    arab: "[٠-٩]",
-    arabext: "[۰-۹]",
-    bali: "[᭐-᭙]",
-    beng: "[০-৯]",
-    deva: "[०-९]",
-    fullwide: "[０-９]",
-    gujr: "[૦-૯]",
-    hanidec: "[〇|一|二|三|四|五|六|七|八|九]",
-    khmr: "[០-៩]",
-    knda: "[೦-೯]",
-    laoo: "[໐-໙]",
-    limb: "[᥆-᥏]",
-    mlym: "[൦-൯]",
-    mong: "[᠐-᠙]",
-    mymr: "[၀-၉]",
-    orya: "[୦-୯]",
-    tamldec: "[௦-௯]",
-    telu: "[౦-౯]",
-    thai: "[๐-๙]",
-    tibt: "[༠-༩]",
-    latn: "\\d"
-  };
-  var numberingSystemsUTF16 = {
-    arab: [1632, 1641],
-    arabext: [1776, 1785],
-    bali: [6992, 7001],
-    beng: [2534, 2543],
-    deva: [2406, 2415],
-    fullwide: [65296, 65303],
-    gujr: [2790, 2799],
-    khmr: [6112, 6121],
-    knda: [3302, 3311],
-    laoo: [3792, 3801],
-    limb: [6470, 6479],
-    mlym: [3430, 3439],
-    mong: [6160, 6169],
-    mymr: [4160, 4169],
-    orya: [2918, 2927],
-    tamldec: [3046, 3055],
-    telu: [3174, 3183],
-    thai: [3664, 3673],
-    tibt: [3872, 3881]
-  };
-  var hanidecChars = numberingSystems.hanidec.replace(/[\[|\]]/g, "").split("");
-  function parseDigits(str) {
-    var value = parseInt(str, 10);
-    if (isNaN(value)) {
-      value = "";
-      for (var i = 0; i < str.length; i++) {
-        var code = str.charCodeAt(i);
-        if (str[i].search(numberingSystems.hanidec) !== -1) {
-          value += hanidecChars.indexOf(str[i]);
-        } else {
-          for (var key in numberingSystemsUTF16) {
-            var _numberingSystemsUTF = numberingSystemsUTF16[key], min = _numberingSystemsUTF[0], max = _numberingSystemsUTF[1];
-            if (code >= min && code <= max) {
-              value += code - min;
-            }
-          }
-        }
-      }
-      return parseInt(value, 10);
-    } else {
-      return value;
-    }
-  }
-  function digitRegex(_ref, append) {
-    var numberingSystem = _ref.numberingSystem;
-    if (append === void 0) {
-      append = "";
-    }
-    return new RegExp("" + numberingSystems[numberingSystem || "latn"] + append);
-  }
   var MISSING_FTP = "missing Intl.DateTimeFormat.formatToParts support";
   function intUnit(regex, post) {
     if (post === void 0) {
@@ -3883,34 +3899,64 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       return maybeExpandMacroToken(t, locale);
     }));
   }
-  function explainFromTokens(locale, input, format) {
-    var tokens = expandMacroTokens(Formatter.parseFormat(format), locale), units = tokens.map(function (t) {
-      return unitForToken(t, locale);
-    }), disqualifyingUnit = units.find(function (t) {
-      return t.invalidReason;
-    });
-    if (disqualifyingUnit) {
-      return {
-        input: input,
-        tokens: tokens,
-        invalidReason: disqualifyingUnit.invalidReason
-      };
-    } else {
-      var _buildRegex = buildRegex(units), regexString = _buildRegex[0], handlers = _buildRegex[1], regex = RegExp(regexString, "i"), _match = match(input, regex, handlers), rawMatches = _match[0], matches = _match[1], _ref6 = matches ? dateTimeFromMatches(matches) : [null, null, undefined], result = _ref6[0], zone = _ref6[1], specificOffset = _ref6[2];
-      if (hasOwnProperty(matches, "a") && hasOwnProperty(matches, "H")) {
-        throw new ConflictingSpecificationError("Can't include meridiem when specifying 24-hour format");
+  var TokenParser = (function () {
+    function TokenParser(locale, format) {
+      this.locale = locale;
+      this.format = format;
+      this.tokens = expandMacroTokens(Formatter.parseFormat(format), locale);
+      this.units = this.tokens.map(function (t) {
+        return unitForToken(t, locale);
+      });
+      this.disqualifyingUnit = this.units.find(function (t) {
+        return t.invalidReason;
+      });
+      if (!this.disqualifyingUnit) {
+        var _buildRegex = buildRegex(this.units), regexString = _buildRegex[0], handlers = _buildRegex[1];
+        this.regex = RegExp(regexString, "i");
+        this.handlers = handlers;
       }
-      return {
-        input: input,
-        tokens: tokens,
-        regex: regex,
-        rawMatches: rawMatches,
-        matches: matches,
-        result: result,
-        zone: zone,
-        specificOffset: specificOffset
-      };
     }
+    var _proto = TokenParser.prototype;
+    _proto.explainFromTokens = function explainFromTokens(input) {
+      if (!this.isValid) {
+        return {
+          input: input,
+          tokens: this.tokens,
+          invalidReason: this.invalidReason
+        };
+      } else {
+        var _match = match(input, this.regex, this.handlers), rawMatches = _match[0], matches = _match[1], _ref6 = matches ? dateTimeFromMatches(matches) : [null, null, undefined], result = _ref6[0], zone = _ref6[1], specificOffset = _ref6[2];
+        if (hasOwnProperty(matches, "a") && hasOwnProperty(matches, "H")) {
+          throw new ConflictingSpecificationError("Can't include meridiem when specifying 24-hour format");
+        }
+        return {
+          input: input,
+          tokens: this.tokens,
+          regex: this.regex,
+          rawMatches: rawMatches,
+          matches: matches,
+          result: result,
+          zone: zone,
+          specificOffset: specificOffset
+        };
+      }
+    };
+    _createClass(TokenParser, [{
+      key: "isValid",
+      get: function get() {
+        return !this.disqualifyingUnit;
+      }
+    }, {
+      key: "invalidReason",
+      get: function get() {
+        return this.disqualifyingUnit ? this.disqualifyingUnit.invalidReason : null;
+      }
+    }]);
+    return TokenParser;
+  })();
+  function explainFromTokens(locale, input, format) {
+    var parser = new TokenParser(locale, format);
+    return parser.explainFromTokens(input);
   }
   function parseFromTokens(locale, input, format) {
     var _explainFromTokens = explainFromTokens(locale, input, format), result = _explainFromTokens.result, zone = _explainFromTokens.zone, specificOffset = _explainFromTokens.specificOffset, invalidReason = _explainFromTokens.invalidReason;
@@ -4155,8 +4201,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return normalizeUnit(unit);
     }
   }
+  function guessOffsetForZone(zone) {
+    if (!zoneOffsetGuessCache[zone]) {
+      if (zoneOffsetTs === undefined) {
+        zoneOffsetTs = Settings.now();
+      }
+      zoneOffsetGuessCache[zone] = zone.offset(zoneOffsetTs);
+    }
+    return zoneOffsetGuessCache[zone];
+  }
   function quickDT(obj, opts) {
-    var zone = normalizeZone(opts.zone, Settings.defaultZone), loc = Locale.fromObject(opts), tsNow = Settings.now();
+    var zone = normalizeZone(opts.zone, Settings.defaultZone);
+    if (!zone.isValid) {
+      return DateTime.invalid(unsupportedZone(zone));
+    }
+    var loc = Locale.fromObject(opts);
     var ts, o;
     if (!isUndefined(obj.year)) {
       for (var _i = 0, _orderedUnits = orderedUnits; _i < _orderedUnits.length; _i++) {
@@ -4169,12 +4228,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       if (invalid) {
         return DateTime.invalid(invalid);
       }
-      var offsetProvis = zone.offset(tsNow);
+      var offsetProvis = guessOffsetForZone(zone);
       var _objToTS = objToTS(obj, offsetProvis, zone);
       ts = _objToTS[0];
       o = _objToTS[1];
     } else {
-      ts = tsNow;
+      ts = Settings.now();
     }
     return new DateTime({
       ts: ts,
@@ -4219,6 +4278,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     return [opts, args];
   }
+  var zoneOffsetTs;
+  var zoneOffsetGuessCache = {};
   var DateTime = (function (_Symbol$for) {
     function DateTime(config) {
       var zone = config.zone || Settings.defaultZone;
@@ -4232,7 +4293,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           c = _ref[0];
           o = _ref[1];
         } else {
-          var ot = zone.offset(this.ts);
+          var ot = isNumber(config.o) && !config.old ? config.o : zone.offset(this.ts);
           c = tsToObj(this.ts, ot);
           invalid = Number.isNaN(c.year) ? new Invalid("invalid input") : null;
           c = invalid ? null : c;
@@ -4382,6 +4443,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       if (normalized.weekday && containsGregor && obj.weekday !== inst.weekday) {
         return DateTime.invalid("mismatched weekday", "you can't specify both a weekday of " + normalized.weekday + " and a date of " + inst.toISO());
       }
+      if (!inst.isValid) {
+        return DateTime.invalid(inst.invalid);
+      }
       return inst;
     };
     DateTime.fromISO = function fromISO(text, opts) {
@@ -4472,6 +4536,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       return expanded.map(function (t) {
         return t.val;
       }).join("");
+    };
+    DateTime.resetCache = function resetCache() {
+      zoneOffsetTs = undefined;
+      zoneOffsetGuessCache = {};
     };
     var _proto = DateTime.prototype;
     _proto.get = function get(unit) {
@@ -4887,6 +4955,39 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       return DateTime.fromFormatExplain(text, fmt, options);
     };
+    DateTime.buildFormatParser = function buildFormatParser(fmt, options) {
+      if (options === void 0) {
+        options = {};
+      }
+      var _options2 = options, _options2$locale = _options2.locale, locale = _options2$locale === void 0 ? null : _options2$locale, _options2$numberingSy = _options2.numberingSystem, numberingSystem = _options2$numberingSy === void 0 ? null : _options2$numberingSy, localeToUse = Locale.fromOpts({
+        locale: locale,
+        numberingSystem: numberingSystem,
+        defaultToEN: true
+      });
+      return new TokenParser(localeToUse, fmt);
+    };
+    DateTime.fromFormatParser = function fromFormatParser(text, formatParser, opts) {
+      if (opts === void 0) {
+        opts = {};
+      }
+      if (isUndefined(text) || isUndefined(formatParser)) {
+        throw new InvalidArgumentError("fromFormatParser requires an input string and a format parser");
+      }
+      var _opts2 = opts, _opts2$locale = _opts2.locale, locale = _opts2$locale === void 0 ? null : _opts2$locale, _opts2$numberingSyste = _opts2.numberingSystem, numberingSystem = _opts2$numberingSyste === void 0 ? null : _opts2$numberingSyste, localeToUse = Locale.fromOpts({
+        locale: locale,
+        numberingSystem: numberingSystem,
+        defaultToEN: true
+      });
+      if (!localeToUse.equals(formatParser.locale)) {
+        throw new InvalidArgumentError("fromFormatParser called with a locale of " + localeToUse + ", " + ("but the format parser was created for " + formatParser.locale));
+      }
+      var _formatParser$explain = formatParser.explainFromTokens(text), result = _formatParser$explain.result, zone = _formatParser$explain.zone, specificOffset = _formatParser$explain.specificOffset, invalidReason = _formatParser$explain.invalidReason;
+      if (invalidReason) {
+        return DateTime.invalid(invalidReason);
+      } else {
+        return parseDataToDateTime(result, zone, opts, "format " + formatParser.format, text, specificOffset);
+      }
+    };
     _createClass(DateTime, [{
       key: "isValid",
       get: function get() {
@@ -5232,7 +5333,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       throw new InvalidArgumentError("Unknown datetime argument: " + dateTimeish + ", of type " + typeof dateTimeish);
     }
   }
-  var VERSION = "3.4.4";
+  var VERSION = "3.5.0";
   var DateTime_1 = luxon.DateTime = DateTime;
   var Duration_1 = luxon.Duration = Duration;
   var FixedOffsetZone_1 = luxon.FixedOffsetZone = FixedOffsetZone;
