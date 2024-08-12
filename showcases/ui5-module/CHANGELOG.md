@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-module@0.2.4...ui5-module@0.3.0) (2024-08-12)
+
+
+### Features
+
+* **ui5-tooling-modules:** performance opt + persistent bundle info cache ([#1059](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1059)) ([b02e050](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b02e050e5e338626c6370db11025c3a0256c3fe5)), closes [#1052](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1052)
+
+
+
+
+
 ## [0.2.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-module@0.2.3...ui5-module@0.2.4) (2023-07-01)
 
 

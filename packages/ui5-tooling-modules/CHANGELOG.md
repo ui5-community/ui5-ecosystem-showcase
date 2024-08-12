@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.8.1...ui5-tooling-modules@3.9.0) (2024-08-12)
+
+
+### Bug Fixes
+
+* decouple tooling extensions from UI5 tooling version ([#1058](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1058)) ([6694c59](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6694c59422ac37d9aea971679de46f5f59b8025c)), closes [#1054](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1054)
+
+
+### Features
+
+* **ui5-tooling-modules:** performance opt + persistent bundle info cache ([#1059](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1059)) ([b02e050](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b02e050e5e338626c6370db11025c3a0256c3fe5)), closes [#1052](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1052)
+
+
+
+
+
 ## [3.8.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.8.0...ui5-tooling-modules@3.8.1) (2024-07-22)
 
 **Note:** Version bump only for package ui5-tooling-modules
