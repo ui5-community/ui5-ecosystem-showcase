@@ -1,8 +1,8 @@
+/* eslint-disable */
 import WebComponent from "sap/ui/core/webc/WebComponent";
 import camelize from "sap/base/strings/camelize";
 
-
-WebComponent.wrap = function(WebComponentClass, options) {
+WebComponent.wrap = function (WebComponentClass, options) {
 	const namespace = options?.namespace;
 	const metadata = {
 		tag: WebComponentClass.metadata.tag,
