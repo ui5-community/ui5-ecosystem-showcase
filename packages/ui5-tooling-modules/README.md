@@ -43,8 +43,12 @@ The following configuration options are relevant for the `task` and the `middlew
   Enables debug logging (defaults to `false`), by setting value to `"verbose"` the extension will log even more detailed
   &nbsp;
 
-- *skipCache*: `boolean` *experimental feature*
+- *skipCache*: `boolean`
   For development scenarios, the module cache can be disabled by setting this option to true. Normally, if a module changes (e.g. bundledefs), this change is detected and the bundle is recreated. This just forces the regeneration always (defaults to `false`)
+  &nbsp;
+
+- *persistentCache*: `boolean` *experimental feature*
+  With this option, the bundle information will be persistent and will be available again after the restart of the development server or for the next execution of your build task. The bundle information is stored in the working directory in the folder `.ui5-tooling-modules` folder. It's recommended to put this folder into `.gitignore` (defaults to `false`)
   &nbsp;
 
 - *keepDynamicImports*: `boolean|String[]` *experimental feature*

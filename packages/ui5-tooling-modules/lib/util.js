@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 const path = require("path");
 const { readFileSync, statSync, readdirSync, existsSync } = require("fs");
-const { readFile, stat } = require("fs").promises;
+const { readFile, stat, writeFile, mkdir } = require("fs").promises;
 
 const rollup = require("rollup");
 const instructions = require("./rollup-plugin-instructions");
@@ -84,10 +84,48 @@ function findNodeModules(dir, folders = [], recursive) {
 	}
 }
 
-// local bundle info cache
-const bundleInfoCache = {};
+/**
+ * bundle info object containing all entries
+ */
+class BundleInfoCache {
+	static #bundleInfoCache = {};
+	static #cachePath(key) {
+		return path.join(process.cwd(), ".ui5-tooling-modules", `${key}.bundleinfo.json`);
+	}
+	static get(key, { persist } = {}) {
+		if (this.#bundleInfoCache[key]) {
+			return this.#bundleInfoCache[key];
+		} else if (persist) {
+			const bundleInfoPath = this.#cachePath(key);
+			if (existsSync(bundleInfoPath)) {
+				return (this.#bundleInfoCache[key] = new BundleInfo().fromJSON(readFileSync(bundleInfoPath, { encoding: "utf8" })));
+			}
+		}
+		return undefined;
+	}
+	static store(key, bundleInfo, { persist } = {}) {
+		this.#bundleInfoCache[key] = bundleInfo;
+		if (persist) {
+			const bundleInfoPath = this.#cachePath(key);
+			mkdir(path.dirname(bundleInfoPath), { recursive: true })
+				.then(() => {
+					return writeFile(bundleInfoPath, JSON.stringify(bundleInfo, null, 2), { encoding: "utf8" });
+				})
+				.catch((err) => {
+					console.error(`Failed to store bundle info in ${bundleInfoPath} on disk! Using in-memory cache only!`, err);
+				});
+		}
+	}
+}
+/**
+ * bundle info object containing all entries
+ */
 class BundleInfo {
 	_entries = [];
+	fromJSON(s) {
+		this._entries = JSON.parse(s)._entries;
+		return this;
+	}
 	getEntry(name) {
 		return this._entries.find((entry) => entry.name === name);
 	}
@@ -129,7 +167,6 @@ const defaultMainFields = ["browser", "module", "main"];
 module.exports = function (log) {
 	/**
 	 * Checks whether the file behind the given path is a module to skip for transformation or not
-	 *
 	 * @param {string} source the path of a JS module
 	 * @returns {boolean} true, if the module should be skipped for transformation
 	 */
@@ -175,7 +212,6 @@ module.exports = function (log) {
 
 	/**
 	 * Resolves the node module
-	 *
 	 * @param {string} moduleName name of the module
 	 * @param {string} cwd current working directory
 	 * @param {string[]} depPaths paths of the dependencies (in addition for cwd)
@@ -219,17 +255,22 @@ module.exports = function (log) {
 	 * (excluding devDependencies and providedDependencies)
 	 * @param {*} cwd current working directory
 	 * @param {*} depPaths paths of the dependencies (in addition for cwd)
+	 * @param {*} knownDeps list of known dependencies
 	 * @returns array of dependency root directories
 	 */
-	function findDependencies(cwd = process.cwd(), depPaths = []) {
+	function findDependencies(cwd = process.cwd(), depPaths = [], knownDeps = []) {
 		const pkgJson = JSON.parse(readFileSync(path.join(cwd, "package.json"), { encoding: "utf8" }));
 		const dependencies = Object.keys(pkgJson.dependencies || {});
 		const depRoots = [];
 		dependencies.forEach((dep) => {
 			const npmPackage = npmPackageScopeRegEx.exec(dep)?.[1];
+			if (knownDeps.indexOf(npmPackage) !== -1) {
+				return depRoots;
+			}
+			knownDeps.push(npmPackage);
 			let depRoot;
 			try {
-				const depPath = resolveNodeModule(dep, cwd, depPaths);
+				const depPath = resolveNodeModule(dep, cwd, depPaths, knownDeps);
 				if (depPath !== dep) {
 					depRoot = depPath.substring(0, depPath.lastIndexOf("node_modules") + "node_modules".length + 1 + npmPackage.length);
 				} else {
@@ -242,15 +283,15 @@ module.exports = function (log) {
 			}
 			if (!depRoot) {
 				try {
-					const depPath = resolveNodeModule(`${npmPackage}/package.json`, cwd, depPaths);
+					const depPath = resolveNodeModule(`${npmPackage}/package.json`, cwd, depPaths, knownDeps);
 					depRoot = path.dirname(depPath);
 				} catch (ex) {
 					/* noop */
 				}
 			}
-			if (depRoots.indexOf(depRoot) === -1) {
+			if (depRoot && depRoots.indexOf(depRoot) === -1) {
 				depRoots.push(depRoot);
-				depRoots.push(...findDependencies(depRoot, [...depPaths, cwd]));
+				depRoots.push(...findDependencies(depRoot, [...depPaths, cwd], knownDeps));
 			}
 		});
 		return depRoots;
@@ -259,7 +300,6 @@ module.exports = function (log) {
 	const that = {
 		/**
 		 * scans the project resources
-		 *
 		 * @param {module:@ui5/fs/AbstractReader[]} reader resources reader
 		 * @param {object} [config] configuration
 		 * @param {boolean} [config.debug] debug mode
@@ -279,13 +319,18 @@ module.exports = function (log) {
 
 			// find the root directories of the dependencies (excludes devDependencies)
 			// since all modules should be declared as dependencies in the package.json
+			let millis = new Date().getTime();
 			const dependencyRoots = !config?.legacyDependencyResolution && findDependencies(cwd, depPaths);
+			log.verbose(`Dependency (${depPaths.length} deps) lookup took ${new Date().getTime() - millis}ms`);
 
 			// find all sources to determine their dependencies
+			millis = new Date().getTime();
 			let allSources = await reader.byGlob("/**/*.{js,jsx,ts,tsx}");
+			log.verbose(`Source (${allSources.length} files) lookup took ${new Date().getTime() - millis}ms`);
 
 			// only keep the TS resources for which no parallel JS resource exist
 			// as we assume that the transpiling creates the parallel JS resource
+			millis = new Date().getTime();
 			allSources = allSources.filter((source) => {
 				const sourcePath = source.getPath();
 				const ext = path.extname(sourcePath);
@@ -298,9 +343,12 @@ module.exports = function (log) {
 				}
 				return true;
 			});
+			log.verbose(`JS filter took ${new Date().getTime() - millis}ms`);
 
 			// find all XML resources to determine their dependencies
+			millis = new Date().getTime();
 			const allXmlResources = await reader.byGlob("/**/*.xml");
+			log.verbose(`XML (${allXmlResources.length} files) lookup took ${new Date().getTime() - millis}ms`);
 
 			// collector for unique dependencies and resources
 			//const uniqueNPMPackages = new Set();
@@ -325,7 +373,7 @@ module.exports = function (log) {
 
 			// eslint-disable-next-line jsdoc/require-jsdoc
 			function addUniqueDep(dep) {
-				if (isProvided(dep)) {
+				if (uniqueDeps.has(dep) || isProvided(dep)) {
 					return false;
 				} else {
 					// add the dependency (by default we already filter the UI5 modules we know)
@@ -341,28 +389,30 @@ module.exports = function (log) {
 
 			// eslint-disable-next-line jsdoc/require-jsdoc
 			function addUniqueModule(module, modulePath) {
-				const moduleName = module.split("/").pop();
-				const moduleFileName = modulePath.split(path.sep).pop();
-				// identify modules which already provide their file extension in the module name
-				// => this avoids the duplication of the modules specified with and without file
-				//    extension in the uniqueModules set (e.g. "myns/module" and "myns/module.js")
-				if (moduleName === moduleFileName && module.endsWith(".js")) {
-					//console.log(`Module name and file name are equal: ${module} => ${modulePath}`);
-					module = module.slice(0, -3); // remove the file extension
+				if (!uniqueModules.has(module)) {
+					const moduleName = module.split("/").pop();
+					const moduleFileName = modulePath.split(path.sep).pop();
+					// identify modules which already provide their file extension in the module name
+					// => this avoids the duplication of the modules specified with and without file
+					//    extension in the uniqueModules set (e.g. "myns/module" and "myns/module.js")
+					if (moduleName === moduleFileName && module.endsWith(".js")) {
+						//console.log(`Module name and file name are equal: ${module} => ${modulePath}`);
+						module = module.slice(0, -3); // remove the file extension
+					}
+					uniqueModules.add(module);
 				}
-				uniqueModules.add(module);
 			}
 
 			// eslint-disable-next-line jsdoc/require-jsdoc
 			function addUniqueResource(res) {
-				if (!isProvided(res) && that.existsResource(res, { cwd, depPaths })) {
+				if (!uniqueResources.has(res) && !isProvided(res) && that.existsResource(res, { cwd, depPaths })) {
 					uniqueResources.add(res);
 				}
 			}
 
 			// eslint-disable-next-line jsdoc/require-jsdoc
 			function addUniqueNamespace(ns) {
-				if (!isProvided(ns)) {
+				if (!uniqueNS.has(ns) && !isProvided(ns)) {
 					uniqueNS.add(ns);
 				}
 			}
@@ -378,9 +428,17 @@ module.exports = function (log) {
 						const existsDep = depPath && existsSyncWithCase(depPath);
 						const allowedDep = existsDep && (!dependencyRoots || dependencyRoots.some((root) => depPath.startsWith(root)));
 						if (allowedDep) {
-							const depContent = readFileSync(depPath, { encoding: "utf8" });
+							// add the dependency to the list of unique dependencies
 							addUniqueModule(dep, depPath);
-							findUniqueJSDeps(depContent, depPath);
+							// only analyze the dependencies of UI5 projects recursively
+							const depRoot = dependencyRoots?.find((root) => depPath.startsWith(root));
+							// check if the dependency is a UI5 project (has a ui5.yaml or a .ui5pkg marker file)
+							if (existsSync(path.join(depRoot, "ui5.yaml")) || existsSync(path.join(depRoot, ".ui5pkg"))) {
+								console.log(depPath);
+								const depContent = readFileSync(depPath, { encoding: "utf8" });
+								// for UI5 projects we analyze the sap.ui.define|require|requireSync plus imports (due to TS)
+								findUniqueJSDeps(depContent, depPath);
+							}
 						} else if (existsDep) {
 							log.warn(`Skipping dependency "${dep}" as it is not part of the dependencies in package.json!`);
 						}
@@ -392,7 +450,7 @@ module.exports = function (log) {
 
 			// utility to lookup unique JS dependencies
 			// eslint-disable-next-line jsdoc/require-jsdoc
-			function findUniqueJSDeps(content, parentDepPath) {
+			function findUniqueJSDeps(content, parentDepPath, ignoreImports) {
 				// use @typescript-eslint/typescript-estree to parse the UI5 modules
 				// and extract the UI5 module dependencies
 				//   => can parse modern JS, TS, JSX, and TSX syntax
@@ -435,11 +493,12 @@ module.exports = function (log) {
 								}
 								deps?.forEach((dep) => addDep(dep));
 							} else if (
+								!ignoreImports &&
 								/* ES6 dynamic import */
 								node?.type === "ImportExpression"
 							) {
 								addDep(node.source.value);
-							} else if (node?.type === "ImportDeclaration") {
+							} else if (!ignoreImports && node?.type === "ImportDeclaration") {
 								/* ES6 import */
 								addDep(node.source.value);
 							}
@@ -512,6 +571,7 @@ module.exports = function (log) {
 			}
 
 			// lookup all resources for their dependencies via the above utility
+			millis = new Date().getTime();
 			if (allXmlResources.length > 0) {
 				const parser = new XMLParser({
 					attributeNamePrefix: "@_",
@@ -531,8 +591,10 @@ module.exports = function (log) {
 					})
 				);
 			}
+			log.verbose(`XML scan took ${new Date().getTime() - millis}ms`);
 
 			// lookup all sources for their dependencies via the above utility
+			millis = new Date().getTime();
 			await Promise.all(
 				allSources.map(async (resource) => {
 					log.verbose(`Processing source: ${resource.getPath()}`);
@@ -543,6 +605,7 @@ module.exports = function (log) {
 					return resource;
 				})
 			);
+			log.verbose(`JS scan took ${new Date().getTime() - millis}ms`);
 
 			// lookup the assets to be included which are configured in the ui5.yaml
 			if (config.includeAssets) {
@@ -581,7 +644,6 @@ module.exports = function (log) {
 		},
 		/**
 		 * Resolves the bare module name from node_modules utilizing the require.resolve
-		 *
 		 * @param {string} moduleName name of the module (e.g. "chart.js/auto")
 		 * @param {object} options configuration options
 		 * @param {string} options.cwd current working directory
@@ -686,7 +748,6 @@ module.exports = function (log) {
 
 		/**
 		 * creates a bundle for the given module(s) using rollup
-		 *
 		 * @param {string|string[]} moduleNames name of the module (e.g. "chart.js/auto") or an array of module names
 		 * @param {object} config configuration options
 		 * @param {string} config.cwd current working directory
@@ -790,10 +851,10 @@ module.exports = function (log) {
 		 * The modules are looked up in the node_modules and are finally
 		 * converted into UI5 AMD-like modules. The build produces chunks
 		 * and modules which are returned as bundling information.
-		 *
 		 * @param {string|string[]} moduleNames name of the module (e.g. "chart.js/auto") or an array of module names
 		 * @param {object} [config] configuration
 		 * @param {boolean} [config.skipCache] skip the module cache
+		 * @param {boolean} [config.persistentCache] flag whether the cache should be persistent
 		 * @param {boolean} [config.debug] debug mode
 		 * @param {boolean|string} [config.chunksPath] the relative path for the chunks to be stored (defaults to "chunks", if value is true, chunks are put into the closest modules folder)
 		 * @param {boolean|string[]} [config.skipTransform] flag or array of globs to verify whether the module transformation should be skipped
@@ -811,13 +872,16 @@ module.exports = function (log) {
 		 */
 		getBundleInfo: async function getBundleInfo(
 			moduleNames,
-			{ skipCache, debug, chunksPath, skipTransform, keepDynamicImports, generatedCode, minify, inject } = {},
+			{ skipCache, persistentCache, debug, chunksPath, skipTransform, keepDynamicImports, generatedCode, minify, inject } = {},
 			{ cwd, projectNamespace, projectType, depPaths, isMiddleware } = {}
 		) {
 			cwd = cwd || process.cwd();
 
 			let bundling = false;
 			let bundleInfo = new BundleInfo();
+			const bundleCacheOptions = {
+				persist: persistentCache,
+			};
 
 			try {
 				// convert the single module request to an array
@@ -867,7 +931,7 @@ module.exports = function (log) {
 				const modules = bundleInfo.getModules();
 				if (modules.length > 0) {
 					// check whether the module should be built?
-					if (skipCache || !bundleInfoCache[cacheKey]) {
+					if (skipCache || !BundleInfoCache.get(cacheKey, bundleCacheOptions)) {
 						bundling = true;
 
 						// bundle the given modules
@@ -969,10 +1033,10 @@ module.exports = function (log) {
 						};
 
 						// cache the output
-						bundleInfoCache[cacheKey] = fixImports(bundleInfo);
+						BundleInfoCache.store(cacheKey, fixImports(bundleInfo), bundleCacheOptions);
 					} else {
 						// retrieve the cached output
-						bundleInfo = bundleInfoCache[cacheKey];
+						bundleInfo = BundleInfoCache.get(cacheKey, bundleCacheOptions);
 					}
 				}
 			} catch (err) {
@@ -986,7 +1050,6 @@ module.exports = function (log) {
 
 		/**
 		 * Lookup and returns a resource from the node_modules.
-		 *
 		 * @param {string} resourceName the resource name
 		 * @param {object} [options] additional options
 		 * @param {string} [options.cwd] current working directory
@@ -1012,7 +1075,6 @@ module.exports = function (log) {
 
 		/**
 		 * Check the existence of a resource in the node_modules
-		 *
 		 * @param {string} resourceName the resource name
 		 * @param {object} [options] additional options
 		 * @param {string} [options.cwd] current working directory
@@ -1039,7 +1101,6 @@ module.exports = function (log) {
 		/**
 		 * Lists all resources included in the provided NPM package filtered by the
 		 * list of ignore glob patterns
-		 *
 		 * @param {string} npmPackageName name of the module (e.g. "chart.js/auto")
 		 * @param {object} [options] additional options
 		 * @param {string} [options.cwd] current working directory
