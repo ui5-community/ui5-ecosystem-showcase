@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.9.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.9.0...ui5-tooling-modules@3.9.1) (2024-08-13)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** perf-opt for module type detection ([#1060](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1060)) ([ce17e87](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ce17e875476df049c8e3eb90a4da60ad2bf28698))
+
+
+
+
+
 # [3.9.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.8.1...ui5-tooling-modules@3.9.0) (2024-08-12)
 
 
