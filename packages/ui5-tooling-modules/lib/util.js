@@ -27,6 +27,8 @@ const parseJS = require("./parseJS");
 const { createHash } = require("crypto");
 const sanitize = require("sanitize-filename");
 
+const { runInContext, createContext } = require("vm");
+
 /**
  * helper to check the existence of a resource (case-sensitive)
  * @param {string} file file path
@@ -56,7 +58,7 @@ function findNodeModules(dir, folders = [], recursive) {
 	if (!recursive && nodeModulesDirCache[dir]) {
 		return nodeModulesDirCache[dir];
 	} else {
-		//const millis = new Date().getTime();
+		//const millis = Date.now();
 		const nodeModulesDir = path.join(dir, "node_modules");
 		if (existsSync(nodeModulesDir)) {
 			folders.push(nodeModulesDir);
@@ -78,7 +80,7 @@ function findNodeModules(dir, folders = [], recursive) {
 		}
 		if (!recursive) {
 			nodeModulesDirCache[dir] = folders;
-			//console.log(`findNodeModules(${dir}) took ${new Date().getTime() - millis}ms`);
+			//console.verbose(`findNodeModules(${dir}) took ${Date.now() - millis}ms`);
 		}
 		return folders;
 	}
@@ -171,43 +173,37 @@ module.exports = function (log) {
 	 * @returns {boolean} true, if the module should be skipped for transformation
 	 */
 	async function shouldSkipModule(source) {
-		try {
-			let isUI5Module = false;
-			let isSystemJSModule = false;
-			const content = await readFile(source, { encoding: "utf8" });
-			if (content) {
-				const { parse } = await import("@typescript-eslint/typescript-estree");
-				const { walk } = await import("estree-walker");
-				const program = parse(content, { jsx: path.extname(source) !== ".ts", allowInvalidAST: true });
-				// SystemJS modules start with "System.register(...)"
-				program.body
-					.filter((node) => node.type === "ExpressionStatement")
-					.forEach((node) => {
-						if (node.expression.type === "CallExpression" && node.expression.callee?.property?.name == "register" && node.expression.callee?.object?.name == "System") {
-							isSystemJSModule = true;
-						}
-					});
-				if (!isSystemJSModule) {
-					// for UI5 modules we need to check for sap.ui.require/define
-					walk(program, {
-						enter(node, parent, prop, index) {
-							if (
-								node?.type === "CallExpression" &&
-								/require|define/.test(node?.callee?.property?.name) &&
-								node?.callee?.object?.property?.name == "ui" &&
-								node?.callee?.object?.object?.name == "sap"
-							) {
+		let m = Date.now();
+		let isUI5Module = false;
+		let isSystemJSModule = false;
+		const content = await readFile(source, { encoding: "utf8" });
+		if (content) {
+			try {
+				const context = createContext({
+					sap: {
+						ui: {
+							require: () => {
 								isUI5Module = true;
-							}
+							},
+							define: () => {
+								isUI5Module = true;
+							},
 						},
-					});
-				}
+					},
+					System: {
+						register: () => {
+							isSystemJSModule = true;
+						},
+					},
+				});
+				runInContext(content, context);
+			} catch (err) {
+				// ESM, CJS, AMD, UMD, etc. modules should not be skipped
+				log.verbose(`Failed to detect module type for "${source}"!`, err.message);
 			}
-			return isUI5Module || isSystemJSModule;
-		} catch (err) {
-			log.verbose(`Failed to parse module "${source}"!`, err);
-			return false;
 		}
+		log.verbose(`shouldSkipModule took ${Date.now() - m}ms`);
+		return isUI5Module || isSystemJSModule;
 	}
 
 	/**
@@ -319,18 +315,18 @@ module.exports = function (log) {
 
 			// find the root directories of the dependencies (excludes devDependencies)
 			// since all modules should be declared as dependencies in the package.json
-			let millis = new Date().getTime();
+			let millis = Date.now();
 			const dependencyRoots = !config?.legacyDependencyResolution && findDependencies(cwd, depPaths);
-			log.verbose(`Dependency (${depPaths.length} deps) lookup took ${new Date().getTime() - millis}ms`);
+			log.verbose(`Dependency (${depPaths.length} deps) lookup took ${Date.now() - millis}ms`);
 
 			// find all sources to determine their dependencies
-			millis = new Date().getTime();
+			millis = Date.now();
 			let allSources = await reader.byGlob("/**/*.{js,jsx,ts,tsx}");
-			log.verbose(`Source (${allSources.length} files) lookup took ${new Date().getTime() - millis}ms`);
+			log.verbose(`Source (${allSources.length} files) lookup took ${Date.now() - millis}ms`);
 
 			// only keep the TS resources for which no parallel JS resource exist
 			// as we assume that the transpiling creates the parallel JS resource
-			millis = new Date().getTime();
+			millis = Date.now();
 			allSources = allSources.filter((source) => {
 				const sourcePath = source.getPath();
 				const ext = path.extname(sourcePath);
@@ -343,12 +339,12 @@ module.exports = function (log) {
 				}
 				return true;
 			});
-			log.verbose(`JS filter took ${new Date().getTime() - millis}ms`);
+			log.verbose(`JS filter took ${Date.now() - millis}ms`);
 
 			// find all XML resources to determine their dependencies
-			millis = new Date().getTime();
+			millis = Date.now();
 			const allXmlResources = await reader.byGlob("/**/*.xml");
-			log.verbose(`XML (${allXmlResources.length} files) lookup took ${new Date().getTime() - millis}ms`);
+			log.verbose(`XML (${allXmlResources.length} files) lookup took ${Date.now() - millis}ms`);
 
 			// collector for unique dependencies and resources
 			//const uniqueNPMPackages = new Set();
@@ -434,7 +430,6 @@ module.exports = function (log) {
 							const depRoot = dependencyRoots?.find((root) => depPath.startsWith(root));
 							// check if the dependency is a UI5 project (has a ui5.yaml or a .ui5pkg marker file)
 							if (existsSync(path.join(depRoot, "ui5.yaml")) || existsSync(path.join(depRoot, ".ui5pkg"))) {
-								console.log(depPath);
 								const depContent = readFileSync(depPath, { encoding: "utf8" });
 								// for UI5 projects we analyze the sap.ui.define|require|requireSync plus imports (due to TS)
 								findUniqueJSDeps(depContent, depPath);
@@ -571,7 +566,7 @@ module.exports = function (log) {
 			}
 
 			// lookup all resources for their dependencies via the above utility
-			millis = new Date().getTime();
+			millis = Date.now();
 			if (allXmlResources.length > 0) {
 				const parser = new XMLParser({
 					attributeNamePrefix: "@_",
@@ -591,10 +586,10 @@ module.exports = function (log) {
 					})
 				);
 			}
-			log.verbose(`XML scan took ${new Date().getTime() - millis}ms`);
+			log.verbose(`XML scan took ${Date.now() - millis}ms`);
 
 			// lookup all sources for their dependencies via the above utility
-			millis = new Date().getTime();
+			millis = Date.now();
 			await Promise.all(
 				allSources.map(async (resource) => {
 					log.verbose(`Processing source: ${resource.getPath()}`);
@@ -605,7 +600,7 @@ module.exports = function (log) {
 					return resource;
 				})
 			);
-			log.verbose(`JS scan took ${new Date().getTime() - millis}ms`);
+			log.verbose(`JS scan took ${Date.now() - millis}ms`);
 
 			// lookup the assets to be included which are configured in the ui5.yaml
 			if (config.includeAssets) {
@@ -923,8 +918,9 @@ module.exports = function (log) {
 				}
 
 				// create a cache key which includes the last modified timestamp and the module names
+				const myLastModified = new Date((await stat(__filename)).mtime).getTime();
 				const cacheKey = createHash("md5")
-					.update(`${lastModified}:${moduleNames.sort().join(",")}`)
+					.update(`${myLastModified}:${lastModified}:${moduleNames.sort().join(",")}`)
 					.digest("hex");
 
 				// if modules have been found, we bundle them all in one
