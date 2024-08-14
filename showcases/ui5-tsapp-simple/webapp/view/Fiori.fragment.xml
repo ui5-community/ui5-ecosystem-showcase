@@ -1,0 +1,29 @@
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns:webc="@ui5/webcomponents" xmlns:fiori="@ui5/webcomponents-fiori">
+  <fiori:NotificationList>
+    <fiori:NotificationListItem
+      id="firstNotificationListItem"
+      titleText="New order (#2525) With a very long title - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent feugiat, turpis vel scelerisque pharetra, tellus odio vehicula dolor, nec elementum lectus turpis at nunc."
+      state="Positive"
+      importance="Important"
+      showClose="true"
+    >
+      <fiori:avatar>
+        <webc:avatar size="XS">
+          <!-- <img src="https://sap.github.io/ui5-webcomponents/images/avatars/woman_avatar_1.png"> -->
+        </webc:avatar>
+      </fiori:avatar>
+      <!-- <span slot="footnotes">Monique Legrand</span>
+            <span slot="footnotes">2 Days</span>
+            And with a very long description - Lorem ipsum dolor sit amet, consectetur
+            adipiscing elit. Praesent feugiat, turpis vel scelerisque pharetra, tellus odio vehicula dolor, nec
+            elementum
+            lectus turpis at nunc.
+            <fiori:menu>
+                <webc:Menu id="menuWithActions">
+                    <webc:MenuItem icon="accept" text="Accept"></webc:MenuItem>
+                    <webc:MenuItem icon="message-error" text="Reject"></webc:MenuItem>
+                </webc:Menu>
+            </fiori:menu> -->
+    </fiori:NotificationListItem>
+  </fiori:NotificationList>
+</core:FragmentDefinition>
