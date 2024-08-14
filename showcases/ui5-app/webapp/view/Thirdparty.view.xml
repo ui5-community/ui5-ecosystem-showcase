@@ -7,8 +7,7 @@
   xmlns:core="sap.ui.core"
   xmlns:mod="ui5-module"
   xmlns:html="http://www.w3.org/1999/xhtml"
-  xmlns:webc="ui5.ecosystem.demo.app.webc"
-  webc:import="@ui5/webcomponents/dist"
+  xmlns:webc="@ui5/webcomponents"
   core:require="{
     Integer: 'sap/ui/model/type/Integer',
     iconActivities: '@ui5/webcomponents-icons/dist/activities'

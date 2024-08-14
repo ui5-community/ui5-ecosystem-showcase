@@ -31,6 +31,7 @@ server:
       afterMiddleware: ui5-tooling-transpile-middleware
       configuration:
         debug: true
+        persistentCache: false # disable persistent cache for development
     - name: ui5-middleware-livereload
       afterMiddleware: compression
       configuration:
