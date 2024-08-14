@@ -1014,18 +1014,21 @@ importers:
       '@ui5/webcomponents':
         specifier: ^2.1.1
         version: 2.1.1
+      '@ui5/webcomponents-fiori':
+        specifier: ^2.1.1
+        version: 2.1.1
     devDependencies:
       '@types/openui5':
         specifier: 1.126.0
         version: 1.126.0
       '@typescript-eslint/eslint-plugin':
-        specifier: ^7.16.1
+        specifier: ^7.18.0
         version: 7.18.0(@typescript-eslint/parser@7.18.0(eslint@8.57.0)(typescript@5.5.4))(eslint@8.57.0)(typescript@5.5.4)
       '@typescript-eslint/parser':
-        specifier: ^7.16.1
+        specifier: ^7.18.0
         version: 7.18.0(eslint@8.57.0)(typescript@5.5.4)
       '@ui5/cli':
-        specifier: ^3.11.0
+        specifier: ^3.11.1
         version: 3.11.1
       '@ui5/ts-interface-generator':
         specifier: ^0.8.3
@@ -1037,7 +1040,7 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
       typescript:
-        specifier: ^5.4.5
+        specifier: ^5.5.4
         version: 5.5.4
       ui5-middleware-livereload:
         specifier: workspace:^
@@ -2986,6 +2989,9 @@ packages:
   '@ui5/webcomponents-base@2.1.1':
     resolution: {integrity: sha512-DtE7+0LRueO5TzVyldX51sZl2xhBgDZBt5fUeqwjTk09BRD9JKY97PwwSoxoHZrqbKNYxhM5pC8EKFP4fHXSwg==}
 
+  '@ui5/webcomponents-fiori@2.1.1':
+    resolution: {integrity: sha512-MR1hdFiJTVdqDPr/DhFPDLZpsxHmEHWII/sz2tKfNNUJgMvEAudzphE3+RM7qvlj7ZnXiExa1L+nLKp8NNwWSw==}
+
   '@ui5/webcomponents-icons-business-suite@2.1.1':
     resolution: {integrity: sha512-cAMcKC/OoYm9oaWRSibjsW9L5mTSo7e7KS7zEV9d3qdZflfCx+lp5/9ywIqpB7PN73RkJyN0oa8Jc8rnvpjEzg==}
 
@@ -3094,6 +3100,13 @@ packages:
   '@zkochan/js-yaml@0.0.7':
     resolution: {integrity: sha512-nrUSn7hzt7J6JWgWGz78ZYI8wj+gdIJdk0Ynjpp8l+trkn58Uqsf6RYrYkEK+3X18EX+TNdtJI0WxAtc+L84SQ==}
     hasBin: true
+
+  '@zxing/library@0.17.1':
+    resolution: {integrity: sha512-RuiBZuteGaFXCle/b0X+g3peN8UpDc3pGe/J7hZBzKWaMZLbjensR7ja3vy47xWhXU4e8MICGqegPMxc2V2sow==}
+    engines: {node: '>= 10.4.0'}
+
+  '@zxing/text-encoding@0.9.0':
+    resolution: {integrity: sha512-U/4aVJ2mxI0aDNI8Uq0wEhMgY+u4CNtEb0om3+y3+niDAsoTCOB33UF0sxpzqzdqXLqmvc+vZyAt4O8pPdfkwA==}
 
   JSONStream@1.3.5:
     resolution: {integrity: sha512-E+iruNOY8VV9s4JEbe1aNEm6MiszPRr/UfcHMz0TQh1BXSxHK+ASV1R6W4HpjBhSeS+54PIsAMCBmwD06LLsqQ==}
@@ -8709,6 +8722,10 @@ packages:
     peerDependencies:
       typescript: '>=4.2.0'
 
+  ts-custom-error@3.3.1:
+    resolution: {integrity: sha512-5OX1tzOjxWEgsr/YEUWSuPrQ00deKLh6D7OTWcvNHm12/7QPyRh8SYpyWvA4IZv8H/+GQWQEh/kwo95Q9OVW1A==}
+    engines: {node: '>=14.0.0'}
+
   tsconfig-paths@4.2.0:
     resolution: {integrity: sha512-NoZ4roiN7LnbKn9QqE1amc9DJfzvZXxF4xDavcOWt1BPkdx+m+0gJuPM+S0vCe7zTJMYUP0R8pO2XMr+Y8oLIg==}
     engines: {node: '>=6'}
@@ -12106,6 +12123,14 @@ snapshots:
       '@lit-labs/ssr-dom-shim': 1.2.1
       lit-html: 2.8.0
 
+  '@ui5/webcomponents-fiori@2.1.1':
+    dependencies:
+      '@ui5/webcomponents': 2.1.1
+      '@ui5/webcomponents-base': 2.1.1
+      '@ui5/webcomponents-icons': 2.1.1
+      '@ui5/webcomponents-theming': 2.1.1
+      '@zxing/library': 0.17.1
+
   '@ui5/webcomponents-icons-business-suite@2.1.1':
     dependencies:
       '@ui5/webcomponents-base': 2.1.1
@@ -12347,6 +12372,15 @@ snapshots:
     dependencies:
       argparse: 2.0.1
 
+  '@zxing/library@0.17.1':
+    dependencies:
+      ts-custom-error: 3.3.1
+    optionalDependencies:
+      '@zxing/text-encoding': 0.9.0
+
+  '@zxing/text-encoding@0.9.0':
+    optional: true
+
   JSONStream@1.3.5:
     dependencies:
       jsonparse: 1.3.1
@@ -12412,7 +12446,7 @@ snapshots:
 
   agent-base@6.0.2:
     dependencies:
-      debug: 4.3.2
+      debug: 4.3.6(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -14400,7 +14434,7 @@ snapshots:
   execa@5.0.0:
     dependencies:
       cross-spawn: 7.0.3
-      get-stream: 6.0.0
+      get-stream: 6.0.1
       human-signals: 2.1.0
       is-stream: 2.0.0
       merge-stream: 2.0.0
@@ -14537,7 +14571,7 @@ snapshots:
 
   extract-zip@2.0.1:
     dependencies:
-      debug: 4.3.4
+      debug: 4.3.6(supports-color@5.5.0)
       get-stream: 5.2.0
       yauzl: 2.10.0
     optionalDependencies:
@@ -14980,7 +15014,7 @@ snapshots:
     dependencies:
       basic-ftp: 5.0.5
       data-uri-to-buffer: 6.0.2
-      debug: 4.3.4
+      debug: 4.3.6(supports-color@5.5.0)
       fs-extra: 11.2.0
     transitivePeerDependencies:
       - supports-color
@@ -15321,7 +15355,7 @@ snapshots:
     dependencies:
       '@tootallnate/once': 1.1.2
       agent-base: 6.0.2
-      debug: 4.3.2
+      debug: 4.3.6(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -15367,7 +15401,7 @@ snapshots:
   https-proxy-agent@5.0.0:
     dependencies:
       agent-base: 6.0.2
-      debug: 4.3.2
+      debug: 4.3.6(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -15548,7 +15582,7 @@ snapshots:
   ioredis@4.28.5:
     dependencies:
       cluster-key-slot: 1.1.2
-      debug: 4.3.2
+      debug: 4.3.6(supports-color@5.5.0)
       denque: 1.5.1
       lodash.defaults: 4.2.0
       lodash.flatten: 4.4.0
@@ -15836,7 +15870,7 @@ snapshots:
 
   jest-diff@29.7.0:
     dependencies:
-      chalk: 4.1.0
+      chalk: 4.1.2
       diff-sequences: 29.6.3
       jest-get-type: 29.6.3
       pretty-format: 29.7.0
@@ -16017,7 +16051,7 @@ snapshots:
       lodash.isplainobject: 4.0.6
       lodash.isstring: 4.0.1
       lodash.once: 4.1.1
-      ms: 2.1.1
+      ms: 2.1.3
       semver: 7.6.3
 
   jspdf@2.5.1:
@@ -16478,7 +16512,7 @@ snapshots:
       '@colors/colors': 1.6.0
       '@types/triple-beam': 1.3.5
       fecha: 4.2.3
-      ms: 2.1.1
+      ms: 2.1.3
       safe-stable-stringify: 2.4.3
       triple-beam: 1.4.1
 
@@ -17124,7 +17158,7 @@ snapshots:
       '@yarnpkg/parsers': 3.0.0-rc.46
       '@zkochan/js-yaml': 0.0.7
       axios: 1.7.3(debug@4.3.6)
-      chalk: 4.1.0
+      chalk: 4.1.2
       cli-cursor: 3.1.0
       cli-spinners: 2.6.1
       cliui: 8.0.1
@@ -17358,7 +17392,7 @@ snapshots:
     dependencies:
       '@tootallnate/quickjs-emscripten': 0.23.0
       agent-base: 7.1.1
-      debug: 4.3.4
+      debug: 4.3.6(supports-color@5.5.0)
       get-uri: 6.0.3
       http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.5
@@ -17727,7 +17761,7 @@ snapshots:
   proxy-agent@6.3.1:
     dependencies:
       agent-base: 7.1.1
-      debug: 4.3.4
+      debug: 4.3.6(supports-color@5.5.0)
       http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.5
       lru-cache: 7.18.3
@@ -19016,6 +19050,8 @@ snapshots:
   ts-api-utils@1.3.0(typescript@5.5.4):
     dependencies:
       typescript: 5.5.4
+
+  ts-custom-error@3.3.1: {}
 
   tsconfig-paths@4.2.0:
     dependencies:

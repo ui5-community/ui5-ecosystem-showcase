@@ -12,7 +12,6 @@ const _classAliases = {};
 
 const _classes = {};
 
-
 // TODO: Make "classes" into... a class :)
 //       Get's rid of passing the "classDef" and the "ui5metadata" around.
 class RegistryEntry {
@@ -53,10 +52,17 @@ class RegistryEntry {
 
 	#parseDeclaration(decl) {
 		switch (decl.kind) {
-			case "class": this.classes[decl.name] = decl; break;
-			case "enum": this.enums[decl.name] = decl; break;
-			case "interface": this.interfaces.add(decl.name); break;
-			default: console.error("unknown declaration kind:", decl.kind);
+			case "class":
+				this.classes[decl.name] = decl;
+				break;
+			case "enum":
+				this.enums[decl.name] = decl;
+				break;
+			case "interface":
+				this.interfaces.add(decl.name);
+				break;
+			default:
+				console.error("unknown declaration kind:", decl.kind);
 		}
 	}
 
@@ -69,6 +75,9 @@ class RegistryEntry {
 		if (correspondingClass) {
 			// find module name
 			correspondingClass.module = exp.declaration?.module;
+			// we track both npm-package name and the namespace
+			// they are identical for now, might change later
+			correspondingClass.namespace = correspondingClass.package = this.namespace;
 		}
 
 		if (exp.kind === "custom-element-definition") {
@@ -79,8 +88,18 @@ class RegistryEntry {
 	#connectSuperclass(classDef) {
 		if (classDef.superclass) {
 			const superclassName = classDef.superclass.name;
+
+			// the top most superclass is "UI5Element", which at runtime is essentially "sap/ui/core/WebComponent"
 			if (superclassName !== "UI5Element") {
-				const superclassRef = this.classes[superclassName];
+				// determine superclass cross-package
+				let superclassRef = this.classes[superclassName];
+				if (!superclassRef) {
+					const refPackage = WebComponentRegistry.getPackage(classDef.superclass.package);
+					superclassRef = refPackage?.classes[superclassName];
+					if (!superclassRef) {
+						console.error(`The class '${this.namespace}/${classDef.name}' has an unknown superclass '${classDef.superclass.package}/${superclassName}'!`);
+					}
+				}
 				this.#connectSuperclass(superclassRef);
 				classDef.superclass = superclassRef;
 			}
@@ -88,7 +107,7 @@ class RegistryEntry {
 	}
 
 	prefixns(str) {
-		return `${this.namespace}.${str}`
+		return `${this.namespace}.${str}`;
 	}
 
 	/**
@@ -100,13 +119,7 @@ class RegistryEntry {
 			this.enums["ValueState"] = {
 				kind: "enum",
 				name: "ValueState",
-				members: [
-					{name: "None" },
-					{name: "Positive" },
-					{name: "Critical" },
-					{name: "Negative" },
-					{name: "Information" }
-				]
+				members: [{ name: "None" }, { name: "Positive" }, { name: "Critical" }, { name: "Negative" }, { name: "Information" }],
 			};
 		}
 	}
@@ -151,8 +164,8 @@ class RegistryEntry {
 				return {
 					origType: parsedType,
 					ui5Type: this.prefixns(parsedType),
-					multiple
-				}
+					multiple,
+				};
 			}
 
 			// case 2: interface type -> theoretically this should this be a 0..n aggregation... but really?
@@ -165,7 +178,7 @@ class RegistryEntry {
 					isInterfaceOrClassType: true,
 					origType: parsedType,
 					ui5Type: interfaceOrClassType,
-					multiple
+					multiple,
 				};
 			}
 
@@ -175,22 +188,22 @@ class RegistryEntry {
 				return {
 					origType: parsedType,
 					ui5Type: refPackage.prefixns(parsedType),
-					multiple
-				}
+					multiple,
+				};
 			}
 
 			return {
 				isUnclear: true,
 				origType: parsedType,
 				ui5Type: "any",
-				multiple
+				multiple,
 			};
 		} else {
 			// primitive types
 			return {
 				origType: parsedType,
 				ui5Type: this.#normalizeType(parsedType),
-				multiple
+				multiple,
 			};
 		}
 	}
@@ -200,11 +213,15 @@ class RegistryEntry {
 			return undefined;
 		}
 
-		switch(ui5TypeInfo.ui5Type) {
-			case "float": return parseFloat(defaultValue);
-			case "boolean": return /true/.test(defaultValue);
-			case "object": return JSON.parse(defaultValue);
-			default: return defaultValue;
+		switch (ui5TypeInfo.ui5Type) {
+			case "float":
+				return parseFloat(defaultValue);
+			case "boolean":
+				return /true/.test(defaultValue);
+			case "object":
+				return JSON.parse(defaultValue);
+			default:
+				return defaultValue;
 		}
 	}
 
@@ -224,7 +241,7 @@ class RegistryEntry {
 			if (propDef.readonly) {
 				// s.a.
 				console.log(`[readonly field] ${classDef.name} - property ${propDef.name}`);
-			} else if (!ui5TypeInfo.isInterfaceOrClassType){
+			} else if (!ui5TypeInfo.isInterfaceOrClassType) {
 				let defaultValue = propDef.default;
 
 				// TODO: Why are the default value strings escaped?
@@ -237,10 +254,9 @@ class RegistryEntry {
 				ui5metadata.properties[propDef.name] = {
 					type: `${ui5TypeInfo.ui5Type}${ui5TypeInfo.multiple ? "[]" : ""}`,
 					mapping: "property",
-					defaultValue: defaultValue
+					defaultValue: defaultValue,
 				};
 			}
-
 		} else if (propDef.kind === "method") {
 			// TODO: methods
 		}
@@ -285,8 +301,8 @@ class RegistryEntry {
 		ui5metadata.aggregations[aggregationName] = {
 			type: aggregationType,
 			multiple: true,
-			slot: slotName
-		}
+			slot: slotName,
+		};
 	}
 
 	#processEvents(ui5metadata, eventDef) {
@@ -338,8 +354,7 @@ class RegistryEntry {
 	}
 
 	#createUI5Metadata(classDef) {
-
-		const ui5metadata = classDef._ui5metadata = {
+		const ui5metadata = (classDef._ui5metadata = {
 			namespace: this.namespace,
 			tag: classDef.tagName,
 			interfaces: [],
@@ -350,7 +365,7 @@ class RegistryEntry {
 			// https://github.com/SAP/openui5/blob/master/src/sap.ui.core/src/sap/ui/core/webc/WebComponent.js#L570C25-L601
 			getters: [],
 			methods: [],
-		};
+		});
 
 		classDef.members?.forEach((propDef) => {
 			this.#processMembers(classDef, ui5metadata, propDef);
@@ -416,7 +431,7 @@ const WebComponentRegistry = {
 		if (!_classes[alias]) {
 			_classes[alias] = obj;
 		}
-	}
-}
+	},
+};
 
 module.exports = WebComponentRegistry;

@@ -6,11 +6,16 @@
   xmlns:mvc="sap.ui.core.mvc"
   xmlns:control="ui5.ecosystem.demo.simpletsapp.control"
   xmlns:webc="@ui5/webcomponents"
+  xmlns:fiori="@ui5/webcomponents-fiori"
   core:require="{
 		Formatter: 'ui5/ecosystem/demo/simpletsapp/model/Formatter',
     iconAI: '@ui5/webcomponents-icons/dist/ai',
     iconBiometric: '@ui5/webcomponents-icons/dist/biometric-face',
-    iconBadge: '@ui5/webcomponents-icons/dist/badge'
+    iconBadge: '@ui5/webcomponents-icons/dist/badge',
+    iconNav: '@ui5/webcomponents-icons/dist/nav-back',
+    iconCustomer: '@ui5/webcomponents-icons/dist/customer',
+    iconAccept: '@ui5/webcomponents-icons/dist/accept',
+    iconMessageError: '@ui5/webcomponents-icons/dist/message-error'
 	}"
 >
   <Page id="page" title="{formatter: 'Formatter.formatValue', path: 'i18n>appTitle'}">
@@ -21,25 +26,53 @@
       <VBox id="contentArea" alignItems="Center" justifyContent="Center" height="100%">
         <control:SimpleControl text="Hello World" />
         <Button text="Don't press me!" press="onBoo" />
-        <webc:Button text="Hello World 123"></webc:Button>
-        <webc:Input value="Hello World 123" change="onBoo"></webc:Input>
+        <webc:Button text="Hello World 123" />
+        <webc:Input value="Hello World 123" change="onBoo" />
         <webc:AvatarGroup type="Individual">
-          <webc:Avatar initials="PM" colorScheme="Accent1"></webc:Avatar>
-          <webc:Avatar initials="XX" colorScheme="Accent4" shape="Square"></webc:Avatar>
-          <webc:Avatar icon="ai" colorScheme="Accent7"></webc:Avatar>
+          <webc:Avatar initials="PM" colorScheme="Accent1" />
+          <webc:Avatar initials="XX" colorScheme="Accent4" shape="Square" />
+          <webc:Avatar icon="ai" colorScheme="Accent7" />
         </webc:AvatarGroup>
-        <webc:DateRangePicker></webc:DateRangePicker>
-        <webc:CheckBox text="Hello World 123"></webc:CheckBox>
-        <webc:List>
+        <webc:DateRangePicker />
+        <webc:CheckBox text="Hello World 123" />
+        <!-- <webc:List>
           <webc:ListItemStandard text="Item 1"></webc:ListItemStandard>
           <webc:ListItemStandard text="Item 2"></webc:ListItemStandard>
           <webc:ListItemStandard text="Item 3"></webc:ListItemStandard>
-        </webc:List>
+        </webc:List> -->
         <webc:Select liveChange=".onLiveChange">
           <webc:Option text="AI" icon="ai" />
           <webc:Option text="Biometric" icon="biometric-face" />
           <webc:Option text="Security" icon="badge" />
         </webc:Select>
+
+        <fiori:NotificationList>
+          <fiori:NotificationListItem
+            id="firstNotificationListItem"
+            titleText="New order (#2525) With a very long title - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent feugiat, turpis vel scelerisque pharetra, tellus odio vehicula dolor, nec elementum lectus turpis at nunc."
+            state="Positive"
+            importance="Important"
+            showClose="true"
+          >
+            <fiori:avatar>
+              <webc:avatar size="XS">
+                <!-- <img src="https://sap.github.io/ui5-webcomponents/images/avatars/woman_avatar_1.png"> -->
+              </webc:avatar>
+            </fiori:avatar>
+            <!-- <span slot="footnotes">Monique Legrand</span>
+              <span slot="footnotes">2 Days</span>
+              And with a very long description - Lorem ipsum dolor sit amet, consectetur
+              adipiscing elit. Praesent feugiat, turpis vel scelerisque pharetra, tellus odio vehicula dolor, nec
+              elementum
+              lectus turpis at nunc. -->
+            <!-- <fiori:menu>
+                <webc:Menu id="menuWithActions">
+                    <webc:MenuItem icon="accept" text="Accept"></webc:MenuItem>
+                    <webc:MenuItem icon="message-error" text="Reject"></webc:MenuItem>
+                </webc:Menu>
+              </fiori:menu> -->
+          </fiori:NotificationListItem>
+        </fiori:NotificationList>
       </VBox>
     </content>
   </Page>
