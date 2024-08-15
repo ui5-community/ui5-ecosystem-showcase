@@ -7,15 +7,13 @@
   xmlns:control="ui5.ecosystem.demo.simpletsapp.control"
   xmlns:webc="@ui5/webcomponents"
   core:require="{
-		Formatter: 'ui5/ecosystem/demo/simpletsapp/model/Formatter',
+    Formatter: 'ui5/ecosystem/demo/simpletsapp/model/Formatter',
     iconAI: '@ui5/webcomponents-icons/dist/ai',
     iconBiometric: '@ui5/webcomponents-icons/dist/biometric-face',
     iconBadge: '@ui5/webcomponents-icons/dist/badge',
-    iconNav: '@ui5/webcomponents-icons/dist/nav-back',
-    iconCustomer: '@ui5/webcomponents-icons/dist/customer',
     iconAccept: '@ui5/webcomponents-icons/dist/accept',
     iconMessageError: '@ui5/webcomponents-icons/dist/message-error'
-	}"
+  }"
 >
   <Page id="page" title="{formatter: 'Formatter.formatValue', path: 'i18n>appTitle'}">
     <headerContent>
@@ -45,8 +43,8 @@
           <webc:Option text="Security" icon="badge" />
         </webc:Select>
 
-        <!-- Comment this in to use "@ui5/webcomponents-fiori" package-->
-        <core:Fragment fragmentName="ui5.ecosystem.demo.simpletsapp.view.Fiori" />
+        <!-- fragment uses "@ui5/webcomponents-fiori" package -->
+        <core:Fragment fragmentName="ui5.ecosystem.demo.simpletsapp.view.fiori.NotificationList" />
       </VBox>
     </content>
   </Page>

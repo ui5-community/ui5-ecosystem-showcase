@@ -10,8 +10,6 @@ const _registry = {};
 
 const _classAliases = {};
 
-const _classes = {};
-
 // TODO: Make "classes" into... a class :)
 //       Get's rid of passing the "classDef" and the "ui5metadata" around.
 class RegistryEntry {
@@ -420,16 +418,6 @@ const WebComponentRegistry = {
 	addClassAlias(alias, obj) {
 		if (!_classAliases[alias]) {
 			_classAliases[alias] = obj;
-		}
-	},
-
-	getClassDef(id) {
-		return _classes[id];
-	},
-
-	addClassDef(alias, obj) {
-		if (!_classes[alias]) {
-			_classes[alias] = obj;
 		}
 	},
 };
