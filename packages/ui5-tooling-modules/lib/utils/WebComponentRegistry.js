@@ -241,13 +241,14 @@ class RegistryEntry {
 				console.log(`[readonly field] ${classDef.name} - property ${propDef.name}`);
 			} else if (!ui5TypeInfo.isInterfaceOrClassType) {
 				let defaultValue = propDef.default;
+				if (defaultValue) {
+					// TODO: Why are the default value strings escaped?
+					if (typeof defaultValue === "string") {
+						defaultValue = defaultValue.replace(/"/g, "");
+					}
 
-				// TODO: Why are the default value strings escaped?
-				if (typeof defaultValue === "string") {
-					defaultValue = defaultValue.replace(/"/g, "");
+					defaultValue = this.#castDefaultValue(defaultValue, ui5TypeInfo);
 				}
-
-				defaultValue = this.#castDefaultValue(defaultValue, ui5TypeInfo);
 
 				ui5metadata.properties[propDef.name] = {
 					type: `${ui5TypeInfo.ui5Type}${ui5TypeInfo.multiple ? "[]" : ""}`,
