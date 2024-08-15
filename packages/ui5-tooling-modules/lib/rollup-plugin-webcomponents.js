@@ -18,22 +18,27 @@ module.exports = function ({ resolveModule } = {}) {
 	const libTemplateFn = loadAndCompileTemplate("templates/Library.hbs");
 	const webccTemplateFn = loadAndCompileTemplate("templates/WebComponentControl.hbs");
 
-	const loadNpmPackage = (npmPackage) => {
+	const loadNpmPackage = (npmPackage, emitFile) => {
 		let registryEntry = WebComponentRegistry.getPackage(npmPackage);
 		if (!registryEntry) {
 			const packageJsonPath = resolveModule(`${npmPackage}/package.json`);
 			if (packageJsonPath) {
 				const packageJson = require(packageJsonPath);
+				// for all UI5 Web Components packages we use the internal custom elements metadata
 				if (/^@ui5\/webcomponents/.test(packageJson.name)) {
 					packageJson.customElements = /* packageJson.customElements || */ "dist/custom-elements-internal.json";
 				}
 				if (!registryEntry && packageJson.customElements) {
+					// load the dependent Web Component packages
+					const libraryDependencies = [];
 					Object.keys(packageJson.dependencies || {}).forEach((dep) => {
-						loadNpmPackage(dep);
+						const package = loadNpmPackage(dep, emitFile);
+						if (package) {
+							libraryDependencies.push(package.namespace);
+						}
 					});
 
 					// load custom elements metadata
-					// load custom elements metadata (custom-elements-internal.json > custom-elements.json)
 					const metadataPath = resolveModule(join(npmPackage, packageJson.customElements));
 					if (metadataPath) {
 						const customElementsMetadata = require(metadataPath);
@@ -45,6 +50,16 @@ module.exports = function ({ resolveModule } = {}) {
 							namespace: npmPackage,
 							npmPackagePath,
 						});
+
+						// assign the dependencies
+						registryEntry.dependencies = libraryDependencies;
+
+						// each library has a library module (with a concrete name) that needs to be emitted
+						emitFile({
+							type: "chunk",
+							id: `${npmPackage}/library`,
+							name: `${npmPackage}/library`,
+						});
 					}
 				}
 			}
@@ -52,7 +67,7 @@ module.exports = function ({ resolveModule } = {}) {
 		return registryEntry;
 	};
 
-	const lookupWebComponentsClass = (source) => {
+	const lookupWebComponentsClass = (source, emitFile) => {
 		let clazz;
 		if ((clazz = WebComponentRegistry.getClassDefinition(source))) {
 			return clazz;
@@ -61,7 +76,7 @@ module.exports = function ({ resolveModule } = {}) {
 		// determine npm package
 		const npmPackage = getNpmPackageName(source);
 
-		const registryEntry = loadNpmPackage(npmPackage);
+		const registryEntry = loadNpmPackage(npmPackage, emitFile);
 		if (registryEntry) {
 			const metadata = registryEntry;
 			let modulePath = resolveModule(source);
@@ -94,7 +109,7 @@ module.exports = function ({ resolveModule } = {}) {
 				}
 
 				let clazz;
-				if ((clazz = lookupWebComponentsClass(source))) {
+				if ((clazz = lookupWebComponentsClass(source, this.emitFile))) {
 					const modulePath = `${clazz.package}/${clazz.module}`;
 					const absModulePath = resolveModule(modulePath);
 					// id needs to be the resolved name to later be able to assign the generated code to the correct module
@@ -120,7 +135,6 @@ module.exports = function ({ resolveModule } = {}) {
 								ui5Type: "library",
 								modulePath,
 								absModulePath,
-								npmPackage,
 								package,
 							},
 						};
@@ -139,7 +153,7 @@ module.exports = function ({ resolveModule } = {}) {
 				const metadataObject = {
 					apiVersion: 2,
 					name: namespace,
-					dependencies: ["sap.ui.core"],
+					dependencies: ["sap.ui.core", ...lib.dependencies],
 					types: Object.keys(lib.enums).map((enumName) => `${namespace}.${enumName}`),
 					elements: [
 						/* do we have any? */
@@ -165,6 +179,7 @@ module.exports = function ({ resolveModule } = {}) {
 					metadata,
 					namespace,
 					enums: lib.enums,
+					dependencies: lib.dependencies.map((dep) => `${dep}/library`),
 				});
 				return code;
 			} else if (moduleInfo.attributes.ui5Type === "control") {

@@ -1,6 +1,8 @@
 import Library from "sap/ui/core/Lib";
 import { registerEnum } from "sap/ui/base/DataType";
-import "@ui5/webcomponents-base/library.js";
+{{#each dependencies}}
+import "{{this}}";
+{{/each}}
 
 const theLibrary = Library.init({{{metadata}}});
 
@@ -13,4 +15,4 @@ theLibrary["{{name}}"] = {
 registerEnum("{{../namespace}}.{{name}}", theLibrary["{{name}}"]);
 {{/each}}
 
-export default {theLibrary};
+export default theLibrary;
