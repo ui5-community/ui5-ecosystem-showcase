@@ -18,9 +18,6 @@ module.exports = function ({ resolveModule } = {}) {
 	const libTemplateFn = loadAndCompileTemplate("templates/Library.hbs");
 	const webccTemplateFn = loadAndCompileTemplate("templates/WebComponentControl.hbs");
 
-	const absToRelPathLib = {};
-	const absToRelPathWebC = {};
-
 	const loadNpmPackage = (npmPackage) => {
 		let registryEntry = WebComponentRegistry.getPackage(npmPackage);
 		if (!registryEntry) {
@@ -48,7 +45,6 @@ module.exports = function ({ resolveModule } = {}) {
 							namespace: npmPackage,
 							npmPackagePath,
 						});
-						absToRelPathLib[`${npmPackagePath}/library.js`] = npmPackage;
 					}
 				}
 			}
@@ -57,14 +53,8 @@ module.exports = function ({ resolveModule } = {}) {
 	};
 
 	const lookupWebComponentsClass = (source) => {
-		let absModulePath = resolveModule(source);
-		const relModulePath = absToRelPathWebC[absModulePath] || source;
-
 		let clazz;
-		if ((clazz = WebComponentRegistry.getClassDefinition(relModulePath))) {
-			clazz.modulePath = absModulePath;
-			clazz.moduleName = relModulePath;
-			absToRelPathWebC[absModulePath] = relModulePath;
+		if ((clazz = WebComponentRegistry.getClassDefinition(source))) {
 			return clazz;
 		}
 
@@ -73,18 +63,16 @@ module.exports = function ({ resolveModule } = {}) {
 
 		const registryEntry = loadNpmPackage(npmPackage);
 		if (registryEntry) {
-			absModulePath = absModulePath || `${registryEntry.npmPackagePath}/library.js`;
 			const metadata = registryEntry;
-			const modulePath = absModulePath.substr(metadata.npmPackagePath.length + 1);
-			const moduleName = `${npmPackage}/${modulePath}`;
-
-			const clazz = WebComponentRegistry.getClassDefinition(moduleName);
-			// TODO: base classes must be ignored as UI5Element is flagged as custom element although it is a base class
-			if (clazz && clazz.customElement && npmPackage !== "@ui5/webcomponents-base") {
-				clazz.modulePath = absModulePath;
-				clazz.moduleName = moduleName;
-				absToRelPathWebC[absModulePath] = moduleName;
-				return clazz;
+			let modulePath = resolveModule(source);
+			if (modulePath) {
+				modulePath = modulePath.substr(metadata.npmPackagePath.length + 1);
+				const moduleName = `${npmPackage}/${modulePath}`;
+				const clazz = WebComponentRegistry.getClassDefinition(moduleName);
+				// TODO: base classes must be ignored as UI5Element is flagged as custom element although it is a base class
+				if (clazz && clazz.customElement && npmPackage !== "@ui5/webcomponents-base") {
+					return clazz;
+				}
 			}
 		}
 	};
@@ -92,29 +80,10 @@ module.exports = function ({ resolveModule } = {}) {
 	return {
 		name: "webcomponents",
 		async resolveId(source, importer /*, options*/) {
-			if (!importer || importer.endsWith("?control") || importer.endsWith("/library.js") || source.endsWith("/library.js")) {
-				if (source.indexOf("NotificationListGroupItem") !== -1) {
-					console.log(`${source} <-- ${importer}`);
-				}
+			const importerModuleInfo = this.getModuleInfo(importer);
+			const isImporterUI5Module = importerModuleInfo?.attributes?.ui5Type;
 
-				/*
-				if (source.startsWith(".") || source.startsWith("..")) {
-					if (importer) {
-						const relImporterPath = absToRelPathWebC[importer];
-						if (relImporterPath) {
-							const relPath = join(dirname(relImporterPath), source);
-							const absPath = join(dirname(importer), source);
-							//source = absToRelPathWebC[absPath] = relPath;
-							//console.log(source);
-						} else {
-							//console.log("YYYYYYYYYY", source, importer);
-						}
-					} else {
-						console.log("XXXXXXXXX", source);
-					}
-				}
-				*/
-
+			if (!importer || isImporterUI5Module) {
 				if (source === "sap/ui/core/webc/WebComponent" || source === "sap/ui/core/Lib" || source === "sap/ui/base/DataType") {
 					// mark Ui5 runtime dependencies as external
 					// to avoid warnings about missing dependencies
@@ -124,28 +93,46 @@ module.exports = function ({ resolveModule } = {}) {
 					};
 				}
 
-				const npmPackageScopeRegEx = /^((?:(@[^/]+)\/)?([^/]+))(?:\/(.*))?\/library(\.js)?$/;
-				const npmPackage = npmPackageScopeRegEx.exec(source)?.[1];
-
-				let clazz, lib;
+				let clazz;
 				if ((clazz = lookupWebComponentsClass(source))) {
-					return `${clazz.modulePath}?control`;
-				} else if ((lib = WebComponentRegistry.getPackage(npmPackage))) {
+					const modulePath = `${clazz.package}/${clazz.module}`;
+					const absModulePath = resolveModule(modulePath);
+					// id needs to be the resolved name to later be able to assign the generated code to the correct module
+					// utils.js => const resolvedModule = modules.find((mod) => module?.facadeModuleId?.startsWith(mod.path));
 					return {
-						id: `${lib.npmPackagePath}/library.js`,
+						id: absModulePath + "?ui5Type=control", // the query parameter is needed to avoid cycles as we overlay the WebComponent class
 						attributes: {
-							npmPackage,
+							ui5Type: "control",
+							modulePath,
+							absModulePath,
+							clazz,
 						},
 					};
+				} else if (source.endsWith("/library.js") || source.endsWith("/library")) {
+					const npmPackage = getNpmPackageName(source);
+					let package;
+					if ((package = WebComponentRegistry.getPackage(npmPackage))) {
+						const modulePath = `${npmPackage}/library.js`;
+						const absModulePath = `${package.npmPackagePath}/library.js`;
+						return {
+							id: absModulePath,
+							attributes: {
+								ui5Type: "library",
+								modulePath,
+								absModulePath,
+								npmPackage,
+								package,
+							},
+						};
+					}
 				}
 			}
 		},
 
 		async load(id) {
-			// TODO:
-			// - @ui5/webcomponents/Button should re-export @ui5/webcomponents/dist/Button
-			let lib, clazz;
-			if ((lib = WebComponentRegistry.getPackage(absToRelPathLib[id]))) {
+			const moduleInfo = this.getModuleInfo(id);
+			if (moduleInfo.attributes.ui5Type === "library") {
+				let lib = moduleInfo.attributes.package;
 				const { namespace } = lib;
 
 				// compile the library metadata
@@ -180,7 +167,8 @@ module.exports = function ({ resolveModule } = {}) {
 					enums: lib.enums,
 				});
 				return code;
-			} else if (id.endsWith("?control") && (clazz = WebComponentRegistry.getClassDefinition(absToRelPathWebC[id.split("?")[0]]))) {
+			} else if (moduleInfo.attributes.ui5Type === "control") {
+				let clazz = moduleInfo.attributes.clazz;
 				// Extend the superclass with the WebComponent class and export it
 				const ui5Metadata = clazz._ui5metadata;
 				const ui5Class = `${ui5Metadata.namespace}.${clazz.name}`;
@@ -189,7 +177,7 @@ module.exports = function ({ resolveModule } = {}) {
 					library: `${ui5Metadata.namespace}.library`,
 				});
 				const metadata = JSON.stringify(metadataObject, undefined, 2);
-				const webcClass = clazz.modulePath;
+				const webcClass = moduleInfo.attributes.absModulePath; // is the absolute path of the original Web Component class
 
 				// Determine the superclass UI5 module name and import it
 				let webcBaseClass = "sap/ui/core/webc/WebComponent";

@@ -31,7 +31,11 @@ module.exports = function (/* { log } = {} */) {
 				// keeping the name and just adding a "?query" to the end
 				// ensures that preserveModules will generate the original
 				// entry name for this entry.
-				return `${resolution.id}${PROXY_SUFFIX}`;
+				if (!moduleInfo.attributes) {
+					return {
+						id: `${resolution.id}${PROXY_SUFFIX}`,
+					};
+				}
 			}
 			return null;
 		},
