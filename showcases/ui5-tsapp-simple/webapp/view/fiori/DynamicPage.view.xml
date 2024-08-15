@@ -1,0 +1,92 @@
+<mvc:View
+  controllerName="ui5.ecosystem.demo.simpletsapp.controller.DynamicPage"
+  displayBlock="true"
+  xmlns:m="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:webc="@ui5/webcomponents"
+  xmlns:fiori="@ui5/webcomponents-fiori"
+  core:require="{
+    Formatter: 'ui5/ecosystem/demo/simpletsapp/model/Formatter',
+    iconActionSettings: '@ui5/webcomponents-icons/dist/action-settings',
+    iconShare: '@ui5/webcomponents-icons/dist/share'
+  }"
+>
+  <fiori:DynamicPage id="page" showFooter="true">
+    <fiori:titleArea>
+      <fiori:DynamicPageTitle>
+        <fiori:breadcrumbs>
+          <webc:Breadcrumbs>
+            <webc:BreadcrumbsItem href="#" text="Man" />
+            <webc:BreadcrumbsItem href="#" text="Shoes" />
+            <webc:BreadcrumbsItem href="#" text="Running Shoes" />
+          </webc:Breadcrumbs>
+        </fiori:breadcrumbs>
+
+        <fiori:heading>
+          <webc:Title text="Special Running Shoe" />
+        </fiori:heading>
+
+        <!-- <div slot="snappedHeading" class="snapped-title-heading">
+            <webc:Avatar shape="square" icon="laptop" color-scheme="Accent5" size="S"></webc:Avatar>
+            <webc:Title wrapping-type="None">Special Running Shoe</webc:Title>
+        </div> -->
+
+        <fiori:subheading>
+          <m:Text text="PO-48865" />
+        </fiori:subheading>
+
+        <fiori:snappedSubheading>
+          <m:Text text="PO-48865" />
+        </fiori:snappedSubheading>
+
+        <!-- default aggregation: "content", doesn't need to be named -->
+        <webc:Tag colorScheme="7" wrappingType="None" text="Special 157.4M EUR" />
+
+        <fiori:actionsBar>
+          <webc:Toolbar id="actionsToolbar" design="Transparent">
+            <webc:ToolbarButton text="Create" />
+            <webc:ToolbarButton id="edit-button" design="Transparent" text="Edit" />
+            <webc:ToolbarButton design="Transparent" text="Paste" />
+          </webc:Toolbar>
+        </fiori:actionsBar>
+
+        <fiori:navigationBar>
+          <webc:Toolbar design="Transparent">
+            <webc:ToolbarButton design="Transparent" icon="share" />
+            <webc:ToolbarButton design="Transparent" icon="action-settings" />
+          </webc:Toolbar>
+        </fiori:navigationBar>
+      </fiori:DynamicPageTitle>
+    </fiori:titleArea>
+
+    <fiori:headerArea>
+      <fiori:DynamicPageHeader>
+        <!-- <div class="product-info">
+            <webc:Avatar id="avatar" shape="square" icon="laptop" color-scheme="Accent5" size="L"></webc:Avatar>
+            <div class="product-info-cell">
+                <webc:Label>Availability</webc:Label>
+                <p class="text availability">In Stock</p>
+            </div>
+            <div class="product-info-cell">
+                <webc:Label>Price</webc:Label>
+                <p class="text price">379.99 USD</p>
+            </div>
+            <div class="product-info-cell">
+                <webc:Label>Product Description</webc:Label>
+                <p class="text product-description">Super-lightweight cushioning propels you forward from landing to toe-off and has a fast, snappy feel.</p>
+            </div>
+        </div> -->
+      </fiori:DynamicPageHeader>
+    </fiori:headerArea>
+
+    <fiori:footerArea>
+      <webc:Bar design="FloatingFooter">
+        <webc:endContent>
+          <webc:Button id="save-edit" text="Save" />
+          <webc:Button id="cancel-edit" text="Close" />
+        </webc:endContent>
+      </webc:Bar>
+    </fiori:footerArea>
+  </fiori:DynamicPage>
+</mvc:View>

@@ -22,6 +22,7 @@
     <content>
       <VBox id="contentArea" alignItems="Center" justifyContent="Center" height="100%">
         <control:SimpleControl text="Hello World" />
+        <webc:Button text="nav to DynamicPage" click=".onNavToDynamicPage" />
         <Button text="Don't press me!" press="onBoo" />
         <webc:Button text="Hello World 123" />
         <webc:Input value="Hello World 123" change="onBoo" />

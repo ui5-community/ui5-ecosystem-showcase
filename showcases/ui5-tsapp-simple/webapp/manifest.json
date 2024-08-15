@@ -60,6 +60,11 @@
           "name": "Main",
           "pattern": "",
           "target": ["Main"]
+        },
+        {
+          "name": "DynamicPage",
+          "pattern": "dynamicPage",
+          "target": ["DynamicPage"]
         }
       ],
       "targets": {
@@ -69,6 +74,13 @@
           "clearControlAggregation": false,
           "viewId": "Main",
           "viewName": "Main"
+        },
+        "DynamicPage": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewId": "DynamicPage",
+          "viewName": "fiori.DynamicPage"
         }
       }
     }

@@ -67,6 +67,9 @@ export default class Main extends Controller {
 			(this.getView()?.byId("contentArea") as VBox).addItem(input);
 		}
 	}
+	public onNavToDynamicPage(): void {
+		this.getOwnerComponent().getRouter().navTo("DynamicPage");
+	}
 	public onBoo(): void {
 		MessageToast.show(`👻`);
 	}
