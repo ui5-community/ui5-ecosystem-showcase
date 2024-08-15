@@ -220,12 +220,6 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 						}
 						return;
 					}
-					const importsParts = /@_(.*):import?/.exec(key);
-					if (importsParts) {
-						node[key] = rewriteDep(node[key], bundledResources);
-						changed = true;
-						return;
-					}
 				});
 			// nodes
 			Object.keys(node)

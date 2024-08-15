@@ -529,12 +529,6 @@ module.exports = function (log) {
 								}
 								return;
 							}
-							const importsParts = /@_(.*):import?/.exec(key);
-							if (importsParts) {
-								imports[importsParts[1]] = node[key];
-								addUniqueNamespace(node[key]);
-								return;
-							}
 						});
 					// nodes
 					Object.keys(node)
