@@ -1,11 +1,10 @@
 const { join, dirname } = require("path");
 const { readFileSync } = require("fs");
-const WebComponentRegistry = require('./utils/WebComponentRegistry');
+const WebComponentRegistry = require("./utils/WebComponentRegistry");
 
 const { compile } = require("handlebars");
 
 module.exports = function ({ resolveModule } = {}) {
-
 	const getNpmPackageName = (source) => {
 		const npmPackageScopeRegEx = /^((?:(@[^/]+)\/)?([^/]+))(?:\/(.*))?$/;
 		return npmPackageScopeRegEx.exec(source)?.[1];
@@ -47,7 +46,7 @@ module.exports = function ({ resolveModule } = {}) {
 						registryEntry = WebComponentRegistry.register({
 							customElementsMetadata,
 							namespace: npmPackage,
-							npmPackagePath
+							npmPackagePath,
 						});
 						absToRelPathLib[`${npmPackagePath}/library.js`] = npmPackage;
 					}
@@ -59,9 +58,13 @@ module.exports = function ({ resolveModule } = {}) {
 
 	const lookupWebComponentsClass = (source) => {
 		let absModulePath = resolveModule(source);
+		const relModulePath = absToRelPathWebC[absModulePath] || source;
 
 		let clazz;
-		if ((clazz = WebComponentRegistry.getClassDefinition(absModulePath))) {
+		if ((clazz = WebComponentRegistry.getClassDefinition(relModulePath))) {
+			clazz.modulePath = absModulePath;
+			clazz.moduleName = relModulePath;
+			absToRelPathWebC[absModulePath] = relModulePath;
 			return clazz;
 		}
 
@@ -84,37 +87,57 @@ module.exports = function ({ resolveModule } = {}) {
 				return clazz;
 			}
 		}
-	}
+	};
 
 	return {
 		name: "webcomponents",
-		async resolveId(source/*, importer, options*/) {
-			if (
-				source === "sap/ui/core/webc/WebComponent" ||
-				source === "sap/ui/core/Lib" ||
-				source === "sap/ui/base/DataType"
-			) {
-				// mark Ui5 runtime dependencies as external
-				// to avoid warnings about missing dependencies
-				return {
-					id: source,
-					external: true
-				};
-			}
+		async resolveId(source, importer /*, options*/) {
+			if (!importer || importer.endsWith("?control") || importer.endsWith("/library.js") || source.endsWith("/library.js")) {
+				if (source.indexOf("NotificationListGroupItem") !== -1) {
+					console.log(`${source} <-- ${importer}`);
+				}
 
-			const npmPackageScopeRegEx = /^((?:(@[^/]+)\/)?([^/]+))(?:\/(.*))?\/library(\.js)?$/;
-			const npmPackage = npmPackageScopeRegEx.exec(source)?.[1];
-
-			let clazz, lib;
-			if ((clazz = lookupWebComponentsClass(source))) {
-				return `${clazz.modulePath}?control`;
-			} else if ((lib = WebComponentRegistry.getPackage(npmPackage))) {
-				return {
-					id: `${lib.npmPackagePath}/library.js`,
-					attributes: {
-						npmPackage
+				/*
+				if (source.startsWith(".") || source.startsWith("..")) {
+					if (importer) {
+						const relImporterPath = absToRelPathWebC[importer];
+						if (relImporterPath) {
+							const relPath = join(dirname(relImporterPath), source);
+							const absPath = join(dirname(importer), source);
+							//source = absToRelPathWebC[absPath] = relPath;
+							//console.log(source);
+						} else {
+							//console.log("YYYYYYYYYY", source, importer);
+						}
+					} else {
+						console.log("XXXXXXXXX", source);
 					}
-				};
+				}
+				*/
+
+				if (source === "sap/ui/core/webc/WebComponent" || source === "sap/ui/core/Lib" || source === "sap/ui/base/DataType") {
+					// mark Ui5 runtime dependencies as external
+					// to avoid warnings about missing dependencies
+					return {
+						id: source,
+						external: true,
+					};
+				}
+
+				const npmPackageScopeRegEx = /^((?:(@[^/]+)\/)?([^/]+))(?:\/(.*))?\/library(\.js)?$/;
+				const npmPackage = npmPackageScopeRegEx.exec(source)?.[1];
+
+				let clazz, lib;
+				if ((clazz = lookupWebComponentsClass(source))) {
+					return `${clazz.modulePath}?control`;
+				} else if ((lib = WebComponentRegistry.getPackage(npmPackage))) {
+					return {
+						id: `${lib.npmPackagePath}/library.js`,
+						attributes: {
+							npmPackage,
+						},
+					};
+				}
 			}
 		},
 
@@ -130,19 +153,21 @@ module.exports = function ({ resolveModule } = {}) {
 					apiVersion: 2,
 					name: namespace,
 					dependencies: ["sap.ui.core"],
-					types:	Object.keys(lib.enums).map((enumName) => `${namespace}.${enumName}`),
-					elements: [ /* do we have any? */ ],
+					types: Object.keys(lib.enums).map((enumName) => `${namespace}.${enumName}`),
+					elements: [
+						/* do we have any? */
+					],
 					controls: Object.keys(lib.customElements).map((elementName) => `${namespace}.${elementName}`),
 					interfaces: Object.keys(lib.interfaces).map((interfaceName) => `${namespace}.${interfaceName}`),
 					designtime: `${namespace}/designtime/library.designtime`,
 					extensions: {
 						flChangeHandlers: {
 							"@ui5/webcomponents.Avatar": {
-								"hideControl": "default",
-								"unhideControl": "default"
+								hideControl: "default",
+								unhideControl: "default",
 							},
 							"@ui5/webcomponents.Button": "@ui5/webcomponents-flexibility.Button",
-						}
+						},
 					},
 					noLibraryCSS: true,
 				};
@@ -155,7 +180,6 @@ module.exports = function ({ resolveModule } = {}) {
 					enums: lib.enums,
 				});
 				return code;
-
 			} else if (id.endsWith("?control") && (clazz = WebComponentRegistry.getClassDefinition(absToRelPathWebC[id.split("?")[0]]))) {
 				// Extend the superclass with the WebComponent class and export it
 				const ui5Metadata = clazz._ui5metadata;

@@ -962,7 +962,7 @@ module.exports = function (log) {
 						} catch (ex) {
 							// related to issue #726 for which the generation of jspdf fails on Windows machines
 							// when running the build in a standalone project with npm (without monorepo and pnpm)
-							/* debug && */ log.warn(`Failed to bundle "${nameOfModules}" using ES modules, falling back to CommonJS modules...`);
+							/* debug && */ log.warn(`Failed to bundle "${nameOfModules}" using ES modules, falling back to CommonJS modules...`, ex.message);
 							debug && log.verbose(ex); // report error in verbose case!
 							output = await that.createBundle(
 								nameOfModules,

@@ -46,7 +46,7 @@
         </webc:Select>
 
         <!-- Comment this in to use "@ui5/webcomponents-fiori" package-->
-        <!-- <core:Fragment fragmentName="ui5.ecosystem.demo.simpletsapp.view.Fiori" /> -->
+        <core:Fragment fragmentName="ui5.ecosystem.demo.simpletsapp.view.Fiori" />
       </VBox>
     </content>
   </Page>
