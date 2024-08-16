@@ -12,7 +12,8 @@
     iconBiometric: '@ui5/webcomponents-icons/dist/biometric-face',
     iconBadge: '@ui5/webcomponents-icons/dist/badge',
     iconAccept: '@ui5/webcomponents-icons/dist/accept',
-    iconMessageError: '@ui5/webcomponents-icons/dist/message-error'
+    iconMessageError: '@ui5/webcomponents-icons/dist/message-error',
+    iconArrow: '@ui5/webcomponents-icons/dist/slim-arrow-right'
   }"
 >
   <Page id="page" title="{formatter: 'Formatter.formatValue', path: 'i18n>appTitle'}">
@@ -22,7 +23,7 @@
     <content>
       <VBox id="contentArea" alignItems="Center" justifyContent="Center" height="100%">
         <control:SimpleControl text="Hello World" />
-        <webc:Button text="nav to DynamicPage" click=".onNavToDynamicPage" />
+        <webc:Button text="nav to DynamicPage" click=".onNavToDynamicPage" design="Attention" endIcon="slim-arrow-right" />
         <Button text="Don't press me!" press="onBoo" />
         <webc:Button text="Hello World 123" />
         <webc:Input value="Hello World 123" change="onBoo" />

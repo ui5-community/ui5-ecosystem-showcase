@@ -6,10 +6,13 @@
   xmlns:mvc="sap.ui.core.mvc"
   xmlns:webc="@ui5/webcomponents"
   xmlns:fiori="@ui5/webcomponents-fiori"
+  xmlns:c="ui5.ecosystem.demo.simpletsapp.control"
   core:require="{
     Formatter: 'ui5/ecosystem/demo/simpletsapp/model/Formatter',
     iconActionSettings: '@ui5/webcomponents-icons/dist/action-settings',
-    iconShare: '@ui5/webcomponents-icons/dist/share'
+    iconShare: '@ui5/webcomponents-icons/dist/share',
+    iconLaptop: '@ui5/webcomponents-icons/dist/laptop',
+    iconArrow: '@ui5/webcomponents-icons/dist/slim-arrow-right'
   }"
 >
   <fiori:DynamicPage id="page" showFooter="true">
@@ -27,10 +30,12 @@
           <webc:Title text="Special Running Shoe" />
         </fiori:heading>
 
-        <!-- <div slot="snappedHeading" class="snapped-title-heading">
-            <webc:Avatar shape="square" icon="laptop" color-scheme="Accent5" size="S"></webc:Avatar>
-            <webc:Title wrapping-type="None">Special Running Shoe</webc:Title>
-        </div> -->
+        <fiori:snappedHeading>
+          <c:HTMLElement tag="div" class="snapped-title-heading">
+            <webc:Avatar shape="Square" icon="laptop" colorScheme="Accent5" size="S" />
+            <webc:Title wrappingType="None" text="Special Running Shoe" />
+          </c:HTMLElement>
+        </fiori:snappedHeading>
 
         <fiori:subheading>
           <m:Text text="PO-48865" />
@@ -62,23 +67,36 @@
 
     <fiori:headerArea>
       <fiori:DynamicPageHeader>
-        <!-- <div class="product-info">
-            <webc:Avatar id="avatar" shape="square" icon="laptop" color-scheme="Accent5" size="L"></webc:Avatar>
-            <div class="product-info-cell">
-                <webc:Label>Availability</webc:Label>
-                <p class="text availability">In Stock</p>
-            </div>
-            <div class="product-info-cell">
-                <webc:Label>Price</webc:Label>
-                <p class="text price">379.99 USD</p>
-            </div>
-            <div class="product-info-cell">
-                <webc:Label>Product Description</webc:Label>
-                <p class="text product-description">Super-lightweight cushioning propels you forward from landing to toe-off and has a fast, snappy feel.</p>
-            </div>
-        </div> -->
+        <c:HTMLElement tag="div" class="product-info">
+          <webc:Avatar id="avatar" shape="Square" icon="laptop" colorScheme="Accent5" size="L" />
+
+          <c:HTMLElement tag="div" class="product-info-cell">
+            <webc:Label text="Availability" />
+            <m:Text class="text availability" text="In Stock" />
+          </c:HTMLElement>
+
+          <c:HTMLElement tag="div" class="product-info-cell">
+            <webc:Label text="Price" />
+            <m:Text class="text price" text="379.99 USD" />
+          </c:HTMLElement>
+
+          <c:HTMLElement tag="div" class="product-info-cell">
+            <webc:Label text="Product Description" />
+            <m:Text class="text product-description" text="Super-lightweight cushioning propels you forward from landing to toe-off and has a fast, snappy feel." />
+          </c:HTMLElement>
+        </c:HTMLElement>
       </fiori:DynamicPageHeader>
     </fiori:headerArea>
+
+    <webc:List content="{dpModel>/items}" headerText="Products" selectionMode="None">
+      <webc:ListItemStandard icon="slim-arrow-right" iconEnd="true" description="{dpModel>productID}" additionalText="{dpModel>price}" text="{dpModel>productName}">
+        <webc:image>
+          <webc:Avatar size="S" shape="Square" colorScheme="Accent10">
+            <m:Image src="{dpModel>imageSrc}" />
+          </webc:Avatar>
+        </webc:image>
+      </webc:ListItemStandard>
+    </webc:List>
 
     <fiori:footerArea>
       <webc:Bar design="FloatingFooter">
