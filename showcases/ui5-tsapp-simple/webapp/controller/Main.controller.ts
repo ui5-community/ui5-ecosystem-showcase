@@ -5,14 +5,14 @@ import WebComponentRenderer from "sap/ui/core/webc/WebComponentRenderer";
 import Controller from "sap/ui/core/mvc/Controller";
 import MessageToast from "sap/m/MessageToast";
 // TODO: imports to @ui5/webcomponents/dist/Button still doesn't work!
-import Button from "@ui5/webcomponents/Button";
-import DatePicker from "@ui5/webcomponents/DatePicker";
+import Button from "@ui5/webcomponents/dist/Button";
+import DatePicker from "@ui5/webcomponents/dist/DatePicker";
 import Input from "@ui5/webcomponents/Input";
 import Control from "sap/ui/core/Control";
 import VBox from "sap/m/VBox";
 import Popup from "sap/ui/core/Popup";
 import Event from "sap/ui/base/Event";
-//import "@ui5/webcomponents/library";
+import { AvatarSize } from "@ui5/webcomponents/library";
 
 WebComponentRenderer.renderAttributeProperties = function (oRm, oWebComponent) {
 	var oAttrProperties = oWebComponent.getMetadata().getPropertiesByMapping("property");

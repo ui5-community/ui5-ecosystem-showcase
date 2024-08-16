@@ -969,10 +969,13 @@ module.exports = function (log) {
 						// parse the rollup build result
 						output.forEach((module, i) => {
 							// lookup the output module in the list of input modules
-							const resolvedModule = modules.find((mod) => module?.facadeModuleId?.startsWith(mod.path));
-							if (resolvedModule) {
-								// entry module
-								resolvedModule.code = module.code;
+							const resolvedModules = modules.filter((mod) => module?.facadeModuleId?.startsWith(mod.path));
+							if (resolvedModules.length > 0) {
+								// one module could be resolved by multiple input modules (e.g. export aliases in package.json)
+								resolvedModules?.forEach((resolvedModule) => {
+									// entry module
+									resolvedModule.code = module.code;
+								});
 							} else {
 								// chunk module
 								if (module.code) {
