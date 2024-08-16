@@ -74,12 +74,20 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 
 	// replace the version in all files handled by this task because this plugin handles additional file types
 	// which are not supported by the replaceVersion task of the UI5 Tooling (hardcoded some selected file types)
-	// (HINT: do this a bit loosly coupled for now to avoid tight dependencies to UI5 Tooling)
+	// (HINT: do this a bit loosely coupled for now to avoid tight dependencies to UI5 Tooling)
+	// Also check for @ui5/builder under @ui5/cli to avoid issues with the module resolution
 	try {
 		// dynamically require the replaceVersion task
 		// (using the absolute path to the module to avoid issues with the module resolution)
-		const replaceVersion = (await import(pathToFileURL(require.resolve("@ui5/builder/tasks/replaceVersion"))))
-			.default;
+		const replaceVersion = (
+			await import(
+				pathToFileURL(
+					require.resolve("@ui5/builder/tasks/replaceVersion", {
+						paths: [cwd, `node_modules${path.sep}@ui5${path.sep}cli`]
+					})
+				)
+			)
+		).default;
 		// replace the versions for all supported file types
 		// using the central replaceVersion task of the UI5 Tooling
 		await replaceVersion({
