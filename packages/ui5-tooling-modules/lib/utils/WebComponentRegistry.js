@@ -25,9 +25,6 @@ class RegistryEntry {
 		this.enums = {};
 		this.interfaces = new Set();
 
-		// TODO: Should not be needed later!
-		this.#patchMissingEnums();
-
 		this.#processMetadata();
 	}
 
@@ -108,20 +105,6 @@ class RegistryEntry {
 		return `${this.namespace}.${str}`;
 	}
 
-	/**
-	 * TODO: We patch some enums as a workaround so that the wrapper controls behave correctly.
-	 *       We need to find out why some enums are not contained in the custom elements manifest.
-	 */
-	#patchMissingEnums() {
-		if (this.namespace === "@ui5/webcomponents") {
-			this.enums["ValueState"] = {
-				kind: "enum",
-				name: "ValueState",
-				members: [{ name: "None" }, { name: "Positive" }, { name: "Critical" }, { name: "Negative" }, { name: "Information" }],
-			};
-		}
-	}
-
 	// --- UI5 Metadata transformer below ---
 
 	#normalizeType(type) {
@@ -170,8 +153,9 @@ class RegistryEntry {
 			const interfaceOrClassType = this.#checkForInterfaceOrClassType(parsedType);
 
 			if (interfaceOrClassType) {
-				// TODO: How should this be wired in the wrapper?
-				//       Is this a calculated property...?
+				// TODO: How should this be wired for properties?
+				//       Aggregations can have an interface/class type, but properties do not.
+				//       A property of this typing could be considered a calculated field...?
 				return {
 					isInterfaceOrClassType: true,
 					origType: parsedType,
