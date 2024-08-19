@@ -38,7 +38,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 		name: `Reader collection of project ${middlewareUtil.getProject().getName()}`,
 		readers: [resources.rootProject, ...depProjects.map((prj) => prj.getReader())],
 	});
-	const { scan, getBundleInfo, getResource } = require("./util")(log);
+	const { scan, getBundleInfo, getResource, resolveModule } = require("./util")(log);
 
 	log.verbose(`Starting ui5-tooling-modules-middleware`);
 
@@ -124,6 +124,11 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 		}
 	};
 
+	const getNpmPackageName = (source) => {
+		const npmPackageScopeRegEx = /^((?:(@[^/]+)\/)?([^/]+))(?:\/(.*))?$/;
+		return npmPackageScopeRegEx.exec(source)?.[1];
+	};
+
 	// return the middleware
 	return async (req, res, next) => {
 		// determine the request path
@@ -144,10 +149,18 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 
 			// check if the resource exists in node_modules
 			let resource = getResource(moduleName, { cwd, depPaths, isMiddleware: true });
+			let existsPackage;
+			if (!resource) {
+				// in some cases there is a request to a module of an NPM package and in this
+				// case we still need to trigger the bundle and watch process to create the
+				// bundle info from which we can extract the resource (e.g. webc libraries)
+				const npmPackage = getNpmPackageName(moduleName);
+				existsPackage = !!resolveModule(`${npmPackage}/package.json`, { cwd, depPaths, isMiddleware: true });
+			}
 
 			// if a resource has been found in node_modules, we will
 			// trigger the bundling process and watch the bundled resources
-			if (resource) {
+			if (resource || existsPackage) {
 				bundleAndWatch({ moduleName });
 			}
 
