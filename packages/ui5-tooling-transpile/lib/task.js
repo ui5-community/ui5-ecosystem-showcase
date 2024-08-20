@@ -83,7 +83,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 			await import(
 				pathToFileURL(
 					require.resolve("@ui5/builder/tasks/replaceVersion", {
-						paths: [cwd, `node_modules${path.sep}@ui5${path.sep}cli`]
+						paths: [cwd, require.resolve("@ui5/cli/package.json")]
 					})
 				)
 			)
