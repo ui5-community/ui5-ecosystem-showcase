@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.4.7...ui5-tooling-transpile@3.4.8) (2024-08-21)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** properly load replaceVersion task ([#1063](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1063)) ([4575da2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4575da2407aa88c537bf7a6250a909f236eec0df))
+
+
+
+
+
 ## [3.4.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.4.6...ui5-tooling-transpile@3.4.7) (2024-07-22)
 
 **Note:** Version bump only for package ui5-tooling-transpile
