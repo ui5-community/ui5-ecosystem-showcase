@@ -98,6 +98,18 @@
       </webc:ListItemStandard>
     </webc:List>
 
+    <!-- pure HTML sample, not supported as of now... but would be nice to have in the future -->
+    <!-- <h:div children="{dpModel>/items}">
+        <h:div>
+            <h:span>
+                <webc:Avatar size="S" shape="Square" colorScheme="Accent10">
+                    <m:Image src="{dpModel>imageSrc}" />
+                </webc:Avatar>
+            </h:span>
+            <h:span>{dpModel&gt;productID}<h:span/>
+        </h:div>
+    </h:div> -->
+
     <fiori:footerArea>
       <webc:Bar design="FloatingFooter">
         <webc:endContent>

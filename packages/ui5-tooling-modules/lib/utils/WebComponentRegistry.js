@@ -130,7 +130,18 @@ class RegistryEntry {
 		//       Does that make sense? Probably should be an empty array instead of undefined?
 		let parsedType = typeInfo?.text;
 		if (parsedType?.indexOf("|") > 0) {
-			parsedType = parsedType.replace(/ \| undefined/g, "");
+			const types = parsedType.split("|").map((s) => s.trim());
+			// "htmlelement | string" is an association, e.g. the @ui5-webcomponents/Popover#opener
+			if (types[0] === "HTMLElement" && types[1] === "string") {
+				return {
+					isAssociation: true,
+					origType: "HTMLElement",
+					ui5Type: "sap.ui.core.Control",
+				};
+			}
+			// UI5 normally accepts only one type for a property, except if "any" is used
+			// in this case we just use the first one as the primary type
+			parsedType = types[0];
 		}
 
 		// check if we have an array type
@@ -164,7 +175,7 @@ class RegistryEntry {
 				};
 			}
 
-			// case 3: hm... neither primitive, nor enum or interface/class type
+			// case 3: check for cross package type reference
 			const refPackage = WebComponentRegistry.getPackage(typeInfo.references[0]?.package);
 			if (refPackage?.enums?.[parsedType]) {
 				return {
@@ -223,7 +234,17 @@ class RegistryEntry {
 			if (propDef.readonly) {
 				// s.a.
 				console.log(`[readonly field] ${classDef.name} - property ${propDef.name}`);
-			} else if (!ui5TypeInfo.isInterfaceOrClassType) {
+			} else if (ui5TypeInfo.isInterfaceOrClassType) {
+				console.warn(`[interface or class type given for property] ${classDef.name} - property ${propDef.name}`);
+			} else if (ui5TypeInfo.isAssociation) {
+				ui5metadata.associations[propDef.name] = {
+					type: ui5TypeInfo.ui5Type,
+					mapping: {
+						type: "property", // assoc. are always property mappings
+						to: propDef.name, // the name of the webc's attribute
+					},
+				};
+			} else {
 				let defaultValue = propDef.default;
 				if (defaultValue) {
 					// TODO: Why are the default value strings escaped?

@@ -14,6 +14,21 @@ import Popup from "sap/ui/core/Popup";
 import Event from "sap/ui/base/Event";
 import { AvatarSize } from "@ui5/webcomponents/library";
 
+function injectStyle() {
+	const sheet = new CSSStyleSheet();
+	sheet.replaceSync(`
+.panelSpacing {
+	margin: 10px;
+}
+.popover-content {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+`);
+	document.adoptedStyleSheets.push(sheet);
+}
+
 WebComponentRenderer.renderAttributeProperties = function (oRm, oWebComponent) {
 	var oAttrProperties = oWebComponent.getMetadata().getPropertiesByMapping("property");
 	var aPropsToAlwaysSet = ["enabled"].concat(
@@ -54,6 +69,8 @@ WebComponentRenderer.renderAttributeProperties = function (oRm, oWebComponent) {
  */
 export default class Main extends Controller {
 	public onInit(): void {
+		injectStyle();
+
 		const button = new Button({ text: "👻", click: this.onBoo });
 		if (button instanceof Control) {
 			(this.getView()?.byId("contentArea") as VBox).addItem(button);
@@ -67,13 +84,26 @@ export default class Main extends Controller {
 			(this.getView()?.byId("contentArea") as VBox).addItem(input);
 		}
 	}
+
 	public onNavToDynamicPage(): void {
 		this.getOwnerComponent().getRouter().navTo("DynamicPage");
 	}
+
 	public onBoo(): void {
 		MessageToast.show(`👻`);
 	}
+
 	public onLiveChange(e: Event): void {
 		MessageToast.show(`🛠️ liveChange: ${e.getParameter("selectedOption").getText()}`, { at: Popup.Dock.CenterCenter });
+	}
+
+	// wire popover opener buttons
+	public onPopoverOpener1Click(e: Event): void {
+		const poppy1 = this.byId("popover1");
+		poppy1?.setOpen(!poppy1?.getOpen());
+	}
+	public onPopoverOpener2Click(e: Event): void {
+		const poppy2 = this.byId("popover2");
+		poppy2?.setOpen(!poppy2?.getOpen());
 	}
 }

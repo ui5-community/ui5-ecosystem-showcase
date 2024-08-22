@@ -4,7 +4,7 @@
   xmlns="sap.m"
   xmlns:core="sap.ui.core"
   xmlns:mvc="sap.ui.core.mvc"
-  xmlns:control="ui5.ecosystem.demo.simpletsapp.control"
+  xmlns:c="ui5.ecosystem.demo.simpletsapp.control"
   xmlns:webc="@ui5/webcomponents"
   core:require="{
     Formatter: 'ui5/ecosystem/demo/simpletsapp/model/Formatter',
@@ -21,33 +21,110 @@
       <core:Icon color="#1873B4" src="sap-icon://sap-ui5" size="2rem" />
     </headerContent>
     <content>
-      <VBox id="contentArea" alignItems="Center" justifyContent="Center" height="100%">
-        <control:SimpleControl text="Hello World" />
-        <webc:Button text="nav to DynamicPage" click=".onNavToDynamicPage" design="Attention" endIcon="slim-arrow-right" />
-        <Button text="Don't press me!" press="onBoo" />
-        <webc:Button text="Hello World 123" />
-        <webc:Input value="Hello World 123" change="onBoo" />
-        <webc:AvatarGroup type="Individual">
-          <webc:Avatar initials="PM" colorScheme="Accent1" />
-          <webc:Avatar initials="XX" colorScheme="Accent4" shape="Square" />
-          <webc:Avatar icon="ai" colorScheme="Accent7" />
-        </webc:AvatarGroup>
-        <webc:DateRangePicker />
-        <webc:CheckBox text="Hello World 123" />
-        <webc:List>
-          <webc:ListItemStandard text="Item 1" />
-          <webc:ListItemStandard text="Item 2" />
-          <webc:ListItemStandard text="Item 3" />
-        </webc:List>
-        <webc:Select liveChange=".onLiveChange">
-          <webc:Option text="AI" icon="ai" />
-          <webc:Option text="Biometric" icon="biometric-face" />
-          <webc:Option text="Security" icon="badge" />
-        </webc:Select>
+      <webc:Panel headerText="Buttons" class="panelSpacing">
+        <VBox alignItems="Center" justifyContent="Center" height="100%">
+          <webc:Button text="nav to DynamicPage" click=".onNavToDynamicPage" design="Attention" endIcon="slim-arrow-right" />
+          <Button text="Don't press me!" press="onBoo" />
+          <webc:Button text="Hello World 123" />
+        </VBox>
+      </webc:Panel>
 
-        <!-- fragment uses "@ui5/webcomponents-fiori" package -->
+      <webc:Panel headerText="Simple Controls" class="panelSpacing">
+        <VBox alignItems="Center" justifyContent="Center" height="100%">
+          <webc:Input value="Hello World 123" change="onBoo" />
+          <webc:AvatarGroup type="Individual">
+            <webc:Avatar initials="PM" colorScheme="Accent1" />
+            <webc:Avatar initials="XX" colorScheme="Accent4" shape="Square" />
+            <webc:Avatar icon="ai" colorScheme="Accent7" />
+          </webc:AvatarGroup>
+          <webc:CheckBox text="Hello World 123" />
+        </VBox>
+      </webc:Panel>
+
+      <webc:Panel headerText="More complex controls" class="panelSpacing">
+        <VBox alignItems="Center" justifyContent="Center" height="100%">
+          <webc:DateRangePicker />
+          <webc:List>
+            <webc:ListItemStandard text="Item 1" />
+            <webc:ListItemStandard text="Item 2" />
+            <webc:ListItemStandard text="Item 3" />
+          </webc:List>
+          <webc:Select liveChange=".onLiveChange">
+            <webc:Option text="AI" icon="ai" />
+            <webc:Option text="Biometric" icon="biometric-face" />
+            <webc:Option text="Security" icon="badge" />
+          </webc:Select>
+        </VBox>
+      </webc:Panel>
+
+      <webc:Panel headerText="Controls created from Main.controller.ts" class="panelSpacing">
+        <VBox id="contentArea" alignItems="Center" justifyContent="Center" height="100%" />
+      </webc:Panel>
+
+      <webc:Panel headerText="Popovers + Associations" class="panelSpacing">
+        <HBox alignItems="Center" justifyContent="Center" height="100%">
+          <webc:Button id="popoverOpenerButton1" text="Open Popover to Bottom" click=".onPopoverOpener1Click" />
+          <webc:Button id="popoverOpenerButton2" text="Open Popover to Left" click=".onPopoverOpener2Click" />
+
+          <webc:Popover id="popover1" opener="popoverOpenerButton1" headerText="Newsletter subscription" placement="Bottom">
+            <c:HTMLElement tag="div" class="popover-content">
+              <webc:Label for="emailInput" required="true" showColon="true" text="Email" />
+              <webc:Input id="emailInput1" placeholder="Enter Email" />
+              <!-- TODO: support for inline styles  =  style="min-width: 150px;" -->
+              <webc:Label text="The popover is associated with the Button. Calling getOpener() returns the ID of the Button." />
+            </c:HTMLElement>
+            <webc:footer>
+              <c:HTMLElement tag="div" class="popover-footer">
+                <webc:Button id="closePopoverButton1" design="Emphasized" text="Subscribe" />
+              </c:HTMLElement>
+            </webc:footer>
+          </webc:Popover>
+
+          <webc:Popover id="popover2" opener="popoverOpenerButton2" headerText="Newsletter subscription" placement="Start">
+            <c:HTMLElement tag="div" class="popover-content">
+              <webc:Label for="emailInput" required="true" showColon="true" text="Email" />
+              <webc:Input id="emailInput2" placeholder="Enter Email" />
+              <!-- TODO: support for inline styles  =  style="min-width: 150px;" -->
+              <webc:Label text="The popover is associated with the Button. Calling getOpener() returns the ID of the Button." />
+            </c:HTMLElement>
+            <webc:footer>
+              <c:HTMLElement tag="div" class="popover-footer">
+                <webc:Button id="closePopoverButton2" design="Emphasized" text="Subscribe" />
+              </c:HTMLElement>
+            </webc:footer>
+          </webc:Popover>
+        </HBox>
+      </webc:Panel>
+
+      <!-- fragment uses "@ui5/webcomponents-fiori" package -->
+      <webc:Panel headerText="@ui5/webcomponents-fiori.NotificationList" class="panelSpacing">
         <core:Fragment fragmentName="ui5.ecosystem.demo.simpletsapp.view.fiori.NotificationList" />
-      </VBox>
+      </webc:Panel>
+
+      <!-- Not supported as of now, but would be nice to have -->
+      <!-- <h:div style="
+        background: #FAFAFA;
+        border-bottom: 2px solid #777777;
+        border-radius: 5px;
+        box-shadow: 0px 5px 10px #999999;
+        padding: 10px;
+        margin: 10px">
+        <h:div style="border-bottom: 1px solid #D0D0D0; padding: 2px;">
+          I'm a self made card :)
+        </h:div>
+        <h:div>
+          <h:p>This is a checkbox:</h:p>
+          <webc:CheckBox text="inside div" />
+          <h:p>
+            <h:a href="https://ui5.sap.com" data-sap-ui-test="12" enabled="true">link to demokit</h:a>
+          </h:p>
+          <h:p>
+            text content before the &lt;hr&gt;...
+            <h:hr />
+            ... and text content after the &lt;hr&gt;.
+          </h:p>
+        </h:div>
+      </h:div> -->
     </content>
   </Page>
 </mvc:View>
