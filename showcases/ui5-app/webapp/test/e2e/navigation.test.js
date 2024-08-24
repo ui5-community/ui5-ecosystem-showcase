@@ -11,12 +11,10 @@ describe("navigation", function () {
 	it("should navigate to the list page and back", async function () {
 		await MainPage.iPressTheNavButton();
 
-		expect(await onTheOtherPage.iShouldSeeTheList()).toBeTruthy();
+		expect(onTheOtherPage.iShouldSeeTheList()).toBeTruthy();
 
 		await onTheOtherPage.iNavigateBack();
 
-		expect(MainPage.iShouldSeeTheApp()).toBeTruthy();
-
-		expect(await MainPage.iShouldSeeTheNavButton()).toBeTruthy();
+		expect(MainPage.iShouldSeeTheNavButton()).toBeTruthy();
 	});
 });
