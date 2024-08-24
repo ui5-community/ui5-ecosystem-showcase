@@ -1,12 +1,5 @@
+const MainPage = require("./pages/Main");
 const onTheOtherPage = require("./pages/Other");
-
-const navFwdButton = {
-	forceSelect: true,
-	selector: {
-		viewName: "ui5.ecosystem.demo.app.view.Main",
-		id: "NavButton",
-	},
-};
 
 const list = {
 	selector: {
@@ -17,8 +10,13 @@ const list = {
 
 // this suite implemented straigh-fwd, no page objects
 describe("binding", function () {
+	it("should see the initial page of the app", async function () {
+		await MainPage.open();
+		expect(MainPage.iShouldSeeTheApp()).toBeTruthy();
+	});
+
 	it("Other view: PeopleList: items aggregation + amount of items", async function () {
-		await browser.asControl(navFwdButton).press();
+		await MainPage.iPressTheNavButton();
 		expect(onTheOtherPage.iShouldSeeTheList()).toBeTruthy();
 
 		const oList = await browser.asControl(list);
