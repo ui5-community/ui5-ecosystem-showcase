@@ -4,7 +4,7 @@ const WebComponentRegistry = require("./utils/WebComponentRegistry");
 
 const { compile } = require("handlebars");
 
-module.exports = function ({ resolveModule } = {}) {
+module.exports = function ({ resolveModule, skip } = {}) {
 	const getNpmPackageName = (source) => {
 		const npmPackageScopeRegEx = /^((?:(@[^/]+)\/)?([^/]+))(?:\/(.*))?$/;
 		return npmPackageScopeRegEx.exec(source)?.[1];
@@ -95,6 +95,9 @@ module.exports = function ({ resolveModule } = {}) {
 	return {
 		name: "webcomponents",
 		async resolveId(source, importer /*, options*/) {
+			if (skip) {
+				return null;
+			}
 			const importerModuleInfo = this.getModuleInfo(importer);
 			const isImporterUI5Module = importerModuleInfo?.attributes?.ui5Type;
 
@@ -144,6 +147,9 @@ module.exports = function ({ resolveModule } = {}) {
 		},
 
 		async load(id) {
+			if (skip) {
+				return null;
+			}
 			const moduleInfo = this.getModuleInfo(id);
 			if (moduleInfo.attributes.ui5Type === "library") {
 				let lib = moduleInfo.attributes.package;

@@ -24,23 +24,23 @@ sap.ui.define(
 	(Controller, MessageToast, jQuery, xlsx, cmis, supabase, octokit, axios, temporal, stompjs, react, reactdom, zod, pdfMake, pdfFonts, xmljs, firebase, firestore, signalr) => {
 		"use strict";
 
-		console.log(xlsx);
-		console.log(cmis);
-		console.log(supabase);
-		console.log(octokit);
-		console.log(axios);
-		console.log(temporal);
-		console.log(stompjs);
-		console.log(react);
-		console.log(reactdom);
-		console.log(zod);
-		console.log(xmljs);
+		console.log("[3rdParty] xlsx", xlsx);
+		console.log("[3rdParty] cmis", cmis);
+		console.log("[3rdParty] supabase", supabase);
+		console.log("[3rdParty] octokit", octokit);
+		console.log("[3rdParty] axios", axios, axios.VERSION);
+		console.log("[3rdParty] temporal", temporal);
+		console.log("[3rdParty] stompjs", stompjs);
+		console.log("[3rdParty] react", react);
+		console.log("[3rdParty] reactdom", reactdom);
+		console.log("[3rdParty] zod", zod);
+		console.log("[3rdParty] xmljs", xmljs);
 
 		pdfMake.vfs = pdfFonts.pdfMake.vfs;
-		console.log(pdfMake);
+		console.log("[3rdParty] pdfMake", pdfMake);
 
-		console.log(firebase);
-		console.log(firestore);
+		console.log("[3rdParty] firebase", firebase);
+		console.log("[3rdParty] firestore", firestore);
 		const { initializeApp } = firebase;
 		const { getFirestore } = firestore;
 		const app = initializeApp({});
@@ -50,7 +50,7 @@ sap.ui.define(
 			console.error(ex);
 		}
 
-		console.log(signalr, jQuery.connection.hub);
+		console.log("[3rdParty] signalr", signalr, jQuery.connection.hub);
 
 		return Controller.extend("ui5.ecosystem.demo.app.controller.Thirdparty", {
 			onInit() {

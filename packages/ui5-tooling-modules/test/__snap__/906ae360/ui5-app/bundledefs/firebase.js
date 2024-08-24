@@ -6748,8 +6748,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		isPromise: isPromise$1,
 	};
 
+	const TextEncoder$1 = (function() { return globalThis.TextEncoder || require("util").TextEncoder; })(); // ### MODIFIED ###
+	const TextDecoder$1 = (function() { return globalThis.TextDecoder || require("util").TextDecoder; })(); // ### MODIFIED ###
+
 	var _polyfillNode_util = /*#__PURE__*/Object.freeze({
 		__proto__: null,
+		TextDecoder: TextDecoder$1,
+		TextEncoder: TextEncoder$1,
 		_extend: _extend,
 		callbackify: callbackify,
 		debuglog: debuglog,
@@ -33941,7 +33946,8 @@ ${pendingInterceptorsFormatter.format(pending)}
 	  DeflateRaw: DeflateRaw,
 	  InflateRaw: InflateRaw,
 	  Unzip: Unzip,
-	  Zlib: Zlib
+	  Zlib: Zlib,
+	  constants: binding, // ### MODIFIED ###
 	};
 
 	var _polyfillNode_zlib$1 = /*#__PURE__*/Object.freeze({

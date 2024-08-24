@@ -47,6 +47,35 @@ function existsSyncWithCase(file) {
 	return existsSyncWithCase(dir);
 }
 
+/**
+ * helper to check the existence of a "file" resource (case-sensitive)
+ * @param {string} file file path
+ * @returns {boolean} true if the file exists
+ */
+function existsAndIsFile(file) {
+	return existsSyncWithCase(file) && statSync(file).isFile();
+}
+
+/**
+ * returns the module path with the proper file extension
+ * @param {string} modulePath module path
+ * @returns {string} the module path with the proper file extension
+ */
+function getModulePathWithExtension(modulePath) {
+	// check for the module path exists and to be a file
+	if (existsAndIsFile(modulePath)) {
+		return modulePath;
+	} else if (existsAndIsFile(`${modulePath}.js`)) {
+		return `${modulePath}.js`;
+	} else if (existsAndIsFile(`${modulePath}.cjs`)) {
+		return `${modulePath}.cjs`;
+	} else if (existsAndIsFile(`${modulePath}.mjs`)) {
+		return `${modulePath}.mjs`;
+	}
+	// reset the module path if it doesn't exist
+	return undefined;
+}
+
 const nodeModulesDirCache = {};
 /**
  * find the node_modules base directories in the given directory
@@ -662,31 +691,24 @@ module.exports = function (log) {
 			// resolve the module path
 			if (moduleName?.startsWith(`${pkg.name}/`)) {
 				// special handling for app-local resources!
-				modulePath = path.join(cwd, moduleName.substring(`${pkg.name}/`.length) + ".js");
+				modulePath = path.join(cwd, moduleName.substring(`${pkg.name}/`.length));
+				// check for the module path exists and to be a file
+				modulePath = getModulePathWithExtension(modulePath);
 			} else {
 				// derive the module path from the package.json entries browser, module or main
 				try {
 					const pkgJsonModuleName = path.join(moduleName, "package.json");
 					const pkgJson = require(pkgJsonModuleName);
-					const existsAndIsFile = function (file) {
-						return existsSyncWithCase(file) && statSync(file).isFile();
-					};
 					const resolveModulePath = function (exports, fields) {
 						for (const field of fields) {
 							if (typeof exports[field] === "string") {
-								modulePath = path.join(path.dirname(resolveNodeModule(pkgJsonModuleName, cwd, depPaths)), exports[field]);
+								let modulePath = path.join(path.dirname(resolveNodeModule(pkgJsonModuleName, cwd, depPaths)), exports[field]);
 								// check for the module path exists and to be a file
-								if (existsAndIsFile(modulePath)) {
+								modulePath = getModulePathWithExtension(modulePath);
+								// stop the loop if the module path is found
+								if (modulePath) {
 									return modulePath;
-								} else if (existsAndIsFile(`${modulePath}.js`)) {
-									return `${modulePath}.js`;
-								} else if (existsAndIsFile(`${modulePath}.cjs`)) {
-									return `${modulePath}.cjs`;
-								} else if (existsAndIsFile(`${modulePath}.mjs`)) {
-									return `${modulePath}.mjs`;
 								}
-								// reset the module path if it doesn't exist
-								modulePath = undefined;
 							}
 						}
 					};
@@ -748,9 +770,10 @@ module.exports = function (log) {
 		 * @param {string} [config.generatedCode] ES compatibility of the generated code (es5, es2015)
 		 * @param {object} [config.inject] the inject configuration for @rollup/plugin-inject
 		 * @param {boolean} [config.isMiddleware] flag if the getResource is called by the middleware
+		 * @param {boolean} [config.skipTransformWebComponents] flag to skip the transformation of web components to UI5 controls
 		 * @returns {rollup.RollupOutput} the build output of rollup
 		 */
-		createBundle: async function createBundle(moduleNames, { cwd, depPaths, mainFields, beforePlugins, afterPlugins, generatedCode, inject, isMiddleware } = {}) {
+		createBundle: async function createBundle(moduleNames, { cwd, depPaths, mainFields, beforePlugins, afterPlugins, generatedCode, inject, isMiddleware, skipTransformWebComponents } = {}) {
 			const { walk } = await import("estree-walker");
 			const bundle = await rollup.rollup({
 				input: moduleNames,
@@ -790,6 +813,7 @@ module.exports = function (log) {
 						resolveModule: function (moduleName) {
 							return that.resolveModule(moduleName, { cwd, depPaths, mainFields });
 						},
+						skip: skipTransformWebComponents,
 					}),
 					// once the node polyfills are injected, we can
 					// resolve the modules from node_modules
@@ -854,6 +878,7 @@ module.exports = function (log) {
 		 * @param {boolean} [config.debug] debug mode
 		 * @param {boolean|string} [config.chunksPath] the relative path for the chunks to be stored (defaults to "chunks", if value is true, chunks are put into the closest modules folder)
 		 * @param {boolean|string[]} [config.skipTransform] flag or array of globs to verify whether the module transformation should be skipped
+		 * @param {boolean} [config.skipTransformWebComponents] flag to skip the transformation of web components to UI5 controls
 		 * @param {boolean|string[]} [config.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
 		 * @param {string} [config.generatedCode] ES compatibility of the generated code (es5, es2015)
 		 * @param {string} [config.minify] minify the code generated by rollup
@@ -868,7 +893,7 @@ module.exports = function (log) {
 		 */
 		getBundleInfo: async function getBundleInfo(
 			moduleNames,
-			{ skipCache, persistentCache, debug, chunksPath, skipTransform, keepDynamicImports, generatedCode, minify, inject } = {},
+			{ skipCache, persistentCache, debug, chunksPath, skipTransform, skipTransformWebComponents, keepDynamicImports, generatedCode, minify, inject } = {},
 			{ cwd, projectNamespace, projectType, depPaths, isMiddleware } = {}
 		) {
 			cwd = cwd || process.cwd();
@@ -942,6 +967,7 @@ module.exports = function (log) {
 							minify,
 							inject,
 							isMiddleware,
+							skipTransformWebComponents,
 						};
 						if (modules.length === 1) {
 							options.afterPlugins.push(dynamicImports({ moduleName: modules[0].name, keepDynamicImports }));

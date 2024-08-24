@@ -711,3 +711,10 @@ export const types = {
 };
 
 export default types;
+
+export const TextEncoder = (function () {
+	return globalThis.TextEncoder || require("util").TextEncoder;
+})(); // ### MODIFIED ###
+export const TextDecoder = (function () {
+	return globalThis.TextDecoder || require("util").TextDecoder;
+})(); // ### MODIFIED ###
