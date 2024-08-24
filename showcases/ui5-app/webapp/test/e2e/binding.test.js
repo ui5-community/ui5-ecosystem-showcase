@@ -2,6 +2,7 @@ const MainPage = require("./pages/Main");
 const onTheOtherPage = require("./pages/Other");
 
 const list = {
+	forceSelect: true,
 	selector: {
 		viewName: "ui5.ecosystem.demo.app.view.Other",
 		id: "PeopleList",
