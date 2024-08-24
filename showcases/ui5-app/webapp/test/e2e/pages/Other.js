@@ -16,7 +16,8 @@ class Other extends Page {
 
 	async iShouldSeeListItems() {
 		// ui5 api + high-speed aggregation retrieval: https://ui5-community.github.io/wdi5/#/usage?id=getshorthand-conveniences
-		return (await browser.asControl(this._listPeople).getItems()).length > 0;
+		const oList = await browser.asControl(this._listPeople);
+		return (await oList.getItems()).length > 0;
 	}
 
 	async iNavigateBack() {
