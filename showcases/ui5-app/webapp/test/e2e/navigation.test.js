@@ -15,6 +15,8 @@ describe("navigation", function () {
 
 		await onTheOtherPage.iNavigateBack();
 
+		expect(MainPage.iShouldSeeTheApp()).toBeTruthy();
+
 		expect(await MainPage.iShouldSeeTheNavButton()).toBeTruthy();
 	});
 });
