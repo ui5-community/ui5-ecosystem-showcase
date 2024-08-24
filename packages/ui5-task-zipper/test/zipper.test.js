@@ -241,6 +241,6 @@ test("Absolute paths for data sources in manifest.json are turned into relative 
   const zip = path.join(t.context.tmpDir, "dist", "ui5ecosystemdemoapp.zip");
 
   const fileContent = await promisifiedNeedleInHaystack(zip, "manifest.json", true);
-  t.regex(fileContent, new RegExp("\"uri\": \"backend\/\","), "Manifest.json does not include relative path for the backend data source");
+  t.regex(fileContent, new RegExp("\"uri\": \"backend/\","), "Manifest.json does not include relative path for the backend data source");
 
 });

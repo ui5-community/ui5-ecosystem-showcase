@@ -22,12 +22,12 @@ const determineProjectName = (collection) => {
 };
 
 /**
-  * Turn absolute data source paths in the manifest.json into relative paths
-  *
-  * @param {Buffer} buffer Buffer of the manifest.json file
-  * @param {object} zip ZipFile instance
-  * returns {void}
-*/
+ * Turn absolute data source paths in the manifest.json into relative paths
+ *
+ * @param {Buffer} buffer Buffer of the manifest.json file
+ * @param {object} zip ZipFile instance
+ * returns {void}
+ */
 const absoluteToRelativePaths = (buffer, zip) => {
 	const manifest = JSON.parse(buffer.toString("utf-8"));
 	if (manifest["sap.app"]["dataSources"]) {
@@ -38,7 +38,7 @@ const absoluteToRelativePaths = (buffer, zip) => {
 		}
 	}
 	zip.addBuffer(Buffer.from(JSON.stringify(manifest, null, 4), "utf-8"), "manifest.json");
-}
+};
 
 /**
  * Zips the application content of the output folder
@@ -56,7 +56,7 @@ const absoluteToRelativePaths = (buffer, zip) => {
  * @param {object} parameters.taskUtil the task utilities
  * @returns {Promise<undefined>} Promise resolving with undefined once data has been written
  */
-module.exports = async function({ log, workspace, dependencies, options, taskUtil }) {
+module.exports = async function ({ log, workspace, dependencies, options, taskUtil }) {
 	const { OmitFromBuildResult } = taskUtil.STANDARD_TAGS;
 
 	// debug mode?
@@ -76,14 +76,14 @@ module.exports = async function({ log, workspace, dependencies, options, taskUti
 		includeDependencies === true
 			? dependencies
 			: taskUtil.resourceFactory.createReaderCollection({
-				readers: !includeDependencies
-					? []
-					: dependencies._readers.filter((reader) => {
-						const projectName = determineProjectName(reader);
-						return includeDependencies.indexOf(projectName) !== -1;
-					}),
-				name: "Filtered reader collection of ui5-task-zipper",
-			});
+					readers: !includeDependencies
+						? []
+						: dependencies._readers.filter((reader) => {
+								const projectName = determineProjectName(reader);
+								return includeDependencies.indexOf(projectName) !== -1;
+						  }),
+					name: "Filtered reader collection of ui5-task-zipper",
+			  });
 
 	// retrieve the resource path prefix (to get all application resources)
 	const prefixPath = `/resources/${options.projectNamespace}/`;
@@ -173,7 +173,7 @@ module.exports = async function({ log, workspace, dependencies, options, taskUti
  *      UI5 Tooling will ensure that those dependencies have been
  *      built before executing the task.
  */
-module.exports.determineRequiredDependencies = async function({ availableDependencies, options }) {
+module.exports.determineRequiredDependencies = async function ({ availableDependencies, options }) {
 	const includeDependencies = options?.configuration?.includeDependencies;
 	if (includeDependencies) {
 		if (Array.isArray(includeDependencies)) {
