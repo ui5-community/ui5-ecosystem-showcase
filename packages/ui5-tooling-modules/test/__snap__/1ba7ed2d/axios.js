@@ -2939,7 +2939,10 @@ sap.ui.define((function () { 'use strict';
     code && (this.code = code);
     config && (this.config = config);
     request && (this.request = request);
-    response && (this.response = response);
+    if (response) {
+      this.response = response;
+      this.status = response.status ? response.status : null;
+    }
   }
 
   utils$1.inherits(AxiosError, Error, {
@@ -2959,7 +2962,7 @@ sap.ui.define((function () { 'use strict';
         // Axios
         config: utils$1.toJSONObject(this.config),
         code: this.code,
-        status: this.response && this.response.status ? this.response.status : null
+        status: this.status
       };
     }
   });
@@ -3427,6 +3430,8 @@ sap.ui.define((function () { 'use strict';
 
   const hasBrowserEnv = typeof window !== 'undefined' && typeof document !== 'undefined';
 
+  const _navigator = typeof navigator === 'object' && navigator || undefined;
+
   /**
    * Determine if we're running in a standard browser environment
    *
@@ -3444,10 +3449,8 @@ sap.ui.define((function () { 'use strict';
    *
    * @returns {boolean}
    */
-  const hasStandardBrowserEnv = (
-    (product) => {
-      return hasBrowserEnv && ['ReactNative', 'NativeScript', 'NS'].indexOf(product) < 0
-    })(typeof navigator !== 'undefined' && navigator.product);
+  const hasStandardBrowserEnv = hasBrowserEnv &&
+    (!_navigator || ['ReactNative', 'NativeScript', 'NS'].indexOf(_navigator.product) < 0);
 
   /**
    * Determine if we're running in a standard browser webWorker environment
@@ -3474,6 +3477,7 @@ sap.ui.define((function () { 'use strict';
     hasBrowserEnv: hasBrowserEnv,
     hasStandardBrowserWebWorkerEnv: hasStandardBrowserWebWorkerEnv,
     hasStandardBrowserEnv: hasStandardBrowserEnv,
+    navigator: _navigator,
     origin: origin
   });
 
@@ -4303,7 +4307,7 @@ sap.ui.define((function () { 'use strict';
   // Standard browser envs have full support of the APIs needed to test
   // whether the request URL is of the same origin as current location.
     (function standardBrowserEnv() {
-      const msie = /(msie|trident)/i.test(navigator.userAgent);
+      const msie = platform.navigator && /(msie|trident)/i.test(platform.navigator.userAgent);
       const urlParsingNode = document.createElement('a');
       let originURL;
 
@@ -5040,6 +5044,9 @@ sap.ui.define((function () { 'use strict';
         withCredentials = withCredentials ? 'include' : 'omit';
       }
 
+      // Cloudflare Workers throws when credentials are defined
+      // see https://github.com/cloudflare/workerd/issues/902
+      const isCredentialsSupported = "credentials" in Request.prototype; 
       request = new Request(url, {
         ...fetchOptions,
         signal: composedSignal,
@@ -5047,7 +5054,7 @@ sap.ui.define((function () { 'use strict';
         headers: headers.normalize().toJSON(),
         body: data,
         duplex: "half",
-        credentials: withCredentials
+        credentials: isCredentialsSupported ? withCredentials : undefined
       });
 
       let response = await fetch(request);
@@ -5258,7 +5265,7 @@ sap.ui.define((function () { 'use strict';
     });
   }
 
-  const VERSION = "1.7.3";
+  const VERSION = "1.7.5";
 
   const validators$1 = {};
 

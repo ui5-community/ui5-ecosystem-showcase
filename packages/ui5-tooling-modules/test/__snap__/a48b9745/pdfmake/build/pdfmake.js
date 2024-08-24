@@ -4,7 +4,7 @@ sap.ui.define((function () { 'use strict';
 
 	var pdfmake = {exports: {}};
 
-	/*! pdfmake v0.2.11, @license MIT, @link http://pdfmake.org */
+	/*! pdfmake v0.2.12, @license MIT, @link http://pdfmake.org */
 
 	(function (module, exports) {
 		(function webpackUniversalModuleDefinition(root, factory) {
@@ -14924,7 +14924,7 @@ sap.ui.define((function () { 'use strict';
 
 		/***/ }),
 
-		/***/ 21408:
+		/***/ 82759:
 		/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 		var __dirname = "/";
 		/* provided dependency */ var Buffer = __webpack_require__(50621)["Buffer"];
@@ -53669,7 +53669,7 @@ sap.ui.define((function () { 'use strict';
 		var isFunction = (__webpack_require__(91867).isFunction);
 		var isUndefined = (__webpack_require__(91867).isUndefined);
 		(__webpack_require__(91867).isNull);
-		var FileSaver = __webpack_require__(12615);
+		var FileSaver = __webpack_require__(42616);
 		var saveAs = FileSaver.saveAs;
 
 		var defaultClientFonts = {
@@ -56199,6 +56199,10 @@ sap.ui.define((function () { 'use strict';
 					return src;
 				}
 
+				if (typeof img === 'object') {
+					throw 'Not supported image definition: ' + JSON.stringify(img);
+				}
+
 				if (fs.existsSync(img)) {
 					return fs.readFileSync(img);
 				}
@@ -57365,7 +57369,7 @@ sap.ui.define((function () { 'use strict';
 			return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex;
 		}
 
-		var PdfKit = _interopDefault(__webpack_require__(21408));
+		var PdfKit = _interopDefault(__webpack_require__(82759));
 
 		function getEngineInstance() {
 			return PdfKit;
@@ -60359,7 +60363,7 @@ sap.ui.define((function () { 'use strict';
 
 		/***/ }),
 
-		/***/ 12615:
+		/***/ 42616:
 		/***/ (function(module, exports, __webpack_require__) {
 
 		var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function(a,b){!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (b),

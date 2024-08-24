@@ -96,7 +96,7 @@ exports.config = {
 	baseUrl: "http://localhost:1081/index.html",
 	//
 	// Default timeout for all waitFor* commands.
-	waitforTimeout: 30000,
+	waitforTimeout: 10000,
 	//
 	// Default timeout in milliseconds for request
 	// if browser driver or grid doesn't send response
@@ -146,7 +146,7 @@ exports.config = {
 	wdi5: {
 		screenshotPath: require("path").join("test", "e2e", "report", "screenshots"),
 		logLevel: process.env.HEADLESS ? "silent" : "error", // error | verbose | silent
-		waitForUI5Timeout: 60000,
+		waitForUI5Timeout: 30000,
 	},
 	//
 	// =====

@@ -1970,12 +1970,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	        },
 	        trys: [],
 	        ops: []
-	      }, f, y, t, g;
-	      return (g = {
-	        next: verb(0),
-	        "throw": verb(1),
-	        "return": verb(2)
-	      }, typeof Symbol === "function" && (g[Symbol.iterator] = function () {
+	      }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+	      return (g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function () {
 	        return this;
 	      }), g);
 	      function verb(n) {
@@ -2121,7 +2117,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	    __asyncGenerator = function (thisArg, _arguments, generator) {
 	      if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
 	      var g = generator.apply(thisArg, _arguments || []), i, q = [];
-	      return (i = {}, verb("next"), verb("throw"), verb("return", awaitReturn), i[Symbol.asyncIterator] = function () {
+	      return (i = Object.create((typeof AsyncIterator === "function" ? AsyncIterator : Object).prototype), verb("next"), verb("throw"), verb("return", awaitReturn), i[Symbol.asyncIterator] = function () {
 	        return this;
 	      }, i);
 	      function awaitReturn(f) {
@@ -2284,19 +2280,23 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	        env.error = env.hasError ? new _SuppressedError(e, env.error, "An error was suppressed during disposal.") : e;
 	        env.hasError = true;
 	      }
+	      var r, s = 0;
 	      function next() {
-	        while (env.stack.length) {
-	          var rec = env.stack.pop();
+	        while (r = env.stack.pop()) {
 	          try {
-	            var result = rec.dispose && rec.dispose.call(rec.value);
-	            if (rec.async) return Promise.resolve(result).then(next, function (e) {
-	              fail(e);
-	              return next();
-	            });
+	            if (!r.async && s === 1) return (s = 0, env.stack.push(r), Promise.resolve().then(next));
+	            if (r.dispose) {
+	              var result = r.dispose.call(r.value);
+	              if (r.async) return (s |= 2, Promise.resolve(result).then(next, function (e) {
+	                fail(e);
+	                return next();
+	              }));
+	            } else s |= 1;
 	          } catch (e) {
 	            fail(e);
 	          }
 	        }
+	        if (s === 1) return env.hasError ? Promise.reject(env.error) : Promise.resolve();
 	        if (env.hasError) throw env.error;
 	      }
 	      return next();
@@ -2958,7 +2958,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	}
 
 	const name$p = "@firebase/app";
-	const version$1 = "0.10.8";
+	const version$1 = "0.10.9";
 
 	/**
 	 * @license
@@ -3027,7 +3027,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	const name$1 = "@firebase/firestore-compat";
 
 	const name = "firebase";
-	const version = "10.12.5";
+	const version = "10.13.0";
 
 	/**
 	 * @license
@@ -3805,38 +3805,45 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	     * already logged, subsequent calls to this function in the same day will be ignored.
 	     */
 	    async triggerHeartbeat() {
-	        var _a, _b;
-	        const platformLogger = this.container
-	            .getProvider('platform-logger')
-	            .getImmediate();
-	        // This is the "Firebase user agent" string from the platform logger
-	        // service, not the browser user agent.
-	        const agent = platformLogger.getPlatformInfoString();
-	        const date = getUTCDateString();
-	        if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null) {
-	            this._heartbeatsCache = await this._heartbeatsCachePromise;
-	            // If we failed to construct a heartbeats cache, then return immediately.
+	        var _a, _b, _c;
+	        try {
+	            const platformLogger = this.container
+	                .getProvider('platform-logger')
+	                .getImmediate();
+	            // This is the "Firebase user agent" string from the platform logger
+	            // service, not the browser user agent.
+	            const agent = platformLogger.getPlatformInfoString();
+	            const date = getUTCDateString();
+	            console.log('heartbeats', (_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats);
 	            if (((_b = this._heartbeatsCache) === null || _b === void 0 ? void 0 : _b.heartbeats) == null) {
+	                this._heartbeatsCache = await this._heartbeatsCachePromise;
+	                // If we failed to construct a heartbeats cache, then return immediately.
+	                if (((_c = this._heartbeatsCache) === null || _c === void 0 ? void 0 : _c.heartbeats) == null) {
+	                    return;
+	                }
+	            }
+	            // Do not store a heartbeat if one is already stored for this day
+	            // or if a header has already been sent today.
+	            if (this._heartbeatsCache.lastSentHeartbeatDate === date ||
+	                this._heartbeatsCache.heartbeats.some(singleDateHeartbeat => singleDateHeartbeat.date === date)) {
 	                return;
 	            }
+	            else {
+	                // There is no entry for this date. Create one.
+	                this._heartbeatsCache.heartbeats.push({ date, agent });
+	            }
+	            // Remove entries older than 30 days.
+	            this._heartbeatsCache.heartbeats =
+	                this._heartbeatsCache.heartbeats.filter(singleDateHeartbeat => {
+	                    const hbTimestamp = new Date(singleDateHeartbeat.date).valueOf();
+	                    const now = Date.now();
+	                    return now - hbTimestamp <= STORED_HEARTBEAT_RETENTION_MAX_MILLIS;
+	                });
+	            return this._storage.overwrite(this._heartbeatsCache);
 	        }
-	        // Do not store a heartbeat if one is already stored for this day
-	        // or if a header has already been sent today.
-	        if (this._heartbeatsCache.lastSentHeartbeatDate === date ||
-	            this._heartbeatsCache.heartbeats.some(singleDateHeartbeat => singleDateHeartbeat.date === date)) {
-	            return;
+	        catch (e) {
+	            logger.warn(e);
 	        }
-	        else {
-	            // There is no entry for this date. Create one.
-	            this._heartbeatsCache.heartbeats.push({ date, agent });
-	        }
-	        // Remove entries older than 30 days.
-	        this._heartbeatsCache.heartbeats = this._heartbeatsCache.heartbeats.filter(singleDateHeartbeat => {
-	            const hbTimestamp = new Date(singleDateHeartbeat.date).valueOf();
-	            const now = Date.now();
-	            return now - hbTimestamp <= STORED_HEARTBEAT_RETENTION_MAX_MILLIS;
-	        });
-	        return this._storage.overwrite(this._heartbeatsCache);
 	    }
 	    /**
 	     * Returns a base64 encoded string which can be attached to the heartbeat-specific header directly.
@@ -3847,34 +3854,40 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	     */
 	    async getHeartbeatsHeader() {
 	        var _a;
-	        if (this._heartbeatsCache === null) {
-	            await this._heartbeatsCachePromise;
+	        try {
+	            if (this._heartbeatsCache === null) {
+	                await this._heartbeatsCachePromise;
+	            }
+	            // If it's still null or the array is empty, there is no data to send.
+	            if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null ||
+	                this._heartbeatsCache.heartbeats.length === 0) {
+	                return '';
+	            }
+	            const date = getUTCDateString();
+	            // Extract as many heartbeats from the cache as will fit under the size limit.
+	            const { heartbeatsToSend, unsentEntries } = extractHeartbeatsForHeader(this._heartbeatsCache.heartbeats);
+	            const headerString = base64urlEncodeWithoutPadding(JSON.stringify({ version: 2, heartbeats: heartbeatsToSend }));
+	            // Store last sent date to prevent another being logged/sent for the same day.
+	            this._heartbeatsCache.lastSentHeartbeatDate = date;
+	            if (unsentEntries.length > 0) {
+	                // Store any unsent entries if they exist.
+	                this._heartbeatsCache.heartbeats = unsentEntries;
+	                // This seems more likely than emptying the array (below) to lead to some odd state
+	                // since the cache isn't empty and this will be called again on the next request,
+	                // and is probably safest if we await it.
+	                await this._storage.overwrite(this._heartbeatsCache);
+	            }
+	            else {
+	                this._heartbeatsCache.heartbeats = [];
+	                // Do not wait for this, to reduce latency.
+	                void this._storage.overwrite(this._heartbeatsCache);
+	            }
+	            return headerString;
 	        }
-	        // If it's still null or the array is empty, there is no data to send.
-	        if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null ||
-	            this._heartbeatsCache.heartbeats.length === 0) {
+	        catch (e) {
+	            logger.warn(e);
 	            return '';
 	        }
-	        const date = getUTCDateString();
-	        // Extract as many heartbeats from the cache as will fit under the size limit.
-	        const { heartbeatsToSend, unsentEntries } = extractHeartbeatsForHeader(this._heartbeatsCache.heartbeats);
-	        const headerString = base64urlEncodeWithoutPadding(JSON.stringify({ version: 2, heartbeats: heartbeatsToSend }));
-	        // Store last sent date to prevent another being logged/sent for the same day.
-	        this._heartbeatsCache.lastSentHeartbeatDate = date;
-	        if (unsentEntries.length > 0) {
-	            // Store any unsent entries if they exist.
-	            this._heartbeatsCache.heartbeats = unsentEntries;
-	            // This seems more likely than emptying the array (below) to lead to some odd state
-	            // since the cache isn't empty and this will be called again on the next request,
-	            // and is probably safest if we await it.
-	            await this._storage.overwrite(this._heartbeatsCache);
-	        }
-	        else {
-	            this._heartbeatsCache.heartbeats = [];
-	            // Do not wait for this, to reduce latency.
-	            void this._storage.overwrite(this._heartbeatsCache);
-	        }
-	        return headerString;
 	    }
 	}
 	function getUTCDateString() {
