@@ -3147,8 +3147,12 @@ sap.ui.define((function () { 'use strict';
 		return Object.prototype.hasOwnProperty.call(obj, prop);
 	}
 
-	((function() { return globalThis.TextEncoder || require("util").TextEncoder; }))(); // ### MODIFIED ###
-	((function() { return globalThis.TextDecoder || require("util").TextDecoder; }))(); // ### MODIFIED ###
+	((function () {
+		return globalThis.TextEncoder || require("util").TextEncoder;
+	}))(); // ### MODIFIED ###
+	((function () {
+		return globalThis.TextDecoder || require("util").TextDecoder;
+	}))(); // ### MODIFIED ###
 
 	function BufferList() {
 	  this.head = null;
