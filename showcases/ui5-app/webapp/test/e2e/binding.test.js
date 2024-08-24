@@ -23,7 +23,8 @@ describe("binding", function () {
 		await onTheOtherPage.iShouldSeeTheList();
 
 		const oList = await browser.asControl(list);
-		const aListItems = await oList.getItems(true); // ui5 api + high-speed aggregation retrieval https://github.com/js-soft/wdi5#getshorthand-conveniences
+		console.log("LIST", oList);
+		const aListItems = await oList.getItems(true); // ui5 api + high-speed aggregation retrieval: https://ui5-community.github.io/wdi5/#/usage?id=getshorthand-conveniences
 		expect(aListItems.length).toBeGreaterThanOrEqual(1);
 	});
 });
