@@ -19,8 +19,7 @@ const list = {
 describe("binding", function () {
 	it("Other view: PeopleList: items aggregation + amount of items", async function () {
 		await browser.asControl(navFwdButton).press();
-
-		await onTheOtherPage.iShouldSeeTheList();
+		expect(onTheOtherPage.iShouldSeeTheList()).toBeTruthy();
 
 		const oList = await browser.asControl(list);
 		console.log("LIST", oList);
