@@ -1,5 +1,3 @@
-const MainPage = require("./pages/Main");
-
 const navFwdButton = {
 	forceSelect: true,
 	selector: {
@@ -19,11 +17,6 @@ const dateTimePicker = {
 
 // this suite implemented straigh-fwd, no page objects
 describe("interaction", function () {
-	it("should see the initial page of the app", async function () {
-		await MainPage.open();
-		expect(MainPage.iShouldSeeTheApp()).toBeTruthy();
-	});
-
 	it("should manually allow date input", async function () {
 		await browser.goTo({ sHash: "#/" });
 

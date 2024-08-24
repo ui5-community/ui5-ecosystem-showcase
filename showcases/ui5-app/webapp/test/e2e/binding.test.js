@@ -1,7 +1,6 @@
 const MainPage = require("./pages/Main");
 const onTheOtherPage = require("./pages/Other");
 
-// this suite implemented straigh-fwd, no page objects
 describe("binding", function () {
 	it("should see the initial page of the app", async function () {
 		await MainPage.open();
