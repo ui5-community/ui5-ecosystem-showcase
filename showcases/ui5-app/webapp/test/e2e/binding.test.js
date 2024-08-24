@@ -9,6 +9,7 @@ describe("binding", function () {
 
 	it("Other view: PeopleList: items aggregation + amount of items", async function () {
 		await MainPage.iPressTheNavButton();
+		expect(onTheOtherPage.iShouldSeeTheList()).toBeTruthy();
 		expect(onTheOtherPage.iShouldSeeListItems()).toBeTruthy();
 	});
 });
