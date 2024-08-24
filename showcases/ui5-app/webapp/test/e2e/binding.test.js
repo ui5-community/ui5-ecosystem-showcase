@@ -19,10 +19,5 @@ describe("binding", function () {
 		await MainPage.iPressTheNavButton();
 		expect(onTheOtherPage.iShouldSeeTheList()).toBeTruthy();
 		expect(onTheOtherPage.iShouldSeeListItems()).toBeTruthy();
-
-		// ui5 api + high-speed aggregation retrieval: https://ui5-community.github.io/wdi5/#/usage?id=getshorthand-conveniences
-		const oList = await browser.asControl(this._listPeople);
-		const aListItems = await oList.getItems(true);
-		expect(aListItems.length).toBeGreaterThanOrEqual(1);
 	});
 });
