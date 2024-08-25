@@ -1,4 +1,4 @@
-sap.ui.define(['sap/ui/core/Lib', 'sap/ui/base/DataType', 'sap/ui/core/webc/WebComponent'], (function (Library, DataType, WebComponentBaseClass) { 'use strict';
+sap.ui.define(['sap/ui/core/Lib', 'sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponentRenderer', 'sap/ui/core/webc/WebComponent'], (function (Library, DataType, hyphenate, WebComponentRenderer, WebComponentBaseClass) { 'use strict';
 
     const isSSR$2 = typeof document === "undefined";
     const internals = {
@@ -4365,6 +4365,46 @@ sap.ui.define(['sap/ui/core/Lib', 'sap/ui/base/DataType', 'sap/ui/core/webc/WebC
       dependencies: [Label$1, Icon$1]
     }), event("change")], CheckBox$1);
     CheckBox$1.define();
+
+    // Fixed with https://github.com/SAP/openui5/commit/7a4615e3fe55221ae9de9d876d3eed209f71a5b1 in UI5 1.128.0
+
+
+    WebComponentRenderer.renderAttributeProperties = function (oRm, oWebComponent) {
+    	var oAttrProperties = oWebComponent.getMetadata().getPropertiesByMapping("property");
+    	// ##### MODIFICATION START #####
+    	var aPropsToAlwaysSet = ["enabled"].concat(
+    		Object.entries(oWebComponent.getMetadata().getPropertyDefaults()).map(([key, value]) => {
+    			return value !== undefined && value !== false ? key : null;
+    		})
+    	); // some properties can be initial and still have a non-default value due to side effects (e.g. EnabledPropagator)
+    	// ##### MODIFICATION END #####
+    	for (var sPropName in oAttrProperties) {
+    		if (oWebComponent.isPropertyInitial(sPropName) && !aPropsToAlwaysSet.includes(sPropName)) {
+    			continue; // do not set attributes for properties that were not explicitly set or bound
+    		}
+
+    		var oPropData = oAttrProperties[sPropName];
+    		var vPropValue = oPropData.get(oWebComponent);
+    		if (oPropData.type === "object" || typeof vPropValue === "object") {
+    			continue; // Properties of type "object" and custom-type properties with object values are set during onAfterRendering
+    		}
+
+    		var sAttrName = oPropData._sMapTo ? oPropData._sMapTo : hyphenate(sPropName);
+    		if (oPropData._fnMappingFormatter) {
+    			vPropValue = oWebComponent[oPropData._fnMappingFormatter].call(oWebComponent, vPropValue);
+    		}
+
+    		if (oPropData.type === "boolean") {
+    			if (vPropValue) {
+    				oRm.attr(sAttrName, "");
+    			}
+    		} else {
+    			if (vPropValue != null) {
+    				oRm.attr(sAttrName, vPropValue);
+    			}
+    		}
+    	}
+    };
 
     const theLibrary$1 = Library.init({
       "apiVersion": 2,

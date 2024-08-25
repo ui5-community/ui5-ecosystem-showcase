@@ -2724,7 +2724,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     this.conn = null;
                 },
             });
-            new Promise(function (resolve, reject) { require(['../browser'], resolve, reject); }).then(function (n) { return n.browser; }).then(({ default: WS }) => {
+            new Promise(function (resolve, reject) { require(['ui5/ecosystem/demo/app/resources/browser'], resolve, reject); }).then(function (n) { return n.browser; }).then(({ default: WS }) => {
                 this.conn = new WS(this._endPointURL(), undefined, {
                     headers: this.headers,
                 });

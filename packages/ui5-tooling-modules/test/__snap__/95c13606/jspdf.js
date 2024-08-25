@@ -1,4 +1,4 @@
-sap.ui.define(['exports', './_chunks_/jspdf.es.min2'], (function (exports, jspdf_es_min) { 'use strict';
+sap.ui.define(['exports', 'ui5/ecosystem/demo/tsapp/resources/_chunks_/jspdf.es.min2'], (function (exports, jspdf_es_min) { 'use strict';
 
 
 

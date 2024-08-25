@@ -1,4 +1,4 @@
-sap.ui.define(['exports', '../react/index2'], (function (exports, index) { 'use strict';
+sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/react/index2'], (function (exports, index) { 'use strict';
 
   var client = {};
 

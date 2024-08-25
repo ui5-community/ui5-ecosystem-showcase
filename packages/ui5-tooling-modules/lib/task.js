@@ -34,9 +34,20 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	const { walk } = await import("estree-walker");
 
 	const cwd = taskUtil.getProject().getRootPath() || process.cwd();
-	const { scan, getBundleInfo, getResource, existsResource } = require("./util")(log);
+	const project = taskUtil.getProject();
+	const projectInfo = {
+		name: project.getName(),
+		version: project.getVersion(),
+		namespace: project.getNamespace(),
+		type: project.getType(),
+		rootPath: project.getRootPath(),
+		framework: {
+			name: project.getFrameworkName(),
+			version: project.getFrameworkVersion(),
+		},
+	};
 
-	const projectNamespace = options.projectNamespace || taskUtil.getProject().getNamespace();
+	const { scan, getBundleInfo, getResource, existsResource } = require("./util")(log, projectInfo);
 
 	// determine all paths for the dependencies
 	const depPaths = taskUtil
@@ -246,7 +257,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 
 	// every unique dependency will be bundled (entry points will be kept, rest is chunked)
 	const bundleTime = Date.now();
-	const bundleInfo = await getBundleInfo(Array.from(uniqueModules), config, { cwd, projectNamespace, depPaths });
+	const bundleInfo = await getBundleInfo(Array.from(uniqueModules), config, { cwd, depPaths });
 	if (bundleInfo.error) {
 		log.error(bundleInfo.error);
 		process.exit(1);

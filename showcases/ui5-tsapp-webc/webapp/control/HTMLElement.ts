@@ -3,7 +3,7 @@ import RenderManager from "sap/ui/core/RenderManager";
 import type { MetadataOptions } from "sap/ui/core/Element";
 
 /**
- * @namespace ui5.ecosystem.demo.simpletsapp.control
+ * @namespace ui5.ecosystem.demo.webctsapp.control
  */
 export default class HTMLElement extends Control {
 	static readonly metadata: MetadataOptions = {

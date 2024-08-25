@@ -196,7 +196,7 @@ const defaultExportsFields = ["browser", "import", "require", "default"];
 // main field processing order (for nodeResolve and resolveModule)
 const defaultMainFields = ["browser", "module", "main"];
 
-module.exports = function (log) {
+module.exports = function (log, projectInfo) {
 	/**
 	 * Checks whether the file behind the given path is a module to skip for transformation or not
 	 * @param {string} source the path of a JS module
@@ -810,9 +810,11 @@ module.exports = function (log) {
 					}),
 					// handle the webcomponents
 					webcomponents({
+						log,
 						resolveModule: function (moduleName) {
 							return that.resolveModule(moduleName, { cwd, depPaths, mainFields });
 						},
+						framework: projectInfo?.framework,
 						skip: skipTransformWebComponents,
 					}),
 					// once the node polyfills are injected, we can
@@ -885,8 +887,6 @@ module.exports = function (log) {
 		 * @param {object} [config.inject] the inject configuration for @rollup/plugin-inject
 		 * @param {object} [options] additional options
 		 * @param {string} [options.cwd] current working directory
-		 * @param {string} [options.projectNamespace] namespace of the project to use for the module names
-		 * @param {string} [options.projectType] type of the project (e.g. for applications we resolve the modules differently)
 		 * @param {string[]} [options.depPaths] paths of the dependencies (in addition for cwd)
 		 * @param {boolean} [options.isMiddleware] flag if the getResource is called by the middleware
 		 * @returns {object} the output object of the resource (code, chunks?, lastModified)
@@ -894,7 +894,7 @@ module.exports = function (log) {
 		getBundleInfo: async function getBundleInfo(
 			moduleNames,
 			{ skipCache, persistentCache, debug, chunksPath, skipTransform, skipTransformWebComponents, keepDynamicImports, generatedCode, minify, inject } = {},
-			{ cwd, projectNamespace, projectType, depPaths, isMiddleware } = {}
+			{ cwd, depPaths, isMiddleware } = {}
 		) {
 			cwd = cwd || process.cwd();
 
@@ -1038,6 +1038,7 @@ module.exports = function (log) {
 							bundleInfo.getEntries().forEach((module) => {
 								const moduleName = module.name;
 								let moduleBasePath;
+								let { namespace: projectNamespace, type: projectType } = projectInfo || {};
 								if (projectType === "application" && projectNamespace) {
 									// for applications we need to adjust the module base path so that the
 									// modules are resolved relative to the project namespace (to support CDN cases)

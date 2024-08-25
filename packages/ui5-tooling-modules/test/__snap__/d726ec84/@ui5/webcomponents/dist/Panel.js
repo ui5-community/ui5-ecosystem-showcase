@@ -1,4 +1,4 @@
-sap.ui.define(['../../../@ui5/webcomponents/library', 'sap/ui/core/webc/WebComponent', 'sap/ui/core/Lib', 'sap/ui/base/DataType', '../../../@ui5/webcomponents-base/library'], (function (_ui5_webcomponents_library, WebComponentBaseClass, Library, DataType, _ui5_webcomponentsBase_library) { 'use strict';
+sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents/library', 'sap/ui/core/webc/WebComponent', 'sap/ui/core/Lib', 'sap/ui/base/DataType', 'ui5/ecosystem/demo/app/resources/@ui5/webcomponents-base/library', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponentRenderer'], (function (_ui5_webcomponents_library, WebComponentBaseClass, Library, DataType, _ui5_webcomponentsBase_library, hyphenate, WebComponentRenderer) { 'use strict';
 
     /**
      * @license

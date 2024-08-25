@@ -69,7 +69,7 @@ function injectStyle() {
 }
 
 /**
- * @namespace ui5.ecosystem.demo.simpletsapp.controller
+ * @namespace ui5.ecosystem.demo.webctsapp.controller
  */
 export default class DynamicPage extends Controller {
 	public onInit(): void {

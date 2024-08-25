@@ -3,8 +3,16 @@ const { readFileSync } = require("fs");
 const WebComponentRegistry = require("./utils/WebComponentRegistry");
 
 const { compile } = require("handlebars");
+const { lt, gte } = require("semver");
 
-module.exports = function ({ resolveModule, skip } = {}) {
+module.exports = function ({ log, resolveModule, framework, skip } = {}) {
+	// TODO: maybe we should derive the minimum version from the applications package.json
+	//       instead of the framework version (which might be a different version)
+	if (!gte(framework?.version || "0.0.0", "1.120.0")) {
+		skip = true;
+		log.warn("Skipping Web Components transformation as UI5 version is < 1.120.0");
+	}
+
 	const getNpmPackageName = (source) => {
 		const npmPackageScopeRegEx = /^((?:(@[^/]+)\/)?([^/]+))(?:\/(.*))?$/;
 		return npmPackageScopeRegEx.exec(source)?.[1];
@@ -17,6 +25,7 @@ module.exports = function ({ resolveModule, skip } = {}) {
 
 	const libTemplateFn = loadAndCompileTemplate("templates/Library.hbs");
 	const webccTemplateFn = loadAndCompileTemplate("templates/WebComponentControl.hbs");
+	const webcmpTemplateFn = loadAndCompileTemplate("templates/WebComponentMonkeyPatches.hbs");
 
 	const loadNpmPackage = (npmPackage, emitFile) => {
 		let registryEntry = WebComponentRegistry.getPackage(npmPackage);
@@ -187,6 +196,12 @@ module.exports = function ({ resolveModule, skip } = {}) {
 					enums: lib.enums,
 					dependencies: lib.dependencies.map((dep) => `${dep}/library`),
 				});
+				// include the monkey patches for the Web Components base library
+				// only for UI5 versions < 1.128.0 (otherwise the monkey patches are not needed anymore)
+				if (namespace === "@ui5/webcomponents-base" && lt(framework?.version || "0.0.0", "1.128.0")) {
+					const monkeyPatches = webcmpTemplateFn();
+					return `${monkeyPatches}\n${code}`;
+				}
 				return code;
 			} else if (moduleInfo.attributes.ui5Type === "control") {
 				let clazz = moduleInfo.attributes.clazz;

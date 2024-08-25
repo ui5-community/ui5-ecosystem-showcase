@@ -26,19 +26,29 @@ const chokidar = require("chokidar");
  * @returns {Function} Middleware function to use
  */
 module.exports = async function ({ log, resources, options, middlewareUtil }) {
-	const cwd = middlewareUtil.getProject().getRootPath() || process.cwd();
-	const projectNamespace = middlewareUtil.getProject().getNamespace();
-	const projectType = middlewareUtil.getProject().getType();
+	const project = middlewareUtil.getProject();
+	const cwd = project.getRootPath() || process.cwd();
+	const projectInfo = {
+		name: project.getName(),
+		version: project.getVersion(),
+		namespace: project.getNamespace(),
+		type: project.getType(),
+		rootPath: project.getRootPath(),
+		framework: {
+			name: project.getFrameworkName(),
+			version: project.getFrameworkVersion(),
+		},
+	};
 	const depProjects = middlewareUtil
 		.getDependencies()
 		.map((dep) => middlewareUtil.getProject(dep))
 		.filter((prj) => !prj.isFrameworkProject());
 	const depPaths = depProjects.map((prj) => prj.getRootPath());
 	const depReaderCollection = middlewareUtil.resourceFactory.createReaderCollection({
-		name: `Reader collection of project ${middlewareUtil.getProject().getName()}`,
+		name: `Reader collection of project ${project.getName()}`,
 		readers: [resources.rootProject, ...depProjects.map((prj) => prj.getReader())],
 	});
-	const { scan, getBundleInfo, getResource, resolveModule } = require("./util")(log);
+	const { scan, getBundleInfo, getResource, resolveModule } = require("./util")(log, projectInfo);
 
 	log.verbose(`Starting ui5-tooling-modules-middleware`);
 
@@ -99,7 +109,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 							log.warn(`Including module "${mod}" to bundle which has been requested dynamically! This module may not be packaged during the build!`);
 							modules.push(mod);
 						});
-					return getBundleInfo(modules, config, { cwd, projectNamespace, projectType, depPaths, isMiddleware: true });
+					return getBundleInfo(modules, config, { cwd, depPaths, isMiddleware: true });
 				})
 				.then((bundleInfo) => {
 					// finally, we watch the entries of the bundle

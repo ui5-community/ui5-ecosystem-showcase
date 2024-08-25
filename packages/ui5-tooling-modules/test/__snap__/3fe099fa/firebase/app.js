@@ -1,4 +1,4 @@
-sap.ui.define(['../index.esm2017'], (function (index_esm2017) { 'use strict';
+sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (index_esm2017) { 'use strict';
 
   var index_cjs = {};
 

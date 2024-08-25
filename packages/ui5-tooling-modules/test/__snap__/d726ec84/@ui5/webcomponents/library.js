@@ -1,4 +1,4 @@
-sap.ui.define(['sap/ui/core/Lib', 'sap/ui/base/DataType', '../webcomponents-base/library'], (function (Library, DataType, _ui5_webcomponentsBase_library) { 'use strict';
+sap.ui.define(['sap/ui/core/Lib', 'sap/ui/base/DataType', '../webcomponents-base/library', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponentRenderer'], (function (Library, DataType, _ui5_webcomponentsBase_library, hyphenate, WebComponentRenderer) { 'use strict';
 
 	const theLibrary = Library.init({
 	  "apiVersion": 2,
