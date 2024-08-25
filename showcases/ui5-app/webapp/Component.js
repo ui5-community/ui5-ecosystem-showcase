@@ -5,7 +5,6 @@ sap.ui.define(
 		"./lib/willNotGetTranspiled", // only for demo purpose
 		"./includes/iWillBeTranspiled", // only for demo purpose
 		"sap/ui/core/ComponentSupport", // make sure to include the ComponentSupport in the bundle
-		"./webc/WebComponentSupport", // support WebComponents natively in XMLViews
 	],
 	(UIComponent, models) => {
 		"use strict";

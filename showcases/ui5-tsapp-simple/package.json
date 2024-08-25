@@ -22,15 +22,14 @@
   },
   "devDependencies": {
     "@types/openui5": "1.126.0",
-    "@typescript-eslint/eslint-plugin": "^7.16.1",
-    "@typescript-eslint/parser": "^7.16.1",
-    "@ui5/cli": "^3.11.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "@ui5/cli": "^3.11.1",
     "@ui5/ts-interface-generator": "^0.8.3",
     "eslint": "^8.57.0",
     "rimraf": "^6.0.1",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.4",
     "ui5-middleware-livereload": "workspace:^",
-    "ui5-tooling-modules": "workspace:^",
     "ui5-tooling-transpile": "workspace:^"
   }
 }

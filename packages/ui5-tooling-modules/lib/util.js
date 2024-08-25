@@ -17,6 +17,7 @@ const pnpmResolve = require("./rollup-plugin-pnpm-resolve");
 const dynamicImports = require("./rollup-plugin-dynamic-imports");
 const replace = require("@rollup/plugin-replace");
 const transformTopLevelThis = require("./rollup-plugin-transform-top-level-this");
+const webcomponents = require("./rollup-plugin-webcomponents");
 
 const walk = require("ignore-walk");
 const minimatch = require("minimatch");
@@ -44,6 +45,35 @@ function existsSyncWithCase(file) {
 		return false;
 	}
 	return existsSyncWithCase(dir);
+}
+
+/**
+ * helper to check the existence of a "file" resource (case-sensitive)
+ * @param {string} file file path
+ * @returns {boolean} true if the file exists
+ */
+function existsAndIsFile(file) {
+	return existsSyncWithCase(file) && statSync(file).isFile();
+}
+
+/**
+ * returns the module path with the proper file extension
+ * @param {string} modulePath module path
+ * @returns {string} the module path with the proper file extension
+ */
+function getModulePathWithExtension(modulePath) {
+	// check for the module path exists and to be a file
+	if (existsAndIsFile(modulePath)) {
+		return modulePath;
+	} else if (existsAndIsFile(`${modulePath}.js`)) {
+		return `${modulePath}.js`;
+	} else if (existsAndIsFile(`${modulePath}.cjs`)) {
+		return `${modulePath}.cjs`;
+	} else if (existsAndIsFile(`${modulePath}.mjs`)) {
+		return `${modulePath}.mjs`;
+	}
+	// reset the module path if it doesn't exist
+	return undefined;
 }
 
 const nodeModulesDirCache = {};
@@ -166,7 +196,7 @@ const defaultExportsFields = ["browser", "import", "require", "default"];
 // main field processing order (for nodeResolve and resolveModule)
 const defaultMainFields = ["browser", "module", "main"];
 
-module.exports = function (log) {
+module.exports = function (log, projectInfo) {
 	/**
 	 * Checks whether the file behind the given path is a module to skip for transformation or not
 	 * @param {string} source the path of a JS module
@@ -528,12 +558,6 @@ module.exports = function (log) {
 								}
 								return;
 							}
-							const importsParts = /@_(.*):import?/.exec(key);
-							if (importsParts) {
-								imports[importsParts[1]] = node[key];
-								addUniqueNamespace(node[key]);
-								return;
-							}
 						});
 					// nodes
 					Object.keys(node)
@@ -667,31 +691,24 @@ module.exports = function (log) {
 			// resolve the module path
 			if (moduleName?.startsWith(`${pkg.name}/`)) {
 				// special handling for app-local resources!
-				modulePath = path.join(cwd, moduleName.substring(`${pkg.name}/`.length) + ".js");
+				modulePath = path.join(cwd, moduleName.substring(`${pkg.name}/`.length));
+				// check for the module path exists and to be a file
+				modulePath = getModulePathWithExtension(modulePath);
 			} else {
 				// derive the module path from the package.json entries browser, module or main
 				try {
 					const pkgJsonModuleName = path.join(moduleName, "package.json");
 					const pkgJson = require(pkgJsonModuleName);
-					const existsAndIsFile = function (file) {
-						return existsSyncWithCase(file) && statSync(file).isFile();
-					};
 					const resolveModulePath = function (exports, fields) {
 						for (const field of fields) {
 							if (typeof exports[field] === "string") {
-								modulePath = path.join(path.dirname(resolveNodeModule(pkgJsonModuleName, cwd, depPaths)), exports[field]);
+								let modulePath = path.join(path.dirname(resolveNodeModule(pkgJsonModuleName, cwd, depPaths)), exports[field]);
 								// check for the module path exists and to be a file
-								if (existsAndIsFile(modulePath)) {
+								modulePath = getModulePathWithExtension(modulePath);
+								// stop the loop if the module path is found
+								if (modulePath) {
 									return modulePath;
-								} else if (existsAndIsFile(`${modulePath}.js`)) {
-									return `${modulePath}.js`;
-								} else if (existsAndIsFile(`${modulePath}.cjs`)) {
-									return `${modulePath}.cjs`;
-								} else if (existsAndIsFile(`${modulePath}.mjs`)) {
-									return `${modulePath}.mjs`;
 								}
-								// reset the module path if it doesn't exist
-								modulePath = undefined;
 							}
 						}
 					};
@@ -753,9 +770,10 @@ module.exports = function (log) {
 		 * @param {string} [config.generatedCode] ES compatibility of the generated code (es5, es2015)
 		 * @param {object} [config.inject] the inject configuration for @rollup/plugin-inject
 		 * @param {boolean} [config.isMiddleware] flag if the getResource is called by the middleware
+		 * @param {boolean} [config.skipTransformWebComponents] flag to skip the transformation of web components to UI5 controls
 		 * @returns {rollup.RollupOutput} the build output of rollup
 		 */
-		createBundle: async function createBundle(moduleNames, { cwd, depPaths, mainFields, beforePlugins, afterPlugins, generatedCode, inject, isMiddleware } = {}) {
+		createBundle: async function createBundle(moduleNames, { cwd, depPaths, mainFields, beforePlugins, afterPlugins, generatedCode, inject, isMiddleware, skipTransformWebComponents } = {}) {
 			const { walk } = await import("estree-walker");
 			const bundle = await rollup.rollup({
 				input: moduleNames,
@@ -789,6 +807,15 @@ module.exports = function (log) {
 						log,
 						cwd,
 						moduleNames,
+					}),
+					// handle the webcomponents
+					webcomponents({
+						log,
+						resolveModule: function (moduleName) {
+							return that.resolveModule(moduleName, { cwd, depPaths, mainFields });
+						},
+						framework: projectInfo?.framework,
+						skip: skipTransformWebComponents,
 					}),
 					// once the node polyfills are injected, we can
 					// resolve the modules from node_modules
@@ -853,22 +880,21 @@ module.exports = function (log) {
 		 * @param {boolean} [config.debug] debug mode
 		 * @param {boolean|string} [config.chunksPath] the relative path for the chunks to be stored (defaults to "chunks", if value is true, chunks are put into the closest modules folder)
 		 * @param {boolean|string[]} [config.skipTransform] flag or array of globs to verify whether the module transformation should be skipped
+		 * @param {boolean} [config.skipTransformWebComponents] flag to skip the transformation of web components to UI5 controls
 		 * @param {boolean|string[]} [config.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
 		 * @param {string} [config.generatedCode] ES compatibility of the generated code (es5, es2015)
 		 * @param {string} [config.minify] minify the code generated by rollup
 		 * @param {object} [config.inject] the inject configuration for @rollup/plugin-inject
 		 * @param {object} [options] additional options
 		 * @param {string} [options.cwd] current working directory
-		 * @param {string} [options.projectNamespace] namespace of the project to use for the module names
-		 * @param {string} [options.projectType] type of the project (e.g. for applications we resolve the modules differently)
 		 * @param {string[]} [options.depPaths] paths of the dependencies (in addition for cwd)
 		 * @param {boolean} [options.isMiddleware] flag if the getResource is called by the middleware
 		 * @returns {object} the output object of the resource (code, chunks?, lastModified)
 		 */
 		getBundleInfo: async function getBundleInfo(
 			moduleNames,
-			{ skipCache, persistentCache, debug, chunksPath, skipTransform, keepDynamicImports, generatedCode, minify, inject } = {},
-			{ cwd, projectNamespace, projectType, depPaths, isMiddleware } = {}
+			{ skipCache, persistentCache, debug, chunksPath, skipTransform, skipTransformWebComponents, keepDynamicImports, generatedCode, minify, inject } = {},
+			{ cwd, depPaths, isMiddleware } = {}
 		) {
 			cwd = cwd || process.cwd();
 
@@ -941,6 +967,7 @@ module.exports = function (log) {
 							minify,
 							inject,
 							isMiddleware,
+							skipTransformWebComponents,
 						};
 						if (modules.length === 1) {
 							options.afterPlugins.push(dynamicImports({ moduleName: modules[0].name, keepDynamicImports }));
@@ -955,7 +982,7 @@ module.exports = function (log) {
 						} catch (ex) {
 							// related to issue #726 for which the generation of jspdf fails on Windows machines
 							// when running the build in a standalone project with npm (without monorepo and pnpm)
-							/* debug && */ log.warn(`Failed to bundle "${nameOfModules}" using ES modules, falling back to CommonJS modules...`);
+							/* debug && */ log.warn(`Failed to bundle "${nameOfModules}" using ES modules, falling back to CommonJS modules...`, ex.message);
 							debug && log.verbose(ex); // report error in verbose case!
 							output = await that.createBundle(
 								nameOfModules,
@@ -968,10 +995,13 @@ module.exports = function (log) {
 						// parse the rollup build result
 						output.forEach((module, i) => {
 							// lookup the output module in the list of input modules
-							const resolvedModule = modules.find((mod) => mod.path === module?.facadeModuleId?.replace(/\?.*$/, ""));
-							if (resolvedModule) {
-								// entry module
-								resolvedModule.code = module.code;
+							const resolvedModules = modules.filter((mod) => module?.facadeModuleId?.startsWith(mod.path));
+							if (resolvedModules.length > 0) {
+								// one module could be resolved by multiple input modules (e.g. export aliases in package.json)
+								resolvedModules?.forEach((resolvedModule) => {
+									// entry module
+									resolvedModule.code = module.code;
+								});
 							} else {
 								// chunk module
 								if (module.code) {
@@ -1008,6 +1038,7 @@ module.exports = function (log) {
 							bundleInfo.getEntries().forEach((module) => {
 								const moduleName = module.name;
 								let moduleBasePath;
+								let { namespace: projectNamespace, type: projectType } = projectInfo || {};
 								if (projectType === "application" && projectNamespace) {
 									// for applications we need to adjust the module base path so that the
 									// modules are resolved relative to the project namespace (to support CDN cases)

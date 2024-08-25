@@ -1,0 +1,40 @@
+{
+  "name": "ui5-tsapp-webc",
+  "version": "0.1.0",
+  "description": "Showcase of a TypeScript setup for developing UI5 applications with UI5 Web Components",
+  "private": true,
+  "author": "Peter Muessig",
+  "license": "Apache-2.0",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "ui5 build --clean-dest",
+    "build:opt": "ui5 build self-contained --clean-dest --all",
+    "dev": "ui5 serve --port 8080 -o index.html",
+    "start": "ui5 serve  --port 8080 -o index.html --config ui5-dist.yaml",
+    "start-cdn": "ui5 serve  --port 8080 -o index-cdn.html --config ui5-dist.yaml",
+    "ts-typecheck": "tsc --noEmit",
+    "lint": "eslint webapp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
+    "directory": "showcases/ui5-tsapp-webc"
+  },
+  "dependencies": {
+    "@ui5/webcomponents": "^2.1.1",
+    "@ui5/webcomponents-fiori": "^2.1.1"
+  },
+  "devDependencies": {
+    "@types/openui5": "1.126.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "@ui5/cli": "^3.11.1",
+    "@ui5/ts-interface-generator": "^0.8.3",
+    "eslint": "^8.57.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.5.4",
+    "ui5-middleware-livereload": "workspace:^",
+    "ui5-tooling-modules": "workspace:^",
+    "ui5-tooling-transpile": "workspace:^"
+  }
+}

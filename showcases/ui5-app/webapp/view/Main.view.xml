@@ -5,7 +5,7 @@
       <Text text="Latest: {UI5VersionInfo>/latest/version}&#13;&#10;Current: {UI5Version>/current/version}" tooltip="Latest OpenUI5 Version" />
     </headerContent>
     <content>
-      <VBox alignItems="Center" justifyContent="Center" height="100%">
+      <VBox alignItems="Center" justifyContent="Center">
         <Title level="H1" titleStyle="H1" text="{i18n>startPage.title.text}" width="100%" textAlign="Center" />
         <HBox>
           <Button id="NavButton" icon="sap-icon://forward" text="{i18n>startPage.navButton.text}" press="navTo('RouteOther')" />

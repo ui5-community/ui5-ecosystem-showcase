@@ -22,3 +22,4 @@ pnpm-lock.yaml
 /**/*.png
 /**/*.md
 /**/*.gen.d.ts
+/**/*.hbs

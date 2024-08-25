@@ -1,0 +1,40 @@
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns:webc="@ui5/webcomponents" xmlns:fiori="@ui5/webcomponents-fiori" xmlns:m="sap.m">
+  <fiori:NotificationList>
+    <fiori:NotificationListItem
+      id="firstNotificationListItem"
+      titleText="New order (#2525) With a very long title - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent feugiat, turpis vel scelerisque pharetra, tellus odio vehicula dolor, nec elementum lectus turpis at nunc."
+      state="Positive"
+      importance="Important"
+      showClose="true"
+    >
+      <fiori:avatar>
+        <webc:Avatar id="myAvatar">
+          <!-- Example for Nesting "sap.m" into "@ui5/webcomponents" into "@ui5/webcomponents-fiori" -->
+          <m:Image src="https://sap.github.io/ui5-webcomponents/images/avatars/woman_avatar_1.png" />
+        </webc:Avatar>
+      </fiori:avatar>
+      <fiori:footnotes>
+        <m:Text text="Monique Legrand" />
+        <m:Text text="2 Days" />
+      </fiori:footnotes>
+
+      <!--
+        This goes into the default aggregation "content".
+        Doesn't need to be named explicitly.
+      -->
+      <m:Text
+        text="This text is placed in the default aggregation 'content'.
+                    It does not need to be named explicitly. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Praesent feugiat, turpis vel scelerisque pharetra, tellus odio vehicula dolor, nec elementum
+                    lectus turpis at nunc."
+      />
+
+      <fiori:menu>
+        <webc:Menu id="menuWithActions">
+          <webc:MenuItem icon="accept" text="Accept" />
+          <webc:MenuItem icon="message-error" text="Reject" />
+        </webc:Menu>
+      </fiori:menu>
+    </fiori:NotificationListItem>
+  </fiori:NotificationList>
+</core:FragmentDefinition>

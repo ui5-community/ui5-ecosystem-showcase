@@ -1,0 +1,18 @@
+import WebComponentClass from "{{webcClass}}";
+import "{{namespace}}/library";
+import WebComponentBaseClass from "{{webcBaseClass}}";
+
+export default WebComponentBaseClass.extend("{{ui5Class}}", {
+  metadata: {{{metadata}}},
+  // TODO: Quick solution to fix a conversion between "number" and "core.CSSSize".
+  //       WebC attribute is a number and is written back to the Control wrapper via core.WebComponent base class.
+  //       The control property is defined as a "sap.ui.core.CSSSize".
+  setProperty: function(sPropName, v, bSupressInvalidate) {
+    if (sPropName === "width" || sPropName === "height") {
+      if (!isNaN(v)) {
+        v += "px";
+      }
+    }
+    return WebComponentBaseClass.prototype.setProperty.apply(this, [sPropName, v, bSupressInvalidate]);
+  }
+});

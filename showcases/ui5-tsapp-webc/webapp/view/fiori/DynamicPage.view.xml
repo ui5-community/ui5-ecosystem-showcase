@@ -1,0 +1,122 @@
+<mvc:View
+  controllerName="ui5.ecosystem.demo.webctsapp.controller.DynamicPage"
+  displayBlock="true"
+  xmlns:m="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:webc="@ui5/webcomponents"
+  xmlns:fiori="@ui5/webcomponents-fiori"
+  xmlns:c="ui5.ecosystem.demo.webctsapp.control"
+  core:require="{
+    Formatter: 'ui5/ecosystem/demo/webctsapp/model/Formatter',
+    iconActionSettings: '@ui5/webcomponents-icons/dist/action-settings',
+    iconShare: '@ui5/webcomponents-icons/dist/share',
+    iconLaptop: '@ui5/webcomponents-icons/dist/laptop',
+    iconArrow: '@ui5/webcomponents-icons/dist/slim-arrow-right'
+  }"
+>
+  <fiori:DynamicPage id="page" showFooter="true">
+    <fiori:titleArea>
+      <fiori:DynamicPageTitle>
+        <fiori:breadcrumbs>
+          <webc:Breadcrumbs>
+            <webc:BreadcrumbsItem href="#" text="Man" />
+            <webc:BreadcrumbsItem href="#" text="Shoes" />
+            <webc:BreadcrumbsItem href="#" text="Running Shoes" />
+          </webc:Breadcrumbs>
+        </fiori:breadcrumbs>
+
+        <fiori:heading>
+          <webc:Title text="Special Running Shoe" />
+        </fiori:heading>
+
+        <fiori:snappedHeading>
+          <c:HTMLElement tag="div" class="snapped-title-heading">
+            <webc:Avatar shape="Square" icon="laptop" colorScheme="Accent5" size="S" />
+            <webc:Title wrappingType="None" text="Special Running Shoe" />
+          </c:HTMLElement>
+        </fiori:snappedHeading>
+
+        <fiori:subheading>
+          <m:Text text="PO-48865" />
+        </fiori:subheading>
+
+        <fiori:snappedSubheading>
+          <m:Text text="PO-48865" />
+        </fiori:snappedSubheading>
+
+        <!-- default aggregation: "content", doesn't need to be named -->
+        <webc:Tag colorScheme="7" wrappingType="None" text="Special 157.4M EUR" />
+
+        <fiori:actionsBar>
+          <webc:Toolbar id="actionsToolbar" design="Transparent">
+            <webc:ToolbarButton text="Create" />
+            <webc:ToolbarButton id="edit-button" design="Transparent" text="Edit" />
+            <webc:ToolbarButton design="Transparent" text="Paste" />
+          </webc:Toolbar>
+        </fiori:actionsBar>
+
+        <fiori:navigationBar>
+          <webc:Toolbar design="Transparent">
+            <webc:ToolbarButton design="Transparent" icon="share" />
+            <webc:ToolbarButton design="Transparent" icon="action-settings" />
+          </webc:Toolbar>
+        </fiori:navigationBar>
+      </fiori:DynamicPageTitle>
+    </fiori:titleArea>
+
+    <fiori:headerArea>
+      <fiori:DynamicPageHeader>
+        <c:HTMLElement tag="div" class="product-info">
+          <webc:Avatar id="avatar" shape="Square" icon="laptop" colorScheme="Accent5" size="L" />
+
+          <c:HTMLElement tag="div" class="product-info-cell">
+            <webc:Label text="Availability" />
+            <m:Text class="text availability" text="In Stock" />
+          </c:HTMLElement>
+
+          <c:HTMLElement tag="div" class="product-info-cell">
+            <webc:Label text="Price" />
+            <m:Text class="text price" text="379.99 USD" />
+          </c:HTMLElement>
+
+          <c:HTMLElement tag="div" class="product-info-cell">
+            <webc:Label text="Product Description" />
+            <m:Text class="text product-description" text="Super-lightweight cushioning propels you forward from landing to toe-off and has a fast, snappy feel." />
+          </c:HTMLElement>
+        </c:HTMLElement>
+      </fiori:DynamicPageHeader>
+    </fiori:headerArea>
+
+    <webc:List content="{dpModel>/items}" headerText="Products" selectionMode="None">
+      <webc:ListItemStandard icon="slim-arrow-right" iconEnd="true" description="{dpModel>productID}" additionalText="{dpModel>price}" text="{dpModel>productName}">
+        <webc:image>
+          <webc:Avatar size="S" shape="Square" colorScheme="Accent10">
+            <m:Image src="{dpModel>imageSrc}" />
+          </webc:Avatar>
+        </webc:image>
+      </webc:ListItemStandard>
+    </webc:List>
+
+    <!-- pure HTML sample, not supported as of now... but would be nice to have in the future -->
+    <!-- <h:div children="{dpModel>/items}">
+        <h:div>
+            <h:span>
+                <webc:Avatar size="S" shape="Square" colorScheme="Accent10">
+                    <m:Image src="{dpModel>imageSrc}" />
+                </webc:Avatar>
+            </h:span>
+            <h:span>{dpModel&gt;productID}<h:span/>
+        </h:div>
+    </h:div> -->
+
+    <fiori:footerArea>
+      <webc:Bar design="FloatingFooter">
+        <webc:endContent>
+          <webc:Button id="save-edit" text="Save" />
+          <webc:Button id="cancel-edit" text="Close" />
+        </webc:endContent>
+      </webc:Bar>
+    </fiori:footerArea>
+  </fiori:DynamicPage>
+</mvc:View>

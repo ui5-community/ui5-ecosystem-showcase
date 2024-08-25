@@ -9,6 +9,11 @@ const { platform } = require("os");
 // *****************************************************************************
 
 // eslint-disable-next-line jsdoc/require-jsdoc
+function createHash(title) {
+	return crypto.createHash("shake256", { outputLength: 4 }).update(title).digest("hex");
+}
+
+// eslint-disable-next-line jsdoc/require-jsdoc
 function readSnapFile(resourceName, snapDir) {
 	const file = path.join(snapDir, `${resourceName}.js`);
 	return readFileSync(file, { encoding: "utf8" });
@@ -17,7 +22,7 @@ function readSnapFile(resourceName, snapDir) {
 // eslint-disable-next-line jsdoc/require-jsdoc
 function writeFile(resourceName, code, ctx) {
 	const file = path.join(ctx.tmpDir, `${resourceName}.js`);
-	const dir = path.resolve(file, "../");
+	const dir = path.dirname(file);
 	if (!existsSync(dir)) {
 		mkdirSync(dir, { recursive: true });
 	}
@@ -47,7 +52,9 @@ async function runModule(resourceName, code, ctx) {
 									name = undefined;
 								}
 								if (Array.isArray(deps)) {
-									const resolvedDeps = await Promise.all(deps.map((dep) => getModule(/exports|require/.test(dep) ? dep : path.join(resourceName, "..", dep), ctx)));
+									const resolvedDeps = await Promise.all(
+										deps.map((dep) => getModule(/exports|require/.test(dep) ? dep : /^\.\.?\//.test(dep) ? path.join(resourceName, "..", dep) : dep, ctx))
+									);
 									try {
 										// INFO: put a breakpoint into the next line and the set the breakpoint for
 										//       "Caught Exceptions". This will let you stop where the error occurs!
@@ -100,28 +107,78 @@ async function getModule(resourceName, ctx) {
 	if (resourceName === "require") {
 		return { retVal: function () {} };
 	}
-	const resource = ctx.bundleInfo.getEntry(resourceName);
-	if (!existsSync(path.join(snapDir, `${resourceName}.js`))) {
-		writeFile(
-			resourceName,
-			resource.code,
-			Object.assign(ctx, {
-				tmpDir: snapDir,
-			})
-		);
+	if (resourceName?.startsWith(ctx.localResourcesNamespace)) {
+		resourceName = resourceName.substring(ctx.localResourcesNamespace.length + 1);
 	}
-	writeFile(resourceName, resource.code, ctx);
-	const retVal = await runModule(resourceName, resource.code, ctx);
-	return {
-		name: resourceName,
-		code: resource.code,
-		retVal,
+	const resource = ctx.bundleInfo.getEntry(resourceName);
+	if (resource) {
+		if (!existsSync(path.join(snapDir, ctx.hash, `${resourceName}.js`))) {
+			writeFile(
+				resourceName,
+				resource.code,
+				Object.assign(ctx, {
+					tmpDir: path.join(snapDir, ctx.hash),
+				})
+			);
+		}
+		writeFile(resourceName, resource.code, ctx);
+		const retVal = await runModule(resourceName, resource.code, ctx);
+		return {
+			name: resourceName,
+			code: resource.code,
+			retVal,
+		};
+	} else {
+		const mockedModule = ctx.modules?.[resourceName];
+		if (mockedModule) {
+			return {
+				name: resourceName,
+				code: "<mocked>",
+				retVal: mockedModule,
+			};
+		} else {
+			// external module
+			console.warn(`External module "${resourceName}" is not found!`);
+			return {
+				name: resourceName,
+				code: "<external>",
+				retVal: {
+					/* empty module */
+				},
+			};
+		}
+	}
+}
+
+// eslint-disable-next-line jsdoc/require-jsdoc
+async function getProjectInfo(cwd = process.cwd()) {
+	const { graphFromPackageDependencies } = await import("@ui5/project/graph");
+	const graph = await graphFromPackageDependencies({
+		cwd,
+		workspaceName: "default",
+	});
+	const project = graph.getRoot();
+	const projectInfo = {
+		name: project.getName(),
+		version: project.getVersion(),
+		namespace: project.getNamespace(),
+		type: project.getType(),
+		rootPath: project.getRootPath(),
+		framework: {
+			name: project.getFrameworkName(),
+			version: project.getFrameworkVersion(),
+		},
 	};
+	return projectInfo;
 }
 
 // eslint-disable-next-line jsdoc/require-jsdoc
 async function setupEnv(resourceName, ctx, config = {}, options = {}) {
-	const bundleInfo = await ctx.util.getBundleInfo(resourceName, Object.assign({ skipCache: true, debug: true }, config), options);
+	const projectInfo = await getProjectInfo(ctx.cwd || process.cwd());
+	const localResourcesNamespace = path.posix.join(projectInfo.namespace, "resources");
+	ctx.localResourcesNamespace = localResourcesNamespace;
+	const util = require("../lib/util")(ctx.log, projectInfo);
+	const bundleInfo = await util.getBundleInfo(resourceName, Object.assign({ skipCache: true, debug: true }, config), options);
 	if (bundleInfo.error) {
 		throw new Error(bundleInfo.error);
 	}
@@ -144,15 +201,16 @@ if (generateSnapshots) {
 }
 
 test.beforeEach(async (t) => {
+	t.context.hash = createHash(t.title);
 	t.context.tmpDir = path.resolve(cwd, generateSnapshots ? `test/__snap__` : `test/__dist__/${crypto.randomBytes(5).toString("hex")}`);
-	t.context.snapDir = snapDir;
+	t.context.snapDir = path.join(snapDir, t.context.hash);
 	const log = (t.context.log = { logs: [] });
 	["silly", "verbose", "perf", "info", "warn", "error", "silent"].forEach((level) => {
 		log[level] = function (...messages) {
 			log.logs.push(`[${level}] ${messages}`);
 		};
 	});
-	t.context.util = require("../lib/util")(log);
+	console.log(`Running test "${t.title.substr(20)}" ("${t.context.hash}")...`);
 });
 test.afterEach.always(async (t) => {
 	if (!t.passed) {
@@ -167,13 +225,14 @@ test.afterEach.always(async (t) => {
 test.serial("Verify generation of @stomp/stompjs", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp"));
 	const env = await setupEnv(["@stomp/stompjs"], {
+		hash: t.context.hash,
 		tmpDir: t.context.tmpDir,
-		util: t.context.util,
+		log: t.context.log,
 	});
 	const module = await env.getModule("@stomp/stompjs");
 	t.true(module.retVal.__esModule);
 	if (platform() !== "win32") {
-		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
+		t.is(module.code, readSnapFile(module.name, t.context.snapDir, createHash(t.title)));
 	}
 });
 
@@ -182,8 +241,9 @@ test.serial("Verify generation of jspdf", async (t) => {
 	const env = await setupEnv(
 		["jspdf"],
 		{
+			hash: t.context.hash,
 			tmpDir: t.context.tmpDir,
-			util: t.context.util,
+			log: t.context.log,
 			scope: {
 				navigator: {},
 			},
@@ -202,8 +262,9 @@ test.serial("Verify generation of jspdf", async (t) => {
 test.serial("Verify generation of luxon", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp"));
 	const env = await setupEnv(["luxon"], {
+		hash: t.context.hash,
 		tmpDir: t.context.tmpDir,
-		util: t.context.util,
+		log: t.context.log,
 	});
 	const module = await env.getModule("luxon");
 	t.true(module.retVal.__esModule);
@@ -215,8 +276,9 @@ test.serial("Verify generation of luxon", async (t) => {
 test.serial("Verify generation of XLSX", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp"));
 	const env = await setupEnv(["xlsx"], {
+		hash: t.context.hash,
 		tmpDir: t.context.tmpDir,
-		util: t.context.util,
+		log: t.context.log,
 	});
 	const module = await env.getModule("xlsx");
 	t.true(module.retVal.__esModule);
@@ -228,8 +290,9 @@ test.serial("Verify generation of XLSX", async (t) => {
 test.serial("Verify generation of moment", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp"));
 	const env = await setupEnv(["moment"], {
+		hash: t.context.hash,
 		tmpDir: t.context.tmpDir,
-		util: t.context.util,
+		log: t.context.log,
 	});
 	const module = await env.getModule("moment");
 	t.true(module.retVal.__esModule);
@@ -241,8 +304,9 @@ test.serial("Verify generation of moment", async (t) => {
 test.serial("Verify generation of cmis", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
 	const env = await setupEnv(["cmis"], {
+		hash: t.context.hash,
 		tmpDir: t.context.tmpDir,
-		util: t.context.util,
+		log: t.context.log,
 		scope: {
 			atob: function () {},
 			btoa: function () {},
@@ -269,8 +333,9 @@ test.serial("Verify generation of cmis", async (t) => {
 test.serial("Verify generation of ui5-app/bundledefs/firebase", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
 	const env = await setupEnv(["ui5-app/bundledefs/firebase"], {
+		hash: t.context.hash,
 		tmpDir: t.context.tmpDir,
-		util: t.context.util,
+		log: t.context.log,
 		scope: {
 			fetch: function () {},
 			XMLHttpRequest: function () {
@@ -304,8 +369,9 @@ test.serial("Verify generation of firebase/firestore", async (t) => {
 			"firebase/firestore/lite",
 		],
 		{
+			hash: t.context.hash,
 			tmpDir: t.context.tmpDir,
-			util: t.context.util,
+			log: t.context.log,
 			scope: {
 				fetch: function () {},
 				XMLHttpRequest: function () {
@@ -337,8 +403,9 @@ test.serial("Verify generation of firebase/firestore", async (t) => {
 test.serial("Verify generation of @supabase/supabase-js", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
 	const env = await setupEnv(["@supabase/supabase-js"], {
+		hash: t.context.hash,
 		tmpDir: t.context.tmpDir,
-		util: t.context.util,
+		log: t.context.log,
 		scope: {
 			WebSocket: function () {},
 		},
@@ -356,8 +423,9 @@ test.serial("Verify generation of @supabase/supabase-js", async (t) => {
 test.serial("Verify generation of @octokit/core", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
 	const env = await setupEnv(["@octokit/core"], {
+		hash: t.context.hash,
 		tmpDir: t.context.tmpDir,
-		util: t.context.util,
+		log: t.context.log,
 		scope: {
 			fetch: function () {},
 			XMLHttpRequest: function () {
@@ -378,8 +446,17 @@ test.serial("Verify generation of @octokit/core", async (t) => {
 test.serial("Verify generation of axios", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
 	const env = await setupEnv(["axios"], {
+		hash: t.context.hash,
 		tmpDir: t.context.tmpDir,
-		util: t.context.util,
+		log: t.context.log,
+		scope: {
+			XMLHttpRequest: function () {
+				return { open: function () {} };
+			},
+			location: {
+				host: "/",
+			},
+		},
 	});
 	const module = await env.getModule("axios");
 	t.true(module.retVal.__esModule);
@@ -391,8 +468,9 @@ test.serial("Verify generation of axios", async (t) => {
 test.serial("Verify generation of @js-temporal/polyfill", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
 	const env = await setupEnv(["@js-temporal/polyfill"], {
+		hash: t.context.hash,
 		tmpDir: t.context.tmpDir,
-		util: t.context.util,
+		log: t.context.log,
 	});
 	const module = await env.getModule("@js-temporal/polyfill");
 	t.true(module.retVal.__esModule);
@@ -406,8 +484,9 @@ test.serial("Verify generation of react/reactdom", async (t) => {
 	const env = await setupEnv(
 		["react", "react-dom/client"],
 		{
+			hash: t.context.hash,
 			tmpDir: t.context.tmpDir,
-			util: t.context.util,
+			log: t.context.log,
 		},
 		{
 			chunksPath: true,
@@ -428,8 +507,9 @@ test.serial("Verify generation of react/reactdom", async (t) => {
 test.serial("Verify generation of zod", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
 	const env = await setupEnv(["zod"], {
+		hash: t.context.hash,
 		tmpDir: t.context.tmpDir,
-		util: t.context.util,
+		log: t.context.log,
 	});
 	const module = await env.getModule("zod");
 	t.true(module.retVal.__esModule);
@@ -443,8 +523,9 @@ test.serial("Verify generation of @luigi-project/container", async (t) => {
 	const env = await setupEnv(
 		["@luigi-project/container"],
 		{
+			hash: t.context.hash,
 			tmpDir: t.context.tmpDir,
-			util: t.context.util,
+			log: t.context.log,
 			scope: {
 				HTMLElement: function () {},
 				customElements: {
@@ -467,8 +548,9 @@ test.serial("Verify generation of @luigi-project/container", async (t) => {
 test.serial("Verify generation of pdfMake", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
 	const env = await setupEnv(["pdfmake/build/pdfmake", "pdfmake/build/vfs_fonts"], {
+		hash: t.context.hash,
 		tmpDir: t.context.tmpDir,
-		util: t.context.util,
+		log: t.context.log,
 		scope: {
 			navigator: {},
 		},
@@ -491,8 +573,9 @@ test.serial("Verify generation of pdfMake", async (t) => {
 test.serial("Verify generation of xml-js", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
 	const env = await setupEnv(["xml-js"], {
+		hash: t.context.hash,
 		tmpDir: t.context.tmpDir,
-		util: t.context.util,
+		log: t.context.log,
 	});
 	const module = await env.getModule("xml-js");
 	t.true(module.retVal.__esModule);
@@ -503,24 +586,31 @@ test.serial("Verify generation of xml-js", async (t) => {
 
 test.serial("Verify generation of @ui5/webcomponents/dist/Panel", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
-	const env = await setupEnv(["@ui5/webcomponents/dist/Panel"], {
-		tmpDir: t.context.tmpDir,
-		util: t.context.util,
-		scope: {
-			HTMLElement: function () {},
-			Element: function () {},
-			Node: function () {},
-			customElements: {
-				get: function () {},
-				define: function () {},
+	const env = await setupEnv(
+		["@ui5/webcomponents/dist/Panel"],
+		{
+			hash: t.context.hash,
+			tmpDir: t.context.tmpDir,
+			log: t.context.log,
+			scope: {
+				HTMLElement: function () {},
+				Element: function () {},
+				Node: function () {},
+				customElements: {
+					get: function () {},
+					define: function () {},
+				},
+				navigator: {},
 			},
-			navigator: {},
+			// running Web Components in the V8 engine causes "TypeError: can't redefine non-configurable property design"
+			// because the Web Components _generateAccessors doesn't mark the property as configurable
+			// => so we simply monkey patch the Object.defineProperty call to get rid of this error during the execution
+			monkeyPatch: "Object.defineProperty = function() { if (arguments[2]) { arguments[2].configurable = true; } return this.apply(undefined, arguments); }.bind(Object.defineProperty);",
 		},
-		// running Web Components in the V8 engine causes "TypeError: can't redefine non-configurable property design"
-		// because the Web Components _generateAccessors doesn't mark the property as configurable
-		// => so we simply monkey patch the Object.defineProperty call to get rid of this error during the execution
-		monkeyPatch: "Object.defineProperty = function() { if (arguments[2]) { arguments[2].configurable = true; } return this.apply(undefined, arguments); }.bind(Object.defineProperty);",
-	});
+		{
+			skipTransformWebComponents: true,
+		}
+	);
 	const module = await env.getModule("@ui5/webcomponents/dist/Panel");
 	t.true(module.retVal.__esModule);
 	if (platform() !== "win32") {
@@ -528,28 +618,97 @@ test.serial("Verify generation of @ui5/webcomponents/dist/Panel", async (t) => {
 	}
 });
 
+test.serial("Verify generation of @ui5/webcomponents/dist/Panel Wrapper UI5 Control", async (t) => {
+	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
+	const env = await setupEnv(["@ui5/webcomponents/dist/Panel"], {
+		hash: t.context.hash,
+		tmpDir: t.context.tmpDir,
+		log: t.context.log,
+		modules: {
+			"sap/ui/core/Lib": {
+				init: function () {
+					return {};
+				},
+			},
+			"sap/ui/base/DataType": {
+				registerEnum: function () {},
+			},
+			"sap/ui/core/webc/WebComponent": {
+				extend: function (name, def) {
+					return { name, def };
+				},
+			},
+		},
+	});
+	const module = await env.getModule("@ui5/webcomponents/dist/Panel");
+	t.deepEqual(module.retVal.name, "@ui5/webcomponents.Panel");
+	t.deepEqual(module.retVal.def.metadata.tag, "ui5-panel");
+	t.deepEqual(module.retVal.def.metadata.library, "@ui5/webcomponents.library");
+	if (platform() !== "win32") {
+		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
+	}
+});
+
 test.serial("Verify generation of @ui5/webcomponents/dist/CheckBox", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
-	const env = await setupEnv(["@ui5/webcomponents/dist/CheckBox"], {
-		tmpDir: t.context.tmpDir,
-		util: t.context.util,
-		scope: {
-			HTMLElement: function () {},
-			Element: function () {},
-			Node: function () {},
-			customElements: {
-				get: function () {},
-				define: function () {},
+	const env = await setupEnv(
+		["@ui5/webcomponents/dist/CheckBox"],
+		{
+			hash: t.context.hash,
+			tmpDir: t.context.tmpDir,
+			log: t.context.log,
+			scope: {
+				HTMLElement: function () {},
+				Element: function () {},
+				Node: function () {},
+				customElements: {
+					get: function () {},
+					define: function () {},
+				},
+				navigator: {},
 			},
-			navigator: {},
+			// running Web Components in the V8 engine causes "TypeError: can't redefine non-configurable property design"
+			// because the Web Components _generateAccessors doesn't mark the property as configurable
+			// => so we simply monkey patch the Object.defineProperty call to get rid of this error during the execution
+			monkeyPatch: "Object.defineProperty = function() { if (arguments[2]) { arguments[2].configurable = true; } return this.apply(undefined, arguments); }.bind(Object.defineProperty);",
 		},
-		// running Web Components in the V8 engine causes "TypeError: can't redefine non-configurable property design"
-		// because the Web Components _generateAccessors doesn't mark the property as configurable
-		// => so we simply monkey patch the Object.defineProperty call to get rid of this error during the execution
-		monkeyPatch: "Object.defineProperty = function() { if (arguments[2]) { arguments[2].configurable = true; } return this.apply(undefined, arguments); }.bind(Object.defineProperty);",
-	});
+		{
+			skipTransformWebComponents: true,
+		}
+	);
 	const module = await env.getModule("@ui5/webcomponents/dist/CheckBox");
 	t.true(module.retVal.__esModule);
+	if (platform() !== "win32") {
+		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
+	}
+});
+
+test.serial("Verify generation of @ui5/webcomponents/dist/CheckBox Wrapper UI5 Control", async (t) => {
+	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
+	const env = await setupEnv(["@ui5/webcomponents/dist/CheckBox"], {
+		hash: t.context.hash,
+		tmpDir: t.context.tmpDir,
+		log: t.context.log,
+		modules: {
+			"sap/ui/core/Lib": {
+				init: function () {
+					return {};
+				},
+			},
+			"sap/ui/base/DataType": {
+				registerEnum: function () {},
+			},
+			"sap/ui/core/webc/WebComponent": {
+				extend: function (name, def) {
+					return { name, def };
+				},
+			},
+		},
+	});
+	const module = await env.getModule("@ui5/webcomponents/dist/CheckBox");
+	t.deepEqual(module.retVal.name, "@ui5/webcomponents.CheckBox");
+	t.deepEqual(module.retVal.def.metadata.tag, "ui5-checkbox");
+	t.deepEqual(module.retVal.def.metadata.library, "@ui5/webcomponents.library");
 	if (platform() !== "win32") {
 		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
 	}
@@ -561,8 +720,9 @@ test.serial("Verify generation of signalr/punycode", async (t) => {
 		return { on: function () {} };
 	};
 	const env = await setupEnv(["signalr", "punycode"], {
+		hash: t.context.hash,
 		tmpDir: t.context.tmpDir,
-		util: t.context.util,
+		log: t.context.log,
 		scope: {
 			document: {
 				readyState: "",

@@ -64,10 +64,10 @@
   },
   "devDependencies": {
     "@ui5/cli": "^3.11.0",
-    "@wdio/cli": "^8.27.1",
-    "@wdio/local-runner": "^8.27.0",
-    "@wdio/mocha-framework": "^8.27.0",
-    "@wdio/spec-reporter": "^8.27.0",
+    "@wdio/cli": "^8",
+    "@wdio/local-runner": "^8",
+    "@wdio/mocha-framework": "^8",
+    "@wdio/spec-reporter": "^8",
     "eslint-plugin-mocha": "^10.4.3",
     "eslint-plugin-wdio": "^7.25.3",
     "karma": "^6.4.3",
@@ -96,6 +96,6 @@
     "ui5-tooling-modules": "workspace:^",
     "ui5-tooling-stringreplace": "workspace:^",
     "ui5-tooling-transpile": "workspace:^",
-    "wdio-ui5-service": "latest"
+    "wdio-ui5-service": "^2"
   }
 }

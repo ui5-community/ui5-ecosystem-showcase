@@ -29,6 +29,7 @@ export default class SimpleControl extends Control {
 			rm.style("color", "blue");
 			rm.style("padding", ".5rem");
 			rm.style("border", "1px dashed lightblue");
+			rm.style("margin-bottom", "5px");
 			rm.attr("title", "${project.version}");
 			rm.openEnd();
 			rm.text(control.getText());
