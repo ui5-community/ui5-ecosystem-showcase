@@ -5,6 +5,7 @@ const list = {
 	selector: {
 		viewName: "ui5.ecosystem.demo.app.view.Other",
 		id: "PeopleList",
+		interaction: "root",
 	},
 };
 
@@ -19,5 +20,10 @@ describe("binding", function () {
 		await MainPage.iPressTheNavButton();
 		expect(onTheOtherPage.iShouldSeeTheList()).toBeTruthy();
 		expect(onTheOtherPage.iShouldSeeListItems()).toBeTruthy();
+
+		// ui5 api + high-speed aggregation retrieval: https://ui5-community.github.io/wdi5/#/usage?id=getshorthand-conveniences
+		const oList = await browser.asControl(list);
+		const aListItems = await oList.getItems(true);
+		expect(aListItems.length).toBeGreaterThanOrEqual(1);
 	});
 });
