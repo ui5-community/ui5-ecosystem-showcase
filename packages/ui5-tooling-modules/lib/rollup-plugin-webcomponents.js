@@ -111,7 +111,8 @@ module.exports = function ({ log, resolveModule, framework, skip } = {}) {
 			const isImporterUI5Module = importerModuleInfo?.attributes?.ui5Type;
 
 			if (!importer || isImporterUI5Module) {
-				if (source === "sap/ui/core/webc/WebComponent" || source === "sap/ui/core/Lib" || source === "sap/ui/base/DataType") {
+				// resolve UI5 modules (hypenate is needed for WebComponentsMonkeyPatches and could be removed again)
+				if (["sap/ui/core/webc/WebComponent", "sap/ui/core/Lib", "sap/ui/base/DataType", "sap/base/strings/hyphenate"].includes(source)) {
 					// mark Ui5 runtime dependencies as external
 					// to avoid warnings about missing dependencies
 					return {
