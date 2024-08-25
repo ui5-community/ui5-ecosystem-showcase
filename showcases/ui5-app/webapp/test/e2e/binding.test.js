@@ -23,6 +23,7 @@ describe("binding", function () {
 
 		// ui5 api + high-speed aggregation retrieval: https://ui5-community.github.io/wdi5/#/usage?id=getshorthand-conveniences
 		const oList = await browser.asControl(list);
+		console.log("oList", oList);
 		const aListItems = await oList.getItems(true);
 		expect(aListItems.length).toBeGreaterThanOrEqual(1);
 	});
