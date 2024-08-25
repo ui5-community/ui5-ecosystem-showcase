@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.10.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.10.0...ui5-tooling-modules@3.10.1) (2024-08-25)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** include hypenate into external module detection ([#1065](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1065)) ([2c24aec](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2c24aec83ef35746bf7bc71d8f4d1e88f741c8ac))
+
+
+
+
+
 # [3.10.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.9.1...ui5-tooling-modules@3.10.0) (2024-08-25)
 
 
