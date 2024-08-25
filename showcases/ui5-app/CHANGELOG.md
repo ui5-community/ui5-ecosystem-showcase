@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.40.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.39.7...ui5-app@0.40.0) (2024-08-25)
+
+
+### Features
+
+* **ui5-tooling-modules:** seamless web components support phase 1 ([#1051](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1051)) ([f2cc93e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f2cc93ed6ecd8200d6675f4340ee0b1a734ec964))
+
+
+
+
+
 ## [0.39.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.39.6...ui5-app@0.39.7) (2024-08-21)
 
 **Note:** Version bump only for package ui5-app

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.9.1...ui5-tooling-modules@3.10.0) (2024-08-25)
+
+
+### Features
+
+* **ui5-tooling-modules:** seamless web components support phase 1 ([#1051](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1051)) ([f2cc93e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f2cc93ed6ecd8200d6675f4340ee0b1a734ec964))
+
+
+
+
+
 ## [3.9.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.9.0...ui5-tooling-modules@3.9.1) (2024-08-13)
 
 
