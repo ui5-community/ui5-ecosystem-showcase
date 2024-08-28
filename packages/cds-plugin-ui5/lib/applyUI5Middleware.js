@@ -1,7 +1,8 @@
 const path = require("path");
 const fs = require("fs");
 
-const log = require("./log");
+const cds = require('@sap/cds');
+const log = cds.log('cds-plugin-ui5')
 
 /**
  * @typedef UI5AppInfo

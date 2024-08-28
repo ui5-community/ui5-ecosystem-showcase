@@ -1,4 +1,6 @@
-const log = require("./lib/log");
+// @sap/cds/lib/index.js#138: global.cds = cds // REVISIT: using global.cds seems wrong
+const cds = global.cds || require("@sap/cds"); // reuse already loaded cds!
+const log = cds.log('cds-plugin-ui5')
 
 // >> IMPORTANT <<
 //
@@ -23,9 +25,6 @@ if (process.env.CDS_PLUGIN_UI5_ACTIVE === "false") {
 	log.info("Skip execution of plugin because it has been disabled by env var CDS_PLUGIN_UI5_ACTIVE!");
 	return;
 }
-
-// @sap/cds/lib/index.js#138: global.cds = cds // REVISIT: using global.cds seems wrong
-const cds = global.cds || require("@sap/cds"); // reuse already loaded cds!
 
 const findUI5Modules = require("./lib/findUI5Modules");
 const createPatchedRouter = require("./lib/createPatchedRouter");
