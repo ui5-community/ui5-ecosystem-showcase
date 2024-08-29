@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.9.8...cds-plugin-ui5@0.10.0) (2024-08-29)
+
+
+### Features
+
+* **cds-plugin-ui5:** use CAP logging, custom formatter using colors, allow log levels ([#1067](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1067)) ([4be3b08](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4be3b08e3a70e1f07b3ae4572928fcec840b7321))
+
+
+
+
+
 ## [0.9.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.9.7...cds-plugin-ui5@0.9.8) (2024-08-11)
 
 
