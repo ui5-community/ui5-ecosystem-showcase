@@ -1,8 +1,6 @@
 const path = require("path");
 const fs = require("fs");
 
-const log = require("./log");
-
 /**
  * @typedef UI5AppInfo
  * @type {object}
@@ -21,6 +19,7 @@ const log = require("./log");
  * @property {string} [workspaceConfigPath] /!\ RESTRICTED /!\ - path to the ui5-workspace.yaml (defaults to "${basePath}/${workspaceConfigFile}")
  * @property {string} [versionOverride] Framework version to use instead of the one defined in the root project
  * @property {string} [cacheMode] /!\ RESTRICTED /!\ - Cache mode to use when consuming SNAPSHOT versions of a framework (one of: Default|False|Off)
+ * @property {string} [log] the logger (defaults to console)
  */
 
 // inspired by https://github.com/SAP/karma-ui5/blob/main/lib/framework.js#L466-L522
@@ -37,6 +36,8 @@ module.exports = async function applyUI5Middleware(router, options) {
 
 	options.cwd = options.cwd || process.cwd();
 	options.basePath = options.basePath || process.cwd();
+
+	const log = options.log || console;
 
 	const configPath = options.configPath || options.basePath;
 	const configFile = options.configFile || "ui5.yaml";

@@ -1,5 +1,3 @@
-const log = require("./lib/log");
-
 // >> IMPORTANT <<
 //
 // JEST has issues with dynamic imports and will fail when they are used,
@@ -16,16 +14,39 @@ const log = require("./lib/log");
 //
 // To disable JEST we rely on env variables (see https://jestjs.io/docs/environment-variables)
 if (process.env.NODE_ENV === "test" && process.env.JEST_WORKER_ID && process.env.CDS_PLUGIN_UI5_ACTIVE !== "true") {
-	log.info("Skip execution of plugin because JEST is running tests! To force the execution of the plugin set env var CDS_PLUGIN_UI5_ACTIVE=true...");
+	console.log(
+		process.env.NO_COLOR ? "[%s] %s" : "\x1b[36m[%s]\x1b[0m \x1b[31m%s\x1b[0m",
+		"cds-plugin-ui5",
+		"Skip execution because JEST is running tests! To force the execution of the plugin set env var CDS_PLUGIN_UI5_ACTIVE=true..."
+	);
 	return;
 }
 if (process.env.CDS_PLUGIN_UI5_ACTIVE === "false") {
-	log.info("Skip execution of plugin because it has been disabled by env var CDS_PLUGIN_UI5_ACTIVE!");
+	console.log(process.env.NO_COLOR ? "[%s] %s" : "\x1b[36m[%s]\x1b[0m \x1b[31m%s\x1b[0m", "cds-plugin-ui5", "Skip execution because it has been disabled by env var CDS_PLUGIN_UI5_ACTIVE!");
 	return;
 }
 
 // @sap/cds/lib/index.js#138: global.cds = cds // REVISIT: using global.cds seems wrong
 const cds = global.cds || require("@sap/cds"); // reuse already loaded cds!
+
+// add color support to the logger
+if (!(process.env.NO_COLOR || process.env.CDS_PLUGIN_UI5_NO_CUSTOM_LOGGER)) {
+	const LOG_COLORS = {
+		TRACE: "\x1b[0m", // default
+		DEBUG: "\x1b[34m", // blue
+		INFO: "\x1b[32m", // green
+		WARN: "\x1b[33m", // yellow
+		ERROR: "\x1b[31m", // red
+	};
+	const LOG_LEVEL_TO_COLOR = Object.fromEntries(Object.keys(LOG_COLORS).map((level) => [cds.log.levels[level], LOG_COLORS[level]]));
+	const LOG_LEVEL_TO_TEXT = Object.fromEntries(Object.keys(LOG_COLORS).map((level) => [cds.log.levels[level], level]));
+	cds.log.format = (label, level, ...args) => {
+		return ["\x1b[36m[%s]\x1b[0m %s[%s]\x1b[0m %s", label, LOG_LEVEL_TO_COLOR[level], LOG_LEVEL_TO_TEXT[level], ...args];
+	};
+}
+
+// create a logger for the cds-plugin-ui5
+const LOG = cds.log("cds-plugin-ui5");
 
 const findUI5Modules = require("./lib/findUI5Modules");
 const createPatchedRouter = require("./lib/createPatchedRouter");
@@ -35,10 +56,10 @@ const rewriteHTML = require("./lib/rewriteHTML");
 // identify whether the execution should be skipped
 let skip = false;
 if (process.env["ui5-middleware-cap"]) {
-	log.info("Skip execution of plugin because is has been started via ui5-middleware-cap!");
+	LOG.info("Skip execution of plugin because is has been started via ui5-middleware-cap!");
 	skip = true;
 } else if (process.env["dev-approuter"]) {
-	log.info("Skip execution of plugin because is has been started via dev-approuter!");
+	LOG.info("Skip execution of plugin because is has been started via dev-approuter!");
 	skip = true;
 }
 
@@ -108,11 +129,11 @@ if (!skip) {
 	const cdsdkVersion = getCDSDKVersion();
 
 	// logging the version of the cds-plugin-ui5
-	log.info(`Running cds-plugin-ui5@${cdsPluginUI5Version} (@sap/cds-dk@${cdsdkVersion}, @sap/cds@${cds.version})`);
+	LOG.info(`Running cds-plugin-ui5@${cdsPluginUI5Version} (@sap/cds-dk@${cdsdkVersion}, @sap/cds@${cds.version})`);
 	if (global.__cds_loaded_from?.size > 1) {
-		log.warn("  !! Multiple versions of @sap/cds loaded !!");
+		LOG.warn("  !! Multiple versions of @sap/cds loaded !!");
 		global.__cds_loaded_from.forEach((cdsPath) => {
-			log.warn(`    => ${cdsPath}`);
+			LOG.warn(`    => ${cdsPath}`);
 		});
 	}
 
@@ -127,19 +148,19 @@ if (!skip) {
 	// CDS server until the bootstrap is completed and the UI5
 	// middlewares for the UI5 applications are properly available
 	cds.on("served", async function served(/* cdsServices */) {
-		log.debug("served");
+		LOG.debug("served");
 		await bootstrapCompleted;
 	});
 
 	// hook into the "bootstrap" event to startup the UI5 middlewares
 	// for the available UI5 applications in the CDS server and its deps
 	cds.on("bootstrap", async function bootstrap(app) {
-		log.debug("bootstrap");
+		LOG.debug("bootstrap");
 
 		// only for cds serve or serving all services the cds-plugin-ui5 is active
 		if (cds.cli?.command === "serve" || cds.options?.service === "all") {
 			const cwd = cds.env?._home || process.cwd();
-			const ui5Modules = await findUI5Modules({ cwd, cds });
+			const ui5Modules = await findUI5Modules({ cwd, cds, LOG });
 			const { localApps, config } = ui5Modules;
 
 			const links = [];
@@ -149,7 +170,7 @@ if (!skip) {
 				const { moduleId, mountPath, modulePath } = ui5Module;
 
 				// mounting the Router for the UI5 application to the CDS server
-				log.info(`Mounting ${mountPath} to UI5 app ${modulePath} (id=${moduleId})${config[moduleId] ? ` using config=${JSON.stringify(config[moduleId])}` : ""}`);
+				LOG.info(`Mounting ${mountPath} to UI5 app ${modulePath} (id=${moduleId})${config[moduleId] ? ` using config=${JSON.stringify(config[moduleId])}` : ""}`);
 
 				// create a patched router
 				const router = await createPatchedRouter();
@@ -160,6 +181,7 @@ if (!skip) {
 					cwd,
 					basePath: modulePath,
 					...(config[moduleId] || {}),
+					LOG,
 				});
 
 				// register the router to the specified mount path
@@ -228,7 +250,7 @@ if (!skip) {
 								);
 								ul.innerHTML = newLis.join("\n");
 							} else {
-								log.warn(`Failed to inject application links into CDS index page!`);
+								LOG.warn(`Failed to inject application links into CDS index page!`);
 							}
 						}
 					);
@@ -245,14 +267,14 @@ if (!skip) {
 					if (idxOfServeStatic !== -1) {
 						middlewareStack.splice(idxOfServeStatic, 0, cmw);
 					} else {
-						log.error(`Failed to determine welcome page middleware! The links of the application pages may not work properly!`);
+						LOG.error(`Failed to determine welcome page middleware! The links of the application pages may not work properly!`);
 					}
 				} else {
-					log.error(`Failed to inject application pages to welcome page! The links of the application pages may not work properly!`);
+					LOG.error(`Failed to inject application pages to welcome page! The links of the application pages may not work properly!`);
 				}
 			}
 		} else {
-			log.info("Skip execution of plugin! The plugin is only active for 'cds serve'!");
+			LOG.info("Skip execution of plugin! The plugin is only active for 'cds serve'!");
 		}
 
 		// bootstrap completed, unlock the "served" event
@@ -313,7 +335,7 @@ if (!skip) {
 					// sanitize the package.json if it exists
 					const packageJsonPath = join(this.task.dest, "package.json");
 					if (existsSync(packageJsonPath)) {
-						log.info(`Sanitizing the package.json for "${namespace}"...`);
+						LOG.info(`Sanitizing the package.json for "${namespace}"...`);
 						const packageJson = JSON.parse(await readFile(packageJsonPath), "utf-8");
 						let modified = false;
 						// remove the workspace configuration
@@ -338,13 +360,13 @@ if (!skip) {
 					}
 					// update the package-lock.json if it exists
 					if (existsSync(join(this.task.dest, "package-lock.json"))) {
-						log.info(`Updating the package-lock.json for "${namespace}"...`);
+						LOG.info(`Updating the package-lock.json for "${namespace}"...`);
 						// run the npm install --package-lock-only to only update the package-lock.json
 						// without installing the dependencies to node_modules
 						try {
 							/* const { stdout, stderr } = */ await exec("npm install --package-lock-only", { cwd: this.task.dest });
 						} catch (e) {
-							log.error(`Failed to update the package-lock.json for "${namespace}"! Error: ${e.code} - ${e.message}`);
+							LOG.error(`Failed to update the package-lock.json for "${namespace}"! Error: ${e.code} - ${e.message}`);
 						}
 					}
 				}
@@ -354,7 +376,7 @@ if (!skip) {
 		if (!satisfies(cdsdkVersion, ">=7.5.0")) {
 			// TODO: add error message to inform the user that the cds build task is not available
 			//       and that the @sap/cds-dk version is too old to support the cds build task
-			log.warn("The cds build task requires @sap/cds-dk version >= 7.5.0! Skipping execution as your @sap/cds-dk version is too old...");
+			LOG.warn("The cds build task requires @sap/cds-dk version >= 7.5.0! Skipping execution as your @sap/cds-dk version is too old...");
 		}
 	}
 }
