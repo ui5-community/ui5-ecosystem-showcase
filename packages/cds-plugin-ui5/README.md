@@ -75,6 +75,15 @@ The configuration can also be injected with the environment variable `CDS_PLUGIN
 CDS_PLUGIN_UI5_MODULES="{ \"ui5-bookshop\": { \"mountPath\": \"/the-bookshop\" } }" cds-serve
 ```
 
+#### Logger
+
+The `cds-plugin-ui5` uses the logger from CDS. By default, it adds coloring to the logs from CDS. This can be disabled in general by using the environment variable `NO_COLOR` for the logger overall or specifically for the `cds-plugin-ui5` by setting the environment variable `CDS_PLUGIN_UI5_NO_CUSTOM_LOGGER`.
+
+```sh
+# disable the colored logging extension of the cds-plugin-ui5
+CDS_PLUGIN_UI5_NO_CUSTOM_LOGGER=1 cds watch
+```
+
 #### UI5 Server Middlewares
 
 If you require to configure the UI5 server middlewares, you can do so by adding some selected configuration options in the `package.json` of the CDS server in the section: `cds/cds-plugin-ui5/modules/%moduleId%`

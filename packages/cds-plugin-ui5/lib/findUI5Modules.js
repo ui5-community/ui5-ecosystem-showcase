@@ -2,9 +2,6 @@ const path = require("path");
 const fs = require("fs");
 const yaml = require("js-yaml");
 
-const cds = require('@sap/cds');
-const log = cds.log('cds-plugin-ui5');
-
 /**
  * @typedef UI5Module
  * @type {object}
@@ -20,9 +17,10 @@ const log = cds.log('cds-plugin-ui5');
  * @param {string} options.cds reference to cds
  * @param {string} options.skipLocalApps skip local apps
  * @param {string} options.skipDeps skip dependencies
+ * @param {string} options.log the logger (defaults to console)
  * @returns {Array<UI5Module>} array of UI5 module
  */
-module.exports = async function findUI5Modules({ cwd, cds, skipLocalApps, skipDeps }) {
+module.exports = async function findUI5Modules({ cwd, cds, skipLocalApps, skipDeps, log = console }) {
 	// extract the modules configuration from the package.json
 	const pkgJson = require(path.join(cwd, "package.json"));
 
