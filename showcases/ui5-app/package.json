@@ -49,6 +49,7 @@
     "cmis": "^1.0.3",
     "firebase": "^10.12.4",
     "is-plain-object": "^5.0.0",
+    "mypackage": "file:local/mypackage",
     "node-fetch": "^2.7.0",
     "pdfmake": "^0.2.10",
     "punycode": "^2.3.1",

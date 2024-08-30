@@ -20,8 +20,9 @@ sap.ui.define(
 		"firebase/app", // requires node-fetch@2
 		"firebase/firestore/lite",
 		"signalr",
+		"mypackage",
 	],
-	(Controller, MessageToast, jQuery, xlsx, cmis, supabase, octokit, axios, temporal, stompjs, react, reactdom, zod, pdfMake, pdfFonts, xmljs, firebase, firestore, signalr) => {
+	(Controller, MessageToast, jQuery, xlsx, cmis, supabase, octokit, axios, temporal, stompjs, react, reactdom, zod, pdfMake, pdfFonts, xmljs, firebase, firestore, signalr, mypackage) => {
 		"use strict";
 
 		console.log("[3rdParty] xlsx", xlsx);
@@ -51,6 +52,7 @@ sap.ui.define(
 		}
 
 		console.log("[3rdParty] signalr", signalr, jQuery.connection.hub);
+		console.log("[3rdParty] mypackage", mypackage);
 
 		return Controller.extend("ui5.ecosystem.demo.app.controller.Thirdparty", {
 			onInit() {
