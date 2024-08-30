@@ -296,9 +296,23 @@ module.exports = function (log, projectInfo) {
 			knownDeps.push(npmPackage);
 			let depRoot;
 			try {
-				const depPath = resolveNodeModule(dep, cwd, depPaths, knownDeps);
+				let depPath = resolveNodeModule(dep, cwd, depPaths, knownDeps);
 				if (depPath !== dep) {
-					depRoot = depPath.substring(0, depPath.lastIndexOf("node_modules") + "node_modules".length + 1 + npmPackage.length);
+					// find the closest package.json to the resolved module
+					// (maybe we should break when a package.json is found even though it is not the right one)
+					while (!depRoot && depPath !== cwd && depPath !== "/" && path.basename(depPath) !== "node_modules") {
+						depPath = path.dirname(depPath);
+						const pkgJsonDepPath = path.join(depPath, "package.json");
+						if (existsSync(pkgJsonDepPath)) {
+							const pkgJsonDep = JSON.parse(readFileSync(pkgJsonDepPath, { encoding: "utf8" }));
+							// only if the package.json name matches the dependency name
+							// we consider it as the root of the dependency
+							if (pkgJsonDep.name === dep) {
+								depRoot = depPath;
+								break;
+							}
+						}
+					}
 				} else {
 					// native modules are not part of the node_modules directory
 					// so we need to resolve it late with the package.json
