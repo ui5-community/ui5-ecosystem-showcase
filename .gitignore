@@ -80,3 +80,6 @@ dist
 
 # local workspace configs
 ui5-workspace.yaml
+
+# local markdown files
+TODO.md

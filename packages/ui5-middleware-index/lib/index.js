@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 /**
  * serving an html file when "/" is called in the browser,
  * similar to what Apache httpd calls "DirectoryIndex <file>"

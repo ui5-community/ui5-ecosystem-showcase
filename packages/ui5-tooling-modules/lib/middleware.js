@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 const path = require("path");
 const { createReadStream } = require("fs");
 const chokidar = require("chokidar");
@@ -60,7 +59,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 			skipTransform: false,
 			watch: true,
 		},
-		options.configuration
+		options.configuration,
 	);
 	let { debug, skipTransform, watch } = config;
 

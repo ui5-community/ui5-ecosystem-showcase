@@ -22,14 +22,18 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "@sap/eslint-plugin-cds": "^3",
     "cds-bookshop-ui5-viewer": "workspace:^",
     "cds-plugin-ui5": "workspace:^",
+    "eslint": "^9.9.1",
+    "globals": "^15.9.0",
     "rimraf": "^6.0.1",
     "ui5-tsapp-simple": "workspace:^"
   },
   "scripts": {
     "clean": "rimraf gen",
     "build": "cds build",
+    "lint": "eslint .",
     "watch": "cds watch",
     "start": "cds-serve",
     "start:dist": "CDS_PLUGIN_UI5_MODULES=\"{ \"ui5-bookshop\": { \"configFile\": \"ui5-dist.yaml\" } }\" cds-serve"

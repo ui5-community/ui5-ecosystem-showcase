@@ -29,10 +29,12 @@ function resolveNodeModule(moduleName, cwd = process.cwd()) {
 		modulePath = require.resolve(moduleName, {
 			paths: [cwd] // necessary for PNPM and/or DEBUG scenario
 		});
+		// eslint-disable-next-line no-unused-vars
 	} catch (err) {
 		// use the default lookup
 		try {
 			modulePath = require.resolve(moduleName);
+			// eslint-disable-next-line no-unused-vars
 		} catch (err) {
 			// gracefully ignore the error
 			//console.error(err);
@@ -123,6 +125,7 @@ async function findBabelConfigOptions(cwd) {
 		// => no recursive merging of babel config is possible with this approach
 		try {
 			babelConfigOptions = JSONC.parse(fs.readFileSync(configFile, { encoding: "utf8" }));
+			// eslint-disable-next-line no-unused-vars
 		} catch (err) {
 			// no JSON so we let Babel lookup the configuration file with the Babel API
 			const partialConfig = await babel.loadPartialConfigAsync({
@@ -272,7 +275,8 @@ module.exports = function (log) {
 							paths: [cwd]
 						});
 						return !!ui5YamlPath;
-					} catch (e) {
+						// eslint-disable-next-line no-unused-vars
+					} catch (err) {
 						return false;
 					}
 				});
@@ -351,8 +355,8 @@ module.exports = function (log) {
 		 * @param {object} cfg configuration object
 		 * @param {object} cfg.configuration task/middleware configuration
 		 * @param {boolean} cfg.isMiddleware true, if the function is called from the middleware
-		 * @param {function} [cfg.preprocess] function to preprocess the babel configuration (before loaded)
-		 * @param {function} [cfg.postprocess] function to postprocess the babel configuration (after loaded)
+		 * @param {Function} [cfg.preprocess] function to preprocess the babel configuration (before loaded)
+		 * @param {Function} [cfg.postprocess] function to postprocess the babel configuration (after loaded)
 		 * @param {string} [cwd] the cwd to lookup the configuration (defaults to process.cwd())
 		 * @returns {object} the babel plugins configuration
 		 */
@@ -451,7 +455,8 @@ module.exports = function (log) {
 			let browserListConfigFile;
 			try {
 				browserListConfigFile = browserslist.findConfig(cwd);
-			} catch (ex) {
+				// eslint-disable-next-line no-unused-vars
+			} catch (err) {
 				configuration?.debug && log.info(`Unable to find browserslist configuration. Fallback to default...`);
 			}
 			const envPreset = ["@babel/preset-env"];

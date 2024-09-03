@@ -1,4 +1,5 @@
-const http = require("http");
+// eslint-disable-next-line no-unused-vars
+const http = require("http"); // needed for JSDoc
 
 /**
  * Async callback function to determine whether the response should be intercepted

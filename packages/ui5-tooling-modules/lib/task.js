@@ -1,9 +1,8 @@
-/* eslint-disable no-unused-vars, no-empty */
 const path = require("path");
 const { createReadStream } = require("fs");
 const { XMLParser, XMLBuilder } = require("fast-xml-parser");
 const minimatch = require("minimatch");
-const parseJS = require("./parseJS");
+const parseJS = require("./utils/parseJS");
 const sanitize = require("sanitize-filename");
 
 /**
@@ -62,7 +61,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 			debug: false,
 			skipTransform: false,
 		},
-		options.configuration
+		options.configuration,
 	);
 
 	// derive the custom thirdparty namespace
@@ -126,6 +125,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 			const program = parse(content, { comment: true, loc: true, range: true, tokens: true });
 			const tokens = {};
 			walk(program, {
+				// eslint-disable-next-line no-unused-vars
 				enter(node, parent, prop, index) {
 					if (
 						/* sap.ui.require.toUrl */
@@ -226,6 +226,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 								requires[key] = rewriteDep(value, bundledResources);
 							}
 							node[key] = JSON.stringify(requires, null, 2).replace(/"/g, "'");
+							// eslint-disable-next-line no-unused-vars
 						} catch (err) {
 							log.error(`Failed to parse the "${node[key]}" as JS object!`);
 						}
@@ -271,7 +272,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				string: rewriteJSDeps(entry.code, bundledResources, entry.name),
 			});
 			await workspace.write(newResource);
-		})
+		}),
 	);
 	config.debug && log.info(`Bundling took ${Date.now() - bundleTime} millis`);
 
@@ -295,7 +296,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 			} else {
 				log.verbose(`Skipping copy of existing resource: ${resourceName}`);
 			}
-		})
+		}),
 	);
 	config.debug && log.info(`Copying resources took ${Date.now() - copyTime} millis`);
 
@@ -327,7 +328,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 			return Array.isArray(config.skipTransform)
 				? config.skipTransform.some((value) => {
 						return minimatch(resourcePath, `/resources/${options.projectNamespace}/${thirdpartyNamespace}/${value}`);
-				  })
+					})
 				: config.skipTransform;
 		};
 
@@ -357,9 +358,9 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 						await workspace.write(res);
 					}
 				}
-			})
+			}),
 		);
-		config.debug && log.info(`Rewriting took ${Date.now() - copyTime} millis`);
+		config.debug && log.info(`Rewriting took ${Date.now() - rewriteTime} millis`);
 	}
 
 	// create path mappings for bundled resources in Component.js

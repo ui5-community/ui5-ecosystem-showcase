@@ -275,6 +275,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 							try {
 								const typeDefPkgJson = JSON.parse(fs.readFileSync(file, { encoding: "utf8" }));
 								typeDefs[file] = typeDefPkgJson;
+								// eslint-disable-next-line no-unused-vars
 							} catch (err) {
 								/* ignore the error */
 							}

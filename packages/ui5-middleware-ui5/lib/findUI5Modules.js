@@ -36,10 +36,11 @@ module.exports = async function findUI5Modules({ cwd, config, log }) {
 					paths: [cwd],
 				});
 				return true;
-			} catch (e) {
+				// eslint-disable-next-line no-unused-vars
+			} catch (err) {
 				return false;
 			}
-		})
+		}),
 	);
 
 	// if apps are available, attach the middlewares of the UI5 apps

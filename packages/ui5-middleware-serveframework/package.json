@@ -26,6 +26,6 @@
     "@ui5/project": "*"
   },
   "peerDependencies": {
-    "@ui5/project": ">=3.9.2 <5"
+    "@ui5/project": ">=3 <5"
   }
 }

@@ -7,7 +7,7 @@ sap.ui.define(["./library", "sap/ui/core/Control", "./ExampleRenderer"], functio
 	"use strict";
 
 	// refer to library types
-	var ExampleColor = library.ExampleColor;
+	const ExampleColor = library.ExampleColor;
 
 	/**
 	 * Constructor for a new <code>ui5.ecosystem.demo.lib.Example</code> control.
@@ -26,7 +26,7 @@ sap.ui.define(["./library", "sap/ui/core/Control", "./ExampleRenderer"], functio
 	 * @public
 	 * @alias ui5.ecosystem.demo.lib.Example
 	 */
-	var Example = Control.extend(
+	const Example = Control.extend(
 		"ui5.ecosystem.demo.lib.Example",
 		/** @lends ui5.ecosystem.demo.lib.Example.prototype */ {
 			metadata: {
@@ -60,7 +60,7 @@ sap.ui.define(["./library", "sap/ui/core/Control", "./ExampleRenderer"], functio
 			onclick: function () {
 				this.firePress();
 			},
-		}
+		},
 	);
 	return Example;
 });

@@ -1,5 +1,3 @@
-/* global globalThis */
-
 const fs = require("fs")
 const path = require("path")
 
@@ -93,6 +91,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	let destinations
 	try {
 		destinations = JSON.parse(process.env.destinations)
+		// eslint-disable-next-line no-unused-vars
 	} catch (ex) {
 		// no destinations from environment => let's check the effectiveOptions
 	}
@@ -167,7 +166,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 						`adding cf-like destination "${
 							route.destination || "(xs-app.json specific setting)"
 						}" proxying reqs to ${route.source}`
-				  )
+					)
 				: null
 		}
 	})
@@ -210,6 +209,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 					)
 				})
 				return extensionModule
+				// eslint-disable-next-line no-unused-vars
 			} catch (ex) {
 				log.warn(
 					`⚠️ Failed to resolve extension "${JSON.stringify(extension)}"! The extension will be ignored...`
@@ -381,6 +381,6 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 					})
 				},
 				proxyMiddleware
-		  )
+			)
 		: proxyMiddleware
 }

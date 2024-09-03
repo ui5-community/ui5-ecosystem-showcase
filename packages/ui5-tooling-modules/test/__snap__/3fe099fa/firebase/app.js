@@ -9,7 +9,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
   	var app = index_esm2017.require$$0;
 
   	var name = "firebase";
-  	var version = "10.13.0";
+  	var version = "10.13.1";
 
   	/**
   	 * @license

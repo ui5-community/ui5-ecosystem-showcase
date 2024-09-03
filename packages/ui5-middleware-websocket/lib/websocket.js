@@ -7,7 +7,7 @@ const expressws = require("./expressws");
  * @callback WSMiddlewareFunction
  * @param {WebSocket} ws websocket object
  * @param {Express.Request} req express request object
- * @param {function} next function to trigger the next middleware
+ * @param {Function} next function to trigger the next middleware
  * @returns {void}
  */
 

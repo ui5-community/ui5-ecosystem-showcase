@@ -1,0 +1,5 @@
+{
+  "cb/**/*.js": "eslint",
+  "src/**/*.cds": "eslint",
+  "src/**/*.js": "eslint"
+}

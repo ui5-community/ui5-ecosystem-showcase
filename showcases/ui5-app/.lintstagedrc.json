@@ -1,0 +1,4 @@
+{
+  "local/**/*.js": "eslint",
+  "webapp/**/*.js": "eslint"
+}

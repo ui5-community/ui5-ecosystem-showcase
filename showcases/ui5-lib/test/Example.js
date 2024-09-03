@@ -2,7 +2,7 @@ sap.ui.define(["ui5/ecosystem/demo/lib/library", "ui5/ecosystem/demo/lib/Example
 	"use strict";
 
 	// refer to library types
-	var ExampleColor = library.ExampleColor;
+	const ExampleColor = library.ExampleColor;
 
 	// create a new instance of the Example control and
 	// place it into the DOM element with the id "content"

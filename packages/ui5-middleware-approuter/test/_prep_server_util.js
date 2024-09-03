@@ -1,6 +1,5 @@
 const { cp } = require("fs").promises
 const path = require("path")
-const replace = require("replace-in-file")
 
 /**
  * @typedef UI5ServerConfig
@@ -23,9 +22,10 @@ const replace = require("replace-in-file")
  * @returns {UI5ServerConfig} full path to the test fixtures of ui5.yaml, xsapp.json and defaultEnv.json (the latter is an empty object if not provided as an input parameter)
  */
 async function prepUI5ServerConfig({ ui5Yaml, appRouterPort, xsAppJson, defaultEnvJson, tmpDir }) {
+	const { replaceInFile } = await import("replace-in-file")
 	// replace default port 1091 for app router w/ random port
 	await cp(path.resolve(ui5Yaml), `${tmpDir}/ui5.yaml`) // copy orig ui5.yaml test fixture
-	const _ui5Yaml = await replace({ files: path.resolve(`${tmpDir}/ui5.yaml`), from: "1091", to: appRouterPort }) // replace port config in file
+	const _ui5Yaml = await replaceInFile({ files: path.resolve(`${tmpDir}/ui5.yaml`), from: "1091", to: appRouterPort }) // replace port config in file
 	const ui5 = { yaml: _ui5Yaml[0].file }
 
 	const _xsapp = { json: path.resolve(xsAppJson) }

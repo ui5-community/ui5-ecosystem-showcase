@@ -56,9 +56,9 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 	const lessResources = [];
 	for (const glob of lessToCompile) {
 		if (!path.isAbsolute(glob)) {
-			lessResources.push(...((await workspace.byGlobSource(path.posix.join(localPath, glob))) || []));
+			lessResources.push(...((await workspace.byGlob(path.posix.join(localPath, glob))) || []));
 		} else {
-			lessResources.push(...((await workspace.byGlobSource(glob)) || []));
+			lessResources.push(...((await workspace.byGlob(glob)) || []));
 		}
 	}
 
@@ -74,7 +74,7 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 		lessResources.map((lessResource) => {
 			isDebug && log.info(`Compiling file ${translateResourcePath(lessResource.getPath())}...`);
 			return lessBuilder.build(lessResource);
-		})
+		}),
 	);
 
 	// finally write the compiled resources back to the workspace
@@ -86,7 +86,7 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 				string: output.css,
 			});
 			return workspace.write(resource);
-		})
+		}),
 	);
 };
 

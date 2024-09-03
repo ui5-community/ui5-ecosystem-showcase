@@ -15,5 +15,9 @@
   },
   "dependencies": {
     "chart.js": "^3.9.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.9.1",
+    "globals": "^15.9.0"
   }
 }
