@@ -56,9 +56,9 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 	const lessResources = [];
 	for (const glob of lessToCompile) {
 		if (!path.isAbsolute(glob)) {
-			lessResources.push(...((await workspace.byGlobSource(path.posix.join(localPath, glob))) || []));
+			lessResources.push(...((await workspace.byGlob(path.posix.join(localPath, glob))) || []));
 		} else {
-			lessResources.push(...((await workspace.byGlobSource(glob)) || []));
+			lessResources.push(...((await workspace.byGlob(glob)) || []));
 		}
 	}
 
