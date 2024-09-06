@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-livereload",
-  "version": "3.0.3",
+  "version": "3.1.0",
   "description": "UI5 middleware for live reloading `webapp` sources on change",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
