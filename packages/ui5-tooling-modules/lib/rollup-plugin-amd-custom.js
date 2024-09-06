@@ -42,6 +42,7 @@ module.exports = function (options = {}) {
 				}
 
 				return transformed;
+				// eslint-disable-next-line no-unused-vars
 			} catch (ex) {
 				return;
 			}

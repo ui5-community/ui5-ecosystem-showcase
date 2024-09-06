@@ -23,7 +23,7 @@ const walk = require("ignore-walk");
 const minimatch = require("minimatch");
 
 const { XMLParser } = require("fast-xml-parser");
-const parseJS = require("./parseJS");
+const parseJS = require("./utils/parseJS");
 
 const { createHash } = require("crypto");
 const sanitize = require("sanitize-filename");
@@ -282,7 +282,7 @@ module.exports = function (log, projectInfo) {
 	 * @param {*} cwd current working directory
 	 * @param {*} depPaths paths of the dependencies (in addition for cwd)
 	 * @param {*} knownDeps list of known dependencies
-	 * @returns array of dependency root directories
+	 * @returns {string[]} array of dependency root directories
 	 */
 	function findDependencies(cwd = process.cwd(), depPaths = [], knownDeps = []) {
 		const pkgJson = JSON.parse(readFileSync(path.join(cwd, "package.json"), { encoding: "utf8" }));
@@ -402,7 +402,6 @@ module.exports = function (log, projectInfo) {
 				return providedDependencies.filter((e) => depOrRes === e || depOrRes.startsWith(`${e}/`)).length > 0;
 			}
 
-			// eslint-disable-next-line jsdoc/require-jsdoc
 			/* TODO: keep functionality commented till needed!
 			function addUniqueNPMPackage(npmPackageName) {
 				if (!uniqueNPMPackages.has(npmPackageName) && npmPackageName && !npmPackageName.startsWith(".") && resolveModule(`${npmPackageName}/package.json`, { cwd, depPaths })) {
@@ -621,7 +620,7 @@ module.exports = function (log, projectInfo) {
 						findUniqueXMLDeps(xmldom);
 
 						return resource;
-					})
+					}),
 				);
 			}
 			log.verbose(`XML scan took ${Date.now() - millis}ms`);
@@ -636,7 +635,7 @@ module.exports = function (log, projectInfo) {
 					findUniqueJSDeps(content, resource.getPath());
 
 					return resource;
-				})
+				}),
 			);
 			log.verbose(`JS scan took ${Date.now() - millis}ms`);
 
@@ -908,7 +907,7 @@ module.exports = function (log, projectInfo) {
 		getBundleInfo: async function getBundleInfo(
 			moduleNames,
 			{ skipCache, persistentCache, debug, chunksPath, skipTransform, skipTransformWebComponents, keepDynamicImports, generatedCode, minify, inject } = {},
-			{ cwd, depPaths, isMiddleware } = {}
+			{ cwd, depPaths, isMiddleware } = {},
 		) {
 			cwd = cwd || process.cwd();
 
@@ -929,7 +928,7 @@ module.exports = function (log, projectInfo) {
 					return Array.isArray(skipTransform)
 						? skipTransform.some((value) => {
 								return minimatch(moduleName, value);
-						  })
+							})
 						: skipTransform;
 				};
 
@@ -1002,7 +1001,7 @@ module.exports = function (log, projectInfo) {
 								nameOfModules,
 								Object.assign({}, options, {
 									mainFields: ["browser", "main", "module"],
-								})
+								}),
 							);
 						}
 

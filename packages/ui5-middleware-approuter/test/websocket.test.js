@@ -4,9 +4,7 @@ const path = require("path")
 const express = require("express")
 const expressws = require("ui5-middleware-websocket/lib/expressws")
 
-const supertest = require("supertest")
 const superwstest = require("superwstest")
-const nock = require("nock")
 
 // Start server before running tests
 test.before(async (t) => {
@@ -30,7 +28,6 @@ test.before(async (t) => {
 
 	// start the UI5 development server with multiple proxy middlewares
 	const { graphFromPackageDependencies } = await import("@ui5/project/graph")
-	const debug = false
 	const graph = await graphFromPackageDependencies({
 		cwd: "../../showcases/ui5-app",
 		rootConfiguration: {

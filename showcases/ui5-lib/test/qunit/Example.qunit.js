@@ -5,7 +5,7 @@ sap.ui.define(
 		"use strict";
 
 		// refer to library types
-		var ExampleColor = library.ExampleColor;
+		const ExampleColor = library.ExampleColor;
 
 		// prepare DOM
 		createAndAppendDiv("uiArea1");
@@ -34,7 +34,7 @@ sap.ui.define(
 		// some basic control checks
 		QUnit.test("Test get properties", function (assert) {
 			assert.expect(2);
-			var oExample = new Example({
+			const oExample = new Example({
 				text: "Example",
 			});
 			assert.equal(oExample.getText(), "Example", "Check text equals 'Example'");
@@ -57,5 +57,5 @@ sap.ui.define(
 				}, 100);
 			});
 		});
-	}
+	},
 );

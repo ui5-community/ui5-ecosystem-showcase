@@ -1,4 +1,4 @@
-const crypto = require("crypto")
+const { randomBytes } = require("crypto")
 const fs = require("fs-extra")
 const nock = require("nock")
 const path = require("path")
@@ -12,7 +12,7 @@ const prepUI5ServerConfig = require("./_prep_server_util")
 
 test.beforeEach(async (t) => {
 	// copy ui5 app to a temp dir in test folder scope
-	t.context.tmpDir = path.resolve(`./test/_ui5-app/${crypto.randomBytes(5).toString("hex")}`)
+	t.context.tmpDir = path.resolve(`./test/_ui5-app/${randomBytes(5).toString("hex")}`)
 	await copyUI5app(t.context.tmpDir)
 
 	// dynamic port allocation for ui5 serve

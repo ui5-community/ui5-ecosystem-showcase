@@ -1,8 +1,6 @@
-const crypto = require("crypto")
+const { randomBytes } = require("crypto")
 const fs = require("fs-extra")
-const nock = require("nock")
 const path = require("path")
-const replace = require("replace-in-file")
 const request = require("supertest")
 const { spawn } = require("child_process")
 const test = require("ava")
@@ -13,7 +11,7 @@ const prepUI5ServerConfig = require("./_prep_server_util")
 
 test.beforeEach(async (t) => {
 	// copy ui5 app to a temp dir in test folder scope
-	t.context.tmpDir = path.resolve(`./test/_ui5-app/${crypto.randomBytes(5).toString("hex")}`)
+	t.context.tmpDir = path.resolve(`./test/_ui5-app/${randomBytes(5).toString("hex")}`)
 	await copyUI5app(t.context.tmpDir)
 
 	// dynamic port allocation for ui5 serve
@@ -66,7 +64,7 @@ test("crud commands (GET, POST, PUT, DELETE)", async (t) => {
 	t.true(respGET.body.value.length > 0, "Entries found")
 
 	// create new person
-	const user = `pimue${crypto.randomBytes(5).toString("hex")}`
+	const user = `pimue${randomBytes(5).toString("hex")}`
 	const respPOST = await app
 		.post("/backend/People")
 		.send({

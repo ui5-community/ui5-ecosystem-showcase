@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 const path = require("path");
 const { existsSync } = require("fs");
 const { readdir: readdirAsync, readFile: readFileAsync } = require("fs").promises;
@@ -83,7 +82,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 					content: content,
 					startTime: startTime,
 				};
-			})
+			}),
 	);
 
 	// read the resources of the JAR files
@@ -97,12 +96,12 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 					})
 					.map(async (entry) => {
 						jarResources[entry] = await jar.content.file(entry).async("string");
-					})
+					}),
 			);
 			if (isDebug) {
 				log.info(`  - Loading JAR file ${jar.file} took ${Date.now() - jar.startTime}ms`);
 			}
-		})
+		}),
 	);
 
 	return async function serveWebJARs(req, res, next) {

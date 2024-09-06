@@ -2958,7 +2958,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	}
 
 	const name$p = "@firebase/app";
-	const version$1 = "0.10.9";
+	const version$1 = "0.10.10";
 
 	/**
 	 * @license
@@ -3027,7 +3027,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	const name$1 = "@firebase/firestore-compat";
 
 	const name = "firebase";
-	const version = "10.13.0";
+	const version = "10.13.1";
 
 	/**
 	 * @license
@@ -3805,7 +3805,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	     * already logged, subsequent calls to this function in the same day will be ignored.
 	     */
 	    async triggerHeartbeat() {
-	        var _a, _b, _c;
+	        var _a, _b;
 	        try {
 	            const platformLogger = this.container
 	                .getProvider('platform-logger')
@@ -3814,11 +3814,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	            // service, not the browser user agent.
 	            const agent = platformLogger.getPlatformInfoString();
 	            const date = getUTCDateString();
-	            console.log('heartbeats', (_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats);
-	            if (((_b = this._heartbeatsCache) === null || _b === void 0 ? void 0 : _b.heartbeats) == null) {
+	            if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null) {
 	                this._heartbeatsCache = await this._heartbeatsCachePromise;
 	                // If we failed to construct a heartbeats cache, then return immediately.
-	                if (((_c = this._heartbeatsCache) === null || _c === void 0 ? void 0 : _c.heartbeats) == null) {
+	                if (((_b = this._heartbeatsCache) === null || _b === void 0 ? void 0 : _b.heartbeats) == null) {
 	                    return;
 	                }
 	            }

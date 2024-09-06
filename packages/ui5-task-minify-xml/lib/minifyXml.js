@@ -1,9 +1,8 @@
-/* eslint-disable no-unused-vars, no-useless-escape */
 const defaultMinifyOptions = {
 	collapseWhitespaceInAttributeValues: true,
 };
 
-const attrValueRegExp = /(?<=<\/?[^\s\/>]+\b(?:\s+[^=\s>]+\s*=\s*(?:"[^"]*"|'[^']*'))*\s+[^\s=\/>]+\s*=\s*(["']))[^\1]*?(?=\1)/g;
+const attrValueRegExp = /(?<=<\/?[^\s/>]+\b(?:\s+[^=\s>]+\s*=\s*(?:"[^"]*"|'[^']*'))*\s+[^\s=/>]+\s*=\s*(["']))[^\1]*?(?=\1)/g;
 
 /**
  * Task to minify XML views, fragments, controls, etc.
@@ -50,7 +49,7 @@ module.exports = async ({ log, workspace, options }) => {
 
 			resource.setString(xml);
 			await workspace.write(resource);
-		})
+		}),
 	);
 };
 

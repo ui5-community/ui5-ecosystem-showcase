@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 const { readFile } = require("fs").promises;
 const path = require("path");
 
@@ -97,7 +96,7 @@ async function addServiceworkerRegistration() {
  *
  * @param {object} parameters Parameters
  * @param {string} parameters.path The path to the resource that should be written
- * @param {string|buffer} parameters.content The content to write to the file
+ * @param {string|Buffer} parameters.content The content to write to the file
  * @returns {Promise} which resolves once the data has been written
  */
 async function writeFile({ path, content }) {

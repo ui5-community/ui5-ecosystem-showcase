@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
 import Controller from "sap/ui/core/mvc/Controller";
 import AppComponent from "../Component";
 

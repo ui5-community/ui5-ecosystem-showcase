@@ -5803,7 +5803,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
     }
 
-    const version$1 = '2.45.2';
+    const version$1 = '2.45.3';
 
     let JS_ENV = '';
     // @ts-ignore
@@ -5911,7 +5911,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         return result;
     }
 
-    const version = '2.64.4';
+    const version = '2.65.0';
 
     const GOTRUE_URL = 'http://localhost:9999';
     const STORAGE_KEY = 'supabase.auth.token';
@@ -6239,6 +6239,9 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             super('Auth session missing!', 'AuthSessionMissingError', 400, undefined);
         }
     }
+    function isAuthSessionMissingError(error) {
+        return isAuthError(error) && error.name === 'AuthSessionMissingError';
+    }
     class AuthInvalidTokenResponseError extends CustomAuthError {
         constructor() {
             super('Auth session or user missing', 'AuthInvalidTokenResponseError', 500, undefined);
@@ -6357,6 +6360,12 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
         else if (errorCode === 'weak_password') {
             throw new AuthWeakPasswordError(_getErrorMessage(data), error.status, ((_a = data.weak_password) === null || _a === void 0 ? void 0 : _a.reasons) || []);
+        }
+        else if (errorCode === 'session_not_found') {
+            // The `session_id` inside the JWT does not correspond to a row in the
+            // `sessions` table. This usually means the user has signed out, has been
+            // deleted, or their session has somehow been terminated.
+            throw new AuthSessionMissingError();
         }
         throw new AuthApiError(_getErrorMessage(data), error.status || 500, errorCode);
     }
@@ -7313,29 +7322,37 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         async _exchangeCodeForSession(authCode) {
             const storageItem = await getItemAsync(this.storage, `${this.storageKey}-code-verifier`);
             const [codeVerifier, redirectType] = (storageItem !== null && storageItem !== void 0 ? storageItem : '').split('/');
-            const { data, error } = await _request(this.fetch, 'POST', `${this.url}/token?grant_type=pkce`, {
-                headers: this.headers,
-                body: {
-                    auth_code: authCode,
-                    code_verifier: codeVerifier,
-                },
-                xform: _sessionResponse,
-            });
-            await removeItemAsync(this.storage, `${this.storageKey}-code-verifier`);
-            if (error) {
-                return { data: { user: null, session: null, redirectType: null }, error };
+            try {
+                const { data, error } = await _request(this.fetch, 'POST', `${this.url}/token?grant_type=pkce`, {
+                    headers: this.headers,
+                    body: {
+                        auth_code: authCode,
+                        code_verifier: codeVerifier,
+                    },
+                    xform: _sessionResponse,
+                });
+                await removeItemAsync(this.storage, `${this.storageKey}-code-verifier`);
+                if (error) {
+                    throw error;
+                }
+                if (!data || !data.session || !data.user) {
+                    return {
+                        data: { user: null, session: null, redirectType: null },
+                        error: new AuthInvalidTokenResponseError(),
+                    };
+                }
+                if (data.session) {
+                    await this._saveSession(data.session);
+                    await this._notifyAllSubscribers('SIGNED_IN', data.session);
+                }
+                return { data: Object.assign(Object.assign({}, data), { redirectType: redirectType !== null && redirectType !== void 0 ? redirectType : null }), error };
             }
-            else if (!data || !data.session || !data.user) {
-                return {
-                    data: { user: null, session: null, redirectType: null },
-                    error: new AuthInvalidTokenResponseError(),
-                };
+            catch (error) {
+                if (isAuthError(error)) {
+                    return { data: { user: null, session: null, redirectType: null }, error };
+                }
+                throw error;
             }
-            if (data.session) {
-                await this._saveSession(data.session);
-                await this._notifyAllSubscribers('SIGNED_IN', data.session);
-            }
-            return { data: Object.assign(Object.assign({}, data), { redirectType: redirectType !== null && redirectType !== void 0 ? redirectType : null }), error };
         }
         /**
          * Allows signing in with an OIDC ID token. The authentication provider used
@@ -7788,6 +7805,13 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             }
             catch (error) {
                 if (isAuthError(error)) {
+                    if (isAuthSessionMissingError(error)) {
+                        // JWT contains a `session_id` which does not correspond to an active
+                        // session in the database, indicating the user is signed out.
+                        await this._removeSession();
+                        await removeItemAsync(this.storage, `${this.storageKey}-code-verifier`);
+                        await this._notifyAllSubscribers('SIGNED_OUT', null);
+                    }
                     return { data: { user: null }, error };
                 }
                 throw error;
@@ -8000,7 +8024,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     console.warn('@supabase/gotrue-js: Session as retrieved from URL was issued over 120s ago, URL could be stale', issuedAt, expiresAt, timeNow);
                 }
                 else if (timeNow - issuedAt < 0) {
-                    console.warn('@supabase/gotrue-js: Session as retrieved from URL was issued in the future? Check the device clok for skew', issuedAt, expiresAt, timeNow);
+                    console.warn('@supabase/gotrue-js: Session as retrieved from URL was issued in the future? Check the device clock for skew', issuedAt, expiresAt, timeNow);
                 }
                 const { data, error } = await this._getUser(access_token);
                 if (error)
@@ -8698,19 +8722,20 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     if (sessionError) {
                         return { data: null, error: sessionError };
                     }
+                    const body = Object.assign({ friendly_name: params.friendlyName, factor_type: params.factorType }, (params.factorType === 'phone' ? { phone: params.phone } : { issuer: params.issuer }));
                     const { data, error } = await _request(this.fetch, 'POST', `${this.url}/factors`, {
-                        body: {
-                            friendly_name: params.friendlyName,
-                            factor_type: params.factorType,
-                            issuer: params.issuer,
-                        },
+                        body,
                         headers: this.headers,
                         jwt: (_a = sessionData === null || sessionData === void 0 ? void 0 : sessionData.session) === null || _a === void 0 ? void 0 : _a.access_token,
                     });
                     if (error) {
                         return { data: null, error };
                     }
-                    if ((_b = data === null || data === void 0 ? void 0 : data.totp) === null || _b === void 0 ? void 0 : _b.qr_code) {
+                    // TODO: Remove once: https://github.com/supabase/auth/pull/1717 is deployed
+                    if (params.factorType === 'phone') {
+                        delete data.totp;
+                    }
+                    if (params.factorType === 'totp' && ((_b = data === null || data === void 0 ? void 0 : data.totp) === null || _b === void 0 ? void 0 : _b.qr_code)) {
                         data.totp.qr_code = `data:image/svg+xml;utf-8,${data.totp.qr_code}`;
                     }
                     return { data, error: null };
@@ -8769,6 +8794,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                             return { data: null, error: sessionError };
                         }
                         return await _request(this.fetch, 'POST', `${this.url}/factors/${params.factorId}/challenge`, {
+                            body: { channel: params.channel },
                             headers: this.headers,
                             jwt: (_a = sessionData === null || sessionData === void 0 ? void 0 : sessionData.session) === null || _a === void 0 ? void 0 : _a.access_token,
                         });
@@ -8811,10 +8837,12 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             }
             const factors = (user === null || user === void 0 ? void 0 : user.factors) || [];
             const totp = factors.filter((factor) => factor.factor_type === 'totp' && factor.status === 'verified');
+            const phone = factors.filter((factor) => factor.factor_type === 'phone' && factor.status === 'verified');
             return {
                 data: {
                     all: factors,
                     totp,
+                    phone,
                 },
                 error: null,
             };
@@ -9127,6 +9155,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     exports.isAuthApiError = isAuthApiError;
     exports.isAuthError = isAuthError;
     exports.isAuthRetryableFetchError = isAuthRetryableFetchError;
+    exports.isAuthSessionMissingError = isAuthSessionMissingError;
     exports.isAuthWeakPasswordError = isAuthWeakPasswordError;
     exports.lockInternals = internals;
     exports.navigatorLock = navigatorLock;

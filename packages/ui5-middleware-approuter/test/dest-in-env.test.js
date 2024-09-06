@@ -1,4 +1,4 @@
-const crypto = require("crypto")
+const { randomBytes } = require("crypto")
 const fs = require("fs-extra")
 const path = require("path")
 const request = require("supertest")
@@ -13,7 +13,7 @@ const { stringify: stringifyDotEnv } = require("envfile")
 
 test.beforeEach(async (t) => {
 	// copy ui5 app to a temp dir in test folder scope
-	t.context.tmpDir = path.resolve(`./test/_ui5-app/${crypto.randomBytes(5).toString("hex")}`)
+	t.context.tmpDir = path.resolve(`./test/_ui5-app/${randomBytes(5).toString("hex")}`)
 	await copyUI5app(t.context.tmpDir)
 
 	// dynamic port allocation for ui5 serve
@@ -60,7 +60,8 @@ test("test valid destinations in .env file", async (t) => {
 	try {
 		// wait for ui5 server and app router to boot
 		await waitOn({ resources: [`tcp:${t.context.port.ui5Server}`, `tcp:${t.context.port.appRouter}`] })
-	} catch (error) {
+		// eslint-disable-next-line no-unused-vars
+	} catch (err) {
 		process.kill(-child.pid)
 		return
 	}

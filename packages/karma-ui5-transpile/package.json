@@ -25,11 +25,11 @@
     "sapui5"
   ],
   "dependencies": {
-    "babel-plugin-istanbul": "^6.1.1",
+    "babel-plugin-istanbul": "^7.0.0",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
-    "karma": "^6.4.3",
+    "karma": "^6.4.4",
     "ui5-tooling-transpile": "workspace:^"
   },
   "peerDependencies": {

@@ -1,4 +1,4 @@
-const { mkdir, cp, rmdir, symlink } = require("fs").promises
+const { mkdir, cp, symlink } = require("fs").promises
 const path = require("path")
 
 /**

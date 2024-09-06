@@ -31,7 +31,8 @@ function parseBoolean(b) {
 function parseJSON(v) {
 	try {
 		return JSON.parse(v);
-	} catch (e) {
+		// eslint-disable-next-line no-unused-vars
+	} catch (err) {
 		return undefined;
 	}
 }
@@ -195,7 +196,7 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 							// remove attribute 'SameSite'
 							.map(function (cookieValue) {
 								return cookieValue.replace(/;\s*samesite=[^;]+\s*(?:;|$)/gi, ";");
-							})
+							}),
 					);
 				}
 			}
@@ -225,7 +226,7 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 						}
 					});
 				},
-				proxyMiddleware
-		  )
+				proxyMiddleware,
+			)
 		: proxyMiddleware;
 };

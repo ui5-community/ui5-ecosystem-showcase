@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, no-prototype-builtins */
 const utils = require("./utils");
 
 /**
@@ -46,7 +45,7 @@ module.exports = async function ({ log, workspace, options }) {
 
 	let i18nAll = {};
 	i18nUsageXMLArr.forEach((i18nUsage) => {
-		if (!i18nAll.hasOwnProperty(i18nUsage.value)) {
+		if (!Object.prototype.hasOwnProperty.call(i18nAll, i18nUsage.value)) {
 			i18nAll[i18nUsage.value] = {};
 			i18nAll[i18nUsage.value]["key"] = i18nUsage.value;
 			i18nAll[i18nUsage.value]["usedIn"] = new Set([i18nUsage.file]);
@@ -69,7 +68,7 @@ module.exports = async function ({ log, workspace, options }) {
 			//Look for undefined properties
 			Object.keys(i18nAll).forEach((i18nKey) => {
 				//let i18n = i18nAll[i18nKey];
-				if (!properties.hasOwnProperty(i18nKey)) {
+				if (!Object.prototype.hasOwnProperty.call(properties, i18nKey)) {
 					notFoundProperties.push(i18nAll[i18nKey]);
 				}
 			});

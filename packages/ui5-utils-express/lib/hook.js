@@ -13,7 +13,8 @@
 // Created with the text ASCII art generator https://patorjk.com/software/taag/
 //   => #p=display&h=3&f=JS%20Bracket%20Letters&t=BLACK%20MAGIC%0ANO%20WARRANTY
 
-const http = require("http");
+// eslint-disable-next-line no-unused-vars
+const http = require("http"); // needed for JSDoc
 
 /**
  * Callback function to inform when the server is listening which provides access to
@@ -23,7 +24,7 @@ const http = require("http");
  * @param {object} parameters the callback parameters
  * @param {Express.Application} parameters.app the express application
  * @param {http.Server} parameters.server the http server instance
- * @param {function} parameters.on function to register event handlers for the server which raise only if the mountpath matches
+ * @param {Function} parameters.on function to register event handlers for the server which raise only if the mountpath matches
  * @param {object} parameters.options some options
  * @param {string} parameters.options.mountpath mount path of the middleware function
  * @param {string} [parameters.options.host] host the server is listening on
@@ -37,7 +38,7 @@ const http = require("http");
  * @callback MiddlewareFunction
  * @param {Express.Request} req express request object
  * @param {Express.Response} res express response object
- * @param {function} next function to trigger the next middleware
+ * @param {Function} next function to trigger the next middleware
  * @returns {void}
  */
 
@@ -78,7 +79,7 @@ module.exports = function hook(name, callback, middleware) {
 					});
 				} else {
 					console.error(
-						`\x1b[36m[~~hook<${name}>~~]\x1b[0m \x1b[31m[ERROR]\x1b[0m - Failed to hook into current server (most likely you are running a connect server which isn't supported by this hook)!`
+						`\x1b[36m[~~hook<${name}>~~]\x1b[0m \x1b[31m[ERROR]\x1b[0m - Failed to hook into current server (most likely you are running a connect server which isn't supported by this hook)!`,
 					);
 				}
 				initializedByRouter = true;
@@ -119,7 +120,7 @@ module.exports = function hook(name, callback, middleware) {
 								: {
 										host: typeof arguments[0] === "number" ? arguments[1] : undefined,
 										port: typeof arguments[0] === "number" ? arguments[0] : undefined,
-								  };
+									};
 						options.mountpath = fn.mountpath;
 						//options.parent = fn.parent;
 						callback({

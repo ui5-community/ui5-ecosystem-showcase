@@ -7,7 +7,7 @@ customConfiguration:
     mountPath: /bookshop-viewer
 framework:
   name: OpenUI5
-  version: "1.126.0"
+  version: "1.127.0"
   libraries:
     - name: sap.m
     - name: sap.ui.core

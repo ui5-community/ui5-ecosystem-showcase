@@ -6,7 +6,7 @@ const fs = require("fs");
 const portfinder = require("portfinder");
 
 /**
- * @typedef {Object} [configuration] configuration
+ * @typedef {object} [configuration] configuration
  * @property {string|yo<input|xml,json,properties>} extraExts - file extensions other than `js`, `html` and `css` to monitor for changes
  * @property {string|yo<input|35729>} [port] - an open port choosen the live reload server is started on
  * @property {string|yo<input|webapp>} [watchPath] path inside `$yourapp` the reload server monitors for changes
@@ -98,7 +98,7 @@ module.exports = async ({ log, resources, options, middlewareUtil }) => {
 					const depPath = path.dirname(
 						require.resolve(`${dep}/ui5.yaml`, {
 							paths: [cwd],
-						})
+						}),
 					);
 					const webappPath = path.join(depPath, "webapp");
 					if (fs.existsSync(webappPath)) {

@@ -22,7 +22,7 @@
     }
   },
   "devDependencies": {
-    "@ui5/cli": "^2.14.17",
+    "@ui5/cli": "^3",
     "ui5-middleware-onelogin": "file:../../",
     "ui5-middleware-servestatic": "^0.3.7",
     "ui5-middleware-simpleproxy": "^0.7.6"

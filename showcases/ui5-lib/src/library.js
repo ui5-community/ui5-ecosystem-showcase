@@ -17,7 +17,7 @@ sap.ui.define(["sap/ui/core/Core", "sap/ui/core/library"], function (Core) {
 	 * @version ${version}
 	 * @public
 	 */
-	var thisLib = Core.initLibrary({
+	const thisLib = Core.initLibrary({
 		name: "ui5.ecosystem.demo.lib",
 		version: "${version}",
 		dependencies: [

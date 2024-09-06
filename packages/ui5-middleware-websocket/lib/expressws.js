@@ -45,7 +45,7 @@ function createWebSocketServer(app, server) {
 			socket.destroy();
 		}
 		*/
-		}.bind(app)
+		}.bind(app),
 	);
 	return wss;
 }
@@ -79,16 +79,16 @@ function sendDummyRequest(app, req, socket) {
  * @callback WSMiddlewareFunction
  * @param {WebSocket} ws websocket object
  * @param {Express.Request} req express request object
- * @param {function} next function to trigger the next middleware
+ * @param {Function} next function to trigger the next middleware
  * @returns {void}
  */
 
 /**
  * Routes websocket requests to the specified path with the specified callback functions.
  *
- * @param {string} path
+ * @param {string} path the path to route the websocket requests to
  * @param  {...WSMiddlewareFunction} middlewares middleware callback functions
- * @returns
+ * @returns {Express.Application} the express application
  */
 function wsRoute(path, ...middlewares) {
 	const wrappedMiddlewares = middlewares.flat().map(wrapMiddleware);
@@ -110,7 +110,6 @@ function wsRoute(path, ...middlewares) {
  *
  * @param {Express.Application} app the express application
  * @param {http.Server} server the http server instance
- * @param {object} options some options
  * @returns {void}
  */
 module.exports = function expressws(app, server /*, options = {} */) {
