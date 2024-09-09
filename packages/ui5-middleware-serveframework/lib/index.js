@@ -80,7 +80,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 			const proxyUrl = getProxyForUrl(baseUrl);
 			const agentOptions = { rejectUnauthorized: effectiveOptions.strictSSL };
 
-			const agent = proxyUrl ? new HttpsProxyAgent(Object.assign(new URL(proxyUrl), agentOptions)) : new https.Agent(agentOptions);
+			const agent = proxyUrl ? new HttpsProxyAgent(new URL(proxyUrl), agentOptions) : new https.Agent(agentOptions);
 
 			if (effectiveOptions.debug) {
 				log.info(`[${baseUrl}] Proxy: ${proxyUrl || "n/a"}, strictSSL: ${effectiveOptions.strictSSL}`);
