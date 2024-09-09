@@ -22,6 +22,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	// provide a set of default runtime options
 	const effectiveOptions = {
 		debug: false,
+		strictSSL: true,
 	};
 	// config-time options from ui5.yaml for cfdestination take precedence
 	if (options.configuration) {
@@ -73,16 +74,24 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 
 			// support for coporate proxies
 			const { getProxyForUrl } = await import("proxy-from-env");
-			const proxyUrl = getProxyForUrl(baseUrl);
 			const { HttpsProxyAgent } = await import("https-proxy-agent");
-			const agent = proxyUrl ? new HttpsProxyAgent(proxyUrl) : undefined;
-			effectiveOptions.debug && log.info(`[${baseUrl}] Proxy: ${proxyUrl ? proxyUrl : "n/a"}`);
+			const https = await import("https");
+
+			const proxyUrl = getProxyForUrl(baseUrl);
+			const agentOptions = { rejectUnauthorized: effectiveOptions.strictSSL };
+
+			const agent = proxyUrl ? new HttpsProxyAgent(Object.assign(new URL(proxyUrl), agentOptions)) : new https.Agent(agentOptions);
+
+			if (effectiveOptions.debug) {
+				log.info(`[${baseUrl}] Proxy: ${proxyUrl || "n/a"}, strictSSL: ${effectiveOptions.strictSSL}`);
+			}
 
 			// fetch the version information for the concrete version from CDN
 			const fetch = (await import("node-fetch")).default;
-			await fetch(`${baseUrl}/${frameworkVersion}/resources/sap-ui-version.json`, { agent })
-				.then((res) => res.json())
-				.then((json) => writeFile(versionInfoFile, JSON.stringify(json), { encoding: "utf-8" }));
+			const versionUrl = `${baseUrl}/${frameworkVersion}/resources/sap-ui-version.json`;
+			const response = await fetch(versionUrl, { agent });
+			const versionInfo = await response.json();
+			await writeFile(versionInfoFile, JSON.stringify(versionInfo), { encoding: "utf-8" });
 		}
 		const versionInfo = JSON.parse(await readFile(versionInfoFile, { encoding: "utf-8" }));
 
@@ -110,11 +119,11 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 						version: frameworkVersion,
 					},
 					undefined,
-					2
+					2,
 				),
 				{
 					encoding: "utf-8",
-				}
+				},
 			);
 
 			// create a ui5.yaml to list all librar
@@ -165,11 +174,11 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 						},
 					},
 					undefined,
-					2
+					2,
 				),
 				{
 					encoding: "utf-8",
-				}
+				},
 			);
 
 			// create a project graph with all library dependencies

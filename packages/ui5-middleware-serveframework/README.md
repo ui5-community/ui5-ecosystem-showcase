@@ -24,6 +24,8 @@ npm install ui5-middleware-serveframework --save-dev
   Name of environment variable that contains ui5 version (in case you want to override framework version from ui5.yaml)
 - `envFilePath`: *`string`*, default: `./.env`
   Path to file with environment variables
+- `strictSSL`: `boolean`
+  Ignore strict SSL checks. Default value `true`.
 
 ## Usage
 
