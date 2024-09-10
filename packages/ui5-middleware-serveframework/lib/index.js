@@ -6,6 +6,7 @@ const yaml = require("js-yaml");
 
 const etag = require("etag");
 const fresh = require("fresh");
+const { Agent: HttpsAgent } = require("https");
 
 /**
  * Serves the built variant of the current framework
@@ -75,12 +76,11 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 			// support for coporate proxies
 			const { getProxyForUrl } = await import("proxy-from-env");
 			const { HttpsProxyAgent } = await import("https-proxy-agent");
-			const https = await import("https");
-
+			// detect and configure proxy agent
 			const proxyUrl = getProxyForUrl(baseUrl);
 			const agentOptions = { rejectUnauthorized: effectiveOptions.strictSSL };
 
-			const agent = proxyUrl ? new HttpsProxyAgent(new URL(proxyUrl), agentOptions) : new https.Agent(agentOptions);
+			const agent = proxyUrl ? new HttpsProxyAgent(proxyUrl, agentOptions) : new HttpsAgent(agentOptions);
 
 			if (effectiveOptions.debug) {
 				log.info(`[${baseUrl}] Proxy: ${proxyUrl || "n/a"}, strictSSL: ${effectiveOptions.strictSSL}`);
