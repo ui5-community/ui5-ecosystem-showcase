@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.15.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.14.0...ui5-tsapp@0.15.0) (2024-09-10)
+
+
+### Features
+
+* **ui5-tooling-modules:** addToNamespace=true is the default now ([#1075](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1075)) ([997fa6a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/997fa6a23af04f14cbbb9d6bc91a12fb9162a8e4))
+
+
+
+
+
 # [0.14.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.13.38...ui5-tsapp@0.14.0) (2024-09-06)
 
 

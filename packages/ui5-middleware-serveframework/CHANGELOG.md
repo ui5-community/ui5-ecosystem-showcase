@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.2.0...ui5-middleware-serveframework@3.3.0) (2024-09-10)
+
+
+### Features
+
+* **ui5-middleware-serveframework:** allow usage with self signed certificates ([#1073](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1073)) ([089fdbc](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/089fdbc0981f59acc1fd72864e877802810ed5f4))
+
+
+
+
+
 # [3.2.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.1.3...ui5-middleware-serveframework@3.2.0) (2024-09-06)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.12.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.11.0...ui5-tooling-modules@3.12.0) (2024-09-10)
+
+
+### Features
+
+* **ui5-tooling-modules:** addToNamespace=true is the default now ([#1075](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1075)) ([997fa6a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/997fa6a23af04f14cbbb9d6bc91a12fb9162a8e4))
+
+
+
+
+
 # [3.11.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.10.2...ui5-tooling-modules@3.11.0) (2024-09-06)
 
 
