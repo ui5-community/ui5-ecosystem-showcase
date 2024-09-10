@@ -21,7 +21,8 @@ builder:
       afterTask: ui5-tooling-transpile-task
       configuration:
         debug: true
-        addToNamespace: true
+        addToNamespace: false
+        prependPathMappings: true
     - name: ui5-task-zipper
       afterTask: generateVersionInfo
       configuration:

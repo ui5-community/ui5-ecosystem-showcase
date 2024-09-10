@@ -76,8 +76,6 @@ builder:
       afterTask: ui5-tooling-transpile-task
       configuration:
         debug: true
-        prependPathMappings: true
-        addToNamespace: true
         removeScopePrefix: true
         includeAssets:
           "@octokit/core":

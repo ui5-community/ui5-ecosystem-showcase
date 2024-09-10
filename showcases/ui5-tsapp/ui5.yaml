@@ -50,8 +50,6 @@ builder:
       afterTask: ui5-tooling-transpile-task
       configuration:
         <<: *cfgModules
-        prependPathMappings: false
-        addToNamespace: true
         providedDependencies:
           - moment
     - name: ui5-task-copyright

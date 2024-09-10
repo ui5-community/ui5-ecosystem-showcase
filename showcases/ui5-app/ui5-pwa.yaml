@@ -45,9 +45,6 @@ builder:
       afterTask: replaceVersion
     - name: ui5-tooling-modules-task
       afterTask: replaceVersion
-      configuration:
-        prependPathMappings: true
-        addToNamespace: true
     - name: ui5-task-pwa-enabler
       afterTask: generateVersionInfo
       configuration:
