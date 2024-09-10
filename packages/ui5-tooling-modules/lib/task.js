@@ -60,6 +60,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 		{
 			debug: false,
 			skipTransform: false,
+			addToNamespace: true,
 		},
 		options.configuration,
 	);

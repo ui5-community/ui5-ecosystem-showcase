@@ -20,7 +20,6 @@ builder:
       afterTask: ui5-tooling-transpile-task
       configuration:
         debug: true
-        addToNamespace: true
 server:
   customMiddleware:
     - name: ui5-tooling-transpile-middleware
