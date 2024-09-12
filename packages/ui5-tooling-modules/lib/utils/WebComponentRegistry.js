@@ -228,12 +228,10 @@ class RegistryEntry {
 				console.warn(`[unclear type 🤔] ${classDef.name} - property '${propDef.name}' has unclear type '${ui5TypeInfo.origType}' -> defaulting to 'any', multiple: ${ui5TypeInfo.multiple}`);
 			}
 
-			// TODO: What to do with "readonly" and/or interface and class types for fields?
-			//       They seem to be calculated fields that don't map to a property/aggregation.
-			//       We could make them into just a getter, which returns the queried attribute of the webc DOM (?)
 			if (propDef.readonly) {
-				// s.a.
-				console.log(`[readonly field] ${classDef.name} - property ${propDef.name}`);
+				// calculated readonly fields -> WebC base class will generate getters
+				// e.g. AvatarGroup#getColorScheme
+				ui5metadata.getters.push(propDef.name);
 			} else if (ui5TypeInfo.isInterfaceOrClassType) {
 				console.warn(`[interface or class type given for property] ${classDef.name} - property ${propDef.name}`);
 			} else if (ui5TypeInfo.isAssociation) {
@@ -262,7 +260,9 @@ class RegistryEntry {
 				};
 			}
 		} else if (propDef.kind === "method") {
-			// TODO: methods
+			// Methods are proxied through the core.WebComponent base class
+			// e.g. DatePicker#isValid or Toolbar#isOverflowOpen
+			ui5metadata.methods.push(propDef.name);
 		}
 	}
 
