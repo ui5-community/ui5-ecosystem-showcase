@@ -21,6 +21,9 @@ var firstTime: boolean = true;
  * @property {string} [username] the username => env:UI5_MIDDLEWARE_ONELOGIN_USERNAME
  * @property {string|yo<password>} [password] the password => env:UI5_MIDDLEWARE_ONELOGIN_PASSWORD
  * @property {boolean|yo<confirm|false>} [useCertificate] use certificate login instead of username/password
+ * @property {string} [clientCertificatesOrigin] the origin of the client certificates => env:UI5_MIDDLEWARE_ONELOGIN_CLIENT_CERTIFICATES_ORIGIN
+ * @property {string} [clientCertificatesPfxPath] the path to the client certificates => env:UI5_MIDDLEWARE_ONELOGIN_CLIENT_CERTIFICATES_PFX_PATH
+ * @property {string} [clientCertificatesPfxPpassphrase] the passphrase to the client certificates => env:UI5_MIDDLEWARE_ONELOGIN_CLIENT_CERTIFICATES_PFX_PASSPHRASE
  * @property {boolean|yo<confirm|false>} [debug] see output
  */
 /**

@@ -1,0 +1,21 @@
+{
+  "name": "certificate",
+  "version": "1.0.0",
+  "description": "UI5 Application: certificate",
+  "author": "„marianfoo“",
+  "license": "Apache-2.0",
+  "scripts": {
+    "clean": "rimraf dist coverage",
+    "build": "ui5 build --clean-dest",
+    "build:opt": "ui5 build self-contained --clean-dest --all",
+    "start": "ui5 serve --port 8080 -o index.html",
+    "start:silent": "ui5 serve --port 8080 ",
+    "start-cdn": "ui5 serve --port 8080 -o index-cdn.html",
+    "start:dist": "npm start -- --config ui5-dist.yaml",
+    "start:dist-cdn": "npm run start-cdn -- --config ui5-dist.yaml"
+  },
+  "devDependencies": {
+    "@ui5/cli": "^4.0.6",
+    "ui5-middleware-onelogin": "file:../.."
+  }
+}

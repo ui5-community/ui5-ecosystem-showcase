@@ -7,5 +7,8 @@ export interface Options {
 		useCertificate: boolean;
 		debug?: boolean;
 		query?: unknown;
+		clientCertificatesOrigin?: string;
+		clientCertificatesPfxPath?: string;
+		clientCertificatesPfxPpassphrase?: string;
 	};
 }

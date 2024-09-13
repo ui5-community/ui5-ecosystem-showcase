@@ -132,7 +132,15 @@ class CookieGetter {
             };
             try {
                 const browser = yield playwright_chromium_1.chromium.launch(playwrightOpt);
-                const context = yield browser.newContext({ ignoreHTTPSErrors: true });
+                const context = yield browser.newContext({ ignoreHTTPSErrors: true,
+                    clientCertificates: [
+                        {
+                            origin: effectiveOptions.configuration.clientCertificatesOrigin,
+                            pfxPath: effectiveOptions.configuration.clientCertificatesPfxPath,
+                            passphrase: effectiveOptions.configuration.clientCertificatesPfxPpassphrase,
+                        }
+                    ]
+                });
                 const page = yield context.newPage();
                 if (!effectiveOptions.configuration.useCertificate) {
                     yield page.goto(attr.url, { waitUntil: "domcontentloaded" });
