@@ -81,6 +81,9 @@ export default class CookieGetter {
 				username: process.env.UI5_MIDDLEWARE_ONELOGIN_USERNAME,
 				password: process.env.UI5_MIDDLEWARE_ONELOGIN_PASSWORD,
 				useCertificate: process.env.UI5_MIDDLEWARE_ONELOGIN_USE_CERTIFICATE === "true",
+				clientCertificatesOrigin: process.env.UI5_MIDDLEWARE_ONELOGIN_CLIENT_CERTIFICATES_ORIGIN,
+				clientCertificatesPfxPath: process.env.UI5_MIDDLEWARE_ONELOGIN_CLIENT_CERTIFICATES_PFX_PATH,
+				clientCertificatesPfxPpassphrase: process.env.UI5_MIDDLEWARE_ONELOGIN_CLIENT_CERTIFICATES_PFX_PASSPHRASE,
 				debug: process.env.UI5_MIDDLEWARE_ONELOGIN_DEBUG === "true",
 				query: this.parseJSON(process.env.UI5_MIDDLEWARE_ONELOGIN_QUERY),
 			},
@@ -121,6 +124,7 @@ export default class CookieGetter {
 			const url = new URL(`${urlWithTrailingSlash}${effectiveOptions.configuration.subdirectory}`);
 			const query = effectiveOptions.configuration.query;
 			if (query) {
+				// @ts-ignore
 				Object.keys(query).forEach((key) => url.searchParams.append(key, query[key]));
 			}
 			attr.url = url.href;
@@ -135,7 +139,19 @@ export default class CookieGetter {
 
 		try {
 			const browser = await chromium.launch(playwrightOpt);
-			const context = await browser.newContext({ ignoreHTTPSErrors: true });
+			const contextOptions: any = { ignoreHTTPSErrors: true };
+
+			if (effectiveOptions.configuration.useCertificate) {
+				contextOptions.clientCertificates = [
+					{
+						origin: effectiveOptions.configuration.clientCertificatesOrigin,
+						pfxPath: effectiveOptions.configuration.clientCertificatesPfxPath,
+						passphrase: effectiveOptions.configuration.clientCertificatesPfxPpassphrase,
+					},
+				];
+			}
+
+			const context = await browser.newContext(contextOptions);
 
 			const page = await context.newPage();
 			if (!effectiveOptions.configuration.useCertificate) {
