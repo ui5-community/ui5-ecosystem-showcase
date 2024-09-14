@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.13.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.12.0...ui5-tooling-modules@3.13.0) (2024-09-14)
+
+
+### Features
+
+* **ui5-tooling-modules:** do not consider webc npm packages as libraries ([#1080](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1080)) ([2643a13](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2643a13fee9782c1f7f2aa86f168237c452efe89))
+* **ui5-tooling-modules:** seamless webcomponents part 2 - readonly & methods ([#1081](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1081)) ([f610e6f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f610e6f1b4c763bb52f0b09d0c494a99255e6141))
+
+
+
+
+
 # [3.12.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.11.0...ui5-tooling-modules@3.12.0) (2024-09-10)
 
 
