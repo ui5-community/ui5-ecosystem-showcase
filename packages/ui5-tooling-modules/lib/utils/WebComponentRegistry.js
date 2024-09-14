@@ -15,10 +15,11 @@ const _classAliases = {};
 class RegistryEntry {
 	#customElementsMetadata = {};
 
-	constructor({ customElementsMetadata, namespace, npmPackagePath }) {
+	constructor({ customElementsMetadata, namespace, npmPackagePath, version }) {
 		this.#customElementsMetadata = customElementsMetadata;
 		this.namespace = namespace;
 		this.npmPackagePath = npmPackagePath;
+		this.version = version;
 
 		this.customElements = {};
 		this.classes = {};
@@ -390,10 +391,10 @@ class RegistryEntry {
 }
 
 const WebComponentRegistry = {
-	register({ customElementsMetadata, namespace, npmPackagePath }) {
+	register({ customElementsMetadata, namespace, npmPackagePath, version }) {
 		let entry = _registry[namespace];
 		if (!entry) {
-			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, npmPackagePath });
+			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, npmPackagePath, version });
 
 			// track all classes also via their module name,
 			// so we can access them faster during resource resolution later on
