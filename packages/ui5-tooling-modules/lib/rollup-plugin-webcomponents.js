@@ -223,8 +223,8 @@ module.exports = function ({ log, resolveModule, framework, skip } = {}) {
 				const ui5Class = `${ui5Metadata.namespace}.${clazz.name}`;
 				const namespace = ui5Metadata.namespace;
 				const metadataObject = Object.assign({}, ui5Metadata, {
-					library: `${ui5Metadata.namespace}.library`,
-					designtime: `${ui5Metadata.namespace}/designtime/${clazz.name}.designtime`,
+					library: `${ui5Metadata.namespace}.library`, // if not defined, the library is derived from the namespace
+					designtime: `${ui5Metadata.namespace}/designtime/${clazz.name}.designtime`, // add a default designtime
 				});
 				const metadata = JSON.stringify(metadataObject, undefined, 2);
 				const webcClass = moduleInfo.attributes.absModulePath; // is the absolute path of the original Web Component class
