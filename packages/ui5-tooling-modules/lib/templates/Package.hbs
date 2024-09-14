@@ -1,0 +1,19 @@
+import { registerEnum } from "sap/ui/base/DataType";
+{{#each dependencies}}
+import "{{this}}";
+{{/each}}
+
+const pkg = {
+	"_ui5metadata": {{{metadata}}}
+};
+
+{{#each enums}}
+pkg["{{name}}"] = {
+{{#each members}}
+	"{{name}}": "{{name}}",
+{{/each}}
+};
+registerEnum("{{../namespace}}.{{name}}", pkg["{{name}}"]);
+{{/each}}
+
+export default pkg;
