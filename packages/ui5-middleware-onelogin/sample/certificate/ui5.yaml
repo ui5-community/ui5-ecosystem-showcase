@@ -22,6 +22,12 @@ server:
         path: https://emea.cockpit.btp.cloud.sap
         subdirectory: cockpit#/
         useCertificate: true
-        clientCertificatesOrigin: "https://accounts.sap.com"
-        clientCertificatesPfxPath: "sap.pfx"
-        # clientCertificatesPfxPpassphrase: used from environment variable
+        # clientCertificates:
+        #   - origin: "https://accounts.sap.com"
+        #     #certPath: "path/to/cert.pem"
+        #     # cert: Buffer value (not applicable in YAML)
+        #     #keyPath: "path/to/key.pem"
+        #     # key: Buffer value (not applicable in YAML)
+        #     pfxPath: "sap.pfx"
+        #     # pfx: Buffer value (not applicable in YAML)
+        #     #passphrase: "your_passphrase_here"
