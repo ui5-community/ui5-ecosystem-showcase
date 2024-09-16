@@ -25,14 +25,23 @@ var firstTime = true;
 // key: string
 // }
 /**
+ * @typedef {Object} ClientCertificate
+ * @property {string} origin - Exact origin that the certificate is valid for. Origin includes https protocol, a hostname and optionally a port.
+ * @property {string} [certPath] - Path to the file with the certificate in PEM format.
+ * @property {Buffer} [cert] - Direct value of the certificate in PEM format.
+ * @property {string} [keyPath] - Path to the file with the private key in PEM format.
+ * @property {Buffer} [key] - Direct value of the private key in PEM format.
+ * @property {string} [pfxPath] - Path to the PFX or PKCS12 encoded private key and certificate chain.
+ * @property {Buffer} [pfx] - Direct value of the PFX or PKCS12 encoded private key and certificate chain.
+ * @property {string} [passphrase] - Passphrase for the private key (PEM or PFX).
+ */
+/**
  * @typedef {Object} [configuration] configuration
  * @property {string} path - The path to use => env:UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL
  * @property {string} [username] the username => env:UI5_MIDDLEWARE_ONELOGIN_USERNAME
  * @property {string|yo<password>} [password] the password => env:UI5_MIDDLEWARE_ONELOGIN_PASSWORD
  * @property {boolean|yo<confirm|false>} [useCertificate] use certificate login instead of username/password
- * @property {string} [clientCertificatesOrigin] the origin of the client certificates => env:UI5_MIDDLEWARE_ONELOGIN_CLIENT_CERTIFICATES_ORIGIN
- * @property {string} [clientCertificatesPfxPath] the path to the client certificates => env:UI5_MIDDLEWARE_ONELOGIN_CLIENT_CERTIFICATES_PFX_PATH
- * @property {string} [clientCertificatesPfxPpassphrase] the passphrase to the client certificates => env:UI5_MIDDLEWARE_ONELOGIN_CLIENT_CERTIFICATES_PFX_PASSPHRASE
+ * @property {ClientCertificate[]} [clientCertificates] Array of client certificate configurations
  * @property {boolean|yo<confirm|false>} [debug] see output
  */
 /**
