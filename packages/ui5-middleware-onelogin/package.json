@@ -17,6 +17,8 @@
     "Fiori"
   ],
   "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
     "lint": "eslint src",
     "test:onelogin": "npx playwright test"
   },
