@@ -800,10 +800,12 @@ module.exports = function (log, projectInfo) {
 						preventAssignment: false,
 						delimiters: ["\\b", "\\b"],
 						values: {
-							"process.env.NODE_ENV": JSON.stringify(isMiddleware ? "development" : "production"),
-							"process.versions.node": JSON.stringify("18.15.0"), // needed for some modules to select features
+							"global.process.versions.node": JSON.stringify("false"), // in some cases, the global.process.versions.node is used to detect the existence of Node.js
+							"process.versions.node": JSON.stringify("18.15.0"), // needed for some modules to select features based on the Node.js version
+							"process.env.NODE_ENV": JSON.stringify("production"), // we always build in production mode
 						},
 					}),
+
 					injectESModule(),
 					skipAssets({
 						log,
@@ -995,6 +997,12 @@ module.exports = function (log, projectInfo) {
 						try {
 							output = await that.createBundle(nameOfModules, options);
 						} catch (ex) {
+							// prefer the main field over the module field for module resolution
+							const mainFirstMainFields = ["browser", "main", "module"];
+							// update paths of modules for later matching
+							modules.forEach((module) => {
+								module.path = that.resolveModule(module.name, { cwd, depPaths, mainFields: mainFirstMainFields });
+							});
 							// related to issue #726 for which the generation of jspdf fails on Windows machines
 							// when running the build in a standalone project with npm (without monorepo and pnpm)
 							/* debug && */ log.warn(`Failed to bundle "${nameOfModules}" using ES modules, falling back to CommonJS modules...`, ex.message);
@@ -1002,7 +1010,7 @@ module.exports = function (log, projectInfo) {
 							output = await that.createBundle(
 								nameOfModules,
 								Object.assign({}, options, {
-									mainFields: ["browser", "main", "module"],
+									mainFields: mainFirstMainFields,
 								}),
 							);
 						}
@@ -1083,7 +1091,8 @@ module.exports = function (log, projectInfo) {
 				}
 			} catch (err) {
 				if (bundling) {
-					log.error(`Couldn't bundle ${moduleNames}: ${err}`, err);
+					console.error(`Couldn't bundle ${moduleNames}!\n${err.message}\n${err.frame}`);
+					//log.error(`Couldn't bundle ${moduleNames}!\n${err.message}\n${err.frame}`);
 				}
 				bundleInfo.error = err;
 			}
