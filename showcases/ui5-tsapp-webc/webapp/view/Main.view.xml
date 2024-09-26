@@ -13,7 +13,9 @@
     iconBadge: '@ui5/webcomponents-icons/dist/badge',
     iconAccept: '@ui5/webcomponents-icons/dist/accept',
     iconMessageError: '@ui5/webcomponents-icons/dist/message-error',
-    iconArrow: '@ui5/webcomponents-icons/dist/slim-arrow-right'
+    iconArrow: '@ui5/webcomponents-icons/dist/slim-arrow-right',
+    iconPaste: '@ui5/webcomponents-icons/dist/paste',
+    iconCopy: '@ui5/webcomponents-icons/dist/copy'
   }"
 >
   <Page id="page" title="{formatter: 'Formatter.formatValue', path: 'i18n>appTitle'}">
@@ -23,9 +25,10 @@
     <content>
       <webc:Panel headerText="Buttons" class="panelSpacing">
         <VBox alignItems="Center" justifyContent="Center" height="100%">
-          <webc:Button text="nav to DynamicPage" click=".onNavToDynamicPage" design="Attention" endIcon="slim-arrow-right" />
-          <Button text="Don't press me!" press="onBoo" />
-          <webc:Button text="Hello World 123" />
+          <webc:Button text="nav to DynamicPage" click=".onNavToDynamicPage" design="Attention" endIcon="slim-arrow-right" class="buttonSpacing" />
+          <webc:Button text="nav to Form with Aria support" click=".onNavToForm" design="Attention" endIcon="slim-arrow-right" class="buttonSpacing" />
+          <Button text="Don't press me!" press="onBoo" class="buttonSpacing" />
+          <webc:Button text="Hello World 123" class="buttonSpacing" />
         </VBox>
       </webc:Panel>
 
@@ -99,6 +102,42 @@
       <!-- fragment uses "@ui5/webcomponents-fiori" package -->
       <webc:Panel headerText="@ui5/webcomponents-fiori.NotificationList" class="panelSpacing">
         <core:Fragment fragmentName="ui5.ecosystem.demo.webctsapp.view.fiori.NotificationList" />
+      </webc:Panel>
+
+      <webc:Panel headerText="Tree" class="panelSpacing">
+        <webc:Tree id="tree" noDataText="No data" accessibleName="Tree with accessibleName">
+          <webc:TreeItem
+            movable="true"
+            text="Tree 1"
+            icon="paste"
+            additionalText="Available"
+            indeterminate="true"
+            selected="true"
+            additionalTextState="Information"
+            accessibleName="Tree item with accessibleName"
+          >
+            <webc:TreeItem movable="true" expanded="true" text="Tree 1.1" additionalText="Re-stock" additionalTextState="Negative" indeterminate="true" selected="true">
+              <webc:TreeItem movable="true" text="Tree 1.1.1" additionalText="Required" additionalTextState="Critical" selected="true" />
+              <webc:TreeItem movable="true" text="Tree 1.1.2" additionalText="Available" additionalTextState="Positive" />
+            </webc:TreeItem>
+          </webc:TreeItem>
+
+          <webc:TreeItem movable="true" text="Tree 2(Allows Nesting)" icon="copy">
+            <webc:TreeItem movable="true" id="firstCollapsedItem" text="Tree 2.1">
+              <webc:TreeItem movable="true" text="Tree 2.1.1" />
+              <webc:TreeItem movable="true" text="Tree 2.1.2">
+                <webc:TreeItem movable="true" text="Tree 2.1.2.1" />
+                <webc:TreeItem movable="true" text="Tree 2.1.2.2" />
+                <webc:TreeItem movable="true" text="Tree 2.1.2.3" />
+                <webc:TreeItem movable="true" text="Tree 2.1.2.5" />
+              </webc:TreeItem>
+            </webc:TreeItem>
+            <webc:TreeItem movable="true" text="Tree 2.2" />
+            <webc:TreeItem movable="true" text="Tree 2.3" />
+          </webc:TreeItem>
+
+          <webc:TreeItem movable="true" text="Tree 3 (no icon)" />
+        </webc:Tree>
       </webc:Panel>
 
       <!-- Not supported as of now, but would be nice to have -->

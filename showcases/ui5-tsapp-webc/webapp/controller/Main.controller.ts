@@ -23,6 +23,9 @@ function injectStyle() {
 .panelSpacing {
 	margin: 10px;
 }
+.buttonSpacing {
+	margin: 2px;
+}
 .popover-content {
 	display: flex;
 	flex-direction: column;
@@ -55,6 +58,10 @@ export default class Main extends Controller {
 
 	public onNavToDynamicPage(): void {
 		this.getOwnerComponent().getRouter().navTo("DynamicPage");
+	}
+
+	public onNavToForm(): void {
+		this.getOwnerComponent().getRouter().navTo("FormPage");
 	}
 
 	public onBoo(): void {
