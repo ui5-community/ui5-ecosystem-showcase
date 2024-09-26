@@ -275,15 +275,46 @@ module.exports = function (log, projectInfo) {
 		return modulePath;
 	}
 
+	/**
+	 * Finds the root directory of the package for the given directory or file
+	 * @param {string} file directory or file to start the search
+	 * @param {string} packageName name of the package
+	 * @param {string} cwd current working directory
+	 * @returns {string} the root directory of the package
+	 */
+	function findPackageRoot(file, packageName, cwd = process.cwd()) {
+		// (maybe we should break when a package.json is found even though it is not the right one)
+		let packageRoot;
+		while (file !== cwd && file !== "/" && path.basename(file) !== "node_modules") {
+			file = path.dirname(file);
+			const pkgJsonFile = path.join(file, "package.json");
+			if (existsSync(pkgJsonFile)) {
+				if (typeof packageName === "string") {
+					const pkgJson = JSON.parse(readFileSync(pkgJsonFile, { encoding: "utf8" }));
+					// only if the package.json name matches the dependency name
+					// we consider it as the root of the dependency
+					if (pkgJson.name === packageName) {
+						packageRoot = file;
+						break;
+					}
+				} else {
+					packageRoot = file;
+					break;
+				}
+			}
+		}
+		return packageRoot;
+	}
+
 	// regex to extract the NPM package name from a dependency
 	const npmPackageScopeRegEx = /^((?:(@[^/]+)\/)?([^/]+))(?:\/(.*))?$/;
 
 	/**
 	 * find the dependencies of the current project and its transitive dependencies
 	 * (excluding devDependencies and providedDependencies)
-	 * @param {*} cwd current working directory
-	 * @param {*} depPaths paths of the dependencies (in addition for cwd)
-	 * @param {*} knownDeps list of known dependencies
+	 * @param {string} cwd current working directory
+	 * @param {string[]} depPaths paths of the dependencies (in addition for cwd)
+	 * @param {string[]} knownDeps list of known dependencies
 	 * @returns {string[]} array of dependency root directories
 	 */
 	function findDependencies(cwd = process.cwd(), depPaths = [], knownDeps = []) {
@@ -301,20 +332,7 @@ module.exports = function (log, projectInfo) {
 				let depPath = resolveNodeModule(dep, cwd, depPaths, knownDeps);
 				if (depPath !== dep) {
 					// find the closest package.json to the resolved module
-					// (maybe we should break when a package.json is found even though it is not the right one)
-					while (!depRoot && depPath !== cwd && depPath !== "/" && path.basename(depPath) !== "node_modules") {
-						depPath = path.dirname(depPath);
-						const pkgJsonDepPath = path.join(depPath, "package.json");
-						if (existsSync(pkgJsonDepPath)) {
-							const pkgJsonDep = JSON.parse(readFileSync(pkgJsonDepPath, { encoding: "utf8" }));
-							// only if the package.json name matches the dependency name
-							// we consider it as the root of the dependency
-							if (pkgJsonDep.name === dep) {
-								depRoot = depPath;
-								break;
-							}
-						}
-					}
+					depRoot = findPackageRoot(depPath, dep, cwd);
 				} else {
 					// native modules are not part of the node_modules directory
 					// so we need to resolve it late with the package.json
@@ -758,6 +776,13 @@ module.exports = function (log, projectInfo) {
 				// resolve from node_modules via regular lookup
 				if (!modulePath) {
 					modulePath = resolveNodeModule(moduleName, cwd, depPaths);
+					// map the module path if necessary
+					const packageRoot = modulePath && findPackageRoot(modulePath, moduleName, cwd);
+					const pkgJsonFile = packageRoot && path.join(packageRoot, "package.json");
+					const pkgJson = pkgJsonFile && require(pkgJsonFile);
+					if (pkgJson?.browser && typeof pkgJson.browser === "object") {
+						console.log(pkgJson.browser);
+					}
 				}
 			}
 			if (modulePath === undefined) {
@@ -803,6 +828,7 @@ module.exports = function (log, projectInfo) {
 							"global.process.versions.node": JSON.stringify("false"), // in some cases, the global.process.versions.node is used to detect the existence of Node.js
 							"process.versions.node": JSON.stringify("18.15.0"), // needed for some modules to select features based on the Node.js version
 							"process.env.NODE_ENV": JSON.stringify("production"), // we always build in production mode
+							"child_process.exec": "function() {}", // avoid the usage of child_process.exec
 						},
 					}),
 
