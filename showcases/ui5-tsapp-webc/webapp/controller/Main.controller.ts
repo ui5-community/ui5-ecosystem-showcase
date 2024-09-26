@@ -9,7 +9,13 @@ import Event from "sap/ui/base/Event";
 import Button from "@ui5/webcomponents/Button";
 import DatePicker from "@ui5/webcomponents/DatePicker";
 import Input from "@ui5/webcomponents/Input";
-import { AvatarSize } from "@ui5/webcomponents/library";
+import { AvatarSize } from "@ui5/webcomponents";
+
+// import icons
+import "@ui5/webcomponents-icons/dist/Assets.js";
+import "@ui5/webcomponents-icons/dist/accept.js";
+
+console.log(AvatarSize);
 
 function injectStyle() {
 	const sheet = new CSSStyleSheet();

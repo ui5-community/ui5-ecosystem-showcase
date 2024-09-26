@@ -1,3 +1,13 @@
+{{#if isBaseLib}}
+import "@ui5/webcomponents-base/dist/features/OpenUI5Support.js";
+import { setCustomElementsScopingSuffix } from "@ui5/webcomponents-base/dist/CustomElementsScope.js";
+setCustomElementsScopingSuffix("{{scopeSuffix}}");
+
+import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
+import OpenUI5Enablement from "@ui5/webcomponents-base/dist/features/OpenUI5Enablement.js";
+OpenUI5Enablement.enrichBusyIndicatorSettings(UI5Element);
+{{/if}}
+
 import { registerEnum } from "sap/ui/base/DataType";
 {{#each dependencies}}
 import "{{this}}";

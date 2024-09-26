@@ -1,9 +1,16 @@
 const { join, dirname } = require("path");
 const { readFileSync, existsSync } = require("fs");
+const { createHash } = require("crypto");
+
 const WebComponentRegistry = require("./utils/WebComponentRegistry");
 
 const { compile } = require("handlebars");
 const { lt, gte } = require("semver");
+
+// TODO:
+//   - enabled - disabled mapping
+//   - OpenUI5Enablement in Package.hbs
+//   - Externalize UI5 Web Components specific code
 
 module.exports = function ({ log, resolveModule, framework, skip } = {}) {
 	// TODO: maybe we should derive the minimum version from the applications package.json
@@ -24,6 +31,12 @@ module.exports = function ({ log, resolveModule, framework, skip } = {}) {
 		const templateFile = readFileSync(join(__dirname, templatePath), { encoding: "utf-8" });
 		return compile(templateFile);
 	};
+
+	// helper function to create a short hash (to scope the UI5 Web Components)
+	const createShortHash = ({ name, version }) => {
+		return createHash("shake256", { outputLength: 4 }).update(`${name}@${version}`).digest("hex");
+	};
+	const ui5WebCScopeSuffix = createShortHash(require(join(process.cwd(), "package.json")));
 
 	// handlebars templates for the Web Components transformation
 	const webcTmplFnPackage = loadAndCompileTemplate("templates/Package.hbs");
@@ -97,13 +110,13 @@ module.exports = function ({ log, resolveModule, framework, skip } = {}) {
 
 	// helper function to lookup a Web Component class by its module name
 	const lookupWebComponentsClass = (source, emitFile) => {
-		let clazz;
-		if ((clazz = WebComponentRegistry.getClassDefinition(source))) {
-			return clazz;
-		}
-
 		// determine npm package
 		const npmPackage = getNpmPackageName(source);
+
+		let clazz;
+		if (npmPackage !== "@ui5/webcomponents-base" && (clazz = WebComponentRegistry.getClassDefinition(source))) {
+			return clazz;
+		}
 
 		const registryEntry = loadNpmPackage(npmPackage, emitFile);
 		if (registryEntry) {
@@ -209,6 +222,8 @@ module.exports = function ({ log, resolveModule, framework, skip } = {}) {
 					namespace,
 					enums: lib.enums,
 					dependencies: lib.dependencies,
+					isBaseLib: namespace === "@ui5/webcomponents-base",
+					scopeSuffix: ui5WebCScopeSuffix,
 				});
 				// include the monkey patches for the Web Components base library
 				// only for UI5 versions < 1.128.0 (otherwise the monkey patches are not needed anymore)
@@ -219,11 +234,22 @@ module.exports = function ({ log, resolveModule, framework, skip } = {}) {
 				return code;
 			} else if (moduleInfo.attributes.ui5Type === "control") {
 				let clazz = moduleInfo.attributes.clazz;
+				// determine whether the clazz is based on the UI5Element superclass
+				let superclass = clazz.superclass,
+					isUI5Element = false;
+				while (superclass) {
+					if (superclass?.name === "UI5Element") {
+						isUI5Element = true;
+						break;
+					}
+					superclass = superclass.superclass;
+				}
 				// Extend the superclass with the WebComponent class and export it
 				const ui5Metadata = clazz._ui5metadata;
 				const ui5Class = `${ui5Metadata.namespace}.${clazz.name}`;
 				const namespace = ui5Metadata.namespace;
 				const metadataObject = Object.assign({}, ui5Metadata, {
+					tag: isUI5Element && ui5WebCScopeSuffix ? `${ui5Metadata.tag}-${ui5WebCScopeSuffix}` : ui5Metadata.tag, // only add the suffix for UI5 Web Components (scoping support)
 					library: `${ui5Metadata.namespace}.library`, // if not defined, the library is derived from the namespace
 					designtime: `${ui5Metadata.namespace}/designtime/${clazz.name}.designtime`, // add a default designtime
 				});
