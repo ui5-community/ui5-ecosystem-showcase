@@ -65,6 +65,11 @@
           "name": "DynamicPage",
           "pattern": "dynamicPage",
           "target": ["DynamicPage"]
+        },
+        {
+          "name": "FormPage",
+          "pattern": "formPage",
+          "target": ["FormPage"]
         }
       ],
       "targets": {
@@ -81,6 +86,13 @@
           "clearControlAggregation": false,
           "viewId": "DynamicPage",
           "viewName": "fiori.DynamicPage"
+        },
+        "FormPage": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewId": "formPage",
+          "viewName": "form.FormPage"
         }
       }
     }

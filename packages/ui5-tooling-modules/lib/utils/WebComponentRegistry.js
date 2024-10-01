@@ -132,14 +132,16 @@ class RegistryEntry {
 		let parsedType = typeInfo?.text;
 		if (parsedType?.indexOf("|") > 0) {
 			const types = parsedType.split("|").map((s) => s.trim());
-			// "htmlelement | string" is an association, e.g. the @ui5-webcomponents/Popover#opener
-			if (types[0] === "HTMLElement" && types[1] === "string") {
+
+			// case 1: "htmlelement | string" is an association, e.g. the @ui5-webcomponents/Popover#opener
+			if (types.includes("HTMLElement") && types.includes("string")) {
 				return {
 					isAssociation: true,
 					origType: "HTMLElement",
 					ui5Type: "sap.ui.core.Control",
 				};
 			}
+
 			// UI5 normally accepts only one type for a property, except if "any" is used
 			// in this case we just use the first one as the primary type
 			parsedType = types[0];
@@ -152,7 +154,7 @@ class RegistryEntry {
 
 		// complex types have a reference to other things, e.g. enums
 		if (typeInfo?.references) {
-			// case 1: enum type -> easy
+			// case 2: enum type -> easy
 			if (this.enums[parsedType]) {
 				return {
 					origType: parsedType,
@@ -161,7 +163,7 @@ class RegistryEntry {
 				};
 			}
 
-			// case 2: interface type -> theoretically this should this be a 0..n aggregation... but really?
+			// case 3: interface type -> theoretically this should this be a 0..n aggregation... but really?
 			const interfaceOrClassType = this.#checkForInterfaceOrClassType(parsedType);
 
 			if (interfaceOrClassType) {
@@ -176,7 +178,7 @@ class RegistryEntry {
 				};
 			}
 
-			// case 3: check for cross package type reference
+			// case 4: check for cross package type reference
 			const refPackage = WebComponentRegistry.getPackage(typeInfo.references[0]?.package);
 			if (refPackage?.enums?.[parsedType]) {
 				return {
@@ -193,7 +195,7 @@ class RegistryEntry {
 				multiple,
 			};
 		} else {
-			// primitive types
+			// case 5: primitive types
 			return {
 				origType: parsedType,
 				ui5Type: this.#normalizeType(parsedType),
@@ -222,7 +224,27 @@ class RegistryEntry {
 	#processMembers(classDef, ui5metadata, propDef) {
 		// field -> property
 		if (propDef.kind === "field") {
-			const ui5TypeInfo = this.#extractUi5Type(propDef.type);
+			let ui5TypeInfo = this.#extractUi5Type(propDef.type, propDef.name);
+
+			// [ Accessibility ]
+			//     1. ACC attributes have webc internal typing and will be defaulted to "object" ob UI5 side.
+			//     2. "accessibleNameRef" must be mapped to "ariaLabelledBy"
+			if (propDef.name === "accessibilityAttributes") {
+				ui5TypeInfo.ui5Type = "object";
+				ui5TypeInfo.isUnclear = false;
+			} else if (propDef.name === "accessibleNameRef") {
+				ui5metadata.associations["ariaLabelledBy"] = {
+					type: "sap.ui.core.Control",
+					multiple: true,
+					mapping: {
+						type: "property",
+						to: "accessibleNameRef",
+						// formatter is implemented in sap.ui.core.webc.WebComponent
+						formatter: "_getAriaLabelledByForRendering",
+					},
+				};
+				return;
+			}
 
 			// DEBUG
 			if (ui5TypeInfo.isUnclear) {

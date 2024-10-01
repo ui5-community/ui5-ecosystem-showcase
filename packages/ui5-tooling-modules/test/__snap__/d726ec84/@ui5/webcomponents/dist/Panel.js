@@ -563,6 +563,9 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
     const EVENT_NAME = "componentFeatureLoad";
     const eventProvider$5 = new EventProvider();
     const featureLoadEventName = name => `${EVENT_NAME}_${name}`;
+    const registerFeature = (name, feature) => {
+      features.set(name, feature);
+    };
     const getFeature = name => {
       return features.get(name);
     };
@@ -1401,6 +1404,23 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
         return curTheme;
     };
     /**
+     * Applies a new theme after fetching its assets from the network.
+     * @public
+     * @param {string} theme the name of the new theme
+     * @returns {Promise<void>} a promise that is resolved when the new theme assets have been fetched and applied to the DOM
+     */
+    const setTheme = async (theme) => {
+        if (curTheme === theme) {
+            return;
+        }
+        curTheme = theme;
+        if (isBooted()) {
+            // Update CSS Custom Properties
+            await applyTheme(curTheme);
+            await reRenderAllUI5Elements({ themeAware: true });
+        }
+    };
+    /**
      * Returns if the currently set theme is part of legacy theme families ("sap_fiori_3").
      * **Note**: in addition, the method checks the base theme of a custom theme, built via the ThemeDesigner.
      *
@@ -1419,6 +1439,9 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
     let booted = false;
     let bootPromise;
     const eventProvider$1 = new EventProvider();
+    const isBooted = () => {
+        return booted;
+    };
     const boot = async () => {
         if (bootPromise !== undefined) {
             return bootPromise;
@@ -1531,6 +1554,19 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
         exclude: [],
     };
     const tagsCache = new Map(); // true/false means the tag should/should not be cached, undefined means not known yet.
+    /**
+     * Sets the suffix to be used for custom elements scoping, f.e. pass "demo" to get tags such as "ui5-button-demo".
+     * Note: by default all tags starting with "ui5-" will be scoped, unless you change this by calling "setCustomElementsScopingRules"
+     *
+     * @public
+     * @param suffix The scoping suffix
+     */
+    const setCustomElementsScopingSuffix = (suffix) => {
+        if (!suffix.match(/^[a-zA-Z0-9_-]+$/)) {
+            throw new Error("Only alphanumeric characters and dashes allowed for the scoping suffix");
+        }
+        suf = suffix;
+    };
     /**
      * Returns the currently set scoping suffix, or undefined if not set.
      *
@@ -2907,33 +2943,33 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
      * Copyright 2017 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
      */
-    var t$1;const i$1=globalThis,s$1=i$1.trustedTypes,e$2=s$1?s$1.createPolicy("lit-html",{createHTML:t=>t}):void 0,o$1="$lit$",n=`lit$${(Math.random()+"").slice(9)}$`,l$2="?"+n,h=`<${l$2}>`,r$1=void 0===i$1.document?{createTreeWalker:()=>({})}:document,u$1=()=>r$1.createComment(""),d=t=>null===t||"object"!=typeof t&&"function"!=typeof t,c$2=Array.isArray,v=t=>c$2(t)||"function"==typeof(null==t?void 0:t[Symbol.iterator]),a$1="[ \t\n\f\r]",f$1=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,_=/-->/g,m$1=/>/g,p$1=RegExp(`>|${a$1}(?:([^\\s"'>=/]+)(${a$1}*=${a$1}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),g=/'/g,$=/"/g,y=/^(?:script|style|textarea|title)$/i,x=t=>(i,...s)=>({_$litType$:t,strings:i,values:s}),T=x(1),b=x(2),w=Symbol.for("lit-noChange"),A=Symbol.for("lit-nothing"),E=new WeakMap,C=r$1.createTreeWalker(r$1,129,null,!1);function P(t,i){if(!Array.isArray(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==e$2?e$2.createHTML(i):i}const V=(t,i)=>{const s=t.length-1,e=[];let l,r=2===i?"<svg>":"",u=f$1;for(let i=0;i<s;i++){const s=t[i];let d,c,v=-1,a=0;for(;a<s.length&&(u.lastIndex=a,c=u.exec(s),null!==c);)a=u.lastIndex,u===f$1?"!--"===c[1]?u=_:void 0!==c[1]?u=m$1:void 0!==c[2]?(y.test(c[2])&&(l=RegExp("</"+c[2],"g")),u=p$1):void 0!==c[3]&&(u=p$1):u===p$1?">"===c[0]?(u=null!=l?l:f$1,v=-1):void 0===c[1]?v=-2:(v=u.lastIndex-c[2].length,d=c[1],u=void 0===c[3]?p$1:'"'===c[3]?$:g):u===$||u===g?u=p$1:u===_||u===m$1?u=f$1:(u=p$1,l=void 0);const x=u===p$1&&t[i+1].startsWith("/>")?" ":"";r+=u===f$1?s+h:v>=0?(e.push(d),s.slice(0,v)+o$1+s.slice(v)+n+x):s+n+(-2===v?(e.push(void 0),i):x);}return [P(t,r+(t[s]||"<?>")+(2===i?"</svg>":"")),e]};class N{constructor({strings:t,_$litType$:i},e){let h;this.parts=[];let r=0,d=0;const c=t.length-1,v=this.parts,[a,f]=V(t,i);if(this.el=N.createElement(a,e),C.currentNode=this.el.content,2===i){const t=this.el.content,i=t.firstChild;i.remove(),t.append(...i.childNodes);}for(;null!==(h=C.nextNode())&&v.length<c;){if(1===h.nodeType){if(h.hasAttributes()){const t=[];for(const i of h.getAttributeNames())if(i.endsWith(o$1)||i.startsWith(n)){const s=f[d++];if(t.push(i),void 0!==s){const t=h.getAttribute(s.toLowerCase()+o$1).split(n),i=/([.?@])?(.*)/.exec(s);v.push({type:1,index:r,name:i[2],strings:t,ctor:"."===i[1]?H:"?"===i[1]?L:"@"===i[1]?z:R});}else v.push({type:6,index:r});}for(const i of t)h.removeAttribute(i);}if(y.test(h.tagName)){const t=h.textContent.split(n),i=t.length-1;if(i>0){h.textContent=s$1?s$1.emptyScript:"";for(let s=0;s<i;s++)h.append(t[s],u$1()),C.nextNode(),v.push({type:2,index:++r});h.append(t[i],u$1());}}}else if(8===h.nodeType)if(h.data===l$2)v.push({type:2,index:r});else {let t=-1;for(;-1!==(t=h.data.indexOf(n,t+1));)v.push({type:7,index:r}),t+=n.length-1;}r++;}}static createElement(t,i){const s=r$1.createElement("template");return s.innerHTML=t,s}}function S(t,i,s=t,e){var o,n,l,h;if(i===w)return i;let r=void 0!==e?null===(o=s._$Co)||void 0===o?void 0:o[e]:s._$Cl;const u=d(i)?void 0:i._$litDirective$;return (null==r?void 0:r.constructor)!==u&&(null===(n=null==r?void 0:r._$AO)||void 0===n||n.call(r,!1),void 0===u?r=void 0:(r=new u(t),r._$AT(t,s,e)),void 0!==e?(null!==(l=(h=s)._$Co)&&void 0!==l?l:h._$Co=[])[e]=r:s._$Cl=r),void 0!==r&&(i=S(t,r._$AS(t,i.values),r,e)),i}class M{constructor(t,i){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=i;}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){var i;const{el:{content:s},parts:e}=this._$AD,o=(null!==(i=null==t?void 0:t.creationScope)&&void 0!==i?i:r$1).importNode(s,!0);C.currentNode=o;let n=C.nextNode(),l=0,h=0,u=e[0];for(;void 0!==u;){if(l===u.index){let i;2===u.type?i=new k(n,n.nextSibling,this,t):1===u.type?i=new u.ctor(n,u.name,u.strings,this,t):6===u.type&&(i=new W(n,this,t)),this._$AV.push(i),u=e[++h];}l!==(null==u?void 0:u.index)&&(n=C.nextNode(),l++);}return C.currentNode=r$1,o}v(t){let i=0;for(const s of this._$AV)void 0!==s&&(void 0!==s.strings?(s._$AI(t,s,i),i+=s.strings.length-2):s._$AI(t[i])),i++;}}class k{constructor(t,i,s,e){var o;this.type=2,this._$AH=A,this._$AN=void 0,this._$AA=t,this._$AB=i,this._$AM=s,this.options=e,this._$Cp=null===(o=null==e?void 0:e.isConnected)||void 0===o||o;}get _$AU(){var t,i;return null!==(i=null===(t=this._$AM)||void 0===t?void 0:t._$AU)&&void 0!==i?i:this._$Cp}get parentNode(){let t=this._$AA.parentNode;const i=this._$AM;return void 0!==i&&11===(null==t?void 0:t.nodeType)&&(t=i.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,i=this){t=S(this,t,i),d(t)?t===A||null==t||""===t?(this._$AH!==A&&this._$AR(),this._$AH=A):t!==this._$AH&&t!==w&&this._(t):void 0!==t._$litType$?this.g(t):void 0!==t.nodeType?this.$(t):v(t)?this.T(t):this._(t);}k(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}$(t){this._$AH!==t&&(this._$AR(),this._$AH=this.k(t));}_(t){this._$AH!==A&&d(this._$AH)?this._$AA.nextSibling.data=t:this.$(r$1.createTextNode(t)),this._$AH=t;}g(t){var i;const{values:s,_$litType$:e}=t,o="number"==typeof e?this._$AC(t):(void 0===e.el&&(e.el=N.createElement(P(e.h,e.h[0]),this.options)),e);if((null===(i=this._$AH)||void 0===i?void 0:i._$AD)===o)this._$AH.v(s);else {const t=new M(o,this),i=t.u(this.options);t.v(s),this.$(i),this._$AH=t;}}_$AC(t){let i=E.get(t.strings);return void 0===i&&E.set(t.strings,i=new N(t)),i}T(t){c$2(this._$AH)||(this._$AH=[],this._$AR());const i=this._$AH;let s,e=0;for(const o of t)e===i.length?i.push(s=new k(this.k(u$1()),this.k(u$1()),this,this.options)):s=i[e],s._$AI(o),e++;e<i.length&&(this._$AR(s&&s._$AB.nextSibling,e),i.length=e);}_$AR(t=this._$AA.nextSibling,i){var s;for(null===(s=this._$AP)||void 0===s||s.call(this,!1,!0,i);t&&t!==this._$AB;){const i=t.nextSibling;t.remove(),t=i;}}setConnected(t){var i;void 0===this._$AM&&(this._$Cp=t,null===(i=this._$AP)||void 0===i||i.call(this,t));}}class R{constructor(t,i,s,e,o){this.type=1,this._$AH=A,this._$AN=void 0,this.element=t,this.name=i,this._$AM=e,this.options=o,s.length>2||""!==s[0]||""!==s[1]?(this._$AH=Array(s.length-1).fill(new String),this.strings=s):this._$AH=A;}get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}_$AI(t,i=this,s,e){const o=this.strings;let n=!1;if(void 0===o)t=S(this,t,i,0),n=!d(t)||t!==this._$AH&&t!==w,n&&(this._$AH=t);else {const e=t;let l,h;for(t=o[0],l=0;l<o.length-1;l++)h=S(this,e[s+l],i,l),h===w&&(h=this._$AH[l]),n||(n=!d(h)||h!==this._$AH[l]),h===A?t=A:t!==A&&(t+=(null!=h?h:"")+o[l+1]),this._$AH[l]=h;}n&&!e&&this.j(t);}j(t){t===A?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,null!=t?t:"");}}class H extends R{constructor(){super(...arguments),this.type=3;}j(t){this.element[this.name]=t===A?void 0:t;}}const I=s$1?s$1.emptyScript:"";class L extends R{constructor(){super(...arguments),this.type=4;}j(t){t&&t!==A?this.element.setAttribute(this.name,I):this.element.removeAttribute(this.name);}}class z extends R{constructor(t,i,s,e,o){super(t,i,s,e,o),this.type=5;}_$AI(t,i=this){var s;if((t=null!==(s=S(this,t,i,0))&&void 0!==s?s:A)===w)return;const e=this._$AH,o=t===A&&e!==A||t.capture!==e.capture||t.once!==e.once||t.passive!==e.passive,n=t!==A&&(e===A||o);o&&this.element.removeEventListener(this.name,this,e),n&&this.element.addEventListener(this.name,this,t),this._$AH=t;}handleEvent(t){var i,s;"function"==typeof this._$AH?this._$AH.call(null!==(s=null===(i=this.options)||void 0===i?void 0:i.host)&&void 0!==s?s:this.element,t):this._$AH.handleEvent(t);}}class W{constructor(t,i,s){this.element=t,this.type=6,this._$AN=void 0,this._$AM=i,this.options=s;}get _$AU(){return this._$AM._$AU}_$AI(t){S(this,t);}}const Z={O:o$1,P:n,A:l$2,C:1,M:V,L:M,R:v,D:S,I:k,V:R,H:L,N:z,U:H,F:W},j=i$1.litHtmlPolyfillSupport;null==j||j(N,k),(null!==(t$1=i$1.litHtmlVersions)&&void 0!==t$1?t$1:i$1.litHtmlVersions=[]).push("2.8.0");const B=(t,i,s)=>{var e,o;const n=null!==(e=null==s?void 0:s.renderBefore)&&void 0!==e?e:i;let l=n._$litPart$;if(void 0===l){const t=null!==(o=null==s?void 0:s.renderBefore)&&void 0!==o?o:null;n._$litPart$=l=new k(i.insertBefore(u$1(),t),t,void 0,null!=s?s:{});}return l._$AI(t),l};
+    var t$1;const i$1=globalThis,s$2=i$1.trustedTypes,e$3=s$2?s$2.createPolicy("lit-html",{createHTML:t=>t}):void 0,o$2="$lit$",n$1=`lit$${(Math.random()+"").slice(9)}$`,l$3="?"+n$1,h=`<${l$3}>`,r$1=void 0===i$1.document?{createTreeWalker:()=>({})}:document,u$2=()=>r$1.createComment(""),d=t=>null===t||"object"!=typeof t&&"function"!=typeof t,c$2=Array.isArray,v=t=>c$2(t)||"function"==typeof(null==t?void 0:t[Symbol.iterator]),a$2="[ \t\n\f\r]",f$1=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,_=/-->/g,m$1=/>/g,p$1=RegExp(`>|${a$2}(?:([^\\s"'>=/]+)(${a$2}*=${a$2}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),g=/'/g,$=/"/g,y=/^(?:script|style|textarea|title)$/i,x=t=>(i,...s)=>({_$litType$:t,strings:i,values:s}),T=x(1),b=x(2),w=Symbol.for("lit-noChange"),A=Symbol.for("lit-nothing"),E=new WeakMap,C=r$1.createTreeWalker(r$1,129,null,!1);function P(t,i){if(!Array.isArray(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==e$3?e$3.createHTML(i):i}const V=(t,i)=>{const s=t.length-1,e=[];let l,r=2===i?"<svg>":"",u=f$1;for(let i=0;i<s;i++){const s=t[i];let d,c,v=-1,a=0;for(;a<s.length&&(u.lastIndex=a,c=u.exec(s),null!==c);)a=u.lastIndex,u===f$1?"!--"===c[1]?u=_:void 0!==c[1]?u=m$1:void 0!==c[2]?(y.test(c[2])&&(l=RegExp("</"+c[2],"g")),u=p$1):void 0!==c[3]&&(u=p$1):u===p$1?">"===c[0]?(u=null!=l?l:f$1,v=-1):void 0===c[1]?v=-2:(v=u.lastIndex-c[2].length,d=c[1],u=void 0===c[3]?p$1:'"'===c[3]?$:g):u===$||u===g?u=p$1:u===_||u===m$1?u=f$1:(u=p$1,l=void 0);const x=u===p$1&&t[i+1].startsWith("/>")?" ":"";r+=u===f$1?s+h:v>=0?(e.push(d),s.slice(0,v)+o$2+s.slice(v)+n$1+x):s+n$1+(-2===v?(e.push(void 0),i):x);}return [P(t,r+(t[s]||"<?>")+(2===i?"</svg>":"")),e]};class N{constructor({strings:t,_$litType$:i},e){let h;this.parts=[];let r=0,d=0;const c=t.length-1,v=this.parts,[a,f]=V(t,i);if(this.el=N.createElement(a,e),C.currentNode=this.el.content,2===i){const t=this.el.content,i=t.firstChild;i.remove(),t.append(...i.childNodes);}for(;null!==(h=C.nextNode())&&v.length<c;){if(1===h.nodeType){if(h.hasAttributes()){const t=[];for(const i of h.getAttributeNames())if(i.endsWith(o$2)||i.startsWith(n$1)){const s=f[d++];if(t.push(i),void 0!==s){const t=h.getAttribute(s.toLowerCase()+o$2).split(n$1),i=/([.?@])?(.*)/.exec(s);v.push({type:1,index:r,name:i[2],strings:t,ctor:"."===i[1]?H:"?"===i[1]?L:"@"===i[1]?z:R});}else v.push({type:6,index:r});}for(const i of t)h.removeAttribute(i);}if(y.test(h.tagName)){const t=h.textContent.split(n$1),i=t.length-1;if(i>0){h.textContent=s$2?s$2.emptyScript:"";for(let s=0;s<i;s++)h.append(t[s],u$2()),C.nextNode(),v.push({type:2,index:++r});h.append(t[i],u$2());}}}else if(8===h.nodeType)if(h.data===l$3)v.push({type:2,index:r});else {let t=-1;for(;-1!==(t=h.data.indexOf(n$1,t+1));)v.push({type:7,index:r}),t+=n$1.length-1;}r++;}}static createElement(t,i){const s=r$1.createElement("template");return s.innerHTML=t,s}}function S(t,i,s=t,e){var o,n,l,h;if(i===w)return i;let r=void 0!==e?null===(o=s._$Co)||void 0===o?void 0:o[e]:s._$Cl;const u=d(i)?void 0:i._$litDirective$;return (null==r?void 0:r.constructor)!==u&&(null===(n=null==r?void 0:r._$AO)||void 0===n||n.call(r,!1),void 0===u?r=void 0:(r=new u(t),r._$AT(t,s,e)),void 0!==e?(null!==(l=(h=s)._$Co)&&void 0!==l?l:h._$Co=[])[e]=r:s._$Cl=r),void 0!==r&&(i=S(t,r._$AS(t,i.values),r,e)),i}class M{constructor(t,i){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=i;}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){var i;const{el:{content:s},parts:e}=this._$AD,o=(null!==(i=null==t?void 0:t.creationScope)&&void 0!==i?i:r$1).importNode(s,!0);C.currentNode=o;let n=C.nextNode(),l=0,h=0,u=e[0];for(;void 0!==u;){if(l===u.index){let i;2===u.type?i=new k(n,n.nextSibling,this,t):1===u.type?i=new u.ctor(n,u.name,u.strings,this,t):6===u.type&&(i=new W(n,this,t)),this._$AV.push(i),u=e[++h];}l!==(null==u?void 0:u.index)&&(n=C.nextNode(),l++);}return C.currentNode=r$1,o}v(t){let i=0;for(const s of this._$AV)void 0!==s&&(void 0!==s.strings?(s._$AI(t,s,i),i+=s.strings.length-2):s._$AI(t[i])),i++;}}class k{constructor(t,i,s,e){var o;this.type=2,this._$AH=A,this._$AN=void 0,this._$AA=t,this._$AB=i,this._$AM=s,this.options=e,this._$Cp=null===(o=null==e?void 0:e.isConnected)||void 0===o||o;}get _$AU(){var t,i;return null!==(i=null===(t=this._$AM)||void 0===t?void 0:t._$AU)&&void 0!==i?i:this._$Cp}get parentNode(){let t=this._$AA.parentNode;const i=this._$AM;return void 0!==i&&11===(null==t?void 0:t.nodeType)&&(t=i.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,i=this){t=S(this,t,i),d(t)?t===A||null==t||""===t?(this._$AH!==A&&this._$AR(),this._$AH=A):t!==this._$AH&&t!==w&&this._(t):void 0!==t._$litType$?this.g(t):void 0!==t.nodeType?this.$(t):v(t)?this.T(t):this._(t);}k(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}$(t){this._$AH!==t&&(this._$AR(),this._$AH=this.k(t));}_(t){this._$AH!==A&&d(this._$AH)?this._$AA.nextSibling.data=t:this.$(r$1.createTextNode(t)),this._$AH=t;}g(t){var i;const{values:s,_$litType$:e}=t,o="number"==typeof e?this._$AC(t):(void 0===e.el&&(e.el=N.createElement(P(e.h,e.h[0]),this.options)),e);if((null===(i=this._$AH)||void 0===i?void 0:i._$AD)===o)this._$AH.v(s);else {const t=new M(o,this),i=t.u(this.options);t.v(s),this.$(i),this._$AH=t;}}_$AC(t){let i=E.get(t.strings);return void 0===i&&E.set(t.strings,i=new N(t)),i}T(t){c$2(this._$AH)||(this._$AH=[],this._$AR());const i=this._$AH;let s,e=0;for(const o of t)e===i.length?i.push(s=new k(this.k(u$2()),this.k(u$2()),this,this.options)):s=i[e],s._$AI(o),e++;e<i.length&&(this._$AR(s&&s._$AB.nextSibling,e),i.length=e);}_$AR(t=this._$AA.nextSibling,i){var s;for(null===(s=this._$AP)||void 0===s||s.call(this,!1,!0,i);t&&t!==this._$AB;){const i=t.nextSibling;t.remove(),t=i;}}setConnected(t){var i;void 0===this._$AM&&(this._$Cp=t,null===(i=this._$AP)||void 0===i||i.call(this,t));}}class R{constructor(t,i,s,e,o){this.type=1,this._$AH=A,this._$AN=void 0,this.element=t,this.name=i,this._$AM=e,this.options=o,s.length>2||""!==s[0]||""!==s[1]?(this._$AH=Array(s.length-1).fill(new String),this.strings=s):this._$AH=A;}get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}_$AI(t,i=this,s,e){const o=this.strings;let n=!1;if(void 0===o)t=S(this,t,i,0),n=!d(t)||t!==this._$AH&&t!==w,n&&(this._$AH=t);else {const e=t;let l,h;for(t=o[0],l=0;l<o.length-1;l++)h=S(this,e[s+l],i,l),h===w&&(h=this._$AH[l]),n||(n=!d(h)||h!==this._$AH[l]),h===A?t=A:t!==A&&(t+=(null!=h?h:"")+o[l+1]),this._$AH[l]=h;}n&&!e&&this.j(t);}j(t){t===A?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,null!=t?t:"");}}class H extends R{constructor(){super(...arguments),this.type=3;}j(t){this.element[this.name]=t===A?void 0:t;}}const I=s$2?s$2.emptyScript:"";class L extends R{constructor(){super(...arguments),this.type=4;}j(t){t&&t!==A?this.element.setAttribute(this.name,I):this.element.removeAttribute(this.name);}}class z extends R{constructor(t,i,s,e,o){super(t,i,s,e,o),this.type=5;}_$AI(t,i=this){var s;if((t=null!==(s=S(this,t,i,0))&&void 0!==s?s:A)===w)return;const e=this._$AH,o=t===A&&e!==A||t.capture!==e.capture||t.once!==e.once||t.passive!==e.passive,n=t!==A&&(e===A||o);o&&this.element.removeEventListener(this.name,this,e),n&&this.element.addEventListener(this.name,this,t),this._$AH=t;}handleEvent(t){var i,s;"function"==typeof this._$AH?this._$AH.call(null!==(s=null===(i=this.options)||void 0===i?void 0:i.host)&&void 0!==s?s:this.element,t):this._$AH.handleEvent(t);}}class W{constructor(t,i,s){this.element=t,this.type=6,this._$AN=void 0,this._$AM=i,this.options=s;}get _$AU(){return this._$AM._$AU}_$AI(t){S(this,t);}}const Z={O:o$2,P:n$1,A:l$3,C:1,M:V,L:M,R:v,D:S,I:k,V:R,H:L,N:z,U:H,F:W},j=i$1.litHtmlPolyfillSupport;null==j||j(N,k),(null!==(t$1=i$1.litHtmlVersions)&&void 0!==t$1?t$1:i$1.litHtmlVersions=[]).push("2.8.0");const B=(t,i,s)=>{var e,o;const n=null!==(e=null==s?void 0:s.renderBefore)&&void 0!==e?e:i;let l=n._$litPart$;if(void 0===l){const t=null!==(o=null==s?void 0:s.renderBefore)&&void 0!==o?o:null;n._$litPart$=l=new k(i.insertBefore(u$2(),t),t,void 0,null!=s?s:{});}return l._$AI(t),l};
 
     /**
      * @license
      * Copyright 2017 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
      */
-    const t={ATTRIBUTE:1,CHILD:2,PROPERTY:3,BOOLEAN_ATTRIBUTE:4,EVENT:5,ELEMENT:6},e$1=t=>(...e)=>({_$litDirective$:t,values:e});class i{constructor(t){}get _$AU(){return this._$AM._$AU}_$AT(t,e,i){this._$Ct=t,this._$AM=e,this._$Ci=i;}_$AS(t,e){return this.update(t,e)}update(t,e){return this.render(...e)}}
+    const t={ATTRIBUTE:1,CHILD:2,PROPERTY:3,BOOLEAN_ATTRIBUTE:4,EVENT:5,ELEMENT:6},e$2=t=>(...e)=>({_$litDirective$:t,values:e});class i{constructor(t){}get _$AU(){return this._$AM._$AU}_$AT(t,e,i){this._$Ct=t,this._$AM=e,this._$Ci=i;}_$AS(t,e){return this.update(t,e)}update(t,e){return this.render(...e)}}
 
     /**
      * @license
      * Copyright 2020 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
-     */const {I:l$1}=Z,r=()=>document.createComment(""),c$1=(o,i,n)=>{var t;const v=o._$AA.parentNode,d=void 0===i?o._$AB:i._$AA;if(void 0===n){const i=v.insertBefore(r(),d),t=v.insertBefore(r(),d);n=new l$1(i,t,o,o.options);}else {const l=n._$AB.nextSibling,i=n._$AM,u=i!==o;if(u){let l;null===(t=n._$AQ)||void 0===t||t.call(n,o),n._$AM=o,void 0!==n._$AP&&(l=o._$AU)!==i._$AU&&n._$AP(l);}if(l!==d||u){let o=n._$AA;for(;o!==l;){const l=o.nextSibling;v.insertBefore(o,d),o=l;}}}return n},f=(o,l,i=o)=>(o._$AI(l,i),o),s={},a=(o,l=s)=>o._$AH=l,m=o=>o._$AH,p=o=>{var l;null===(l=o._$AP)||void 0===l||l.call(o,!1,!0);let i=o._$AA;const n=o._$AB.nextSibling;for(;i!==n;){const o=i.nextSibling;i.remove(),i=o;}};
+     */const {I:l$2}=Z,r=()=>document.createComment(""),c$1=(o,i,n)=>{var t;const v=o._$AA.parentNode,d=void 0===i?o._$AB:i._$AA;if(void 0===n){const i=v.insertBefore(r(),d),t=v.insertBefore(r(),d);n=new l$2(i,t,o,o.options);}else {const l=n._$AB.nextSibling,i=n._$AM,u=i!==o;if(u){let l;null===(t=n._$AQ)||void 0===t||t.call(n,o),n._$AM=o,void 0!==n._$AP&&(l=o._$AU)!==i._$AU&&n._$AP(l);}if(l!==d||u){let o=n._$AA;for(;o!==l;){const l=o.nextSibling;v.insertBefore(o,d),o=l;}}}return n},f=(o,l,i=o)=>(o._$AI(l,i),o),s$1={},a$1=(o,l=s$1)=>o._$AH=l,m=o=>o._$AH,p=o=>{var l;null===(l=o._$AP)||void 0===l||l.call(o,!1,!0);let i=o._$AA;const n=o._$AB.nextSibling;for(;i!==n;){const o=i.nextSibling;i.remove(),i=o;}};
 
     /**
      * @license
      * Copyright 2017 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
      */
-    const u=(e,s,t)=>{const r=new Map;for(let l=s;l<=t;l++)r.set(e[l],l);return r},c=e$1(class extends i{constructor(e){if(super(e),e.type!==t.CHILD)throw Error("repeat() can only be used in text expressions")}ct(e,s,t){let r;void 0===t?t=s:void 0!==s&&(r=s);const l=[],o=[];let i=0;for(const s of e)l[i]=r?r(s,i):i,o[i]=t(s,i),i++;return {values:o,keys:l}}render(e,s,t){return this.ct(e,s,t).values}update(s,[t,r,c]){var d;const a$1=m(s),{values:p$1,keys:v}=this.ct(t,r,c);if(!Array.isArray(a$1))return this.ut=v,p$1;const h=null!==(d=this.ut)&&void 0!==d?d:this.ut=[],m$1=[];let y,x,j=0,k=a$1.length-1,w$1=0,A=p$1.length-1;for(;j<=k&&w$1<=A;)if(null===a$1[j])j++;else if(null===a$1[k])k--;else if(h[j]===v[w$1])m$1[w$1]=f(a$1[j],p$1[w$1]),j++,w$1++;else if(h[k]===v[A])m$1[A]=f(a$1[k],p$1[A]),k--,A--;else if(h[j]===v[A])m$1[A]=f(a$1[j],p$1[A]),c$1(s,m$1[A+1],a$1[j]),j++,A--;else if(h[k]===v[w$1])m$1[w$1]=f(a$1[k],p$1[w$1]),c$1(s,a$1[j],a$1[k]),k--,w$1++;else if(void 0===y&&(y=u(v,w$1,A),x=u(h,j,k)),y.has(h[j]))if(y.has(h[k])){const e=x.get(v[w$1]),t=void 0!==e?a$1[e]:null;if(null===t){const e=c$1(s,a$1[j]);f(e,p$1[w$1]),m$1[w$1]=e;}else m$1[w$1]=f(t,p$1[w$1]),c$1(s,a$1[j],t),a$1[e]=null;w$1++;}else p(a$1[k]),k--;else p(a$1[j]),j++;for(;w$1<=A;){const e=c$1(s,m$1[A+1]);f(e,p$1[w$1]),m$1[w$1++]=e;}for(;j<=k;){const e=a$1[j++];null!==e&&p(e);}return this.ut=v,a(s,m$1),w}});
+    const u$1=(e,s,t)=>{const r=new Map;for(let l=s;l<=t;l++)r.set(e[l],l);return r},c=e$2(class extends i{constructor(e){if(super(e),e.type!==t.CHILD)throw Error("repeat() can only be used in text expressions")}ct(e,s,t){let r;void 0===t?t=s:void 0!==s&&(r=s);const l=[],o=[];let i=0;for(const s of e)l[i]=r?r(s,i):i,o[i]=t(s,i),i++;return {values:o,keys:l}}render(e,s,t){return this.ct(e,s,t).values}update(s,[t,r,c]){var d;const a=m(s),{values:p$1,keys:v}=this.ct(t,r,c);if(!Array.isArray(a))return this.ut=v,p$1;const h=null!==(d=this.ut)&&void 0!==d?d:this.ut=[],m$1=[];let y,x,j=0,k=a.length-1,w$1=0,A=p$1.length-1;for(;j<=k&&w$1<=A;)if(null===a[j])j++;else if(null===a[k])k--;else if(h[j]===v[w$1])m$1[w$1]=f(a[j],p$1[w$1]),j++,w$1++;else if(h[k]===v[A])m$1[A]=f(a[k],p$1[A]),k--,A--;else if(h[j]===v[A])m$1[A]=f(a[j],p$1[A]),c$1(s,m$1[A+1],a[j]),j++,A--;else if(h[k]===v[w$1])m$1[w$1]=f(a[k],p$1[w$1]),c$1(s,a[j],a[k]),k--,w$1++;else if(void 0===y&&(y=u$1(v,w$1,A),x=u$1(h,j,k)),y.has(h[j]))if(y.has(h[k])){const e=x.get(v[w$1]),t=void 0!==e?a[e]:null;if(null===t){const e=c$1(s,a[j]);f(e,p$1[w$1]),m$1[w$1]=e;}else m$1[w$1]=f(t,p$1[w$1]),c$1(s,a[j],t),a[e]=null;w$1++;}else p(a[k]),k--;else p(a[j]),j++;for(;w$1<=A;){const e=c$1(s,m$1[A+1]);f(e,p$1[w$1]),m$1[w$1++]=e;}for(;j<=k;){const e=a[j++];null!==e&&p(e);}return this.ut=v,a$1(s,m$1),w}});
 
     /**
      * @license
      * Copyright 2018 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
-     */const o=e$1(class extends i{constructor(t$1){var i;if(super(t$1),t$1.type!==t.ATTRIBUTE||"class"!==t$1.name||(null===(i=t$1.strings)||void 0===i?void 0:i.length)>2)throw Error("`classMap()` can only be used in the `class` attribute and must be the only part in the attribute.")}render(t){return " "+Object.keys(t).filter((i=>t[i])).join(" ")+" "}update(i,[s]){var r,o;if(void 0===this.it){this.it=new Set,void 0!==i.strings&&(this.nt=new Set(i.strings.join(" ").split(/\s/).filter((t=>""!==t))));for(const t in s)s[t]&&!(null===(r=this.nt)||void 0===r?void 0:r.has(t))&&this.it.add(t);return this.render(s)}const e=i.element.classList;this.it.forEach((t=>{t in s||(e.remove(t),this.it.delete(t));}));for(const t in s){const i=!!s[t];i===this.it.has(t)||(null===(o=this.nt)||void 0===o?void 0:o.has(t))||(i?(e.add(t),this.it.add(t)):(e.remove(t),this.it.delete(t)));}return w}});
+     */const o$1=e$2(class extends i{constructor(t$1){var i;if(super(t$1),t$1.type!==t.ATTRIBUTE||"class"!==t$1.name||(null===(i=t$1.strings)||void 0===i?void 0:i.length)>2)throw Error("`classMap()` can only be used in the `class` attribute and must be the only part in the attribute.")}render(t){return " "+Object.keys(t).filter((i=>t[i])).join(" ")+" "}update(i,[s]){var r,o;if(void 0===this.it){this.it=new Set,void 0!==i.strings&&(this.nt=new Set(i.strings.join(" ").split(/\s/).filter((t=>""!==t))));for(const t in s)s[t]&&!(null===(r=this.nt)||void 0===r?void 0:r.has(t))&&this.it.add(t);return this.render(s)}const e=i.element.classList;this.it.forEach((t=>{t in s||(e.remove(t),this.it.delete(t));}));for(const t in s){const i=!!s[t];i===this.it.has(t)||(null===(o=this.nt)||void 0===o?void 0:o.has(t))||(i?(e.add(t),this.it.add(t)):(e.remove(t),this.it.delete(t)));}return w}});
 
     // @ts-nocheck
     /* eslint-disable */
@@ -3003,19 +3039,19 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
             return w;
         }
     }
-    const styleMap = e$1(StyleMapDirective);
+    const styleMap = e$2(StyleMapDirective);
 
     /**
      * @license
      * Copyright 2018 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
-     */const l=l=>null!=l?l:A;
+     */const l$1=l=>null!=l?l:A;
 
     /**
      * @license
      * Copyright 2017 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
-     */class e extends i{constructor(i){if(super(i),this.et=A,i.type!==t.CHILD)throw Error(this.constructor.directiveName+"() can only be used in child bindings")}render(r){if(r===A||null==r)return this.ft=void 0,this.et=r;if(r===w)return r;if("string"!=typeof r)throw Error(this.constructor.directiveName+"() called with a non-string value");if(r===this.et)return this.ft;this.et=r;const s=[r];return s.raw=s,this.ft={_$litType$:this.constructor.resultType,strings:s,values:[]}}}e.directiveName="unsafeHTML",e.resultType=1;
+     */let e$1 = class e extends i{constructor(i){if(super(i),this.et=A,i.type!==t.CHILD)throw Error(this.constructor.directiveName+"() can only be used in child bindings")}render(r){if(r===A||null==r)return this.ft=void 0,this.et=r;if(r===w)return r;if("string"!=typeof r)throw Error(this.constructor.directiveName+"() called with a non-string value");if(r===this.et)return this.ft;this.et=r;const s=[r];return s.raw=s,this.ft={_$litType$:this.constructor.resultType,strings:s,values:[]}}};e$1.directiveName="unsafeHTML",e$1.resultType=1;
 
     const effectiveHtml = (strings, ...values) => {
         const litStatic = getFeature("LitStatic");
@@ -4237,16 +4273,16 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
     var ButtonType$1 = ButtonType;
 
     /* eslint no-unused-vars: 0 */
-    function block0$2(context, tags, suffix) { return effectiveHtml `<button type="button" class="ui5-button-root" ?disabled="${this.disabled}" data-sap-focus-ref  @focusout=${this._onfocusout} @focusin=${this._onfocusin} @click=${this._onclick} @mousedown=${this._onmousedown} @mouseup=${this._onmouseup} @keydown=${this._onkeydown} @keyup=${this._onkeyup} @touchstart="${this._ontouchstart}" @touchend="${this._ontouchend}" tabindex=${l(this.tabIndexValue)} aria-expanded="${l(this.accessibilityAttributes.expanded)}" aria-controls="${l(this.accessibilityAttributes.controls)}" aria-haspopup="${l(this._hasPopup)}" aria-label="${l(this.ariaLabelText)}" aria-describedby="${l(this.ariaDescribedbyText)}" title="${l(this.buttonTitle)}" part="button" role="${l(this.effectiveAccRole)}">${this.icon ? block1$2.call(this, context, tags, suffix) : undefined}<span id="${l(this._id)}-content" class="ui5-button-text"><bdi><slot></slot></bdi></span>${this.endIcon ? block2$2.call(this, context, tags, suffix) : undefined}${this.hasButtonType ? block3$2.call(this, context, tags, suffix) : undefined}</button> `; }
-    function block1$2(context, tags, suffix) { return suffix ? effectiveHtml `<${scopeTag("ui5-icon", tags, suffix)} class="ui5-button-icon" name="${l(this.icon)}" mode="${l(this.iconMode)}" part="icon" ?show-tooltip=${this.showIconTooltip}></${scopeTag("ui5-icon", tags, suffix)}>` : effectiveHtml `<ui5-icon class="ui5-button-icon" name="${l(this.icon)}" mode="${l(this.iconMode)}" part="icon" ?show-tooltip=${this.showIconTooltip}></ui5-icon>`; }
-    function block2$2(context, tags, suffix) { return suffix ? effectiveHtml `<${scopeTag("ui5-icon", tags, suffix)} class="ui5-button-end-icon" name="${l(this.endIcon)}" mode="${l(this.endIconMode)}" part="endIcon"></${scopeTag("ui5-icon", tags, suffix)}>` : effectiveHtml `<ui5-icon class="ui5-button-end-icon" name="${l(this.endIcon)}" mode="${l(this.endIconMode)}" part="endIcon"></ui5-icon>`; }
-    function block3$2(context, tags, suffix) { return effectiveHtml `<span id="ui5-button-hiddenText-type" aria-hidden="true" class="ui5-hidden-text">${l(this.buttonTypeText)}</span>`; }
+    function block0$2(context, tags, suffix) { return effectiveHtml `<button type="button" class="ui5-button-root" ?disabled="${this.disabled}" data-sap-focus-ref  @focusout=${this._onfocusout} @focusin=${this._onfocusin} @click=${this._onclick} @mousedown=${this._onmousedown} @mouseup=${this._onmouseup} @keydown=${this._onkeydown} @keyup=${this._onkeyup} @touchstart="${this._ontouchstart}" @touchend="${this._ontouchend}" tabindex=${l$1(this.tabIndexValue)} aria-expanded="${l$1(this.accessibilityAttributes.expanded)}" aria-controls="${l$1(this.accessibilityAttributes.controls)}" aria-haspopup="${l$1(this._hasPopup)}" aria-label="${l$1(this.ariaLabelText)}" aria-describedby="${l$1(this.ariaDescribedbyText)}" title="${l$1(this.buttonTitle)}" part="button" role="${l$1(this.effectiveAccRole)}">${this.icon ? block1$2.call(this, context, tags, suffix) : undefined}<span id="${l$1(this._id)}-content" class="ui5-button-text"><bdi><slot></slot></bdi></span>${this.endIcon ? block2$2.call(this, context, tags, suffix) : undefined}${this.hasButtonType ? block3$2.call(this, context, tags, suffix) : undefined}</button> `; }
+    function block1$2(context, tags, suffix) { return suffix ? effectiveHtml `<${scopeTag("ui5-icon", tags, suffix)} class="ui5-button-icon" name="${l$1(this.icon)}" mode="${l$1(this.iconMode)}" part="icon" ?show-tooltip=${this.showIconTooltip}></${scopeTag("ui5-icon", tags, suffix)}>` : effectiveHtml `<ui5-icon class="ui5-button-icon" name="${l$1(this.icon)}" mode="${l$1(this.iconMode)}" part="icon" ?show-tooltip=${this.showIconTooltip}></ui5-icon>`; }
+    function block2$2(context, tags, suffix) { return suffix ? effectiveHtml `<${scopeTag("ui5-icon", tags, suffix)} class="ui5-button-end-icon" name="${l$1(this.endIcon)}" mode="${l$1(this.endIconMode)}" part="endIcon"></${scopeTag("ui5-icon", tags, suffix)}>` : effectiveHtml `<ui5-icon class="ui5-button-end-icon" name="${l$1(this.endIcon)}" mode="${l$1(this.endIconMode)}" part="endIcon"></ui5-icon>`; }
+    function block3$2(context, tags, suffix) { return effectiveHtml `<span id="ui5-button-hiddenText-type" aria-hidden="true" class="ui5-hidden-text">${l$1(this.buttonTypeText)}</span>`; }
 
     /* eslint no-unused-vars: 0 */
-    function block0$1(context, tags, suffix) { return effectiveHtml `<svg class="ui5-icon-root" part="root" tabindex="${l(this._tabIndex)}" dir="${l(this._dir)}" viewBox="${l(this.viewBox)}" role="${l(this.effectiveAccessibleRole)}" focusable="false" preserveAspectRatio="xMidYMid meet" aria-label="${l(this.effectiveAccessibleName)}" aria-hidden=${l(this.effectiveAriaHidden)} xmlns="http://www.w3.org/2000/svg" @keydown=${this._onkeydown} @keyup=${this._onkeyup}>${blockSVG1.call(this, context, tags, suffix)}</svg>`; }
-    function block1$1(context, tags, suffix) { return effectiveSvg `<title id="${l(this._id)}-tooltip">${l(this.effectiveAccessibleName)}</title>`; }
-    function block2$1(context, tags, suffix) { return effectiveSvg `${l(this.customSvg)}`; }
-    function block3$1(context, tags, suffix, item, index) { return effectiveSvg `<path d="${l(item)}"></path>`; }
+    function block0$1(context, tags, suffix) { return effectiveHtml `<svg class="ui5-icon-root" part="root" tabindex="${l$1(this._tabIndex)}" dir="${l$1(this._dir)}" viewBox="${l$1(this.viewBox)}" role="${l$1(this.effectiveAccessibleRole)}" focusable="false" preserveAspectRatio="xMidYMid meet" aria-label="${l$1(this.effectiveAccessibleName)}" aria-hidden=${l$1(this.effectiveAriaHidden)} xmlns="http://www.w3.org/2000/svg" @keydown=${this._onkeydown} @keyup=${this._onkeyup}>${blockSVG1.call(this, context, tags, suffix)}</svg>`; }
+    function block1$1(context, tags, suffix) { return effectiveSvg `<title id="${l$1(this._id)}-tooltip">${l$1(this.effectiveAccessibleName)}</title>`; }
+    function block2$1(context, tags, suffix) { return effectiveSvg `${l$1(this.customSvg)}`; }
+    function block3$1(context, tags, suffix, item, index) { return effectiveSvg `<path d="${l$1(item)}"></path>`; }
     function blockSVG1(context, tags, suffix) {
         return effectiveSvg `${this.hasIconTooltip ? block1$1.call(this, context, tags, suffix) : undefined}<g role="presentation">${this.customSvg ? block2$1.call(this, context, tags, suffix) : undefined}${c(this.pathData, (item, index) => item._id || index, (item, index) => block3$1.call(this, context, tags, suffix, item, index))}</g>`;
     }
@@ -4698,13 +4734,13 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
     var Button$1 = Button;
 
     /* eslint no-unused-vars: 0 */
-    function block0(context, tags, suffix) { return effectiveHtml `<div class="ui5-panel-root" role="${l(this.accRole)}" aria-label="${l(this.effectiveAccessibleName)}" aria-labelledby="${l(this.fixedPanelAriaLabelledbyReference)}">${this.hasHeaderOrHeaderText ? block1.call(this, context, tags, suffix) : undefined}<div class="ui5-panel-content" id="${l(this._id)}-content" tabindex="-1" style="${styleMap(this.styles.content)}" part="content"><slot></slot></div></div>`; }
-    function block1(context, tags, suffix) { return effectiveHtml `<div class="ui5-panel-heading-wrapper${o(this.classes.stickyHeaderClass)}" role="${l(this.headingWrapperRole)}" aria-level="${l(this.headingWrapperAriaLevel)}"><div @click="${this._headerClick}" @keydown="${this._headerKeyDown}" @keyup="${this._headerKeyUp}" class="ui5-panel-header" tabindex="${l(this.headerTabIndex)}" role="${l(this.accInfo.role)}" aria-expanded="${l(this.accInfo.ariaExpanded)}" aria-controls="${l(this.accInfo.ariaControls)}" aria-labelledby="${l(this.accInfo.ariaLabelledby)}" part="header">${!this.fixed ? block2.call(this, context, tags, suffix) : undefined}${this._hasHeader ? block5.call(this, context, tags, suffix) : block6.call(this, context, tags, suffix)}</div></div>`; }
+    function block0(context, tags, suffix) { return effectiveHtml `<div class="ui5-panel-root" role="${l$1(this.accRole)}" aria-label="${l$1(this.effectiveAccessibleName)}" aria-labelledby="${l$1(this.fixedPanelAriaLabelledbyReference)}">${this.hasHeaderOrHeaderText ? block1.call(this, context, tags, suffix) : undefined}<div class="ui5-panel-content" id="${l$1(this._id)}-content" tabindex="-1" style="${styleMap(this.styles.content)}" part="content"><slot></slot></div></div>`; }
+    function block1(context, tags, suffix) { return effectiveHtml `<div class="ui5-panel-heading-wrapper${o$1(this.classes.stickyHeaderClass)}" role="${l$1(this.headingWrapperRole)}" aria-level="${l$1(this.headingWrapperAriaLevel)}"><div @click="${this._headerClick}" @keydown="${this._headerKeyDown}" @keyup="${this._headerKeyUp}" class="ui5-panel-header" tabindex="${l$1(this.headerTabIndex)}" role="${l$1(this.accInfo.role)}" aria-expanded="${l$1(this.accInfo.ariaExpanded)}" aria-controls="${l$1(this.accInfo.ariaControls)}" aria-labelledby="${l$1(this.accInfo.ariaLabelledby)}" part="header">${!this.fixed ? block2.call(this, context, tags, suffix) : undefined}${this._hasHeader ? block5.call(this, context, tags, suffix) : block6.call(this, context, tags, suffix)}</div></div>`; }
     function block2(context, tags, suffix) { return effectiveHtml `<div class="ui5-panel-header-button-root">${this._hasHeader ? block3.call(this, context, tags, suffix) : block4.call(this, context, tags, suffix)}</div>`; }
-    function block3(context, tags, suffix) { return suffix ? effectiveHtml `<${scopeTag("ui5-button", tags, suffix)} design="Transparent" class="ui5-panel-header-button ui5-panel-header-button-with-icon" @click="${this._toggleButtonClick}" .accessibilityAttributes=${l(this.accInfo.button.accessibilityAttributes)} tooltip="${l(this.accInfo.button.title)}" accessible-name="${l(this.accInfo.button.ariaLabelButton)}"><div class="ui5-panel-header-icon-wrapper"><${scopeTag("ui5-icon", tags, suffix)} class="ui5-panel-header-icon ${o(this.classes.headerBtn)}" name="slim-arrow-right"></${scopeTag("ui5-icon", tags, suffix)}></div></${scopeTag("ui5-button", tags, suffix)}>` : effectiveHtml `<ui5-button design="Transparent" class="ui5-panel-header-button ui5-panel-header-button-with-icon" @click="${this._toggleButtonClick}" .accessibilityAttributes=${l(this.accInfo.button.accessibilityAttributes)} tooltip="${l(this.accInfo.button.title)}" accessible-name="${l(this.accInfo.button.ariaLabelButton)}"><div class="ui5-panel-header-icon-wrapper"><ui5-icon class="ui5-panel-header-icon ${o(this.classes.headerBtn)}" name="slim-arrow-right"></ui5-icon></div></ui5-button>`; }
-    function block4(context, tags, suffix) { return suffix ? effectiveHtml `<${scopeTag("ui5-icon", tags, suffix)} class="ui5-panel-header-button ui5-panel-header-icon ${o(this.classes.headerBtn)}" name="slim-arrow-right" show-tooltip accessible-name="${l(this.toggleButtonTitle)}"></${scopeTag("ui5-icon", tags, suffix)}>` : effectiveHtml `<ui5-icon class="ui5-panel-header-button ui5-panel-header-icon ${o(this.classes.headerBtn)}" name="slim-arrow-right" show-tooltip accessible-name="${l(this.toggleButtonTitle)}"></ui5-icon>`; }
+    function block3(context, tags, suffix) { return suffix ? effectiveHtml `<${scopeTag("ui5-button", tags, suffix)} design="Transparent" class="ui5-panel-header-button ui5-panel-header-button-with-icon" @click="${this._toggleButtonClick}" .accessibilityAttributes=${l$1(this.accInfo.button.accessibilityAttributes)} tooltip="${l$1(this.accInfo.button.title)}" accessible-name="${l$1(this.accInfo.button.ariaLabelButton)}"><div class="ui5-panel-header-icon-wrapper"><${scopeTag("ui5-icon", tags, suffix)} class="ui5-panel-header-icon ${o$1(this.classes.headerBtn)}" name="slim-arrow-right"></${scopeTag("ui5-icon", tags, suffix)}></div></${scopeTag("ui5-button", tags, suffix)}>` : effectiveHtml `<ui5-button design="Transparent" class="ui5-panel-header-button ui5-panel-header-button-with-icon" @click="${this._toggleButtonClick}" .accessibilityAttributes=${l$1(this.accInfo.button.accessibilityAttributes)} tooltip="${l$1(this.accInfo.button.title)}" accessible-name="${l$1(this.accInfo.button.ariaLabelButton)}"><div class="ui5-panel-header-icon-wrapper"><ui5-icon class="ui5-panel-header-icon ${o$1(this.classes.headerBtn)}" name="slim-arrow-right"></ui5-icon></div></ui5-button>`; }
+    function block4(context, tags, suffix) { return suffix ? effectiveHtml `<${scopeTag("ui5-icon", tags, suffix)} class="ui5-panel-header-button ui5-panel-header-icon ${o$1(this.classes.headerBtn)}" name="slim-arrow-right" show-tooltip accessible-name="${l$1(this.toggleButtonTitle)}"></${scopeTag("ui5-icon", tags, suffix)}>` : effectiveHtml `<ui5-icon class="ui5-panel-header-button ui5-panel-header-icon ${o$1(this.classes.headerBtn)}" name="slim-arrow-right" show-tooltip accessible-name="${l$1(this.toggleButtonTitle)}"></ui5-icon>`; }
     function block5(context, tags, suffix) { return effectiveHtml `<slot name="header"></slot>`; }
-    function block6(context, tags, suffix) { return effectiveHtml `<div id="${l(this._id)}-header-title" class="ui5-panel-header-title">${l(this.headerText)}</div>`; }
+    function block6(context, tags, suffix) { return effectiveHtml `<div id="${l$1(this._id)}-header-title" class="ui5-panel-header-title">${l$1(this.headerText)}</div>`; }
 
     registerThemePropertiesLoader("@ui5/webcomponents-theming", "sap_horizon", async () => styleData$4);
     registerThemePropertiesLoader("@ui5/webcomponents", "sap_horizon", async () => styleData$3);
@@ -4925,6 +4961,227 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
     }), event("toggle")], Panel$1);
     Panel$1.define();
 
+    const patchPatcher = (Patcher) => {
+        const origOpenEnd = Patcher.prototype.openEnd;
+        Patcher.prototype.openEnd = function openEnd() {
+            if (this._mAttributes.popover) {
+                delete this._mAttributes.popover; // The "popover" attribute will be managed externally, don't let Patcher remove it
+            }
+            return origOpenEnd.apply(this);
+        };
+    };
+
+    const openNativePopover = (domRef) => {
+        domRef.setAttribute("popover", "manual");
+        domRef.showPopover();
+    };
+    const closeNativePopover = (domRef) => {
+        if (domRef.hasAttribute("popover")) {
+            domRef.hidePopover();
+            domRef.removeAttribute("popover");
+        }
+    };
+    const patchOpen = (Popup) => {
+        const origOpen = Popup.prototype.open;
+        Popup.prototype.open = function open(...args) {
+            origOpen.apply(this, args); // call open first to initiate opening
+            const topLayerAlreadyInUse = !!document.body.querySelector(":popover-open"); // check if there is already something in the top layer
+            const openingInitiated = ["OPENING", "OPEN"].includes(this.getOpenState());
+            if (openingInitiated && topLayerAlreadyInUse) {
+                const element = this.getContent();
+                if (element) {
+                    const domRef = element.getDomRef();
+                    if (domRef) {
+                        openNativePopover(domRef);
+                    }
+                }
+            }
+        };
+    };
+    const patchClosed = (Popup) => {
+        const _origClosed = Popup.prototype._closed;
+        Popup.prototype._closed = function _closed(...args) {
+            const element = this.getContent();
+            const domRef = element.getDomRef();
+            _origClosed.apply(this, args); // only then call _close
+            if (domRef) {
+                closeNativePopover(domRef); // unset the popover attribute and close the native popover, but only if still in DOM
+            }
+        };
+    };
+    const patchFocusEvent = (Popup) => {
+        const origFocusEvent = Popup.prototype.onFocusEvent;
+        Popup.prototype.onFocusEvent = function onFocusEvent(e) {
+            const isTypeFocus = e.type === "focus" || e.type === "activate";
+            const target = e.target;
+            if (!isTypeFocus || !target.closest("[ui5-popover],[ui5-responsive-popover],[ui5-dialog]")) {
+                origFocusEvent.call(this, e);
+            }
+        };
+    };
+    const createGlobalStyles = () => {
+        const stylesheet = new CSSStyleSheet();
+        stylesheet.replaceSync(`.sapMPopup-CTX:popover-open { inset: unset; }`);
+        document.adoptedStyleSheets = [...document.adoptedStyleSheets, stylesheet];
+    };
+    const patchPopup = (Popup) => {
+        patchOpen(Popup); // Popup.prototype.open
+        patchClosed(Popup); // Popup.prototype._closed
+        createGlobalStyles(); // Ensures correct popover positioning by OpenUI5 (otherwise 0,0 is the center of the screen)
+        patchFocusEvent(Popup); // Popup.prototype.onFocusEvent
+    };
+
+    class OpenUI5Support {
+        static isAtLeastVersion116() {
+            if (!window.sap.ui.version) {
+                return true; // sap.ui.version will be removed in newer OpenUI5 versions
+            }
+            const version = window.sap.ui.version;
+            const parts = version.split(".");
+            if (!parts || parts.length < 2) {
+                return false;
+            }
+            return parseInt(parts[0]) > 1 || parseInt(parts[1]) >= 116;
+        }
+        static isOpenUI5Detected() {
+            return typeof window.sap?.ui?.require === "function";
+        }
+        static init() {
+            if (!OpenUI5Support.isOpenUI5Detected()) {
+                return Promise.resolve();
+            }
+            return new Promise(resolve => {
+                window.sap.ui.require(["sap/ui/core/Core"], async (Core) => {
+                    const callback = () => {
+                        let deps = ["sap/ui/core/Popup", "sap/ui/core/Patcher", "sap/ui/core/LocaleData"];
+                        if (OpenUI5Support.isAtLeastVersion116()) { // for versions since 1.116.0 and onward, use the modular core
+                            deps = [
+                                ...deps,
+                                "sap/base/i18n/Formatting",
+                                "sap/base/i18n/Localization",
+                                "sap/ui/core/ControlBehavior",
+                                "sap/ui/core/Theming",
+                                "sap/ui/core/date/CalendarUtils",
+                            ];
+                        }
+                        window.sap.ui.require(deps, (Popup, Patcher) => {
+                            patchPatcher(Patcher);
+                            patchPopup(Popup);
+                            resolve();
+                        });
+                    };
+                    if (OpenUI5Support.isAtLeastVersion116()) {
+                        await Core.ready();
+                        callback();
+                    }
+                    else {
+                        Core.attachInit(callback);
+                    }
+                });
+            });
+        }
+        static getConfigurationSettingsObject() {
+            if (!OpenUI5Support.isOpenUI5Detected()) {
+                return {};
+            }
+            if (OpenUI5Support.isAtLeastVersion116()) {
+                const ControlBehavior = window.sap.ui.require("sap/ui/core/ControlBehavior");
+                const Localization = window.sap.ui.require("sap/base/i18n/Localization");
+                const Theming = window.sap.ui.require("sap/ui/core/Theming");
+                const Formatting = window.sap.ui.require("sap/base/i18n/Formatting");
+                const CalendarUtils = window.sap.ui.require("sap/ui/core/date/CalendarUtils");
+                return {
+                    animationMode: ControlBehavior.getAnimationMode(),
+                    language: Localization.getLanguage(),
+                    theme: Theming.getTheme(),
+                    themeRoot: Theming.getThemeRoot(),
+                    rtl: Localization.getRTL(),
+                    timezone: Localization.getTimezone(),
+                    calendarType: Formatting.getCalendarType(),
+                    formatSettings: {
+                        firstDayOfWeek: CalendarUtils.getWeekConfigurationValues().firstDayOfWeek,
+                        legacyDateCalendarCustomizing: Formatting.getCustomIslamicCalendarData?.()
+                            ?? Formatting.getLegacyDateCalendarCustomizing?.(),
+                    },
+                };
+            }
+            const Core = window.sap.ui.require("sap/ui/core/Core");
+            const config = Core.getConfiguration();
+            const LocaleData = window.sap.ui.require("sap/ui/core/LocaleData");
+            return {
+                animationMode: config.getAnimationMode(),
+                language: config.getLanguage(),
+                theme: config.getTheme(),
+                themeRoot: config.getThemeRoot(),
+                rtl: config.getRTL(),
+                timezone: config.getTimezone(),
+                calendarType: config.getCalendarType(),
+                formatSettings: {
+                    firstDayOfWeek: LocaleData ? LocaleData.getInstance(config.getLocale()).getFirstDayOfWeek() : undefined,
+                    legacyDateCalendarCustomizing: config.getFormatSettings().getLegacyDateCalendarCustomizing(),
+                },
+            };
+        }
+        static getLocaleDataObject() {
+            if (!OpenUI5Support.isOpenUI5Detected()) {
+                return;
+            }
+            const LocaleData = window.sap.ui.require("sap/ui/core/LocaleData");
+            if (OpenUI5Support.isAtLeastVersion116()) {
+                const Localization = window.sap.ui.require("sap/base/i18n/Localization");
+                return LocaleData.getInstance(Localization.getLanguageTag())._get();
+            }
+            const Core = window.sap.ui.require("sap/ui/core/Core");
+            const config = Core.getConfiguration();
+            return LocaleData.getInstance(config.getLocale())._get();
+        }
+        static _listenForThemeChange() {
+            if (OpenUI5Support.isAtLeastVersion116()) {
+                const Theming = window.sap.ui.require("sap/ui/core/Theming");
+                Theming.attachApplied(() => {
+                    setTheme(Theming.getTheme());
+                });
+            }
+            else {
+                const Core = window.sap.ui.require("sap/ui/core/Core");
+                const config = Core.getConfiguration();
+                Core.attachThemeChanged(() => {
+                    setTheme(config.getTheme());
+                });
+            }
+        }
+        static attachListeners() {
+            if (!OpenUI5Support.isOpenUI5Detected()) {
+                return;
+            }
+            OpenUI5Support._listenForThemeChange();
+        }
+        static cssVariablesLoaded() {
+            if (!OpenUI5Support.isOpenUI5Detected()) {
+                return;
+            }
+            const link = [...document.head.children].find(el => el.id === "sap-ui-theme-sap.ui.core"); // more reliable than querySelector early
+            if (!link) {
+                return false;
+            }
+            return !!link.href.match(/\/css(-|_)variables\.css/);
+        }
+    }
+    registerFeature("OpenUI5Support", OpenUI5Support);
+
+    /**
+     * @license
+     * Copyright 2020 Google LLC
+     * SPDX-License-Identifier: BSD-3-Clause
+     */const e=Symbol.for(""),l=t=>{if((null==t?void 0:t.r)===e)return null==t?void 0:t._$litStatic$},o=t=>({_$litStatic$:t,r:e}),s=new Map,a=t=>(r,...e)=>{const o=e.length;let i,a;const n=[],u=[];let c,$=0,f=!1;for(;$<o;){for(c=r[$];$<o&&void 0!==(a=e[$],i=l(a));)c+=i+r[++$],f=!0;$!==o&&u.push(a),n.push(c),$++;}if($===o&&n.push(r[o]),f){const t=n.join("$$lit$$");void 0===(r=s.get(t))&&(n.raw=n,s.set(t,r=n)),e=u;}return t(r,...e)},n=a(T),u=a(b);
+
+    class LitStatic {
+    }
+    LitStatic.html = n;
+    LitStatic.svg = u;
+    LitStatic.unsafeStatic = o;
+    registerFeature("LitStatic", LitStatic);
+
     // Fixed with https://github.com/SAP/openui5/commit/7a4615e3fe55221ae9de9d876d3eed209f71a5b1 in UI5 1.128.0
 
 
@@ -4964,6 +5221,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
     		}
     	}
     };
+    setCustomElementsScopingSuffix("0ec084e8");
 
     const pkg$1 = {
     	"_ui5metadata": {
@@ -5604,7 +5862,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
     var Panel = WebComponentBaseClass.extend("@ui5/webcomponents.Panel", {
       metadata: {
       "namespace": "@ui5/webcomponents",
-      "tag": "ui5-panel",
+      "tag": "ui5-panel-0ec084e8",
       "interfaces": [],
       "properties": {
         "headerText": {
@@ -5682,7 +5940,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
       // TODO: Quick solution to fix a conversion between "number" and "core.CSSSize".
       //       WebC attribute is a number and is written back to the Control wrapper via core.WebComponent base class.
       //       The control property is defined as a "sap.ui.core.CSSSize".
-      setProperty: function(sPropName, v, bSupressInvalidate) {
+    	setProperty: function(sPropName, v, bSupressInvalidate) {
         if (sPropName === "width" || sPropName === "height") {
           if (!isNaN(v)) {
             v += "px";

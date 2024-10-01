@@ -1,6 +1,6 @@
 const test = require("ava");
 const path = require("path");
-const crypto = require("crypto");
+const { createHash, randomBytes } = require("crypto");
 const { rmSync, readFileSync, writeFileSync, existsSync, mkdirSync } = require("fs");
 const { platform } = require("os");
 
@@ -9,8 +9,8 @@ const { platform } = require("os");
 // *****************************************************************************
 
 // eslint-disable-next-line jsdoc/require-jsdoc
-function createHash(title) {
-	return crypto.createHash("shake256", { outputLength: 4 }).update(title).digest("hex");
+function createShortHash(title) {
+	return createHash("shake256", { outputLength: 4 }).update(title).digest("hex");
 }
 
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -33,7 +33,7 @@ function writeFile(resourceName, code, ctx) {
 async function runModule(resourceName, code, ctx) {
 	const fn = new Function(
 		["scope"],
-		`// ${resourceName}\n${ctx?.monkeyPatch || ""}Object.keys(scope).forEach(sym => { globalThis[sym] = scope[sym]; });\nconst window = self = global = globalThis;\n${code}`
+		`// ${resourceName}\n${ctx?.monkeyPatch || ""}Object.keys(scope).forEach(sym => { globalThis[sym] = scope[sym]; });\nconst window = self = global = globalThis;\n${code}`,
 	);
 	return new Promise((resolve, reject) => {
 		fn(
@@ -53,14 +53,14 @@ async function runModule(resourceName, code, ctx) {
 								}
 								if (Array.isArray(deps)) {
 									const resolvedDeps = await Promise.all(
-										deps.map((dep) => getModule(/exports|require/.test(dep) ? dep : /^\.\.?\//.test(dep) ? path.join(resourceName, "..", dep) : dep, ctx))
+										deps.map((dep) => getModule(/exports|require/.test(dep) ? dep : /^\.\.?\//.test(dep) ? path.join(resourceName, "..", dep) : dep, ctx)),
 									);
 									try {
 										// INFO: put a breakpoint into the next line and the set the breakpoint for
 										//       "Caught Exceptions". This will let you stop where the error occurs!
 										let exports = callback.apply(
 											undefined,
-											resolvedDeps.map((dep) => dep.retVal)
+											resolvedDeps.map((dep) => dep.retVal),
 										);
 										let exportsIndex = deps.indexOf("exports");
 										exports = exportsIndex !== -1 ? resolvedDeps[exportsIndex].retVal : exports;
@@ -90,8 +90,8 @@ async function runModule(resourceName, code, ctx) {
 						},
 					},
 				},
-				ctx?.scope
-			)
+				ctx?.scope,
+			),
 		);
 	});
 }
@@ -118,7 +118,7 @@ async function getModule(resourceName, ctx) {
 				resource.code,
 				Object.assign(ctx, {
 					tmpDir: path.join(snapDir, ctx.hash),
-				})
+				}),
 			);
 		}
 		writeFile(resourceName, resource.code, ctx);
@@ -201,8 +201,8 @@ if (generateSnapshots) {
 }
 
 test.beforeEach(async (t) => {
-	t.context.hash = createHash(t.title);
-	t.context.tmpDir = path.resolve(cwd, generateSnapshots ? `test/__snap__` : `test/__dist__/${crypto.randomBytes(5).toString("hex")}`);
+	t.context.hash = createShortHash(t.title);
+	t.context.tmpDir = path.resolve(cwd, generateSnapshots ? `test/__snap__` : `test/__dist__/${randomBytes(5).toString("hex")}`);
 	t.context.snapDir = path.join(snapDir, t.context.hash);
 	const log = (t.context.log = { logs: [] });
 	["silly", "verbose", "perf", "info", "warn", "error", "silent"].forEach((level) => {
@@ -232,7 +232,7 @@ test.serial("Verify generation of @stomp/stompjs", async (t) => {
 	const module = await env.getModule("@stomp/stompjs");
 	t.true(module.retVal.__esModule);
 	if (platform() !== "win32") {
-		t.is(module.code, readSnapFile(module.name, t.context.snapDir, createHash(t.title)));
+		t.is(module.code, readSnapFile(module.name, t.context.snapDir, createShortHash(t.title)));
 	}
 });
 
@@ -250,7 +250,7 @@ test.serial("Verify generation of jspdf", async (t) => {
 		},
 		{
 			chunksPath: "../_chunks_/../",
-		}
+		},
 	);
 	const module = await env.getModule("jspdf");
 	t.true(module.retVal.__esModule);
@@ -386,7 +386,7 @@ test.serial("Verify generation of firebase/firestore", async (t) => {
 					},
 				},
 			},
-		}
+		},
 	);
 	const firebase = await env.getModule("firebase/app");
 	t.true(firebase.retVal.__esModule);
@@ -490,7 +490,7 @@ test.serial("Verify generation of react/reactdom", async (t) => {
 		},
 		{
 			chunksPath: true,
-		}
+		},
 	);
 	const react = await env.getModule("react");
 	t.true(react.retVal.__esModule);
@@ -536,7 +536,7 @@ test.serial("Verify generation of @luigi-project/container", async (t) => {
 		},
 		{
 			keepDynamicImports: ["@luigi-project/container"],
-		}
+		},
 	);
 	const module = await env.getModule("@luigi-project/container");
 	t.true(module.retVal.__esModule);
@@ -608,8 +608,12 @@ test.serial("Verify generation of @ui5/webcomponents/dist/Panel", async (t) => {
 			monkeyPatch: "Object.defineProperty = function() { if (arguments[2]) { arguments[2].configurable = true; } return this.apply(undefined, arguments); }.bind(Object.defineProperty);",
 		},
 		{
-			skipTransformWebComponents: true,
-		}
+			pluginOptions: {
+				webcomponents: {
+					skip: true,
+				},
+			},
+		},
 	);
 	const module = await env.getModule("@ui5/webcomponents/dist/Panel");
 	t.true(module.retVal.__esModule);
@@ -642,7 +646,7 @@ test.serial("Verify generation of @ui5/webcomponents/dist/Panel Wrapper UI5 Cont
 	});
 	const module = await env.getModule("@ui5/webcomponents/dist/Panel");
 	t.deepEqual(module.retVal.name, "@ui5/webcomponents.Panel");
-	t.deepEqual(module.retVal.def.metadata.tag, "ui5-panel");
+	t.deepEqual(module.retVal.def.metadata.tag.substr(0, module.retVal.def.metadata.tag.lastIndexOf("-")), "ui5-panel");
 	t.deepEqual(module.retVal.def.metadata.library, "@ui5/webcomponents.library");
 	if (platform() !== "win32") {
 		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
@@ -673,8 +677,12 @@ test.serial("Verify generation of @ui5/webcomponents/dist/CheckBox", async (t) =
 			monkeyPatch: "Object.defineProperty = function() { if (arguments[2]) { arguments[2].configurable = true; } return this.apply(undefined, arguments); }.bind(Object.defineProperty);",
 		},
 		{
-			skipTransformWebComponents: true,
-		}
+			pluginOptions: {
+				webcomponents: {
+					skip: true,
+				},
+			},
+		},
 	);
 	const module = await env.getModule("@ui5/webcomponents/dist/CheckBox");
 	t.true(module.retVal.__esModule);
@@ -685,26 +693,36 @@ test.serial("Verify generation of @ui5/webcomponents/dist/CheckBox", async (t) =
 
 test.serial("Verify generation of @ui5/webcomponents/dist/CheckBox Wrapper UI5 Control", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
-	const env = await setupEnv(["@ui5/webcomponents/dist/CheckBox"], {
-		hash: t.context.hash,
-		tmpDir: t.context.tmpDir,
-		log: t.context.log,
-		modules: {
-			"sap/ui/core/Lib": {
-				init: function () {
-					return {};
+	const env = await setupEnv(
+		["@ui5/webcomponents/dist/CheckBox"],
+		{
+			hash: t.context.hash,
+			tmpDir: t.context.tmpDir,
+			log: t.context.log,
+			modules: {
+				"sap/ui/core/Lib": {
+					init: function () {
+						return {};
+					},
 				},
-			},
-			"sap/ui/base/DataType": {
-				registerEnum: function () {},
-			},
-			"sap/ui/core/webc/WebComponent": {
-				extend: function (name, def) {
-					return { name, def };
+				"sap/ui/base/DataType": {
+					registerEnum: function () {},
+				},
+				"sap/ui/core/webc/WebComponent": {
+					extend: function (name, def) {
+						return { name, def };
+					},
 				},
 			},
 		},
-	});
+		{
+			pluginOptions: {
+				webcomponents: {
+					scoping: false,
+				},
+			},
+		},
+	);
 	const module = await env.getModule("@ui5/webcomponents/dist/CheckBox");
 	t.deepEqual(module.retVal.name, "@ui5/webcomponents.CheckBox");
 	t.deepEqual(module.retVal.def.metadata.tag, "ui5-checkbox");

@@ -97,15 +97,38 @@ The following configuration options are relevant for the `task` and the `middlew
         - 'fs'
         - '*'
   ```
+  &nbsp;
 
 - *chunksPath*: `boolean|string`
   Relative path for the chunks to be stored into (if value is `true`, chunks are put into the closest modules folder which was the default behavior in the `3.5.x` release of the tooling extension)
+  &nbsp;
 
 - *legacyDependencyResolution*: `boolean`
   Re-enables the legacy dependency resolution of the tooling extension which allows to use entry points from `devDependencies` of the project. By default, only the `dependencies` maintained in the projects' `package.json` and the transitive dependencies are considered for the entry points and all other entry points are ignored. (available since new minor version `3.7.0` which introduces a new dependency resolution for `dependencies` only)
+  &nbsp;
 
 - *minify*: `boolean` *experimental feature*
   Flag to indicate that the generated code should be minified (in case of excluding thirdparty resources from minification in general, this option can be used to minify just the generated code)
+  &nbsp;
+
+The following configuration options are relevant for the `task` and the `middleware` which allow you to directly configure rollup plugins which is used as follows:
+
+```yaml
+  configuration:
+    pluginOptions:   # map of plugin options
+      webcomponents: # the name of the rollup plugin
+        skip: true   # configuration
+```
+
+The available plugin configuration options are:
+
+- *pluginOptions.webcomponents.skip*: `boolean`
+  Flag to skip the transformation of Web Components to UI5 Controls a.k.a. *Seamless Web Components* support. This allows to directly require the Web Components modules from NPM packages and use them as UI5 Controls. The NPM packages providing Web Components must include a [Custom Elements Manifest](https://custom-elements-manifest.open-wc.org/) declared in the `customElements` field in the `package.json`. (defaults to `false`)
+  &nbsp;
+
+- *pluginOptions.webcomponents.scoping*: `boolean`
+  Flag to disable the [Custom Elements Scoping](https://sap.github.io/ui5-webcomponents/docs/advanced/scoping/) of UI5 Web Components. This allows to load multiple versions of UI5 Web Components into a single application without conflicts. This feature is enabled by default and can be disabled if needed. (defaults to `true`)
+  &nbsp;
 
 The following configuration options are just relevant for the `task`:
 
