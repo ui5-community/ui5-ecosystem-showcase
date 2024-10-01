@@ -9,10 +9,11 @@ const { lt, gte } = require("semver");
 
 // TODO:
 //   - enabled - disabled mapping
-//   - OpenUI5Enablement in Package.hbs
 //   - Externalize UI5 Web Components specific code
+module.exports = function ({ log, resolveModule, framework, options } = {}) {
+	// derive the configuration from the provided options
+	let { skip, scoping, enrichBusyIndicator } = Object.assign({ skip: false, scoping: true, enrichBusyIndicator: false }, options);
 
-module.exports = function ({ log, resolveModule, framework, skip } = {}) {
 	// TODO: maybe we should derive the minimum version from the applications package.json
 	//       instead of the framework version (which might be a different version)
 	if (!gte(framework?.version || "0.0.0", "1.120.0")) {
@@ -36,7 +37,7 @@ module.exports = function ({ log, resolveModule, framework, skip } = {}) {
 	const createShortHash = ({ name, version }) => {
 		return createHash("shake256", { outputLength: 4 }).update(`${name}@${version}`).digest("hex");
 	};
-	const ui5WebCScopeSuffix = createShortHash(require(join(process.cwd(), "package.json")));
+	const ui5WebCScopeSuffix = !!scoping && createShortHash(require(join(process.cwd(), "package.json")));
 
 	// handlebars templates for the Web Components transformation
 	const webcTmplFnPackage = loadAndCompileTemplate("templates/Package.hbs");
@@ -224,6 +225,7 @@ module.exports = function ({ log, resolveModule, framework, skip } = {}) {
 					dependencies: lib.dependencies,
 					isBaseLib: namespace === "@ui5/webcomponents-base",
 					scopeSuffix: ui5WebCScopeSuffix,
+					enrichBusyIndicator,
 				});
 				// include the monkey patches for the Web Components base library
 				// only for UI5 versions < 1.128.0 (otherwise the monkey patches are not needed anymore)

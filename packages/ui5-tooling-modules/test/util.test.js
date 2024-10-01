@@ -608,7 +608,11 @@ test.serial("Verify generation of @ui5/webcomponents/dist/Panel", async (t) => {
 			monkeyPatch: "Object.defineProperty = function() { if (arguments[2]) { arguments[2].configurable = true; } return this.apply(undefined, arguments); }.bind(Object.defineProperty);",
 		},
 		{
-			skipTransformWebComponents: true,
+			pluginOptions: {
+				webcomponents: {
+					skip: true,
+				},
+			},
 		},
 	);
 	const module = await env.getModule("@ui5/webcomponents/dist/Panel");
@@ -642,7 +646,7 @@ test.serial("Verify generation of @ui5/webcomponents/dist/Panel Wrapper UI5 Cont
 	});
 	const module = await env.getModule("@ui5/webcomponents/dist/Panel");
 	t.deepEqual(module.retVal.name, "@ui5/webcomponents.Panel");
-	t.deepEqual(module.retVal.def.metadata.tag, "ui5-panel");
+	t.deepEqual(module.retVal.def.metadata.tag.substr(0, module.retVal.def.metadata.tag.lastIndexOf("-")), "ui5-panel");
 	t.deepEqual(module.retVal.def.metadata.library, "@ui5/webcomponents.library");
 	if (platform() !== "win32") {
 		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
@@ -673,7 +677,11 @@ test.serial("Verify generation of @ui5/webcomponents/dist/CheckBox", async (t) =
 			monkeyPatch: "Object.defineProperty = function() { if (arguments[2]) { arguments[2].configurable = true; } return this.apply(undefined, arguments); }.bind(Object.defineProperty);",
 		},
 		{
-			skipTransformWebComponents: true,
+			pluginOptions: {
+				webcomponents: {
+					skip: true,
+				},
+			},
 		},
 	);
 	const module = await env.getModule("@ui5/webcomponents/dist/CheckBox");
@@ -685,26 +693,36 @@ test.serial("Verify generation of @ui5/webcomponents/dist/CheckBox", async (t) =
 
 test.serial("Verify generation of @ui5/webcomponents/dist/CheckBox Wrapper UI5 Control", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
-	const env = await setupEnv(["@ui5/webcomponents/dist/CheckBox"], {
-		hash: t.context.hash,
-		tmpDir: t.context.tmpDir,
-		log: t.context.log,
-		modules: {
-			"sap/ui/core/Lib": {
-				init: function () {
-					return {};
+	const env = await setupEnv(
+		["@ui5/webcomponents/dist/CheckBox"],
+		{
+			hash: t.context.hash,
+			tmpDir: t.context.tmpDir,
+			log: t.context.log,
+			modules: {
+				"sap/ui/core/Lib": {
+					init: function () {
+						return {};
+					},
 				},
-			},
-			"sap/ui/base/DataType": {
-				registerEnum: function () {},
-			},
-			"sap/ui/core/webc/WebComponent": {
-				extend: function (name, def) {
-					return { name, def };
+				"sap/ui/base/DataType": {
+					registerEnum: function () {},
+				},
+				"sap/ui/core/webc/WebComponent": {
+					extend: function (name, def) {
+						return { name, def };
+					},
 				},
 			},
 		},
-	});
+		{
+			pluginOptions: {
+				webcomponents: {
+					scoping: false,
+				},
+			},
+		},
+	);
 	const module = await env.getModule("@ui5/webcomponents/dist/CheckBox");
 	t.deepEqual(module.retVal.name, "@ui5/webcomponents.CheckBox");
 	t.deepEqual(module.retVal.def.metadata.tag, "ui5-checkbox");

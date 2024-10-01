@@ -5048,10 +5048,6 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
       "tag": "ui5-checkbox",
       "interfaces": [],
       "properties": {
-        "accessibleNameRef": {
-          "type": "string",
-          "mapping": "property"
-        },
         "accessibleName": {
           "type": "string",
           "mapping": "property"
@@ -5119,7 +5115,17 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
           "multiple": true
         }
       },
-      "associations": {},
+      "associations": {
+        "ariaLabelledBy": {
+          "type": "sap.ui.core.Control",
+          "multiple": true,
+          "mapping": {
+            "type": "property",
+            "to": "accessibleNameRef",
+            "formatter": "_getAriaLabelledByForRendering"
+          }
+        }
+      },
       "events": {
         "change": {}
       },
@@ -5132,7 +5138,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
       // TODO: Quick solution to fix a conversion between "number" and "core.CSSSize".
       //       WebC attribute is a number and is written back to the Control wrapper via core.WebComponent base class.
       //       The control property is defined as a "sap.ui.core.CSSSize".
-      setProperty: function(sPropName, v, bSupressInvalidate) {
+    	setProperty: function(sPropName, v, bSupressInvalidate) {
         if (sPropName === "width" || sPropName === "height") {
           if (!isNaN(v)) {
             v += "px";
