@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.13.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.13.0...ui5-tooling-modules@3.13.1) (2024-10-01)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** windows support and performance improvements ([#1085](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1085)) ([170b462](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/170b46233bdaaa3db098769aa098dd025330cbf0))
+
+
+
+
+
 # [3.13.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.12.0...ui5-tooling-modules@3.13.0) (2024-09-14)
 
 
