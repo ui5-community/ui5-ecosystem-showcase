@@ -245,6 +245,7 @@ module.exports = function (log, projectInfo) {
 	 */
 	function resolveNodeModule(moduleName, cwd = process.cwd(), depPaths = []) {
 		let modulePath;
+		//let millis = Date.now();
 		const resolve = function (moduleName, options) {
 			try {
 				return require.resolve(moduleName, options);
@@ -270,6 +271,7 @@ module.exports = function (log, projectInfo) {
 			});
 			if (modulePath) break;
 		}
+		//console.log(`resolveNodeModule filter took ${Date.now() - millis}ms`, moduleName);
 		return modulePath;
 	}
 
@@ -710,7 +712,7 @@ module.exports = function (log, projectInfo) {
 			} else {
 				// derive the module path from the package.json entries browser, module or main
 				try {
-					const pkgJsonModuleName = path.join(moduleName, "package.json");
+					const pkgJsonModuleName = path.posix.join(moduleName, "package.json");
 					const pkgJson = require(pkgJsonModuleName);
 					const resolveModulePath = function (exports, fields) {
 						for (const field of fields) {

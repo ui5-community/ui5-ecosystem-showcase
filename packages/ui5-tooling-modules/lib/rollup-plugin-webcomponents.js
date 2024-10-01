@@ -111,6 +111,7 @@ module.exports = function ({ log, resolveModule, framework, skip } = {}) {
 			let modulePath = resolveModule(source);
 			if (modulePath) {
 				modulePath = modulePath.substr(metadata.npmPackagePath.length + 1);
+				modulePath = modulePath.replace(/\\/g, "/");
 				const moduleName = `${npmPackage}/${modulePath}`;
 				const clazz = WebComponentRegistry.getClassDefinition(moduleName);
 				// TODO: base classes must be ignored as UI5Element is flagged as custom element although it is a base class
@@ -227,7 +228,7 @@ module.exports = function ({ log, resolveModule, framework, skip } = {}) {
 					designtime: `${ui5Metadata.namespace}/designtime/${clazz.name}.designtime`, // add a default designtime
 				});
 				const metadata = JSON.stringify(metadataObject, undefined, 2);
-				const webcClass = moduleInfo.attributes.absModulePath; // is the absolute path of the original Web Component class
+				const webcClass = moduleInfo.attributes.absModulePath.replace(/\\/g, "/"); // is the absolute path of the original Web Component class
 
 				// Determine the superclass UI5 module name and import it
 				let webcBaseClass = "sap/ui/core/webc/WebComponent";
