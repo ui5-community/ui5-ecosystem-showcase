@@ -133,9 +133,21 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 		}
 	};
 
+	// determine the NPM package name from a given source
 	const getNpmPackageName = (source) => {
 		const npmPackageScopeRegEx = /^((?:(@[^/]+)\/)?([^/]+))(?:\/(.*))?$/;
 		return npmPackageScopeRegEx.exec(source)?.[1];
+	};
+
+	// check the existence of an NPM package for a given resource
+	const npmPackageCache = {};
+	const existsNpmPackageForResource = (source) => {
+		const npmPackage = getNpmPackageName(source);
+		if (npmPackageCache[npmPackage] === undefined) {
+			const existsPackage = !!resolveModule(`${npmPackage}/package.json`, { cwd, depPaths, isMiddleware: true });
+			npmPackageCache[npmPackage] = existsPackage;
+		}
+		return npmPackageCache[npmPackage];
 	};
 
 	// return the middleware
@@ -159,8 +171,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 			// in some cases there is a request to a module of an NPM package and in this
 			// case we still need to trigger the bundle and watch process to create the
 			// bundle info from which we can extract the resource (e.g. webc libraries)
-			const npmPackage = getNpmPackageName(moduleName);
-			const existsPackage = !!resolveModule(`${npmPackage}/package.json`, { cwd, depPaths, isMiddleware: true });
+			const existsPackage = existsNpmPackageForResource(moduleName);
 			let resource;
 			if (existsPackage) {
 				// check if the resource exists in node_modules
