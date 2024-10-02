@@ -12,7 +12,7 @@ const { lt, gte } = require("semver");
 //   - Externalize UI5 Web Components specific code
 module.exports = function ({ log, resolveModule, framework, options } = {}) {
 	// derive the configuration from the provided options
-	let { skip, scoping, enrichBusyIndicator } = Object.assign({ skip: false, scoping: true, enrichBusyIndicator: false }, options);
+	let { skip, scoping, scopeSuffix, enrichBusyIndicator } = Object.assign({ skip: false, scoping: true, enrichBusyIndicator: false }, options);
 
 	// TODO: maybe we should derive the minimum version from the applications package.json
 	//       instead of the framework version (which might be a different version)
@@ -37,7 +37,7 @@ module.exports = function ({ log, resolveModule, framework, options } = {}) {
 	const createShortHash = ({ name, version }) => {
 		return createHash("shake256", { outputLength: 4 }).update(`${name}@${version}`).digest("hex");
 	};
-	const ui5WebCScopeSuffix = !!scoping && createShortHash(require(join(process.cwd(), "package.json")));
+	const ui5WebCScopeSuffix = !!scoping && (scopeSuffix || createShortHash(require(join(process.cwd(), "package.json"))));
 
 	// handlebars templates for the Web Components transformation
 	const webcTmplFnPackage = loadAndCompileTemplate("templates/Package.hbs");

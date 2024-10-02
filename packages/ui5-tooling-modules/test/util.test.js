@@ -624,29 +624,39 @@ test.serial("Verify generation of @ui5/webcomponents/dist/Panel", async (t) => {
 
 test.serial("Verify generation of @ui5/webcomponents/dist/Panel Wrapper UI5 Control", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
-	const env = await setupEnv(["@ui5/webcomponents/dist/Panel"], {
-		hash: t.context.hash,
-		tmpDir: t.context.tmpDir,
-		log: t.context.log,
-		modules: {
-			"sap/ui/core/Lib": {
-				init: function () {
-					return {};
+	const env = await setupEnv(
+		["@ui5/webcomponents/dist/Panel"],
+		{
+			hash: t.context.hash,
+			tmpDir: t.context.tmpDir,
+			log: t.context.log,
+			modules: {
+				"sap/ui/core/Lib": {
+					init: function () {
+						return {};
+					},
 				},
-			},
-			"sap/ui/base/DataType": {
-				registerEnum: function () {},
-			},
-			"sap/ui/core/webc/WebComponent": {
-				extend: function (name, def) {
-					return { name, def };
+				"sap/ui/base/DataType": {
+					registerEnum: function () {},
+				},
+				"sap/ui/core/webc/WebComponent": {
+					extend: function (name, def) {
+						return { name, def };
+					},
 				},
 			},
 		},
-	});
+		{
+			pluginOptions: {
+				webcomponents: {
+					scopeSuffix: "mYsCoPeSuFfIx",
+				},
+			},
+		},
+	);
 	const module = await env.getModule("@ui5/webcomponents/dist/Panel");
 	t.deepEqual(module.retVal.name, "@ui5/webcomponents.Panel");
-	t.deepEqual(module.retVal.def.metadata.tag.substr(0, module.retVal.def.metadata.tag.lastIndexOf("-")), "ui5-panel");
+	t.deepEqual(module.retVal.def.metadata.tag, "ui5-panel-mYsCoPeSuFfIx");
 	t.deepEqual(module.retVal.def.metadata.library, "@ui5/webcomponents.library");
 	if (platform() !== "win32") {
 		t.is(module.code, readSnapFile(module.name, t.context.snapDir));

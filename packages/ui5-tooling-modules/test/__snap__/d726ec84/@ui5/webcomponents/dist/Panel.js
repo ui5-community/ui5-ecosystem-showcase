@@ -5221,7 +5221,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
     		}
     	}
     };
-    setCustomElementsScopingSuffix("0ec084e8");
+    setCustomElementsScopingSuffix("mYsCoPeSuFfIx");
 
     const pkg$1 = {
     	"_ui5metadata": {
@@ -5862,7 +5862,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
     var Panel = WebComponentBaseClass.extend("@ui5/webcomponents.Panel", {
       metadata: {
       "namespace": "@ui5/webcomponents",
-      "tag": "ui5-panel-0ec084e8",
+      "tag": "ui5-panel-mYsCoPeSuFfIx",
       "interfaces": [],
       "properties": {
         "headerText": {
