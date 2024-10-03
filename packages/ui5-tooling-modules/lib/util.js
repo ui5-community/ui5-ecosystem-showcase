@@ -266,10 +266,12 @@ module.exports = function (log, projectInfo) {
 			if (modulePath) break;
 			// 3.) resolve from node_modules via regular lookup (try the lookup relative to the module)
 			const nodeModulePaths = findNodeModules(cwd);
-			modulePath = resolve(`${moduleName}${ext}`, {
-				paths: [cwd, ...nodeModulePaths], // necessary for PNPM and/or DEBUG scenario
-			});
-			if (modulePath) break;
+			if (nodeModulePaths.length > 0) {
+				modulePath = resolve(`${moduleName}${ext}`, {
+					paths: [cwd, ...nodeModulePaths], // necessary for PNPM and/or DEBUG scenario
+				});
+				if (modulePath) break;
+			}
 		}
 		//console.log(`resolveNodeModule filter took ${Date.now() - millis}ms`, moduleName);
 		return modulePath;
