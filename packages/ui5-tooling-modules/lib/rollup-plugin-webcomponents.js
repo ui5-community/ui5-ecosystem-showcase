@@ -50,7 +50,13 @@ module.exports = function ({ log, resolveModule, framework, options } = {}) {
 		if (!registryEntry) {
 			const packageJsonPath = resolveModule(`${npmPackage}/package.json`);
 			if (packageJsonPath) {
-				const packageJson = require(packageJsonPath);
+				let packageJson;
+				try {
+					packageJson = JSON.parse(readFileSync(packageJsonPath, { encoding: "utf8" }));
+				} catch (err) {
+					log.error(`Failed to parse package.json of ${npmPackage}`, err);
+					return undefined;
+				}
 				const npmPackagePath = dirname(packageJsonPath);
 				// check if the custom elements metadata file exists (fallback to custom-elements-internal.json for @ui5/webcomponents)
 				let metadataPath;

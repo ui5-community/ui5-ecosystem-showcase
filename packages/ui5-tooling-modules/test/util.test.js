@@ -584,29 +584,60 @@ test.serial("Verify generation of xml-js", async (t) => {
 	}
 });
 
+const webcomponentsContext = {
+	scope: {
+		HTMLElement: function () {},
+		Element: function () {},
+		Node: function () {},
+		CSSStyleSheet: function () {
+			this.replaceSync = function () {};
+		},
+		customElements: {
+			get: function () {},
+			define: function () {},
+		},
+		navigator: {},
+		document: {
+			body: {
+				insertBefore: function () {},
+				appendChild: function () {},
+				removeChild: function () {},
+			},
+			createElement: function () {
+				return {
+					style: {},
+					classList: {
+						add: function () {},
+					},
+					setAttribute: function () {},
+				};
+			},
+			querySelector: function () {},
+			createTreeWalker: function () {},
+			adoptedStyleSheets: [],
+		},
+		location: {
+			search: "",
+		},
+		getComputedStyle: function () {
+			return {};
+		},
+	},
+	// running Web Components in the V8 engine causes "TypeError: can't redefine non-configurable property design"
+	// because the Web Components _generateAccessors doesn't mark the property as configurable
+	// => so we simply monkey patch the Object.defineProperty call to get rid of this error during the execution
+	monkeyPatch: "Object.defineProperty = function() { if (arguments[2]) { arguments[2].configurable = true; } return this.apply(undefined, arguments); }.bind(Object.defineProperty);",
+};
+
 test.serial("Verify generation of @ui5/webcomponents/dist/Panel", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
 	const env = await setupEnv(
 		["@ui5/webcomponents/dist/Panel"],
-		{
+		Object.assign({}, webcomponentsContext, {
 			hash: t.context.hash,
 			tmpDir: t.context.tmpDir,
 			log: t.context.log,
-			scope: {
-				HTMLElement: function () {},
-				Element: function () {},
-				Node: function () {},
-				customElements: {
-					get: function () {},
-					define: function () {},
-				},
-				navigator: {},
-			},
-			// running Web Components in the V8 engine causes "TypeError: can't redefine non-configurable property design"
-			// because the Web Components _generateAccessors doesn't mark the property as configurable
-			// => so we simply monkey patch the Object.defineProperty call to get rid of this error during the execution
-			monkeyPatch: "Object.defineProperty = function() { if (arguments[2]) { arguments[2].configurable = true; } return this.apply(undefined, arguments); }.bind(Object.defineProperty);",
-		},
+		}),
 		{
 			pluginOptions: {
 				webcomponents: {
@@ -667,25 +698,11 @@ test.serial("Verify generation of @ui5/webcomponents/dist/CheckBox", async (t) =
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
 	const env = await setupEnv(
 		["@ui5/webcomponents/dist/CheckBox"],
-		{
+		Object.assign({}, webcomponentsContext, {
 			hash: t.context.hash,
 			tmpDir: t.context.tmpDir,
 			log: t.context.log,
-			scope: {
-				HTMLElement: function () {},
-				Element: function () {},
-				Node: function () {},
-				customElements: {
-					get: function () {},
-					define: function () {},
-				},
-				navigator: {},
-			},
-			// running Web Components in the V8 engine causes "TypeError: can't redefine non-configurable property design"
-			// because the Web Components _generateAccessors doesn't mark the property as configurable
-			// => so we simply monkey patch the Object.defineProperty call to get rid of this error during the execution
-			monkeyPatch: "Object.defineProperty = function() { if (arguments[2]) { arguments[2].configurable = true; } return this.apply(undefined, arguments); }.bind(Object.defineProperty);",
-		},
+		}),
 		{
 			pluginOptions: {
 				webcomponents: {
