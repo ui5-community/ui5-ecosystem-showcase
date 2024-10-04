@@ -56,7 +56,7 @@ function existsSyncWithCase(file) {
  * @returns {boolean} true if the file exists
  */
 function existsSyncWithCaseAndIsFile(file) {
-	return existsSyncWithCase(file) && statSync(file).isFile();
+	return existsSyncWithCase(file) && existsSync(file) && statSync(file).isFile();
 }
 
 /**
