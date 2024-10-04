@@ -30,13 +30,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
   // Many optimizations have been made, so the bundle size is ultimately smaller but performance is similar.
   // Sometimes 0 will appear where -1 would be more appropriate. This is because using a uint
   // is better for memory in most engines (I *think*).
-  // Mediocre shim
-  var Worker;
-  try {
-      Worker = require('worker_threads').Worker;
-  }
-  catch (e) {
-  }
 
   // aliases for shorter compressed code (most minifers don't do this)
   var u8 = Uint8Array, u16 = Uint16Array, u32 = Uint32Array;
