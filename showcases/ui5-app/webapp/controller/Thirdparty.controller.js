@@ -21,8 +21,33 @@ sap.ui.define(
 		"firebase/firestore/lite",
 		"signalr",
 		"mypackage",
+		"@opentelemetry/api",
+		"@opentelemetry/sdk-trace-web",
 	],
-	(Controller, MessageToast, jQuery, xlsx, cmis, supabase, octokit, axios, temporal, stompjs, react, reactdom, zod, pdfMake, pdfFonts, xmljs, firebase, firestore, signalr, mypackage) => {
+	(
+		Controller,
+		MessageToast,
+		jQuery,
+		xlsx,
+		cmis,
+		supabase,
+		octokit,
+		axios,
+		temporal,
+		stompjs,
+		react,
+		reactdom,
+		zod,
+		pdfMake,
+		pdfFonts,
+		xmljs,
+		firebase,
+		firestore,
+		signalr,
+		mypackage,
+		otAPI,
+		otSDK,
+	) => {
 		"use strict";
 
 		console.log("[3rdParty] xlsx", xlsx);
@@ -54,6 +79,9 @@ sap.ui.define(
 		console.log("[3rdParty] signalr", signalr, jQuery.connection.hub);
 		console.log("[3rdParty] mypackage", mypackage);
 
+		console.log("[3rdParty] @opentelemetry/api", otAPI);
+		console.log("[3rdParty] @opentelemetry/sdk-trace-web", otSDK);
+
 		return Controller.extend("ui5.ecosystem.demo.app.controller.Thirdparty", {
 			onInit() {
 				// https://www.npmjs.com/package/xlsx
@@ -74,5 +102,5 @@ sap.ui.define(
 				this.byId("webcBtn").setText(event.getSource().getValue());
 			},
 		});
-	}
+	},
 );

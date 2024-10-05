@@ -397,10 +397,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   beforeAfterHook.exports.Singular = Hook.Singular;
   var Collection = beforeAfterHook.exports.Collection = Hook.Collection;
 
-  var isPlainObject$1 = {};
-
-  Object.defineProperty(isPlainObject$1, '__esModule', { value: true });
-
   /*!
    * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
    *
@@ -434,8 +430,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     return true;
   }
 
-  var isPlainObject_2 = isPlainObject$1.isPlainObject = isPlainObject;
-
   // pkg/dist-src/util/lowercase-keys.js
   function lowercaseKeys(object) {
     if (!object) {
@@ -449,7 +443,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   function mergeDeep(defaults, options) {
     const result = Object.assign({}, defaults);
     Object.keys(options).forEach((key) => {
-      if (isPlainObject_2(options[key])) {
+      if (isPlainObject(options[key])) {
         if (!(key in defaults))
           Object.assign(result, { [key]: options[key] });
         else
@@ -950,7 +944,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   // pkg/dist-src/fetch-wrapper.js
   function fetchWrapper(requestOptions) {
     const log = requestOptions.request && requestOptions.request.log ? requestOptions.request.log : console;
-    if (isPlainObject_2(requestOptions.body) || Array.isArray(requestOptions.body)) {
+    if (isPlainObject(requestOptions.body) || Array.isArray(requestOptions.body)) {
       requestOptions.body = JSON.stringify(requestOptions.body);
     }
     let headers = {};

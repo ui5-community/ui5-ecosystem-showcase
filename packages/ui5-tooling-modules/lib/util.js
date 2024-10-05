@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 const path = require("path");
-const { readFileSync, statSync, readdirSync, existsSync } = require("fs");
+const { readFileSync, statSync, readdirSync, existsSync, realpathSync } = require("fs");
 const { readFile, stat, writeFile, mkdir } = require("fs").promises;
 
 const rollup = require("rollup");
@@ -30,6 +30,21 @@ const sanitize = require("sanitize-filename");
 
 const { runInContext, createContext } = require("vm");
 
+const { minVersion } = require("semver");
+
+/**
+ * checks if the given version is a valid semver version
+ * @param {string} version the version to check
+ * @returns {boolean} true if the version is a valid semver version
+ */
+function isValidVersion(version) {
+	try {
+		return minVersion(version) !== null;
+	} catch (e) {
+		return false;
+	}
+}
+
 /**
  * helper to check the existence of a resource (case-sensitive)
  * @param {string} file file path
@@ -40,11 +55,14 @@ function existsSyncWithCase(file) {
 	if (dir === path.dirname(dir)) {
 		return true;
 	}
-	var filenames = readdirSync(dir);
-	if (filenames.indexOf(path.basename(file)) === -1) {
-		return false;
+	if (existsSync(dir)) {
+		var filenames = readdirSync(dir);
+		if (filenames.indexOf(path.basename(file)) === -1) {
+			return false;
+		}
+		return existsSyncWithCase(dir);
 	}
-	return existsSyncWithCase(dir);
+	return false;
 }
 
 /**
@@ -52,8 +70,17 @@ function existsSyncWithCase(file) {
  * @param {string} file file path
  * @returns {boolean} true if the file exists
  */
-function existsAndIsFile(file) {
-	return existsSyncWithCase(file) && statSync(file).isFile();
+function existsSyncWithCaseAndIsFile(file) {
+	return existsSyncWithCase(file) && existsSync(file) && statSync(file).isFile();
+}
+
+/**
+ * helper to check the existence of a "file" resource
+ * @param {string} file file path
+ * @returns {boolean} true if the file exists
+ */
+function existsSyncAndIsFile(file) {
+	return existsSync(file) && statSync(file).isFile();
 }
 
 /**
@@ -63,57 +90,148 @@ function existsAndIsFile(file) {
  */
 function getModulePathWithExtension(modulePath) {
 	// check for the module path exists and to be a file
-	if (existsAndIsFile(modulePath)) {
+	if (existsSyncWithCaseAndIsFile(modulePath)) {
 		return modulePath;
-	} else if (existsAndIsFile(`${modulePath}.js`)) {
+	} else if (existsSyncWithCaseAndIsFile(`${modulePath}.js`)) {
 		return `${modulePath}.js`;
-	} else if (existsAndIsFile(`${modulePath}.cjs`)) {
+	} else if (existsSyncWithCaseAndIsFile(`${modulePath}.cjs`)) {
 		return `${modulePath}.cjs`;
-	} else if (existsAndIsFile(`${modulePath}.mjs`)) {
+	} else if (existsSyncWithCaseAndIsFile(`${modulePath}.mjs`)) {
 		return `${modulePath}.mjs`;
 	}
 	// reset the module path if it doesn't exist
 	return undefined;
 }
 
-const nodeModulesDirCache = {};
 /**
- * find the node_modules base directories in the given directory
- * @param {string} dir directory to start the search
- * @param {*} folders list of found node_modules base directories
- * @param {*} recursive flag whether search runs recursively
- * @returns {string[]} list of found node_modules base directories
+ * detects the "node_modules" directories relative to the current working directory
+ * @param {string} cwd current working directory
+ * @returns {string[]} list of existing node_modules directories
  */
-function findNodeModules(dir, folders = [], recursive) {
-	if (!recursive && nodeModulesDirCache[dir]) {
-		return nodeModulesDirCache[dir];
-	} else {
-		//const millis = Date.now();
-		const nodeModulesDir = path.join(dir, "node_modules");
-		if (existsSync(nodeModulesDir)) {
-			folders.push(nodeModulesDir);
-			//console.log("found node_modules in " + nodeModulesDir);
-			readdirSync(nodeModulesDir, { withFileTypes: true }).forEach((nodeModule) => {
-				const nodeModuleName = nodeModule.name;
-				const nodeModuleDir = path.join(nodeModulesDir, nodeModuleName);
-				if (nodeModuleName.startsWith("@")) {
-					readdirSync(nodeModuleDir, { withFileTypes: true }).forEach((scopedNodeModule) => {
-						const scopedNodeModuleDir = path.join(nodeModuleDir, scopedNodeModule.name);
-						if (existsSync(path.join(scopedNodeModuleDir, "package.json"))) {
-							findNodeModules(scopedNodeModuleDir, folders, true);
-						}
-					});
-				} else if (existsSync(path.join(nodeModuleDir, "package.json"))) {
-					findNodeModules(nodeModuleDir, folders, true);
-				}
-			});
+function detectNodeModulesPaths(cwd = process.cwd()) {
+	const nodeModules = [];
+	let dir = cwd;
+	while (dir !== path.dirname(dir)) {
+		const nm = path.join(dir, "node_modules");
+		if (existsSync(nm)) {
+			nodeModules.push(nm);
 		}
-		if (!recursive) {
-			nodeModulesDirCache[dir] = folders;
-			//console.verbose(`findNodeModules(${dir}) took ${Date.now() - millis}ms`);
-		}
-		return folders;
+		dir = path.dirname(dir);
 	}
+	return nodeModules;
+}
+
+/**
+ * resolves the module name by testing file extensions
+ * @param {string} moduleName the module name
+ * @param {object} options options for require.resolve
+ * @param {string[]} options.paths paths to lookup the module
+ * @returns {string} the resolved module path
+ */
+function resolve(moduleName, options) {
+	let modulePath,
+		errors = [];
+	// try to resolve the module path with the default extensions
+	for (const ext of ["", ".js", ".cjs", ".mjs"]) {
+		try {
+			modulePath = require.resolve(`${moduleName}${ext}`, options);
+			if (modulePath) {
+				break;
+			}
+		} catch (err) {
+			errors.push(err);
+		}
+	}
+	// if an error occurred and the module path is still undefined, we throw the error
+	if (modulePath === undefined && errors.length > 0) {
+		throw errors.shift(); // throw the first error only
+	}
+	// if the module is a built-in module, we ignore it
+	if (modulePath === moduleName) {
+		modulePath = undefined;
+		const err = new Error(`Found built-in module "${moduleName}". Ignoring and trigger manual resolution to find custom modules!`);
+		err.code = "ERR_BUILTIN_MODULE";
+		throw err;
+	}
+	return modulePath;
+}
+
+// regex to extract the NPM package name from a dependency
+const npmPackageScopeRegEx = /^((?:(@[^/]+)\/)?([^/]+))(?:\/(.*))?$/;
+
+/**
+ * find the dependency by its name
+ * @param {string} dep name of the dependency
+ * @param {string} cwd current working directory
+ * @param {string[]} depPaths list of dependency paths
+ * @returns {string} the module path
+ */
+function findDependency(dep, cwd = process.cwd(), depPaths = []) {
+	let modulePath;
+	try {
+		modulePath = resolve(dep, { paths: [cwd, ...depPaths] });
+	} catch (err) {
+		// if the module is not exported, we try to resolve it manually
+		const [, npmPackage, , , module] = npmPackageScopeRegEx.exec(dep) || [];
+		if (err.code === "ERR_PACKAGE_PATH_NOT_EXPORTED" || err.code === "ERR_BUILTIN_MODULE") {
+			// the node_modules path of the dependency are importan as require.resolve.paths
+			// returns the node_modules paths relative to the location of this module
+			for (const resolvePath of [...detectNodeModulesPaths(cwd), ...(require.resolve.paths(npmPackage) || [])]) {
+				modulePath = path.join(resolvePath, npmPackage);
+				if (module) {
+					modulePath = path.join(modulePath, module);
+				}
+				if (!existsSyncAndIsFile(modulePath)) {
+					modulePath = undefined;
+				} else {
+					// resolve the symlink to the real path
+					// the check for symlink is not working
+					// therefore we always resolve the real path
+					modulePath = realpathSync(modulePath);
+					break;
+				}
+			}
+		} else {
+			// ignoring the error
+			//console.error(`Failed to find dependency ${dep} due to ${err.code}`, ex);
+		}
+	}
+	return modulePath;
+}
+
+/**
+ * find the dependencies of the current project and its transitive dependencies
+ * (excluding devDependencies and providedDependencies)
+ * @param {object} options options
+ * @param {string} options.cwd current working directory
+ * @param {string[]} options.depPaths list of dependency paths
+ * @param {boolean} options.linkedOnly find only the linked dependencies
+ * @param {string[]} options.knownDeps list of known dependencies
+ * @returns {string[]} array of dependency root directories
+ */
+function findDependencies({ cwd = process.cwd(), depPaths = [], linkedOnly, knownDeps = [] } = {}) {
+	const pkgJson = getPackageJson(path.join(cwd, "package.json"));
+	let dependencies = Object.keys(pkgJson.dependencies || {});
+	if (linkedOnly) {
+		dependencies = dependencies.filter((dep) => {
+			return !isValidVersion(pkgJson.dependencies[dep]);
+		});
+	}
+	const depRoots = [];
+	for (const dep of dependencies) {
+		const npmPackage = npmPackageScopeRegEx.exec(dep)?.[1];
+		if (knownDeps.indexOf(npmPackage) !== -1) {
+			continue;
+		}
+		knownDeps.push(npmPackage);
+		const depPath = findDependency(path.posix.join(npmPackage, "package.json"), cwd, depPaths);
+		let depRoot = depPath && path.dirname(depPath);
+		if (depRoot && depRoots.indexOf(depRoot) === -1) {
+			depRoots.push(depRoot);
+			depRoots.push(...findDependencies({ cwd: depRoot, depPaths, linkedOnly, knownDeps }));
+		}
+	}
+	return depRoots;
 }
 
 /**
@@ -187,15 +305,38 @@ class BundleInfo {
 	}
 }
 
+// local cache of resolved module paths
+const modulesCache = {};
+
 // local cache of negative modules (avoid additional lookups)
 const modulesNegativeCache = [];
 
-// main field processing order (for resolveModule)
-const defaultExportsFields = ["browser", "import", "require", "default"];
+// local cache for package.json files
+const packageJsonCache = {};
 
-// main field processing order (for nodeResolve and resolveModule)
-const defaultMainFields = ["browser", "module", "main"];
+// local cache for dependencies list
+const findDependenciesCache = {};
 
+// performance metrics
+const perfmetrics = {
+	resolveModulesTime: 0,
+	resolveModules: {},
+};
+
+/**
+ * load and cache the package.json file	for the given path
+ * @param {string} pkgJsonFile the path of the package.json file
+ * @returns {object} the package.json content
+ */
+function getPackageJson(pkgJsonFile) {
+	if (!packageJsonCache[pkgJsonFile]) {
+		const pkgJson = JSON.parse(readFileSync(pkgJsonFile, { encoding: "utf8" }));
+		packageJsonCache[pkgJsonFile] = pkgJson;
+	}
+	return packageJsonCache[pkgJsonFile];
+}
+
+// the utiltiy module
 module.exports = function (log, projectInfo) {
 	/**
 	 * Checks whether the file behind the given path is a module to skip for transformation or not
@@ -236,109 +377,6 @@ module.exports = function (log, projectInfo) {
 		return isUI5Module || isSystemJSModule;
 	}
 
-	/**
-	 * Resolves the node module
-	 * @param {string} moduleName name of the module
-	 * @param {string} cwd current working directory
-	 * @param {string[]} depPaths paths of the dependencies (in addition for cwd)
-	 * @returns {string} path of the module if found or undefined
-	 */
-	function resolveNodeModule(moduleName, cwd = process.cwd(), depPaths = []) {
-		let modulePath;
-		//let millis = Date.now();
-		const resolve = function (moduleName, options) {
-			try {
-				return require.resolve(moduleName, options);
-			} catch (err) {
-				// gracefully ignore the error
-				//console.error(err);
-			}
-		};
-		// try to resolve the module with different file extensions
-		for (const ext of ["", ".js", ".cjs", ".mjs"]) {
-			// 1.) use default lookup
-			modulePath = resolve(`${moduleName}${ext}`);
-			if (modulePath) break;
-			// 2.) resolve from node_modules via regular lookup (try the lookup relative to CWD)
-			modulePath = resolve(`${moduleName}${ext}`, {
-				paths: [cwd, ...depPaths], // necessary for PNPM and/or DEBUG scenario
-			});
-			if (modulePath) break;
-			// 3.) resolve from node_modules via regular lookup (try the lookup relative to the module)
-			const nodeModulePaths = findNodeModules(cwd);
-			modulePath = resolve(`${moduleName}${ext}`, {
-				paths: [cwd, ...nodeModulePaths], // necessary for PNPM and/or DEBUG scenario
-			});
-			if (modulePath) break;
-		}
-		//console.log(`resolveNodeModule filter took ${Date.now() - millis}ms`, moduleName);
-		return modulePath;
-	}
-
-	// regex to extract the NPM package name from a dependency
-	const npmPackageScopeRegEx = /^((?:(@[^/]+)\/)?([^/]+))(?:\/(.*))?$/;
-
-	/**
-	 * find the dependencies of the current project and its transitive dependencies
-	 * (excluding devDependencies and providedDependencies)
-	 * @param {*} cwd current working directory
-	 * @param {*} depPaths paths of the dependencies (in addition for cwd)
-	 * @param {*} knownDeps list of known dependencies
-	 * @returns {string[]} array of dependency root directories
-	 */
-	function findDependencies(cwd = process.cwd(), depPaths = [], knownDeps = []) {
-		const pkgJson = JSON.parse(readFileSync(path.join(cwd, "package.json"), { encoding: "utf8" }));
-		const dependencies = Object.keys(pkgJson.dependencies || {});
-		const depRoots = [];
-		dependencies.forEach((dep) => {
-			const npmPackage = npmPackageScopeRegEx.exec(dep)?.[1];
-			if (knownDeps.indexOf(npmPackage) !== -1) {
-				return depRoots;
-			}
-			knownDeps.push(npmPackage);
-			let depRoot;
-			try {
-				let depPath = resolveNodeModule(dep, cwd, depPaths, knownDeps);
-				if (depPath !== dep) {
-					// find the closest package.json to the resolved module
-					// (maybe we should break when a package.json is found even though it is not the right one)
-					while (!depRoot && depPath !== cwd && depPath !== "/" && path.basename(depPath) !== "node_modules") {
-						depPath = path.dirname(depPath);
-						const pkgJsonDepPath = path.join(depPath, "package.json");
-						if (existsSync(pkgJsonDepPath)) {
-							const pkgJsonDep = JSON.parse(readFileSync(pkgJsonDepPath, { encoding: "utf8" }));
-							// only if the package.json name matches the dependency name
-							// we consider it as the root of the dependency
-							if (pkgJsonDep.name === dep) {
-								depRoot = depPath;
-								break;
-							}
-						}
-					}
-				} else {
-					// native modules are not part of the node_modules directory
-					// so we need to resolve it late with the package.json
-					depRoot = undefined;
-				}
-			} catch (ex) {
-				/* noop */
-			}
-			if (!depRoot) {
-				try {
-					const depPath = resolveNodeModule(`${npmPackage}/package.json`, cwd, depPaths, knownDeps);
-					depRoot = path.dirname(depPath);
-				} catch (ex) {
-					/* noop */
-				}
-			}
-			if (depRoot && depRoots.indexOf(depRoot) === -1) {
-				depRoots.push(depRoot);
-				depRoots.push(...findDependencies(depRoot, [...depPaths, cwd], knownDeps));
-			}
-		});
-		return depRoots;
-	}
-
 	const that = {
 		/**
 		 * scans the project resources
@@ -353,7 +391,7 @@ module.exports = function (log, projectInfo) {
 		 * @param {string[]} [options.depPaths] paths of the dependencies (in addition for cwd)
 		 * @returns {object} unique dependencies, resources, namespaces, chunks, ...
 		 */
-		scan: async function (reader, config, { cwd, depPaths }) {
+		scan: async function (reader, config, { cwd = process.cwd(), depPaths = [] }) {
 			const { parse } = await import("@typescript-eslint/typescript-estree");
 			const { walk } = await import("estree-walker");
 
@@ -571,7 +609,6 @@ module.exports = function (log, projectInfo) {
 								} catch (err) {
 									log.error(`Failed to parse the "${node[key]}" as JS object!`);
 								}
-								return;
 							}
 						});
 					// nodes
@@ -677,30 +714,38 @@ module.exports = function (log, projectInfo) {
 			};
 		},
 		/**
-		 * Resolves the bare module name from node_modules utilizing the require.resolve
+		 * Resolves the bare module name from node_modules utilizing Node.js resolution algorithm
 		 * @param {string} moduleName name of the module (e.g. "chart.js/auto")
 		 * @param {object} options configuration options
 		 * @param {string} options.cwd current working directory
 		 * @param {string[]} options.depPaths paths of the dependencies (in addition for cwd)
-		 * @param {string[]} options.mainFields an order of main fields to check in package.json
-		 * @param {string[]} options.exportsFields an order of exports fields to check in package.json
 		 * @returns {string} the path of the module in the filesystem
 		 */
 		// ignore module paths starting with a segment from the ignore list (TODO: maybe a better check?)
-		resolveModule: function resolveModule(moduleName, { cwd, depPaths, mainFields, exportsFields } = {}) {
-			// default the current working directory
-			cwd = cwd || process.cwd();
+		resolveModule: function resolveModule(moduleName, { cwd = process.cwd(), depPaths = [] } = {}) {
+			// create a cache key for the module and check the cache
+			const cacheKey = createHash("md5")
+				.update(`${[moduleName, cwd, ...depPaths].sort().join(",")}`)
+				.digest("hex");
+			if (modulesCache[cacheKey]) {
+				return modulesCache[cacheKey];
+			}
 			// if a module is listed in the negative cache, we ignore it!
 			if (modulesNegativeCache.indexOf(moduleName) !== -1 || /^\./.test(moduleName)) {
 				return undefined;
 			}
-			// package.json of app
-			const pkg = require(path.join(cwd, "package.json"));
-			// default the mainFields and exportsFields
-			mainFields = mainFields || defaultMainFields;
-			exportsFields = exportsFields || defaultExportsFields;
 			// retrieve or create a resolved module
-			log.verbose(`Resolving ${moduleName} [${mainFields}]...`);
+			const millis = Date.now();
+			log.verbose(`Resolving ${moduleName}...`);
+			// package.json of app
+			const pkg = getPackageJson(path.join(cwd, "package.json"));
+			// create the extended dependencies path (incl. direct dependencies for module lookup)
+			// hint: we include the direct dependencies to resolve the module path in the context
+			//       of the app (which is required e.g. when linking dependencies to the project)
+			if (!findDependenciesCache[cwd]) {
+				findDependenciesCache[cwd] = findDependencies({ cwd, depPaths, linkedOnly: true });
+			}
+			const extendedDepPaths = [...depPaths, ...findDependenciesCache[cwd]];
 			// no module found => resolve it
 			let modulePath;
 			// resolve the module path
@@ -710,54 +755,160 @@ module.exports = function (log, projectInfo) {
 				// check for the module path exists and to be a file
 				modulePath = getModulePathWithExtension(modulePath);
 			} else {
-				// derive the module path from the package.json entries browser, module or main
-				try {
-					const pkgJsonModuleName = path.posix.join(moduleName, "package.json");
-					const pkgJson = require(pkgJsonModuleName);
-					const resolveModulePath = function (exports, fields) {
-						for (const field of fields) {
-							if (typeof exports[field] === "string") {
-								let modulePath = path.join(path.dirname(resolveNodeModule(pkgJsonModuleName, cwd, depPaths)), exports[field]);
-								// check for the module path exists and to be a file
-								modulePath = getModulePathWithExtension(modulePath);
-								// stop the loop if the module path is found
-								if (modulePath) {
-									return modulePath;
-								}
-							}
+				// Implementation of the Node.js Package Entry Points mechanism
+				// https://nodejs.org/api/packages.html#package-entry-points
+				let pkgJsonFile,
+					relativeModulePath,
+					isEntryModule = true;
+
+				// when resolving absolute files we lookup the package.json in the parent dirs
+				// for later resolution of the module path (e.g. the mapping in browsers field)
+				if (path.isAbsolute(moduleName)) {
+					// lookup the parent dirs recursive to find package.json
+					const nodeModules = `${path.sep}node_modules${path.sep}`;
+					if (moduleName.lastIndexOf(nodeModules) > -1) {
+						const localModuleRootPath = moduleName.substring(0, moduleName.lastIndexOf(nodeModules) + nodeModules.length);
+						const localModuleName = moduleName.substring(localModuleRootPath.length)?.replace(/\\/g, "/");
+						const [, npmPackage] = npmPackageScopeRegEx.exec(localModuleName) || [];
+						pkgJsonFile = path.join(localModuleRootPath, npmPackage, "package.json");
+						if (!existsSyncAndIsFile(pkgJsonFile)) {
+							pkgJsonFile = undefined;
 						}
-					};
-					// resolve the module path from exports information
-					// 1.) the browser field in package.json > exports > "."
-					if (typeof pkgJson?.exports?.["."] === "object" && typeof pkgJson?.exports?.["."].browser === "object") {
-						modulePath = resolveModulePath(pkgJson.exports["."].browser, exportsFields);
-					}
-					// 2.) the browser field in package.json
-					if (!modulePath) {
-						modulePath = resolveModulePath(pkgJson, ["browser"]);
-					}
-					// 3.) the fields in package.json > exports > "."
-					if (!modulePath && typeof pkgJson?.exports?.["."] === "object") {
-						Object.values(pkgJson?.exports?.["."]).forEach((entry) => {
-							if (!modulePath && typeof entry === "object") {
-								modulePath = resolveModulePath([entry, exportsFields]);
+					} else {
+						let dir = path.dirname(moduleName);
+						while (dir !== path.dirname(dir)) {
+							const pkgJson = path.join(dir, "package.json");
+							if (existsSyncAndIsFile(pkgJson)) {
+								pkgJsonFile = pkgJson;
+								break;
 							}
-						});
-						if (!modulePath) {
-							modulePath = resolveModulePath([pkgJson?.exports?.["."], exportsFields]);
+							dir = path.dirname(dir);
 						}
 					}
-					// 4.) the fields in package.json
-					if (!modulePath) {
-						modulePath = resolveModulePath(pkgJson, mainFields);
+					// the module path is the absolute path (but with file extension)
+					modulePath = getModulePathWithExtension(moduleName);
+					// if the absolute path is not a file we try to lookup the index module
+					if (modulePath === undefined) {
+						modulePath = getModulePathWithExtension(`${moduleName}${path.sep}index`);
 					}
-				} catch (err) {
-					// gracefully ignore the error
-					//console.error(err);
+				} else {
+					// lookup the package.json with the npm package name
+					const [, npmPackage, , , relModulePath] = npmPackageScopeRegEx.exec(moduleName) || [];
+					pkgJsonFile = findDependency(`${npmPackage}/package.json`, cwd, extendedDepPaths);
+					// short track if the module exists relative to the package.json
+					// we can skip the resolution using the package.json fields to find the module
+					if (pkgJsonFile && relModulePath) {
+						const rootPath = path.dirname(pkgJsonFile);
+						modulePath = getModulePathWithExtension(path.join(rootPath, relModulePath)); // undefined if it doesn't exist
+						isEntryModule = false;
+						relativeModulePath = relModulePath;
+					}
 				}
-				// resolve from node_modules via regular lookup
-				if (!modulePath) {
-					modulePath = resolveNodeModule(moduleName, cwd, depPaths);
+
+				// if a package.json file was found we try to resolve the module path
+				// from the mappings in the package.json file (e.g. browser field)
+				if (pkgJsonFile) {
+					// determine the root path of the package.json file and load the package.json
+					const rootPath = path.dirname(pkgJsonFile);
+					const pkgJson = getPackageJson(pkgJsonFile);
+
+					// entry modules must be resolved from the package.json fields
+					if (isEntryModule && modulePath === undefined) {
+						// exports first
+						if (pkgJson.exports) {
+							const exportsField = pkgJson.exports[relativeModulePath ? `./${relativeModulePath}` : "."];
+							let main;
+							if (typeof (main = exportsField?.browser?.default) === "string") {
+								//console.log("##################", moduleName, "exports[.][browser][default]", main);
+								modulePath = path.join(rootPath, main);
+							} else if (typeof (main = exportsField?.import?.default) === "string") {
+								//console.log("##################", moduleName, "exports[.][import][default]", main);
+								modulePath = path.join(rootPath, main);
+							} else if (typeof (main = exportsField?.import) === "string") {
+								//console.log("##################", moduleName, "exports[.][import]", main);
+								modulePath = path.join(rootPath, main);
+							} else if (typeof (main = pkgJson.exports?.import) === "string") {
+								//console.log("##################", moduleName, "exports[import]", main);
+								modulePath = path.join(rootPath, main);
+							} else if (typeof (main = exportsField?.require?.default) === "string") {
+								//console.log("##################", moduleName, "exports[.][require][default]", main);
+								modulePath = path.join(rootPath, main);
+							} else if (typeof (main = exportsField?.require) === "string") {
+								//console.log("##################", moduleName, "exports[.][require]", main);
+								modulePath = path.join(rootPath, main);
+							} else if (typeof (main = pkgJson.exports?.require) === "string") {
+								//console.log("##################", moduleName, "exports[require]", main);
+								modulePath = path.join(rootPath, main);
+							} else if (typeof (main = exportsField?.default) === "string") {
+								//console.log("##################", moduleName, "exports[.][default]", main);
+								modulePath = path.join(rootPath, main);
+							} else if (typeof (main = exportsField) === "string") {
+								//console.log("##################", moduleName, "exports[.]", main);
+								modulePath = path.join(rootPath, main);
+							} else if (Array.isArray((main = pkgJson.exports["."]))) {
+								//console.log("##################", moduleName, "exports[.][]", main.pop());
+								const entry = main.pop();
+								if (typeof entry?.import?.default === "string") {
+									modulePath = path.join(rootPath, entry.import.default);
+								} else if (typeof entry?.require?.default === "string") {
+									modulePath = path.join(rootPath, entry.require.default);
+								} else if (typeof entry?.default === "string") {
+									modulePath = path.join(rootPath, entry.default);
+								} else {
+									//console.error("#### UNKNOWN CASE ####", "exports[.]", moduleName, JSON.stringify(entry));
+								}
+							} else {
+								//console.error("#### UNKNOWN CASE ####", "exports", moduleName, JSON.stringify(pkgJson.exports));
+							}
+						} else if (typeof pkgJson.browser === "string") {
+							//console.log("##################", moduleName, "browser", pkgJson.browser);
+							modulePath = path.join(rootPath, pkgJson.browser);
+						} else if (typeof pkgJson.module === "string") {
+							//console.log("##################", moduleName, "module", pkgJson.module);
+							modulePath = path.join(rootPath, pkgJson.module);
+						} else if (typeof pkgJson.main === "string") {
+							//console.log("##################", moduleName, "main", pkgJson.main);
+							modulePath = path.join(rootPath, pkgJson.main);
+						} else {
+							// no configuration found, we lookup the index module
+							modulePath = getModulePathWithExtension(path.join(rootPath, "index"));
+						}
+					}
+
+					// if the package.json has a browser field we try to map the module path
+					// (a false value in the browser field means the module should be ignored)
+					if (typeof pkgJson.browser === "object") {
+						//console.log("##################", moduleName, "browser", pkgJson.browser);
+						const mappings =
+							packageJsonCache[pkgJsonFile + "~mappings"] ||
+							Object.fromEntries(
+								Object.entries(pkgJson.browser)
+									.filter(([key, value]) => {
+										return value !== false; // these modules should ideally be ignored => maybe we make them undefined
+									})
+									.map(([key, value]) => {
+										return [path.join(rootPath, key), path.join(rootPath, value)];
+									}),
+							);
+						if (!packageJsonCache[pkgJsonFile + "~mappings"]) {
+							packageJsonCache[pkgJsonFile + "~mappings"] = mappings;
+						}
+						//console.log("##################", "before  ", modulePath);
+						modulePath = mappings[modulePath] || modulePath;
+						//console.log("##################", "after   ", modulePath);
+					}
+
+					// check for the module path exists and is a file
+					// only then the module path is valid and can be returned
+					if (modulePath !== undefined && !existsSyncAndIsFile(modulePath)) {
+						modulePath = undefined;
+					}
+				}
+
+				// use the findDependency utility to resolve the module name
+				if (modulePath === undefined && !path.isAbsolute(moduleName)) {
+					//console.log("##################", "findDependency", moduleName);
+					modulePath = findDependency(moduleName, cwd, extendedDepPaths);
 				}
 			}
 			if (modulePath === undefined) {
@@ -770,6 +921,17 @@ module.exports = function (log, projectInfo) {
 			} else {
 				log.verbose(`  => found at ${modulePath}`);
 			}
+			if (modulePath) {
+				modulesCache[cacheKey] = modulePath;
+			}
+			const took = Date.now() - millis;
+			//console.log(`resolveModule "${moduleName}" took ${took}ms`);
+			perfmetrics.resolveModulesTime += took;
+			if (!perfmetrics.resolveModules[moduleName]) {
+				perfmetrics.resolveModules[moduleName] = took;
+			} else {
+				console.error(`Duplicate module resolution for "${moduleName}"!`);
+			}
 			return modulePath;
 		},
 
@@ -779,7 +941,6 @@ module.exports = function (log, projectInfo) {
 		 * @param {object} config configuration options
 		 * @param {string} config.cwd current working directory
 		 * @param {string[]} config.depPaths paths of the dependencies (in addition for cwd)
-		 * @param {string[]} config.mainFields an order of main fields to check in package.json
 		 * @param {rollup.InputPluginOption[]} [config.beforePlugins] rollup plugins to be executed before
 		 * @param {rollup.InputPluginOption[]} [config.afterPlugins] rollup plugins to be executed after
 		 * @param {object} [config.pluginOptions] configuration options for the rollup plugins (e.g. webcomponents)
@@ -788,7 +949,7 @@ module.exports = function (log, projectInfo) {
 		 * @param {boolean} [config.isMiddleware] flag if the getResource is called by the middleware
 		 * @returns {rollup.RollupOutput} the build output of rollup
 		 */
-		createBundle: async function createBundle(moduleNames, { cwd, depPaths, mainFields, beforePlugins, afterPlugins, pluginOptions, generatedCode, inject, isMiddleware } = {}) {
+		createBundle: async function createBundle(moduleNames, { cwd = process.cwd(), depPaths = [], beforePlugins, afterPlugins, pluginOptions, generatedCode, inject, isMiddleware } = {}) {
 			const { walk } = await import("estree-walker");
 			const bundle = await rollup.rollup({
 				input: moduleNames,
@@ -800,8 +961,9 @@ module.exports = function (log, projectInfo) {
 						preventAssignment: false,
 						delimiters: ["\\b", "\\b"],
 						values: {
-							"process.env.NODE_ENV": JSON.stringify(isMiddleware ? "development" : "production"),
-							"process.versions.node": JSON.stringify("18.15.0"), // needed for some modules to select features
+							"global.process.versions.node": JSON.stringify("false"), // in some cases, the global.process.versions.node is used to detect the existence of Node.js
+							"process.versions.node": JSON.stringify("18.15.0"), // needed for some modules to select features based on the Node.js version
+							"process.env.NODE_ENV": JSON.stringify("production"), // we always build in production mode
 						},
 					}),
 					injectESModule(),
@@ -827,8 +989,9 @@ module.exports = function (log, projectInfo) {
 					webcomponents({
 						log,
 						resolveModule: function (moduleName) {
-							return that.resolveModule(moduleName, { cwd, depPaths, mainFields });
+							return that.resolveModule(moduleName, { cwd, depPaths });
 						},
+						getPackageJson, // use the cached package.json if possible
 						framework: projectInfo?.framework,
 						options: pluginOptions?.["webcomponents"],
 					}),
@@ -836,7 +999,7 @@ module.exports = function (log, projectInfo) {
 					// resolve the modules from node_modules
 					pnpmResolve({
 						resolveModule: function (moduleName) {
-							return that.resolveModule(moduleName, { cwd, depPaths, mainFields });
+							return that.resolveModule(moduleName, { cwd, depPaths });
 						},
 					}),
 					// the following plugins must be executed after the
@@ -909,10 +1072,8 @@ module.exports = function (log, projectInfo) {
 		getBundleInfo: async function getBundleInfo(
 			moduleNames,
 			{ pluginOptions, skipCache, persistentCache, debug, chunksPath, skipTransform, keepDynamicImports, generatedCode, minify, inject } = {},
-			{ cwd, depPaths, isMiddleware } = {},
+			{ cwd = process.cwd(), depPaths = [], isMiddleware } = {},
 		) {
-			cwd = cwd || process.cwd();
-
 			let bundling = false;
 			let bundleInfo = new BundleInfo();
 			const bundleCacheOptions = {
@@ -975,7 +1136,6 @@ module.exports = function (log, projectInfo) {
 						const options = {
 							cwd,
 							depPaths,
-							mainFields: defaultMainFields,
 							beforePlugins: [logger({ log })],
 							afterPlugins: [],
 							generatedCode,
@@ -991,21 +1151,11 @@ module.exports = function (log, projectInfo) {
 							options.afterPlugins.push(require("@rollup/plugin-terser")());
 						}
 						const nameOfModules = modules.map((module) => module.name);
-						let output;
-						try {
-							output = await that.createBundle(nameOfModules, options);
-						} catch (ex) {
-							// related to issue #726 for which the generation of jspdf fails on Windows machines
-							// when running the build in a standalone project with npm (without monorepo and pnpm)
-							/* debug && */ log.warn(`Failed to bundle "${nameOfModules}" using ES modules, falling back to CommonJS modules...`, ex.message);
-							debug && log.verbose(ex); // report error in verbose case!
-							output = await that.createBundle(
-								nameOfModules,
-								Object.assign({}, options, {
-									mainFields: ["browser", "main", "module"],
-								}),
-							);
-						}
+						//const millis = Date.now();
+						const output = await that.createBundle(nameOfModules, options);
+						//console.log(`createBundle overall duration: ${Date.now() - millis}ms`);
+						//console.log(`resolveModule overall duration: ${perfmetrics.resolveModulesTime}ms`);
+						//console.table(Object.entries(perfmetrics.resolveModules).filter(([key, value]) => value > 10).sort(([keyA, valueA], [keyB, valueB]) => valueB - valueA).map(([key, value]) => `${value}ms for ${key}`));
 
 						// parse the rollup build result
 						output.forEach((module, i) => {
@@ -1083,7 +1233,8 @@ module.exports = function (log, projectInfo) {
 				}
 			} catch (err) {
 				if (bundling) {
-					log.error(`Couldn't bundle ${moduleNames}: ${err}`, err);
+					console.error(`Couldn't bundle ${moduleNames}!\n${err.message}\n${err.frame}`, err);
+					//log.error(`Couldn't bundle ${moduleNames}!\n${err.message}\n${err.frame}`);
 				}
 				bundleInfo.error = err;
 			}
@@ -1099,7 +1250,7 @@ module.exports = function (log, projectInfo) {
 		 * @param {boolean} [options.isMiddleware] flag if the getResource is called by the middleware
 		 * @returns {undefined|string} the content of the resource or undefined if not found
 		 */
-		getResource: function getResource(resourceName, { cwd, depPaths, isMiddleware }) {
+		getResource: function getResource(resourceName, { cwd = process.cwd(), depPaths = [], isMiddleware }) {
 			const resourcePath = that.resolveModule(`${resourceName}`, { cwd, depPaths });
 			if (typeof resourcePath === "string" && existsSync(resourcePath)) {
 				let code = readFileSync(resourcePath, {
@@ -1124,7 +1275,7 @@ module.exports = function (log, projectInfo) {
 		 * @param {boolean} [options.onlyFiles] true, if only files should be checked
 		 * @returns {boolean} true, if the resource exists (as a folder or file)
 		 */
-		existsResource: function existsResource(resourceName, { cwd, depPaths, onlyFiles }) {
+		existsResource: function existsResource(resourceName, { cwd = process.cwd(), depPaths = [], onlyFiles }) {
 			// try to lookup the resource in the node_modules first
 			const parts = /((?:@[^/]+\/)?(?:[^/]+))(.*)/.exec(resourceName);
 			if (parts) {
@@ -1150,7 +1301,7 @@ module.exports = function (log, projectInfo) {
 		 * @param {string[]} [options.ignore] list of globs to be ignored
 		 * @returns {string[]} a list of resource paths
 		 */
-		listResources: function listResources(npmPackageName, { cwd, depPaths, ignore }) {
+		listResources: function listResources(npmPackageName, { cwd = process.cwd(), depPaths = [], ignore }) {
 			const npmPackageJsonPath = that.resolveModule(`${npmPackageName}/package.json`, { cwd, depPaths });
 			if (typeof npmPackageJsonPath === "string") {
 				const npmPackagePath = path.resolve(npmPackageJsonPath, "../");

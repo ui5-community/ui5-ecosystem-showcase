@@ -1,4 +1,4 @@
-sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (index_esm2017) { 'use strict';
+sap.ui.define(['ui5/ecosystem/demo/app/resources/index.cjs3'], (function (index_cjs$1) { 'use strict';
 
   var index_cjs = {};
 
@@ -6,7 +6,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 
   	Object.defineProperty(exports, '__esModule', { value: true });
 
-  	var app = index_esm2017.require$$0;
+  	var app = index_cjs$1.index_cjs;
 
   	var name = "firebase";
   	var version = "10.13.1";

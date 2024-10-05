@@ -1,4 +1,4 @@
-sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (index_esm2017) { 'use strict';
+sap.ui.define(['ui5/ecosystem/demo/app/resources/index.cjs3'], (function (index_cjs$1) { 'use strict';
 
 	var index_cjs = {};
 
@@ -239,7 +239,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	 * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
 	 * get the Object implementation, which is slower but behaves correctly.
 	 */
-	Buffer.TYPED_ARRAY_SUPPORT = index_esm2017.global.TYPED_ARRAY_SUPPORT !== undefined ? index_esm2017.global.TYPED_ARRAY_SUPPORT : true;
+	Buffer.TYPED_ARRAY_SUPPORT = index_cjs$1.global.TYPED_ARRAY_SUPPORT !== undefined ? index_cjs$1.global.TYPED_ARRAY_SUPPORT : true;
 
 	/*
 	 * Export kMaxLength after typed array support is determined.
@@ -1947,8 +1947,6 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 
 	var index_node_cjs = {};
 
-	var require$$1$5 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(index_esm2017.index_esm2017);
-
 	var inherits;
 	if (typeof Object.create === 'function'){
 	  inherits = function inherits(ctor, superCtor) {
@@ -2031,22 +2029,22 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	// If --no-deprecation is set, then it is a no-op.
 	function deprecate(fn, msg) {
 		// Allow for deprecating things in the process of starting up.
-		if (isUndefined(index_esm2017.global.process)) {
+		if (isUndefined(index_cjs$1.global.process)) {
 			return function () {
 				return deprecate(fn, msg).apply(this, arguments);
 			};
 		}
 
-		if (index_esm2017.browser$1.noDeprecation === true) {
+		if (index_cjs$1.browser$1.noDeprecation === true) {
 			return fn;
 		}
 
 		var warned = false;
 		function deprecated() {
 			if (!warned) {
-				if (index_esm2017.browser$1.throwDeprecation) {
+				if (index_cjs$1.browser$1.throwDeprecation) {
 					throw new Error(msg);
-				} else if (index_esm2017.browser$1.traceDeprecation) {
+				} else if (index_cjs$1.browser$1.traceDeprecation) {
 					console.trace(msg);
 				} else {
 					console.error(msg);
@@ -2062,7 +2060,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	var debugs = {};
 	var debugEnviron;
 	function debuglog(set) {
-		if (isUndefined(debugEnviron)) debugEnviron = index_esm2017.browser$1.env.NODE_DEBUG || "";
+		if (isUndefined(debugEnviron)) debugEnviron = index_cjs$1.browser$1.env.NODE_DEBUG || "";
 		set = set.toUpperCase();
 		if (!debugs[set]) {
 			if (new RegExp("\\b" + set + "\\b", "i").test(debugEnviron)) {
@@ -2601,10 +2599,10 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 			// implications (stack, `uncaughtException`, `async_hooks`)
 			original.apply(this, args).then(
 				function (ret) {
-					index_esm2017.browser$1.nextTick(cb.bind(null, null, ret));
+					index_cjs$1.browser$1.nextTick(cb.bind(null, null, ret));
 				},
 				function (rej) {
-					index_esm2017.browser$1.nextTick(callbackifyOnRejected.bind(null, rej, cb));
+					index_cjs$1.browser$1.nextTick(callbackifyOnRejected.bind(null, rej, cb));
 				}
 			);
 		}
@@ -2686,9 +2684,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 		types: types
 	});
 
-	var require$$3$1 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_util);
-
-	var require$$4$1 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(index_esm2017.index_esm2017$1);
+	var require$$3$1 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(_polyfillNode_util);
 
 	var undici$1 = {};
 
@@ -2742,7 +2738,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	  if (isBuffer$3(arrbuf)) {
 	    return false;
 	  }
-	  if (typeof index_esm2017.global.ArrayBuffer !== 'function') {
+	  if (typeof index_cjs$1.global.ArrayBuffer !== 'function') {
 	    return false;
 	  }
 	  if (typeof ArrayBuffer.isView === 'function') {
@@ -3171,7 +3167,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 		throws: throws
 	});
 
-	var require$$1$4 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_assert);
+	var require$$1$4 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(_polyfillNode_assert);
 
 	var _polyfillNode_net = {};
 
@@ -3180,9 +3176,9 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 		default: _polyfillNode_net
 	});
 
-	var require$$1$3 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_net$1);
+	var require$$1$3 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(_polyfillNode_net$1);
 
-	var hasFetch = isFunction(index_esm2017.global.fetch) && isFunction(index_esm2017.global.ReadableStream);
+	var hasFetch = isFunction(index_cjs$1.global.fetch) && isFunction(index_cjs$1.global.ReadableStream);
 
 	var _blobConstructor;
 	function blobConstructor() {
@@ -3190,7 +3186,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	    return _blobConstructor;
 	  }
 	  try {
-	    new index_esm2017.global.Blob([new ArrayBuffer(1)]);
+	    new index_cjs$1.global.Blob([new ArrayBuffer(1)]);
 	    _blobConstructor = true;
 	  } catch (e) {
 	    _blobConstructor = false;
@@ -3201,10 +3197,10 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 
 	function checkTypeSupport(type) {
 	  if (!xhr) {
-	    xhr = new index_esm2017.global.XMLHttpRequest();
+	    xhr = new index_cjs$1.global.XMLHttpRequest();
 	    // If location.host is empty, e.g. if this page/worker was loaded
 	    // from a Blob, then use example.com to avoid an error
-	    xhr.open('GET', index_esm2017.global.location.host ? '/' : 'https://example.com');
+	    xhr.open('GET', index_cjs$1.global.location.host ? '/' : 'https://example.com');
 	  }
 	  try {
 	    xhr.responseType = type;
@@ -3217,8 +3213,8 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 
 	// For some strange reason, Safari 7.0 reports typeof global.ArrayBuffer === 'object'.
 	// Safari 7.1 appears to have fixed this bug.
-	var haveArrayBuffer = typeof index_esm2017.global.ArrayBuffer !== 'undefined';
-	var haveSlice = haveArrayBuffer && isFunction(index_esm2017.global.ArrayBuffer.prototype.slice);
+	var haveArrayBuffer = typeof index_cjs$1.global.ArrayBuffer !== 'undefined';
+	var haveSlice = haveArrayBuffer && isFunction(index_cjs$1.global.ArrayBuffer.prototype.slice);
 
 	var arraybuffer = haveArrayBuffer && checkTypeSupport('arraybuffer');
 	  // These next two tests unavoidably show warnings in Chrome. Since fetch will always
@@ -3227,7 +3223,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	var mozchunkedarraybuffer = !hasFetch && haveArrayBuffer &&
 	  checkTypeSupport('moz-chunked-arraybuffer');
 	var overrideMimeType = isFunction(xhr.overrideMimeType);
-	var vbArray = isFunction(index_esm2017.global.VBArray);
+	var vbArray = isFunction(index_cjs$1.global.VBArray);
 
 	function isFunction(value) {
 	  return typeof value === 'function'
@@ -4365,7 +4361,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	  if (!state.emittedReadable) {
 	    debug('emitReadable', state.flowing);
 	    state.emittedReadable = true;
-	    if (state.sync) index_esm2017.nextTick(emitReadable_, stream);else emitReadable_(stream);
+	    if (state.sync) index_cjs$1.nextTick(emitReadable_, stream);else emitReadable_(stream);
 	  }
 	}
 
@@ -4384,7 +4380,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	function maybeReadMore(stream, state) {
 	  if (!state.readingMore) {
 	    state.readingMore = true;
-	    index_esm2017.nextTick(maybeReadMore_, stream, state);
+	    index_cjs$1.nextTick(maybeReadMore_, stream, state);
 	  }
 	}
 
@@ -4429,7 +4425,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	  var doEnd = (!pipeOpts || pipeOpts.end !== false);
 
 	  var endFn = doEnd ? onend : cleanup;
-	  if (state.endEmitted) index_esm2017.nextTick(endFn);else src.once('end', endFn);
+	  if (state.endEmitted) index_cjs$1.nextTick(endFn);else src.once('end', endFn);
 
 	  dest.on('unpipe', onunpipe);
 	  function onunpipe(readable) {
@@ -4615,7 +4611,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	      state.readableListening = state.needReadable = true;
 	      state.emittedReadable = false;
 	      if (!state.reading) {
-	        index_esm2017.nextTick(nReadingNextTick, this);
+	        index_cjs$1.nextTick(nReadingNextTick, this);
 	      } else if (state.length) {
 	        emitReadable(this);
 	      }
@@ -4646,7 +4642,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	function resume$1(stream, state) {
 	  if (!state.resumeScheduled) {
 	    state.resumeScheduled = true;
-	    index_esm2017.nextTick(resume_, stream, state);
+	    index_cjs$1.nextTick(resume_, stream, state);
 	  }
 	}
 
@@ -4854,7 +4850,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 
 	  if (!state.endEmitted) {
 	    state.ended = true;
-	    index_esm2017.nextTick(endReadableNT, state, stream);
+	    index_cjs$1.nextTick(endReadableNT, state, stream);
 	  }
 	}
 
@@ -5032,7 +5028,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	  var er = new Error('write after end');
 	  // TODO: defer error events consistently everywhere, not just the cb
 	  stream.emit('error', er);
-	  index_esm2017.nextTick(cb, er);
+	  index_cjs$1.nextTick(cb, er);
 	}
 
 	// If we get something that is not a buffer, string, null, or undefined,
@@ -5053,7 +5049,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	  }
 	  if (er) {
 	    stream.emit('error', er);
-	    index_esm2017.nextTick(cb, er);
+	    index_cjs$1.nextTick(cb, er);
 	    valid = false;
 	  }
 	  return valid;
@@ -5153,7 +5149,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 
 	function onwriteError(stream, state, sync, er, cb) {
 	  --state.pendingcb;
-	  if (sync) index_esm2017.nextTick(cb, er);else cb(er);
+	  if (sync) index_cjs$1.nextTick(cb, er);else cb(er);
 
 	  stream._writableState.errorEmitted = true;
 	  stream.emit('error', er);
@@ -5183,7 +5179,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 
 	    if (sync) {
 	      /*<replacement>*/
-	        index_esm2017.nextTick(afterWrite, stream, state, finished, cb);
+	        index_cjs$1.nextTick(afterWrite, stream, state, finished, cb);
 	      /*</replacement>*/
 	    } else {
 	        afterWrite(stream, state, finished, cb);
@@ -5325,7 +5321,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	  state.ending = true;
 	  finishMaybe(stream, state);
 	  if (cb) {
-	    if (state.finished) index_esm2017.nextTick(cb);else stream.once('finish', cb);
+	    if (state.finished) index_cjs$1.nextTick(cb);else stream.once('finish', cb);
 	  }
 	  state.ended = true;
 	  stream.writable = false;
@@ -5387,7 +5383,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 
 	  // no more data can be written.
 	  // But allow more writes to happen in this tick.
-	  index_esm2017.nextTick(onEndNT, this);
+	  index_cjs$1.nextTick(onEndNT, this);
 	}
 
 	function onEndNT(self) {
@@ -5705,7 +5701,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	  // Fake the 'close' event, but only once 'end' fires
 	  self.on('end', function() {
 	    // The nextTick is necessary to prevent the 'request' module from causing an infinite loop
-	    index_esm2017.browser$1.nextTick(function() {
+	    index_cjs$1.browser$1.nextTick(function() {
 	      self.emit('close');
 	    });
 	  });
@@ -5797,7 +5793,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	      break
 	    try {
 	      // This fails in IE8
-	      response = new index_esm2017.global.VBArray(xhr.responseBody).toArray();
+	      response = new index_cjs$1.global.VBArray(xhr.responseBody).toArray();
 	    } catch (e) {
 	      // pass
 	    }
@@ -5843,7 +5839,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	    response = xhr.response;
 	    if (xhr.readyState !== rStates.LOADING)
 	      break
-	    var reader = new index_esm2017.global.MSStreamReader();
+	    var reader = new index_cjs$1.global.MSStreamReader();
 	    reader.onprogress = function() {
 	      if (reader.result.byteLength > self._pos) {
 	        self.push(new Buffer(new Uint8Array(reader.result.slice(self._pos))));
@@ -6008,7 +6004,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	  var body;
 	  if (opts.method === 'POST' || opts.method === 'PUT' || opts.method === 'PATCH') {
 	    if (blobConstructor()) {
-	      body = new index_esm2017.global.Blob(self._body.map(function(buffer) {
+	      body = new index_cjs$1.global.Blob(self._body.map(function(buffer) {
 	        return toArrayBuffer(buffer)
 	      }), {
 	        type: (headersObj['content-type'] || {}).value || ''
@@ -6024,7 +6020,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	      return [headersObj[name].name, headersObj[name].value]
 	    });
 
-	    index_esm2017.global.fetch(self._opts.url, {
+	    index_cjs$1.global.fetch(self._opts.url, {
 	      method: self._opts.method,
 	      headers: headers,
 	      body: body,
@@ -6037,11 +6033,11 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	      self.emit('error', reason);
 	    });
 	  } else {
-	    var xhr = self._xhr = new index_esm2017.global.XMLHttpRequest();
+	    var xhr = self._xhr = new index_cjs$1.global.XMLHttpRequest();
 	    try {
 	      xhr.open(self._opts.method, self._opts.url, true);
 	    } catch (err) {
-	      index_esm2017.browser$1.nextTick(function() {
+	      index_cjs$1.browser$1.nextTick(function() {
 	        self.emit('error', err);
 	      });
 	      return
@@ -6087,7 +6083,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	    try {
 	      xhr.send(body);
 	    } catch (err) {
-	      index_esm2017.browser$1.nextTick(function() {
+	      index_cjs$1.browser$1.nextTick(function() {
 	        self.emit('error', err);
 	      });
 	      return
@@ -6608,8 +6604,8 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	});
 
 	// WHATWG API
-	const URL$2 = index_esm2017.global.URL;
-	const URLSearchParams$1 = index_esm2017.global.URLSearchParams;
+	const URL$2 = index_cjs$1.global.URL;
+	const URLSearchParams$1 = index_cjs$1.global.URLSearchParams;
 	var _polyfillNode_url = {
 	  parse: urlParse,
 	  resolve: urlResolve,
@@ -7376,7 +7372,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	  // Normally, the page is loaded from http or https, so not specifying a protocol
 	  // will result in a (valid) protocol-relative url. However, this won't work if
 	  // the protocol is something else, like 'file:'
-	  var defaultProtocol = index_esm2017.global.location.protocol.search(/^https?:$/) === -1 ? 'http:' : '';
+	  var defaultProtocol = index_cjs$1.global.location.protocol.search(/^https?:$/) === -1 ? 'http:' : '';
 
 	  var protocol = opts.protocol || defaultProtocol;
 	  var host = opts.hostname || opts.host;
@@ -7514,7 +7510,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 		request: request$3
 	});
 
-	var require$$15 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_http$1);
+	var require$$15 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(_polyfillNode_http$1);
 
 	var symbols$4 = {
 	  kClose: Symbol('close'),
@@ -7584,13 +7580,13 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	  kHttpsProxyAgent: Symbol('https proxy agent')
 	};
 
-	var require$$0$2 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_stream);
+	var require$$0$2 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(_polyfillNode_stream);
 
-	var require$$29 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_buffer);
+	var require$$29 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(_polyfillNode_buffer);
 
-	var require$$7$1 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_querystring$1);
+	var require$$7$1 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(_polyfillNode_querystring$1);
 
-	var require$$9 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_events);
+	var require$$9 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(_polyfillNode_events);
 
 	let UndiciError$2 = class UndiciError extends Error {
 	  constructor (message) {
@@ -8815,7 +8811,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 		channel: channel
 	});
 
-	var require$$0$1 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_diagnostics_channel);
+	var require$$0$1 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(_polyfillNode_diagnostics_channel);
 
 	const diagnosticsChannel = require$$0$1;
 	const util$o = require$$3$1;
@@ -9674,7 +9670,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 		default: _polyfillNode_tls
 	});
 
-	var require$$4 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_tls$1);
+	var require$$4 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(_polyfillNode_tls$1);
 
 	const net$1 = require$$1$3;
 	const assert$d = require$$1$4;
@@ -9691,12 +9687,12 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	let SessionCache;
 	// FIXME: remove workaround when the Node bug is fixed
 	// https://github.com/nodejs/node/issues/49344#issuecomment-1741776308
-	if (index_esm2017.commonjsGlobal.FinalizationRegistry && !(index_esm2017.browser$1.env.NODE_V8_COVERAGE || index_esm2017.browser$1.env.UNDICI_NO_FG)) {
+	if (index_cjs$1.commonjsGlobal.FinalizationRegistry && !(index_cjs$1.browser$1.env.NODE_V8_COVERAGE || index_cjs$1.browser$1.env.UNDICI_NO_FG)) {
 	  SessionCache = class WeakSessionCache {
 	    constructor (maxCachedSessions) {
 	      this._maxCachedSessions = maxCachedSessions;
 	      this._sessionCache = new Map();
-	      this._sessionRegistry = new index_esm2017.commonjsGlobal.FinalizationRegistry((key) => {
+	      this._sessionRegistry = new index_cjs$1.commonjsGlobal.FinalizationRegistry((key) => {
 	        if (this._sessionCache.size < this._maxCachedSessions) {
 	          return
 	        }
@@ -9843,7 +9839,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	  const timeoutId = setTimeout(() => {
 	    // setImmediate is added to make sure that we prioritize socket error events over timeouts
 	    s1 = setImmediate(() => {
-	      if (index_esm2017.browser$1.platform === 'win32') {
+	      if (index_cjs$1.browser$1.platform === 'win32') {
 	        // Windows needs an extra setImmediate probably due to implementation differences in the socket logic
 	        s2 = setImmediate(() => onConnectTimeout());
 	      } else {
@@ -15734,7 +15730,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	  this.write_in_progress = true;
 
 	  var self = this;
-	  index_esm2017.browser$1.nextTick(function() {
+	  index_cjs$1.browser$1.nextTick(function() {
 	    self.write_in_progress = false;
 	    var res = self._write(flush, input, in_off, in_len, out, out_off, out_len);
 	    self.callback(res[0], res[1]);
@@ -16280,7 +16276,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 				}
 			});
 		} else {
-			index_esm2017.browser$1.nextTick(callback);
+			index_cjs$1.browser$1.nextTick(callback);
 		}
 	};
 
@@ -16303,7 +16299,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 		}
 
 		if (ws.ended) {
-			if (callback) index_esm2017.browser$1.nextTick(callback);
+			if (callback) index_cjs$1.browser$1.nextTick(callback);
 		} else if (ws.ending) {
 			if (callback) this.once("end", callback);
 		} else if (ws.needDrain) {
@@ -16318,7 +16314,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	};
 
 	Zlib.prototype.close = function (callback) {
-		if (callback) index_esm2017.browser$1.nextTick(callback);
+		if (callback) index_cjs$1.browser$1.nextTick(callback);
 
 		if (this._closed) return;
 
@@ -16327,7 +16323,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 		this._binding.close();
 
 		var self = this;
-		index_esm2017.browser$1.nextTick(function () {
+		index_cjs$1.browser$1.nextTick(function () {
 			self.emit("close");
 		});
 	};
@@ -16534,7 +16530,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 		unzipSync: unzipSync
 	});
 
-	var require$$0 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_zlib$1);
+	var require$$0 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(_polyfillNode_zlib$1);
 
 	var constants$4;
 	var hasRequiredConstants$2;
@@ -17466,13 +17462,13 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 		default: _polyfillNode_perf_hooks
 	});
 
-	var require$$5$2 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_perf_hooks$1);
+	var require$$5$2 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(_polyfillNode_perf_hooks$1);
 
 	var types_polyfillNodeIgnore = /*#__PURE__*/Object.freeze({
 		__proto__: null
 	});
 
-	var require$$7 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(types_polyfillNodeIgnore);
+	var require$$7 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(types_polyfillNodeIgnore);
 
 	var webidl_1;
 	var hasRequiredWebidl;
@@ -18182,7 +18178,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 		default: _polyfillNode_crypto
 	});
 
-	var require$$6 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_crypto$1);
+	var require$$6 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(_polyfillNode_crypto$1);
 
 	var util$m;
 	var hasRequiredUtil$5;
@@ -21259,7 +21255,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	let extractBody;
 
 	async function lazyllhttp () {
-	  const llhttpWasmData = index_esm2017.browser$1.env.JEST_WORKER_ID ? requireLlhttpWasm() : undefined;
+	  const llhttpWasmData = index_cjs$1.browser$1.env.JEST_WORKER_ID ? requireLlhttpWasm() : undefined;
 
 	  let mod;
 	  try {
@@ -22086,7 +22082,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	      return false
 	    }
 
-	    index_esm2017.browser$1.emitWarning(new RequestContentLengthMismatchError$1());
+	    index_cjs$1.browser$1.emitWarning(new RequestContentLengthMismatchError$1());
 	  }
 
 	  const socket = client[kSocket$1];
@@ -22442,7 +22438,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	        throw new RequestContentLengthMismatchError$1()
 	      }
 
-	      index_esm2017.browser$1.emitWarning(new RequestContentLengthMismatchError$1());
+	      index_cjs$1.browser$1.emitWarning(new RequestContentLengthMismatchError$1());
 	    }
 
 	    socket.cork();
@@ -22516,7 +22512,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	      if (client[kStrictContentLength$2]) {
 	        throw new RequestContentLengthMismatchError$1()
 	      } else {
-	        index_esm2017.browser$1.emitWarning(new RequestContentLengthMismatchError$1());
+	        index_cjs$1.browser$1.emitWarning(new RequestContentLengthMismatchError$1());
 	      }
 	    }
 
@@ -22559,7 +22555,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 		constants: constants$2
 	});
 
-	var require$$5$1 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_http2);
+	var require$$5$1 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(_polyfillNode_http2);
 
 	const assert$a = require$$1$4;
 	const { pipeline: pipeline$1 } = require$$0$2;
@@ -22639,7 +22635,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 
 	  if (!h2ExperimentalWarned) {
 	    h2ExperimentalWarned = true;
-	    index_esm2017.browser$1.emitWarning('H2 support is experimental, expect them to change at any time.', {
+	    index_cjs$1.browser$1.emitWarning('H2 support is experimental, expect them to change at any time.', {
 	      code: 'UNDICI-H2'
 	    });
 	  }
@@ -22929,7 +22925,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	      return false
 	    }
 
-	    index_esm2017.browser$1.emitWarning(new RequestContentLengthMismatchError());
+	    index_cjs$1.browser$1.emitWarning(new RequestContentLengthMismatchError());
 	  }
 
 	  if (contentLength != null) {
@@ -23696,7 +23692,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	      this[kInterceptors$4] = interceptors.Client;
 	      if (!deprecatedInterceptorWarned) {
 	        deprecatedInterceptorWarned = true;
-	        index_esm2017.browser$1.emitWarning('Client.Options#interceptor is deprecated. Use Dispatcher#compose instead.', {
+	        index_cjs$1.browser$1.emitWarning('Client.Options#interceptor is deprecated. Use Dispatcher#compose instead.', {
 	          code: 'UNDICI-CLIENT-INTERCEPTOR-DEPRECATED'
 	        });
 	      }
@@ -24850,7 +24846,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 
 	var agent = Agent$5;
 
-	var require$$1$2 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_url$1);
+	var require$$1$2 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(_polyfillNode_url$1);
 
 	const { kProxy, kClose: kClose$3, kDestroy: kDestroy$1, kInterceptors } = symbols$4;
 	const { URL: URL$1 } = require$$1$2;
@@ -25064,7 +25060,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 
 	    if (!experimentalWarned) {
 	      experimentalWarned = true;
-	      index_esm2017.browser$1.emitWarning('EnvHttpProxyAgent is experimental, expect them to change at any time.', {
+	      index_cjs$1.browser$1.emitWarning('EnvHttpProxyAgent is experimental, expect them to change at any time.', {
 	        code: 'UNDICI-EHPA'
 	      });
 	    }
@@ -25073,14 +25069,14 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 
 	    this[kNoProxyAgent] = new Agent$3(agentOpts);
 
-	    const HTTP_PROXY = httpProxy ?? index_esm2017.browser$1.env.http_proxy ?? index_esm2017.browser$1.env.HTTP_PROXY;
+	    const HTTP_PROXY = httpProxy ?? index_cjs$1.browser$1.env.http_proxy ?? index_cjs$1.browser$1.env.HTTP_PROXY;
 	    if (HTTP_PROXY) {
 	      this[kHttpProxyAgent] = new ProxyAgent$1({ ...agentOpts, uri: HTTP_PROXY });
 	    } else {
 	      this[kHttpProxyAgent] = this[kNoProxyAgent];
 	    }
 
-	    const HTTPS_PROXY = httpsProxy ?? index_esm2017.browser$1.env.https_proxy ?? index_esm2017.browser$1.env.HTTPS_PROXY;
+	    const HTTPS_PROXY = httpsProxy ?? index_cjs$1.browser$1.env.https_proxy ?? index_cjs$1.browser$1.env.HTTPS_PROXY;
 	    if (HTTPS_PROXY) {
 	      this[kHttpsProxyAgent] = new ProxyAgent$1({ ...agentOpts, uri: HTTPS_PROXY });
 	    } else {
@@ -25194,7 +25190,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	  }
 
 	  get #noProxyEnv () {
-	    return index_esm2017.browser$1.env.no_proxy ?? index_esm2017.browser$1.env.NO_PROXY ?? ''
+	    return index_cjs$1.browser$1.env.no_proxy ?? index_cjs$1.browser$1.env.NO_PROXY ?? ''
 	  }
 	};
 
@@ -26061,7 +26057,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 		AsyncResource: AsyncResource$5
 	});
 
-	var require$$1$1 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_async_hooks);
+	var require$$1$1 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(_polyfillNode_async_hooks);
 
 	const assert$4 = require$$1$4;
 	const { Readable: Readable$1 } = readable;
@@ -27718,7 +27714,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 
 	function noop(){}
 
-	var _polyfillNode_console = index_esm2017.global.console ? index_esm2017.global.console : {
+	var _polyfillNode_console = index_cjs$1.global.console ? index_cjs$1.global.console : {
 	  log: noop,
 	  info: noop,
 	  warn: noop,
@@ -27735,13 +27731,13 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 		default: _polyfillNode_console
 	});
 
-	var require$$1 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_console$1);
+	var require$$1 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(_polyfillNode_console$1);
 
 	const { Transform } = require$$0$2;
 	const { Console } = require$$1;
 
-	const PERSISTENT = index_esm2017.browser$1.versions.icu ? '✅' : 'Y ';
-	const NOT_PERSISTENT = index_esm2017.browser$1.versions.icu ? '❌' : 'N ';
+	const PERSISTENT = index_cjs$1.browser$1.versions.icu ? '✅' : 'Y ';
+	const NOT_PERSISTENT = index_cjs$1.browser$1.versions.icu ? '❌' : 'N ';
 
 	/**
 	 * Gets the output of `console.table(…)` as a string.
@@ -27757,7 +27753,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.esm2017'], (function (ind
 	    this.logger = new Console({
 	      stdout: this.transform,
 	      inspectOptions: {
-	        colors: !disableColors && !index_esm2017.browser$1.env.CI
+	        colors: !disableColors && !index_cjs$1.browser$1.env.CI
 	      }
 	    });
 	  }
@@ -28905,7 +28901,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 
 		const textEncoder = new TextEncoder('utf-8');
 
-		const hasFinalizationRegistry = globalThis.FinalizationRegistry && index_esm2017.browser$1.version.indexOf('v18') !== 0;
+		const hasFinalizationRegistry = globalThis.FinalizationRegistry && index_cjs$1.browser$1.version.indexOf('v18') !== 0;
 		let registry;
 
 		if (hasFinalizationRegistry) {
@@ -29537,8 +29533,8 @@ ${pendingInterceptorsFormatter.format(pending)}
 		dispatcherWeakref = function () {
 		  // FIXME: remove workaround when the Node bug is backported to v18
 		  // https://github.com/nodejs/node/issues/49344#issuecomment-1741776308
-		  if (index_esm2017.browser$1.env.NODE_V8_COVERAGE && index_esm2017.browser$1.version.startsWith('v18')) {
-		    index_esm2017.browser$1._rawDebug('Using compatibility WeakRef and FinalizationRegistry');
+		  if (index_cjs$1.browser$1.env.NODE_V8_COVERAGE && index_cjs$1.browser$1.version.startsWith('v18')) {
+		    index_cjs$1.browser$1._rawDebug('Using compatibility WeakRef and FinalizationRegistry');
 		    return {
 		      WeakRef: CompatWeakRef,
 		      FinalizationRegistry: CompatFinalizer
@@ -29929,7 +29925,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		      }
 
 		      if (!patchMethodWarning && request.method === 'patch') {
-		        index_esm2017.browser$1.emitWarning('Using `patch` is highly likely to result in a `405 Method Not Allowed`. `PATCH` is much more likely to succeed.', {
+		        index_cjs$1.browser$1.emitWarning('Using `patch` is highly likely to result in a `405 Method Not Allowed`. `PATCH` is much more likely to succeed.', {
 		          code: 'UNDICI-FETCH-patch'
 		        });
 
@@ -33179,7 +33175,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		return encoding;
 	}
 
-	var require$$5 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(_polyfillNode_string_decoder);
+	var require$$5 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(_polyfillNode_string_decoder);
 
 	var util$7;
 	var hasRequiredUtil$4;
@@ -35853,7 +35849,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		__proto__: null
 	});
 
-	var require$$3 = /*@__PURE__*/index_esm2017.getAugmentedNamespace(worker_threads_polyfillNodeIgnore);
+	var require$$3 = /*@__PURE__*/index_cjs$1.getAugmentedNamespace(worker_threads_polyfillNodeIgnore);
 
 	var events;
 	var hasRequiredEvents;
@@ -36567,7 +36563,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 		}
 
 		// https://nodejs.org/api/intl.html#detecting-internationalization-support
-		const hasIntl = typeof index_esm2017.browser$1.versions.icu === 'string';
+		const hasIntl = typeof index_cjs$1.browser$1.versions.icu === 'string';
 		const fatalDecoder = hasIntl ? new TextDecoder('utf-8', { fatal: true }) : undefined;
 
 		/**
@@ -38868,7 +38864,7 @@ ${pendingInterceptorsFormatter.format(pending)}
 
 		    if (!experimentalWarned) {
 		      experimentalWarned = true;
-		      index_esm2017.browser$1.emitWarning('EventSource is experimental, expect them to change at any time.', {
+		      index_cjs$1.browser$1.emitWarning('EventSource is experimental, expect them to change at any time.', {
 		        code: 'UNDICI-ES'
 		      });
 		    }
@@ -39406,11 +39402,11 @@ ${pendingInterceptorsFormatter.format(pending)}
 
 	Object.defineProperty(index_node_cjs, '__esModule', { value: true });
 
-	var app = index_esm2017.require$$0;
-	var component = require$$1$5;
-	var logger = index_esm2017.index_cjs;
+	var app = index_cjs$1.index_cjs;
+	var component = index_cjs$1.index_cjs$2;
+	var logger = index_cjs$1.index_cjs$1;
 	var util$1 = require$$3$1;
-	var util = require$$4$1;
+	var util = index_cjs$1.require$$4;
 	var undici = undici$1;
 	var crypto = require$$6;
 

@@ -1,32 +1,19 @@
 const path = require("path");
-const fs = require("fs");
-
-const existsAndIsFile = function (file) {
-	return fs.existsSync(file) && fs.statSync(file).isFile();
-};
 
 module.exports = function ({ resolveModule } = {}) {
 	return {
 		name: "pnpm-resolve",
 		resolveId: function (importee, importer) {
+			let module = importee;
 			if (path.isAbsolute(importee)) {
 				// ignore absolute paths
 				return null;
 			} else if (importee.startsWith("./") || importee.startsWith("../")) {
 				// resolve relative paths
-				const file = path.resolve(path.dirname(importer), importee);
-				if (existsAndIsFile(file)) {
-					return file;
-				} else if (existsAndIsFile(`${file}.js`)) {
-					return `${file}.js`;
-				} else if (existsAndIsFile(`${file}.cjs`)) {
-					return `${file}.cjs`;
-				} else if (existsAndIsFile(`${file}.mjs`)) {
-					return `${file}.mjs`;
-				}
+				module = path.resolve(path.dirname(importer), importee);
 			}
-			// needs to be in sync with nodeResolve
-			const resolvedModule = resolveModule(importee);
+			// try to resolve the node module using the provided function
+			const resolvedModule = resolveModule(module);
 			//console.log(`Resolved ${importee} to ${resolvedModule}`);
 			return resolvedModule;
 		},
