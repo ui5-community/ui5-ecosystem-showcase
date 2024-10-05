@@ -30,6 +30,21 @@ const sanitize = require("sanitize-filename");
 
 const { runInContext, createContext } = require("vm");
 
+const { minVersion } = require("semver");
+
+/**
+ * checks if the given version is a valid semver version
+ * @param {string} version the version to check
+ * @returns {boolean} true if the version is a valid semver version
+ */
+function isValidVersion(version) {
+	try {
+		return minVersion(version) !== null;
+	} catch (e) {
+		return false;
+	}
+}
+
 /**
  * helper to check the existence of a resource (case-sensitive)
  * @param {string} file file path
@@ -187,15 +202,21 @@ function findDependency(dep, cwd = process.cwd(), depPaths = []) {
 /**
  * find the dependencies of the current project and its transitive dependencies
  * (excluding devDependencies and providedDependencies)
- * @param {string} cwd current working directory
- * @param {string[]} depPaths list of dependency paths
- * @param {boolean} recursive find all dependencies recursively
- * @param {string[]} knownDeps list of known dependencies
+ * @param {object} options options
+ * @param {string} options.cwd current working directory
+ * @param {string[]} options.depPaths list of dependency paths
+ * @param {boolean} options.linkedOnly find only the linked dependencies
+ * @param {string[]} options.knownDeps list of known dependencies
  * @returns {string[]} array of dependency root directories
  */
-function findDependencies(cwd = process.cwd(), depPaths = [], recursive = true, knownDeps = []) {
+function findDependencies({ cwd = process.cwd(), depPaths = [], linkedOnly, knownDeps = [] } = {}) {
 	const pkgJson = getPackageJson(path.join(cwd, "package.json"));
-	const dependencies = Object.keys(pkgJson.dependencies || {});
+	let dependencies = Object.keys(pkgJson.dependencies || {});
+	if (linkedOnly) {
+		dependencies = dependencies.filter((dep) => {
+			return !isValidVersion(pkgJson.dependencies[dep]);
+		});
+	}
 	const depRoots = [];
 	for (const dep of dependencies) {
 		const npmPackage = npmPackageScopeRegEx.exec(dep)?.[1];
@@ -207,7 +228,7 @@ function findDependencies(cwd = process.cwd(), depPaths = [], recursive = true, 
 		let depRoot = depPath && path.dirname(depPath);
 		if (depRoot && depRoots.indexOf(depRoot) === -1) {
 			depRoots.push(depRoot);
-			recursive && depRoots.push(...findDependencies(depRoot, depPaths, recursive, knownDeps));
+			depRoots.push(...findDependencies({ cwd: depRoot, depPaths, linkedOnly, knownDeps }));
 		}
 	}
 	return depRoots;
@@ -722,7 +743,7 @@ module.exports = function (log, projectInfo) {
 			// hint: we include the direct dependencies to resolve the module path in the context
 			//       of the app (which is required e.g. when linking dependencies to the project)
 			if (!findDependenciesCache[cwd]) {
-				findDependenciesCache[cwd] = findDependencies(cwd, depPaths);
+				findDependenciesCache[cwd] = findDependencies({ cwd, depPaths, linkedOnly: true });
 			}
 			const extendedDepPaths = [...depPaths, ...findDependenciesCache[cwd]];
 			// no module found => resolve it
