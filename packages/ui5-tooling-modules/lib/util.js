@@ -189,10 +189,11 @@ function findDependency(dep, cwd = process.cwd(), depPaths = []) {
  * (excluding devDependencies and providedDependencies)
  * @param {string} cwd current working directory
  * @param {string[]} depPaths list of dependency paths
+ * @param {boolean} recursive find all dependencies recursively
  * @param {string[]} knownDeps list of known dependencies
  * @returns {string[]} array of dependency root directories
  */
-function findDependencies(cwd = process.cwd(), depPaths = [], knownDeps = []) {
+function findDependencies(cwd = process.cwd(), depPaths = [], recursive = true, knownDeps = []) {
 	const pkgJson = getPackageJson(path.join(cwd, "package.json"));
 	const dependencies = Object.keys(pkgJson.dependencies || {});
 	const depRoots = [];
@@ -206,7 +207,7 @@ function findDependencies(cwd = process.cwd(), depPaths = [], knownDeps = []) {
 		let depRoot = depPath && path.dirname(depPath);
 		if (depRoot && depRoots.indexOf(depRoot) === -1) {
 			depRoots.push(depRoot);
-			depRoots.push(...findDependencies(depRoot, depPaths, knownDeps));
+			recursive && depRoots.push(...findDependencies(depRoot, depPaths, recursive, knownDeps));
 		}
 	}
 	return depRoots;
@@ -291,6 +292,9 @@ const modulesNegativeCache = [];
 
 // local cache for package.json files
 const packageJsonCache = {};
+
+// local cache for dependencies list
+const findDependenciesCache = {};
 
 // performance metrics
 const perfmetrics = {
@@ -714,6 +718,13 @@ module.exports = function (log, projectInfo) {
 			log.verbose(`Resolving ${moduleName}...`);
 			// package.json of app
 			const pkg = getPackageJson(path.join(cwd, "package.json"));
+			// create the extended dependencies path (incl. direct dependencies for module lookup)
+			// hint: we include the direct dependencies to resolve the module path in the context
+			//       of the app (which is required e.g. when linking dependencies to the project)
+			if (!findDependenciesCache[cwd]) {
+				findDependenciesCache[cwd] = findDependencies(cwd, depPaths);
+			}
+			const extendedDepPaths = [...depPaths, ...findDependenciesCache[cwd]];
 			// no module found => resolve it
 			let modulePath;
 			// resolve the module path
@@ -762,7 +773,7 @@ module.exports = function (log, projectInfo) {
 				} else {
 					// lookup the package.json with the npm package name
 					const [, npmPackage, , , relModulePath] = npmPackageScopeRegEx.exec(moduleName) || [];
-					pkgJsonFile = findDependency(`${npmPackage}/package.json`, cwd, depPaths);
+					pkgJsonFile = findDependency(`${npmPackage}/package.json`, cwd, extendedDepPaths);
 					// short track if the module exists relative to the package.json
 					// we can skip the resolution using the package.json fields to find the module
 					if (pkgJsonFile && relModulePath) {
@@ -876,7 +887,7 @@ module.exports = function (log, projectInfo) {
 				// use the findDependency utility to resolve the module name
 				if (modulePath === undefined && !path.isAbsolute(moduleName)) {
 					//console.log("##################", "findDependency", moduleName);
-					modulePath = findDependency(moduleName, cwd, depPaths);
+					modulePath = findDependency(moduleName, cwd, extendedDepPaths);
 				}
 			}
 			if (modulePath === undefined) {
