@@ -193,7 +193,7 @@ function findDependency(dep, cwd = process.cwd(), depPaths = []) {
  * @returns {string[]} array of dependency root directories
  */
 function findDependencies(cwd = process.cwd(), depPaths = [], knownDeps = []) {
-	const pkgJson = JSON.parse(readFileSync(path.join(cwd, "package.json"), { encoding: "utf8" }));
+	const pkgJson = getPackageJson(path.join(cwd, "package.json"));
 	const dependencies = Object.keys(pkgJson.dependencies || {});
 	const depRoots = [];
 	for (const dep of dependencies) {
@@ -288,6 +288,28 @@ const modulesCache = {};
 
 // local cache of negative modules (avoid additional lookups)
 const modulesNegativeCache = [];
+
+// local cache for package.json files
+const packageJsonCache = {};
+
+// performance metrics
+const perfmetrics = {
+	resolveModulesTime: 0,
+	resolveModules: {},
+};
+
+/**
+ * load and cache the package.json file	for the given path
+ * @param {string} pkgJsonFile the path of the package.json file
+ * @returns {object} the package.json content
+ */
+function getPackageJson(pkgJsonFile) {
+	if (!packageJsonCache[pkgJsonFile]) {
+		const pkgJson = JSON.parse(readFileSync(pkgJsonFile, { encoding: "utf8" }));
+		packageJsonCache[pkgJsonFile] = pkgJson;
+	}
+	return packageJsonCache[pkgJsonFile];
+}
 
 // the utiltiy module
 module.exports = function (log, projectInfo) {
@@ -667,7 +689,7 @@ module.exports = function (log, projectInfo) {
 			};
 		},
 		/**
-		 * Resolves the bare module name from node_modules utilizing the require.resolve
+		 * Resolves the bare module name from node_modules utilizing Node.js resolution algorithm
 		 * @param {string} moduleName name of the module (e.g. "chart.js/auto")
 		 * @param {object} options configuration options
 		 * @param {string} options.cwd current working directory
@@ -676,6 +698,7 @@ module.exports = function (log, projectInfo) {
 		 */
 		// ignore module paths starting with a segment from the ignore list (TODO: maybe a better check?)
 		resolveModule: function resolveModule(moduleName, { cwd = process.cwd(), depPaths = [] } = {}) {
+			// create a cache key for the module and check the cache
 			const cacheKey = createHash("md5")
 				.update(`${[moduleName, cwd, ...depPaths].sort().join(",")}`)
 				.digest("hex");
@@ -687,10 +710,10 @@ module.exports = function (log, projectInfo) {
 				return undefined;
 			}
 			// retrieve or create a resolved module
-			//const millis = Date.now();
+			const millis = Date.now();
 			log.verbose(`Resolving ${moduleName}...`);
 			// package.json of app
-			const pkg = require(path.join(cwd, "package.json"));
+			const pkg = getPackageJson(path.join(cwd, "package.json"));
 			// no module found => resolve it
 			let modulePath;
 			// resolve the module path
@@ -702,15 +725,23 @@ module.exports = function (log, projectInfo) {
 			} else {
 				// Implementation of the Node.js Package Entry Points mechanism
 				// https://nodejs.org/api/packages.html#package-entry-points
-				if (modulePath === undefined) {
-					let pkgJsonFile,
-						relativeModulePath,
-						isEntryModule = true;
+				let pkgJsonFile,
+					relativeModulePath,
+					isEntryModule = true;
 
-					// when resolving absolute files we lookup the package.json in the parent dirs
-					// for later resolution of the module path (e.g. the mapping in browsers field)
-					if (path.isAbsolute(moduleName)) {
-						// lookup the parent dirs recursive to find package.json
+				// when resolving absolute files we lookup the package.json in the parent dirs
+				// for later resolution of the module path (e.g. the mapping in browsers field)
+				if (path.isAbsolute(moduleName)) {
+					// lookup the parent dirs recursive to find package.json
+					if (moduleName.lastIndexOf("/node_modules/") > -1) {
+						const localModuleRootPath = moduleName.substring(0, moduleName.lastIndexOf("/node_modules/") + "/node_modules/".length);
+						const localModuleName = moduleName.substring(localModuleRootPath.length);
+						const [, npmPackage] = npmPackageScopeRegEx.exec(localModuleName) || [];
+						pkgJsonFile = path.join(localModuleRootPath, npmPackage, "package.json");
+						if (!existsSyncAndIsFile(pkgJsonFile)) {
+							pkgJsonFile = undefined;
+						}
+					} else {
 						let dir = path.dirname(moduleName);
 						while (dir !== path.dirname(dir)) {
 							const pkgJson = path.join(dir, "package.json");
@@ -720,101 +751,104 @@ module.exports = function (log, projectInfo) {
 							}
 							dir = path.dirname(dir);
 						}
-						// the module path is the absolute path (but with file extension)
-						modulePath = getModulePathWithExtension(moduleName);
-						// if the absolute path is not a file we try to lookup the index module
-						if (modulePath === undefined) {
-							modulePath = getModulePathWithExtension(`${moduleName}/index`);
-						}
-					} else {
-						// lookup the package.json with the npm package name
-						const [, npmPackage, , , relModulePath] = npmPackageScopeRegEx.exec(moduleName) || [];
-						pkgJsonFile = findDependency(`${npmPackage}/package.json`, cwd, depPaths);
-						// short track if the module exists relative to the package.json
-						// we can skip the resolution using the package.json fields to find the module
-						if (pkgJsonFile && relModulePath) {
-							const rootPath = path.dirname(pkgJsonFile);
-							modulePath = getModulePathWithExtension(path.join(rootPath, relModulePath)); // undefined if it doesn't exist
-							isEntryModule = false;
-							relativeModulePath = relModulePath;
+					}
+					// the module path is the absolute path (but with file extension)
+					modulePath = getModulePathWithExtension(moduleName);
+					// if the absolute path is not a file we try to lookup the index module
+					if (modulePath === undefined) {
+						modulePath = getModulePathWithExtension(`${moduleName}/index`);
+					}
+				} else {
+					// lookup the package.json with the npm package name
+					const [, npmPackage, , , relModulePath] = npmPackageScopeRegEx.exec(moduleName) || [];
+					pkgJsonFile = findDependency(`${npmPackage}/package.json`, cwd, depPaths);
+					// short track if the module exists relative to the package.json
+					// we can skip the resolution using the package.json fields to find the module
+					if (pkgJsonFile && relModulePath) {
+						const rootPath = path.dirname(pkgJsonFile);
+						modulePath = getModulePathWithExtension(path.join(rootPath, relModulePath)); // undefined if it doesn't exist
+						isEntryModule = false;
+						relativeModulePath = relModulePath;
+					}
+				}
+
+				// if a package.json file was found we try to resolve the module path
+				// from the mappings in the package.json file (e.g. browser field)
+				if (pkgJsonFile) {
+					// determine the root path of the package.json file and load the package.json
+					const rootPath = path.dirname(pkgJsonFile);
+					const pkgJson = getPackageJson(pkgJsonFile);
+
+					// entry modules must be resolved from the package.json fields
+					if (isEntryModule && modulePath === undefined) {
+						// exports first
+						if (pkgJson.exports) {
+							const exportsField = pkgJson.exports[relativeModulePath ? `./${relativeModulePath}` : "."];
+							let main;
+							if (typeof (main = exportsField?.browser?.default) === "string") {
+								//console.log("##################", moduleName, "exports[.][browser][default]", main);
+								modulePath = path.join(rootPath, main);
+							} else if (typeof (main = exportsField?.import?.default) === "string") {
+								//console.log("##################", moduleName, "exports[.][import][default]", main);
+								modulePath = path.join(rootPath, main);
+							} else if (typeof (main = exportsField?.import) === "string") {
+								//console.log("##################", moduleName, "exports[.][import]", main);
+								modulePath = path.join(rootPath, main);
+							} else if (typeof (main = pkgJson.exports?.import) === "string") {
+								//console.log("##################", moduleName, "exports[import]", main);
+								modulePath = path.join(rootPath, main);
+							} else if (typeof (main = exportsField?.require?.default) === "string") {
+								//console.log("##################", moduleName, "exports[.][require][default]", main);
+								modulePath = path.join(rootPath, main);
+							} else if (typeof (main = exportsField?.require) === "string") {
+								//console.log("##################", moduleName, "exports[.][require]", main);
+								modulePath = path.join(rootPath, main);
+							} else if (typeof (main = pkgJson.exports?.require) === "string") {
+								//console.log("##################", moduleName, "exports[require]", main);
+								modulePath = path.join(rootPath, main);
+							} else if (typeof (main = exportsField?.default) === "string") {
+								//console.log("##################", moduleName, "exports[.][default]", main);
+								modulePath = path.join(rootPath, main);
+							} else if (typeof (main = exportsField) === "string") {
+								//console.log("##################", moduleName, "exports[.]", main);
+								modulePath = path.join(rootPath, main);
+							} else if (Array.isArray((main = pkgJson.exports["."]))) {
+								//console.log("##################", moduleName, "exports[.][]", main.pop());
+								const entry = main.pop();
+								if (typeof entry?.import?.default === "string") {
+									modulePath = path.join(rootPath, entry.import.default);
+								} else if (typeof entry?.require?.default === "string") {
+									modulePath = path.join(rootPath, entry.require.default);
+								} else if (typeof entry?.default === "string") {
+									modulePath = path.join(rootPath, entry.default);
+								} else {
+									//console.error("#### UNKNOWN CASE ####", "exports[.]", moduleName, JSON.stringify(entry));
+								}
+							} else {
+								//console.error("#### UNKNOWN CASE ####", "exports", moduleName, JSON.stringify(pkgJson.exports));
+							}
+						} else if (typeof pkgJson.browser === "string") {
+							//console.log("##################", moduleName, "browser", pkgJson.browser);
+							modulePath = path.join(rootPath, pkgJson.browser);
+						} else if (typeof pkgJson.module === "string") {
+							//console.log("##################", moduleName, "module", pkgJson.module);
+							modulePath = path.join(rootPath, pkgJson.module);
+						} else if (typeof pkgJson.main === "string") {
+							//console.log("##################", moduleName, "main", pkgJson.main);
+							modulePath = path.join(rootPath, pkgJson.main);
+						} else {
+							// no configuration found, we lookup the index module
+							modulePath = getModulePathWithExtension(path.join(rootPath, "index"));
 						}
 					}
 
-					// if a package.json file was found we try to resolve the module path
-					// from the mappings in the package.json file (e.g. browser field)
-					if (pkgJsonFile) {
-						// determine the root path of the package.json file and load the package.json
-						const rootPath = path.dirname(pkgJsonFile);
-						const pkgJson = JSON.parse(readFileSync(pkgJsonFile, { encoding: "utf8" }));
-
-						// entry modules must be resolved from the package.json fields
-						if (isEntryModule && modulePath === undefined) {
-							// exports first
-							if (pkgJson.exports) {
-								const exportsField = pkgJson.exports[relativeModulePath ? `./${relativeModulePath}` : "."];
-								let main;
-								if (typeof (main = exportsField?.browser?.default) === "string") {
-									//console.log("##################", moduleName, "exports[.][browser][default]", main);
-									modulePath = path.join(rootPath, main);
-								} else if (typeof (main = exportsField?.import?.default) === "string") {
-									//console.log("##################", moduleName, "exports[.][import][default]", main);
-									modulePath = path.join(rootPath, main);
-								} else if (typeof (main = exportsField?.import) === "string") {
-									//console.log("##################", moduleName, "exports[.][import]", main);
-									modulePath = path.join(rootPath, main);
-								} else if (typeof (main = pkgJson.exports?.import) === "string") {
-									//console.log("##################", moduleName, "exports[import]", main);
-									modulePath = path.join(rootPath, main);
-								} else if (typeof (main = exportsField?.require?.default) === "string") {
-									//console.log("##################", moduleName, "exports[.][require][default]", main);
-									modulePath = path.join(rootPath, main);
-								} else if (typeof (main = exportsField?.require) === "string") {
-									//console.log("##################", moduleName, "exports[.][require]", main);
-									modulePath = path.join(rootPath, main);
-								} else if (typeof (main = pkgJson.exports?.require) === "string") {
-									//console.log("##################", moduleName, "exports[require]", main);
-									modulePath = path.join(rootPath, main);
-								} else if (typeof (main = exportsField?.default) === "string") {
-									//console.log("##################", moduleName, "exports[.][default]", main);
-									modulePath = path.join(rootPath, main);
-								} else if (typeof (main = exportsField) === "string") {
-									//console.log("##################", moduleName, "exports[.]", main);
-									modulePath = path.join(rootPath, main);
-								} else if (Array.isArray((main = pkgJson.exports["."]))) {
-									//console.log("##################", moduleName, "exports[.][]", main.pop());
-									const entry = main.pop();
-									if (typeof entry?.import?.default === "string") {
-										modulePath = path.join(rootPath, entry.import.default);
-									} else if (typeof entry?.require?.default === "string") {
-										modulePath = path.join(rootPath, entry.require.default);
-									} else if (typeof entry?.default === "string") {
-										modulePath = path.join(rootPath, entry.default);
-									} else {
-										//console.error("#### UNKNOWN CASE ####", "exports[.]", moduleName, JSON.stringify(entry));
-									}
-								} else {
-									//console.error("#### UNKNOWN CASE ####", "exports", moduleName, JSON.stringify(pkgJson.exports));
-								}
-							} else if (typeof pkgJson.browser === "string") {
-								//console.log("##################", moduleName, "browser", pkgJson.browser);
-								modulePath = path.join(rootPath, pkgJson.browser);
-							} else if (typeof pkgJson.module === "string") {
-								//console.log("##################", moduleName, "module", pkgJson.module);
-								modulePath = path.join(rootPath, pkgJson.module);
-							} else if (typeof pkgJson.main === "string") {
-								//console.log("##################", moduleName, "main", pkgJson.main);
-								modulePath = path.join(rootPath, pkgJson.main);
-							} else {
-								// no configuration found, we lookup the index module
-								modulePath = getModulePathWithExtension(path.join(rootPath, "index"));
-							}
-						}
-
-						// if the package.json has a browser field we try to map the module path
-						// (a false value in the browser field means the module should be ignored)
-						if (typeof pkgJson.browser === "object") {
-							//console.log("##################", moduleName, "browser", pkgJson.browser);
-							const mappings = Object.fromEntries(
+					// if the package.json has a browser field we try to map the module path
+					// (a false value in the browser field means the module should be ignored)
+					if (typeof pkgJson.browser === "object") {
+						//console.log("##################", moduleName, "browser", pkgJson.browser);
+						const mappings =
+							packageJsonCache[pkgJsonFile + "~mappings"] ||
+							Object.fromEntries(
 								Object.entries(pkgJson.browser)
 									.filter(([key, value]) => {
 										return value !== false; // these modules should ideally be ignored => maybe we make them undefined
@@ -823,21 +857,23 @@ module.exports = function (log, projectInfo) {
 										return [path.join(rootPath, key), path.join(rootPath, value)];
 									}),
 							);
-							//console.log("##################", "before  ", modulePath);
-							modulePath = mappings[modulePath] || modulePath;
-							//console.log("##################", "after   ", modulePath);
+						if (!packageJsonCache[pkgJsonFile + "~mappings"]) {
+							packageJsonCache[pkgJsonFile + "~mappings"] = mappings;
 						}
+						//console.log("##################", "before  ", modulePath);
+						modulePath = mappings[modulePath] || modulePath;
+						//console.log("##################", "after   ", modulePath);
+					}
 
-						// check for the module path exists and is a file
-						// only then the module path is valid and can be returned
-						if (modulePath !== undefined && !existsSyncAndIsFile(modulePath)) {
-							modulePath = undefined;
-						}
+					// check for the module path exists and is a file
+					// only then the module path is valid and can be returned
+					if (modulePath !== undefined && !existsSyncAndIsFile(modulePath)) {
+						modulePath = undefined;
 					}
 				}
 
 				// use the findDependency utility to resolve the module name
-				if (modulePath === undefined) {
+				if (modulePath === undefined && !path.isAbsolute(moduleName)) {
 					//console.log("##################", "findDependency", moduleName);
 					modulePath = findDependency(moduleName, cwd, depPaths);
 				}
@@ -855,7 +891,14 @@ module.exports = function (log, projectInfo) {
 			if (modulePath) {
 				modulesCache[cacheKey] = modulePath;
 			}
-			//console.log(`resolveModule "${moduleName}" took ${Date.now() - millis}ms`);
+			const took = Date.now() - millis;
+			//console.log(`resolveModule "${moduleName}" took ${took}ms`);
+			perfmetrics.resolveModulesTime += took;
+			if (!perfmetrics.resolveModules[moduleName]) {
+				perfmetrics.resolveModules[moduleName] = took;
+			} else {
+				console.error(`Duplicate module resolution for "${moduleName}"!`);
+			}
 			return modulePath;
 		},
 
@@ -888,10 +931,8 @@ module.exports = function (log, projectInfo) {
 							"global.process.versions.node": JSON.stringify("false"), // in some cases, the global.process.versions.node is used to detect the existence of Node.js
 							"process.versions.node": JSON.stringify("18.15.0"), // needed for some modules to select features based on the Node.js version
 							"process.env.NODE_ENV": JSON.stringify("production"), // we always build in production mode
-							"child_process.exec": "function() {}", // avoid the usage of child_process.exec
 						},
 					}),
-
 					injectESModule(),
 					skipAssets({
 						log,
@@ -917,6 +958,7 @@ module.exports = function (log, projectInfo) {
 						resolveModule: function (moduleName) {
 							return that.resolveModule(moduleName, { cwd, depPaths });
 						},
+						getPackageJson, // use the cached package.json if possible
 						framework: projectInfo?.framework,
 						options: pluginOptions?.["webcomponents"],
 					}),
@@ -1076,35 +1118,14 @@ module.exports = function (log, projectInfo) {
 							options.afterPlugins.push(require("@rollup/plugin-terser")());
 						}
 						const nameOfModules = modules.map((module) => module.name);
-						let output;
-						try {
-							output = await that.createBundle(nameOfModules, options);
-						} catch (ex) {
-							/*
-							// prefer the main field over the module field for module resolution
-							const mainFirstMainFields = ["browser", "main", "module"];
-							// update paths of modules for later matching
-							modules.forEach((module) => {
-								module.path = that.resolveModule(module.name, { cwd, depPaths, mainFields: mainFirstMainFields });
-							});
-							*/
-							// related to issue #726 for which the generation of jspdf fails on Windows machines
-							// when running the build in a standalone project with npm (without monorepo and pnpm)
-							/* debug && */ //log.warn(`Failed to bundle "${nameOfModules}" using ES modules, falling back to CommonJS modules...`, ex.message);
-							log.warn(`Failed to bundle "${nameOfModules}"...`, ex.message, ex);
-							debug && log.verbose(ex); // report error in verbose case!
-							/*
-							output = await that.createBundle(
-								nameOfModules,
-								Object.assign({}, options, {
-									mainFields: mainFirstMainFields,
-								}),
-							);
-							*/
-						}
+						//const millis = Date.now();
+						const output = await that.createBundle(nameOfModules, options);
+						//console.log(`createBundle overall duration: ${Date.now() - millis}ms`);
+						//console.log(`resolveModule overall duration: ${perfmetrics.resolveModulesTime}ms`);
+						//console.table(Object.entries(perfmetrics.resolveModules).filter(([key, value]) => value > 10).sort(([keyA, valueA], [keyB, valueB]) => valueB - valueA).map(([key, value]) => `${value}ms for ${key}`));
 
 						// parse the rollup build result
-						output?.forEach((module, i) => {
+						output.forEach((module, i) => {
 							// lookup the output module in the list of input modules
 							const resolvedModules = modules.filter((mod) => module?.facadeModuleId?.startsWith(mod.path));
 							if (resolvedModules.length > 0) {

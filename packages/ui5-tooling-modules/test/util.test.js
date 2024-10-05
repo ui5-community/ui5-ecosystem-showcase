@@ -788,3 +788,23 @@ test.serial("Verify generation of signalr/punycode", async (t) => {
 		t.is(moduleP.code, readSnapFile(moduleP.name, t.context.snapDir));
 	}
 });
+
+test.serial("Verify generation of @opentelemetry", async (t) => {
+	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
+	const env = await setupEnv(["@opentelemetry/api", "@opentelemetry/sdk-trace-web"], {
+		hash: t.context.hash,
+		tmpDir: t.context.tmpDir,
+		log: t.context.log,
+		scope: {},
+	});
+	const moduleOT_API = await env.getModule("@opentelemetry/api");
+	t.true(moduleOT_API.retVal.__esModule);
+	t.is(typeof moduleOT_API.retVal.trace, "object");
+	const moduleOT_SDK = await env.getModule("@opentelemetry/sdk-trace-web");
+	t.true(moduleOT_SDK.retVal.__esModule);
+	t.is(typeof moduleOT_SDK.retVal.WebTracerProvider, "function");
+	if (platform() !== "win32") {
+		t.is(moduleOT_API.code, readSnapFile(moduleOT_API.name, t.context.snapDir));
+		t.is(moduleOT_SDK.code, readSnapFile(moduleOT_SDK.name, t.context.snapDir));
+	}
+});

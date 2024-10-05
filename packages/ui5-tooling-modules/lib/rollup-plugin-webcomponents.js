@@ -10,7 +10,7 @@ const { lt, gte } = require("semver");
 // TODO:
 //   - enabled - disabled mapping
 //   - Externalize UI5 Web Components specific code
-module.exports = function ({ log, resolveModule, framework, options } = {}) {
+module.exports = function ({ log, resolveModule, getPackageJson, framework, options } = {}) {
 	// derive the configuration from the provided options
 	let { skip, scoping, scopeSuffix, enrichBusyIndicator } = Object.assign({ skip: false, scoping: true, enrichBusyIndicator: false }, options);
 
@@ -52,7 +52,7 @@ module.exports = function ({ log, resolveModule, framework, options } = {}) {
 			if (packageJsonPath) {
 				let packageJson;
 				try {
-					packageJson = JSON.parse(readFileSync(packageJsonPath, { encoding: "utf8" }));
+					packageJson = getPackageJson(packageJsonPath);
 				} catch (err) {
 					log.error(`Failed to parse package.json of ${npmPackage}`, err);
 					return undefined;
