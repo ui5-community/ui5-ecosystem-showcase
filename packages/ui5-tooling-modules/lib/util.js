@@ -733,9 +733,10 @@ module.exports = function (log, projectInfo) {
 				// for later resolution of the module path (e.g. the mapping in browsers field)
 				if (path.isAbsolute(moduleName)) {
 					// lookup the parent dirs recursive to find package.json
-					if (moduleName.lastIndexOf("/node_modules/") > -1) {
-						const localModuleRootPath = moduleName.substring(0, moduleName.lastIndexOf("/node_modules/") + "/node_modules/".length);
-						const localModuleName = moduleName.substring(localModuleRootPath.length);
+					const nodeModules = `${path.sep}node_modules${path.sep}`;
+					if (moduleName.lastIndexOf(nodeModules) > -1) {
+						const localModuleRootPath = moduleName.substring(0, moduleName.lastIndexOf(nodeModules) + nodeModules.length);
+						const localModuleName = moduleName.substring(localModuleRootPath.length)?.replace(/\\/g, "/");
 						const [, npmPackage] = npmPackageScopeRegEx.exec(localModuleName) || [];
 						pkgJsonFile = path.join(localModuleRootPath, npmPackage, "package.json");
 						if (!existsSyncAndIsFile(pkgJsonFile)) {
@@ -756,7 +757,7 @@ module.exports = function (log, projectInfo) {
 					modulePath = getModulePathWithExtension(moduleName);
 					// if the absolute path is not a file we try to lookup the index module
 					if (modulePath === undefined) {
-						modulePath = getModulePathWithExtension(`${moduleName}/index`);
+						modulePath = getModulePathWithExtension(`${moduleName}${path.sep}index`);
 					}
 				} else {
 					// lookup the package.json with the npm package name
