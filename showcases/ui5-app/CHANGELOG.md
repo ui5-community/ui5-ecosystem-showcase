@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.44.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.43.1...ui5-app@0.44.0) (2024-10-06)
+
+
+### Features
+
+* **ui5-tooling-modules:** scoping and import.meta support for webc ([#1089](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1089)) ([8c434ec](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8c434ecdf26d0d48b5d5cd0f76e2944bb52508d5))
+
+
+
+
+
 ## [0.43.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.43.0...ui5-app@0.43.1) (2024-10-06)
 
 
