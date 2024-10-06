@@ -1,1289 +1,4 @@
-sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponentRenderer', 'sap/ui/core/webc/WebComponent'], (function (DataType, hyphenate, WebComponentRenderer, WebComponentBaseClass) { 'use strict';
-
-    var class2type = {};
-    var hasOwn = class2type.hasOwnProperty;
-    var toString = class2type.toString;
-    var fnToString = hasOwn.toString;
-    var ObjectFunctionString = fnToString.call(Object);
-    var fnIsPlainObject = function (obj) {
-        var proto, Ctor;
-        if (!obj || toString.call(obj) !== "[object Object]") {
-            return false;
-        }
-        proto = Object.getPrototypeOf(obj);
-        if (!proto) {
-            return true;
-        }
-        Ctor = hasOwn.call(proto, "constructor") && proto.constructor;
-        return typeof Ctor === "function" && fnToString.call(Ctor) === ObjectFunctionString;
-    };
-
-    var oToken = Object.create(null);
-    var fnMerge$1 = function (arg1, arg2, arg3, arg4) {
-        var src, copyIsArray, copy, name, options, clone, target = arguments[2] || {}, i = 3, length = arguments.length, deep = arguments[0] || false, skipToken = arguments[1] ? undefined : oToken;
-        if (typeof target !== 'object' && typeof target !== 'function') {
-            target = {};
-        }
-        for (; i < length; i++) {
-            if ((options = arguments[i]) != null) {
-                for (name in options) {
-                    src = target[name];
-                    copy = options[name];
-                    if (name === '__proto__' || target === copy) {
-                        continue;
-                    }
-                    if (deep && copy && (fnIsPlainObject(copy) || (copyIsArray = Array.isArray(copy)))) {
-                        if (copyIsArray) {
-                            copyIsArray = false;
-                            clone = src && Array.isArray(src) ? src : [];
-                        }
-                        else {
-                            clone = src && fnIsPlainObject(src) ? src : {};
-                        }
-                        target[name] = fnMerge$1(deep, arguments[1], clone, copy);
-                    }
-                    else if (copy !== skipToken) {
-                        target[name] = copy;
-                    }
-                }
-            }
-        }
-        return target;
-    };
-
-    const fnMerge = function (arg1, arg2) {
-        return fnMerge$1(true, false, ...arguments);
-    };
-
-    const whenDOMReady = () => {
-        return new Promise(resolve => {
-            if (document.body) {
-                resolve();
-            }
-            else {
-                document.addEventListener("DOMContentLoaded", () => {
-                    resolve();
-                });
-            }
-        });
-    };
-
-    class EventProvider {
-        constructor() {
-            this._eventRegistry = new Map();
-        }
-        attachEvent(eventName, fnFunction) {
-            const eventRegistry = this._eventRegistry;
-            const eventListeners = eventRegistry.get(eventName);
-            if (!Array.isArray(eventListeners)) {
-                eventRegistry.set(eventName, [fnFunction]);
-                return;
-            }
-            if (!eventListeners.includes(fnFunction)) {
-                eventListeners.push(fnFunction);
-            }
-        }
-        detachEvent(eventName, fnFunction) {
-            const eventRegistry = this._eventRegistry;
-            const eventListeners = eventRegistry.get(eventName);
-            if (!eventListeners) {
-                return;
-            }
-            const indexOfFnToDetach = eventListeners.indexOf(fnFunction);
-            if (indexOfFnToDetach !== -1) {
-                eventListeners.splice(indexOfFnToDetach, 1);
-            }
-            if (eventListeners.length === 0) {
-                eventRegistry.delete(eventName);
-            }
-        }
-        /**
-         * Fires an event and returns the results of all event listeners as an array.
-         *
-         * @param eventName the event to fire
-         * @param data optional data to pass to each event listener
-         * @returns {Array} an array with the results of all event listeners
-         */
-        fireEvent(eventName, data) {
-            const eventRegistry = this._eventRegistry;
-            const eventListeners = eventRegistry.get(eventName);
-            if (!eventListeners) {
-                return [];
-            }
-            return eventListeners.map(fn => {
-                return fn.call(this, data);
-            });
-        }
-        /**
-         * Fires an event and returns a promise that will resolve once all listeners have resolved.
-         *
-         * @param eventName the event to fire
-         * @param data optional data to pass to each event listener
-         * @returns {Promise} a promise that will resolve when all listeners have resolved
-         */
-        fireEventAsync(eventName, data) {
-            return Promise.all(this.fireEvent(eventName, data));
-        }
-        isHandlerAttached(eventName, fnFunction) {
-            const eventRegistry = this._eventRegistry;
-            const eventListeners = eventRegistry.get(eventName);
-            if (!eventListeners) {
-                return false;
-            }
-            return eventListeners.includes(fnFunction);
-        }
-        hasListeners(eventName) {
-            return !!this._eventRegistry.get(eventName);
-        }
-    }
-
-    const VersionInfo = {
-        version: "2.1.2",
-        major: 2,
-        minor: 1,
-        patch: 2,
-        suffix: "",
-        isNext: false,
-        buildTime: 1724244890,
-    };
-
-    /**
-     * Returns a singleton HTML element, inserted in given parent element of HTML page,
-     * used mostly to store and share global resources between multiple UI5 Web Components runtimes.
-     *
-     * @param { string } tag the element tag/selector
-     * @param { HTMLElement } parentElement the parent element to insert the singleton element instance
-     * @param { Function } createEl a factory function for the element instantiation, by default document.createElement is used
-     * @returns { Element }
-     */
-    const getSingletonElementInstance = (tag, parentElement = document.body, createEl) => {
-        let el = document.querySelector(tag);
-        if (el) {
-            return el;
-        }
-        el = createEl ? createEl() : document.createElement(tag);
-        return parentElement.insertBefore(el, parentElement.firstChild);
-    };
-
-    const getMetaDomEl = () => {
-        const el = document.createElement("meta");
-        el.setAttribute("name", "ui5-shared-resources");
-        el.setAttribute("content", ""); // attribute "content" should be present when "name" is set.
-        return el;
-    };
-    const getSharedResourcesInstance = () => {
-        if (typeof document === "undefined") {
-            return null;
-        }
-        return getSingletonElementInstance(`meta[name="ui5-shared-resources"]`, document.head, getMetaDomEl);
-    };
-    /**
-     * Use this method to initialize/get resources that you would like to be shared among UI5 Web Components runtime instances.
-     * The data will be accessed via a singleton "ui5-shared-resources" HTML element in the "body" element of the page.
-     *
-     * @public
-     * @param namespace Unique ID of the resource, may contain "." to denote hierarchy
-     * @param initialValue Object or primitive that will be used as an initial value if the resource does not exist
-     * @returns {*}
-     */
-    const getSharedResource = (namespace, initialValue) => {
-        const parts = namespace.split(".");
-        let current = getSharedResourcesInstance();
-        if (!current) {
-            return initialValue;
-        }
-        for (let i = 0; i < parts.length; i++) {
-            const part = parts[i];
-            const lastPart = i === parts.length - 1;
-            if (!Object.prototype.hasOwnProperty.call(current, part)) {
-                current[part] = lastPart ? initialValue : {};
-            }
-            current = current[part];
-        }
-        return current;
-    };
-
-    let currentRuntimeIndex;
-    let currentRuntimeAlias = "";
-    const compareCache = new Map();
-    /**
-     * Central registry where all runtimes register themselves by pushing an object.
-     * The index in the registry servers as an ID for the runtime.
-     * @type {*}
-     */
-    const Runtimes = getSharedResource("Runtimes", []);
-    /**
-     * Registers the current runtime in the shared runtimes resource registry
-     */
-    const registerCurrentRuntime = () => {
-        if (currentRuntimeIndex === undefined) {
-            currentRuntimeIndex = Runtimes.length;
-            const versionInfo = VersionInfo;
-            Runtimes.push({
-                ...versionInfo,
-                alias: currentRuntimeAlias,
-                description: `Runtime ${currentRuntimeIndex} - ver ${versionInfo.version}${""}`,
-            });
-        }
-    };
-    /**
-     * Returns the index of the current runtime's object in the shared runtimes resource registry
-     * @returns {*}
-     */
-    const getCurrentRuntimeIndex = () => {
-        return currentRuntimeIndex;
-    };
-    /**
-     * Compares two runtimes and returns 1 if the first is of a bigger version, -1 if the second is of a bigger version, and 0 if equal
-     * @param index1 The index of the first runtime to compare
-     * @param index2 The index of the second runtime to compare
-     * @returns {number}
-     */
-    const compareRuntimes = (index1, index2) => {
-        const cacheIndex = `${index1},${index2}`;
-        if (compareCache.has(cacheIndex)) {
-            return compareCache.get(cacheIndex);
-        }
-        const runtime1 = Runtimes[index1];
-        const runtime2 = Runtimes[index2];
-        if (!runtime1 || !runtime2) {
-            throw new Error("Invalid runtime index supplied");
-        }
-        // If any of the two is a next version, bigger buildTime wins
-        if (runtime1.isNext || runtime2.isNext) {
-            return runtime1.buildTime - runtime2.buildTime;
-        }
-        // If major versions differ, bigger one wins
-        const majorDiff = runtime1.major - runtime2.major;
-        if (majorDiff) {
-            return majorDiff;
-        }
-        // If minor versions differ, bigger one wins
-        const minorDiff = runtime1.minor - runtime2.minor;
-        if (minorDiff) {
-            return minorDiff;
-        }
-        // If patch versions differ, bigger one wins
-        const patchDiff = runtime1.patch - runtime2.patch;
-        if (patchDiff) {
-            return patchDiff;
-        }
-        // Bigger suffix wins, f.e. rc10 > rc9
-        // Important: suffix is alphanumeric, must use natural compare
-        const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
-        const result = collator.compare(runtime1.suffix, runtime2.suffix);
-        compareCache.set(cacheIndex, result);
-        return result;
-    };
-    const getAllRuntimes = () => {
-        return Runtimes;
-    };
-
-    const isSSR$2 = typeof document === "undefined";
-    const getStyleId = (name, value) => {
-        return value ? `${name}|${value}` : name;
-    };
-    const shouldUpdate = (runtimeIndex) => {
-        if (runtimeIndex === undefined) {
-            return true;
-        }
-        return compareRuntimes(getCurrentRuntimeIndex(), parseInt(runtimeIndex)) === 1; // 1 means the current is newer, 0 means the same, -1 means the resource's runtime is newer
-    };
-    const createStyle = (data, name, value = "", theme) => {
-        const content = typeof data === "string" ? data : data.content;
-        const currentRuntimeIndex = getCurrentRuntimeIndex();
-        const stylesheet = new CSSStyleSheet();
-        stylesheet.replaceSync(content);
-        stylesheet._ui5StyleId = getStyleId(name, value); // set an id so that we can find the style later
-        if (theme) {
-            stylesheet._ui5RuntimeIndex = currentRuntimeIndex;
-            stylesheet._ui5Theme = theme;
-        }
-        document.adoptedStyleSheets = [...document.adoptedStyleSheets, stylesheet];
-    };
-    const updateStyle = (data, name, value = "", theme) => {
-        const content = typeof data === "string" ? data : data.content;
-        const currentRuntimeIndex = getCurrentRuntimeIndex();
-        const stylesheet = document.adoptedStyleSheets.find(sh => sh._ui5StyleId === getStyleId(name, value));
-        if (!stylesheet) {
-            return;
-        }
-        if (!theme) {
-            stylesheet.replaceSync(content || "");
-        }
-        else {
-            const stylesheetRuntimeIndex = stylesheet._ui5RuntimeIndex;
-            const stylesheetTheme = stylesheet._ui5Theme;
-            if (stylesheetTheme !== theme || shouldUpdate(stylesheetRuntimeIndex)) {
-                stylesheet.replaceSync(content || "");
-                stylesheet._ui5RuntimeIndex = String(currentRuntimeIndex);
-                stylesheet._ui5Theme = theme;
-            }
-        }
-    };
-    const hasStyle = (name, value = "") => {
-        if (isSSR$2) {
-            return true;
-        }
-        return !!document.adoptedStyleSheets.find(sh => sh._ui5StyleId === getStyleId(name, value));
-    };
-    const removeStyle = (name, value = "") => {
-        document.adoptedStyleSheets = document.adoptedStyleSheets.filter(sh => sh._ui5StyleId !== getStyleId(name, value));
-    };
-    const createOrUpdateStyle = (data, name, value = "", theme) => {
-        if (hasStyle(name, value)) {
-            updateStyle(data, name, value, theme);
-        }
-        else {
-            createStyle(data, name, value, theme);
-        }
-    };
-    const mergeStyles = (style1, style2) => {
-        if (style1 === undefined) {
-            return style2;
-        }
-        if (style2 === undefined) {
-            return style1;
-        }
-        const style2Content = typeof style2 === "string" ? style2 : style2.content;
-        if (typeof style1 === "string") {
-            return `${style1} ${style2Content}`;
-        }
-        return {
-            content: `${style1.content} ${style2Content}`,
-            packageName: style1.packageName,
-            fileName: style1.fileName,
-        };
-    };
-
-    const features = new Map();
-    const componentFeatures = new Map();
-    const subscribers = new Map();
-    const EVENT_NAME = "componentFeatureLoad";
-    const eventProvider$5 = new EventProvider();
-    const featureLoadEventName = name => `${EVENT_NAME}_${name}`;
-    const registerFeature = (name, feature) => {
-      features.set(name, feature);
-    };
-    const getFeature = name => {
-      return features.get(name);
-    };
-    const getComponentFeature = name => {
-      return componentFeatures.get(name);
-    };
-    const subscribeForFeatureLoad = (name, klass, callback) => {
-      const subscriber = subscribers.get(klass);
-      const isSubscribed = subscriber?.includes(name);
-      if (isSubscribed) {
-        return;
-      }
-      if (!subscriber) {
-        subscribers.set(klass, [name]);
-      } else {
-        subscriber.push(name);
-      }
-      eventProvider$5.attachEvent(featureLoadEventName(name), callback);
-    };
-
-    const styleData$7 = {
-        packageName: "@ui5/webcomponents-base",
-        fileName: "FontFace.css",
-        content: `@font-face{font-family:"72";font-style:normal;font-weight:400;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Regular.woff2?ui5-webcomponents) format("woff2"),local("72");unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:"72full";font-style:normal;font-weight:400;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Regular-full.woff2?ui5-webcomponents) format("woff2"),local('72-full')}@font-face{font-family:"72";font-style:normal;font-weight:700;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Bold.woff2?ui5-webcomponents) format("woff2"),local('72-Bold');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:"72full";font-style:normal;font-weight:700;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Bold-full.woff2?ui5-webcomponents) format("woff2")}@font-face{font-family:'72-Bold';font-style:normal;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Bold.woff2?ui5-webcomponents) format("woff2"),local('72-Bold');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:'72-Boldfull';font-style:normal;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Bold-full.woff2?ui5-webcomponents) format("woff2")}@font-face{font-family:'72-Light';font-style:normal;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Light.woff2?ui5-webcomponents) format("woff2"),local('72-Light');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:'72-Lightfull';font-style:normal;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Light-full.woff2?ui5-webcomponents) format("woff2")}@font-face{font-family:'72Mono';src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72Mono-Regular.woff2?ui5-webcomponents) format('woff2'),local('72Mono');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:'72Monofull';src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72Mono-Regular-full.woff2?ui5-webcomponents) format('woff2')}@font-face{font-family:'72Mono-Bold';src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72Mono-Bold.woff2?ui5-webcomponents) format('woff2'),local('72Mono-Bold');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:'72Mono-Boldfull';src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72Mono-Bold-full.woff2?ui5-webcomponents) format('woff2')}@font-face{font-family:"72Black";font-style:bold;font-weight:900;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Black.woff2?ui5-webcomponents) format("woff2"),local('72Black');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:'72Blackfull';src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Black-full.woff2?ui5-webcomponents) format('woff2')}@font-face{font-family:"72-SemiboldDuplex";src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-SemiboldDuplex.woff2?ui5-webcomponents) format("woff2"),local('72-SemiboldDuplex');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}`,
-    };
-
-    const styleData$6 = {
-        packageName: "@ui5/webcomponents-base",
-        fileName: "OverrideFontFace.css",
-        content: `@font-face{font-family:'72override';unicode-range:U+0102-0103,U+01A0-01A1,U+01AF-01B0,U+1EA0-1EB7,U+1EB8-1EC7,U+1EC8-1ECB,U+1ECC-1EE3,U+1EE4-1EF1,U+1EF4-1EF7;src:local('Arial'),local('Helvetica'),local('sans-serif')}`,
-    };
-
-    const assetParameters = { "themes": { "default": "sap_horizon", "all": ["sap_fiori_3", "sap_fiori_3_dark", "sap_fiori_3_hcb", "sap_fiori_3_hcw", "sap_horizon", "sap_horizon_dark", "sap_horizon_hcb", "sap_horizon_hcw", "sap_horizon_exp", "sap_horizon_dark_exp", "sap_horizon_hcb_exp", "sap_horizon_hcw_exp"] }, "languages": { "default": "en", "all": ["ar", "bg", "ca", "cnr", "cs", "cy", "da", "de", "el", "en", "en_GB", "en_US_sappsd", "en_US_saprigi", "en_US_saptrc", "es", "es_MX", "et", "fi", "fr", "fr_CA", "hi", "hr", "hu", "in", "it", "iw", "ja", "kk", "ko", "lt", "lv", "mk", "ms", "nl", "no", "pl", "pt_PT", "pt", "ro", "ru", "sh", "sk", "sl", "sr", "sv", "th", "tr", "uk", "vi", "zh_CN", "zh_TW"] }, "locales": { "default": "en", "all": ["ar", "ar_EG", "ar_SA", "bg", "ca", "cnr", "cs", "da", "de", "de_AT", "de_CH", "el", "el_CY", "en", "en_AU", "en_GB", "en_HK", "en_IE", "en_IN", "en_NZ", "en_PG", "en_SG", "en_ZA", "es", "es_AR", "es_BO", "es_CL", "es_CO", "es_MX", "es_PE", "es_UY", "es_VE", "et", "fa", "fi", "fr", "fr_BE", "fr_CA", "fr_CH", "fr_LU", "he", "hi", "hr", "hu", "id", "it", "it_CH", "ja", "kk", "ko", "lt", "lv", "ms", "mk", "nb", "nl", "nl_BE", "pl", "pt", "pt_PT", "ro", "ru", "ru_UA", "sk", "sl", "sr", "sr_Latn", "sv", "th", "tr", "uk", "vi", "zh_CN", "zh_HK", "zh_SG", "zh_TW"] } };
-    const DEFAULT_THEME = assetParameters.themes.default;
-    const SUPPORTED_THEMES = assetParameters.themes.all;
-    const DEFAULT_LANGUAGE = assetParameters.languages.default;
-    const DEFAULT_LOCALE = assetParameters.locales.default;
-
-    const getMetaTagValue = (metaTagName) => {
-        const metaTag = document.querySelector(`META[name="${metaTagName}"]`), metaTagContent = metaTag && metaTag.getAttribute("content");
-        return metaTagContent;
-    };
-    const validateThemeOrigin = (origin) => {
-        const allowedOrigins = getMetaTagValue("sap-allowedThemeOrigins");
-        return allowedOrigins && allowedOrigins.split(",").some(allowedOrigin => {
-            return allowedOrigin === "*" || origin === allowedOrigin.trim();
-        });
-    };
-    const buildCorrectUrl = (oldUrl, newOrigin) => {
-        const oldUrlPath = new URL(oldUrl).pathname;
-        return new URL(oldUrlPath, newOrigin).toString();
-    };
-    const validateThemeRoot = (themeRoot) => {
-        let resultUrl;
-        try {
-            if (themeRoot.startsWith(".") || themeRoot.startsWith("/")) {
-                // Handle relative url
-                // new URL("/newExmPath", "http://example.com/exmPath") => http://example.com/newExmPath
-                // new URL("./newExmPath", "http://example.com/exmPath") => http://example.com/exmPath/newExmPath
-                // new URL("../newExmPath", "http://example.com/exmPath") => http://example.com/newExmPath
-                resultUrl = new URL(themeRoot, window.location.href).toString();
-            }
-            else {
-                const themeRootURL = new URL(themeRoot);
-                const origin = themeRootURL.origin;
-                if (origin && validateThemeOrigin(origin)) {
-                    // If origin is allowed, use it
-                    resultUrl = themeRootURL.toString();
-                }
-                else {
-                    // If origin is not allow and the URL is not relative, we have to replace the origin
-                    // with current location
-                    resultUrl = buildCorrectUrl(themeRootURL.toString(), window.location.href);
-                }
-            }
-            if (!resultUrl.endsWith("/")) {
-                resultUrl = `${resultUrl}/`;
-            }
-            return `${resultUrl}UI5/`;
-        }
-        catch (e) {
-            // Catch if URL is not correct
-        }
-    };
-
-    /**
-     * Different types of AnimationMode.
-     *
-     * @public
-     */
-    var AnimationMode;
-    (function (AnimationMode) {
-        /**
-         * @public
-         */
-        AnimationMode["Full"] = "full";
-        /**
-         * @public
-         */
-        AnimationMode["Basic"] = "basic";
-        /**
-         * @public
-         */
-        AnimationMode["Minimal"] = "minimal";
-        /**
-         * @public
-         */
-        AnimationMode["None"] = "none";
-    })(AnimationMode || (AnimationMode = {}));
-    var AnimationMode$1 = AnimationMode;
-
-    let initialized = false;
-    let initialConfig = {
-        animationMode: AnimationMode$1.Full,
-        theme: DEFAULT_THEME,
-        themeRoot: undefined,
-        rtl: undefined,
-        language: undefined,
-        timezone: undefined,
-        calendarType: undefined,
-        secondaryCalendarType: undefined,
-        noConflict: false,
-        formatSettings: {},
-        fetchDefaultLanguage: false,
-        defaultFontLoading: true,
-    };
-    /* General settings */
-    const getAnimationMode$1 = () => {
-        initConfiguration();
-        return initialConfig.animationMode;
-    };
-    const getTheme$1 = () => {
-        initConfiguration();
-        return initialConfig.theme;
-    };
-    const getThemeRoot$1 = () => {
-        initConfiguration();
-        return initialConfig.themeRoot;
-    };
-    const getLanguage$1 = () => {
-        initConfiguration();
-        return initialConfig.language;
-    };
-    /**
-     * Returns if the default language, that is inlined at build time,
-     * should be fetched over the network instead.
-     * @returns {Boolean}
-     */
-    const getFetchDefaultLanguage$1 = () => {
-        initConfiguration();
-        return initialConfig.fetchDefaultLanguage;
-    };
-    const getNoConflict$1 = () => {
-        initConfiguration();
-        return initialConfig.noConflict;
-    };
-    const getDefaultFontLoading$1 = () => {
-        initConfiguration();
-        return initialConfig.defaultFontLoading;
-    };
-    const booleanMapping = new Map();
-    booleanMapping.set("true", true);
-    booleanMapping.set("false", false);
-    const parseConfigurationScript = () => {
-        const configScript = document.querySelector("[data-ui5-config]") || document.querySelector("[data-id='sap-ui-config']"); // for backward compatibility
-        let configJSON;
-        if (configScript) {
-            try {
-                configJSON = JSON.parse(configScript.innerHTML);
-            }
-            catch (err) {
-                console.warn("Incorrect data-sap-ui-config format. Please use JSON"); /* eslint-disable-line */
-            }
-            if (configJSON) {
-                initialConfig = fnMerge(initialConfig, configJSON);
-            }
-        }
-    };
-    const parseURLParameters = () => {
-        const params = new URLSearchParams(window.location.search);
-        // Process "sap-*" params first
-        params.forEach((value, key) => {
-            const parts = key.split("sap-").length;
-            if (parts === 0 || parts === key.split("sap-ui-").length) {
-                return;
-            }
-            applyURLParam(key, value, "sap");
-        });
-        // Process "sap-ui-*" params
-        params.forEach((value, key) => {
-            if (!key.startsWith("sap-ui")) {
-                return;
-            }
-            applyURLParam(key, value, "sap-ui");
-        });
-    };
-    const normalizeThemeRootParamValue = (value) => {
-        const themeRoot = value.split("@")[1];
-        return validateThemeRoot(themeRoot);
-    };
-    const normalizeThemeParamValue = (param, value) => {
-        if (param === "theme" && value.includes("@")) { // the theme parameter might have @<URL-TO-THEME> in the value - strip this
-            return value.split("@")[0];
-        }
-        return value;
-    };
-    const applyURLParam = (key, value, paramType) => {
-        const lowerCaseValue = value.toLowerCase();
-        const param = key.split(`${paramType}-`)[1];
-        if (booleanMapping.has(value)) {
-            value = booleanMapping.get(lowerCaseValue);
-        }
-        if (param === "theme") {
-            initialConfig.theme = normalizeThemeParamValue(param, value);
-            if (value && value.includes("@")) {
-                initialConfig.themeRoot = normalizeThemeRootParamValue(value);
-            }
-        }
-        else {
-            initialConfig[param] = value;
-        }
-    };
-    const applyOpenUI5Configuration = () => {
-        const openUI5Support = getFeature("OpenUI5Support");
-        if (!openUI5Support || !openUI5Support.isOpenUI5Detected()) {
-            return;
-        }
-        const OpenUI5Config = openUI5Support.getConfigurationSettingsObject();
-        initialConfig = fnMerge(initialConfig, OpenUI5Config);
-    };
-    const initConfiguration = () => {
-        if (typeof document === "undefined" || initialized) {
-            return;
-        }
-        // 1. Lowest priority - configuration script
-        parseConfigurationScript();
-        // 2. URL parameters overwrite configuration script parameters
-        parseURLParameters();
-        // 3. If OpenUI5 is detected, it has the highest priority
-        applyOpenUI5Configuration();
-        initialized = true;
-    };
-
-    let defaultFontLoading;
-    /**
-     * Returns if the "defaultFontLoading" configuration is set.
-     * @public
-     * @returns { boolean }
-     */
-    const getDefaultFontLoading = () => {
-        if (defaultFontLoading === undefined) {
-            defaultFontLoading = getDefaultFontLoading$1();
-        }
-        return defaultFontLoading;
-    };
-
-    const insertFontFace = () => {
-        const openUI5Support = getFeature("OpenUI5Support");
-        // Only set the main font if there is no OpenUI5 support, or there is, but OpenUI5 is not loaded
-        if ((!openUI5Support || !openUI5Support.isOpenUI5Detected())) {
-            insertMainFontFace();
-        }
-        // Always set the override font - OpenUI5 in CSS Vars mode does not set it, unlike the main font
-        insertOverrideFontFace();
-    };
-    const insertMainFontFace = () => {
-        const hasFontStyles = document.querySelector("head>style[data-ui5-font-face]");
-        if (!getDefaultFontLoading() || hasFontStyles) {
-            return;
-        }
-        if (!hasStyle("data-ui5-font-face")) {
-            createStyle(styleData$7, "data-ui5-font-face");
-        }
-    };
-    const insertOverrideFontFace = () => {
-        if (!hasStyle("data-ui5-font-face-override")) {
-            createStyle(styleData$6, "data-ui5-font-face-override");
-        }
-    };
-
-    const styleData$5 = {
-        packageName: "@ui5/webcomponents-base",
-        fileName: "SystemCSSVars.css",
-        content: `:root{--_ui5_content_density:cozy}.sapUiSizeCompact,.ui5-content-density-compact,[data-ui5-compact-size]{--_ui5_content_density:compact}`,
-    };
-
-    const insertSystemCSSVars = () => {
-        if (!hasStyle("data-ui5-system-css-vars")) {
-            createStyle(styleData$5, "data-ui5-system-css-vars");
-        }
-    };
-
-    const MAX_PROCESS_COUNT = 10;
-    class RenderQueue {
-        constructor() {
-            this.list = []; // Used to store the web components in order
-            this.lookup = new Set(); // Used for faster search
-        }
-        add(webComponent) {
-            if (this.lookup.has(webComponent)) {
-                return;
-            }
-            this.list.push(webComponent);
-            this.lookup.add(webComponent);
-        }
-        remove(webComponent) {
-            if (!this.lookup.has(webComponent)) {
-                return;
-            }
-            this.list = this.list.filter(item => item !== webComponent);
-            this.lookup.delete(webComponent);
-        }
-        shift() {
-            const webComponent = this.list.shift();
-            if (webComponent) {
-                this.lookup.delete(webComponent);
-                return webComponent;
-            }
-        }
-        isEmpty() {
-            return this.list.length === 0;
-        }
-        isAdded(webComponent) {
-            return this.lookup.has(webComponent);
-        }
-        /**
-         * Processes the whole queue by executing the callback on each component,
-         * while also imposing restrictions on how many times a component may be processed.
-         *
-         * @param callback - function with one argument (the web component to be processed)
-         */
-        process(callback) {
-            let webComponent;
-            const stats = new Map();
-            webComponent = this.shift();
-            while (webComponent) {
-                const timesProcessed = stats.get(webComponent) || 0;
-                if (timesProcessed > MAX_PROCESS_COUNT) {
-                    throw new Error(`Web component processed too many times this task, max allowed is: ${MAX_PROCESS_COUNT}`);
-                }
-                callback(webComponent);
-                stats.set(webComponent, timesProcessed + 1);
-                webComponent = this.shift();
-            }
-        }
-    }
-
-    const Tags = getSharedResource("Tags", new Map());
-    const Definitions = new Set();
-    let Failures = new Map();
-    let failureTimeout;
-    const UNKNOWN_RUNTIME = -1;
-    const registerTag = tag => {
-      Definitions.add(tag);
-      Tags.set(tag, getCurrentRuntimeIndex());
-    };
-    const isTagRegistered = tag => {
-      return Definitions.has(tag);
-    };
-    const getAllRegisteredTags = () => {
-      return [...Definitions.values()];
-    };
-    const recordTagRegistrationFailure = tag => {
-      let tagRegRuntimeIndex = Tags.get(tag);
-      if (tagRegRuntimeIndex === undefined) {
-        tagRegRuntimeIndex = UNKNOWN_RUNTIME;
-      }
-      if (!Failures.has(tagRegRuntimeIndex)) {
-        Failures.set(tagRegRuntimeIndex, new Set());
-      }
-      Failures.get(tagRegRuntimeIndex).add(tag);
-      if (!failureTimeout) {
-        failureTimeout = setTimeout(() => {
-          displayFailedRegistrations();
-          Failures = new Map();
-          failureTimeout = undefined;
-        }, 1000);
-      }
-    };
-    const displayFailedRegistrations = () => {
-      const allRuntimes = getAllRuntimes();
-      const currentRuntimeIndex = getCurrentRuntimeIndex();
-      const currentRuntime = allRuntimes[currentRuntimeIndex];
-      let message = `Multiple UI5 Web Components instances detected.`;
-      if (allRuntimes.length > 1) {
-        message = `${message}\nLoading order (versions before 1.1.0 not listed): ${allRuntimes.map(runtime => `\n${runtime.description}`).join("")}`;
-      }
-      [...Failures.keys()].forEach(otherRuntimeIndex => {
-        let comparison;
-        let otherRuntime;
-        if (otherRuntimeIndex === UNKNOWN_RUNTIME) {
-          comparison = 1;
-          otherRuntime = {
-            description: `Older unknown runtime`
-          };
-        } else {
-          comparison = compareRuntimes(currentRuntimeIndex, otherRuntimeIndex);
-          otherRuntime = allRuntimes[otherRuntimeIndex];
-        }
-        let compareWord;
-        if (comparison > 0) {
-          compareWord = "an older";
-        } else if (comparison < 0) {
-          compareWord = "a newer";
-        } else {
-          compareWord = "the same";
-        }
-        message = `${message}\n\n"${currentRuntime.description}" failed to define ${Failures.get(otherRuntimeIndex).size} tag(s) as they were defined by a runtime of ${compareWord} version "${otherRuntime.description}": ${[...Failures.get(otherRuntimeIndex)].sort().join(", ")}.`;
-        if (comparison > 0) {
-          message = `${message}\nWARNING! If your code uses features of the above web components, unavailable in ${otherRuntime.description}, it might not work as expected!`;
-        } else {
-          message = `${message}\nSince the above web components were defined by the same or newer version runtime, they should be compatible with your code.`;
-        }
-      });
-      message = `${message}\n\nTo prevent other runtimes from defining tags that you use, consider using scoping or have third-party libraries use scoping: https://github.com/SAP/ui5-webcomponents/blob/main/docs/2-advanced/03-scoping.md.`;
-      console.warn(message);
-    };
-
-    const rtlAwareSet = new Set();
-    const markAsRtlAware = (klass) => {
-        rtlAwareSet.add(klass);
-    };
-    const isRtlAware = (klass) => {
-        return rtlAwareSet.has(klass);
-    };
-
-    const registeredElements = new Set();
-    const eventProvider$4 = new EventProvider();
-    const invalidatedWebComponents = new RenderQueue(); // Queue for invalidated web components
-    let renderTaskPromise, renderTaskPromiseResolve;
-    let mutationObserverTimer;
-    let queuePromise;
-    /**
-     * Schedules a render task (if not already scheduled) to render the component
-     *
-     * @param webComponent
-     * @returns {Promise}
-     */
-    const renderDeferred = async (webComponent) => {
-        // Enqueue the web component
-        invalidatedWebComponents.add(webComponent);
-        // Schedule a rendering task
-        await scheduleRenderTask();
-    };
-    /**
-     * Renders a component synchronously and adds it to the registry of rendered components
-     *
-     * @param webComponent
-     */
-    const renderImmediately = (webComponent) => {
-        eventProvider$4.fireEvent("beforeComponentRender", webComponent);
-        registeredElements.add(webComponent);
-        webComponent._render();
-    };
-    /**
-     * Cancels the rendering of a component, if awaiting to be rendered, and removes it from the registry of rendered components
-     *
-     * @param webComponent
-     */
-    const cancelRender = (webComponent) => {
-        invalidatedWebComponents.remove(webComponent);
-        registeredElements.delete(webComponent);
-    };
-    /**
-     * Schedules a rendering task, if not scheduled already
-     */
-    const scheduleRenderTask = async () => {
-        if (!queuePromise) {
-            queuePromise = new Promise(resolve => {
-                window.requestAnimationFrame(() => {
-                    // Render all components in the queue
-                    // console.log(`--------------------RENDER TASK START------------------------------`); // eslint-disable-line
-                    invalidatedWebComponents.process(renderImmediately);
-                    // console.log(`--------------------RENDER TASK END------------------------------`); // eslint-disable-line
-                    // Resolve the promise so that callers of renderDeferred can continue
-                    queuePromise = null;
-                    resolve();
-                    // Wait for Mutation observer before the render task is considered finished
-                    if (!mutationObserverTimer) {
-                        mutationObserverTimer = setTimeout(() => {
-                            mutationObserverTimer = undefined;
-                            if (invalidatedWebComponents.isEmpty()) {
-                                _resolveTaskPromise();
-                            }
-                        }, 200);
-                    }
-                });
-            });
-        }
-        await queuePromise;
-    };
-    /**
-     * return a promise that will be resolved once all invalidated web components are rendered
-     */
-    const whenDOMUpdated = () => {
-        if (renderTaskPromise) {
-            return renderTaskPromise;
-        }
-        renderTaskPromise = new Promise(resolve => {
-            renderTaskPromiseResolve = resolve;
-            window.requestAnimationFrame(() => {
-                if (invalidatedWebComponents.isEmpty()) {
-                    renderTaskPromise = undefined;
-                    resolve();
-                }
-            });
-        });
-        return renderTaskPromise;
-    };
-    const whenAllCustomElementsAreDefined = () => {
-        const definedPromises = getAllRegisteredTags().map(tag => customElements.whenDefined(tag));
-        return Promise.all(definedPromises);
-    };
-    const renderFinished = async () => {
-        await whenAllCustomElementsAreDefined();
-        await whenDOMUpdated();
-    };
-    const _resolveTaskPromise = () => {
-        if (!invalidatedWebComponents.isEmpty()) {
-            // More updates are pending. Resolve will be called again
-            return;
-        }
-        if (renderTaskPromiseResolve) {
-            renderTaskPromiseResolve();
-            renderTaskPromiseResolve = undefined;
-            renderTaskPromise = undefined;
-        }
-    };
-    /**
-     * Re-renders all UI5 Elements on the page, with the option to specify filters to rerender only some components.
-     *
-     * Usage:
-     * reRenderAllUI5Elements() -> re-renders all components
-     * reRenderAllUI5Elements({tag: "ui5-button"}) -> re-renders only instances of ui5-button
-     * reRenderAllUI5Elements({rtlAware: true}) -> re-renders only rtlAware components
-     * reRenderAllUI5Elements({languageAware: true}) -> re-renders only languageAware components
-     * reRenderAllUI5Elements({themeAware: true}) -> re-renders only themeAware components
-     * reRenderAllUI5Elements({rtlAware: true, languageAware: true}) -> re-renders components that are rtlAware or languageAware
-     * etc...
-     *
-     * @public
-     * @param {object|undefined} filters - Object with keys that can be "rtlAware" or "languageAware"
-     * @returns {Promise<void>}
-     */
-    const reRenderAllUI5Elements = async (filters) => {
-        registeredElements.forEach((element) => {
-            const ctor = element.constructor;
-            const tag = ctor.getMetadata().getTag();
-            const rtlAware = isRtlAware(ctor);
-            const languageAware = ctor.getMetadata().isLanguageAware();
-            const themeAware = ctor.getMetadata().isThemeAware();
-            if (!filters || (filters.tag === tag) || (filters.rtlAware && rtlAware) || (filters.languageAware && languageAware) || (filters.themeAware && themeAware)) {
-                renderDeferred(element);
-            }
-        });
-        await renderFinished();
-    };
-
-    const eventProvider$3 = new EventProvider();
-    const THEME_REGISTERED = "themeRegistered";
-    const attachThemeRegistered = (listener) => {
-        eventProvider$3.attachEvent(THEME_REGISTERED, listener);
-    };
-    const fireThemeRegistered = (theme) => {
-        return eventProvider$3.fireEvent(THEME_REGISTERED, theme);
-    };
-
-    const themeStyles = new Map();
-    const loaders$2 = new Map();
-    const customLoaders = new Map();
-    const registeredPackages = new Set();
-    const registeredThemes = new Set();
-    const registerThemePropertiesLoader = (packageName, themeName, loader) => {
-        loaders$2.set(`${packageName}/${themeName}`, loader);
-        registeredPackages.add(packageName);
-        registeredThemes.add(themeName);
-        fireThemeRegistered(themeName);
-    };
-    const getThemeProperties = async (packageName, themeName, externalThemeName) => {
-        const cacheKey = `${packageName}_${themeName}_${externalThemeName || ""}`;
-        const cachedStyleData = themeStyles.get(cacheKey);
-        if (cachedStyleData !== undefined) { // it's valid for style to be an empty string
-            return cachedStyleData;
-        }
-        if (!registeredThemes.has(themeName)) {
-            const regThemesStr = [...registeredThemes.values()].join(", ");
-            console.warn(`You have requested a non-registered theme ${themeName} - falling back to ${DEFAULT_THEME}. Registered themes are: ${regThemesStr}`); /* eslint-disable-line */
-            return _getThemeProperties(packageName, DEFAULT_THEME);
-        }
-        const [style, customStyle] = await Promise.all([
-            _getThemeProperties(packageName, themeName),
-            externalThemeName ? _getThemeProperties(packageName, externalThemeName, true) : undefined,
-        ]);
-        const styleData = mergeStyles(style, customStyle);
-        if (styleData) {
-            themeStyles.set(cacheKey, styleData);
-        }
-        return styleData;
-    };
-    const _getThemeProperties = async (packageName, themeName, forCustomTheme = false) => {
-        const loadersMap = forCustomTheme ? customLoaders : loaders$2;
-        const loader = loadersMap.get(`${packageName}/${themeName}`);
-        if (!loader) {
-            // no themes for package
-            if (!forCustomTheme) {
-                console.error(`Theme [${themeName}] not registered for package [${packageName}]`); /* eslint-disable-line */
-            }
-            return;
-        }
-        let data;
-        try {
-            data = await loader(themeName);
-        }
-        catch (error) {
-            const e = error;
-            console.error(packageName, e.message); /* eslint-disable-line */
-            return;
-        }
-        const themeProps = data._ || data; // Refactor: remove _ everywhere
-        return themeProps;
-    };
-    const getRegisteredPackages = () => {
-        return registeredPackages;
-    };
-    const isThemeRegistered = (theme) => {
-        return registeredThemes.has(theme);
-    };
-
-    const warnings = new Set();
-    const getThemeMetadata = () => {
-        // Check if the class was already applied, most commonly to the link/style tag with the CSS Variables
-        let el = document.querySelector(".sapThemeMetaData-Base-baseLib") || document.querySelector(".sapThemeMetaData-UI5-sap-ui-core");
-        if (el) {
-            return getComputedStyle(el).backgroundImage;
-        }
-        el = document.createElement("span");
-        el.style.display = "none";
-        // Try with sapThemeMetaData-Base-baseLib first
-        el.classList.add("sapThemeMetaData-Base-baseLib");
-        document.body.appendChild(el);
-        let metadata = getComputedStyle(el).backgroundImage;
-        // Try with sapThemeMetaData-UI5-sap-ui-core only if the previous selector was not found
-        if (metadata === "none") {
-            el.classList.add("sapThemeMetaData-UI5-sap-ui-core");
-            metadata = getComputedStyle(el).backgroundImage;
-        }
-        document.body.removeChild(el);
-        return metadata;
-    };
-    const parseThemeMetadata = (metadataString) => {
-        const params = /\(["']?data:text\/plain;utf-8,(.*?)['"]?\)$/i.exec(metadataString);
-        if (params && params.length >= 2) {
-            let paramsString = params[1];
-            paramsString = paramsString.replace(/\\"/g, `"`);
-            if (paramsString.charAt(0) !== "{" && paramsString.charAt(paramsString.length - 1) !== "}") {
-                try {
-                    paramsString = decodeURIComponent(paramsString);
-                }
-                catch (ex) {
-                    if (!warnings.has("decode")) {
-                        console.warn("Malformed theme metadata string, unable to decodeURIComponent"); // eslint-disable-line
-                        warnings.add("decode");
-                    }
-                    return;
-                }
-            }
-            try {
-                return JSON.parse(paramsString);
-            }
-            catch (ex) {
-                if (!warnings.has("parse")) {
-                    console.warn("Malformed theme metadata string, unable to parse JSON"); // eslint-disable-line
-                    warnings.add("parse");
-                }
-            }
-        }
-    };
-    const processThemeMetadata = (metadata) => {
-        let themeName;
-        let baseThemeName;
-        try {
-            themeName = metadata.Path.match(/\.([^.]+)\.css_variables$/)[1];
-            baseThemeName = metadata.Extends[0];
-        }
-        catch (ex) {
-            if (!warnings.has("object")) {
-                console.warn("Malformed theme metadata Object", metadata); // eslint-disable-line
-                warnings.add("object");
-            }
-            return;
-        }
-        return {
-            themeName,
-            baseThemeName,
-        };
-    };
-    const getThemeDesignerTheme = () => {
-        const metadataString = getThemeMetadata();
-        if (!metadataString || metadataString === "none") {
-            return;
-        }
-        const metadata = parseThemeMetadata(metadataString);
-        if (metadata) {
-            return processThemeMetadata(metadata);
-        }
-    };
-
-    const eventProvider$2 = new EventProvider();
-    const THEME_LOADED = "themeLoaded";
-    const fireThemeLoaded = (theme) => {
-        return eventProvider$2.fireEvent(THEME_LOADED, theme);
-    };
-
-    /**
-     * Creates a `<link>` tag in the `<head>` tag
-     * @param href - the CSS
-     * @param attributes - optional attributes to add to the tag
-     */
-    const createLinkInHead = (href, attributes) => {
-        const link = document.createElement("link");
-        link.type = "text/css";
-        link.rel = "stylesheet";
-        if (attributes) {
-            Object.entries(attributes).forEach(pair => link.setAttribute(...pair));
-        }
-        link.href = href;
-        document.head.appendChild(link);
-        return new Promise(resolve => {
-            link.addEventListener("load", resolve);
-            link.addEventListener("error", resolve); // intended
-        });
-    };
-
-    let currThemeRoot;
-    /**
-     * Returns the current theme root.
-     *
-     * @public
-     * @since 1.14.0
-     * @returns { string } the current theme root
-     */
-    const getThemeRoot = () => {
-        if (currThemeRoot === undefined) {
-            currThemeRoot = getThemeRoot$1();
-        }
-        return currThemeRoot;
-    };
-    const formatThemeLink = (theme) => {
-        return `${getThemeRoot()}Base/baseLib/${theme}/css_variables.css`; // theme root is always set at this point.
-    };
-    const attachCustomThemeStylesToHead = async (theme) => {
-        const link = document.querySelector(`[sap-ui-webcomponents-theme="${theme}"]`);
-        if (link) {
-            document.head.removeChild(link);
-        }
-        await createLinkInHead(formatThemeLink(theme), { "sap-ui-webcomponents-theme": theme });
-    };
-
-    const BASE_THEME_PACKAGE = "@ui5/webcomponents-theming";
-    const isThemeBaseRegistered = () => {
-        const registeredPackages = getRegisteredPackages();
-        return registeredPackages.has(BASE_THEME_PACKAGE);
-    };
-    const loadThemeBase = async (theme) => {
-        if (!isThemeBaseRegistered()) {
-            return;
-        }
-        const cssData = await getThemeProperties(BASE_THEME_PACKAGE, theme);
-        if (cssData) {
-            createOrUpdateStyle(cssData, "data-ui5-theme-properties", BASE_THEME_PACKAGE, theme);
-        }
-    };
-    const deleteThemeBase = () => {
-        removeStyle("data-ui5-theme-properties", BASE_THEME_PACKAGE);
-    };
-    const loadComponentPackages = async (theme, externalThemeName) => {
-        const registeredPackages = getRegisteredPackages();
-        const packagesStylesPromises = [...registeredPackages].map(async (packageName) => {
-            if (packageName === BASE_THEME_PACKAGE) {
-                return;
-            }
-            const cssData = await getThemeProperties(packageName, theme, externalThemeName);
-            if (cssData) {
-                createOrUpdateStyle(cssData, `data-ui5-component-properties-${getCurrentRuntimeIndex()}`, packageName);
-            }
-        });
-        return Promise.all(packagesStylesPromises);
-    };
-    const detectExternalTheme = async (theme) => {
-        // If theme designer theme is detected, use this
-        const extTheme = getThemeDesignerTheme();
-        if (extTheme) {
-            return extTheme;
-        }
-        // If OpenUI5Support is enabled, try to find out if it loaded variables
-        const openUI5Support = getFeature("OpenUI5Support");
-        if (openUI5Support && openUI5Support.isOpenUI5Detected()) {
-            const varsLoaded = openUI5Support.cssVariablesLoaded();
-            if (varsLoaded) {
-                return {
-                    themeName: openUI5Support.getConfigurationSettingsObject()?.theme,
-                    baseThemeName: "", // baseThemeName is only relevant for custom themes
-                };
-            }
-        }
-        else if (getThemeRoot()) {
-            await attachCustomThemeStylesToHead(theme);
-            return getThemeDesignerTheme();
-        }
-    };
-    const applyTheme = async (theme) => {
-        const extTheme = await detectExternalTheme(theme);
-        // Only load theme_base properties if there is no externally loaded theme, or there is, but it is not being loaded
-        if (!extTheme || theme !== extTheme.themeName) {
-            await loadThemeBase(theme);
-        }
-        else {
-            deleteThemeBase();
-        }
-        // Always load component packages properties. For non-registered themes, try with the base theme, if any
-        const packagesTheme = isThemeRegistered(theme) ? theme : extTheme && extTheme.baseThemeName;
-        await loadComponentPackages(packagesTheme || DEFAULT_THEME, extTheme && extTheme.themeName === theme ? theme : undefined);
-        fireThemeLoaded(theme);
-    };
-
-    let curTheme;
-    /**
-     * Returns the current theme.
-     * @public
-     * @returns {string} the current theme name
-     */
-    const getTheme = () => {
-        if (curTheme === undefined) {
-            curTheme = getTheme$1();
-        }
-        return curTheme;
-    };
-    /**
-     * Applies a new theme after fetching its assets from the network.
-     * @public
-     * @param {string} theme the name of the new theme
-     * @returns {Promise<void>} a promise that is resolved when the new theme assets have been fetched and applied to the DOM
-     */
-    const setTheme = async (theme) => {
-        if (curTheme === theme) {
-            return;
-        }
-        curTheme = theme;
-        if (isBooted()) {
-            // Update CSS Custom Properties
-            await applyTheme(curTheme);
-            await reRenderAllUI5Elements({ themeAware: true });
-        }
-    };
-    /**
-     * Returns if the currently set theme is part of legacy theme families ("sap_fiori_3").
-     * **Note**: in addition, the method checks the base theme of a custom theme, built via the ThemeDesigner.
-     *
-     * @private
-     * @returns { boolean }
-     */
-    const isLegacyThemeFamily = () => {
-        const currentTheme = getTheme();
-        if (!isKnownTheme(currentTheme)) {
-            return !getThemeDesignerTheme()?.baseThemeName?.startsWith("sap_horizon");
-        }
-        return !currentTheme.startsWith("sap_horizon");
-    };
-    const isKnownTheme = (theme) => SUPPORTED_THEMES.includes(theme);
-
-    let booted = false;
-    let bootPromise;
-    const eventProvider$1 = new EventProvider();
-    const isBooted = () => {
-        return booted;
-    };
-    const boot = async () => {
-        if (bootPromise !== undefined) {
-            return bootPromise;
-        }
-        const bootExecutor = async (resolve) => {
-            registerCurrentRuntime();
-            if (typeof document === "undefined") {
-                resolve();
-                return;
-            }
-            attachThemeRegistered(onThemeRegistered);
-            const openUI5Support = getFeature("OpenUI5Support");
-            const isOpenUI5Loaded = openUI5Support ? openUI5Support.isOpenUI5Detected() : false;
-            const f6Navigation = getFeature("F6Navigation");
-            if (openUI5Support) {
-                await openUI5Support.init();
-            }
-            if (f6Navigation && !isOpenUI5Loaded) {
-                f6Navigation.init();
-            }
-            await whenDOMReady();
-            await applyTheme(getTheme());
-            openUI5Support && openUI5Support.attachListeners();
-            insertFontFace();
-            insertSystemCSSVars();
-            resolve();
-            booted = true;
-            await eventProvider$1.fireEventAsync("boot");
-        };
-        bootPromise = new Promise(bootExecutor);
-        return bootPromise;
-    };
-    /**
-     * Callback, executed after theme properties registration
-     * to apply the newly registered theme.
-     * @private
-     * @param { string } theme
-     */
-    const onThemeRegistered = (theme) => {
-        if (booted && theme === getTheme()) { // getTheme should only be called if "booted" is true
-            applyTheme(getTheme());
-        }
-    };
+sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/core/webc/WebComponent', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponentRenderer', 'sap/ui/base/DataType'], (function (_ui5_webcomponentsBase, _ui5_webcomponents, WebComponentBaseClass, hyphenate, WebComponentRenderer, DataType) { 'use strict';
 
     const kebabToCamelMap = new Map();
     const camelToKebabMap = new Map();
@@ -1347,62 +62,6 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
         return nodeList.reduce((acc, curr) => acc.concat(getSlottedNodes(curr)), []);
     };
 
-    let suf;
-    let rulesObj = {
-        include: [/^ui5-/],
-        exclude: [],
-    };
-    const tagsCache = new Map(); // true/false means the tag should/should not be cached, undefined means not known yet.
-    /**
-     * Sets the suffix to be used for custom elements scoping, f.e. pass "demo" to get tags such as "ui5-button-demo".
-     * Note: by default all tags starting with "ui5-" will be scoped, unless you change this by calling "setCustomElementsScopingRules"
-     *
-     * @public
-     * @param suffix The scoping suffix
-     */
-    const setCustomElementsScopingSuffix = (suffix) => {
-        if (!suffix.match(/^[a-zA-Z0-9_-]+$/)) {
-            throw new Error("Only alphanumeric characters and dashes allowed for the scoping suffix");
-        }
-        suf = suffix;
-    };
-    /**
-     * Returns the currently set scoping suffix, or undefined if not set.
-     *
-     * @public
-     * @returns {String|undefined}
-     */
-    const getCustomElementsScopingSuffix = () => {
-        return suf;
-    };
-    /**
-     * Determines whether custom elements with the given tag should be scoped or not.
-     * The tag is first matched against the "include" rules and then against the "exclude" rules and the
-     * result is cached until new rules are set.
-     *
-     * @public
-     * @param tag
-     */
-    const shouldScopeCustomElement = (tag) => {
-        if (!tagsCache.has(tag)) {
-            const result = rulesObj.include.some(rule => tag.match(rule)) && !rulesObj.exclude.some(rule => tag.match(rule));
-            tagsCache.set(tag, result);
-        }
-        return tagsCache.get(tag);
-    };
-    /**
-     * Returns the currently set scoping suffix, if any and if the tag should be scoped, or undefined otherwise.
-     *
-     * @public
-     * @param tag
-     * @returns {String}
-     */
-    const getEffectiveScopingSuffixForTag = (tag) => {
-        if (shouldScopeCustomElement(tag)) {
-            return getCustomElementsScopingSuffix();
-        }
-    };
-
     /**
      * @class
      * @public
@@ -1461,7 +120,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
             if (!pureTag) {
                 return "";
             }
-            const suffix = getEffectiveScopingSuffixForTag(pureTag);
+            const suffix = _ui5_webcomponentsBase.getEffectiveScopingSuffixForTag(pureTag);
             if (!suffix) {
                 return pureTag;
             }
@@ -1640,15 +299,15 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
         return value;
     };
 
-    const getEventProvider = () => getSharedResource("CustomStyle.eventProvider", new EventProvider());
+    const getEventProvider = () => _ui5_webcomponentsBase.getSharedResource("CustomStyle.eventProvider", new _ui5_webcomponentsBase.EventProvider());
     const CUSTOM_CSS_CHANGE = "CustomCSSChange";
     const attachCustomCSSChange = (listener) => {
         getEventProvider().attachEvent(CUSTOM_CSS_CHANGE, listener);
     };
-    const getCustomCSSFor = () => getSharedResource("CustomStyle.customCSSFor", {});
+    const getCustomCSSFor = () => _ui5_webcomponentsBase.getSharedResource("CustomStyle.customCSSFor", {});
     attachCustomCSSChange((tag) => {
         {
-            reRenderAllUI5Elements({ tag });
+            _ui5_webcomponentsBase.reRenderAllUI5Elements({ tag });
         }
     });
     const getCustomCSS = (tag) => {
@@ -1673,7 +332,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
     const getEffectiveStyle = (ElementClass) => {
         const tag = ElementClass.getMetadata().getTag();
         const key = `${tag}_normal`;
-        const openUI5Enablement = getFeature("OpenUI5Enablement");
+        const openUI5Enablement = _ui5_webcomponentsBase.getFeature("OpenUI5Enablement");
         if (!effectiveStyleMap.has(key)) {
             let busyIndicatorStyles = "";
             if (openUI5Enablement) {
@@ -1782,7 +441,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
      */
     const getNoConflict = () => {
         if (noConflict === undefined) {
-            noConflict = getNoConflict$1();
+            noConflict = _ui5_webcomponentsBase.getNoConflict();
         }
         return noConflict;
     };
@@ -1854,7 +513,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
      */
     const executeTemplate = (template, component) => {
         const tagsToScope = getTagsToScope(component);
-        const scope = getCustomElementsScopingSuffix();
+        const scope = _ui5_webcomponentsBase.getCustomElementsScopingSuffix();
         return template.call(component, component, tagsToScope, scope);
     };
     /**
@@ -1866,8 +525,8 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
     const getTagsToScope = (component) => {
         const ctor = component.constructor;
         const componentTag = ctor.getMetadata().getPureTag();
-        const tagsToScope = ctor.getUniqueDependencies().map((dep) => dep.getMetadata().getPureTag()).filter(shouldScopeCustomElement);
-        if (shouldScopeCustomElement(componentTag)) {
+        const tagsToScope = ctor.getUniqueDependencies().map((dep) => dep.getMetadata().getPureTag()).filter(_ui5_webcomponentsBase.shouldScopeCustomElement);
+        if (_ui5_webcomponentsBase.shouldScopeCustomElement(componentTag)) {
             tagsToScope.push(componentTag);
         }
         return tagsToScope;
@@ -1943,7 +602,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
       }
       this.onInvalidation(changeInfo);
       this._changedState.push(changeInfo);
-      renderDeferred(this);
+      _ui5_webcomponentsBase.renderDeferred(this);
       this._invalidationEventProvider.fireEvent("invalidate", {
         ...changeInfo,
         target: this
@@ -1969,8 +628,8 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
         this._fullyConnected = false;
         this._childChangeListeners = new Map();
         this._slotChangeListeners = new Map();
-        this._invalidationEventProvider = new EventProvider();
-        this._componentStateFinalizedEventProvider = new EventProvider();
+        this._invalidationEventProvider = new _ui5_webcomponentsBase.EventProvider();
+        this._componentStateFinalizedEventProvider = new _ui5_webcomponentsBase.EventProvider();
         let deferredResolve;
         this._domRefReadyPromise = new Promise(resolve => {
           deferredResolve = resolve;
@@ -2057,7 +716,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
         if (!this._inDOM) {
           return;
         }
-        renderImmediately(this);
+        _ui5_webcomponentsBase.renderImmediately(this);
         this._domRefReadyPromise._deferredResolve();
         this._fullyConnected = true;
         this.onEnterDOM();
@@ -2074,7 +733,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
           this._fullyConnected = false;
         }
         this._domRefReadyPromise._deferredResolve();
-        cancelRender(this);
+        _ui5_webcomponentsBase.cancelRender(this);
       }
       onBeforeRendering() {}
       onAfterRendering() {}
@@ -2444,7 +1103,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
         this._componentStateFinalizedEventProvider.detachEvent("componentStateFinalized", callback);
       }
       get effectiveDir() {
-        markAsRtlAware(this.constructor);
+        _ui5_webcomponentsBase.markAsRtlAware(this.constructor);
         return getEffectiveDir(this);
       }
       get isUI5Element() {
@@ -2557,23 +1216,23 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
         return Promise.resolve();
       }
       static async define() {
-        await boot();
+        await _ui5_webcomponentsBase.boot();
         await Promise.all([this.whenDependenciesDefined(), this.onDefine()]);
         const tag = this.getMetadata().getTag();
         const features = this.getMetadata().getFeatures();
         features.forEach(feature => {
-          if (getComponentFeature(feature)) {
+          if (_ui5_webcomponentsBase.getComponentFeature(feature)) {
             this.cacheUniqueDependencies();
           }
-          subscribeForFeatureLoad(feature, this, this.cacheUniqueDependencies.bind(this));
+          _ui5_webcomponentsBase.subscribeForFeatureLoad(feature, this, this.cacheUniqueDependencies.bind(this));
         });
-        const definedLocally = isTagRegistered(tag);
+        const definedLocally = _ui5_webcomponentsBase.isTagRegistered(tag);
         const definedGlobally = customElements.get(tag);
         if (definedGlobally && !definedLocally) {
-          recordTagRegistrationFailure(tag);
+          _ui5_webcomponentsBase.recordTagRegistrationFailure(tag);
         } else if (!definedGlobally) {
           this._generateAccessors();
-          registerTag(tag);
+          _ui5_webcomponentsBase.registerTag(tag);
           customElements.define(tag, this);
         }
         return this;
@@ -2588,7 +1247,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
           klass = Object.getPrototypeOf(klass);
           metadataObjects.unshift(klass.metadata);
         }
-        const mergedMetadata = fnMerge({}, ...metadataObjects);
+        const mergedMetadata = _ui5_webcomponentsBase.fnMerge({}, ...metadataObjects);
         this._metadata = new UI5ElementMetadata(mergedMetadata);
         return this._metadata;
       }
@@ -2742,33 +1401,26 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
      * Copyright 2017 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
      */
-    var t$1;const i$1=window,s$2=i$1.trustedTypes,e$3=s$2?s$2.createPolicy("lit-html",{createHTML:t=>t}):void 0,o$2="$lit$",n$1=`lit$${(Math.random()+"").slice(9)}$`,l$3="?"+n$1,h=`<${l$3}>`,r$1=document,u$2=()=>r$1.createComment(""),d=t=>null===t||"object"!=typeof t&&"function"!=typeof t,c$2=Array.isArray,v=t=>c$2(t)||"function"==typeof(null==t?void 0:t[Symbol.iterator]),a$2="[ \t\n\f\r]",f$1=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,_=/-->/g,m$1=/>/g,p$1=RegExp(`>|${a$2}(?:([^\\s"'>=/]+)(${a$2}*=${a$2}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),g=/'/g,$=/"/g,y=/^(?:script|style|textarea|title)$/i,w=t=>(i,...s)=>({_$litType$:t,strings:i,values:s}),x=w(1),b=w(2),T=Symbol.for("lit-noChange"),A=Symbol.for("lit-nothing"),E=new WeakMap,C=r$1.createTreeWalker(r$1,129,null,!1);function P(t,i){if(!Array.isArray(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==e$3?e$3.createHTML(i):i}const V=(t,i)=>{const s=t.length-1,e=[];let l,r=2===i?"<svg>":"",u=f$1;for(let i=0;i<s;i++){const s=t[i];let d,c,v=-1,a=0;for(;a<s.length&&(u.lastIndex=a,c=u.exec(s),null!==c);)a=u.lastIndex,u===f$1?"!--"===c[1]?u=_:void 0!==c[1]?u=m$1:void 0!==c[2]?(y.test(c[2])&&(l=RegExp("</"+c[2],"g")),u=p$1):void 0!==c[3]&&(u=p$1):u===p$1?">"===c[0]?(u=null!=l?l:f$1,v=-1):void 0===c[1]?v=-2:(v=u.lastIndex-c[2].length,d=c[1],u=void 0===c[3]?p$1:'"'===c[3]?$:g):u===$||u===g?u=p$1:u===_||u===m$1?u=f$1:(u=p$1,l=void 0);const w=u===p$1&&t[i+1].startsWith("/>")?" ":"";r+=u===f$1?s+h:v>=0?(e.push(d),s.slice(0,v)+o$2+s.slice(v)+n$1+w):s+n$1+(-2===v?(e.push(void 0),i):w);}return [P(t,r+(t[s]||"<?>")+(2===i?"</svg>":"")),e]};class N{constructor({strings:t,_$litType$:i},e){let h;this.parts=[];let r=0,d=0;const c=t.length-1,v=this.parts,[a,f]=V(t,i);if(this.el=N.createElement(a,e),C.currentNode=this.el.content,2===i){const t=this.el.content,i=t.firstChild;i.remove(),t.append(...i.childNodes);}for(;null!==(h=C.nextNode())&&v.length<c;){if(1===h.nodeType){if(h.hasAttributes()){const t=[];for(const i of h.getAttributeNames())if(i.endsWith(o$2)||i.startsWith(n$1)){const s=f[d++];if(t.push(i),void 0!==s){const t=h.getAttribute(s.toLowerCase()+o$2).split(n$1),i=/([.?@])?(.*)/.exec(s);v.push({type:1,index:r,name:i[2],strings:t,ctor:"."===i[1]?H:"?"===i[1]?L:"@"===i[1]?z:k});}else v.push({type:6,index:r});}for(const i of t)h.removeAttribute(i);}if(y.test(h.tagName)){const t=h.textContent.split(n$1),i=t.length-1;if(i>0){h.textContent=s$2?s$2.emptyScript:"";for(let s=0;s<i;s++)h.append(t[s],u$2()),C.nextNode(),v.push({type:2,index:++r});h.append(t[i],u$2());}}}else if(8===h.nodeType)if(h.data===l$3)v.push({type:2,index:r});else {let t=-1;for(;-1!==(t=h.data.indexOf(n$1,t+1));)v.push({type:7,index:r}),t+=n$1.length-1;}r++;}}static createElement(t,i){const s=r$1.createElement("template");return s.innerHTML=t,s}}function S(t,i,s=t,e){var o,n,l,h;if(i===T)return i;let r=void 0!==e?null===(o=s._$Co)||void 0===o?void 0:o[e]:s._$Cl;const u=d(i)?void 0:i._$litDirective$;return (null==r?void 0:r.constructor)!==u&&(null===(n=null==r?void 0:r._$AO)||void 0===n||n.call(r,!1),void 0===u?r=void 0:(r=new u(t),r._$AT(t,s,e)),void 0!==e?(null!==(l=(h=s)._$Co)&&void 0!==l?l:h._$Co=[])[e]=r:s._$Cl=r),void 0!==r&&(i=S(t,r._$AS(t,i.values),r,e)),i}class M{constructor(t,i){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=i;}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){var i;const{el:{content:s},parts:e}=this._$AD,o=(null!==(i=null==t?void 0:t.creationScope)&&void 0!==i?i:r$1).importNode(s,!0);C.currentNode=o;let n=C.nextNode(),l=0,h=0,u=e[0];for(;void 0!==u;){if(l===u.index){let i;2===u.type?i=new R(n,n.nextSibling,this,t):1===u.type?i=new u.ctor(n,u.name,u.strings,this,t):6===u.type&&(i=new Z(n,this,t)),this._$AV.push(i),u=e[++h];}l!==(null==u?void 0:u.index)&&(n=C.nextNode(),l++);}return C.currentNode=r$1,o}v(t){let i=0;for(const s of this._$AV)void 0!==s&&(void 0!==s.strings?(s._$AI(t,s,i),i+=s.strings.length-2):s._$AI(t[i])),i++;}}class R{constructor(t,i,s,e){var o;this.type=2,this._$AH=A,this._$AN=void 0,this._$AA=t,this._$AB=i,this._$AM=s,this.options=e,this._$Cp=null===(o=null==e?void 0:e.isConnected)||void 0===o||o;}get _$AU(){var t,i;return null!==(i=null===(t=this._$AM)||void 0===t?void 0:t._$AU)&&void 0!==i?i:this._$Cp}get parentNode(){let t=this._$AA.parentNode;const i=this._$AM;return void 0!==i&&11===(null==t?void 0:t.nodeType)&&(t=i.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,i=this){t=S(this,t,i),d(t)?t===A||null==t||""===t?(this._$AH!==A&&this._$AR(),this._$AH=A):t!==this._$AH&&t!==T&&this._(t):void 0!==t._$litType$?this.g(t):void 0!==t.nodeType?this.$(t):v(t)?this.T(t):this._(t);}k(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}$(t){this._$AH!==t&&(this._$AR(),this._$AH=this.k(t));}_(t){this._$AH!==A&&d(this._$AH)?this._$AA.nextSibling.data=t:this.$(r$1.createTextNode(t)),this._$AH=t;}g(t){var i;const{values:s,_$litType$:e}=t,o="number"==typeof e?this._$AC(t):(void 0===e.el&&(e.el=N.createElement(P(e.h,e.h[0]),this.options)),e);if((null===(i=this._$AH)||void 0===i?void 0:i._$AD)===o)this._$AH.v(s);else {const t=new M(o,this),i=t.u(this.options);t.v(s),this.$(i),this._$AH=t;}}_$AC(t){let i=E.get(t.strings);return void 0===i&&E.set(t.strings,i=new N(t)),i}T(t){c$2(this._$AH)||(this._$AH=[],this._$AR());const i=this._$AH;let s,e=0;for(const o of t)e===i.length?i.push(s=new R(this.k(u$2()),this.k(u$2()),this,this.options)):s=i[e],s._$AI(o),e++;e<i.length&&(this._$AR(s&&s._$AB.nextSibling,e),i.length=e);}_$AR(t=this._$AA.nextSibling,i){var s;for(null===(s=this._$AP)||void 0===s||s.call(this,!1,!0,i);t&&t!==this._$AB;){const i=t.nextSibling;t.remove(),t=i;}}setConnected(t){var i;void 0===this._$AM&&(this._$Cp=t,null===(i=this._$AP)||void 0===i||i.call(this,t));}}class k{constructor(t,i,s,e,o){this.type=1,this._$AH=A,this._$AN=void 0,this.element=t,this.name=i,this._$AM=e,this.options=o,s.length>2||""!==s[0]||""!==s[1]?(this._$AH=Array(s.length-1).fill(new String),this.strings=s):this._$AH=A;}get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}_$AI(t,i=this,s,e){const o=this.strings;let n=!1;if(void 0===o)t=S(this,t,i,0),n=!d(t)||t!==this._$AH&&t!==T,n&&(this._$AH=t);else {const e=t;let l,h;for(t=o[0],l=0;l<o.length-1;l++)h=S(this,e[s+l],i,l),h===T&&(h=this._$AH[l]),n||(n=!d(h)||h!==this._$AH[l]),h===A?t=A:t!==A&&(t+=(null!=h?h:"")+o[l+1]),this._$AH[l]=h;}n&&!e&&this.j(t);}j(t){t===A?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,null!=t?t:"");}}class H extends k{constructor(){super(...arguments),this.type=3;}j(t){this.element[this.name]=t===A?void 0:t;}}const I=s$2?s$2.emptyScript:"";class L extends k{constructor(){super(...arguments),this.type=4;}j(t){t&&t!==A?this.element.setAttribute(this.name,I):this.element.removeAttribute(this.name);}}class z extends k{constructor(t,i,s,e,o){super(t,i,s,e,o),this.type=5;}_$AI(t,i=this){var s;if((t=null!==(s=S(this,t,i,0))&&void 0!==s?s:A)===T)return;const e=this._$AH,o=t===A&&e!==A||t.capture!==e.capture||t.once!==e.once||t.passive!==e.passive,n=t!==A&&(e===A||o);o&&this.element.removeEventListener(this.name,this,e),n&&this.element.addEventListener(this.name,this,t),this._$AH=t;}handleEvent(t){var i,s;"function"==typeof this._$AH?this._$AH.call(null!==(s=null===(i=this.options)||void 0===i?void 0:i.host)&&void 0!==s?s:this.element,t):this._$AH.handleEvent(t);}}class Z{constructor(t,i,s){this.element=t,this.type=6,this._$AN=void 0,this._$AM=i,this.options=s;}get _$AU(){return this._$AM._$AU}_$AI(t){S(this,t);}}const j={O:o$2,P:n$1,A:l$3,C:1,M:V,L:M,R:v,D:S,I:R,V:k,H:L,N:z,U:H,F:Z},B=i$1.litHtmlPolyfillSupport;null==B||B(N,R),(null!==(t$1=i$1.litHtmlVersions)&&void 0!==t$1?t$1:i$1.litHtmlVersions=[]).push("2.8.0");const D=(t,i,s)=>{var e,o;const n=null!==(e=null==s?void 0:s.renderBefore)&&void 0!==e?e:i;let l=n._$litPart$;if(void 0===l){const t=null!==(o=null==s?void 0:s.renderBefore)&&void 0!==o?o:null;n._$litPart$=l=new R(i.insertBefore(u$2(),t),t,void 0,null!=s?s:{});}return l._$AI(t),l};
-
-    /**
-     * @license
-     * Copyright 2017 Google LLC
-     * SPDX-License-Identifier: BSD-3-Clause
-     */
-    const t={ATTRIBUTE:1,CHILD:2,PROPERTY:3,BOOLEAN_ATTRIBUTE:4,EVENT:5,ELEMENT:6},e$2=t=>(...e)=>({_$litDirective$:t,values:e});class i{constructor(t){}get _$AU(){return this._$AM._$AU}_$AT(t,e,i){this._$Ct=t,this._$AM=e,this._$Ci=i;}_$AS(t,e){return this.update(t,e)}update(t,e){return this.render(...e)}}
+    const t={ATTRIBUTE:1,CHILD:2,PROPERTY:3,BOOLEAN_ATTRIBUTE:4,EVENT:5,ELEMENT:6},e$1=t=>(...e)=>({_$litDirective$:t,values:e});class i{constructor(t){}get _$AU(){return this._$AM._$AU}_$AT(t,e,i){this._$Ct=t,this._$AM=e,this._$Ci=i;}_$AS(t,e){return this.update(t,e)}update(t,e){return this.render(...e)}}
 
     /**
      * @license
      * Copyright 2020 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
-     */const {I:l$2}=j,r=()=>document.createComment(""),c$1=(o,i,n)=>{var t;const v=o._$AA.parentNode,d=void 0===i?o._$AB:i._$AA;if(void 0===n){const i=v.insertBefore(r(),d),t=v.insertBefore(r(),d);n=new l$2(i,t,o,o.options);}else {const l=n._$AB.nextSibling,i=n._$AM,u=i!==o;if(u){let l;null===(t=n._$AQ)||void 0===t||t.call(n,o),n._$AM=o,void 0!==n._$AP&&(l=o._$AU)!==i._$AU&&n._$AP(l);}if(l!==d||u){let o=n._$AA;for(;o!==l;){const l=o.nextSibling;v.insertBefore(o,d),o=l;}}}return n},f=(o,l,i=o)=>(o._$AI(l,i),o),s$1={},a$1=(o,l=s$1)=>o._$AH=l,m=o=>o._$AH,p=o=>{var l;null===(l=o._$AP)||void 0===l||l.call(o,!1,!0);let i=o._$AA;const n=o._$AB.nextSibling;for(;i!==n;){const o=i.nextSibling;i.remove(),i=o;}};
+     */const {I:l$1}=_ui5_webcomponentsBase.j,r=()=>document.createComment(""),c$1=(o,i,n)=>{var t;const v=o._$AA.parentNode,d=void 0===i?o._$AB:i._$AA;if(void 0===n){const i=v.insertBefore(r(),d),t=v.insertBefore(r(),d);n=new l$1(i,t,o,o.options);}else {const l=n._$AB.nextSibling,i=n._$AM,u=i!==o;if(u){let l;null===(t=n._$AQ)||void 0===t||t.call(n,o),n._$AM=o,void 0!==n._$AP&&(l=o._$AU)!==i._$AU&&n._$AP(l);}if(l!==d||u){let o=n._$AA;for(;o!==l;){const l=o.nextSibling;v.insertBefore(o,d),o=l;}}}return n},f=(o,l,i=o)=>(o._$AI(l,i),o),s={},a=(o,l=s)=>o._$AH=l,m=o=>o._$AH,p=o=>{var l;null===(l=o._$AP)||void 0===l||l.call(o,!1,!0);let i=o._$AA;const n=o._$AB.nextSibling;for(;i!==n;){const o=i.nextSibling;i.remove(),i=o;}};
 
     /**
      * @license
      * Copyright 2017 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
      */
-    const u$1=(e,s,t)=>{const r=new Map;for(let l=s;l<=t;l++)r.set(e[l],l);return r},c=e$2(class extends i{constructor(e){if(super(e),e.type!==t.CHILD)throw Error("repeat() can only be used in text expressions")}ct(e,s,t){let r;void 0===t?t=s:void 0!==s&&(r=s);const l=[],o=[];let i=0;for(const s of e)l[i]=r?r(s,i):i,o[i]=t(s,i),i++;return {values:o,keys:l}}render(e,s,t){return this.ct(e,s,t).values}update(s,[t,r,c]){var d;const a=m(s),{values:p$1,keys:v}=this.ct(t,r,c);if(!Array.isArray(a))return this.ut=v,p$1;const h=null!==(d=this.ut)&&void 0!==d?d:this.ut=[],m$1=[];let y,x,j=0,k=a.length-1,w=0,A=p$1.length-1;for(;j<=k&&w<=A;)if(null===a[j])j++;else if(null===a[k])k--;else if(h[j]===v[w])m$1[w]=f(a[j],p$1[w]),j++,w++;else if(h[k]===v[A])m$1[A]=f(a[k],p$1[A]),k--,A--;else if(h[j]===v[A])m$1[A]=f(a[j],p$1[A]),c$1(s,m$1[A+1],a[j]),j++,A--;else if(h[k]===v[w])m$1[w]=f(a[k],p$1[w]),c$1(s,a[j],a[k]),k--,w++;else if(void 0===y&&(y=u$1(v,w,A),x=u$1(h,j,k)),y.has(h[j]))if(y.has(h[k])){const e=x.get(v[w]),t=void 0!==e?a[e]:null;if(null===t){const e=c$1(s,a[j]);f(e,p$1[w]),m$1[w]=e;}else m$1[w]=f(t,p$1[w]),c$1(s,a[j],t),a[e]=null;w++;}else p(a[k]),k--;else p(a[j]),j++;for(;w<=A;){const e=c$1(s,m$1[A+1]);f(e,p$1[w]),m$1[w++]=e;}for(;j<=k;){const e=a[j++];null!==e&&p(e);}return this.ut=v,a$1(s,m$1),T}});
+    const u=(e,s,t)=>{const r=new Map;for(let l=s;l<=t;l++)r.set(e[l],l);return r},c=e$1(class extends i{constructor(e){if(super(e),e.type!==t.CHILD)throw Error("repeat() can only be used in text expressions")}ct(e,s,t){let r;void 0===t?t=s:void 0!==s&&(r=s);const l=[],o=[];let i=0;for(const s of e)l[i]=r?r(s,i):i,o[i]=t(s,i),i++;return {values:o,keys:l}}render(e,s,t){return this.ct(e,s,t).values}update(s,[t,r,c]){var d;const a$1=m(s),{values:p$1,keys:v}=this.ct(t,r,c);if(!Array.isArray(a$1))return this.ut=v,p$1;const h=null!==(d=this.ut)&&void 0!==d?d:this.ut=[],m$1=[];let y,x,j=0,k=a$1.length-1,w=0,A=p$1.length-1;for(;j<=k&&w<=A;)if(null===a$1[j])j++;else if(null===a$1[k])k--;else if(h[j]===v[w])m$1[w]=f(a$1[j],p$1[w]),j++,w++;else if(h[k]===v[A])m$1[A]=f(a$1[k],p$1[A]),k--,A--;else if(h[j]===v[A])m$1[A]=f(a$1[j],p$1[A]),c$1(s,m$1[A+1],a$1[j]),j++,A--;else if(h[k]===v[w])m$1[w]=f(a$1[k],p$1[w]),c$1(s,a$1[j],a$1[k]),k--,w++;else if(void 0===y&&(y=u(v,w,A),x=u(h,j,k)),y.has(h[j]))if(y.has(h[k])){const e=x.get(v[w]),t=void 0!==e?a$1[e]:null;if(null===t){const e=c$1(s,a$1[j]);f(e,p$1[w]),m$1[w]=e;}else m$1[w]=f(t,p$1[w]),c$1(s,a$1[j],t),a$1[e]=null;w++;}else p(a$1[k]),k--;else p(a$1[j]),j++;for(;w<=A;){const e=c$1(s,m$1[A+1]);f(e,p$1[w]),m$1[w++]=e;}for(;j<=k;){const e=a$1[j++];null!==e&&p(e);}return this.ut=v,a(s,m$1),_ui5_webcomponentsBase.T}});
 
     /**
      * @license
      * Copyright 2018 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
-     */const o$1=e$2(class extends i{constructor(t$1){var i;if(super(t$1),t$1.type!==t.ATTRIBUTE||"class"!==t$1.name||(null===(i=t$1.strings)||void 0===i?void 0:i.length)>2)throw Error("`classMap()` can only be used in the `class` attribute and must be the only part in the attribute.")}render(t){return " "+Object.keys(t).filter((i=>t[i])).join(" ")+" "}update(i,[s]){var r,o;if(void 0===this.it){this.it=new Set,void 0!==i.strings&&(this.nt=new Set(i.strings.join(" ").split(/\s/).filter((t=>""!==t))));for(const t in s)s[t]&&!(null===(r=this.nt)||void 0===r?void 0:r.has(t))&&this.it.add(t);return this.render(s)}const e=i.element.classList;this.it.forEach((t=>{t in s||(e.remove(t),this.it.delete(t));}));for(const t in s){const i=!!s[t];i===this.it.has(t)||(null===(o=this.nt)||void 0===o?void 0:o.has(t))||(i?(e.add(t),this.it.add(t)):(e.remove(t),this.it.delete(t)));}return T}});
+     */const o=e$1(class extends i{constructor(t$1){var i;if(super(t$1),t$1.type!==t.ATTRIBUTE||"class"!==t$1.name||(null===(i=t$1.strings)||void 0===i?void 0:i.length)>2)throw Error("`classMap()` can only be used in the `class` attribute and must be the only part in the attribute.")}render(t){return " "+Object.keys(t).filter((i=>t[i])).join(" ")+" "}update(i,[s]){var r,o;if(void 0===this.it){this.it=new Set,void 0!==i.strings&&(this.nt=new Set(i.strings.join(" ").split(/\s/).filter((t=>""!==t))));for(const t in s)s[t]&&!(null===(r=this.nt)||void 0===r?void 0:r.has(t))&&this.it.add(t);return this.render(s)}const e=i.element.classList;this.it.forEach((t=>{t in s||(e.remove(t),this.it.delete(t));}));for(const t in s){const i=!!s[t];i===this.it.has(t)||(null===(o=this.nt)||void 0===o?void 0:o.has(t))||(i?(e.add(t),this.it.add(t)):(e.remove(t),this.it.delete(t)));}return _ui5_webcomponentsBase.T}});
 
     // @ts-nocheck
     /* eslint-disable */
@@ -2835,42 +1487,42 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
                     }
                 }
             }
-            return T;
+            return _ui5_webcomponentsBase.T;
         }
     }
-    const styleMap = e$2(StyleMapDirective);
+    const styleMap = e$1(StyleMapDirective);
 
     /**
      * @license
      * Copyright 2018 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
-     */const l$1=l=>null!=l?l:A;
+     */const l=l=>null!=l?l:_ui5_webcomponentsBase.A;
 
     /**
      * @license
      * Copyright 2017 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
-     */let e$1 = class e extends i{constructor(i){if(super(i),this.et=A,i.type!==t.CHILD)throw Error(this.constructor.directiveName+"() can only be used in child bindings")}render(r){if(r===A||null==r)return this.ft=void 0,this.et=r;if(r===T)return r;if("string"!=typeof r)throw Error(this.constructor.directiveName+"() called with a non-string value");if(r===this.et)return this.ft;this.et=r;const s=[r];return s.raw=s,this.ft={_$litType$:this.constructor.resultType,strings:s,values:[]}}};e$1.directiveName="unsafeHTML",e$1.resultType=1;
+     */class e extends i{constructor(i){if(super(i),this.et=_ui5_webcomponentsBase.A,i.type!==t.CHILD)throw Error(this.constructor.directiveName+"() can only be used in child bindings")}render(r){if(r===_ui5_webcomponentsBase.A||null==r)return this.ft=void 0,this.et=r;if(r===_ui5_webcomponentsBase.T)return r;if("string"!=typeof r)throw Error(this.constructor.directiveName+"() called with a non-string value");if(r===this.et)return this.ft;this.et=r;const s=[r];return s.raw=s,this.ft={_$litType$:this.constructor.resultType,strings:s,values:[]}}}e.directiveName="unsafeHTML",e.resultType=1;
 
     const effectiveHtml = (strings, ...values) => {
-        const litStatic = getFeature("LitStatic");
-        const fn = litStatic ? litStatic.html : x;
+        const litStatic = _ui5_webcomponentsBase.getFeature("LitStatic");
+        const fn = litStatic ? litStatic.html : _ui5_webcomponentsBase.x;
         return fn(strings, ...values);
     };
     const effectiveSvg = (strings, ...values) => {
-        const litStatic = getFeature("LitStatic");
-        const fn = litStatic ? litStatic.svg : b;
+        const litStatic = _ui5_webcomponentsBase.getFeature("LitStatic");
+        const fn = litStatic ? litStatic.svg : _ui5_webcomponentsBase.b;
         return fn(strings, ...values);
     };
     const litRender = (templateResult, container, options) => {
-        const openUI5Enablement = getFeature("OpenUI5Enablement");
+        const openUI5Enablement = _ui5_webcomponentsBase.getFeature("OpenUI5Enablement");
         if (openUI5Enablement) {
             templateResult = openUI5Enablement.wrapTemplateResultInBusyMarkup(effectiveHtml, options.host, templateResult);
         }
-        D(templateResult, container, options);
+        _ui5_webcomponentsBase.D(templateResult, container, options);
     };
     const scopeTag = (tag, tags, suffix) => {
-        const litStatic = getFeature("LitStatic");
+        const litStatic = _ui5_webcomponentsBase.getFeature("LitStatic");
         if (litStatic) {
             return litStatic.unsafeStatic((tags || []).includes(tag) ? `${tag}-${suffix}` : tag);
         }
@@ -3174,7 +1826,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
      */
     const getAnimationMode = () => {
         if (curAnimationMode === undefined) {
-            curAnimationMode = getAnimationMode$1();
+            curAnimationMode = _ui5_webcomponentsBase.getAnimationMode();
         }
         return curAnimationMode;
     };
@@ -3182,17 +1834,17 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
     const isSSR$1 = typeof document === "undefined";
     const detectNavigatorLanguage = () => {
         if (isSSR$1) {
-            return DEFAULT_LANGUAGE;
+            return _ui5_webcomponentsBase.DEFAULT_LANGUAGE;
         }
         const browserLanguages = navigator.languages;
         const navigatorLanguage = () => {
             return navigator.language;
         };
         const rawLocale = (browserLanguages && browserLanguages[0]) || navigatorLanguage();
-        return rawLocale || DEFAULT_LANGUAGE;
+        return rawLocale || _ui5_webcomponentsBase.DEFAULT_LANGUAGE;
     };
 
-    const eventProvider = new EventProvider();
+    const eventProvider = new _ui5_webcomponentsBase.EventProvider();
     const LANG_CHANGE = "languageChange";
     const attachLanguageChange = (listener) => {
         eventProvider.attachEvent(LANG_CHANGE, listener);
@@ -3207,7 +1859,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
      */
     const getLanguage = () => {
         if (curLanguage === undefined) {
-            curLanguage = getLanguage$1();
+            curLanguage = _ui5_webcomponentsBase.getLanguage();
         }
         return curLanguage;
     };
@@ -3229,7 +1881,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
      */
     const getFetchDefaultLanguage = () => {
         if (fetchDefaultLanguage === undefined) {
-            setFetchDefaultLanguage(getFetchDefaultLanguage$1());
+            setFetchDefaultLanguage(_ui5_webcomponentsBase.getFetchDefaultLanguage());
         }
         return fetchDefaultLanguage;
     };
@@ -3242,7 +1894,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
                 throw new Error(`The given language ${sLocaleId} does not adhere to BCP-47.`);
             }
             this.sLocaleId = sLocaleId;
-            this.sLanguage = aResult[1] || DEFAULT_LANGUAGE;
+            this.sLanguage = aResult[1] || _ui5_webcomponentsBase.DEFAULT_LANGUAGE;
             this.sScript = aResult[2] || "";
             this.sRegion = aResult[3] || "";
             this.sVariant = (aResult[4] && aResult[4].slice(1)) || null;
@@ -3327,7 +1979,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
         catch (e) {
             // ignore
         }
-        return new Locale(DEFAULT_LOCALE);
+        return new Locale(_ui5_webcomponentsBase.DEFAULT_LOCALE);
     };
     /**
      * Returns the locale based on the parameter or configured language Configuration#getLanguage
@@ -3358,7 +2010,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
     const normalizeLocale = (locale) => {
         let m;
         if (!locale) {
-            return DEFAULT_LOCALE;
+            return _ui5_webcomponentsBase.DEFAULT_LOCALE;
         }
         if (typeof locale === "string" && (m = localeRegEX.exec(locale.replace(/_/g, "-")))) { /* eslint-disable-line */
             let language = m[1].toLowerCase();
@@ -3383,7 +2035,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
             }
             return language + (region ? "_" + region + (variants ? "_" + variants.replace("-", "_") : "") : ""); /* eslint-disable-line */
         }
-        return DEFAULT_LOCALE;
+        return _ui5_webcomponentsBase.DEFAULT_LOCALE;
     };
 
     /**
@@ -3394,7 +2046,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
      */
     const nextFallbackLocale = (locale) => {
         if (!locale) {
-            return DEFAULT_LOCALE;
+            return _ui5_webcomponentsBase.DEFAULT_LOCALE;
         }
         if (locale === "zh_HK") {
             return "zh_TW";
@@ -3405,7 +2057,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
             return locale.slice(0, p);
         }
         // for any language but the default, fallback to the default first before falling back to the 'raw' language (empty string)
-        return locale !== DEFAULT_LOCALE ? DEFAULT_LOCALE : "";
+        return locale !== _ui5_webcomponentsBase.DEFAULT_LOCALE ? _ui5_webcomponentsBase.DEFAULT_LOCALE : "";
     };
 
     // contains package names for which the warning has been shown
@@ -3440,7 +2092,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
         }
     };
     const useFallbackBundle = (packageName, localeId) => {
-        return localeId !== DEFAULT_LANGUAGE && !_hasLoader(packageName, localeId);
+        return localeId !== _ui5_webcomponentsBase.DEFAULT_LANGUAGE && !_hasLoader(packageName, localeId);
     };
     /**
      * This method preforms the asynchronous task of fetching the actual text resources. It will fetch
@@ -3464,7 +2116,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
         }
         // use default language unless configured to always fetch it from the network
         const fetchDefaultLanguage = getFetchDefaultLanguage();
-        if (localeId === DEFAULT_LANGUAGE && !fetchDefaultLanguage) {
+        if (localeId === _ui5_webcomponentsBase.DEFAULT_LANGUAGE && !fetchDefaultLanguage) {
             _setI18nBundleData(packageName, null); // reset for the default language (if data was set for a previous language)
             return;
         }
@@ -3636,7 +2288,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
         iconCollections.set(collectionName, themeCollectionMap);
     };
     const getIconCollectionForTheme = (collectionName) => {
-        const themeFamily = isLegacyThemeFamily() ? "legacy" : "sap_horizon";
+        const themeFamily = _ui5_webcomponentsBase.isLegacyThemeFamily() ? "legacy" : "sap_horizon";
         return iconCollections.has(collectionName) ? iconCollections.get(collectionName)[themeFamily] : collectionName;
     };
 
@@ -3663,7 +2315,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
      * @returns { IconCollection } the effective collection name
      */
     const getEffectiveIconCollection = (collectionName) => {
-        const defaultIconCollection = getDefaultIconCollection(getTheme());
+        const defaultIconCollection = getDefaultIconCollection(_ui5_webcomponentsBase.getTheme());
         // no collection + default collection, configured via setDefaultIconCollection - return the configured icon collection.
         if (!collectionName && defaultIconCollection) {
             return getIconCollectionByAlias(defaultIconCollection);
@@ -3678,8 +2330,8 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
 
     const DEFAULT_THEME_FAMILY = "legacy"; // includes sap_fiori_*
     const loaders = new Map();
-    const registry = getSharedResource("SVGIcons.registry", new Map());
-    const iconCollectionPromises = getSharedResource("SVGIcons.promises", new Map());
+    const registry = _ui5_webcomponentsBase.getSharedResource("SVGIcons.registry", new Map());
+    const iconCollectionPromises = _ui5_webcomponentsBase.getSharedResource("SVGIcons.promises", new Map());
     const ICON_NOT_FOUND$1 = "ICON_NOT_FOUND";
     const _loadIconCollectionOnce = async (collectionName) => {
         if (!iconCollectionPromises.has(collectionName)) {
@@ -4072,16 +2724,16 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
     var ButtonType$1 = ButtonType;
 
     /* eslint no-unused-vars: 0 */
-    function block0$2(context, tags, suffix) { return effectiveHtml `<button type="button" class="ui5-button-root" ?disabled="${this.disabled}" data-sap-focus-ref  @focusout=${this._onfocusout} @focusin=${this._onfocusin} @click=${this._onclick} @mousedown=${this._onmousedown} @mouseup=${this._onmouseup} @keydown=${this._onkeydown} @keyup=${this._onkeyup} @touchstart="${this._ontouchstart}" @touchend="${this._ontouchend}" tabindex=${l$1(this.tabIndexValue)} aria-expanded="${l$1(this.accessibilityAttributes.expanded)}" aria-controls="${l$1(this.accessibilityAttributes.controls)}" aria-haspopup="${l$1(this._hasPopup)}" aria-label="${l$1(this.ariaLabelText)}" aria-describedby="${l$1(this.ariaDescribedbyText)}" title="${l$1(this.buttonTitle)}" part="button" role="${l$1(this.effectiveAccRole)}">${this.icon ? block1$2.call(this, context, tags, suffix) : undefined}<span id="${l$1(this._id)}-content" class="ui5-button-text"><bdi><slot></slot></bdi></span>${this.endIcon ? block2$2.call(this, context, tags, suffix) : undefined}${this.hasButtonType ? block3$2.call(this, context, tags, suffix) : undefined}</button> `; }
-    function block1$2(context, tags, suffix) { return suffix ? effectiveHtml `<${scopeTag("ui5-icon", tags, suffix)} class="ui5-button-icon" name="${l$1(this.icon)}" mode="${l$1(this.iconMode)}" part="icon" ?show-tooltip=${this.showIconTooltip}></${scopeTag("ui5-icon", tags, suffix)}>` : effectiveHtml `<ui5-icon class="ui5-button-icon" name="${l$1(this.icon)}" mode="${l$1(this.iconMode)}" part="icon" ?show-tooltip=${this.showIconTooltip}></ui5-icon>`; }
-    function block2$2(context, tags, suffix) { return suffix ? effectiveHtml `<${scopeTag("ui5-icon", tags, suffix)} class="ui5-button-end-icon" name="${l$1(this.endIcon)}" mode="${l$1(this.endIconMode)}" part="endIcon"></${scopeTag("ui5-icon", tags, suffix)}>` : effectiveHtml `<ui5-icon class="ui5-button-end-icon" name="${l$1(this.endIcon)}" mode="${l$1(this.endIconMode)}" part="endIcon"></ui5-icon>`; }
-    function block3$2(context, tags, suffix) { return effectiveHtml `<span id="ui5-button-hiddenText-type" aria-hidden="true" class="ui5-hidden-text">${l$1(this.buttonTypeText)}</span>`; }
+    function block0$2(context, tags, suffix) { return effectiveHtml `<button type="button" class="ui5-button-root" ?disabled="${this.disabled}" data-sap-focus-ref  @focusout=${this._onfocusout} @focusin=${this._onfocusin} @click=${this._onclick} @mousedown=${this._onmousedown} @mouseup=${this._onmouseup} @keydown=${this._onkeydown} @keyup=${this._onkeyup} @touchstart="${this._ontouchstart}" @touchend="${this._ontouchend}" tabindex=${l(this.tabIndexValue)} aria-expanded="${l(this.accessibilityAttributes.expanded)}" aria-controls="${l(this.accessibilityAttributes.controls)}" aria-haspopup="${l(this._hasPopup)}" aria-label="${l(this.ariaLabelText)}" aria-describedby="${l(this.ariaDescribedbyText)}" title="${l(this.buttonTitle)}" part="button" role="${l(this.effectiveAccRole)}">${this.icon ? block1$2.call(this, context, tags, suffix) : undefined}<span id="${l(this._id)}-content" class="ui5-button-text"><bdi><slot></slot></bdi></span>${this.endIcon ? block2$2.call(this, context, tags, suffix) : undefined}${this.hasButtonType ? block3$2.call(this, context, tags, suffix) : undefined}</button> `; }
+    function block1$2(context, tags, suffix) { return suffix ? effectiveHtml `<${scopeTag("ui5-icon", tags, suffix)} class="ui5-button-icon" name="${l(this.icon)}" mode="${l(this.iconMode)}" part="icon" ?show-tooltip=${this.showIconTooltip}></${scopeTag("ui5-icon", tags, suffix)}>` : effectiveHtml `<ui5-icon class="ui5-button-icon" name="${l(this.icon)}" mode="${l(this.iconMode)}" part="icon" ?show-tooltip=${this.showIconTooltip}></ui5-icon>`; }
+    function block2$2(context, tags, suffix) { return suffix ? effectiveHtml `<${scopeTag("ui5-icon", tags, suffix)} class="ui5-button-end-icon" name="${l(this.endIcon)}" mode="${l(this.endIconMode)}" part="endIcon"></${scopeTag("ui5-icon", tags, suffix)}>` : effectiveHtml `<ui5-icon class="ui5-button-end-icon" name="${l(this.endIcon)}" mode="${l(this.endIconMode)}" part="endIcon"></ui5-icon>`; }
+    function block3$2(context, tags, suffix) { return effectiveHtml `<span id="ui5-button-hiddenText-type" aria-hidden="true" class="ui5-hidden-text">${l(this.buttonTypeText)}</span>`; }
 
     /* eslint no-unused-vars: 0 */
-    function block0$1(context, tags, suffix) { return effectiveHtml `<svg class="ui5-icon-root" part="root" tabindex="${l$1(this._tabIndex)}" dir="${l$1(this._dir)}" viewBox="${l$1(this.viewBox)}" role="${l$1(this.effectiveAccessibleRole)}" focusable="false" preserveAspectRatio="xMidYMid meet" aria-label="${l$1(this.effectiveAccessibleName)}" aria-hidden=${l$1(this.effectiveAriaHidden)} xmlns="http://www.w3.org/2000/svg" @keydown=${this._onkeydown} @keyup=${this._onkeyup}>${blockSVG1.call(this, context, tags, suffix)}</svg>`; }
-    function block1$1(context, tags, suffix) { return effectiveSvg `<title id="${l$1(this._id)}-tooltip">${l$1(this.effectiveAccessibleName)}</title>`; }
-    function block2$1(context, tags, suffix) { return effectiveSvg `${l$1(this.customSvg)}`; }
-    function block3$1(context, tags, suffix, item, index) { return effectiveSvg `<path d="${l$1(item)}"></path>`; }
+    function block0$1(context, tags, suffix) { return effectiveHtml `<svg class="ui5-icon-root" part="root" tabindex="${l(this._tabIndex)}" dir="${l(this._dir)}" viewBox="${l(this.viewBox)}" role="${l(this.effectiveAccessibleRole)}" focusable="false" preserveAspectRatio="xMidYMid meet" aria-label="${l(this.effectiveAccessibleName)}" aria-hidden=${l(this.effectiveAriaHidden)} xmlns="http://www.w3.org/2000/svg" @keydown=${this._onkeydown} @keyup=${this._onkeyup}>${blockSVG1.call(this, context, tags, suffix)}</svg>`; }
+    function block1$1(context, tags, suffix) { return effectiveSvg `<title id="${l(this._id)}-tooltip">${l(this.effectiveAccessibleName)}</title>`; }
+    function block2$1(context, tags, suffix) { return effectiveSvg `${l(this.customSvg)}`; }
+    function block3$1(context, tags, suffix, item, index) { return effectiveSvg `<path d="${l(item)}"></path>`; }
     function blockSVG1(context, tags, suffix) {
         return effectiveSvg `${this.hasIconTooltip ? block1$1.call(this, context, tags, suffix) : undefined}<g role="presentation">${this.customSvg ? block2$1.call(this, context, tags, suffix) : undefined}${c(this.pathData, (item, index) => item._id || index, (item, index) => block3$1.call(this, context, tags, suffix, item, index))}</g>`;
     }
@@ -4122,8 +2774,8 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
     const styleData$3 = { packageName: "@ui5/webcomponents", fileName: "themes/sap_horizon/parameters-bundle.css.ts", content: `:root{--ui5-v2-1-2-avatar-hover-box-shadow-offset: 0px 0px 0px .0625rem;--ui5-v2-1-2-avatar-initials-color: var(--sapContent_ImagePlaceholderForegroundColor);--ui5-v2-1-2-avatar-border-radius-img-deduction: .0625rem;--_ui5-v2-1-2_avatar_outline: var(--sapContent_FocusWidth) var(--sapContent_FocusStyle) var(--sapContent_FocusColor);--_ui5-v2-1-2_avatar_focus_width: .0625rem;--_ui5-v2-1-2_avatar_focus_color: var(--sapContent_FocusColor);--_ui5-v2-1-2_avatar_overflow_button_focus_offset: .0625rem;--_ui5-v2-1-2_avatar_focus_offset: .1875rem;--ui5-v2-1-2-avatar-initials-border: .0625rem solid var(--sapAvatar_1_BorderColor);--ui5-v2-1-2-avatar-border-radius: var(--sapElement_BorderCornerRadius);--_ui5-v2-1-2_avatar_fontsize_XS: 1rem;--_ui5-v2-1-2_avatar_fontsize_S: 1.125rem;--_ui5-v2-1-2_avatar_fontsize_M: 1.5rem;--_ui5-v2-1-2_avatar_fontsize_L: 2.25rem;--_ui5-v2-1-2_avatar_fontsize_XL: 3rem;--ui5-v2-1-2-avatar-accent1: var(--sapAvatar_1_Background);--ui5-v2-1-2-avatar-accent2: var(--sapAvatar_2_Background);--ui5-v2-1-2-avatar-accent3: var(--sapAvatar_3_Background);--ui5-v2-1-2-avatar-accent4: var(--sapAvatar_4_Background);--ui5-v2-1-2-avatar-accent5: var(--sapAvatar_5_Background);--ui5-v2-1-2-avatar-accent6: var(--sapAvatar_6_Background);--ui5-v2-1-2-avatar-accent7: var(--sapAvatar_7_Background);--ui5-v2-1-2-avatar-accent8: var(--sapAvatar_8_Background);--ui5-v2-1-2-avatar-accent9: var(--sapAvatar_9_Background);--ui5-v2-1-2-avatar-accent10: var(--sapAvatar_10_Background);--ui5-v2-1-2-avatar-placeholder: var(--sapContent_ImagePlaceholderBackground);--ui5-v2-1-2-avatar-accent1-color: var(--sapAvatar_1_TextColor);--ui5-v2-1-2-avatar-accent2-color: var(--sapAvatar_2_TextColor);--ui5-v2-1-2-avatar-accent3-color: var(--sapAvatar_3_TextColor);--ui5-v2-1-2-avatar-accent4-color: var(--sapAvatar_4_TextColor);--ui5-v2-1-2-avatar-accent5-color: var(--sapAvatar_5_TextColor);--ui5-v2-1-2-avatar-accent6-color: var(--sapAvatar_6_TextColor);--ui5-v2-1-2-avatar-accent7-color: var(--sapAvatar_7_TextColor);--ui5-v2-1-2-avatar-accent8-color: var(--sapAvatar_8_TextColor);--ui5-v2-1-2-avatar-accent9-color: var(--sapAvatar_9_TextColor);--ui5-v2-1-2-avatar-accent10-color: var(--sapAvatar_10_TextColor);--ui5-v2-1-2-avatar-placeholder-color: var(--sapContent_ImagePlaceholderForegroundColor);--ui5-v2-1-2-avatar-accent1-border-color: var(--sapAvatar_1_BorderColor);--ui5-v2-1-2-avatar-accent2-border-color: var(--sapAvatar_2_BorderColor);--ui5-v2-1-2-avatar-accent3-border-color: var(--sapAvatar_3_BorderColor);--ui5-v2-1-2-avatar-accent4-border-color: var(--sapAvatar_4_BorderColor);--ui5-v2-1-2-avatar-accent5-border-color: var(--sapAvatar_5_BorderColor);--ui5-v2-1-2-avatar-accent6-border-color: var(--sapAvatar_6_BorderColor);--ui5-v2-1-2-avatar-accent7-border-color: var(--sapAvatar_7_BorderColor);--ui5-v2-1-2-avatar-accent8-border-color: var(--sapAvatar_8_BorderColor);--ui5-v2-1-2-avatar-accent9-border-color: var(--sapAvatar_9_BorderColor);--ui5-v2-1-2-avatar-accent10-border-color: var(--sapAvatar_10_BorderColor);--ui5-v2-1-2-avatar-placeholder-border-color: var(--sapContent_ImagePlaceholderBackground);--_ui5-v2-1-2_avatar_icon_XS: var(--_ui5-v2-1-2_avatar_fontsize_XS);--_ui5-v2-1-2_avatar_icon_S: var(--_ui5-v2-1-2_avatar_fontsize_S);--_ui5-v2-1-2_avatar_icon_M: var(--_ui5-v2-1-2_avatar_fontsize_M);--_ui5-v2-1-2_avatar_icon_L: var(--_ui5-v2-1-2_avatar_fontsize_L);--_ui5-v2-1-2_avatar_icon_XL: var(--_ui5-v2-1-2_avatar_fontsize_XL);--_ui5-v2-1-2_avatar_group_button_focus_border: none;--_ui5-v2-1-2_avatar_group_focus_border_radius: .375rem;--_ui5-v2-1-2-tag-height: 1rem;--_ui5-v2-1-2-tag-icon-width: .75rem;--ui5-v2-1-2-tag-text-shadow: var(--sapContent_TextShadow);--ui5-v2-1-2-tag-contrast-text-shadow: var(--sapContent_ContrastTextShadow);--ui5-v2-1-2-tag-information-text-shadow: var(--ui5-v2-1-2-tag-text-shadow);--ui5-v2-1-2-tag-set2-color-scheme-1-color: var(--sapIndicationColor_1);--ui5-v2-1-2-tag-set2-color-scheme-1-background: var(--sapIndicationColor_1b);--ui5-v2-1-2-tag-set2-color-scheme-1-border: var(--sapIndicationColor_1b_BorderColor);--ui5-v2-1-2-tag-set2-color-scheme-1-hover-background: var(--sapIndicationColor_1b_Hover_Background);--ui5-v2-1-2-tag-set2-color-scheme-1-active-color: var(--sapIndicationColor_1_Active_TextColor);--ui5-v2-1-2-tag-set2-color-scheme-1-active-background: var(--sapIndicationColor_1_Active_Background);--ui5-v2-1-2-tag-set2-color-scheme-1-active-border: var(--sapIndicationColor_1_Active_BorderColor);--ui5-v2-1-2-tag-set2-color-scheme-2-color: var(--sapIndicationColor_2);--ui5-v2-1-2-tag-set2-color-scheme-2-background: var(--sapIndicationColor_2b);--ui5-v2-1-2-tag-set2-color-scheme-2-border: var(--sapIndicationColor_2b_BorderColor);--ui5-v2-1-2-tag-set2-color-scheme-2-hover-background: var(--sapIndicationColor_2b_Hover_Background);--ui5-v2-1-2-tag-set2-color-scheme-2-active-color: var(--sapIndicationColor_2_Active_TextColor);--ui5-v2-1-2-tag-set2-color-scheme-2-active-background: var(--sapIndicationColor_2_Active_Background);--ui5-v2-1-2-tag-set2-color-scheme-2-active-border: var(--sapIndicationColor_2_Active_BorderColor);--ui5-v2-1-2-tag-set2-color-scheme-3-color: var(--sapIndicationColor_3);--ui5-v2-1-2-tag-set2-color-scheme-3-background: var(--sapIndicationColor_3b);--ui5-v2-1-2-tag-set2-color-scheme-3-border: var(--sapIndicationColor_3b_BorderColor);--ui5-v2-1-2-tag-set2-color-scheme-3-hover-background: var(--sapIndicationColor_3b_Hover_Background);--ui5-v2-1-2-tag-set2-color-scheme-3-active-color: var(--sapIndicationColor_3_Active_TextColor);--ui5-v2-1-2-tag-set2-color-scheme-3-active-background: var(--sapIndicationColor_3_Active_Background);--ui5-v2-1-2-tag-set2-color-scheme-3-active-border: var(--sapIndicationColor_3_Active_BorderColor);--ui5-v2-1-2-tag-set2-color-scheme-4-color: var(--sapIndicationColor_4);--ui5-v2-1-2-tag-set2-color-scheme-4-background: var(--sapIndicationColor_4b);--ui5-v2-1-2-tag-set2-color-scheme-4-border: var(--sapIndicationColor_4b_BorderColor);--ui5-v2-1-2-tag-set2-color-scheme-4-hover-background: var(--sapIndicationColor_4b_Hover_Background);--ui5-v2-1-2-tag-set2-color-scheme-4-active-color: var(--sapIndicationColor_4_Active_TextColor);--ui5-v2-1-2-tag-set2-color-scheme-4-active-background: var(--sapIndicationColor_4_Active_Background);--ui5-v2-1-2-tag-set2-color-scheme-4-active-border: var(--sapIndicationColor_4_Active_BorderColor);--ui5-v2-1-2-tag-set2-color-scheme-5-color: var(--sapIndicationColor_5);--ui5-v2-1-2-tag-set2-color-scheme-5-background: var(--sapIndicationColor_5b);--ui5-v2-1-2-tag-set2-color-scheme-5-border: var(--sapIndicationColor_5b_BorderColor);--ui5-v2-1-2-tag-set2-color-scheme-5-hover-background: var(--sapIndicationColor_5b_Hover_Background);--ui5-v2-1-2-tag-set2-color-scheme-5-active-color: var(--sapIndicationColor_5_Active_TextColor);--ui5-v2-1-2-tag-set2-color-scheme-5-active-background: var(--sapIndicationColor_5_Active_Background);--ui5-v2-1-2-tag-set2-color-scheme-5-active-border: var(--sapIndicationColor_5_Active_BorderColor);--ui5-v2-1-2-tag-set2-color-scheme-6-color: var(--sapIndicationColor_6);--ui5-v2-1-2-tag-set2-color-scheme-6-background: var(--sapIndicationColor_6b);--ui5-v2-1-2-tag-set2-color-scheme-6-border: var(--sapIndicationColor_6b_BorderColor);--ui5-v2-1-2-tag-set2-color-scheme-6-hover-background: var(--sapIndicationColor_6b_Hover_Background);--ui5-v2-1-2-tag-set2-color-scheme-6-active-color: var(--sapIndicationColor_6_Active_TextColor);--ui5-v2-1-2-tag-set2-color-scheme-6-active-background: var(--sapIndicationColor_6_Active_Background);--ui5-v2-1-2-tag-set2-color-scheme-6-active-border: var(--sapIndicationColor_6_Active_BorderColor);--ui5-v2-1-2-tag-set2-color-scheme-7-color: var(--sapIndicationColor_7);--ui5-v2-1-2-tag-set2-color-scheme-7-background: var(--sapIndicationColor_7b);--ui5-v2-1-2-tag-set2-color-scheme-7-border: var(--sapIndicationColor_7b_BorderColor);--ui5-v2-1-2-tag-set2-color-scheme-7-hover-background: var(--sapIndicationColor_7b_Hover_Background);--ui5-v2-1-2-tag-set2-color-scheme-7-active-color: var(--sapIndicationColor_7_Active_TextColor);--ui5-v2-1-2-tag-set2-color-scheme-7-active-background: var(--sapIndicationColor_7_Active_Background);--ui5-v2-1-2-tag-set2-color-scheme-7-active-border: var(--sapIndicationColor_7_Active_BorderColor);--ui5-v2-1-2-tag-set2-color-scheme-8-color: var(--sapIndicationColor_8);--ui5-v2-1-2-tag-set2-color-scheme-8-background: var(--sapIndicationColor_8b);--ui5-v2-1-2-tag-set2-color-scheme-8-border: var(--sapIndicationColor_8b_BorderColor);--ui5-v2-1-2-tag-set2-color-scheme-8-hover-background: var(--sapIndicationColor_8b_Hover_Background);--ui5-v2-1-2-tag-set2-color-scheme-8-active-color: var(--sapIndicationColor_8_Active_TextColor);--ui5-v2-1-2-tag-set2-color-scheme-8-active-background: var(--sapIndicationColor_8_Active_Background);--ui5-v2-1-2-tag-set2-color-scheme-8-active-border: var(--sapIndicationColor_8_Active_BorderColor);--ui5-v2-1-2-tag-set2-color-scheme-9-color: var(--sapIndicationColor_9);--ui5-v2-1-2-tag-set2-color-scheme-9-background: var(--sapIndicationColor_9b);--ui5-v2-1-2-tag-set2-color-scheme-9-border: var(--sapIndicationColor_9b_BorderColor);--ui5-v2-1-2-tag-set2-color-scheme-10-color: var(--sapIndicationColor_10);--ui5-v2-1-2-tag-set2-color-scheme-10-background: var(--sapIndicationColor_10b);--ui5-v2-1-2-tag-set2-color-scheme-10-border: var(--sapIndicationColor_10b_BorderColor);--ui5-v2-1-2-tag-set2-color-scheme-10-hover-background: var(--sapIndicationColor_10b_Hover_Background);--ui5-v2-1-2-tag-set2-color-scheme-10-active-color: var(--sapIndicationColor_10_Active_TextColor);--ui5-v2-1-2-tag-set2-color-scheme-10-active-background: var(--sapIndicationColor_10_Active_Background);--ui5-v2-1-2-tag-set2-color-scheme-10-active-border: var(--sapIndicationColor_10_Active_BorderColor);--_ui5-v2-1-2-tag-height_size_l: 1.5rem;--_ui5-v2-1-2-tag-min-width_size_l: 1.75rem;--_ui5-v2-1-2-tag-font-size_size_l: 1.25rem;--_ui5-v2-1-2-tag-icon_min_width_size_l: 1.25rem;--_ui5-v2-1-2-tag-icon_min_height_size_l:1.25rem;--_ui5-v2-1-2-tag-icon_height_size_l: 1.25rem;--_ui5-v2-1-2-tag-text_padding_size_l: .125rem .25rem;--_ui5-v2-1-2-tag-text-height_size_l: 1.5rem;--_ui5-v2-1-2-tag-text-padding: .1875rem .25rem;--_ui5-v2-1-2-tag-padding-inline-icon-only: .313rem;--_ui5-v2-1-2-tag-text-transform: none;--_ui5-v2-1-2-tag-icon-gap: .25rem;--_ui5-v2-1-2-tag-font-size: var(--sapFontSize);--_ui5-v2-1-2-tag-font: var(--sapFontSemiboldDuplexFamily);--_ui5-v2-1-2-tag-font-weight: normal;--_ui5-v2-1-2-tag-letter-spacing: normal;--_ui5-v2-1-2_bar_base_height: 2.75rem;--_ui5-v2-1-2_bar_subheader_height: 3rem;--_ui5-v2-1-2_bar-start-container-padding-start: .75rem;--_ui5-v2-1-2_bar-mid-container-padding-start-end: .5rem;--_ui5-v2-1-2_bar-end-container-padding-end: .75rem;--_ui5-v2-1-2_bar_subheader_margin-top: -.0625rem;--_ui5-v2-1-2_breadcrumbs_margin: 0 0 .5rem 0;--browser_scrollbar_border_radius: var(--sapElement_BorderCornerRadius);--browser_scrollbar_border: none;--_ui5-v2-1-2_busy_indicator_block_layer: color-mix(in oklch, transparent, var(--sapBlockLayer_Background) 20%);--_ui5-v2-1-2_busy_indicator_color: var(--sapContent_BusyColor);--_ui5-v2-1-2_busy_indicator_focus_outline: var(--sapContent_FocusWidth) var(--sapContent_FocusStyle) var(--sapContent_FocusColor);--_ui5-v2-1-2-calendar-legend-root-padding: .75rem;--_ui5-v2-1-2-calendar-legend-root-width: 18.5rem;--_ui5-v2-1-2-calendar-legend-item-root-focus-margin: 0;--_ui5-v2-1-2-calendar-legend-item-root-width: 7.75rem;--_ui5-v2-1-2-calendar-legend-item-root-focus-border: var(--sapContent_FocusWidth) solid var(--sapContent_FocusColor);--_ui5-v2-1-2_card_box_shadow: var(--sapContent_Shadow0);--_ui5-v2-1-2_card_header_border_color: var(--sapTile_SeparatorColor);--_ui5-v2-1-2_card_header_focus_border: var(--sapContent_FocusWidth) var(--sapContent_FocusStyle) var(--sapContent_FocusColor);--_ui5-v2-1-2_card_header_focus_bottom_radius: 0px;--_ui5-v2-1-2_card_header_title_font_weight: normal;--_ui5-v2-1-2_card_header_subtitle_margin_top: .25rem;--_ui5-v2-1-2_card_hover_box_shadow: var(--sapContent_Shadow2);--_ui5-v2-1-2_card_header_focus_offset: 0px;--_ui5-v2-1-2_card_header_focus_radius: var(--_ui5-v2-1-2_card_border-radius);--_ui5-v2-1-2_card_header_title_font_family: var(--sapFontHeaderFamily);--_ui5-v2-1-2_card_header_title_font_size: var(--sapFontHeader6Size);--_ui5-v2-1-2_card_header_hover_bg: var(--sapTile_Hover_Background);--_ui5-v2-1-2_card_header_active_bg: var(--sapTile_Active_Background);--_ui5-v2-1-2_card_header_border: none;--_ui5-v2-1-2_card_border-radius: var(--sapTile_BorderCornerRadius);--_ui5-v2-1-2_card_header_padding: 1rem 1rem .75rem 1rem;--_ui5-v2-1-2_card_border: none;--ui5-v2-1-2_carousel_background_color_solid: var(--sapGroup_ContentBackground);--ui5-v2-1-2_carousel_background_color_translucent: var(--sapBackgroundColor);--ui5-v2-1-2_carousel_button_size: 2.5rem;--ui5-v2-1-2_carousel_inactive_dot_size: .25rem;--ui5-v2-1-2_carousel_inactive_dot_margin: 0 .375rem;--ui5-v2-1-2_carousel_inactive_dot_border: 1px solid var(--sapContent_ForegroundBorderColor);--ui5-v2-1-2_carousel_inactive_dot_background: var(--sapContent_ForegroundBorderColor);--ui5-v2-1-2_carousel_active_dot_border: 1px solid var(--sapContent_Selected_ForegroundColor);--ui5-v2-1-2_carousel_active_dot_background: var(--sapContent_Selected_ForegroundColor);--ui5-v2-1-2_carousel_navigation_button_active_box_shadow: none;--_ui5-v2-1-2_checkbox_box_shadow: none;--_ui5-v2-1-2_checkbox_transition: unset;--_ui5-v2-1-2_checkbox_focus_border: none;--_ui5-v2-1-2_checkbox_border_radius: 0;--_ui5-v2-1-2_checkbox_focus_outline: var(--sapContent_FocusWidth) var(--sapContent_FocusStyle) var(--sapContent_FocusColor);--_ui5-v2-1-2_checkbox_outer_hover_background: transparent;--_ui5-v2-1-2_checkbox_inner_width_height: 1.375rem;--_ui5-v2-1-2_checkbox_inner_disabled_border_color: var(--sapField_BorderColor);--_ui5-v2-1-2_checkbox_inner_information_box_shadow: none;--_ui5-v2-1-2_checkbox_inner_warning_box_shadow: none;--_ui5-v2-1-2_checkbox_inner_error_box_shadow: none;--_ui5-v2-1-2_checkbox_inner_success_box_shadow: none;--_ui5-v2-1-2_checkbox_inner_default_box_shadow: none;--_ui5-v2-1-2_checkbox_inner_background: var(--sapField_Background);--_ui5-v2-1-2_checkbox_wrapped_focus_padding: .375rem;--_ui5-v2-1-2_checkbox_wrapped_focus_inset_block: var(--_ui5-v2-1-2_checkbox_focus_position);--_ui5-v2-1-2_checkbox_compact_wrapper_padding: .5rem;--_ui5-v2-1-2_checkbox_compact_width_height: 2rem;--_ui5-v2-1-2_checkbox_compact_inner_size: 1rem;--_ui5-v2-1-2_checkbox_compact_focus_position: .375rem;--_ui5-v2-1-2_checkbox_label_offset: var(--_ui5-v2-1-2_checkbox_wrapper_padding);--_ui5-v2-1-2_checkbox_disabled_label_color: var(--sapContent_LabelColor);--_ui5-v2-1-2_checkbox_default_focus_border: none;--_ui5-v2-1-2_checkbox_focus_outline_display: block;--_ui5-v2-1-2_checkbox_wrapper_padding: .6875rem;--_ui5-v2-1-2_checkbox_width_height: 2.75rem;--_ui5-v2-1-2_checkbox_label_color: var(--sapField_TextColor);--_ui5-v2-1-2_checkbox_inner_border: solid var(--sapField_BorderWidth) var(--sapField_BorderColor);--_ui5-v2-1-2_checkbox_inner_border_radius: var(--sapField_BorderCornerRadius);--_ui5-v2-1-2_checkbox_checkmark_color: var(--sapContent_Selected_ForegroundColor);--_ui5-v2-1-2_checkbox_hover_background: var(--sapContent_Selected_Hover_Background);--_ui5-v2-1-2_checkbox_inner_hover_border_color: var(--sapField_Hover_BorderColor);--_ui5-v2-1-2_checkbox_inner_hover_checked_border_color: var(--sapField_Hover_BorderColor);--_ui5-v2-1-2_checkbox_inner_selected_border_color: var(--sapField_BorderColor);--_ui5-v2-1-2_checkbox_inner_active_border_color: var(--sapField_Hover_BorderColor);--_ui5-v2-1-2_checkbox_active_background: var(--sapContent_Selected_Hover_Background);--_ui5-v2-1-2_checkbox_inner_readonly_border: var(--sapElement_BorderWidth) var(--sapField_ReadOnly_BorderColor) dashed;--_ui5-v2-1-2_checkbox_inner_error_border: var(--sapField_InvalidBorderWidth) solid var(--sapField_InvalidColor);--_ui5-v2-1-2_checkbox_inner_error_background_hover: var(--sapField_Hover_Background);--_ui5-v2-1-2_checkbox_inner_warning_border: var(--sapField_WarningBorderWidth) solid var(--sapField_WarningColor);--_ui5-v2-1-2_checkbox_inner_warning_color: var(--sapField_WarningColor);--_ui5-v2-1-2_checkbox_inner_warning_background_hover: var(--sapField_Hover_Background);--_ui5-v2-1-2_checkbox_checkmark_warning_color: var(--sapField_WarningColor);--_ui5-v2-1-2_checkbox_inner_success_border: var(--sapField_SuccessBorderWidth) solid var(--sapField_SuccessColor);--_ui5-v2-1-2_checkbox_inner_success_background_hover: var(--sapField_Hover_Background);--_ui5-v2-1-2_checkbox_inner_information_color: var(--sapField_InformationColor);--_ui5-v2-1-2_checkbox_inner_information_border: var(--sapField_InformationBorderWidth) solid var(--sapField_InformationColor);--_ui5-v2-1-2_checkbox_inner_information_background_hover: var(--sapField_Hover_Background);--_ui5-v2-1-2_checkbox_disabled_opacity: var(--sapContent_DisabledOpacity);--_ui5-v2-1-2_checkbox_focus_position: .3125rem;--_ui5-v2-1-2_checkbox_focus_border_radius: .5rem;--_ui5-v2-1-2_checkbox_right_focus_distance: var(--_ui5-v2-1-2_checkbox_focus_position);--_ui5-v2-1-2_color-palette-item-after-focus-inset: .0625rem;--_ui5-v2-1-2_color-palette-item-outer-border-radius: .25rem;--_ui5-v2-1-2_color-palette-item-inner-border-radius: .1875rem;--_ui5-v2-1-2_color-palette-item-after-not-focus-color: .0625rem solid var(--sapGroup_ContentBackground);--_ui5-v2-1-2_color-palette-item-container-sides-padding: .3125rem;--_ui5-v2-1-2_color-palette-item-container-rows-padding: .6875rem;--_ui5-v2-1-2_color-palette-item-focus-height: 1.5rem;--_ui5-v2-1-2_color-palette-item-container-padding: var(--_ui5-v2-1-2_color-palette-item-container-sides-padding) var(--_ui5-v2-1-2_color-palette-item-container-rows-padding);--_ui5-v2-1-2_color-palette-item-hover-margin: .0625rem;--_ui5-v2-1-2_color-palette-row-height: 9.5rem;--_ui5-v2-1-2_color-palette-button-height: 3rem;--_ui5-v2-1-2_color-palette-item-before-focus-color: .125rem solid var(--sapContent_FocusColor);--_ui5-v2-1-2_color-palette-item-before-focus-inset: -.3125rem;--_ui5-v2-1-2_color-palette-item-before-focus-hover-inset: -.0625rem;--_ui5-v2-1-2_color-palette-item-after-focus-color: .0625rem solid var(--sapContent_ContrastFocusColor);--_ui5-v2-1-2_color-palette-item-selected-focused-border-after: none;--_ui5-v2-1-2_color-palette-item-after-focus-hover-inset: .0625rem;--_ui5-v2-1-2_color-palette-item-before-focus-border-radius: .4375rem;--_ui5-v2-1-2_color-palette-item-after-focus-border-radius: .3125rem;--_ui5-v2-1-2_color-palette-item-hover-outer-border-radius: .4375rem;--_ui5-v2-1-2_color-palette-item-hover-inner-border-radius: .375rem;--_ui5-v2-1-2_color-palette-item-selected-focused-border-before: -.0625rem;--_ui5-v2-1-2_color-palette-item-after-focus-not-selected-border: none;--_ui5-v2-1-2_color-palette-item-selected-focused-border: none;--_ui5-v2-1-2_color_picker_circle_outer_border: .0625rem solid var(--sapContent_ContrastShadowColor);--_ui5-v2-1-2_color_picker_circle_inner_border: .0625rem solid var(--sapField_BorderColor);--_ui5-v2-1-2_color_picker_circle_inner_circle_size: .5625rem;--_ui5-v2-1-2_color_picker_slider_handle_box_shadow: .125rem solid var(--sapField_BorderColor);--_ui5-v2-1-2_color_picker_slider_handle_border: .125rem solid var(--sapField_BorderColor);--_ui5-v2-1-2_color_picker_slider_handle_outline_hover: .125rem solid var(--sapContent_FocusColor);--_ui5-v2-1-2_color_picker_slider_handle_outline_focus: .125rem solid var(--sapContent_FocusColor);--_ui5-v2-1-2_color_picker_slider_handle_margin_top: -.1875rem;--_ui5-v2-1-2_color_picker_slider_handle_focus_margin_top: var(--_ui5-v2-1-2_color_picker_slider_handle_margin_top);--_ui5-v2-1-2_color_picker_slider_container_margin_top: -11px;--_ui5-v2-1-2_color_picker_slider_handle_inline_focus: 1px solid var(--sapContent_ContrastFocusColor);--_ui5-v2-1-2_datepicker_icon_border: none;--_ui5-v2-1-2-datepicker-hover-background: var(--sapField_Hover_Background);--_ui5-v2-1-2-datepicker_border_radius: .25rem;--_ui5-v2-1-2-datepicker_icon_border_radius: .125rem;--_ui5-v2-1-2_daypicker_item_box_shadow: inset 0 0 0 .0625rem var(--sapContent_Selected_ForegroundColor);--_ui5-v2-1-2_daypicker_item_margin: 2px;--_ui5-v2-1-2_daypicker_item_border: none;--_ui5-v2-1-2_daypicker_item_selected_border_color: var(--sapList_Background);--_ui5-v2-1-2_daypicker_daynames_container_height: 2rem;--_ui5-v2-1-2_daypicker_weeknumbers_container_padding_top: 2rem;--_ui5-v2-1-2_daypicker_item_othermonth_background_color: var(--sapList_Background);--_ui5-v2-1-2_daypicker_item_othermonth_color: var(--sapContent_LabelColor);--_ui5-v2-1-2_daypicker_item_othermonth_hover_color: var(--sapContent_LabelColor);--_ui5-v2-1-2_daypicker_item_now_inner_border_radius: 0;--_ui5-v2-1-2_daypicker_item_outline_width: 1px;--_ui5-v2-1-2_daypicker_item_outline_offset: 1px;--_ui5-v2-1-2_daypicker_item_now_focus_after_width: calc(100% - .25rem) ;--_ui5-v2-1-2_daypicker_item_now_focus_after_height: calc(100% - .25rem) ;--_ui5-v2-1-2_daypicker_item_now_selected_focus_after_width: calc(100% - .375rem) ;--_ui5-v2-1-2_daypicker_item_now_selected_focus_after_height: calc(100% - .375rem) ;--_ui5-v2-1-2_daypicker_item_selected_background: transparent;--_ui5-v2-1-2_daypicker_item_outline_focus_after: none;--_ui5-v2-1-2_daypicker_item_border_focus_after: var(--_ui5-v2-1-2_daypicker_item_outline_width) dotted var(--sapContent_FocusColor);--_ui5-v2-1-2_daypicker_item_width_focus_after: calc(100% - .25rem) ;--_ui5-v2-1-2_daypicker_item_height_focus_after: calc(100% - .25rem) ;--_ui5-v2-1-2_daypicker_item_now_outline: none;--_ui5-v2-1-2_daypicker_item_now_outline_offset: none;--_ui5-v2-1-2_daypicker_item_now_outline_offset_focus_after: var(--_ui5-v2-1-2_daypicker_item_now_outline_offset);--_ui5-v2-1-2_daypicker_item_selected_between_hover_background: var(--sapList_Hover_SelectionBackground);--_ui5-v2-1-2_daypicker_item_now_not_selected_inset: 0;--_ui5-v2-1-2_daypicker_item_now_border_color: var(--sapLegend_CurrentDateTime);--_ui5-v2-1-2_dp_two_calendar_item_secondary_text_border_radios: .25rem;--_ui5-v2-1-2_daypicker_special_day_top: 2.5rem;--_ui5-v2-1-2_daypicker_special_day_before_border_color: var(--sapList_Background);--_ui5-v2-1-2_daypicker_selected_item_now_special_day_border_bottom_radius: 0;--_ui5-v2-1-2_daypicker_twocalendar_item_special_day_after_border_width: .125rem;--_ui5-v2-1-2_daypicker_twocalendar_item_special_day_dot: .375rem;--_ui5-v2-1-2_daypicker_twocalendar_item_special_day_top: 2rem;--_ui5-v2-1-2_daypicker_twocalendar_item_special_day_right: 1.4375rem;--_ui5-v2-1-2_daypicker_item_border_radius: .4375rem;--_ui5-v2-1-2_daypicker_item_focus_border: .0625rem dotted var(--sapContent_FocusColor);--_ui5-v2-1-2_daypicker_item_selected_border: .0625rem solid var(--sapList_SelectionBorderColor);--_ui5-v2-1-2_daypicker_item_not_selected_focus_border: .125rem solid var(--sapContent_FocusColor);--_ui5-v2-1-2_daypicker_item_selected_focus_color: var(--sapContent_FocusColor);--_ui5-v2-1-2_daypicker_item_selected_focus_width: .125rem;--_ui5-v2-1-2_daypicker_item_no_selected_inset: .375rem;--_ui5-v2-1-2_daypicker_item_now_border_focus_after: .125rem solid var(--sapList_SelectionBorderColor);--_ui5-v2-1-2_daypicker_item_now_border_radius_focus_after: .3125rem;--_ui5-v2-1-2_day_picker_item_selected_now_border_focus: .125rem solid var(--sapContent_FocusColor);--_ui5-v2-1-2_day_picker_item_selected_now_border_radius_focus: .1875rem;--ui5-v2-1-2-dp-item_withsecondtype_border: .375rem;--_ui5-v2-1-2_daypicker_item_now_border: .125rem solid var(--sapLegend_CurrentDateTime);--_ui5-v2-1-2_daypicker_dayname_color: var(--sapContent_LabelColor);--_ui5-v2-1-2_daypicker_weekname_color: var(--sapContent_LabelColor);--_ui5-v2-1-2_daypicker_item_selected_box_shadow: inset 0 0 0 .0625rem var(--sapContent_Selected_ForegroundColor);--_ui5-v2-1-2_daypicker_item_selected_daytext_hover_background: transparent;--_ui5-v2-1-2_daypicker_item_border_radius_item: .5rem;--_ui5-v2-1-2_daypicker_item_border_radius_focus_after: .1875rem;--_ui5-v2-1-2_daypicker_item_selected_between_border: .5rem;--_ui5-v2-1-2_daypicker_item_selected_between_background: var(--sapList_SelectionBackgroundColor);--_ui5-v2-1-2_daypicker_item_selected_between_text_background: transparent;--_ui5-v2-1-2_daypicker_item_selected_between_text_font: var(--sapFontFamily);--_ui5-v2-1-2_daypicker_item_selected_text_font: var(--sapFontBoldFamily);--_ui5-v2-1-2_daypicker_item_now_box_shadow: inset 0 0 0 .35rem var(--sapList_Background);--_ui5-v2-1-2_daypicker_item_selected_text_outline: .0625rem solid var(--sapSelectedColor);--_ui5-v2-1-2_daypicker_item_now_selected_outline_offset: -.25rem;--_ui5-v2-1-2_daypicker_item_now_selected_between_inset: .25rem;--_ui5-v2-1-2_daypicker_item_now_selected_between_border: .0625rem solid var(--sapContent_Selected_ForegroundColor);--_ui5-v2-1-2_daypicker_item_now_selected_between_border_radius: .1875rem;--_ui5-v2-1-2_daypicker_item_select_between_border: 1px solid var(--sapContent_Selected_ForegroundColor);--_ui5-v2-1-2_daypicker_item_weeekend_filter: brightness(105%);--_ui5-v2-1-2_daypicker_item_selected_hover: var(--sapList_Hover_Background);--_ui5-v2-1-2_daypicker_item_now_inset: .3125rem;--_ui5-v2-1-2-dp-item_withsecondtype_border: .25rem;--_ui5-v2-1-2_daypicker_item_selected__secondary_type_text_outline: .0625rem solid var(--sapSelectedColor);--_ui5-v2-1-2_daypicker_two_calendar_item_now_day_text_content: "";--_ui5-v2-1-2_daypicker_two_calendar_item_now_selected_border_width: .125rem;--_ui5-v2-1-2_daypicker_two_calendar_item_border_radius: .5rem;--_ui5-v2-1-2_daypicker_two_calendar_item_border_focus_border_radius: .375rem;--_ui5-v2-1-2_daypicker_two_calendar_item_no_selected_inset: 0;--_ui5-v2-1-2_daypicker_two_calendar_item_selected_now_border_radius_focus: .1875rem;--_ui5-v2-1-2_daypicker_two_calendar_item_no_selected_focus_inset: .1875rem;--_ui5-v2-1-2_daypicker_two_calendar_item_no_select_focus_border_radius: .3125rem;--_ui5-v2-1-2_daypicker_two_calendar_item_now_inset: .3125rem;--_ui5-v2-1-2_daypicker_two_calendar_item_now_selected_border_inset: .125rem;--_ui5-v2-1-2_daypicker_selected_item_special_day_width: calc(100% - .125rem) ;--_ui5-v2-1-2_daypicker_special_day_border_bottom_radius: .5rem;--_ui5-v2-1-2-daypicker_item_selected_now_border_radius: .5rem;--_ui5-v2-1-2_daypicker_selected_item_now_special_day_width: calc(100% - .1875rem) ;--_ui5-v2-1-2_daypicker_selected_item_now_special_day_border_bottom_radius_alternate: .5rem;--_ui5-v2-1-2_daypicker_selected_item_now_special_day_top: 2.4375rem;--_ui5-v2-1-2_daypicker_two_calendar_item_margin_bottom: 0;--_ui5-v2-1-2_daypicker_twocalendar_item_special_day_now_inset: .3125rem;--_ui5-v2-1-2_daypicker_twocalendar_item_special_day_now_border_radius: .25rem;--_ui5-v2-1-2_daypicker_item_now_focus_margin: 0;--_ui5-v2-1-2_daypicker_special_day_border_top: none;--_ui5-v2-1-2_daypicker_special_day_selected_border_radius_bottom: .25rem;--_ui5-v2-1-2_daypicker_specialday_focused_top: 2.125rem;--_ui5-v2-1-2_daypicker_specialday_focused_width: calc(100% - .75rem) ;--_ui5-v2-1-2_daypicker_specialday_focused_border_bottom: 0;--_ui5-v2-1-2_daypicker_item_now_specialday_top: 2.3125rem;--_ui5-v2-1-2_daypicker_item_now_specialday_width: calc(100% - .5rem) ;--_ui5-v2-1-2_dialog_resize_handle_color: var(--sapButton_Lite_TextColor);--_ui5-v2-1-2_dialog_header_error_state_icon_color: var(--sapNegativeElementColor);--_ui5-v2-1-2_dialog_header_information_state_icon_color: var(--sapInformativeElementColor);--_ui5-v2-1-2_dialog_header_success_state_icon_color: var(--sapPositiveElementColor);--_ui5-v2-1-2_dialog_header_warning_state_icon_color: var(--sapCriticalElementColor);--_ui5-v2-1-2_dialog_header_state_line_height: .0625rem;--_ui5-v2-1-2_dialog_header_focus_bottom_offset: 2px;--_ui5-v2-1-2_dialog_header_focus_top_offset: 1px;--_ui5-v2-1-2_dialog_header_focus_left_offset: 1px;--_ui5-v2-1-2_dialog_header_focus_right_offset: 1px;--_ui5-v2-1-2_dialog_resize_handle_right: 0;--_ui5-v2-1-2_dialog_resize_handle_bottom: 3px;--_ui5-v2-1-2_dialog_header_border_radius: var(--sapElement_BorderCornerRadius);--_ui5-v2-1-2_file_uploader_value_state_error_hover_background_color: var(--sapField_Hover_Background);--_ui5-v2-1-2_file_uploader_hover_border: none;--_ui5-v2-1-2_table_cell_valign: center;--_ui5-v2-1-2_table_cell_min_width: 2.75rem;--_ui5-v2-1-2_table_navigated_cell_width: .1875rem;--_ui5-v2-1-2_table_shadow_border_left: inset var(--sapContent_FocusWidth) 0 var(--sapContent_FocusColor);--_ui5-v2-1-2_table_shadow_border_right: inset calc(-1 * var(--sapContent_FocusWidth)) 0 var(--sapContent_FocusColor);--_ui5-v2-1-2_table_shadow_border_top: inset 0 var(--sapContent_FocusWidth) var(--sapContent_FocusColor);--_ui5-v2-1-2_table_shadow_border_bottom: inset 0 -1px var(--sapContent_FocusColor);--ui5-v2-1-2-form-item-layout: 1fr 2fr;--ui5-v2-1-2-form-item-layout-span1: 1fr 11fr;--ui5-v2-1-2-form-item-layout-span2: 2fr 10fr;--ui5-v2-1-2-form-item-layout-span3: 3fr 9fr;--ui5-v2-1-2-form-item-layout-span4: 4fr 8fr;--ui5-v2-1-2-form-item-layout-span5: 5fr 7fr;--ui5-v2-1-2-form-item-layout-span6: 6fr 6fr;--ui5-v2-1-2-form-item-layout-span7: 7fr 5fr;--ui5-v2-1-2-form-item-layout-span8: 8fr 4fr;--ui5-v2-1-2-form-item-layout-span9: 9fr 3fr;--ui5-v2-1-2-form-item-layout-span10: 10fr 2fr;--ui5-v2-1-2-form-item-layout-span11: 11fr 1fr;--ui5-v2-1-2-form-item-layout-span12: 1fr;--ui5-v2-1-2-form-item-label-justify: end;--ui5-v2-1-2-form-item-label-justify-span12: start;--ui5-v2-1-2-form-item-label-padding: .125rem 0;--ui5-v2-1-2-form-item-label-padding-end: .85rem;--ui5-v2-1-2-form-item-label-padding-span12: .625rem .25rem 0 .25rem;--ui5-v2-1-2-group-header-listitem-background-color: var(--sapList_GroupHeaderBackground);--ui5-v2-1-2-icon-focus-border-radius: .25rem;--_ui5-v2-1-2_input_width: 13.125rem;--_ui5-v2-1-2_input_min_width: 2.75rem;--_ui5-v2-1-2_input_height: var(--sapElement_Height);--_ui5-v2-1-2_input_compact_height: 1.625rem;--_ui5-v2-1-2_input_value_state_error_hover_background: var(--sapField_Hover_Background);--_ui5-v2-1-2_input_background_color: var(--sapField_Background);--_ui5-v2-1-2_input_border_radius: var(--sapField_BorderCornerRadius);--_ui5-v2-1-2_input_placeholder_style: italic;--_ui5-v2-1-2_input_placeholder_color: var(--sapField_PlaceholderTextColor);--_ui5-v2-1-2_input_bottom_border_height: 0;--_ui5-v2-1-2_input_bottom_border_color: transparent;--_ui5-v2-1-2_input_focused_border_color: var(--sapField_Hover_BorderColor);--_ui5-v2-1-2_input_state_border_width: .125rem;--_ui5-v2-1-2_input_information_border_width: .125rem;--_ui5-v2-1-2_input_error_font_weight: normal;--_ui5-v2-1-2_input_warning_font_weight: normal;--_ui5-v2-1-2_input_focus_border_width: 1px;--_ui5-v2-1-2_input_error_warning_font_style: inherit;--_ui5-v2-1-2_input_error_warning_text_indent: 0;--_ui5-v2-1-2_input_disabled_color: var(--sapContent_DisabledTextColor);--_ui5-v2-1-2_input_disabled_font_weight: normal;--_ui5-v2-1-2_input_disabled_border_color: var(--sapField_BorderColor);--_ui5-v2-1-2-input_disabled_background: var(--sapField_Background);--_ui5-v2-1-2_input_readonly_border_color: var(--sapField_ReadOnly_BorderColor);--_ui5-v2-1-2_input_readonly_background: var(--sapField_ReadOnly_Background);--_ui5-v2-1-2_input_disabled_opacity: var(--sapContent_DisabledOpacity);--_ui5-v2-1-2_input_icon_min_width: 2.25rem;--_ui5-v2-1-2_input_compact_min_width: 2rem;--_ui5-v2-1-2_input_transition: none;--_ui5-v2-1-2-input-value-state-icon-display: none;--_ui5-v2-1-2_input_value_state_error_border_color: var(--sapField_InvalidColor);--_ui5-v2-1-2_input_focused_value_state_error_border_color: var(--sapField_InvalidColor);--_ui5-v2-1-2_input_value_state_warning_border_color: var(--sapField_WarningColor);--_ui5-v2-1-2_input_focused_value_state_warning_border_color: var(--sapField_WarningColor);--_ui5-v2-1-2_input_value_state_success_border_color: var(--sapField_SuccessColor);--_ui5-v2-1-2_input_focused_value_state_success_border_color: var(--sapField_SuccessColor);--_ui5-v2-1-2_input_value_state_success_border_width: 1px;--_ui5-v2-1-2_input_value_state_information_border_color: var(--sapField_InformationColor);--_ui5-v2-1-2_input_focused_value_state_information_border_color: var(--sapField_InformationColor);--_ui5-v2-1-2-input-value-state-information-border-width: 1px;--_ui5-v2-1-2-input-background-image: none;--ui5-v2-1-2_input_focus_pseudo_element_content: "";--_ui5-v2-1-2_input_value_state_error_warning_placeholder_font_weight: normal;--_ui5-v2-1-2-input_error_placeholder_color: var(--sapField_PlaceholderTextColor);--_ui5-v2-1-2_input_icon_width: 2.25rem;--_ui5-v2-1-2-input-icons-count: 0;--_ui5-v2-1-2_input_margin_top_bottom: .1875rem;--_ui5-v2-1-2_input_tokenizer_min_width: 3.25rem;--_ui5-v2-1-2-input-border: none;--_ui5-v2-1-2_input_hover_border: none;--_ui5-v2-1-2_input_focus_border_radius: .25rem;--_ui5-v2-1-2_input_readonly_focus_border_radius: .125rem;--_ui5-v2-1-2_input_error_warning_border_style: none;--_ui5-v2-1-2_input_focused_value_state_error_background: var(--sapField_Hover_Background);--_ui5-v2-1-2_input_focused_value_state_warning_background: var(--sapField_Hover_Background);--_ui5-v2-1-2_input_focused_value_state_success_background: var(--sapField_Hover_Background);--_ui5-v2-1-2_input_focused_value_state_information_background: var(--sapField_Hover_Background);--_ui5-v2-1-2_input_focused_value_state_error_focus_outline_color: var(--sapField_InvalidColor);--_ui5-v2-1-2_input_focused_value_state_warning_focus_outline_color: var(--sapField_WarningColor);--_ui5-v2-1-2_input_focused_value_state_success_focus_outline_color: var(--sapField_SuccessColor);--_ui5-v2-1-2_input_focus_offset: 0;--_ui5-v2-1-2_input_readonly_focus_offset: .125rem;--_ui5-v2-1-2_input_information_icon_padding: .625rem .625rem .5rem .625rem;--_ui5-v2-1-2_input_information_focused_icon_padding: .625rem .625rem .5625rem .625rem;--_ui5-v2-1-2_input_error_warning_icon_padding: .625rem .625rem .5rem .625rem;--_ui5-v2-1-2_input_error_warning_focused_icon_padding: .625rem .625rem .5625rem .625rem;--_ui5-v2-1-2_input_custom_icon_padding: .625rem .625rem .5625rem .625rem;--_ui5-v2-1-2_input_error_warning_custom_icon_padding: .625rem .625rem .5rem .625rem;--_ui5-v2-1-2_input_error_warning_custom_focused_icon_padding: .625rem .625rem .5625rem .625rem;--_ui5-v2-1-2_input_information_custom_icon_padding: .625rem .625rem .5rem .625rem;--_ui5-v2-1-2_input_information_custom_focused_icon_padding: .625rem .625rem .5625rem .625rem;--_ui5-v2-1-2_input_focus_outline_color: var(--sapField_Active_BorderColor);--_ui5-v2-1-2_input_icon_wrapper_height: calc(100% - 1px) ;--_ui5-v2-1-2_input_icon_wrapper_state_height: calc(100% - 2px) ;--_ui5-v2-1-2_input_icon_wrapper_success_state_height: calc(100% - var(--_ui5-v2-1-2_input_value_state_success_border_width));--_ui5-v2-1-2_input_icon_color: var(--sapContent_IconColor);--_ui5-v2-1-2_input_icon_pressed_bg: var(--sapButton_Selected_Background);--_ui5-v2-1-2_input_icon_padding: .625rem .625rem .5625rem .625rem;--_ui5-v2-1-2_input_icon_hover_bg: var(--sapField_Focus_Background);--_ui5-v2-1-2_input_icon_pressed_color: var(--sapButton_Active_TextColor);--_ui5-v2-1-2_input_icon_border_radius: .25rem;--_ui5-v2-1-2_input_icon_box_shadow: var(--sapField_Hover_Shadow);--_ui5-v2-1-2_input_icon_border: none;--_ui5-v2-1-2_input_error_icon_box_shadow: var(--sapContent_Negative_Shadow);--_ui5-v2-1-2_input_warning_icon_box_shadow: var(--sapContent_Critical_Shadow);--_ui5-v2-1-2_input_information_icon_box_shadow: var(--sapContent_Informative_Shadow);--_ui5-v2-1-2_input_success_icon_box_shadow: var(--sapContent_Positive_Shadow);--_ui5-v2-1-2_input_icon_error_pressed_color: var(--sapButton_Reject_Selected_TextColor);--_ui5-v2-1-2_input_icon_warning_pressed_color: var(--sapButton_Attention_Selected_TextColor);--_ui5-v2-1-2_input_icon_information_pressed_color: var(--sapButton_Selected_TextColor);--_ui5-v2-1-2_input_icon_success_pressed_color: var(--sapButton_Accept_Selected_TextColor);--_ui5-v2-1-2_link_focus_text_decoration: underline;--_ui5-v2-1-2_link_text_decoration: var(--sapLink_TextDecoration);--_ui5-v2-1-2_link_hover_text_decoration: var(--sapLink_Hover_TextDecoration);--_ui5-v2-1-2_link_focused_hover_text_decoration: none;--_ui5-v2-1-2_link_focused_hover_text_color: var(--sapContent_ContrastTextColor);--_ui5-v2-1-2_link_active_text_decoration: var(--sapLink_Active_TextDecoration);--_ui5-v2-1-2_link_outline: none;--_ui5-v2-1-2_link_focus_border-radius: .125rem;--_ui5-v2-1-2_link_focus_background_color: var(--sapContent_FocusColor);--_ui5-v2-1-2_link_focus_color: var(--sapContent_ContrastTextColor);--_ui5-v2-1-2_link_subtle_text_decoration: underline;--_ui5-v2-1-2_link_subtle_text_decoration_hover: none;--ui5-v2-1-2_list_footer_text_color: var(--sapList_FooterTextColor);--ui5-v2-1-2-listitem-background-color: var(--sapList_Background);--ui5-v2-1-2-listitem-border-bottom: var(--sapList_BorderWidth) solid var(--sapList_BorderColor);--ui5-v2-1-2-listitem-selected-border-bottom: 1px solid var(--sapList_SelectionBorderColor);--ui5-v2-1-2-listitem-focused-selected-border-bottom: 1px solid var(--sapList_SelectionBorderColor);--_ui5-v2-1-2_listitembase_focus_width: 1px;--_ui5-v2-1-2-listitembase_disabled_opacity: .5;--_ui5-v2-1-2_product_switch_item_border: none;--ui5-v2-1-2-listitem-active-border-color: var(--sapContent_FocusColor);--_ui5-v2-1-2_menu_item_padding: 0 1rem 0 .75rem;--_ui5-v2-1-2_menu_item_submenu_icon_right: 1rem;--_ui5-v2-1-2_menu_item_additional_text_start_margin: 1rem;--_ui5-v2-1-2_menu_popover_border_radius: var(--sapPopover_BorderCornerRadius);--_ui5-v2-1-2_monthpicker_item_border: none;--_ui5-v2-1-2_monthpicker_item_margin: 1px;--_ui5-v2-1-2_monthpicker_item_border_radius: .5rem;--_ui5-v2-1-2_monthpicker_item_focus_after_border: var(--_ui5-v2-1-2_button_focused_border);--_ui5-v2-1-2_monthpicker_item_focus_after_border_radius: .5rem;--_ui5-v2-1-2_monthpicker_item_focus_after_width: calc(100% - .5rem) ;--_ui5-v2-1-2_monthpicker_item_focus_after_height: calc(100% - .5rem) ;--_ui5-v2-1-2_monthpicker_item_focus_after_offset: .25rem;--_ui5-v2-1-2_monthpicker_item_selected_text_color: var(--sapContent_Selected_TextColor);--_ui5-v2-1-2_monthpicker_item_selected_background_color:var(--sapLegend_WorkingBackground);--_ui5-v2-1-2_monthpicker_item_selected_hover_color: var(--sapList_Hover_Background);--_ui5-v2-1-2_monthpicker_item_selected_box_shadow: none;--_ui5-v2-1-2_monthpicker_item_focus_after_outline: .125rem solid var(--sapSelectedColor);--_ui5-v2-1-2_monthpicker_item_selected_font_wieght: bold;--_ui5-v2-1-2_message_strip_icon_width: 2.5rem;--_ui5-v2-1-2_message_strip_button_border_width: 0;--_ui5-v2-1-2_message_strip_button_border_style: none;--_ui5-v2-1-2_message_strip_button_border_color: transparent;--_ui5-v2-1-2_message_strip_button_border_radius: 0;--_ui5-v2-1-2_message_strip_padding: .4375rem 2.5rem .4375rem 2.5rem;--_ui5-v2-1-2_message_strip_padding_block_no_icon: .4375rem .4375rem;--_ui5-v2-1-2_message_strip_padding_inline_no_icon: 1rem 2.5rem;--_ui5-v2-1-2_message_strip_button_height: 1.625rem;--_ui5-v2-1-2_message_strip_border_width: 1px;--_ui5-v2-1-2_message_strip_close_button_border: none;--_ui5-v2-1-2_message_strip_icon_top: .4375rem;--_ui5-v2-1-2_message_strip_focus_width: 1px;--_ui5-v2-1-2_message_strip_focus_offset: -2px;--_ui5-v2-1-2_message_strip_close_button_top: .125rem;--_ui5-v2-1-2_message_strip_close_button_color_set_1_background: #eaecee4d;--_ui5-v2-1-2_message_strip_close_button_color_set_2_background: #eaecee80;--_ui5-v2-1-2_message_strip_close_button_color_set_1_color: var(--sapButton_Emphasized_TextColor);--_ui5-v2-1-2_message_strip_close_button_color_set_1_hover_color: var(--sapButton_Emphasized_TextColor);--_ui5-v2-1-2_message_strip_scheme_1_set_2_background: var(--sapIndicationColor_1b);--_ui5-v2-1-2_message_strip_scheme_1_set_2_border_color: var(--sapIndicationColor_1b_BorderColor);--_ui5-v2-1-2_message_strip_scheme_2_set_2_background: var(--sapIndicationColor_2b);--_ui5-v2-1-2_message_strip_scheme_2_set_2_border_color: var(--sapIndicationColor_2b_BorderColor);--_ui5-v2-1-2_message_strip_scheme_3_set_2_background: var(--sapIndicationColor_3b);--_ui5-v2-1-2_message_strip_scheme_3_set_2_border_color: var(--sapIndicationColor_3b_BorderColor);--_ui5-v2-1-2_message_strip_scheme_4_set_2_background: var(--sapIndicationColor_4b);--_ui5-v2-1-2_message_strip_scheme_4_set_2_border_color: var(--sapIndicationColor_4b_BorderColor);--_ui5-v2-1-2_message_strip_scheme_5_set_2_background: var(--sapIndicationColor_5b);--_ui5-v2-1-2_message_strip_scheme_5_set_2_border_color: var(--sapIndicationColor_5b_BorderColor);--_ui5-v2-1-2_message_strip_scheme_6_set_2_background: var(--sapIndicationColor_6b);--_ui5-v2-1-2_message_strip_scheme_6_set_2_border_color: var(--sapIndicationColor_6b_BorderColor);--_ui5-v2-1-2_message_strip_scheme_7_set_2_background: var(--sapIndicationColor_7b);--_ui5-v2-1-2_message_strip_scheme_7_set_2_border_color: var(--sapIndicationColor_7b_BorderColor);--_ui5-v2-1-2_message_strip_scheme_8_set_2_background: var(--sapIndicationColor_8b);--_ui5-v2-1-2_message_strip_scheme_8_set_2_border_color: var(--sapIndicationColor_8b_BorderColor);--_ui5-v2-1-2_message_strip_scheme_9_set_2_background: var(--sapIndicationColor_9b);--_ui5-v2-1-2_message_strip_scheme_9_set_2_border_color: var(--sapIndicationColor_9b_BorderColor);--_ui5-v2-1-2_message_strip_scheme_10_set_2_background: var(--sapIndicationColor_10b);--_ui5-v2-1-2_message_strip_scheme_10_set_2_border_color: var(--sapIndicationColor_10b_BorderColor);--_ui5-v2-1-2_message_strip_close_button_right: .1875rem;--_ui5-v2-1-2_panel_focus_border: var(--sapContent_FocusWidth) var(--sapContent_FocusStyle) var(--sapContent_FocusColor);--_ui5-v2-1-2_panel_header_height: 2.75rem;--_ui5-v2-1-2_panel_button_root_width: 2.75rem;--_ui5-v2-1-2_panel_button_root_height: 2.75rem;--_ui5-v2-1-2_panel_header_padding_right: .5rem;--_ui5-v2-1-2_panel_header_button_wrapper_padding: .25rem;--_ui5-v2-1-2_panel_border_radius: var(--sapElement_BorderCornerRadius);--_ui5-v2-1-2_panel_border_bottom: none;--_ui5-v2-1-2_panel_default_header_border: .0625rem solid var(--sapGroup_TitleBorderColor);--_ui5-v2-1-2_panel_outline_offset: -.125rem;--_ui5-v2-1-2_panel_border_radius_expanded: var(--sapElement_BorderCornerRadius) var(--sapElement_BorderCornerRadius) 0 0;--_ui5-v2-1-2_panel_icon_color: var(--sapButton_Lite_TextColor);--_ui5-v2-1-2_panel_focus_offset: 0px;--_ui5-v2-1-2_panel_focus_bottom_offset: -1px;--_ui5-v2-1-2_panel_content_padding: .625rem 1rem;--_ui5-v2-1-2_panel_header_background_color: var(--sapGroup_TitleBackground);--_ui5-v2-1-2_popover_background: var(--sapGroup_ContentBackground);--_ui5-v2-1-2_popover_box_shadow: var(--sapContent_Shadow2);--_ui5-v2-1-2_popover_no_arrow_box_shadow: var(--sapContent_Shadow1);--_ui5-v2-1-2_popup_content_padding_s: 1rem;--_ui5-v2-1-2_popup_content_padding_m_l: 2rem;--_ui5-v2-1-2_popup_content_padding_xl: 3rem;--_ui5-v2-1-2_popup_header_footer_padding_s: 1rem;--_ui5-v2-1-2_popup_header_footer_padding_m_l: 2rem;--_ui5-v2-1-2_popup_header_footer_padding_xl: 3rem;--_ui5-v2-1-2_popup_viewport_margin: 10px;--_ui5-v2-1-2_popup_header_font_weight: 400;--_ui5-v2-1-2_popup_header_prop_header_text_alignment: flex-start;--_ui5-v2-1-2_popup_header_background: var(--sapPageHeader_Background);--_ui5-v2-1-2_popup_header_shadow: var(--sapContent_HeaderShadow);--_ui5-v2-1-2_popup_header_border: none;--_ui5-v2-1-2_popup_border_radius: .5rem;--_ui5-v2-1-2_popup_block_layer_background: color-mix(in oklch, transparent, var(--sapBlockLayer_Background) 60%);--_ui5-v2-1-2_progress_indicator_bar_border_max: none;--_ui5-v2-1-2_progress_indicator_icon_visibility: inline-block;--_ui5-v2-1-2_progress_indicator_side_points_visibility: block;--_ui5-v2-1-2_progress_indicator_padding: 1.25rem 0 .75rem 0;--_ui5-v2-1-2_progress_indicator_padding_novalue: .3125rem;--_ui5-v2-1-2_progress_indicator_padding_end: 1.25rem;--_ui5-v2-1-2_progress_indicator_host_height: unset;--_ui5-v2-1-2_progress_indicator_host_min_height: unset;--_ui5-v2-1-2_progress_indicator_host_box_sizing: border-box;--_ui5-v2-1-2_progress_indicator_root_position: relative;--_ui5-v2-1-2_progress_indicator_root_border_radius: .25rem;--_ui5-v2-1-2_progress_indicator_root_height: .375rem;--_ui5-v2-1-2_progress_indicator_root_min_height: .375rem;--_ui5-v2-1-2_progress_indicator_root_overflow: visible;--_ui5-v2-1-2_progress_indicator_bar_height: .625rem;--_ui5-v2-1-2_progress_indicator_bar_border_radius: .5rem;--_ui5-v2-1-2_progress_indicator_remaining_bar_border_radius: .25rem;--_ui5-v2-1-2_progress_indicator_remaining_bar_position: absolute;--_ui5-v2-1-2_progress_indicator_remaining_bar_width: 100%;--_ui5-v2-1-2_progress_indicator_remaining_bar_overflow: visible;--_ui5-v2-1-2_progress_indicator_icon_position: absolute;--_ui5-v2-1-2_progress_indicator_icon_right_position: -1.25rem;--_ui5-v2-1-2_progress_indicator_value_margin: 0 0 .1875rem 0;--_ui5-v2-1-2_progress_indicator_value_position: absolute;--_ui5-v2-1-2_progress_indicator_value_top_position: -1.3125rem;--_ui5-v2-1-2_progress_indicator_value_left_position: 0;--_ui5-v2-1-2_progress_indicator_background_none: var(--sapProgress_Background);--_ui5-v2-1-2_progress_indicator_background_error: var(--sapProgress_NegativeBackground);--_ui5-v2-1-2_progress_indicator_background_warning: var(--sapProgress_CriticalBackground);--_ui5-v2-1-2_progress_indicator_background_success: var(--sapProgress_PositiveBackground);--_ui5-v2-1-2_progress_indicator_background_information: var(--sapProgress_InformationBackground);--_ui5-v2-1-2_progress_indicator_value_state_none: var(--sapProgress_Value_Background);--_ui5-v2-1-2_progress_indicator_value_state_error: var(--sapProgress_Value_NegativeBackground);--_ui5-v2-1-2_progress_indicator_value_state_warning: var(--sapProgress_Value_CriticalBackground);--_ui5-v2-1-2_progress_indicator_value_state_success: var(--sapProgress_Value_PositiveBackground);--_ui5-v2-1-2_progress_indicator_value_state_information: var(--sapProgress_Value_InformationBackground);--_ui5-v2-1-2_progress_indicator_value_state_error_icon_color: var(--sapProgress_Value_NegativeTextColor);--_ui5-v2-1-2_progress_indicator_value_state_warning_icon_color: var(--sapProgress_Value_CriticalTextColor);--_ui5-v2-1-2_progress_indicator_value_state_success_icon_color: var(--sapProgress_Value_PositiveTextColor);--_ui5-v2-1-2_progress_indicator_value_state_information_icon_color: var(--sapProgress_Value_InformationTextColor);--_ui5-v2-1-2_progress_indicator_border: none;--_ui5-v2-1-2_progress_indicator_border_color_error: var(--sapErrorBorderColor);--_ui5-v2-1-2_progress_indicator_border_color_warning: var(--sapWarningBorderColor);--_ui5-v2-1-2_progress_indicator_border_color_success: var(--sapSuccessBorderColor);--_ui5-v2-1-2_progress_indicator_border_color_information: var(--sapInformationBorderColor);--_ui5-v2-1-2_progress_indicator_color: var(--sapField_TextColor);--_ui5-v2-1-2_progress_indicator_bar_color: var(--sapProgress_TextColor);--_ui5-v2-1-2_progress_indicator_icon_size: var(--sapFontLargeSize);--_ui5-v2-1-2_rating_indicator_item_height: 1em;--_ui5-v2-1-2_rating_indicator_item_width: 1em;--_ui5-v2-1-2_rating_indicator_component_spacing: .5rem 0px;--_ui5-v2-1-2_rating_indicator_border_radius: .25rem;--_ui5-v2-1-2_rating_indicator_outline_offset: .125rem;--_ui5-v2-1-2_rating_indicator_readonly_item_height: .75em;--_ui5-v2-1-2_rating_indicator_readonly_item_width: .75em;--_ui5-v2-1-2_rating_indicator_readonly_item_spacing: .1875rem .1875rem;--_ui5-v2-1-2_segmented_btn_inner_border: .0625rem solid transparent;--_ui5-v2-1-2_segmented_btn_inner_border_odd_child: .0625rem solid transparent;--_ui5-v2-1-2_segmented_btn_inner_pressed_border_odd_child: .0625rem solid var(--sapButton_Selected_BorderColor);--_ui5-v2-1-2_segmented_btn_inner_border_radius: var(--sapButton_BorderCornerRadius);--_ui5-v2-1-2_segmented_btn_background_color: var(--sapButton_Lite_Background);--_ui5-v2-1-2_segmented_btn_border_color: var(--sapButton_Lite_BorderColor);--_ui5-v2-1-2_segmented_btn_hover_box_shadow: none;--_ui5-v2-1-2_segmented_btn_item_border_left: .0625rem;--_ui5-v2-1-2_segmented_btn_item_border_right: .0625rem;--_ui5-v2-1-2_button_base_min_compact_width: 2rem;--_ui5-v2-1-2_button_base_height: var(--sapElement_Height);--_ui5-v2-1-2_button_compact_height: 1.625rem;--_ui5-v2-1-2_button_border_radius: var(--sapButton_BorderCornerRadius);--_ui5-v2-1-2_button_compact_padding: .4375rem;--_ui5-v2-1-2_button_emphasized_outline: 1px dotted var(--sapContent_FocusColor);--_ui5-v2-1-2_button_focus_offset: 1px;--_ui5-v2-1-2_button_focus_width: 1px;--_ui5-v2-1-2_button_emphasized_focused_border_before: .125rem solid var(--sapContent_FocusColor);--_ui5-v2-1-2_button_emphasized_focused_active_border_color: transparent;--_ui5-v2-1-2_button_focused_border: .125rem solid var(--sapContent_FocusColor);--_ui5-v2-1-2_button_focused_border_radius: .375rem;--_ui5-v2-1-2_button_focused_inner_border_radius: .375rem;--_ui5-v2-1-2_button_base_min_width: 2.25rem;--_ui5-v2-1-2_button_base_padding: .5625rem;--_ui5-v2-1-2_button_base_icon_only_padding: .5625rem;--_ui5-v2-1-2_button_base_icon_margin: .375rem;--_ui5-v2-1-2_button_icon_font_size: 1rem;--_ui5-v2-1-2_button_text_shadow: none;--_ui5-v2-1-2_button_emphasized_border_width: .0625rem;--_ui5-v2-1-2_button_pressed_focused_border_color: var(--sapContent_FocusColor);--_ui5-v2-1-2_button_fontFamily: var(--sapFontSemiboldDuplexFamily);--_ui5-v2-1-2_button_emphasized_focused_border_color: var(--sapContent_ContrastFocusColor);--_ui5-v2-1-2_radio_button_min_width: 2.75rem;--_ui5-v2-1-2_radio_button_hover_fill_error: var(--sapField_Hover_Background);--_ui5-v2-1-2_radio_button_hover_fill_warning: var(--sapField_Hover_Background);--_ui5-v2-1-2_radio_button_hover_fill_success: var(--sapField_Hover_Background);--_ui5-v2-1-2_radio_button_hover_fill_information: var(--sapField_Hover_Background);--_ui5-v2-1-2_radio_button_checked_fill: var(--sapSelectedColor);--_ui5-v2-1-2_radio_button_checked_error_fill: var(--sapField_InvalidColor);--_ui5-v2-1-2_radio_button_checked_success_fill: var(--sapField_SuccessColor);--_ui5-v2-1-2_radio_button_checked_information_fill: var(--sapField_InformationColor);--_ui5-v2-1-2_radio_button_warning_error_border_dash: 0;--_ui5-v2-1-2_radio_button_outer_ring_color: var(--sapField_BorderColor);--_ui5-v2-1-2_radio_button_outer_ring_width: var(--sapField_BorderWidth);--_ui5-v2-1-2_radio_button_outer_ring_bg: var(--sapField_Background);--_ui5-v2-1-2_radio_button_outer_ring_hover_color: var(--sapField_Hover_BorderColor);--_ui5-v2-1-2_radio_button_outer_ring_active_color: var(--sapField_Hover_BorderColor);--_ui5-v2-1-2_radio_button_outer_ring_checked_hover_color: var(--sapField_Hover_BorderColor);--_ui5-v2-1-2_radio_button_outer_ring_padding_with_label: 0 .6875rem;--_ui5-v2-1-2_radio_button_border: none;--_ui5-v2-1-2_radio_button_focus_outline: block;--_ui5-v2-1-2_radio_button_color: var(--sapField_BorderColor);--_ui5-v2-1-2_radio_button_label_offset: 1px;--_ui5-v2-1-2_radio_button_items_align: unset;--_ui5-v2-1-2_radio_button_information_border_width: var(--sapField_InformationBorderWidth);--_ui5-v2-1-2_radio_button_border_width: var(--sapContent_FocusWidth);--_ui5-v2-1-2_radio_button_border_radius: .5rem;--_ui5-v2-1-2_radio_button_label_color: var(--sapField_TextColor);--_ui5-v2-1-2_radio_button_inner_ring_radius: 27.5%;--_ui5-v2-1-2_radio_button_outer_ring_padding: 0 .6875rem;--_ui5-v2-1-2_radio_button_read_only_border_type: 4,2;--_ui5-v2-1-2_radio_button_inner_ring_color: var(--sapContent_Selected_ForegroundColor);--_ui5-v2-1-2_radio_button_checked_warning_fill: var(--sapField_WarningColor);--_ui5-v2-1-2_radio_button_read_only_inner_ring_color: var(--sapField_TextColor);--_ui5-v2-1-2_radio_button_read_only_border_width: var(--sapElement_BorderWidth);--_ui5-v2-1-2_radio_button_hover_fill: var(--sapContent_Selected_Hover_Background);--_ui5-v2-1-2_radio_button_focus_dist: .375rem;--_ui5-v2-1-2_switch_height: 2.75rem;--_ui5-v2-1-2_switch_foucs_border_size: 1px;--_ui5-v2-1-2-switch-root-border-radius: 0;--_ui5-v2-1-2-switch-root-box-shadow: none;--_ui5-v2-1-2-switch-focus: "";--_ui5-v2-1-2_switch_track_border_radius: .75rem;--_ui5-v2-1-2-switch-track-border: 1px solid;--_ui5-v2-1-2_switch_track_transition: none;--_ui5-v2-1-2_switch_handle_border_radius: 1rem;--_ui5-v2-1-2-switch-handle-icon-display: none;--_ui5-v2-1-2-switch-slider-texts-display: inline;--_ui5-v2-1-2_switch_width: 3.5rem;--_ui5-v2-1-2_switch_min_width: none;--_ui5-v2-1-2_switch_with_label_width: 3.875rem;--_ui5-v2-1-2_switch_focus_outline: none;--_ui5-v2-1-2_switch_root_after_outline: .125rem solid var(--sapContent_FocusColor);--_ui5-v2-1-2_switch_root_after_boreder: none;--_ui5-v2-1-2_switch_root_after_boreder_radius: 1rem;--_ui5-v2-1-2_switch_root_outline_top: .5rem;--_ui5-v2-1-2_switch_root_outline_bottom: .5rem;--_ui5-v2-1-2_switch_root_outline_left: .375rem;--_ui5-v2-1-2_switch_root_outline_right: .375rem;--_ui5-v2-1-2_switch_disabled_opacity: var(--sapContent_DisabledOpacity);--_ui5-v2-1-2_switch_transform: translateX(100%) translateX(-1.625rem);--_ui5-v2-1-2_switch_transform_with_label: translateX(100%) translateX(-1.875rem);--_ui5-v2-1-2_switch_rtl_transform: translateX(-100%) translateX(1.625rem);--_ui5-v2-1-2_switch_rtl_transform_with_label: translateX(-100%) translateX(1.875rem);--_ui5-v2-1-2_switch_track_width: 2.5rem;--_ui5-v2-1-2_switch_track_height: 1.5rem;--_ui5-v2-1-2_switch_track_with_label_width: 2.875rem;--_ui5-v2-1-2_switch_track_with_label_height: 1.5rem;--_ui5-v2-1-2_switch_track_active_background_color: var(--sapButton_Track_Selected_Background);--_ui5-v2-1-2_switch_track_inactive_background_color: var(--sapButton_Track_Background);--_ui5-v2-1-2_switch_track_hover_active_background_color: var(--sapButton_Track_Selected_Hover_Background);--_ui5-v2-1-2_switch_track_hover_inactive_background_color: var(--sapButton_Track_Hover_Background);--_ui5-v2-1-2_switch_track_active_border_color: var(--sapButton_Track_Selected_BorderColor);--_ui5-v2-1-2_switch_track_inactive_border_color: var(--sapButton_Track_BorderColor);--_ui5-v2-1-2_switch_track_hover_active_border_color: var(--sapButton_Track_Selected_Hover_BorderColor);--_ui5-v2-1-2_switch_track_hover_inactive_border_color: var(--sapButton_Track_Hover_BorderColor);--_ui5-v2-1-2_switch_track_semantic_accept_background_color: var(--sapButton_Track_Positive_Background);--_ui5-v2-1-2_switch_track_semantic_reject_background_color: var(--sapButton_Track_Negative_Background);--_ui5-v2-1-2_switch_track_semantic_hover_accept_background_color: var(--sapButton_Track_Positive_Hover_Background);--_ui5-v2-1-2_switch_track_semantic_hover_reject_background_color: var(--sapButton_Track_Negative_Hover_Background);--_ui5-v2-1-2_switch_track_semantic_accept_border_color: var(--sapButton_Track_Positive_BorderColor);--_ui5-v2-1-2_switch_track_semantic_reject_border_color: var(--sapButton_Track_Negative_BorderColor);--_ui5-v2-1-2_switch_track_semantic_hover_accept_border_color: var(--sapButton_Track_Positive_Hover_BorderColor);--_ui5-v2-1-2_switch_track_semantic_hover_reject_border_color: var(--sapButton_Track_Negative_Hover_BorderColor);--_ui5-v2-1-2_switch_track_icon_display: inline-block;--_ui5-v2-1-2_switch_handle_width: 1.5rem;--_ui5-v2-1-2_switch_handle_height: 1.25rem;--_ui5-v2-1-2_switch_handle_with_label_width: 1.75rem;--_ui5-v2-1-2_switch_handle_with_label_height: 1.25rem;--_ui5-v2-1-2_switch_handle_border: var(--_ui5-v2-1-2_switch_handle_border_width) solid var(--sapButton_Handle_BorderColor);--_ui5-v2-1-2_switch_handle_border_width: .125rem;--_ui5-v2-1-2_switch_handle_active_background_color: var(--sapButton_Handle_Selected_Background);--_ui5-v2-1-2_switch_handle_inactive_background_color: var(--sapButton_Handle_Background);--_ui5-v2-1-2_switch_handle_hover_active_background_color: var(--sapButton_Handle_Selected_Hover_Background);--_ui5-v2-1-2_switch_handle_hover_inactive_background_color: var(--sapButton_Handle_Hover_Background);--_ui5-v2-1-2_switch_handle_active_border_color: var(--sapButton_Handle_Selected_BorderColor);--_ui5-v2-1-2_switch_handle_inactive_border_color: var(--sapButton_Handle_BorderColor);--_ui5-v2-1-2_switch_handle_hover_active_border_color: var(--sapButton_Handle_Selected_BorderColor);--_ui5-v2-1-2_switch_handle_hover_inactive_border_color: var(--sapButton_Handle_BorderColor);--_ui5-v2-1-2_switch_handle_semantic_accept_background_color: var(--sapButton_Handle_Positive_Background);--_ui5-v2-1-2_switch_handle_semantic_reject_background_color: var(--sapButton_Handle_Negative_Background);--_ui5-v2-1-2_switch_handle_semantic_hover_accept_background_color: var(--sapButton_Handle_Positive_Hover_Background);--_ui5-v2-1-2_switch_handle_semantic_hover_reject_background_color: var(--sapButton_Handle_Negative_Hover_Background);--_ui5-v2-1-2_switch_handle_semantic_accept_border_color: var(--sapButton_Handle_Positive_BorderColor);--_ui5-v2-1-2_switch_handle_semantic_reject_border_color: var(--sapButton_Handle_Negative_BorderColor);--_ui5-v2-1-2_switch_handle_semantic_hover_accept_border_color: var(--sapButton_Handle_Positive_BorderColor);--_ui5-v2-1-2_switch_handle_semantic_hover_reject_border_color: var(--sapButton_Handle_Negative_BorderColor);--_ui5-v2-1-2_switch_handle_on_hover_box_shadow: 0 0 0 .125rem var(--sapButton_Handle_Selected_Hover_BorderColor);--_ui5-v2-1-2_switch_handle_off_hover_box_shadow: 0 0 0 .125rem var(--sapButton_Handle_Hover_BorderColor);--_ui5-v2-1-2_switch_handle_semantic_on_hover_box_shadow: 0 0 0 .125rem var(--sapButton_Handle_Positive_Hover_BorderColor);--_ui5-v2-1-2_switch_handle_semantic_off_hover_box_shadow: 0 0 0 .125rem var(--sapButton_Handle_Negative_Hover_BorderColor);--_ui5-v2-1-2_switch_handle_left: .0625rem;--_ui5-v2-1-2_switch_text_font_family: var(--sapContent_IconFontFamily);--_ui5-v2-1-2_switch_text_font_size: var(--sapFontLargeSize);--_ui5-v2-1-2_switch_text_width: 1.25rem;--_ui5-v2-1-2_switch_text_with_label_font_family: "72-Condensed-Bold" , "72" , "72full" , Arial, Helvetica, sans-serif;--_ui5-v2-1-2_switch_text_with_label_font_size: var(--sapFontSmallSize);--_ui5-v2-1-2_switch_text_with_label_width: 1.75rem;--_ui5-v2-1-2_switch_text_inactive_left: .1875rem;--_ui5-v2-1-2_switch_text_inactive_left_alternate: .0625rem;--_ui5-v2-1-2_switch_text_inactive_right: auto;--_ui5-v2-1-2_switch_text_inactive_right_alternate: 0;--_ui5-v2-1-2_switch_text_active_left: .1875rem;--_ui5-v2-1-2_switch_text_active_left_alternate: .0625rem;--_ui5-v2-1-2_switch_text_active_right: auto;--_ui5-v2-1-2_switch_text_active_color: var(--sapButton_Handle_Selected_TextColor);--_ui5-v2-1-2_switch_text_inactive_color: var(--sapButton_Handle_TextColor);--_ui5-v2-1-2_switch_text_semantic_accept_color: var(--sapButton_Handle_Positive_TextColor);--_ui5-v2-1-2_switch_text_semantic_reject_color: var(--sapButton_Handle_Negative_TextColor);--_ui5-v2-1-2_switch_text_overflow: hidden;--_ui5-v2-1-2_switch_text_z_index: 1;--_ui5-v2-1-2_switch_text_hidden: hidden;--_ui5-v2-1-2_switch_text_min_width: none;--_ui5-v2-1-2_switch_icon_width: 1rem;--_ui5-v2-1-2_switch_icon_height: 1rem;--_ui5-v2-1-2_select_disabled_background: var(--sapField_Background);--_ui5-v2-1-2_select_disabled_border_color: var(--sapField_BorderColor);--_ui5-v2-1-2_select_state_error_warning_border_style: solid;--_ui5-v2-1-2_select_state_error_warning_border_width: .125rem;--_ui5-v2-1-2_select_focus_width: 1px;--_ui5-v2-1-2_select_label_color: var(--sapField_TextColor);--_ui5-v2-1-2_select_hover_icon_left_border: none;--_ui5-v2-1-2_select_option_focus_border_radius: var(--sapElement_BorderCornerRadius);--_ui5-v2-1-2_split_button_host_transparent_hover_background: transparent;--_ui5-v2-1-2_split_button_transparent_disabled_background: transparent;--_ui5-v2-1-2_split_button_host_default_box_shadow: inset 0 0 0 var(--sapButton_BorderWidth) var(--sapButton_BorderColor);--_ui5-v2-1-2_split_button_host_attention_box_shadow: inset 0 0 0 var(--sapButton_BorderWidth) var(--sapButton_Attention_BorderColor);--_ui5-v2-1-2_split_button_host_emphasized_box_shadow: inset 0 0 0 var(--sapButton_BorderWidth) var(--sapButton_Emphasized_BorderColor);--_ui5-v2-1-2_split_button_host_positive_box_shadow: inset 0 0 0 var(--sapButton_BorderWidth) var(--sapButton_Accept_BorderColor);--_ui5-v2-1-2_split_button_host_negative_box_shadow: inset 0 0 0 var(--sapButton_BorderWidth) var(--sapButton_Reject_BorderColor);--_ui5-v2-1-2_split_button_host_transparent_box_shadow: inset 0 0 0 var(--sapButton_BorderWidth) var(--sapButton_Lite_BorderColor);--_ui5-v2-1-2_split_text_button_border_color: transparent;--_ui5-v2-1-2_split_text_button_background_color: transparent;--_ui5-v2-1-2_split_text_button_emphasized_border: var(--sapButton_BorderWidth) solid var(--sapButton_Emphasized_BorderColor);--_ui5-v2-1-2_split_text_button_emphasized_border_width: .0625rem;--_ui5-v2-1-2_split_text_button_hover_border: var(--sapButton_BorderWidth) solid var(--sapButton_BorderColor);--_ui5-v2-1-2_split_text_button_emphasized_hover_border: var(--sapButton_BorderWidth) solid var(--sapButton_Emphasized_BorderColor);--_ui5-v2-1-2_split_text_button_positive_hover_border: var(--sapButton_BorderWidth) solid var(--sapButton_Accept_BorderColor);--_ui5-v2-1-2_split_text_button_negative_hover_border: var(--sapButton_BorderWidth) solid var(--sapButton_Reject_BorderColor);--_ui5-v2-1-2_split_text_button_attention_hover_border: var(--sapButton_BorderWidth) solid var(--sapButton_Attention_BorderColor);--_ui5-v2-1-2_split_text_button_transparent_hover_border: var(--sapButton_BorderWidth) solid var(--sapButton_BorderColor);--_ui5-v2-1-2_split_arrow_button_hover_border: var(--sapButton_BorderWidth) solid var(--sapButton_BorderColor);--_ui5-v2-1-2_split_arrow_button_emphasized_hover_border: var(--sapButton_BorderWidth) solid var(--sapButton_Emphasized_BorderColor);--_ui5-v2-1-2_split_arrow_button_emphasized_hover_border_left: var(--sapButton_BorderWidth) solid var(--sapButton_Emphasized_BorderColor);--_ui5-v2-1-2_split_arrow_button_positive_hover_border: var(--sapButton_BorderWidth) solid var(--sapButton_Accept_BorderColor);--_ui5-v2-1-2_split_arrow_button_negative_hover_border: var(--sapButton_BorderWidth) solid var(--sapButton_Reject_BorderColor);--_ui5-v2-1-2_split_arrow_button_attention_hover_border: var(--sapButton_BorderWidth) solid var(--sapButton_Attention_BorderColor);--_ui5-v2-1-2_split_arrow_button_transparent_hover_border: var(--sapButton_BorderWidth) solid var(--sapButton_BorderColor);--_ui5-v2-1-2_split_text_button_hover_border_left: var(--sapButton_BorderWidth) solid var(--sapButton_BorderColor);--_ui5-v2-1-2_split_text_button_emphasized_hover_border_left: var(--sapButton_BorderWidth) solid var(--sapButton_Emphasized_BorderColor);--_ui5-v2-1-2_split_text_button_positive_hover_border_left: var(--sapButton_BorderWidth) solid var(--sapButton_Accept_BorderColor);--_ui5-v2-1-2_split_text_button_negative_hover_border_left: var(--sapButton_BorderWidth) solid var(--sapButton_Reject_BorderColor);--_ui5-v2-1-2_split_text_button_attention_hover_border_left: var(--sapButton_BorderWidth) solid var(--sapButton_Attention_BorderColor);--_ui5-v2-1-2_split_text_button_transparent_hover_border_left: var(--sapButton_BorderWidth) solid var(--sapButton_BorderColor);--_ui5-v2-1-2_split_button_focused_border: .125rem solid var(--sapContent_FocusColor);--_ui5-v2-1-2_split_button_focused_border_radius: .375rem;--_ui5-v2-1-2_split_button_hover_border_radius: var(--_ui5-v2-1-2_button_border_radius);--_ui5-v2-1-2_split_button_middle_separator_width: 0;--_ui5-v2-1-2_split_button_middle_separator_left: -.0625rem;--_ui5-v2-1-2_split_button_middle_separator_hover_display: none;--_ui5-v2-1-2_split_button_text_button_width: 2.375rem;--_ui5-v2-1-2_split_button_text_button_right_border_width: .0625rem;--_ui5-v2-1-2_split_button_transparent_hover_background: var(--sapButton_Lite_Hover_Background);--_ui5-v2-1-2_split_button_transparent_hover_color: var(--sapButton_TextColor);--_ui5-v2-1-2_split_button_host_transparent_hover_box_shadow: inset 0 0 0 var(--sapButton_BorderWidth) var(--sapButton_BorderColor);--_ui5-v2-1-2_split_button_inner_focused_border_radius_outer: .375rem;--_ui5-v2-1-2_split_button_inner_focused_border_radius_inner: .375rem;--_ui5-v2-1-2_split_button_emphasized_separator_color: transparent;--_ui5-v2-1-2_split_button_positive_separator_color: transparent;--_ui5-v2-1-2_split_button_negative_separator_color: transparent;--_ui5-v2-1-2_split_button_attention_separator_color: transparent;--_ui5-v2-1-2_split_button_attention_separator_color_default: var(--sapButton_Attention_TextColor);--_ui5-v2-1-2_split_text_button_hover_border_right: var(--sapButton_BorderWidth) solid var(--sapButton_BorderColor);--_ui5-v2-1-2_split_text_button_emphasized_hover_border_right: none;--_ui5-v2-1-2_split_text_button_positive_hover_border_right: var(--sapButton_BorderWidth) solid var(--sapButton_Accept_BorderColor);--_ui5-v2-1-2_split_text_button_negative_hover_border_right: var(--sapButton_BorderWidth) solid var(--sapButton_Reject_BorderColor);--_ui5-v2-1-2_split_text_button_attention_hover_border_right: var(--sapButton_BorderWidth) solid var(--sapButton_Attention_BorderColor);--_ui5-v2-1-2_split_text_button_transparent_hover_border_right: var(--sapButton_BorderWidth) solid var(--sapButton_BorderColor);--_ui5-v2-1-2_split_button_middle_separator_hover_display_emphasized: none;--_ui5-v2-1-2_tc_header_height: var(--_ui5-v2-1-2_tc_item_height);--_ui5-v2-1-2_tc_header_height_text_only: var(--_ui5-v2-1-2_tc_item_text_only_height);--_ui5-v2-1-2_tc_header_height_text_with_additional_text: var(--_ui5-v2-1-2_tc_item_text_only_with_additional_text_height);--_ui5-v2-1-2_tc_header_box_shadow: var(--sapContent_HeaderShadow);--_ui5-v2-1-2_tc_header_background: var(--sapObjectHeader_Background);--_ui5-v2-1-2_tc_header_background_translucent: var(--sapObjectHeader_Background);--_ui5-v2-1-2_tc_content_background: var(--sapBackgroundColor);--_ui5-v2-1-2_tc_content_background_translucent: var(--sapGroup_ContentBackground);--_ui5-v2-1-2_tc_headeritem_padding: 1rem;--_ui5-v2-1-2_tc_headerItem_additional_text_color: var(--sapContent_LabelColor);--_ui5-v2-1-2_tc_headerItem_text_selected_color: var(--sapSelectedColor);--_ui5-v2-1-2_tc_headerItem_text_selected_hover_color: var(--sapSelectedColor);--_ui5-v2-1-2_tc_headerItem_additional_text_font_weight: normal;--_ui5-v2-1-2_tc_headerItem_neutral_color: var(--sapNeutralTextColor);--_ui5-v2-1-2_tc_headerItem_positive_color: var(--sapPositiveTextColor);--_ui5-v2-1-2_tc_headerItem_negative_color: var(--sapNegativeTextColor);--_ui5-v2-1-2_tc_headerItem_critical_color: var(--sapCriticalTextColor);--_ui5-v2-1-2_tc_headerItem_neutral_border_color: var(--sapNeutralElementColor);--_ui5-v2-1-2_tc_headerItem_positive_border_color: var(--sapPositiveElementColor);--_ui5-v2-1-2_tc_headerItem_negative_border_color: var(--sapNegativeElementColor);--_ui5-v2-1-2_tc_headerItem_critical_border_color: var(--sapCriticalElementColor);--_ui5-v2-1-2_tc_headerItem_neutral_selected_border_color: var(--_ui5-v2-1-2_tc_headerItem_neutral_color);--_ui5-v2-1-2_tc_headerItem_positive_selected_border_color: var(--_ui5-v2-1-2_tc_headerItem_positive_color);--_ui5-v2-1-2_tc_headerItem_negative_selected_border_color: var(--_ui5-v2-1-2_tc_headerItem_negative_color);--_ui5-v2-1-2_tc_headerItem_critical_selected_border_color: var(--_ui5-v2-1-2_tc_headerItem_critical_color);--_ui5-v2-1-2_tc_headerItem_transition: none;--_ui5-v2-1-2_tc_headerItem_hover_border_visibility: hidden;--_ui5-v2-1-2_tc_headerItemContent_border_radius: .125rem .125rem 0 0;--_ui5-v2-1-2_tc_headerItemContent_border_bg: transparent;--_ui5-v2-1-2_tc_headerItem_neutral_border_bg: transparent;--_ui5-v2-1-2_tc_headerItem_positive_border_bg: transparent;--_ui5-v2-1-2_tc_headerItem_negative_border_bg: transparent;--_ui5-v2-1-2_tc_headerItem_critical_border_bg: transparent;--_ui5-v2-1-2_tc_headerItemContent_border_height: 0;--_ui5-v2-1-2_tc_headerItemContent_focus_offset: 1rem;--_ui5-v2-1-2_tc_headerItem_text_focus_border_offset_left: 0px;--_ui5-v2-1-2_tc_headerItem_text_focus_border_offset_right: 0px;--_ui5-v2-1-2_tc_headerItem_text_focus_border_offset_top: 0px;--_ui5-v2-1-2_tc_headerItem_text_focus_border_offset_bottom: 0px;--_ui5-v2-1-2_tc_headerItem_mixed_mode_focus_border_offset_left: .75rem;--_ui5-v2-1-2_tc_headerItem_mixed_mode_focus_border_offset_right: .625rem;--_ui5-v2-1-2_tc_headerItem_mixed_mode_focus_border_offset_top: .75rem;--_ui5-v2-1-2_tc_headerItem_mixed_mode_focus_border_offset_bottom: .75rem;--_ui5-v2-1-2_tc_headerItemContent_focus_border: none;--_ui5-v2-1-2_tc_headerItemContent_default_focus_border: none;--_ui5-v2-1-2_tc_headerItemContent_focus_border_radius: 0;--_ui5-v2-1-2_tc_headerItemSemanticIcon_display: none;--_ui5-v2-1-2_tc_headerItemSemanticIcon_size: .75rem;--_ui5-v2-1-2_tc_mixedMode_itemText_font_family: var(--sapFontFamily);--_ui5-v2-1-2_tc_mixedMode_itemText_font_size: var(--sapFontSmallSize);--_ui5-v2-1-2_tc_mixedMode_itemText_font_weight: normal;--_ui5-v2-1-2_tc_overflowItem_positive_color: var(--sapPositiveColor);--_ui5-v2-1-2_tc_overflowItem_negative_color: var(--sapNegativeColor);--_ui5-v2-1-2_tc_overflowItem_critical_color: var(--sapCriticalColor);--_ui5-v2-1-2_tc_overflowItem_focus_offset: .125rem;--_ui5-v2-1-2_tc_overflowItem_extraIndent: 0rem;--_ui5-v2-1-2_tc_headerItemIcon_positive_selected_background: var(--sapPositiveColor);--_ui5-v2-1-2_tc_headerItemIcon_negative_selected_background: var(--sapNegativeColor);--_ui5-v2-1-2_tc_headerItemIcon_critical_selected_background: var(--sapCriticalColor);--_ui5-v2-1-2_tc_headerItemIcon_neutral_selected_background: var(--sapNeutralColor);--_ui5-v2-1-2_tc_headerItemIcon_semantic_selected_color: var(--sapGroup_ContentBackground);--_ui5-v2-1-2_tc_header_border_bottom: .0625rem solid var(--sapObjectHeader_Background);--_ui5-v2-1-2_tc_headerItemContent_border_bottom: .1875rem solid var(--sapSelectedColor);--_ui5-v2-1-2_tc_headerItem_color: var(--sapTextColor);--_ui5-v2-1-2_tc_overflowItem_default_color: var(--sapTextColor);--_ui5-v2-1-2_tc_overflowItem_current_color: CurrentColor;--_ui5-v2-1-2_tc_content_border_bottom: .0625rem solid var(--sapObjectHeader_BorderColor);--_ui5-v2-1-2_tc_headerItem_expand_button_margin_inline_start: 0rem;--_ui5-v2-1-2_tc_headerItem_single_click_expand_button_margin_inline_start: .25rem;--_ui5-v2-1-2_tc_headerItem_expand_button_border_radius: .25rem;--_ui5-v2-1-2_tc_headerItem_expand_button_separator_display: inline-block;--_ui5-v2-1-2_tc_headerItem_focus_border: .125rem solid var(--sapContent_FocusColor);--_ui5-v2-1-2_tc_headerItem_focus_border_offset: -5px;--_ui5-v2-1-2_tc_headerItemIcon_focus_border_radius: 50%;--_ui5-v2-1-2_tc_headerItem_focus_border_radius: .375rem;--_ui5-v2-1-2_tc_headeritem_text_font_weight: bold;--_ui5-v2-1-2_tc_headerItem_focus_offset: 1px;--_ui5-v2-1-2_tc_headerItem_text_hover_color: var(--sapContent_Selected_ForegroundColor);--_ui5-v2-1-2_tc_headerItemIcon_border: .125rem solid var(--sapContent_Selected_ForegroundColor);--_ui5-v2-1-2_tc_headerItemIcon_color: var(--sapContent_Selected_ForegroundColor);--_ui5-v2-1-2_tc_headerItemIcon_selected_background: var(--sapContent_Selected_ForegroundColor);--_ui5-v2-1-2_tc_headerItemIcon_background_color: var(--sapContent_Selected_Background);--_ui5-v2-1-2_tc_headerItemIcon_selected_color: var(--sapContent_ContrastIconColor);--_ui5-v2-1-2_tc_mixedMode_itemText_color: var(--sapTextColor);--_ui5-v2-1-2_tc_overflow_text_color: var(--sapTextColor);--_ui5-v2-1-2_text_max_lines: initial;--_ui5-v2-1-2_textarea_state_border_width: .125rem;--_ui5-v2-1-2_textarea_information_border_width: .125rem;--_ui5-v2-1-2_textarea_placeholder_font_style: italic;--_ui5-v2-1-2_textarea_value_state_error_warning_placeholder_font_weight: normal;--_ui5-v2-1-2_textarea_error_placeholder_font_style: italic;--_ui5-v2-1-2_textarea_error_placeholder_color: var(--sapField_PlaceholderTextColor);--_ui5-v2-1-2_textarea_error_hover_background_color: var(--sapField_Hover_Background);--_ui5-v2-1-2_textarea_disabled_opacity: .4;--_ui5-v2-1-2_textarea_focus_pseudo_element_content: "";--_ui5-v2-1-2_textarea_min_height: 2.25rem;--_ui5-v2-1-2_textarea_padding_right_and_left_readonly: .5625rem;--_ui5-v2-1-2_textarea_padding_top_readonly: .4375rem;--_ui5-v2-1-2_textarea_exceeded_text_height: 1rem;--_ui5-v2-1-2_textarea_hover_border: none;--_ui5-v2-1-2_textarea_focus_border_radius: .25rem;--_ui5-v2-1-2_textarea_error_warning_border_style: none;--_ui5-v2-1-2_textarea_line_height: 1.5;--_ui5-v2-1-2_textarea_focused_value_state_error_background: var(--sapField_Hover_Background);--_ui5-v2-1-2_textarea_focused_value_state_warning_background: var(--sapField_Hover_Background);--_ui5-v2-1-2_textarea_focused_value_state_success_background: var(--sapField_Hover_Background);--_ui5-v2-1-2_textarea_focused_value_state_information_background: var(--sapField_Hover_Background);--_ui5-v2-1-2_textarea_focused_value_state_error_focus_outline_color: var(--sapField_InvalidColor);--_ui5-v2-1-2_textarea_focused_value_state_warning_focus_outline_color: var(--sapField_WarningColor);--_ui5-v2-1-2_textarea_focused_value_state_success_focus_outline_color: var(--sapField_SuccessColor);--_ui5-v2-1-2_textarea_focus_offset: 0;--_ui5-v2-1-2_textarea_readonly_focus_offset: 1px;--_ui5-v2-1-2_textarea_focus_outline_color: var(--sapField_Active_BorderColor);--_ui5-v2-1-2_textarea_value_state_focus_offset: 0;--_ui5-v2-1-2_textarea_wrapper_padding: .0625rem;--_ui5-v2-1-2_textarea_success_wrapper_padding: .0625rem;--_ui5-v2-1-2_textarea_warning_error_wrapper_padding: .0625rem .0625rem .125rem .0625rem;--_ui5-v2-1-2_textarea_information_wrapper_padding: .0625rem .0625rem .125rem .0625rem;--_ui5-v2-1-2_textarea_padding_bottom_readonly: .375rem;--_ui5-v2-1-2_textarea_padding_top_error_warning: .5rem;--_ui5-v2-1-2_textarea_padding_bottom_error_warning: .4375rem;--_ui5-v2-1-2_textarea_padding_top_information: .5rem;--_ui5-v2-1-2_textarea_padding_bottom_information: .4375rem;--_ui5-v2-1-2_textarea_padding_right_and_left: .625rem;--_ui5-v2-1-2_textarea_padding_right_and_left_error_warning: .625rem;--_ui5-v2-1-2_textarea_padding_right_and_left_information: .625rem;--_ui5-v2-1-2_textarea_readonly_border_style: dashed;--_ui5-v2-1-2_time_picker_border: .0625rem solid transparent;--_ui5-v2-1-2-time_picker_border_radius: .25rem;--_ui5-v2-1-2_toast_vertical_offset: 3rem;--_ui5-v2-1-2_toast_horizontal_offset: 2rem;--_ui5-v2-1-2_toast_background: var(--sapList_Background);--_ui5-v2-1-2_toast_shadow: var(--sapContent_Shadow2);--_ui5-v2-1-2_toast_offset_width: -.1875rem;--_ui5-v2-1-2_toggle_button_pressed_focussed: var(--sapButton_Selected_BorderColor);--_ui5-v2-1-2_toggle_button_pressed_focussed_hovered: var(--sapButton_Selected_BorderColor);--_ui5-v2-1-2_toggle_button_selected_positive_text_color: var(--sapButton_Selected_TextColor);--_ui5-v2-1-2_toggle_button_selected_negative_text_color: var(--sapButton_Selected_TextColor);--_ui5-v2-1-2_toggle_button_selected_attention_text_color: var(--sapButton_Selected_TextColor);--_ui5-v2-1-2_toggle_button_emphasized_pressed_focussed_hovered: var(--sapContent_FocusColor);--_ui5-v2-1-2_toggle_button_emphasized_text_shadow: none;--_ui5-v2-1-2_yearpicker_item_selected_focus: var(--sapContent_Selected_Background);--_ui5-v2-1-2_yearpicker_item_border: none;--_ui5-v2-1-2_yearpicker_item_margin: 1px;--_ui5-v2-1-2_yearpicker_item_border_radius: .5rem;--_ui5-v2-1-2_yearpicker_item_focus_after_offset: .25rem;--_ui5-v2-1-2_yearpicker_item_focus_after_border: var(--_ui5-v2-1-2_button_focused_border);--_ui5-v2-1-2_yearpicker_item_focus_after_border_radius: .5rem;--_ui5-v2-1-2_yearpicker_item_focus_after_width: calc(100% - .5rem) ;--_ui5-v2-1-2_yearpicker_item_focus_after_height: calc(100% - .5rem) ;--_ui5-v2-1-2_yearpicker_item_selected_background_color: transparent;--_ui5-v2-1-2_yearpicker_item_selected_text_color: var(--sapContent_Selected_TextColor);--_ui5-v2-1-2_yearpicker_item_selected_box_shadow: none;--_ui5-v2-1-2_yearpicker_item_selected_hover_color: var(--sapList_Hover_Background);--_ui5-v2-1-2_yearpicker_item_focus_after_outline: none;--_ui5-v2-1-2_calendar_header_middle_button_width: 6.25rem;--_ui5-v2-1-2_calendar_header_middle_button_flex: 1 1 auto;--_ui5-v2-1-2_calendar_header_middle_button_focus_after_display: block;--_ui5-v2-1-2_calendar_header_middle_button_focus_after_width: calc(100% - .375rem) ;--_ui5-v2-1-2_calendar_header_middle_button_focus_after_height: calc(100% - .375rem) ;--_ui5-v2-1-2_calendar_header_middle_button_focus_after_top_offset: .125rem;--_ui5-v2-1-2_calendar_header_middle_button_focus_after_left_offset: .125rem;--_ui5-v2-1-2_calendar_header_arrow_button_border: none;--_ui5-v2-1-2_calendar_header_arrow_button_border_radius: .5rem;--_ui5-v2-1-2_calendar_header_button_background_color: var(--sapButton_Lite_Background);--_ui5-v2-1-2_calendar_header_arrow_button_box_shadow: 0 0 .125rem 0 rgb(85 107 130 / 72%);--_ui5-v2-1-2_calendar_header_middle_button_focus_border_radius: .5rem;--_ui5-v2-1-2_calendar_header_middle_button_focus_border: none;--_ui5-v2-1-2_calendar_header_middle_button_focus_after_border: none;--_ui5-v2-1-2_calendar_header_middle_button_focus_background: transparent;--_ui5-v2-1-2_calendar_header_middle_button_focus_outline: .125rem solid var(--sapSelectedColor);--_ui5-v2-1-2_calendar_header_middle_button_focus_active_outline: .0625rem solid var(--sapSelectedColor);--_ui5-v2-1-2_calendar_header_middle_button_focus_active_background: transparent;--_ui5-v2-1-2_token_background: var(--sapButton_TokenBackground);--_ui5-v2-1-2_token_readonly_background: var(--sapButton_TokenBackground);--_ui5-v2-1-2_token_readonly_color: var(--sapContent_LabelColor);--_ui5-v2-1-2_token_right_margin: .3125rem;--_ui5-v2-1-2_token_padding: .25rem 0;--_ui5-v2-1-2_token_left_padding: .3125rem;--_ui5-v2-1-2_token_focused_selected_border: 1px solid var(--sapButton_Selected_BorderColor);--_ui5-v2-1-2_token_focus_offset: -.25rem;--_ui5-v2-1-2_token_focus_outline_width: .0625rem;--_ui5-v2-1-2_token_hover_border_color: var(--sapButton_TokenBorderColor);--_ui5-v2-1-2_token_selected_focus_outline: none;--_ui5-v2-1-2_token_focus_outline: none;--_ui5-v2-1-2_token_outline_offset: .125rem;--_ui5-v2-1-2_token_selected_hover_border_color: var(--sapButton_Selected_BorderColor);--ui5-v2-1-2_token_focus_pseudo_element_content: "";--_ui5-v2-1-2_token_border_radius: .375rem;--_ui5-v2-1-2_token_focus_outline_border_radius: .5rem;--_ui5-v2-1-2_token_text_color: var(--sapTextColor);--_ui5-v2-1-2_token_selected_text_font_family: var(--sapFontSemiboldDuplexFamily);--_ui5-v2-1-2_token_selected_internal_border_bottom: .125rem solid var(--sapButton_Selected_BorderColor);--_ui5-v2-1-2_token_selected_internal_border_bottom_radius: .1875rem;--_ui5-v2-1-2_token_text_icon_top: .0625rem;--_ui5-v2-1-2_token_selected_focused_offset_bottom: -.375rem;--_ui5-v2-1-2_token_readonly_padding: .25rem .3125rem;--_ui5-v2-1-2_tokenizer-popover_offset: .3125rem;--_ui5-v2-1-2_tokenizer_n_more_text_color: var(--sapLinkColor);--_ui5-v2-1-2-multi_combobox_token_margin_top: 1px;--_ui5-v2-1-2_slider_progress_container_dot_background: var(--sapField_BorderColor);--_ui5-v2-1-2_slider_progress_border: none;--_ui5-v2-1-2_slider_padding: 1.406rem 1.0625rem;--_ui5-v2-1-2_slider_inner_height: .25rem;--_ui5-v2-1-2_slider_outer_height: 1.6875rem;--_ui5-v2-1-2_slider_progress_border_radius: .25rem;--_ui5-v2-1-2_slider_tickmark_bg: var(--sapField_BorderColor);--_ui5-v2-1-2_slider_handle_margin_left: calc(-1 * (var(--_ui5-v2-1-2_slider_handle_width) / 2));--_ui5-v2-1-2_slider_handle_outline_offset: .075rem;--_ui5-v2-1-2_slider_progress_outline: .0625rem dotted var(--sapContent_FocusColor);--_ui5-v2-1-2_slider_progress_outline_offset: -.8125rem;--_ui5-v2-1-2_slider_disabled_opacity: .4;--_ui5-v2-1-2_slider_tooltip_border_color: var(--sapField_BorderColor);--_ui5-v2-1-2_range_slider_handle_background_focus: transparent;--_ui5-v2-1-2_slider_progress_box_sizing: content-box;--_ui5-v2-1-2_range_slider_focus_outline_width: 100%;--_ui5-v2-1-2_slider_progress_outline_offset_left: 0;--_ui5-v2-1-2_range_slider_focus_outline_radius: 0;--_ui5-v2-1-2_slider_progress_container_top: 0;--_ui5-v2-1-2_slider_progress_height: 100%;--_ui5-v2-1-2_slider_active_progress_border: none;--_ui5-v2-1-2_slider_active_progress_left: 0;--_ui5-v2-1-2_slider_active_progress_top: 0;--_ui5-v2-1-2_slider_no_tickmarks_progress_container_top: var(--_ui5-v2-1-2_slider_progress_container_top);--_ui5-v2-1-2_slider_no_tickmarks_progress_height: var(--_ui5-v2-1-2_slider_progress_height);--_ui5-v2-1-2_slider_no_tickmarks_active_progress_border: var(--_ui5-v2-1-2_slider_active_progress_border);--_ui5-v2-1-2_slider_no_tickmarks_active_progress_left: var(--_ui5-v2-1-2_slider_active_progress_left);--_ui5-v2-1-2_slider_no_tickmarks_active_progress_top: var(--_ui5-v2-1-2_slider_active_progress_top);--_ui5-v2-1-2_slider_handle_focus_visibility: none;--_ui5-v2-1-2_slider_handle_icon_size: 1rem;--_ui5-v2-1-2_slider_progress_container_background: var(--sapSlider_Background);--_ui5-v2-1-2_slider_progress_container_dot_display: block;--_ui5-v2-1-2_slider_inner_min_width: 4rem;--_ui5-v2-1-2_slider_progress_background: var(--sapSlider_Selected_Background);--_ui5-v2-1-2_slider_progress_before_background: var(--sapSlider_Selected_Background);--_ui5-v2-1-2_slider_progress_after_background: var(--sapContent_MeasureIndicatorColor);--_ui5-v2-1-2_slider_handle_background: var(--sapSlider_HandleBackground);--_ui5-v2-1-2_slider_handle_icon_display: inline-block;--_ui5-v2-1-2_slider_handle_border: .0625rem solid var(--sapSlider_HandleBorderColor);--_ui5-v2-1-2_slider_handle_border_radius: .5rem;--_ui5-v2-1-2_slider_handle_height: 1.5rem;--_ui5-v2-1-2_slider_handle_width: 2rem;--_ui5-v2-1-2_slider_handle_top: -.625rem;--_ui5-v2-1-2_slider_handle_font_family: "SAP-icons";--_ui5-v2-1-2_slider_handle_hover_border: .0625rem solid var(--sapSlider_Hover_HandleBorderColor);--_ui5-v2-1-2_slider_handle_focus_border: .125rem solid var(--sapContent_FocusColor);--_ui5-v2-1-2_slider_handle_background_focus: var(--sapSlider_Active_RangeHandleBackground);--_ui5-v2-1-2_slider_handle_outline: none;--_ui5-v2-1-2_slider_handle_hover_background: var(--sapSlider_Hover_HandleBackground);--_ui5-v2-1-2_slider_tooltip_background: var(--sapField_Focus_Background);--_ui5-v2-1-2_slider_tooltip_border: none;--_ui5-v2-1-2_slider_tooltip_border_radius: .5rem;--_ui5-v2-1-2_slider_tooltip_box_shadow: var(--sapContent_Shadow1);--_ui5-v2-1-2_range_slider_legacy_progress_focus_display: none;--_ui5-v2-1-2_range_slider_progress_focus_display: block;--_ui5-v2-1-2_slider_tickmark_in_range_bg: var(--sapSlider_Selected_BorderColor);--_ui5-v2-1-2_slider_label_fontsize: var(--sapFontSmallSize);--_ui5-v2-1-2_slider_label_color: var(--sapContent_LabelColor);--_ui5-v2-1-2_slider_tooltip_min_width: 2rem;--_ui5-v2-1-2_slider_tooltip_padding: .25rem;--_ui5-v2-1-2_slider_tooltip_fontsize: var(--sapFontSmallSize);--_ui5-v2-1-2_slider_tooltip_color: var(--sapContent_LabelColor);--_ui5-v2-1-2_slider_tooltip_height: 1.375rem;--_ui5-v2-1-2_slider_handle_focus_width: 1px;--_ui5-v2-1-2_slider_start_end_point_size: .5rem;--_ui5-v2-1-2_slider_start_end_point_left: -.75rem;--_ui5-v2-1-2_slider_start_end_point_top: -.125rem;--_ui5-v2-1-2_slider_handle_focused_tooltip_distance: calc(var(--_ui5-v2-1-2_slider_tooltip_bottom) - var(--_ui5-v2-1-2_slider_handle_focus_width));--_ui5-v2-1-2_slider_tooltip_border_box: border-box;--_ui5-v2-1-2_range_slider_handle_active_background: var(--sapSlider_Active_RangeHandleBackground);--_ui5-v2-1-2_range_slider_active_handle_icon_display: none;--_ui5-v2-1-2_range_slider_progress_focus_top: -15px;--_ui5-v2-1-2_range_slider_progress_focus_left: calc(-1 * (var(--_ui5-v2-1-2_slider_handle_width) / 2) - 5px);--_ui5-v2-1-2_range_slider_progress_focus_padding: 0 1rem 0 1rem;--_ui5-v2-1-2_range_slider_progress_focus_width: calc(100% + var(--_ui5-v2-1-2_slider_handle_width) + 10px);--_ui5-v2-1-2_range_slider_progress_focus_height: calc(var(--_ui5-v2-1-2_slider_handle_height) + 10px);--_ui5-v2-1-2_range_slider_root_hover_handle_icon_display: inline-block;--_ui5-v2-1-2_range_slider_root_hover_handle_bg: var(--_ui5-v2-1-2_slider_handle_hover_background);--_ui5-v2-1-2_range_slider_root_active_handle_icon_display: none;--_ui5-v2-1-2_slider_tickmark_height: .5rem;--_ui5-v2-1-2_slider_tickmark_top: -2px;--_ui5-v2-1-2_slider_handle_box_sizing: border-box;--_ui5-v2-1-2_range_slider_handle_background: var(--sapSlider_RangeHandleBackground);--_ui5-v2-1-2_slider_tooltip_bottom: 2rem;--_ui5-v2-1-2_value_state_message_border: none;--_ui5-v2-1-2_value_state_header_border: none;--_ui5-v2-1-2_input_value_state_icon_offset: .5rem;--_ui5-v2-1-2_value_state_header_box_shadow_error: inset 0 -.0625rem var(--sapField_InvalidColor);--_ui5-v2-1-2_value_state_header_box_shadow_information: inset 0 -.0625rem var(--sapField_InformationColor);--_ui5-v2-1-2_value_state_header_box_shadow_success: inset 0 -.0625rem var(--sapField_SuccessColor);--_ui5-v2-1-2_value_state_header_box_shadow_warning: inset 0 -.0625rem var(--sapField_WarningColor);--_ui5-v2-1-2_value_state_message_icon_offset_phone: 1rem;--_ui5-v2-1-2_value_state_header_border_bottom: none;--_ui5-v2-1-2_input_value_state_icon_display: inline-block;--_ui5-v2-1-2_value_state_message_padding: .5rem .5rem .5rem 1.875rem;--_ui5-v2-1-2_value_state_header_padding: .5rem .5rem .5rem 1.875rem;--_ui5-v2-1-2_value_state_message_popover_box_shadow: var(--sapContent_Shadow1);--_ui5-v2-1-2_value_state_message_icon_width: 1rem;--_ui5-v2-1-2_value_state_message_icon_height: 1rem;--_ui5-v2-1-2_value_state_header_offset: -.25rem;--_ui5-v2-1-2_value_state_message_popover_border_radius: var(--sapPopover_BorderCornerRadius);--_ui5-v2-1-2_value_state_message_padding_phone: .5rem .5rem .5rem 2.375rem;--_ui5-v2-1-2_value_state_message_line_height: 1.125rem;--_ui5-v2-1-2-toolbar-padding-left: .5rem;--_ui5-v2-1-2-toolbar-padding-right: .5rem;--_ui5-v2-1-2-toolbar-item-margin-left: 0;--_ui5-v2-1-2-toolbar-item-margin-right: .25rem;--_ui5-v2-1-2_step_input_min_width: 7.25rem;--_ui5-v2-1-2_step_input_padding: 2.5rem;--_ui5-v2-1-2_step_input_input_error_background_color: inherit;--_ui5-v2-1-2-step_input_button_state_hover_background_color: var(--sapField_Hover_Background);--_ui5-v2-1-2_step_input_border_style: none;--_ui5-v2-1-2_step_input_border_style_hover: none;--_ui5-v2-1-2_step_input_button_background_color: transparent;--_ui5-v2-1-2_step_input_input_border: none;--_ui5-v2-1-2_step_input_input_margin_top: 0;--_ui5-v2-1-2_step_input_button_display: inline-flex;--_ui5-v2-1-2_step_input_button_left: 0;--_ui5-v2-1-2_step_input_button_right: 0;--_ui5-v2-1-2_step_input_input_border_focused_after: .125rem solid #0070f2;--_ui5-v2-1-2_step_input_input_border_top_bottom_focused_after: 0;--_ui5-v2-1-2_step_input_input_border_radius_focused_after: .25rem;--_ui5-v2-1-2_step_input_input_information_border_color_focused_after: var(--sapField_InformationColor);--_ui5-v2-1-2_step_input_input_warning_border_color_focused_after: var(--sapField_WarningColor);--_ui5-v2-1-2_step_input_input_success_border_color_focused_after: var(--sapField_SuccessColor);--_ui5-v2-1-2_step_input_input_error_border_color_focused_after: var(--sapField_InvalidColor);--_ui5-v2-1-2_step_input_disabled_button_background: none;--_ui5-v2-1-2_step_input_border_color_hover: none;--_ui5-v2-1-2_step_input_border_hover: none;--_ui5-v2-1-2_input_input_background_color: transparent;--_ui5-v2-1-2_load_more_padding: 0;--_ui5-v2-1-2_load_more_border: 1px top solid transparent;--_ui5-v2-1-2_load_more_border_radius: none;--_ui5-v2-1-2_load_more_outline_width: var(--sapContent_FocusWidth);--_ui5-v2-1-2_load_more_border-bottom: var(--sapList_BorderWidth) solid var(--sapList_BorderColor);--_ui5-v2-1-2_calendar_height: 24.5rem;--_ui5-v2-1-2_calendar_width: 20rem;--_ui5-v2-1-2_calendar_padding: 1rem;--_ui5-v2-1-2_calendar_left_right_padding: .5rem;--_ui5-v2-1-2_calendar_top_bottom_padding: 1rem;--_ui5-v2-1-2_calendar_header_height: 3rem;--_ui5-v2-1-2_calendar_header_arrow_button_width: 2.5rem;--_ui5-v2-1-2_calendar_header_padding: .25rem 0;--_ui5-v2-1-2_checkbox_root_side_padding: .6875rem;--_ui5-v2-1-2_checkbox_icon_size: 1rem;--_ui5-v2-1-2_checkbox_partially_icon_size: .75rem;--_ui5-v2-1-2_custom_list_item_rb_min_width: 2.75rem;--_ui5-v2-1-2_day_picker_item_width: 2.25rem;--_ui5-v2-1-2_day_picker_item_height: 2.875rem;--_ui5-v2-1-2_day_picker_empty_height: 3rem;--_ui5-v2-1-2_day_picker_item_justify_content: space-between;--_ui5-v2-1-2_dp_two_calendar_item_now_text_padding_top: .375rem;--_ui5-v2-1-2_daypicker_item_now_selected_two_calendar_focus_special_day_top: 2rem;--_ui5-v2-1-2_daypicker_item_now_selected_two_calendar_focus_special_day_right: 1.4375rem;--_ui5-v2-1-2_dp_two_calendar_item_primary_text_height: 1.8125rem;--_ui5-v2-1-2_dp_two_calendar_item_secondary_text_height: 1rem;--_ui5-v2-1-2_dp_two_calendar_item_text_padding_top: .4375rem;--_ui5-v2-1-2_daypicker_item_now_selected_two_calendar_focus_secondary_text_padding_block: 0 .5rem;--_ui5-v2-1-2-calendar-legend-item-root-focus-offset: -.125rem;--_ui5-v2-1-2-calendar-legend-item-box-margin: .25rem;--_ui5-v2-1-2-calendar-legend-item-box-inner-margin: .5rem;--_ui5-v2-1-2_color-palette-swatch-container-padding: .3125rem .6875rem;--_ui5-v2-1-2_datetime_picker_width: 40.0625rem;--_ui5-v2-1-2_datetime_picker_height: 25rem;--_ui5-v2-1-2_datetime_timeview_width: 17rem;--_ui5-v2-1-2_datetime_timeview_phonemode_width: 19.5rem;--_ui5-v2-1-2_datetime_timeview_padding: 1rem;--_ui5-v2-1-2_datetime_timeview_phonemode_clocks_width: 24.5rem;--_ui5-v2-1-2_datetime_dateview_phonemode_margin_bottom: 0;--_ui5-v2-1-2_dialog_content_min_height: 2.75rem;--_ui5-v2-1-2_dialog_footer_height: 2.75rem;--_ui5-v2-1-2_input_inner_padding: 0 .625rem;--_ui5-v2-1-2_input_inner_padding_with_icon: 0 .25rem 0 .625rem;--_ui5-v2-1-2_input_inner_space_to_tokenizer: .125rem;--_ui5-v2-1-2_input_inner_space_to_n_more_text: .1875rem;--_ui5-v2-1-2_list_no_data_height: 3rem;--_ui5-v2-1-2_list_item_cb_margin_right: 0;--_ui5-v2-1-2_list_item_title_size: var(--sapFontLargeSize);--_ui5-v2-1-2_list_no_data_font_size: var(--sapFontLargeSize);--_ui5-v2-1-2_list_item_img_size: 3rem;--_ui5-v2-1-2_list_item_img_top_margin: .5rem;--_ui5-v2-1-2_list_item_img_bottom_margin: .5rem;--_ui5-v2-1-2_list_item_img_hn_margin: .75rem;--_ui5-v2-1-2_list_item_dropdown_base_height: 2.5rem;--_ui5-v2-1-2_list_item_base_height: var(--sapElement_LineHeight);--_ui5-v2-1-2_list_item_base_padding: 0 1rem;--_ui5-v2-1-2_list_item_icon_size: 1.125rem;--_ui5-v2-1-2_list_item_icon_padding-inline-end: .5rem;--_ui5-v2-1-2_list_item_selection_btn_margin_top: calc(-1 * var(--_ui5-v2-1-2_checkbox_wrapper_padding));--_ui5-v2-1-2_list_item_content_vertical_offset: calc((var(--_ui5-v2-1-2_list_item_base_height) - var(--_ui5-v2-1-2_list_item_title_size)) / 2);--_ui5-v2-1-2_group_header_list_item_height: 2.75rem;--_ui5-v2-1-2_list_busy_row_height: 3rem;--_ui5-v2-1-2_month_picker_item_height: 3rem;--_ui5-v2-1-2_list_buttons_left_space: .125rem;--_ui5-v2-1-2_form_item_min_height: 2.813rem;--_ui5-v2-1-2_form_item_padding: .65rem;--_ui5-v2-1-2-form-group-heading-height: 2.75rem;--_ui5-v2-1-2_popup_default_header_height: 2.75rem;--_ui5-v2-1-2_year_picker_item_height: 3rem;--_ui5-v2-1-2_tokenizer_padding: .25rem;--_ui5-v2-1-2_token_height: 1.625rem;--_ui5-v2-1-2_token_icon_size: .75rem;--_ui5-v2-1-2_token_icon_padding: .25rem .5rem;--_ui5-v2-1-2_token_wrapper_right_padding: .3125rem;--_ui5-v2-1-2_token_wrapper_left_padding: 0;--_ui5-v2-1-2_tl_bubble_padding: 1rem;--_ui5-v2-1-2_tl_indicator_before_bottom: -1.625rem;--_ui5-v2-1-2_tl_padding: 1rem 1rem 1rem .5rem;--_ui5-v2-1-2_tl_li_margin_bottom: 1.625rem;--_ui5-v2-1-2_switch_focus_width_size_horizon_exp: calc(100% + 4px) ;--_ui5-v2-1-2_switch_focus_height_size_horizon_exp: calc(100% + 4px) ;--_ui5-v2-1-2_tc_item_text: 3rem;--_ui5-v2-1-2_tc_item_height: 4.75rem;--_ui5-v2-1-2_tc_item_text_only_height: 2.75rem;--_ui5-v2-1-2_tc_item_text_only_with_additional_text_height: 3.75rem;--_ui5-v2-1-2_tc_item_text_line_height: 1.325rem;--_ui5-v2-1-2_tc_item_icon_circle_size: 2.75rem;--_ui5-v2-1-2_tc_item_icon_size: 1.25rem;--_ui5-v2-1-2_tc_item_add_text_margin_top: .375rem;--_ui5-v2-1-2_textarea_margin: .25rem 0;--_ui5-v2-1-2_radio_button_height: 2.75rem;--_ui5-v2-1-2_radio_button_label_side_padding: .875rem;--_ui5-v2-1-2_radio_button_inner_size: 2.75rem;--_ui5-v2-1-2_radio_button_svg_size: 1.375rem;--_ui5-v2-1-2-responsive_popover_header_height: 2.75rem;--ui5-v2-1-2_side_navigation_item_height: 2.75rem;--_ui5-v2-1-2-tree-indent-step: 1.5rem;--_ui5-v2-1-2-tree-toggle-box-width: 2.75rem;--_ui5-v2-1-2-tree-toggle-box-height: 2.25rem;--_ui5-v2-1-2-tree-toggle-icon-size: 1.0625rem;--_ui5-v2-1-2_timeline_tli_indicator_before_bottom: -1.5rem;--_ui5-v2-1-2_timeline_tli_indicator_before_right: -1.625rem;--_ui5-v2-1-2_timeline_tli_indicator_before_without_icon_bottom: -1.875rem;--_ui5-v2-1-2_timeline_tli_indicator_before_without_icon_right: -1.9375rem;--_ui5-v2-1-2_timeline_tli_indicator_after_top: calc(-100% - 1rem) ;--_ui5-v2-1-2_timeline_tli_indicator_after_height: calc(100% + 1rem) ;--_ui5-v2-1-2_timeline_tli_indicator_before_height: 100%;--_ui5-v2-1-2_timeline_tli_horizontal_indicator_after_width: calc(100% + .25rem) ;--_ui5-v2-1-2_timeline_tli_horizontal_indicator_after_left: 1.9375rem;--_ui5-v2-1-2_timeline_tli_horizontal_without_icon_indicator_before_width: calc(100% + .5rem) ;--_ui5-v2-1-2_timeline_tli_horizontal_indicator_before_width: calc(100% + .5rem) ;--_ui5-v2-1-2_timeline_tli_icon_horizontal_indicator_after_width: calc(100% + .25rem) ;--_ui5-v2-1-2_timeline_tli_without_icon_horizontal_indicator_before_width: calc(100% + .375rem) ;--_ui5-v2-1-2_timeline_tli_horizontal_indicator_short_after_width: 100%;--_ui5-v2-1-2_timeline_tli_last_child_vertical_indicator_before_height: calc(100% - 1.5rem) ;--_ui5-v2-1-2-toolbar-separator-height: 2rem;--_ui5-v2-1-2-toolbar-height: 2.75rem;--_ui5-v2-1-2_toolbar_overflow_padding: .25rem .5rem;--_ui5-v2-1-2_table_cell_padding: .25rem .5rem;--_ui5-v2-1-2_dynamic_page_title_actions_separator_height: var(--_ui5-v2-1-2-toolbar-separator-height);--_ui5-v2-1-2_split_button_middle_separator_top: .625rem;--_ui5-v2-1-2_split_button_middle_separator_height: 1rem;--_ui5-v2-1-2-calendar-legend-item-root-focus-border-radius: .25rem;--_ui5-v2-1-2_color-palette-item-height: 1.75rem;--_ui5-v2-1-2_color-palette-item-hover-height: 2.25rem;--_ui5-v2-1-2_color-palette-item-margin: calc(((var(--_ui5-v2-1-2_color-palette-item-hover-height) - var(--_ui5-v2-1-2_color-palette-item-height)) / 2) + .0625rem);--_ui5-v2-1-2_color-palette-row-width: 12rem;--_ui5-v2-1-2_textarea_padding_top: .5rem;--_ui5-v2-1-2_textarea_padding_bottom: .4375rem;--_ui5-v2-1-2_dp_two_calendar_item_secondary_text_padding_block: 0 .5rem;--_ui5-v2-1-2_dp_two_calendar_item_secondary_text_padding: 0 .5rem;--_ui5-v2-1-2_daypicker_two_calendar_item_selected_focus_margin_bottom: 0;--_ui5-v2-1-2_daypicker_two_calendar_item_selected_focus_padding_right: .5rem}[dir=rtl]{--_ui5-v2-1-2_table_shadow_border_left: inset calc(-1 * var(--sapContent_FocusWidth)) 0 var(--sapContent_FocusColor);--_ui5-v2-1-2_table_shadow_border_right: inset var(--sapContent_FocusWidth) 0 var(--sapContent_FocusColor);--_ui5-v2-1-2_icon_transform_scale: scale(-1, 1);--_ui5-v2-1-2_panel_toggle_btn_rotation: var(--_ui5-v2-1-2_rotation_minus_90deg);--_ui5-v2-1-2_li_notification_group_toggle_btn_rotation: var(--_ui5-v2-1-2_rotation_minus_90deg);--_ui5-v2-1-2_timeline_scroll_container_offset: -.5rem;--_ui5-v2-1-2_popover_upward_arrow_margin: .1875rem .125rem 0 0;--_ui5-v2-1-2_popover_right_arrow_margin: .1875rem .25rem 0 0;--_ui5-v2-1-2_popover_downward_arrow_margin: -.4375rem .125rem 0 0;--_ui5-v2-1-2_popover_left_arrow_margin: .1875rem -.375rem 0 0;--_ui5-v2-1-2_dialog_resize_cursor:sw-resize;--_ui5-v2-1-2_menu_submenu_margin_offset: 0 -.25rem;--_ui5-v2-1-2_menu_submenu_placement_type_left_margin_offset: 0 .25rem;--_ui5-v2-1-2-menu_item_icon_float: left;--_ui5-v2-1-2-shellbar-notification-btn-count-offset: auto;--_ui5-v2-1-2_segmented_btn_item_border_left: .0625rem;--_ui5-v2-1-2_segmented_btn_item_border_right: .0625rem;--_ui5-v2-1-2_progress_indicator_bar_border_radius: .5rem;--_ui5-v2-1-2_progress_indicator_remaining_bar_border_radius: .25rem}[data-ui5-compact-size],.ui5-content-density-compact,.sapUiSizeCompact{--_ui5-v2-1-2_input_min_width: 2rem;--_ui5-v2-1-2_input_icon_width: 2rem;--_ui5-v2-1-2_input_information_icon_padding: .3125rem .5rem .1875rem .5rem;--_ui5-v2-1-2_input_information_focused_icon_padding: .3125rem .5rem .25rem .5rem;--_ui5-v2-1-2_input_error_warning_icon_padding: .3125rem .5rem .1875rem .5rem;--_ui5-v2-1-2_input_error_warning_focused_icon_padding: .3125rem .5rem .25rem .5rem;--_ui5-v2-1-2_input_custom_icon_padding: .3125rem .5rem .25rem .5rem;--_ui5-v2-1-2_input_error_warning_custom_icon_padding: .3125rem .5rem .1875rem .5rem;--_ui5-v2-1-2_input_error_warning_custom_focused_icon_padding: .3125rem .5rem .25rem .5rem;--_ui5-v2-1-2_input_information_custom_icon_padding: .3125rem .5rem .1875rem .5rem;--_ui5-v2-1-2_input_information_custom_focused_icon_padding: .3125rem .5rem .25rem .5rem;--_ui5-v2-1-2_input_icon_padding: .3125rem .5rem .25rem .5rem;--_ui5-v2-1-2_panel_header_button_wrapper_padding: .1875rem .25rem;--_ui5-v2-1-2_rating_indicator_item_height: 1em;--_ui5-v2-1-2_rating_indicator_item_width: 1em;--_ui5-v2-1-2_rating_indicator_readonly_item_height: .75em;--_ui5-v2-1-2_rating_indicator_readonly_item_width: .75em;--_ui5-v2-1-2_rating_indicator_component_spacing: .5rem 0px;--_ui5-v2-1-2_radio_button_min_width: 2rem;--_ui5-v2-1-2_radio_button_outer_ring_padding_with_label: 0 .5rem;--_ui5-v2-1-2_radio_button_outer_ring_padding: 0 .5rem;--_ui5-v2-1-2_radio_button_focus_dist: .1875rem;--_ui5-v2-1-2_switch_height: 2rem;--_ui5-v2-1-2_switch_width: 3rem;--_ui5-v2-1-2_switch_min_width: none;--_ui5-v2-1-2_switch_with_label_width: 3.75rem;--_ui5-v2-1-2_switch_root_outline_top: .25rem;--_ui5-v2-1-2_switch_root_outline_bottom: .25rem;--_ui5-v2-1-2_switch_transform: translateX(100%) translateX(-1.375rem);--_ui5-v2-1-2_switch_transform_with_label: translateX(100%) translateX(-1.875rem);--_ui5-v2-1-2_switch_rtl_transform: translateX(1.375rem) translateX(-100%);--_ui5-v2-1-2_switch_rtl_transform_with_label: translateX(1.875rem) translateX(-100%);--_ui5-v2-1-2_switch_track_width: 2rem;--_ui5-v2-1-2_switch_track_height: 1.25rem;--_ui5-v2-1-2_switch_track_with_label_width: 2.75rem;--_ui5-v2-1-2_switch_track_with_label_height: 1.25rem;--_ui5-v2-1-2_switch_handle_width: 1.25rem;--_ui5-v2-1-2_switch_handle_height: 1rem;--_ui5-v2-1-2_switch_handle_with_label_width: 1.75rem;--_ui5-v2-1-2_switch_handle_with_label_height: 1rem;--_ui5-v2-1-2_switch_text_font_size: var(--sapFontSize);--_ui5-v2-1-2_switch_text_width: 1rem;--_ui5-v2-1-2_switch_text_active_left: .1875rem;--_ui5-v2-1-2_textarea_padding_right_and_left_readonly: .4375rem;--_ui5-v2-1-2_textarea_padding_top_readonly: .125rem;--_ui5-v2-1-2_textarea_exceeded_text_height: .375rem;--_ui5-v2-1-2_textarea_min_height: 1.625rem;--_ui5-v2-1-2_textarea_padding_bottom_readonly: .0625rem;--_ui5-v2-1-2_textarea_padding_top_error_warning: .1875rem;--_ui5-v2-1-2_textarea_padding_bottom_error_warning: .125rem;--_ui5-v2-1-2_textarea_padding_top_information: .1875rem;--_ui5-v2-1-2_textarea_padding_bottom_information: .125rem;--_ui5-v2-1-2_textarea_padding_right_and_left: .5rem;--_ui5-v2-1-2_textarea_padding_right_and_left_error_warning: .5rem;--_ui5-v2-1-2_textarea_padding_right_and_left_information: .5rem;--_ui5-v2-1-2_token_selected_focused_offset_bottom: -.25rem;--_ui5-v2-1-2_tokenizer-popover_offset: .1875rem;--_ui5-v2-1-2_slider_handle_icon_size: .875rem;--_ui5-v2-1-2_slider_padding: 1rem 1.0625rem;--_ui5-v2-1-2_range_slider_progress_focus_width: calc(100% + var(--_ui5-v2-1-2_slider_handle_width) + 10px);--_ui5-v2-1-2_range_slider_progress_focus_height: calc(var(--_ui5-v2-1-2_slider_handle_height) + 10px);--_ui5-v2-1-2_range_slider_progress_focus_top: -.8125rem;--_ui5-v2-1-2_slider_tooltip_bottom: 1.75rem;--_ui5-v2-1-2_slider_handle_focused_tooltip_distance: calc(var(--_ui5-v2-1-2_slider_tooltip_bottom) - var(--_ui5-v2-1-2_slider_handle_focus_width));--_ui5-v2-1-2_range_slider_progress_focus_left: calc(-1 * (var(--_ui5-v2-1-2_slider_handle_width) / 2) - 5px);--_ui5-v2-1-2_bar_base_height: 2.5rem;--_ui5-v2-1-2_bar_subheader_height: 2.25rem;--_ui5-v2-1-2_button_base_height: var(--sapElement_Compact_Height);--_ui5-v2-1-2_button_base_padding: .4375rem;--_ui5-v2-1-2_button_base_min_width: 2rem;--_ui5-v2-1-2_button_icon_font_size: 1rem;--_ui5-v2-1-2_calendar_height: 18rem;--_ui5-v2-1-2_calendar_width: 17.75rem;--_ui5-v2-1-2_calendar_left_right_padding: .25rem;--_ui5-v2-1-2_calendar_top_bottom_padding: .5rem;--_ui5-v2-1-2_calendar_header_height: 2rem;--_ui5-v2-1-2_calendar_header_arrow_button_width: 2rem;--_ui5-v2-1-2_calendar_header_padding: 0;--_ui5-v2-1-2-calendar-legend-root-padding: .5rem;--_ui5-v2-1-2-calendar-legend-root-width: 16.75rem;--_ui5-v2-1-2-calendar-legend-item-root-focus-margin: -.125rem;--_ui5-v2-1-2_checkbox_root_side_padding: var(--_ui5-v2-1-2_checkbox_wrapped_focus_padding);--_ui5-v2-1-2_checkbox_width_height: var(--_ui5-v2-1-2_checkbox_compact_width_height);--_ui5-v2-1-2_checkbox_wrapper_padding: var(--_ui5-v2-1-2_checkbox_compact_wrapper_padding);--_ui5-v2-1-2_checkbox_inner_width_height: var(--_ui5-v2-1-2_checkbox_compact_inner_size);--_ui5-v2-1-2_checkbox_icon_size: .75rem;--_ui5-v2-1-2_checkbox_partially_icon_size: .5rem;--_ui5-v2-1-2_custom_list_item_rb_min_width: 2rem;--_ui5-v2-1-2_daypicker_weeknumbers_container_padding_top: 2rem;--_ui5-v2-1-2_day_picker_item_width: 2rem;--_ui5-v2-1-2_day_picker_item_height: 2rem;--_ui5-v2-1-2_day_picker_empty_height: 2.125rem;--_ui5-v2-1-2_day_picker_item_justify_content: flex-end;--_ui5-v2-1-2_dp_two_calendar_item_now_text_padding_top: .5rem;--_ui5-v2-1-2_dp_two_calendar_item_primary_text_height: 1rem;--_ui5-v2-1-2_dp_two_calendar_item_secondary_text_height: .75rem;--_ui5-v2-1-2_dp_two_calendar_item_text_padding_top: .5rem;--_ui5-v2-1-2_daypicker_special_day_top: 1.625rem;--_ui5-v2-1-2_daypicker_twocalendar_item_special_day_top: 1.25rem;--_ui5-v2-1-2_daypicker_twocalendar_item_special_day_right: 1.25rem;--_ui5-v2-1-2_daypicker_two_calendar_item_margin_bottom: 0;--_ui5-v2-1-2_daypicker_item_now_selected_two_calendar_focus_special_day_top: 1.125rem;--_ui5-v2-1-2_daypicker_item_now_selected_two_calendar_focus_special_day_right: 1.125rem;--_ui5-v2-1-2_daypicker_item_now_selected_two_calendar_focus_secondary_text_padding_block: 0 1rem;--_ui5-v2-1-2_datetime_picker_height: 20.5rem;--_ui5-v2-1-2_datetime_picker_width: 35.5rem;--_ui5-v2-1-2_datetime_timeview_width: 17rem;--_ui5-v2-1-2_datetime_timeview_phonemode_width: 18.5rem;--_ui5-v2-1-2_datetime_timeview_padding: .5rem;--_ui5-v2-1-2_datetime_timeview_phonemode_clocks_width: 21.125rem;--_ui5-v2-1-2_datetime_dateview_phonemode_margin_bottom: 3.125rem;--_ui5-v2-1-2_dialog_content_min_height: 2.5rem;--_ui5-v2-1-2_dialog_footer_height: 2.5rem;--_ui5-v2-1-2_form_item_min_height: 2rem;--_ui5-v2-1-2_form_item_padding: .25rem;--_ui5-v2-1-2-form-group-heading-height: 2rem;--_ui5-v2-1-2_input_height: var(--sapElement_Compact_Height);--_ui5-v2-1-2_input_inner_padding: 0 .5rem;--_ui5-v2-1-2_input_inner_padding_with_icon: 0 .2rem 0 .5rem;--_ui5-v2-1-2_input_inner_space_to_tokenizer: .125rem;--_ui5-v2-1-2_input_inner_space_to_n_more_text: .125rem;--_ui5-v2-1-2_input_icon_min_width: var(--_ui5-v2-1-2_input_compact_min_width);--_ui5-v2-1-2_menu_item_padding: 0 .75rem 0 .5rem;--_ui5-v2-1-2_menu_item_submenu_icon_right: .75rem;--_ui5-v2-1-2_popup_default_header_height: 2.5rem;--_ui5-v2-1-2_textarea_margin: .1875rem 0;--_ui5-v2-1-2_list_no_data_height: 2rem;--_ui5-v2-1-2_list_item_cb_margin_right: .5rem;--_ui5-v2-1-2_list_item_title_size: var(--sapFontSize);--_ui5-v2-1-2_list_item_img_top_margin: .55rem;--_ui5-v2-1-2_list_no_data_font_size: var(--sapFontSize);--_ui5-v2-1-2_list_item_dropdown_base_height: 2rem;--_ui5-v2-1-2_list_item_base_height: 2rem;--_ui5-v2-1-2_list_item_base_padding: 0 1rem;--_ui5-v2-1-2_list_item_icon_size: 1rem;--_ui5-v2-1-2_list_item_selection_btn_margin_top: calc(-1 * var(--_ui5-v2-1-2_checkbox_wrapper_padding));--_ui5-v2-1-2_list_item_content_vertical_offset: calc((var(--_ui5-v2-1-2_list_item_base_height) - var(--_ui5-v2-1-2_list_item_title_size)) / 2);--_ui5-v2-1-2_list_busy_row_height: 2rem;--_ui5-v2-1-2_list_buttons_left_space: .125rem;--_ui5-v2-1-2_month_picker_item_height: 2rem;--_ui5-v2-1-2_year_picker_item_height: 2rem;--_ui5-v2-1-2_panel_header_height: 2rem;--_ui5-v2-1-2_panel_button_root_height: 2rem;--_ui5-v2-1-2_panel_button_root_width: 2.5rem;--_ui5-v2-1-2_token_height: 1.25rem;--_ui5-v2-1-2_token_right_margin: .25rem;--_ui5-v2-1-2_token_left_padding: .25rem;--_ui5-v2-1-2_token_readonly_padding: .125rem .25rem;--_ui5-v2-1-2_token_focus_offset: -.125rem;--_ui5-v2-1-2_token_icon_size: .75rem;--_ui5-v2-1-2_token_icon_padding: .375rem .375rem;--_ui5-v2-1-2_token_wrapper_right_padding: .25rem;--_ui5-v2-1-2_token_wrapper_left_padding: 0;--_ui5-v2-1-2_token_outline_offset: -.125rem;--_ui5-v2-1-2_tl_bubble_padding: .5rem;--_ui5-v2-1-2_tl_indicator_before_bottom: -.5rem;--_ui5-v2-1-2_tl_padding: .5rem;--_ui5-v2-1-2_tl_li_margin_bottom: .5rem;--_ui5-v2-1-2_tc_item_text: 2rem;--_ui5-v2-1-2_tc_item_text_line_height: 1.325rem;--_ui5-v2-1-2_tc_item_add_text_margin_top: .3125rem;--_ui5-v2-1-2_tc_item_height: 4rem;--_ui5-v2-1-2_tc_header_height: var(--_ui5-v2-1-2_tc_item_height);--_ui5-v2-1-2_tc_item_icon_circle_size: 2rem;--_ui5-v2-1-2_tc_item_icon_size: 1rem;--_ui5-v2-1-2_radio_button_height: 2rem;--_ui5-v2-1-2_radio_button_label_side_padding: .5rem;--_ui5-v2-1-2_radio_button_inner_size: 2rem;--_ui5-v2-1-2_radio_button_svg_size: 1rem;--_ui5-v2-1-2-responsive_popover_header_height: 2.5rem;--ui5-v2-1-2_side_navigation_item_height: 2rem;--_ui5-v2-1-2_slider_handle_height: 1.25rem;--_ui5-v2-1-2_slider_handle_width: 1.25rem;--_ui5-v2-1-2_slider_tooltip_padding: .25rem;--_ui5-v2-1-2_slider_progress_outline_offset: -.625rem;--_ui5-v2-1-2_slider_outer_height: 1.3125rem;--_ui5-v2-1-2_step_input_min_width: 6rem;--_ui5-v2-1-2_step_input_padding: 2rem;--_ui5-v2-1-2-tree-indent-step: .5rem;--_ui5-v2-1-2-tree-toggle-box-width: 2rem;--_ui5-v2-1-2-tree-toggle-box-height: 1.5rem;--_ui5-v2-1-2-tree-toggle-icon-size: .8125rem;--_ui5-v2-1-2_timeline_tli_indicator_before_bottom: -.75rem;--_ui5-v2-1-2_timeline_tli_indicator_before_right: -.5rem;--_ui5-v2-1-2_timeline_tli_indicator_before_without_icon_bottom: -1rem;--_ui5-v2-1-2_timeline_tli_indicator_before_without_icon_right: -.8125rem;--_ui5-v2-1-2_timeline_tli_indicator_before_height: calc(100% - 1.25rem) ;--_ui5-v2-1-2_timeline_tli_horizontal_without_icon_indicator_before_width: var(--_ui5-v2-1-2_timeline_tli_indicator_after_height);--_ui5-v2-1-2_timeline_tli_horizontal_indicator_after_width: var(--_ui5-v2-1-2_timeline_tli_indicator_after_height);--_ui5-v2-1-2_timeline_tli_horizontal_indicator_before_width: var(--_ui5-v2-1-2_timeline_tli_indicator_after_height);--_ui5-v2-1-2_timeline_tli_icon_horizontal_indicator_after_width: var(--_ui5-v2-1-2_timeline_tli_indicator_after_height);--_ui5-v2-1-2_timeline_tli_indicator_after_top: calc(-100% + .9375rem) ;--_ui5-v2-1-2_timeline_tli_indicator_after_height: calc(100% - .75rem) ;--_ui5-v2-1-2_timeline_tli_horizontal_indicator_after_left: 1.8625rem;--_ui5-v2-1-2_timeline_tli_horizontal_indicator_short_after_width: calc(100% - 1rem) ;--_ui5-v2-1-2_timeline_tli_without_icon_horizontal_indicator_before_width: calc(100% - .625rem) ;--_ui5-v2-1-2_timeline_tli_last_child_vertical_indicator_before_height: calc(100% - 2.5rem) ;--_ui5-v2-1-2_timeline_tlgi_compact_icon_before_height: calc(100% + 1.5rem) ;--_ui5-v2-1-2_timeline_tlgi_horizontal_line_placeholder_before_width: var(--_ui5-v2-1-2_timeline_tlgi_compact_icon_before_height);--_ui5-v2-1-2_timeline_tlgi_horizontal_compact_root_margin_left: .5rem;--_ui5-v2-1-2_timeline_tlgi_compact_root_gap: .5rem;--_ui5-v2-1-2_timeline_tlgi_root_horizontal_height: 19.375rem;--_ui5-v2-1-2_vsd_header_container: 2.5rem;--_ui5-v2-1-2_vsd_sub_header_container_height: 2rem;--_ui5-v2-1-2_vsd_header_height: 4rem;--_ui5-v2-1-2_vsd_expand_content_height: 25.4375rem;--_ui5-v2-1-2-toolbar-separator-height: 1.5rem;--_ui5-v2-1-2-toolbar-height: 2rem;--_ui5-v2-1-2_toolbar_overflow_padding: .1875rem .375rem;--_ui5-v2-1-2_dynamic_page_title_actions_separator_height: var(--_ui5-v2-1-2-toolbar-separator-height);--_ui5-v2-1-2_textarea_padding_top: .1875rem;--_ui5-v2-1-2_textarea_padding_bottom: .125rem;--_ui5-v2-1-2_checkbox_focus_position: .25rem;--_ui5-v2-1-2_split_button_middle_separator_top: .3125rem;--_ui5-v2-1-2_split_button_middle_separator_height: 1rem;--_ui5-v2-1-2_slider_handle_top: -.5rem;--_ui5-v2-1-2_slider_tooltip_height: 1.375rem;--_ui5-v2-1-2_checkbox_wrapped_focus_inset_block: .125rem;--_ui5-v2-1-2_color-palette-item-height: 1.25rem;--_ui5-v2-1-2_color-palette-item-focus-height: 1rem;--_ui5-v2-1-2_color-palette-item-container-sides-padding: .1875rem;--_ui5-v2-1-2_color-palette-item-container-rows-padding: .8125rem;--_ui5-v2-1-2_color-palette-item-hover-height: 1.625rem;--_ui5-v2-1-2_color-palette-item-margin: calc(((var(--_ui5-v2-1-2_color-palette-item-hover-height) - var(--_ui5-v2-1-2_color-palette-item-height)) / 2) + .0625rem);--_ui5-v2-1-2_color-palette-row-width: 8.75rem;--_ui5-v2-1-2_color-palette-swatch-container-padding: .1875rem .5rem;--_ui5-v2-1-2_color-palette-item-hover-margin: .0625rem;--_ui5-v2-1-2_color-palette-row-height: 7.5rem;--_ui5-v2-1-2_color-palette-button-height: 2rem;--_ui5-v2-1-2_color-palette-item-before-focus-inset: -.25rem;--_ui5-v2-1-2_color_picker_slider_container_margin_top: -9px;--_ui5-v2-1-2_daypicker_selected_item_now_special_day_top: 1.5625rem;--_ui5-v2-1-2_daypicker_specialday_focused_top: 1.3125rem;--_ui5-v2-1-2_daypicker_selected_item_now_special_day_border_bottom_radius_alternate: .5rem;--_ui5-v2-1-2_daypicker_specialday_focused_border_bottom: .25rem;--_ui5-v2-1-2_daypicker_item_now_specialday_top: 1.4375rem;--_ui5-v2-1-2_dp_two_calendar_item_secondary_text_padding_block: 0 .375rem;--_ui5-v2-1-2_dp_two_calendar_item_secondary_text_padding: 0 .375rem;--_ui5-v2-1-2_daypicker_two_calendar_item_selected_focus_margin_bottom: -.25rem;--_ui5-v2-1-2_daypicker_two_calendar_item_selected_focus_padding_right: .4375rem}:root,[dir=ltr]{--_ui5-v2-1-2_rotation_90deg: rotate(90deg);--_ui5-v2-1-2_rotation_minus_90deg: rotate(-90deg);--_ui5-v2-1-2_icon_transform_scale: none;--_ui5-v2-1-2_panel_toggle_btn_rotation: var(--_ui5-v2-1-2_rotation_90deg);--_ui5-v2-1-2_li_notification_group_toggle_btn_rotation: var(--_ui5-v2-1-2_rotation_90deg);--_ui5-v2-1-2_timeline_scroll_container_offset: .5rem;--_ui5-v2-1-2_popover_upward_arrow_margin: .1875rem 0 0 .1875rem;--_ui5-v2-1-2_popover_right_arrow_margin: .1875rem 0 0 -.375rem;--_ui5-v2-1-2_popover_downward_arrow_margin: -.375rem 0 0 .125rem;--_ui5-v2-1-2_popover_left_arrow_margin: .125rem 0 0 .25rem;--_ui5-v2-1-2_dialog_resize_cursor: se-resize;--_ui5-v2-1-2_progress_indicator_bar_border_radius: .5rem 0 0 .5rem;--_ui5-v2-1-2_progress_indicator_remaining_bar_border_radius: 0 .5rem .5rem 0;--_ui5-v2-1-2_menu_submenu_margin_offset: -.25rem 0;--_ui5-v2-1-2_menu_submenu_placement_type_left_margin_offset: .25rem 0;--_ui5-v2-1-2-menu_item_icon_float: right;--_ui5-v2-1-2-shellbar-notification-btn-count-offset: -.125rem}
 ` };
 
-    registerThemePropertiesLoader("@ui5/webcomponents-theming", "sap_horizon", async () => styleData$4);
-    registerThemePropertiesLoader("@ui5/webcomponents", "sap_horizon", async () => styleData$3);
+    _ui5_webcomponentsBase.registerThemePropertiesLoader("@ui5/webcomponents-theming", "sap_horizon", async () => styleData$4);
+    _ui5_webcomponentsBase.registerThemePropertiesLoader("@ui5/webcomponents", "sap_horizon", async () => styleData$3);
     const styleData$2 = { packageName: "@ui5/webcomponents", fileName: "themes/Icon.css.ts", content: `:host{-webkit-tap-highlight-color:rgba(0,0,0,0)}:host([hidden]){display:none}:host([invalid]){display:none}:host(:not([hidden]).ui5_hovered){opacity:.7}:host{display:inline-block;width:1rem;height:1rem;color:var(--sapContent_IconColor);fill:currentColor;outline:none}:host([design="Contrast"]){color:var(--sapContent_ContrastIconColor)}:host([design="Critical"]){color:var(--sapCriticalElementColor)}:host([design="Information"]){color:var(--sapInformativeElementColor)}:host([design="Negative"]){color:var(--sapNegativeElementColor)}:host([design="Neutral"]){color:var(--sapNeutralElementColor)}:host([design="NonInteractive"]){color:var(--sapContent_NonInteractiveIconColor)}:host([design="Positive"]){color:var(--sapPositiveElementColor)}:host([mode="Interactive"][desktop]) .ui5-icon-root:focus,:host([mode="Interactive"]) .ui5-icon-root:focus-visible{outline:var(--sapContent_FocusWidth) var(--sapContent_FocusStyle) var(--sapContent_FocusColor);border-radius:var(--ui5-v2-1-2-icon-focus-border-radius)}.ui5-icon-root{display:flex;height:100%;width:100%;outline:none;vertical-align:top}:host([mode="Interactive"]){cursor:pointer}.ui5-icon-root:not([dir=ltr]){transform:var(--_ui5-v2-1-2_icon_transform_scale);transform-origin:center}
 ` };
 
@@ -4258,8 +2910,8 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
     const BUTTON_ARIA_TYPE_EMPHASIZED = { key: "BUTTON_ARIA_TYPE_EMPHASIZED", defaultText: "Emphasized" };
     const PANEL_ICON = { key: "PANEL_ICON", defaultText: "Expand/Collapse" };
 
-    registerThemePropertiesLoader("@ui5/webcomponents-theming", "sap_horizon", async () => styleData$4);
-    registerThemePropertiesLoader("@ui5/webcomponents", "sap_horizon", async () => styleData$3);
+    _ui5_webcomponentsBase.registerThemePropertiesLoader("@ui5/webcomponents-theming", "sap_horizon", async () => styleData$4);
+    _ui5_webcomponentsBase.registerThemePropertiesLoader("@ui5/webcomponents", "sap_horizon", async () => styleData$3);
     const styleData$1 = { packageName: "@ui5/webcomponents", fileName: "themes/Button.css.ts", content: `:host{vertical-align:middle}.ui5-hidden-text{position:absolute;clip:rect(1px,1px,1px,1px);user-select:none;left:-1000px;top:-1000px;pointer-events:none;font-size:0}:host(:not([hidden])){display:inline-block}:host{min-width:var(--_ui5-v2-1-2_button_base_min_width);height:var(--_ui5-v2-1-2_button_base_height);line-height:normal;font-family:var(--_ui5-v2-1-2_button_fontFamily);font-size:var(--sapFontSize);text-shadow:var(--_ui5-v2-1-2_button_text_shadow);border-radius:var(--_ui5-v2-1-2_button_border_radius);cursor:pointer;background-color:var(--sapButton_Background);border:var(--sapButton_BorderWidth) solid var(--sapButton_BorderColor);color:var(--sapButton_TextColor);box-sizing:border-box;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ui5-button-root{min-width:inherit;cursor:inherit;height:100%;width:100%;box-sizing:border-box;display:flex;justify-content:center;align-items:center;outline:none;padding:0 var(--_ui5-v2-1-2_button_base_padding);position:relative;background:transparent;border:none;color:inherit;text-shadow:inherit;font:inherit;white-space:inherit;overflow:inherit;text-overflow:inherit;letter-spacing:inherit;word-spacing:inherit;line-height:inherit;-webkit-user-select:none;-moz-user-select:none;user-select:none}:host(:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]):hover),:host(:not([hidden]):not([disabled]).ui5_hovered){background:var(--sapButton_Hover_Background);border:1px solid var(--sapButton_Hover_BorderColor);color:var(--sapButton_Hover_TextColor)}.ui5-button-icon,.ui5-button-end-icon{color:inherit;flex-shrink:0}.ui5-button-end-icon{margin-inline-start:var(--_ui5-v2-1-2_button_base_icon_margin)}:host([icon-only]:not([has-end-icon])) .ui5-button-root{min-width:auto;padding:0}:host([icon-only]) .ui5-button-text{display:none}.ui5-button-text{outline:none;position:relative;white-space:inherit;overflow:inherit;text-overflow:inherit}:host([has-icon]:not(:empty)) .ui5-button-text{margin-inline-start:var(--_ui5-v2-1-2_button_base_icon_margin)}:host([has-end-icon]:not([has-icon]):empty) .ui5-button-end-icon{margin-inline-start:0}:host([disabled]){opacity:var(--sapContent_DisabledOpacity);pointer-events:unset;cursor:default}:host([has-icon]:not([icon-only]):not([has-end-icon])) .ui5-button-text{min-width:calc(var(--_ui5-v2-1-2_button_base_min_width) - var(--_ui5-v2-1-2_button_base_icon_margin) - 1rem)}:host([disabled]:active){pointer-events:none}:host([desktop]:not([active])) .ui5-button-root:focus-within:after,:host(:not([active])) .ui5-button-root:focus-visible:after,:host([desktop][active][design="Emphasized"]) .ui5-button-root:focus-within:after,:host([active][design="Emphasized"]) .ui5-button-root:focus-visible:after,:host([desktop][active]) .ui5-button-root:focus-within:before,:host([active]) .ui5-button-root:focus-visible:before{content:"";position:absolute;box-sizing:border-box;inset:.0625rem;border:var(--_ui5-v2-1-2_button_focused_border);border-radius:var(--_ui5-v2-1-2_button_focused_border_radius)}:host([desktop][active]) .ui5-button-root:focus-within:before,:host([active]) .ui5-button-root:focus-visible:before{border-color:var(--_ui5-v2-1-2_button_pressed_focused_border_color)}:host([design="Emphasized"][desktop]) .ui5-button-root:focus-within:after,:host([design="Emphasized"]) .ui5-button-root:focus-visible:after{border-color:var(--_ui5-v2-1-2_button_emphasized_focused_border_color)}:host([design="Emphasized"][desktop]) .ui5-button-root:focus-within:before,:host([design="Emphasized"]) .ui5-button-root:focus-visible:before{content:"";position:absolute;box-sizing:border-box;inset:.0625rem;border:var(--_ui5-v2-1-2_button_emphasized_focused_border_before);border-radius:var(--_ui5-v2-1-2_button_focused_border_radius)}.ui5-button-root::-moz-focus-inner{border:0}bdi{display:block;white-space:inherit;overflow:inherit;text-overflow:inherit}:host([ui5-button][active]:not([disabled]):not([non-interactive])){background-image:none;background-color:var(--sapButton_Active_Background);border-color:var(--sapButton_Active_BorderColor);color:var(--sapButton_Active_TextColor)}:host([design="Positive"]){background-color:var(--sapButton_Accept_Background);border-color:var(--sapButton_Accept_BorderColor);color:var(--sapButton_Accept_TextColor)}:host([design="Positive"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]):hover),:host([design="Positive"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]).ui5_hovered){background-color:var(--sapButton_Accept_Hover_Background);border-color:var(--sapButton_Accept_Hover_BorderColor);color:var(--sapButton_Accept_Hover_TextColor)}:host([ui5-button][design="Positive"][active]:not([non-interactive])){background-color:var(--sapButton_Accept_Active_Background);border-color:var(--sapButton_Accept_Active_BorderColor);color:var(--sapButton_Accept_Active_TextColor)}:host([design="Negative"]){background-color:var(--sapButton_Reject_Background);border-color:var(--sapButton_Reject_BorderColor);color:var(--sapButton_Reject_TextColor)}:host([design="Negative"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]):hover),:host([design="Negative"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]).ui5_hovered){background-color:var(--sapButton_Reject_Hover_Background);border-color:var(--sapButton_Reject_Hover_BorderColor);color:var(--sapButton_Reject_Hover_TextColor)}:host([ui5-button][design="Negative"][active]:not([non-interactive])){background-color:var(--sapButton_Reject_Active_Background);border-color:var(--sapButton_Reject_Active_BorderColor);color:var(--sapButton_Reject_Active_TextColor)}:host([design="Attention"]){background-color:var(--sapButton_Attention_Background);border-color:var(--sapButton_Attention_BorderColor);color:var(--sapButton_Attention_TextColor)}:host([design="Attention"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]):hover),:host([design="Attention"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]).ui5_hovered){background-color:var(--sapButton_Attention_Hover_Background);border-color:var(--sapButton_Attention_Hover_BorderColor);color:var(--sapButton_Attention_Hover_TextColor)}:host([ui5-button][design="Attention"][active]:not([non-interactive])){background-color:var(--sapButton_Attention_Active_Background);border-color:var(--sapButton_Attention_Active_BorderColor);color:var(--sapButton_Attention_Active_TextColor)}:host([design="Emphasized"]){background-color:var(--sapButton_Emphasized_Background);border-color:var(--sapButton_Emphasized_BorderColor);border-width:var(--_ui5-v2-1-2_button_emphasized_border_width);color:var(--sapButton_Emphasized_TextColor);font-family:var(--sapFontBoldFamily )}:host([design="Emphasized"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]):hover),:host([design="Emphasized"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]).ui5_hovered){background-color:var(--sapButton_Emphasized_Hover_Background);border-color:var(--sapButton_Emphasized_Hover_BorderColor);border-width:var(--_ui5-v2-1-2_button_emphasized_border_width);color:var(--sapButton_Emphasized_Hover_TextColor)}:host([ui5-button][design="Empasized"][active]:not([non-interactive])){background-color:var(--sapButton_Emphasized_Active_Background);border-color:var(--sapButton_Emphasized_Active_BorderColor);color:var(--sapButton_Emphasized_Active_TextColor)}:host([design="Emphasized"][desktop]) .ui5-button-root:focus-within:after,:host([design="Emphasized"]) .ui5-button-root:focus-visible:after{border-color:var(--_ui5-v2-1-2_button_emphasized_focused_border_color);outline:none}:host([design="Emphasized"][desktop][active]:not([non-interactive])) .ui5-button-root:focus-within:after,:host([design="Emphasized"][active]:not([non-interactive])) .ui5-button-root:focus-visible:after{border-color:var(--_ui5-v2-1-2_button_emphasized_focused_active_border_color)}:host([design="Transparent"]){background-color:var(--sapButton_Lite_Background);color:var(--sapButton_Lite_TextColor);border-color:var(--sapButton_Lite_BorderColor)}:host([design="Transparent"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]):hover),:host([design="Transparent"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]).ui5_hovered){background-color:var(--sapButton_Lite_Hover_Background);border-color:var(--sapButton_Lite_Hover_BorderColor);color:var(--sapButton_Lite_Hover_TextColor)}:host([ui5-button][design="Transparent"][active]:not([non-interactive])){background-color:var(--sapButton_Lite_Active_Background);border-color:var(--sapButton_Lite_Active_BorderColor);color:var(--sapButton_Active_TextColor)}:host([ui5-segmented-button-item][active][desktop]) .ui5-button-root:focus-within:after,:host([ui5-segmented-button-item][active]) .ui5-button-root:focus-visible:after,:host([pressed][desktop]) .ui5-button-root:focus-within:after,:host([pressed]) .ui5-button-root:focus-visible:after{border-color:var(--_ui5-v2-1-2_button_pressed_focused_border_color);outline:none}:host([ui5-segmented-button-item][desktop]:not(:last-child)) .ui5-button-root:focus-within:after,:host([ui5-segmented-button-item]:not(:last-child)) .ui5-button-root:focus-visible:after{border-top-right-radius:var(--_ui5-v2-1-2_button_focused_inner_border_radius);border-bottom-right-radius:var(--_ui5-v2-1-2_button_focused_inner_border_radius)}:host([ui5-segmented-button-item][desktop]:not(:first-child)) .ui5-button-root:focus-within:after,:host([ui5-segmented-button-item]:not(:first-child)) .ui5-button-root:focus-visible:after{border-top-left-radius:var(--_ui5-v2-1-2_button_focused_inner_border_radius);border-bottom-left-radius:var(--_ui5-v2-1-2_button_focused_inner_border_radius)}
 ` };
 
@@ -4533,16 +3185,16 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
     var Button$1 = Button;
 
     /* eslint no-unused-vars: 0 */
-    function block0(context, tags, suffix) { return effectiveHtml `<div class="ui5-panel-root" role="${l$1(this.accRole)}" aria-label="${l$1(this.effectiveAccessibleName)}" aria-labelledby="${l$1(this.fixedPanelAriaLabelledbyReference)}">${this.hasHeaderOrHeaderText ? block1.call(this, context, tags, suffix) : undefined}<div class="ui5-panel-content" id="${l$1(this._id)}-content" tabindex="-1" style="${styleMap(this.styles.content)}" part="content"><slot></slot></div></div>`; }
-    function block1(context, tags, suffix) { return effectiveHtml `<div class="ui5-panel-heading-wrapper${o$1(this.classes.stickyHeaderClass)}" role="${l$1(this.headingWrapperRole)}" aria-level="${l$1(this.headingWrapperAriaLevel)}"><div @click="${this._headerClick}" @keydown="${this._headerKeyDown}" @keyup="${this._headerKeyUp}" class="ui5-panel-header" tabindex="${l$1(this.headerTabIndex)}" role="${l$1(this.accInfo.role)}" aria-expanded="${l$1(this.accInfo.ariaExpanded)}" aria-controls="${l$1(this.accInfo.ariaControls)}" aria-labelledby="${l$1(this.accInfo.ariaLabelledby)}" part="header">${!this.fixed ? block2.call(this, context, tags, suffix) : undefined}${this._hasHeader ? block5.call(this, context, tags, suffix) : block6.call(this, context, tags, suffix)}</div></div>`; }
+    function block0(context, tags, suffix) { return effectiveHtml `<div class="ui5-panel-root" role="${l(this.accRole)}" aria-label="${l(this.effectiveAccessibleName)}" aria-labelledby="${l(this.fixedPanelAriaLabelledbyReference)}">${this.hasHeaderOrHeaderText ? block1.call(this, context, tags, suffix) : undefined}<div class="ui5-panel-content" id="${l(this._id)}-content" tabindex="-1" style="${styleMap(this.styles.content)}" part="content"><slot></slot></div></div>`; }
+    function block1(context, tags, suffix) { return effectiveHtml `<div class="ui5-panel-heading-wrapper${o(this.classes.stickyHeaderClass)}" role="${l(this.headingWrapperRole)}" aria-level="${l(this.headingWrapperAriaLevel)}"><div @click="${this._headerClick}" @keydown="${this._headerKeyDown}" @keyup="${this._headerKeyUp}" class="ui5-panel-header" tabindex="${l(this.headerTabIndex)}" role="${l(this.accInfo.role)}" aria-expanded="${l(this.accInfo.ariaExpanded)}" aria-controls="${l(this.accInfo.ariaControls)}" aria-labelledby="${l(this.accInfo.ariaLabelledby)}" part="header">${!this.fixed ? block2.call(this, context, tags, suffix) : undefined}${this._hasHeader ? block5.call(this, context, tags, suffix) : block6.call(this, context, tags, suffix)}</div></div>`; }
     function block2(context, tags, suffix) { return effectiveHtml `<div class="ui5-panel-header-button-root">${this._hasHeader ? block3.call(this, context, tags, suffix) : block4.call(this, context, tags, suffix)}</div>`; }
-    function block3(context, tags, suffix) { return suffix ? effectiveHtml `<${scopeTag("ui5-button", tags, suffix)} design="Transparent" class="ui5-panel-header-button ui5-panel-header-button-with-icon" @click="${this._toggleButtonClick}" .accessibilityAttributes=${l$1(this.accInfo.button.accessibilityAttributes)} tooltip="${l$1(this.accInfo.button.title)}" accessible-name="${l$1(this.accInfo.button.ariaLabelButton)}"><div class="ui5-panel-header-icon-wrapper"><${scopeTag("ui5-icon", tags, suffix)} class="ui5-panel-header-icon ${o$1(this.classes.headerBtn)}" name="slim-arrow-right"></${scopeTag("ui5-icon", tags, suffix)}></div></${scopeTag("ui5-button", tags, suffix)}>` : effectiveHtml `<ui5-button design="Transparent" class="ui5-panel-header-button ui5-panel-header-button-with-icon" @click="${this._toggleButtonClick}" .accessibilityAttributes=${l$1(this.accInfo.button.accessibilityAttributes)} tooltip="${l$1(this.accInfo.button.title)}" accessible-name="${l$1(this.accInfo.button.ariaLabelButton)}"><div class="ui5-panel-header-icon-wrapper"><ui5-icon class="ui5-panel-header-icon ${o$1(this.classes.headerBtn)}" name="slim-arrow-right"></ui5-icon></div></ui5-button>`; }
-    function block4(context, tags, suffix) { return suffix ? effectiveHtml `<${scopeTag("ui5-icon", tags, suffix)} class="ui5-panel-header-button ui5-panel-header-icon ${o$1(this.classes.headerBtn)}" name="slim-arrow-right" show-tooltip accessible-name="${l$1(this.toggleButtonTitle)}"></${scopeTag("ui5-icon", tags, suffix)}>` : effectiveHtml `<ui5-icon class="ui5-panel-header-button ui5-panel-header-icon ${o$1(this.classes.headerBtn)}" name="slim-arrow-right" show-tooltip accessible-name="${l$1(this.toggleButtonTitle)}"></ui5-icon>`; }
+    function block3(context, tags, suffix) { return suffix ? effectiveHtml `<${scopeTag("ui5-button", tags, suffix)} design="Transparent" class="ui5-panel-header-button ui5-panel-header-button-with-icon" @click="${this._toggleButtonClick}" .accessibilityAttributes=${l(this.accInfo.button.accessibilityAttributes)} tooltip="${l(this.accInfo.button.title)}" accessible-name="${l(this.accInfo.button.ariaLabelButton)}"><div class="ui5-panel-header-icon-wrapper"><${scopeTag("ui5-icon", tags, suffix)} class="ui5-panel-header-icon ${o(this.classes.headerBtn)}" name="slim-arrow-right"></${scopeTag("ui5-icon", tags, suffix)}></div></${scopeTag("ui5-button", tags, suffix)}>` : effectiveHtml `<ui5-button design="Transparent" class="ui5-panel-header-button ui5-panel-header-button-with-icon" @click="${this._toggleButtonClick}" .accessibilityAttributes=${l(this.accInfo.button.accessibilityAttributes)} tooltip="${l(this.accInfo.button.title)}" accessible-name="${l(this.accInfo.button.ariaLabelButton)}"><div class="ui5-panel-header-icon-wrapper"><ui5-icon class="ui5-panel-header-icon ${o(this.classes.headerBtn)}" name="slim-arrow-right"></ui5-icon></div></ui5-button>`; }
+    function block4(context, tags, suffix) { return suffix ? effectiveHtml `<${scopeTag("ui5-icon", tags, suffix)} class="ui5-panel-header-button ui5-panel-header-icon ${o(this.classes.headerBtn)}" name="slim-arrow-right" show-tooltip accessible-name="${l(this.toggleButtonTitle)}"></${scopeTag("ui5-icon", tags, suffix)}>` : effectiveHtml `<ui5-icon class="ui5-panel-header-button ui5-panel-header-icon ${o(this.classes.headerBtn)}" name="slim-arrow-right" show-tooltip accessible-name="${l(this.toggleButtonTitle)}"></ui5-icon>`; }
     function block5(context, tags, suffix) { return effectiveHtml `<slot name="header"></slot>`; }
-    function block6(context, tags, suffix) { return effectiveHtml `<div id="${l$1(this._id)}-header-title" class="ui5-panel-header-title">${l$1(this.headerText)}</div>`; }
+    function block6(context, tags, suffix) { return effectiveHtml `<div id="${l(this._id)}-header-title" class="ui5-panel-header-title">${l(this.headerText)}</div>`; }
 
-    registerThemePropertiesLoader("@ui5/webcomponents-theming", "sap_horizon", async () => styleData$4);
-    registerThemePropertiesLoader("@ui5/webcomponents", "sap_horizon", async () => styleData$3);
+    _ui5_webcomponentsBase.registerThemePropertiesLoader("@ui5/webcomponents-theming", "sap_horizon", async () => styleData$4);
+    _ui5_webcomponentsBase.registerThemePropertiesLoader("@ui5/webcomponents", "sap_horizon", async () => styleData$3);
     const styleData = { packageName: "@ui5/webcomponents", fileName: "themes/Panel.css.ts", content: `.ui5-hidden-text{position:absolute;clip:rect(1px,1px,1px,1px);user-select:none;left:-1000px;top:-1000px;pointer-events:none;font-size:0}:host(:not([hidden])){display:block}:host{font-family:"72override",var(--sapFontFamily);background-color:var(--sapGroup_TitleBackground);border-radius:var(--_ui5-v2-1-2_panel_border_radius)}:host(:not([collapsed])){border-bottom:var(--_ui5-v2-1-2_panel_border_bottom)}:host([fixed]) .ui5-panel-header{padding-left:1rem}.ui5-panel-header{min-height:var(--_ui5-v2-1-2_panel_header_height);width:100%;position:relative;display:flex;justify-content:flex-start;align-items:center;outline:none;box-sizing:border-box;padding-right:var(--_ui5-v2-1-2_panel_header_padding_right);font-family:"72override",var(--sapFontHeaderFamily);font-size:var(--sapGroup_Title_FontSize);font-weight:400;color:var(--sapGroup_TitleTextColor)}.ui5-panel-header-icon{color:var(--_ui5-v2-1-2_panel_icon_color)}.ui5-panel-header-button-animated{transition:transform .4s ease-out}:host(:not([_has-header]):not([fixed])) .ui5-panel-header{cursor:pointer}:host(:not([_has-header]):not([fixed])) .ui5-panel-header:focus:after{content:"";position:absolute;pointer-events:none;z-index:2;border:var(--_ui5-v2-1-2_panel_focus_border);border-radius:var(--_ui5-v2-1-2_panel_border_radius);top:var(--_ui5-v2-1-2_panel_focus_offset);bottom:var(--_ui5-v2-1-2_panel_focus_bottom_offset);left:var(--_ui5-v2-1-2_panel_focus_offset);right:var(--_ui5-v2-1-2_panel_focus_offset)}:host(:not([collapsed]):not([_has-header]):not([fixed])) .ui5-panel-header:focus:after{border-radius:var(--_ui5-v2-1-2_panel_border_radius_expanded)}:host(:not([collapsed])) .ui5-panel-header-button:not(.ui5-panel-header-button-with-icon),:host(:not([collapsed])) .ui5-panel-header-icon-wrapper [ui5-icon]{transform:var(--_ui5-v2-1-2_panel_toggle_btn_rotation)}:host([fixed]) .ui5-panel-header-title{width:100%}.ui5-panel-heading-wrapper.ui5-panel-heading-wrapper-sticky{position:sticky;top:0;background-color:var(--_ui5-v2-1-2_panel_header_background_color);z-index:100;border-radius:var(--_ui5-v2-1-2_panel_border_radius)}.ui5-panel-header-title{width:calc(100% - var(--_ui5-v2-1-2_panel_button_root_width));overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ui5-panel-content{padding:var(--_ui5-v2-1-2_panel_content_padding);background-color:var(--sapGroup_ContentBackground);outline:none;border-bottom-left-radius:var(--_ui5-v2-1-2_panel_border_radius);border-bottom-right-radius:var(--_ui5-v2-1-2_panel_border_radius);overflow:auto}.ui5-panel-header-button-root{display:flex;justify-content:center;align-items:center;flex-shrink:0;width:var(--_ui5-v2-1-2_panel_button_root_width);height:var(--_ui5-v2-1-2_panel_button_root_height);padding:var(--_ui5-v2-1-2_panel_header_button_wrapper_padding);box-sizing:border-box}:host([fixed]:not([collapsed]):not([_has-header])) .ui5-panel-header,:host([collapsed]) .ui5-panel-header{border-bottom:.0625rem solid var(--sapGroup_TitleBorderColor)}:host([collapsed]) .ui5-panel-header{border-bottom-left-radius:var(--_ui5-v2-1-2_panel_border_radius);border-bottom-right-radius:var(--_ui5-v2-1-2_panel_border_radius)}:host(:not([fixed]):not([collapsed])) .ui5-panel-header{border-bottom:var(--_ui5-v2-1-2_panel_default_header_border)}[ui5-button].ui5-panel-header-button{display:flex;justify-content:center;align-items:center;min-width:initial;height:100%;width:100%}.ui5-panel-header-icon-wrapper{display:flex;justify-content:center;align-items:center}.ui5-panel-header-icon-wrapper,.ui5-panel-header-icon-wrapper .ui5-panel-header-icon{color:inherit}.ui5-panel-header-icon-wrapper,[ui5-button].ui5-panel-header-button-with-icon [ui5-icon]{pointer-events:none}.ui5-panel-root{height:100%;display:flex;flex-direction:column}
 ` };
 
@@ -4580,7 +3232,7 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
         return true;
       }
       shouldNotAnimate() {
-        return this.noAnimation || getAnimationMode() === AnimationMode$1.None;
+        return this.noAnimation || getAnimationMode() === _ui5_webcomponentsBase.AnimationMode.None;
       }
       _headerClick(e) {
         if (!this.shouldToggle(e.target)) {
@@ -4759,904 +3411,6 @@ sap.ui.define(['sap/ui/base/DataType', 'sap/base/strings/hyphenate', 'sap/ui/cor
       dependencies: [Button$1, Icon$1]
     }), event("toggle")], Panel$1);
     Panel$1.define();
-
-    const patchPatcher = (Patcher) => {
-        const origOpenEnd = Patcher.prototype.openEnd;
-        Patcher.prototype.openEnd = function openEnd() {
-            if (this._mAttributes.popover) {
-                delete this._mAttributes.popover; // The "popover" attribute will be managed externally, don't let Patcher remove it
-            }
-            return origOpenEnd.apply(this);
-        };
-    };
-
-    const openNativePopover = (domRef) => {
-        domRef.setAttribute("popover", "manual");
-        domRef.showPopover();
-    };
-    const closeNativePopover = (domRef) => {
-        if (domRef.hasAttribute("popover")) {
-            domRef.hidePopover();
-            domRef.removeAttribute("popover");
-        }
-    };
-    const patchOpen = (Popup) => {
-        const origOpen = Popup.prototype.open;
-        Popup.prototype.open = function open(...args) {
-            origOpen.apply(this, args); // call open first to initiate opening
-            const topLayerAlreadyInUse = !!document.body.querySelector(":popover-open"); // check if there is already something in the top layer
-            const openingInitiated = ["OPENING", "OPEN"].includes(this.getOpenState());
-            if (openingInitiated && topLayerAlreadyInUse) {
-                const element = this.getContent();
-                if (element) {
-                    const domRef = element.getDomRef();
-                    if (domRef) {
-                        openNativePopover(domRef);
-                    }
-                }
-            }
-        };
-    };
-    const patchClosed = (Popup) => {
-        const _origClosed = Popup.prototype._closed;
-        Popup.prototype._closed = function _closed(...args) {
-            const element = this.getContent();
-            const domRef = element.getDomRef();
-            _origClosed.apply(this, args); // only then call _close
-            if (domRef) {
-                closeNativePopover(domRef); // unset the popover attribute and close the native popover, but only if still in DOM
-            }
-        };
-    };
-    const patchFocusEvent = (Popup) => {
-        const origFocusEvent = Popup.prototype.onFocusEvent;
-        Popup.prototype.onFocusEvent = function onFocusEvent(e) {
-            const isTypeFocus = e.type === "focus" || e.type === "activate";
-            const target = e.target;
-            if (!isTypeFocus || !target.closest("[ui5-popover],[ui5-responsive-popover],[ui5-dialog]")) {
-                origFocusEvent.call(this, e);
-            }
-        };
-    };
-    const createGlobalStyles = () => {
-        const stylesheet = new CSSStyleSheet();
-        stylesheet.replaceSync(`.sapMPopup-CTX:popover-open { inset: unset; }`);
-        document.adoptedStyleSheets = [...document.adoptedStyleSheets, stylesheet];
-    };
-    const patchPopup = (Popup) => {
-        patchOpen(Popup); // Popup.prototype.open
-        patchClosed(Popup); // Popup.prototype._closed
-        createGlobalStyles(); // Ensures correct popover positioning by OpenUI5 (otherwise 0,0 is the center of the screen)
-        patchFocusEvent(Popup); // Popup.prototype.onFocusEvent
-    };
-
-    class OpenUI5Support {
-        static isAtLeastVersion116() {
-            if (!window.sap.ui.version) {
-                return true; // sap.ui.version will be removed in newer OpenUI5 versions
-            }
-            const version = window.sap.ui.version;
-            const parts = version.split(".");
-            if (!parts || parts.length < 2) {
-                return false;
-            }
-            return parseInt(parts[0]) > 1 || parseInt(parts[1]) >= 116;
-        }
-        static isOpenUI5Detected() {
-            return typeof window.sap?.ui?.require === "function";
-        }
-        static init() {
-            if (!OpenUI5Support.isOpenUI5Detected()) {
-                return Promise.resolve();
-            }
-            return new Promise(resolve => {
-                window.sap.ui.require(["sap/ui/core/Core"], async (Core) => {
-                    const callback = () => {
-                        let deps = ["sap/ui/core/Popup", "sap/ui/core/Patcher", "sap/ui/core/LocaleData"];
-                        if (OpenUI5Support.isAtLeastVersion116()) { // for versions since 1.116.0 and onward, use the modular core
-                            deps = [
-                                ...deps,
-                                "sap/base/i18n/Formatting",
-                                "sap/base/i18n/Localization",
-                                "sap/ui/core/ControlBehavior",
-                                "sap/ui/core/Theming",
-                                "sap/ui/core/date/CalendarUtils",
-                            ];
-                        }
-                        window.sap.ui.require(deps, (Popup, Patcher) => {
-                            patchPatcher(Patcher);
-                            patchPopup(Popup);
-                            resolve();
-                        });
-                    };
-                    if (OpenUI5Support.isAtLeastVersion116()) {
-                        await Core.ready();
-                        callback();
-                    }
-                    else {
-                        Core.attachInit(callback);
-                    }
-                });
-            });
-        }
-        static getConfigurationSettingsObject() {
-            if (!OpenUI5Support.isOpenUI5Detected()) {
-                return {};
-            }
-            if (OpenUI5Support.isAtLeastVersion116()) {
-                const ControlBehavior = window.sap.ui.require("sap/ui/core/ControlBehavior");
-                const Localization = window.sap.ui.require("sap/base/i18n/Localization");
-                const Theming = window.sap.ui.require("sap/ui/core/Theming");
-                const Formatting = window.sap.ui.require("sap/base/i18n/Formatting");
-                const CalendarUtils = window.sap.ui.require("sap/ui/core/date/CalendarUtils");
-                return {
-                    animationMode: ControlBehavior.getAnimationMode(),
-                    language: Localization.getLanguage(),
-                    theme: Theming.getTheme(),
-                    themeRoot: Theming.getThemeRoot(),
-                    rtl: Localization.getRTL(),
-                    timezone: Localization.getTimezone(),
-                    calendarType: Formatting.getCalendarType(),
-                    formatSettings: {
-                        firstDayOfWeek: CalendarUtils.getWeekConfigurationValues().firstDayOfWeek,
-                        legacyDateCalendarCustomizing: Formatting.getCustomIslamicCalendarData?.()
-                            ?? Formatting.getLegacyDateCalendarCustomizing?.(),
-                    },
-                };
-            }
-            const Core = window.sap.ui.require("sap/ui/core/Core");
-            const config = Core.getConfiguration();
-            const LocaleData = window.sap.ui.require("sap/ui/core/LocaleData");
-            return {
-                animationMode: config.getAnimationMode(),
-                language: config.getLanguage(),
-                theme: config.getTheme(),
-                themeRoot: config.getThemeRoot(),
-                rtl: config.getRTL(),
-                timezone: config.getTimezone(),
-                calendarType: config.getCalendarType(),
-                formatSettings: {
-                    firstDayOfWeek: LocaleData ? LocaleData.getInstance(config.getLocale()).getFirstDayOfWeek() : undefined,
-                    legacyDateCalendarCustomizing: config.getFormatSettings().getLegacyDateCalendarCustomizing(),
-                },
-            };
-        }
-        static getLocaleDataObject() {
-            if (!OpenUI5Support.isOpenUI5Detected()) {
-                return;
-            }
-            const LocaleData = window.sap.ui.require("sap/ui/core/LocaleData");
-            if (OpenUI5Support.isAtLeastVersion116()) {
-                const Localization = window.sap.ui.require("sap/base/i18n/Localization");
-                return LocaleData.getInstance(Localization.getLanguageTag())._get();
-            }
-            const Core = window.sap.ui.require("sap/ui/core/Core");
-            const config = Core.getConfiguration();
-            return LocaleData.getInstance(config.getLocale())._get();
-        }
-        static _listenForThemeChange() {
-            if (OpenUI5Support.isAtLeastVersion116()) {
-                const Theming = window.sap.ui.require("sap/ui/core/Theming");
-                Theming.attachApplied(() => {
-                    setTheme(Theming.getTheme());
-                });
-            }
-            else {
-                const Core = window.sap.ui.require("sap/ui/core/Core");
-                const config = Core.getConfiguration();
-                Core.attachThemeChanged(() => {
-                    setTheme(config.getTheme());
-                });
-            }
-        }
-        static attachListeners() {
-            if (!OpenUI5Support.isOpenUI5Detected()) {
-                return;
-            }
-            OpenUI5Support._listenForThemeChange();
-        }
-        static cssVariablesLoaded() {
-            if (!OpenUI5Support.isOpenUI5Detected()) {
-                return;
-            }
-            const link = [...document.head.children].find(el => el.id === "sap-ui-theme-sap.ui.core"); // more reliable than querySelector early
-            if (!link) {
-                return false;
-            }
-            return !!link.href.match(/\/css(-|_)variables\.css/);
-        }
-    }
-    registerFeature("OpenUI5Support", OpenUI5Support);
-
-    /**
-     * @license
-     * Copyright 2020 Google LLC
-     * SPDX-License-Identifier: BSD-3-Clause
-     */const e=Symbol.for(""),l=t=>{if((null==t?void 0:t.r)===e)return null==t?void 0:t._$litStatic$},o=t=>({_$litStatic$:t,r:e}),s=new Map,a=t=>(r,...e)=>{const o=e.length;let i,a;const n=[],u=[];let c,$=0,f=!1;for(;$<o;){for(c=r[$];$<o&&void 0!==(a=e[$],i=l(a));)c+=i+r[++$],f=!0;$!==o&&u.push(a),n.push(c),$++;}if($===o&&n.push(r[o]),f){const t=n.join("$$lit$$");void 0===(r=s.get(t))&&(n.raw=n,s.set(t,r=n)),e=u;}return t(r,...e)},n=a(x),u=a(b);
-
-    class LitStatic {
-    }
-    LitStatic.html = n;
-    LitStatic.svg = u;
-    LitStatic.unsafeStatic = o;
-    registerFeature("LitStatic", LitStatic);
-
-    // Fixed with https://github.com/SAP/openui5/commit/7a4615e3fe55221ae9de9d876d3eed209f71a5b1 in UI5 1.128.0
-
-
-    WebComponentRenderer.renderAttributeProperties = function (oRm, oWebComponent) {
-    	var oAttrProperties = oWebComponent.getMetadata().getPropertiesByMapping("property");
-    	// ##### MODIFICATION START #####
-    	var aPropsToAlwaysSet = ["enabled"].concat(
-    		Object.entries(oWebComponent.getMetadata().getPropertyDefaults()).map(([key, value]) => {
-    			return value !== undefined && value !== false ? key : null;
-    		})
-    	); // some properties can be initial and still have a non-default value due to side effects (e.g. EnabledPropagator)
-    	// ##### MODIFICATION END #####
-    	for (var sPropName in oAttrProperties) {
-    		if (oWebComponent.isPropertyInitial(sPropName) && !aPropsToAlwaysSet.includes(sPropName)) {
-    			continue; // do not set attributes for properties that were not explicitly set or bound
-    		}
-
-    		var oPropData = oAttrProperties[sPropName];
-    		var vPropValue = oPropData.get(oWebComponent);
-    		if (oPropData.type === "object" || typeof vPropValue === "object") {
-    			continue; // Properties of type "object" and custom-type properties with object values are set during onAfterRendering
-    		}
-
-    		var sAttrName = oPropData._sMapTo ? oPropData._sMapTo : hyphenate(sPropName);
-    		if (oPropData._fnMappingFormatter) {
-    			vPropValue = oWebComponent[oPropData._fnMappingFormatter].call(oWebComponent, vPropValue);
-    		}
-
-    		if (oPropData.type === "boolean") {
-    			if (vPropValue) {
-    				oRm.attr(sAttrName, "");
-    			}
-    		} else {
-    			if (vPropValue != null) {
-    				oRm.attr(sAttrName, vPropValue);
-    			}
-    		}
-    	}
-    };
-    setCustomElementsScopingSuffix("mYsCoPeSuFfIx");
-
-    const pkg$1 = {
-    	"_ui5metadata": {
-      "name": "@ui5/webcomponents-base",
-      "version": "2.1.2",
-      "dependencies": [
-        "sap.ui.core"
-      ],
-      "types": [
-        "@ui5/webcomponents-base.AnimationMode",
-        "@ui5/webcomponents-base.AriaHasPopup",
-        "@ui5/webcomponents-base.AriaRole",
-        "@ui5/webcomponents-base.CalendarType",
-        "@ui5/webcomponents-base.ItemNavigationBehavior",
-        "@ui5/webcomponents-base.MovePlacement",
-        "@ui5/webcomponents-base.NavigationMode",
-        "@ui5/webcomponents-base.ValueState"
-      ],
-      "interfaces": [],
-      "controls": [],
-      "elements": []
-    }
-    };
-
-    pkg$1["AnimationMode"] = {
-    	"Full": "Full",
-    	"Basic": "Basic",
-    	"Minimal": "Minimal",
-    	"None": "None",
-    };
-    DataType.registerEnum("@ui5/webcomponents-base.AnimationMode", pkg$1["AnimationMode"]);
-    pkg$1["AriaHasPopup"] = {
-    	"Dialog": "Dialog",
-    	"Grid": "Grid",
-    	"ListBox": "ListBox",
-    	"Menu": "Menu",
-    	"Tree": "Tree",
-    };
-    DataType.registerEnum("@ui5/webcomponents-base.AriaHasPopup", pkg$1["AriaHasPopup"]);
-    pkg$1["AriaRole"] = {
-    	"AlertDialog": "AlertDialog",
-    	"Button": "Button",
-    	"Dialog": "Dialog",
-    	"Link": "Link",
-    };
-    DataType.registerEnum("@ui5/webcomponents-base.AriaRole", pkg$1["AriaRole"]);
-    pkg$1["CalendarType"] = {
-    	"Gregorian": "Gregorian",
-    	"Islamic": "Islamic",
-    	"Japanese": "Japanese",
-    	"Buddhist": "Buddhist",
-    	"Persian": "Persian",
-    };
-    DataType.registerEnum("@ui5/webcomponents-base.CalendarType", pkg$1["CalendarType"]);
-    pkg$1["ItemNavigationBehavior"] = {
-    	"Static": "Static",
-    	"Cyclic": "Cyclic",
-    };
-    DataType.registerEnum("@ui5/webcomponents-base.ItemNavigationBehavior", pkg$1["ItemNavigationBehavior"]);
-    pkg$1["MovePlacement"] = {
-    	"On": "On",
-    	"Before": "Before",
-    	"After": "After",
-    };
-    DataType.registerEnum("@ui5/webcomponents-base.MovePlacement", pkg$1["MovePlacement"]);
-    pkg$1["NavigationMode"] = {
-    	"Auto": "Auto",
-    	"Vertical": "Vertical",
-    	"Horizontal": "Horizontal",
-    	"Paging": "Paging",
-    };
-    DataType.registerEnum("@ui5/webcomponents-base.NavigationMode", pkg$1["NavigationMode"]);
-    pkg$1["ValueState"] = {
-    	"None": "None",
-    	"Positive": "Positive",
-    	"Critical": "Critical",
-    	"Negative": "Negative",
-    	"Information": "Information",
-    };
-    DataType.registerEnum("@ui5/webcomponents-base.ValueState", pkg$1["ValueState"]);
-
-    const pkg = {
-    	"_ui5metadata": {
-      "name": "@ui5/webcomponents",
-      "version": "2.1.2",
-      "dependencies": [
-        "sap.ui.core"
-      ],
-      "types": [
-        "@ui5/webcomponents.AvatarColorScheme",
-        "@ui5/webcomponents.AvatarGroupType",
-        "@ui5/webcomponents.AvatarShape",
-        "@ui5/webcomponents.AvatarSize",
-        "@ui5/webcomponents.BackgroundDesign",
-        "@ui5/webcomponents.BarDesign",
-        "@ui5/webcomponents.BorderDesign",
-        "@ui5/webcomponents.BreadcrumbsDesign",
-        "@ui5/webcomponents.BreadcrumbsSeparator",
-        "@ui5/webcomponents.BusyIndicatorSize",
-        "@ui5/webcomponents.BusyIndicatorTextPlacement",
-        "@ui5/webcomponents.ButtonAccessibleRole",
-        "@ui5/webcomponents.ButtonDesign",
-        "@ui5/webcomponents.ButtonType",
-        "@ui5/webcomponents.CalendarLegendItemType",
-        "@ui5/webcomponents.CalendarSelectionMode",
-        "@ui5/webcomponents.CarouselArrowsPlacement",
-        "@ui5/webcomponents.CarouselPageIndicatorType",
-        "@ui5/webcomponents.ComboBoxFilter",
-        "@ui5/webcomponents.FormItemSpacing",
-        "@ui5/webcomponents.Highlight",
-        "@ui5/webcomponents.IconDesign",
-        "@ui5/webcomponents.IconMode",
-        "@ui5/webcomponents.InputType",
-        "@ui5/webcomponents.LinkAccessibleRole",
-        "@ui5/webcomponents.LinkDesign",
-        "@ui5/webcomponents.ListAccessibleRole",
-        "@ui5/webcomponents.ListGrowingMode",
-        "@ui5/webcomponents.ListItemAccessibleRole",
-        "@ui5/webcomponents.ListItemType",
-        "@ui5/webcomponents.ListSelectionMode",
-        "@ui5/webcomponents.ListSeparator",
-        "@ui5/webcomponents.MessageStripDesign",
-        "@ui5/webcomponents.OverflowMode",
-        "@ui5/webcomponents.PanelAccessibleRole",
-        "@ui5/webcomponents.PopoverHorizontalAlign",
-        "@ui5/webcomponents.PopoverPlacement",
-        "@ui5/webcomponents.PopoverVerticalAlign",
-        "@ui5/webcomponents.PopupAccessibleRole",
-        "@ui5/webcomponents.Priority",
-        "@ui5/webcomponents.SegmentedButtonSelectionMode",
-        "@ui5/webcomponents.SemanticColor",
-        "@ui5/webcomponents.SwitchDesign",
-        "@ui5/webcomponents.TabLayout",
-        "@ui5/webcomponents.TableGrowingMode",
-        "@ui5/webcomponents.TableOverflowMode",
-        "@ui5/webcomponents.TableSelectionMode",
-        "@ui5/webcomponents.TagDesign",
-        "@ui5/webcomponents.TagSize",
-        "@ui5/webcomponents.TitleLevel",
-        "@ui5/webcomponents.ToastPlacement",
-        "@ui5/webcomponents.ToolbarAlign",
-        "@ui5/webcomponents.ToolbarDesign",
-        "@ui5/webcomponents.ToolbarItemOverflowBehavior",
-        "@ui5/webcomponents.WrappingType"
-      ],
-      "interfaces": [],
-      "controls": [
-        "@ui5/webcomponents.Avatar",
-        "@ui5/webcomponents.AvatarGroup",
-        "@ui5/webcomponents.Bar",
-        "@ui5/webcomponents.Breadcrumbs",
-        "@ui5/webcomponents.BreadcrumbsItem",
-        "@ui5/webcomponents.BusyIndicator",
-        "@ui5/webcomponents.Button",
-        "@ui5/webcomponents.Calendar",
-        "@ui5/webcomponents.CalendarDate",
-        "@ui5/webcomponents.CalendarDateRange",
-        "@ui5/webcomponents.CalendarLegend",
-        "@ui5/webcomponents.CalendarLegendItem",
-        "@ui5/webcomponents.Card",
-        "@ui5/webcomponents.CardHeader",
-        "@ui5/webcomponents.Carousel",
-        "@ui5/webcomponents.CheckBox",
-        "@ui5/webcomponents.ColorPalette",
-        "@ui5/webcomponents.ColorPaletteItem",
-        "@ui5/webcomponents.ColorPalettePopover",
-        "@ui5/webcomponents.ColorPicker",
-        "@ui5/webcomponents.ComboBox",
-        "@ui5/webcomponents.ComboBoxItem",
-        "@ui5/webcomponents.ComboBoxItemGroup",
-        "@ui5/webcomponents.DatePicker",
-        "@ui5/webcomponents.DateRangePicker",
-        "@ui5/webcomponents.DateTimePicker",
-        "@ui5/webcomponents.Dialog",
-        "@ui5/webcomponents.FileUploader",
-        "@ui5/webcomponents.Form",
-        "@ui5/webcomponents.FormGroup",
-        "@ui5/webcomponents.FormItem",
-        "@ui5/webcomponents.Icon",
-        "@ui5/webcomponents.Input",
-        "@ui5/webcomponents.Label",
-        "@ui5/webcomponents.Link",
-        "@ui5/webcomponents.List",
-        "@ui5/webcomponents.ListItemCustom",
-        "@ui5/webcomponents.ListItemGroup",
-        "@ui5/webcomponents.ListItemStandard",
-        "@ui5/webcomponents.Menu",
-        "@ui5/webcomponents.MenuItem",
-        "@ui5/webcomponents.MenuSeparator",
-        "@ui5/webcomponents.MessageStrip",
-        "@ui5/webcomponents.MultiComboBox",
-        "@ui5/webcomponents.MultiComboBoxItem",
-        "@ui5/webcomponents.MultiComboBoxItemGroup",
-        "@ui5/webcomponents.MultiInput",
-        "@ui5/webcomponents.Option",
-        "@ui5/webcomponents.OptionCustom",
-        "@ui5/webcomponents.Panel",
-        "@ui5/webcomponents.Popover",
-        "@ui5/webcomponents.ProgressIndicator",
-        "@ui5/webcomponents.RadioButton",
-        "@ui5/webcomponents.RangeSlider",
-        "@ui5/webcomponents.RatingIndicator",
-        "@ui5/webcomponents.ResponsivePopover",
-        "@ui5/webcomponents.SegmentedButton",
-        "@ui5/webcomponents.SegmentedButtonItem",
-        "@ui5/webcomponents.Select",
-        "@ui5/webcomponents.Slider",
-        "@ui5/webcomponents.SpecialCalendarDate",
-        "@ui5/webcomponents.SplitButton",
-        "@ui5/webcomponents.StepInput",
-        "@ui5/webcomponents.SuggestionItem",
-        "@ui5/webcomponents.SuggestionItemCustom",
-        "@ui5/webcomponents.SuggestionItemGroup",
-        "@ui5/webcomponents.Switch",
-        "@ui5/webcomponents.Tab",
-        "@ui5/webcomponents.TabContainer",
-        "@ui5/webcomponents.TabSeparator",
-        "@ui5/webcomponents.Table",
-        "@ui5/webcomponents.TableCell",
-        "@ui5/webcomponents.TableGrowing",
-        "@ui5/webcomponents.TableHeaderCell",
-        "@ui5/webcomponents.TableHeaderRow",
-        "@ui5/webcomponents.TableRow",
-        "@ui5/webcomponents.TableSelection",
-        "@ui5/webcomponents.Tag",
-        "@ui5/webcomponents.Text",
-        "@ui5/webcomponents.TextArea",
-        "@ui5/webcomponents.TimePicker",
-        "@ui5/webcomponents.Title",
-        "@ui5/webcomponents.Toast",
-        "@ui5/webcomponents.ToggleButton",
-        "@ui5/webcomponents.Token",
-        "@ui5/webcomponents.Tokenizer",
-        "@ui5/webcomponents.Toolbar",
-        "@ui5/webcomponents.ToolbarButton",
-        "@ui5/webcomponents.ToolbarSelect",
-        "@ui5/webcomponents.ToolbarSelectOption",
-        "@ui5/webcomponents.ToolbarSeparator",
-        "@ui5/webcomponents.ToolbarSpacer",
-        "@ui5/webcomponents.Tree",
-        "@ui5/webcomponents.TreeItem",
-        "@ui5/webcomponents.TreeItemCustom"
-      ],
-      "elements": []
-    }
-    };
-
-    pkg["AvatarColorScheme"] = {
-    	"Accent1": "Accent1",
-    	"Accent2": "Accent2",
-    	"Accent3": "Accent3",
-    	"Accent4": "Accent4",
-    	"Accent5": "Accent5",
-    	"Accent6": "Accent6",
-    	"Accent7": "Accent7",
-    	"Accent8": "Accent8",
-    	"Accent9": "Accent9",
-    	"Accent10": "Accent10",
-    	"Placeholder": "Placeholder",
-    };
-    DataType.registerEnum("@ui5/webcomponents.AvatarColorScheme", pkg["AvatarColorScheme"]);
-    pkg["AvatarGroupType"] = {
-    	"Group": "Group",
-    	"Individual": "Individual",
-    };
-    DataType.registerEnum("@ui5/webcomponents.AvatarGroupType", pkg["AvatarGroupType"]);
-    pkg["AvatarShape"] = {
-    	"Circle": "Circle",
-    	"Square": "Square",
-    };
-    DataType.registerEnum("@ui5/webcomponents.AvatarShape", pkg["AvatarShape"]);
-    pkg["AvatarSize"] = {
-    	"XS": "XS",
-    	"S": "S",
-    	"M": "M",
-    	"L": "L",
-    	"XL": "XL",
-    };
-    DataType.registerEnum("@ui5/webcomponents.AvatarSize", pkg["AvatarSize"]);
-    pkg["BackgroundDesign"] = {
-    	"Solid": "Solid",
-    	"Transparent": "Transparent",
-    	"Translucent": "Translucent",
-    };
-    DataType.registerEnum("@ui5/webcomponents.BackgroundDesign", pkg["BackgroundDesign"]);
-    pkg["BarDesign"] = {
-    	"Header": "Header",
-    	"Subheader": "Subheader",
-    	"Footer": "Footer",
-    	"FloatingFooter": "FloatingFooter",
-    };
-    DataType.registerEnum("@ui5/webcomponents.BarDesign", pkg["BarDesign"]);
-    pkg["BorderDesign"] = {
-    	"Solid": "Solid",
-    	"None": "None",
-    };
-    DataType.registerEnum("@ui5/webcomponents.BorderDesign", pkg["BorderDesign"]);
-    pkg["BreadcrumbsDesign"] = {
-    	"Standard": "Standard",
-    	"NoCurrentPage": "NoCurrentPage",
-    };
-    DataType.registerEnum("@ui5/webcomponents.BreadcrumbsDesign", pkg["BreadcrumbsDesign"]);
-    pkg["BreadcrumbsSeparator"] = {
-    	"Slash": "Slash",
-    	"BackSlash": "BackSlash",
-    	"DoubleBackSlash": "DoubleBackSlash",
-    	"DoubleGreaterThan": "DoubleGreaterThan",
-    	"DoubleSlash": "DoubleSlash",
-    	"GreaterThan": "GreaterThan",
-    };
-    DataType.registerEnum("@ui5/webcomponents.BreadcrumbsSeparator", pkg["BreadcrumbsSeparator"]);
-    pkg["BusyIndicatorSize"] = {
-    	"S": "S",
-    	"M": "M",
-    	"L": "L",
-    };
-    DataType.registerEnum("@ui5/webcomponents.BusyIndicatorSize", pkg["BusyIndicatorSize"]);
-    pkg["BusyIndicatorTextPlacement"] = {
-    	"Top": "Top",
-    	"Bottom": "Bottom",
-    };
-    DataType.registerEnum("@ui5/webcomponents.BusyIndicatorTextPlacement", pkg["BusyIndicatorTextPlacement"]);
-    pkg["ButtonAccessibleRole"] = {
-    	"Button": "Button",
-    	"Link": "Link",
-    };
-    DataType.registerEnum("@ui5/webcomponents.ButtonAccessibleRole", pkg["ButtonAccessibleRole"]);
-    pkg["ButtonDesign"] = {
-    	"Default": "Default",
-    	"Positive": "Positive",
-    	"Negative": "Negative",
-    	"Transparent": "Transparent",
-    	"Emphasized": "Emphasized",
-    	"Attention": "Attention",
-    };
-    DataType.registerEnum("@ui5/webcomponents.ButtonDesign", pkg["ButtonDesign"]);
-    pkg["ButtonType"] = {
-    	"Button": "Button",
-    	"Submit": "Submit",
-    	"Reset": "Reset",
-    };
-    DataType.registerEnum("@ui5/webcomponents.ButtonType", pkg["ButtonType"]);
-    pkg["CalendarLegendItemType"] = {
-    	"None": "None",
-    	"Working": "Working",
-    	"NonWorking": "NonWorking",
-    	"Type01": "Type01",
-    	"Type02": "Type02",
-    	"Type03": "Type03",
-    	"Type04": "Type04",
-    	"Type05": "Type05",
-    	"Type06": "Type06",
-    	"Type07": "Type07",
-    	"Type08": "Type08",
-    	"Type09": "Type09",
-    	"Type10": "Type10",
-    	"Type11": "Type11",
-    	"Type12": "Type12",
-    	"Type13": "Type13",
-    	"Type14": "Type14",
-    	"Type15": "Type15",
-    	"Type16": "Type16",
-    	"Type17": "Type17",
-    	"Type18": "Type18",
-    	"Type19": "Type19",
-    	"Type20": "Type20",
-    };
-    DataType.registerEnum("@ui5/webcomponents.CalendarLegendItemType", pkg["CalendarLegendItemType"]);
-    pkg["CalendarSelectionMode"] = {
-    	"Single": "Single",
-    	"Multiple": "Multiple",
-    	"Range": "Range",
-    };
-    DataType.registerEnum("@ui5/webcomponents.CalendarSelectionMode", pkg["CalendarSelectionMode"]);
-    pkg["CarouselArrowsPlacement"] = {
-    	"Content": "Content",
-    	"Navigation": "Navigation",
-    };
-    DataType.registerEnum("@ui5/webcomponents.CarouselArrowsPlacement", pkg["CarouselArrowsPlacement"]);
-    pkg["CarouselPageIndicatorType"] = {
-    	"Default": "Default",
-    	"Numeric": "Numeric",
-    };
-    DataType.registerEnum("@ui5/webcomponents.CarouselPageIndicatorType", pkg["CarouselPageIndicatorType"]);
-    pkg["ComboBoxFilter"] = {
-    	"StartsWithPerTerm": "StartsWithPerTerm",
-    	"StartsWith": "StartsWith",
-    	"Contains": "Contains",
-    	"None": "None",
-    };
-    DataType.registerEnum("@ui5/webcomponents.ComboBoxFilter", pkg["ComboBoxFilter"]);
-    pkg["FormItemSpacing"] = {
-    	"Normal": "Normal",
-    	"Large": "Large",
-    };
-    DataType.registerEnum("@ui5/webcomponents.FormItemSpacing", pkg["FormItemSpacing"]);
-    pkg["Highlight"] = {
-    	"None": "None",
-    	"Positive": "Positive",
-    	"Critical": "Critical",
-    	"Negative": "Negative",
-    	"Information": "Information",
-    };
-    DataType.registerEnum("@ui5/webcomponents.Highlight", pkg["Highlight"]);
-    pkg["IconDesign"] = {
-    	"Contrast": "Contrast",
-    	"Critical": "Critical",
-    	"Default": "Default",
-    	"Information": "Information",
-    	"Negative": "Negative",
-    	"Neutral": "Neutral",
-    	"NonInteractive": "NonInteractive",
-    	"Positive": "Positive",
-    };
-    DataType.registerEnum("@ui5/webcomponents.IconDesign", pkg["IconDesign"]);
-    pkg["IconMode"] = {
-    	"Image": "Image",
-    	"Decorative": "Decorative",
-    	"Interactive": "Interactive",
-    };
-    DataType.registerEnum("@ui5/webcomponents.IconMode", pkg["IconMode"]);
-    pkg["InputType"] = {
-    	"Text": "Text",
-    	"Email": "Email",
-    	"Number": "Number",
-    	"Password": "Password",
-    	"Tel": "Tel",
-    	"URL": "URL",
-    	"Search": "Search",
-    };
-    DataType.registerEnum("@ui5/webcomponents.InputType", pkg["InputType"]);
-    pkg["LinkAccessibleRole"] = {
-    	"Link": "Link",
-    	"Button": "Button",
-    };
-    DataType.registerEnum("@ui5/webcomponents.LinkAccessibleRole", pkg["LinkAccessibleRole"]);
-    pkg["LinkDesign"] = {
-    	"Default": "Default",
-    	"Subtle": "Subtle",
-    	"Emphasized": "Emphasized",
-    };
-    DataType.registerEnum("@ui5/webcomponents.LinkDesign", pkg["LinkDesign"]);
-    pkg["ListAccessibleRole"] = {
-    	"List": "List",
-    	"Menu": "Menu",
-    	"Tree": "Tree",
-    	"ListBox": "ListBox",
-    };
-    DataType.registerEnum("@ui5/webcomponents.ListAccessibleRole", pkg["ListAccessibleRole"]);
-    pkg["ListGrowingMode"] = {
-    	"Button": "Button",
-    	"Scroll": "Scroll",
-    	"None": "None",
-    };
-    DataType.registerEnum("@ui5/webcomponents.ListGrowingMode", pkg["ListGrowingMode"]);
-    pkg["ListItemAccessibleRole"] = {
-    	"ListItem": "ListItem",
-    	"MenuItem": "MenuItem",
-    	"TreeItem": "TreeItem",
-    	"Option": "Option",
-    	"None": "None",
-    };
-    DataType.registerEnum("@ui5/webcomponents.ListItemAccessibleRole", pkg["ListItemAccessibleRole"]);
-    pkg["ListItemType"] = {
-    	"Inactive": "Inactive",
-    	"Active": "Active",
-    	"Detail": "Detail",
-    	"Navigation": "Navigation",
-    };
-    DataType.registerEnum("@ui5/webcomponents.ListItemType", pkg["ListItemType"]);
-    pkg["ListSelectionMode"] = {
-    	"None": "None",
-    	"Single": "Single",
-    	"SingleStart": "SingleStart",
-    	"SingleEnd": "SingleEnd",
-    	"SingleAuto": "SingleAuto",
-    	"Multiple": "Multiple",
-    	"Delete": "Delete",
-    };
-    DataType.registerEnum("@ui5/webcomponents.ListSelectionMode", pkg["ListSelectionMode"]);
-    pkg["ListSeparator"] = {
-    	"All": "All",
-    	"Inner": "Inner",
-    	"None": "None",
-    };
-    DataType.registerEnum("@ui5/webcomponents.ListSeparator", pkg["ListSeparator"]);
-    pkg["MessageStripDesign"] = {
-    	"Information": "Information",
-    	"Positive": "Positive",
-    	"Negative": "Negative",
-    	"Critical": "Critical",
-    	"ColorSet1": "ColorSet1",
-    	"ColorSet2": "ColorSet2",
-    };
-    DataType.registerEnum("@ui5/webcomponents.MessageStripDesign", pkg["MessageStripDesign"]);
-    pkg["OverflowMode"] = {
-    	"End": "End",
-    	"StartAndEnd": "StartAndEnd",
-    };
-    DataType.registerEnum("@ui5/webcomponents.OverflowMode", pkg["OverflowMode"]);
-    pkg["PanelAccessibleRole"] = {
-    	"Complementary": "Complementary",
-    	"Form": "Form",
-    	"Region": "Region",
-    };
-    DataType.registerEnum("@ui5/webcomponents.PanelAccessibleRole", pkg["PanelAccessibleRole"]);
-    pkg["PopoverHorizontalAlign"] = {
-    	"Center": "Center",
-    	"Start": "Start",
-    	"End": "End",
-    	"Stretch": "Stretch",
-    };
-    DataType.registerEnum("@ui5/webcomponents.PopoverHorizontalAlign", pkg["PopoverHorizontalAlign"]);
-    pkg["PopoverPlacement"] = {
-    	"Start": "Start",
-    	"End": "End",
-    	"Top": "Top",
-    	"Bottom": "Bottom",
-    };
-    DataType.registerEnum("@ui5/webcomponents.PopoverPlacement", pkg["PopoverPlacement"]);
-    pkg["PopoverVerticalAlign"] = {
-    	"Center": "Center",
-    	"Top": "Top",
-    	"Bottom": "Bottom",
-    	"Stretch": "Stretch",
-    };
-    DataType.registerEnum("@ui5/webcomponents.PopoverVerticalAlign", pkg["PopoverVerticalAlign"]);
-    pkg["PopupAccessibleRole"] = {
-    	"None": "None",
-    	"Dialog": "Dialog",
-    	"AlertDialog": "AlertDialog",
-    };
-    DataType.registerEnum("@ui5/webcomponents.PopupAccessibleRole", pkg["PopupAccessibleRole"]);
-    pkg["Priority"] = {
-    	"High": "High",
-    	"Medium": "Medium",
-    	"Low": "Low",
-    	"None": "None",
-    };
-    DataType.registerEnum("@ui5/webcomponents.Priority", pkg["Priority"]);
-    pkg["SegmentedButtonSelectionMode"] = {
-    	"Single": "Single",
-    	"Multiple": "Multiple",
-    };
-    DataType.registerEnum("@ui5/webcomponents.SegmentedButtonSelectionMode", pkg["SegmentedButtonSelectionMode"]);
-    pkg["SemanticColor"] = {
-    	"Default": "Default",
-    	"Positive": "Positive",
-    	"Negative": "Negative",
-    	"Critical": "Critical",
-    	"Neutral": "Neutral",
-    };
-    DataType.registerEnum("@ui5/webcomponents.SemanticColor", pkg["SemanticColor"]);
-    pkg["SwitchDesign"] = {
-    	"Textual": "Textual",
-    	"Graphical": "Graphical",
-    };
-    DataType.registerEnum("@ui5/webcomponents.SwitchDesign", pkg["SwitchDesign"]);
-    pkg["TabLayout"] = {
-    	"Inline": "Inline",
-    	"Standard": "Standard",
-    };
-    DataType.registerEnum("@ui5/webcomponents.TabLayout", pkg["TabLayout"]);
-    pkg["TableGrowingMode"] = {
-    	"Button": "Button",
-    	"Scroll": "Scroll",
-    };
-    DataType.registerEnum("@ui5/webcomponents.TableGrowingMode", pkg["TableGrowingMode"]);
-    pkg["TableOverflowMode"] = {
-    	"Scroll": "Scroll",
-    	"Popin": "Popin",
-    };
-    DataType.registerEnum("@ui5/webcomponents.TableOverflowMode", pkg["TableOverflowMode"]);
-    pkg["TableSelectionMode"] = {
-    	"None": "None",
-    	"Single": "Single",
-    	"Multiple": "Multiple",
-    };
-    DataType.registerEnum("@ui5/webcomponents.TableSelectionMode", pkg["TableSelectionMode"]);
-    pkg["TagDesign"] = {
-    	"Set1": "Set1",
-    	"Set2": "Set2",
-    	"Neutral": "Neutral",
-    	"Information": "Information",
-    	"Positive": "Positive",
-    	"Negative": "Negative",
-    	"Critical": "Critical",
-    };
-    DataType.registerEnum("@ui5/webcomponents.TagDesign", pkg["TagDesign"]);
-    pkg["TagSize"] = {
-    	"S": "S",
-    	"L": "L",
-    };
-    DataType.registerEnum("@ui5/webcomponents.TagSize", pkg["TagSize"]);
-    pkg["TitleLevel"] = {
-    	"H1": "H1",
-    	"H2": "H2",
-    	"H3": "H3",
-    	"H4": "H4",
-    	"H5": "H5",
-    	"H6": "H6",
-    };
-    DataType.registerEnum("@ui5/webcomponents.TitleLevel", pkg["TitleLevel"]);
-    pkg["ToastPlacement"] = {
-    	"TopStart": "TopStart",
-    	"TopCenter": "TopCenter",
-    	"TopEnd": "TopEnd",
-    	"MiddleStart": "MiddleStart",
-    	"MiddleCenter": "MiddleCenter",
-    	"MiddleEnd": "MiddleEnd",
-    	"BottomStart": "BottomStart",
-    	"BottomCenter": "BottomCenter",
-    	"BottomEnd": "BottomEnd",
-    };
-    DataType.registerEnum("@ui5/webcomponents.ToastPlacement", pkg["ToastPlacement"]);
-    pkg["ToolbarAlign"] = {
-    	"Start": "Start",
-    	"End": "End",
-    };
-    DataType.registerEnum("@ui5/webcomponents.ToolbarAlign", pkg["ToolbarAlign"]);
-    pkg["ToolbarDesign"] = {
-    	"Solid": "Solid",
-    	"Transparent": "Transparent",
-    };
-    DataType.registerEnum("@ui5/webcomponents.ToolbarDesign", pkg["ToolbarDesign"]);
-    pkg["ToolbarItemOverflowBehavior"] = {
-    	"Default": "Default",
-    	"NeverOverflow": "NeverOverflow",
-    	"AlwaysOverflow": "AlwaysOverflow",
-    };
-    DataType.registerEnum("@ui5/webcomponents.ToolbarItemOverflowBehavior", pkg["ToolbarItemOverflowBehavior"]);
-    pkg["WrappingType"] = {
-    	"None": "None",
-    	"Normal": "Normal",
-    };
-    DataType.registerEnum("@ui5/webcomponents.WrappingType", pkg["WrappingType"]);
 
     var Panel = WebComponentBaseClass.extend("@ui5/webcomponents.Panel", {
       metadata: {

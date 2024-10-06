@@ -4,12 +4,20 @@ import "@ui5/webcomponents-base/dist/features/OpenUI5Support.js";
 import { setCustomElementsScopingSuffix } from "@ui5/webcomponents-base/dist/CustomElementsScope.js";
 setCustomElementsScopingSuffix("{{scopeSuffix}}");
 {{/if}}
-
 {{#if enrichBusyIndicator}}
 import UI5Element from "@ui5/webcomponents-base/dist/UI5Element.js";
 import OpenUI5Enablement from "@ui5/webcomponents-base/dist/features/OpenUI5Enablement.js";
 OpenUI5Enablement.enrichBusyIndicatorSettings(UI5Element);
 {{/if}}
+{{/if}}
+
+{{#if nonUI5TagsToRegister}}
+import { getCustomElementsScopingRules, setCustomElementsScopingRules } from "@ui5/webcomponents-base/dist/CustomElementsScope.js";
+const scopingRules = getCustomElementsScopingRules();
+{{#each nonUI5TagsToRegister}}
+scopingRules.include.push(/^{{{this}}}$/);
+{{/each}}
+setCustomElementsScopingRules(scopingRules);
 {{/if}}
 
 import { registerEnum } from "sap/ui/base/DataType";

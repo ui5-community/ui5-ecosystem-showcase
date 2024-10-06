@@ -45,6 +45,7 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 	const webcTmplFnPatches = loadAndCompileTemplate("templates/MonkeyPatches.hbs");
 
 	// helper function to load a NPM package and its custom elements metadata
+	const emittedFiles = [];
 	const loadNpmPackage = (npmPackage, emitFile) => {
 		let registryEntry = WebComponentRegistry.getPackage(npmPackage);
 		if (!registryEntry) {
@@ -102,16 +103,22 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 
 					// assign the dependencies
 					registryEntry.dependencies = libraryDependencies;
-
-					// each NPM package has a package module (with a concrete name) that needs to be emitted
-					emitFile({
-						type: "chunk",
-						id: `${npmPackage}`,
-						name: `${npmPackage}`,
-					});
 				}
 			}
 		}
+
+		// we must emit the package module to be able to import it later
+		// files should be emitted only once (emitted files are reset for the next build)
+		if (registryEntry && !emittedFiles.includes(npmPackage)) {
+			// each NPM package has a package module (with a concrete name) that needs to be emitted
+			emitFile({
+				type: "chunk",
+				id: `${npmPackage}`,
+				name: `${npmPackage}`,
+			});
+			emittedFiles.push(npmPackage);
+		}
+
 		return registryEntry;
 	};
 
@@ -223,6 +230,17 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 				};
 				const metadata = JSON.stringify(metadataObject, undefined, 2);
 
+				// create the list of custom elements tags which need to be registered
+				let nonUI5TagsToRegister;
+				if (ui5WebCScopeSuffix) {
+					nonUI5TagsToRegister = Object.values(lib.customElements)
+						.map((element) => element.tagName)
+						.filter((tag) => !tag.startsWith("ui5-"));
+					if (nonUI5TagsToRegister.length === 0) {
+						nonUI5TagsToRegister = undefined;
+					}
+				}
+
 				// generate the library code
 				const code = webcTmplFnPackage({
 					metadata,
@@ -232,6 +250,7 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 					isBaseLib: namespace === "@ui5/webcomponents-base",
 					scopeSuffix: ui5WebCScopeSuffix,
 					enrichBusyIndicator,
+					nonUI5TagsToRegister,
 				});
 				// include the monkey patches for the Web Components base library
 				// only for UI5 versions < 1.128.0 (otherwise the monkey patches are not needed anymore)

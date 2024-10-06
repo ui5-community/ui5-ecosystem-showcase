@@ -92,12 +92,13 @@ class RegistryEntry {
 				if (!superclassRef) {
 					const refPackage = WebComponentRegistry.getPackage(classDef.superclass.package);
 					superclassRef = refPackage?.classes[superclassName];
-					if (!superclassRef) {
-						console.error(`The class '${this.namespace}/${classDef.name}' has an unknown superclass '${classDef.superclass.package}/${superclassName}'!`);
-					}
 				}
-				this.#connectSuperclass(superclassRef);
-				classDef.superclass = superclassRef;
+				if (!superclassRef) {
+					console.error(`The class '${this.namespace}/${classDef.name}' has an unknown superclass '${classDef.superclass.package}/${superclassName}'!`);
+				} else {
+					this.#connectSuperclass(superclassRef);
+					classDef.superclass = superclassRef;
+				}
 			}
 		}
 	}
