@@ -18,6 +18,7 @@ const dynamicImports = require("./rollup-plugin-dynamic-imports");
 const replace = require("@rollup/plugin-replace");
 const transformTopLevelThis = require("./rollup-plugin-transform-top-level-this");
 const webcomponents = require("./rollup-plugin-webcomponents");
+const importMeta = require("./rollup-plugin-import-meta");
 
 const walk = require("ignore-walk");
 const minimatch = require("minimatch");
@@ -338,6 +339,37 @@ function getPackageJson(pkgJsonFile) {
 		packageJsonCache[pkgJsonFile] = pkgJson;
 	}
 	return packageJsonCache[pkgJsonFile];
+}
+
+/**
+ * finds the package.json file for the given module path
+ * @param {string} modulePath the path of the module
+ * @returns {string} the path of the package.json file
+ */
+function findPackageJson(modulePath) {
+	let pkgJsonFile;
+	// lookup the parent dirs recursive to find package.json
+	const nodeModules = `${path.sep}node_modules${path.sep}`;
+	if (modulePath.lastIndexOf(nodeModules) > -1) {
+		const localModuleRootPath = modulePath.substring(0, modulePath.lastIndexOf(nodeModules) + nodeModules.length);
+		const localModuleName = modulePath.substring(localModuleRootPath.length)?.replace(/\\/g, "/");
+		const [, npmPackage] = npmPackageScopeRegEx.exec(localModuleName) || [];
+		pkgJsonFile = path.join(localModuleRootPath, npmPackage, "package.json");
+		if (!existsSyncAndIsFile(pkgJsonFile)) {
+			pkgJsonFile = undefined;
+		}
+	} else {
+		let dir = path.dirname(modulePath);
+		while (dir !== path.dirname(dir)) {
+			const pkgJson = path.join(dir, "package.json");
+			if (existsSyncAndIsFile(pkgJson)) {
+				pkgJsonFile = pkgJson;
+				break;
+			}
+			dir = path.dirname(dir);
+		}
+	}
+	return pkgJsonFile;
 }
 
 // the utiltiy module
@@ -769,26 +801,7 @@ module.exports = function (log, projectInfo) {
 				// for later resolution of the module path (e.g. the mapping in browsers field)
 				if (path.isAbsolute(moduleName)) {
 					// lookup the parent dirs recursive to find package.json
-					const nodeModules = `${path.sep}node_modules${path.sep}`;
-					if (moduleName.lastIndexOf(nodeModules) > -1) {
-						const localModuleRootPath = moduleName.substring(0, moduleName.lastIndexOf(nodeModules) + nodeModules.length);
-						const localModuleName = moduleName.substring(localModuleRootPath.length)?.replace(/\\/g, "/");
-						const [, npmPackage] = npmPackageScopeRegEx.exec(localModuleName) || [];
-						pkgJsonFile = path.join(localModuleRootPath, npmPackage, "package.json");
-						if (!existsSyncAndIsFile(pkgJsonFile)) {
-							pkgJsonFile = undefined;
-						}
-					} else {
-						let dir = path.dirname(moduleName);
-						while (dir !== path.dirname(dir)) {
-							const pkgJson = path.join(dir, "package.json");
-							if (existsSyncAndIsFile(pkgJson)) {
-								pkgJsonFile = pkgJson;
-								break;
-							}
-							dir = path.dirname(dir);
-						}
-					}
+					pkgJsonFile = findPackageJson(moduleName);
 					// the module path is the absolute path (but with file extension)
 					modulePath = getModulePathWithExtension(moduleName);
 					// if the absolute path is not a file we try to lookup the index module
@@ -1006,6 +1019,8 @@ module.exports = function (log, projectInfo) {
 							return that.resolveModule(moduleName, { cwd, depPaths });
 						},
 					}),
+					// handle the import.meta usages (e.g. geomap loading maplibre)
+					importMeta(),
 					// the following plugins must be executed after the
 					// node polyfills are injected and the modules are resolved
 					// to ensure that the modules are properly transformed
@@ -1124,13 +1139,18 @@ module.exports = function (log, projectInfo) {
 				}
 
 				// create a cache key which includes the last modified timestamp and the module names
+				const modules = bundleInfo.getModules();
 				const myLastModified = new Date((await stat(__filename)).mtime).getTime();
 				const cacheKey = createHash("md5")
-					.update(`${myLastModified}:${lastModified}:${moduleNames.sort().join(",")}`)
+					.update(
+						`${myLastModified}:${lastModified}:${modules
+							.map((module) => module.name)
+							.sort()
+							.join(",")}`,
+					)
 					.digest("hex");
 
 				// if modules have been found, we bundle them all in one
-				const modules = bundleInfo.getModules();
 				if (modules.length > 0) {
 					// check whether the module should be built?
 					if (skipCache || !BundleInfoCache.get(cacheKey, bundleCacheOptions)) {
