@@ -61,7 +61,6 @@
     "tui-image-editor": "^3.15.3",
     "ui5-lib": "workspace:^",
     "ui5-module": "workspace:^",
-    "xlsx": "^0.18.5",
     "xml-js": "^1.6.11",
     "zod": "^3.23.8"
   },
@@ -102,6 +101,7 @@
     "ui5-tooling-modules": "workspace:^",
     "ui5-tooling-stringreplace": "workspace:^",
     "ui5-tooling-transpile": "workspace:^",
-    "wdio-ui5-service": "^2"
+    "wdio-ui5-service": "^2",
+    "xlsx": "^0.18.5"
   }
 }

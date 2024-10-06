@@ -105,7 +105,9 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 					Array.from(requestedModules)
 						.filter((mod) => !uniqueModules.has(mod))
 						.forEach((mod) => {
-							log.warn(`Including module "${mod}" to bundle which has been requested dynamically! This module may not be packaged during the build!`);
+							log.warn(
+								`Including module "${mod}" to bundle which has been requested dynamically! This module may not be packaged during the build (please check your dependencies of your package.json, if it is listed in devDependencies make sure to move it into the dependencies section)!`,
+							);
 							modules.push(mod);
 						});
 					return getBundleInfo(modules, config, { cwd, depPaths, isMiddleware: true });

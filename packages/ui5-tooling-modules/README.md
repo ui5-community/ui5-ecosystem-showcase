@@ -107,6 +107,10 @@ The following configuration options are relevant for the `task` and the `middlew
   Re-enables the legacy dependency resolution of the tooling extension which allows to use entry points from `devDependencies` of the project. By default, only the `dependencies` maintained in the projects' `package.json` and the transitive dependencies are considered for the entry points and all other entry points are ignored. (available since new minor version `3.7.0` which introduces a new dependency resolution for `dependencies` only)
   &nbsp;
 
+- *additionalDependencies*: `string[]`
+  List of additional dependency names to include into the bundling. By default all dependencies and their transitive dependencies are considered. In some cases it is useful to also include devDependencies, e.g. when re-packaging a thirdparty package. If you want to exclude this dependency from being a transitive dependency then you can put it into the devDependencies and list it in this configuration option (but keep in mind that this may exclude the dependency from some check tools!)
+  &nbsp;
+
 - *minify*: `boolean` *experimental feature*
   Flag to indicate that the generated code should be minified (in case of excluding thirdparty resources from minification in general, this option can be used to minify just the generated code)
   &nbsp;
