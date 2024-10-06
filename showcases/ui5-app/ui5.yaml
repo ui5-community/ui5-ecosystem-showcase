@@ -77,6 +77,8 @@ builder:
       configuration:
         debug: true
         removeScopePrefix: true
+        additionalDependencies:
+          - "xlsx"
         includeAssets:
           "@octokit/core":
             - "dist-web/*.map"
@@ -221,6 +223,8 @@ server:
       afterMiddleware: ui5-tooling-transpile-middleware
       configuration:
         debug: true
+        additionalDependencies:
+          - "xlsx"
         #skipCache: true
     - name: ui5-tooling-less-middleware
       beforeMiddleware: serveResources

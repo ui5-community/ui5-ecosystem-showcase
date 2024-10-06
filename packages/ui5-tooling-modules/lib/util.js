@@ -203,15 +203,19 @@ function findDependency(dep, cwd = process.cwd(), depPaths = []) {
  * find the dependencies of the current project and its transitive dependencies
  * (excluding devDependencies and providedDependencies)
  * @param {object} options options
- * @param {string} options.cwd current working directory
- * @param {string[]} options.depPaths list of dependency paths
- * @param {boolean} options.linkedOnly find only the linked dependencies
- * @param {string[]} options.knownDeps list of known dependencies
+ * @param {string} [options.cwd] current working directory
+ * @param {string[]} [options.depPaths] list of dependency paths
+ * @param {boolean} [options.linkedOnly] find only the linked dependencies
+ * @param {string[]} [options.additionalDeps] list of additional dependencies (e.g. dev dependencies to inlude)
+ * @param {string[]} [knownDeps] list of known dependencies
  * @returns {string[]} array of dependency root directories
  */
-function findDependencies({ cwd = process.cwd(), depPaths = [], linkedOnly, knownDeps = [] } = {}) {
+function findDependencies({ cwd = process.cwd(), depPaths = [], linkedOnly, additionalDeps = [] } = {}, knownDeps = []) {
 	const pkgJson = getPackageJson(path.join(cwd, "package.json"));
 	let dependencies = Object.keys(pkgJson.dependencies || {});
+	if (additionalDeps?.length > 0) {
+		dependencies = dependencies.concat(additionalDeps);
+	}
 	if (linkedOnly) {
 		dependencies = dependencies.filter((dep) => {
 			return !isValidVersion(pkgJson.dependencies[dep]);
@@ -228,7 +232,7 @@ function findDependencies({ cwd = process.cwd(), depPaths = [], linkedOnly, know
 		let depRoot = depPath && path.dirname(depPath);
 		if (depRoot && depRoots.indexOf(depRoot) === -1) {
 			depRoots.push(depRoot);
-			depRoots.push(...findDependencies({ cwd: depRoot, depPaths, linkedOnly, knownDeps }));
+			depRoots.push(...findDependencies({ cwd: depRoot, depPaths, linkedOnly, additionalDeps }, knownDeps));
 		}
 	}
 	return depRoots;
@@ -400,7 +404,7 @@ module.exports = function (log, projectInfo) {
 			// find the root directories of the dependencies (excludes devDependencies)
 			// since all modules should be declared as dependencies in the package.json
 			let millis = Date.now();
-			const dependencyRoots = !config?.legacyDependencyResolution && findDependencies(cwd, depPaths);
+			const dependencyRoots = !config?.legacyDependencyResolution && findDependencies({ cwd, depPaths, additionalDeps: config.additionalDependencies });
 			log.verbose(`Dependency (${depPaths.length} deps) lookup took ${Date.now() - millis}ms`);
 
 			// find all sources to determine their dependencies

@@ -761,9 +761,6 @@ importers:
       ui5-module:
         specifier: workspace:^
         version: link:../ui5-module
-      xlsx:
-        specifier: ^0.18.5
-        version: 0.18.5
       xml-js:
         specifier: ^1.6.11
         version: 1.6.11
@@ -882,6 +879,9 @@ importers:
       wdio-ui5-service:
         specifier: ^2
         version: 2.0.10(@wdio/cli@8.40.3(devtools@8.40.2(encoding@0.1.13))(encoding@0.1.13))(@wdio/local-runner@8.40.3(devtools@8.40.2(encoding@0.1.13))(encoding@0.1.13))(@wdio/mocha-framework@8.40.3)(@wdio/spec-reporter@8.40.3)(@wdio/types@8.40.3)(encoding@0.1.13)(webdriverio@8.40.3(devtools@8.40.2(encoding@0.1.13))(encoding@0.1.13))
+      xlsx:
+        specifier: ^0.18.5
+        version: 0.18.5
 
   showcases/ui5-app-simple:
     dependencies:
