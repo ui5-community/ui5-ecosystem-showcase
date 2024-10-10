@@ -1,4 +1,4 @@
-sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/core/webc/WebComponent', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponentRenderer', 'sap/ui/base/DataType'], (function (_ui5_webcomponentsBase, _ui5_webcomponents, WebComponentBaseClass, hyphenate, WebComponentRenderer, DataType) { 'use strict';
+sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/core/webc/WebComponent', 'sap/ui/base/DataType'], (function (_ui5_webcomponentsBase, _ui5_webcomponents, WebComponentBaseClass, DataType) { 'use strict';
 
     const kebabToCamelMap = new Map();
     const camelToKebabMap = new Map();

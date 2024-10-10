@@ -1,4 +1,4 @@
-sap.ui.define(['sap/ui/base/DataType', '../webcomponents-base', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponentRenderer'], (function (DataType, _ui5_webcomponentsBase, hyphenate, WebComponentRenderer) { 'use strict';
+sap.ui.define(['sap/ui/base/DataType', '../webcomponents-base'], (function (DataType, _ui5_webcomponentsBase) { 'use strict';
 
 	const pkg = {
 		"_ui5metadata": {
