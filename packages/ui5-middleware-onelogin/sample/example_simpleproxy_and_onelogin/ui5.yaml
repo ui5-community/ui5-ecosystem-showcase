@@ -9,7 +9,7 @@ resources:
 
 framework:
   name: OpenUI5
-  version: "1.127.0"
+  version: "1.129.0"
   libraries:
     - name: sap.m
     - name: sap.ui.core

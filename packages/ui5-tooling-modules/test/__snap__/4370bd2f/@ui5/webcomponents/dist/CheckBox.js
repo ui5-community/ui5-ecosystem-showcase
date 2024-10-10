@@ -1,4 +1,4 @@
-sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/core/webc/WebComponent', 'sap/ui/base/DataType', 'ui5/ecosystem/demo/app/resources/@ui5/webcomponents-base', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponentRenderer'], (function (_ui5_webcomponents, WebComponentBaseClass, DataType, _ui5_webcomponentsBase, hyphenate, WebComponentRenderer) { 'use strict';
+sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/core/webc/WebComponent', 'sap/ui/base/DataType', 'ui5/ecosystem/demo/app/resources/@ui5/webcomponents-base'], (function (_ui5_webcomponents, WebComponentBaseClass, DataType, _ui5_webcomponentsBase) { 'use strict';
 
     const isSSR$2 = typeof document === "undefined";
     const internals = {

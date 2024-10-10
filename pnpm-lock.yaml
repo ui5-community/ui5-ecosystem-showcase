@@ -1028,8 +1028,8 @@ importers:
         specifier: ^3.4.2
         version: 3.4.2
       '@types/openui5':
-        specifier: 1.127.0
-        version: 1.127.0
+        specifier: 1.129.0
+        version: 1.129.0
       '@ui5/cli':
         specifier: ^4.0.6
         version: 4.0.6
@@ -1082,8 +1082,8 @@ importers:
   showcases/ui5-tsapp-simple:
     devDependencies:
       '@types/openui5':
-        specifier: 1.127.0
-        version: 1.127.0
+        specifier: 1.129.0
+        version: 1.129.0
       '@ui5/cli':
         specifier: ^4.0.6
         version: 4.0.6
@@ -1122,8 +1122,8 @@ importers:
         version: 2.1.2
     devDependencies:
       '@types/openui5':
-        specifier: 1.127.0
-        version: 1.127.0
+        specifier: 1.129.0
+        version: 1.129.0
       '@ui5/cli':
         specifier: ^4.0.6
         version: 4.0.6
@@ -1158,8 +1158,8 @@ importers:
   showcases/ui5-tslib:
     devDependencies:
       '@types/openui5':
-        specifier: 1.127.0
-        version: 1.127.0
+        specifier: 1.129.0
+        version: 1.129.0
       '@ui5/cli':
         specifier: ^4.0.6
         version: 4.0.6
@@ -2946,8 +2946,8 @@ packages:
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
 
-  '@types/openui5@1.127.0':
-    resolution: {integrity: sha512-MIauyuHgaNnN7PDMZ71vS9XqpVlo0tXL6EaMhdmNjQTMblm6IJxlmOz0UX1BkdJwGKIA2rVE+2WGz6xn7ndJaQ==}
+  '@types/openui5@1.129.0':
+    resolution: {integrity: sha512-OLh8+uOAd0Qq6BiDRy2NnIeKMrwHwdSBi9YGwalU0xLQxZav2G6lYcP8nMOs61Z4aCE+Ae5sEjYoCizJ+fqJ6g==}
 
   '@types/phoenix@1.6.5':
     resolution: {integrity: sha512-xegpDuR+z0UqG9fwHqNoy3rI7JDlvaPh2TY47Fl80oq6g+hXT+c/LEuE43X48clZ6lOfANl5WrPur9fYO1RJ/w==}
@@ -12010,7 +12010,7 @@ snapshots:
 
   '@types/normalize-package-data@2.4.4': {}
 
-  '@types/openui5@1.127.0':
+  '@types/openui5@1.129.0':
     dependencies:
       '@types/jquery': 3.5.30
       '@types/qunit': 2.19.10
@@ -12502,7 +12502,7 @@ snapshots:
 
   '@ui5/webcomponents-localization@2.1.2':
     dependencies:
-      '@types/openui5': 1.127.0
+      '@types/openui5': 1.129.0
       '@ui5/webcomponents-base': 2.1.2
 
   '@ui5/webcomponents-theming@2.1.2':
