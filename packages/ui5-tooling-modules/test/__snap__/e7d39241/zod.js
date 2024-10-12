@@ -4232,7 +4232,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         ZodError: ZodError
     });
 
-    try { Object.defineProperty(z, "__" + "esModule", { value: true }); z.default = z; } catch (ex) {}
+    let exp = z?.default || z || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
 
     exports.BRAND = BRAND;
     exports.DIRTY = DIRTY;
@@ -4293,7 +4293,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     exports.custom = custom;
     exports.date = dateType;
     exports.datetimeRegex = datetimeRegex;
-    exports.default = z;
+    exports.default = exp;
     exports.defaultErrorMap = errorMap;
     exports.discriminatedUnion = discriminatedUnionType;
     exports.effect = effectsType;

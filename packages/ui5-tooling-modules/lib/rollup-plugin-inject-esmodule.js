@@ -50,10 +50,13 @@ module.exports = function (/* { log } = {} */) {
 				// special handling here
 				if (hasDefaultExport) {
 					code += `import { default as defaultExport } from ${JSON.stringify(entryId)};`;
+					// in some cases the default exports provides a default property
+					// fetch-mock: ("export { index as default }" instead of "export default index")
+					code += `let exp = defaultExport?.default || defaultExport || { __emptyModule: true };`;
 					// we also re-export the default export as "default" to ensure compatibility with _interopRequireDefault
 					// which expects the "default" property to be present for CommonJS interop reasons
-					code += `try { Object.defineProperty(defaultExport, "__" + "esModule", { value: true }); defaultExport.default = defaultExport; } catch (ex) {}`;
-					code += `export default defaultExport;`;
+					code += `try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}`;
+					code += `export default exp;`;
 				} else {
 					code += `export const __esModule = true;`;
 				}

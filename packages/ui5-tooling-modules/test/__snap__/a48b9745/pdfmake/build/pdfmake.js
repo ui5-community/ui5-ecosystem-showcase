@@ -73353,8 +73353,8 @@ sap.ui.define((function () { 'use strict';
 
 	var pdfmakeExports = pdfmake.exports;
 
-	try { Object.defineProperty(pdfmakeExports, "__" + "esModule", { value: true }); pdfmakeExports.default = pdfmakeExports; } catch (ex) {}
+	let exp = pdfmakeExports?.default || pdfmakeExports || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
 
-	return pdfmakeExports;
+	return exp;
 
 }));

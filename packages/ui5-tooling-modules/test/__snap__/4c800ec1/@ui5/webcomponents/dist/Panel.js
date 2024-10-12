@@ -4725,8 +4725,8 @@ sap.ui.define((function () { 'use strict';
     Panel.define();
     var defaultExport = Panel;
 
-    try { Object.defineProperty(defaultExport, "__" + "esModule", { value: true }); defaultExport.default = defaultExport; } catch (ex) {}
+    let exp = defaultExport?.default || defaultExport || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
 
-    return defaultExport;
+    return exp;
 
 }));

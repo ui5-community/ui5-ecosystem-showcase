@@ -48996,8 +48996,8 @@ ${pendingInterceptorsFormatter.format(pending)}
   	
   } (index_cjs));
 
-  try { Object.defineProperty(index_cjs, "__" + "esModule", { value: true }); index_cjs.default = index_cjs; } catch (ex) {}
+  let exp = index_cjs?.default || index_cjs || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
 
-  return index_cjs;
+  return exp;
 
 }));

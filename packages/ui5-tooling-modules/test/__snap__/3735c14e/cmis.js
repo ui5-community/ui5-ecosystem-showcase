@@ -20939,8 +20939,8 @@ sap.ui.define((function () { 'use strict';
 		} 
 	} (cmis$1));
 
-	try { Object.defineProperty(cmis$1, "__" + "esModule", { value: true }); cmis$1.default = cmis$1; } catch (ex) {}
+	let exp = cmis$1?.default || cmis$1 || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
 
-	return cmis$1;
+	return exp;
 
 }));

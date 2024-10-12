@@ -5848,7 +5848,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     mergeConfig
   } = axios;
 
-  try { Object.defineProperty(axios, "__" + "esModule", { value: true }); axios.default = axios; } catch (ex) {}
+  let exp = axios?.default || axios || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
 
   exports.Axios = Axios;
   exports.AxiosError = AxiosError;
@@ -5859,7 +5859,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   exports.HttpStatusCode = HttpStatusCode;
   exports.VERSION = VERSION;
   exports.all = all;
-  exports.default = axios;
+  exports.default = exp;
   exports.formToJSON = formToJSON;
   exports.getAdapter = getAdapter;
   exports.isAxiosError = isAxiosError;
