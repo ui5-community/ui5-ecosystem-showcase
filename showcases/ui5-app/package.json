@@ -1,6 +1,6 @@
 {
   "name": "ui5-app",
-  "version": "0.44.1",
+  "version": "0.44.2",
   "description": "UI5 application using custom middlewares and tasks",
   "private": true,
   "author": "Volker Buzek, Peter Muessig",
@@ -49,6 +49,7 @@
     "@ui5/webcomponents-icons": "^2.1.2",
     "axios": "^1.7.7",
     "cmis": "^1.0.3",
+    "fetch-mock": "^11.1.5",
     "firebase": "^10.13.1",
     "is-plain-object": "^5.0.0",
     "mypackage": "file:local/mypackage",
@@ -62,8 +63,7 @@
     "ui5-lib": "workspace:^",
     "ui5-module": "workspace:^",
     "xml-js": "^1.6.11",
-    "zod": "^3.23.8",
-    "fetch-mock": "^11.1.5"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@ui5/cli": "^4.0.6",
