@@ -440,10 +440,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		'toUnicode': toUnicode
 	};
 
-	try { Object.defineProperty(punycode, "__" + "esModule", { value: true }); punycode.default = punycode; } catch (ex) {}
+	let exp = punycode?.default || punycode || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
 
 	exports.decode = decode;
-	exports.default = punycode;
+	exports.default = exp;
 	exports.encode = encode;
 	exports.toASCII = toASCII;
 	exports.toUnicode = toUnicode;

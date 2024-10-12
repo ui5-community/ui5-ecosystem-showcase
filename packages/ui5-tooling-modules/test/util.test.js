@@ -808,3 +808,20 @@ test.serial("Verify generation of @opentelemetry", async (t) => {
 		t.is(moduleOT_SDK.code, readSnapFile(moduleOT_SDK.name, t.context.snapDir));
 	}
 });
+
+test.serial("Verify generation of fetch-mock", async (t) => {
+	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
+	const env = await setupEnv(["fetch-mock"], {
+		hash: t.context.hash,
+		tmpDir: t.context.tmpDir,
+		log: t.context.log,
+		scope: {},
+	});
+	const fetchMock = await env.getModule("fetch-mock");
+	t.true(fetchMock.retVal.__esModule);
+	t.is(typeof fetchMock.retVal.config, "object");
+	t.is(typeof fetchMock.retVal.fetchHandler, "function");
+	if (platform() !== "win32") {
+		t.is(fetchMock.code, readSnapFile(fetchMock.name, t.context.snapDir));
+	}
+});

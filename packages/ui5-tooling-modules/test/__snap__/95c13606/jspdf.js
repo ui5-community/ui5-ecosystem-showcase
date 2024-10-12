@@ -17,7 +17,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/tsapp/resources/_chunks_/jspdf.es.
 	exports.GState = jspdf_es_min.j;
 	exports.ShadingPattern = jspdf_es_min.B;
 	exports.TilingPattern = jspdf_es_min.M;
-	exports.default = jspdf_es_min.E;
+	exports.default = jspdf_es_min.exp;
 	exports.jsPDF = jspdf_es_min.E;
 
 	Object.defineProperty(exports, '__esModule', { value: true });

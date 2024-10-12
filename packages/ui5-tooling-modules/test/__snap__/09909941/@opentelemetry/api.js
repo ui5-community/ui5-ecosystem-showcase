@@ -1,7 +1,7 @@
 sap.ui.define(['ui5/ecosystem/demo/app/resources/index3'], (function (index) { 'use strict';
 
-	try { Object.defineProperty(index.src, "__" + "esModule", { value: true }); index.src.default = index.src; } catch (ex) {}
+	let exp = index.src?.default || index.src || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
 
-	return index.src;
+	return exp;
 
 }));

@@ -394,9 +394,9 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/react/index2'], (fun
     exports.hydrateRoot = client.hydrateRoot = m.hydrateRoot;
   }
 
-  try { Object.defineProperty(client, "__" + "esModule", { value: true }); client.default = client; } catch (ex) {}
+  let exp = client?.default || client || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
 
-  exports.default = client;
+  exports.default = exp;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
