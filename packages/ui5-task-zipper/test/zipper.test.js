@@ -1,7 +1,7 @@
 const path = require("path");
 const { rmSync, existsSync, readdirSync } = require("fs");
 const { spawnSync } = require("child_process");
-const crypto = require("crypto");
+// const crypto = require("crypto");
 const yauzl = require("yauzl");
 
 const test = require("ava");
@@ -66,6 +66,23 @@ test.beforeEach(async (t) => {
 test.afterEach.always(async (t) => {
   // cleanup
 	rmSync(t.context.tmpDir, { recursive: true, force: true });
+});
+
+test("archive creation w/ additional directories", async (t) => {
+	const ui5 = { yaml: path.resolve("./test/__assets__/ui5-app/ui5.additionalDirectories.yaml") };
+	spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
+		stdio: "inherit", // > don't include stdout in test output,
+		shell: true,
+		cwd: path.resolve(__dirname, "../../../showcases/ui5-app"),
+	});
+	// default options packs to $app-id.zip
+	const targetZip = path.resolve(t.context.tmpDir, "dist", "customZipName.zip");
+	t.true(existsSync(targetZip));
+	const allDepsFound = await Promise.all([
+		promisifiedNeedleInHaystack(targetZip, "testDir/README.md"),
+		promisifiedNeedleInHaystack(targetZip, "testDir/subFolder/testFile.js")
+	]);
+	t.true(allDepsFound.every((dep) => dep === true));
 });
 
 test("archive creation w/ additional files", async (t) => {
