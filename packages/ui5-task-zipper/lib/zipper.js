@@ -53,6 +53,7 @@ const absoluteToRelativePaths = (buffer, zip) => {
  * @param {object} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @param {string} [parameters.options.configuration.archiveName] ZIP archive name (defaults to project namespace)
  * @param {string} [parameters.options.configuration.additionalFiles] List of additional files to be included
+ * @param {string} [parameters.options.configuration.additionalDirectories] List of additional directories to be included
  * @param {object} parameters.taskUtil the task utilities
  * @returns {Promise<undefined>} Promise resolving with undefined once data has been written
  */
@@ -81,9 +82,9 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 						: dependencies._readers.filter((reader) => {
 								const projectName = determineProjectName(reader);
 								return includeDependencies.indexOf(projectName) !== -1;
-						  }),
+							}),
 					name: "Filtered reader collection of ui5-task-zipper",
-			  });
+				});
 
 	// retrieve the resource path prefix (to get all application resources)
 	const prefixPath = `/resources/${options.projectNamespace}/`;
@@ -93,7 +94,12 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 	try {
 		const wsResources = await workspace.byGlob(`/resources/**`);
 		const depResources = await deps.byGlob(`**`);
-		allResources = [...wsResources, ...depResources];
+		let additionalDirResources = [];
+		const additionalDirectories = options?.configuration?.additionalDirectories ?? [];
+		for (let dir of additionalDirectories) {
+			additionalDirResources = [...additionalDirResources, ...(await deps.byGlob(`${dir}/**`, { nodir: false }))];
+		}
+		allResources = [...wsResources, ...depResources, ...additionalDirResources];
 	} catch (e) {
 		log.error(`Couldn't read resources: ${e}`);
 	}
@@ -126,7 +132,7 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 				} else {
 					log.warn(`Duplicate resource path found: ${resourcePath}! Skipping...`);
 				}
-			})
+			}),
 		);
 		// include the additional files from the project
 		const additionalFiles = options?.configuration?.additionalFiles;
@@ -139,6 +145,7 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 			for (const [filePathSource, filePathTarget] of Object.entries(additionalFiles)) {
 				isDebug && log.info(`Adding ${filePathSource} to archive at path ${filePathTarget}.`);
 				zip.addFile(path.join(process.cwd(), filePathSource), filePathTarget || filePathSource);
+				zip.ad;
 			}
 		}
 	} catch (e) {
