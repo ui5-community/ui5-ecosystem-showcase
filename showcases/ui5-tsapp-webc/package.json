@@ -1,6 +1,6 @@
 {
   "name": "ui5-tsapp-webc",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "description": "Showcase of a TypeScript setup for developing UI5 applications with UI5 Web Components",
   "private": true,
   "author": "Peter Muessig",
