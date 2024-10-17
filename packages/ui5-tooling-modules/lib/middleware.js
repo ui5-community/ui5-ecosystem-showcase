@@ -63,23 +63,38 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	);
 	let { debug, skipTransform, watch } = config;
 
-	// merge the skipTransform configuration from the dependencies if not skipping
-	// the transformation of the whole project (usage of boolean values are overruling!)
-	if (skipTransform !== true) {
-		middlewareUtil.getDependencies().forEach((dep) => {
-			const customConfig = middlewareUtil.getProject(dep).getCustomConfiguration();
-			const customSkipTransform = customConfig?.["ui5-tooling-modules"]?.skipTransform;
+	// merge custom configurations from dependencies (only needed for middlewares, as tasks are built atomically)
+	// this ensures that configuration doesn't need to be duplicated in the consuming project
+	// the downside is that the regular configuration is not considered for the dependencies (only the customConfiguration)
+	// which needs to follow a dedicated naming convention and the same structure as the regular configuration
+	depProjects.forEach((dep) => {
+		const customConfig = dep.getCustomConfiguration();
+		const relatedCustomConfig = customConfig?.["ui5-tooling-modules"];
+		// merge the skipTransform configuration from the dependencies if not skipping
+		// the transformation of the whole project (usage of boolean values are overruling!)
+		if (skipTransform !== true) {
+			const customSkipTransform = relatedCustomConfig?.skipTransform;
 			if (Array.isArray(customSkipTransform)) {
 				if (!skipTransform) {
 					skipTransform = [];
 				}
 				(skipTransform || []).push(...customSkipTransform);
-				log.verbose(`The dependency "${dep}" provides the following "skipTransform" configuration: "${customSkipTransform.join(", ")}"`);
+				log.verbose(`The dependency "${dep.getName()}" provides the following "skipTransform" configuration: "${customSkipTransform.join(", ")}"`);
 			} else if (typeof customSkipTransform === "boolean") {
-				log.warn(`The dependency "${dep}" defines "skipTransform" with a boolean value. This configuration is ignored! Pleas specify the "skipTransform" with a string[] to be considered...`);
+				log.warn(
+					`The dependency "${dep.getName()}" defines "skipTransform" with a boolean value. This configuration is ignored! Pleas specify the "skipTransform" with a string[] to be considered...`,
+				);
 			}
-		});
-	}
+		}
+		// detect the customConfiguration of the dependencies to derive the additionalDependencies
+		// other properties are so far not considered from the dependencies
+		if (Array.isArray(relatedCustomConfig?.additionalDependencies)) {
+			const customAdditionalConfig = relatedCustomConfig.additionalDependencies;
+			config.additionalDependencies = config.additionalDependencies || [];
+			config.additionalDependencies.push(...customAdditionalConfig);
+			log.verbose(`The dependency "${dep.getName()}" provides the following "additionalDependencies" configuration: ${customAdditionalConfig.join(", ")}`);
+		}
+	});
 
 	// logic which bundles and watches the modules coming from the
 	// node_modules or dependencies via NPM package names

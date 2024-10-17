@@ -20,7 +20,9 @@ scopingRules.include.push(/^{{{this}}}$/);
 setCustomElementsScopingRules(scopingRules);
 {{/if}}
 
+{{#if hasEnums}}
 import { registerEnum } from "sap/ui/base/DataType";
+{{/if}}
 {{#each dependencies}}
 import "{{this}}";
 {{/each}}

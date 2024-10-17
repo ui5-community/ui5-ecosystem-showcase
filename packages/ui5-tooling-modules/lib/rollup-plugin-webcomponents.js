@@ -246,6 +246,7 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 					metadata,
 					namespace,
 					enums: lib.enums,
+					hasEnums: Object.keys(lib.enums).length > 0,
 					dependencies: lib.dependencies,
 					isBaseLib: namespace === "@ui5/webcomponents-base",
 					scopeSuffix: ui5WebCScopeSuffix,
