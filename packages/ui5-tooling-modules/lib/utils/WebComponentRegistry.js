@@ -316,11 +316,16 @@ class RegistryEntry {
 			}
 		}
 
-		// "default" slot becomes default aggregation
+		// The "default" slot will most likely be transformed into the "content" in UI5
 		if (aggregationName === "default") {
-			// we call it "content" in ui5 though
-			aggregationName = "content";
-			// default slot has no name
+			// but if a "_ui5propertyName" is defined, we regard it as a named aggregation!
+			if (slotDef._ui5propertyName) {
+				aggregationName = slotDef._ui5propertyName;
+			} else {
+				aggregationName = "content";
+			}
+
+			// on webc level the default slot has no name
 			slotName = undefined;
 
 			ui5metadata.defaultAggregation = aggregationName;
