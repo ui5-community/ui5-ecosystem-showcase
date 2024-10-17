@@ -262,6 +262,15 @@ importers:
         specifier: ^8.3.0
         version: 8.4.0(eslint@9.9.1(jiti@1.21.6))(typescript@5.5.4)
 
+  packages/ui5-middleware-onelogin/sample/certificate:
+    devDependencies:
+      '@ui5/cli':
+        specifier: ^4.0.6
+        version: 4.0.6
+      ui5-middleware-onelogin:
+        specifier: file:../..
+        version: link:../..
+
   packages/ui5-middleware-serveframework:
     dependencies:
       dotenv:

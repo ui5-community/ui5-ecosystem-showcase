@@ -1,0 +1,4 @@
+UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL=https://example.com/login
+UI5_MIDDLEWARE_ONELOGIN_USE_CERTIFICATE=true
+UI5_MIDDLEWARE_ONELOGIN_CLIENT_CERTIFICATES=[{"origin": "https://accounts.sap.com","pfxPath": "sap.pfx","passphrase": "XXX"}]
+UI5_MIDDLEWARE_ONELOGIN_DEBUG=true
