@@ -1168,9 +1168,10 @@ module.exports = function (log, projectInfo) {
 							isMiddleware,
 							pluginOptions,
 						};
-						if (modules.length === 1) {
-							options.afterPlugins.push(dynamicImports({ moduleName: modules[0].name, keepDynamicImports }));
-						}
+						// by default we add the dynamic imports plugin to keep dynamic imports for the given modules
+						// if the keepDynamicImports is a boolean, we keep the dynamic imports for all modules
+						options.afterPlugins.push(dynamicImports({ findPackageJson, keepDynamicImports }));
+						// when minifying the code, we add the terser plugin
 						if (minify) {
 							options.afterPlugins.push(require("@rollup/plugin-terser")());
 						}
