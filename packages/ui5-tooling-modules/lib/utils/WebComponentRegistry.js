@@ -127,6 +127,7 @@ class RegistryEntry {
 	}
 
 	#extractUi5Type(typeInfo) {
+		// [Simple type]:
 		// some types are given as a union type, e.g. "string | undefined"
 		// TODO: are there combinations of arrays and other types/undefined? e.g. "Array<number> | undefined"
 		//       Does that make sense? Probably should be an empty array instead of undefined?
@@ -143,18 +144,24 @@ class RegistryEntry {
 				};
 			}
 
-			// UI5 normally accepts only one type for a property, except if "any" is used
-			// in this case we just use the first one as the primary type
+			// UI5 only accepts one type for a property/aggregation, in this case we just use the first one as the primary type.
 			parsedType = types[0];
 		}
 
 		// check if we have an array type
 		const arrayTypeMatch = parsedType?.match(/Array<(.*)>/i);
 		const multiple = !!arrayTypeMatch;
-		parsedType = arrayTypeMatch?.[1] || parsedType;
 
-		// complex types have a reference to other things, e.g. enums
-		if (typeInfo?.references) {
+		// [Complex types]:
+		// we have a reference to other things -> enums, interfaces, classes
+		if (typeInfo?.references?.length > 0) {
+			// Since the UI5 runtime only allows for 1 single type per property/aggregation, we take the first reference
+			parsedType = typeInfo.references[0].name;
+
+			// TODO: Investigate if this fallback can be omitted, I suspect it is not needed.
+			//       The string based type "arrayTypeMatch[1]" might contain TypeScript generics, which are not known (and irrelevant) to UI5 -> e.g. P13nPopup
+			parsedType ??= arrayTypeMatch?.[1] || parsedType;
+
 			// case 2: enum type -> easy
 			if (this.enums[parsedType]) {
 				return {
@@ -164,13 +171,10 @@ class RegistryEntry {
 				};
 			}
 
-			// case 3: interface type -> theoretically this should this be a 0..n aggregation... but really?
+			// case 3: interface or class type
 			const interfaceOrClassType = this.#checkForInterfaceOrClassType(parsedType);
 
 			if (interfaceOrClassType) {
-				// TODO: How should this be wired for properties?
-				//       Aggregations can have an interface/class type, but properties do not.
-				//       A property of this typing could be considered a calculated field...?
 				return {
 					isInterfaceOrClassType: true,
 					origType: parsedType,
@@ -225,7 +229,7 @@ class RegistryEntry {
 	#processMembers(classDef, ui5metadata, propDef) {
 		// field -> property
 		if (propDef.kind === "field") {
-			let ui5TypeInfo = this.#extractUi5Type(propDef.type, propDef.name);
+			let ui5TypeInfo = this.#extractUi5Type(propDef.type);
 
 			// [ Accessibility ]
 			//     1. ACC attributes have webc internal typing and will be defaulted to "object" ob UI5 side.

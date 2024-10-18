@@ -36,6 +36,8 @@
         <VBox alignItems="Center" justifyContent="Center" height="100%">
           <webc:Input value="Hello World 123" change="onBoo" />
           <webc:AvatarGroup type="Individual">
+            <!-- Example: the default aggregation of the AvatarGroup is called "items"
+                 It is not need to explicitly name this aggregation here. -->
             <webc:Avatar initials="PM" colorScheme="Accent1" />
             <webc:Avatar initials="XX" colorScheme="Accent4" shape="Square" />
             <webc:Avatar icon="ai" colorScheme="Accent7" />
