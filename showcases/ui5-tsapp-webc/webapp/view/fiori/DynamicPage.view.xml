@@ -88,7 +88,7 @@
       </fiori:DynamicPageHeader>
     </fiori:headerArea>
 
-    <webc:List content="{dpModel>/items}" headerText="Products" selectionMode="None">
+    <webc:List items="{dpModel>/items}" headerText="Products" selectionMode="None">
       <webc:ListItemStandard icon="slim-arrow-right" iconEnd="true" description="{dpModel>productID}" additionalText="{dpModel>price}" text="{dpModel>productName}">
         <webc:image>
           <webc:Avatar size="S" shape="Square" colorScheme="Accent10">
