@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.5.7...ui5-tsapp-webc@0.5.8) (2024-10-18)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** named aggregations can also be marked as default aggregation ([#1096](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1096)) ([49db54e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/49db54ebd2115f08e013ab67e8193396fa6e2ee3))
+
+
+
+
+
 ## [0.5.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.5.6...ui5-tsapp-webc@0.5.7) (2024-10-17)
 
 **Note:** Version bump only for package ui5-tsapp-webc

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.16.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.16.2...ui5-tooling-modules@3.16.3) (2024-10-18)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** named aggregations can also be marked as default aggregation ([#1096](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1096)) ([49db54e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/49db54ebd2115f08e013ab67e8193396fa6e2ee3))
+* **ui5-tooling-modules:** properly support keepDynamicImports ([#1101](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1101)) ([94b9762](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/94b976297a55d75f78899ba99cc183d26f192bf0))
+
+
+
+
+
 ## [3.16.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.16.1...ui5-tooling-modules@3.16.2) (2024-10-17)
 
 

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.12](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-bookshop-ui5-viewer@0.3.11...cds-bookshop-ui5-viewer@0.3.12) (2024-10-18)
+
+**Note:** Version bump only for package cds-bookshop-ui5-viewer
+
+
+
+
+
 ## [0.3.11](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-bookshop-ui5-viewer@0.3.10...cds-bookshop-ui5-viewer@0.3.11) (2024-10-17)
 
 **Note:** Version bump only for package cds-bookshop-ui5-viewer
