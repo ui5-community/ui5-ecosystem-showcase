@@ -170,7 +170,17 @@ const npmPackageScopeRegEx = /^((?:(@[^/]+)\/)?([^/]+))(?:\/(.*))?$/;
 function findDependency(dep, cwd = process.cwd(), depPaths = []) {
 	let modulePath;
 	try {
-		modulePath = resolve(dep, { paths: [cwd, ...depPaths] });
+		try {
+			modulePath = resolve(dep, { paths: [cwd, ...depPaths] });
+		} catch (err) {
+			// sometimes the package.json is not found, therefore we try to resolve the dependency
+			// without the package.json, just with the npm package name (and lookup the package.json manually)
+			if (dep.endsWith("/package.json") && err.code === "MODULE_NOT_FOUND") {
+				modulePath = resolve(dep.substring(0, dep.length - "/package.json".length), { paths: [cwd, ...depPaths] });
+			} else {
+				throw err;
+			}
+		}
 	} catch (err) {
 		// if the module is not exported, we try to resolve it manually
 		const [, npmPackage, , , module] = npmPackageScopeRegEx.exec(dep) || [];
