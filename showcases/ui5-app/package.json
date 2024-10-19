@@ -103,6 +103,6 @@
     "ui5-tooling-stringreplace": "workspace:^",
     "ui5-tooling-transpile": "workspace:^",
     "wdio-ui5-service": "^2",
-    "xlsx": "^0.18.5"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   }
 }
