@@ -27,18 +27,35 @@ npm install ui5-middleware-onelogin --save-dev
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
-Currently you can define the properties in the configuration (see below) or the following environment variables are used.
+You can define the properties either in the configuration (YAML file) or using environment variables. The order of precedence is:
+
+1. YAML file configuration
+2. Environment variables
+3. Default configuration
+
+**Important:** When configuring `ClientCertificate`, you must define all its properties either in the YAML file or in environment variables. Mixing definitions between YAML and environment variables for `ClientCertificate` is not supported.
+
+Currently, you can define the following properties:
 
 - path: `string` either the url or the hostname and port of the SAP system
 - subdirectory`(optional)`: `string` the subdirectory that is appended to the path, defaults to the fiori launchpad at /sap/bc/ui2/flp
 - username`(optional)`: `string` Username to be used to login to the launchpad
-- password`(optional)`: `string`Password used to login
+- password`(optional)`: `string` Password used to login
 - useCertificate`(optional)`: `boolean` use a certificate to login instead of username and password
 - debug`(optional)`: `boolean` true will open up the playwright browser so you can see what's going on
 
 **NB1:** If you choose to use the certificate login then check the property AutoSelectCertificateForUrls in chrome://policy if it holds the url pattern for your system. [Playwright](https://github.com/microsoft/playwright/issues/1799) has an issue to handle the certificate prompt. Another workaround is to set debug and useCertificate to true in the configuration and press ok when the prompt opens
 
 **NB2:** If your system does not host a fiori launchpad, you will have to adjust the subdirectory to point to a different login protected page. In the case of a MII java stack that hosts an OData service, try setting subdirectory to XMII/PropertyAccessServlet?Mode=List
+
+- ClientCertificate`(optional)`: `object` Configuration for client certificate authentication
+  - origin: `string` Exact origin that the certificate is valid for. Origin includes https protocol, a hostname and optionally a port.
+  - certPath: `string` Path to the file with the certificate in PEM format.
+  - keyPath: `string` Path to the file with the private key in PEM format.
+  - pfxPath: `string` Path to the PFX or PKCS12 encoded private key and certificate chain.
+  - passphrase: `string` Passphrase for the private key (PEM or PFX).
+
+You can set the following environment variables in your .env file (remember to add it to your .gitignore):
 
 You can either add the following properties to your .env file, remember to add that to your .gitignore
 
