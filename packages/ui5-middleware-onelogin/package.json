@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "async-prompt": "^1.0.1",
-    "cookie": "^0.6.0",
+    "cookie": "^0.7.0",
     "dotenv": "^16.4.5",
     "playwright-chromium": "^1.46.1",
     "playwright-core": "^1.46.1",
