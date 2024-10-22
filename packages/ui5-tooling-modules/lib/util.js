@@ -223,13 +223,14 @@ function findDependency(dep, cwd = process.cwd(), depPaths = []) {
  */
 function findDependencies({ cwd = process.cwd(), depPaths = [], linkedOnly, additionalDeps = [] } = {}, knownDeps = []) {
 	const pkgJson = getPackageJson(path.join(cwd, "package.json"));
-	let dependencies = Object.keys(pkgJson.dependencies || {});
+	let dependencies = [...Object.keys(pkgJson.dependencies || {}), ...Object.keys(pkgJson.optionalDependencies || {})];
 	if (additionalDeps?.length > 0) {
 		dependencies = dependencies.concat(additionalDeps);
 	}
 	if (linkedOnly) {
 		dependencies = dependencies.filter((dep) => {
-			return !isValidVersion(pkgJson.dependencies[dep]);
+			const version = pkgJson.dependencies[dep] || pkgJson.optionalDependencies[dep];
+			return !isValidVersion(version);
 		});
 	}
 	const depRoots = [];
@@ -941,7 +942,7 @@ module.exports = function (log, projectInfo) {
 			if (modulePath === undefined) {
 				modulesNegativeCache.push(moduleName);
 				log.verbose(`  => not found!`);
-			} else if (modulePath === moduleName) {
+			} else if (!path.isAbsolute(modulePath) && modulePath === moduleName) {
 				modulePath = undefined;
 				modulesNegativeCache.push(moduleName);
 				log.verbose(`  => found but ignored (identified as native node module)!`);

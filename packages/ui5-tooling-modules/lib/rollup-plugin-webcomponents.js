@@ -12,13 +12,17 @@ const { lt, gte } = require("semver");
 //   - Externalize UI5 Web Components specific code
 module.exports = function ({ log, resolveModule, getPackageJson, framework, options } = {}) {
 	// derive the configuration from the provided options
-	let { skip, scoping, scopeSuffix, enrichBusyIndicator } = Object.assign({ skip: false, scoping: true, enrichBusyIndicator: false }, options);
+	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force } = Object.assign({ skip: false, scoping: true, enrichBusyIndicator: false, force: false }, options);
 
 	// TODO: maybe we should derive the minimum version from the applications package.json
 	//       instead of the framework version (which might be a different version)
-	if (!gte(framework?.version || "0.0.0", "1.120.0")) {
+	if (!force && !gte(framework?.version || "0.0.0", "1.120.0")) {
 		skip = true;
 		log.warn("Skipping Web Components transformation as UI5 version is < 1.120.0");
+	} else if (force) {
+		// for some local development scenarios, we might want to force the transformation
+		// when the framework name and framework version is unknown (e.g. openui5 testsuite)
+		log.warn("Forcing Web Components transformation");
 	}
 
 	// helper function to extract the npm package name from a module name
@@ -82,7 +86,7 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 				}
 				// load the dependent Web Component packages
 				const libraryDependencies = [];
-				Object.keys(packageJson.dependencies || {}).forEach((dep) => {
+				[...Object.keys(packageJson.dependencies || {}), ...Object.keys(packageJson.optionalDependencies || {})].forEach((dep) => {
 					const package = loadNpmPackage(dep, emitFile);
 					if (package) {
 						libraryDependencies.push(package.namespace);
@@ -235,7 +239,7 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 				if (ui5WebCScopeSuffix) {
 					nonUI5TagsToRegister = Object.values(lib.customElements)
 						.map((element) => element.tagName)
-						.filter((tag) => !tag.startsWith("ui5-"));
+						.filter((tag) => (tag ? !tag.startsWith("ui5-") : false));
 					if (nonUI5TagsToRegister.length === 0) {
 						nonUI5TagsToRegister = undefined;
 					}
