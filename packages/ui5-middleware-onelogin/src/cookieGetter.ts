@@ -81,6 +81,7 @@ export default class CookieGetter {
 				username: process.env.UI5_MIDDLEWARE_ONELOGIN_USERNAME,
 				password: process.env.UI5_MIDDLEWARE_ONELOGIN_PASSWORD,
 				useCertificate: process.env.UI5_MIDDLEWARE_ONELOGIN_USE_CERTIFICATE === "true",
+				clientCertificates: this.parseJSON(process.env.UI5_MIDDLEWARE_ONELOGIN_CLIENT_CERTIFICATES),
 				debug: process.env.UI5_MIDDLEWARE_ONELOGIN_DEBUG === "true",
 				query: this.parseJSON(process.env.UI5_MIDDLEWARE_ONELOGIN_QUERY),
 			},
@@ -88,6 +89,12 @@ export default class CookieGetter {
 
 		const effectiveOptions = Object.assign({}, options);
 		effectiveOptions.configuration = Object.assign({}, defaultOptions.configuration, envOptions.configuration, options.configuration);
+
+		// Check if clientCertificates should be used: useCertificate is true and clientCertificates is defined or clientCertificates contains any certificate
+		const useClientCertificates =
+			effectiveOptions.configuration.useCertificate ||
+			(effectiveOptions.configuration.clientCertificates &&
+				effectiveOptions.configuration.clientCertificates.some((cert) => cert.certPath || cert.cert || cert.keyPath || cert.key || cert.pfxPath || cert.pfx));
 
 		if (effectiveOptions.configuration.debug) {
 			log.info("Default options:");
@@ -98,6 +105,7 @@ export default class CookieGetter {
 			log.info(options);
 			log.info("Effective options:");
 			log.info(effectiveOptions);
+			log.info(`Using client certificates: ${useClientCertificates}`);
 		}
 
 		const attr: Attributes = {
@@ -106,7 +114,7 @@ export default class CookieGetter {
 			password: effectiveOptions.configuration.password!,
 		};
 
-		if ((!attr.username || !attr.password) && !effectiveOptions.configuration.useCertificate) {
+		if ((!attr.username || !attr.password) && !useClientCertificates) {
 			log.warn("No credentials provided. Please answer the following prompts");
 			if (!attr.username) {
 				attr.username = await prompt("Username: ");
@@ -121,6 +129,7 @@ export default class CookieGetter {
 			const url = new URL(`${urlWithTrailingSlash}${effectiveOptions.configuration.subdirectory}`);
 			const query = effectiveOptions.configuration.query;
 			if (query) {
+				// @ts-ignore
 				Object.keys(query).forEach((key) => url.searchParams.append(key, query[key]));
 			}
 			attr.url = url.href;
@@ -135,10 +144,21 @@ export default class CookieGetter {
 
 		try {
 			const browser = await chromium.launch(playwrightOpt);
-			const context = await browser.newContext({ ignoreHTTPSErrors: true });
+			const contextOptions: any = { ignoreHTTPSErrors: true };
+
+			if (useClientCertificates && effectiveOptions.configuration.clientCertificates) {
+				contextOptions.clientCertificates = effectiveOptions.configuration.clientCertificates;
+			}
+
+			if (effectiveOptions.configuration.debug) {
+				log.info("Client certificates configuration:");
+				log.info(contextOptions.clientCertificates);
+			}
+
+			const context = await browser.newContext(contextOptions);
 
 			const page = await context.newPage();
-			if (!effectiveOptions.configuration.useCertificate) {
+			if (!useClientCertificates) {
 				await page.goto(attr.url, { waitUntil: "domcontentloaded" });
 
 				const elem = await this.getUserInput(page);
