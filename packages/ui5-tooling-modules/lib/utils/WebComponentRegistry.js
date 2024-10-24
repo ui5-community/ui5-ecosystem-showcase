@@ -27,6 +27,8 @@ class RegistryEntry {
 		this.interfaces = new Set();
 
 		this.#processMetadata();
+
+		console.log(`Metadata processed for package ${namespace}.`);
 	}
 
 	#processMetadata() {
@@ -227,7 +229,7 @@ class RegistryEntry {
 	}
 
 	#processMembers(classDef, ui5metadata, propDef) {
-		// field -> property
+		// field -> property or association
 		if (propDef.kind === "field") {
 			let ui5TypeInfo = this.#extractUi5Type(propDef.type);
 
@@ -255,6 +257,9 @@ class RegistryEntry {
 			if (ui5TypeInfo.isUnclear) {
 				console.warn(`[unclear type 🤔] ${classDef.name} - property '${propDef.name}' has unclear type '${ui5TypeInfo.origType}' -> defaulting to 'any', multiple: ${ui5TypeInfo.multiple}`);
 			}
+
+			// If any property of a class is a form relevant property, the UI5 control class must implement the "sap.ui.core.IFormContent" interface
+			classDef._ui5implementsFormContent ??= propDef._ui5formProperty;
 
 			if (propDef.readonly) {
 				// calculated readonly fields -> WebC base class will generate getters
@@ -354,6 +359,11 @@ class RegistryEntry {
 				}
 			});
 		}
+
+		// classes with properties marked as "_ui5formProperty" need to implement IFormContent
+		if (classDef._ui5implementsFormContent) {
+			ui5metadata.interfaces.push("sap.ui.core.IFormContent");
+		}
 	}
 
 	#ensureDefaults(ui5metadata) {
@@ -365,14 +375,17 @@ class RegistryEntry {
 			};
 		}
 
-		// mandatory default aggregation
-		if (!ui5metadata.defaultAggregation) {
-			ui5metadata.aggregations["default"] = {
-				type: "sap.ui.core.Control",
-				multiple: true,
-			};
-			ui5metadata.defaultAggregation = "default";
-		}
+		// TODO: Discuss if this is still needed.
+		//       Aren't we wrongfully introducing aggregations to controls that shouldn't have any.
+		//       e.g. the "@ui5/webcomponents.Switch" does not have a default slot and thus shouldn't have "content" aggregation.
+		// mandatory default aggregation, named "content" in UI5
+		// if (!ui5metadata.defaultAggregation) {
+		// 	ui5metadata.aggregations["content"] ??= {
+		// 		type: "sap.ui.core.Control",
+		// 		multiple: true,
+		// 	};
+		// 	ui5metadata.defaultAggregation = "content";
+		// }
 
 		// cssProperties: [ "width", "height", "display" ]
 		if (!ui5metadata.properties["width"]) {
@@ -387,6 +400,45 @@ class RegistryEntry {
 				type: "sap.ui.core.CSSSize",
 				mapping: "style",
 			};
+		}
+	}
+
+	/**
+	 * Some web components need additional patches to comply with UI5 framework requirements,
+	 * e.g. applying the LabelEnablement mixin
+	 *
+	 * Most things patched in this function should eventually be available generically in the custom elements metadta.
+	 *
+	 * @param {object} ui5metadata the UI5 metadata object
+	 */
+	#patchUI5Specifics(ui5metadata) {
+		const { tag } = ui5metadata;
+
+		// The label has a couple of specifics that are not fully reflected in the custom elements.
+		// This code harmonizes the Label with the original retrofit control wrapper.
+		// TODO: How to generalize this?
+		//       Is harmonizing with the retrofit library really correct?
+		if (tag === "ui5-label") {
+			// the ui5-label has as default slot, but no aggregations on the retrofit layer...
+			ui5metadata.aggregations = [];
+			// the "for" attribute is called "labelFor" in the retrofit...
+			ui5metadata.associations["labelFor"] = {
+				type: "sap.ui.core.Control",
+				multiple: false,
+				mapping: {
+					type: "property",
+					to: "for",
+				},
+			};
+			delete ui5metadata.properties["for"];
+
+			// Any "Label" control needs a special UI5-only interface
+			// Additionally, all controls implementing this interface must apply the "sap/ui/core/LabelEnablement" mixin on their class
+			// refer to "../templates/WrapperControl.hbs"
+			ui5metadata.interfaces.push("sap.ui.core.Label");
+		} else if (tag === "ui5-multi-input") {
+			// TODO: Multi Input needs to implement the functions defined in "sap.ui.core.ISemanticFormContent"...
+			ui5metadata.interfaces.push("sap.ui.core.ISemanticFormContent");
 		}
 	}
 
@@ -419,6 +471,8 @@ class RegistryEntry {
 		this.#processUI5Interfaces(classDef, ui5metadata);
 
 		this.#ensureDefaults(ui5metadata);
+
+		this.#patchUI5Specifics(ui5metadata);
 	}
 }
 
