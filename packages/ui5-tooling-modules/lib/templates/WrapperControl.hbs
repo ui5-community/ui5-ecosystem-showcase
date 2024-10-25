@@ -1,8 +1,11 @@
 import WebComponentClass from "{{webcClass}}";
 import "{{namespace}}";
 import WebComponentBaseClass from "{{webcBaseClass}}";
+{{#if needsLabelEnablement}}
+import LabelEnablement from "sap/ui/core/LabelEnablement";
+{{/if}}
 
-export default WebComponentBaseClass.extend("{{ui5Class}}", {
+const WrapperClass = WebComponentBaseClass.extend("{{ui5Class}}", {
   metadata: {{{metadata}}},
   // TODO: Quick solution to fix a conversion between "number" and "core.CSSSize".
   //       WebC attribute is a number and is written back to the Control wrapper via core.WebComponent base class.
@@ -16,3 +19,9 @@ export default WebComponentBaseClass.extend("{{ui5Class}}", {
     return WebComponentBaseClass.prototype.setProperty.apply(this, [sPropName, v, bSupressInvalidate]);
   }
 });
+
+{{#if needsLabelEnablement}}
+LabelEnablement.enrich(WrapperClass.prototype);
+{{/if}}
+
+export default WrapperClass;

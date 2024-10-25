@@ -411,13 +411,10 @@ class RegistryEntry {
 	 *
 	 * @param {object} ui5metadata the UI5 metadata object
 	 */
-	#patchUI5Specifics(ui5metadata) {
+	#patchUI5Specifics(classDef, ui5metadata) {
 		const { tag } = ui5metadata;
 
 		// The label has a couple of specifics that are not fully reflected in the custom elements.
-		// This code harmonizes the Label with the original retrofit control wrapper.
-		// TODO: How to generalize this?
-		//       Is harmonizing with the retrofit library really correct?
 		if (tag === "ui5-label") {
 			// the ui5-label has as default slot, but no aggregations on the retrofit layer...
 			ui5metadata.aggregations = [];
@@ -433,9 +430,9 @@ class RegistryEntry {
 			delete ui5metadata.properties["for"];
 
 			// Any "Label" control needs a special UI5-only interface
-			// Additionally, all controls implementing this interface must apply the "sap/ui/core/LabelEnablement" mixin on their class
-			// refer to "../templates/WrapperControl.hbs"
 			ui5metadata.interfaces.push("sap.ui.core.Label");
+			// Additionally, all such controls must apply the "sap/ui/core/LabelEnablement" (see "../templates/WrapperControl.hbs")
+			classDef._ui5NeedsLabelEnablement = true;
 		} else if (tag === "ui5-multi-input") {
 			// TODO: Multi Input needs to implement the functions defined in "sap.ui.core.ISemanticFormContent"...
 			ui5metadata.interfaces.push("sap.ui.core.ISemanticFormContent");
@@ -472,7 +469,7 @@ class RegistryEntry {
 
 		this.#ensureDefaults(ui5metadata);
 
-		this.#patchUI5Specifics(ui5metadata);
+		this.#patchUI5Specifics(classDef, ui5metadata);
 	}
 }
 
