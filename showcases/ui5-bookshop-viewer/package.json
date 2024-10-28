@@ -1,6 +1,6 @@
 {
   "name": "ui5-bookshop-viewer",
-  "version": "0.3.14",
+  "version": "0.3.15",
   "description": "Standalone UI5 bookshop viewer using ui5-middleware-cap",
   "private": true,
   "author": "Nicolai Schoenteich, Peter Muessig",
