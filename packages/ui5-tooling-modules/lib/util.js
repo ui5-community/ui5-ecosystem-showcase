@@ -187,7 +187,13 @@ function findDependency(dep, cwd = process.cwd(), depPaths = []) {
 		if (err.code === "ERR_PACKAGE_PATH_NOT_EXPORTED" || err.code === "ERR_BUILTIN_MODULE") {
 			// the node_modules path of the dependency are importan as require.resolve.paths
 			// returns the node_modules paths relative to the location of this module
-			for (const resolvePath of [...detectNodeModulesPaths(cwd), ...(require.resolve.paths(npmPackage) || [])]) {
+			const resolvePaths = [...detectNodeModulesPaths(cwd)];
+			depPaths?.forEach((depPath) => {
+				resolvePaths.push(...detectNodeModulesPaths(depPath));
+			});
+			resolvePaths.push(...(require.resolve.paths(npmPackage) || []));
+			// lookup the dependency in the node_modules directories
+			for (const resolvePath of resolvePaths) {
 				modulePath = path.join(resolvePath, npmPackage);
 				if (module) {
 					modulePath = path.join(modulePath, module);
