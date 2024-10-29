@@ -375,18 +375,6 @@ class RegistryEntry {
 			};
 		}
 
-		// TODO: Discuss if this is still needed.
-		//       Aren't we wrongfully introducing aggregations to controls that shouldn't have any.
-		//       e.g. the "@ui5/webcomponents.Switch" does not have a default slot and thus shouldn't have "content" aggregation.
-		// mandatory default aggregation, named "content" in UI5
-		// if (!ui5metadata.defaultAggregation) {
-		// 	ui5metadata.aggregations["content"] ??= {
-		// 		type: "sap.ui.core.Control",
-		// 		multiple: true,
-		// 	};
-		// 	ui5metadata.defaultAggregation = "content";
-		// }
-
 		// cssProperties: [ "width", "height", "display" ]
 		if (!ui5metadata.properties["width"]) {
 			ui5metadata.properties["width"] = {
