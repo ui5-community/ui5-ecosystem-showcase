@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-simple@0.9.1...ui5-tsapp-simple@0.9.2) (2024-10-30)
+
+
+### Bug Fixes
+
+* **ui5-tsapp-simple:** mark SimpleControl renderer as static ([#1111](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1111)) ([559203f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/559203f00db0a3379d1787b6e5ecc72337008a8a))
+
+
+
+
+
 ## [0.9.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-simple@0.9.0...ui5-tsapp-simple@0.9.1) (2024-10-10)
 
 **Note:** Version bump only for package ui5-tsapp-simple
