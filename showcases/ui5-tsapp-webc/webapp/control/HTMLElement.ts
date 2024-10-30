@@ -24,7 +24,7 @@ export default class HTMLElement extends Control {
 		super(id, settings);
 	}
 
-	renderer = {
+	static renderer = {
 		apiVersion: 2,
 		render: (rm: RenderManager, control: HTMLElement) => {
 			rm.openStart(control.getTag(), control);

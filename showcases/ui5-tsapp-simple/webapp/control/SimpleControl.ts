@@ -19,7 +19,7 @@ export default class SimpleControl extends Control {
 		super(id, settings);
 	}
 
-	renderer = {
+	static renderer = {
 		apiVersion: 2,
 		render: (rm: RenderManager, control: SimpleControl) => {
 			rm.openStart("div", control);
