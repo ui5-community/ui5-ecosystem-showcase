@@ -11,6 +11,10 @@ OpenUI5Enablement.enrichBusyIndicatorSettings(UI5Element);
 {{/if}}
 {{/if}}
 
+{{#if assetsModule}}
+import "{{assetsModule}}";
+{{/if}}
+
 {{#if nonUI5TagsToRegister}}
 import { getCustomElementsScopingRules, setCustomElementsScopingRules } from "@ui5/webcomponents-base/dist/CustomElementsScope.js";
 const scopingRules = getCustomElementsScopingRules();
