@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.17.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.16.6...ui5-tooling-modules@3.17.0) (2024-10-30)
+
+
+### Features
+
+* **ui5-tooling-modules:** support including Assets for Web Components ([#1112](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1112)) ([15c3420](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/15c3420e838d73f58092cf20c767d6e13a22288f))
+
+
+
+
+
 ## [3.16.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.16.5...ui5-tooling-modules@3.16.6) (2024-10-28)
 
 

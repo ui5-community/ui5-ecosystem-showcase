@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.5.11...ui5-tsapp-webc@0.6.0) (2024-10-30)
+
+
+### Bug Fixes
+
+* **ui5-tsapp-simple:** mark SimpleControl renderer as static ([#1111](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1111)) ([559203f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/559203f00db0a3379d1787b6e5ecc72337008a8a))
+
+
+### Features
+
+* **ui5-tooling-modules:** support including Assets for Web Components ([#1112](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1112)) ([15c3420](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/15c3420e838d73f58092cf20c767d6e13a22288f))
+
+
+
+
+
 ## [0.5.11](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.5.10...ui5-tsapp-webc@0.5.11) (2024-10-28)
 
 **Note:** Version bump only for package ui5-tsapp-webc
