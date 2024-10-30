@@ -2724,7 +2724,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     this.conn = null;
                 },
             });
-            new Promise(function (resolve, reject) { require(['ui5/ecosystem/demo/app/resources/wrapper'], resolve, reject); }).then(({ default: WS }) => {
+            new Promise(function (resolve, reject) { require(['ui5/ecosystem/demo/app/resources/_dynamics/wrapper'], resolve, reject); }).then(({ default: WS }) => {
                 this.conn = new WS(this._endPointURL(), undefined, {
                     headers: this.headers,
                 });

@@ -1094,6 +1094,7 @@ module.exports = function (log, projectInfo) {
 		 * @param {boolean} [config.persistentCache] flag whether the cache should be persistent
 		 * @param {boolean} [config.debug] debug mode
 		 * @param {boolean|string} [config.chunksPath] the relative path for the chunks to be stored (defaults to "chunks", if value is true, chunks are put into the closest modules folder)
+		 * @param {string} [config.dynamicEntriesPath] the relative path for dynamic entries (defaults to "_dynamics")
 		 * @param {boolean|string[]} [config.skipTransform] flag or array of globs to verify whether the module transformation should be skipped
 		 * @param {boolean|string[]} [config.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
 		 * @param {string} [config.generatedCode] ES compatibility of the generated code (es5, es2015)
@@ -1107,7 +1108,7 @@ module.exports = function (log, projectInfo) {
 		 */
 		getBundleInfo: async function getBundleInfo(
 			moduleNames,
-			{ pluginOptions, skipCache, persistentCache, debug, chunksPath, skipTransform, keepDynamicImports, generatedCode, minify, inject } = {},
+			{ pluginOptions, skipCache, persistentCache, debug, chunksPath, dynamicEntriesPath, skipTransform, keepDynamicImports, generatedCode, minify, inject } = {},
 			{ cwd = process.cwd(), depPaths = [], isMiddleware } = {},
 		) {
 			let bundling = false;
@@ -1227,9 +1228,17 @@ module.exports = function (log, projectInfo) {
 									} else {
 										filePath = "";
 									}
+									// remove the file extension (.js) from the filename
 									const fileName = module.fileName.substring(0, module.fileName.length - 3);
+									let chunkName = fileName;
+									// in case of dynamic entries we move them into a separate folder
+									// to allow to exclude them from the preload bundles easily
+									if (module.isDynamicEntry) {
+										chunkName = path.posix.join("_dynamics", fileName);
+									}
+									// add the chunk to the bundle info
 									bundleInfo.addChunk({
-										name: path.posix.join(filePath, fileName),
+										name: path.posix.join(filePath, chunkName),
 										originalName: fileName,
 										code: module.code,
 									});
@@ -1259,6 +1268,11 @@ module.exports = function (log, projectInfo) {
 								bundleInfo.getChunks().forEach((chunk) => {
 									const originalChunkName = chunk.originalName;
 									const chunkName = chunk.name;
+									// replace the modules having a relative path
+									const relativePath = "../".repeat(moduleName.split("/").length - 1) || "./";
+									module.code = module.code?.replace(`'${relativePath}${originalChunkName}'`, `'${moduleBasePath || "."}/${chunkName}'`);
+									module.code = module.code?.replace(`"${relativePath}${originalChunkName}"`, `"${moduleBasePath || "."}/${chunkName}"`);
+									// replace the modules aside
 									module.code = module.code?.replace(`'./${originalChunkName}'`, `'${moduleBasePath || "."}/${chunkName}'`);
 									module.code = module.code?.replace(`"./${originalChunkName}"`, `"${moduleBasePath || "."}/${chunkName}"`);
 								});
