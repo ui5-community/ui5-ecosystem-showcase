@@ -1,4 +1,4 @@
-sap.ui.define(['sap/ui/base/DataType', '../webcomponents-base'], (function (DataType, _ui5_webcomponentsBase) { 'use strict';
+sap.ui.define(['sap/ui/base/DataType', 'ui5/ecosystem/demo/app/resources/webcomponents-base'], (function (DataType, _ui5_webcomponentsBase) { 'use strict';
 
 	const pkg = {
 		"_ui5metadata": {

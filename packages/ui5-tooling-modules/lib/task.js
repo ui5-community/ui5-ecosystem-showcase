@@ -26,6 +26,7 @@ const sanitize = require("sanitize-filename");
  * @param {boolean|string[]} [parameters.options.configuration.skipTransform] flag or array of globs to verify whether the module transformation should be skipped
  * @param {boolean} [parameters.options.configuration.minify] minify the generated code
  * @param {boolean|string} [parameters.options.configuration.chunksPath] the relative path for the chunks to be stored (defaults to "chunks", if value is true, chunks are put into the closest modules folder)
+ * @param {boolean|string} [parameters.options.configuration.dynamicEntriesPath] the relative path for dynamic entries (defaults to "_dynamics")
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ log, workspace, taskUtil, options }) {
@@ -125,6 +126,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 		try {
 			const program = parse(content, { comment: true, loc: true, range: true, tokens: true });
 			const tokens = {};
+			let importsSapUiRequire = false;
 			walk(program, {
 				// eslint-disable-next-line no-unused-vars
 				enter(node, parent, prop, index) {
@@ -163,6 +165,26 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 						/require|define/.test(node?.callee?.property?.name) &&
 						node?.callee?.object?.property?.name == "ui" &&
 						node?.callee?.object?.object?.name == "sap"
+					) {
+						const depsArray = node.arguments.filter((arg) => arg.type === "ArrayExpression");
+						if (depsArray.length > 0) {
+							depsArray[0].elements.forEach((elDep) => {
+								if (elDep?.type === "Literal" /* && bundledResources.includes(elDep.value) */) {
+									if (elDep.value === "require") {
+										importsSapUiRequire = true;
+									} else {
+										tokens[elDep.value] = rewriteDep(elDep.value, bundledResources);
+										elDep.value = tokens[elDep.value];
+										changed = true;
+									}
+								}
+							});
+						}
+					} else if (
+						/* require if imported in sap.ui.require|define */
+						importsSapUiRequire &&
+						node?.type === "CallExpression" &&
+						/require/.test(node?.callee?.name)
 					) {
 						const depsArray = node.arguments.filter((arg) => arg.type === "ArrayExpression");
 						if (depsArray.length > 0) {

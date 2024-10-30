@@ -11,6 +11,10 @@ framework:
     - name: sap.ui.unified
     - name: themelib_sap_horizon
 builder:
+  componentPreload:
+    excludes:
+      # exclude the dynamic imports from the bundle
+      - "ui5/ecosystem/demo/webctsapp/thirdparty/_dynamics/**"
   customTasks:
     - name: ui5-tooling-transpile-task
       afterTask: replaceVersion

@@ -1,4 +1,4 @@
-const { join, dirname } = require("path");
+const { join, dirname, posix } = require("path");
 const { readFileSync, existsSync } = require("fs");
 const { createHash } = require("crypto");
 
@@ -12,7 +12,16 @@ const { lt, gte } = require("semver");
 //   - Externalize UI5 Web Components specific code
 module.exports = function ({ log, resolveModule, getPackageJson, framework, options } = {}) {
 	// derive the configuration from the provided options
-	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force } = Object.assign({ skip: false, scoping: true, enrichBusyIndicator: false, force: false }, options);
+	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets } = Object.assign(
+		{
+			skip: false,
+			scoping: true,
+			enrichBusyIndicator: false,
+			force: false,
+			includeAssets: false, // experimental (due to race condition!)
+		},
+		options,
+	);
 
 	// TODO: maybe we should derive the minimum version from the applications package.json
 	//       instead of the framework version (which might be a different version)
@@ -245,6 +254,14 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 					}
 				}
 
+				// if assets should be included we probe for the assets module
+				// which is always located in dist/Assets.js for UI5 Web Components
+				// and in case of resolving the module successfully we include it
+				let assetsModule = posix.join(namespace, "dist/Assets.js");
+				if (!(includeAssets && resolveModule(assetsModule))) {
+					assetsModule = undefined;
+				}
+
 				// generate the library code
 				const code = webcTmplFnPackage({
 					metadata,
@@ -256,6 +273,7 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 					scopeSuffix: ui5WebCScopeSuffix,
 					enrichBusyIndicator,
 					nonUI5TagsToRegister,
+					assetsModule,
 				});
 				// include the monkey patches for the Web Components base library
 				// only for UI5 versions < 1.128.0 (otherwise the monkey patches are not needed anymore)
