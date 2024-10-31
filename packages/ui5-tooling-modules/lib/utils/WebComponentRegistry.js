@@ -228,28 +228,69 @@ class RegistryEntry {
 		}
 	}
 
+	/**
+	 * Checks the given property definition object for a special UI5 mapping.
+	 * The specific formatter are implemented in "sap.ui.core.webc.WebComponent".
+	 *
+	 * @param {object} propDef the property definition object from the custom elements metadata
+	 * @param {object} ui5metadata the UI5 metadata object
+	 * @returns {boolean} whether the property needs a special mapping
+	 */
+	#checkForSpecialMapping(propDef, ui5metadata) {
+		if (propDef.name === "accessibleNameRef") {
+			ui5metadata.associations["ariaLabelledBy"] = {
+				type: "sap.ui.core.Control",
+				multiple: true,
+				mapping: {
+					type: "property",
+					to: "accessibleNameRef",
+					formatter: "_getAriaLabelledByForRendering",
+				},
+			};
+			return true;
+		} else if (propDef.name === "disabled") {
+			// "disabled" maps to "enabled" in UI5
+			ui5metadata.properties["enabled"] = {
+				type: "boolean",
+				defaultValue: "true",
+				mapping: {
+					type: "property",
+					to: "disabled",
+					formatter: "_mapEnabled",
+				},
+			};
+			return true;
+		} else if (propDef.name === "textDirection") {
+			// text direction needs to be mapped to the native "dir"
+			ui5metadata.properties["textDirection"] = {
+				type: "sap.ui.core.TextDirection",
+				defaultValue: "TextDirection.Inherit",
+				mapping: {
+					type: "property",
+					to: "dir",
+					formatter: "_mapTextDirection",
+				},
+			};
+			return true;
+		}
+
+		return false;
+	}
+
 	#processMembers(classDef, ui5metadata, propDef) {
 		// field -> property or association
 		if (propDef.kind === "field") {
 			let ui5TypeInfo = this.#extractUi5Type(propDef.type);
 
-			// [ Accessibility ]
-			//     1. ACC attributes have webc internal typing and will be defaulted to "object" ob UI5 side.
-			//     2. "accessibleNameRef" must be mapped to "ariaLabelledBy"
+			// ACC attributes have webc internal typing and will be defaulted to "object" ob UI5 side.
 			if (propDef.name === "accessibilityAttributes") {
 				ui5TypeInfo.ui5Type = "object";
 				ui5TypeInfo.isUnclear = false;
-			} else if (propDef.name === "accessibleNameRef") {
-				ui5metadata.associations["ariaLabelledBy"] = {
-					type: "sap.ui.core.Control",
-					multiple: true,
-					mapping: {
-						type: "property",
-						to: "accessibleNameRef",
-						// formatter is implemented in sap.ui.core.webc.WebComponent
-						formatter: "_getAriaLabelledByForRendering",
-					},
-				};
+			}
+
+			// Some properties might need a special UI5 mapping, e.g. "accesibleNameRef"
+			const hasSpecialMapping = this.#checkForSpecialMapping(propDef, ui5metadata);
+			if (hasSpecialMapping) {
 				return;
 			}
 

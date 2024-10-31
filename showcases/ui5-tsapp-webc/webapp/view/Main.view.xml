@@ -59,6 +59,16 @@
             <webc:Option text="Biometric" icon="biometric-face" />
             <webc:Option text="Security" icon="badge" />
           </webc:Select>
+          <!-- Sample for aggregation modification via event handler -->
+          <webc:MultiInput id="multi-input" tokenDelete=".deleteToken">
+            <webc:tokens>
+              <webc:Token text="Argentina" />
+              <webc:Token text="Mexico" />
+              <webc:Token text="Philippines" />
+              <webc:Token text="Sweden" />
+              <webc:Token text="USA" />
+            </webc:tokens>
+          </webc:MultiInput>
         </VBox>
       </webc:Panel>
 

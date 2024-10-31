@@ -10,6 +10,7 @@ import Button from "@ui5/webcomponents/Button";
 import DatePicker from "@ui5/webcomponents/DatePicker";
 import Input from "@ui5/webcomponents/Input";
 import { AvatarSize } from "@ui5/webcomponents";
+import Token from "@ui5/webcomponents/Token";
 
 // import icons
 import "@ui5/webcomponents-icons/dist/Assets.js";
@@ -70,6 +71,17 @@ export default class Main extends Controller {
 
 	public onLiveChange(e: Event): void {
 		MessageToast.show(`🛠️ liveChange: ${e.getParameter("selectedOption").getText()}`, { at: Popup.Dock.CenterCenter });
+	}
+
+	/**
+	 * Deletes a token from the MultiInput's "token" aggregation.
+	 */
+	public deleteToken(e: Event): void {
+		const deletedTokens: Token[] = e.getParameter("tokens");
+		deletedTokens.forEach((t: Token) => {
+			const multiInput = t.getParent();
+			multiInput.removeToken(t);
+		});
 	}
 
 	// wire popover opener buttons
