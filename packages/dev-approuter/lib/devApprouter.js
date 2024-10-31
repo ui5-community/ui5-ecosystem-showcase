@@ -2,10 +2,11 @@ const approuter = require("@sap/approuter");
 const express = require("express");
 const xsenv = require("@sap/xsenv");
 
+const LOG = require("@sap/cds").log("dev-approuter") || console;
+
 const findUI5Modules = require("cds-plugin-ui5/lib/findUI5Modules");
 const createPatchedRouter = require("cds-plugin-ui5/lib/createPatchedRouter");
 const applyUI5Middleware = require("cds-plugin-ui5/lib/applyUI5Middleware");
-
 const findCDSModules = require("ui5-middleware-cap/lib/findCDSModules");
 const applyCDSMiddleware = require("ui5-middleware-cap/lib/applyCDSMiddleware");
 
@@ -91,7 +92,7 @@ class DevApprouter {
 			});
 
 			// mounting the router for the UI5 application to the CDS server
-			console.log(`Mounting ${mountPath} to UI5 app ${modulePath}`);
+			LOG.info(`Mounting ${mountPath} to UI5 app ${modulePath}`);
 
 			let middlewareMountPath;
 			// define middlewareMountPath as `/_${mountPath}` if ui5 module is referenced as "dependency" in xs-dev.json or xs-app.json
@@ -126,7 +127,7 @@ class DevApprouter {
 			app._listen = app.listen;
 			app.listen = function (port, callback) {
 				return this._listen(cdsPort, function () {
-					console.log(`CDS server started at: http://localhost:${cdsPort}`);
+					LOG.info(`CDS server started at: http://localhost:${cdsPort}`);
 					callback?.apply(callback, arguments);
 				});
 			};
@@ -169,7 +170,7 @@ class DevApprouter {
 				},
 			].concat(extensions),
 		});
-		console.log(`Approuter started at: http://localhost:${arPort}`);
+		LOG.info(`Approuter started at: http://localhost:${arPort}`);
 	}
 }
 

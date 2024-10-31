@@ -1,6 +1,8 @@
 const path = require("path");
 const fs = require("fs");
 
+const LOG = require("@sap/cds").log("dev-approuter") || console;
+
 /**
  * Parses the approuter configuration from an `xs-dev.json` file.
  * If that file doesn't exist, it looks for an `xs-app.json` file.
@@ -16,6 +18,7 @@ const parseConfig = () => {
 		if (fs.existsSync(path.join(process.cwd(), file))) {
 			config = JSON.parse(fs.readFileSync(path.join(process.cwd(), file), { encoding: "utf8" }));
 			configFile = file;
+			LOG.info(`Using configuration from ${path.join(process.cwd(), configFile)}`);
 			break;
 		}
 	}
@@ -47,6 +50,7 @@ const applyDependencyConfig = (config) => {
 		}
 	});
 	delete config.dependencyRoutes;
+	LOG.info("running these routes:", config.routes);
 	return config;
 };
 
@@ -83,6 +87,7 @@ const addDestination = (moduleId, port, mountPath) => {
 		});
 		process.env.destinations = JSON.stringify(destinations);
 	}
+	LOG.info("running these destinations:", JSON.parse(process.env.destinations));
 };
 
 /**
