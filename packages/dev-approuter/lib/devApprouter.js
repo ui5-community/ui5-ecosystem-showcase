@@ -144,7 +144,9 @@ class DevApprouter {
 					dependency: moduleId,
 					authenticationType: "none",
 				};
-				config.routes.unshift(Object.assign({}, route));
+				// respect already declared routes in xs-dev.json
+				// so inserting these auto-generated ones after
+				config.routes.push(Object.assign({}, route));
 				config.dependencyRoutes[moduleId] = configureCDSRoute(moduleId, servicesPaths, route);
 			} else {
 				config.dependencyRoutes[moduleId] = configureCDSRoute(moduleId, servicesPaths, config.dependencyRoutes[moduleId]);
