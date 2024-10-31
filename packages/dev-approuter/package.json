@@ -19,10 +19,5 @@
   },
   "peerDependencies": {
     "@sap/cds": "*"
-  },
-  "peerDependenciesMeta": {
-    "@sap/cds": {
-      "optional": true
-    }
   }
 }
