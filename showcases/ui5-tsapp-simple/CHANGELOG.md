@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-simple@0.9.2...ui5-tsapp-simple@0.9.3) (2024-11-01)
+
+
+### Bug Fixes
+
+* update dependencies ([#1114](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1114)) ([d7672f2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d7672f2cd10f8a5de1da3070050ab98810e0fcf8))
+
+
+
+
+
 ## [0.9.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-simple@0.9.1...ui5-tsapp-simple@0.9.2) (2024-10-30)
 
 

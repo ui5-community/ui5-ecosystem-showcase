@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.18.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.17.0...ui5-tooling-modules@3.18.0) (2024-11-01)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** include LabelEnablement to list of external deps ([#1116](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1116)) ([4ca258c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4ca258c8102372332cc0999a837acb23f6ecbf7a))
+* update dependencies ([#1114](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1114)) ([d7672f2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d7672f2cd10f8a5de1da3070050ab98810e0fcf8))
+
+
+### Features
+
+* **ui5-tooling-modules:** support special UI5 settings for web components ([#1108](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1108)) ([d0c7cde](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d0c7cde0974b0eba4fd3dd6757320dc6a84129de))
+
+
+
+
+
 # [3.17.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.16.6...ui5-tooling-modules@3.17.0) (2024-10-30)
 
 

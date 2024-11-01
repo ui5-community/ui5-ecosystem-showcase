@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-onelogin@3.6.1...ui5-middleware-onelogin@3.6.2) (2024-11-01)
+
+
+### Bug Fixes
+
+* update dependencies ([#1114](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1114)) ([d7672f2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d7672f2cd10f8a5de1da3070050ab98810e0fcf8))
+
+
+
+
+
 ## [3.6.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-onelogin@3.6.0...ui5-middleware-onelogin@3.6.1) (2024-10-10)
 
 **Note:** Version bump only for package ui5-middleware-onelogin
