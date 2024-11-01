@@ -305,6 +305,7 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 				});
 				const metadata = JSON.stringify(metadataObject, undefined, 2);
 				const webcClass = moduleInfo.attributes.absModulePath.replace(/\\/g, "/"); // is the absolute path of the original Web Component class
+				const needsLabelEnablement = clazz._ui5NeedsLabelEnablement;
 
 				// Determine the superclass UI5 module name and import it
 				let webcBaseClass = "sap/ui/core/webc/WebComponent";
@@ -321,6 +322,7 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 					metadata,
 					webcClass,
 					webcBaseClass,
+					needsLabelEnablement,
 				});
 				return code;
 			}

@@ -59,6 +59,16 @@
             <webc:Option text="Biometric" icon="biometric-face" />
             <webc:Option text="Security" icon="badge" />
           </webc:Select>
+          <!-- Sample for aggregation modification via event handler -->
+          <webc:MultiInput id="multi-input" tokenDelete=".deleteToken">
+            <webc:tokens>
+              <webc:Token text="Argentina" />
+              <webc:Token text="Mexico" />
+              <webc:Token text="Philippines" />
+              <webc:Token text="Sweden" />
+              <webc:Token text="USA" />
+            </webc:tokens>
+          </webc:MultiInput>
         </VBox>
       </webc:Panel>
 
@@ -73,7 +83,7 @@
 
           <webc:Popover id="popover1" opener="popoverOpenerButton1" headerText="Newsletter subscription" placement="Bottom">
             <c:HTMLElement tag="div" class="popover-content">
-              <webc:Label for="emailInput" required="true" showColon="true" text="Email" />
+              <webc:Label labelFor="emailInput" required="true" showColon="true" text="Email" />
               <webc:Input id="emailInput1" placeholder="Enter Email" />
               <!-- TODO: support for inline styles  =  style="min-width: 150px;" -->
               <webc:Label text="The popover is associated with the Button. Calling getOpener() returns the ID of the Button." />
@@ -87,7 +97,7 @@
 
           <webc:Popover id="popover2" opener="popoverOpenerButton2" headerText="Newsletter subscription" placement="Start">
             <c:HTMLElement tag="div" class="popover-content">
-              <webc:Label for="emailInput" required="true" showColon="true" text="Email" />
+              <webc:Label labelFor="emailInput" required="true" showColon="true" text="Email" />
               <webc:Input id="emailInput2" placeholder="Enter Email" />
               <!-- TODO: support for inline styles  =  style="min-width: 150px;" -->
               <webc:Label text="The popover is associated with the Button. Calling getOpener() returns the ID of the Button." />

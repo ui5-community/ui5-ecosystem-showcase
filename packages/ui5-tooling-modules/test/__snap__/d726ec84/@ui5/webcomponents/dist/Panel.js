@@ -3204,7 +3204,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'ui5/ecosy
       return (c > 3 && r && Object.defineProperty(target, key, r), r);
     });
     var Panel_1;
-    let Panel$1 = Panel_1 = class Panel extends UI5Element {
+    let Panel = Panel_1 = class Panel extends UI5Element {
       constructor() {
         super(...arguments);
         this.fixed = false;
@@ -3370,38 +3370,38 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'ui5/ecosy
         Panel_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
       }
     };
-    __decorate([property()], Panel$1.prototype, "headerText", void 0);
+    __decorate([property()], Panel.prototype, "headerText", void 0);
     __decorate([property({
       type: Boolean
-    })], Panel$1.prototype, "fixed", void 0);
+    })], Panel.prototype, "fixed", void 0);
     __decorate([property({
       type: Boolean
-    })], Panel$1.prototype, "collapsed", void 0);
+    })], Panel.prototype, "collapsed", void 0);
     __decorate([property({
       type: Boolean
-    })], Panel$1.prototype, "noAnimation", void 0);
-    __decorate([property()], Panel$1.prototype, "accessibleRole", void 0);
-    __decorate([property()], Panel$1.prototype, "headerLevel", void 0);
-    __decorate([property()], Panel$1.prototype, "accessibleName", void 0);
+    })], Panel.prototype, "noAnimation", void 0);
+    __decorate([property()], Panel.prototype, "accessibleRole", void 0);
+    __decorate([property()], Panel.prototype, "headerLevel", void 0);
+    __decorate([property()], Panel.prototype, "accessibleName", void 0);
     __decorate([property({
       type: Boolean
-    })], Panel$1.prototype, "stickyHeader", void 0);
+    })], Panel.prototype, "stickyHeader", void 0);
     __decorate([property({
       type: Boolean
-    })], Panel$1.prototype, "useAccessibleNameForToggleButton", void 0);
+    })], Panel.prototype, "useAccessibleNameForToggleButton", void 0);
     __decorate([property({
       type: Boolean
-    })], Panel$1.prototype, "_hasHeader", void 0);
+    })], Panel.prototype, "_hasHeader", void 0);
     __decorate([property({
       type: Boolean,
       noAttribute: true
-    })], Panel$1.prototype, "_contentExpanded", void 0);
+    })], Panel.prototype, "_contentExpanded", void 0);
     __decorate([property({
       type: Boolean,
       noAttribute: true
-    })], Panel$1.prototype, "_animationRunning", void 0);
-    __decorate([slot()], Panel$1.prototype, "header", void 0);
-    Panel$1 = Panel_1 = __decorate([customElement({
+    })], Panel.prototype, "_animationRunning", void 0);
+    __decorate([slot()], Panel.prototype, "header", void 0);
+    Panel = Panel_1 = __decorate([customElement({
       tag: "ui5-panel",
       fastNavigation: true,
       languageAware: true,
@@ -3409,10 +3409,10 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'ui5/ecosy
       template: block0,
       styles: styleData,
       dependencies: [Button$1, Icon$1]
-    }), event("toggle")], Panel$1);
-    Panel$1.define();
+    }), event("toggle")], Panel);
+    Panel.define();
 
-    var Panel = WebComponentBaseClass.extend("@ui5/webcomponents.Panel", {
+    const WrapperClass = WebComponentBaseClass.extend("@ui5/webcomponents.Panel", {
       metadata: {
       "namespace": "@ui5/webcomponents",
       "tag": "ui5-panel-mYsCoPeSuFfIx",
@@ -3503,6 +3503,6 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'ui5/ecosy
       }
     });
 
-    return Panel;
+    return WrapperClass;
 
 }));
