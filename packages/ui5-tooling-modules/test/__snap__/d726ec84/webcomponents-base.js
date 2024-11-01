@@ -137,16 +137,6 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
         }
     }
 
-    const VersionInfo = {
-        version: "2.1.2",
-        major: 2,
-        minor: 1,
-        patch: 2,
-        suffix: "",
-        isNext: false,
-        buildTime: 1724244890,
-    };
-
     /**
      * Returns a singleton HTML element, inserted in given parent element of HTML page,
      * used mostly to store and share global resources between multiple UI5 Web Components runtimes.
@@ -203,6 +193,153 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
         return current;
     };
 
+    const Tags = getSharedResource("Tags", new Map());
+    const Definitions = new Set();
+    let Failures = new Map();
+    let failureTimeout;
+    const UNKNOWN_RUNTIME = -1;
+    const registerTag = tag => {
+      Definitions.add(tag);
+      Tags.set(tag, getCurrentRuntimeIndex());
+    };
+    const isTagRegistered = tag => {
+      return Definitions.has(tag);
+    };
+    const getAllRegisteredTags = () => {
+      return [...Definitions.values()];
+    };
+    const recordTagRegistrationFailure = tag => {
+      let tagRegRuntimeIndex = Tags.get(tag);
+      if (tagRegRuntimeIndex === undefined) {
+        tagRegRuntimeIndex = UNKNOWN_RUNTIME;
+      }
+      if (!Failures.has(tagRegRuntimeIndex)) {
+        Failures.set(tagRegRuntimeIndex, new Set());
+      }
+      Failures.get(tagRegRuntimeIndex).add(tag);
+      if (!failureTimeout) {
+        failureTimeout = setTimeout(() => {
+          displayFailedRegistrations();
+          Failures = new Map();
+          failureTimeout = undefined;
+        }, 1000);
+      }
+    };
+    const displayFailedRegistrations = () => {
+      const allRuntimes = getAllRuntimes();
+      const currentRuntimeIndex = getCurrentRuntimeIndex();
+      const currentRuntime = allRuntimes[currentRuntimeIndex];
+      let message = `Multiple UI5 Web Components instances detected.`;
+      if (allRuntimes.length > 1) {
+        message = `${message}\nLoading order (versions before 1.1.0 not listed): ${allRuntimes.map(runtime => `\n${runtime.description}`).join("")}`;
+      }
+      [...Failures.keys()].forEach(otherRuntimeIndex => {
+        let comparison;
+        let otherRuntime;
+        if (otherRuntimeIndex === UNKNOWN_RUNTIME) {
+          comparison = 1;
+          otherRuntime = {
+            description: `Older unknown runtime`
+          };
+        } else {
+          comparison = compareRuntimes(currentRuntimeIndex, otherRuntimeIndex);
+          otherRuntime = allRuntimes[otherRuntimeIndex];
+        }
+        let compareWord;
+        if (comparison > 0) {
+          compareWord = "an older";
+        } else if (comparison < 0) {
+          compareWord = "a newer";
+        } else {
+          compareWord = "the same";
+        }
+        message = `${message}\n\n"${currentRuntime.description}" failed to define ${Failures.get(otherRuntimeIndex).size} tag(s) as they were defined by a runtime of ${compareWord} version "${otherRuntime.description}": ${[...Failures.get(otherRuntimeIndex)].sort().join(", ")}.`;
+        if (comparison > 0) {
+          message = `${message}\nWARNING! If your code uses features of the above web components, unavailable in ${otherRuntime.description}, it might not work as expected!`;
+        } else {
+          message = `${message}\nSince the above web components were defined by the same or newer version runtime, they should be compatible with your code.`;
+        }
+      });
+      message = `${message}\n\nTo prevent other runtimes from defining tags that you use, consider using scoping or have third-party libraries use scoping: https://github.com/SAP/ui5-webcomponents/blob/main/docs/2-advanced/03-scoping.md.`;
+      console.warn(message);
+    };
+
+    const VersionInfo = {
+        version: "2.3.0",
+        major: 2,
+        minor: 3,
+        patch: 0,
+        suffix: "",
+        isNext: false,
+        buildTime: 1727888399,
+    };
+
+    let suf;
+    let rulesObj = {
+        include: [/^ui5-/],
+        exclude: [],
+    };
+    const tagsCache = new Map(); // true/false means the tag should/should not be cached, undefined means not known yet.
+    /**
+     * Sets the suffix to be used for custom elements scoping, f.e. pass "demo" to get tags such as "ui5-button-demo".
+     * Note: by default all tags starting with "ui5-" will be scoped, unless you change this by calling "setCustomElementsScopingRules"
+     *
+     * @public
+     * @param suffix The scoping suffix
+     */
+    const setCustomElementsScopingSuffix = (suffix) => {
+        if (!suffix.match(/^[a-zA-Z0-9_-]+$/)) {
+            throw new Error("Only alphanumeric characters and dashes allowed for the scoping suffix");
+        }
+        suf = suffix;
+    };
+    /**
+     * Returns the currently set scoping suffix, or undefined if not set.
+     *
+     * @public
+     * @returns {String|undefined}
+     */
+    const getCustomElementsScopingSuffix = () => {
+        return suf;
+    };
+    /**
+     * Returns the rules, governing which custom element tags to scope and which not. By default, all elements
+     * starting with "ui5-" are scoped. The default rules are: {include: [/^ui5-/]}.
+     *
+     * @public
+     * @returns {Object}
+     */
+    const getCustomElementsScopingRules = () => {
+        return rulesObj;
+    };
+    /**
+     * Determines whether custom elements with the given tag should be scoped or not.
+     * The tag is first matched against the "include" rules and then against the "exclude" rules and the
+     * result is cached until new rules are set.
+     *
+     * @public
+     * @param tag
+     */
+    const shouldScopeCustomElement = (tag) => {
+        if (!tagsCache.has(tag)) {
+            const result = rulesObj.include.some(rule => tag.match(rule)) && !rulesObj.exclude.some(rule => tag.match(rule));
+            tagsCache.set(tag, result);
+        }
+        return tagsCache.get(tag);
+    };
+    /**
+     * Returns the currently set scoping suffix, if any and if the tag should be scoped, or undefined otherwise.
+     *
+     * @public
+     * @param tag
+     * @returns {String}
+     */
+    const getEffectiveScopingSuffixForTag = (tag) => {
+        if (shouldScopeCustomElement(tag)) {
+            return getCustomElementsScopingSuffix();
+        }
+    };
+
     let currentRuntimeIndex;
     let currentRuntimeAlias = "";
     const compareCache = new Map();
@@ -221,6 +358,15 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
             const versionInfo = VersionInfo;
             Runtimes.push({
                 ...versionInfo,
+                get scopingSuffix() {
+                    return getCustomElementsScopingSuffix();
+                },
+                get registeredTags() {
+                    return getAllRegisteredTags();
+                },
+                get scopingRules() {
+                    return getCustomElementsScopingRules();
+                },
                 alias: currentRuntimeAlias,
                 description: `Runtime ${currentRuntimeIndex} - ver ${versionInfo.version}${""}`,
             });
@@ -279,7 +425,7 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
         return Runtimes;
     };
 
-    const isSSR = typeof document === "undefined";
+    const isSSR$2 = typeof document === "undefined";
     const getStyleId = (name, value) => {
         return value ? `${name}|${value}` : name;
     };
@@ -322,7 +468,7 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
         }
     };
     const hasStyle = (name, value = "") => {
-        if (isSSR) {
+        if (isSSR$2) {
             return true;
         }
         return !!document.adoptedStyleSheets.find(sh => sh._ui5StyleId === getStyleId(name, value));
@@ -360,7 +506,7 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
     const componentFeatures = new Map();
     const subscribers = new Map();
     const EVENT_NAME = "componentFeatureLoad";
-    const eventProvider$4 = new EventProvider();
+    const eventProvider$5 = new EventProvider();
     const featureLoadEventName = name => `${EVENT_NAME}_${name}`;
     const registerFeature = (name, feature) => {
       features.set(name, feature);
@@ -382,7 +528,7 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
       } else {
         subscriber.push(name);
       }
-      eventProvider$4.attachEvent(featureLoadEventName(name), callback);
+      eventProvider$5.attachEvent(featureLoadEventName(name), callback);
     };
 
     const styleData$2 = {
@@ -402,6 +548,26 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
     const SUPPORTED_THEMES = assetParameters.themes.all;
     const DEFAULT_LANGUAGE = assetParameters.languages.default;
     const DEFAULT_LOCALE = assetParameters.locales.default;
+    const SUPPORTED_LOCALES = assetParameters.locales.all;
+
+    const isSSR$1 = typeof document === "undefined";
+    const internals$1 = {
+        search() {
+            if (isSSR$1) {
+                return "";
+            }
+            return window.location.search;
+        },
+    };
+    const getLocationHref = () => {
+        if (isSSR$1) {
+            return "";
+        }
+        return window.location.href;
+    };
+    const getLocationSearch = () => {
+        return internals$1.search();
+    };
 
     const getMetaTagValue = (metaTagName) => {
         const metaTag = document.querySelector(`META[name="${metaTagName}"]`), metaTagContent = metaTag && metaTag.getAttribute("content");
@@ -425,7 +591,7 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
                 // new URL("/newExmPath", "http://example.com/exmPath") => http://example.com/newExmPath
                 // new URL("./newExmPath", "http://example.com/exmPath") => http://example.com/exmPath/newExmPath
                 // new URL("../newExmPath", "http://example.com/exmPath") => http://example.com/newExmPath
-                resultUrl = new URL(themeRoot, window.location.href).toString();
+                resultUrl = new URL(themeRoot, getLocationHref()).toString();
             }
             else {
                 const themeRootURL = new URL(themeRoot);
@@ -437,7 +603,7 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
                 else {
                     // If origin is not allow and the URL is not relative, we have to replace the origin
                     // with current location
-                    resultUrl = buildCorrectUrl(themeRootURL.toString(), window.location.href);
+                    resultUrl = buildCorrectUrl(themeRootURL.toString(), getLocationHref());
                 }
             }
             if (!resultUrl.endsWith("/")) {
@@ -476,6 +642,12 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
     })(AnimationMode || (AnimationMode = {}));
     var AnimationMode$1 = AnimationMode;
 
+    const eventProvider$4 = new EventProvider();
+    const CONFIGURATION_RESET = "configurationReset";
+    const attachConfigurationReset = (listener) => {
+        eventProvider$4.attachEvent(CONFIGURATION_RESET, listener);
+    };
+
     let initialized = false;
     let initialConfig = {
         animationMode: AnimationMode$1.Full,
@@ -486,10 +658,11 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
         timezone: undefined,
         calendarType: undefined,
         secondaryCalendarType: undefined,
-        noConflict: false,
+        noConflict: false, // no URL
         formatSettings: {},
         fetchDefaultLanguage: false,
         defaultFontLoading: true,
+        enableDefaultTooltips: true,
     };
     /* General settings */
     const getAnimationMode = () => {
@@ -525,6 +698,10 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
         initConfiguration();
         return initialConfig.defaultFontLoading;
     };
+    const getEnableDefaultTooltips = () => {
+        initConfiguration();
+        return initialConfig.enableDefaultTooltips;
+    };
     const booleanMapping = new Map();
     booleanMapping.set("true", true);
     booleanMapping.set("false", false);
@@ -544,7 +721,7 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
         }
     };
     const parseURLParameters = () => {
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(getLocationSearch());
         // Process "sap-*" params first
         params.forEach((value, key) => {
             const parts = key.split("sap-").length;
@@ -599,16 +776,26 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
         if (typeof document === "undefined" || initialized) {
             return;
         }
+        resetConfiguration();
+        initialized = true;
+    };
+    /**
+     * Internaly exposed method to enable configurations in tests.
+     * @private
+     */
+    const resetConfiguration = (testEnv) => {
         // 1. Lowest priority - configuration script
         parseConfigurationScript();
         // 2. URL parameters overwrite configuration script parameters
         parseURLParameters();
         // 3. If OpenUI5 is detected, it has the highest priority
         applyOpenUI5Configuration();
-        initialized = true;
     };
 
     let defaultFontLoading;
+    attachConfigurationReset(() => {
+        defaultFontLoading = undefined;
+    });
     /**
      * Returns if the "defaultFontLoading" configuration is set.
      * @public
@@ -711,77 +898,6 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
             }
         }
     }
-
-    const Tags = getSharedResource("Tags", new Map());
-    const Definitions = new Set();
-    let Failures = new Map();
-    let failureTimeout;
-    const UNKNOWN_RUNTIME = -1;
-    const registerTag = tag => {
-      Definitions.add(tag);
-      Tags.set(tag, getCurrentRuntimeIndex());
-    };
-    const isTagRegistered = tag => {
-      return Definitions.has(tag);
-    };
-    const getAllRegisteredTags = () => {
-      return [...Definitions.values()];
-    };
-    const recordTagRegistrationFailure = tag => {
-      let tagRegRuntimeIndex = Tags.get(tag);
-      if (tagRegRuntimeIndex === undefined) {
-        tagRegRuntimeIndex = UNKNOWN_RUNTIME;
-      }
-      if (!Failures.has(tagRegRuntimeIndex)) {
-        Failures.set(tagRegRuntimeIndex, new Set());
-      }
-      Failures.get(tagRegRuntimeIndex).add(tag);
-      if (!failureTimeout) {
-        failureTimeout = setTimeout(() => {
-          displayFailedRegistrations();
-          Failures = new Map();
-          failureTimeout = undefined;
-        }, 1000);
-      }
-    };
-    const displayFailedRegistrations = () => {
-      const allRuntimes = getAllRuntimes();
-      const currentRuntimeIndex = getCurrentRuntimeIndex();
-      const currentRuntime = allRuntimes[currentRuntimeIndex];
-      let message = `Multiple UI5 Web Components instances detected.`;
-      if (allRuntimes.length > 1) {
-        message = `${message}\nLoading order (versions before 1.1.0 not listed): ${allRuntimes.map(runtime => `\n${runtime.description}`).join("")}`;
-      }
-      [...Failures.keys()].forEach(otherRuntimeIndex => {
-        let comparison;
-        let otherRuntime;
-        if (otherRuntimeIndex === UNKNOWN_RUNTIME) {
-          comparison = 1;
-          otherRuntime = {
-            description: `Older unknown runtime`
-          };
-        } else {
-          comparison = compareRuntimes(currentRuntimeIndex, otherRuntimeIndex);
-          otherRuntime = allRuntimes[otherRuntimeIndex];
-        }
-        let compareWord;
-        if (comparison > 0) {
-          compareWord = "an older";
-        } else if (comparison < 0) {
-          compareWord = "a newer";
-        } else {
-          compareWord = "the same";
-        }
-        message = `${message}\n\n"${currentRuntime.description}" failed to define ${Failures.get(otherRuntimeIndex).size} tag(s) as they were defined by a runtime of ${compareWord} version "${otherRuntime.description}": ${[...Failures.get(otherRuntimeIndex)].sort().join(", ")}.`;
-        if (comparison > 0) {
-          message = `${message}\nWARNING! If your code uses features of the above web components, unavailable in ${otherRuntime.description}, it might not work as expected!`;
-        } else {
-          message = `${message}\nSince the above web components were defined by the same or newer version runtime, they should be compatible with your code.`;
-        }
-      });
-      message = `${message}\n\nTo prevent other runtimes from defining tags that you use, consider using scoping or have third-party libraries use scoping: https://github.com/SAP/ui5-webcomponents/blob/main/docs/2-advanced/03-scoping.md.`;
-      console.warn(message);
-    };
 
     const rtlAwareSet = new Set();
     const markAsRtlAware = (klass) => {
@@ -1099,6 +1215,9 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
     };
 
     let currThemeRoot;
+    attachConfigurationReset(() => {
+        currThemeRoot = undefined;
+    });
     /**
      * Returns the current theme root.
      *
@@ -1165,7 +1284,7 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
             const varsLoaded = openUI5Support.cssVariablesLoaded();
             if (varsLoaded) {
                 return {
-                    themeName: openUI5Support.getConfigurationSettingsObject()?.theme,
+                    themeName: openUI5Support.getConfigurationSettingsObject()?.theme, // just themeName
                     baseThemeName: "", // baseThemeName is only relevant for custom themes
                 };
             }
@@ -1191,6 +1310,9 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
     };
 
     let curTheme;
+    attachConfigurationReset(() => {
+        curTheme = undefined;
+    });
     /**
      * Returns the current theme.
      * @public
@@ -1235,6 +1357,173 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
     };
     const isKnownTheme = (theme) => SUPPORTED_THEMES.includes(theme);
 
+    const isSSR = typeof document === "undefined";
+    const internals = {
+        get userAgent() {
+            if (isSSR) {
+                return "";
+            }
+            return navigator.userAgent;
+        },
+        get touch() {
+            if (isSSR) {
+                return false;
+            }
+            return "ontouchstart" in window || navigator.maxTouchPoints > 0;
+        },
+        get chrome() {
+            if (isSSR) {
+                return false;
+            }
+            return /(Chrome|CriOS)/.test(internals.userAgent);
+        },
+        get firefox() {
+            if (isSSR) {
+                return false;
+            }
+            return /Firefox/.test(internals.userAgent);
+        },
+        get safari() {
+            if (isSSR) {
+                return false;
+            }
+            return !internals.chrome && /(Version|PhantomJS)\/(\d+\.\d+).*Safari/.test(internals.userAgent);
+        },
+        get webkit() {
+            if (isSSR) {
+                return false;
+            }
+            return /webkit/.test(internals.userAgent);
+        },
+        get windows() {
+            if (isSSR) {
+                return false;
+            }
+            return navigator.platform.indexOf("Win") !== -1;
+        },
+        get macOS() {
+            if (isSSR) {
+                return false;
+            }
+            return !!navigator.userAgent.match(/Macintosh|Mac OS X/i);
+        },
+        get iOS() {
+            if (isSSR) {
+                return false;
+            }
+            return !!(navigator.platform.match(/iPhone|iPad|iPod/)) || !!(internals.userAgent.match(/Mac/) && "ontouchend" in document);
+        },
+        get android() {
+            if (isSSR) {
+                return false;
+            }
+            return !internals.windows && /Android/.test(internals.userAgent);
+        },
+        get androidPhone() {
+            if (isSSR) {
+                return false;
+            }
+            return internals.android && /(?=android)(?=.*mobile)/i.test(internals.userAgent);
+        },
+        get ipad() {
+            if (isSSR) {
+                return false;
+            }
+            // With iOS 13 the string 'iPad' was removed from the user agent string through a browser setting, which is applied on all sites by default:
+            // "Request Desktop Website -> All websites" (for more infos see: https://forums.developer.apple.com/thread/119186).
+            // Therefore the OS is detected as MACINTOSH instead of iOS and the device is a tablet if the Device.support.touch is true.
+            return /ipad/i.test(internals.userAgent) || (/Macintosh/i.test(internals.userAgent) && "ontouchend" in document);
+        },
+        _isPhone() {
+            detectTablet();
+            return internals.touch && !tablet;
+        },
+    };
+    let windowsVersion;
+    let webkitVersion;
+    let tablet;
+    const isWindows8OrAbove = () => {
+        if (isSSR) {
+            return false;
+        }
+        if (!internals.windows) {
+            return false;
+        }
+        if (windowsVersion === undefined) {
+            const matches = internals.userAgent.match(/Windows NT (\d+).(\d)/);
+            windowsVersion = matches ? parseFloat(matches[1]) : 0;
+        }
+        return windowsVersion >= 8;
+    };
+    const isWebkit537OrAbove = () => {
+        if (isSSR) {
+            return false;
+        }
+        if (!internals.webkit) {
+            return false;
+        }
+        if (webkitVersion === undefined) {
+            const matches = internals.userAgent.match(/(webkit)[ /]([\w.]+)/);
+            webkitVersion = matches ? parseFloat(matches[1]) : 0;
+        }
+        return webkitVersion >= 537.10;
+    };
+    const detectTablet = () => {
+        if (isSSR) {
+            return false;
+        }
+        if (tablet !== undefined) {
+            return;
+        }
+        if (internals.ipad) {
+            tablet = true;
+            return;
+        }
+        if (internals.touch) {
+            if (isWindows8OrAbove()) {
+                tablet = true;
+                return;
+            }
+            if (internals.chrome && internals.android) {
+                tablet = !/Mobile Safari\/[.0-9]+/.test(internals.userAgent);
+                return;
+            }
+            let densityFactor = window.devicePixelRatio ? window.devicePixelRatio : 1; // may be undefined in Windows Phone devices
+            if (internals.android && isWebkit537OrAbove()) {
+                densityFactor = 1;
+            }
+            tablet = (Math.min(window.screen.width / densityFactor, window.screen.height / densityFactor) >= 600);
+            return;
+        }
+        tablet = internals.userAgent.indexOf("Touch") !== -1 || (internals.android && !internals.androidPhone);
+    };
+    const isSafari = () => internals.safari;
+    const isTablet = () => {
+        detectTablet();
+        return (internals.touch || isWindows8OrAbove()) && tablet;
+    };
+    const isPhone = () => {
+        return internals._isPhone();
+    };
+    const isDesktop = () => {
+        if (isSSR) {
+            return false;
+        }
+        return (!isTablet() && !isPhone()) || isWindows8OrAbove();
+    };
+    const isIOS = () => {
+        return internals.iOS;
+    };
+
+    let listenerAttached = false;
+    const fixSafariActiveState = () => {
+        if (isSafari() && isIOS() && !listenerAttached) {
+            // Safari on iOS does not use the :active state unless there is a touchstart event handler on the <body> element
+            document.body.addEventListener("touchstart", () => { });
+            listenerAttached = true;
+        }
+    };
+
     let booted = false;
     let bootPromise;
     const eventProvider = new EventProvider();
@@ -1266,9 +1555,10 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
             openUI5Support && openUI5Support.attachListeners();
             insertFontFace();
             insertSystemCSSVars();
+            fixSafariActiveState();
             resolve();
             booted = true;
-            await eventProvider.fireEventAsync("boot");
+            eventProvider.fireEvent("boot");
         };
         bootPromise = new Promise(bootExecutor);
         return bootPromise;
@@ -1282,62 +1572,6 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
     const onThemeRegistered = (theme) => {
         if (booted && theme === getTheme()) { // getTheme should only be called if "booted" is true
             applyTheme(getTheme());
-        }
-    };
-
-    let suf;
-    let rulesObj = {
-        include: [/^ui5-/],
-        exclude: [],
-    };
-    const tagsCache = new Map(); // true/false means the tag should/should not be cached, undefined means not known yet.
-    /**
-     * Sets the suffix to be used for custom elements scoping, f.e. pass "demo" to get tags such as "ui5-button-demo".
-     * Note: by default all tags starting with "ui5-" will be scoped, unless you change this by calling "setCustomElementsScopingRules"
-     *
-     * @public
-     * @param suffix The scoping suffix
-     */
-    const setCustomElementsScopingSuffix = (suffix) => {
-        if (!suffix.match(/^[a-zA-Z0-9_-]+$/)) {
-            throw new Error("Only alphanumeric characters and dashes allowed for the scoping suffix");
-        }
-        suf = suffix;
-    };
-    /**
-     * Returns the currently set scoping suffix, or undefined if not set.
-     *
-     * @public
-     * @returns {String|undefined}
-     */
-    const getCustomElementsScopingSuffix = () => {
-        return suf;
-    };
-    /**
-     * Determines whether custom elements with the given tag should be scoped or not.
-     * The tag is first matched against the "include" rules and then against the "exclude" rules and the
-     * result is cached until new rules are set.
-     *
-     * @public
-     * @param tag
-     */
-    const shouldScopeCustomElement = (tag) => {
-        if (!tagsCache.has(tag)) {
-            const result = rulesObj.include.some(rule => tag.match(rule)) && !rulesObj.exclude.some(rule => tag.match(rule));
-            tagsCache.set(tag, result);
-        }
-        return tagsCache.get(tag);
-    };
-    /**
-     * Returns the currently set scoping suffix, if any and if the tag should be scoped, or undefined otherwise.
-     *
-     * @public
-     * @param tag
-     * @returns {String}
-     */
-    const getEffectiveScopingSuffixForTag = (tag) => {
-        if (shouldScopeCustomElement(tag)) {
-            return getCustomElementsScopingSuffix();
         }
     };
 
@@ -1377,7 +1611,7 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
             if (openingInitiated && topLayerAlreadyInUse) {
                 const element = this.getContent();
                 if (element) {
-                    const domRef = element.getDomRef();
+                    const domRef = element instanceof HTMLElement ? element : element?.getDomRef();
                     if (domRef) {
                         openNativePopover(domRef);
                     }
@@ -1389,7 +1623,7 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
         const _origClosed = Popup.prototype._closed;
         Popup.prototype._closed = function _closed(...args) {
             const element = this.getContent();
-            const domRef = element.getDomRef();
+            const domRef = element instanceof HTMLElement ? element : element?.getDomRef();
             _origClosed.apply(this, args); // only then call _close
             if (domRef) {
                 closeNativePopover(domRef); // unset the popover attribute and close the native popover, but only if still in DOM
@@ -1574,7 +1808,7 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
     const pkg = {
     	"_ui5metadata": {
       "name": "@ui5/webcomponents-base",
-      "version": "2.1.2",
+      "version": "2.3.0",
       "dependencies": [
         "sap.ui.core"
       ],
@@ -1657,7 +1891,9 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
     exports.DEFAULT_LANGUAGE = DEFAULT_LANGUAGE;
     exports.DEFAULT_LOCALE = DEFAULT_LOCALE;
     exports.EventProvider = EventProvider;
+    exports.SUPPORTED_LOCALES = SUPPORTED_LOCALES;
     exports.T = T;
+    exports.attachConfigurationReset = attachConfigurationReset;
     exports.b = b;
     exports.boot = boot;
     exports.cancelRender = cancelRender;
@@ -1666,13 +1902,16 @@ sap.ui.define(['exports', 'sap/ui/base/DataType'], (function (exports, DataType)
     exports.getComponentFeature = getComponentFeature;
     exports.getCustomElementsScopingSuffix = getCustomElementsScopingSuffix;
     exports.getEffectiveScopingSuffixForTag = getEffectiveScopingSuffixForTag;
+    exports.getEnableDefaultTooltips = getEnableDefaultTooltips;
     exports.getFeature = getFeature;
     exports.getFetchDefaultLanguage = getFetchDefaultLanguage;
     exports.getLanguage = getLanguage;
     exports.getNoConflict = getNoConflict;
     exports.getSharedResource = getSharedResource;
     exports.getTheme = getTheme;
+    exports.isDesktop = isDesktop;
     exports.isLegacyThemeFamily = isLegacyThemeFamily;
+    exports.isSafari = isSafari;
     exports.isTagRegistered = isTagRegistered;
     exports.j = j;
     exports.markAsRtlAware = markAsRtlAware;

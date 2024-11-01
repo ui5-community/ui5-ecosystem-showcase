@@ -3,7 +3,7 @@ sap.ui.define(['sap/ui/base/DataType'], (function (DataType) { 'use strict';
 	const pkg = {
 		"_ui5metadata": {
 	  "name": "@ui5/webcomponents-base",
-	  "version": "2.1.2",
+	  "version": "2.3.0",
 	  "dependencies": [
 	    "sap.ui.core"
 	  ],
