@@ -12,9 +12,9 @@
   },
   "dependencies": {
     "@sap/approuter": ">=16.7.1",
-    "@sap/xsenv": "5.2.0",
+    "@sap/xsenv": "5.4.0",
     "cds-plugin-ui5": "workspace:^",
-    "express": "^4.19.2",
+    "express": "^4.21.1",
     "ui5-middleware-cap": "workspace:^"
   },
   "peerDependencies": {
