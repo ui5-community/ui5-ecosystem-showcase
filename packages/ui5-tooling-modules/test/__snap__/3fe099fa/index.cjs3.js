@@ -1,7 +1,5 @@
 sap.ui.define(['exports'], (function (exports) { 'use strict';
 
-	var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
 	function getAugmentedNamespace(n) {
 	  if (n.__esModule) return n;
 	  var f = n.default;
@@ -30,556 +28,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	var index_cjs$2 = {};
 
 	var index_cjs$1 = {};
-
-	var tslib$1 = {exports: {}};
-
-	(function (module) {
-	  var __extends;
-	  var __assign;
-	  var __rest;
-	  var __decorate;
-	  var __param;
-	  var __esDecorate;
-	  var __runInitializers;
-	  var __propKey;
-	  var __setFunctionName;
-	  var __metadata;
-	  var __awaiter;
-	  var __generator;
-	  var __exportStar;
-	  var __values;
-	  var __read;
-	  var __spread;
-	  var __spreadArrays;
-	  var __spreadArray;
-	  var __await;
-	  var __asyncGenerator;
-	  var __asyncDelegator;
-	  var __asyncValues;
-	  var __makeTemplateObject;
-	  var __importStar;
-	  var __importDefault;
-	  var __classPrivateFieldGet;
-	  var __classPrivateFieldSet;
-	  var __classPrivateFieldIn;
-	  var __createBinding;
-	  var __addDisposableResource;
-	  var __disposeResources;
-	  (function (factory) {
-	    var root = typeof commonjsGlobal === "object" ? commonjsGlobal : typeof self === "object" ? self : typeof this === "object" ? this : {};
-	    {
-	      factory(createExporter(root, createExporter(module.exports)));
-	    }
-	    function createExporter(exports, previous) {
-	      if (exports !== root) {
-	        if (typeof Object.create === "function") {
-	          Object.defineProperty(exports, "__esModule", {
-	            value: true
-	          });
-	        } else {
-	          exports.__esModule = true;
-	        }
-	      }
-	      return function (id, v) {
-	        return exports[id] = previous ? previous(id, v) : v;
-	      };
-	    }
-	  })(function (exporter) {
-	    var extendStatics = Object.setPrototypeOf || ({
-	      __proto__: []
-	    }) instanceof Array && (function (d, b) {
-	      d.__proto__ = b;
-	    }) || (function (d, b) {
-	      for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p];
-	    });
-	    __extends = function (d, b) {
-	      if (typeof b !== "function" && b !== null) throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-	      extendStatics(d, b);
-	      function __() {
-	        this.constructor = d;
-	      }
-	      d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	    };
-	    __assign = Object.assign || (function (t) {
-	      for (var s, i = 1, n = arguments.length; i < n; i++) {
-	        s = arguments[i];
-	        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-	      }
-	      return t;
-	    });
-	    __rest = function (s, e) {
-	      var t = {};
-	      for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
-	      if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-	        if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
-	      }
-	      return t;
-	    };
-	    __decorate = function (decorators, target, key, desc) {
-	      var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	      if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc); else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	      return (c > 3 && r && Object.defineProperty(target, key, r), r);
-	    };
-	    __param = function (paramIndex, decorator) {
-	      return function (target, key) {
-	        decorator(target, key, paramIndex);
-	      };
-	    };
-	    __esDecorate = function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-	      function accept(f) {
-	        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
-	        return f;
-	      }
-	      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-	      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-	      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-	      var _, done = false;
-	      for (var i = decorators.length - 1; i >= 0; i--) {
-	        var context = {};
-	        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-	        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-	        context.addInitializer = function (f) {
-	          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
-	          extraInitializers.push(accept(f || null));
-	        };
-	        var result = (0, decorators[i])(kind === "accessor" ? {
-	          get: descriptor.get,
-	          set: descriptor.set
-	        } : descriptor[key], context);
-	        if (kind === "accessor") {
-	          if (result === void 0) continue;
-	          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-	          if (_ = accept(result.get)) descriptor.get = _;
-	          if (_ = accept(result.set)) descriptor.set = _;
-	          if (_ = accept(result.init)) initializers.unshift(_);
-	        } else if (_ = accept(result)) {
-	          if (kind === "field") initializers.unshift(_); else descriptor[key] = _;
-	        }
-	      }
-	      if (target) Object.defineProperty(target, contextIn.name, descriptor);
-	      done = true;
-	    };
-	    __runInitializers = function (thisArg, initializers, value) {
-	      var useValue = arguments.length > 2;
-	      for (var i = 0; i < initializers.length; i++) {
-	        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-	      }
-	      return useValue ? value : void 0;
-	    };
-	    __propKey = function (x) {
-	      return typeof x === "symbol" ? x : ("").concat(x);
-	    };
-	    __setFunctionName = function (f, name, prefix) {
-	      if (typeof name === "symbol") name = name.description ? ("[").concat(name.description, "]") : "";
-	      return Object.defineProperty(f, "name", {
-	        configurable: true,
-	        value: prefix ? ("").concat(prefix, " ", name) : name
-	      });
-	    };
-	    __metadata = function (metadataKey, metadataValue) {
-	      if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
-	    };
-	    __awaiter = function (thisArg, _arguments, P, generator) {
-	      function adopt(value) {
-	        return value instanceof P ? value : new P(function (resolve) {
-	          resolve(value);
-	        });
-	      }
-	      return new (P || (P = Promise))(function (resolve, reject) {
-	        function fulfilled(value) {
-	          try {
-	            step(generator.next(value));
-	          } catch (e) {
-	            reject(e);
-	          }
-	        }
-	        function rejected(value) {
-	          try {
-	            step(generator["throw"](value));
-	          } catch (e) {
-	            reject(e);
-	          }
-	        }
-	        function step(result) {
-	          result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-	        }
-	        step((generator = generator.apply(thisArg, _arguments || [])).next());
-	      });
-	    };
-	    __generator = function (thisArg, body) {
-	      var _ = {
-	        label: 0,
-	        sent: function () {
-	          if (t[0] & 1) throw t[1];
-	          return t[1];
-	        },
-	        trys: [],
-	        ops: []
-	      }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
-	      return (g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function () {
-	        return this;
-	      }), g);
-	      function verb(n) {
-	        return function (v) {
-	          return step([n, v]);
-	        };
-	      }
-	      function step(op) {
-	        if (f) throw new TypeError("Generator is already executing.");
-	        while ((g && (g = 0, op[0] && (_ = 0)), _)) try {
-	          if ((f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)) return t;
-	          if ((y = 0, t)) op = [op[0] & 2, t.value];
-	          switch (op[0]) {
-	            case 0:
-	            case 1:
-	              t = op;
-	              break;
-	            case 4:
-	              _.label++;
-	              return {
-	                value: op[1],
-	                done: false
-	              };
-	            case 5:
-	              _.label++;
-	              y = op[1];
-	              op = [0];
-	              continue;
-	            case 7:
-	              op = _.ops.pop();
-	              _.trys.pop();
-	              continue;
-	            default:
-	              if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
-	                _ = 0;
-	                continue;
-	              }
-	              if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
-	                _.label = op[1];
-	                break;
-	              }
-	              if (op[0] === 6 && _.label < t[1]) {
-	                _.label = t[1];
-	                t = op;
-	                break;
-	              }
-	              if (t && _.label < t[2]) {
-	                _.label = t[2];
-	                _.ops.push(op);
-	                break;
-	              }
-	              if (t[2]) _.ops.pop();
-	              _.trys.pop();
-	              continue;
-	          }
-	          op = body.call(thisArg, _);
-	        } catch (e) {
-	          op = [6, e];
-	          y = 0;
-	        } finally {
-	          f = t = 0;
-	        }
-	        if (op[0] & 5) throw op[1];
-	        return {
-	          value: op[0] ? op[1] : void 0,
-	          done: true
-	        };
-	      }
-	    };
-	    __exportStar = function (m, o) {
-	      for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(o, p)) __createBinding(o, m, p);
-	    };
-	    __createBinding = Object.create ? function (o, m, k, k2) {
-	      if (k2 === undefined) k2 = k;
-	      var desc = Object.getOwnPropertyDescriptor(m, k);
-	      if (!desc || (("get" in desc) ? !m.__esModule : desc.writable || desc.configurable)) {
-	        desc = {
-	          enumerable: true,
-	          get: function () {
-	            return m[k];
-	          }
-	        };
-	      }
-	      Object.defineProperty(o, k2, desc);
-	    } : function (o, m, k, k2) {
-	      if (k2 === undefined) k2 = k;
-	      o[k2] = m[k];
-	    };
-	    __values = function (o) {
-	      var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-	      if (m) return m.call(o);
-	      if (o && typeof o.length === "number") return {
-	        next: function () {
-	          if (o && i >= o.length) o = void 0;
-	          return {
-	            value: o && o[i++],
-	            done: !o
-	          };
-	        }
-	      };
-	      throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-	    };
-	    __read = function (o, n) {
-	      var m = typeof Symbol === "function" && o[Symbol.iterator];
-	      if (!m) return o;
-	      var i = m.call(o), r, ar = [], e;
-	      try {
-	        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-	      } catch (error) {
-	        e = {
-	          error: error
-	        };
-	      } finally {
-	        try {
-	          if (r && !r.done && (m = i["return"])) m.call(i);
-	        } finally {
-	          if (e) throw e.error;
-	        }
-	      }
-	      return ar;
-	    };
-	    __spread = function () {
-	      for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
-	      return ar;
-	    };
-	    __spreadArrays = function () {
-	      for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-	      for (var r = Array(s), k = 0, i = 0; i < il; i++) for (var a = arguments[i], j = 0, jl = a.length; j < jl; (j++, k++)) r[k] = a[j];
-	      return r;
-	    };
-	    __spreadArray = function (to, from, pack) {
-	      if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-	        if (ar || !((i in from))) {
-	          if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-	          ar[i] = from[i];
-	        }
-	      }
-	      return to.concat(ar || Array.prototype.slice.call(from));
-	    };
-	    __await = function (v) {
-	      return this instanceof __await ? (this.v = v, this) : new __await(v);
-	    };
-	    __asyncGenerator = function (thisArg, _arguments, generator) {
-	      if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-	      var g = generator.apply(thisArg, _arguments || []), i, q = [];
-	      return (i = Object.create((typeof AsyncIterator === "function" ? AsyncIterator : Object).prototype), verb("next"), verb("throw"), verb("return", awaitReturn), i[Symbol.asyncIterator] = function () {
-	        return this;
-	      }, i);
-	      function awaitReturn(f) {
-	        return function (v) {
-	          return Promise.resolve(v).then(f, reject);
-	        };
-	      }
-	      function verb(n, f) {
-	        if (g[n]) {
-	          i[n] = function (v) {
-	            return new Promise(function (a, b) {
-	              q.push([n, v, a, b]) > 1 || resume(n, v);
-	            });
-	          };
-	          if (f) i[n] = f(i[n]);
-	        }
-	      }
-	      function resume(n, v) {
-	        try {
-	          step(g[n](v));
-	        } catch (e) {
-	          settle(q[0][3], e);
-	        }
-	      }
-	      function step(r) {
-	        r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r);
-	      }
-	      function fulfill(value) {
-	        resume("next", value);
-	      }
-	      function reject(value) {
-	        resume("throw", value);
-	      }
-	      function settle(f, v) {
-	        if ((f(v), q.shift(), q.length)) resume(q[0][0], q[0][1]);
-	      }
-	    };
-	    __asyncDelegator = function (o) {
-	      var i, p;
-	      return (i = {}, verb("next"), verb("throw", function (e) {
-	        throw e;
-	      }), verb("return"), i[Symbol.iterator] = function () {
-	        return this;
-	      }, i);
-	      function verb(n, f) {
-	        i[n] = o[n] ? function (v) {
-	          return (p = !p) ? {
-	            value: __await(o[n](v)),
-	            done: false
-	          } : f ? f(v) : v;
-	        } : f;
-	      }
-	    };
-	    __asyncValues = function (o) {
-	      if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-	      var m = o[Symbol.asyncIterator], i;
-	      return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () {
-	        return this;
-	      }, i);
-	      function verb(n) {
-	        i[n] = o[n] && (function (v) {
-	          return new Promise(function (resolve, reject) {
-	            (v = o[n](v), settle(resolve, reject, v.done, v.value));
-	          });
-	        });
-	      }
-	      function settle(resolve, reject, d, v) {
-	        Promise.resolve(v).then(function (v) {
-	          resolve({
-	            value: v,
-	            done: d
-	          });
-	        }, reject);
-	      }
-	    };
-	    __makeTemplateObject = function (cooked, raw) {
-	      if (Object.defineProperty) {
-	        Object.defineProperty(cooked, "raw", {
-	          value: raw
-	        });
-	      } else {
-	        cooked.raw = raw;
-	      }
-	      return cooked;
-	    };
-	    var __setModuleDefault = Object.create ? function (o, v) {
-	      Object.defineProperty(o, "default", {
-	        enumerable: true,
-	        value: v
-	      });
-	    } : function (o, v) {
-	      o["default"] = v;
-	    };
-	    __importStar = function (mod) {
-	      if (mod && mod.__esModule) return mod;
-	      var result = {};
-	      if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-	      __setModuleDefault(result, mod);
-	      return result;
-	    };
-	    __importDefault = function (mod) {
-	      return mod && mod.__esModule ? mod : {
-	        "default": mod
-	      };
-	    };
-	    __classPrivateFieldGet = function (receiver, state, kind, f) {
-	      if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-	      if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-	      return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-	    };
-	    __classPrivateFieldSet = function (receiver, state, value, kind, f) {
-	      if (kind === "m") throw new TypeError("Private method is not writable");
-	      if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-	      if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-	      return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value);
-	    };
-	    __classPrivateFieldIn = function (state, receiver) {
-	      if (receiver === null || typeof receiver !== "object" && typeof receiver !== "function") throw new TypeError("Cannot use 'in' operator on non-object");
-	      return typeof state === "function" ? receiver === state : state.has(receiver);
-	    };
-	    __addDisposableResource = function (env, value, async) {
-	      if (value !== null && value !== void 0) {
-	        if (typeof value !== "object" && typeof value !== "function") throw new TypeError("Object expected.");
-	        var dispose, inner;
-	        if (async) {
-	          if (!Symbol.asyncDispose) throw new TypeError("Symbol.asyncDispose is not defined.");
-	          dispose = value[Symbol.asyncDispose];
-	        }
-	        if (dispose === void 0) {
-	          if (!Symbol.dispose) throw new TypeError("Symbol.dispose is not defined.");
-	          dispose = value[Symbol.dispose];
-	          if (async) inner = dispose;
-	        }
-	        if (typeof dispose !== "function") throw new TypeError("Object not disposable.");
-	        if (inner) dispose = function () {
-	          try {
-	            inner.call(this);
-	          } catch (e) {
-	            return Promise.reject(e);
-	          }
-	        };
-	        env.stack.push({
-	          value: value,
-	          dispose: dispose,
-	          async: async
-	        });
-	      } else if (async) {
-	        env.stack.push({
-	          async: true
-	        });
-	      }
-	      return value;
-	    };
-	    var _SuppressedError = typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
-	      var e = new Error(message);
-	      return (e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e);
-	    };
-	    __disposeResources = function (env) {
-	      function fail(e) {
-	        env.error = env.hasError ? new _SuppressedError(e, env.error, "An error was suppressed during disposal.") : e;
-	        env.hasError = true;
-	      }
-	      var r, s = 0;
-	      function next() {
-	        while (r = env.stack.pop()) {
-	          try {
-	            if (!r.async && s === 1) return (s = 0, env.stack.push(r), Promise.resolve().then(next));
-	            if (r.dispose) {
-	              var result = r.dispose.call(r.value);
-	              if (r.async) return (s |= 2, Promise.resolve(result).then(next, function (e) {
-	                fail(e);
-	                return next();
-	              }));
-	            } else s |= 1;
-	          } catch (e) {
-	            fail(e);
-	          }
-	        }
-	        if (s === 1) return env.hasError ? Promise.reject(env.error) : Promise.resolve();
-	        if (env.hasError) throw env.error;
-	      }
-	      return next();
-	    };
-	    exporter("__extends", __extends);
-	    exporter("__assign", __assign);
-	    exporter("__rest", __rest);
-	    exporter("__decorate", __decorate);
-	    exporter("__param", __param);
-	    exporter("__esDecorate", __esDecorate);
-	    exporter("__runInitializers", __runInitializers);
-	    exporter("__propKey", __propKey);
-	    exporter("__setFunctionName", __setFunctionName);
-	    exporter("__metadata", __metadata);
-	    exporter("__awaiter", __awaiter);
-	    exporter("__generator", __generator);
-	    exporter("__exportStar", __exportStar);
-	    exporter("__createBinding", __createBinding);
-	    exporter("__values", __values);
-	    exporter("__read", __read);
-	    exporter("__spread", __spread);
-	    exporter("__spreadArrays", __spreadArrays);
-	    exporter("__spreadArray", __spreadArray);
-	    exporter("__await", __await);
-	    exporter("__asyncGenerator", __asyncGenerator);
-	    exporter("__asyncDelegator", __asyncDelegator);
-	    exporter("__asyncValues", __asyncValues);
-	    exporter("__makeTemplateObject", __makeTemplateObject);
-	    exporter("__importStar", __importStar);
-	    exporter("__importDefault", __importDefault);
-	    exporter("__classPrivateFieldGet", __classPrivateFieldGet);
-	    exporter("__classPrivateFieldSet", __classPrivateFieldSet);
-	    exporter("__classPrivateFieldIn", __classPrivateFieldIn);
-	    exporter("__addDisposableResource", __addDisposableResource);
-	    exporter("__disposeResources", __disposeResources);
-	  });
-	})(tslib$1);
-	var tslibExports = tslib$1.exports;
 
 	var global$1 = (typeof global !== "undefined" ? global :
 	  typeof self !== "undefined" ? self :
@@ -1182,6 +630,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	}
 	function isWebWorker() {
 	  return typeof WorkerGlobalScope !== "undefined" && typeof self !== "undefined" && self instanceof WorkerGlobalScope;
+	}
+	function isCloudflareWorker() {
+	  return typeof navigator !== "undefined" && navigator.userAgent === "Cloudflare-Workers";
 	}
 	function isBrowserExtension() {
 	  const runtime = typeof chrome === "object" ? chrome.runtime : typeof browser === "object" ? browser.runtime : undefined;
@@ -1894,6 +1345,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		isAdmin: isAdmin,
 		isBrowser: isBrowser,
 		isBrowserExtension: isBrowserExtension,
+		isCloudflareWorker: isCloudflareWorker,
 		isElectron: isElectron,
 		isEmpty: isEmpty,
 		isIE: isIE,
@@ -1926,24 +1378,23 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		validateNamespace: validateNamespace
 	});
 
-	var require$$4$1 = /*@__PURE__*/getAugmentedNamespace(index_esm2017);
+	var require$$4 = /*@__PURE__*/getAugmentedNamespace(index_esm2017);
 
 	Object.defineProperty(index_cjs$1, '__esModule', { value: true });
 
-	var tslib = tslibExports;
-	var util = require$$4$1;
+	var util = require$$4;
 
 	/**
 	 * Component for service name T, e.g. `auth`, `auth-internal`
 	 */
-	var Component = /** @class */ (function () {
+	class Component {
 	    /**
 	     *
 	     * @param name The public service name, e.g. app, auth, firestore, database
 	     * @param instanceFactory Service factory responsible for creating the public interface
 	     * @param type whether the service provided by the component is public or private
 	     */
-	    function Component(name, instanceFactory, type) {
+	    constructor(name, instanceFactory, type) {
 	        this.name = name;
 	        this.instanceFactory = instanceFactory;
 	        this.type = type;
@@ -1955,24 +1406,23 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	        this.instantiationMode = "LAZY" /* InstantiationMode.LAZY */;
 	        this.onInstanceCreated = null;
 	    }
-	    Component.prototype.setInstantiationMode = function (mode) {
+	    setInstantiationMode(mode) {
 	        this.instantiationMode = mode;
 	        return this;
-	    };
-	    Component.prototype.setMultipleInstances = function (multipleInstances) {
+	    }
+	    setMultipleInstances(multipleInstances) {
 	        this.multipleInstances = multipleInstances;
 	        return this;
-	    };
-	    Component.prototype.setServiceProps = function (props) {
+	    }
+	    setServiceProps(props) {
 	        this.serviceProps = props;
 	        return this;
-	    };
-	    Component.prototype.setInstanceCreatedCallback = function (callback) {
+	    }
+	    setInstanceCreatedCallback(callback) {
 	        this.onInstanceCreated = callback;
 	        return this;
-	    };
-	    return Component;
-	}());
+	    }
+	}
 
 	/**
 	 * @license
@@ -1990,7 +1440,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	 * See the License for the specific language governing permissions and
 	 * limitations under the License.
 	 */
-	var DEFAULT_ENTRY_NAME = '[DEFAULT]';
+	const DEFAULT_ENTRY_NAME = '[DEFAULT]';
 
 	/**
 	 * @license
@@ -2012,8 +1462,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	 * Provider for instance for service name T, e.g. 'auth', 'auth-internal'
 	 * NameServiceMapping[T] is an alias for the type of the instance
 	 */
-	var Provider = /** @class */ (function () {
-	    function Provider(name, container) {
+	class Provider {
+	    constructor(name, container) {
 	        this.name = name;
 	        this.container = container;
 	        this.component = null;
@@ -2023,20 +1473,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	        this.onInitCallbacks = new Map();
 	    }
 	    /**
-	     * @param identifier A provider can provide mulitple instances of a service
+	     * @param identifier A provider can provide multiple instances of a service
 	     * if this.component.multipleInstances is true.
 	     */
-	    Provider.prototype.get = function (identifier) {
+	    get(identifier) {
 	        // if multipleInstances is not supported, use the default name
-	        var normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
+	        const normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
 	        if (!this.instancesDeferred.has(normalizedIdentifier)) {
-	            var deferred = new util.Deferred();
+	            const deferred = new util.Deferred();
 	            this.instancesDeferred.set(normalizedIdentifier, deferred);
 	            if (this.isInitialized(normalizedIdentifier) ||
 	                this.shouldAutoInitialize()) {
 	                // initialize the service if it can be auto-initialized
 	                try {
-	                    var instance = this.getOrInitializeService({
+	                    const instance = this.getOrInitializeService({
 	                        instanceIdentifier: normalizedIdentifier
 	                    });
 	                    if (instance) {
@@ -2050,12 +1500,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	            }
 	        }
 	        return this.instancesDeferred.get(normalizedIdentifier).promise;
-	    };
-	    Provider.prototype.getImmediate = function (options) {
+	    }
+	    getImmediate(options) {
 	        var _a;
 	        // if multipleInstances is not supported, use the default name
-	        var normalizedIdentifier = this.normalizeInstanceIdentifier(options === null || options === void 0 ? void 0 : options.identifier);
-	        var optional = (_a = options === null || options === void 0 ? void 0 : options.optional) !== null && _a !== void 0 ? _a : false;
+	        const normalizedIdentifier = this.normalizeInstanceIdentifier(options === null || options === void 0 ? void 0 : options.identifier);
+	        const optional = (_a = options === null || options === void 0 ? void 0 : options.optional) !== null && _a !== void 0 ? _a : false;
 	        if (this.isInitialized(normalizedIdentifier) ||
 	            this.shouldAutoInitialize()) {
 	            try {
@@ -2073,25 +1523,24 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	            }
 	        }
 	        else {
-	            // In case a component is not initialized and should/can not be auto-initialized at the moment, return null if the optional flag is set, or throw
+	            // In case a component is not initialized and should/cannot be auto-initialized at the moment, return null if the optional flag is set, or throw
 	            if (optional) {
 	                return null;
 	            }
 	            else {
-	                throw Error("Service ".concat(this.name, " is not available"));
+	                throw Error(`Service ${this.name} is not available`);
 	            }
 	        }
-	    };
-	    Provider.prototype.getComponent = function () {
+	    }
+	    getComponent() {
 	        return this.component;
-	    };
-	    Provider.prototype.setComponent = function (component) {
-	        var e_1, _a;
+	    }
+	    setComponent(component) {
 	        if (component.name !== this.name) {
-	            throw Error("Mismatching Component ".concat(component.name, " for Provider ").concat(this.name, "."));
+	            throw Error(`Mismatching Component ${component.name} for Provider ${this.name}.`);
 	        }
 	        if (this.component) {
-	            throw Error("Component for ".concat(this.name, " has already been provided"));
+	            throw Error(`Component for ${this.name} has already been provided`);
 	        }
 	        this.component = component;
 	        // return early without attempting to initialize the component if the component requires explicit initialization (calling `Provider.initialize()`)
@@ -2110,108 +1559,75 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	                // a fatal error in this case?
 	            }
 	        }
-	        try {
-	            // Create service instances for the pending promises and resolve them
-	            // NOTE: if this.multipleInstances is false, only the default instance will be created
-	            // and all promises with resolve with it regardless of the identifier.
-	            for (var _b = tslib.__values(this.instancesDeferred.entries()), _c = _b.next(); !_c.done; _c = _b.next()) {
-	                var _d = tslib.__read(_c.value, 2), instanceIdentifier = _d[0], instanceDeferred = _d[1];
-	                var normalizedIdentifier = this.normalizeInstanceIdentifier(instanceIdentifier);
-	                try {
-	                    // `getOrInitializeService()` should always return a valid instance since a component is guaranteed. use ! to make typescript happy.
-	                    var instance = this.getOrInitializeService({
-	                        instanceIdentifier: normalizedIdentifier
-	                    });
-	                    instanceDeferred.resolve(instance);
-	                }
-	                catch (e) {
-	                    // when the instance factory throws an exception, it should not cause
-	                    // a fatal error. We just leave the promise unresolved.
-	                }
-	            }
-	        }
-	        catch (e_1_1) { e_1 = { error: e_1_1 }; }
-	        finally {
+	        // Create service instances for the pending promises and resolve them
+	        // NOTE: if this.multipleInstances is false, only the default instance will be created
+	        // and all promises with resolve with it regardless of the identifier.
+	        for (const [instanceIdentifier, instanceDeferred] of this.instancesDeferred.entries()) {
+	            const normalizedIdentifier = this.normalizeInstanceIdentifier(instanceIdentifier);
 	            try {
-	                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+	                // `getOrInitializeService()` should always return a valid instance since a component is guaranteed. use ! to make typescript happy.
+	                const instance = this.getOrInitializeService({
+	                    instanceIdentifier: normalizedIdentifier
+	                });
+	                instanceDeferred.resolve(instance);
 	            }
-	            finally { if (e_1) throw e_1.error; }
+	            catch (e) {
+	                // when the instance factory throws an exception, it should not cause
+	                // a fatal error. We just leave the promise unresolved.
+	            }
 	        }
-	    };
-	    Provider.prototype.clearInstance = function (identifier) {
-	        if (identifier === void 0) { identifier = DEFAULT_ENTRY_NAME; }
+	    }
+	    clearInstance(identifier = DEFAULT_ENTRY_NAME) {
 	        this.instancesDeferred.delete(identifier);
 	        this.instancesOptions.delete(identifier);
 	        this.instances.delete(identifier);
-	    };
+	    }
 	    // app.delete() will call this method on every provider to delete the services
 	    // TODO: should we mark the provider as deleted?
-	    Provider.prototype.delete = function () {
-	        return tslib.__awaiter(this, void 0, void 0, function () {
-	            var services;
-	            return tslib.__generator(this, function (_a) {
-	                switch (_a.label) {
-	                    case 0:
-	                        services = Array.from(this.instances.values());
-	                        return [4 /*yield*/, Promise.all(tslib.__spreadArray(tslib.__spreadArray([], tslib.__read(services
-	                                .filter(function (service) { return 'INTERNAL' in service; }) // legacy services
-	                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-	                                .map(function (service) { return service.INTERNAL.delete(); })), false), tslib.__read(services
-	                                .filter(function (service) { return '_delete' in service; }) // modularized services
-	                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-	                                .map(function (service) { return service._delete(); })), false))];
-	                    case 1:
-	                        _a.sent();
-	                        return [2 /*return*/];
-	                }
-	            });
-	        });
-	    };
-	    Provider.prototype.isComponentSet = function () {
+	    async delete() {
+	        const services = Array.from(this.instances.values());
+	        await Promise.all([
+	            ...services
+	                .filter(service => 'INTERNAL' in service) // legacy services
+	                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+	                .map(service => service.INTERNAL.delete()),
+	            ...services
+	                .filter(service => '_delete' in service) // modularized services
+	                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+	                .map(service => service._delete())
+	        ]);
+	    }
+	    isComponentSet() {
 	        return this.component != null;
-	    };
-	    Provider.prototype.isInitialized = function (identifier) {
-	        if (identifier === void 0) { identifier = DEFAULT_ENTRY_NAME; }
+	    }
+	    isInitialized(identifier = DEFAULT_ENTRY_NAME) {
 	        return this.instances.has(identifier);
-	    };
-	    Provider.prototype.getOptions = function (identifier) {
-	        if (identifier === void 0) { identifier = DEFAULT_ENTRY_NAME; }
+	    }
+	    getOptions(identifier = DEFAULT_ENTRY_NAME) {
 	        return this.instancesOptions.get(identifier) || {};
-	    };
-	    Provider.prototype.initialize = function (opts) {
-	        var e_2, _a;
-	        if (opts === void 0) { opts = {}; }
-	        var _b = opts.options, options = _b === void 0 ? {} : _b;
-	        var normalizedIdentifier = this.normalizeInstanceIdentifier(opts.instanceIdentifier);
+	    }
+	    initialize(opts = {}) {
+	        const { options = {} } = opts;
+	        const normalizedIdentifier = this.normalizeInstanceIdentifier(opts.instanceIdentifier);
 	        if (this.isInitialized(normalizedIdentifier)) {
-	            throw Error("".concat(this.name, "(").concat(normalizedIdentifier, ") has already been initialized"));
+	            throw Error(`${this.name}(${normalizedIdentifier}) has already been initialized`);
 	        }
 	        if (!this.isComponentSet()) {
-	            throw Error("Component ".concat(this.name, " has not been registered yet"));
+	            throw Error(`Component ${this.name} has not been registered yet`);
 	        }
-	        var instance = this.getOrInitializeService({
+	        const instance = this.getOrInitializeService({
 	            instanceIdentifier: normalizedIdentifier,
-	            options: options
+	            options
 	        });
-	        try {
-	            // resolve any pending promise waiting for the service instance
-	            for (var _c = tslib.__values(this.instancesDeferred.entries()), _d = _c.next(); !_d.done; _d = _c.next()) {
-	                var _e = tslib.__read(_d.value, 2), instanceIdentifier = _e[0], instanceDeferred = _e[1];
-	                var normalizedDeferredIdentifier = this.normalizeInstanceIdentifier(instanceIdentifier);
-	                if (normalizedIdentifier === normalizedDeferredIdentifier) {
-	                    instanceDeferred.resolve(instance);
-	                }
+	        // resolve any pending promise waiting for the service instance
+	        for (const [instanceIdentifier, instanceDeferred] of this.instancesDeferred.entries()) {
+	            const normalizedDeferredIdentifier = this.normalizeInstanceIdentifier(instanceIdentifier);
+	            if (normalizedIdentifier === normalizedDeferredIdentifier) {
+	                instanceDeferred.resolve(instance);
 	            }
-	        }
-	        catch (e_2_1) { e_2 = { error: e_2_1 }; }
-	        finally {
-	            try {
-	                if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
-	            }
-	            finally { if (e_2) throw e_2.error; }
 	        }
 	        return instance;
-	    };
+	    }
 	    /**
 	     *
 	     * @param callback - a function that will be invoked  after the provider has been initialized by calling provider.initialize().
@@ -2220,56 +1636,44 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	     * @param identifier An optional instance identifier
 	     * @returns a function to unregister the callback
 	     */
-	    Provider.prototype.onInit = function (callback, identifier) {
+	    onInit(callback, identifier) {
 	        var _a;
-	        var normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
-	        var existingCallbacks = (_a = this.onInitCallbacks.get(normalizedIdentifier)) !== null && _a !== void 0 ? _a : new Set();
+	        const normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
+	        const existingCallbacks = (_a = this.onInitCallbacks.get(normalizedIdentifier)) !== null && _a !== void 0 ? _a : new Set();
 	        existingCallbacks.add(callback);
 	        this.onInitCallbacks.set(normalizedIdentifier, existingCallbacks);
-	        var existingInstance = this.instances.get(normalizedIdentifier);
+	        const existingInstance = this.instances.get(normalizedIdentifier);
 	        if (existingInstance) {
 	            callback(existingInstance, normalizedIdentifier);
 	        }
-	        return function () {
+	        return () => {
 	            existingCallbacks.delete(callback);
 	        };
-	    };
+	    }
 	    /**
 	     * Invoke onInit callbacks synchronously
 	     * @param instance the service instance`
 	     */
-	    Provider.prototype.invokeOnInitCallbacks = function (instance, identifier) {
-	        var e_3, _a;
-	        var callbacks = this.onInitCallbacks.get(identifier);
+	    invokeOnInitCallbacks(instance, identifier) {
+	        const callbacks = this.onInitCallbacks.get(identifier);
 	        if (!callbacks) {
 	            return;
 	        }
-	        try {
-	            for (var callbacks_1 = tslib.__values(callbacks), callbacks_1_1 = callbacks_1.next(); !callbacks_1_1.done; callbacks_1_1 = callbacks_1.next()) {
-	                var callback = callbacks_1_1.value;
-	                try {
-	                    callback(instance, identifier);
-	                }
-	                catch (_b) {
-	                    // ignore errors in the onInit callback
-	                }
-	            }
-	        }
-	        catch (e_3_1) { e_3 = { error: e_3_1 }; }
-	        finally {
+	        for (const callback of callbacks) {
 	            try {
-	                if (callbacks_1_1 && !callbacks_1_1.done && (_a = callbacks_1.return)) _a.call(callbacks_1);
+	                callback(instance, identifier);
 	            }
-	            finally { if (e_3) throw e_3.error; }
+	            catch (_a) {
+	                // ignore errors in the onInit callback
+	            }
 	        }
-	    };
-	    Provider.prototype.getOrInitializeService = function (_a) {
-	        var instanceIdentifier = _a.instanceIdentifier, _b = _a.options, options = _b === void 0 ? {} : _b;
-	        var instance = this.instances.get(instanceIdentifier);
+	    }
+	    getOrInitializeService({ instanceIdentifier, options = {} }) {
+	        let instance = this.instances.get(instanceIdentifier);
 	        if (!instance && this.component) {
 	            instance = this.component.instanceFactory(this.container, {
 	                instanceIdentifier: normalizeIdentifierForFactory(instanceIdentifier),
-	                options: options
+	                options
 	            });
 	            this.instances.set(instanceIdentifier, instance);
 	            this.instancesOptions.set(instanceIdentifier, options);
@@ -2288,28 +1692,26 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	                try {
 	                    this.component.onInstanceCreated(this.container, instanceIdentifier, instance);
 	                }
-	                catch (_c) {
+	                catch (_a) {
 	                    // ignore errors in the onInstanceCreatedCallback
 	                }
 	            }
 	        }
 	        return instance || null;
-	    };
-	    Provider.prototype.normalizeInstanceIdentifier = function (identifier) {
-	        if (identifier === void 0) { identifier = DEFAULT_ENTRY_NAME; }
+	    }
+	    normalizeInstanceIdentifier(identifier = DEFAULT_ENTRY_NAME) {
 	        if (this.component) {
 	            return this.component.multipleInstances ? identifier : DEFAULT_ENTRY_NAME;
 	        }
 	        else {
 	            return identifier; // assume multiple instances are supported before the component is provided.
 	        }
-	    };
-	    Provider.prototype.shouldAutoInitialize = function () {
+	    }
+	    shouldAutoInitialize() {
 	        return (!!this.component &&
 	            this.component.instantiationMode !== "EXPLICIT" /* InstantiationMode.EXPLICIT */);
-	    };
-	    return Provider;
-	}());
+	    }
+	}
 	// undefined should be passed to the service factory for the default instance
 	function normalizeIdentifierForFactory(identifier) {
 	    return identifier === DEFAULT_ENTRY_NAME ? undefined : identifier;
@@ -2337,8 +1739,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	/**
 	 * ComponentContainer that provides Providers for service name T, e.g. `auth`, `auth-internal`
 	 */
-	var ComponentContainer = /** @class */ (function () {
-	    function ComponentContainer(name) {
+	class ComponentContainer {
+	    constructor(name) {
 	        this.name = name;
 	        this.providers = new Map();
 	    }
@@ -2351,21 +1753,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	     * for different tests.
 	     * if overwrite is false: throw an exception
 	     */
-	    ComponentContainer.prototype.addComponent = function (component) {
-	        var provider = this.getProvider(component.name);
+	    addComponent(component) {
+	        const provider = this.getProvider(component.name);
 	        if (provider.isComponentSet()) {
-	            throw new Error("Component ".concat(component.name, " has already been registered with ").concat(this.name));
+	            throw new Error(`Component ${component.name} has already been registered with ${this.name}`);
 	        }
 	        provider.setComponent(component);
-	    };
-	    ComponentContainer.prototype.addOrOverwriteComponent = function (component) {
-	        var provider = this.getProvider(component.name);
+	    }
+	    addOrOverwriteComponent(component) {
+	        const provider = this.getProvider(component.name);
 	        if (provider.isComponentSet()) {
 	            // delete the existing provider from the container, so we can register the new component
 	            this.providers.delete(component.name);
 	        }
 	        this.addComponent(component);
-	    };
+	    }
 	    /**
 	     * getProvider provides a type safe interface where it can only be called with a field name
 	     * present in NameServiceMapping interface.
@@ -2373,20 +1775,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	     * Firebase SDKs providing services should extend NameServiceMapping interface to register
 	     * themselves.
 	     */
-	    ComponentContainer.prototype.getProvider = function (name) {
+	    getProvider(name) {
 	        if (this.providers.has(name)) {
 	            return this.providers.get(name);
 	        }
 	        // create a Provider for a service that hasn't registered with Firebase
-	        var provider = new Provider(name, this);
+	        const provider = new Provider(name, this);
 	        this.providers.set(name, provider);
 	        return provider;
-	    };
-	    ComponentContainer.prototype.getProviders = function () {
+	    }
+	    getProviders() {
 	        return Array.from(this.providers.values());
-	    };
-	    return ComponentContainer;
-	}());
+	    }
+	}
 
 	index_cjs$1.Component = Component;
 	index_cjs$1.ComponentContainer = ComponentContainer;
@@ -2397,8 +1798,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	(function (exports) {
 
 		Object.defineProperty(exports, '__esModule', { value: true });
-
-		var tslib = tslibExports;
 
 		/**
 		 * @license
@@ -2416,11 +1815,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		 * See the License for the specific language governing permissions and
 		 * limitations under the License.
 		 */
-		var _a;
 		/**
 		 * A container for all of the Logger instances
 		 */
-		var instances = [];
+		const instances = [];
 		/**
 		 * The JS SDK supports 5 log levels and also allows a user the ability to
 		 * silence the logs altogether.
@@ -2441,7 +1839,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		    LogLevel[LogLevel["ERROR"] = 4] = "ERROR";
 		    LogLevel[LogLevel["SILENT"] = 5] = "SILENT";
 		})(exports.LogLevel || (exports.LogLevel = {}));
-		var levelStringToEnum = {
+		const levelStringToEnum = {
 		    'debug': exports.LogLevel.DEBUG,
 		    'verbose': exports.LogLevel.VERBOSE,
 		    'info': exports.LogLevel.INFO,
@@ -2452,50 +1850,46 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		/**
 		 * The default log level
 		 */
-		var defaultLogLevel = exports.LogLevel.INFO;
+		const defaultLogLevel = exports.LogLevel.INFO;
 		/**
 		 * By default, `console.debug` is not displayed in the developer console (in
 		 * chrome). To avoid forcing users to have to opt-in to these logs twice
 		 * (i.e. once for firebase, and once in the console), we are sending `DEBUG`
 		 * logs to the `console.log` function.
 		 */
-		var ConsoleMethod = (_a = {},
-		    _a[exports.LogLevel.DEBUG] = 'log',
-		    _a[exports.LogLevel.VERBOSE] = 'log',
-		    _a[exports.LogLevel.INFO] = 'info',
-		    _a[exports.LogLevel.WARN] = 'warn',
-		    _a[exports.LogLevel.ERROR] = 'error',
-		    _a);
+		const ConsoleMethod = {
+		    [exports.LogLevel.DEBUG]: 'log',
+		    [exports.LogLevel.VERBOSE]: 'log',
+		    [exports.LogLevel.INFO]: 'info',
+		    [exports.LogLevel.WARN]: 'warn',
+		    [exports.LogLevel.ERROR]: 'error'
+		};
 		/**
 		 * The default log handler will forward DEBUG, VERBOSE, INFO, WARN, and ERROR
 		 * messages on to their corresponding console counterparts (if the log method
 		 * is supported by the current log level)
 		 */
-		var defaultLogHandler = function (instance, logType) {
-		    var args = [];
-		    for (var _i = 2; _i < arguments.length; _i++) {
-		        args[_i - 2] = arguments[_i];
-		    }
+		const defaultLogHandler = (instance, logType, ...args) => {
 		    if (logType < instance.logLevel) {
 		        return;
 		    }
-		    var now = new Date().toISOString();
-		    var method = ConsoleMethod[logType];
+		    const now = new Date().toISOString();
+		    const method = ConsoleMethod[logType];
 		    if (method) {
-		        console[method].apply(console, tslib.__spreadArray(["[".concat(now, "]  ").concat(instance.name, ":")], args, false));
+		        console[method](`[${now}]  ${instance.name}:`, ...args);
 		    }
 		    else {
-		        throw new Error("Attempted to log a message with an invalid logType (value: ".concat(logType, ")"));
+		        throw new Error(`Attempted to log a message with an invalid logType (value: ${logType})`);
 		    }
 		};
-		var Logger = /** @class */ (function () {
+		class Logger {
 		    /**
 		     * Gives you an instance of a Logger to capture messages according to
 		     * Firebase's logging scheme.
 		     *
 		     * @param name The name that the logs will be associated with
 		     */
-		    function Logger(name) {
+		    constructor(name) {
 		        this.name = name;
 		        /**
 		         * The log level of the given Logger instance.
@@ -2515,99 +1909,67 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		         */
 		        instances.push(this);
 		    }
-		    Object.defineProperty(Logger.prototype, "logLevel", {
-		        get: function () {
-		            return this._logLevel;
-		        },
-		        set: function (val) {
-		            if (!(val in exports.LogLevel)) {
-		                throw new TypeError("Invalid value \"".concat(val, "\" assigned to `logLevel`"));
-		            }
-		            this._logLevel = val;
-		        },
-		        enumerable: false,
-		        configurable: true
-		    });
+		    get logLevel() {
+		        return this._logLevel;
+		    }
+		    set logLevel(val) {
+		        if (!(val in exports.LogLevel)) {
+		            throw new TypeError(`Invalid value "${val}" assigned to \`logLevel\``);
+		        }
+		        this._logLevel = val;
+		    }
 		    // Workaround for setter/getter having to be the same type.
-		    Logger.prototype.setLogLevel = function (val) {
+		    setLogLevel(val) {
 		        this._logLevel = typeof val === 'string' ? levelStringToEnum[val] : val;
-		    };
-		    Object.defineProperty(Logger.prototype, "logHandler", {
-		        get: function () {
-		            return this._logHandler;
-		        },
-		        set: function (val) {
-		            if (typeof val !== 'function') {
-		                throw new TypeError('Value assigned to `logHandler` must be a function');
-		            }
-		            this._logHandler = val;
-		        },
-		        enumerable: false,
-		        configurable: true
-		    });
-		    Object.defineProperty(Logger.prototype, "userLogHandler", {
-		        get: function () {
-		            return this._userLogHandler;
-		        },
-		        set: function (val) {
-		            this._userLogHandler = val;
-		        },
-		        enumerable: false,
-		        configurable: true
-		    });
+		    }
+		    get logHandler() {
+		        return this._logHandler;
+		    }
+		    set logHandler(val) {
+		        if (typeof val !== 'function') {
+		            throw new TypeError('Value assigned to `logHandler` must be a function');
+		        }
+		        this._logHandler = val;
+		    }
+		    get userLogHandler() {
+		        return this._userLogHandler;
+		    }
+		    set userLogHandler(val) {
+		        this._userLogHandler = val;
+		    }
 		    /**
 		     * The functions below are all based on the `console` interface
 		     */
-		    Logger.prototype.debug = function () {
-		        var args = [];
-		        for (var _i = 0; _i < arguments.length; _i++) {
-		            args[_i] = arguments[_i];
-		        }
-		        this._userLogHandler && this._userLogHandler.apply(this, tslib.__spreadArray([this, exports.LogLevel.DEBUG], args, false));
-		        this._logHandler.apply(this, tslib.__spreadArray([this, exports.LogLevel.DEBUG], args, false));
-		    };
-		    Logger.prototype.log = function () {
-		        var args = [];
-		        for (var _i = 0; _i < arguments.length; _i++) {
-		            args[_i] = arguments[_i];
-		        }
-		        this._userLogHandler && this._userLogHandler.apply(this, tslib.__spreadArray([this, exports.LogLevel.VERBOSE], args, false));
-		        this._logHandler.apply(this, tslib.__spreadArray([this, exports.LogLevel.VERBOSE], args, false));
-		    };
-		    Logger.prototype.info = function () {
-		        var args = [];
-		        for (var _i = 0; _i < arguments.length; _i++) {
-		            args[_i] = arguments[_i];
-		        }
-		        this._userLogHandler && this._userLogHandler.apply(this, tslib.__spreadArray([this, exports.LogLevel.INFO], args, false));
-		        this._logHandler.apply(this, tslib.__spreadArray([this, exports.LogLevel.INFO], args, false));
-		    };
-		    Logger.prototype.warn = function () {
-		        var args = [];
-		        for (var _i = 0; _i < arguments.length; _i++) {
-		            args[_i] = arguments[_i];
-		        }
-		        this._userLogHandler && this._userLogHandler.apply(this, tslib.__spreadArray([this, exports.LogLevel.WARN], args, false));
-		        this._logHandler.apply(this, tslib.__spreadArray([this, exports.LogLevel.WARN], args, false));
-		    };
-		    Logger.prototype.error = function () {
-		        var args = [];
-		        for (var _i = 0; _i < arguments.length; _i++) {
-		            args[_i] = arguments[_i];
-		        }
-		        this._userLogHandler && this._userLogHandler.apply(this, tslib.__spreadArray([this, exports.LogLevel.ERROR], args, false));
-		        this._logHandler.apply(this, tslib.__spreadArray([this, exports.LogLevel.ERROR], args, false));
-		    };
-		    return Logger;
-		}());
+		    debug(...args) {
+		        this._userLogHandler && this._userLogHandler(this, exports.LogLevel.DEBUG, ...args);
+		        this._logHandler(this, exports.LogLevel.DEBUG, ...args);
+		    }
+		    log(...args) {
+		        this._userLogHandler &&
+		            this._userLogHandler(this, exports.LogLevel.VERBOSE, ...args);
+		        this._logHandler(this, exports.LogLevel.VERBOSE, ...args);
+		    }
+		    info(...args) {
+		        this._userLogHandler && this._userLogHandler(this, exports.LogLevel.INFO, ...args);
+		        this._logHandler(this, exports.LogLevel.INFO, ...args);
+		    }
+		    warn(...args) {
+		        this._userLogHandler && this._userLogHandler(this, exports.LogLevel.WARN, ...args);
+		        this._logHandler(this, exports.LogLevel.WARN, ...args);
+		    }
+		    error(...args) {
+		        this._userLogHandler && this._userLogHandler(this, exports.LogLevel.ERROR, ...args);
+		        this._logHandler(this, exports.LogLevel.ERROR, ...args);
+		    }
+		}
 		function setLogLevel(level) {
-		    instances.forEach(function (inst) {
+		    instances.forEach(inst => {
 		        inst.setLogLevel(level);
 		    });
 		}
 		function setUserLogHandler(logCallback, options) {
-		    var _loop_1 = function (instance) {
-		        var customLogLevel = null;
+		    for (const instance of instances) {
+		        let customLogLevel = null;
 		        if (options && options.level) {
 		            customLogLevel = levelStringToEnum[options.level];
 		        }
@@ -2615,13 +1977,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		            instance.userLogHandler = null;
 		        }
 		        else {
-		            instance.userLogHandler = function (instance, level) {
-		                var args = [];
-		                for (var _i = 2; _i < arguments.length; _i++) {
-		                    args[_i - 2] = arguments[_i];
-		                }
-		                var message = args
-		                    .map(function (arg) {
+		            instance.userLogHandler = (instance, level, ...args) => {
+		                const message = args
+		                    .map(arg => {
 		                    if (arg == null) {
 		                        return null;
 		                    }
@@ -2643,22 +2001,18 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		                        }
 		                    }
 		                })
-		                    .filter(function (arg) { return arg; })
+		                    .filter(arg => arg)
 		                    .join(' ');
 		                if (level >= (customLogLevel !== null && customLogLevel !== void 0 ? customLogLevel : instance.logLevel)) {
 		                    logCallback({
 		                        level: exports.LogLevel[level].toLowerCase(),
-		                        message: message,
-		                        args: args,
+		                        message,
+		                        args,
 		                        type: instance.name
 		                    });
 		                }
 		            };
 		        }
-		    };
-		    for (var _i = 0, instances_1 = instances; _i < instances_1.length; _i++) {
-		        var instance = instances_1[_i];
-		        _loop_1(instance);
 		    }
 		}
 
@@ -2951,17 +2305,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		wrap: wrap
 	});
 
-	var require$$4 = /*@__PURE__*/getAugmentedNamespace(build);
+	var require$$3 = /*@__PURE__*/getAugmentedNamespace(build);
 
 	(function (exports) {
 
 		Object.defineProperty(exports, '__esModule', { value: true });
 
 		var component = index_cjs$1;
-		var tslib = tslibExports;
 		var logger$1 = index_cjs;
-		var util = require$$4$1;
-		var idb = require$$4;
+		var util = require$$4;
+		var idb = require$$3;
 
 		/**
 		 * @license
@@ -2979,31 +2332,30 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		 * See the License for the specific language governing permissions and
 		 * limitations under the License.
 		 */
-		var PlatformLoggerServiceImpl = /** @class */ (function () {
-		    function PlatformLoggerServiceImpl(container) {
+		class PlatformLoggerServiceImpl {
+		    constructor(container) {
 		        this.container = container;
 		    }
 		    // In initial implementation, this will be called by installations on
 		    // auth token refresh, and installations will send this string.
-		    PlatformLoggerServiceImpl.prototype.getPlatformInfoString = function () {
-		        var providers = this.container.getProviders();
+		    getPlatformInfoString() {
+		        const providers = this.container.getProviders();
 		        // Loop through providers and get library/version pairs from any that are
 		        // version components.
 		        return providers
-		            .map(function (provider) {
+		            .map(provider => {
 		            if (isVersionServiceProvider(provider)) {
-		                var service = provider.getImmediate();
-		                return "".concat(service.library, "/").concat(service.version);
+		                const service = provider.getImmediate();
+		                return `${service.library}/${service.version}`;
 		            }
 		            else {
 		                return null;
 		            }
 		        })
-		            .filter(function (logString) { return logString; })
+		            .filter(logString => logString)
 		            .join(' ');
-		    };
-		    return PlatformLoggerServiceImpl;
-		}());
+		    }
+		}
 		/**
 		 *
 		 * @param provider check if this provider provides a VersionService
@@ -3013,12 +2365,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		 * provider.
 		 */
 		function isVersionServiceProvider(provider) {
-		    var component = provider.getComponent();
+		    const component = provider.getComponent();
 		    return (component === null || component === void 0 ? void 0 : component.type) === "VERSION" /* ComponentType.VERSION */;
 		}
 
-		var name$p = "@firebase/app";
-		var version$1 = "0.10.10";
+		const name$q = "@firebase/app";
+		const version$1 = "0.10.15";
 
 		/**
 		 * @license
@@ -3036,58 +2388,60 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		 * See the License for the specific language governing permissions and
 		 * limitations under the License.
 		 */
-		var logger = new logger$1.Logger('@firebase/app');
+		const logger = new logger$1.Logger('@firebase/app');
 
-		var name$o = "@firebase/app-compat";
+		const name$p = "@firebase/app-compat";
 
-		var name$n = "@firebase/analytics-compat";
+		const name$o = "@firebase/analytics-compat";
 
-		var name$m = "@firebase/analytics";
+		const name$n = "@firebase/analytics";
 
-		var name$l = "@firebase/app-check-compat";
+		const name$m = "@firebase/app-check-compat";
 
-		var name$k = "@firebase/app-check";
+		const name$l = "@firebase/app-check";
 
-		var name$j = "@firebase/auth";
+		const name$k = "@firebase/auth";
 
-		var name$i = "@firebase/auth-compat";
+		const name$j = "@firebase/auth-compat";
 
-		var name$h = "@firebase/database";
+		const name$i = "@firebase/database";
 
-		var name$g = "@firebase/database-compat";
+		const name$h = "@firebase/data-connect";
 
-		var name$f = "@firebase/functions";
+		const name$g = "@firebase/database-compat";
 
-		var name$e = "@firebase/functions-compat";
+		const name$f = "@firebase/functions";
 
-		var name$d = "@firebase/installations";
+		const name$e = "@firebase/functions-compat";
 
-		var name$c = "@firebase/installations-compat";
+		const name$d = "@firebase/installations";
 
-		var name$b = "@firebase/messaging";
+		const name$c = "@firebase/installations-compat";
 
-		var name$a = "@firebase/messaging-compat";
+		const name$b = "@firebase/messaging";
 
-		var name$9 = "@firebase/performance";
+		const name$a = "@firebase/messaging-compat";
 
-		var name$8 = "@firebase/performance-compat";
+		const name$9 = "@firebase/performance";
 
-		var name$7 = "@firebase/remote-config";
+		const name$8 = "@firebase/performance-compat";
 
-		var name$6 = "@firebase/remote-config-compat";
+		const name$7 = "@firebase/remote-config";
 
-		var name$5 = "@firebase/storage";
+		const name$6 = "@firebase/remote-config-compat";
 
-		var name$4 = "@firebase/storage-compat";
+		const name$5 = "@firebase/storage";
 
-		var name$3 = "@firebase/firestore";
+		const name$4 = "@firebase/storage-compat";
 
-		var name$2 = "@firebase/vertexai-preview";
+		const name$3 = "@firebase/firestore";
 
-		var name$1 = "@firebase/firestore-compat";
+		const name$2 = "@firebase/vertexai";
 
-		var name = "firebase";
-		var version = "10.13.1";
+		const name$1 = "@firebase/firestore-compat";
+
+		const name = "firebase";
+		const version = "11.0.1";
 
 		/**
 		 * @license
@@ -3105,42 +2459,42 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		 * See the License for the specific language governing permissions and
 		 * limitations under the License.
 		 */
-		var _a$1;
 		/**
 		 * The default app name
 		 *
 		 * @internal
 		 */
-		var DEFAULT_ENTRY_NAME = '[DEFAULT]';
-		var PLATFORM_LOG_STRING = (_a$1 = {},
-		    _a$1[name$p] = 'fire-core',
-		    _a$1[name$o] = 'fire-core-compat',
-		    _a$1[name$m] = 'fire-analytics',
-		    _a$1[name$n] = 'fire-analytics-compat',
-		    _a$1[name$k] = 'fire-app-check',
-		    _a$1[name$l] = 'fire-app-check-compat',
-		    _a$1[name$j] = 'fire-auth',
-		    _a$1[name$i] = 'fire-auth-compat',
-		    _a$1[name$h] = 'fire-rtdb',
-		    _a$1[name$g] = 'fire-rtdb-compat',
-		    _a$1[name$f] = 'fire-fn',
-		    _a$1[name$e] = 'fire-fn-compat',
-		    _a$1[name$d] = 'fire-iid',
-		    _a$1[name$c] = 'fire-iid-compat',
-		    _a$1[name$b] = 'fire-fcm',
-		    _a$1[name$a] = 'fire-fcm-compat',
-		    _a$1[name$9] = 'fire-perf',
-		    _a$1[name$8] = 'fire-perf-compat',
-		    _a$1[name$7] = 'fire-rc',
-		    _a$1[name$6] = 'fire-rc-compat',
-		    _a$1[name$5] = 'fire-gcs',
-		    _a$1[name$4] = 'fire-gcs-compat',
-		    _a$1[name$3] = 'fire-fst',
-		    _a$1[name$1] = 'fire-fst-compat',
-		    _a$1[name$2] = 'fire-vertex',
-		    _a$1['fire-js'] = 'fire-js',
-		    _a$1[name] = 'fire-js-all',
-		    _a$1);
+		const DEFAULT_ENTRY_NAME = '[DEFAULT]';
+		const PLATFORM_LOG_STRING = {
+		    [name$q]: 'fire-core',
+		    [name$p]: 'fire-core-compat',
+		    [name$n]: 'fire-analytics',
+		    [name$o]: 'fire-analytics-compat',
+		    [name$l]: 'fire-app-check',
+		    [name$m]: 'fire-app-check-compat',
+		    [name$k]: 'fire-auth',
+		    [name$j]: 'fire-auth-compat',
+		    [name$i]: 'fire-rtdb',
+		    [name$h]: 'fire-data-connect',
+		    [name$g]: 'fire-rtdb-compat',
+		    [name$f]: 'fire-fn',
+		    [name$e]: 'fire-fn-compat',
+		    [name$d]: 'fire-iid',
+		    [name$c]: 'fire-iid-compat',
+		    [name$b]: 'fire-fcm',
+		    [name$a]: 'fire-fcm-compat',
+		    [name$9]: 'fire-perf',
+		    [name$8]: 'fire-perf-compat',
+		    [name$7]: 'fire-rc',
+		    [name$6]: 'fire-rc-compat',
+		    [name$5]: 'fire-gcs',
+		    [name$4]: 'fire-gcs-compat',
+		    [name$3]: 'fire-fst',
+		    [name$1]: 'fire-fst-compat',
+		    [name$2]: 'fire-vertex',
+		    'fire-js': 'fire-js',
+		    [name]: 'fire-js-all'
+		};
 
 		/**
 		 * @license
@@ -3161,18 +2515,18 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		/**
 		 * @internal
 		 */
-		var _apps = new Map();
+		const _apps = new Map();
 		/**
 		 * @internal
 		 */
-		var _serverApps = new Map();
+		const _serverApps = new Map();
 		/**
 		 * Registered components.
 		 *
 		 * @internal
 		 */
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		var _components = new Map();
+		const _components = new Map();
 		/**
 		 * @param component - the component being added to this app's container
 		 *
@@ -3183,7 +2537,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		        app.container.addComponent(component);
 		    }
 		    catch (e) {
-		        logger.debug("Component ".concat(component.name, " failed to register with FirebaseApp ").concat(app.name), e);
+		        logger.debug(`Component ${component.name} failed to register with FirebaseApp ${app.name}`, e);
 		    }
 		}
 		/**
@@ -3201,39 +2555,18 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		 * @internal
 		 */
 		function _registerComponent(component) {
-		    var e_1, _a, e_2, _b;
-		    var componentName = component.name;
+		    const componentName = component.name;
 		    if (_components.has(componentName)) {
-		        logger.debug("There were multiple attempts to register component ".concat(componentName, "."));
+		        logger.debug(`There were multiple attempts to register component ${componentName}.`);
 		        return false;
 		    }
 		    _components.set(componentName, component);
-		    try {
-		        // add the component to existing app instances
-		        for (var _c = tslib.__values(_apps.values()), _d = _c.next(); !_d.done; _d = _c.next()) {
-		            var app = _d.value;
-		            _addComponent(app, component);
-		        }
+		    // add the component to existing app instances
+		    for (const app of _apps.values()) {
+		        _addComponent(app, component);
 		    }
-		    catch (e_1_1) { e_1 = { error: e_1_1 }; }
-		    finally {
-		        try {
-		            if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
-		        }
-		        finally { if (e_1) throw e_1.error; }
-		    }
-		    try {
-		        for (var _e = tslib.__values(_serverApps.values()), _f = _e.next(); !_f.done; _f = _e.next()) {
-		            var serverApp = _f.value;
-		            _addComponent(serverApp, component);
-		        }
-		    }
-		    catch (e_2_1) { e_2 = { error: e_2_1 }; }
-		    finally {
-		        try {
-		            if (_f && !_f.done && (_b = _e.return)) _b.call(_e);
-		        }
-		        finally { if (e_2) throw e_2.error; }
+		    for (const serverApp of _serverApps.values()) {
+		        _addComponent(serverApp, component);
 		    }
 		    return true;
 		}
@@ -3247,7 +2580,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		 * @internal
 		 */
 		function _getProvider(app, name) {
-		    var heartbeatController = app.container
+		    const heartbeatController = app.container
 		        .getProvider('heartbeat')
 		        .getImmediate({ optional: true });
 		    if (heartbeatController) {
@@ -3263,8 +2596,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		 *
 		 * @internal
 		 */
-		function _removeServiceInstance(app, name, instanceIdentifier) {
-		    if (instanceIdentifier === void 0) { instanceIdentifier = DEFAULT_ENTRY_NAME; }
+		function _removeServiceInstance(app, name, instanceIdentifier = DEFAULT_ENTRY_NAME) {
 		    _getProvider(app, name).clearInstance(instanceIdentifier);
 		}
 		/**
@@ -3314,26 +2646,25 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		 * See the License for the specific language governing permissions and
 		 * limitations under the License.
 		 */
-		var _a;
-		var ERRORS = (_a = {},
-		    _a["no-app" /* AppError.NO_APP */] = "No Firebase App '{$appName}' has been created - " +
+		const ERRORS = {
+		    ["no-app" /* AppError.NO_APP */]: "No Firebase App '{$appName}' has been created - " +
 		        'call initializeApp() first',
-		    _a["bad-app-name" /* AppError.BAD_APP_NAME */] = "Illegal App name: '{$appName}'",
-		    _a["duplicate-app" /* AppError.DUPLICATE_APP */] = "Firebase App named '{$appName}' already exists with different options or config",
-		    _a["app-deleted" /* AppError.APP_DELETED */] = "Firebase App named '{$appName}' already deleted",
-		    _a["server-app-deleted" /* AppError.SERVER_APP_DELETED */] = 'Firebase Server App has been deleted',
-		    _a["no-options" /* AppError.NO_OPTIONS */] = 'Need to provide options, when not being deployed to hosting via source.',
-		    _a["invalid-app-argument" /* AppError.INVALID_APP_ARGUMENT */] = 'firebase.{$appName}() takes either no argument or a ' +
+		    ["bad-app-name" /* AppError.BAD_APP_NAME */]: "Illegal App name: '{$appName}'",
+		    ["duplicate-app" /* AppError.DUPLICATE_APP */]: "Firebase App named '{$appName}' already exists with different options or config",
+		    ["app-deleted" /* AppError.APP_DELETED */]: "Firebase App named '{$appName}' already deleted",
+		    ["server-app-deleted" /* AppError.SERVER_APP_DELETED */]: 'Firebase Server App has been deleted',
+		    ["no-options" /* AppError.NO_OPTIONS */]: 'Need to provide options, when not being deployed to hosting via source.',
+		    ["invalid-app-argument" /* AppError.INVALID_APP_ARGUMENT */]: 'firebase.{$appName}() takes either no argument or a ' +
 		        'Firebase App instance.',
-		    _a["invalid-log-argument" /* AppError.INVALID_LOG_ARGUMENT */] = 'First argument to `onLog` must be null or a function.',
-		    _a["idb-open" /* AppError.IDB_OPEN */] = 'Error thrown when opening IndexedDB. Original error: {$originalErrorMessage}.',
-		    _a["idb-get" /* AppError.IDB_GET */] = 'Error thrown when reading from IndexedDB. Original error: {$originalErrorMessage}.',
-		    _a["idb-set" /* AppError.IDB_WRITE */] = 'Error thrown when writing to IndexedDB. Original error: {$originalErrorMessage}.',
-		    _a["idb-delete" /* AppError.IDB_DELETE */] = 'Error thrown when deleting from IndexedDB. Original error: {$originalErrorMessage}.',
-		    _a["finalization-registry-not-supported" /* AppError.FINALIZATION_REGISTRY_NOT_SUPPORTED */] = 'FirebaseServerApp deleteOnDeref field defined but the JS runtime does not support FinalizationRegistry.',
-		    _a["invalid-server-app-environment" /* AppError.INVALID_SERVER_APP_ENVIRONMENT */] = 'FirebaseServerApp is not for use in browser environments.',
-		    _a);
-		var ERROR_FACTORY = new util.ErrorFactory('app', 'Firebase', ERRORS);
+		    ["invalid-log-argument" /* AppError.INVALID_LOG_ARGUMENT */]: 'First argument to `onLog` must be null or a function.',
+		    ["idb-open" /* AppError.IDB_OPEN */]: 'Error thrown when opening IndexedDB. Original error: {$originalErrorMessage}.',
+		    ["idb-get" /* AppError.IDB_GET */]: 'Error thrown when reading from IndexedDB. Original error: {$originalErrorMessage}.',
+		    ["idb-set" /* AppError.IDB_WRITE */]: 'Error thrown when writing to IndexedDB. Original error: {$originalErrorMessage}.',
+		    ["idb-delete" /* AppError.IDB_DELETE */]: 'Error thrown when deleting from IndexedDB. Original error: {$originalErrorMessage}.',
+		    ["finalization-registry-not-supported" /* AppError.FINALIZATION_REGISTRY_NOT_SUPPORTED */]: 'FirebaseServerApp deleteOnDeref field defined but the JS runtime does not support FinalizationRegistry.',
+		    ["invalid-server-app-environment" /* AppError.INVALID_SERVER_APP_ENVIRONMENT */]: 'FirebaseServerApp is not for use in browser environments.'
+		};
+		const ERROR_FACTORY = new util.ErrorFactory('app', 'Firebase', ERRORS);
 
 		/**
 		 * @license
@@ -3351,82 +2682,56 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		 * See the License for the specific language governing permissions and
 		 * limitations under the License.
 		 */
-		var FirebaseAppImpl = /** @class */ (function () {
-		    function FirebaseAppImpl(options, config, container) {
-		        var _this = this;
+		class FirebaseAppImpl {
+		    constructor(options, config, container) {
 		        this._isDeleted = false;
-		        this._options = tslib.__assign({}, options);
-		        this._config = tslib.__assign({}, config);
+		        this._options = Object.assign({}, options);
+		        this._config = Object.assign({}, config);
 		        this._name = config.name;
 		        this._automaticDataCollectionEnabled =
 		            config.automaticDataCollectionEnabled;
 		        this._container = container;
-		        this.container.addComponent(new component.Component('app', function () { return _this; }, "PUBLIC" /* ComponentType.PUBLIC */));
+		        this.container.addComponent(new component.Component('app', () => this, "PUBLIC" /* ComponentType.PUBLIC */));
 		    }
-		    Object.defineProperty(FirebaseAppImpl.prototype, "automaticDataCollectionEnabled", {
-		        get: function () {
-		            this.checkDestroyed();
-		            return this._automaticDataCollectionEnabled;
-		        },
-		        set: function (val) {
-		            this.checkDestroyed();
-		            this._automaticDataCollectionEnabled = val;
-		        },
-		        enumerable: false,
-		        configurable: true
-		    });
-		    Object.defineProperty(FirebaseAppImpl.prototype, "name", {
-		        get: function () {
-		            this.checkDestroyed();
-		            return this._name;
-		        },
-		        enumerable: false,
-		        configurable: true
-		    });
-		    Object.defineProperty(FirebaseAppImpl.prototype, "options", {
-		        get: function () {
-		            this.checkDestroyed();
-		            return this._options;
-		        },
-		        enumerable: false,
-		        configurable: true
-		    });
-		    Object.defineProperty(FirebaseAppImpl.prototype, "config", {
-		        get: function () {
-		            this.checkDestroyed();
-		            return this._config;
-		        },
-		        enumerable: false,
-		        configurable: true
-		    });
-		    Object.defineProperty(FirebaseAppImpl.prototype, "container", {
-		        get: function () {
-		            return this._container;
-		        },
-		        enumerable: false,
-		        configurable: true
-		    });
-		    Object.defineProperty(FirebaseAppImpl.prototype, "isDeleted", {
-		        get: function () {
-		            return this._isDeleted;
-		        },
-		        set: function (val) {
-		            this._isDeleted = val;
-		        },
-		        enumerable: false,
-		        configurable: true
-		    });
+		    get automaticDataCollectionEnabled() {
+		        this.checkDestroyed();
+		        return this._automaticDataCollectionEnabled;
+		    }
+		    set automaticDataCollectionEnabled(val) {
+		        this.checkDestroyed();
+		        this._automaticDataCollectionEnabled = val;
+		    }
+		    get name() {
+		        this.checkDestroyed();
+		        return this._name;
+		    }
+		    get options() {
+		        this.checkDestroyed();
+		        return this._options;
+		    }
+		    get config() {
+		        this.checkDestroyed();
+		        return this._config;
+		    }
+		    get container() {
+		        return this._container;
+		    }
+		    get isDeleted() {
+		        return this._isDeleted;
+		    }
+		    set isDeleted(val) {
+		        this._isDeleted = val;
+		    }
 		    /**
 		     * This function will throw an Error if the App has already been deleted -
 		     * use before performing API actions on the App.
 		     */
-		    FirebaseAppImpl.prototype.checkDestroyed = function () {
+		    checkDestroyed() {
 		        if (this.isDeleted) {
 		            throw ERROR_FACTORY.create("app-deleted" /* AppError.APP_DELETED */, { appName: this._name });
 		        }
-		    };
-		    return FirebaseAppImpl;
-		}());
+		    }
+		}
 
 		/**
 		 * @license
@@ -3444,57 +2749,50 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		 * See the License for the specific language governing permissions and
 		 * limitations under the License.
 		 */
-		var FirebaseServerAppImpl = /** @class */ (function (_super) {
-		    tslib.__extends(FirebaseServerAppImpl, _super);
-		    function FirebaseServerAppImpl(options, serverConfig, name, container) {
-		        var _this = this;
+		class FirebaseServerAppImpl extends FirebaseAppImpl {
+		    constructor(options, serverConfig, name, container) {
 		        // Build configuration parameters for the FirebaseAppImpl base class.
-		        var automaticDataCollectionEnabled = serverConfig.automaticDataCollectionEnabled !== undefined
+		        const automaticDataCollectionEnabled = serverConfig.automaticDataCollectionEnabled !== undefined
 		            ? serverConfig.automaticDataCollectionEnabled
 		            : false;
 		        // Create the FirebaseAppSettings object for the FirebaseAppImp constructor.
-		        var config = {
-		            name: name,
-		            automaticDataCollectionEnabled: automaticDataCollectionEnabled
+		        const config = {
+		            name,
+		            automaticDataCollectionEnabled
 		        };
 		        if (options.apiKey !== undefined) {
 		            // Construct the parent FirebaseAppImp object.
-		            _this = _super.call(this, options, config, container) || this;
+		            super(options, config, container);
 		        }
 		        else {
-		            var appImpl = options;
-		            _this = _super.call(this, appImpl.options, config, container) || this;
+		            const appImpl = options;
+		            super(appImpl.options, config, container);
 		        }
 		        // Now construct the data for the FirebaseServerAppImpl.
-		        _this._serverConfig = tslib.__assign({ automaticDataCollectionEnabled: automaticDataCollectionEnabled }, serverConfig);
-		        _this._finalizationRegistry = null;
+		        this._serverConfig = Object.assign({ automaticDataCollectionEnabled }, serverConfig);
+		        this._finalizationRegistry = null;
 		        if (typeof FinalizationRegistry !== 'undefined') {
-		            _this._finalizationRegistry = new FinalizationRegistry(function () {
-		                _this.automaticCleanup();
+		            this._finalizationRegistry = new FinalizationRegistry(() => {
+		                this.automaticCleanup();
 		            });
 		        }
-		        _this._refCount = 0;
-		        _this.incRefCount(_this._serverConfig.releaseOnDeref);
+		        this._refCount = 0;
+		        this.incRefCount(this._serverConfig.releaseOnDeref);
 		        // Do not retain a hard reference to the dref object, otherwise the FinalizationRegistry
 		        // will never trigger.
-		        _this._serverConfig.releaseOnDeref = undefined;
+		        this._serverConfig.releaseOnDeref = undefined;
 		        serverConfig.releaseOnDeref = undefined;
-		        registerVersion(name$p, version$1, 'serverapp');
-		        return _this;
+		        registerVersion(name$q, version$1, 'serverapp');
 		    }
-		    FirebaseServerAppImpl.prototype.toJSON = function () {
+		    toJSON() {
 		        return undefined;
-		    };
-		    Object.defineProperty(FirebaseServerAppImpl.prototype, "refCount", {
-		        get: function () {
-		            return this._refCount;
-		        },
-		        enumerable: false,
-		        configurable: true
-		    });
+		    }
+		    get refCount() {
+		        return this._refCount;
+		    }
 		    // Increment the reference count of this server app. If an object is provided, register it
 		    // with the finalization registry.
-		    FirebaseServerAppImpl.prototype.incRefCount = function (obj) {
+		    incRefCount(obj) {
 		        if (this.isDeleted) {
 		            return;
 		        }
@@ -3502,39 +2800,34 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		        if (obj !== undefined && this._finalizationRegistry !== null) {
 		            this._finalizationRegistry.register(obj, this);
 		        }
-		    };
+		    }
 		    // Decrement the reference count.
-		    FirebaseServerAppImpl.prototype.decRefCount = function () {
+		    decRefCount() {
 		        if (this.isDeleted) {
 		            return 0;
 		        }
 		        return --this._refCount;
-		    };
+		    }
 		    // Invoked by the FinalizationRegistry callback to note that this app should go through its
 		    // reference counts and delete itself if no reference count remain. The coordinating logic that
 		    // handles this is in deleteApp(...).
-		    FirebaseServerAppImpl.prototype.automaticCleanup = function () {
+		    automaticCleanup() {
 		        void deleteApp(this);
-		    };
-		    Object.defineProperty(FirebaseServerAppImpl.prototype, "settings", {
-		        get: function () {
-		            this.checkDestroyed();
-		            return this._serverConfig;
-		        },
-		        enumerable: false,
-		        configurable: true
-		    });
+		    }
+		    get settings() {
+		        this.checkDestroyed();
+		        return this._serverConfig;
+		    }
 		    /**
 		     * This function will throw an Error if the App has already been deleted -
 		     * use before performing API actions on the App.
 		     */
-		    FirebaseServerAppImpl.prototype.checkDestroyed = function () {
+		    checkDestroyed() {
 		        if (this.isDeleted) {
 		            throw ERROR_FACTORY.create("server-app-deleted" /* AppError.SERVER_APP_DELETED */);
 		        }
-		    };
-		    return FirebaseServerAppImpl;
-		}(FirebaseAppImpl));
+		    }
+		}
 
 		/**
 		 * @license
@@ -3557,17 +2850,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		 *
 		 * @public
 		 */
-		var SDK_VERSION = version;
-		function initializeApp(_options, rawConfig) {
-		    var e_1, _a;
-		    if (rawConfig === void 0) { rawConfig = {}; }
-		    var options = _options;
+		const SDK_VERSION = version;
+		function initializeApp(_options, rawConfig = {}) {
+		    let options = _options;
 		    if (typeof rawConfig !== 'object') {
-		        var name_1 = rawConfig;
-		        rawConfig = { name: name_1 };
+		        const name = rawConfig;
+		        rawConfig = { name };
 		    }
-		    var config = tslib.__assign({ name: DEFAULT_ENTRY_NAME, automaticDataCollectionEnabled: false }, rawConfig);
-		    var name = config.name;
+		    const config = Object.assign({ name: DEFAULT_ENTRY_NAME, automaticDataCollectionEnabled: false }, rawConfig);
+		    const name = config.name;
 		    if (typeof name !== 'string' || !name) {
 		        throw ERROR_FACTORY.create("bad-app-name" /* AppError.BAD_APP_NAME */, {
 		            appName: String(name)
@@ -3577,7 +2868,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		    if (!options) {
 		        throw ERROR_FACTORY.create("no-options" /* AppError.NO_OPTIONS */);
 		    }
-		    var existingApp = _apps.get(name);
+		    const existingApp = _apps.get(name);
 		    if (existingApp) {
 		        // return the existing app if options and config deep equal the ones in the existing app.
 		        if (util.deepEqual(options, existingApp.options) &&
@@ -3588,26 +2879,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		            throw ERROR_FACTORY.create("duplicate-app" /* AppError.DUPLICATE_APP */, { appName: name });
 		        }
 		    }
-		    var container = new component.ComponentContainer(name);
-		    try {
-		        for (var _b = tslib.__values(_components.values()), _c = _b.next(); !_c.done; _c = _b.next()) {
-		            var component$1 = _c.value;
-		            container.addComponent(component$1);
-		        }
+		    const container = new component.ComponentContainer(name);
+		    for (const component of _components.values()) {
+		        container.addComponent(component);
 		    }
-		    catch (e_1_1) { e_1 = { error: e_1_1 }; }
-		    finally {
-		        try {
-		            if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-		        }
-		        finally { if (e_1) throw e_1.error; }
-		    }
-		    var newApp = new FirebaseAppImpl(options, config, container);
+		    const newApp = new FirebaseAppImpl(options, config, container);
 		    _apps.set(name, newApp);
 		    return newApp;
 		}
 		function initializeServerApp(_options, _serverAppConfig) {
-		    var e_2, _a;
 		    if (util.isBrowser() && !util.isWebWorker()) {
 		        // FirebaseServerApp isn't designed to be run in browsers.
 		        throw ERROR_FACTORY.create("invalid-server-app-environment" /* AppError.INVALID_SERVER_APP_ENVIRONMENT */);
@@ -3615,7 +2895,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		    if (_serverAppConfig.automaticDataCollectionEnabled === undefined) {
 		        _serverAppConfig.automaticDataCollectionEnabled = false;
 		    }
-		    var appOptions;
+		    let appOptions;
 		    if (_isFirebaseApp(_options)) {
 		        appOptions = _options.options;
 		    }
@@ -3623,41 +2903,31 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		        appOptions = _options;
 		    }
 		    // Build an app name based on a hash of the configuration options.
-		    var nameObj = tslib.__assign(tslib.__assign({}, _serverAppConfig), appOptions);
+		    const nameObj = Object.assign(Object.assign({}, _serverAppConfig), appOptions);
 		    // However, Do not mangle the name based on releaseOnDeref, since it will vary between the
 		    // construction of FirebaseServerApp instances. For example, if the object is the request headers.
 		    if (nameObj.releaseOnDeref !== undefined) {
 		        delete nameObj.releaseOnDeref;
 		    }
-		    var hashCode = function (s) {
-		        return tslib.__spreadArray([], tslib.__read(s), false).reduce(function (hash, c) { return (Math.imul(31, hash) + c.charCodeAt(0)) | 0; }, 0);
+		    const hashCode = (s) => {
+		        return [...s].reduce((hash, c) => (Math.imul(31, hash) + c.charCodeAt(0)) | 0, 0);
 		    };
 		    if (_serverAppConfig.releaseOnDeref !== undefined) {
 		        if (typeof FinalizationRegistry === 'undefined') {
 		            throw ERROR_FACTORY.create("finalization-registry-not-supported" /* AppError.FINALIZATION_REGISTRY_NOT_SUPPORTED */, {});
 		        }
 		    }
-		    var nameString = '' + hashCode(JSON.stringify(nameObj));
-		    var existingApp = _serverApps.get(nameString);
+		    const nameString = '' + hashCode(JSON.stringify(nameObj));
+		    const existingApp = _serverApps.get(nameString);
 		    if (existingApp) {
 		        existingApp.incRefCount(_serverAppConfig.releaseOnDeref);
 		        return existingApp;
 		    }
-		    var container = new component.ComponentContainer(nameString);
-		    try {
-		        for (var _b = tslib.__values(_components.values()), _c = _b.next(); !_c.done; _c = _b.next()) {
-		            var component$1 = _c.value;
-		            container.addComponent(component$1);
-		        }
+		    const container = new component.ComponentContainer(nameString);
+		    for (const component of _components.values()) {
+		        container.addComponent(component);
 		    }
-		    catch (e_2_1) { e_2 = { error: e_2_1 }; }
-		    finally {
-		        try {
-		            if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
-		        }
-		        finally { if (e_2) throw e_2.error; }
-		    }
-		    var newApp = new FirebaseServerAppImpl(appOptions, _serverAppConfig, nameString, container);
+		    const newApp = new FirebaseServerAppImpl(appOptions, _serverAppConfig, nameString, container);
 		    _serverApps.set(nameString, newApp);
 		    return newApp;
 		}
@@ -3690,9 +2960,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		 *
 		 * @public
 		 */
-		function getApp(name) {
-		    if (name === void 0) { name = DEFAULT_ENTRY_NAME; }
-		    var app = _apps.get(name);
+		function getApp(name = DEFAULT_ENTRY_NAME) {
+		    const app = _apps.get(name);
 		    if (!app && name === DEFAULT_ENTRY_NAME && util.getDefaultAppConfig()) {
 		        return initializeApp();
 		    }
@@ -3725,37 +2994,26 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		 *
 		 * @public
 		 */
-		function deleteApp(app) {
-		    return tslib.__awaiter(this, void 0, void 0, function () {
-		        var cleanupProviders, name, firebaseServerApp;
-		        return tslib.__generator(this, function (_a) {
-		            switch (_a.label) {
-		                case 0:
-		                    cleanupProviders = false;
-		                    name = app.name;
-		                    if (_apps.has(name)) {
-		                        cleanupProviders = true;
-		                        _apps.delete(name);
-		                    }
-		                    else if (_serverApps.has(name)) {
-		                        firebaseServerApp = app;
-		                        if (firebaseServerApp.decRefCount() <= 0) {
-		                            _serverApps.delete(name);
-		                            cleanupProviders = true;
-		                        }
-		                    }
-		                    if (!cleanupProviders) return [3 /*break*/, 2];
-		                    return [4 /*yield*/, Promise.all(app.container
-		                            .getProviders()
-		                            .map(function (provider) { return provider.delete(); }))];
-		                case 1:
-		                    _a.sent();
-		                    app.isDeleted = true;
-		                    _a.label = 2;
-		                case 2: return [2 /*return*/];
-		            }
-		        });
-		    });
+		async function deleteApp(app) {
+		    let cleanupProviders = false;
+		    const name = app.name;
+		    if (_apps.has(name)) {
+		        cleanupProviders = true;
+		        _apps.delete(name);
+		    }
+		    else if (_serverApps.has(name)) {
+		        const firebaseServerApp = app;
+		        if (firebaseServerApp.decRefCount() <= 0) {
+		            _serverApps.delete(name);
+		            cleanupProviders = true;
+		        }
+		    }
+		    if (cleanupProviders) {
+		        await Promise.all(app.container
+		            .getProviders()
+		            .map(provider => provider.delete()));
+		        app.isDeleted = true;
+		    }
 		}
 		/**
 		 * Registers a library's name and version for platform logging purposes.
@@ -3769,29 +3027,29 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		    var _a;
 		    // TODO: We can use this check to whitelist strings when/if we set up
 		    // a good whitelist system.
-		    var library = (_a = PLATFORM_LOG_STRING[libraryKeyOrName]) !== null && _a !== void 0 ? _a : libraryKeyOrName;
+		    let library = (_a = PLATFORM_LOG_STRING[libraryKeyOrName]) !== null && _a !== void 0 ? _a : libraryKeyOrName;
 		    if (variant) {
-		        library += "-".concat(variant);
+		        library += `-${variant}`;
 		    }
-		    var libraryMismatch = library.match(/\s|\//);
-		    var versionMismatch = version.match(/\s|\//);
+		    const libraryMismatch = library.match(/\s|\//);
+		    const versionMismatch = version.match(/\s|\//);
 		    if (libraryMismatch || versionMismatch) {
-		        var warning = [
-		            "Unable to register library \"".concat(library, "\" with version \"").concat(version, "\":")
+		        const warning = [
+		            `Unable to register library "${library}" with version "${version}":`
 		        ];
 		        if (libraryMismatch) {
-		            warning.push("library name \"".concat(library, "\" contains illegal characters (whitespace or \"/\")"));
+		            warning.push(`library name "${library}" contains illegal characters (whitespace or "/")`);
 		        }
 		        if (libraryMismatch && versionMismatch) {
 		            warning.push('and');
 		        }
 		        if (versionMismatch) {
-		            warning.push("version name \"".concat(version, "\" contains illegal characters (whitespace or \"/\")"));
+		            warning.push(`version name "${version}" contains illegal characters (whitespace or "/")`);
 		        }
 		        logger.warn(warning.join(' '));
 		        return;
 		    }
-		    _registerComponent(new component.Component("".concat(library, "-version"), function () { return ({ library: library, version: version }); }, "VERSION" /* ComponentType.VERSION */));
+		    _registerComponent(new component.Component(`${library}-version`, () => ({ library, version }), "VERSION" /* ComponentType.VERSION */));
 		}
 		/**
 		 * Sets log handler for all Firebase SDKs.
@@ -3835,14 +3093,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		 * See the License for the specific language governing permissions and
 		 * limitations under the License.
 		 */
-		var DB_NAME = 'firebase-heartbeat-database';
-		var DB_VERSION = 1;
-		var STORE_NAME = 'firebase-heartbeat-store';
-		var dbPromise = null;
+		const DB_NAME = 'firebase-heartbeat-database';
+		const DB_VERSION = 1;
+		const STORE_NAME = 'firebase-heartbeat-store';
+		let dbPromise = null;
 		function getDbPromise() {
 		    if (!dbPromise) {
 		        dbPromise = idb.openDB(DB_NAME, DB_VERSION, {
-		            upgrade: function (db, oldVersion) {
+		            upgrade: (db, oldVersion) => {
 		                // We don't use 'break' in this switch statement, the fall-through
 		                // behavior is what we want, because if there are multiple versions between
 		                // the old version and the current version, we want ALL the migrations
@@ -3861,7 +3119,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		                        }
 		                }
 		            }
-		        }).catch(function (e) {
+		        }).catch(e => {
 		            throw ERROR_FACTORY.create("idb-open" /* AppError.IDB_OPEN */, {
 		                originalErrorMessage: e.message
 		            });
@@ -3869,83 +3127,50 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		    }
 		    return dbPromise;
 		}
-		function readHeartbeatsFromIndexedDB(app) {
-		    return tslib.__awaiter(this, void 0, void 0, function () {
-		        var db, tx, result, e_1, idbGetError;
-		        return tslib.__generator(this, function (_a) {
-		            switch (_a.label) {
-		                case 0:
-		                    _a.trys.push([0, 4, , 5]);
-		                    return [4 /*yield*/, getDbPromise()];
-		                case 1:
-		                    db = _a.sent();
-		                    tx = db.transaction(STORE_NAME);
-		                    return [4 /*yield*/, tx.objectStore(STORE_NAME).get(computeKey(app))];
-		                case 2:
-		                    result = _a.sent();
-		                    // We already have the value but tx.done can throw,
-		                    // so we need to await it here to catch errors
-		                    return [4 /*yield*/, tx.done];
-		                case 3:
-		                    // We already have the value but tx.done can throw,
-		                    // so we need to await it here to catch errors
-		                    _a.sent();
-		                    return [2 /*return*/, result];
-		                case 4:
-		                    e_1 = _a.sent();
-		                    if (e_1 instanceof util.FirebaseError) {
-		                        logger.warn(e_1.message);
-		                    }
-		                    else {
-		                        idbGetError = ERROR_FACTORY.create("idb-get" /* AppError.IDB_GET */, {
-		                            originalErrorMessage: e_1 === null || e_1 === void 0 ? void 0 : e_1.message
-		                        });
-		                        logger.warn(idbGetError.message);
-		                    }
-		                    return [3 /*break*/, 5];
-		                case 5: return [2 /*return*/];
-		            }
-		        });
-		    });
+		async function readHeartbeatsFromIndexedDB(app) {
+		    try {
+		        const db = await getDbPromise();
+		        const tx = db.transaction(STORE_NAME);
+		        const result = await tx.objectStore(STORE_NAME).get(computeKey(app));
+		        // We already have the value but tx.done can throw,
+		        // so we need to await it here to catch errors
+		        await tx.done;
+		        return result;
+		    }
+		    catch (e) {
+		        if (e instanceof util.FirebaseError) {
+		            logger.warn(e.message);
+		        }
+		        else {
+		            const idbGetError = ERROR_FACTORY.create("idb-get" /* AppError.IDB_GET */, {
+		                originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
+		            });
+		            logger.warn(idbGetError.message);
+		        }
+		    }
 		}
-		function writeHeartbeatsToIndexedDB(app, heartbeatObject) {
-		    return tslib.__awaiter(this, void 0, void 0, function () {
-		        var db, tx, objectStore, e_2, idbGetError;
-		        return tslib.__generator(this, function (_a) {
-		            switch (_a.label) {
-		                case 0:
-		                    _a.trys.push([0, 4, , 5]);
-		                    return [4 /*yield*/, getDbPromise()];
-		                case 1:
-		                    db = _a.sent();
-		                    tx = db.transaction(STORE_NAME, 'readwrite');
-		                    objectStore = tx.objectStore(STORE_NAME);
-		                    return [4 /*yield*/, objectStore.put(heartbeatObject, computeKey(app))];
-		                case 2:
-		                    _a.sent();
-		                    return [4 /*yield*/, tx.done];
-		                case 3:
-		                    _a.sent();
-		                    return [3 /*break*/, 5];
-		                case 4:
-		                    e_2 = _a.sent();
-		                    if (e_2 instanceof util.FirebaseError) {
-		                        logger.warn(e_2.message);
-		                    }
-		                    else {
-		                        idbGetError = ERROR_FACTORY.create("idb-set" /* AppError.IDB_WRITE */, {
-		                            originalErrorMessage: e_2 === null || e_2 === void 0 ? void 0 : e_2.message
-		                        });
-		                        logger.warn(idbGetError.message);
-		                    }
-		                    return [3 /*break*/, 5];
-		                case 5: return [2 /*return*/];
-		            }
-		        });
-		    });
+		async function writeHeartbeatsToIndexedDB(app, heartbeatObject) {
+		    try {
+		        const db = await getDbPromise();
+		        const tx = db.transaction(STORE_NAME, 'readwrite');
+		        const objectStore = tx.objectStore(STORE_NAME);
+		        await objectStore.put(heartbeatObject, computeKey(app));
+		        await tx.done;
+		    }
+		    catch (e) {
+		        if (e instanceof util.FirebaseError) {
+		            logger.warn(e.message);
+		        }
+		        else {
+		            const idbGetError = ERROR_FACTORY.create("idb-set" /* AppError.IDB_WRITE */, {
+		                originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
+		            });
+		            logger.warn(idbGetError.message);
+		        }
+		    }
 		}
 		function computeKey(app) {
-		    return "".concat(app.name, "!").concat(app.options.appId);
+		    return `${app.name}!${app.options.appId}`;
 		}
 
 		/**
@@ -3964,12 +3189,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		 * See the License for the specific language governing permissions and
 		 * limitations under the License.
 		 */
-		var MAX_HEADER_BYTES = 1024;
+		const MAX_HEADER_BYTES = 1024;
 		// 30 days
-		var STORED_HEARTBEAT_RETENTION_MAX_MILLIS = 30 * 24 * 60 * 60 * 1000;
-		var HeartbeatServiceImpl = /** @class */ (function () {
-		    function HeartbeatServiceImpl(container) {
-		        var _this = this;
+		const STORED_HEARTBEAT_RETENTION_MAX_MILLIS = 30 * 24 * 60 * 60 * 1000;
+		class HeartbeatServiceImpl {
+		    constructor(container) {
 		        this.container = container;
 		        /**
 		         * In-memory cache for heartbeats, used by getHeartbeatsHeader() to generate
@@ -3981,10 +3205,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		         * Leave public for easier testing.
 		         */
 		        this._heartbeatsCache = null;
-		        var app = this.container.getProvider('app').getImmediate();
+		        const app = this.container.getProvider('app').getImmediate();
 		        this._storage = new HeartbeatStorageImpl(app);
-		        this._heartbeatsCachePromise = this._storage.read().then(function (result) {
-		            _this._heartbeatsCache = result;
+		        this._heartbeatsCachePromise = this._storage.read().then(result => {
+		            this._heartbeatsCache = result;
 		            return result;
 		        });
 		    }
@@ -3995,57 +3219,46 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		     * Note that we only store one heartbeat per day. So if a heartbeat for today is
 		     * already logged, subsequent calls to this function in the same day will be ignored.
 		     */
-		    HeartbeatServiceImpl.prototype.triggerHeartbeat = function () {
+		    async triggerHeartbeat() {
 		        var _a, _b;
-		        return tslib.__awaiter(this, void 0, void 0, function () {
-		            var platformLogger, agent, date_1, _c, e_1;
-		            return tslib.__generator(this, function (_d) {
-		                switch (_d.label) {
-		                    case 0:
-		                        _d.trys.push([0, 3, , 4]);
-		                        platformLogger = this.container
-		                            .getProvider('platform-logger')
-		                            .getImmediate();
-		                        agent = platformLogger.getPlatformInfoString();
-		                        date_1 = getUTCDateString();
-		                        if (!(((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null)) return [3 /*break*/, 2];
-		                        _c = this;
-		                        return [4 /*yield*/, this._heartbeatsCachePromise];
-		                    case 1:
-		                        _c._heartbeatsCache = _d.sent();
-		                        // If we failed to construct a heartbeats cache, then return immediately.
-		                        if (((_b = this._heartbeatsCache) === null || _b === void 0 ? void 0 : _b.heartbeats) == null) {
-		                            return [2 /*return*/];
-		                        }
-		                        _d.label = 2;
-		                    case 2:
-		                        // Do not store a heartbeat if one is already stored for this day
-		                        // or if a header has already been sent today.
-		                        if (this._heartbeatsCache.lastSentHeartbeatDate === date_1 ||
-		                            this._heartbeatsCache.heartbeats.some(function (singleDateHeartbeat) { return singleDateHeartbeat.date === date_1; })) {
-		                            return [2 /*return*/];
-		                        }
-		                        else {
-		                            // There is no entry for this date. Create one.
-		                            this._heartbeatsCache.heartbeats.push({ date: date_1, agent: agent });
-		                        }
-		                        // Remove entries older than 30 days.
-		                        this._heartbeatsCache.heartbeats =
-		                            this._heartbeatsCache.heartbeats.filter(function (singleDateHeartbeat) {
-		                                var hbTimestamp = new Date(singleDateHeartbeat.date).valueOf();
-		                                var now = Date.now();
-		                                return now - hbTimestamp <= STORED_HEARTBEAT_RETENTION_MAX_MILLIS;
-		                            });
-		                        return [2 /*return*/, this._storage.overwrite(this._heartbeatsCache)];
-		                    case 3:
-		                        e_1 = _d.sent();
-		                        logger.warn(e_1);
-		                        return [3 /*break*/, 4];
-		                    case 4: return [2 /*return*/];
+		        try {
+		            const platformLogger = this.container
+		                .getProvider('platform-logger')
+		                .getImmediate();
+		            // This is the "Firebase user agent" string from the platform logger
+		            // service, not the browser user agent.
+		            const agent = platformLogger.getPlatformInfoString();
+		            const date = getUTCDateString();
+		            if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null) {
+		                this._heartbeatsCache = await this._heartbeatsCachePromise;
+		                // If we failed to construct a heartbeats cache, then return immediately.
+		                if (((_b = this._heartbeatsCache) === null || _b === void 0 ? void 0 : _b.heartbeats) == null) {
+		                    return;
 		                }
-		            });
-		        });
-		    };
+		            }
+		            // Do not store a heartbeat if one is already stored for this day
+		            // or if a header has already been sent today.
+		            if (this._heartbeatsCache.lastSentHeartbeatDate === date ||
+		                this._heartbeatsCache.heartbeats.some(singleDateHeartbeat => singleDateHeartbeat.date === date)) {
+		                return;
+		            }
+		            else {
+		                // There is no entry for this date. Create one.
+		                this._heartbeatsCache.heartbeats.push({ date, agent });
+		            }
+		            // Remove entries older than 30 days.
+		            this._heartbeatsCache.heartbeats =
+		                this._heartbeatsCache.heartbeats.filter(singleDateHeartbeat => {
+		                    const hbTimestamp = new Date(singleDateHeartbeat.date).valueOf();
+		                    const now = Date.now();
+		                    return now - hbTimestamp <= STORED_HEARTBEAT_RETENTION_MAX_MILLIS;
+		                });
+		            return this._storage.overwrite(this._heartbeatsCache);
+		        }
+		        catch (e) {
+		            logger.warn(e);
+		        }
+		    }
 		    /**
 		     * Returns a base64 encoded string which can be attached to the heartbeat-specific header directly.
 		     * It also clears all heartbeats from memory as well as in IndexedDB.
@@ -4053,76 +3266,58 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		     * NOTE: Consuming product SDKs should not send the header if this method
 		     * returns an empty string.
 		     */
-		    HeartbeatServiceImpl.prototype.getHeartbeatsHeader = function () {
+		    async getHeartbeatsHeader() {
 		        var _a;
-		        return tslib.__awaiter(this, void 0, void 0, function () {
-		            var date, _b, heartbeatsToSend, unsentEntries, headerString, e_2;
-		            return tslib.__generator(this, function (_c) {
-		                switch (_c.label) {
-		                    case 0:
-		                        _c.trys.push([0, 6, , 7]);
-		                        if (!(this._heartbeatsCache === null)) return [3 /*break*/, 2];
-		                        return [4 /*yield*/, this._heartbeatsCachePromise];
-		                    case 1:
-		                        _c.sent();
-		                        _c.label = 2;
-		                    case 2:
-		                        // If it's still null or the array is empty, there is no data to send.
-		                        if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null ||
-		                            this._heartbeatsCache.heartbeats.length === 0) {
-		                            return [2 /*return*/, ''];
-		                        }
-		                        date = getUTCDateString();
-		                        _b = extractHeartbeatsForHeader(this._heartbeatsCache.heartbeats), heartbeatsToSend = _b.heartbeatsToSend, unsentEntries = _b.unsentEntries;
-		                        headerString = util.base64urlEncodeWithoutPadding(JSON.stringify({ version: 2, heartbeats: heartbeatsToSend }));
-		                        // Store last sent date to prevent another being logged/sent for the same day.
-		                        this._heartbeatsCache.lastSentHeartbeatDate = date;
-		                        if (!(unsentEntries.length > 0)) return [3 /*break*/, 4];
-		                        // Store any unsent entries if they exist.
-		                        this._heartbeatsCache.heartbeats = unsentEntries;
-		                        // This seems more likely than emptying the array (below) to lead to some odd state
-		                        // since the cache isn't empty and this will be called again on the next request,
-		                        // and is probably safest if we await it.
-		                        return [4 /*yield*/, this._storage.overwrite(this._heartbeatsCache)];
-		                    case 3:
-		                        // This seems more likely than emptying the array (below) to lead to some odd state
-		                        // since the cache isn't empty and this will be called again on the next request,
-		                        // and is probably safest if we await it.
-		                        _c.sent();
-		                        return [3 /*break*/, 5];
-		                    case 4:
-		                        this._heartbeatsCache.heartbeats = [];
-		                        // Do not wait for this, to reduce latency.
-		                        void this._storage.overwrite(this._heartbeatsCache);
-		                        _c.label = 5;
-		                    case 5: return [2 /*return*/, headerString];
-		                    case 6:
-		                        e_2 = _c.sent();
-		                        logger.warn(e_2);
-		                        return [2 /*return*/, ''];
-		                    case 7: return [2 /*return*/];
-		                }
-		            });
-		        });
-		    };
-		    return HeartbeatServiceImpl;
-		}());
+		        try {
+		            if (this._heartbeatsCache === null) {
+		                await this._heartbeatsCachePromise;
+		            }
+		            // If it's still null or the array is empty, there is no data to send.
+		            if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null ||
+		                this._heartbeatsCache.heartbeats.length === 0) {
+		                return '';
+		            }
+		            const date = getUTCDateString();
+		            // Extract as many heartbeats from the cache as will fit under the size limit.
+		            const { heartbeatsToSend, unsentEntries } = extractHeartbeatsForHeader(this._heartbeatsCache.heartbeats);
+		            const headerString = util.base64urlEncodeWithoutPadding(JSON.stringify({ version: 2, heartbeats: heartbeatsToSend }));
+		            // Store last sent date to prevent another being logged/sent for the same day.
+		            this._heartbeatsCache.lastSentHeartbeatDate = date;
+		            if (unsentEntries.length > 0) {
+		                // Store any unsent entries if they exist.
+		                this._heartbeatsCache.heartbeats = unsentEntries;
+		                // This seems more likely than emptying the array (below) to lead to some odd state
+		                // since the cache isn't empty and this will be called again on the next request,
+		                // and is probably safest if we await it.
+		                await this._storage.overwrite(this._heartbeatsCache);
+		            }
+		            else {
+		                this._heartbeatsCache.heartbeats = [];
+		                // Do not wait for this, to reduce latency.
+		                void this._storage.overwrite(this._heartbeatsCache);
+		            }
+		            return headerString;
+		        }
+		        catch (e) {
+		            logger.warn(e);
+		            return '';
+		        }
+		    }
+		}
 		function getUTCDateString() {
-		    var today = new Date();
+		    const today = new Date();
 		    // Returns date format 'YYYY-MM-DD'
 		    return today.toISOString().substring(0, 10);
 		}
-		function extractHeartbeatsForHeader(heartbeatsCache, maxSize) {
-		    var e_3, _a;
-		    if (maxSize === void 0) { maxSize = MAX_HEADER_BYTES; }
+		function extractHeartbeatsForHeader(heartbeatsCache, maxSize = MAX_HEADER_BYTES) {
 		    // Heartbeats grouped by user agent in the standard format to be sent in
 		    // the header.
-		    var heartbeatsToSend = [];
+		    const heartbeatsToSend = [];
 		    // Single date format heartbeats that are not sent.
-		    var unsentEntries = heartbeatsCache.slice();
-		    var _loop_1 = function (singleDateHeartbeat) {
+		    let unsentEntries = heartbeatsCache.slice();
+		    for (const singleDateHeartbeat of heartbeatsCache) {
 		        // Look for an existing entry with the same user agent.
-		        var heartbeatEntry = heartbeatsToSend.find(function (hb) { return hb.agent === singleDateHeartbeat.agent; });
+		        const heartbeatEntry = heartbeatsToSend.find(hb => hb.agent === singleDateHeartbeat.agent);
 		        if (!heartbeatEntry) {
 		            // If no entry for this user agent exists, create one.
 		            heartbeatsToSend.push({
@@ -4133,7 +3328,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		                // If the header would exceed max size, remove the added heartbeat
 		                // entry and stop adding to the header.
 		                heartbeatsToSend.pop();
-		                return "break";
+		                break;
 		            }
 		        }
 		        else {
@@ -4142,127 +3337,85 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		            // and stop adding to the header.
 		            if (countBytes(heartbeatsToSend) > maxSize) {
 		                heartbeatEntry.dates.pop();
-		                return "break";
+		                break;
 		            }
 		        }
 		        // Pop unsent entry from queue. (Skipped if adding the entry exceeded
 		        // quota and the loop breaks early.)
 		        unsentEntries = unsentEntries.slice(1);
-		    };
-		    try {
-		        for (var heartbeatsCache_1 = tslib.__values(heartbeatsCache), heartbeatsCache_1_1 = heartbeatsCache_1.next(); !heartbeatsCache_1_1.done; heartbeatsCache_1_1 = heartbeatsCache_1.next()) {
-		            var singleDateHeartbeat = heartbeatsCache_1_1.value;
-		            var state_1 = _loop_1(singleDateHeartbeat);
-		            if (state_1 === "break")
-		                break;
-		        }
-		    }
-		    catch (e_3_1) { e_3 = { error: e_3_1 }; }
-		    finally {
-		        try {
-		            if (heartbeatsCache_1_1 && !heartbeatsCache_1_1.done && (_a = heartbeatsCache_1.return)) _a.call(heartbeatsCache_1);
-		        }
-		        finally { if (e_3) throw e_3.error; }
 		    }
 		    return {
-		        heartbeatsToSend: heartbeatsToSend,
-		        unsentEntries: unsentEntries
+		        heartbeatsToSend,
+		        unsentEntries
 		    };
 		}
-		var HeartbeatStorageImpl = /** @class */ (function () {
-		    function HeartbeatStorageImpl(app) {
+		class HeartbeatStorageImpl {
+		    constructor(app) {
 		        this.app = app;
 		        this._canUseIndexedDBPromise = this.runIndexedDBEnvironmentCheck();
 		    }
-		    HeartbeatStorageImpl.prototype.runIndexedDBEnvironmentCheck = function () {
-		        return tslib.__awaiter(this, void 0, void 0, function () {
-		            return tslib.__generator(this, function (_a) {
-		                if (!util.isIndexedDBAvailable()) {
-		                    return [2 /*return*/, false];
-		                }
-		                else {
-		                    return [2 /*return*/, util.validateIndexedDBOpenable()
-		                            .then(function () { return true; })
-		                            .catch(function () { return false; })];
-		                }
-		            });
-		        });
-		    };
+		    async runIndexedDBEnvironmentCheck() {
+		        if (!util.isIndexedDBAvailable()) {
+		            return false;
+		        }
+		        else {
+		            return util.validateIndexedDBOpenable()
+		                .then(() => true)
+		                .catch(() => false);
+		        }
+		    }
 		    /**
 		     * Read all heartbeats.
 		     */
-		    HeartbeatStorageImpl.prototype.read = function () {
-		        return tslib.__awaiter(this, void 0, void 0, function () {
-		            var canUseIndexedDB, idbHeartbeatObject;
-		            return tslib.__generator(this, function (_a) {
-		                switch (_a.label) {
-		                    case 0: return [4 /*yield*/, this._canUseIndexedDBPromise];
-		                    case 1:
-		                        canUseIndexedDB = _a.sent();
-		                        if (!!canUseIndexedDB) return [3 /*break*/, 2];
-		                        return [2 /*return*/, { heartbeats: [] }];
-		                    case 2: return [4 /*yield*/, readHeartbeatsFromIndexedDB(this.app)];
-		                    case 3:
-		                        idbHeartbeatObject = _a.sent();
-		                        if (idbHeartbeatObject === null || idbHeartbeatObject === void 0 ? void 0 : idbHeartbeatObject.heartbeats) {
-		                            return [2 /*return*/, idbHeartbeatObject];
-		                        }
-		                        else {
-		                            return [2 /*return*/, { heartbeats: [] }];
-		                        }
-		                    case 4: return [2 /*return*/];
-		                }
-		            });
-		        });
-		    };
+		    async read() {
+		        const canUseIndexedDB = await this._canUseIndexedDBPromise;
+		        if (!canUseIndexedDB) {
+		            return { heartbeats: [] };
+		        }
+		        else {
+		            const idbHeartbeatObject = await readHeartbeatsFromIndexedDB(this.app);
+		            if (idbHeartbeatObject === null || idbHeartbeatObject === void 0 ? void 0 : idbHeartbeatObject.heartbeats) {
+		                return idbHeartbeatObject;
+		            }
+		            else {
+		                return { heartbeats: [] };
+		            }
+		        }
+		    }
 		    // overwrite the storage with the provided heartbeats
-		    HeartbeatStorageImpl.prototype.overwrite = function (heartbeatsObject) {
+		    async overwrite(heartbeatsObject) {
 		        var _a;
-		        return tslib.__awaiter(this, void 0, void 0, function () {
-		            var canUseIndexedDB, existingHeartbeatsObject;
-		            return tslib.__generator(this, function (_b) {
-		                switch (_b.label) {
-		                    case 0: return [4 /*yield*/, this._canUseIndexedDBPromise];
-		                    case 1:
-		                        canUseIndexedDB = _b.sent();
-		                        if (!!canUseIndexedDB) return [3 /*break*/, 2];
-		                        return [2 /*return*/];
-		                    case 2: return [4 /*yield*/, this.read()];
-		                    case 3:
-		                        existingHeartbeatsObject = _b.sent();
-		                        return [2 /*return*/, writeHeartbeatsToIndexedDB(this.app, {
-		                                lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
-		                                heartbeats: heartbeatsObject.heartbeats
-		                            })];
-		                }
+		        const canUseIndexedDB = await this._canUseIndexedDBPromise;
+		        if (!canUseIndexedDB) {
+		            return;
+		        }
+		        else {
+		            const existingHeartbeatsObject = await this.read();
+		            return writeHeartbeatsToIndexedDB(this.app, {
+		                lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
+		                heartbeats: heartbeatsObject.heartbeats
 		            });
-		        });
-		    };
+		        }
+		    }
 		    // add heartbeats
-		    HeartbeatStorageImpl.prototype.add = function (heartbeatsObject) {
+		    async add(heartbeatsObject) {
 		        var _a;
-		        return tslib.__awaiter(this, void 0, void 0, function () {
-		            var canUseIndexedDB, existingHeartbeatsObject;
-		            return tslib.__generator(this, function (_b) {
-		                switch (_b.label) {
-		                    case 0: return [4 /*yield*/, this._canUseIndexedDBPromise];
-		                    case 1:
-		                        canUseIndexedDB = _b.sent();
-		                        if (!!canUseIndexedDB) return [3 /*break*/, 2];
-		                        return [2 /*return*/];
-		                    case 2: return [4 /*yield*/, this.read()];
-		                    case 3:
-		                        existingHeartbeatsObject = _b.sent();
-		                        return [2 /*return*/, writeHeartbeatsToIndexedDB(this.app, {
-		                                lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
-		                                heartbeats: tslib.__spreadArray(tslib.__spreadArray([], tslib.__read(existingHeartbeatsObject.heartbeats), false), tslib.__read(heartbeatsObject.heartbeats), false)
-		                            })];
-		                }
+		        const canUseIndexedDB = await this._canUseIndexedDBPromise;
+		        if (!canUseIndexedDB) {
+		            return;
+		        }
+		        else {
+		            const existingHeartbeatsObject = await this.read();
+		            return writeHeartbeatsToIndexedDB(this.app, {
+		                lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
+		                heartbeats: [
+		                    ...existingHeartbeatsObject.heartbeats,
+		                    ...heartbeatsObject.heartbeats
+		                ]
 		            });
-		        });
-		    };
-		    return HeartbeatStorageImpl;
-		}());
+		        }
+		    }
+		}
 		/**
 		 * Calculate bytes of a HeartbeatsByUserAgent array after being wrapped
 		 * in a platform logging header JSON object, stringified, and converted
@@ -4292,12 +3445,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		 * limitations under the License.
 		 */
 		function registerCoreComponents(variant) {
-		    _registerComponent(new component.Component('platform-logger', function (container) { return new PlatformLoggerServiceImpl(container); }, "PRIVATE" /* ComponentType.PRIVATE */));
-		    _registerComponent(new component.Component('heartbeat', function (container) { return new HeartbeatServiceImpl(container); }, "PRIVATE" /* ComponentType.PRIVATE */));
+		    _registerComponent(new component.Component('platform-logger', container => new PlatformLoggerServiceImpl(container), "PRIVATE" /* ComponentType.PRIVATE */));
+		    _registerComponent(new component.Component('heartbeat', container => new HeartbeatServiceImpl(container), "PRIVATE" /* ComponentType.PRIVATE */));
 		    // Register `app` package.
-		    registerVersion(name$p, version$1, variant);
-		    // BUILD_TARGET will be replaced by values like esm5, esm2017, cjs5, etc during the compilation
-		    registerVersion(name$p, version$1, 'cjs5');
+		    registerVersion(name$q, version$1, variant);
+		    // BUILD_TARGET will be replaced by values like esm2017, cjs2017, etc during the compilation
+		    registerVersion(name$q, version$1, 'cjs2017');
 		    // Register platform SDK identifier (no version).
 		    registerVersion('fire-js', '');
 		}
@@ -4339,13 +3492,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 	} (index_cjs$2));
 
 	exports.browser$1 = browser$1$1;
-	exports.commonjsGlobal = commonjsGlobal;
 	exports.getAugmentedNamespace = getAugmentedNamespace;
 	exports.global = global$1;
 	exports.index_cjs = index_cjs$2;
 	exports.index_cjs$1 = index_cjs;
 	exports.index_cjs$2 = index_cjs$1;
-	exports.nextTick = nextTick;
-	exports.require$$4 = require$$4$1;
+	exports.require$$4 = require$$4;
 
 }));

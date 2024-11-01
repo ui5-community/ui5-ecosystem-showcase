@@ -3,7 +3,7 @@ sap.ui.define(['sap/ui/base/DataType', './webcomponents-base'], (function (DataT
 	const pkg = {
 		"_ui5metadata": {
 	  "name": "@ui5/webcomponents",
-	  "version": "2.1.2",
+	  "version": "2.3.0",
 	  "dependencies": [
 	    "sap.ui.core"
 	  ],
@@ -24,6 +24,7 @@ sap.ui.define(['sap/ui/base/DataType', './webcomponents-base'], (function (DataT
 	    "@ui5/webcomponents.ButtonType",
 	    "@ui5/webcomponents.CalendarLegendItemType",
 	    "@ui5/webcomponents.CalendarSelectionMode",
+	    "@ui5/webcomponents.CalendarWeekNumbering",
 	    "@ui5/webcomponents.CarouselArrowsPlacement",
 	    "@ui5/webcomponents.CarouselPageIndicatorType",
 	    "@ui5/webcomponents.ComboBoxFilter",
@@ -41,6 +42,7 @@ sap.ui.define(['sap/ui/base/DataType', './webcomponents-base'], (function (DataT
 	    "@ui5/webcomponents.ListSelectionMode",
 	    "@ui5/webcomponents.ListSeparator",
 	    "@ui5/webcomponents.MessageStripDesign",
+	    "@ui5/webcomponents.NotificationListGrowingMode",
 	    "@ui5/webcomponents.OverflowMode",
 	    "@ui5/webcomponents.PanelAccessibleRole",
 	    "@ui5/webcomponents.PopoverHorizontalAlign",
@@ -52,11 +54,13 @@ sap.ui.define(['sap/ui/base/DataType', './webcomponents-base'], (function (DataT
 	    "@ui5/webcomponents.SemanticColor",
 	    "@ui5/webcomponents.SwitchDesign",
 	    "@ui5/webcomponents.TabLayout",
+	    "@ui5/webcomponents.TableCellHorizontalAlign",
 	    "@ui5/webcomponents.TableGrowingMode",
 	    "@ui5/webcomponents.TableOverflowMode",
 	    "@ui5/webcomponents.TableSelectionMode",
 	    "@ui5/webcomponents.TagDesign",
 	    "@ui5/webcomponents.TagSize",
+	    "@ui5/webcomponents.EmptyIndicatorMode",
 	    "@ui5/webcomponents.TitleLevel",
 	    "@ui5/webcomponents.ToastPlacement",
 	    "@ui5/webcomponents.ToolbarAlign",
@@ -293,6 +297,13 @@ sap.ui.define(['sap/ui/base/DataType', './webcomponents-base'], (function (DataT
 		"Range": "Range",
 	};
 	DataType.registerEnum("@ui5/webcomponents.CalendarSelectionMode", pkg["CalendarSelectionMode"]);
+	pkg["CalendarWeekNumbering"] = {
+		"Default": "Default",
+		"ISO_8601": "ISO_8601",
+		"MiddleEastern": "MiddleEastern",
+		"WesternTraditional": "WesternTraditional",
+	};
+	DataType.registerEnum("@ui5/webcomponents.CalendarWeekNumbering", pkg["CalendarWeekNumbering"]);
 	pkg["CarouselArrowsPlacement"] = {
 		"Content": "Content",
 		"Navigation": "Navigation",
@@ -414,6 +425,11 @@ sap.ui.define(['sap/ui/base/DataType', './webcomponents-base'], (function (DataT
 		"ColorSet2": "ColorSet2",
 	};
 	DataType.registerEnum("@ui5/webcomponents.MessageStripDesign", pkg["MessageStripDesign"]);
+	pkg["NotificationListGrowingMode"] = {
+		"Button": "Button",
+		"None": "None",
+	};
+	DataType.registerEnum("@ui5/webcomponents.NotificationListGrowingMode", pkg["NotificationListGrowingMode"]);
 	pkg["OverflowMode"] = {
 		"End": "End",
 		"StartAndEnd": "StartAndEnd",
@@ -482,6 +498,14 @@ sap.ui.define(['sap/ui/base/DataType', './webcomponents-base'], (function (DataT
 		"Standard": "Standard",
 	};
 	DataType.registerEnum("@ui5/webcomponents.TabLayout", pkg["TabLayout"]);
+	pkg["TableCellHorizontalAlign"] = {
+		"Left": "Left",
+		"Start": "Start",
+		"Right": "Right",
+		"End": "End",
+		"Center": "Center",
+	};
+	DataType.registerEnum("@ui5/webcomponents.TableCellHorizontalAlign", pkg["TableCellHorizontalAlign"]);
 	pkg["TableGrowingMode"] = {
 		"Button": "Button",
 		"Scroll": "Scroll",
@@ -513,6 +537,11 @@ sap.ui.define(['sap/ui/base/DataType', './webcomponents-base'], (function (DataT
 		"L": "L",
 	};
 	DataType.registerEnum("@ui5/webcomponents.TagSize", pkg["TagSize"]);
+	pkg["EmptyIndicatorMode"] = {
+		"Off": "Off",
+		"On": "On",
+	};
+	DataType.registerEnum("@ui5/webcomponents.EmptyIndicatorMode", pkg["EmptyIndicatorMode"]);
 	pkg["TitleLevel"] = {
 		"H1": "H1",
 		"H2": "H2",
