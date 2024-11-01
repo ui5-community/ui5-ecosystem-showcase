@@ -3962,7 +3962,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
     var CheckBox_1;
     let isGlobalHandlerAttached = false;
     let activeCb;
-    let CheckBox$1 = CheckBox_1 = class CheckBox extends UI5Element {
+    let CheckBox = CheckBox_1 = class CheckBox extends UI5Element {
       get formValidityMessage() {
         return CheckBox_1.i18nBundle.getText(FORM_CHECKABLE_REQUIRED);
       }
@@ -4127,34 +4127,34 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
         CheckBox_1.i18nBundle = await getI18nBundle("@ui5/webcomponents");
       }
     };
-    __decorate([property()], CheckBox$1.prototype, "accessibleNameRef", void 0);
-    __decorate([property()], CheckBox$1.prototype, "accessibleName", void 0);
+    __decorate([property()], CheckBox.prototype, "accessibleNameRef", void 0);
+    __decorate([property()], CheckBox.prototype, "accessibleName", void 0);
     __decorate([property({
       type: Boolean
-    })], CheckBox$1.prototype, "disabled", void 0);
+    })], CheckBox.prototype, "disabled", void 0);
     __decorate([property({
       type: Boolean
-    })], CheckBox$1.prototype, "readonly", void 0);
+    })], CheckBox.prototype, "readonly", void 0);
     __decorate([property({
       type: Boolean
-    })], CheckBox$1.prototype, "displayOnly", void 0);
+    })], CheckBox.prototype, "displayOnly", void 0);
     __decorate([property({
       type: Boolean
-    })], CheckBox$1.prototype, "required", void 0);
+    })], CheckBox.prototype, "required", void 0);
     __decorate([property({
       type: Boolean
-    })], CheckBox$1.prototype, "indeterminate", void 0);
+    })], CheckBox.prototype, "indeterminate", void 0);
     __decorate([property({
       type: Boolean
-    })], CheckBox$1.prototype, "checked", void 0);
-    __decorate([property()], CheckBox$1.prototype, "text", void 0);
-    __decorate([property()], CheckBox$1.prototype, "valueState", void 0);
-    __decorate([property()], CheckBox$1.prototype, "wrappingType", void 0);
-    __decorate([property()], CheckBox$1.prototype, "name", void 0);
+    })], CheckBox.prototype, "checked", void 0);
+    __decorate([property()], CheckBox.prototype, "text", void 0);
+    __decorate([property()], CheckBox.prototype, "valueState", void 0);
+    __decorate([property()], CheckBox.prototype, "wrappingType", void 0);
+    __decorate([property()], CheckBox.prototype, "name", void 0);
     __decorate([property({
       type: Boolean
-    })], CheckBox$1.prototype, "active", void 0);
-    CheckBox$1 = CheckBox_1 = __decorate([customElement({
+    })], CheckBox.prototype, "active", void 0);
+    CheckBox = CheckBox_1 = __decorate([customElement({
       tag: "ui5-checkbox",
       languageAware: true,
       formAssociated: true,
@@ -4162,23 +4162,29 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
       template: block0,
       styles: styleData,
       dependencies: [Label$1, Icon$1]
-    }), event("change")], CheckBox$1);
-    CheckBox$1.define();
+    }), event("change")], CheckBox);
+    CheckBox.define();
 
-    var CheckBox = WebComponentBaseClass.extend("@ui5/webcomponents.CheckBox", {
+    const WrapperClass = WebComponentBaseClass.extend("@ui5/webcomponents.CheckBox", {
       metadata: {
       "namespace": "@ui5/webcomponents",
       "tag": "ui5-checkbox",
-      "interfaces": [],
+      "interfaces": [
+        "sap.ui.core.IFormContent"
+      ],
       "properties": {
         "accessibleName": {
           "type": "string",
           "mapping": "property"
         },
-        "disabled": {
+        "enabled": {
           "type": "boolean",
-          "mapping": "property",
-          "defaultValue": false
+          "defaultValue": "true",
+          "mapping": {
+            "type": "property",
+            "to": "disabled",
+            "formatter": "_mapEnabled"
+          }
         },
         "readonly": {
           "type": "boolean",
@@ -4232,12 +4238,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
           "mapping": "style"
         }
       },
-      "aggregations": {
-        "default": {
-          "type": "sap.ui.core.Control",
-          "multiple": true
-        }
-      },
+      "aggregations": {},
       "associations": {
         "ariaLabelledBy": {
           "type": "sap.ui.core.Control",
@@ -4254,7 +4255,6 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
       },
       "getters": [],
       "methods": [],
-      "defaultAggregation": "default",
       "library": "@ui5/webcomponents.library",
       "designtime": "@ui5/webcomponents/designtime/CheckBox.designtime"
     },
@@ -4271,6 +4271,6 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
       }
     });
 
-    return CheckBox;
+    return WrapperClass;
 
 }));

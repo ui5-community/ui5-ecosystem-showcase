@@ -20,14 +20,14 @@
           <webc:Form id="testForm2" headerText="Form Title Text" layout="S1 M2 L2 XL3" labelSpan="S12 M12 L12 XL12">
             <webc:FormItem>
               <webc:labelContent>
-                <webc:Label for="nameInp" text="Name:" />
+                <webc:Label labelFor="nameInp" text="Name:" />
               </webc:labelContent>
               <webc:Input value="Red Point Stores" id="nameInp" />
             </webc:FormItem>
 
             <webc:FormItem>
               <webc:labelContent>
-                <webc:Label id="cityLbl" for="cityInp" text="ZIP Code/City:" />
+                <webc:Label id="cityLbl" labelFor="cityInp" text="ZIP Code/City:" />
               </webc:labelContent>
               <webc:Input id="cityInp" value="411" ariaLabelledBy="cityLbl" />
               <webc:Input value="Maintown" ariaLabelledBy="cityLbl" />
@@ -35,7 +35,7 @@
 
             <webc:FormItem>
               <webc:labelContent>
-                <webc:Label id="streetLbl" for="streetInp" text="Street:" />
+                <webc:Label id="streetLbl" labelFor="streetInp" text="Street:" />
               </webc:labelContent>
               <webc:Input id="streetInp" value="Main St" ariaLabelledBy="streetLbl" />
               <webc:Input id="streetNumberInp" value="1618" ariaLabelledBy="streetLbl" />
@@ -43,7 +43,7 @@
 
             <webc:FormItem>
               <webc:labelContent>
-                <webc:Label id="countryLbl" for="countrySel" text="Country:" />
+                <webc:Label id="countryLbl" labelFor="countrySel" text="Country:" />
               </webc:labelContent>
               <webc:Select id="countrySel" ariaLabelledBy="countryLbl">
                 <webc:Option text="Australia" />
@@ -54,14 +54,14 @@
 
             <webc:FormItem>
               <webc:labelContent>
-                <webc:Label for="wsInp" text="WebSite:" />
+                <webc:Label labelFor="wsInp" text="WebSite:" />
               </webc:labelContent>
               <webc:Input value="sap.com" id="wsInp" />
             </webc:FormItem>
 
             <webc:FormItem>
               <webc:labelContent>
-                <webc:Label for="delInp" text="Delivery address:" />
+                <webc:Label labelFor="delInp" text="Delivery address:" />
               </webc:labelContent>
               <webc:Input value="Newtown" id="delInp" />
             </webc:FormItem>

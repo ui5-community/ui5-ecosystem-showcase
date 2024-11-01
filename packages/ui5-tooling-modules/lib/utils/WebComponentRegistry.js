@@ -27,6 +27,8 @@ class RegistryEntry {
 		this.interfaces = new Set();
 
 		this.#processMetadata();
+
+		console.log(`Metadata processed for package ${namespace}.`);
 	}
 
 	#processMetadata() {
@@ -226,28 +228,69 @@ class RegistryEntry {
 		}
 	}
 
+	/**
+	 * Checks the given property definition object for a special UI5 mapping.
+	 * The specific formatter are implemented in "sap.ui.core.webc.WebComponent".
+	 *
+	 * @param {object} propDef the property definition object from the custom elements metadata
+	 * @param {object} ui5metadata the UI5 metadata object
+	 * @returns {boolean} whether the property needs a special mapping
+	 */
+	#checkForSpecialMapping(propDef, ui5metadata) {
+		if (propDef.name === "accessibleNameRef") {
+			ui5metadata.associations["ariaLabelledBy"] = {
+				type: "sap.ui.core.Control",
+				multiple: true,
+				mapping: {
+					type: "property",
+					to: "accessibleNameRef",
+					formatter: "_getAriaLabelledByForRendering",
+				},
+			};
+			return true;
+		} else if (propDef.name === "disabled") {
+			// "disabled" maps to "enabled" in UI5
+			ui5metadata.properties["enabled"] = {
+				type: "boolean",
+				defaultValue: "true",
+				mapping: {
+					type: "property",
+					to: "disabled",
+					formatter: "_mapEnabled",
+				},
+			};
+			return true;
+		} else if (propDef.name === "textDirection") {
+			// text direction needs to be mapped to the native "dir"
+			ui5metadata.properties["textDirection"] = {
+				type: "sap.ui.core.TextDirection",
+				defaultValue: "TextDirection.Inherit",
+				mapping: {
+					type: "property",
+					to: "dir",
+					formatter: "_mapTextDirection",
+				},
+			};
+			return true;
+		}
+
+		return false;
+	}
+
 	#processMembers(classDef, ui5metadata, propDef) {
-		// field -> property
+		// field -> property or association
 		if (propDef.kind === "field") {
 			let ui5TypeInfo = this.#extractUi5Type(propDef.type);
 
-			// [ Accessibility ]
-			//     1. ACC attributes have webc internal typing and will be defaulted to "object" ob UI5 side.
-			//     2. "accessibleNameRef" must be mapped to "ariaLabelledBy"
+			// ACC attributes have webc internal typing and will be defaulted to "object" ob UI5 side.
 			if (propDef.name === "accessibilityAttributes") {
 				ui5TypeInfo.ui5Type = "object";
 				ui5TypeInfo.isUnclear = false;
-			} else if (propDef.name === "accessibleNameRef") {
-				ui5metadata.associations["ariaLabelledBy"] = {
-					type: "sap.ui.core.Control",
-					multiple: true,
-					mapping: {
-						type: "property",
-						to: "accessibleNameRef",
-						// formatter is implemented in sap.ui.core.webc.WebComponent
-						formatter: "_getAriaLabelledByForRendering",
-					},
-				};
+			}
+
+			// Some properties might need a special UI5 mapping, e.g. "accesibleNameRef"
+			const hasSpecialMapping = this.#checkForSpecialMapping(propDef, ui5metadata);
+			if (hasSpecialMapping) {
 				return;
 			}
 
@@ -255,6 +298,9 @@ class RegistryEntry {
 			if (ui5TypeInfo.isUnclear) {
 				console.warn(`[unclear type 🤔] ${classDef.name} - property '${propDef.name}' has unclear type '${ui5TypeInfo.origType}' -> defaulting to 'any', multiple: ${ui5TypeInfo.multiple}`);
 			}
+
+			// If any property of a class is a form relevant property, the UI5 control class must implement the "sap.ui.core.IFormContent" interface
+			classDef._ui5implementsFormContent ??= propDef._ui5formProperty;
 
 			if (propDef.readonly) {
 				// calculated readonly fields -> WebC base class will generate getters
@@ -354,6 +400,11 @@ class RegistryEntry {
 				}
 			});
 		}
+
+		// classes with properties marked as "_ui5formProperty" need to implement IFormContent
+		if (classDef._ui5implementsFormContent) {
+			ui5metadata.interfaces.push("sap.ui.core.IFormContent");
+		}
 	}
 
 	#ensureDefaults(ui5metadata) {
@@ -363,15 +414,6 @@ class RegistryEntry {
 				type: "string",
 				mapping: "textContent",
 			};
-		}
-
-		// mandatory default aggregation
-		if (!ui5metadata.defaultAggregation) {
-			ui5metadata.aggregations["default"] = {
-				type: "sap.ui.core.Control",
-				multiple: true,
-			};
-			ui5metadata.defaultAggregation = "default";
 		}
 
 		// cssProperties: [ "width", "height", "display" ]
@@ -387,6 +429,42 @@ class RegistryEntry {
 				type: "sap.ui.core.CSSSize",
 				mapping: "style",
 			};
+		}
+	}
+
+	/**
+	 * Some web components need additional patches to comply with UI5 framework requirements,
+	 * e.g. applying the LabelEnablement mixin
+	 *
+	 * Most things patched in this function should eventually be available generically in the custom elements metadta.
+	 *
+	 * @param {object} ui5metadata the UI5 metadata object
+	 */
+	#patchUI5Specifics(classDef, ui5metadata) {
+		const { tag } = ui5metadata;
+
+		// The label has a couple of specifics that are not fully reflected in the custom elements.
+		if (tag === "ui5-label") {
+			// the ui5-label has as default slot, but no aggregations on the retrofit layer...
+			ui5metadata.aggregations = [];
+			// the "for" attribute is called "labelFor" in the retrofit...
+			ui5metadata.associations["labelFor"] = {
+				type: "sap.ui.core.Control",
+				multiple: false,
+				mapping: {
+					type: "property",
+					to: "for",
+				},
+			};
+			delete ui5metadata.properties["for"];
+
+			// Any "Label" control needs a special UI5-only interface
+			ui5metadata.interfaces.push("sap.ui.core.Label");
+			// Additionally, all such controls must apply the "sap/ui/core/LabelEnablement" (see "../templates/WrapperControl.hbs")
+			classDef._ui5NeedsLabelEnablement = true;
+		} else if (tag === "ui5-multi-input") {
+			// TODO: Multi Input needs to implement the functions defined in "sap.ui.core.ISemanticFormContent"...
+			ui5metadata.interfaces.push("sap.ui.core.ISemanticFormContent");
 		}
 	}
 
@@ -419,6 +497,8 @@ class RegistryEntry {
 		this.#processUI5Interfaces(classDef, ui5metadata);
 
 		this.#ensureDefaults(ui5metadata);
+
+		this.#patchUI5Specifics(classDef, ui5metadata);
 	}
 }
 
