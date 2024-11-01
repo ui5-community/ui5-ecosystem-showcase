@@ -163,7 +163,7 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 	};
 
 	// list of external dependencies that are needed for the Web Components transformation
-	const externalDeps = ["sap/ui/core/webc/WebComponent", "sap/ui/core/webc/WebComponentRenderer", "sap/ui/base/DataType", "sap/base/strings/hyphenate"];
+	const externalDeps = ["sap/ui/core/webc/WebComponent", "sap/ui/core/webc/WebComponentRenderer", "sap/ui/base/DataType", "sap/base/strings/hyphenate", "sap/ui/core/LabelEnablement"];
 
 	return {
 		name: "webcomponents",
