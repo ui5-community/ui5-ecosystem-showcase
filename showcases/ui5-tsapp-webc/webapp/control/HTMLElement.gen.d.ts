@@ -28,7 +28,7 @@ declare module "./HTMLElement" {
         getChildren(): Control[];
         addChild(children: Control): this;
         insertChild(children: Control, index: number): this;
-        removeChild(children: number | string | Control): this;
+        removeChild(children: number | string | Control): Control | null;
         removeAllChildren(): Control[];
         indexOfChild(children: Control): number;
         destroyChildren(): this;
