@@ -23,10 +23,10 @@
     "timeout": "20s"
   },
   "dependencies": {
-    "@sap/approuter": "^16.7.1",
+    "@sap/approuter": "^17.0.0",
     "content-type": "^1.0.5",
     "dotenv": "^16.4.5",
-    "http-proxy-middleware": "^2.0.6",
+    "http-proxy-middleware": "^2.0.7",
     "mime-types": "^2.1.35",
     "portfinder": "^1.0.32",
     "ui5-utils-express": "workspace:^"
@@ -35,13 +35,13 @@
     "@ui5/cli": "^3",
     "@ui5/project": "^3",
     "@ui5/server": "^3",
-    "ava": "^6.1.3",
+    "ava": "^6.2.0",
     "envfile": "7.1.0",
     "get-port": "^7.1.0",
     "nock": "^13.5.5",
-    "replace-in-file": "^8.1.0",
+    "replace-in-file": "^8.2.0",
     "supertest": "^7.0.0",
     "ui5-middleware-websocket": "workspace:^",
-    "wait-on": "^8.0.0"
+    "wait-on": "^8.0.1"
   }
 }

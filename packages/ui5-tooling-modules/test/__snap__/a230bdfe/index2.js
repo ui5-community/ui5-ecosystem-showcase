@@ -246,6 +246,11 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     var PostgrestError$1 = {};
 
     Object.defineProperty(PostgrestError$1, "__esModule", { value: true });
+    /**
+     * Error format
+     *
+     * {@link https://postgrest.org/en/stable/api.html?highlight=options#errors-and-http-status-codes}
+     */
     class PostgrestError extends Error {
         constructor(context) {
             super(context.message);
@@ -263,7 +268,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     Object.defineProperty(PostgrestBuilder$1, "__esModule", { value: true });
     // @ts-ignore
     const node_fetch_1 = __importDefault$5(require$$0);
-    const PostgrestError_1 = __importDefault$5(PostgrestError$1);
+    const PostgrestError_1$1 = __importDefault$5(PostgrestError$1);
     class PostgrestBuilder {
         constructor(builder) {
             this.shouldThrowOnError = false;
@@ -293,6 +298,14 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          */
         throwOnError() {
             this.shouldThrowOnError = true;
+            return this;
+        }
+        /**
+         * Set an HTTP header for the request.
+         */
+        setHeader(name, value) {
+            this.headers = Object.assign({}, this.headers);
+            this.headers[name] = value;
             return this;
         }
         then(onfulfilled, onrejected) {
@@ -396,7 +409,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                         statusText = 'OK';
                     }
                     if (error && this.shouldThrowOnError) {
-                        throw new PostgrestError_1.default(error);
+                        throw new PostgrestError_1$1.default(error);
                     }
                 }
                 const postgrestResponse = {
@@ -1438,7 +1451,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         return (mod && mod.__esModule) ? mod : { "default": mod };
     };
     Object.defineProperty(cjs, "__esModule", { value: true });
-    cjs.PostgrestBuilder = cjs.PostgrestTransformBuilder = cjs.PostgrestFilterBuilder = cjs.PostgrestQueryBuilder = PostgrestClient = cjs.PostgrestClient = void 0;
+    cjs.PostgrestError = cjs.PostgrestBuilder = cjs.PostgrestTransformBuilder = cjs.PostgrestFilterBuilder = cjs.PostgrestQueryBuilder = PostgrestClient = cjs.PostgrestClient = void 0;
     // Always update wrapper.mjs when updating this file.
     const PostgrestClient_1 = __importDefault(PostgrestClient$2);
     var PostgrestClient = cjs.PostgrestClient = PostgrestClient_1.default;
@@ -1450,15 +1463,18 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     cjs.PostgrestTransformBuilder = PostgrestTransformBuilder_1.default;
     const PostgrestBuilder_1 = __importDefault(PostgrestBuilder$1);
     cjs.PostgrestBuilder = PostgrestBuilder_1.default;
+    const PostgrestError_1 = __importDefault(PostgrestError$1);
+    cjs.PostgrestError = PostgrestError_1.default;
     cjs.default = {
         PostgrestClient: PostgrestClient_1.default,
         PostgrestQueryBuilder: PostgrestQueryBuilder_1.default,
         PostgrestFilterBuilder: PostgrestFilterBuilder_1.default,
         PostgrestTransformBuilder: PostgrestTransformBuilder_1.default,
         PostgrestBuilder: PostgrestBuilder_1.default,
+        PostgrestError: PostgrestError_1.default,
     };
 
-    const version$3 = '2.10.2';
+    const version$3 = '2.10.7';
 
     const DEFAULT_HEADERS$3 = { 'X-Client-Info': `realtime-js/${version$3}` };
     const VSN = '1.0.0';
@@ -2120,10 +2136,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     (function (REALTIME_LISTEN_TYPES) {
         REALTIME_LISTEN_TYPES["BROADCAST"] = "broadcast";
         REALTIME_LISTEN_TYPES["PRESENCE"] = "presence";
-        /**
-         * listen to Postgres changes.
-         */
         REALTIME_LISTEN_TYPES["POSTGRES_CHANGES"] = "postgres_changes";
+        REALTIME_LISTEN_TYPES["SYSTEM"] = "system";
     })(exports.REALTIME_LISTEN_TYPES || (exports.REALTIME_LISTEN_TYPES = {}));
     exports.REALTIME_SUBSCRIBE_STATES = void 0;
     (function (REALTIME_SUBSCRIBE_STATES) {
@@ -2192,6 +2206,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             this.presence = new RealtimePresence(this);
             this.broadcastEndpointURL =
                 httpEndpointURL(this.socket.endPoint) + '/api/broadcast';
+            this.private = this.params.config.private || false;
         }
         /** Subscribe registers your client with the server */
         subscribe(callback, timeout = this.timeout) {
@@ -2310,7 +2325,12 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     },
                     body: JSON.stringify({
                         messages: [
-                            { topic: this.subTopic, event, payload: endpoint_payload },
+                            {
+                                topic: this.subTopic,
+                                event,
+                                payload: endpoint_payload,
+                                private: this.private,
+                            },
                         ],
                     }),
                 };
@@ -2601,6 +2621,12 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
 
     const noop = () => { };
     const NATIVE_WEBSOCKET_AVAILABLE = typeof WebSocket !== 'undefined';
+    const WORKER_SCRIPT = `
+  addEventListener("message", (e) => {
+    if (e.data.event === "start") {
+      setInterval(() => postMessage({ event: "keepAlive" }), e.data.interval);
+    }
+  });`;
     class RealtimeClient {
         /**
          * Initializes the Socket.
@@ -2616,6 +2642,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param options.encode The function to encode outgoing messages. Defaults to JSON: (payload, callback) => callback(JSON.stringify(payload))
          * @param options.decode The function to decode incoming messages. Defaults to Serializer's decode.
          * @param options.reconnectAfterMs he optional function that returns the millsec reconnect interval. Defaults to stepped backoff off.
+         * @param options.worker Use Web Worker to set a side flow. Defaults to false.
+         * @param options.workerUrl The URL of the worker script. Defaults to https://realtime.supabase.com/worker.js that includes a heartbeat event call to keep the connection alive.
          */
         constructor(endPoint, options) {
             var _a;
@@ -2700,6 +2728,13 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 this.connect();
             }, this.reconnectAfterMs);
             this.fetch = this._resolveFetch(options === null || options === void 0 ? void 0 : options.fetch);
+            if (options === null || options === void 0 ? void 0 : options.worker) {
+                if (typeof window !== 'undefined' && !window.Worker) {
+                    throw new Error('Web Worker is not supported');
+                }
+                this.worker = (options === null || options === void 0 ? void 0 : options.worker) || false;
+                this.workerUrl = options === null || options === void 0 ? void 0 : options.workerUrl;
+            }
         }
         /**
          * Connects the socket, unless already connected.
@@ -2921,12 +2956,37 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             });
         }
         /** @internal */
-        _onConnOpen() {
+        async _onConnOpen() {
             this.log('transport', `connected to ${this._endPointURL()}`);
             this._flushSendBuffer();
             this.reconnectTimer.reset();
-            this.heartbeatTimer && clearInterval(this.heartbeatTimer);
-            this.heartbeatTimer = setInterval(() => this._sendHeartbeat(), this.heartbeatIntervalMs);
+            if (!this.worker) {
+                this.heartbeatTimer && clearInterval(this.heartbeatTimer);
+                this.heartbeatTimer = setInterval(() => this._sendHeartbeat(), this.heartbeatIntervalMs);
+            }
+            else {
+                if (this.workerUrl) {
+                    this.log('worker', `starting worker for from ${this.workerUrl}`);
+                }
+                else {
+                    this.log('worker', `starting default worker`);
+                }
+                const objectUrl = this._workerObjectUrl(this.workerUrl);
+                this.workerRef = new Worker(objectUrl);
+                this.workerRef.onerror = (error) => {
+                    this.log('worker', 'worker error', error.message);
+                    this.workerRef.terminate();
+                };
+                this.workerRef.onmessage = (event) => {
+                    if (event.data.event === 'keepAlive') {
+                        this._sendHeartbeat();
+                    }
+                };
+                this.workerRef.postMessage({
+                    event: 'start',
+                    interval: this.heartbeatIntervalMs,
+                });
+            }
             this.stateChangeCallbacks.open.forEach((callback) => callback());
         }
         /** @internal */
@@ -2983,6 +3043,17 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 ref: this.pendingHeartbeatRef,
             });
             this.setAuth(this.accessToken);
+        }
+        _workerObjectUrl(url) {
+            let result_url;
+            if (url) {
+                result_url = url;
+            }
+            else {
+                const blob = new Blob([WORKER_SCRIPT], { type: 'application/javascript' });
+                result_url = URL.createObjectURL(blob);
+            }
+            return result_url;
         }
     }
     class WSWebSocketDummy {
@@ -5194,10 +5265,10 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     if (typeof Blob !== 'undefined' && fileBody instanceof Blob) {
                         body = new FormData();
                         body.append('cacheControl', options.cacheControl);
-                        body.append('', fileBody);
                         if (metadata) {
                             body.append('metadata', this.encodeMetadata(metadata));
                         }
+                        body.append('', fileBody);
                     }
                     else if (typeof FormData !== 'undefined' && fileBody instanceof FormData) {
                         body = fileBody;
@@ -5696,7 +5767,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     }
 
     // generated by genversion
-    const version$2 = '2.7.0';
+    const version$2 = '2.7.1';
 
     const DEFAULT_HEADERS$2 = { 'X-Client-Info': `storage-js/${version$2}` };
 
@@ -5873,7 +5944,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
     }
 
-    const version$1 = '2.45.3';
+    const version$1 = '2.46.1';
 
     let JS_ENV = '';
     // @ts-ignore
@@ -5981,7 +6052,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         return result;
     }
 
-    const version = '2.65.0';
+    const version = '2.65.1';
 
     const GOTRUE_URL = 'http://localhost:9999';
     const STORAGE_KEY = 'supabase.auth.token';
@@ -7158,10 +7229,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     const { data, error } = await this._getSessionFromURL(isPKCEFlow);
                     if (error) {
                         this._debug('#_initialize()', 'error detecting session from URL', error);
-                        // hacky workaround to keep the existing session if there's an error returned from identity linking
-                        // TODO: once error codes are ready, we should match against it instead of the message
-                        if ((error === null || error === void 0 ? void 0 : error.message) === 'Identity is already linked' ||
-                            (error === null || error === void 0 ? void 0 : error.message) === 'Identity is already linked to another user') {
+                        if ((error === null || error === void 0 ? void 0 : error.code) === 'identity_already_exists') {
                             return { error };
                         }
                         // failed login attempt via url,
@@ -7880,7 +7948,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                         // session in the database, indicating the user is signed out.
                         await this._removeSession();
                         await removeItemAsync(this.storage, `${this.storageKey}-code-verifier`);
-                        await this._notifyAllSubscribers('SIGNED_OUT', null);
                     }
                     return { data: { user: null }, error };
                 }
@@ -8172,7 +8239,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 if (scope !== 'others') {
                     await this._removeSession();
                     await removeItemAsync(this.storage, `${this.storageKey}-code-verifier`);
-                    await this._notifyAllSubscribers('SIGNED_OUT', null);
                 }
                 return { error: null };
             });
@@ -8391,7 +8457,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             return { data: { provider, url }, error: null };
         }
         /**
-         * Recovers the session from LocalStorage and refreshes
+         * Recovers the session from LocalStorage and refreshes the token
          * Note: this method is async to accommodate for AsyncStorage e.g. in React native.
          */
         async _recoverAndRefresh() {
@@ -8469,7 +8535,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     const result = { session: null, error };
                     if (!isAuthRetryableFetchError(error)) {
                         await this._removeSession();
-                        await this._notifyAllSubscribers('SIGNED_OUT', null);
                     }
                     (_a = this.refreshingDeferred) === null || _a === void 0 ? void 0 : _a.resolve(result);
                     return result;
@@ -8524,6 +8589,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         async _removeSession() {
             this._debug('#_removeSession()');
             await removeItemAsync(this.storage, this.storageKey);
+            await this._notifyAllSubscribers('SIGNED_OUT', null);
         }
         /**
          * Removes any registered visibilitychange callback.
@@ -8561,12 +8627,12 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 // finished and tests run endlessly. This can be prevented by calling
                 // `unref()` on the returned object.
                 ticker.unref();
-                // @ts-ignore
+                // @ts-expect-error TS has no context of Deno
             }
             else if (typeof Deno !== 'undefined' && typeof Deno.unrefTimer === 'function') {
                 // similar like for NodeJS, but with the Deno API
                 // https://deno.land/api@latest?unstable&s=Deno.unrefTimer
-                // @ts-ignore
+                // @ts-expect-error TS has no context of Deno
                 Deno.unrefTimer(ticker);
             }
             // run the tick immediately, but in the next pass of the event loop so that
@@ -8781,9 +8847,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 throw error;
             }
         }
-        /**
-         * {@see GoTrueMFAApi#enroll}
-         */
         async _enroll(params) {
             try {
                 return await this._useSession(async (result) => {
@@ -8800,10 +8863,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     });
                     if (error) {
                         return { data: null, error };
-                    }
-                    // TODO: Remove once: https://github.com/supabase/auth/pull/1717 is deployed
-                    if (params.factorType === 'phone') {
-                        delete data.totp;
                     }
                     if (params.factorType === 'totp' && ((_b = data === null || data === void 0 ? void 0 : data.totp) === null || _b === void 0 ? void 0 : _b.qr_code)) {
                         data.totp.qr_code = `data:image/svg+xml;utf-8,${data.totp.qr_code}`;

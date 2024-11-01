@@ -9,7 +9,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index.cjs3'], (function (index_
   	var app = index_cjs$1.index_cjs;
 
   	var name = "firebase";
-  	var version = "10.13.1";
+  	var version = "11.0.1";
 
   	/**
   	 * @license

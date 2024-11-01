@@ -1162,7 +1162,7 @@ module.exports = function (log, projectInfo) {
 				const cacheKey = createHash("md5")
 					.update(
 						`${myLastModified}:${lastModified}:${modules
-							.map((module) => module.name)
+							.map((module) => `${module.name}@${module.path}`)
 							.sort()
 							.join(",")}`,
 					)

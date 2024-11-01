@@ -24,11 +24,11 @@
     "timeout": "5m"
   },
   "dependencies": {
-    "yazl": "^2.5.1"
+    "yazl": "^3.1.0"
   },
   "devDependencies": {
     "@ui5/cli": "^3",
-    "ava": "^6.1.3",
+    "ava": "^6.2.0",
     "yauzl": "^3.1.3"
   }
 }

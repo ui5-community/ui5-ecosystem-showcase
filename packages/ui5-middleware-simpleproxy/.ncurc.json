@@ -1,0 +1,3 @@
+{
+  "reject": ["@ui5/project", "@ui5/server", "http-proxy-middleware", "minimatch"]
+}

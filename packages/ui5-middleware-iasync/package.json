@@ -14,7 +14,7 @@
     "lint": "eslint lib"
   },
   "dependencies": {
-    "browser-sync": "^3.0.2",
+    "browser-sync": "^3.0.3",
     "connect-injector": "^0.4.4"
   }
 }
