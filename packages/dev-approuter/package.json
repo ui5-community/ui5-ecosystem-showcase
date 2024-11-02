@@ -21,8 +21,8 @@
     "@sap/cds": "*"
   },
   "peerDependenciesMeta": {
-    "soy-milk": {
-      "@sap/cds": true
+    "@sap/cds": {
+      "optional": true
     }
   }
 }
