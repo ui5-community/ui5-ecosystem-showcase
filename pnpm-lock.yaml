@@ -102,8 +102,6 @@ importers:
       express:
         specifier: ^4.21.1
         version: 4.21.1
-        specifier: ^4.21.1
-        version: 4.21.1
       ui5-middleware-cap:
         specifier: workspace:^
         version: link:../ui5-middleware-cap
@@ -2806,9 +2804,6 @@ packages:
   '@sap/xsenv@5.4.0':
     resolution: {integrity: sha512-O9G71v7S1ZHorDHwNGAbZXmvRvALbeN8Q/j1UgQdKfUcf18re+5CZxKCVUezs2OTBR2KB/tvDFLnlXwHYuwC7A==}
     engines: {node: ^18.0.0 || ^20.0.0  || ^22.0.0}
-  '@sap/xsenv@5.4.0':
-    resolution: {integrity: sha512-O9G71v7S1ZHorDHwNGAbZXmvRvALbeN8Q/j1UgQdKfUcf18re+5CZxKCVUezs2OTBR2KB/tvDFLnlXwHYuwC7A==}
-    engines: {node: ^18.0.0 || ^20.0.0  || ^22.0.0}
 
   '@sap/xssec@3.6.1':
     resolution: {integrity: sha512-OJouwIWClefpsJ8rVCziEydeDHDNOMA4hjsjw9OqolbbObaiYMMDRU0YJbPe7XL5JkLgrtt+CLCBCsNERxcCZg==}
@@ -4896,10 +4891,6 @@ packages:
 
   encodeurl@1.0.2:
     resolution: {integrity: sha512-TPJXq8JqFaVYm2CWmPvnP2Iyo4ZSM7/QKcSmuMLDObfpH5fi7RUGmd/rTDf+rut/saiDiQEeVTNgAmJEdAOx0w==}
-    engines: {node: '>= 0.8'}
-
-  encodeurl@2.0.0:
-    resolution: {integrity: sha512-Q0n9HRi4m6JuGIV1eFlmvJB7ZEVxu93IrMyiMsGC0lrMJMWzRgx6WGquyfQgZVb31vhGgXnfmPNNXmxnOkRBrg==}
     engines: {node: '>= 0.8'}
 
   encodeurl@2.0.0:
@@ -11965,7 +11956,6 @@ snapshots:
       - supports-color
 
   '@sap/xsenv@5.4.0':
-  '@sap/xsenv@5.4.0':
     dependencies:
       debug: 4.3.7
       node-cache: 5.1.2
@@ -12607,7 +12597,6 @@ snapshots:
       escape-html: 1.0.3
       etag: 1.8.1
       express: 4.21.1
-      express: 4.21.1
       fresh: 0.5.2
       graceful-fs: 4.2.11
       mime-types: 2.1.35
@@ -12679,7 +12668,6 @@ snapshots:
       devcert-sanscache: 0.5.1
       escape-html: 1.0.3
       etag: 1.8.1
-      express: 4.21.1
       express: 4.21.1
       fresh: 0.5.2
       graceful-fs: 4.2.11
@@ -14778,8 +14766,6 @@ snapshots:
   emoji-regex@9.2.2: {}
 
   encodeurl@1.0.2: {}
-
-  encodeurl@2.0.0: {}
 
   encodeurl@2.0.0: {}
 
