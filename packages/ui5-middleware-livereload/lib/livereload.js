@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-vars, no-undef */
-const connectLivereload = require("connect-livereload");
-const livereload = require("livereload");
 const path = require("path");
 const fs = require("fs");
 const portfinder = require("portfinder");
+const chokidar = require("chokidar");
+// eslint-disable-next-line no-redeclare
+const WebSocket = require("ws");
 
 /**
  * @typedef {object} [configuration] configuration
@@ -123,53 +124,90 @@ module.exports = async ({ log, resources, options, middlewareUtil }) => {
 	} else if (exclusions) {
 		exclusions = [new RegExp(exclusions)];
 	}
-	let extraExts = options?.configuration?.extraExts || "jsx,ts,tsx,xml,json,properties";
+	let extraExts = options?.configuration?.extraExts || "js,html,css,jsx,ts,tsx,xml,json,properties";
 	let debug = options?.configuration?.debug;
 	let usePolling = options?.configuration?.usePolling;
 
-	let serverOptions = {
-		debug: debug,
-		extraExts: extraExts ? extraExts.split(",") : undefined,
-		port: port,
-		exclusions: exclusions,
+	// Set up WebSocket server
+	const wss = new WebSocket.Server({ port });
+	wss.on("connection", (ws) => {
+		debug && log.info("WebSocket client connected");
+	});
+
+	// Build array of file extensions to watch
+	const extsToWatch = extraExts.split(",");
+
+	// Prepare glob patterns for chokidar
+	const globPatterns = extsToWatch.map((ext) => `**/*.${ext}`);
+
+	// Set up chokidar watcher
+	const watcher = chokidar.watch(watchPath, {
+		ignored: exclusions,
+		ignoreInitial: true,
 		usePolling: usePolling,
-	};
-
-	const cli = require("yargs");
-	if (cli.argv.h2) {
-		const os = require("os");
-		const fs = require("fs");
-
-		sslKeyPath = cli.argv.key ? cli.argv.key : path.join(os.homedir(), ".ui5", "server", "server.key");
-		sslCertPath = cli.argv.cert ? cli.argv.cert : path.join(os.homedir(), ".ui5", "server", "server.crt");
-		debug ? log.info(`Livereload using SSL key ${sslKeyPath}`) : null;
-		debug ? log.info(`Livereload using SSL certificate ${sslCertPath}`) : null;
-
-		serverOptions.https = {
-			key: fs.readFileSync(sslKeyPath),
-			cert: fs.readFileSync(sslCertPath),
-		};
-	}
-
-	const livereloadServer = livereload.createServer(serverOptions, () => {
-		log.info("Livereload server started!");
+		cwd: cwd,
+		followSymlinks: true,
+		depth: Infinity,
 	});
 
-	if (Array.isArray(watchPath)) {
-		let watchPaths = [];
-		for (let i = 0; i < watchPath.length; i++) {
-			watchPaths.push(path.resolve(cwd, watchPath[i]));
+	watcher.on("all", (event, filePath) => {
+		debug && log.info(`File ${event}: ${filePath}`);
+		// Notify all connected clients to reload
+		wss.clients.forEach((client) => {
+			if (client.readyState === WebSocket.OPEN) {
+				client.send("reload");
+			}
+		});
+	});
+
+	// Middleware function to inject the client-side script
+	return (req, res, next) => {
+		// Only inject into HTML responses
+		if (res._livereloadInjected) {
+			return next();
 		}
-		debug ? log.info(`Livereload connecting to port ${port} for paths ${watchPaths}`) : null;
-		livereloadServer.watch(watchPaths);
-	} else {
-		debug ? log.info(`Livereload connecting to port ${port} for path ${watchPath}`) : null;
-		livereloadServer.watch(path.resolve(cwd, watchPath));
-	}
 
-	// connect-livereload already holds the
-	// method sig (req, res, next)
-	return connectLivereload({
-		port: port,
-	});
+		// Intercept write and end methods
+		const originalWrite = res.write;
+		const originalEnd = res.end;
+
+		let body = "";
+
+		res.write = function (chunk) {
+			body += chunk.toString();
+		};
+
+		res.end = function (chunk) {
+			if (chunk) {
+				body += chunk.toString();
+			}
+
+			// Check if response is HTML
+			if (res.getHeader("Content-Type") && res.getHeader("Content-Type").includes("text/html")) {
+				// Inject the client-side script
+				const script = `
+          <script>
+            (function() {
+              var socket = new WebSocket('ws://' + location.hostname + ':${port}');
+              socket.onmessage = function(event) {
+                if (event.data === 'reload') {
+                  location.reload();
+                }
+              };
+            })();
+          </script>
+        `;
+				body = body.replace(/<\/body>/i, script + "</body>");
+			}
+
+			// Remove the line that sets Content-Length
+			// res.setHeader("Content-Length", Buffer.byteLength(body));
+			res._livereloadInjected = true;
+			res.write = originalWrite;
+			res.end = originalEnd;
+			res.end(body);
+		};
+
+		next();
+	};
 };
