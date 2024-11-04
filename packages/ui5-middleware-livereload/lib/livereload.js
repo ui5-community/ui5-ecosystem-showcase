@@ -1,10 +1,12 @@
 /* eslint-disable no-unused-vars, no-undef */
 const path = require("path");
 const fs = require("fs");
+const os = require("os");
 const portfinder = require("portfinder");
 const chokidar = require("chokidar");
 // eslint-disable-next-line no-redeclare
 const WebSocket = require("ws");
+const yargs = require("yargs");
 
 /**
  * @typedef {object} [configuration] configuration
@@ -13,6 +15,7 @@ const WebSocket = require("ws");
  * @property {string|yo<input|webapp>} [watchPath] path inside `$yourapp` the reload server monitors for changes
  * @property {string} [exclusions] one or many `regex`. By default, this includes `.git/`, `.svn/`, and `.hg/`
  * @property {boolean|yo<confirm|false>} [debug] see output
+ * @property {boolean} [usePolling] - enable polling for file changes
  */
 
 /**
@@ -21,7 +24,7 @@ const WebSocket = require("ws");
  *
  * @param {object} options the entered config option
  * @param {number} defaultPort the port which is defaulted
- * @returns {number} a port which is free
+ * @returns {Promise<number>} - a port which is free
  */
 const getPortForLivereload = async (options, defaultPort) => {
 	if (options.configuration && options.configuration.port) {
@@ -41,6 +44,7 @@ const getPortForLivereload = async (options, defaultPort) => {
  * <b>ATTENTION: this is a hack to be compatible with UI5 tooling 2.x and 3.x</b>
  *
  * @param {module:@ui5/fs.AbstractReader} collection Reader or Collection to read resources of the root project and its dependencies
+ * @param {boolean} skipFwkDeps whether to skip framework dependencies
  * @returns {string[]} source paths
  */
 const determineSourcePaths = (collection, skipFwkDeps) => {
@@ -124,24 +128,35 @@ module.exports = async ({ log, resources, options, middlewareUtil }) => {
 	} else if (exclusions) {
 		exclusions = [new RegExp(exclusions)];
 	}
-	let extraExts = options?.configuration?.extraExts || "js,html,css,jsx,ts,tsx,xml,json,properties";
-	let debug = options?.configuration?.debug;
-	let usePolling = options?.configuration?.usePolling;
+	const extraExts = options?.configuration?.extraExts || "js,html,css,jsx,ts,tsx,xml,json,properties";
+	const debug = options?.configuration?.debug;
+	const usePolling = options?.configuration?.usePolling;
 
-	// Ensure watchPath is always an array
-	const watchPaths = Array.isArray(watchPath) ? watchPath : [watchPath];
+	// SSL Configuration via command-line arguments
+	const cli = yargs(process.argv.slice(2)).argv;
 
-	// Create complete paths with extensions
-	const pathsToWatch = watchPaths.flatMap((basePath) => extraExts.split(",").map((ext) => path.join(basePath, `**/*.${ext.trim()}`)));
+	let serverOptions = {};
+	let useHttps = false;
+	if (cli.h2) {
+		useHttps = true;
+		const sslKeyPath = cli.key ? cli.key : path.join(os.homedir(), ".ui5", "server", "server.key");
+		const sslCertPath = cli.cert ? cli.cert : path.join(os.homedir(), ".ui5", "server", "server.crt");
+		if (fs.existsSync(sslKeyPath) && fs.existsSync(sslCertPath)) {
+			serverOptions = {
+				key: fs.readFileSync(sslKeyPath),
+				cert: fs.readFileSync(sslCertPath),
+			};
+			debug && log.info(`Livereload using SSL key ${sslKeyPath} and certificate ${sslCertPath}`);
+		} else {
+			log.warn("SSL key or certificate not found, falling back to HTTP.");
+		}
+	}
 
-	// Set up WebSocket server
-	const wss = new WebSocket.Server({ port });
-	wss.on("connection", (ws) => {
-		debug && log.info("WebSocket client connected");
-	});
+	// Build array of file extensions to watch
+	const extsToWatch = extraExts.split(",");
 
 	// Set up chokidar watcher
-	const watcher = chokidar.watch(pathsToWatch, {
+	const watcher = chokidar.watch(watchPath, {
 		ignored: exclusions,
 		ignoreInitial: true,
 		usePolling: usePolling,
@@ -150,14 +165,37 @@ module.exports = async ({ log, resources, options, middlewareUtil }) => {
 		depth: Infinity,
 	});
 
+	// Set up WebSocket server
+	let server;
+	if (useHttps && Object.keys(serverOptions).length > 0) {
+		// HTTPS Server
+		server = require("https").createServer(serverOptions);
+	} else {
+		// HTTP Server
+		server = require("http").createServer();
+	}
+	server.listen(port, () => {
+		debug && log.info(`Livereload server started on port ${port}`);
+	});
+
+	const wss = new WebSocket.Server({ server });
+
+	wss.on("connection", (ws) => {
+		debug && log.info("WebSocket client connected");
+	});
+
 	watcher.on("all", (event, filePath) => {
-		debug && log.info(`File ${event}: ${filePath}`);
-		// Notify all connected clients to reload
-		wss.clients.forEach((client) => {
-			if (client.readyState === WebSocket.OPEN) {
-				client.send("reload");
-			}
-		});
+		// Check if the changed file matches the extensions
+		const ext = path.extname(filePath).substring(1);
+		if (extsToWatch.includes(ext)) {
+			debug && log.info(`File ${event}: ${filePath}`);
+			// Notify all connected clients to reload
+			wss.clients.forEach((client) => {
+				if (client.readyState === WebSocket.OPEN) {
+					client.send("reload");
+				}
+			});
+		}
 	});
 
 	// Middleware function to inject the client-side script
@@ -174,21 +212,26 @@ module.exports = async ({ log, resources, options, middlewareUtil }) => {
 		let body = "";
 
 		res.write = function (chunk) {
-			body += chunk.toString();
+			body += chunk instanceof Buffer ? chunk.toString() : chunk;
 		};
 
 		res.end = function (chunk) {
 			if (chunk) {
-				body += chunk.toString();
+				body += chunk instanceof Buffer ? chunk.toString() : chunk;
 			}
 
 			// Check if response is HTML
 			if (res.getHeader("Content-Type") && res.getHeader("Content-Type").includes("text/html")) {
+				// Determine protocol
+				const protocol = useHttps ? "wss" : "ws";
 				// Inject the client-side script
 				const script = `
           <script>
             (function() {
-              var socket = new WebSocket('ws://' + location.hostname + ':${port}');
+              var protocol = '${protocol}';
+              var port = ${port};
+              var host = location.hostname;
+              var socket = new WebSocket(protocol + '://' + host + ':' + port);
               socket.onmessage = function(event) {
                 if (event.data === 'reload') {
                   location.reload();
@@ -200,8 +243,6 @@ module.exports = async ({ log, resources, options, middlewareUtil }) => {
 				body = body.replace(/<\/body>/i, script + "</body>");
 			}
 
-			// Remove the line that sets Content-Length
-			// res.setHeader("Content-Length", Buffer.byteLength(body));
 			res._livereloadInjected = true;
 			res.write = originalWrite;
 			res.end = originalEnd;
