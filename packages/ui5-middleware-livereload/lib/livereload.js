@@ -128,20 +128,20 @@ module.exports = async ({ log, resources, options, middlewareUtil }) => {
 	let debug = options?.configuration?.debug;
 	let usePolling = options?.configuration?.usePolling;
 
+	// Ensure watchPath is always an array
+	const watchPaths = Array.isArray(watchPath) ? watchPath : [watchPath];
+
+	// Create complete paths with extensions
+	const pathsToWatch = watchPaths.flatMap((basePath) => extraExts.split(",").map((ext) => path.join(basePath, `**/*.${ext.trim()}`)));
+
 	// Set up WebSocket server
 	const wss = new WebSocket.Server({ port });
 	wss.on("connection", (ws) => {
 		debug && log.info("WebSocket client connected");
 	});
 
-	// Build array of file extensions to watch
-	const extsToWatch = extraExts.split(",");
-
-	// Prepare glob patterns for chokidar
-	const globPatterns = extsToWatch.map((ext) => `**/*.${ext}`);
-
 	// Set up chokidar watcher
-	const watcher = chokidar.watch(watchPath, {
+	const watcher = chokidar.watch(pathsToWatch, {
 		ignored: exclusions,
 		ignoreInitial: true,
 		usePolling: usePolling,
