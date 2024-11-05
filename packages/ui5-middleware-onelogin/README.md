@@ -48,12 +48,15 @@ Currently, you can define the following properties:
 
 **NB2:** If your system does not host a fiori launchpad, you will have to adjust the subdirectory to point to a different login protected page. In the case of a MII java stack that hosts an OData service, try setting subdirectory to XMII/PropertyAccessServlet?Mode=List
 
-- ClientCertificate`(optional)`: `object` Configuration for client certificate authentication
-  - origin: `string` Exact origin that the certificate is valid for. Origin includes https protocol, a hostname and optionally a port.
-  - certPath: `string` Path to the file with the certificate in PEM format.
-  - keyPath: `string` Path to the file with the private key in PEM format.
-  - pfxPath: `string` Path to the PFX or PKCS12 encoded private key and certificate chain.
-  - passphrase: `string` Passphrase for the private key (PEM or PFX).
+**Certificate properties:**
+
+- certificateOrigin`(optional)`: `string` Exact origin that the certificate is valid for. Origin includes https protocol, a hostname and optionally a port.
+- certificateCertPath`(optional)`: `string` Path to the file with the certificate in PEM format.
+- certificateKeyPath`(optional)`: `string` Path to the file with the private key in PEM format.
+- certificatePfxPath`(optional)`: `string` Path to the PFX or PKCS12 encoded private key and certificate chain.
+- certificatePassphrase`(optional)`: `string` Passphrase for the private key (PEM or PFX).
+
+Those properties are only work when useCertificate is set to true.
 
 You can set the following environment variables in your .env file (remember to add it to your .gitignore):
 
@@ -64,6 +67,7 @@ You can either add the following properties to your .env file, remember to add t
 - UI5_MIDDLEWARE_ONELOGIN_USERNAME
 - UI5_MIDDLEWARE_ONELOGIN_PASSWORD
 - UI5_MIDDLEWARE_ONELOGIN_USE_CERTIFICATE
+- UI5_MIDDLEWARE_ONELOGIN_CLIENT_CERTIFICATE
 - UI5_MIDDLEWARE_ONELOGIN_QUERY or UI5_MIDDLEWARE_SIMPLE_PROXY_QUERY
 - UI5_MIDDLEWARE_ONELOGIN_DEBUG
 

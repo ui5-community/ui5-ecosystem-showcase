@@ -10,32 +10,23 @@ var cookie: string;
 //First time to make sure we only output the parsed cookie once
 var firstTime: boolean = true;
 
-// interface cookieFace {
-// name: string,
-// key: string
-// }
-
-/**
- * @typedef {Object} ClientCertificate
- * @property {string} origin - Exact origin that the certificate is valid for. Origin includes https protocol, a hostname and optionally a port.
- * @property {string} [certPath] - Path to the file with the certificate in PEM format.
- * @property {Buffer} [cert] - Direct value of the certificate in PEM format.
- * @property {string} [keyPath] - Path to the file with the private key in PEM format.
- * @property {Buffer} [key] - Direct value of the private key in PEM format.
- * @property {string} [pfxPath] - Path to the PFX or PKCS12 encoded private key and certificate chain.
- * @property {Buffer} [pfx] - Direct value of the PFX or PKCS12 encoded private key and certificate chain.
- * @property {string} [passphrase] - Passphrase for the private key (PEM or PFX).
- */
-
 /**
  * @typedef {Object} [configuration] configuration
  * @property {string} path - The path to use => env:UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL
  * @property {string} [username] the username => env:UI5_MIDDLEWARE_ONELOGIN_USERNAME
  * @property {string|yo<password>} [password] the password => env:UI5_MIDDLEWARE_ONELOGIN_PASSWORD
  * @property {boolean|yo<confirm|false>} [useCertificate] use certificate login instead of username/password
- * @property {ClientCertificate[]} [clientCertificates] Array of client certificate configurations
+ * @property {string} [certificateOrigin] - Exact origin that the certificate is valid for. Origin includes https protocol, a hostname and optionally a port.
+ * @property {string} [certificateCertPath] - Path to the file with the certificate in PEM format.
+ * @property {Buffer} [certificateCert] - Direct value of the certificate in PEM format.
+ * @property {string} [certificateKeyPath] - Path to the file with the private key in PEM format.
+ * @property {Buffer} [certificateKey] - Direct value of the private key in PEM format.
+ * @property {string} [certificatePfxPath] - Path to the PFX or PKCS12 encoded private key and certificate chain.
+ * @property {Buffer} [certificatePfx] - Direct value of the PFX or PKCS12 encoded private key and certificate chain.
+ * @property {string} [certificatePassphrase] - Passphrase for the private key (PEM or PFX).
  * @property {boolean|yo<confirm|false>} [debug] see output
  */
+
 /**
  * Custom UI5 Server middleware example
  *

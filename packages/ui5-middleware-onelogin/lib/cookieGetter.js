@@ -84,17 +84,29 @@ class CookieGetter {
                     username: process.env.UI5_MIDDLEWARE_ONELOGIN_USERNAME,
                     password: process.env.UI5_MIDDLEWARE_ONELOGIN_PASSWORD,
                     useCertificate: process.env.UI5_MIDDLEWARE_ONELOGIN_USE_CERTIFICATE === "true",
-                    clientCertificates: this.parseJSON(process.env.UI5_MIDDLEWARE_ONELOGIN_CLIENT_CERTIFICATES),
+                    clientCertificate: this.parseJSON(process.env.UI5_MIDDLEWARE_ONELOGIN_CLIENT_CERTIFICATE),
                     debug: process.env.UI5_MIDDLEWARE_ONELOGIN_DEBUG === "true",
                     query: this.parseJSON(process.env.UI5_MIDDLEWARE_ONELOGIN_QUERY),
+                    certificateOrigin: process.env.UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_ORIGIN,
+                    certificateCertPath: process.env.UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_CERT_PATH,
+                    certificateCert: this.parseJSON(process.env.UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_CERT),
+                    certificateKeyPath: process.env.UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_KEY_PATH,
+                    certificateKey: this.parseJSON(process.env.UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_KEY),
+                    certificatePfxPath: process.env.UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_PFX_PATH,
+                    certificatePfx: this.parseJSON(process.env.UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_PFX),
+                    certificatePassphrase: process.env.UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_PASSPHRASE,
                 },
             });
             const effectiveOptions = Object.assign({}, options);
             effectiveOptions.configuration = Object.assign({}, defaultOptions.configuration, envOptions.configuration, options.configuration);
-            // Check if clientCertificates should be used: useCertificate is true and clientCertificates is defined or clientCertificates contains any certificate
-            const useClientCertificates = effectiveOptions.configuration.useCertificate ||
-                (effectiveOptions.configuration.clientCertificates &&
-                    effectiveOptions.configuration.clientCertificates.some(cert => cert.certPath || cert.cert || cert.keyPath || cert.key || cert.pfxPath || cert.pfx));
+            const isUseCertificateEnabled = effectiveOptions.configuration.useCertificate;
+            const hasCertificateConfig = effectiveOptions.configuration.certificateCertPath ||
+                effectiveOptions.configuration.certificateCert ||
+                effectiveOptions.configuration.certificateKeyPath ||
+                effectiveOptions.configuration.certificateKey ||
+                effectiveOptions.configuration.certificatePfxPath ||
+                effectiveOptions.configuration.certificatePfx;
+            const useClientCertificates = isUseCertificateEnabled && hasCertificateConfig;
             if (effectiveOptions.configuration.debug) {
                 log.info("Default options:");
                 log.info(defaultOptions);
@@ -104,7 +116,7 @@ class CookieGetter {
                 log.info(options);
                 log.info("Effective options:");
                 log.info(effectiveOptions);
-                log.info(`Using client certificates: ${useClientCertificates}`);
+                log.info('Using client certificates: ' + String(useClientCertificates));
             }
             const attr = {
                 url: effectiveOptions.configuration.path,
@@ -140,8 +152,19 @@ class CookieGetter {
             try {
                 const browser = yield playwright_chromium_1.chromium.launch(playwrightOpt);
                 const contextOptions = { ignoreHTTPSErrors: true };
-                if (useClientCertificates && effectiveOptions.configuration.clientCertificates) {
-                    contextOptions.clientCertificates = effectiveOptions.configuration.clientCertificates;
+                if (useClientCertificates) {
+                    contextOptions.clientCertificates = [
+                        {
+                            origin: effectiveOptions.configuration.certificateOrigin,
+                            certPath: effectiveOptions.configuration.certificateCertPath,
+                            cert: effectiveOptions.configuration.certificateCert,
+                            keyPath: effectiveOptions.configuration.certificateKeyPath,
+                            key: effectiveOptions.configuration.certificateKey,
+                            pfxPath: effectiveOptions.configuration.certificatePfxPath,
+                            pfx: effectiveOptions.configuration.certificatePfx,
+                            passphrase: effectiveOptions.configuration.certificatePassphrase,
+                        },
+                    ];
                 }
                 if (effectiveOptions.configuration.debug) {
                     log.info("Client certificates configuration:");
@@ -203,8 +226,17 @@ class CookieGetter {
                     catch (oError) {
                         //This error is fine, it's not locating the No button specifically for Azure
                     }
+                    // Certificate login without certificate configuration
                 }
-                else {
+                else if (isUseCertificateEnabled && hasCertificateConfig) {
+                    // Full certificate login with provided configuration
+                    log.info("Login with certificate configuration. Waiting for page to load...");
+                    yield page.goto(attr.url, { waitUntil: "networkidle" });
+                    // Add more robust certificate handling here if needed
+                }
+                else if (isUseCertificateEnabled && !hasCertificateConfig) {
+                    // Certificate login without explicit configuration
+                    // (might be using system certificates)
                     yield page.goto(attr.url, { waitUntil: "networkidle" });
                     let isLoginPage = true;
                     for (let attempt = 0; attempt < 3; attempt++) {
@@ -216,16 +248,12 @@ class CookieGetter {
                         if (!isLoginPage) {
                             break;
                         }
-                        else {
-                            if (effectiveOptions.configuration.debug) {
-                                log.info(`"${attr.url}" looks like a login page, reloading...`);
-                            }
+                        else if (effectiveOptions.configuration.debug) {
+                            log.info(`"${attr.url}" looks like a login page, reloading...`);
                         }
                     }
-                    if (isLoginPage) {
-                        if (effectiveOptions.configuration.debug) {
-                            log.info(`Couldn't login using a certificate!`);
-                        }
+                    if (isLoginPage && effectiveOptions.configuration.debug) {
+                        log.info(`Couldn't login using a certificate!`);
                     }
                 }
                 const cookies = yield context.cookies();

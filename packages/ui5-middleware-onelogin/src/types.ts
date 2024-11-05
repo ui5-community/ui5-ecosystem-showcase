@@ -7,15 +7,13 @@ export interface Options {
 		useCertificate: boolean;
 		debug?: boolean;
 		query?: unknown;
-		clientCertificates?: Array<{
-			origin: string;
-			certPath?: string;
-			cert?: Buffer;
-			keyPath?: string;
-			key?: Buffer;
-			pfxPath?: string;
-			pfx?: Buffer;
-			passphrase?: string;
-		}>;
+		certificateOrigin?: string;
+		certificateCertPath?: string;
+		certificateCert?: Buffer;
+		certificateKeyPath?: string;
+		certificateKey?: Buffer;
+		certificatePfxPath?: string;
+		certificatePfx?: Buffer;
+		certificatePassphrase?: string;
 	};
 }
