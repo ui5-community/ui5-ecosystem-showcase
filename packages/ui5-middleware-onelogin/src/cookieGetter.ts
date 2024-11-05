@@ -81,7 +81,6 @@ export default class CookieGetter {
 				username: process.env.UI5_MIDDLEWARE_ONELOGIN_USERNAME,
 				password: process.env.UI5_MIDDLEWARE_ONELOGIN_PASSWORD,
 				useCertificate: process.env.UI5_MIDDLEWARE_ONELOGIN_USE_CERTIFICATE === "true",
-				clientCertificate: this.parseJSON(process.env.UI5_MIDDLEWARE_ONELOGIN_CLIENT_CERTIFICATE),
 				debug: process.env.UI5_MIDDLEWARE_ONELOGIN_DEBUG === "true",
 				query: this.parseJSON(process.env.UI5_MIDDLEWARE_ONELOGIN_QUERY),
 				certificateOrigin: process.env.UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_ORIGIN,
