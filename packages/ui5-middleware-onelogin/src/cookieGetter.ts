@@ -275,12 +275,16 @@ export default class CookieGetter {
 					isLoginPage = await this.isLoginPage(page);
 					if (!isLoginPage) {
 						break;
-					} else if (effectiveOptions.configuration.debug) {
-						log.info(`"${attr.url}" looks like a login page, reloading...`);
+					} else {
+						if (effectiveOptions.configuration.debug) {
+							log.info(`"${attr.url}" looks like a login page, reloading...`);
+						}
 					}
 				}
-				if (isLoginPage && effectiveOptions.configuration.debug) {
-					log.info(`Couldn't login using a certificate!`);
+				if (isLoginPage) {
+					if (effectiveOptions.configuration.debug) {
+						log.info(`Couldn't login using a certificate!`);
+					}
 				}
 			}
 
