@@ -108,12 +108,19 @@ class CookieGetter {
             const useClientCertificates = isUseCertificateEnabled && hasCertificateConfig;
             if (effectiveOptions.configuration.debug) {
                 const sanitizePassphrase = (obj) => {
-                    var _a;
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-                    if (!((_a = obj === null || obj === void 0 ? void 0 : obj.configuration) === null || _a === void 0 ? void 0 : _a.certificatePassphrase))
+                    // If there's no passphrase to hide, return the object as-is
+                    if (!obj?.configuration?.certificatePassphrase) {
                         return obj;
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-                    return Object.assign(Object.assign({}, obj), { configuration: Object.assign(Object.assign({}, obj.configuration), { certificatePassphrase: "***" }) });
+                    }
+
+                    // Create a deep copy of the object and replace the passphrase with asterisks
+                    return {
+                        ...obj,
+                        configuration: {
+                            ...obj.configuration,
+                            certificatePassphrase: "***"
+                        }
+                    };
                 };
                 log.info("Default options:");
                 log.info(sanitizePassphrase(defaultOptions));
