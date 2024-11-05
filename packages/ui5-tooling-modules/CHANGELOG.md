@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.18.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.0...ui5-tooling-modules@3.18.1) (2024-11-05)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** upgrade to chokidar 4.x ([#1118](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1118)) ([75043e6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/75043e6e28307c0644a1853f8c5e4c3d9c66e6d4))
+
+
+
+
+
 # [3.18.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.17.0...ui5-tooling-modules@3.18.0) (2024-11-01)
 
 
