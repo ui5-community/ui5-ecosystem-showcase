@@ -128,23 +128,41 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 						});
 					return getBundleInfo(modules, config, { cwd, depPaths, isMiddleware: true });
 				})
-				.then((bundleInfo) => {
+				.then(async (bundleInfo) => {
 					// finally, we watch the entries of the bundle
 					debug && log.info(`Bundling took ${Date.now() - bundleTime} millis`);
-					bundleWatcher?.close();
+					await bundleWatcher?.close();
+					return bundleInfo;
+				})
+				.then((bundleInfo) => {
 					if (watch) {
-						const globsToWatch = [cwd, ...depPaths].map((depPath) => `${depPath}/**/*.{js,jsx,ts,tsx,xml}`);
-						globsToWatch.push(...bundleInfo.getResources().map((res) => res.path));
+						const pathsToWatch = [cwd, ...depPaths].map((depPath) => `${depPath}`);
+						pathsToWatch.push(...bundleInfo.getResources().map((res) => res.path));
 						if (debug) {
 							log.info(`Watch files:`);
-							globsToWatch.forEach((file) => log.info(`  - ${file}`));
+							pathsToWatch.forEach((file) => log.info(`  - ${file}`));
 						}
+						const nodeModulesPaths = pathsToWatch.map((p) => path.join(p, "node_modules"));
+						let changeTimeout;
 						bundleWatcher = chokidar
-							.watch(globsToWatch, {
+							.watch(pathsToWatch, {
+								persistent: false,
 								ignoreInitial: true,
-								ignored: [/node_modules/],
+								ignored: (file, stats) => {
+									// ignore node_modules
+									if (nodeModulesPaths.find((p) => file.startsWith(p))) {
+										return true;
+									}
+									// ignore non-source code files
+									return stats?.isFile() && !/\.(js|jsx|ts|tsx|xml)$/.test(file);
+								},
 							})
-							.on("change", () => bundleAndWatch({ force: true }));
+							.on("change", () => {
+								clearTimeout(changeTimeout);
+								setTimeout(() => {
+									bundleAndWatch({ force: true });
+								}, 100);
+							});
 					}
 					return bundleInfo;
 				});
