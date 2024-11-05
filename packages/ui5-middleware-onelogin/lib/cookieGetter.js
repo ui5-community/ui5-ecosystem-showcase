@@ -84,7 +84,6 @@ class CookieGetter {
                     username: process.env.UI5_MIDDLEWARE_ONELOGIN_USERNAME,
                     password: process.env.UI5_MIDDLEWARE_ONELOGIN_PASSWORD,
                     useCertificate: process.env.UI5_MIDDLEWARE_ONELOGIN_USE_CERTIFICATE === "true",
-                    clientCertificate: this.parseJSON(process.env.UI5_MIDDLEWARE_ONELOGIN_CLIENT_CERTIFICATE),
                     debug: process.env.UI5_MIDDLEWARE_ONELOGIN_DEBUG === "true",
                     query: this.parseJSON(process.env.UI5_MIDDLEWARE_ONELOGIN_QUERY),
                     certificateOrigin: process.env.UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_ORIGIN,
@@ -108,15 +107,23 @@ class CookieGetter {
                 effectiveOptions.configuration.certificatePfx;
             const useClientCertificates = isUseCertificateEnabled && hasCertificateConfig;
             if (effectiveOptions.configuration.debug) {
+                const sanitizePassphrase = (obj) => {
+                    var _a;
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+                    if (!((_a = obj === null || obj === void 0 ? void 0 : obj.configuration) === null || _a === void 0 ? void 0 : _a.certificatePassphrase))
+                        return obj;
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+                    return Object.assign(Object.assign({}, obj), { configuration: Object.assign(Object.assign({}, obj.configuration), { certificatePassphrase: "***" }) });
+                };
                 log.info("Default options:");
-                log.info(defaultOptions);
+                log.info(sanitizePassphrase(defaultOptions));
                 log.info("Env options:");
-                log.info(envOptions);
+                log.info(sanitizePassphrase(envOptions));
                 log.info("Yaml options:");
-                log.info(options);
+                log.info(sanitizePassphrase(options));
                 log.info("Effective options:");
-                log.info(effectiveOptions);
-                log.info('Using client certificates: ' + String(useClientCertificates));
+                log.info(sanitizePassphrase(effectiveOptions));
+                log.info("Using client certificates: " + String(useClientCertificates));
             }
             const attr = {
                 url: effectiveOptions.configuration.path,
@@ -168,7 +175,10 @@ class CookieGetter {
                 }
                 if (effectiveOptions.configuration.debug) {
                     log.info("Client certificates configuration:");
-                    log.info(contextOptions.clientCertificates);
+                    // Create a copy of certificates config without the passphrase for logging
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return
+                    const certificatesForLogging = contextOptions.clientCertificates.map((cert) => (Object.assign(Object.assign({}, cert), { passphrase: cert.passphrase ? "***" : undefined })));
+                    log.info(certificatesForLogging);
                 }
                 const context = yield browser.newContext(contextOptions);
                 const page = yield context.newPage();
