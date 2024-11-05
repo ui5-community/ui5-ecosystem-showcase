@@ -58,6 +58,15 @@ Currently, you can define the following properties:
 
 Those properties are only work when useCertificate is set to true.
 
+**Using SAP Passport:**
+
+You can use SAP Passport certificates to login without having to provide a username and password.  
+Get your certificate from [SAP Passport](https://support.sap.com/en/my-support/single-sign-on-passports.html).  
+Here you download a pfx file with a passphrase. You can move the certificate to the root of your project and set the certificatePfxPath to the file name.  
+Add the passphrase to the .env file with the property `UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_PASSPHRASE`.
+
+**Using environment variables:**
+
 You can set the following environment variables in your .env file (remember to add it to your .gitignore):
 
 You can either add the following properties to your .env file, remember to add that to your .gitignore
@@ -67,7 +76,11 @@ You can either add the following properties to your .env file, remember to add t
 - UI5_MIDDLEWARE_ONELOGIN_USERNAME
 - UI5_MIDDLEWARE_ONELOGIN_PASSWORD
 - UI5_MIDDLEWARE_ONELOGIN_USE_CERTIFICATE
-- UI5_MIDDLEWARE_ONELOGIN_CLIENT_CERTIFICATE
+- UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_ORIGIN
+- UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_CERT_PATH
+- UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_KEY_PATH
+- UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_PFX_PATH
+- UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_PASSPHRASE
 - UI5_MIDDLEWARE_ONELOGIN_QUERY or UI5_MIDDLEWARE_SIMPLE_PROXY_QUERY
 - UI5_MIDDLEWARE_ONELOGIN_DEBUG
 
