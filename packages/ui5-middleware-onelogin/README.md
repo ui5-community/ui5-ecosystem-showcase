@@ -37,39 +37,39 @@ You can define the properties either in the configuration (YAML file) or using e
 
 Currently, you can define the following properties:
 
-- path: `string` either the url or the hostname and port of the SAP system
-- subdirectory`(optional)`: `string` the subdirectory that is appended to the path, defaults to the fiori launchpad at /sap/bc/ui2/flp
-- username`(optional)`: `string` Username to be used to login to the launchpad
-- password`(optional)`: `string` Password used to login
-- useCertificate`(optional)`: `boolean` use a certificate to login instead of username and password
-- debug`(optional)`: `boolean` true will open up the playwright browser so you can see what's going on
+- **path**: `string` either the url or the hostname and port of the SAP system
+- **subdirectory**`(optional)`: `string` the subdirectory that is appended to the path, defaults to the fiori launchpad at /sap/bc/ui2/flp
+- **username**`(optional)`: `string` Username to be used to login to the launchpad
+- **password**`(optional)`: `string` Password used to login
+- **useCertificate**`(optional)`: `boolean` use a certificate to login instead of username and password
+- **debug**`(optional)`: `boolean` true will open up the playwright browser so you can see what's going on
 
 **NB1:** If you choose to use the certificate login then check the property AutoSelectCertificateForUrls in chrome://policy if it holds the url pattern for your system. [Playwright](https://github.com/microsoft/playwright/issues/1799) has an issue to handle the certificate prompt. Another workaround is to set debug and useCertificate to true in the configuration and press ok when the prompt opens
 
 **NB2:** If your system does not host a fiori launchpad, you will have to adjust the subdirectory to point to a different login protected page. In the case of a MII java stack that hosts an OData service, try setting subdirectory to XMII/PropertyAccessServlet?Mode=List
 
-**Certificate properties:**
+### **Certificate properties:**
 
-- certificateOrigin`(optional)`: `string` Exact origin that the certificate is valid for. Origin includes https protocol, a hostname and optionally a port.
-- certificateCertPath`(optional)`: `string` Path to the file with the certificate in PEM format.
-- certificateKeyPath`(optional)`: `string` Path to the file with the private key in PEM format.
-- certificatePfxPath`(optional)`: `string` Path to the PFX or PKCS12 encoded private key and certificate chain.
-- certificatePassphrase`(optional)`: `string` Passphrase for the private key (PEM or PFX).
+- **certificateOrigin**`(optional)`: `string` Exact origin that the certificate is valid for. Origin includes https protocol, a hostname and optionally a port.
+- **certificateCertPath**`(optional)`: `string` Path to the file with the certificate in PEM format.
+- **certificateKeyPath**`(optional)`: `string` Path to the file with the private key in PEM format.
+- **certificatePfxPath**`(optional)`: `string` Path to the PFX or PKCS12 encoded private key and certificate chain.
+- **certificatePassphrase**`(optional)`: `string` Passphrase for the private key (PEM or PFX).
 
 Those properties are only work when useCertificate is set to true.
 
-**Using SAP Passport:**
+### **Using SAP Passport:**
 
 You can use SAP Passport certificates to login without having to provide a username and password.  
 Get your certificate from [SAP Passport](https://support.sap.com/en/my-support/single-sign-on-passports.html).  
-Here you download a pfx file with a passphrase. You can move the certificate to the root of your project and set the certificatePfxPath to the file name.  
-Add the passphrase to the .env file with the property `UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_PASSPHRASE`.
+Here you download a **pfx** file with a passphrase. You can move the certificate to the root of your project and set the `certificatePfxPath` to the file name.  
+Add the passphrase to the **.env** file with the property `UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_PASSPHRASE`.
 
-**Using environment variables:**
+### **Using environment variables:**
 
-You can set the following environment variables in your .env file (remember to add it to your .gitignore):
+You can set the following environment variables in your **.env** file (remember to add it to your .gitignore):
 
-You can either add the following properties to your .env file, remember to add that to your .gitignore
+You can either add the following properties to your **.env** file, remember to add that to your .gitignore
 
 - UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL or UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI
 - UI5_MIDDLEWARE_ONELOGIN_LOGIN_SUBDIRECTORY
