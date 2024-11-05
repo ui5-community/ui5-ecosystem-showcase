@@ -105,22 +105,14 @@ class CookieGetter {
                 effectiveOptions.configuration.certificateKey ||
                 effectiveOptions.configuration.certificatePfxPath ||
                 effectiveOptions.configuration.certificatePfx;
-            const useClientCertificates = isUseCertificateEnabled && hasCertificateConfig;
             if (effectiveOptions.configuration.debug) {
                 const sanitizePassphrase = (obj) => {
-                    // If there's no passphrase to hide, return the object as-is
-                    if (!obj?.configuration?.certificatePassphrase) {
+                    var _a;
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+                    if (!((_a = obj === null || obj === void 0 ? void 0 : obj.configuration) === null || _a === void 0 ? void 0 : _a.certificatePassphrase))
                         return obj;
-                    }
-
-                    // Create a deep copy of the object and replace the passphrase with asterisks
-                    return {
-                        ...obj,
-                        configuration: {
-                            ...obj.configuration,
-                            certificatePassphrase: "***"
-                        }
-                    };
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+                    return Object.assign(Object.assign({}, obj), { configuration: Object.assign(Object.assign({}, obj.configuration), { certificatePassphrase: "***" }) });
                 };
                 log.info("Default options:");
                 log.info(sanitizePassphrase(defaultOptions));
@@ -130,14 +122,14 @@ class CookieGetter {
                 log.info(sanitizePassphrase(options));
                 log.info("Effective options:");
                 log.info(sanitizePassphrase(effectiveOptions));
-                log.info("Using client certificates: " + String(useClientCertificates));
+                log.info("Using client certificates: " + String(isUseCertificateEnabled && hasCertificateConfig));
             }
             const attr = {
                 url: effectiveOptions.configuration.path,
                 username: effectiveOptions.configuration.username,
                 password: effectiveOptions.configuration.password,
             };
-            if ((!attr.username || !attr.password) && !useClientCertificates) {
+            if ((!attr.username || !attr.password) && !(isUseCertificateEnabled && hasCertificateConfig)) {
                 log.warn("No credentials provided. Please answer the following prompts");
                 if (!attr.username) {
                     attr.username = yield prompt("Username: ");
@@ -166,7 +158,7 @@ class CookieGetter {
             try {
                 const browser = yield playwright_chromium_1.chromium.launch(playwrightOpt);
                 const contextOptions = { ignoreHTTPSErrors: true };
-                if (useClientCertificates) {
+                if (isUseCertificateEnabled && hasCertificateConfig) {
                     contextOptions.clientCertificates = [
                         {
                             origin: effectiveOptions.configuration.certificateOrigin,
@@ -189,7 +181,7 @@ class CookieGetter {
                 }
                 const context = yield browser.newContext(contextOptions);
                 const page = yield context.newPage();
-                if (!useClientCertificates) {
+                if (!(isUseCertificateEnabled && hasCertificateConfig)) {
                     yield page.goto(attr.url, { waitUntil: "domcontentloaded" });
                     const elem = yield this.getUserInput(page);
                     const password = page.locator('input[type="password"]');
