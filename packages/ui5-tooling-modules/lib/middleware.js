@@ -143,10 +143,8 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 							pathsToWatch.forEach((file) => log.info(`  - ${file}`));
 						}
 						const nodeModulesPaths = pathsToWatch.map((p) => path.join(p, "node_modules"));
-						let changeTimeout;
 						bundleWatcher = chokidar
 							.watch(pathsToWatch, {
-								persistent: false,
 								ignoreInitial: true,
 								ignored: (file, stats) => {
 									// ignore node_modules
@@ -158,10 +156,8 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 								},
 							})
 							.on("change", () => {
-								clearTimeout(changeTimeout);
-								setTimeout(() => {
-									bundleAndWatch({ force: true });
-								}, 100);
+								console.log("XXXXXXXXXXXXXXXX - change");
+								bundleAndWatch({ force: true });
 							});
 					}
 					return bundleInfo;
