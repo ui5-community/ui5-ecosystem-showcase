@@ -433,6 +433,7 @@ module.exports = function (log, projectInfo) {
 	const that = {
 		/**
 		 * scans the project resources
+		 * @param {object} projectInfo project information
 		 * @param {module:@ui5/fs/AbstractReader[]} reader resources reader
 		 * @param {object} [config] configuration
 		 * @param {boolean} [config.debug] debug mode
@@ -444,7 +445,7 @@ module.exports = function (log, projectInfo) {
 		 * @param {string[]} [options.depPaths] paths of the dependencies (in addition for cwd)
 		 * @returns {object} unique dependencies, resources, namespaces, chunks, ...
 		 */
-		scan: async function (reader, config, { cwd = process.cwd(), depPaths = [] }) {
+		scan: async function (projectInfo, reader, config, { cwd = process.cwd(), depPaths = [] }) {
 			const { parse } = await import("@typescript-eslint/typescript-estree");
 			const { walk } = await import("estree-walker");
 
@@ -558,7 +559,11 @@ module.exports = function (log, projectInfo) {
 					try {
 						const depPath = that.resolveModule(dep, { cwd, depPaths });
 						const existsDep = depPath && existsSyncWithCase(depPath);
-						const allowedDep = existsDep && (!dependencyRoots || dependencyRoots.some((root) => depPath.startsWith(root)));
+						let allowedDep = existsDep && (!dependencyRoots || dependencyRoots.some((root) => depPath.startsWith(root)));
+						// determine local dependencies (e.g. for bundle definitions)
+						if (!allowedDep && dep.startsWith(`${projectInfo.pkgJson.name}/`)) {
+							allowedDep = true;
+						}
 						if (allowedDep) {
 							// add the dependency to the list of unique dependencies
 							addUniqueModule(dep, depPath);

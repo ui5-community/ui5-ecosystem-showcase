@@ -3,6 +3,27 @@ const { createReadStream } = require("fs");
 const chokidar = require("chokidar");
 
 /**
+ * Determines the source paths of the given resource collection recursivly.
+ *
+ * <b>ATTENTION: this is a hack to be compatible with UI5 tooling 2.x and 3.x</b>
+ *
+ * @param {module:@ui5/fs.AbstractReader} collection Reader or Collection to read resources of the root project and its dependencies
+ * @returns {string[]} source paths
+ */
+const determineSourcePaths = (collection) => {
+	const fsPaths = [];
+	collection?._readers?.forEach((_reader) => {
+		fsPaths.push(...determineSourcePaths(_reader));
+	});
+	if (collection?._project?._type === "application") {
+		fsPaths.push(path.resolve(collection._project._modulePath, collection._project._webappPath));
+	} else if (typeof collection?._fsBasePath === "string") {
+		fsPaths.push(collection._fsBasePath);
+	}
+	return fsPaths;
+};
+
+/**
  * Custom middleware to create the UI5 AMD-like bundles for used ES imports from node_modules.
  *
  * @param {object} parameters Parameters
@@ -38,6 +59,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 			name: project.getFrameworkName(),
 			version: project.getFrameworkVersion(),
 		},
+		pkgJson: require(path.join(cwd, "package.json")),
 	};
 	const depProjects = middlewareUtil
 		.getDependencies()
@@ -63,6 +85,55 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 		options.configuration,
 	);
 	let { debug, skipTransform, watch } = config;
+
+	// should we watch the files?
+	let onChangeCallback;
+	let watcher;
+	if (watch) {
+		const pathsToWatch = []; //[cwd, ...depPaths].map((depPath) => `${depPath}`);
+		determineSourcePaths(project.getReader()).forEach((p) => pathsToWatch.push(p));
+		depProjects.forEach((dep) => {
+			determineSourcePaths(dep.getReader()).forEach((p) => pathsToWatch.push(p));
+		});
+		if (debug) {
+			log.info(`Source paths to watch:`);
+			pathsToWatch.forEach((file) => log.info(`  - ${file}`));
+		}
+		// watch the files
+		watcher = chokidar
+			.watch(pathsToWatch, {
+				ignored: (file, stats) => {
+					// ignore non-source code files
+					if (stats?.isFile() && !/\.(js|jsx|ts|tsx|xml)$/.test(file)) {
+						return true;
+					} else {
+						if (debug) {
+							log.verbose(`[FSWATCHER] Watching changes on file: ${file}`);
+						}
+						return false;
+					}
+				},
+			})
+			.on("add", (file) => {
+				if (debug) {
+					log.verbose(`[FSWATCHER] File ${file} has been added`);
+				}
+				watcher.add(file);
+			})
+			.on("unlink", (file) => {
+				if (debug) {
+					log.verbose(`[FSWATCHER] File ${file} has been removed`);
+				}
+				watcher.unwatch(file);
+			})
+			.on("change", (file) => {
+				if (debug) {
+					log.verbose(`[FSWATCHER] File ${file} has been changed`);
+				}
+				log.info(`File ${file} has been changed. Checking for dependencies changes...`);
+				typeof onChangeCallback === "function" && onChangeCallback();
+			});
+	}
 
 	// merge custom configurations from dependencies (only needed for middlewares, as tasks are built atomically)
 	// this ensures that configuration doesn't need to be duplicated in the consuming project
@@ -100,7 +171,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	// logic which bundles and watches the modules coming from the
 	// node_modules or dependencies via NPM package names
 	const requestedModules = new Set();
-	let whenBundled, bundleWatcher, scanTime, bundleTime;
+	let whenBundled, scanTime, bundleTime;
 	const bundleAndWatch = async ({ moduleName, force }) => {
 		if (moduleName && !requestedModules.has(moduleName)) {
 			requestedModules.add(moduleName);
@@ -108,7 +179,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 		if (force || !whenBundled) {
 			// first, we need to scan for all unique dependencies
 			scanTime = Date.now();
-			whenBundled = scan(depReaderCollection, config, { cwd, depPaths })
+			whenBundled = scan(projectInfo, depReaderCollection, config, { cwd, depPaths })
 				.then(({ uniqueModules }) => {
 					// second, we trigger the bundling of the unique dependencies
 					debug && log.info(`Scanning took ${Date.now() - scanTime} millis`);
@@ -128,38 +199,15 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 						});
 					return getBundleInfo(modules, config, { cwd, depPaths, isMiddleware: true });
 				})
-				.then(async (bundleInfo) => {
-					// finally, we watch the entries of the bundle
-					debug && log.info(`Bundling took ${Date.now() - bundleTime} millis`);
-					await bundleWatcher?.close();
-					return bundleInfo;
-				})
 				.then((bundleInfo) => {
-					if (watch) {
-						const pathsToWatch = [cwd, ...depPaths].map((depPath) => `${depPath}`);
-						pathsToWatch.push(...bundleInfo.getResources().map((res) => res.path));
-						if (debug) {
-							log.info(`Watch files:`);
-							pathsToWatch.forEach((file) => log.info(`  - ${file}`));
+					debug && log.info(`Bundling took ${Date.now() - bundleTime} millis`);
+					bundleInfo.getEntries().forEach((entry) => {
+						if (entry.path) {
+							watcher.add(entry.path);
+							debug && log.verbose(`[FSWATCHER] File ${entry.path} has been added`);
 						}
-						const nodeModulesPaths = pathsToWatch.map((p) => path.join(p, "node_modules"));
-						bundleWatcher = chokidar
-							.watch(pathsToWatch, {
-								ignoreInitial: true,
-								ignored: (file, stats) => {
-									// ignore node_modules
-									if (nodeModulesPaths.find((p) => file.startsWith(p))) {
-										return true;
-									}
-									// ignore non-source code files
-									return stats?.isFile() && !/\.(js|jsx|ts|tsx|xml)$/.test(file);
-								},
-							})
-							.on("change", () => {
-								console.log("XXXXXXXXXXXXXXXX - change");
-								bundleAndWatch({ force: true });
-							});
-					}
+					});
+					onChangeCallback = () => bundleAndWatch({ force: true });
 					return bundleInfo;
 				});
 		}
