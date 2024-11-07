@@ -45,6 +45,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 			name: project.getFrameworkName(),
 			version: project.getFrameworkVersion(),
 		},
+		pkgJson: require(path.join(cwd, "package.json")),
 	};
 
 	const { scan, getBundleInfo, getResource, existsResource } = require("./util")(log, projectInfo);
@@ -79,7 +80,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 
 	// scan the content of the project for unique dependencies, resources and more
 	const scanTime = Date.now();
-	const { uniqueModules, uniqueResources, uniqueNS } = await scan(workspace, config, { cwd, depPaths });
+	const { uniqueModules, uniqueResources, uniqueNS } = await scan(projectInfo, workspace, config, { cwd, depPaths });
 	config.debug && log.info(`Scanning took ${Date.now() - scanTime} millis`);
 
 	// list of included assets pattern (required for rewrite)
