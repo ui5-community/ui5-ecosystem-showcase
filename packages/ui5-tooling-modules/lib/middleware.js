@@ -81,10 +81,11 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 			persistentCache: true,
 			skipTransform: false,
 			watch: true,
+			watchDebounce: 100,
 		},
 		options.configuration,
 	);
-	let { debug, skipTransform, watch } = config;
+	let { debug, skipTransform, watch, watchDebounce } = config;
 
 	// should we watch the files?
 	let onChangeCallback;
@@ -100,6 +101,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 			pathsToWatch.forEach((file) => log.info(`  - ${file}`));
 		}
 		// watch the files
+		let debounceTimer;
 		watcher = chokidar
 			.watch(pathsToWatch, {
 				ignored: (file, stats) => {
@@ -131,7 +133,12 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 					log.verbose(`[FSWATCHER] File ${file} has been changed`);
 				}
 				log.info(`File ${file} has been changed. Checking for dependencies changes...`);
-				typeof onChangeCallback === "function" && onChangeCallback();
+				if (typeof onChangeCallback === "function") {
+					clearTimeout(debounceTimer);
+					debounceTimer = setTimeout(() => {
+						onChangeCallback();
+					}, watchDebounce);
+				}
 			});
 	}
 
