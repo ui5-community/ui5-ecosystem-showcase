@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.18.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.3...ui5-tooling-modules@3.18.4) (2024-11-07)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** debounce file change events ([#1121](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1121)) ([ff725b3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ff725b3aa4610c8b2e7e7ce3aa43fd8cdea1242a))
+
+
+
+
+
 ## [3.18.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.2...ui5-tooling-modules@3.18.3) (2024-11-07)
 
 
