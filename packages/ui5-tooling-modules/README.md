@@ -130,8 +130,20 @@ The available plugin configuration options are:
   Flag to skip the transformation of Web Components to UI5 Controls a.k.a. *Seamless Web Components* support. This allows to directly require the Web Components modules from NPM packages and use them as UI5 Controls. The NPM packages providing Web Components must include a [Custom Elements Manifest](https://custom-elements-manifest.open-wc.org/) declared in the `customElements` field in the `package.json`. (defaults to `false`)
   &nbsp;
 
+- *pluginOptions.webcomponents.force*: `boolean`
+  Flag to force the transformation of Web Components to UI5 Controls a.k.a. *Seamless Web Components* support. In some cases, in which the framework version cannot be part of the `ui5.yaml`, you can force the transformation. (defaults to `true`)
+  &nbsp;
+
 - *pluginOptions.webcomponents.scoping*: `boolean`
   Flag to disable the [Custom Elements Scoping](https://sap.github.io/ui5-webcomponents/docs/advanced/scoping/) of UI5 Web Components. This allows to load multiple versions of UI5 Web Components into a single application without conflicts. This feature is enabled by default and can be disabled if needed. (defaults to `true`)
+  &nbsp;
+
+- *pluginOptions.webcomponents.enrichBusyIndicator*: `boolean` *experimental flag*
+  Flag to include the BusyIndicator support from into the generated Web Components package module. (defaults to `false`)
+  &nbsp;
+
+- *pluginOptions.webcomponents.includeAssets*: `boolean` *experimental flag*
+  Flag to include all assets into the thirdparty folder: such as all themes and languages. Although they will be lazily loaded the generation process will slow down and you will have many additional files. All dynamic imports will reside inside the `_dynamics` folder within the thirdparty folder. (defaults to `false`)
   &nbsp;
 
 The following configuration options are just relevant for the `task`:
@@ -159,7 +171,7 @@ The following configuration options are just relevant for the `task`:
 
 The following configuration options are just relevant for the `middleware`:
 
-- *watch*: `boolean` *experimental feature*
+- *watch*: `boolean` *experimental flag*
   For development scenarios, the server is listening to changes of the source files of the project and its dependencies and triggers the generation of the bundle if the used NPM packages have been changed (defaults to `true`)
   &nbsp;
 
