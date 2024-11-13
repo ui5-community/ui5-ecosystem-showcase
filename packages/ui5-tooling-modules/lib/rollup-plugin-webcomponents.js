@@ -163,7 +163,14 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 	};
 
 	// list of external dependencies that are needed for the Web Components transformation
-	const externalDeps = ["sap/ui/core/webc/WebComponent", "sap/ui/core/webc/WebComponentRenderer", "sap/ui/base/DataType", "sap/base/strings/hyphenate", "sap/ui/core/LabelEnablement"];
+	const externalDeps = [
+		"sap/ui/core/webc/WebComponent",
+		"sap/ui/core/webc/WebComponentRenderer",
+		"sap/ui/base/DataType",
+		"sap/base/strings/hyphenate",
+		"sap/ui/core/LabelEnablement",
+		"sap/ui/core/EnabledPropagator",
+	];
 
 	return {
 		name: "webcomponents",
@@ -306,6 +313,7 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 				const metadata = JSON.stringify(metadataObject, undefined, 2);
 				const webcClass = moduleInfo.attributes.absModulePath.replace(/\\/g, "/"); // is the absolute path of the original Web Component class
 				const needsLabelEnablement = clazz._ui5NeedsLabelEnablement;
+				const needsEnabledPropagator = clazz._ui5NeedsEnabledPropagator;
 
 				// Determine the superclass UI5 module name and import it
 				let webcBaseClass = "sap/ui/core/webc/WebComponent";
@@ -323,6 +331,7 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 					webcClass,
 					webcBaseClass,
 					needsLabelEnablement,
+					needsEnabledPropagator,
 				});
 				return code;
 			}

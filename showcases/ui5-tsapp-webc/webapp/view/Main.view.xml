@@ -43,6 +43,14 @@
             <webc:Avatar icon="ai" colorScheme="Accent7" />
           </webc:AvatarGroup>
           <webc:CheckBox text="Hello World 123" />
+
+          <!-- Enabled propagation test -->
+          <webc:Label text="'enabled' poperty of Buttons is propagated from OverflowToolbar:" />
+          <webc:Button click=".toggleOverflowToolbarEnabled" text="toggle enabled state" />
+          <OverflowToolbar id="overflowToolbar" enabled="false">
+            <Button text="enabled='false'" press="onBoo" class="buttonSpacing" enabled="false" />
+            <webc:Button text="enabled='true'" class="buttonSpacing" enabled="true" />
+          </OverflowToolbar>
         </VBox>
       </webc:Panel>
 
