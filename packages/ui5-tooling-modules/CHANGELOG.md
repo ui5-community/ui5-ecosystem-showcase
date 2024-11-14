@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.18.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.4...ui5-tooling-modules@3.18.5) (2024-11-14)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** apply sap/ui/core/EnabledPropagator mixin ([#1122](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1122)) ([774a209](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/774a20943367c551d6140c2dcf45a6cc964f09ca))
+* **ui5-tooling-modules:** ensure scoping suffix is set before define of modules ([#1123](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1123)) ([db10bd3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/db10bd346b2d12073def3642c320d682785aed2a))
+
+
+
+
+
 ## [3.18.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.3...ui5-tooling-modules@3.18.4) (2024-11-07)
 
 
