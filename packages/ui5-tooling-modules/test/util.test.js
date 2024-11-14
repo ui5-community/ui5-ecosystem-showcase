@@ -675,6 +675,7 @@ test.serial("Verify generation of @ui5/webcomponents/dist/Panel Wrapper UI5 Cont
 						return { name, def };
 					},
 				},
+				"sap/ui/core/EnabledPropagator": function () {},
 			},
 		},
 		{
@@ -740,6 +741,7 @@ test.serial("Verify generation of @ui5/webcomponents/dist/CheckBox Wrapper UI5 C
 						return { name, def };
 					},
 				},
+				"sap/ui/core/EnabledPropagator": function () {},
 			},
 		},
 		{

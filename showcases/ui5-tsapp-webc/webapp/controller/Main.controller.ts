@@ -1,6 +1,7 @@
 /* eslint-disable */
 import Controller from "sap/ui/core/mvc/Controller";
 import MessageToast from "sap/m/MessageToast";
+import OverflowToolbar from "sap/m/OverflowToolbar";
 import Control from "sap/ui/core/Control";
 import VBox from "sap/m/VBox";
 import Popup from "sap/ui/core/Popup";
@@ -92,5 +93,14 @@ export default class Main extends Controller {
 	public onPopoverOpener2Click(e: Event): void {
 		const poppy2 = this.byId("popover2");
 		poppy2?.setOpen(!poppy2?.getOpen());
+	}
+
+	/**
+	 * Toggles the 'enabled' state of the OverflowToolbar to test the
+	 * propagation of the 'enabled' state to child controls.
+	 */
+	public toggleOverflowToolbarEnabled(e: Event): void {
+		const ovt: OverflowToolbar = this.byId("overflowToolbar") as OverflowToolbar;
+		ovt.setEnabled(!ovt.getEnabled());
 	}
 }

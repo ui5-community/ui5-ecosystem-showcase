@@ -4,6 +4,9 @@ import WebComponentBaseClass from "{{webcBaseClass}}";
 {{#if needsLabelEnablement}}
 import LabelEnablement from "sap/ui/core/LabelEnablement";
 {{/if}}
+{{#if needsEnabledPropagator}}
+import EnabledPropagator from "sap/ui/core/EnabledPropagator";
+{{/if}}
 
 const WrapperClass = WebComponentBaseClass.extend("{{ui5Class}}", {
   metadata: {{{metadata}}},
@@ -22,6 +25,9 @@ const WrapperClass = WebComponentBaseClass.extend("{{ui5Class}}", {
 
 {{#if needsLabelEnablement}}
 LabelEnablement.enrich(WrapperClass.prototype);
+{{/if}}
+{{#if needsEnabledPropagator}}
+EnabledPropagator.call(WrapperClass.prototype);
 {{/if}}
 
 export default WrapperClass;

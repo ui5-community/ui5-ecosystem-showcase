@@ -236,7 +236,7 @@ class RegistryEntry {
 	 * @param {object} ui5metadata the UI5 metadata object
 	 * @returns {boolean} whether the property needs a special mapping
 	 */
-	#checkForSpecialMapping(propDef, ui5metadata) {
+	#checkForSpecialMapping(classDef, propDef, ui5metadata) {
 		if (propDef.name === "accessibleNameRef") {
 			ui5metadata.associations["ariaLabelledBy"] = {
 				type: "sap.ui.core.Control",
@@ -250,6 +250,8 @@ class RegistryEntry {
 			return true;
 		} else if (propDef.name === "disabled") {
 			// "disabled" maps to "enabled" in UI5
+			// we also need the UI5 EnabledPropagator
+			classDef._ui5NeedsEnabledPropagator = true;
 			ui5metadata.properties["enabled"] = {
 				type: "boolean",
 				defaultValue: "true",
@@ -289,7 +291,7 @@ class RegistryEntry {
 			}
 
 			// Some properties might need a special UI5 mapping, e.g. "accesibleNameRef"
-			const hasSpecialMapping = this.#checkForSpecialMapping(propDef, ui5metadata);
+			const hasSpecialMapping = this.#checkForSpecialMapping(classDef, propDef, ui5metadata);
 			if (hasSpecialMapping) {
 				return;
 			}

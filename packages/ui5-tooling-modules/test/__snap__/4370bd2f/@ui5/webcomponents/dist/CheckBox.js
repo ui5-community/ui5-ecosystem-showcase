@@ -1,4 +1,4 @@
-sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/core/webc/WebComponent', 'sap/ui/base/DataType', 'ui5/ecosystem/demo/app/resources/@ui5/webcomponents-base'], (function (_ui5_webcomponents, WebComponentBaseClass, DataType, _ui5_webcomponentsBase) { 'use strict';
+sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/core/webc/WebComponent', 'sap/ui/core/EnabledPropagator', 'sap/ui/base/DataType', 'ui5/ecosystem/demo/app/resources/@ui5/webcomponents-base'], (function (_ui5_webcomponents, WebComponentBaseClass, EnabledPropagator, DataType, _ui5_webcomponentsBase) { 'use strict';
 
     const isSSR$3 = typeof document === "undefined";
     const internals$1 = {
@@ -4525,6 +4525,8 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
         return WebComponentBaseClass.prototype.setProperty.apply(this, [sPropName, v, bSupressInvalidate]);
       }
     });
+
+    EnabledPropagator.call(WrapperClass.prototype);
 
     return WrapperClass;
 
