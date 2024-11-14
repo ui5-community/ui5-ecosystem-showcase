@@ -629,6 +629,24 @@ const webcomponentsContext = {
 	monkeyPatch: "Object.defineProperty = function() { if (arguments[2]) { arguments[2].configurable = true; } return this.apply(undefined, arguments); }.bind(Object.defineProperty);",
 };
 
+const webcContextModules = {
+	"sap/ui/core/Lib": {
+		init: function () {
+			return {};
+		},
+	},
+	"sap/ui/base/DataType": {
+		registerEnum: function () {},
+	},
+	"sap/ui/core/webc/WebComponent": {
+		prototype: {},
+		extend: function (name, def) {
+			return { name, def };
+		},
+	},
+	"sap/ui/core/EnabledPropagator": function () {},
+};
+
 test.serial("Verify generation of @ui5/webcomponents/dist/Panel", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
 	const env = await setupEnv(
@@ -637,6 +655,7 @@ test.serial("Verify generation of @ui5/webcomponents/dist/Panel", async (t) => {
 			hash: t.context.hash,
 			tmpDir: t.context.tmpDir,
 			log: t.context.log,
+			modules: webcContextModules,
 		}),
 		{
 			pluginOptions: {
@@ -661,22 +680,7 @@ test.serial("Verify generation of @ui5/webcomponents/dist/Panel Wrapper UI5 Cont
 			hash: t.context.hash,
 			tmpDir: t.context.tmpDir,
 			log: t.context.log,
-			modules: {
-				"sap/ui/core/Lib": {
-					init: function () {
-						return {};
-					},
-				},
-				"sap/ui/base/DataType": {
-					registerEnum: function () {},
-				},
-				"sap/ui/core/webc/WebComponent": {
-					extend: function (name, def) {
-						return { name, def };
-					},
-				},
-				"sap/ui/core/EnabledPropagator": function () {},
-			},
+			modules: webcContextModules,
 		},
 		{
 			pluginOptions: {
@@ -703,6 +707,7 @@ test.serial("Verify generation of @ui5/webcomponents/dist/CheckBox", async (t) =
 			hash: t.context.hash,
 			tmpDir: t.context.tmpDir,
 			log: t.context.log,
+			modules: webcContextModules,
 		}),
 		{
 			pluginOptions: {
@@ -727,22 +732,7 @@ test.serial("Verify generation of @ui5/webcomponents/dist/CheckBox Wrapper UI5 C
 			hash: t.context.hash,
 			tmpDir: t.context.tmpDir,
 			log: t.context.log,
-			modules: {
-				"sap/ui/core/Lib": {
-					init: function () {
-						return {};
-					},
-				},
-				"sap/ui/base/DataType": {
-					registerEnum: function () {},
-				},
-				"sap/ui/core/webc/WebComponent": {
-					extend: function (name, def) {
-						return { name, def };
-					},
-				},
-				"sap/ui/core/EnabledPropagator": function () {},
-			},
+			modules: webcContextModules,
 		},
 		{
 			pluginOptions: {
