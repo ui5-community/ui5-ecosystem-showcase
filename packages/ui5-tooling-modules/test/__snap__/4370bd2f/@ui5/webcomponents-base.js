@@ -1,4 +1,33 @@
-sap.ui.define(['sap/ui/base/DataType'], (function (DataType) { 'use strict';
+sap.ui.define(['sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponent', 'sap/ui/base/DataType'], (function (hyphenate, WebComponent, DataType) { 'use strict';
+
+	// Will be fixed with TBD in UI5 1.130
+
+	WebComponent.prototype.__attachCustomEventsListeners = function() {
+		// ##### MODIFICATION START #####
+		var oEvents = this.getMetadata().getAllEvents();
+		// ##### MODIFICATION END #####
+		for (var sEventName in oEvents) {
+			var sCustomEventName = hyphenate(sEventName);
+			this.getDomRef().addEventListener(sCustomEventName, this.__handleCustomEventBound);
+		}
+	};
+
+	WebComponent.prototype.__detachCustomEventsListeners = function() {
+		var oDomRef = this.getDomRef();
+		if (!oDomRef) {
+			return;
+		}
+
+		// ##### MODIFICATION START #####
+		var oEvents = this.getMetadata().getAllEvents();
+		// ##### MODIFICATION END #####
+		for (var sEventName in oEvents) {
+			if (oEvents.hasOwnProperty(sEventName)) {
+				var sCustomEventName = hyphenate(sEventName);
+				oDomRef.removeEventListener(sCustomEventName, this.__handleCustomEventBound);
+			}
+		}
+	};
 
 	const pkg = {
 		"_ui5metadata": {

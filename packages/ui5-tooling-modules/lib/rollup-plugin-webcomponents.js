@@ -55,7 +55,11 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 	// handlebars templates for the Web Components transformation
 	const webcTmplFnPackage = loadAndCompileTemplate("templates/Package.hbs");
 	const webcTmplFnControl = loadAndCompileTemplate("templates/WrapperControl.hbs");
-	const webcTmplFnPatches = loadAndCompileTemplate("templates/MonkeyPatches.hbs");
+	const webcTmplFnMPAttributes = loadAndCompileTemplate("templates/monkey_patches/RenderAttributeProperties.hbs");
+	const webcTmplFnMPAllEvents = loadAndCompileTemplate("templates/monkey_patches/RegisterAllEvents.hbs");
+
+	// array of all web component classes
+	const webcModules = [];
 
 	// helper function to load a NPM package and its custom elements metadata
 	const emittedFiles = [];
@@ -283,9 +287,14 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 					assetsModule,
 				});
 				// include the monkey patches for the Web Components base library
-				// only for UI5 versions < 1.128.0 (otherwise the monkey patches are not needed anymore)
+				// only for UI5 versions < 1.128.0 we need the attributes fix
 				if (namespace === "@ui5/webcomponents-base" && lt(framework?.version || "0.0.0", "1.128.0")) {
-					const monkeyPatches = webcTmplFnPatches();
+					const monkeyPatches = webcTmplFnMPAttributes();
+					return `${monkeyPatches}\n${code}`;
+				}
+				// only for UI5 versions < 1.132.0 we need the events fix
+				if (namespace === "@ui5/webcomponents-base" && lt(framework?.version || "0.0.0", "1.132.0")) {
+					const monkeyPatches = webcTmplFnMPAllEvents();
 					return `${monkeyPatches}\n${code}`;
 				}
 				return code;
@@ -311,9 +320,15 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 					designtime: `${ui5Metadata.namespace}/designtime/${clazz.name}.designtime`, // add a default designtime
 				});
 				const metadata = JSON.stringify(metadataObject, undefined, 2);
-				const webcClass = moduleInfo.attributes.absModulePath.replace(/\\/g, "/"); // is the absolute path of the original Web Component class
+				const webcModule = moduleInfo.attributes.absModulePath;
+				const webcClass = webcModule.replace(/\\/g, "/"); // is the absolute path of the original Web Component class
 				const needsLabelEnablement = clazz._ui5NeedsLabelEnablement;
 				const needsEnabledPropagator = clazz._ui5NeedsEnabledPropagator;
+
+				// store the webc class as a marker to add the import to @ui5/webcomponents-base
+				if (!webcModules.includes(webcModule)) {
+					webcModules.push(webcModule);
+				}
 
 				// Determine the superclass UI5 module name and import it
 				let webcBaseClass = "sap/ui/core/webc/WebComponent";
@@ -334,6 +349,11 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 					needsEnabledPropagator,
 				});
 				return code;
+			} else if (webcModules.includes(id)) {
+				// for all Web Component classes we need to import the @ui5/webcomponents-base
+				// to ensure that the basic functionality is available (enablement, scoping, etc.)
+				const code = readFileSync(id, "utf-8");
+				return `import "@ui5/webcomponents-base";\n${code}`;
 			}
 			return null;
 		},

@@ -1,162 +1,4 @@
-sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/core/webc/WebComponent', 'sap/ui/core/EnabledPropagator', 'sap/ui/base/DataType', 'ui5/ecosystem/demo/app/resources/@ui5/webcomponents-base'], (function (_ui5_webcomponents, WebComponentBaseClass, EnabledPropagator, DataType, _ui5_webcomponentsBase) { 'use strict';
-
-    const isSSR$3 = typeof document === "undefined";
-    const internals$1 = {
-        get userAgent() {
-            if (isSSR$3) {
-                return "";
-            }
-            return navigator.userAgent;
-        },
-        get touch() {
-            if (isSSR$3) {
-                return false;
-            }
-            return "ontouchstart" in window || navigator.maxTouchPoints > 0;
-        },
-        get chrome() {
-            if (isSSR$3) {
-                return false;
-            }
-            return /(Chrome|CriOS)/.test(internals$1.userAgent);
-        },
-        get firefox() {
-            if (isSSR$3) {
-                return false;
-            }
-            return /Firefox/.test(internals$1.userAgent);
-        },
-        get safari() {
-            if (isSSR$3) {
-                return false;
-            }
-            return !internals$1.chrome && /(Version|PhantomJS)\/(\d+\.\d+).*Safari/.test(internals$1.userAgent);
-        },
-        get webkit() {
-            if (isSSR$3) {
-                return false;
-            }
-            return /webkit/.test(internals$1.userAgent);
-        },
-        get windows() {
-            if (isSSR$3) {
-                return false;
-            }
-            return navigator.platform.indexOf("Win") !== -1;
-        },
-        get macOS() {
-            if (isSSR$3) {
-                return false;
-            }
-            return !!navigator.userAgent.match(/Macintosh|Mac OS X/i);
-        },
-        get iOS() {
-            if (isSSR$3) {
-                return false;
-            }
-            return !!(navigator.platform.match(/iPhone|iPad|iPod/)) || !!(internals$1.userAgent.match(/Mac/) && "ontouchend" in document);
-        },
-        get android() {
-            if (isSSR$3) {
-                return false;
-            }
-            return !internals$1.windows && /Android/.test(internals$1.userAgent);
-        },
-        get androidPhone() {
-            if (isSSR$3) {
-                return false;
-            }
-            return internals$1.android && /(?=android)(?=.*mobile)/i.test(internals$1.userAgent);
-        },
-        get ipad() {
-            if (isSSR$3) {
-                return false;
-            }
-            // With iOS 13 the string 'iPad' was removed from the user agent string through a browser setting, which is applied on all sites by default:
-            // "Request Desktop Website -> All websites" (for more infos see: https://forums.developer.apple.com/thread/119186).
-            // Therefore the OS is detected as MACINTOSH instead of iOS and the device is a tablet if the Device.support.touch is true.
-            return /ipad/i.test(internals$1.userAgent) || (/Macintosh/i.test(internals$1.userAgent) && "ontouchend" in document);
-        },
-        _isPhone() {
-            detectTablet();
-            return internals$1.touch && !tablet;
-        },
-    };
-    let windowsVersion;
-    let webkitVersion;
-    let tablet;
-    const isWindows8OrAbove = () => {
-        if (isSSR$3) {
-            return false;
-        }
-        if (!internals$1.windows) {
-            return false;
-        }
-        if (windowsVersion === undefined) {
-            const matches = internals$1.userAgent.match(/Windows NT (\d+).(\d)/);
-            windowsVersion = matches ? parseFloat(matches[1]) : 0;
-        }
-        return windowsVersion >= 8;
-    };
-    const isWebkit537OrAbove = () => {
-        if (isSSR$3) {
-            return false;
-        }
-        if (!internals$1.webkit) {
-            return false;
-        }
-        if (webkitVersion === undefined) {
-            const matches = internals$1.userAgent.match(/(webkit)[ /]([\w.]+)/);
-            webkitVersion = matches ? parseFloat(matches[1]) : 0;
-        }
-        return webkitVersion >= 537.10;
-    };
-    const detectTablet = () => {
-        if (isSSR$3) {
-            return false;
-        }
-        if (tablet !== undefined) {
-            return;
-        }
-        if (internals$1.ipad) {
-            tablet = true;
-            return;
-        }
-        if (internals$1.touch) {
-            if (isWindows8OrAbove()) {
-                tablet = true;
-                return;
-            }
-            if (internals$1.chrome && internals$1.android) {
-                tablet = !/Mobile Safari\/[.0-9]+/.test(internals$1.userAgent);
-                return;
-            }
-            let densityFactor = window.devicePixelRatio ? window.devicePixelRatio : 1; // may be undefined in Windows Phone devices
-            if (internals$1.android && isWebkit537OrAbove()) {
-                densityFactor = 1;
-            }
-            tablet = (Math.min(window.screen.width / densityFactor, window.screen.height / densityFactor) >= 600);
-            return;
-        }
-        tablet = internals$1.userAgent.indexOf("Touch") !== -1 || (internals$1.android && !internals$1.androidPhone);
-    };
-    const isSafari = () => internals$1.safari;
-    const isTablet = () => {
-        detectTablet();
-        return (internals$1.touch || isWindows8OrAbove()) && tablet;
-    };
-    const isPhone = () => {
-        return internals$1._isPhone();
-    };
-    const isDesktop = () => {
-        if (isSSR$3) {
-            return false;
-        }
-        return (!isTablet() && !isPhone()) || isWindows8OrAbove();
-    };
-    const isIOS = () => {
-        return internals$1.iOS;
-    };
+sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/core/webc/WebComponent', 'sap/ui/core/EnabledPropagator', 'ui5/ecosystem/demo/app/resources/@ui5/webcomponents-base', 'sap/base/strings/hyphenate', 'sap/ui/base/DataType'], (function (_ui5_webcomponents, WebComponent, EnabledPropagator, _ui5_webcomponentsBase, hyphenate, DataType) { 'use strict';
 
     var class2type = {};
     var hasOwn = class2type.hasOwnProperty;
@@ -211,19 +53,6 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
 
     const fnMerge = function (arg1, arg2) {
         return fnMerge$1(true, false, ...arguments);
-    };
-
-    const whenDOMReady = () => {
-        return new Promise(resolve => {
-            if (document.body) {
-                resolve();
-            }
-            else {
-                document.addEventListener("DOMContentLoaded", () => {
-                    resolve();
-                });
-            }
-        });
     };
 
     class EventProvider {
@@ -295,6 +124,403 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
         }
     }
 
+    const features = new Map();
+    const componentFeatures = new Map();
+    const subscribers = new Map();
+    const EVENT_NAME = "componentFeatureLoad";
+    const eventProvider$6 = new EventProvider();
+    const featureLoadEventName = name => `${EVENT_NAME}_${name}`;
+    const registerFeature = (name, feature) => {
+      features.set(name, feature);
+    };
+    const getFeature = name => {
+      return features.get(name);
+    };
+    const getComponentFeature = name => {
+      return componentFeatures.get(name);
+    };
+    const subscribeForFeatureLoad = (name, klass, callback) => {
+      const subscriber = subscribers.get(klass);
+      const isSubscribed = subscriber?.includes(name);
+      if (isSubscribed) {
+        return;
+      }
+      if (!subscriber) {
+        subscribers.set(klass, [name]);
+      } else {
+        subscriber.push(name);
+      }
+      eventProvider$6.attachEvent(featureLoadEventName(name), callback);
+    };
+
+    const assetParameters = { "themes": { "default": "sap_horizon", "all": ["sap_fiori_3", "sap_fiori_3_dark", "sap_fiori_3_hcb", "sap_fiori_3_hcw", "sap_horizon", "sap_horizon_dark", "sap_horizon_hcb", "sap_horizon_hcw", "sap_horizon_exp", "sap_horizon_dark_exp", "sap_horizon_hcb_exp", "sap_horizon_hcw_exp"] }, "languages": { "default": "en", "all": ["ar", "bg", "ca", "cnr", "cs", "cy", "da", "de", "el", "en", "en_GB", "en_US_sappsd", "en_US_saprigi", "en_US_saptrc", "es", "es_MX", "et", "fi", "fr", "fr_CA", "hi", "hr", "hu", "in", "it", "iw", "ja", "kk", "ko", "lt", "lv", "mk", "ms", "nl", "no", "pl", "pt_PT", "pt", "ro", "ru", "sh", "sk", "sl", "sr", "sv", "th", "tr", "uk", "vi", "zh_CN", "zh_TW"] }, "locales": { "default": "en", "all": ["ar", "ar_EG", "ar_SA", "bg", "ca", "cnr", "cs", "da", "de", "de_AT", "de_CH", "el", "el_CY", "en", "en_AU", "en_GB", "en_HK", "en_IE", "en_IN", "en_NZ", "en_PG", "en_SG", "en_ZA", "es", "es_AR", "es_BO", "es_CL", "es_CO", "es_MX", "es_PE", "es_UY", "es_VE", "et", "fa", "fi", "fr", "fr_BE", "fr_CA", "fr_CH", "fr_LU", "he", "hi", "hr", "hu", "id", "it", "it_CH", "ja", "kk", "ko", "lt", "lv", "ms", "mk", "nb", "nl", "nl_BE", "pl", "pt", "pt_PT", "ro", "ru", "ru_UA", "sk", "sl", "sr", "sr_Latn", "sv", "th", "tr", "uk", "vi", "zh_CN", "zh_HK", "zh_SG", "zh_TW"] } };
+    const DEFAULT_THEME = assetParameters.themes.default;
+    const SUPPORTED_THEMES = assetParameters.themes.all;
+    const DEFAULT_LANGUAGE = assetParameters.languages.default;
+    const DEFAULT_LOCALE = assetParameters.locales.default;
+    const SUPPORTED_LOCALES = assetParameters.locales.all;
+
+    const isSSR$3 = typeof document === "undefined";
+    const internals$1 = {
+        search() {
+            if (isSSR$3) {
+                return "";
+            }
+            return window.location.search;
+        },
+    };
+    const getLocationHref = () => {
+        if (isSSR$3) {
+            return "";
+        }
+        return window.location.href;
+    };
+    const getLocationSearch = () => {
+        return internals$1.search();
+    };
+
+    const getMetaTagValue = (metaTagName) => {
+        const metaTag = document.querySelector(`META[name="${metaTagName}"]`), metaTagContent = metaTag && metaTag.getAttribute("content");
+        return metaTagContent;
+    };
+    const validateThemeOrigin = (origin) => {
+        const allowedOrigins = getMetaTagValue("sap-allowedThemeOrigins");
+        return allowedOrigins && allowedOrigins.split(",").some(allowedOrigin => {
+            return allowedOrigin === "*" || origin === allowedOrigin.trim();
+        });
+    };
+    const buildCorrectUrl = (oldUrl, newOrigin) => {
+        const oldUrlPath = new URL(oldUrl).pathname;
+        return new URL(oldUrlPath, newOrigin).toString();
+    };
+    const validateThemeRoot = (themeRoot) => {
+        let resultUrl;
+        try {
+            if (themeRoot.startsWith(".") || themeRoot.startsWith("/")) {
+                // Handle relative url
+                // new URL("/newExmPath", "http://example.com/exmPath") => http://example.com/newExmPath
+                // new URL("./newExmPath", "http://example.com/exmPath") => http://example.com/exmPath/newExmPath
+                // new URL("../newExmPath", "http://example.com/exmPath") => http://example.com/newExmPath
+                resultUrl = new URL(themeRoot, getLocationHref()).toString();
+            }
+            else {
+                const themeRootURL = new URL(themeRoot);
+                const origin = themeRootURL.origin;
+                if (origin && validateThemeOrigin(origin)) {
+                    // If origin is allowed, use it
+                    resultUrl = themeRootURL.toString();
+                }
+                else {
+                    // If origin is not allow and the URL is not relative, we have to replace the origin
+                    // with current location
+                    resultUrl = buildCorrectUrl(themeRootURL.toString(), getLocationHref());
+                }
+            }
+            if (!resultUrl.endsWith("/")) {
+                resultUrl = `${resultUrl}/`;
+            }
+            return `${resultUrl}UI5/`;
+        }
+        catch (e) {
+            // Catch if URL is not correct
+        }
+    };
+
+    /**
+     * Different types of AnimationMode.
+     *
+     * @public
+     */
+    var AnimationMode;
+    (function (AnimationMode) {
+        /**
+         * @public
+         */
+        AnimationMode["Full"] = "full";
+        /**
+         * @public
+         */
+        AnimationMode["Basic"] = "basic";
+        /**
+         * @public
+         */
+        AnimationMode["Minimal"] = "minimal";
+        /**
+         * @public
+         */
+        AnimationMode["None"] = "none";
+    })(AnimationMode || (AnimationMode = {}));
+    var AnimationMode$1 = AnimationMode;
+
+    const eventProvider$5 = new EventProvider();
+    const CONFIGURATION_RESET = "configurationReset";
+    const attachConfigurationReset = (listener) => {
+        eventProvider$5.attachEvent(CONFIGURATION_RESET, listener);
+    };
+
+    let initialized = false;
+    let initialConfig = {
+        animationMode: AnimationMode$1.Full,
+        theme: DEFAULT_THEME,
+        themeRoot: undefined,
+        rtl: undefined,
+        language: undefined,
+        timezone: undefined,
+        calendarType: undefined,
+        secondaryCalendarType: undefined,
+        noConflict: false, // no URL
+        formatSettings: {},
+        fetchDefaultLanguage: false,
+        defaultFontLoading: true,
+        enableDefaultTooltips: true,
+    };
+    const getTheme$1 = () => {
+        initConfiguration();
+        return initialConfig.theme;
+    };
+    const getThemeRoot$1 = () => {
+        initConfiguration();
+        return initialConfig.themeRoot;
+    };
+    const getLanguage$1 = () => {
+        initConfiguration();
+        return initialConfig.language;
+    };
+    /**
+     * Returns if the default language, that is inlined at build time,
+     * should be fetched over the network instead.
+     * @returns {Boolean}
+     */
+    const getFetchDefaultLanguage$1 = () => {
+        initConfiguration();
+        return initialConfig.fetchDefaultLanguage;
+    };
+    const getNoConflict$1 = () => {
+        initConfiguration();
+        return initialConfig.noConflict;
+    };
+    const getDefaultFontLoading$1 = () => {
+        initConfiguration();
+        return initialConfig.defaultFontLoading;
+    };
+    const getFormatSettings = () => {
+        initConfiguration();
+        return initialConfig.formatSettings;
+    };
+    const booleanMapping = new Map();
+    booleanMapping.set("true", true);
+    booleanMapping.set("false", false);
+    const parseConfigurationScript = () => {
+        const configScript = document.querySelector("[data-ui5-config]") || document.querySelector("[data-id='sap-ui-config']"); // for backward compatibility
+        let configJSON;
+        if (configScript) {
+            try {
+                configJSON = JSON.parse(configScript.innerHTML);
+            }
+            catch (err) {
+                console.warn("Incorrect data-sap-ui-config format. Please use JSON"); /* eslint-disable-line */
+            }
+            if (configJSON) {
+                initialConfig = fnMerge(initialConfig, configJSON);
+            }
+        }
+    };
+    const parseURLParameters = () => {
+        const params = new URLSearchParams(getLocationSearch());
+        // Process "sap-*" params first
+        params.forEach((value, key) => {
+            const parts = key.split("sap-").length;
+            if (parts === 0 || parts === key.split("sap-ui-").length) {
+                return;
+            }
+            applyURLParam(key, value, "sap");
+        });
+        // Process "sap-ui-*" params
+        params.forEach((value, key) => {
+            if (!key.startsWith("sap-ui")) {
+                return;
+            }
+            applyURLParam(key, value, "sap-ui");
+        });
+    };
+    const normalizeThemeRootParamValue = (value) => {
+        const themeRoot = value.split("@")[1];
+        return validateThemeRoot(themeRoot);
+    };
+    const normalizeThemeParamValue = (param, value) => {
+        if (param === "theme" && value.includes("@")) { // the theme parameter might have @<URL-TO-THEME> in the value - strip this
+            return value.split("@")[0];
+        }
+        return value;
+    };
+    const applyURLParam = (key, value, paramType) => {
+        const lowerCaseValue = value.toLowerCase();
+        const param = key.split(`${paramType}-`)[1];
+        if (booleanMapping.has(value)) {
+            value = booleanMapping.get(lowerCaseValue);
+        }
+        if (param === "theme") {
+            initialConfig.theme = normalizeThemeParamValue(param, value);
+            if (value && value.includes("@")) {
+                initialConfig.themeRoot = normalizeThemeRootParamValue(value);
+            }
+        }
+        else {
+            initialConfig[param] = value;
+        }
+    };
+    const applyOpenUI5Configuration = () => {
+        const openUI5Support = getFeature("OpenUI5Support");
+        if (!openUI5Support || !openUI5Support.isOpenUI5Detected()) {
+            return;
+        }
+        const OpenUI5Config = openUI5Support.getConfigurationSettingsObject();
+        initialConfig = fnMerge(initialConfig, OpenUI5Config);
+    };
+    const initConfiguration = () => {
+        if (typeof document === "undefined" || initialized) {
+            return;
+        }
+        resetConfiguration();
+        initialized = true;
+    };
+    /**
+     * Internaly exposed method to enable configurations in tests.
+     * @private
+     */
+    const resetConfiguration = (testEnv) => {
+        // 1. Lowest priority - configuration script
+        parseConfigurationScript();
+        // 2. URL parameters overwrite configuration script parameters
+        parseURLParameters();
+        // 3. If OpenUI5 is detected, it has the highest priority
+        applyOpenUI5Configuration();
+    };
+
+    attachConfigurationReset(() => {
+    });
+
+    /**
+     * Different calendar types.
+     *
+     * @public
+     */
+    var CalendarType;
+    (function (CalendarType) {
+        /**
+         * @public
+         */
+        CalendarType["Gregorian"] = "Gregorian";
+        /**
+         * @public
+         */
+        CalendarType["Islamic"] = "Islamic";
+        /**
+         * @public
+         */
+        CalendarType["Japanese"] = "Japanese";
+        /**
+         * @public
+         */
+        CalendarType["Buddhist"] = "Buddhist";
+        /**
+         * @public
+         */
+        CalendarType["Persian"] = "Persian";
+    })(CalendarType || (CalendarType = {}));
+
+    attachConfigurationReset(() => {
+    });
+
+    let formatSettings;
+    class LegacyDateFormats {
+        /**
+         * Returns the currently set customizing data for Islamic calendar support
+         *
+         * @return {object[]} Returns an array that contains the customizing data.
+         * @public
+         */
+        static getLegacyDateCalendarCustomizing() {
+            if (formatSettings === undefined) {
+                formatSettings = getFormatSettings();
+            }
+            return formatSettings.legacyDateCalendarCustomizing || [];
+        }
+    }
+    registerFeature("LegacyDateFormats", LegacyDateFormats);
+
+    attachConfigurationReset(() => {
+    });
+    const legacyDateFormats = getFeature("LegacyDateFormats");
+    legacyDateFormats ? LegacyDateFormats.getLegacyDateCalendarCustomizing : () => { return []; };
+
+    const IconCollectionConfiguration = new Map();
+    /**
+     * Returns the configured default icon collection for a given theme.
+     *
+     * @param { string } theme
+     * @public
+     * @returns { string | undefined }
+     */
+    const getDefaultIconCollection = (theme) => {
+        return IconCollectionConfiguration.get(theme);
+    };
+
+    const MAX_PROCESS_COUNT = 10;
+    class RenderQueue {
+        constructor() {
+            this.list = []; // Used to store the web components in order
+            this.lookup = new Set(); // Used for faster search
+        }
+        add(webComponent) {
+            if (this.lookup.has(webComponent)) {
+                return;
+            }
+            this.list.push(webComponent);
+            this.lookup.add(webComponent);
+        }
+        remove(webComponent) {
+            if (!this.lookup.has(webComponent)) {
+                return;
+            }
+            this.list = this.list.filter(item => item !== webComponent);
+            this.lookup.delete(webComponent);
+        }
+        shift() {
+            const webComponent = this.list.shift();
+            if (webComponent) {
+                this.lookup.delete(webComponent);
+                return webComponent;
+            }
+        }
+        isEmpty() {
+            return this.list.length === 0;
+        }
+        isAdded(webComponent) {
+            return this.lookup.has(webComponent);
+        }
+        /**
+         * Processes the whole queue by executing the callback on each component,
+         * while also imposing restrictions on how many times a component may be processed.
+         *
+         * @param callback - function with one argument (the web component to be processed)
+         */
+        process(callback) {
+            let webComponent;
+            const stats = new Map();
+            webComponent = this.shift();
+            while (webComponent) {
+                const timesProcessed = stats.get(webComponent) || 0;
+                if (timesProcessed > MAX_PROCESS_COUNT) {
+                    throw new Error(`Web component processed too many times this task, max allowed is: ${MAX_PROCESS_COUNT}`);
+                }
+                callback(webComponent);
+                stats.set(webComponent, timesProcessed + 1);
+                webComponent = this.shift();
+            }
+        }
+    }
+
     /**
      * Returns a singleton HTML element, inserted in given parent element of HTML page,
      * used mostly to store and share global resources between multiple UI5 Web Components runtimes.
@@ -349,77 +575,6 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
             current = current[part];
         }
         return current;
-    };
-
-    const Tags = getSharedResource("Tags", new Map());
-    const Definitions = new Set();
-    let Failures = new Map();
-    let failureTimeout;
-    const UNKNOWN_RUNTIME = -1;
-    const registerTag = tag => {
-      Definitions.add(tag);
-      Tags.set(tag, getCurrentRuntimeIndex());
-    };
-    const isTagRegistered = tag => {
-      return Definitions.has(tag);
-    };
-    const getAllRegisteredTags = () => {
-      return [...Definitions.values()];
-    };
-    const recordTagRegistrationFailure = tag => {
-      let tagRegRuntimeIndex = Tags.get(tag);
-      if (tagRegRuntimeIndex === undefined) {
-        tagRegRuntimeIndex = UNKNOWN_RUNTIME;
-      }
-      if (!Failures.has(tagRegRuntimeIndex)) {
-        Failures.set(tagRegRuntimeIndex, new Set());
-      }
-      Failures.get(tagRegRuntimeIndex).add(tag);
-      if (!failureTimeout) {
-        failureTimeout = setTimeout(() => {
-          displayFailedRegistrations();
-          Failures = new Map();
-          failureTimeout = undefined;
-        }, 1000);
-      }
-    };
-    const displayFailedRegistrations = () => {
-      const allRuntimes = getAllRuntimes();
-      const currentRuntimeIndex = getCurrentRuntimeIndex();
-      const currentRuntime = allRuntimes[currentRuntimeIndex];
-      let message = `Multiple UI5 Web Components instances detected.`;
-      if (allRuntimes.length > 1) {
-        message = `${message}\nLoading order (versions before 1.1.0 not listed): ${allRuntimes.map(runtime => `\n${runtime.description}`).join("")}`;
-      }
-      [...Failures.keys()].forEach(otherRuntimeIndex => {
-        let comparison;
-        let otherRuntime;
-        if (otherRuntimeIndex === UNKNOWN_RUNTIME) {
-          comparison = 1;
-          otherRuntime = {
-            description: `Older unknown runtime`
-          };
-        } else {
-          comparison = compareRuntimes(currentRuntimeIndex, otherRuntimeIndex);
-          otherRuntime = allRuntimes[otherRuntimeIndex];
-        }
-        let compareWord;
-        if (comparison > 0) {
-          compareWord = "an older";
-        } else if (comparison < 0) {
-          compareWord = "a newer";
-        } else {
-          compareWord = "the same";
-        }
-        message = `${message}\n\n"${currentRuntime.description}" failed to define ${Failures.get(otherRuntimeIndex).size} tag(s) as they were defined by a runtime of ${compareWord} version "${otherRuntime.description}": ${[...Failures.get(otherRuntimeIndex)].sort().join(", ")}.`;
-        if (comparison > 0) {
-          message = `${message}\nWARNING! If your code uses features of the above web components, unavailable in ${otherRuntime.description}, it might not work as expected!`;
-        } else {
-          message = `${message}\nSince the above web components were defined by the same or newer version runtime, they should be compatible with your code.`;
-        }
-      });
-      message = `${message}\n\nTo prevent other runtimes from defining tags that you use, consider using scoping or have third-party libraries use scoping: https://github.com/SAP/ui5-webcomponents/blob/main/docs/2-advanced/03-scoping.md.`;
-      console.warn(message);
     };
 
     const VersionInfo = {
@@ -570,467 +725,76 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
         return Runtimes;
     };
 
-    const isSSR$2 = typeof document === "undefined";
-    const getStyleId = (name, value) => {
-        return value ? `${name}|${value}` : name;
+    const Tags = getSharedResource("Tags", new Map());
+    const Definitions = new Set();
+    let Failures = new Map();
+    let failureTimeout;
+    const UNKNOWN_RUNTIME = -1;
+    const registerTag = tag => {
+      Definitions.add(tag);
+      Tags.set(tag, getCurrentRuntimeIndex());
     };
-    const shouldUpdate = (runtimeIndex) => {
-        if (runtimeIndex === undefined) {
-            return true;
-        }
-        return compareRuntimes(getCurrentRuntimeIndex(), parseInt(runtimeIndex)) === 1; // 1 means the current is newer, 0 means the same, -1 means the resource's runtime is newer
+    const isTagRegistered = tag => {
+      return Definitions.has(tag);
     };
-    const createStyle = (data, name, value = "", theme) => {
-        const content = typeof data === "string" ? data : data.content;
-        const currentRuntimeIndex = getCurrentRuntimeIndex();
-        const stylesheet = new CSSStyleSheet();
-        stylesheet.replaceSync(content);
-        stylesheet._ui5StyleId = getStyleId(name, value); // set an id so that we can find the style later
-        if (theme) {
-            stylesheet._ui5RuntimeIndex = currentRuntimeIndex;
-            stylesheet._ui5Theme = theme;
-        }
-        document.adoptedStyleSheets = [...document.adoptedStyleSheets, stylesheet];
+    const getAllRegisteredTags = () => {
+      return [...Definitions.values()];
     };
-    const updateStyle = (data, name, value = "", theme) => {
-        const content = typeof data === "string" ? data : data.content;
-        const currentRuntimeIndex = getCurrentRuntimeIndex();
-        const stylesheet = document.adoptedStyleSheets.find(sh => sh._ui5StyleId === getStyleId(name, value));
-        if (!stylesheet) {
-            return;
-        }
-        if (!theme) {
-            stylesheet.replaceSync(content || "");
-        }
-        else {
-            const stylesheetRuntimeIndex = stylesheet._ui5RuntimeIndex;
-            const stylesheetTheme = stylesheet._ui5Theme;
-            if (stylesheetTheme !== theme || shouldUpdate(stylesheetRuntimeIndex)) {
-                stylesheet.replaceSync(content || "");
-                stylesheet._ui5RuntimeIndex = String(currentRuntimeIndex);
-                stylesheet._ui5Theme = theme;
-            }
-        }
-    };
-    const hasStyle = (name, value = "") => {
-        if (isSSR$2) {
-            return true;
-        }
-        return !!document.adoptedStyleSheets.find(sh => sh._ui5StyleId === getStyleId(name, value));
-    };
-    const removeStyle = (name, value = "") => {
-        document.adoptedStyleSheets = document.adoptedStyleSheets.filter(sh => sh._ui5StyleId !== getStyleId(name, value));
-    };
-    const createOrUpdateStyle = (data, name, value = "", theme) => {
-        if (hasStyle(name, value)) {
-            updateStyle(data, name, value, theme);
-        }
-        else {
-            createStyle(data, name, value, theme);
-        }
-    };
-    const mergeStyles = (style1, style2) => {
-        if (style1 === undefined) {
-            return style2;
-        }
-        if (style2 === undefined) {
-            return style1;
-        }
-        const style2Content = typeof style2 === "string" ? style2 : style2.content;
-        if (typeof style1 === "string") {
-            return `${style1} ${style2Content}`;
-        }
-        return {
-            content: `${style1.content} ${style2Content}`,
-            packageName: style1.packageName,
-            fileName: style1.fileName,
-        };
-    };
-
-    const features = new Map();
-    const componentFeatures = new Map();
-    const subscribers = new Map();
-    const EVENT_NAME = "componentFeatureLoad";
-    const eventProvider$6 = new EventProvider();
-    const featureLoadEventName = name => `${EVENT_NAME}_${name}`;
-    const getFeature = name => {
-      return features.get(name);
-    };
-    const getComponentFeature = name => {
-      return componentFeatures.get(name);
-    };
-    const subscribeForFeatureLoad = (name, klass, callback) => {
-      const subscriber = subscribers.get(klass);
-      const isSubscribed = subscriber?.includes(name);
-      if (isSubscribed) {
-        return;
+    const recordTagRegistrationFailure = tag => {
+      let tagRegRuntimeIndex = Tags.get(tag);
+      if (tagRegRuntimeIndex === undefined) {
+        tagRegRuntimeIndex = UNKNOWN_RUNTIME;
       }
-      if (!subscriber) {
-        subscribers.set(klass, [name]);
-      } else {
-        subscriber.push(name);
+      if (!Failures.has(tagRegRuntimeIndex)) {
+        Failures.set(tagRegRuntimeIndex, new Set());
       }
-      eventProvider$6.attachEvent(featureLoadEventName(name), callback);
+      Failures.get(tagRegRuntimeIndex).add(tag);
+      if (!failureTimeout) {
+        failureTimeout = setTimeout(() => {
+          displayFailedRegistrations();
+          Failures = new Map();
+          failureTimeout = undefined;
+        }, 1000);
+      }
     };
-
-    const styleData$7 = {
-        packageName: "@ui5/webcomponents-base",
-        fileName: "FontFace.css",
-        content: `@font-face{font-family:"72";font-style:normal;font-weight:400;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Regular.woff2?ui5-webcomponents) format("woff2"),local("72");unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:"72full";font-style:normal;font-weight:400;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Regular-full.woff2?ui5-webcomponents) format("woff2"),local('72-full')}@font-face{font-family:"72";font-style:normal;font-weight:700;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Bold.woff2?ui5-webcomponents) format("woff2"),local('72-Bold');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:"72full";font-style:normal;font-weight:700;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Bold-full.woff2?ui5-webcomponents) format("woff2")}@font-face{font-family:'72-Bold';font-style:normal;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Bold.woff2?ui5-webcomponents) format("woff2"),local('72-Bold');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:'72-Boldfull';font-style:normal;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Bold-full.woff2?ui5-webcomponents) format("woff2")}@font-face{font-family:'72-Light';font-style:normal;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Light.woff2?ui5-webcomponents) format("woff2"),local('72-Light');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:'72-Lightfull';font-style:normal;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Light-full.woff2?ui5-webcomponents) format("woff2")}@font-face{font-family:'72Mono';src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72Mono-Regular.woff2?ui5-webcomponents) format('woff2'),local('72Mono');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:'72Monofull';src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72Mono-Regular-full.woff2?ui5-webcomponents) format('woff2')}@font-face{font-family:'72Mono-Bold';src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72Mono-Bold.woff2?ui5-webcomponents) format('woff2'),local('72Mono-Bold');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:'72Mono-Boldfull';src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72Mono-Bold-full.woff2?ui5-webcomponents) format('woff2')}@font-face{font-family:"72Black";font-style:bold;font-weight:900;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Black.woff2?ui5-webcomponents) format("woff2"),local('72Black');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:'72Blackfull';src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Black-full.woff2?ui5-webcomponents) format('woff2')}@font-face{font-family:"72-SemiboldDuplex";src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-SemiboldDuplex.woff2?ui5-webcomponents) format("woff2"),local('72-SemiboldDuplex');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}`,
-    };
-
-    const styleData$6 = {
-        packageName: "@ui5/webcomponents-base",
-        fileName: "OverrideFontFace.css",
-        content: `@font-face{font-family:'72override';unicode-range:U+0102-0103,U+01A0-01A1,U+01AF-01B0,U+1EA0-1EB7,U+1EB8-1EC7,U+1EC8-1ECB,U+1ECC-1EE3,U+1EE4-1EF1,U+1EF4-1EF7;src:local('Arial'),local('Helvetica'),local('sans-serif')}`,
-    };
-
-    const assetParameters = { "themes": { "default": "sap_horizon", "all": ["sap_fiori_3", "sap_fiori_3_dark", "sap_fiori_3_hcb", "sap_fiori_3_hcw", "sap_horizon", "sap_horizon_dark", "sap_horizon_hcb", "sap_horizon_hcw", "sap_horizon_exp", "sap_horizon_dark_exp", "sap_horizon_hcb_exp", "sap_horizon_hcw_exp"] }, "languages": { "default": "en", "all": ["ar", "bg", "ca", "cnr", "cs", "cy", "da", "de", "el", "en", "en_GB", "en_US_sappsd", "en_US_saprigi", "en_US_saptrc", "es", "es_MX", "et", "fi", "fr", "fr_CA", "hi", "hr", "hu", "in", "it", "iw", "ja", "kk", "ko", "lt", "lv", "mk", "ms", "nl", "no", "pl", "pt_PT", "pt", "ro", "ru", "sh", "sk", "sl", "sr", "sv", "th", "tr", "uk", "vi", "zh_CN", "zh_TW"] }, "locales": { "default": "en", "all": ["ar", "ar_EG", "ar_SA", "bg", "ca", "cnr", "cs", "da", "de", "de_AT", "de_CH", "el", "el_CY", "en", "en_AU", "en_GB", "en_HK", "en_IE", "en_IN", "en_NZ", "en_PG", "en_SG", "en_ZA", "es", "es_AR", "es_BO", "es_CL", "es_CO", "es_MX", "es_PE", "es_UY", "es_VE", "et", "fa", "fi", "fr", "fr_BE", "fr_CA", "fr_CH", "fr_LU", "he", "hi", "hr", "hu", "id", "it", "it_CH", "ja", "kk", "ko", "lt", "lv", "ms", "mk", "nb", "nl", "nl_BE", "pl", "pt", "pt_PT", "ro", "ru", "ru_UA", "sk", "sl", "sr", "sr_Latn", "sv", "th", "tr", "uk", "vi", "zh_CN", "zh_HK", "zh_SG", "zh_TW"] } };
-    const DEFAULT_THEME = assetParameters.themes.default;
-    const SUPPORTED_THEMES = assetParameters.themes.all;
-    const DEFAULT_LANGUAGE = assetParameters.languages.default;
-    const DEFAULT_LOCALE = assetParameters.locales.default;
-    const SUPPORTED_LOCALES = assetParameters.locales.all;
-
-    const isSSR$1 = typeof document === "undefined";
-    const internals = {
-        search() {
-            if (isSSR$1) {
-                return "";
-            }
-            return window.location.search;
-        },
-    };
-    const getLocationHref = () => {
-        if (isSSR$1) {
-            return "";
+    const displayFailedRegistrations = () => {
+      const allRuntimes = getAllRuntimes();
+      const currentRuntimeIndex = getCurrentRuntimeIndex();
+      const currentRuntime = allRuntimes[currentRuntimeIndex];
+      let message = `Multiple UI5 Web Components instances detected.`;
+      if (allRuntimes.length > 1) {
+        message = `${message}\nLoading order (versions before 1.1.0 not listed): ${allRuntimes.map(runtime => `\n${runtime.description}`).join("")}`;
+      }
+      [...Failures.keys()].forEach(otherRuntimeIndex => {
+        let comparison;
+        let otherRuntime;
+        if (otherRuntimeIndex === UNKNOWN_RUNTIME) {
+          comparison = 1;
+          otherRuntime = {
+            description: `Older unknown runtime`
+          };
+        } else {
+          comparison = compareRuntimes(currentRuntimeIndex, otherRuntimeIndex);
+          otherRuntime = allRuntimes[otherRuntimeIndex];
         }
-        return window.location.href;
-    };
-    const getLocationSearch = () => {
-        return internals.search();
-    };
-
-    const getMetaTagValue = (metaTagName) => {
-        const metaTag = document.querySelector(`META[name="${metaTagName}"]`), metaTagContent = metaTag && metaTag.getAttribute("content");
-        return metaTagContent;
-    };
-    const validateThemeOrigin = (origin) => {
-        const allowedOrigins = getMetaTagValue("sap-allowedThemeOrigins");
-        return allowedOrigins && allowedOrigins.split(",").some(allowedOrigin => {
-            return allowedOrigin === "*" || origin === allowedOrigin.trim();
-        });
-    };
-    const buildCorrectUrl = (oldUrl, newOrigin) => {
-        const oldUrlPath = new URL(oldUrl).pathname;
-        return new URL(oldUrlPath, newOrigin).toString();
-    };
-    const validateThemeRoot = (themeRoot) => {
-        let resultUrl;
-        try {
-            if (themeRoot.startsWith(".") || themeRoot.startsWith("/")) {
-                // Handle relative url
-                // new URL("/newExmPath", "http://example.com/exmPath") => http://example.com/newExmPath
-                // new URL("./newExmPath", "http://example.com/exmPath") => http://example.com/exmPath/newExmPath
-                // new URL("../newExmPath", "http://example.com/exmPath") => http://example.com/newExmPath
-                resultUrl = new URL(themeRoot, getLocationHref()).toString();
-            }
-            else {
-                const themeRootURL = new URL(themeRoot);
-                const origin = themeRootURL.origin;
-                if (origin && validateThemeOrigin(origin)) {
-                    // If origin is allowed, use it
-                    resultUrl = themeRootURL.toString();
-                }
-                else {
-                    // If origin is not allow and the URL is not relative, we have to replace the origin
-                    // with current location
-                    resultUrl = buildCorrectUrl(themeRootURL.toString(), getLocationHref());
-                }
-            }
-            if (!resultUrl.endsWith("/")) {
-                resultUrl = `${resultUrl}/`;
-            }
-            return `${resultUrl}UI5/`;
+        let compareWord;
+        if (comparison > 0) {
+          compareWord = "an older";
+        } else if (comparison < 0) {
+          compareWord = "a newer";
+        } else {
+          compareWord = "the same";
         }
-        catch (e) {
-            // Catch if URL is not correct
+        message = `${message}\n\n"${currentRuntime.description}" failed to define ${Failures.get(otherRuntimeIndex).size} tag(s) as they were defined by a runtime of ${compareWord} version "${otherRuntime.description}": ${[...Failures.get(otherRuntimeIndex)].sort().join(", ")}.`;
+        if (comparison > 0) {
+          message = `${message}\nWARNING! If your code uses features of the above web components, unavailable in ${otherRuntime.description}, it might not work as expected!`;
+        } else {
+          message = `${message}\nSince the above web components were defined by the same or newer version runtime, they should be compatible with your code.`;
         }
+      });
+      message = `${message}\n\nTo prevent other runtimes from defining tags that you use, consider using scoping or have third-party libraries use scoping: https://github.com/SAP/ui5-webcomponents/blob/main/docs/2-advanced/03-scoping.md.`;
+      console.warn(message);
     };
-
-    /**
-     * Different types of AnimationMode.
-     *
-     * @public
-     */
-    var AnimationMode;
-    (function (AnimationMode) {
-        /**
-         * @public
-         */
-        AnimationMode["Full"] = "full";
-        /**
-         * @public
-         */
-        AnimationMode["Basic"] = "basic";
-        /**
-         * @public
-         */
-        AnimationMode["Minimal"] = "minimal";
-        /**
-         * @public
-         */
-        AnimationMode["None"] = "none";
-    })(AnimationMode || (AnimationMode = {}));
-    var AnimationMode$1 = AnimationMode;
-
-    const eventProvider$5 = new EventProvider();
-    const CONFIGURATION_RESET = "configurationReset";
-    const attachConfigurationReset = (listener) => {
-        eventProvider$5.attachEvent(CONFIGURATION_RESET, listener);
-    };
-
-    let initialized = false;
-    let initialConfig = {
-        animationMode: AnimationMode$1.Full,
-        theme: DEFAULT_THEME,
-        themeRoot: undefined,
-        rtl: undefined,
-        language: undefined,
-        timezone: undefined,
-        calendarType: undefined,
-        secondaryCalendarType: undefined,
-        noConflict: false, // no URL
-        formatSettings: {},
-        fetchDefaultLanguage: false,
-        defaultFontLoading: true,
-        enableDefaultTooltips: true,
-    };
-    const getTheme$1 = () => {
-        initConfiguration();
-        return initialConfig.theme;
-    };
-    const getThemeRoot$1 = () => {
-        initConfiguration();
-        return initialConfig.themeRoot;
-    };
-    const getLanguage$1 = () => {
-        initConfiguration();
-        return initialConfig.language;
-    };
-    /**
-     * Returns if the default language, that is inlined at build time,
-     * should be fetched over the network instead.
-     * @returns {Boolean}
-     */
-    const getFetchDefaultLanguage$1 = () => {
-        initConfiguration();
-        return initialConfig.fetchDefaultLanguage;
-    };
-    const getNoConflict$1 = () => {
-        initConfiguration();
-        return initialConfig.noConflict;
-    };
-    const getDefaultFontLoading$1 = () => {
-        initConfiguration();
-        return initialConfig.defaultFontLoading;
-    };
-    const booleanMapping = new Map();
-    booleanMapping.set("true", true);
-    booleanMapping.set("false", false);
-    const parseConfigurationScript = () => {
-        const configScript = document.querySelector("[data-ui5-config]") || document.querySelector("[data-id='sap-ui-config']"); // for backward compatibility
-        let configJSON;
-        if (configScript) {
-            try {
-                configJSON = JSON.parse(configScript.innerHTML);
-            }
-            catch (err) {
-                console.warn("Incorrect data-sap-ui-config format. Please use JSON"); /* eslint-disable-line */
-            }
-            if (configJSON) {
-                initialConfig = fnMerge(initialConfig, configJSON);
-            }
-        }
-    };
-    const parseURLParameters = () => {
-        const params = new URLSearchParams(getLocationSearch());
-        // Process "sap-*" params first
-        params.forEach((value, key) => {
-            const parts = key.split("sap-").length;
-            if (parts === 0 || parts === key.split("sap-ui-").length) {
-                return;
-            }
-            applyURLParam(key, value, "sap");
-        });
-        // Process "sap-ui-*" params
-        params.forEach((value, key) => {
-            if (!key.startsWith("sap-ui")) {
-                return;
-            }
-            applyURLParam(key, value, "sap-ui");
-        });
-    };
-    const normalizeThemeRootParamValue = (value) => {
-        const themeRoot = value.split("@")[1];
-        return validateThemeRoot(themeRoot);
-    };
-    const normalizeThemeParamValue = (param, value) => {
-        if (param === "theme" && value.includes("@")) { // the theme parameter might have @<URL-TO-THEME> in the value - strip this
-            return value.split("@")[0];
-        }
-        return value;
-    };
-    const applyURLParam = (key, value, paramType) => {
-        const lowerCaseValue = value.toLowerCase();
-        const param = key.split(`${paramType}-`)[1];
-        if (booleanMapping.has(value)) {
-            value = booleanMapping.get(lowerCaseValue);
-        }
-        if (param === "theme") {
-            initialConfig.theme = normalizeThemeParamValue(param, value);
-            if (value && value.includes("@")) {
-                initialConfig.themeRoot = normalizeThemeRootParamValue(value);
-            }
-        }
-        else {
-            initialConfig[param] = value;
-        }
-    };
-    const applyOpenUI5Configuration = () => {
-        const openUI5Support = getFeature("OpenUI5Support");
-        if (!openUI5Support || !openUI5Support.isOpenUI5Detected()) {
-            return;
-        }
-        const OpenUI5Config = openUI5Support.getConfigurationSettingsObject();
-        initialConfig = fnMerge(initialConfig, OpenUI5Config);
-    };
-    const initConfiguration = () => {
-        if (typeof document === "undefined" || initialized) {
-            return;
-        }
-        resetConfiguration();
-        initialized = true;
-    };
-    /**
-     * Internaly exposed method to enable configurations in tests.
-     * @private
-     */
-    const resetConfiguration = (testEnv) => {
-        // 1. Lowest priority - configuration script
-        parseConfigurationScript();
-        // 2. URL parameters overwrite configuration script parameters
-        parseURLParameters();
-        // 3. If OpenUI5 is detected, it has the highest priority
-        applyOpenUI5Configuration();
-    };
-
-    let defaultFontLoading;
-    attachConfigurationReset(() => {
-        defaultFontLoading = undefined;
-    });
-    /**
-     * Returns if the "defaultFontLoading" configuration is set.
-     * @public
-     * @returns { boolean }
-     */
-    const getDefaultFontLoading = () => {
-        if (defaultFontLoading === undefined) {
-            defaultFontLoading = getDefaultFontLoading$1();
-        }
-        return defaultFontLoading;
-    };
-
-    const insertFontFace = () => {
-        const openUI5Support = getFeature("OpenUI5Support");
-        // Only set the main font if there is no OpenUI5 support, or there is, but OpenUI5 is not loaded
-        if ((!openUI5Support || !openUI5Support.isOpenUI5Detected())) {
-            insertMainFontFace();
-        }
-        // Always set the override font - OpenUI5 in CSS Vars mode does not set it, unlike the main font
-        insertOverrideFontFace();
-    };
-    const insertMainFontFace = () => {
-        const hasFontStyles = document.querySelector("head>style[data-ui5-font-face]");
-        if (!getDefaultFontLoading() || hasFontStyles) {
-            return;
-        }
-        if (!hasStyle("data-ui5-font-face")) {
-            createStyle(styleData$7, "data-ui5-font-face");
-        }
-    };
-    const insertOverrideFontFace = () => {
-        if (!hasStyle("data-ui5-font-face-override")) {
-            createStyle(styleData$6, "data-ui5-font-face-override");
-        }
-    };
-
-    const styleData$5 = {
-        packageName: "@ui5/webcomponents-base",
-        fileName: "SystemCSSVars.css",
-        content: `:root{--_ui5_content_density:cozy}.sapUiSizeCompact,.ui5-content-density-compact,[data-ui5-compact-size]{--_ui5_content_density:compact}`,
-    };
-
-    const insertSystemCSSVars = () => {
-        if (!hasStyle("data-ui5-system-css-vars")) {
-            createStyle(styleData$5, "data-ui5-system-css-vars");
-        }
-    };
-
-    const MAX_PROCESS_COUNT = 10;
-    class RenderQueue {
-        constructor() {
-            this.list = []; // Used to store the web components in order
-            this.lookup = new Set(); // Used for faster search
-        }
-        add(webComponent) {
-            if (this.lookup.has(webComponent)) {
-                return;
-            }
-            this.list.push(webComponent);
-            this.lookup.add(webComponent);
-        }
-        remove(webComponent) {
-            if (!this.lookup.has(webComponent)) {
-                return;
-            }
-            this.list = this.list.filter(item => item !== webComponent);
-            this.lookup.delete(webComponent);
-        }
-        shift() {
-            const webComponent = this.list.shift();
-            if (webComponent) {
-                this.lookup.delete(webComponent);
-                return webComponent;
-            }
-        }
-        isEmpty() {
-            return this.list.length === 0;
-        }
-        isAdded(webComponent) {
-            return this.lookup.has(webComponent);
-        }
-        /**
-         * Processes the whole queue by executing the callback on each component,
-         * while also imposing restrictions on how many times a component may be processed.
-         *
-         * @param callback - function with one argument (the web component to be processed)
-         */
-        process(callback) {
-            let webComponent;
-            const stats = new Map();
-            webComponent = this.shift();
-            while (webComponent) {
-                const timesProcessed = stats.get(webComponent) || 0;
-                if (timesProcessed > MAX_PROCESS_COUNT) {
-                    throw new Error(`Web component processed too many times this task, max allowed is: ${MAX_PROCESS_COUNT}`);
-                }
-                callback(webComponent);
-                stats.set(webComponent, timesProcessed + 1);
-                webComponent = this.shift();
-            }
-        }
-    }
 
     const rtlAwareSet = new Set();
     const markAsRtlAware = (klass) => {
@@ -1170,6 +934,83 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
             }
         });
         await renderFinished();
+    };
+
+    const isSSR$2 = typeof document === "undefined";
+    const getStyleId = (name, value) => {
+        return value ? `${name}|${value}` : name;
+    };
+    const shouldUpdate = (runtimeIndex) => {
+        if (runtimeIndex === undefined) {
+            return true;
+        }
+        return compareRuntimes(getCurrentRuntimeIndex(), parseInt(runtimeIndex)) === 1; // 1 means the current is newer, 0 means the same, -1 means the resource's runtime is newer
+    };
+    const createStyle = (data, name, value = "", theme) => {
+        const content = typeof data === "string" ? data : data.content;
+        const currentRuntimeIndex = getCurrentRuntimeIndex();
+        const stylesheet = new CSSStyleSheet();
+        stylesheet.replaceSync(content);
+        stylesheet._ui5StyleId = getStyleId(name, value); // set an id so that we can find the style later
+        if (theme) {
+            stylesheet._ui5RuntimeIndex = currentRuntimeIndex;
+            stylesheet._ui5Theme = theme;
+        }
+        document.adoptedStyleSheets = [...document.adoptedStyleSheets, stylesheet];
+    };
+    const updateStyle = (data, name, value = "", theme) => {
+        const content = typeof data === "string" ? data : data.content;
+        const currentRuntimeIndex = getCurrentRuntimeIndex();
+        const stylesheet = document.adoptedStyleSheets.find(sh => sh._ui5StyleId === getStyleId(name, value));
+        if (!stylesheet) {
+            return;
+        }
+        if (!theme) {
+            stylesheet.replaceSync(content || "");
+        }
+        else {
+            const stylesheetRuntimeIndex = stylesheet._ui5RuntimeIndex;
+            const stylesheetTheme = stylesheet._ui5Theme;
+            if (stylesheetTheme !== theme || shouldUpdate(stylesheetRuntimeIndex)) {
+                stylesheet.replaceSync(content || "");
+                stylesheet._ui5RuntimeIndex = String(currentRuntimeIndex);
+                stylesheet._ui5Theme = theme;
+            }
+        }
+    };
+    const hasStyle = (name, value = "") => {
+        if (isSSR$2) {
+            return true;
+        }
+        return !!document.adoptedStyleSheets.find(sh => sh._ui5StyleId === getStyleId(name, value));
+    };
+    const removeStyle = (name, value = "") => {
+        document.adoptedStyleSheets = document.adoptedStyleSheets.filter(sh => sh._ui5StyleId !== getStyleId(name, value));
+    };
+    const createOrUpdateStyle = (data, name, value = "", theme) => {
+        if (hasStyle(name, value)) {
+            updateStyle(data, name, value, theme);
+        }
+        else {
+            createStyle(data, name, value, theme);
+        }
+    };
+    const mergeStyles = (style1, style2) => {
+        if (style1 === undefined) {
+            return style2;
+        }
+        if (style2 === undefined) {
+            return style1;
+        }
+        const style2Content = typeof style2 === "string" ? style2 : style2.content;
+        if (typeof style1 === "string") {
+            return `${style1} ${style2Content}`;
+        }
+        return {
+            content: `${style1.content} ${style2Content}`,
+            packageName: style1.packageName,
+            fileName: style1.fileName,
+        };
     };
 
     const eventProvider$3 = new EventProvider();
@@ -1442,36 +1283,240 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
         fireThemeLoaded(theme);
     };
 
-    let curTheme;
+    const whenDOMReady = () => {
+        return new Promise(resolve => {
+            if (document.body) {
+                resolve();
+            }
+            else {
+                document.addEventListener("DOMContentLoaded", () => {
+                    resolve();
+                });
+            }
+        });
+    };
+
+    const styleData$7 = {
+        packageName: "@ui5/webcomponents-base",
+        fileName: "FontFace.css",
+        content: `@font-face{font-family:"72";font-style:normal;font-weight:400;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Regular.woff2?ui5-webcomponents) format("woff2"),local("72");unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:"72full";font-style:normal;font-weight:400;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Regular-full.woff2?ui5-webcomponents) format("woff2"),local('72-full')}@font-face{font-family:"72";font-style:normal;font-weight:700;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Bold.woff2?ui5-webcomponents) format("woff2"),local('72-Bold');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:"72full";font-style:normal;font-weight:700;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Bold-full.woff2?ui5-webcomponents) format("woff2")}@font-face{font-family:'72-Bold';font-style:normal;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Bold.woff2?ui5-webcomponents) format("woff2"),local('72-Bold');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:'72-Boldfull';font-style:normal;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Bold-full.woff2?ui5-webcomponents) format("woff2")}@font-face{font-family:'72-Light';font-style:normal;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Light.woff2?ui5-webcomponents) format("woff2"),local('72-Light');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:'72-Lightfull';font-style:normal;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Light-full.woff2?ui5-webcomponents) format("woff2")}@font-face{font-family:'72Mono';src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72Mono-Regular.woff2?ui5-webcomponents) format('woff2'),local('72Mono');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:'72Monofull';src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72Mono-Regular-full.woff2?ui5-webcomponents) format('woff2')}@font-face{font-family:'72Mono-Bold';src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72Mono-Bold.woff2?ui5-webcomponents) format('woff2'),local('72Mono-Bold');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:'72Mono-Boldfull';src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72Mono-Bold-full.woff2?ui5-webcomponents) format('woff2')}@font-face{font-family:"72Black";font-style:bold;font-weight:900;src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Black.woff2?ui5-webcomponents) format("woff2"),local('72Black');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}@font-face{font-family:'72Blackfull';src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-Black-full.woff2?ui5-webcomponents) format('woff2')}@font-face{font-family:"72-SemiboldDuplex";src:url(https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/fonts/72-SemiboldDuplex.woff2?ui5-webcomponents) format("woff2"),local('72-SemiboldDuplex');unicode-range:U+00,U+0D,U+20-7E,U+A0-FF,U+131,U+152-153,U+161,U+178,U+17D-17E,U+192,U+237,U+2C6,U+2DC,U+3BC,U+1E9E,U+2013-2014,U+2018-201A,U+201C-201E,U+2020-2022,U+2026,U+2030,U+2039-203A,U+2044,U+20AC,U+2122}`,
+    };
+
+    const styleData$6 = {
+        packageName: "@ui5/webcomponents-base",
+        fileName: "OverrideFontFace.css",
+        content: `@font-face{font-family:'72override';unicode-range:U+0102-0103,U+01A0-01A1,U+01AF-01B0,U+1EA0-1EB7,U+1EB8-1EC7,U+1EC8-1ECB,U+1ECC-1EE3,U+1EE4-1EF1,U+1EF4-1EF7;src:local('Arial'),local('Helvetica'),local('sans-serif')}`,
+    };
+
+    let defaultFontLoading;
     attachConfigurationReset(() => {
-        curTheme = undefined;
+        defaultFontLoading = undefined;
     });
     /**
-     * Returns the current theme.
+     * Returns if the "defaultFontLoading" configuration is set.
      * @public
-     * @returns {string} the current theme name
-     */
-    const getTheme = () => {
-        if (curTheme === undefined) {
-            curTheme = getTheme$1();
-        }
-        return curTheme;
-    };
-    /**
-     * Returns if the currently set theme is part of legacy theme families ("sap_fiori_3").
-     * **Note**: in addition, the method checks the base theme of a custom theme, built via the ThemeDesigner.
-     *
-     * @private
      * @returns { boolean }
      */
-    const isLegacyThemeFamily = () => {
-        const currentTheme = getTheme();
-        if (!isKnownTheme(currentTheme)) {
-            return !getThemeDesignerTheme()?.baseThemeName?.startsWith("sap_horizon");
+    const getDefaultFontLoading = () => {
+        if (defaultFontLoading === undefined) {
+            defaultFontLoading = getDefaultFontLoading$1();
         }
-        return !currentTheme.startsWith("sap_horizon");
+        return defaultFontLoading;
     };
-    const isKnownTheme = (theme) => SUPPORTED_THEMES.includes(theme);
+
+    const insertFontFace = () => {
+        const openUI5Support = getFeature("OpenUI5Support");
+        // Only set the main font if there is no OpenUI5 support, or there is, but OpenUI5 is not loaded
+        if ((!openUI5Support || !openUI5Support.isOpenUI5Detected())) {
+            insertMainFontFace();
+        }
+        // Always set the override font - OpenUI5 in CSS Vars mode does not set it, unlike the main font
+        insertOverrideFontFace();
+    };
+    const insertMainFontFace = () => {
+        const hasFontStyles = document.querySelector("head>style[data-ui5-font-face]");
+        if (!getDefaultFontLoading() || hasFontStyles) {
+            return;
+        }
+        if (!hasStyle("data-ui5-font-face")) {
+            createStyle(styleData$7, "data-ui5-font-face");
+        }
+    };
+    const insertOverrideFontFace = () => {
+        if (!hasStyle("data-ui5-font-face-override")) {
+            createStyle(styleData$6, "data-ui5-font-face-override");
+        }
+    };
+
+    const styleData$5 = {
+        packageName: "@ui5/webcomponents-base",
+        fileName: "SystemCSSVars.css",
+        content: `:root{--_ui5_content_density:cozy}.sapUiSizeCompact,.ui5-content-density-compact,[data-ui5-compact-size]{--_ui5_content_density:compact}`,
+    };
+
+    const insertSystemCSSVars = () => {
+        if (!hasStyle("data-ui5-system-css-vars")) {
+            createStyle(styleData$5, "data-ui5-system-css-vars");
+        }
+    };
+
+    const isSSR$1 = typeof document === "undefined";
+    const internals = {
+        get userAgent() {
+            if (isSSR$1) {
+                return "";
+            }
+            return navigator.userAgent;
+        },
+        get touch() {
+            if (isSSR$1) {
+                return false;
+            }
+            return "ontouchstart" in window || navigator.maxTouchPoints > 0;
+        },
+        get chrome() {
+            if (isSSR$1) {
+                return false;
+            }
+            return /(Chrome|CriOS)/.test(internals.userAgent);
+        },
+        get firefox() {
+            if (isSSR$1) {
+                return false;
+            }
+            return /Firefox/.test(internals.userAgent);
+        },
+        get safari() {
+            if (isSSR$1) {
+                return false;
+            }
+            return !internals.chrome && /(Version|PhantomJS)\/(\d+\.\d+).*Safari/.test(internals.userAgent);
+        },
+        get webkit() {
+            if (isSSR$1) {
+                return false;
+            }
+            return /webkit/.test(internals.userAgent);
+        },
+        get windows() {
+            if (isSSR$1) {
+                return false;
+            }
+            return navigator.platform.indexOf("Win") !== -1;
+        },
+        get macOS() {
+            if (isSSR$1) {
+                return false;
+            }
+            return !!navigator.userAgent.match(/Macintosh|Mac OS X/i);
+        },
+        get iOS() {
+            if (isSSR$1) {
+                return false;
+            }
+            return !!(navigator.platform.match(/iPhone|iPad|iPod/)) || !!(internals.userAgent.match(/Mac/) && "ontouchend" in document);
+        },
+        get android() {
+            if (isSSR$1) {
+                return false;
+            }
+            return !internals.windows && /Android/.test(internals.userAgent);
+        },
+        get androidPhone() {
+            if (isSSR$1) {
+                return false;
+            }
+            return internals.android && /(?=android)(?=.*mobile)/i.test(internals.userAgent);
+        },
+        get ipad() {
+            if (isSSR$1) {
+                return false;
+            }
+            // With iOS 13 the string 'iPad' was removed from the user agent string through a browser setting, which is applied on all sites by default:
+            // "Request Desktop Website -> All websites" (for more infos see: https://forums.developer.apple.com/thread/119186).
+            // Therefore the OS is detected as MACINTOSH instead of iOS and the device is a tablet if the Device.support.touch is true.
+            return /ipad/i.test(internals.userAgent) || (/Macintosh/i.test(internals.userAgent) && "ontouchend" in document);
+        },
+        _isPhone() {
+            detectTablet();
+            return internals.touch && !tablet;
+        },
+    };
+    let windowsVersion;
+    let webkitVersion;
+    let tablet;
+    const isWindows8OrAbove = () => {
+        if (isSSR$1) {
+            return false;
+        }
+        if (!internals.windows) {
+            return false;
+        }
+        if (windowsVersion === undefined) {
+            const matches = internals.userAgent.match(/Windows NT (\d+).(\d)/);
+            windowsVersion = matches ? parseFloat(matches[1]) : 0;
+        }
+        return windowsVersion >= 8;
+    };
+    const isWebkit537OrAbove = () => {
+        if (isSSR$1) {
+            return false;
+        }
+        if (!internals.webkit) {
+            return false;
+        }
+        if (webkitVersion === undefined) {
+            const matches = internals.userAgent.match(/(webkit)[ /]([\w.]+)/);
+            webkitVersion = matches ? parseFloat(matches[1]) : 0;
+        }
+        return webkitVersion >= 537.10;
+    };
+    const detectTablet = () => {
+        if (isSSR$1) {
+            return false;
+        }
+        if (tablet !== undefined) {
+            return;
+        }
+        if (internals.ipad) {
+            tablet = true;
+            return;
+        }
+        if (internals.touch) {
+            if (isWindows8OrAbove()) {
+                tablet = true;
+                return;
+            }
+            if (internals.chrome && internals.android) {
+                tablet = !/Mobile Safari\/[.0-9]+/.test(internals.userAgent);
+                return;
+            }
+            let densityFactor = window.devicePixelRatio ? window.devicePixelRatio : 1; // may be undefined in Windows Phone devices
+            if (internals.android && isWebkit537OrAbove()) {
+                densityFactor = 1;
+            }
+            tablet = (Math.min(window.screen.width / densityFactor, window.screen.height / densityFactor) >= 600);
+            return;
+        }
+        tablet = internals.userAgent.indexOf("Touch") !== -1 || (internals.android && !internals.androidPhone);
+    };
+    const isSafari = () => internals.safari;
+    const isTablet = () => {
+        detectTablet();
+        return (internals.touch || isWindows8OrAbove()) && tablet;
+    };
+    const isPhone = () => {
+        return internals._isPhone();
+    };
+    const isDesktop = () => {
+        if (isSSR$1) {
+            return false;
+        }
+        return (!isTablet() && !isPhone()) || isWindows8OrAbove();
+    };
+    const isIOS = () => {
+        return internals.iOS;
+    };
 
     let listenerAttached = false;
     const fixSafariActiveState = () => {
@@ -1529,6 +1574,458 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
             applyTheme(getTheme());
         }
     };
+
+    let curTheme;
+    attachConfigurationReset(() => {
+        curTheme = undefined;
+    });
+    /**
+     * Returns the current theme.
+     * @public
+     * @returns {string} the current theme name
+     */
+    const getTheme = () => {
+        if (curTheme === undefined) {
+            curTheme = getTheme$1();
+        }
+        return curTheme;
+    };
+    /**
+     * Returns if the currently set theme is part of legacy theme families ("sap_fiori_3").
+     * **Note**: in addition, the method checks the base theme of a custom theme, built via the ThemeDesigner.
+     *
+     * @private
+     * @returns { boolean }
+     */
+    const isLegacyThemeFamily = () => {
+        const currentTheme = getTheme();
+        if (!isKnownTheme(currentTheme)) {
+            return !getThemeDesignerTheme()?.baseThemeName?.startsWith("sap_horizon");
+        }
+        return !currentTheme.startsWith("sap_horizon");
+    };
+    const isKnownTheme = (theme) => SUPPORTED_THEMES.includes(theme);
+
+    var RegisteredIconCollection;
+    (function (RegisteredIconCollection) {
+        RegisteredIconCollection["SAPIconsV4"] = "SAP-icons-v4";
+        RegisteredIconCollection["SAPIconsV5"] = "SAP-icons-v5";
+        RegisteredIconCollection["SAPIconsTNTV2"] = "tnt-v2";
+        RegisteredIconCollection["SAPIconsTNTV3"] = "tnt-v3";
+        RegisteredIconCollection["SAPBSIconsV1"] = "business-suite-v1";
+        RegisteredIconCollection["SAPBSIconsV2"] = "business-suite-v2";
+    })(RegisteredIconCollection || (RegisteredIconCollection = {}));
+    const iconCollections = new Map();
+    iconCollections.set("SAP-icons", {
+        "legacy": RegisteredIconCollection.SAPIconsV4,
+        "sap_horizon": RegisteredIconCollection.SAPIconsV5,
+    });
+    iconCollections.set("tnt", {
+        "legacy": RegisteredIconCollection.SAPIconsTNTV2,
+        "sap_horizon": RegisteredIconCollection.SAPIconsTNTV3,
+    });
+    iconCollections.set("business-suite", {
+        "legacy": RegisteredIconCollection.SAPBSIconsV1,
+        "sap_horizon": RegisteredIconCollection.SAPBSIconsV2,
+    });
+    /**
+     * Registers collection version per theme.
+     * **For exmaple:** registerIconCollectionForTheme("my-custom-icons", {"sap_horizon": "my-custom-icons-v5"})
+     * @param { string } collectionName
+     * @param { ThemeToCollectionMap } themeCollectionMap
+     */
+    const registerIconCollectionForTheme = (collectionName, themeCollectionMap) => {
+        if (iconCollections.has(collectionName)) {
+            iconCollections.set(collectionName, { ...themeCollectionMap, ...iconCollections.get(collectionName) });
+            return;
+        }
+        iconCollections.set(collectionName, themeCollectionMap);
+    };
+    const getIconCollectionForTheme = (collectionName) => {
+        const themeFamily = isLegacyThemeFamily() ? "legacy" : "sap_horizon";
+        return iconCollections.has(collectionName) ? iconCollections.get(collectionName)[themeFamily] : collectionName;
+    };
+
+    /**
+     * Supported icon collection aliases.
+     *
+     * Users might specify a collection, using both the key and the value in the following key-value pairs,
+     * e.g the following pairs are completely exchangeable:
+     *
+     * - "SAP-icons/accept" and "SAP-icons-v4/accept"
+     * - "horizon/accept" and "SAP-icons-v5/accept"
+     * - "SAP-icons-TNT/actor" and "tnt/actor"
+     * - "BusinessSuiteInAppSymbols/3d" and "business-suite/3d"
+     */
+    var IconCollectionsAlias;
+    (function (IconCollectionsAlias) {
+        IconCollectionsAlias["SAP-icons"] = "SAP-icons-v4";
+        IconCollectionsAlias["horizon"] = "SAP-icons-v5";
+        IconCollectionsAlias["SAP-icons-TNT"] = "tnt";
+        IconCollectionsAlias["BusinessSuiteInAppSymbols"] = "business-suite";
+    })(IconCollectionsAlias || (IconCollectionsAlias = {}));
+    /**
+     * Returns the collection name for a given alias:
+     *
+     * - "SAP-icons-TNT"resolves to "tnt"
+     * - "BusinessSuiteInAppSymbols" resolves to "business-suite"
+     * - "horizon" resolves to "SAP-icons-v5"
+     *
+     * @param { string } collectionName
+     * @return { string } the normalized collection name
+     */
+    const getIconCollectionByAlias = (collectionName) => {
+        if (IconCollectionsAlias[collectionName]) {
+            return IconCollectionsAlias[collectionName];
+        }
+        return collectionName;
+    };
+
+    /**
+     * Returns the effective theme dependant icon collection:
+     *
+     * - "no collection" resolves to "SAP-icons-v4" in "Quartz" and to "SAP-icons-v5" in "Horizon"
+     * - "tnt" (and its alias "SAP-icons-TNT") resolves to "tnt-v2" in "Quartz" and resolves to "tnt-v3" in "Horizon"
+     * - "business-suite" (and its alias "BusinessSuiteInAppSymbols") resolves to "business-suite-v1" in "Quartz" and resolves to "business-suite-v2" in "Horizon"
+     *
+     * @param { IconCollection } collectionName
+     * @returns { IconCollection } the effective collection name
+     */
+    const getEffectiveIconCollection = (collectionName) => {
+        const defaultIconCollection = getDefaultIconCollection(getTheme());
+        // no collection + default collection, configured via setDefaultIconCollection - return the configured icon collection.
+        if (!collectionName && defaultIconCollection) {
+            return getIconCollectionByAlias(defaultIconCollection);
+        }
+        // no collection - return "SAP-icons-v4" or  "SAP-icons-v5".
+        if (!collectionName) {
+            return getIconCollectionForTheme("SAP-icons");
+        }
+        // has collection - return "SAP-icons-v4", "SAP-icons-v5", "tnt-v1", "tnt-v2", "business-suite-v1", "business-suite-v2", or custom ones.
+        return getIconCollectionForTheme(collectionName);
+    };
+
+    const eventProvider = new EventProvider();
+    const LANG_CHANGE = "languageChange";
+    const attachLanguageChange = (listener) => {
+        eventProvider.attachEvent(LANG_CHANGE, listener);
+    };
+
+    let curLanguage;
+    let fetchDefaultLanguage;
+    attachConfigurationReset(() => {
+        curLanguage = undefined;
+        fetchDefaultLanguage = undefined;
+    });
+    /**
+     * Returns the currently configured language, or the browser language as a fallback.
+     * @public
+     * @returns {string}
+     */
+    const getLanguage = () => {
+        if (curLanguage === undefined) {
+            curLanguage = getLanguage$1();
+        }
+        return curLanguage;
+    };
+    /**
+     * Returns if the default language, that is inlined, should be fetched over the network.
+     * @public
+     * @returns {boolean}
+     */
+    const getFetchDefaultLanguage = () => {
+        if (fetchDefaultLanguage === undefined) {
+            fetchDefaultLanguage = getFetchDefaultLanguage$1();
+        }
+        return fetchDefaultLanguage;
+    };
+
+    // Fire these events even with noConflict: true
+    const excludeList = [
+        "value-changed",
+        "click",
+    ];
+    let noConflict;
+    attachConfigurationReset(() => {
+        noConflict = undefined;
+    });
+    const shouldFireOriginalEvent = (eventName) => {
+        return excludeList.includes(eventName);
+    };
+    const shouldNotFireOriginalEvent = (eventName) => {
+        const nc = getNoConflict();
+        // return !(nc.events && nc.events.includes && nc.events.includes(eventName));
+        return !(typeof nc !== "boolean" && nc.events && nc.events.includes && nc.events.includes(eventName));
+    };
+    /**
+     * Returns if the "noConflict" configuration is set.
+     * @public
+     * @returns { NoConflictData }
+     */
+    const getNoConflict = () => {
+        if (noConflict === undefined) {
+            noConflict = getNoConflict$1();
+        }
+        return noConflict;
+    };
+    const skipOriginalEvent = (eventName) => {
+        const nc = getNoConflict();
+        // Always fire these events
+        if (shouldFireOriginalEvent(eventName)) {
+            return false;
+        }
+        // Read from the configuration
+        if (nc === true) {
+            return true;
+        }
+        return !shouldNotFireOriginalEvent(eventName);
+    };
+
+    /**
+     * Returns a custom element class decorator.
+     *
+     * @param { string | object } tagNameOrComponentSettings
+     * @returns { ClassDecorator }
+     */
+    const customElement = (tagNameOrComponentSettings = {}) => {
+        return (target) => {
+            if (!Object.prototype.hasOwnProperty.call(target, "metadata")) {
+                target.metadata = {};
+            }
+            if (typeof tagNameOrComponentSettings === "string") {
+                target.metadata.tag = tagNameOrComponentSettings;
+                return;
+            }
+            const { tag, languageAware, themeAware, cldr, fastNavigation, formAssociated, shadowRootOptions, features, } = tagNameOrComponentSettings;
+            target.metadata.tag = tag;
+            if (languageAware) {
+                target.metadata.languageAware = languageAware;
+            }
+            if (cldr) {
+                target.metadata.cldr = cldr;
+            }
+            if (features) {
+                target.metadata.features = features;
+            }
+            if (themeAware) {
+                target.metadata.themeAware = themeAware;
+            }
+            if (fastNavigation) {
+                target.metadata.fastNavigation = fastNavigation;
+            }
+            if (formAssociated) {
+                target.metadata.formAssociated = formAssociated;
+            }
+            if (shadowRootOptions) {
+                target.metadata.shadowRootOptions = shadowRootOptions;
+            }
+            ["renderer", "template", "styles", "dependencies"].forEach((customElementEntity) => {
+                const customElementEntityValue = tagNameOrComponentSettings[customElementEntity];
+                customElementEntityValue && Object.defineProperty(target, customElementEntity, {
+                    get: () => tagNameOrComponentSettings[customElementEntity],
+                });
+            });
+        };
+    };
+
+    /**
+     * Returns an event class decorator.
+     *
+     * @param { string } name the event name
+     * @param { EventData } data the event data
+     * @returns { ClassDecorator }
+     */
+    const event = (name, data = {}) => {
+        return (target) => {
+            if (!Object.prototype.hasOwnProperty.call(target, "metadata")) {
+                target.metadata = {};
+            }
+            const metadata = target.metadata;
+            if (!metadata.events) {
+                metadata.events = {};
+            }
+            const eventsMetadata = metadata.events;
+            if (!eventsMetadata[name]) {
+                eventsMetadata[name] = data;
+            }
+        };
+    };
+
+    /**
+     * Returns a property decorator.
+     *
+     * @param { Property } propData
+     * @returns { PropertyDecorator }
+     */
+    const property = (propData) => {
+        return (target, propertyKey) => {
+            const ctor = target.constructor;
+            if (!Object.prototype.hasOwnProperty.call(ctor, "metadata")) {
+                ctor.metadata = {};
+            }
+            const metadata = ctor.metadata;
+            if (!metadata.properties) {
+                metadata.properties = {};
+            }
+            const propsMetadata = metadata.properties;
+            if (!propsMetadata[propertyKey]) {
+                propsMetadata[propertyKey] = propData ?? {};
+            }
+        };
+    };
+
+    const KeyCodes = {
+        BACKSPACE: 8,
+        TAB: 9,
+        ENTER: 13,
+        SHIFT: 16,
+        CONTROL: 17,
+        ALT: 18,
+        BREAK: 19,
+        CAPS_LOCK: 20,
+        ESCAPE: 27,
+        SPACE: 32,
+        PAGE_UP: 33,
+        PAGE_DOWN: 34,
+        END: 35,
+        HOME: 36,
+        ARROW_LEFT: 37,
+        ARROW_UP: 38,
+        ARROW_RIGHT: 39,
+        ARROW_DOWN: 40,
+        PRINT: 44,
+        INSERT: 45,
+        DELETE: 46,
+        DIGIT_0: 48,
+        DIGIT_1: 49,
+        DIGIT_2: 50,
+        DIGIT_3: 51,
+        DIGIT_4: 52,
+        DIGIT_5: 53,
+        DIGIT_6: 54,
+        DIGIT_7: 55,
+        DIGIT_8: 56,
+        DIGIT_9: 57,
+        A: 65,
+        B: 66,
+        C: 67,
+        D: 68,
+        E: 69,
+        F: 70,
+        G: 71,
+        H: 72,
+        I: 73,
+        J: 74,
+        K: 75,
+        L: 76,
+        M: 77,
+        N: 78,
+        O: 79,
+        P: 80,
+        Q: 81,
+        R: 82,
+        S: 83,
+        T: 84,
+        U: 85,
+        V: 86,
+        W: 87,
+        X: 88,
+        Y: 89,
+        Z: 90,
+        WINDOWS: 91,
+        CONTEXT_MENU: 93,
+        TURN_OFF: 94,
+        SLEEP: 95,
+        NUMPAD_0: 96,
+        NUMPAD_1: 97,
+        NUMPAD_2: 98,
+        NUMPAD_3: 99,
+        NUMPAD_4: 100,
+        NUMPAD_5: 101,
+        NUMPAD_6: 102,
+        NUMPAD_7: 103,
+        NUMPAD_8: 104,
+        NUMPAD_9: 105,
+        NUMPAD_ASTERISK: 106,
+        NUMPAD_PLUS: 107,
+        NUMPAD_MINUS: 109,
+        NUMPAD_COMMA: 110,
+        NUMPAD_SLASH: 111,
+        F1: 112,
+        F2: 113,
+        F3: 114,
+        F4: 115,
+        F5: 116,
+        F6: 117,
+        F7: 118,
+        F8: 119,
+        F9: 120,
+        F10: 121,
+        F11: 122,
+        F12: 123,
+        NUM_LOCK: 144,
+        SCROLL_LOCK: 145,
+        COLON: 186,
+        PLUS: 187,
+        COMMA: 188,
+        SLASH: 189,
+        DOT: 190,
+        PIPE: 191,
+        SEMICOLON: 192,
+        MINUS: 219,
+        GREAT_ACCENT: 220,
+        EQUALS: 221,
+        SINGLE_QUOTE: 222,
+        BACKSLASH: 226,
+    };
+    const isEnter = (event) => (event.key ? event.key === "Enter" : event.keyCode === KeyCodes.ENTER) && !hasModifierKeys(event);
+    const isSpace = (event) => (event.key ? (event.key === "Spacebar" || event.key === " ") : event.keyCode === KeyCodes.SPACE) && !hasModifierKeys(event);
+    const hasModifierKeys = (event) => event.shiftKey || event.altKey || getCtrlKey(event);
+    const getCtrlKey = (event) => !!(event.metaKey || event.ctrlKey); // double negation doesn't have effect on boolean but ensures null and undefined are equivalent to false.
+
+    /**
+     * Different navigation modes for ItemNavigation.
+     *
+     * @public
+     */
+    var NavigationMode;
+    (function (NavigationMode) {
+        /**
+         * @public
+         */
+        NavigationMode["Auto"] = "Auto";
+        /**
+         * @public
+         */
+        NavigationMode["Vertical"] = "Vertical";
+        /**
+         * @public
+         */
+        NavigationMode["Horizontal"] = "Horizontal";
+        /**
+         * @public
+         */
+        NavigationMode["Paging"] = "Paging";
+    })(NavigationMode || (NavigationMode = {}));
+
+    /**
+     * Different behavior for ItemNavigation.
+     *
+     * @public
+     */
+    var ItemNavigationBehavior;
+    (function (ItemNavigationBehavior) {
+        /**
+         * Static behavior: navigations stops at the first or last item.
+         * @public
+         */
+        ItemNavigationBehavior["Static"] = "Static";
+        /**
+         * Cycling behavior: navigating past the last item continues with the first and vice versa.
+         * @public
+         */
+        ItemNavigationBehavior["Cyclic"] = "Cyclic";
+    })(ItemNavigationBehavior || (ItemNavigationBehavior = {}));
 
     const kebabToCamelMap = new Map();
     const camelToKebabMap = new Map();
@@ -1962,47 +2459,6 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
         }
     };
 
-    // Fire these events even with noConflict: true
-    const excludeList = [
-        "value-changed",
-        "click",
-    ];
-    let noConflict;
-    attachConfigurationReset(() => {
-        noConflict = undefined;
-    });
-    const shouldFireOriginalEvent = (eventName) => {
-        return excludeList.includes(eventName);
-    };
-    const shouldNotFireOriginalEvent = (eventName) => {
-        const nc = getNoConflict();
-        // return !(nc.events && nc.events.includes && nc.events.includes(eventName));
-        return !(typeof nc !== "boolean" && nc.events && nc.events.includes && nc.events.includes(eventName));
-    };
-    /**
-     * Returns if the "noConflict" configuration is set.
-     * @public
-     * @returns { NoConflictData }
-     */
-    const getNoConflict = () => {
-        if (noConflict === undefined) {
-            noConflict = getNoConflict$1();
-        }
-        return noConflict;
-    };
-    const skipOriginalEvent = (eventName) => {
-        const nc = getNoConflict();
-        // Always fire these events
-        if (shouldFireOriginalEvent(eventName)) {
-            return false;
-        }
-        // Read from the configuration
-        if (nc === true) {
-            return true;
-        }
-        return !shouldNotFireOriginalEvent(eventName);
-    };
-
     const getEffectiveDir = (element) => {
         if (element.matches(":dir(rtl)")) {
             return "rtl";
@@ -2120,41 +2576,6 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
         };
         const rawLocale = (browserLanguages && browserLanguages[0]) || navigatorLanguage();
         return rawLocale || DEFAULT_LANGUAGE;
-    };
-
-    const eventProvider = new EventProvider();
-    const LANG_CHANGE = "languageChange";
-    const attachLanguageChange = (listener) => {
-        eventProvider.attachEvent(LANG_CHANGE, listener);
-    };
-
-    let curLanguage;
-    let fetchDefaultLanguage;
-    attachConfigurationReset(() => {
-        curLanguage = undefined;
-        fetchDefaultLanguage = undefined;
-    });
-    /**
-     * Returns the currently configured language, or the browser language as a fallback.
-     * @public
-     * @returns {string}
-     */
-    const getLanguage = () => {
-        if (curLanguage === undefined) {
-            curLanguage = getLanguage$1();
-        }
-        return curLanguage;
-    };
-    /**
-     * Returns if the default language, that is inlined, should be fetched over the network.
-     * @public
-     * @returns {boolean}
-     */
-    const getFetchDefaultLanguage = () => {
-        if (fetchDefaultLanguage === undefined) {
-            fetchDefaultLanguage = getFetchDefaultLanguage$1();
-        }
-        return fetchDefaultLanguage;
     };
 
     const rLocale = /^((?:[A-Z]{2,3}(?:-[A-Z]{3}){0,3})|[A-Z]{4}|[A-Z]{5,8})(?:-([A-Z]{4}))?(?:-([A-Z]{2}|[0-9]{3}))?((?:-[0-9A-Z]{5,8}|-[0-9][0-9A-Z]{3})*)((?:-[0-9A-WYZ](?:-[0-9A-Z]{2,8})+)*)(?:-(X(?:-[0-9A-Z]{1,8})+))?$/i;
@@ -3332,97 +3753,3669 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
       return ("isUI5Element" in object);
     };
 
+    (function() {
+    /* Copyright Google Inc.
+     * Licensed under the Apache Licence Version 2.0
+     * Autogenerated at Tue May 22 10:18:21 PDT 2012
+     * \@overrides window
+     * \@provides cssSchema, CSS_PROP_BIT_QUANTITY, CSS_PROP_BIT_HASH_VALUE, CSS_PROP_BIT_NEGATIVE_QUANTITY, CSS_PROP_BIT_QSTRING_CONTENT, CSS_PROP_BIT_QSTRING_URL, CSS_PROP_BIT_HISTORY_INSENSITIVE, CSS_PROP_BIT_Z_INDEX, CSS_PROP_BIT_ALLOWED_IN_LINK */
     /**
-     * Returns a custom element class decorator.
-     *
-     * @param { string | object } tagNameOrComponentSettings
-     * @returns { ClassDecorator }
+     * @const
+     * @type {number}
      */
-    const customElement = (tagNameOrComponentSettings = {}) => {
-        return (target) => {
-            if (!Object.prototype.hasOwnProperty.call(target, "metadata")) {
-                target.metadata = {};
+    var CSS_PROP_BIT_QUANTITY = 1;
+    /**
+     * @const
+     * @type {number}
+     */
+    var CSS_PROP_BIT_HASH_VALUE = 2;
+    /**
+     * @const
+     * @type {number}
+     */
+    var CSS_PROP_BIT_NEGATIVE_QUANTITY = 4;
+    /**
+     * @const
+     * @type {number}
+     */
+    var CSS_PROP_BIT_QSTRING_CONTENT = 8;
+    /**
+     * @const
+     * @type {number}
+     */
+    var CSS_PROP_BIT_QSTRING_URL = 16;
+    /**
+     * @const
+     * @type {number}
+     */
+    var CSS_PROP_BIT_Z_INDEX = 64;
+    /**
+     * @const
+     * @type {number}
+     */
+    var CSS_PROP_BIT_ALLOWED_IN_LINK = 128;
+    var cssSchema = (function () {
+        var s = [
+          'rgb(?:\\(\\s*(?:\\d+|0|\\d+(?:\\.\\d+)?%)\\s*,\\s*(?:\\d+|0|\\d+(?:\\.\\d+)?%)\\s*,\\s*(?:\\d+|0|\\d+(?:\\.\\d+)?%)|a\\(\\s*(?:\\d+|0|\\d+(?:\\.\\d+)?%)\\s*,\\s*(?:\\d+|0|\\d+(?:\\.\\d+)?%)\\s*,\\s*(?:\\d+|0|\\d+(?:\\.\\d+)?%)\\s*,\\s*(?:\\d+|0(?:\\.\\d+)?|\\.\\d+|1(?:\\.0+)?|0|\\d+(?:\\.\\d+)?%)) *\\)'
+        ], c = [ /^ *$/i, RegExp('^ *(?:\\s*' + s[ 0 ] + '|(?:\\s*' + s[ 0 ] +
+            ')?)+ *$', 'i'), RegExp('^ *\\s*' + s[ 0 ] + ' *$', 'i'),
+          RegExp('^ *\\s*' + s[ 0 ] + '\\s*' + s[ 0 ] + ' *$', 'i') ], L = [ [
+            'aliceblue', 'antiquewhite', 'aqua', 'aquamarine', 'azure', 'beige',
+            'bisque', 'black', 'blanchedalmond', 'blue', 'blueviolet', 'brown',
+            'burlywood', 'cadetblue', 'chartreuse', 'chocolate', 'coral',
+            'cornflowerblue', 'cornsilk', 'crimson', 'cyan', 'darkblue',
+            'darkcyan', 'darkgoldenrod', 'darkgray', 'darkgreen', 'darkkhaki',
+            'darkmagenta', 'darkolivegreen', 'darkorange', 'darkorchid', 'darkred',
+            'darksalmon', 'darkseagreen', 'darkslateblue', 'darkslategray',
+            'darkturquoise', 'darkviolet', 'deeppink', 'deepskyblue', 'dimgray',
+            'dodgerblue', 'firebrick', 'floralwhite', 'forestgreen', 'fuchsia',
+            'gainsboro', 'ghostwhite', 'gold', 'goldenrod', 'gray', 'green',
+            'greenyellow', 'honeydew', 'hotpink', 'indianred', 'indigo', 'ivory',
+            'khaki', 'lavender', 'lavenderblush', 'lawngreen', 'lemonchiffon',
+            'lightblue', 'lightcoral', 'lightcyan', 'lightgoldenrodyellow',
+            'lightgreen', 'lightgrey', 'lightpink', 'lightsalmon', 'lightseagreen',
+            'lightskyblue', 'lightslategray', 'lightsteelblue', 'lightyellow',
+            'lime', 'limegreen', 'linen', 'magenta', 'maroon', 'mediumaquamarine',
+            'mediumblue', 'mediumorchid', 'mediumpurple', 'mediumseagreen',
+            'mediumslateblue', 'mediumspringgreen', 'mediumturquoise',
+            'mediumvioletred', 'midnightblue', 'mintcream', 'mistyrose',
+            'moccasin', 'navajowhite', 'navy', 'oldlace', 'olive', 'olivedrab',
+            'orange', 'orangered', 'orchid', 'palegoldenrod', 'palegreen',
+            'paleturquoise', 'palevioletred', 'papayawhip', 'peachpuff', 'peru',
+            'pink', 'plum', 'powderblue', 'purple', 'red', 'rosybrown',
+            'royalblue', 'saddlebrown', 'salmon', 'sandybrown', 'seagreen',
+            'seashell', 'sienna', 'silver', 'skyblue', 'slateblue', 'slategray',
+            'snow', 'springgreen', 'steelblue', 'tan', 'teal', 'thistle', 'tomato',
+            'turquoise', 'violet', 'wheat', 'white', 'whitesmoke', 'yellow',
+            'yellowgreen' ], [ 'all-scroll', 'col-resize', 'crosshair', 'default',
+            'e-resize', 'hand', 'help', 'move', 'n-resize', 'ne-resize', 'no-drop',
+            'not-allowed', 'nw-resize', 'pointer', 'progress', 'row-resize',
+            's-resize', 'se-resize', 'sw-resize', 'text', 'vertical-text',
+            'w-resize', 'wait' ], [ '-moz-inline-box', '-moz-inline-stack',
+            'block', 'inline', 'inline-block', 'inline-table', 'list-item',
+            'run-in', 'table', 'table-caption', 'table-cell', 'table-column',
+            'table-column-group', 'table-footer-group', 'table-header-group',
+            'table-row', 'table-row-group' ], [ 'armenian', 'circle', 'decimal',
+            'decimal-leading-zero', 'disc', 'georgian', 'lower-alpha',
+            'lower-greek', 'lower-latin', 'lower-roman', 'square', 'upper-alpha',
+            'upper-latin', 'upper-roman' ], [ '100', '200', '300', '400', '500',
+            '600', '700', '800', '900', 'bold', 'bolder', 'lighter' ], [
+            'condensed', 'expanded', 'extra-condensed', 'extra-expanded',
+            'narrower', 'semi-condensed', 'semi-expanded', 'ultra-condensed',
+            'ultra-expanded', 'wider' ], [ 'behind', 'center-left', 'center-right',
+            'far-left', 'far-right', 'left-side', 'leftwards', 'right-side',
+            'rightwards' ], [ 'large', 'larger', 'small', 'smaller', 'x-large',
+            'x-small', 'xx-large', 'xx-small' ], [ '-moz-pre-wrap', '-o-pre-wrap',
+            '-pre-wrap', 'nowrap', 'pre', 'pre-line', 'pre-wrap' ], [ 'dashed',
+            'dotted', 'double', 'groove', 'outset', 'ridge', 'solid' ], [
+            'baseline', 'middle', 'sub', 'super', 'text-bottom', 'text-top' ], [
+            'caption', 'icon', 'menu', 'message-box', 'small-caption', 'status-bar'
+          ], [ 'fast', 'faster', 'slow', 'slower', 'x-fast', 'x-slow' ], [ 'above',
+            'below', 'higher', 'level', 'lower' ], [ 'border-box', 'contain',
+            'content-box', 'cover', 'padding-box' ], [ 'cursive', 'fantasy',
+            'monospace', 'sans-serif', 'serif' ], [ 'loud', 'silent', 'soft',
+            'x-loud', 'x-soft' ], [ 'no-repeat', 'repeat-x', 'repeat-y', 'round',
+            'space' ], [ 'blink', 'line-through', 'overline', 'underline' ], [
+            'high', 'low', 'x-high', 'x-low' ], [ 'absolute', 'relative', 'static'
+          ], [ 'capitalize', 'lowercase', 'uppercase' ], [ 'child', 'female',
+            'male' ], [ 'bidi-override', 'embed' ], [ 'bottom', 'top' ], [ 'clip',
+            'ellipsis' ], [ 'continuous', 'digits' ], [ 'hide', 'show' ], [
+            'inside', 'outside' ], [ 'italic', 'oblique' ], [ 'left', 'right' ], [
+            'ltr', 'rtl' ], [ 'no-content', 'no-display' ], [ 'suppress',
+            'unrestricted' ], [ 'thick', 'thin' ], [ ',' ], [ '/' ], [ 'always' ],
+          [ 'auto' ], [ 'avoid' ], [ 'both' ], [ 'break-word' ], [ 'center' ], [
+            'code' ], [ 'collapse' ], [ 'fixed' ], [ 'hidden' ], [ 'inherit' ], [
+            'inset' ], [ 'invert' ], [ 'justify' ], [ 'local' ], [ 'medium' ], [
+            'mix' ], [ 'none' ], [ 'normal' ], [ 'once' ], [ 'repeat' ], [ 'scroll'
+          ], [ 'separate' ], [ 'small-caps' ], [ 'spell-out' ], [ 'transparent' ],
+          [ 'visible' ] ];
+        return {
+          '-moz-border-radius': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 36 ] ]
+          },
+          '-moz-border-radius-bottomleft': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5
+          },
+          '-moz-border-radius-bottomright': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5
+          },
+          '-moz-border-radius-topleft': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5
+          },
+          '-moz-border-radius-topright': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5
+          },
+          '-moz-box-shadow': {
+            'cssExtra': c[ 1 ],
+            'cssAlternates': [ 'boxShadow' ],
+            'cssPropBits': 7,
+            'cssLitGroup': [ L[ 0 ], L[ 35 ], L[ 48 ], L[ 54 ] ]
+          },
+          '-moz-opacity': {
+            'cssPropBits': 1,
+            'cssLitGroup': [ L[ 47 ] ]
+          },
+          '-moz-outline': {
+            'cssExtra': c[ 3 ],
+            'cssPropBits': 7,
+            'cssLitGroup': [ L[ 0 ], L[ 9 ], L[ 34 ], L[ 46 ], L[ 47 ], L[ 48 ], L[
+                49 ], L[ 52 ], L[ 54 ] ]
+          },
+          '-moz-outline-color': {
+            'cssExtra': c[ 2 ],
+            'cssPropBits': 2,
+            'cssLitGroup': [ L[ 0 ], L[ 47 ], L[ 49 ] ]
+          },
+          '-moz-outline-style': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 9 ], L[ 46 ], L[ 47 ], L[ 48 ], L[ 54 ] ]
+          },
+          '-moz-outline-width': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 34 ], L[ 47 ], L[ 52 ] ]
+          },
+          '-o-text-overflow': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 25 ] ]
+          },
+          '-webkit-border-bottom-left-radius': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5
+          },
+          '-webkit-border-bottom-right-radius': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5
+          },
+          '-webkit-border-radius': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 36 ] ]
+          },
+          '-webkit-border-radius-bottom-left': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5
+          },
+          '-webkit-border-radius-bottom-right': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5
+          },
+          '-webkit-border-radius-top-left': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5
+          },
+          '-webkit-border-radius-top-right': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5
+          },
+          '-webkit-border-top-left-radius': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5
+          },
+          '-webkit-border-top-right-radius': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5
+          },
+          '-webkit-box-shadow': {
+            'cssExtra': c[ 1 ],
+            'cssAlternates': [ 'boxShadow' ],
+            'cssPropBits': 7,
+            'cssLitGroup': [ L[ 0 ], L[ 35 ], L[ 48 ], L[ 54 ] ]
+          },
+          'azimuth': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 6 ], L[ 30 ], L[ 42 ], L[ 47 ] ]
+          },
+          'background': {
+            'cssExtra': RegExp('^ *(?:\\s*' + s[ 0 ] + '){0,2} *$', 'i'),
+            'cssPropBits': 23,
+            'cssLitGroup': [ L[ 0 ], L[ 14 ], L[ 17 ], L[ 24 ], L[ 30 ], L[ 35 ],
+              L[ 36 ], L[ 38 ], L[ 42 ], L[ 45 ], L[ 47 ], L[ 51 ], L[ 54 ], L[ 57
+              ], L[ 58 ], L[ 62 ] ]
+          },
+          'background-attachment': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 35 ], L[ 45 ], L[ 51 ], L[ 58 ] ]
+          },
+          'background-color': {
+            'cssExtra': c[ 2 ],
+            'cssPropBits': 130,
+            'cssLitGroup': [ L[ 0 ], L[ 47 ], L[ 62 ] ]
+          },
+          'background-image': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 16,
+            'cssLitGroup': [ L[ 35 ], L[ 54 ] ]
+          },
+          'background-position': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 24 ], L[ 30 ], L[ 35 ], L[ 42 ] ]
+          },
+          'background-repeat': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 17 ], L[ 35 ], L[ 57 ] ]
+          },
+          'border': {
+            'cssExtra': c[ 3 ],
+            'cssPropBits': 7,
+            'cssLitGroup': [ L[ 0 ], L[ 9 ], L[ 34 ], L[ 46 ], L[ 47 ], L[ 48 ], L[
+                52 ], L[ 54 ], L[ 62 ] ]
+          },
+          'border-bottom': {
+            'cssExtra': c[ 3 ],
+            'cssPropBits': 7,
+            'cssLitGroup': [ L[ 0 ], L[ 9 ], L[ 34 ], L[ 46 ], L[ 47 ], L[ 48 ], L[
+                52 ], L[ 54 ], L[ 62 ] ]
+          },
+          'border-bottom-color': {
+            'cssExtra': c[ 2 ],
+            'cssPropBits': 2,
+            'cssLitGroup': [ L[ 0 ], L[ 47 ], L[ 62 ] ]
+          },
+          'border-bottom-left-radius': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5
+          },
+          'border-bottom-right-radius': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5
+          },
+          'border-bottom-style': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 9 ], L[ 46 ], L[ 47 ], L[ 48 ], L[ 54 ] ]
+          },
+          'border-bottom-width': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 34 ], L[ 47 ], L[ 52 ] ]
+          },
+          'border-collapse': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 44 ], L[ 47 ], L[ 59 ] ]
+          },
+          'border-color': {
+            'cssExtra': RegExp('^ *(?:\\s*' + s[ 0 ] + '){1,4} *$', 'i'),
+            'cssPropBits': 2,
+            'cssLitGroup': [ L[ 0 ], L[ 47 ], L[ 62 ] ]
+          },
+          'border-left': {
+            'cssExtra': c[ 3 ],
+            'cssPropBits': 7,
+            'cssLitGroup': [ L[ 0 ], L[ 9 ], L[ 34 ], L[ 46 ], L[ 47 ], L[ 48 ], L[
+                52 ], L[ 54 ], L[ 62 ] ]
+          },
+          'border-left-color': {
+            'cssExtra': c[ 2 ],
+            'cssPropBits': 2,
+            'cssLitGroup': [ L[ 0 ], L[ 47 ], L[ 62 ] ]
+          },
+          'border-left-style': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 9 ], L[ 46 ], L[ 47 ], L[ 48 ], L[ 54 ] ]
+          },
+          'border-left-width': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 34 ], L[ 47 ], L[ 52 ] ]
+          },
+          'border-radius': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 36 ] ]
+          },
+          'border-right': {
+            'cssExtra': c[ 3 ],
+            'cssPropBits': 7,
+            'cssLitGroup': [ L[ 0 ], L[ 9 ], L[ 34 ], L[ 46 ], L[ 47 ], L[ 48 ], L[
+                52 ], L[ 54 ], L[ 62 ] ]
+          },
+          'border-right-color': {
+            'cssExtra': c[ 2 ],
+            'cssPropBits': 2,
+            'cssLitGroup': [ L[ 0 ], L[ 47 ], L[ 62 ] ]
+          },
+          'border-right-style': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 9 ], L[ 46 ], L[ 47 ], L[ 48 ], L[ 54 ] ]
+          },
+          'border-right-width': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 34 ], L[ 47 ], L[ 52 ] ]
+          },
+          'border-spacing': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 47 ] ]
+          },
+          'border-style': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 9 ], L[ 46 ], L[ 47 ], L[ 48 ], L[ 54 ] ]
+          },
+          'border-top': {
+            'cssExtra': c[ 3 ],
+            'cssPropBits': 7,
+            'cssLitGroup': [ L[ 0 ], L[ 9 ], L[ 34 ], L[ 46 ], L[ 47 ], L[ 48 ], L[
+                52 ], L[ 54 ], L[ 62 ] ]
+          },
+          'border-top-color': {
+            'cssExtra': c[ 2 ],
+            'cssPropBits': 2,
+            'cssLitGroup': [ L[ 0 ], L[ 47 ], L[ 62 ] ]
+          },
+          'border-top-left-radius': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5
+          },
+          'border-top-right-radius': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5
+          },
+          'border-top-style': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 9 ], L[ 46 ], L[ 47 ], L[ 48 ], L[ 54 ] ]
+          },
+          'border-top-width': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 34 ], L[ 47 ], L[ 52 ] ]
+          },
+          'border-width': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 34 ], L[ 47 ], L[ 52 ] ]
+          },
+          'bottom': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 38 ], L[ 47 ] ]
+          },
+          'box-shadow': {
+            'cssExtra': c[ 1 ],
+            'cssPropBits': 7,
+            'cssLitGroup': [ L[ 0 ], L[ 35 ], L[ 48 ], L[ 54 ] ]
+          },
+          'caption-side': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 24 ], L[ 47 ] ]
+          },
+          'clear': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 30 ], L[ 40 ], L[ 47 ], L[ 54 ] ]
+          },
+          'clip': {
+            'cssExtra':
+            /^ *\s*rect\(\s*(?:0|[+\-]?\d+(?:\.\d+)?(?:[cem]m|ex|in|p[ctx])|auto)\s*,\s*(?:0|[+\-]?\d+(?:\.\d+)?(?:[cem]m|ex|in|p[ctx])|auto)\s*,\s*(?:0|[+\-]?\d+(?:\.\d+)?(?:[cem]m|ex|in|p[ctx])|auto)\s*,\s*(?:0|[+\-]?\d+(?:\.\d+)?(?:[cem]m|ex|in|p[ctx])|auto) *\) *$/i,
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 38 ], L[ 47 ] ]
+          },
+          'color': {
+            'cssExtra': c[ 2 ],
+            'cssPropBits': 130,
+            'cssLitGroup': [ L[ 0 ], L[ 47 ] ]
+          },
+          'content': { 'cssPropBits': 0 },
+          'counter-increment': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 47 ], L[ 54 ] ]
+          },
+          'counter-reset': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 47 ], L[ 54 ] ]
+          },
+          'cue': {
+            'cssPropBits': 16,
+            'cssLitGroup': [ L[ 47 ], L[ 54 ] ]
+          },
+          'cue-after': {
+            'cssPropBits': 16,
+            'cssLitGroup': [ L[ 47 ], L[ 54 ] ]
+          },
+          'cue-before': {
+            'cssPropBits': 16,
+            'cssLitGroup': [ L[ 47 ], L[ 54 ] ]
+          },
+          'cursor': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 144,
+            'cssLitGroup': [ L[ 1 ], L[ 35 ], L[ 38 ], L[ 47 ] ]
+          },
+          'direction': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 31 ], L[ 47 ] ]
+          },
+          'display': {
+            'cssPropBits': 32,
+            'cssLitGroup': [ L[ 2 ], L[ 47 ], L[ 54 ] ]
+          },
+          'elevation': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 13 ], L[ 47 ] ]
+          },
+          'empty-cells': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 27 ], L[ 47 ] ]
+          },
+          'filter': {
+            'cssExtra':
+            /^ *(?:\s*alpha\(\s*opacity\s*=\s*(?:0|\d+(?:\.\d+)?%|[+\-]?\d+(?:\.\d+)?) *\))+ *$/i,
+            'cssPropBits': 32
+          },
+          'float': {
+            'cssAlternates': [ 'cssFloat', 'styleFloat' ],
+            'cssPropBits': 32,
+            'cssLitGroup': [ L[ 30 ], L[ 47 ], L[ 54 ] ]
+          },
+          'font': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 9,
+            'cssLitGroup': [ L[ 4 ], L[ 7 ], L[ 11 ], L[ 15 ], L[ 29 ], L[ 35 ], L[
+                36 ], L[ 47 ], L[ 52 ], L[ 55 ], L[ 60 ] ]
+          },
+          'font-family': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 8,
+            'cssLitGroup': [ L[ 15 ], L[ 35 ], L[ 47 ] ]
+          },
+          'font-size': {
+            'cssPropBits': 1,
+            'cssLitGroup': [ L[ 7 ], L[ 47 ], L[ 52 ] ]
+          },
+          'font-stretch': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 5 ], L[ 55 ] ]
+          },
+          'font-style': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 29 ], L[ 47 ], L[ 55 ] ]
+          },
+          'font-variant': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 47 ], L[ 55 ], L[ 60 ] ]
+          },
+          'font-weight': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 4 ], L[ 47 ], L[ 55 ] ],
+            // ##### BEGIN: MODIFIED BY SAP
+            'cssLitNumeric': true
+            // ##### END: MODIFIED BY SAP
+          },
+          'height': {
+            'cssPropBits': 37,
+            'cssLitGroup': [ L[ 38 ], L[ 47 ] ]
+          },
+          'left': {
+            'cssPropBits': 37,
+            'cssLitGroup': [ L[ 38 ], L[ 47 ] ]
+          },
+          'letter-spacing': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 47 ], L[ 55 ] ]
+          },
+          'line-height': {
+            'cssPropBits': 1,
+            'cssLitGroup': [ L[ 47 ], L[ 55 ] ]
+          },
+          'list-style': {
+            'cssPropBits': 16,
+            'cssLitGroup': [ L[ 3 ], L[ 28 ], L[ 47 ], L[ 54 ] ]
+          },
+          'list-style-image': {
+            'cssPropBits': 16,
+            'cssLitGroup': [ L[ 47 ], L[ 54 ] ]
+          },
+          'list-style-position': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 28 ], L[ 47 ] ]
+          },
+          'list-style-type': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 3 ], L[ 47 ], L[ 54 ] ]
+          },
+          'margin': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 38 ], L[ 47 ] ]
+          },
+          'margin-bottom': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 38 ], L[ 47 ] ]
+          },
+          'margin-left': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 38 ], L[ 47 ] ]
+          },
+          'margin-right': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 38 ], L[ 47 ] ]
+          },
+          'margin-top': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 38 ], L[ 47 ] ]
+          },
+          'max-height': {
+            'cssPropBits': 1,
+            'cssLitGroup': [ L[ 38 ], L[ 47 ], L[ 54 ] ]
+          },
+          'max-width': {
+            'cssPropBits': 1,
+            'cssLitGroup': [ L[ 38 ], L[ 47 ], L[ 54 ] ]
+          },
+          'min-height': {
+            'cssPropBits': 1,
+            'cssLitGroup': [ L[ 38 ], L[ 47 ] ]
+          },
+          'min-width': {
+            'cssPropBits': 1,
+            'cssLitGroup': [ L[ 38 ], L[ 47 ] ]
+          },
+          'opacity': {
+            'cssPropBits': 33,
+            'cssLitGroup': [ L[ 47 ] ]
+          },
+          'outline': {
+            'cssExtra': c[ 3 ],
+            'cssPropBits': 7,
+            'cssLitGroup': [ L[ 0 ], L[ 9 ], L[ 34 ], L[ 46 ], L[ 47 ], L[ 48 ], L[
+                49 ], L[ 52 ], L[ 54 ] ]
+          },
+          'outline-color': {
+            'cssExtra': c[ 2 ],
+            'cssPropBits': 2,
+            'cssLitGroup': [ L[ 0 ], L[ 47 ], L[ 49 ] ]
+          },
+          'outline-style': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 9 ], L[ 46 ], L[ 47 ], L[ 48 ], L[ 54 ] ]
+          },
+          'outline-width': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 34 ], L[ 47 ], L[ 52 ] ]
+          },
+          'overflow': {
+            'cssPropBits': 32,
+            'cssLitGroup': [ L[ 38 ], L[ 46 ], L[ 47 ], L[ 58 ], L[ 63 ] ]
+          },
+          'overflow-x': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 32 ], L[ 38 ], L[ 46 ], L[ 58 ], L[ 63 ] ]
+          },
+          'overflow-y': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 32 ], L[ 38 ], L[ 46 ], L[ 58 ], L[ 63 ] ]
+          },
+          'padding': {
+            'cssPropBits': 1,
+            'cssLitGroup': [ L[ 47 ] ]
+          },
+          'padding-bottom': {
+            'cssPropBits': 33,
+            'cssLitGroup': [ L[ 47 ] ]
+          },
+          'padding-left': {
+            'cssPropBits': 33,
+            'cssLitGroup': [ L[ 47 ] ]
+          },
+          'padding-right': {
+            'cssPropBits': 33,
+            'cssLitGroup': [ L[ 47 ] ]
+          },
+          'padding-top': {
+            'cssPropBits': 33,
+            'cssLitGroup': [ L[ 47 ] ]
+          },
+          'page-break-after': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 30 ], L[ 37 ], L[ 38 ], L[ 39 ], L[ 47 ] ]
+          },
+          'page-break-before': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 30 ], L[ 37 ], L[ 38 ], L[ 39 ], L[ 47 ] ]
+          },
+          'page-break-inside': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 38 ], L[ 39 ], L[ 47 ] ]
+          },
+          'pause': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 47 ] ]
+          },
+          'pause-after': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 47 ] ]
+          },
+          'pause-before': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 47 ] ]
+          },
+          'pitch': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 19 ], L[ 47 ], L[ 52 ] ]
+          },
+          'pitch-range': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 47 ] ]
+          },
+          'play-during': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 16,
+            'cssLitGroup': [ L[ 38 ], L[ 47 ], L[ 53 ], L[ 54 ], L[ 57 ] ]
+          },
+          'position': {
+            'cssPropBits': 32,
+            'cssLitGroup': [ L[ 20 ], L[ 47 ] ]
+          },
+          'quotes': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 47 ], L[ 54 ] ]
+          },
+          'richness': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 47 ] ]
+          },
+          'right': {
+            'cssPropBits': 37,
+            'cssLitGroup': [ L[ 38 ], L[ 47 ] ]
+          },
+          'speak': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 47 ], L[ 54 ], L[ 55 ], L[ 61 ] ]
+          },
+          'speak-header': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 37 ], L[ 47 ], L[ 56 ] ]
+          },
+          'speak-numeral': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 26 ], L[ 47 ] ]
+          },
+          'speak-punctuation': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 43 ], L[ 47 ], L[ 54 ] ]
+          },
+          'speech-rate': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 12 ], L[ 47 ], L[ 52 ] ]
+          },
+          'stress': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 47 ] ]
+          },
+          'table-layout': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 38 ], L[ 45 ], L[ 47 ] ]
+          },
+          'text-align': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 30 ], L[ 42 ], L[ 47 ], L[ 50 ] ]
+          },
+          'text-decoration': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 18 ], L[ 47 ], L[ 54 ] ]
+          },
+          'text-indent': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 47 ] ]
+          },
+          'text-overflow': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 25 ] ]
+          },
+          'text-shadow': {
+            'cssExtra': c[ 1 ],
+            'cssPropBits': 7,
+            'cssLitGroup': [ L[ 0 ], L[ 35 ], L[ 48 ], L[ 54 ] ]
+          },
+          'text-transform': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 21 ], L[ 47 ], L[ 54 ] ]
+          },
+          'text-wrap': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 33 ], L[ 54 ], L[ 55 ] ]
+          },
+          'top': {
+            'cssPropBits': 37,
+            'cssLitGroup': [ L[ 38 ], L[ 47 ] ]
+          },
+          'unicode-bidi': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 23 ], L[ 47 ], L[ 55 ] ]
+          },
+          'vertical-align': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 10 ], L[ 24 ], L[ 47 ] ]
+          },
+          'visibility': {
+            'cssPropBits': 32,
+            'cssLitGroup': [ L[ 44 ], L[ 46 ], L[ 47 ], L[ 63 ] ]
+          },
+          'voice-family': {
+            'cssExtra': c[ 0 ],
+            'cssPropBits': 8,
+            'cssLitGroup': [ L[ 22 ], L[ 35 ], L[ 47 ] ]
+          },
+          'volume': {
+            'cssPropBits': 1,
+            'cssLitGroup': [ L[ 16 ], L[ 47 ], L[ 52 ] ]
+          },
+          'white-space': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 8 ], L[ 47 ], L[ 55 ] ]
+          },
+          'width': {
+            'cssPropBits': 33,
+            'cssLitGroup': [ L[ 38 ], L[ 47 ] ]
+          },
+          'word-spacing': {
+            'cssPropBits': 5,
+            'cssLitGroup': [ L[ 47 ], L[ 55 ] ]
+          },
+          'word-wrap': {
+            'cssPropBits': 0,
+            'cssLitGroup': [ L[ 41 ], L[ 55 ] ]
+          },
+          'z-index': {
+            'cssPropBits': 69,
+            'cssLitGroup': [ L[ 38 ], L[ 47 ] ]
+          },
+          'zoom': {
+            'cssPropBits': 1,
+            'cssLitGroup': [ L[ 55 ] ]
+          }
+        };
+      })();
+    if (typeof window !== 'undefined') {
+      window['cssSchema'] = cssSchema;
+    }
+    // Copyright (C) 2011 Google Inc.
+    //
+    // Licensed under the Apache License, Version 2.0 (the "License");
+    // you may not use this file except in compliance with the License.
+    // You may obtain a copy of the License at
+    //
+    //      http://www.apache.org/licenses/LICENSE-2.0
+    //
+    // Unless required by applicable law or agreed to in writing, software
+    // distributed under the License is distributed on an "AS IS" BASIS,
+    // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    // See the License for the specific language governing permissions and
+    // limitations under the License.
+
+    /**
+     * A lexical scannar for CSS3 as defined at http://www.w3.org/TR/css3-syntax .
+     *
+     * @author Mike Samuel <mikesamuel@gmail.com>
+     * \@provides lexCss, decodeCss
+     * \@overrides window
+     */
+
+    var lexCss;
+    var decodeCss;
+
+    (function () {
+
+      /**
+       * Decodes an escape sequence as specified in CSS3 section 4.1.
+       * http://www.w3.org/TR/css3-syntax/#characters
+       * @private
+       */
+      function decodeCssEscape(s) {
+        var i = parseInt(s.substring(1), 16);
+        // If parseInt didn't find a hex diigt, it returns NaN so return the
+        // escaped character.
+        // Otherwise, parseInt will stop at the first non-hex digit so there's no
+        // need to worry about trailing whitespace.
+        if (i > 0xffff) {
+          // A supplemental codepoint.
+          return i -= 0x10000,
+            String.fromCharCode(
+                0xd800 + (i >> 10),
+                0xdc00 + (i & 0x3FF));
+        } else if (i == i) {
+          return String.fromCharCode(i);
+        } else if (s[1] < ' ') {
+          // "a backslash followed by a newline is ignored".
+          return '';
+        } else {
+          return s[1];
+        }
+      }
+
+      /**
+       * Returns an equivalent CSS string literal given plain text: foo -> "foo".
+       * @private
+       */
+      function escapeCssString(s, replacer) {
+        return '"' + s.replace(/[\u0000-\u001f\\\"<>]/g, replacer) + '"';
+      }
+
+      /**
+       * Maps chars to CSS escaped equivalents: "\n" -> "\\a ".
+       * @private
+       */
+      function escapeCssStrChar(ch) {
+        return cssStrChars[ch]
+            || (cssStrChars[ch] = '\\' + ch.charCodeAt(0).toString(16) + ' ');
+      }
+
+      /**
+       * Maps chars to URI escaped equivalents: "\n" -> "%0a".
+       * @private
+       */
+      function escapeCssUrlChar(ch) {
+        return cssUrlChars[ch]
+            || (cssUrlChars[ch] = (ch < '\x10' ? '%0' : '%')
+                + ch.charCodeAt(0).toString(16));
+      }
+
+      /**
+       * Mapping of CSS special characters to escaped equivalents.
+       * @private
+       */
+      var cssStrChars = {
+        '\\': '\\\\'
+      };
+
+      /**
+       * Mapping of CSS special characters to URL-escaped equivalents.
+       * @private
+       */
+      var cssUrlChars = {
+        '\\': '%5c'
+      };
+
+      // The comments below are copied from the CSS3 module syntax at
+      // http://www.w3.org/TR/css3-syntax .
+      // These string constants minify out when this is run-through closure
+      // compiler.
+      // Rules that have been adapted have comments prefixed with "Diff:", and
+      // where rules have been combined to avoid back-tracking in the regex engine
+      // or to work around limitations, there is a comment prefixed with
+      // "NewRule:".
+
+      // In the below, we assume CRLF and CR have been normalize to CR.
+
+      // wc  ::=  #x9 | #xA | #xC | #xD | #x20
+      var WC = '[\\t\\n\\f ]';
+      // w  ::=  wc*
+      var W = WC + '*';
+      // nl  ::=  #xA | #xD #xA | #xD | #xC
+      var NL = '[\\n\\f]';
+      // nonascii  ::=  [#x80-#xD7FF#xE000-#xFFFD#x10000-#x10FFFF]
+      // NewRule: Supplemental codepoints are represented as surrogate pairs in JS.
+      var SURROGATE_PAIR = '[\\ud800-\\udbff][\\udc00-\\udfff]';
+      var NONASCII = '[\\u0080-\\ud7ff\\ue000-\\ufffd]|' + SURROGATE_PAIR;
+      // unicode  ::=  '\' [0-9a-fA-F]{1,6} wc?
+      // NewRule: No point in having ESCAPE do (\\x|\\y)
+      var UNICODE_TAIL = '[0-9a-fA-F]{1,6}' + WC + '?';
+      // escape  ::=  unicode
+      //           | '\' [#x20-#x7E#x80-#xD7FF#xE000-#xFFFD#x10000-#x10FFFF]
+      // NewRule: Below we use escape tail to efficiently match an escape or a
+      // line continuation so we can decode string content.
+      var ESCAPE_TAIL = '(?:' + UNICODE_TAIL
+          + '|[\\u0020-\\u007e\\u0080-\\ud7ff\\ue000\\ufffd]|'
+          + SURROGATE_PAIR + ')';
+      var ESCAPE = '\\\\' + ESCAPE_TAIL;
+      // urlchar  ::=  [#x9#x21#x23-#x26#x28-#x7E] | nonascii | escape
+      var URLCHAR = '(?:[\\t\\x21\\x23-\\x26\\x28-\\x5b\\x5d-\\x7e]|'
+          + NONASCII + '|' + ESCAPE + ')';
+      // stringchar  ::= urlchar | #x20 | '\' nl
+      // We ignore mismatched surrogate pairs inside strings, so stringchar
+      // simplifies to a non-(quote|newline|backslash) or backslash any.
+      // Since we normalize CRLF to a single code-unit, there is no special
+      // handling needed for '\\' + CRLF.
+      var STRINGCHAR = '[^\'"\\n\\f\\\\]|\\\\[\\s\\S]';
+      // string  ::=  '"' (stringchar | "'")* '"' | "'" (stringchar | '"')* "'"
+      var STRING = '"(?:\'|' + STRINGCHAR + ')*"'
+          + '|\'(?:\"|' + STRINGCHAR + ')*\'';
+      // num  ::=  [0-9]+ | [0-9]* '.' [0-9]+
+      // Diff: We attach signs to num tokens.
+      var NUM = '[-+]?(?:[0-9]+(?:[.][0-9]+)?|[.][0-9]+)';
+      // nmstart  ::=  [a-zA-Z] | '_' | nonascii | escape
+      var NMSTART = '(?:[a-zA-Z_]|' + NONASCII + '|' + ESCAPE + ')';
+      // nmchar  ::=  [a-zA-Z0-9] | '-' | '_' | nonascii | escape
+      var NMCHAR = '(?:[a-zA-Z0-9_-]|' + NONASCII + '|' + ESCAPE + ')';
+      // ident  ::=  '-'? nmstart nmchar*
+      var IDENT = '-?' + NMSTART + NMCHAR + '*';
+
+      // NewRule: union of IDENT, ATKEYWORD, HASH, but excluding #[0-9].
+      var WORD_TERM = '(?:@?-?' + NMSTART + '|#)' + NMCHAR + '*';
+      var NUMERIC_VALUE = NUM + '(?:%|' + IDENT + ')?';
+      // URI  ::=  "url(" w (string | urlchar* ) w ")"
+      var URI = 'url[(]' + W + '(?:' + STRING + '|' + URLCHAR + '*)' + W + '[)]';
+      // UNICODE-RANGE  ::=  "U+" [0-9A-F?]{1,6} ('-' [0-9A-F]{1,6})?
+      var UNICODE_RANGE = 'U[+][0-9A-F?]{1,6}(?:-[0-9A-F]{1,6})?';
+      // CDO  ::=  "<\!--"
+      var CDO = '<\!--';
+      // CDC  ::=  "-->"
+      var CDC = '-->';
+      // S  ::=  wc+
+      var S = WC + '+';
+      // COMMENT  ::=  "/*" [^*]* '*'+ ([^/] [^*]* '*'+)* "/"
+      // Diff: recognizes // comments.
+      var COMMENT = '/(?:[*][^*]*[*]+(?:[^/][^*]*[*]+)*/|/[^\\n\\f]*)';
+      // FUNCTION  ::=  ident '('
+      // Diff: We exclude url explicitly.
+      // TODO: should we be tolerant of "fn ("?
+      // ##### BEGIN: MODIFIED BY SAP
+      // Avoid risk of 'catastrophic backtracking' when unicode escapes are used
+      // var FUNCTION = '(?!url[(])' + IDENT + '[(]';
+      var FUNCTION = '(?!url[(])(?=(' + IDENT + '))\\1[(]';
+      // NewRule: one rule for all the comparison operators.
+      var CMP_OPS = '[~|^$*]=';
+      // CHAR  ::=  any character not matched by the above rules, except for " or '
+      // Diff: We exclude / and \ since they are handled above to prevent
+      // /* without a following */ from combining when comments are concatenated.
+      var CHAR = '[^"\'\\\\/]|/(?![/*])';
+      // BOM  ::=  #xFEFF
+      var BOM = '\\uFEFF';
+
+      var CSS_TOKEN = new RegExp([
+          BOM, UNICODE_RANGE, URI, FUNCTION, WORD_TERM, STRING, NUMERIC_VALUE,
+          CDO, CDC, S, COMMENT, CMP_OPS, CHAR].join("|"), 'gi');
+
+      /**
+       * Decodes CSS escape sequences in a CSS string body.
+       */
+       decodeCss = function (css) {
+         return css.replace(
+             new RegExp('\\\\(?:' + ESCAPE_TAIL + '|' + NL + ')', 'g'),
+             decodeCssEscape);
+       };
+
+      /**
+       * Given CSS Text, returns an array of normalized tokens.
+       * @param {string} cssText
+       * @return {Array.<string>} tokens where all ignorable token sequences have
+       *    been reduced to a single {@code " "} and all strings and
+       *    {@code url(...)} tokens have been normalized to use double quotes as
+       *    delimiters and to not otherwise contain double quotes.
+       */
+      lexCss = function (cssText) {
+        cssText = '' + cssText;
+        var tokens = cssText.replace(/\r\n?/g, '\n')  // Normalize CRLF & CR to LF.
+            .match(CSS_TOKEN) || [];
+        var j = 0;
+        var last = ' ';
+        for (var i = 0, n = tokens.length; i < n; ++i) {
+          // Normalize all escape sequences.  We will have to re-escape some
+          // codepoints in string and url(...) bodies but we already know the
+          // boundaries.
+          // We might mistakenly treat a malformed identifier like \22\20\22 as a
+          // string, but that will not break any valid stylesheets since we requote
+          // and re-escape in string below.
+          var tok = decodeCss(tokens[i]);
+          var len = tok.length;
+          var cc = tok.charCodeAt(0);
+          tok =
+              // All strings should be double quoted, and the body should never
+              // contain a double quote.
+              (cc == '"'.charCodeAt(0) || cc == '\''.charCodeAt(0))
+              ? escapeCssString(tok.substring(1, len - 1), escapeCssStrChar)
+              // A breaking ignorable token should is replaced with a single space.
+              : (cc == '/'.charCodeAt(0) && len > 1  // Comment.
+                 || tok == '\\' || tok == CDC || tok == CDO || tok == '\ufeff'
+                 // Characters in W.
+                 || cc <= ' '.charCodeAt(0))
+              ? ' '
+              // Make sure that all url(...)s are double quoted.
+              : /url\(/i.test(tok)
+              ? 'url(' + escapeCssString(
+                tok.replace(
+                    new RegExp('^url\\(' + W + '["\']?|["\']?' + W + '\\)$', 'gi'),
+                    ''),
+                escapeCssUrlChar)
+                + ')'
+              // Escapes in identifier like tokens will have been normalized above.
+              : tok;
+          // Merge adjacent space tokens.
+          if (last != tok || tok != ' ') {
+            tokens[j++] = last = tok;
+          }
+        }
+        tokens.length = j;
+        return tokens;
+      };
+    })();
+
+    // Exports for closure compiler.
+    if (typeof window !== 'undefined') {
+      window['lexCss'] = lexCss;
+      window['decodeCss'] = decodeCss;
+    }
+    // Copyright (C) 2011 Google Inc.
+    //
+    // Licensed under the Apache License, Version 2.0 (the "License");
+    // you may not use this file except in compliance with the License.
+    // You may obtain a copy of the License at
+    //
+    //      http://www.apache.org/licenses/LICENSE-2.0
+    //
+    // Unless required by applicable law or agreed to in writing, software
+    // distributed under the License is distributed on an "AS IS" BASIS,
+    // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    // See the License for the specific language governing permissions and
+    // limitations under the License.
+
+    /**
+     * @fileoverview
+     * JavaScript support for client-side CSS sanitization.
+     * The CSS property schema API is defined in CssPropertyPatterns.java which
+     * is used to generate css-defs.js.
+     *
+     * @author mikesamuel@gmail.com
+     * \@requires CSS_PROP_BIT_ALLOWED_IN_LINK
+     * \@requires CSS_PROP_BIT_HASH_VALUE
+     * \@requires CSS_PROP_BIT_NEGATIVE_QUANTITY
+     * \@requires CSS_PROP_BIT_QSTRING_CONTENT
+     * \@requires CSS_PROP_BIT_QSTRING_URL
+     * \@requires CSS_PROP_BIT_QUANTITY
+     * \@requires CSS_PROP_BIT_Z_INDEX
+     * \@requires cssSchema
+     * \@requires decodeCss
+     * \@requires html4
+     * \@overrides window
+     * \@requires parseCssStylesheet
+     * \@provides sanitizeCssProperty
+     * \@provides sanitizeCssSelectors
+     * \@provides sanitizeStylesheet
+     */
+
+    /**
+     * Given a series of normalized CSS tokens, applies a property schema, as
+     * defined in CssPropertyPatterns.java, and sanitizes the tokens in place.
+     * @param property a property name.
+     * @param propertySchema a property of cssSchema as defined by
+     *    CssPropertyPatterns.java
+     * @param tokens as parsed by lexCss.  Modified in place.
+     * @param opt_naiveUriRewriter a URI rewriter; an object with a "rewrite"
+     *     function that takes a URL and returns a safe URL.
+     */
+    var sanitizeCssProperty = (function () {
+      var NOEFFECT_URL = 'url("about:blank")';
+      /**
+       * The set of characters that need to be normalized inside url("...").
+       * We normalize newlines because they are not allowed inside quoted strings,
+       * normalize quote characters, angle-brackets, and asterisks because they
+       * could be used to break out of the URL or introduce targets for CSS
+       * error recovery.  We normalize parentheses since they delimit unquoted
+       * URLs and calls and could be a target for error recovery.
+       */
+      var NORM_URL_REGEXP = /[\n\f\r\"\'()*<>]/g;
+      /** The replacements for NORM_URL_REGEXP. */
+      var NORM_URL_REPLACEMENTS = {
+        '\n': '%0a',
+        '\f': '%0c',
+        '\r': '%0d',
+        '"':  '%22',
+        '\'': '%27',
+        '(':  '%28',
+        ')':  '%29',
+        '*':  '%2a',
+        '<':  '%3c',
+        '>':  '%3e'
+      };
+
+
+      function normalizeUrl(s) {
+        if ('string' === typeof s) {
+          return 'url("' + s.replace(NORM_URL_REGEXP, normalizeUrlChar) + '")';
+        } else {
+          return NOEFFECT_URL;
+        }
+      }
+      function normalizeUrlChar(ch) {
+        return NORM_URL_REPLACEMENTS[ch];
+      }
+
+      // From RFC3986
+      var URI_SCHEME_RE = new RegExp(
+          '^' +
+          '(?:' +
+            '([^:\/?# ]+)' +         // scheme
+          ':)?'
+      );
+
+      var ALLOWED_URI_SCHEMES = /^(?:https?|mailto)$/i;
+
+      function safeUri(uri, prop, naiveUriRewriter) {
+        if (!naiveUriRewriter) { return null; }
+        var parsed = ('' + uri).match(URI_SCHEME_RE);
+        if (parsed && (!parsed[1] || ALLOWED_URI_SCHEMES.test(parsed[1]))) {
+          return naiveUriRewriter(uri, prop);
+        } else {
+          return null;
+        }
+      }
+
+      function unionArrays(arrs) {
+        var map = {};
+        for (var i = arrs.length; --i >= 0;) {
+          var arr = arrs[i];
+          for (var j = arr.length; --j >= 0;) {
+            map[arr[j]] = ALLOWED_LITERAL;
+          }
+        }
+        return map;
+      }
+
+      /**
+       * Normalize tokens within a function call they can match against
+       * cssSchema[propName].cssExtra.
+       * @return the exclusive end in tokens of the function call.
+       */
+      function normalizeFunctionCall(tokens, start) {
+        var parenDepth = 1, end = start + 1, n = tokens.length;
+        while (end < n && parenDepth) {
+          // TODO: Can URLs appear in functions?
+          var token = tokens[end++];
+          parenDepth += (token === '(' ? 1 : token === ')' ? -1 : 0);
+        }
+        return end;
+      }
+
+      // Used as map value to avoid hasOwnProperty checks.
+      var ALLOWED_LITERAL = {};
+
+      return function (property, propertySchema, tokens, opt_naiveUriRewriter) {
+        var propBits = propertySchema.cssPropBits;
+        // Used to determine whether to treat quoted strings as URLs or
+        // plain text content, and whether unrecognized keywords can be quoted
+        // to treate ['Arial', 'Black'] equivalently to ['"Arial Black"'].
+        var qstringBits = propBits & (
+            CSS_PROP_BIT_QSTRING_CONTENT | CSS_PROP_BIT_QSTRING_URL);
+        // TODO(mikesamuel): Figure out what to do with props like
+        // content that admit both URLs and strings.
+
+        // Used to join unquoted keywords into a single quoted string.
+        var lastQuoted = NaN;
+        var i = 0, k = 0;
+        for (;i < tokens.length; ++i) {
+          // Has the effect of normalizing hex digits, keywords,
+          // and function names.
+          var token = tokens[i].toLowerCase();
+          var cc = token.charCodeAt(0), cc1, cc2, isnum1, isnum2, end;
+          var litGroup, litMap;
+          token = (
+            // Strip out spaces.  Normally cssparser.js dumps these, but we
+            // strip them out in case the content doesn't come via cssparser.js.
+            (cc === ' '.charCodeAt(0))
+              ? ''
+              : (cc === '"'.charCodeAt(0))
+                  ? (  // Quoted string.
+                      (qstringBits === CSS_PROP_BIT_QSTRING_URL && opt_naiveUriRewriter)
+                      // Sanitize and convert to url("...") syntax.
+                      // Treat url content as case-sensitive.
+                      ? (normalizeUrl(
+                           safeUri(
+                             decodeCss(tokens[i].substring(1, token.length - 1)),
+                             property,
+                             opt_naiveUriRewriter
+                           )
+                         ))
+                      // Drop if plain text content strings not allowed.
+                      : (qstringBits === CSS_PROP_BIT_QSTRING_CONTENT) ? token : '')
+                  // Preserve hash color literals if allowed.
+                  : (cc === '#'.charCodeAt(0) && /^#(?:[0-9a-f]{3}){1,2}$/.test(token))
+                      ? (propBits & CSS_PROP_BIT_HASH_VALUE ? token : '')
+                      // ##### BEGIN: MODIFIED BY SAP
+                      // : ('0'.charCodeAt(0) <= cc && cc <= '9'.charCodeAt(0))
+                      : ('0'.charCodeAt(0) <= cc && cc <= '9'.charCodeAt(0) && !propertySchema.cssLitNumeric)
+                      // ##### END: MODIFIED BY SAP
+                          // A number starting with a digit.
+                          ? ((propBits & CSS_PROP_BIT_QUANTITY)
+                               ? ((propBits & CSS_PROP_BIT_Z_INDEX)
+                                    ? (token.match(/^\d{1,7}$/) ? token : '')
+                                    : token)
+                               : '')
+                          // Normalize quantities so they don't start with a '.' or '+' sign and
+                          // make sure they all have an integer component so can't be confused
+                          // with a dotted identifier.
+                          // This can't be done in the lexer since ".4" is a valid rule part.
+                          : (cc1 = token.charCodeAt(1),
+                             cc2 = token.charCodeAt(2),
+                             isnum1 = '0'.charCodeAt(0) <= cc1 && cc1 <= '9'.charCodeAt(0),
+                             isnum2 = '0'.charCodeAt(0) <= cc2 && cc2 <= '9'.charCodeAt(0),
+                             // +.5 -> 0.5 if allowed.
+                             (cc === '+'.charCodeAt(0)
+                              && (isnum1 || (cc1 === '.'.charCodeAt(0) && isnum2))))
+                               ? ((propBits & CSS_PROP_BIT_QUANTITY)
+                                    ? ((propBits & CSS_PROP_BIT_Z_INDEX)
+                                         ? (token.match(/^\+\d{1,7}$/) ? token : '')
+                                         : ((isnum1 ? '' : '0') + token.substring(1)))
+                                    : '')
+                               // -.5 -> -0.5 if allowed otherwise -> 0 if quantities allowed.
+                               : (cc === '-'.charCodeAt(0)
+                                  && (isnum1 || (cc1 === '.'.charCodeAt(0) && isnum2)))
+                                    ? ((propBits & CSS_PROP_BIT_NEGATIVE_QUANTITY)
+                                         ? ((propBits & CSS_PROP_BIT_Z_INDEX)
+                                              ? (token.match(/^\-\d{1,7}$/) ? token : '')
+                                              : ((isnum1 ? '-' : '-0') + token.substring(1)))
+                                         : ((propBits & CSS_PROP_BIT_QUANTITY) ? '0' : ''))
+                                    // .5 -> 0.5 if allowed.
+                                    : (cc === '.'.charCodeAt(0) && isnum1)
+                                         ? ((propBits & CSS_PROP_BIT_QUANTITY) ? '0' + token : '')
+                                         // Handle url("...") by rewriting the body.
+                                         : ('url(' === token.substring(0, 4))
+                                              ? ((opt_naiveUriRewriter && (qstringBits & CSS_PROP_BIT_QSTRING_URL))
+                                                   ? normalizeUrl(
+                                                       safeUri(
+                                                         tokens[i].substring(5, token.length - 2),
+                                                         property,
+                                                         opt_naiveUriRewriter
+                                                       )
+                                                     )
+                                                   : '')
+                                              // Handle func(...) and literal tokens
+                                              // such as keywords and punctuation.
+                                              : (
+                                                 // Step 1. Combine func(...) into something that can be compared
+                                                 // against propertySchema.cssExtra.
+                                                 (token.charAt(token.length-1) === '(')
+                                                 && (end = normalizeFunctionCall(tokens, i),
+                                                   // When tokens is
+                                                   //   ['x', ' ', 'rgb(', '255', ',', '0', ',', '0', ')', ' ', 'y']
+                                                   // and i is the index of 'rgb(' and end is the index of ')'
+                                                   // splices tokens to where i now is the index of the whole call:
+                                                   //   ['x', ' ', 'rgb( 255 , 0 , 0 )', ' ', 'y']
+                                                   tokens.splice(i, end - i,
+                                                     token = tokens.slice(i, end).join(' '))),
+                                                 litGroup = propertySchema.cssLitGroup,
+                                                 litMap = (
+                                                    litGroup
+                                                    ? (propertySchema.cssLitMap
+                                                       // Lazily compute the union from litGroup.
+                                                       || (propertySchema.cssLitMap = unionArrays(litGroup)))
+                                                    : ALLOWED_LITERAL),  // A convenient empty object.
+                                                 (litMap[token] === ALLOWED_LITERAL
+                                                  || propertySchema.cssExtra && propertySchema.cssExtra.test(token)))
+                                                    // Token is in the literal map or matches extra.
+                                                    ? token
+                                                    : (/^\w+$/.test(token)
+                                                       && (qstringBits === CSS_PROP_BIT_QSTRING_CONTENT))
+                                                         // Quote unrecognized keywords so font names like
+                                                          //    Arial Bold
+                                                          // ->
+                                                          //    "Arial Bold"
+                                                          ? (lastQuoted+1 === k
+                                                             // If the last token was also a keyword that was quoted, then
+                                                             // combine this token into that.
+                                                             ? (tokens[lastQuoted] = tokens[lastQuoted]
+                                                                .substring(0, tokens[lastQuoted].length-1) + ' ' + token + '"',
+                                                                token = '')
+                                                             : (lastQuoted = k, '"' + token + '"'))
+                                                          // Disallowed.
+                                                          : '');
+          if (token) {
+            tokens[k++] = token;
+          }
+        }
+        // For single URL properties, if the URL failed to pass the sanitizer,
+        // then just drop it.
+        if (k === 1 && tokens[0] === NOEFFECT_URL) { k = 0; }
+        tokens.length = k;
+      };
+    })();
+
+    /**
+     * Given a series of tokens, returns two lists of sanitized selectors.
+     * @param {Array.<string>} selectors In the form produces by csslexer.js.
+     * @param {string} suffix a suffix that is added to all IDs and which is
+     *    used as a CLASS names so that the returned selectors will only match
+     *    nodes under one with suffix as a class name.
+     *    If suffix is {@code "sfx"}, the selector
+     *    {@code ["a", "#foo", " ", "b", ".bar"]} will be namespaced to
+     *    {@code [".sfx", " ", "a", "#foo-sfx", " ", "b", ".bar"]}.
+     * @return {Array.<Array.<string>>} an array of length 2 where the zeroeth
+     *    element contains history-insensitive selectors and the first element
+     *    contains history-sensitive selectors.
+     */
+    function sanitizeCssSelectors(selectors, suffix) {
+      // Produce two distinct lists of selectors to sequester selectors that are
+      // history sensitive (:visited), so that we can disallow properties in the
+      // property groups for the history sensitive ones.
+      var historySensitiveSelectors = [];
+      var historyInsensitiveSelectors = [];
+
+      // Remove any spaces that are not operators.
+      var k = 0, i;
+      for (i = 0; i < selectors.length; ++i) {
+        if (!(selectors[i] == ' '
+              && (selectors[i-1] == '>' || selectors[i+1] == '>'))) {
+          selectors[k++] = selectors[i];
+        }
+      }
+      selectors.length = k;
+
+      // Split around commas.  If there is an error in one of the comma separated
+      // bits, we throw the whole away, but the failure of one selector does not
+      // affect others.
+      var n = selectors.length, start = 0;
+      for (i = 0; i < n; ++i) {
+        if (selectors[i] == ',') {
+          processSelector(start, i);
+          start = i+1;
+        }
+      }
+      processSelector(start, n);
+
+
+      function processSelector(start, end) {
+        var historySensitive = false;
+
+        // Space around commas is not an operator.
+        if (selectors[start] === ' ') { ++start; }
+        if (end-1 !== start && selectors[end] === ' ') { --end; }
+
+        // Split the selector into element selectors, content around
+        // space (ancestor operator) and '>' (descendant operator).
+        var out = [];
+        var lastOperator = start;
+        var elSelector = '';
+        for (var i = start; i < end; ++i) {
+          var tok = selectors[i];
+          var isChild = (tok === '>');
+          if (isChild || tok === ' ') {
+            // We've found the end of a single link in the selector chain.
+            // We disallow absolute positions relative to html.
+            elSelector = processElementSelector(lastOperator, i, false);
+            if (!elSelector || (isChild && /^html/i.test(elSelector))) {
+              return;
             }
-            if (typeof tagNameOrComponentSettings === "string") {
-                target.metadata.tag = tagNameOrComponentSettings;
-                return;
+            lastOperator = i+1;
+            out.push(elSelector, isChild ? ' > ' : ' ');
+          }
+        }
+        elSelector = processElementSelector(lastOperator, end, true);
+        if (!elSelector) { return; }
+        out.push(elSelector);
+
+        function processElementSelector(start, end, last) {
+
+          // Split the element selector into three parts.
+          // DIV.foo#bar:hover
+          //    ^       ^
+          // el classes pseudo
+          var element, classId, pseudoSelector, tok, elType;
+          element = '';
+          if (start < end) {
+            tok = selectors[start].toLowerCase();
+            if (tok === '*'
+                || (tok === 'body' && start+1 !== end && !last)
+                || ('number' === typeof (elType = html4.ELEMENTS[tok])
+                    && !(elType & html4.eflags.UNSAFE))) {
+              ++start;
+              element = tok;
             }
-            const { tag, languageAware, themeAware, cldr, fastNavigation, formAssociated, shadowRootOptions, features, } = tagNameOrComponentSettings;
-            target.metadata.tag = tag;
-            if (languageAware) {
-                target.metadata.languageAware = languageAware;
+          }
+          classId = '';
+          while (start < end) {
+            tok = selectors[start];
+            if (tok.charAt(0) === '#') {
+              if (/^#_|__$|[^#0-9A-Za-z:_\-]/.test(tok)) { return null; }
+              // Rewrite ID elements to include the suffix.
+              classId += tok + '-' + suffix;
+            } else if (tok === '.') {
+              if (++start < end
+                  && /^[0-9A-Za-z:_\-]+$/.test(tok = selectors[start])
+                  && !/^_|__$/.test(tok)) {
+                classId += '.' + tok;
+              } else {
+                return null;
+              }
+            } else {
+              break;
             }
-            if (cldr) {
-                target.metadata.cldr = cldr;
+            ++start;
+          }
+          pseudoSelector = '';
+          if (start < end && selectors[start] === ':') {
+            tok = selectors[++start];
+            if (tok === 'visited' || tok === 'link') {
+              if (!/^[a*]?$/.test(element)) {
+                return null;
+              }
+              historySensitive = true;
+              pseudoSelector = ':' + tok;
+              element = 'a';
+              ++start;
             }
-            if (features) {
-                target.metadata.features = features;
-            }
-            if (themeAware) {
-                target.metadata.themeAware = themeAware;
-            }
-            if (fastNavigation) {
-                target.metadata.fastNavigation = fastNavigation;
-            }
-            if (formAssociated) {
-                target.metadata.formAssociated = formAssociated;
-            }
-            if (shadowRootOptions) {
-                target.metadata.shadowRootOptions = shadowRootOptions;
-            }
-            ["renderer", "template", "styles", "dependencies"].forEach((customElementEntity) => {
-                const customElementEntityValue = tagNameOrComponentSettings[customElementEntity];
-                customElementEntityValue && Object.defineProperty(target, customElementEntity, {
-                    get: () => tagNameOrComponentSettings[customElementEntity],
-                });
+          }
+          if (start === end) {
+            return element + classId + pseudoSelector;
+          }
+          return null;
+        }
+
+
+        var safeSelector = out.join('');
+        if (/^body\b/.test(safeSelector)) {
+          // Substitute the class that is attached to pseudo body elements for
+          // the body element.
+          safeSelector = '.vdoc-body___.' + suffix + safeSelector.substring(4);
+        } else {
+          // Namespace the selector so that it only matches under
+          // a node with suffix in its CLASS attribute.
+          safeSelector = '.' + suffix + ' ' + safeSelector;
+        }
+
+        (historySensitive
+         ? historySensitiveSelectors
+         : historyInsensitiveSelectors).push(safeSelector);
+      }
+
+      return [historyInsensitiveSelectors, historySensitiveSelectors];
+    }
+
+    var sanitizeStylesheet = (function () {
+      var allowed = {};
+      var cssMediaTypeWhitelist = {
+        'braille': allowed,
+        'embossed': allowed,
+        'handheld': allowed,
+        'print': allowed,
+        'projection': allowed,
+        'screen': allowed,
+        'speech': allowed,
+        'tty': allowed,
+        'tv': allowed
+      };
+
+      /**
+       * Given a series of sanitized tokens, removes any properties that would
+       * leak user history if allowed to style links differently depending on
+       * whether the linked URL is in the user's browser history.
+       * @param {Array.<string>} blockOfProperties
+       */
+      function sanitizeHistorySensitive(blockOfProperties) {
+        var elide = false;
+        for (var i = 0, n = blockOfProperties.length; i < n-1; ++i) {
+          var token = blockOfProperties[i];
+          if (':' === blockOfProperties[i+1]) {
+            elide = !(cssSchema[token].cssPropBits & CSS_PROP_BIT_ALLOWED_IN_LINK);
+          }
+          if (elide) { blockOfProperties[i] = ''; }
+          if (';' === token) { elide = false; }
+        }
+        return blockOfProperties.join('');
+      }
+
+      /**
+       * @param {string} cssText a string containing a CSS stylesheet.
+       * @param {string} suffix a suffix that is added to all IDs and which is
+       *    used as a CLASS names so that the returned selectors will only match
+       *    nodes under one with suffix as a class name.
+       *    If suffix is {@code "sfx"}, the selector
+       *    {@code ["a", "#foo", " ", "b", ".bar"]} will be namespaced to
+       *    {@code [".sfx", " ", "a", "#foo-sfx", " ", "b", ".bar"]}.
+       * @param {function(string, string)} opt_naiveUriRewriter maps URLs of media
+       *    (images, sounds) that appear as CSS property values to sanitized
+       *    URLs or null if the URL should not be allowed as an external media
+       *    file in sanitized CSS.
+       */
+      return function /*sanitizeStylesheet*/(
+           cssText, suffix, opt_naiveUriRewriter) {
+        var safeCss = void 0;
+        // A stack describing the { ... } regions.
+        // Null elements indicate blocks that should not be emitted.
+        var blockStack = [];
+        // True when the content of the current block should be left off safeCss.
+        var elide = false;
+        parseCssStylesheet(
+            cssText,
+            {
+              startStylesheet: function () {
+                safeCss = [];
+              },
+              endStylesheet: function () {
+              },
+              startAtrule: function (atIdent, headerArray) {
+                if (elide) {
+                  atIdent = null;
+                } else if (atIdent === '@media') {
+                  headerArray = headerArray.filter(
+                    function (mediaType) {
+                      return cssMediaTypeWhitelist[mediaType] == allowed;
+                    });
+                  if (headerArray.length) {
+                    safeCss.push(atIdent, headerArray.join(','), '{');
+                  } else {
+                    atIdent = null;
+                  }
+                } else {
+                  if (atIdent === '@import') {
+                    // TODO: Use a logger instead.
+                    if (window.console) {
+                      window.console.log(
+                          '@import ' + headerArray.join(' ') + ' elided');
+                    }
+                  }
+                  atIdent = null;  // Elide the block.
+                }
+                elide = !atIdent;
+                blockStack.push(atIdent);
+              },
+              endAtrule: function () {
+                blockStack.pop();
+                if (!elide) {
+                  safeCss.push(';');
+                }
+                checkElide();
+              },
+              startBlock: function () {
+                // There are no bare blocks in CSS, so we do not change the
+                // block stack here, but instead in the events that bracket
+                // blocks.
+                if (!elide) {
+                  safeCss.push('{');
+                }
+              },
+              endBlock: function () {
+                if (!elide) {
+                  safeCss.push('}');
+                  elide = true;  // skip any semicolon from endAtRule.
+                }
+              },
+              startRuleset: function (selectorArray) {
+                var historySensitiveSelectors = void 0;
+                var removeHistoryInsensitiveSelectors = false;
+                if (!elide) {
+                  var selectors = sanitizeCssSelectors(selectorArray, suffix);
+                  var historyInsensitiveSelectors = selectors[0];
+                  historySensitiveSelectors = selectors[1];
+                  if (!historyInsensitiveSelectors.length
+                      && !historySensitiveSelectors.length) {
+                    elide = true;
+                  } else {
+                    var selector = historyInsensitiveSelectors.join(', ');
+                    if (!selector) {
+                      // If we have only history sensitive selectors,
+                      // use an impossible rule so that we can capture the content
+                      // for later processing by
+                      // history insenstive content for use below.
+                      selector = 'head > html';
+                      removeHistoryInsensitiveSelectors = true;
+                    }
+                    safeCss.push(selector, '{');
+                  }
+                }
+                blockStack.push(
+                    elide
+                    ? null
+                    // Sometimes a single list of selectors is split in two,
+                    //   div, a:visited
+                    // because we want to allow some properties for DIV that
+                    // we don't want to allow for A:VISITED to avoid leaking
+                    // user history.
+                    // Store the history sensitive selectors and the position
+                    // where the block starts so we can later create a copy
+                    // of the permissive tokens, and filter it to handle the
+                    // history sensitive case.
+                    : {
+                        historySensitiveSelectors: historySensitiveSelectors,
+                        endOfSelectors: safeCss.length - 1,  // 1 is open curly
+                        removeHistoryInsensitiveSelectors:
+                           removeHistoryInsensitiveSelectors
+                      });
+              },
+              endRuleset: function () {
+                var rules = blockStack.pop();
+                var propertiesEnd = safeCss.length;
+                if (!elide) {
+                  safeCss.push('}');
+                  if (rules) {
+                    var extraSelectors = rules.historySensitiveSelectors;
+                    if (extraSelectors.length) {
+                      var propertyGroupTokens = safeCss.slice(rules.endOfSelectors);
+                      safeCss.push(extraSelectors.join(', '),
+                                   sanitizeHistorySensitive(propertyGroupTokens));
+                    }
+                  }
+                }
+                if (rules && rules.removeHistoryInsensitiveSelectors) {
+                  safeCss.splice(
+                    // -1 and +1 account for curly braces.
+                    rules.endOfSelectors - 1, propertiesEnd + 1);
+                }
+                checkElide();
+              },
+              declaration: function (property, valueArray) {
+                if (!elide) {
+                  var schema = cssSchema[property];
+                  if (schema) {
+                    sanitizeCssProperty(property, schema, valueArray, opt_naiveUriRewriter);
+                    if (valueArray.length) {
+                      safeCss.push(property, ':', valueArray.join(' '), ';');
+                    }
+                  }
+                }
+              }
             });
-        };
-    };
+        function checkElide() {
+          elide = blockStack.length !== 0
+              && blockStack[blockStack.length-1] !== null;
+        }
+        return safeCss.join('');
+      };
+    })();
+
+    // Exports for closure compiler.
+    if (typeof window !== 'undefined') {
+      window['sanitizeCssProperty'] = sanitizeCssProperty;
+      window['sanitizeCssSelectors'] = sanitizeCssSelectors;
+      window['sanitizeStylesheet'] = sanitizeStylesheet;
+    }
+    // Copyright (C) 2010 Google Inc.
+    //
+    // Licensed under the Apache License, Version 2.0 (the "License");
+    // you may not use this file except in compliance with the License.
+    // You may obtain a copy of the License at
+    //
+    //      http://www.apache.org/licenses/LICENSE-2.0
+    //
+    // Unless required by applicable law or agreed to in writing, software
+    // distributed under the License is distributed on an "AS IS" BASIS,
+    // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    // See the License for the specific language governing permissions and
+    // limitations under the License.
 
     /**
-     * Returns a property decorator.
+     * @fileoverview
+     * Utilities for dealing with CSS source code.
      *
-     * @param { Property } propData
-     * @returns { PropertyDecorator }
+     * @author mikesamuel@gmail.com
+     * \@requires lexCss
+     * \@overrides window
+     * \@provides parseCssStylesheet, parseCssDeclarations
      */
-    const property = (propData) => {
-        return (target, propertyKey) => {
-            const ctor = target.constructor;
-            if (!Object.prototype.hasOwnProperty.call(ctor, "metadata")) {
-                ctor.metadata = {};
-            }
-            const metadata = ctor.metadata;
-            if (!metadata.properties) {
-                metadata.properties = {};
-            }
-            const propsMetadata = metadata.properties;
-            if (!propsMetadata[propertyKey]) {
-                propsMetadata[propertyKey] = propData ?? {};
-            }
-        };
-    };
 
     /**
-     * Returns an event class decorator.
+     * parseCssStylesheet takes a chunk of CSS text and a handler object with
+     * methods that it calls as below:
+     * <pre>
+     * // At the beginning of a stylesheet.
+     * handler.startStylesheet();
      *
-     * @param { string } name the event name
-     * @param { EventData } data the event data
-     * @returns { ClassDecorator }
+     * // For an @foo rule ended by a semicolon: @import "foo.css";
+     * handler.startAtrule('@import', ['"foo.css"']);
+     * handler.endAtrule();
+     *
+     * // For an @foo rule ended with a block. @media print { ... }
+     * handler.startAtrule('@media', ['print']);
+     * handler.startBlock();
+     * // Calls to contents elided.  Probably selectors and declarations as below.
+     * handler.endBlock();
+     * handler.endAtrule();
+     *
+     * // For a ruleset: p.clazz q, s { color: blue; }
+     * handler.startRuleset(['p', '.', 'clazz', ' ', 'q', ',', ' ', 's']);
+     * handler.declaration('color', ['blue']);
+     * handler.endRuleset();
+     *
+     * // At the end of a stylesheet.
+     * handler.endStylesheet();
+     * </pre>
+     * When errors are encountered, the parser drops the useless tokens and
+     * attempts to resume parsing.
+     *
+     * @param {string} cssText CSS3 content to parse as a stylesheet.
+     * @param {Object} handler An object like <pre>{
+     *   startStylesheet: function () { ... },
+     *   endStylesheet: function () { ... },
+     *   startAtrule: function (atIdent, headerArray) { ... },
+     *   endAtrule: function () { ... },
+     *   startBlock: function () { ... },
+     *   endBlock: function () { ... },
+     *   startRuleset: function (selectorArray) { ... },
+     *   endRuleset: function () { ... },
+     *   declaration: function (property, valueArray) { ... },
+     * }</pre>
      */
-    const event = (name, data = {}) => {
-        return (target) => {
-            if (!Object.prototype.hasOwnProperty.call(target, "metadata")) {
-                target.metadata = {};
+    var parseCssStylesheet;
+
+    /**
+     * parseCssDeclarations parses a run of declaration productions as seen in the
+     * body of the HTML5 {@code style} attribute.
+     *
+     * @param {string} cssText CSS3 content to parse as a run of declarations.
+     * @param {Object} handler An object like <pre>{
+     *   declaration: function (property, valueArray) { ... },
+     * }</pre>
+     */
+    var parseCssDeclarations;
+
+    (function () {
+      // stylesheet  : [ CDO | CDC | S | statement ]*;
+      parseCssStylesheet = function(cssText, handler) {
+        var toks = lexCss(cssText);
+        if (handler.startStylesheet) { handler.startStylesheet(); }
+        for (var i = 0, n = toks.length; i < n;) {
+          // CDO and CDC ("<!--" and "-->") are converted to space by the lexer.
+          i = toks[i] === ' ' ? i+1 : statement(toks, i, n, handler);
+        }
+        if (handler.endStylesheet) { handler.endStylesheet(); }
+      };
+
+      // statement   : ruleset | at-rule;
+      function statement(toks, i, n, handler) {
+        if (i < n) {
+          var tok = toks[i];
+          if (tok.charAt(0) === '@') {
+            return atrule(toks, i, n, handler, true);
+          } else {
+            return ruleset(toks, i, n, handler);
+          }
+        } else {
+          return i;
+        }
+      }
+
+      // at-rule     : ATKEYWORD S* any* [ block | ';' S* ];
+      function atrule(toks, i, n, handler, blockok) {
+        var start = i++;
+        while (i < n && toks[i] !== '{' && toks[i] !== ';') {
+          ++i;
+        }
+        if (i < n && (blockok || toks[i] === ';')) {
+          var s = start+1, e = i;
+          if (s < n && toks[s] === ' ') { ++s; }
+          if (e > s && toks[e-1] === ' ') { --e; }
+          if (handler.startAtrule) {
+            handler.startAtrule(toks[start].toLowerCase(), toks.slice(s, e));
+          }
+          i = (toks[i] === '{')
+              ? block(toks, i, n, handler)
+              : i+1;  // Skip over ';'
+          if (handler.endAtrule) {
+            handler.endAtrule();
+          }
+        }
+        // Else we reached end of input or are missing a semicolon.
+        // Drop the rule on the floor.
+        return i;
+      }
+
+      // block       : '{' S* [ any | block | ATKEYWORD S* | ';' S* ]* '}' S*;
+       // Assumes the leading '{' has been verified by callers.
+      function block(toks, i, n, handler) {
+        ++i; //  skip over '{'
+        if (handler.startBlock) { handler.startBlock(); }
+        while (i < n) {
+          var ch = toks[i].charAt(0);
+          if (ch == '}') {
+            ++i;
+            break;
+          }
+          if (ch === ' ' || ch === ';') {
+            i = i+1;
+          } else if (ch === '@') {
+            i = atrule(toks, i, n, handler, false);
+          } else if (ch === '{') {
+            i = block(toks, i, n, handler);
+          } else {
+            // Instead of using (any* block) to subsume ruleset we allow either
+            // blocks or rulesets with a non-blank selector.
+            // This is more restrictive but does not require atrule specific
+            // parse tree fixup to realize that the contents of the block in
+            //    @media print { ... }
+            // is a ruleset.  We just don't care about any block carrying at-rules
+            // whose body content is not ruleset content.
+            i = ruleset(toks, i, n, handler);
+          }
+        }
+        if (handler.endBlock) { handler.endBlock(); }
+        return i;
+      }
+
+      // ruleset    : selector? '{' S* declaration? [ ';' S* declaration? ]* '}' S*;
+      function ruleset(toks, i, n, handler) {
+        // toks[s:e] are the selector tokens including internal whitespace.
+        var s = i, e = selector(toks, i, n, true);
+        if (e < 0) {
+          // Skip malformed content per selector calling convention.
+          e = ~e;
+          // Make sure we skip at least one token.
+          return i === e ? e+1 : e;
+        }
+        i = e;
+        // Don't include any trailing space in the selector slice.
+        if (e > s && toks[e-1] === ' ') { --e; }
+        var tok = toks[i];
+        ++i;  // Skip over '{'
+        if (tok !== '{') {
+          // Skips past the '{' when there is a malformed input.
+          return i;
+        }
+        if (handler.startRuleset) {
+          handler.startRuleset(toks.slice(s, e));
+        }
+        while (i < n) {
+          tok = toks[i];
+          if (tok === '}') {
+            ++i;
+            break;
+          }
+          if (tok === ' ') {
+            i = i+1;
+          } else {
+            i = declaration(toks, i, n, handler);
+          }
+        }
+        if (handler.endRuleset) {
+          handler.endRuleset();
+        }
+        return i < n ? i+1 : i;
+      }
+
+      // selector    : any+;
+      // any         : [ IDENT | NUMBER | PERCENTAGE | DIMENSION | STRING
+      //               | DELIM | URI | HASH | UNICODE-RANGE | INCLUDES
+      //               | FUNCTION S* any* ')' | DASHMATCH | '(' S* any* ')'
+      //               | '[' S* any* ']' ] S*;
+      // A negative return value, rv, indicates the selector was malformed and
+      // the index at which we stopped is ~rv.
+      function selector(toks, i, n, allowSemi) {
+        // The definition of any above can be summed up as
+        //   "any run of token except ('[', ']', '(', ')', ':', ';', '{', '}')
+        //    or nested runs of parenthesized tokens or square bracketed tokens".
+        // Spaces are significant in the selector.
+        // Selector is used as (selector?) so the below looks for (any*) for
+        // simplicity.
+        var tok;
+        // Keeping a stack pointer actually causes this to minify better since
+        // ".length" and ".push" are a lo of chars.
+        var brackets = [], stackLast = -1;
+        for (;i < n; ++i) {
+          tok = toks[i].charAt(0);
+          if (tok === '[' || tok === '(') {
+            brackets[++stackLast] = tok;
+          } else if ((tok === ']' && brackets[stackLast] === '[') ||
+                     (tok === ')' && brackets[stackLast] === '(')) {
+            --stackLast;
+          } else if (tok === '{' || tok === '}' || tok === ';' || tok === '@'
+                     || (tok === ':' && !allowSemi)) {
+            break;
+          }
+        }
+        if (stackLast >= 0) {
+          // Returns the bitwise inverse of i+1 to indicate an error in the
+          // token stream so that clients can ignore it.
+          i = ~(i+1);
+        }
+        return i;
+      }
+
+      var ident = /^-?[a-z]/i;
+
+      // declaration : property ':' S* value;
+      // property    : IDENT S*;
+      // value       : [ any | block | ATKEYWORD S* ]+;
+      function declaration(toks, i, n, handler) {
+        var property = toks[i++];
+        if (!ident.test(property)) {
+          return i+1;  // skip one token.
+        }
+        var tok;
+        if (i < n && toks[i] === ' ') { ++i; }
+        if (i == n || toks[i] !== ':') {
+          // skip tokens to next semi or close bracket.
+          while (i < n && (tok = toks[i]) !== ';' && tok !== '}') { ++i; }
+          return i;
+        }
+        ++i;
+        if (i < n && toks[i] === ' ') { ++i; }
+
+        // None of the rules we care about want atrules or blocks in value, so
+        // we look for any+ but that is the same as selector but not zero-length.
+        // This gets us the benefit of not emitting any value with mismatched
+        // brackets.
+        var s = i, e = selector(toks, i, n, false);
+        if (e < 0) {
+          // Skip malformed content per selector calling convention.
+          e = ~e;
+        } else {
+          var value = [], valuelen = 0;
+          for (var j = s; j < e; ++j) {
+            tok = toks[j];
+            if (tok !== ' ') {
+              value[valuelen++] = tok;
             }
-            const metadata = target.metadata;
-            if (!metadata.events) {
-                metadata.events = {};
+          }
+          // One of the following is now true:
+          // (1) e is flush with the end of the tokens as in <... style="x:y">.
+          // (2) tok[e] points to a ';' in which case we need to consume the semi.
+          // (3) tok[e] points to a '}' in which case we don't consume it.
+          // (4) else there is bogus unparsed value content at toks[e:].
+          // Allow declaration flush with end for style attr body.
+          if (e < n) {  // 2, 3, or 4
+            do {
+              tok = toks[e];
+              if (tok === ';' || tok === '}') { break; }
+              // Don't emit the property if there is questionable trailing content.
+              valuelen = 0;
+            } while (++e < n);
+            if (tok === ';') {
+              ++e;
             }
-            const eventsMetadata = metadata.events;
-            if (!eventsMetadata[name]) {
-                eventsMetadata[name] = data;
-            }
+          }
+          if (valuelen && handler.declaration) {
+            // TODO: coerce non-keyword ident tokens to quoted strings.
+            handler.declaration(property.toLowerCase(), value);
+          }
+        }
+        return e;
+      }
+
+      parseCssDeclarations = function(cssText, handler) {
+        var toks = lexCss(cssText);
+        for (var i = 0, n = toks.length; i < n;) {
+          i = toks[i] !== ' ' ? declaration(toks, i, n, handler) : i+1;
+        }
+      };
+    })();
+
+    // Exports for closure compiler.
+    if (typeof window !== 'undefined') {
+      window['parseCssStylesheet'] = parseCssStylesheet;
+      window['parseCssDeclarations'] = parseCssDeclarations;
+    }
+    /*!
+     * OpenUI5
+     * (c) Copyright 2009-2024 SAP SE or an SAP affiliate company.
+     * Licensed under the Apache License, Version 2.0 - see LICENSE.txt.
+     */
+    // Based on coding from the HTML4 Sanitizer by Google Inc.
+    // The HTML Attributes and ELements were reorganized according to the actual HTML5 specification
+    // from the W3C. All types and flags were reviewed again as accurately as possible with HTML4 only
+    // elements removed, you can still see them as comments. All rules which are new or changed from the
+    // old HTML4 file are also marked "new" within the comment. The comments also state which attributes
+    // and elements are assigned to respective types and flags. All rules which were not 100% clear were
+    // analyzed in a way of similarity, so for example "audio" and "video" content behaves like images etc.
+    // URIEFFECTS state if a URL is loaded inplace within a tag where the actual document is in control
+    // of what type of content is loaded like "image" or if a new document is loaded like with "a href".
+    // LOADERTYPES state if content is loaded as sandboxed which means it is loaded within a specific
+    // surroundig player like with video content for example or if it is loaded freely without restrictions.
+    // @overrides window
+    // @provides html4
+
+    var html4 = {};
+    html4.atype = {
+      NONE: 0,
+      URI: 1, //action, cite, data, href, icon, manifest, poster, src
+      URI_FRAGMENT: 11, //usemap
+      SCRIPT: 2, //all event handlers
+      STYLE: 3, //style
+      ID: 4, //id
+      IDREF: 5, //for
+      IDREFS: 6, //headers
+      GLOBAL_NAME: 7, //name of form, iframe, img, map, meta
+      LOCAL_NAME: 8, //name of button, fieldset, input, keygen, object, output, param, select, textarea
+      CLASSES: 9, //class
+      FRAME_TARGET: 10 //formtarget, srcdoc, target
+    };
+
+    html4.ATTRIBS = {
+    	'*::accesskey': 0, //NONE
+    	'*::class': 9, //CLASSES
+    	'*::contenteditable': 0, //NONE new
+    	'*::contextmenu': 0, //NONE new
+    	'*::dir': 0, //NONE
+    	'*::draggable': 0, //NONE new
+    	'*::dropzone': 0, //NONE new
+    	'*::hidden': 0, //NONE new
+    	'*::id': 4, //ID
+    	'*::lang': 0, //NONE
+    	'*::onabort': 2, //SCRIPT new
+    	'*::onblur': 2, //SCRIPT new
+    	'*::oncanplay': 2, //SCRIPT new
+    	'*::oncanplaythrough': 2, //SCRIPT new
+    	'*::onchange': 2, //SCRIPT new
+    	'*::onclick': 2, //SCRIPT
+    	'*::oncontextmenu': 2, //SCRIPT new
+    	'*::oncuechange': 2, //SCRIPT new
+    	'*::ondblclick': 2, //SCRIPT
+    	'*::ondrag': 2, //SCRIPT new
+    	'*::ondragend': 2, //SCRIPT new
+    	'*::ondragenter': 2, //SCRIPT new
+    	'*::ondragleave': 2, //SCRIPT new
+    	'*::ondragover': 2, //SCRIPT new
+    	'*::ondragstart': 2, //SCRIPT new
+    	'*::ondrop': 2, //SCRIPT new
+    	'*::ondurationchange': 2, //SCRIPT new
+    	'*::onemptied': 2, //SCRIPT new
+    	'*::onended': 2, //SCRIPT new
+    	'*::onerror': 2, //SCRIPT new
+    	'*::onfocus': 2, //SCRIPT new
+    	'*::oninput': 2, //SCRIPT new
+    	'*::oninvalid':	 2, //SCRIPT new
+    	'*::onkeydown': 2, //SCRIPT
+    	'*::onkeypress': 2, //SCRIPT
+    	'*::onkeyup': 2, //SCRIPT
+    	'*::onload': 2, //SCRIPT
+    	'*::onloadeddata': 2, //SCRIPT new
+    	'*::onloadedmetadata': 2, //SCRIPT new
+    	'*::onloadstart': 2, //SCRIPT new
+    	'*::onmousedown': 2, //SCRIPT
+    	'*::onmousemove': 2, //SCRIPT
+    	'*::onmouseout': 2, //SCRIPT
+    	'*::onmouseover': 2, //SCRIPT
+    	'*::onmouseup': 2, //SCRIPT
+    	'*::onmousewheel': 2, //SCRIPT new
+    	'*::onpause': 2, //SCRIPT new
+    	'*::onplay': 2, //SCRIPT new
+    	'*::onplaying': 2, //SCRIPT new
+    	'*::onprogress': 2, //SCRIPT new
+    	'*::onratechange': 2, //SCRIPT new
+    	'*::onreadystatechange': 2, //SCRIPT new
+    	'*::onreset': 2, //SCRIPT new
+    	'*::onscroll': 2, //SCRIPT new
+    	'*::onseeked': 2, //SCRIPT new
+    	'*::onseeking': 2, //SCRIPT new
+    	'*::onselect': 2, //SCRIPT new
+    	'*::onshow': 2, //SCRIPT new
+    	'*::onstalled': 2, //SCRIPT new
+    	'*::onsubmit': 2, //SCRIPT new
+    	'*::onsuspend': 2, //SCRIPT new
+    	'*::ontimeupdate': 2, //SCRIPT new
+    	'*::onvolumechange': 2, //SCRIPT new
+    	'*::onwaiting': 2, //SCRIPT new
+    	'*::spellcheck': 0, //NONE new
+    	'*::style': 3, //STYLE
+    	'*::tabindex': 0, //NONE
+    	'*::title': 0, //NONE
+    //---------------------  'a::accesskey': 0, moved to global
+    //---------------------  'a::coords': 0,
+    	'a::href': 1, //URI
+    	'a::hreflang': 0, //NONE
+    	'a::media': 0, //NONE new
+    //---------------------  'a::name': 7,
+    //---------------------	 'a::onblur': 2, moved to global
+    //---------------------	 'a::onfocus': 2, moved to global
+    	'a::rel': 0, //NONE
+    //---------------------  'a::rev': 0,
+    //---------------------  'a::shape': 0,
+    //---------------------  'a::tabindex': 0, moved to global
+    	'a::target': 0, //changed to "0" because of CSN 1918585 2013, original value was 10 FRAME_TARGET but it seems uncritical
+    	'a::type': 0, //NONE
+    //---------------------  'area::accesskey': 0, moved to global
+    	'area::alt': 0, //NONE
+    	'area::coords': 0, //NONE
+    	'area::href': 1, //URI
+    	'area::hreflang': 0, //NONE new
+    	'area::media': 0, //NONE new
+    //---------------------  'area::nohref': 0,
+    //---------------------	 'area::onblur': 2, moved to global
+    //---------------------	 'area::onfocus': 2, moved to global
+    	'area::rel': 0, //NONE new
+    	'area::shape': 0, //NONE
+    //---------------------  'area::tabindex': 0, moved to global
+    	'area::target': 10, //FRAME_TARGET
+    	'area::type': 0, //NONE
+    	'audio::autoplay': 0, //NONE new
+    	'audio::controls': 0, //NONE new
+    	'audio::loop': 0, //NONE new
+    	'audio::mediagroup': 0, //NONE new
+    	'audio::preload': 0, //NONE new
+    	'audio::src': 1, //URI
+    	'base::href': 1, //URI
+    	'base::target': 10, //FRAME_TARGET
+    //---------------------  'bdo::dir': 0,
+    	'blockquote::cite': 1, //URI
+    	'body::onafterprint': 2, //SCRIPT new
+    	'body::onbeforeprint': 2, //SCRIPT new
+    	'body::onbeforeunload': 2, //SCRIPT new
+    	'body::onblur': 2, //SCRIPT new
+    	'body::onerror': 2, //SCRIPT new
+    	'body::onfocus': 2, //SCRIPT new
+    	'body::onhashchange': 2, //SCRIPT new
+    	'body::onload': 2, //SCRIPT new
+    	'body::onmessage': 2, //SCRIPT new
+    	'body::onoffline': 2, //SCRIPT new
+    	'body::ononline': 2, //SCRIPT new
+    	'body::onpagehide': 2, //SCRIPT new
+    	'body::onpageshow': 2, //SCRIPT new
+    	'body::onpopstate': 2, //SCRIPT new
+    	'body::onredo': 2, //SCRIPT new
+    	'body::onresize': 2, //SCRIPT new
+    	'body::onscroll': 2, //SCRIPT new
+    	'body::onstorage': 2, //SCRIPT new
+    	'body::onundo': 2, //SCRIPT new
+    	'body::onunload': 2, //SCRIPT new
+    //---------------------  'br::clear': 0,
+    //---------------------  'button::accesskey': 0, moved to global
+    	'button::autofocus': 0, //NONE new
+    	'button::disabled': 0, //NONE
+    	'button::form': 0, //NONE new
+    	'button::formaction': 1, //URI new
+    	'button::formenctype': 0, //NONE new
+    	'button::formmethod': 0, //NONE new
+    	'button::formnovalidate': 0, //NONE new
+    	'button::formtarget': 10, //FRAME_TARGET new
+    	'button::name': 8, //LOCAL_NAME
+    //---------------------	 'button::onblur': 2,
+    //---------------------	 'button::onfocus': 2,
+    //---------------------  'button::tabindex': 0, moved to global
+    	'button::type': 0, //NONE
+    	'button::value': 0, //NONE
+    	'canvas::height': 0, //NONE
+    	'canvas::width': 0, //NONE
+    //---------------------	 'caption::align': 0,
+    //---------------------  'col::align': 0,
+    //---------------------	 'col::char': 0,
+    //---------------------	 'col::charoff': 0,
+    	'col::span': 0, //NONE
+    //---------------------	 'col::valign': 0,
+    //---------------------	 'col::width': 0,
+    //---------------------	 'colgroup::align': 0,
+    //---------------------	 'colgroup::char': 0,
+    //---------------------	 'colgroup::charoff': 0,
+    	'colgroup::span': 0, //NONE
+    //---------------------	 'colgroup::valign': 0,
+    //---------------------	 'colgroup::width': 0,
+    	'command::checked': 0, //NONE new
+    	'command::disabled': 0, //NONE new
+    	'command::icon': 1, //URI new
+    	'command::label': 0, //NONE new
+    	'command::radiogroup': 0, //NONE new
+    	'command::type': 0, //NONE new
+    	'del::cite': 1, //URI
+    	'del::datetime': 0, //NONE
+    	'details::open': 0, //NONE new
+    //---------------------	 'dir::compact': 0,
+    //---------------------	 'div::align': 0,
+    //---------------------	 'dl::compact': 0,
+    	'embed::height': 0, //NONE new
+    	'embed::src': 1, //URI new
+    	'embed::type': 0, //NONE new
+    	'embed::width': 0, //NONE new
+    	'fieldset::disabled': 0, //NONE new
+    	'fieldset::form': 0, //NONE new
+    	'fieldset::name': 8, //LOCAL_NAME new
+    //---------------------	 'font::color': 0,
+    //---------------------	 'font::face': 0,
+    //---------------------	 'font::size': 0,
+    //---------------------	 'form::accept': 0,
+    	'form::accept-charset': 0, //NONE
+    	'form::action': 1, //URI
+    	'form::autocomplete': 0, //NONE
+    	'form::enctype': 0, //NONE
+    	'form::method': 0, //NONE
+    	'form::name': 7, //GLOBAL_NAME
+    	'form::novalidate': 0, //NONE new
+    //---------------------	 'form::onreset': 2,
+    //---------------------	 'form::onsubmit': 2,
+    	'form::target': 10, //FRAME_TARGET
+    //---------------------	 'h1::align': 0,
+    //---------------------	 'h2::align': 0,
+    //---------------------	 'h3::align': 0,
+    //---------------------	 'h4::align': 0,
+    //---------------------	 'h5::align': 0,
+    //---------------------	 'h6::align': 0,
+    //---------------------	 'hr::align': 0,
+    //---------------------	 'hr::noshade': 0,
+    //---------------------	 'hr::size': 0,
+    //---------------------	 'hr::width': 0,
+    	'html:: manifest': 1, //URI new
+    //---------------------	 'iframe::align': 0,
+    //---------------------	'iframe::frameborder': 0,
+    	'iframe::height': 0, //NONE
+    //---------------------	 'iframe::marginheight': 0,
+    //---------------------	 'iframe::marginwidth': 0,
+    	'iframe::name': 7, //GLOBAL_NAME new
+    	'iframe::sandbox': 0, //NONE new
+    	'iframe::seamless': 0, //NONE new
+    	'iframe::src': 1, //URI new
+    	'iframe::srcdoc': 10, //FRAME_TARGET new
+    	'iframe::width': 0, //NONE
+    //---------------------	 'img::align': 0,
+    	'img::alt': 0, //NONE
+    //---------------------	 'img::border': 0,
+    	'img::height': 0, //NONE
+    //---------------------	 'img::hspace': 0,
+    	'img::ismap': 0, //NONE
+    	'img::name': 7, //GLOBAL_NAME
+    	'img::src': 1, //URI
+    	'img::usemap': 11, //URI_FRAGMENT
+    //---------------------	'img::vspace': 0,
+    	'img::width': 0, //NONE
+    	'input::accept': 0, //NONE
+    //---------------------	 'input::accesskey': 0, moved to global
+    //---------------------	 'input::align': 0,
+    	'input::alt': 0, //NONE
+    	'input::autocomplete': 0, //NONE
+    	'input::autofocus': 0, //NONE new
+    	'input::checked': 0, //NONE
+    	'input::dirname': 0, //NONE new
+    	'input::disabled': 0, //NONE
+    	'input::form': 0, //NONE new
+    	'input::formaction': 1, //URI new
+    	'input::formenctype': 0, //NONE new
+    	'input::formmethod': 0, //NONE new
+    	'input::formnovalidate': 0, //NONE new
+    	'input::formtarget': 10, //FRAME_TARGET new
+    	'input::height': 0, //NONE new
+    //---------------------	 'input::ismap': 0,
+    	'input::list': 0, //NONE new
+    	'input::max': 0, //NONE new
+    	'input::maxlength': 0, //NONE
+    	'input::min': 0, //NONE new
+    	'input::multiple': 0, //NONE new
+    	'input::name': 8, //LOCAL_NAME
+    //---------------------	 'input::onblur': 2,
+    //---------------------	 'input::onchange': 2,
+    //---------------------	 'input::onfocus': 2,
+    //---------------------	 'input::onselect': 2,
+    	'input::pattern': 0, //NONE new
+    	'input::placeholder': 0, //NONE new
+    	'input::readonly': 0, //NONE
+    	'input::required': 0, //NONE new
+    	'input::step': 0, //NONE new
+    	'input::size': 0, //NONE
+    	'input::src': 1, //URI
+    //---------------------  'input::tabindex': 0, moved to global
+    	'input::type': 0, //NONE
+    //---------------------	 'input::usemap': 11,
+    	'input::value': 0, //NONE
+    	'input::width': 0, //NONE new
+    	'ins::cite': 1, //URI
+    	'ins::datetime': 0, //NONE
+    //---------------------  'label::accesskey': 0, moved to global
+    	'keygen::autofocus': 0, //NONE new
+    	'keygen::challenge': 0, //NONE new
+    	'keygen::disabled': 0, //NONE new
+    	'keygen::form': 0, //NONE new
+    	'keygen::keytype': 0, //NONE new
+    	'keygen::name': 8, //LOCAL_NAME new
+    	'label::for': 5, //IDREF
+    	'label::form': 0, //NONE new
+    //---------------------	 'label::onblur': 2,
+    //---------------------	 'label::onfocus': 2,
+    //---------------------  'legend::accesskey': 0, moved to global
+    //---------------------  'legend::align': 0,
+    //---------------------  'li::type': 0,
+    	'link::href': 1, //URI new
+    	'link::hreflang': 0, //NONE new
+    	'link::media': 0, //NONE new
+    	'link::rel': 0, //NONE new
+    	'link::sizes': 0, //NONE new
+    	'link::type': 0, //NONE new
+    	'li::value': 0, //NONE new
+    	'map::name': 7, //GLOBAL_NAME
+    //---------------------  'menu::compact': 0,
+    	'menu::label': 0, //NONE new
+    	'menu::type': 0, //NONE new
+    	'meta::charset': 0, //NONE new
+    	'meta::content': 0, //NONE new
+    	'meta::http-equiv': 0, //NONE new
+    	'meta::name': 7, //GLOBAL_NAME new
+    	'meter::form': 0, //NONE new
+    	'meter::high': 0, //NONE new
+    	'meter::low': 0, //NONE new
+    	'meter::max': 0, //NONE new
+    	'meter::min': 0, //NONE new
+    	'meter::optimum': 0, //NONE new
+    	'meter::value': 0, //NONE new
+    	'object::data': 1, //URI new
+    	'object::form': 0, //NONE new
+    	'object::height': 0, //NONE new
+    	'object::name': 8, //LOCAL_NAME new
+    	'object::type': 0, //NONE new
+    	'object::usemap': 11, //URI_FRAGMENT new
+    	'object::width': 0, //NONE new
+    //---------------------  'ol::compact': 0,
+    	'ol::reversed': 0, //NONE new
+    	'ol::start': 0, //NONE
+    //---------------------  'ol::type': 0,
+    	'optgroup::disabled': 0, //NONE
+    	'optgroup::label': 0, //NONE
+    	'option::disabled': 0, //NONE
+    	'option::label': 0, //NONE
+    	'option::selected': 0, //NONE
+    	'option::value': 0, //NONE
+    	'output::for': 5, //IDREF new
+    	'output::form': 0, //NONE new
+    	'output::name': 8, //LOCAL_NAME new
+    //---------------------  'p::align': 0,
+    	'param::name': 8, //LOCAL_NAME new
+    	'param::value': 0, //NONE new
+    	'progress::form': 0, //NONE new
+    	'progress::max': 0, //NONE new
+    	'progress::value': 0, //NONE new
+    //---------------------  'pre::width': 0,
+    	'q::cite': 1, //URI
+    	'script::async': 0, //NONE new
+    	'script::charset': 0, //NONE new
+    	'script::defer': 0, //NONE new
+    	'script::src': 1, //URI new
+    	'script::type': 0, //NONE new
+    	'select::autofocus': 0, //NONE new
+    	'select::disabled': 0, //NONE
+    	'select::form': 0, //NONE new
+    	'select::multiple': 0, //NONE
+    	'select::name': 8, //LOCAL_NAME
+    //---------------------	 'select::onblur': 2,
+    //---------------------	 'select::onchange': 2,
+    //---------------------	 'select::onfocus': 2,
+    	'select::required': 0, //NONE new
+    	'select::size': 0, //NONE
+    //---------------------  'select::tabindex': 0, moved to global
+    	'source::media': 0, //NONE new
+    	'source::src': 1, //URI new
+    	'source::type': 0, //NONE new
+    	'style::media': 0, //NONE new
+    	'style::scoped': 0, //NONE new
+    	'style::type': 0, //NONE new
+    //---------------------	 'table::align': 0,
+    //---------------------	 'table::bgcolor': 0,
+    	'table::border': 0, //NONE
+    //---------------------	 'table::cellpadding': 0,
+    //---------------------	 'table::cellspacing': 0,
+    //---------------------	 'table::frame': 0,
+    //---------------------	 'table::rules': 0,
+    //---------------------	 'table::summary': 0,
+    //---------------------	 'table::width': 0,
+    //---------------------	 'tbody::align': 0,
+    //---------------------	 'tbody::char': 0,
+    //---------------------	 'tbody::charoff': 0,
+    //---------------------	 'tbody::valign': 0,
+    //---------------------	 'td::abbr': 0,
+    //---------------------	 'td::align': 0,
+    //---------------------	 'td::axis': 0,
+    //---------------------	 'td::bgcolor': 0,
+    //---------------------	 'td::char': 0,
+    //---------------------	 'td::charoff': 0,
+    	'td::colspan': 0, //NONE
+    	'td::headers': 6, //IDREFS
+    //---------------------	 'td::height': 0,
+    //---------------------	 'td::nowrap': 0,
+    	'td::rowspan': 0, //NONE
+    //---------------------	 'td::scope': 0,
+    //---------------------  'td::valign': 0,
+    //---------------------	 'td::width': 0,
+    //---------------------  'textarea::accesskey': 0, moved to global
+    	'textarea::autofocus': 0, //NONE new
+    	'textarea::cols': 0, //NONE
+    	'textarea::disabled': 0, //NONE
+    	'textarea::form': 0, //NONE new
+    	'textarea::maxlength': 0, //NONE new
+    	'textarea::name': 8, //LOCAL_NAME
+    //---------------------	 'textarea::onblur': 2,
+    //---------------------	 'textarea::onchange': 2,
+    //---------------------	 'textarea::onfocus': 2,
+    //---------------------	 'textarea::onselect': 2,
+    	'textarea::placeholder': 0, //NONE new
+    	'textarea::readonly': 0, //NONE
+    	'textarea::required': 0, //NONE new
+    	'textarea::rows': 0, //NONE
+    	'textarea::wrap': 0, //NONE new
+    //---------------------  'textarea::tabindex': 0, moved to global
+    //---------------------	 'tfoot::align': 0,
+    //---------------------	 'tfoot::char': 0,
+    //---------------------	 'tfoot::charoff': 0,
+    //---------------------	 'tfoot::valign': 0,
+    //---------------------	 'th::abbr': 0,
+    //---------------------	 'th::align': 0,
+    //---------------------	 'th::axis': 0,
+    //---------------------	 'th::bgcolor': 0,
+    //---------------------	 'th::char': 0,
+    //---------------------	 'th::charoff': 0,
+    	'th::colspan': 0, //NONE
+    	'th::headers': 6, //IDREFS
+    //---------------------	 'th::height': 0,
+    //---------------------	 'th::nowrap': 0,
+    	'th::rowspan': 0, //NONE
+    	'th::scope': 0, //NONE
+    //---------------------	 'th::valign': 0,
+    //---------------------	 'th::width': 0,
+    //---------------------	 'thead::align': 0,
+    //---------------------	 'thead::char': 0,
+    //---------------------	 'thead::charoff': 0,
+    //---------------------	 'thead::valign': 0,
+    	'time::datetime': 0, //NONE new
+    	'time::pubdate': 0, //NONE new
+    //---------------------	 'tr::align': 0,
+    //---------------------	 'tr::bgcolor': 0,
+    //---------------------	 'tr::char': 0,
+    //---------------------	 'tr::charoff': 0,
+    //---------------------	 'tr::valign': 0,
+    	'track::default': 0, //NONE new
+    	'track::kind': 0, //NONE new
+    	'track::label': 0, //NONE new
+    	'track::src': 1, //URI new
+    	'track::srclang': 0, //NONE new
+    //---------------------	 'ul::compact': 0,
+    //---------------------	 'ul::type': 0
+    	'video::autoplay': 0, //NONE new
+    	'video::controls': 0, //NONE new
+    	'video::height': 0, //NONE new
+    	'video::loop': 0, //NONE new
+    	'video::mediagroup': 0, //NONE new
+    	'video::poster': 1, //URI new
+    	'video::preload': 0, //NONE new
+    	'video::src': 1, //URI new
+    	'video::width': 0 //NONE new
+    };
+    html4.eflags = {
+    	OPTIONAL_ENDTAG: 1,
+    	EMPTY: 2,
+    	CDATA: 4,
+    	RCDATA: 8,
+    	UNSAFE: 16,
+    	FOLDABLE: 32,
+    	SCRIPT: 64,
+    	STYLE: 128
+    };
+    html4.ELEMENTS = {
+    	'a': 0,
+    	'abbr': 0,
+    //---------------------	 'acronym': 0,
+    	'address': 0,
+    //---------------------	 'applet': 16,
+    	'area': 2, //EMPTY
+    	'article': 0, //new
+    	'aside': 0, //new
+    	'audio': 0, //new
+    	'b': 0,
+    	'base': 18, //EMPTY, UNSAFE
+    //---------------------	 'basefont': 18,
+    	'bdi': 0, //new
+    	'bdo': 0,
+    //---------------------	 'big': 0,
+    	'blockquote': 0,
+    	'body': 49, //OPTIONAL_ENDTAG, UNSAFE, FOLDABLE
+    	'br': 2, //EMPTY
+    	'button': 0,
+    	'canvas': 0,
+    	'caption': 0,
+    //---------------------	 'center': 0,
+    	'cite': 0,
+    	'code': 0,
+    	'col': 2, //EMPTY
+    	'colgroup': 1, //OPTIONAL_ENDTAG
+    	'command': 2, //EMPTY new
+    	'datalist': 0, //new
+    	'dd': 1, //OPTIONAL_ENDTAG
+    	'del': 0,
+    	'details': 0, //new
+    	'dfn': 0,
+    //---------------------	 'dir': 0,
+    	'div': 0,
+    	'dl': 0,
+    	'dt': 1, //OPTIONAL_ENDTAG
+    	'em': 0,
+    	'embed': 18, //EMPTY, UNSAFE new
+    	'fieldset': 0,
+    	'figcaption': 0, //new
+    	'figure': 0, //new
+    //---------------------	 'font': 0,
+    	'footer': 0, //new
+    	'form': 0,
+    //---------------------	 'frame': 18,
+    //---------------------	 'frameset': 16,
+    	'h1': 0,
+    	'h2': 0,
+    	'h3': 0,
+    	'h4': 0,
+    	'h5': 0,
+    	'h6': 0,
+    	'head': 49, //OPTIONAL_ENDTAG, UNSAFE, FOLDABLE
+    	'header': 0, //new
+    	'hgroup': 0, //new
+    	'hr': 2, //EMPTY
+    	'html': 49, //OPTIONAL_ENDTAG, UNSAFE, FOLDABLE
+    	'i': 0,
+    	'iframe': 0, //new
+    	'img': 2,//EMPTY
+    	'input': 2, //EMPTY
+    	'ins': 0,
+    //---------------------	 'isindex': 18,
+    	'kbd': 0,
+    	'keygen': 2, //EMPTY new
+    	'label': 0,
+    	'legend': 0,
+    	'li': 1, //OPTIONAL_ENDTAG
+    	'link': 18, //EMPTY, UNSAFE
+    	'map': 0,
+    	'mark': 0, //new
+    	'menu': 0,
+    	'meta': 18, //EMPTY, UNSAFE
+    	'meter': 0, //new
+    	'nav': 0,
+    //---------------------	 'nobr': 0,
+    //---------------------	 'noembed': 4,
+    //---------------------	 'noframes': 20,
+    	'noscript': 20, //CDATA, UNSAFE
+    	'object': 16, //UNSAFE
+    	'ol': 0,
+    	'optgroup': 1, //OPTIONAL_ENDTAG new !!!!vorher 0
+    	'option': 1, //OPTIONAL_ENDTAG
+    	'output': 0, //new
+    	'p': 1, //OPTIONAL_ENDTAG
+    	'param': 18, //EMPTY, UNSAFE
+    	'pre': 0,
+    	'progress': 0, //new
+    	'q': 0,
+    	'rp': 1, //OPTIONAL_ENDTAG new
+    	'rt': 1, //OPTIONAL_ENDTAG new
+    	'ruby': 0, //new
+    	's': 0,
+    	'samp': 0,
+    	'script': 84, //CDATA, UNSAFE, SCRIPT
+    	'section': 0, //new
+    	'select': 0,
+    	'small': 0,
+    	'source': 2, //EMPTY new
+    	'span': 0,
+    //---------------------	 'strike': 0,
+    	'strong': 0,
+    	'style': 148, //CDATA, UNSAFE, STYLE
+    	'sub': 0,
+    	'summary': 0, //new
+    	'sup': 0,
+    	'table': 0,
+    	'tbody': 1, //OPTIONAL_ENDTAG
+    	'td': 1, //OPTIONAL_ENDTAG
+    	'textarea': 8, //RCDATA
+    	'tfoot': 1, //OPTIONAL_ENDTAG
+    	'th': 1, //OPTIONAL_ENDTAG
+    	'thead': 1, //OPTIONAL_ENDTAG
+    	'time': 0, //new
+    	'title': 24, //RCDATA, UNSAFE
+    	'tr': 1, //OPTIONAL_ENDTAG
+    	'track': 2, //EMPTY new
+    //---------------------	 'tt': 0,
+    	'u': 0,
+    	'ul': 0,
+    	'var': 0,
+    	'video': 0, //new
+    	'wbr': 2 //EMPTY new
+    };
+    html4.ueffects = {
+    	NOT_LOADED: 0,
+    	SAME_DOCUMENT: 1,
+    	NEW_DOCUMENT: 2
+    };
+    html4.URIEFFECTS = {
+    	'a::href': 2, //NEW_DOCUMENT
+    	'area::href': 2, //NEW_DOCUMENT
+    	'audio::src': 1, //SAME_DOCUMENT new
+    	'base::href':2, //NEW_DOCUMENT new
+    	'blockquote::cite': 0, //NOT_LOADED
+    //---------------------	 'body::background': 1,
+    	'button::formaction': 2, //NEW_DOCUMENT new
+    	'command::icon': 1, //SAME_DOCUMENT new
+    	'del::cite': 0, //NOT_LOADED
+    	'embed::src': 1, //SAME_DOCUMENT new
+    	'form::action': 2, //NEW_DOCUMENT
+    	'html:: manifest': 1, //SAME_DOCUMENT new
+    	'iframe::src': 1, //SAME_DOCUMENT new
+    	'img::src': 1, //SAME_DOCUMENT
+    	'input::formaction': 2, //NEW_DOCUMENT new
+    	'input::src': 1, //SAME_DOCUMENT
+    	'ins::cite': 0, //NOT_LOADED
+    	'link::href': 2, //NEW_DOCUMENT new
+    	'object::data': 1, //SAME_DOCUMENT new
+    	'q::cite': 0, //NOT_LOADED
+    	'script::src': 1, //SAME_DOCUMENT new
+    	'source::src': 1, //SAME_DOCUMENT new
+    	'track::src': 1, //SAME_DOCUMENT new
+    	'video::poster': 1, //SAME_DOCUMENT new
+    	'video::src': 1 //SAME_DOCUMENT new
+    };
+    html4.ltypes = {
+    	UNSANDBOXED: 2,
+    	SANDBOXED: 1,
+    	DATA: 0
+    };
+    html4.LOADERTYPES = {
+    	'a::href': 2, //UNSANDBOXED
+    	'area::href': 2, //UNSANDBOXED
+    	'audio::src': 1, //SANDBOXED new
+    	'base::href': 2, //UNSANDBOXED new
+    	'blockquote::cite': 2, //UNSANDBOXED
+    //---------------------	 'body::background': 1,
+    	'button::formaction': 2, //UNSANDBOXED new
+    	'command::icon': 1, //SANDBOXED new
+    	'del::cite': 2, //UNSANDBOXED
+    	'embed::src': 1, //SANDBOXED new
+    	'form::action': 2, //UNSANDBOXED
+    	'html:: manifest': 1, //SANDBOXED new
+    	'iframe::src': 1, //SANDBOXED new
+    	'img::src': 1, //SANDBOXED
+    	'input::formaction': 2, //UNSANDBOXED new
+    	'input::src': 1, //SANDBOXED
+    	'ins::cite': 2, //UNSANDBOXED
+    	'link::href': 2, //UNSANDBOXED new
+    	'object::data': 0, //DATA new
+    	'q::cite': 2, //UNSANDBOXED
+    	'script::src': 1, //SANDBOXED new
+    	'source::src': 1, //SANDBOXED new
+    	'track::src': 1, //SANDBOXED new
+    	'video::poster': 1, //SANDBOXED new
+    	'video::src': 1 //SANDBOXED new
+    };if (typeof window !== 'undefined') {
+    	window['html4'] = html4;
+    }// Copyright (C) 2006 Google Inc.
+    //
+    // Licensed under the Apache License, Version 2.0 (the "License");
+    // you may not use this file except in compliance with the License.
+    // You may obtain a copy of the License at
+    //
+    //      http://www.apache.org/licenses/LICENSE-2.0
+    //
+    // Unless required by applicable law or agreed to in writing, software
+    // distributed under the License is distributed on an "AS IS" BASIS,
+    // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    // See the License for the specific language governing permissions and
+    // limitations under the License.
+
+    /**
+     * @fileoverview
+     * An HTML sanitizer that can satisfy a variety of security policies.
+     *
+     * <p>
+     * The HTML sanitizer is built around a SAX parser and HTML element and
+     * attributes schemas.
+     *
+     * If the cssparser is loaded, inline styles are sanitized using the
+     * css property and value schemas.  Else they are remove during
+     * sanitization.
+     *
+     * If it exists, uses parseCssDeclarations, sanitizeCssProperty,  cssSchema
+     *
+     * @author mikesamuel@gmail.com
+     * @author jasvir@gmail.com
+     * \@requires html4
+     * \@overrides window
+     * \@provides html, html_sanitize
+     */
+
+    /**
+     * \@namespace
+     */
+    var html = (function(html4) {
+
+      // For closure compiler
+      var parseCssDeclarations, sanitizeCssProperty, cssSchema;
+      if ('undefined' !== typeof window) {
+        parseCssDeclarations = window['parseCssDeclarations'];
+        sanitizeCssProperty = window['sanitizeCssProperty'];
+        cssSchema = window['cssSchema'];
+      }
+
+      var lcase;
+      // The below may not be true on browsers in the Turkish locale.
+      if ('script' === 'SCRIPT'.toLowerCase()) {
+        lcase = function(s) { return s.toLowerCase(); };
+      } else {
+        /**
+         * {\@updoc
+         * $ lcase('SCRIPT')
+         * # 'script'
+         * $ lcase('script')
+         * # 'script'
+         * }
+         */
+        lcase = function(s) {
+          return s.replace(
+              /[A-Z]/g,
+              function(ch) {
+                return String.fromCharCode(ch.charCodeAt(0) | 32);
+              });
         };
+      }
+
+      // The keys of this object must be 'quoted' or JSCompiler will mangle them!
+      var ENTITIES = {
+        'lt': '<',
+        'gt': '>',
+        'amp': '&',
+        'nbsp': '\xA0',
+        'quot': '"',
+        'apos': '\''
+      };
+
+      var decimalEscapeRe = /^#(\d+)$/;
+      var hexEscapeRe = /^#x([0-9A-Fa-f]+)$/;
+      /**
+       * Decodes an HTML entity.
+       *
+       * {\@updoc
+       * $ lookupEntity('lt')
+       * # '<'
+       * $ lookupEntity('GT')
+       * # '>'
+       * $ lookupEntity('amp')
+       * # '&'
+       * $ lookupEntity('nbsp')
+       * # '\xA0'
+       * $ lookupEntity('apos')
+       * # "'"
+       * $ lookupEntity('quot')
+       * # '"'
+       * $ lookupEntity('#xa')
+       * # '\n'
+       * $ lookupEntity('#10')
+       * # '\n'
+       * $ lookupEntity('#x0a')
+       * # '\n'
+       * $ lookupEntity('#010')
+       * # '\n'
+       * $ lookupEntity('#x00A')
+       * # '\n'
+       * $ lookupEntity('Pi')      // Known failure
+       * # '\u03A0'
+       * $ lookupEntity('pi')      // Known failure
+       * # '\u03C0'
+       * }
+       *
+       * @param {string} name the content between the '&' and the ';'.
+       * @return {string} a single unicode code-point as a string.
+       */
+      function lookupEntity(name) {
+        name = lcase(name);  // TODO: &pi; is different from &Pi;
+        if (ENTITIES.hasOwnProperty(name)) { return ENTITIES[name]; }
+        var m = name.match(decimalEscapeRe);
+        if (m) {
+          return String.fromCharCode(parseInt(m[1], 10));
+        } else if (!!(m = name.match(hexEscapeRe))) {
+          return String.fromCharCode(parseInt(m[1], 16));
+        }
+        return '';
+      }
+
+      function decodeOneEntity(_, name) {
+        return lookupEntity(name);
+      }
+
+      var nulRe = /\0/g;
+      function stripNULs(s) {
+        return s.replace(nulRe, '');
+      }
+
+      var entityRe = /&(#\d+|#x[0-9A-Fa-f]+|\w+);/g;
+      /**
+       * The plain text of a chunk of HTML CDATA which possibly containing.
+       *
+       * {\@updoc
+       * $ unescapeEntities('')
+       * # ''
+       * $ unescapeEntities('hello World!')
+       * # 'hello World!'
+       * $ unescapeEntities('1 &lt; 2 &amp;&AMP; 4 &gt; 3&#10;')
+       * # '1 < 2 && 4 > 3\n'
+       * $ unescapeEntities('&lt;&lt <- unfinished entity&gt;')
+       * # '<&lt <- unfinished entity>'
+       * $ unescapeEntities('/foo?bar=baz&copy=true')  // & often unescaped in URLS
+       * # '/foo?bar=baz&copy=true'
+       * $ unescapeEntities('pi=&pi;&#x3c0;, Pi=&Pi;\u03A0') // FIXME: known failure
+       * # 'pi=\u03C0\u03c0, Pi=\u03A0\u03A0'
+       * }
+       *
+       * @param {string} s a chunk of HTML CDATA.  It must not start or end inside
+       *     an HTML entity.
+       */
+      function unescapeEntities(s) {
+        return s.replace(entityRe, decodeOneEntity);
+      }
+
+      var ampRe = /&/g;
+      var looseAmpRe = /&([^a-z#]|#(?:[^0-9x]|x(?:[^0-9a-f]|$)|$)|$)/gi;
+      var ltRe = /[<]/g;
+      var gtRe = />/g;
+      var quotRe = /\"/g;
+
+      /**
+       * Escapes HTML special characters in attribute values.
+       *
+       * {\@updoc
+       * $ escapeAttrib('')
+       * # ''
+       * $ escapeAttrib('"<<&==&>>"')  // Do not just escape the first occurrence.
+       * # '&#34;&lt;&lt;&amp;&#61;&#61;&amp;&gt;&gt;&#34;'
+       * $ escapeAttrib('Hello <World>!')
+       * # 'Hello &lt;World&gt;!'
+       * }
+       */
+      function escapeAttrib(s) {
+        return ('' + s).replace(ampRe, '&amp;').replace(ltRe, '&lt;')
+            .replace(gtRe, '&gt;').replace(quotRe, '&#34;');
+      }
+
+      /**
+       * Escape entities in RCDATA that can be escaped without changing the meaning.
+       * {\@updoc
+       * $ normalizeRCData('1 < 2 &&amp; 3 > 4 &amp;& 5 &lt; 7&8')
+       * # '1 &lt; 2 &amp;&amp; 3 &gt; 4 &amp;&amp; 5 &lt; 7&amp;8'
+       * }
+       */
+      function normalizeRCData(rcdata) {
+        return rcdata
+            .replace(looseAmpRe, '&amp;$1')
+            .replace(ltRe, '&lt;')
+            .replace(gtRe, '&gt;');
+      }
+
+      // TODO(mikesamuel): validate sanitizer regexs against the HTML5 grammar at
+      // http://www.whatwg.org/specs/web-apps/current-work/multipage/syntax.html
+      // http://www.whatwg.org/specs/web-apps/current-work/multipage/parsing.html
+      // http://www.whatwg.org/specs/web-apps/current-work/multipage/tokenization.html
+      // http://www.whatwg.org/specs/web-apps/current-work/multipage/tree-construction.html
+
+      // We initially split input so that potentially meaningful characters
+      // like '<' and '>' are separate tokens, using a fast dumb process that
+      // ignores quoting.  Then we walk that token stream, and when we see a
+      // '<' that's the start of a tag, we use ATTR_RE to extract tag
+      // attributes from the next token.  That token will never have a '>'
+      // character.  However, it might have an unbalanced quote character, and
+      // when we see that, we combine additional tokens to balance the quote.
+
+      var ATTR_RE = new RegExp(
+        '^\\s*' +
+        '([a-z][a-z-]*)' +          // 1 = Attribute name
+        '(?:' + (
+          '\\s*(=)\\s*' +           // 2 = Is there a value?
+          '(' + (                   // 3 = Attribute value
+            // TODO(felix8a): maybe use backref to match quotes
+            '(\")[^\"]*(\"|$)' +    // 4, 5 = Double-quoted string
+            '|' +
+            '(\')[^\']*(\'|$)' +    // 6, 7 = Single-quoted string
+            '|' +
+            // Positive lookahead to prevent interpretation of
+            // <foo a= b=c> as <foo a='b=c'>
+            // TODO(felix8a): might be able to drop this case
+            '(?=[a-z][a-z-]*\\s*=)' +
+            '|' +
+            // Unquoted value that isn't an attribute name
+            // (since we didn't match the positive lookahead above)
+            '[^\"\'\\s]*' ) +
+          ')' ) +
+        ')?',
+        'i');
+
+      var ENTITY_RE = /^(#[0-9]+|#x[0-9a-f]+|\w+);/i;
+
+      // false on IE<=8, true on most other browsers
+      var splitWillCapture = ('a,b'.split(/(,)/).length === 3);
+
+      // bitmask for tags with special parsing, like <script> and <textarea>
+      var EFLAGS_TEXT = html4.eflags.CDATA | html4.eflags.RCDATA;
+
+      /**
+       * Given a SAX-like event handler, produce a function that feeds those
+       * events and a parameter to the event handler.
+       *
+       * The event handler has the form:{@code
+       * {
+       *   // Name is an upper-case HTML tag name.  Attribs is an array of
+       *   // alternating upper-case attribute names, and attribute values.  The
+       *   // attribs array is reused by the parser.  Param is the value passed to
+       *   // the saxParser.
+       *   startTag: function (name, attribs, param) { ... },
+       *   endTag:   function (name, param) { ... },
+       *   pcdata:   function (text, param) { ... },
+       *   rcdata:   function (text, param) { ... },
+       *   cdata:    function (text, param) { ... },
+       *   startDoc: function (param) { ... },
+       *   endDoc:   function (param) { ... }
+       * }}
+       *
+       * @param {Object} handler a record containing event handlers.
+       * @return {function(string, Object)} A function that takes a chunk of HTML
+       *     and a parameter.  The parameter is passed on to the handler methods.
+       */
+      function makeSaxParser(handler) {
+        return function(htmlText, param) {
+          return parse(htmlText, handler, param);
+        };
+      }
+
+      // Parsing strategy is to split input into parts that might be lexically
+      // meaningful (every ">" becomes a separate part), and then recombine
+      // parts if we discover they're in a different context.
+
+      // Note, html-sanitizer filters unknown tags here, even though they also
+      // get filtered out by the sanitizer's handler.  This is back-compat
+      // behavior; makeSaxParser is public.
+
+      // TODO(felix8a): Significant performance regressions from -legacy,
+      // tested on
+      //    Chrome 18.0
+      //    Firefox 11.0
+      //    IE 6, 7, 8, 9
+      //    Opera 11.61
+      //    Safari 5.1.3
+      // Many of these are unusual patterns that are linearly slower and still
+      // pretty fast (eg 1ms to 5ms), so not necessarily worth fixing.
+
+      // TODO(felix8a): "<script> && && && ... <\/script>" is slower on all
+      // browsers.  The hotspot is htmlSplit.
+
+      // TODO(felix8a): "<p title='>>>>...'><\/p>" is slower on all browsers.
+      // This is partly htmlSplit, but the hotspot is parseTagAndAttrs.
+
+      // TODO(felix8a): "<a><\/a><a><\/a>..." is slower on IE9.
+      // "<a>1<\/a><a>1<\/a>..." is faster, "<a><\/a>2<a><\/a>2..." is faster.
+
+      // TODO(felix8a): "<p<p<p..." is slower on IE[6-8]
+
+      var continuationMarker = {};
+      function parse(htmlText, handler, param) {
+        var parts = htmlSplit(htmlText);
+        var state = {
+          noMoreGT: false,
+          noMoreEndComments: false
+        };
+        parseCPS(handler, parts, 0, state, param);
+      }
+
+      function continuationMaker(h, parts, initial, state, param) {
+        return function () {
+          parseCPS(h, parts, initial, state, param);
+        };
+      }
+
+      function parseCPS(h, parts, initial, state, param) {
+        try {
+          if (h.startDoc && initial == 0) { h.startDoc(param); }
+          var m, p, tagName;
+          for (var pos = initial, end = parts.length; pos < end;) {
+            var current = parts[pos++];
+            var next = parts[pos];
+            switch (current) {
+            case '&':
+              if (ENTITY_RE.test(next)) {
+                if (h.pcdata) {
+                  h.pcdata('&' + next, param, continuationMarker,
+                    continuationMaker(h, parts, pos, state, param));
+                }
+                pos++;
+              } else {
+                if (h.pcdata) { h.pcdata("&amp;", param, continuationMarker,
+                    continuationMaker(h, parts, pos, state, param));
+                }
+              }
+              break;
+            case '<\/':
+              if (m = /^(\w+)[^\'\"]*/.exec(next)) {
+                if (m[0].length === next.length && parts[pos + 1] === '>') {
+                  // fast case, no attribute parsing needed
+                  pos += 2;
+                  tagName = lcase(m[1]);
+                  if (html4.ELEMENTS.hasOwnProperty(tagName)) {
+                    if (h.endTag) {
+                      h.endTag(tagName, param, continuationMarker,
+                        continuationMaker(h, parts, pos, state, param));
+                    }
+                  }
+                } else {
+                  // slow case, need to parse attributes
+                  // TODO(felix8a): do we really care about misparsing this?
+                  pos = parseEndTag(
+                    parts, pos, h, param, continuationMarker, state);
+                }
+              } else {
+                if (h.pcdata) {
+                  h.pcdata('&lt;/', param, continuationMarker,
+                    continuationMaker(h, parts, pos, state, param));
+                }
+              }
+              break;
+            case '<':
+              if (m = /^(\w+)\s*\/?/.exec(next)) {
+                if (m[0].length === next.length && parts[pos + 1] === '>') {
+                  // fast case, no attribute parsing needed
+                  pos += 2;
+                  tagName = lcase(m[1]);
+                  if (html4.ELEMENTS.hasOwnProperty(tagName)) {
+                    if (h.startTag) {
+                      h.startTag(tagName, [], param, continuationMarker,
+                        continuationMaker(h, parts, pos, state, param));
+                    }
+                    // tags like <script> and <textarea> have special parsing
+                    var eflags = html4.ELEMENTS[tagName];
+                    if (eflags & EFLAGS_TEXT) {
+                      var tag = { name: tagName, next: pos, eflags: eflags };
+                      pos = parseText(
+                        parts, tag, h, param, continuationMarker, state);
+                    }
+                  }
+                } else {
+                  // slow case, need to parse attributes
+                  pos = parseStartTag(
+                    parts, pos, h, param, continuationMarker, state);
+                }
+              } else {
+                if (h.pcdata) {
+                  h.pcdata('&lt;', param, continuationMarker,
+                    continuationMaker(h, parts, pos, state, param));
+                }
+              }
+              break;
+            case '<\!--':
+              // The pathological case is n copies of '<\!--' without '-->', and
+              // repeated failure to find '-->' is quadratic.  We avoid that by
+              // remembering when search for '-->' fails.
+              if (!state.noMoreEndComments) {
+                // A comment <\!--x--> is split into three tokens:
+                //   '<\!--', 'x--', '>'
+                // We want to find the next '>' token that has a preceding '--'.
+                // pos is at the 'x--'.
+                for (p = pos + 1; p < end; p++) {
+                  if (parts[p] === '>' && /--$/.test(parts[p - 1])) { break; }
+                }
+                if (p < end) {
+                  pos = p + 1;
+                } else {
+                  state.noMoreEndComments = true;
+                }
+              }
+              if (state.noMoreEndComments) {
+                if (h.pcdata) {
+                  h.pcdata('&lt;!--', param, continuationMarker,
+                    continuationMaker(h, parts, pos, state, param));
+                }
+              }
+              break;
+            case '<\!':
+              if (!/^\w/.test(next)) {
+                if (h.pcdata) {
+                  h.pcdata('&lt;!', param, continuationMarker,
+                    continuationMaker(h, parts, pos, state, param));
+                }
+              } else {
+                // similar to noMoreEndComment logic
+                if (!state.noMoreGT) {
+                  for (p = pos + 1; p < end; p++) {
+                    if (parts[p] === '>') { break; }
+                  }
+                  if (p < end) {
+                    pos = p + 1;
+                  } else {
+                    state.noMoreGT = true;
+                  }
+                }
+                if (state.noMoreGT) {
+                  if (h.pcdata) {
+                    h.pcdata('&lt;!', param, continuationMarker,
+                      continuationMaker(h, parts, pos, state, param));
+                  }
+                }
+              }
+              break;
+            case '<?':
+              // similar to noMoreEndComment logic
+              if (!state.noMoreGT) {
+                for (p = pos + 1; p < end; p++) {
+                  if (parts[p] === '>') { break; }
+                }
+                if (p < end) {
+                  pos = p + 1;
+                } else {
+                  state.noMoreGT = true;
+                }
+              }
+              if (state.noMoreGT) {
+                if (h.pcdata) {
+                  h.pcdata('&lt;?', param, continuationMarker,
+                    continuationMaker(h, parts, pos, state, param));
+                }
+              }
+              break;
+            case '>':
+              if (h.pcdata) {
+                h.pcdata("&gt;", param, continuationMarker,
+                  continuationMaker(h, parts, pos, state, param));
+              }
+              break;
+            case '':
+              break;
+            default:
+              if (h.pcdata) {
+                h.pcdata(current, param, continuationMarker,
+                  continuationMaker(h, parts, pos, state, param));
+              }
+              break;
+            }
+          }
+          if (h.endDoc) { h.endDoc(param); }
+        } catch (e) {
+          if (e !== continuationMarker) { throw e; }
+        }
+      }
+
+      // Split str into parts for the html parser.
+      function htmlSplit(str) {
+        // can't hoist this out of the function because of the re.exec loop.
+        var re = /(<\/|<\!--|<[!?]|[&<>])/g;
+        str += '';
+        if (splitWillCapture) {
+          return str.split(re);
+        } else {
+          var parts = [];
+          var lastPos = 0;
+          var m;
+          while ((m = re.exec(str)) !== null) {
+            parts.push(str.substring(lastPos, m.index));
+            parts.push(m[0]);
+            lastPos = m.index + m[0].length;
+          }
+          parts.push(str.substring(lastPos));
+          return parts;
+        }
+      }
+
+      function parseEndTag(parts, pos, h, param, continuationMarker, state) {
+        var tag = parseTagAndAttrs(parts, pos);
+        // drop unclosed tags
+        if (!tag) { return parts.length; }
+        if (tag.eflags !== void 0) {
+          if (h.endTag) {
+            h.endTag(tag.name, param, continuationMarker,
+              continuationMaker(h, parts, pos, state, param));
+          }
+        }
+        return tag.next;
+      }
+
+      function parseStartTag(parts, pos, h, param, continuationMarker, state) {
+        var tag = parseTagAndAttrs(parts, pos);
+        // drop unclosed tags
+        if (!tag) { return parts.length; }
+        if (tag.eflags !== void 0) {
+          if (h.startTag) {
+            h.startTag(tag.name, tag.attrs, param, continuationMarker,
+              continuationMaker(h, parts, tag.next, state, param));
+          }
+          // tags like <script> and <textarea> have special parsing
+          if (tag.eflags & EFLAGS_TEXT) {
+            return parseText(parts, tag, h, param, continuationMarker, state);
+          }
+        }
+        return tag.next;
+      }
+
+      var endTagRe = {};
+
+      // Tags like <script> and <textarea> are flagged as CDATA or RCDATA,
+      // which means everything is text until we see the correct closing tag.
+      function parseText(parts, tag, h, param, continuationMarker, state) {
+        var end = parts.length;
+        if (!endTagRe.hasOwnProperty(tag.name)) {
+          endTagRe[tag.name] = new RegExp('^' + tag.name + '(?:[\\s\\/]|$)', 'i');
+        }
+        var re = endTagRe[tag.name];
+        var first = tag.next;
+        var p = tag.next + 1;
+        for (; p < end; p++) {
+          if (parts[p - 1] === '<\/' && re.test(parts[p])) { break; }
+        }
+        if (p < end) { p -= 1; }
+        var buf = parts.slice(first, p).join('');
+        if (tag.eflags & html4.eflags.CDATA) {
+          if (h.cdata) {
+            h.cdata(buf, param, continuationMarker,
+              continuationMaker(h, parts, p, state, param));
+          }
+        } else if (tag.eflags & html4.eflags.RCDATA) {
+          if (h.rcdata) {
+            h.rcdata(normalizeRCData(buf), param, continuationMarker,
+              continuationMaker(h, parts, p, state, param));
+          }
+        } else {
+          throw new Error('bug');
+        }
+        return p;
+      }
+
+      // at this point, parts[pos-1] is either "<" or "<\/".
+      function parseTagAndAttrs(parts, pos) {
+        var m = /^(\w+)/.exec(parts[pos]);
+        var tag = { name: lcase(m[1]) };
+        if (html4.ELEMENTS.hasOwnProperty(tag.name)) {
+          tag.eflags = html4.ELEMENTS[tag.name];
+        } else {
+          tag.eflags = void 0;
+        }
+        var buf = parts[pos].substr(m[0].length);
+        // Find the next '>'.  We optimistically assume this '>' is not in a
+        // quoted context, and further down we fix things up if it turns out to
+        // be quoted.
+        var p = pos + 1;
+        var end = parts.length;
+        for (; p < end; p++) {
+          if (parts[p] === '>') { break; }
+          buf += parts[p];
+        }
+        if (end <= p) { return void 0; }
+        var attrs = [];
+        while (buf !== '') {
+          m = ATTR_RE.exec(buf);
+          if (!m) {
+            // No attribute found: skip garbage
+            buf = buf.replace(/^[\s\S][^a-z\s]*/, '');
+
+          } else if ((m[4] && !m[5]) || (m[6] && !m[7])) {
+            // Unterminated quote: slurp to the next unquoted '>'
+            var quote = m[4] || m[6];
+            var sawQuote = false;
+            var abuf = [buf, parts[p++]];
+            for (; p < end; p++) {
+              if (sawQuote) {
+                if (parts[p] === '>') { break; }
+              } else if (0 <= parts[p].indexOf(quote)) {
+                sawQuote = true;
+              }
+              abuf.push(parts[p]);
+            }
+            // Slurp failed: lose the garbage
+            if (end <= p) { break; }
+            // Otherwise retry attribute parsing
+            buf = abuf.join('');
+            continue;
+
+          } else {
+            // We have an attribute
+            var aName = lcase(m[1]);
+            var aValue = m[2] ? decodeValue(m[3]) : aName;
+            attrs.push(aName, aValue);
+            buf = buf.substr(m[0].length);
+          }
+        }
+        tag.attrs = attrs;
+        tag.next = p + 1;
+        return tag;
+      }
+
+      function decodeValue(v) {
+        var q = v.charCodeAt(0);
+        if (q === 0x22 || q === 0x27) { // " or '
+          v = v.substr(1, v.length - 2);
+        }
+        return unescapeEntities(stripNULs(v));
+      }
+
+      /**
+       * Returns a function that strips unsafe tags and attributes from html.
+       * @param {function(string, Array.<string>): ?Array.<string>} tagPolicy
+       *     A function that takes (tagName, attribs[]), where tagName is a key in
+       *     html4.ELEMENTS and attribs is an array of alternating attribute names
+       *     and values.  It should return a sanitized attribute array, or null to
+       *     delete the tag.  It's okay for tagPolicy to modify the attribs array,
+       *     but the same array is reused, so it should not be held between calls.
+       * @return {function(string, Array)} A function that sanitizes a string of
+       *     HTML and appends result strings to the second argument, an array.
+       */
+      function makeHtmlSanitizer(tagPolicy) {
+        var stack;
+        var ignoring;
+        var emit = function (text, out) {
+          if (!ignoring) { out.push(text); }
+        };
+        return makeSaxParser({
+          startDoc: function(_) {
+            stack = [];
+            ignoring = false;
+          },
+          startTag: function(tagName, attribs, out) {
+            if (ignoring) { return; }
+            if (!html4.ELEMENTS.hasOwnProperty(tagName)) { return; }
+            var eflags = html4.ELEMENTS[tagName];
+            if (eflags & html4.eflags.FOLDABLE) {
+              return;
+            }
+            attribs = tagPolicy(tagName, attribs);
+            if (!attribs) {
+              ignoring = !(eflags & html4.eflags.EMPTY);
+              return;
+            }
+            // TODO(mikesamuel): relying on tagPolicy not to insert unsafe
+            // attribute names.
+            if (!(eflags & html4.eflags.EMPTY)) {
+              stack.push(tagName);
+            }
+
+            out.push('<', tagName);
+            for (var i = 0, n = attribs.length; i < n; i += 2) {
+              var attribName = attribs[i],
+                  value = attribs[i + 1];
+              if (value !== null && value !== void 0) {
+                out.push(' ', attribName, '="', escapeAttrib(value), '"');
+              }
+            }
+            out.push('>');
+          },
+          endTag: function(tagName, out) {
+            if (ignoring) {
+              ignoring = false;
+              return;
+            }
+            if (!html4.ELEMENTS.hasOwnProperty(tagName)) { return; }
+            var eflags = html4.ELEMENTS[tagName];
+            if (!(eflags & (html4.eflags.EMPTY | html4.eflags.FOLDABLE))) {
+              var index;
+              if (eflags & html4.eflags.OPTIONAL_ENDTAG) {
+                for (index = stack.length; --index >= 0;) {
+                  var stackEl = stack[index];
+                  if (stackEl === tagName) { break; }
+                  if (!(html4.ELEMENTS[stackEl] &
+                        html4.eflags.OPTIONAL_ENDTAG)) {
+                    // Don't pop non optional end tags looking for a match.
+                    return;
+                  }
+                }
+              } else {
+                for (index = stack.length; --index >= 0;) {
+                  if (stack[index] === tagName) { break; }
+                }
+              }
+              if (index < 0) { return; }  // Not opened.
+              for (var i = stack.length; --i > index;) {
+                var stackEl = stack[i];
+                if (!(html4.ELEMENTS[stackEl] &
+                      html4.eflags.OPTIONAL_ENDTAG)) {
+                  out.push('<\/', stackEl, '>');
+                }
+              }
+              stack.length = index;
+              out.push('<\/', tagName, '>');
+            }
+          },
+          pcdata: emit,
+          rcdata: emit,
+          cdata: emit,
+          endDoc: function(out) {
+            for (; stack.length; stack.length--) {
+              out.push('<\/', stack[stack.length - 1], '>');
+            }
+          }
+        });
+      }
+
+      // From RFC3986
+      var URI_SCHEME_RE = new RegExp(
+          '^' +
+          '(?:' +
+            '([^:\/?# ]+)' +         // scheme
+          ':)?'
+      );
+
+      var ALLOWED_URI_SCHEMES = /^(?:https?|mailto)$/i;
+
+      function safeUri(uri, naiveUriRewriter) {
+        if (!naiveUriRewriter) { return null; }
+        var parsed = ('' + uri).match(URI_SCHEME_RE);
+        if (parsed && (!parsed[1] || ALLOWED_URI_SCHEMES.test(parsed[1]))) {
+          return naiveUriRewriter(uri);
+        } else {
+          return null;
+        }
+      }
+
+      /**
+       * Sanitizes attributes on an HTML tag.
+       * @param {string} tagName An HTML tag name in lowercase.
+       * @param {Array.<?string>} attribs An array of alternating names and values.
+       * @param {?function(?string): ?string} opt_naiveUriRewriter A transform to
+       *     apply to URI attributes; it can return a new string value, or null to
+       *     delete the attribute.  If unspecified, URI attributes are deleted.
+       * @param {function(?string): ?string} opt_nmTokenPolicy A transform to apply
+       *     to attributes containing HTML names, element IDs, and space-separated
+       *     lists of classes; it can return a new string value, or null to delete
+       *     the attribute.  If unspecified, these attributes are kept unchanged.
+       * @return {Array.<?string>} The sanitized attributes as a list of alternating
+       *     names and values, where a null value means to omit the attribute.
+       */
+      function sanitizeAttribs(
+          tagName, attribs, opt_naiveUriRewriter, opt_nmTokenPolicy) {
+        for (var i = 0; i < attribs.length; i += 2) {
+          var attribName = attribs[i];
+          var value = attribs[i + 1];
+          var atype = null, attribKey;
+          if ((attribKey = tagName + '::' + attribName,
+               html4.ATTRIBS.hasOwnProperty(attribKey)) ||
+              (attribKey = '*::' + attribName,
+               html4.ATTRIBS.hasOwnProperty(attribKey))) {
+            atype = html4.ATTRIBS[attribKey];
+          }
+          if (atype !== null) {
+            switch (atype) {
+              case html4.atype.NONE: break;
+              case html4.atype.SCRIPT:
+                value = null;
+                break;
+              case html4.atype.STYLE:
+                if ('undefined' === typeof parseCssDeclarations) {
+                  value = null;
+                  break;
+                }
+                var sanitizedDeclarations = [];
+                parseCssDeclarations(
+                    value,
+                    {
+                      declaration: function (property, tokens) {
+                        var normProp = property.toLowerCase();
+                        var schema = cssSchema[normProp];
+                        if (!schema) {
+                          return;
+                        }
+                        sanitizeCssProperty(
+                            normProp, schema, tokens,
+                            opt_naiveUriRewriter);
+                        sanitizedDeclarations.push(property + ': ' + tokens.join(' '));
+                      }
+                    });
+                value = sanitizedDeclarations.length > 0 ? sanitizedDeclarations.join(' ; ') : null;
+                break;
+              case html4.atype.ID:
+              case html4.atype.IDREF:
+              case html4.atype.IDREFS:
+              case html4.atype.GLOBAL_NAME:
+              case html4.atype.LOCAL_NAME:
+              case html4.atype.CLASSES:
+                value = opt_nmTokenPolicy ? opt_nmTokenPolicy(value) : value;
+                break;
+              case html4.atype.URI:
+                value = safeUri(value, opt_naiveUriRewriter);
+                break;
+              case html4.atype.URI_FRAGMENT:
+                if (value && '#' === value.charAt(0)) {
+                  value = value.substring(1);  // remove the leading '#'
+                  value = opt_nmTokenPolicy ? opt_nmTokenPolicy(value) : value;
+                  if (value !== null && value !== void 0) {
+                    value = '#' + value;  // restore the leading '#'
+                  }
+                } else {
+                  value = null;
+                }
+                break;
+              default:
+                value = null;
+                break;
+            }
+          } else {
+            value = null;
+          }
+          attribs[i + 1] = value;
+        }
+        return attribs;
+      }
+
+      /**
+       * Creates a tag policy that omits all tags marked UNSAFE in html4-defs.js
+       * and applies the default attribute sanitizer with the supplied policy for
+       * URI attributes and NMTOKEN attributes.
+       * @param {?function(?string): ?string} opt_naiveUriRewriter A transform to
+       *     apply to URI attributes.  If not given, URI attributes are deleted.
+       * @param {function(?string): ?string} opt_nmTokenPolicy A transform to apply
+       *     to attributes containing HTML names, element IDs, and space-separated
+       *     lists of classes.  If not given, such attributes are left unchanged.
+       * @return {function(string, Array.<?string>)} A tagPolicy suitable for
+       *     passing to html.sanitize.
+       */
+      function makeTagPolicy(opt_naiveUriRewriter, opt_nmTokenPolicy) {
+        return function(tagName, attribs) {
+          if (!(html4.ELEMENTS[tagName] & html4.eflags.UNSAFE)) {
+            return sanitizeAttribs(
+                tagName, attribs, opt_naiveUriRewriter, opt_nmTokenPolicy);
+          }
+        };
+      }
+
+      /**
+       * Sanitizes HTML tags and attributes according to a given policy.
+       * @param {string} inputHtml The HTML to sanitize.
+       * @param {function(string, Array.<?string>)} tagPolicy A function that
+       *     decides which tags to accept and sanitizes their attributes (see
+       *     makeHtmlSanitizer above for details).
+       * @return {string} The sanitized HTML.
+       */
+      function sanitizeWithPolicy(inputHtml, tagPolicy) {
+        var outputArray = [];
+        makeHtmlSanitizer(tagPolicy)(inputHtml, outputArray);
+        return outputArray.join('');
+      }
+
+      /**
+       * Strips unsafe tags and attributes from HTML.
+       * @param {string} inputHtml The HTML to sanitize.
+       * @param {?function(?string): ?string} opt_naiveUriRewriter A transform to
+       *     apply to URI attributes.  If not given, URI attributes are deleted.
+       * @param {function(?string): ?string} opt_nmTokenPolicy A transform to apply
+       *     to attributes containing HTML names, element IDs, and space-separated
+       *     lists of classes.  If not given, such attributes are left unchanged.
+       */
+      function sanitize(inputHtml, opt_naiveUriRewriter, opt_nmTokenPolicy) {
+        var tagPolicy = makeTagPolicy(opt_naiveUriRewriter, opt_nmTokenPolicy);
+        return sanitizeWithPolicy(inputHtml, tagPolicy);
+      }
+
+      return {
+        escapeAttrib: escapeAttrib,
+        makeHtmlSanitizer: makeHtmlSanitizer,
+        makeSaxParser: makeSaxParser,
+        makeTagPolicy: makeTagPolicy,
+        normalizeRCData: normalizeRCData,
+        sanitize: sanitize,
+        sanitizeAttribs: sanitizeAttribs,
+        sanitizeWithPolicy: sanitizeWithPolicy,
+        unescapeEntities: unescapeEntities
+      };
+    })(html4);
+
+    var html_sanitize = html.sanitize;
+
+    // Exports for closure compiler.  Note this file is also cajoled
+    // for domado and run in an environment without 'window'
+    if (typeof window !== 'undefined') {
+      window['html'] = html;
+      window['html_sanitize'] = html_sanitize;
+    }
+
+    }());
+
+    const DEFAULT_THEME_FAMILY = "legacy"; // includes sap_fiori_*
+    const loaders = new Map();
+    const registry = getSharedResource("SVGIcons.registry", new Map());
+    const iconCollectionPromises = getSharedResource("SVGIcons.promises", new Map());
+    const ICON_NOT_FOUND$1 = "ICON_NOT_FOUND";
+    const _loadIconCollectionOnce = async (collectionName) => {
+        if (!iconCollectionPromises.has(collectionName)) {
+            if (!loaders.has(collectionName)) {
+                throw new Error(`No loader registered for the ${collectionName} icons collection. Probably you forgot to import the "AllIcons.js" module for the respective package.`);
+            }
+            const loadIcons = loaders.get(collectionName);
+            iconCollectionPromises.set(collectionName, loadIcons(collectionName));
+        }
+        return iconCollectionPromises.get(collectionName);
+    };
+    const _fillRegistry = (bundleData) => {
+        Object.keys(bundleData.data).forEach(iconName => {
+            const iconData = bundleData.data[iconName];
+            registerIcon(iconName, {
+                pathData: (iconData.path || iconData.paths),
+                ltr: iconData.ltr,
+                accData: iconData.acc,
+                collection: bundleData.collection,
+                packageName: bundleData.packageName,
+            });
+        });
+    };
+    // set
+    const registerIcon = (name, iconData) => {
+        const key = `${iconData.collection}/${name}`;
+        registry.set(key, {
+            pathData: iconData.pathData,
+            ltr: iconData.ltr,
+            accData: iconData.accData,
+            packageName: iconData.packageName,
+            customTemplate: iconData.customTemplate,
+            viewBox: iconData.viewBox,
+            collection: iconData.collection,
+        });
+    };
+    /**
+     * Processes the full icon name and splits it into - "name", "collection".
+     * - removes legacy protocol ("sap-icon://")
+     * - resolves aliases (f.e "SAP-icons-TNT/actor" => "tnt/actor")
+     *
+     * @param { string } name
+     * @return { object }
+     */
+    const processName = (name) => {
+        // silently support ui5-compatible URIs
+        if (name.startsWith("sap-icon://")) {
+            name = name.replace("sap-icon://", "");
+        }
+        let collection;
+        [name, collection] = name.split("/").reverse();
+        name = name.replace("icon-", "");
+        if (collection) {
+            collection = getIconCollectionByAlias(collection);
+        }
+        return { name, collection };
+    };
+    const getIconDataSync = (iconName) => {
+        const { name, collection } = processName(iconName);
+        return getRegisteredIconData(collection, name);
+    };
+    const getIconData = async (iconName) => {
+        const { name, collection } = processName(iconName);
+        let iconData = ICON_NOT_FOUND$1;
+        try {
+            iconData = (await _loadIconCollectionOnce(getEffectiveIconCollection(collection)));
+        }
+        catch (error) {
+            const e = error;
+            console.error(e.message); /* eslint-disable-line */
+        }
+        if (iconData === ICON_NOT_FOUND$1) {
+            return iconData;
+        }
+        const registeredIconData = getRegisteredIconData(collection, name);
+        if (registeredIconData) {
+            return registeredIconData;
+        }
+        // not filled by another await. many getters will await on the same loader, but fill only once
+        if (Array.isArray(iconData)) {
+            iconData.forEach(data => {
+                _fillRegistry(data);
+                registerIconCollectionForTheme(collection, { [data.themeFamily || DEFAULT_THEME_FAMILY]: data.collection });
+            });
+        }
+        else {
+            _fillRegistry(iconData);
+        }
+        return getRegisteredIconData(collection, name);
+    };
+    const getRegisteredIconData = (collection, name) => {
+        const registryKey = `${getEffectiveIconCollection(collection)}/${name}`;
+        return registry.get(registryKey);
     };
 
     /**
@@ -3430,7 +7423,107 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
      * Copyright 2017 Google LLC
      * SPDX-License-Identifier: BSD-3-Clause
      */
-    var t$1;const i$1=window,s$1=i$1.trustedTypes,e$2=s$1?s$1.createPolicy("lit-html",{createHTML:t=>t}):void 0,o$1="$lit$",n=`lit$${(Math.random()+"").slice(9)}$`,l$2="?"+n,h=`<${l$2}>`,r$1=document,u$1=()=>r$1.createComment(""),d=t=>null===t||"object"!=typeof t&&"function"!=typeof t,c$2=Array.isArray,v=t=>c$2(t)||"function"==typeof(null==t?void 0:t[Symbol.iterator]),a$1="[ \t\n\f\r]",f$1=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,_=/-->/g,m$1=/>/g,p$1=RegExp(`>|${a$1}(?:([^\\s"'>=/]+)(${a$1}*=${a$1}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),g=/'/g,$=/"/g,y=/^(?:script|style|textarea|title)$/i,w=t=>(i,...s)=>({_$litType$:t,strings:i,values:s}),x=w(1),b=w(2),T=Symbol.for("lit-noChange"),A=Symbol.for("lit-nothing"),E=new WeakMap,C=r$1.createTreeWalker(r$1,129,null,!1);function P(t,i){if(!Array.isArray(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==e$2?e$2.createHTML(i):i}const V=(t,i)=>{const s=t.length-1,e=[];let l,r=2===i?"<svg>":"",u=f$1;for(let i=0;i<s;i++){const s=t[i];let d,c,v=-1,a=0;for(;a<s.length&&(u.lastIndex=a,c=u.exec(s),null!==c);)a=u.lastIndex,u===f$1?"!--"===c[1]?u=_:void 0!==c[1]?u=m$1:void 0!==c[2]?(y.test(c[2])&&(l=RegExp("</"+c[2],"g")),u=p$1):void 0!==c[3]&&(u=p$1):u===p$1?">"===c[0]?(u=null!=l?l:f$1,v=-1):void 0===c[1]?v=-2:(v=u.lastIndex-c[2].length,d=c[1],u=void 0===c[3]?p$1:'"'===c[3]?$:g):u===$||u===g?u=p$1:u===_||u===m$1?u=f$1:(u=p$1,l=void 0);const w=u===p$1&&t[i+1].startsWith("/>")?" ":"";r+=u===f$1?s+h:v>=0?(e.push(d),s.slice(0,v)+o$1+s.slice(v)+n+w):s+n+(-2===v?(e.push(void 0),i):w);}return [P(t,r+(t[s]||"<?>")+(2===i?"</svg>":"")),e]};class N{constructor({strings:t,_$litType$:i},e){let h;this.parts=[];let r=0,d=0;const c=t.length-1,v=this.parts,[a,f]=V(t,i);if(this.el=N.createElement(a,e),C.currentNode=this.el.content,2===i){const t=this.el.content,i=t.firstChild;i.remove(),t.append(...i.childNodes);}for(;null!==(h=C.nextNode())&&v.length<c;){if(1===h.nodeType){if(h.hasAttributes()){const t=[];for(const i of h.getAttributeNames())if(i.endsWith(o$1)||i.startsWith(n)){const s=f[d++];if(t.push(i),void 0!==s){const t=h.getAttribute(s.toLowerCase()+o$1).split(n),i=/([.?@])?(.*)/.exec(s);v.push({type:1,index:r,name:i[2],strings:t,ctor:"."===i[1]?H:"?"===i[1]?L:"@"===i[1]?z:k});}else v.push({type:6,index:r});}for(const i of t)h.removeAttribute(i);}if(y.test(h.tagName)){const t=h.textContent.split(n),i=t.length-1;if(i>0){h.textContent=s$1?s$1.emptyScript:"";for(let s=0;s<i;s++)h.append(t[s],u$1()),C.nextNode(),v.push({type:2,index:++r});h.append(t[i],u$1());}}}else if(8===h.nodeType)if(h.data===l$2)v.push({type:2,index:r});else {let t=-1;for(;-1!==(t=h.data.indexOf(n,t+1));)v.push({type:7,index:r}),t+=n.length-1;}r++;}}static createElement(t,i){const s=r$1.createElement("template");return s.innerHTML=t,s}}function S(t,i,s=t,e){var o,n,l,h;if(i===T)return i;let r=void 0!==e?null===(o=s._$Co)||void 0===o?void 0:o[e]:s._$Cl;const u=d(i)?void 0:i._$litDirective$;return (null==r?void 0:r.constructor)!==u&&(null===(n=null==r?void 0:r._$AO)||void 0===n||n.call(r,!1),void 0===u?r=void 0:(r=new u(t),r._$AT(t,s,e)),void 0!==e?(null!==(l=(h=s)._$Co)&&void 0!==l?l:h._$Co=[])[e]=r:s._$Cl=r),void 0!==r&&(i=S(t,r._$AS(t,i.values),r,e)),i}class M{constructor(t,i){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=i;}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){var i;const{el:{content:s},parts:e}=this._$AD,o=(null!==(i=null==t?void 0:t.creationScope)&&void 0!==i?i:r$1).importNode(s,!0);C.currentNode=o;let n=C.nextNode(),l=0,h=0,u=e[0];for(;void 0!==u;){if(l===u.index){let i;2===u.type?i=new R(n,n.nextSibling,this,t):1===u.type?i=new u.ctor(n,u.name,u.strings,this,t):6===u.type&&(i=new Z(n,this,t)),this._$AV.push(i),u=e[++h];}l!==(null==u?void 0:u.index)&&(n=C.nextNode(),l++);}return C.currentNode=r$1,o}v(t){let i=0;for(const s of this._$AV)void 0!==s&&(void 0!==s.strings?(s._$AI(t,s,i),i+=s.strings.length-2):s._$AI(t[i])),i++;}}class R{constructor(t,i,s,e){var o;this.type=2,this._$AH=A,this._$AN=void 0,this._$AA=t,this._$AB=i,this._$AM=s,this.options=e,this._$Cp=null===(o=null==e?void 0:e.isConnected)||void 0===o||o;}get _$AU(){var t,i;return null!==(i=null===(t=this._$AM)||void 0===t?void 0:t._$AU)&&void 0!==i?i:this._$Cp}get parentNode(){let t=this._$AA.parentNode;const i=this._$AM;return void 0!==i&&11===(null==t?void 0:t.nodeType)&&(t=i.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,i=this){t=S(this,t,i),d(t)?t===A||null==t||""===t?(this._$AH!==A&&this._$AR(),this._$AH=A):t!==this._$AH&&t!==T&&this._(t):void 0!==t._$litType$?this.g(t):void 0!==t.nodeType?this.$(t):v(t)?this.T(t):this._(t);}k(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}$(t){this._$AH!==t&&(this._$AR(),this._$AH=this.k(t));}_(t){this._$AH!==A&&d(this._$AH)?this._$AA.nextSibling.data=t:this.$(r$1.createTextNode(t)),this._$AH=t;}g(t){var i;const{values:s,_$litType$:e}=t,o="number"==typeof e?this._$AC(t):(void 0===e.el&&(e.el=N.createElement(P(e.h,e.h[0]),this.options)),e);if((null===(i=this._$AH)||void 0===i?void 0:i._$AD)===o)this._$AH.v(s);else {const t=new M(o,this),i=t.u(this.options);t.v(s),this.$(i),this._$AH=t;}}_$AC(t){let i=E.get(t.strings);return void 0===i&&E.set(t.strings,i=new N(t)),i}T(t){c$2(this._$AH)||(this._$AH=[],this._$AR());const i=this._$AH;let s,e=0;for(const o of t)e===i.length?i.push(s=new R(this.k(u$1()),this.k(u$1()),this,this.options)):s=i[e],s._$AI(o),e++;e<i.length&&(this._$AR(s&&s._$AB.nextSibling,e),i.length=e);}_$AR(t=this._$AA.nextSibling,i){var s;for(null===(s=this._$AP)||void 0===s||s.call(this,!1,!0,i);t&&t!==this._$AB;){const i=t.nextSibling;t.remove(),t=i;}}setConnected(t){var i;void 0===this._$AM&&(this._$Cp=t,null===(i=this._$AP)||void 0===i||i.call(this,t));}}class k{constructor(t,i,s,e,o){this.type=1,this._$AH=A,this._$AN=void 0,this.element=t,this.name=i,this._$AM=e,this.options=o,s.length>2||""!==s[0]||""!==s[1]?(this._$AH=Array(s.length-1).fill(new String),this.strings=s):this._$AH=A;}get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}_$AI(t,i=this,s,e){const o=this.strings;let n=!1;if(void 0===o)t=S(this,t,i,0),n=!d(t)||t!==this._$AH&&t!==T,n&&(this._$AH=t);else {const e=t;let l,h;for(t=o[0],l=0;l<o.length-1;l++)h=S(this,e[s+l],i,l),h===T&&(h=this._$AH[l]),n||(n=!d(h)||h!==this._$AH[l]),h===A?t=A:t!==A&&(t+=(null!=h?h:"")+o[l+1]),this._$AH[l]=h;}n&&!e&&this.j(t);}j(t){t===A?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,null!=t?t:"");}}class H extends k{constructor(){super(...arguments),this.type=3;}j(t){this.element[this.name]=t===A?void 0:t;}}const I=s$1?s$1.emptyScript:"";class L extends k{constructor(){super(...arguments),this.type=4;}j(t){t&&t!==A?this.element.setAttribute(this.name,I):this.element.removeAttribute(this.name);}}class z extends k{constructor(t,i,s,e,o){super(t,i,s,e,o),this.type=5;}_$AI(t,i=this){var s;if((t=null!==(s=S(this,t,i,0))&&void 0!==s?s:A)===T)return;const e=this._$AH,o=t===A&&e!==A||t.capture!==e.capture||t.once!==e.once||t.passive!==e.passive,n=t!==A&&(e===A||o);o&&this.element.removeEventListener(this.name,this,e),n&&this.element.addEventListener(this.name,this,t),this._$AH=t;}handleEvent(t){var i,s;"function"==typeof this._$AH?this._$AH.call(null!==(s=null===(i=this.options)||void 0===i?void 0:i.host)&&void 0!==s?s:this.element,t):this._$AH.handleEvent(t);}}class Z{constructor(t,i,s){this.element=t,this.type=6,this._$AN=void 0,this._$AM=i,this.options=s;}get _$AU(){return this._$AM._$AU}_$AI(t){S(this,t);}}const j={O:o$1,P:n,A:l$2,C:1,M:V,L:M,R:v,D:S,I:R,V:k,H:L,N:z,U:H,F:Z},B=i$1.litHtmlPolyfillSupport;null==B||B(N,R),(null!==(t$1=i$1.litHtmlVersions)&&void 0!==t$1?t$1:i$1.litHtmlVersions=[]).push("2.8.0");const D=(t,i,s)=>{var e,o;const n=null!==(e=null==s?void 0:s.renderBefore)&&void 0!==e?e:i;let l=n._$litPart$;if(void 0===l){const t=null!==(o=null==s?void 0:s.renderBefore)&&void 0!==o?o:null;n._$litPart$=l=new R(i.insertBefore(u$1(),t),t,void 0,null!=s?s:{});}return l._$AI(t),l};
+    var t$1;const i$1=window,s$2=i$1.trustedTypes,e$3=s$2?s$2.createPolicy("lit-html",{createHTML:t=>t}):void 0,o$2="$lit$",n$1=`lit$${(Math.random()+"").slice(9)}$`,l$3="?"+n$1,h=`<${l$3}>`,r$1=document,u$2=()=>r$1.createComment(""),d=t=>null===t||"object"!=typeof t&&"function"!=typeof t,c$2=Array.isArray,v=t=>c$2(t)||"function"==typeof(null==t?void 0:t[Symbol.iterator]),a$2="[ \t\n\f\r]",f$1=/<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g,_=/-->/g,m$1=/>/g,p$1=RegExp(`>|${a$2}(?:([^\\s"'>=/]+)(${a$2}*=${a$2}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`,"g"),g=/'/g,$=/"/g,y=/^(?:script|style|textarea|title)$/i,w=t=>(i,...s)=>({_$litType$:t,strings:i,values:s}),x=w(1),b=w(2),T=Symbol.for("lit-noChange"),A=Symbol.for("lit-nothing"),E=new WeakMap,C=r$1.createTreeWalker(r$1,129,null,!1);function P(t,i){if(!Array.isArray(t)||!t.hasOwnProperty("raw"))throw Error("invalid template strings array");return void 0!==e$3?e$3.createHTML(i):i}const V=(t,i)=>{const s=t.length-1,e=[];let l,r=2===i?"<svg>":"",u=f$1;for(let i=0;i<s;i++){const s=t[i];let d,c,v=-1,a=0;for(;a<s.length&&(u.lastIndex=a,c=u.exec(s),null!==c);)a=u.lastIndex,u===f$1?"!--"===c[1]?u=_:void 0!==c[1]?u=m$1:void 0!==c[2]?(y.test(c[2])&&(l=RegExp("</"+c[2],"g")),u=p$1):void 0!==c[3]&&(u=p$1):u===p$1?">"===c[0]?(u=null!=l?l:f$1,v=-1):void 0===c[1]?v=-2:(v=u.lastIndex-c[2].length,d=c[1],u=void 0===c[3]?p$1:'"'===c[3]?$:g):u===$||u===g?u=p$1:u===_||u===m$1?u=f$1:(u=p$1,l=void 0);const w=u===p$1&&t[i+1].startsWith("/>")?" ":"";r+=u===f$1?s+h:v>=0?(e.push(d),s.slice(0,v)+o$2+s.slice(v)+n$1+w):s+n$1+(-2===v?(e.push(void 0),i):w);}return [P(t,r+(t[s]||"<?>")+(2===i?"</svg>":"")),e]};class N{constructor({strings:t,_$litType$:i},e){let h;this.parts=[];let r=0,d=0;const c=t.length-1,v=this.parts,[a,f]=V(t,i);if(this.el=N.createElement(a,e),C.currentNode=this.el.content,2===i){const t=this.el.content,i=t.firstChild;i.remove(),t.append(...i.childNodes);}for(;null!==(h=C.nextNode())&&v.length<c;){if(1===h.nodeType){if(h.hasAttributes()){const t=[];for(const i of h.getAttributeNames())if(i.endsWith(o$2)||i.startsWith(n$1)){const s=f[d++];if(t.push(i),void 0!==s){const t=h.getAttribute(s.toLowerCase()+o$2).split(n$1),i=/([.?@])?(.*)/.exec(s);v.push({type:1,index:r,name:i[2],strings:t,ctor:"."===i[1]?H:"?"===i[1]?L:"@"===i[1]?z:k});}else v.push({type:6,index:r});}for(const i of t)h.removeAttribute(i);}if(y.test(h.tagName)){const t=h.textContent.split(n$1),i=t.length-1;if(i>0){h.textContent=s$2?s$2.emptyScript:"";for(let s=0;s<i;s++)h.append(t[s],u$2()),C.nextNode(),v.push({type:2,index:++r});h.append(t[i],u$2());}}}else if(8===h.nodeType)if(h.data===l$3)v.push({type:2,index:r});else {let t=-1;for(;-1!==(t=h.data.indexOf(n$1,t+1));)v.push({type:7,index:r}),t+=n$1.length-1;}r++;}}static createElement(t,i){const s=r$1.createElement("template");return s.innerHTML=t,s}}function S(t,i,s=t,e){var o,n,l,h;if(i===T)return i;let r=void 0!==e?null===(o=s._$Co)||void 0===o?void 0:o[e]:s._$Cl;const u=d(i)?void 0:i._$litDirective$;return (null==r?void 0:r.constructor)!==u&&(null===(n=null==r?void 0:r._$AO)||void 0===n||n.call(r,!1),void 0===u?r=void 0:(r=new u(t),r._$AT(t,s,e)),void 0!==e?(null!==(l=(h=s)._$Co)&&void 0!==l?l:h._$Co=[])[e]=r:s._$Cl=r),void 0!==r&&(i=S(t,r._$AS(t,i.values),r,e)),i}class M{constructor(t,i){this._$AV=[],this._$AN=void 0,this._$AD=t,this._$AM=i;}get parentNode(){return this._$AM.parentNode}get _$AU(){return this._$AM._$AU}u(t){var i;const{el:{content:s},parts:e}=this._$AD,o=(null!==(i=null==t?void 0:t.creationScope)&&void 0!==i?i:r$1).importNode(s,!0);C.currentNode=o;let n=C.nextNode(),l=0,h=0,u=e[0];for(;void 0!==u;){if(l===u.index){let i;2===u.type?i=new R(n,n.nextSibling,this,t):1===u.type?i=new u.ctor(n,u.name,u.strings,this,t):6===u.type&&(i=new Z(n,this,t)),this._$AV.push(i),u=e[++h];}l!==(null==u?void 0:u.index)&&(n=C.nextNode(),l++);}return C.currentNode=r$1,o}v(t){let i=0;for(const s of this._$AV)void 0!==s&&(void 0!==s.strings?(s._$AI(t,s,i),i+=s.strings.length-2):s._$AI(t[i])),i++;}}class R{constructor(t,i,s,e){var o;this.type=2,this._$AH=A,this._$AN=void 0,this._$AA=t,this._$AB=i,this._$AM=s,this.options=e,this._$Cp=null===(o=null==e?void 0:e.isConnected)||void 0===o||o;}get _$AU(){var t,i;return null!==(i=null===(t=this._$AM)||void 0===t?void 0:t._$AU)&&void 0!==i?i:this._$Cp}get parentNode(){let t=this._$AA.parentNode;const i=this._$AM;return void 0!==i&&11===(null==t?void 0:t.nodeType)&&(t=i.parentNode),t}get startNode(){return this._$AA}get endNode(){return this._$AB}_$AI(t,i=this){t=S(this,t,i),d(t)?t===A||null==t||""===t?(this._$AH!==A&&this._$AR(),this._$AH=A):t!==this._$AH&&t!==T&&this._(t):void 0!==t._$litType$?this.g(t):void 0!==t.nodeType?this.$(t):v(t)?this.T(t):this._(t);}k(t){return this._$AA.parentNode.insertBefore(t,this._$AB)}$(t){this._$AH!==t&&(this._$AR(),this._$AH=this.k(t));}_(t){this._$AH!==A&&d(this._$AH)?this._$AA.nextSibling.data=t:this.$(r$1.createTextNode(t)),this._$AH=t;}g(t){var i;const{values:s,_$litType$:e}=t,o="number"==typeof e?this._$AC(t):(void 0===e.el&&(e.el=N.createElement(P(e.h,e.h[0]),this.options)),e);if((null===(i=this._$AH)||void 0===i?void 0:i._$AD)===o)this._$AH.v(s);else {const t=new M(o,this),i=t.u(this.options);t.v(s),this.$(i),this._$AH=t;}}_$AC(t){let i=E.get(t.strings);return void 0===i&&E.set(t.strings,i=new N(t)),i}T(t){c$2(this._$AH)||(this._$AH=[],this._$AR());const i=this._$AH;let s,e=0;for(const o of t)e===i.length?i.push(s=new R(this.k(u$2()),this.k(u$2()),this,this.options)):s=i[e],s._$AI(o),e++;e<i.length&&(this._$AR(s&&s._$AB.nextSibling,e),i.length=e);}_$AR(t=this._$AA.nextSibling,i){var s;for(null===(s=this._$AP)||void 0===s||s.call(this,!1,!0,i);t&&t!==this._$AB;){const i=t.nextSibling;t.remove(),t=i;}}setConnected(t){var i;void 0===this._$AM&&(this._$Cp=t,null===(i=this._$AP)||void 0===i||i.call(this,t));}}class k{constructor(t,i,s,e,o){this.type=1,this._$AH=A,this._$AN=void 0,this.element=t,this.name=i,this._$AM=e,this.options=o,s.length>2||""!==s[0]||""!==s[1]?(this._$AH=Array(s.length-1).fill(new String),this.strings=s):this._$AH=A;}get tagName(){return this.element.tagName}get _$AU(){return this._$AM._$AU}_$AI(t,i=this,s,e){const o=this.strings;let n=!1;if(void 0===o)t=S(this,t,i,0),n=!d(t)||t!==this._$AH&&t!==T,n&&(this._$AH=t);else {const e=t;let l,h;for(t=o[0],l=0;l<o.length-1;l++)h=S(this,e[s+l],i,l),h===T&&(h=this._$AH[l]),n||(n=!d(h)||h!==this._$AH[l]),h===A?t=A:t!==A&&(t+=(null!=h?h:"")+o[l+1]),this._$AH[l]=h;}n&&!e&&this.j(t);}j(t){t===A?this.element.removeAttribute(this.name):this.element.setAttribute(this.name,null!=t?t:"");}}class H extends k{constructor(){super(...arguments),this.type=3;}j(t){this.element[this.name]=t===A?void 0:t;}}const I=s$2?s$2.emptyScript:"";class L extends k{constructor(){super(...arguments),this.type=4;}j(t){t&&t!==A?this.element.setAttribute(this.name,I):this.element.removeAttribute(this.name);}}class z extends k{constructor(t,i,s,e,o){super(t,i,s,e,o),this.type=5;}_$AI(t,i=this){var s;if((t=null!==(s=S(this,t,i,0))&&void 0!==s?s:A)===T)return;const e=this._$AH,o=t===A&&e!==A||t.capture!==e.capture||t.once!==e.once||t.passive!==e.passive,n=t!==A&&(e===A||o);o&&this.element.removeEventListener(this.name,this,e),n&&this.element.addEventListener(this.name,this,t),this._$AH=t;}handleEvent(t){var i,s;"function"==typeof this._$AH?this._$AH.call(null!==(s=null===(i=this.options)||void 0===i?void 0:i.host)&&void 0!==s?s:this.element,t):this._$AH.handleEvent(t);}}class Z{constructor(t,i,s){this.element=t,this.type=6,this._$AN=void 0,this._$AM=i,this.options=s;}get _$AU(){return this._$AM._$AU}_$AI(t){S(this,t);}}const j={O:o$2,P:n$1,A:l$3,C:1,M:V,L:M,R:v,D:S,I:R,V:k,H:L,N:z,U:H,F:Z},B=i$1.litHtmlPolyfillSupport;null==B||B(N,R),(null!==(t$1=i$1.litHtmlVersions)&&void 0!==t$1?t$1:i$1.litHtmlVersions=[]).push("2.8.0");const D=(t,i,s)=>{var e,o;const n=null!==(e=null==s?void 0:s.renderBefore)&&void 0!==e?e:i;let l=n._$litPart$;if(void 0===l){const t=null!==(o=null==s?void 0:s.renderBefore)&&void 0!==o?o:null;n._$litPart$=l=new R(i.insertBefore(u$2(),t),t,void 0,null!=s?s:{});}return l._$AI(t),l};
+
+    /**
+     * @license
+     * Copyright 2020 Google LLC
+     * SPDX-License-Identifier: BSD-3-Clause
+     */const e$2=Symbol.for(""),l$2=t=>{if((null==t?void 0:t.r)===e$2)return null==t?void 0:t._$litStatic$},o$1=t=>({_$litStatic$:t,r:e$2}),s$1=new Map,a$1=t=>(r,...e)=>{const o=e.length;let i,a;const n=[],u=[];let c,$=0,f=!1;for(;$<o;){for(c=r[$];$<o&&void 0!==(a=e[$],i=l$2(a));)c+=i+r[++$],f=!0;$!==o&&u.push(a),n.push(c),$++;}if($===o&&n.push(r[o]),f){const t=n.join("$$lit$$");void 0===(r=s$1.get(t))&&(n.raw=n,s$1.set(t,r=n)),e=u;}return t(r,...e)},n=a$1(x),u$1=a$1(b);
+
+    class LitStatic {
+    }
+    LitStatic.html = n;
+    LitStatic.svg = u$1;
+    LitStatic.unsafeStatic = o$1;
+    registerFeature("LitStatic", LitStatic);
+
+    const mediaRanges = new Map();
+    const DEAFULT_RANGE_SET = new Map();
+    DEAFULT_RANGE_SET.set("S", [0, 599]);
+    DEAFULT_RANGE_SET.set("M", [600, 1023]);
+    DEAFULT_RANGE_SET.set("L", [1024, 1439]);
+    DEAFULT_RANGE_SET.set("XL", [1440, Infinity]);
+    /**
+     * Enumeration containing the names and settings of predefined screen width media query range sets.
+     *
+     * @public
+     */
+    var RANGESETS;
+    (function (RANGESETS) {
+        /**
+         * A 4-step range set (S-M-L-XL).
+         *
+         * The ranges of this set are:
+         *
+         * - `"S"`: For screens smaller than 600 pixels.
+         * - `"M"`: For screens greater than or equal to 600 pixels and smaller than 1024 pixels.
+         * - `"L"`: For screens greater than or equal to 1024 pixels and smaller than 1440 pixels.
+         * - `"XL"`: For screens greater than or equal to 1440 pixels.
+         *
+         *
+         * @public
+         */
+        RANGESETS["RANGE_4STEPS"] = "4Step";
+    })(RANGESETS || (RANGESETS = {}));
+    /**
+     * Initializes a screen width media query range set.
+     *
+     * This initialization step makes the range set ready to be used for one of the other functions in namespace `MediaRange`.
+     *
+     * A range set can be defined as shown in the following example:
+     * ```
+     * MediaRange.initRangeSet("MyRangeSet", [200, 400], ["Small", "Medium", "Large"]);
+     * ```
+     * This example defines the following named ranges:
+     *
+     * - `"Small"`: For screens smaller than 200 pixels.
+     * - `"Medium"`: For screens greater than or equal to 200 pixels and smaller than 400 pixels.
+     * - `"Large"`: For screens greater than or equal to 400 pixels.
+     *
+     *
+     * @param name The name of the range set to be initialized.
+     * The name must be a valid id and consist only of letters and numeric digits.
+     * @param range The given range set.
+     */
+    const initRangeSet = (name, range) => {
+        mediaRanges.set(name, range);
+    };
+    /**
+     * Returns information about the current active range of the range set with the given name.
+     *
+     * If the optional parameter `width` is given, the active range will be determined for that width,
+     * otherwise it is determined for the current window size.
+     *
+     * @param name The name of the range set. The range set must be initialized beforehand ({@link MediaRange.initRangeSet})
+     * @param [width] An optional width, based on which the range should be determined;
+     * If `width` is not provided, the window size will be used.
+     * @returns The name of the current active interval of the range set.
+     * @public
+     */
+    const getCurrentRange = (name, width = window.innerWidth) => {
+        let rangeSet = mediaRanges.get(name);
+        if (!rangeSet) {
+            rangeSet = mediaRanges.get(RANGESETS.RANGE_4STEPS);
+        }
+        let currentRangeName;
+        const effectiveWidth = Math.floor(width);
+        rangeSet.forEach((value, key) => {
+            if (effectiveWidth >= value[0] && effectiveWidth <= value[1]) {
+                currentRangeName = key;
+            }
+        });
+        return currentRangeName || [...rangeSet.keys()][0];
+    };
+    /**
+     * API for screen width changes.
+     */
+    const MediaRange = {
+        RANGESETS,
+        initRangeSet,
+        getCurrentRange,
+    };
+    MediaRange.initRangeSet(MediaRange.RANGESETS.RANGE_4STEPS, DEAFULT_RANGE_SET);
 
     /**
      * @license
@@ -3578,325 +7671,6 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
             }
         });
         return result;
-    };
-
-    const KeyCodes = {
-        BACKSPACE: 8,
-        TAB: 9,
-        ENTER: 13,
-        SHIFT: 16,
-        CONTROL: 17,
-        ALT: 18,
-        BREAK: 19,
-        CAPS_LOCK: 20,
-        ESCAPE: 27,
-        SPACE: 32,
-        PAGE_UP: 33,
-        PAGE_DOWN: 34,
-        END: 35,
-        HOME: 36,
-        ARROW_LEFT: 37,
-        ARROW_UP: 38,
-        ARROW_RIGHT: 39,
-        ARROW_DOWN: 40,
-        PRINT: 44,
-        INSERT: 45,
-        DELETE: 46,
-        DIGIT_0: 48,
-        DIGIT_1: 49,
-        DIGIT_2: 50,
-        DIGIT_3: 51,
-        DIGIT_4: 52,
-        DIGIT_5: 53,
-        DIGIT_6: 54,
-        DIGIT_7: 55,
-        DIGIT_8: 56,
-        DIGIT_9: 57,
-        A: 65,
-        B: 66,
-        C: 67,
-        D: 68,
-        E: 69,
-        F: 70,
-        G: 71,
-        H: 72,
-        I: 73,
-        J: 74,
-        K: 75,
-        L: 76,
-        M: 77,
-        N: 78,
-        O: 79,
-        P: 80,
-        Q: 81,
-        R: 82,
-        S: 83,
-        T: 84,
-        U: 85,
-        V: 86,
-        W: 87,
-        X: 88,
-        Y: 89,
-        Z: 90,
-        WINDOWS: 91,
-        CONTEXT_MENU: 93,
-        TURN_OFF: 94,
-        SLEEP: 95,
-        NUMPAD_0: 96,
-        NUMPAD_1: 97,
-        NUMPAD_2: 98,
-        NUMPAD_3: 99,
-        NUMPAD_4: 100,
-        NUMPAD_5: 101,
-        NUMPAD_6: 102,
-        NUMPAD_7: 103,
-        NUMPAD_8: 104,
-        NUMPAD_9: 105,
-        NUMPAD_ASTERISK: 106,
-        NUMPAD_PLUS: 107,
-        NUMPAD_MINUS: 109,
-        NUMPAD_COMMA: 110,
-        NUMPAD_SLASH: 111,
-        F1: 112,
-        F2: 113,
-        F3: 114,
-        F4: 115,
-        F5: 116,
-        F6: 117,
-        F7: 118,
-        F8: 119,
-        F9: 120,
-        F10: 121,
-        F11: 122,
-        F12: 123,
-        NUM_LOCK: 144,
-        SCROLL_LOCK: 145,
-        COLON: 186,
-        PLUS: 187,
-        COMMA: 188,
-        SLASH: 189,
-        DOT: 190,
-        PIPE: 191,
-        SEMICOLON: 192,
-        MINUS: 219,
-        GREAT_ACCENT: 220,
-        EQUALS: 221,
-        SINGLE_QUOTE: 222,
-        BACKSLASH: 226,
-    };
-    const isEnter = (event) => (event.key ? event.key === "Enter" : event.keyCode === KeyCodes.ENTER) && !hasModifierKeys(event);
-    const isSpace = (event) => (event.key ? (event.key === "Spacebar" || event.key === " ") : event.keyCode === KeyCodes.SPACE) && !hasModifierKeys(event);
-    const hasModifierKeys = (event) => event.shiftKey || event.altKey || getCtrlKey(event);
-    const getCtrlKey = (event) => !!(event.metaKey || event.ctrlKey); // double negation doesn't have effect on boolean but ensures null and undefined are equivalent to false.
-
-    /**
-     * Supported icon collection aliases.
-     *
-     * Users might specify a collection, using both the key and the value in the following key-value pairs,
-     * e.g the following pairs are completely exchangeable:
-     *
-     * - "SAP-icons/accept" and "SAP-icons-v4/accept"
-     * - "horizon/accept" and "SAP-icons-v5/accept"
-     * - "SAP-icons-TNT/actor" and "tnt/actor"
-     * - "BusinessSuiteInAppSymbols/3d" and "business-suite/3d"
-     */
-    var IconCollectionsAlias;
-    (function (IconCollectionsAlias) {
-        IconCollectionsAlias["SAP-icons"] = "SAP-icons-v4";
-        IconCollectionsAlias["horizon"] = "SAP-icons-v5";
-        IconCollectionsAlias["SAP-icons-TNT"] = "tnt";
-        IconCollectionsAlias["BusinessSuiteInAppSymbols"] = "business-suite";
-    })(IconCollectionsAlias || (IconCollectionsAlias = {}));
-    /**
-     * Returns the collection name for a given alias:
-     *
-     * - "SAP-icons-TNT"resolves to "tnt"
-     * - "BusinessSuiteInAppSymbols" resolves to "business-suite"
-     * - "horizon" resolves to "SAP-icons-v5"
-     *
-     * @param { string } collectionName
-     * @return { string } the normalized collection name
-     */
-    const getIconCollectionByAlias = (collectionName) => {
-        if (IconCollectionsAlias[collectionName]) {
-            return IconCollectionsAlias[collectionName];
-        }
-        return collectionName;
-    };
-
-    var RegisteredIconCollection;
-    (function (RegisteredIconCollection) {
-        RegisteredIconCollection["SAPIconsV4"] = "SAP-icons-v4";
-        RegisteredIconCollection["SAPIconsV5"] = "SAP-icons-v5";
-        RegisteredIconCollection["SAPIconsTNTV2"] = "tnt-v2";
-        RegisteredIconCollection["SAPIconsTNTV3"] = "tnt-v3";
-        RegisteredIconCollection["SAPBSIconsV1"] = "business-suite-v1";
-        RegisteredIconCollection["SAPBSIconsV2"] = "business-suite-v2";
-    })(RegisteredIconCollection || (RegisteredIconCollection = {}));
-    const iconCollections = new Map();
-    iconCollections.set("SAP-icons", {
-        "legacy": RegisteredIconCollection.SAPIconsV4,
-        "sap_horizon": RegisteredIconCollection.SAPIconsV5,
-    });
-    iconCollections.set("tnt", {
-        "legacy": RegisteredIconCollection.SAPIconsTNTV2,
-        "sap_horizon": RegisteredIconCollection.SAPIconsTNTV3,
-    });
-    iconCollections.set("business-suite", {
-        "legacy": RegisteredIconCollection.SAPBSIconsV1,
-        "sap_horizon": RegisteredIconCollection.SAPBSIconsV2,
-    });
-    /**
-     * Registers collection version per theme.
-     * **For exmaple:** registerIconCollectionForTheme("my-custom-icons", {"sap_horizon": "my-custom-icons-v5"})
-     * @param { string } collectionName
-     * @param { ThemeToCollectionMap } themeCollectionMap
-     */
-    const registerIconCollectionForTheme = (collectionName, themeCollectionMap) => {
-        if (iconCollections.has(collectionName)) {
-            iconCollections.set(collectionName, { ...themeCollectionMap, ...iconCollections.get(collectionName) });
-            return;
-        }
-        iconCollections.set(collectionName, themeCollectionMap);
-    };
-    const getIconCollectionForTheme = (collectionName) => {
-        const themeFamily = isLegacyThemeFamily() ? "legacy" : "sap_horizon";
-        return iconCollections.has(collectionName) ? iconCollections.get(collectionName)[themeFamily] : collectionName;
-    };
-
-    const IconCollectionConfiguration = new Map();
-    /**
-     * Returns the configured default icon collection for a given theme.
-     *
-     * @param { string } theme
-     * @public
-     * @returns { string | undefined }
-     */
-    const getDefaultIconCollection = (theme) => {
-        return IconCollectionConfiguration.get(theme);
-    };
-
-    /**
-     * Returns the effective theme dependant icon collection:
-     *
-     * - "no collection" resolves to "SAP-icons-v4" in "Quartz" and to "SAP-icons-v5" in "Horizon"
-     * - "tnt" (and its alias "SAP-icons-TNT") resolves to "tnt-v2" in "Quartz" and resolves to "tnt-v3" in "Horizon"
-     * - "business-suite" (and its alias "BusinessSuiteInAppSymbols") resolves to "business-suite-v1" in "Quartz" and resolves to "business-suite-v2" in "Horizon"
-     *
-     * @param { IconCollection } collectionName
-     * @returns { IconCollection } the effective collection name
-     */
-    const getEffectiveIconCollection = (collectionName) => {
-        const defaultIconCollection = getDefaultIconCollection(getTheme());
-        // no collection + default collection, configured via setDefaultIconCollection - return the configured icon collection.
-        if (!collectionName && defaultIconCollection) {
-            return getIconCollectionByAlias(defaultIconCollection);
-        }
-        // no collection - return "SAP-icons-v4" or  "SAP-icons-v5".
-        if (!collectionName) {
-            return getIconCollectionForTheme("SAP-icons");
-        }
-        // has collection - return "SAP-icons-v4", "SAP-icons-v5", "tnt-v1", "tnt-v2", "business-suite-v1", "business-suite-v2", or custom ones.
-        return getIconCollectionForTheme(collectionName);
-    };
-
-    const DEFAULT_THEME_FAMILY = "legacy"; // includes sap_fiori_*
-    const loaders = new Map();
-    const registry = getSharedResource("SVGIcons.registry", new Map());
-    const iconCollectionPromises = getSharedResource("SVGIcons.promises", new Map());
-    const ICON_NOT_FOUND$1 = "ICON_NOT_FOUND";
-    const _loadIconCollectionOnce = async (collectionName) => {
-        if (!iconCollectionPromises.has(collectionName)) {
-            if (!loaders.has(collectionName)) {
-                throw new Error(`No loader registered for the ${collectionName} icons collection. Probably you forgot to import the "AllIcons.js" module for the respective package.`);
-            }
-            const loadIcons = loaders.get(collectionName);
-            iconCollectionPromises.set(collectionName, loadIcons(collectionName));
-        }
-        return iconCollectionPromises.get(collectionName);
-    };
-    const _fillRegistry = (bundleData) => {
-        Object.keys(bundleData.data).forEach(iconName => {
-            const iconData = bundleData.data[iconName];
-            registerIcon(iconName, {
-                pathData: (iconData.path || iconData.paths),
-                ltr: iconData.ltr,
-                accData: iconData.acc,
-                collection: bundleData.collection,
-                packageName: bundleData.packageName,
-            });
-        });
-    };
-    // set
-    const registerIcon = (name, iconData) => {
-        const key = `${iconData.collection}/${name}`;
-        registry.set(key, {
-            pathData: iconData.pathData,
-            ltr: iconData.ltr,
-            accData: iconData.accData,
-            packageName: iconData.packageName,
-            customTemplate: iconData.customTemplate,
-            viewBox: iconData.viewBox,
-            collection: iconData.collection,
-        });
-    };
-    /**
-     * Processes the full icon name and splits it into - "name", "collection".
-     * - removes legacy protocol ("sap-icon://")
-     * - resolves aliases (f.e "SAP-icons-TNT/actor" => "tnt/actor")
-     *
-     * @param { string } name
-     * @return { object }
-     */
-    const processName = (name) => {
-        // silently support ui5-compatible URIs
-        if (name.startsWith("sap-icon://")) {
-            name = name.replace("sap-icon://", "");
-        }
-        let collection;
-        [name, collection] = name.split("/").reverse();
-        name = name.replace("icon-", "");
-        if (collection) {
-            collection = getIconCollectionByAlias(collection);
-        }
-        return { name, collection };
-    };
-    const getIconDataSync = (iconName) => {
-        const { name, collection } = processName(iconName);
-        return getRegisteredIconData(collection, name);
-    };
-    const getIconData = async (iconName) => {
-        const { name, collection } = processName(iconName);
-        let iconData = ICON_NOT_FOUND$1;
-        try {
-            iconData = (await _loadIconCollectionOnce(getEffectiveIconCollection(collection)));
-        }
-        catch (error) {
-            const e = error;
-            console.error(e.message); /* eslint-disable-line */
-        }
-        if (iconData === ICON_NOT_FOUND$1) {
-            return iconData;
-        }
-        const registeredIconData = getRegisteredIconData(collection, name);
-        if (registeredIconData) {
-            return registeredIconData;
-        }
-        // not filled by another await. many getters will await on the same loader, but fill only once
-        if (Array.isArray(iconData)) {
-            iconData.forEach(data => {
-                _fillRegistry(data);
-                registerIconCollectionForTheme(collection, { [data.themeFamily || DEFAULT_THEME_FAMILY]: data.collection });
-            });
-        }
-        else {
-            _fillRegistry(iconData);
-        }
-        return getRegisteredIconData(collection, name);
-    };
-    const getRegisteredIconData = (collection, name) => {
-        const registryKey = `${getEffectiveIconCollection(collection)}/${name}`;
-        return registry.get(registryKey);
     };
 
     const name$7 = "accept";
@@ -4420,7 +8194,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
     }), event("change")], CheckBox);
     CheckBox.define();
 
-    const WrapperClass = WebComponentBaseClass.extend("@ui5/webcomponents.CheckBox", {
+    const WrapperClass = WebComponent.extend("@ui5/webcomponents.CheckBox", {
       metadata: {
       "namespace": "@ui5/webcomponents",
       "tag": "ui5-checkbox",
@@ -4522,7 +8296,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
             v += "px";
           }
         }
-        return WebComponentBaseClass.prototype.setProperty.apply(this, [sPropName, v, bSupressInvalidate]);
+        return WebComponent.prototype.setProperty.apply(this, [sPropName, v, bSupressInvalidate]);
       }
     });
 
