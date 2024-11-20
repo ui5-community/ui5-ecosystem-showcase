@@ -645,6 +645,9 @@ const webcContextModules = {
 		},
 	},
 	"sap/ui/core/EnabledPropagator": function () {},
+	"sap/base/strings/hyphenate": function (s) {
+		return s;
+	},
 };
 
 test.serial("Verify generation of @ui5/webcomponents/dist/Panel", async (t) => {

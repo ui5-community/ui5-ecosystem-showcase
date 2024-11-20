@@ -168,10 +168,10 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 
 	// list of external dependencies that are needed for the Web Components transformation
 	const externalDeps = [
+		"sap/base/strings/hyphenate",
+		"sap/ui/base/DataType",
 		"sap/ui/core/webc/WebComponent",
 		"sap/ui/core/webc/WebComponentRenderer",
-		"sap/ui/base/DataType",
-		"sap/base/strings/hyphenate",
 		"sap/ui/core/LabelEnablement",
 		"sap/ui/core/EnabledPropagator",
 	];
@@ -304,7 +304,7 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 				let superclass = clazz.superclass,
 					isUI5Element = false;
 				while (superclass) {
-					if (superclass?.name === "UI5Element") {
+					if (superclass?.namespace === "@ui5/webcomponents-base" && superclass?.name === "UI5Element") {
 						isUI5Element = true;
 						break;
 					}
@@ -332,7 +332,8 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 
 				// Determine the superclass UI5 module name and import it
 				let webcBaseClass = "sap/ui/core/webc/WebComponent";
-				if (clazz.superclass?._ui5metadata) {
+				const ui5Superclass = clazz.superclass;
+				if (ui5Superclass?._ui5metadata && !(ui5Superclass.namespace === "@ui5/webcomponents-base" && ui5Superclass.name === "UI5Element")) {
 					const { module } = clazz.superclass;
 					const { namespace } = clazz.superclass._ui5metadata;
 					webcBaseClass = `${namespace}/${module}`;
