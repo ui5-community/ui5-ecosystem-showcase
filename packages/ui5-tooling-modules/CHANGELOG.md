@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.18.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.5...ui5-tooling-modules@3.18.6) (2024-11-20)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** cross package superclass detection for WebC ([#1124](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1124)) ([78597c6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/78597c66f068b2ec6dbe14d64e853a1f414bbeb4))
+
+
+
+
+
 ## [3.18.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.4...ui5-tooling-modules@3.18.5) (2024-11-14)
 
 
