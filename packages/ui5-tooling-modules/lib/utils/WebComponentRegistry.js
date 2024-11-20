@@ -84,23 +84,31 @@ class RegistryEntry {
 	}
 
 	#connectSuperclass(classDef) {
+		if (classDef.superclass?.name?.includes(".")) {
+			const superclassName = classDef.superclass.name;
+			const [npmPackage, ...nameParts] = superclassName.split(".");
+			classDef.superclass = {
+				name: nameParts.join("."),
+				package: npmPackage,
+				file: `dist/${nameParts.join("/")}.js`,
+			};
+			console.warn(`The class '${this.namespace}/${classDef.name}' detected superclass '${classDef.superclass.package}/${classDef.superclass.name}' from string '${superclassName}'!`);
+		}
 		if (classDef.superclass) {
 			const superclassName = classDef.superclass.name;
-
-			// the top most superclass is "UI5Element", which at runtime is essentially "sap/ui/core/WebComponent"
-			if (superclassName !== "UI5Element") {
-				// determine superclass cross-package
-				let superclassRef = this.classes[superclassName];
-				if (!superclassRef) {
-					const refPackage = WebComponentRegistry.getPackage(classDef.superclass.package);
-					superclassRef = refPackage?.classes[superclassName];
-				}
-				if (!superclassRef) {
-					console.error(`The class '${this.namespace}/${classDef.name}' has an unknown superclass '${classDef.superclass.package}/${superclassName}'!`);
-				} else {
-					this.#connectSuperclass(superclassRef);
-					classDef.superclass = superclassRef;
-				}
+			// determine superclass cross-package
+			const refPackage = WebComponentRegistry.getPackage(classDef.superclass.package);
+			let superclassRef = (refPackage || this).classes[superclassName];
+			if (!superclassRef) {
+				console.error(
+					`The class '${this.namespace}/${classDef.name}' has an unknown superclass '${classDef.superclass.package}/${superclassName}' using default '@ui5/webcomponents-base/UI5Element'!`,
+				);
+				const refPackage = WebComponentRegistry.getPackage("@ui5/webcomponents-base");
+				let superclassRef = (refPackage || this).classes["UI5Element"];
+				classDef.superclass = superclassRef;
+			} else {
+				this.#connectSuperclass(superclassRef);
+				classDef.superclass = superclassRef;
 			}
 		}
 	}
