@@ -80,6 +80,18 @@
         </VBox>
       </webc:Panel>
 
+      <webc:Panel headerText="Value State handling" class="panelSpacing">
+        <VBox alignItems="Center" justifyContent="Center" height="100%">
+          <webc:Input placeholder="Choose content density" valueState="Information" valueStateMessage="This is an error message. Extra long text used as an error message.">
+            <!-- TODO: Why do SuggestionItems not have the '@ui5/webcomponents.IInputSuggestionItem' interface? -->
+            <!-- TODO: Setting showSuggestions="true" leads to a strange error about "i18n" packages...? -->
+            <!--<webc:SuggestionItem text="Cozy" />
+            <webc:SuggestionItem text="Compact" />
+            <webc:SuggestionItem text="Condensed" />-->
+          </webc:Input>
+        </VBox>
+      </webc:Panel>
+
       <webc:Panel headerText="Controls created from Main.controller.ts" class="panelSpacing">
         <VBox id="contentArea" alignItems="Center" justifyContent="Center" height="100%" />
       </webc:Panel>

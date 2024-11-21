@@ -259,7 +259,7 @@ class RegistryEntry {
 		} else if (propDef.name === "disabled") {
 			// "disabled" maps to "enabled" in UI5
 			// we also need the UI5 EnabledPropagator
-			classDef._ui5NeedsEnabledPropagator = true;
+			classDef._ui5specifics.needsEnabledPropagator = true;
 			ui5metadata.properties["enabled"] = {
 				type: "boolean",
 				defaultValue: "true",
@@ -471,10 +471,36 @@ class RegistryEntry {
 			// Any "Label" control needs a special UI5-only interface
 			ui5metadata.interfaces.push("sap.ui.core.Label");
 			// Additionally, all such controls must apply the "sap/ui/core/LabelEnablement" (see "../templates/WrapperControl.hbs")
-			classDef._ui5NeedsLabelEnablement = true;
+			classDef._ui5specifics.needsLabelEnablement = true;
 		} else if (tag === "ui5-multi-input") {
 			// TODO: Multi Input needs to implement the functions defined in "sap.ui.core.ISemanticFormContent"...
 			ui5metadata.interfaces.push("sap.ui.core.ISemanticFormContent");
+		}
+
+		// If a "valueStateMessage" slot is present, we need a special property mapping
+		// and correct the "valueState" property's typing
+		if (ui5metadata.aggregations["valueStateMessage"]) {
+			if (ui5metadata.properties["valueState"]) {
+				// there will not be an aggregation in UI5, but rather a string mapped property!
+				delete ui5metadata.aggregations["valueStateMessage"];
+				ui5metadata.properties["valueStateMessage"] = {
+					name: "valueStateMessage",
+					type: "string",
+					defaultValue: `""`,
+					mapping: {
+						type: "slot",
+						to: "div",
+					},
+				};
+				// the UI5 valueState needs the Core's enum typing
+				ui5metadata.properties["valueState"].type = "sap.ui.core.ValueState";
+			} else {
+				// this is an interesting inconsistency that does not occur in the UI5 web components
+				// we report it here for custom web component development
+				console.warn(
+					`The class '${this.namespace}/${classDef.name}' defines a slot called 'valueStateMessage', but does not provide a corresponding 'valueState' property! A UI5 control expects both to be present for correct 'valueState' handling.`,
+				);
+			}
 		}
 	}
 
@@ -491,6 +517,9 @@ class RegistryEntry {
 			getters: [],
 			methods: [],
 		});
+
+		// we track a couple of UI5 specifics like interfaces and mixins separately
+		classDef._ui5specifics = {};
 
 		classDef.members?.forEach((propDef) => {
 			this.#processMembers(classDef, ui5metadata, propDef);

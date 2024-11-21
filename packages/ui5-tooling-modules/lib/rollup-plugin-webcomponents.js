@@ -322,8 +322,8 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 				const metadata = JSON.stringify(metadataObject, undefined, 2);
 				const webcModule = moduleInfo.attributes.absModulePath;
 				const webcClass = webcModule.replace(/\\/g, "/"); // is the absolute path of the original Web Component class
-				const needsLabelEnablement = clazz._ui5NeedsLabelEnablement;
-				const needsEnabledPropagator = clazz._ui5NeedsEnabledPropagator;
+				const needsLabelEnablement = clazz._ui5specifics.needsLabelEnablement;
+				const needsEnabledPropagator = clazz._ui5specifics.needsEnabledPropagator;
 
 				// store the webc class as a marker to add the import to @ui5/webcomponents-base
 				if (!webcModules.includes(webcModule)) {
