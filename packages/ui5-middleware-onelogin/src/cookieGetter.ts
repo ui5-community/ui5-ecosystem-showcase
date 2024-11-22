@@ -83,21 +83,52 @@ export default class CookieGetter {
 				useCertificate: process.env.UI5_MIDDLEWARE_ONELOGIN_USE_CERTIFICATE === "true",
 				debug: process.env.UI5_MIDDLEWARE_ONELOGIN_DEBUG === "true",
 				query: this.parseJSON(process.env.UI5_MIDDLEWARE_ONELOGIN_QUERY),
+				certificateOrigin: process.env.UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_ORIGIN,
+				certificateCertPath: process.env.UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_CERT_PATH,
+				certificateCert: this.parseJSON(process.env.UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_CERT),
+				certificateKeyPath: process.env.UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_KEY_PATH,
+				certificateKey: this.parseJSON(process.env.UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_KEY),
+				certificatePfxPath: process.env.UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_PFX_PATH,
+				certificatePfx: this.parseJSON(process.env.UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_PFX),
+				certificatePassphrase: process.env.UI5_MIDDLEWARE_ONELOGIN_CERTIFICATE_PASSPHRASE,
 			},
 		});
 
 		const effectiveOptions = Object.assign({}, options);
 		effectiveOptions.configuration = Object.assign({}, defaultOptions.configuration, envOptions.configuration, options.configuration);
 
+		const isUseCertificateEnabled = effectiveOptions.configuration.useCertificate;
+		const hasCertificateConfig =
+			effectiveOptions.configuration.certificateCertPath ||
+			effectiveOptions.configuration.certificateCert ||
+			effectiveOptions.configuration.certificateKeyPath ||
+			effectiveOptions.configuration.certificateKey ||
+			effectiveOptions.configuration.certificatePfxPath ||
+			effectiveOptions.configuration.certificatePfx;
+
 		if (effectiveOptions.configuration.debug) {
+			const sanitizePassphrase = (obj: any) => {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+				if (!obj?.configuration?.certificatePassphrase) return obj;
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+				return {
+					...obj,
+					configuration: {
+						...obj.configuration,
+						certificatePassphrase: "***",
+					},
+				};
+			};
+
 			log.info("Default options:");
-			log.info(defaultOptions);
+			log.info(sanitizePassphrase(defaultOptions));
 			log.info("Env options:");
-			log.info(envOptions);
+			log.info(sanitizePassphrase(envOptions));
 			log.info("Yaml options:");
-			log.info(options);
+			log.info(sanitizePassphrase(options));
 			log.info("Effective options:");
-			log.info(effectiveOptions);
+			log.info(sanitizePassphrase(effectiveOptions));
+			log.info("Using client certificates: " + String(isUseCertificateEnabled && hasCertificateConfig));
 		}
 
 		const attr: Attributes = {
@@ -106,7 +137,7 @@ export default class CookieGetter {
 			password: effectiveOptions.configuration.password!,
 		};
 
-		if ((!attr.username || !attr.password) && !effectiveOptions.configuration.useCertificate) {
+		if ((!attr.username || !attr.password) && !(isUseCertificateEnabled && hasCertificateConfig)) {
 			log.warn("No credentials provided. Please answer the following prompts");
 			if (!attr.username) {
 				attr.username = await prompt("Username: ");
@@ -121,6 +152,7 @@ export default class CookieGetter {
 			const url = new URL(`${urlWithTrailingSlash}${effectiveOptions.configuration.subdirectory}`);
 			const query = effectiveOptions.configuration.query;
 			if (query) {
+				// @ts-ignore
 				Object.keys(query).forEach((key) => url.searchParams.append(key, query[key]));
 			}
 			attr.url = url.href;
@@ -135,10 +167,38 @@ export default class CookieGetter {
 
 		try {
 			const browser = await chromium.launch(playwrightOpt);
-			const context = await browser.newContext({ ignoreHTTPSErrors: true });
+			const contextOptions: any = { ignoreHTTPSErrors: true };
+
+			if (isUseCertificateEnabled && hasCertificateConfig) {
+				contextOptions.clientCertificates = [
+					{
+						origin: effectiveOptions.configuration.certificateOrigin,
+						certPath: effectiveOptions.configuration.certificateCertPath,
+						cert: effectiveOptions.configuration.certificateCert,
+						keyPath: effectiveOptions.configuration.certificateKeyPath,
+						key: effectiveOptions.configuration.certificateKey,
+						pfxPath: effectiveOptions.configuration.certificatePfxPath,
+						pfx: effectiveOptions.configuration.certificatePfx,
+						passphrase: effectiveOptions.configuration.certificatePassphrase,
+					},
+				];
+			}
+
+			if (effectiveOptions.configuration.debug) {
+				log.info("Client certificates configuration:");
+				// Create a copy of certificates config without the passphrase for logging
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return
+				const certificatesForLogging = contextOptions.clientCertificates.map((cert: any) => ({
+					...cert,
+					passphrase: cert.passphrase ? "***" : undefined,
+				}));
+				log.info(certificatesForLogging);
+			}
+
+			const context = await browser.newContext(contextOptions);
 
 			const page = await context.newPage();
-			if (!effectiveOptions.configuration.useCertificate) {
+			if (!(isUseCertificateEnabled && hasCertificateConfig)) {
 				await page.goto(attr.url, { waitUntil: "domcontentloaded" });
 
 				const elem = await this.getUserInput(page);
@@ -195,7 +255,15 @@ export default class CookieGetter {
 				} catch (oError) {
 					//This error is fine, it's not locating the No button specifically for Azure
 				}
-			} else {
+				// Certificate login without certificate configuration
+			} else if (isUseCertificateEnabled && hasCertificateConfig) {
+				// Full certificate login with provided configuration
+				log.info("Login with certificate configuration. Waiting for page to load...");
+				await page.goto(attr.url, { waitUntil: "networkidle" });
+				// Add more robust certificate handling here if needed
+			} else if (isUseCertificateEnabled && !hasCertificateConfig) {
+				// Certificate login without explicit configuration
+				// (might be using system certificates)
 				await page.goto(attr.url, { waitUntil: "networkidle" });
 
 				let isLoginPage = true;

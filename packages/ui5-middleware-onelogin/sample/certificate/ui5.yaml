@@ -1,0 +1,32 @@
+specVersion: "4.0"
+metadata:
+  name: certificate
+type: application
+framework:
+  name: OpenUI5
+  version: "1.120.20"
+  libraries:
+    - name: sap.m
+    - name: sap.ui.core
+    - name: themelib_sap_horizon
+builder:
+  resources:
+    excludes:
+      - "test/e2e/**"
+server:
+  customMiddleware:
+    - name: ui5-middleware-onelogin
+      afterMiddleware: compression
+      configuration:
+        debug: true
+        path: https://emea.cockpit.btp.cloud.sap
+        subdirectory: cockpit#/
+        useCertificate: true
+        #certificateOrigin: "https://accounts.sap.com"
+        #certificateCertPath: "path/to/cert.pem"
+        #certificateCert: # Buffer value (not applicable in YAML)
+        #certificateKeyPath: "path/to/key.pem"
+        #certificateKey: # Buffer value (not applicable in YAML)
+        #certificatePfxPath: "sap.pfx"
+        #certificatePfx: # Buffer value (not applicable in YAML)
+        #certificatePassphrase: "your_passphrase_here"
