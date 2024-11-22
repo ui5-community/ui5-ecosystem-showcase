@@ -23,9 +23,11 @@
     "proxy-from-env": "^1.1.0"
   },
   "devDependencies": {
+    "@ui5/builder": "*",
     "@ui5/project": "*"
   },
   "peerDependencies": {
+    "@ui5/builder": ">=3 <5",
     "@ui5/project": ">=3 <5"
   }
 }
