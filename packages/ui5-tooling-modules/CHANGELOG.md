@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.18.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.6...ui5-tooling-modules@3.18.7) (2024-11-22)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** do not load metadata from npm packages twice ([#1126](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1126)) ([2199f93](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2199f935539e329404f8061c5e149a9bc8b6f228))
+
+
+
+
+
 ## [3.18.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.5...ui5-tooling-modules@3.18.6) (2024-11-20)
 
 
