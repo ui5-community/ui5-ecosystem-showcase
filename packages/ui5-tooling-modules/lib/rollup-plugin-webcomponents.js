@@ -63,9 +63,11 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 
 	// helper function to load a NPM package and its custom elements metadata
 	const emittedFiles = [];
+	const loadedNpmPackages = [];
 	const loadNpmPackage = (npmPackage, emitFile) => {
 		let registryEntry = WebComponentRegistry.getPackage(npmPackage);
-		if (!registryEntry) {
+		if (!registryEntry && !loadedNpmPackages.includes(npmPackage)) {
+			loadedNpmPackages.push(npmPackage);
 			const packageJsonPath = resolveModule(`${npmPackage}/package.json`);
 			if (packageJsonPath) {
 				let packageJson;
