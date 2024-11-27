@@ -7,6 +7,9 @@ import LabelEnablement from "sap/ui/core/LabelEnablement";
 {{#if needsEnabledPropagator}}
 import EnabledPropagator from "sap/ui/core/EnabledPropagator";
 {{/if}}
+{{#if needsMessageMixin}}
+import MessageMixin from "sap/ui/core/message/MessageMixin";
+{{/if}}
 
 const WrapperClass = WebComponentBaseClass.extend("{{ui5Class}}", {
   metadata: {{{metadata}}},
@@ -28,6 +31,9 @@ LabelEnablement.enrich(WrapperClass.prototype);
 {{/if}}
 {{#if needsEnabledPropagator}}
 EnabledPropagator.call(WrapperClass.prototype);
+{{/if}}
+{{#if needsMessageMixin}}
+MessageMixin.call(WrapperClass.prototype);
 {{/if}}
 
 export default WrapperClass;

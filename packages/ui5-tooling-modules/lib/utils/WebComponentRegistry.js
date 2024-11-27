@@ -492,8 +492,18 @@ class RegistryEntry {
 						to: "div",
 					},
 				};
-				// the UI5 valueState needs the Core's enum typing
-				ui5metadata.properties["valueState"].type = "sap.ui.core.ValueState";
+
+				// the UI5 valueState needs the Core's enum typing and some special mapping to
+				// convert the "sap.ui.core.ValueState" to the web component's variant.
+				Object.assign(ui5metadata.properties["valueState"], {
+					type: "sap.ui.core.ValueState",
+					mapping: {
+						formatter: "_mapValueState",
+					},
+				});
+
+				// mixin support for handling of backend messages
+				classDef._ui5specifics.needsMessageMixin = true;
 			} else {
 				// this is an interesting inconsistency that does not occur in the UI5 web components
 				// we report it here for custom web component development

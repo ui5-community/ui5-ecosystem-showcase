@@ -23,12 +23,17 @@
       <core:Icon color="#1873B4" src="sap-icon://sap-ui5" size="2rem" />
     </headerContent>
     <content>
+      <webc:Panel headerText="Test Pages" class="panelSpacing">
+        <VBox alignItems="Center" justifyContent="Center" height="100%">
+          <webc:Button text="DynamicPage" click=".onNavToDynamicPage" design="Attention" endIcon="slim-arrow-right" class="buttonSpacing" />
+          <webc:Button text="Form with Aria support" click=".onNavToForm" design="Attention" endIcon="slim-arrow-right" class="buttonSpacing" />
+          <webc:Button text="Value/Data State" click=".onNavToValueState" design="Attention" endIcon="slim-arrow-right" class="buttonSpacing" />
+        </VBox>
+      </webc:Panel>
       <webc:Panel headerText="Buttons" class="panelSpacing">
         <VBox alignItems="Center" justifyContent="Center" height="100%">
-          <webc:Button text="nav to DynamicPage" click=".onNavToDynamicPage" design="Attention" endIcon="slim-arrow-right" class="buttonSpacing" />
-          <webc:Button text="nav to Form with Aria support" click=".onNavToForm" design="Attention" endIcon="slim-arrow-right" class="buttonSpacing" />
-          <Button text="Don't press me!" press="onBoo" class="buttonSpacing" />
-          <webc:Button text="Hello World 123" class="buttonSpacing" />
+          <Button text="sap.m.Button" press="onBoo" class="buttonSpacing" />
+          <webc:Button text="webc Button" click="onBoo" class="buttonSpacing" />
         </VBox>
       </webc:Panel>
 
@@ -77,18 +82,6 @@
               <webc:Token text="USA" />
             </webc:tokens>
           </webc:MultiInput>
-        </VBox>
-      </webc:Panel>
-
-      <webc:Panel headerText="Value State handling" class="panelSpacing">
-        <VBox alignItems="Center" justifyContent="Center" height="100%">
-          <webc:Input placeholder="Choose content density" valueState="Information" valueStateMessage="This is an error message. Extra long text used as an error message.">
-            <!-- TODO: Why do SuggestionItems not have the '@ui5/webcomponents.IInputSuggestionItem' interface? -->
-            <!-- TODO: Setting showSuggestions="true" leads to a strange error about "i18n" packages...? -->
-            <!--<webc:SuggestionItem text="Cozy" />
-            <webc:SuggestionItem text="Compact" />
-            <webc:SuggestionItem text="Condensed" />-->
-          </webc:Input>
         </VBox>
       </webc:Panel>
 
