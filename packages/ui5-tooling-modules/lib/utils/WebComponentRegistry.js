@@ -501,6 +501,7 @@ class RegistryEntry {
 					type: "sap.ui.core.ValueState",
 					mapping: {
 						formatter: "_mapValueState",
+						parser: "_parseValueState",
 					},
 				});
 
