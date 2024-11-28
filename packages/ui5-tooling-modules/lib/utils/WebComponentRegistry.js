@@ -483,12 +483,14 @@ class RegistryEntry {
 			if (ui5metadata.properties["valueState"]) {
 				// there will not be an aggregation in UI5, but rather a string mapped property!
 				delete ui5metadata.aggregations["valueStateMessage"];
-				ui5metadata.properties["valueStateMessage"] = {
-					name: "valueStateMessage",
+				ui5metadata.properties["valueStateText"] = {
+					name: "valueStateText",
 					type: "string",
 					defaultValue: `""`,
 					mapping: {
 						type: "slot",
+						slotName: "valueStateMessage",
+						// "mapping.to" describes the result in the webc DOM
 						to: "div",
 					},
 				};

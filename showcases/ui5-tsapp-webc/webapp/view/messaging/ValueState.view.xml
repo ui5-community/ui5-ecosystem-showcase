@@ -19,16 +19,17 @@
         <VBox alignItems="Center" justifyContent="Center" height="100%">
           <webc:Label text="The Input's valueStateMessage is mapped from 'valueStateMessage' property to a slot." />
           <webc:Label text="The 'valueState' property's type is 'sap.ui.core.ValueState', which is automatically mapped to the correct web component values." />
-          <webc:Input placeholder="infos in valueStateMessage" valueState="Information" valueStateMessage="This is an info message. Extra long text used as an info message.">
+          <webc:Input placeholder="infos in valueStateMessage" valueState="Information" valueStateText="This is an info message. Extra long text used as an info message.">
             <!-- TODO: Why do SuggestionItems not have the '@ui5/webcomponents.IInputSuggestionItem' interface? -->
             <!-- TODO: Setting showSuggestions="true" leads to a strange error about "i18n" packages...? -->
             <!--<webc:SuggestionItem text="Cozy" />
                 <webc:SuggestionItem text="Compact" />
                 <webc:SuggestionItem text="Condensed" />-->
           </webc:Input>
-          <webc:Input placeholder="Warning! Here be dragons!" valueState="Warning" valueStateMessage="This is an warning message. Dragons are super dangerous." />
-          <webc:Input placeholder="HUGE success! 🎉" valueState="Success" valueStateMessage="This is invisible, since success does not show a special message." />
-          <webc:Input placeholder="Oh no. Something is wrong!" valueState="Error" valueStateMessage="This is an error message. Please fix your input, it does not compute." />
+          <webc:Input placeholder="Warning! Here be dragons!" valueState="Warning" valueStateText="This is an warning message. Dragons are super dangerous." />
+          <webc:Input placeholder="HUGE success! 🎉" valueState="Success" valueStateText="This is invisible, since success does not show a special message." />
+          <webc:Input placeholder="Oh no. Something is wrong!" valueState="Error" valueStateText="This is an error message. Please fix your input, it does not compute." />
+          <webc:Input placeholder="No valueState here." valueState="None" valueStateText="Nothing to be done." />
         </VBox>
       </webc:Panel>
     </content>
