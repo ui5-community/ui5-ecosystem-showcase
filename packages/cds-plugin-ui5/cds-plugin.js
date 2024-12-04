@@ -16,14 +16,13 @@
 let skip = false;
 if (process.env.NODE_ENV === "test" && process.env.JEST_WORKER_ID && process.env.CDS_PLUGIN_UI5_ACTIVE !== "true") {
 	console.log(
-		process.env.NO_COLOR ? "[%s] %s" : "\x1b[36m[%s]\x1b[0m \x1b[31m%s\x1b[0m",
+		process.env.NO_COLOR ? "[%s] %s" : "\x1b[36m[%s]\x1b[0m \x1b[33m%s\x1b[0m",
 		"cds-plugin-ui5",
 		"Skip execution because JEST is running tests! To force the execution of the plugin set env var CDS_PLUGIN_UI5_ACTIVE=true...",
 	);
 	skip = true;
-}
-if (process.env.CDS_PLUGIN_UI5_ACTIVE === "false") {
-	console.log(process.env.NO_COLOR ? "[%s] %s" : "\x1b[36m[%s]\x1b[0m \x1b[31m%s\x1b[0m", "cds-plugin-ui5", "Skip execution because it has been disabled by env var CDS_PLUGIN_UI5_ACTIVE!");
+} else if (process.env.CDS_PLUGIN_UI5_ACTIVE === "false") {
+	console.log(process.env.NO_COLOR ? "[%s] %s" : "\x1b[36m[%s]\x1b[0m \x1b[33m%s\x1b[0m", "cds-plugin-ui5", "Skip execution because it has been disabled by env var CDS_PLUGIN_UI5_ACTIVE!");
 	skip = true;
 }
 
