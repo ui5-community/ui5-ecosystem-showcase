@@ -15,6 +15,8 @@ const { Agent: HttpsAgent } = require("https");
  * @param {@ui5/logger/Logger} parameters.log Logger instance
  * @param {object} parameters.options Options
  * @param {object} [parameters.options.configuration] Custom server middleware configuration if given in ui5.yaml
+ * @param {boolean} [parameters.options.configuration.saveLibsLocal] Whether to save libraries in the project directory instead of user home
+ * @param {string} [parameters.options.configuration.cachePath] Custom path to store cached framework files
  * @param {object} parameters.middlewareUtil Specification version dependent interface to a
  *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
  * @returns {Function} Middleware function to use
@@ -24,6 +26,8 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	const effectiveOptions = {
 		debug: false,
 		strictSSL: true,
+		saveLibsLocal: false, // New parameter to save libraries locally
+		cachePath: undefined,
 	};
 	// config-time options from ui5.yaml for cfdestination take precedence
 	if (options.configuration) {
@@ -59,7 +63,15 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 
 		// all the data is stored in the `.ui5` folder
 		const homeDir = require("os").homedir();
-		const frameworkDir = path.resolve(homeDir, `.ui5/ui5-middleware-serveframework/${frameworkName.toLowerCase()}/${frameworkVersion}`);
+		if (!effectiveOptions.cachePath) {
+			if (effectiveOptions.saveLibsLocal) {
+				effectiveOptions.cachePath = path.join(process.cwd(), ".ui5-middleware-serveframework");
+			} else {
+				effectiveOptions.cachePath = path.resolve(homeDir, `.ui5/ui5-middleware-serveframework`);
+			}
+		}
+
+		const frameworkDir = path.join(effectiveOptions.cachePath, `${frameworkName.toLowerCase()}/${frameworkVersion}`);
 		if (!existsSync(frameworkDir)) {
 			await mkdir(frameworkDir, { recursive: true });
 		}
@@ -73,7 +85,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 				sapui5: "https://ui5.sap.com",
 			}[frameworkName.toLowerCase()];
 
-			// support for coporate proxies
+			// support for corporate proxies
 			const { getProxyForUrl } = await import("proxy-from-env");
 			const { HttpsProxyAgent } = await import("https-proxy-agent");
 			// detect and configure proxy agent
@@ -95,7 +107,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		}
 		const versionInfo = JSON.parse(await readFile(versionInfoFile, { encoding: "utf-8" }));
 
-		// lookup an existing locally built framework version or built a missing framework locally
+		// lookup an existing locally built framework version or build a missing framework locally
 		const frameworkPkgJson = path.resolve(frameworkDir, `package.json`);
 		const frameworkUI5Yaml = path.resolve(frameworkDir, `ui5.yaml`);
 		const frameworkWebappDir = path.join(frameworkDir, "webapp");
@@ -104,11 +116,11 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 		const frameworkReadyMarker = path.join(frameworkDir, ".ready");
 		const existsFramework = [frameworkPkgJson, frameworkUI5Yaml, frameworkManifest, frameworkDestDir, frameworkReadyMarker].reduce((prev, cur) => {
 			return prev && existsSync(cur);
-		});
+		}, true);
 		if (!existsFramework) {
 			existsSync(frameworkWebappDir) && (await rm(frameworkWebappDir, { recursive: true }));
 			existsSync(frameworkDestDir) && (await rm(frameworkDestDir, { recursive: true }));
-			mkdir(frameworkWebappDir, { recursive: true });
+			await mkdir(frameworkWebappDir, { recursive: true });
 
 			// create a dummy manifest to simulate a very basic application
 			await writeFile(
@@ -126,7 +138,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 				},
 			);
 
-			// create a ui5.yaml to list all librar
+			// create ui5.yaml to list all libraries
 			let ui5YamlContent = yaml.dump({
 				specVersion: "3.0",
 				metadata: {
