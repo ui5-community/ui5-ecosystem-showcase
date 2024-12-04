@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.11.1...cds-plugin-ui5@0.11.2) (2024-12-04)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** color adoption for skip logs ([#1129](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1129)) ([0d2c354](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0d2c35421c803ef7b5c6492715d13e53e88031d4))
+
+
+
+
+
 ## [0.11.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.11.0...cds-plugin-ui5@0.11.1) (2024-10-10)
 
 
