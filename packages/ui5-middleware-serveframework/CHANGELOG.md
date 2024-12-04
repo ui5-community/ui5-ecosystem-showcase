@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.4.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.3.1...ui5-middleware-serveframework@3.4.0) (2024-12-04)
+
+
+### Features
+
+* **ui5-middleware-serverframework:** custom path to save libs ([#1130](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1130)) ([4ddfec7](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4ddfec71cca3a5ced43ecc3f85981de225ce3544))
+
+
+
+
+
 ## [3.3.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.3.0...ui5-middleware-serveframework@3.3.1) (2024-11-22)
 
 
