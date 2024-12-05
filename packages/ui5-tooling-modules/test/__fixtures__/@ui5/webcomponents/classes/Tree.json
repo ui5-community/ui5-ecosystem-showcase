@@ -1,0 +1,23 @@
+{
+  "namespace": "@ui5/webcomponents",
+  "tag": "ui5-tree",
+  "interfaces": [],
+  "properties": {
+    "selectionMode": { "type": "@ui5/webcomponents.ListSelectionMode", "mapping": "property", "defaultValue": "None" },
+    "noDataText": { "type": "string", "mapping": "property" },
+    "headerText": { "type": "string", "mapping": "property" },
+    "footerText": { "type": "string", "mapping": "property" },
+    "accessibleName": { "type": "string", "mapping": "property" },
+    "text": { "type": "string", "mapping": "textContent" },
+    "width": { "type": "sap.ui.core.CSSSize", "mapping": "style" },
+    "height": { "type": "sap.ui.core.CSSSize", "mapping": "style" }
+  },
+  "aggregations": { "items": { "type": "@ui5/webcomponents.TreeItemBase", "multiple": true }, "header": { "type": "sap.ui.core.Control", "multiple": true, "slot": "header" } },
+  "associations": {
+    "ariaLabelledBy": { "type": "sap.ui.core.Control", "multiple": true, "mapping": { "type": "property", "to": "accessibleNameRef", "formatter": "_getAriaLabelledByForRendering" } }
+  },
+  "events": { "itemToggle": {}, "itemMouseover": {}, "itemMouseout": {}, "itemClick": {}, "itemDelete": {}, "selectionChange": {} },
+  "getters": [],
+  "methods": ["walk"],
+  "defaultAggregation": "items"
+}

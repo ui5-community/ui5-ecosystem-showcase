@@ -38,12 +38,13 @@ const pkg = {
 };
 
 {{#each enums}}
-pkg["{{name}}"] = {
-{{#each members}}
-	"{{name}}": "{{name}}",
+pkg["{{@key}}"] = {
+{{#each this}}
+	"{{this}}": "{{this}}",
 {{/each}}
 };
-registerEnum("{{../namespace}}.{{name}}", pkg["{{name}}"]);
+registerEnum("{{../namespace}}.{{@key}}", pkg["{{@key}}"]);
+
 {{/each}}
 
 export default pkg;

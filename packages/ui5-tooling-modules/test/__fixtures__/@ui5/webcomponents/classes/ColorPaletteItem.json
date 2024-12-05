@@ -1,0 +1,17 @@
+{
+  "namespace": "@ui5/webcomponents",
+  "tag": "ui5-color-palette-item",
+  "interfaces": ["@ui5/webcomponents.IColorPaletteItem"],
+  "properties": {
+    "value": { "type": "string", "mapping": "property", "defaultValue": "" },
+    "selected": { "type": "boolean", "mapping": "property", "defaultValue": false },
+    "text": { "type": "string", "mapping": "textContent" },
+    "width": { "type": "sap.ui.core.CSSSize", "mapping": "style" },
+    "height": { "type": "sap.ui.core.CSSSize", "mapping": "style" }
+  },
+  "aggregations": {},
+  "associations": {},
+  "events": {},
+  "getters": [],
+  "methods": []
+}

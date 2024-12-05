@@ -1,0 +1,20 @@
+{
+  "namespace": "@ui5/webcomponents",
+  "tag": "ui5-icon",
+  "interfaces": ["@ui5/webcomponents.IIcon"],
+  "properties": {
+    "design": { "type": "@ui5/webcomponents.IconDesign", "mapping": "property", "defaultValue": "Default" },
+    "name": { "type": "string", "mapping": "property" },
+    "accessibleName": { "type": "string", "mapping": "property" },
+    "showTooltip": { "type": "boolean", "mapping": "property", "defaultValue": false },
+    "mode": { "type": "@ui5/webcomponents.IconMode", "mapping": "property", "defaultValue": "Image" },
+    "text": { "type": "string", "mapping": "textContent" },
+    "width": { "type": "sap.ui.core.CSSSize", "mapping": "style" },
+    "height": { "type": "sap.ui.core.CSSSize", "mapping": "style" }
+  },
+  "aggregations": {},
+  "associations": {},
+  "events": {},
+  "getters": [],
+  "methods": []
+}

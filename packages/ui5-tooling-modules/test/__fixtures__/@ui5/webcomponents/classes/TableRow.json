@@ -1,0 +1,19 @@
+{
+  "namespace": "@ui5/webcomponents",
+  "tag": "ui5-table-row",
+  "interfaces": [],
+  "properties": {
+    "rowKey": { "type": "string", "mapping": "property", "defaultValue": "" },
+    "interactive": { "type": "boolean", "mapping": "property", "defaultValue": false },
+    "navigated": { "type": "boolean", "mapping": "property", "defaultValue": false },
+    "text": { "type": "string", "mapping": "textContent" },
+    "width": { "type": "sap.ui.core.CSSSize", "mapping": "style" },
+    "height": { "type": "sap.ui.core.CSSSize", "mapping": "style" }
+  },
+  "aggregations": { "cells": { "type": "@ui5/webcomponents.TableCell", "multiple": true } },
+  "associations": {},
+  "events": {},
+  "getters": [],
+  "methods": [],
+  "defaultAggregation": "cells"
+}

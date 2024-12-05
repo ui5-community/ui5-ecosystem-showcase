@@ -46,6 +46,9 @@ class RegistryEntry {
 			// [3] create UI5 metadata for each classed based on the parsed custom elements metadata
 			this.#createUI5Metadata(classDef);
 		});
+
+		// [4] prepare enum objects
+		this.#prepareEnums();
 	}
 
 	#parseDeclaration(decl) {
@@ -551,6 +554,23 @@ class RegistryEntry {
 		this.#ensureDefaults(ui5metadata);
 
 		this.#patchUI5Specifics(classDef, ui5metadata);
+	}
+
+	/**
+	 * Prepares the UI5 enum objects for the "package.hbs" template.
+	 */
+	#prepareEnums() {
+		Object.keys(this.enums).forEach((enumName) => {
+			const enumValues = [];
+
+			const enumMembers = this.enums[enumName].members;
+			enumMembers.forEach((member) => {
+				// Key<>Value must be identical!
+				enumValues.push(member.name);
+			});
+
+			this.enums[enumName] = enumValues;
+		});
 	}
 }
 

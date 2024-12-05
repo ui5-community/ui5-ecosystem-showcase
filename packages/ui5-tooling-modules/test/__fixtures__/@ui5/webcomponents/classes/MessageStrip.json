@@ -1,0 +1,20 @@
+{
+  "namespace": "@ui5/webcomponents",
+  "tag": "ui5-message-strip",
+  "interfaces": [],
+  "properties": {
+    "design": { "type": "@ui5/webcomponents.MessageStripDesign", "mapping": "property", "defaultValue": "Information" },
+    "colorScheme": { "type": "string", "mapping": "property", "defaultValue": "1" },
+    "hideIcon": { "type": "boolean", "mapping": "property", "defaultValue": false },
+    "hideCloseButton": { "type": "boolean", "mapping": "property", "defaultValue": false },
+    "text": { "type": "string", "mapping": "textContent" },
+    "width": { "type": "sap.ui.core.CSSSize", "mapping": "style" },
+    "height": { "type": "sap.ui.core.CSSSize", "mapping": "style" }
+  },
+  "aggregations": { "content": { "type": "sap.ui.core.Control", "multiple": true }, "icon": { "type": "@ui5/webcomponents.IIcon", "multiple": true, "slot": "icon" } },
+  "associations": {},
+  "events": { "close": {} },
+  "getters": [],
+  "methods": [],
+  "defaultAggregation": "content"
+}
