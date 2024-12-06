@@ -13,7 +13,8 @@
   "scripts": {
     "lint": "eslint lib",
     "test": "ava --no-worker-threads",
-    "test:snapshots": "ava --no-worker-threads -- --generateSnapshots"
+    "test:snapshots": "ava --no-worker-threads -- --generateSnapshots",
+    "test:fixtures": "ava --no-worker-threads -- --generateFixtures"
   },
   "ava": {
     "files": [

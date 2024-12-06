@@ -66,6 +66,10 @@ export default class Main extends Controller {
 		this.getOwnerComponent().getRouter().navTo("FormPage");
 	}
 
+	public onNavToValueState(): void {
+		this.getOwnerComponent().getRouter().navTo("ValueState");
+	}
+
 	public onBoo(): void {
 		MessageToast.show(`👻`);
 	}
