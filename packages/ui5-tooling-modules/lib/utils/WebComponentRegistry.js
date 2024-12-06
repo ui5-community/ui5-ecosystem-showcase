@@ -489,7 +489,7 @@ class RegistryEntry {
 				ui5metadata.properties["valueStateText"] = {
 					name: "valueStateText",
 					type: "string",
-					defaultValue: `""`,
+					defaultValue: "",
 					mapping: {
 						type: "slot",
 						slotName: "valueStateMessage",

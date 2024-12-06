@@ -49,7 +49,7 @@ function writeFixtures(webcRegistryEntry) {
 // TESTS START HERE!
 // *****************************************************************************
 
-test.serial("Verify generation of @stomp/stompjs", async (t) => {
+test.serial("Verify ui5-metadata generation from 'custom-elements-internal.json'", async (t) => {
 	const appDir = path.join(__dirname, "../../../showcases", "ui5-tsapp-webc");
 
 	const webcBaseNpmPackage = "@ui5/webcomponents-base";
