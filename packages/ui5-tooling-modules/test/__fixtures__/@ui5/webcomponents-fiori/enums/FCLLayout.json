@@ -1,0 +1,11 @@
+[
+  "OneColumn",
+  "TwoColumnsStartExpanded",
+  "TwoColumnsMidExpanded",
+  "ThreeColumnsMidExpanded",
+  "ThreeColumnsEndExpanded",
+  "ThreeColumnsStartExpandedEndHidden",
+  "ThreeColumnsMidExpandedEndHidden",
+  "MidColumnFullScreen",
+  "EndColumnFullScreen"
+]

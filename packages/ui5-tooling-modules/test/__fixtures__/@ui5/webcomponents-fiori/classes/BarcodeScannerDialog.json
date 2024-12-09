@@ -1,0 +1,16 @@
+{
+  "namespace": "@ui5/webcomponents-fiori",
+  "tag": "ui5-barcode-scanner-dialog",
+  "interfaces": [],
+  "properties": {
+    "open": { "type": "boolean", "mapping": "property", "defaultValue": false },
+    "text": { "type": "string", "mapping": "textContent" },
+    "width": { "type": "sap.ui.core.CSSSize", "mapping": "style" },
+    "height": { "type": "sap.ui.core.CSSSize", "mapping": "style" }
+  },
+  "aggregations": {},
+  "associations": {},
+  "events": { "close": {}, "scanSuccess": {}, "scanError": {} },
+  "getters": [],
+  "methods": []
+}

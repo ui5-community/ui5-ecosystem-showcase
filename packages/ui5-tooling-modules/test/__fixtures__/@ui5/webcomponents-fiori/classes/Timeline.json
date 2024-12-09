@@ -1,0 +1,18 @@
+{
+  "namespace": "@ui5/webcomponents-fiori",
+  "tag": "ui5-timeline",
+  "interfaces": [],
+  "properties": {
+    "layout": { "type": "@ui5/webcomponents-fiori.TimelineLayout", "mapping": "property", "defaultValue": "Vertical" },
+    "accessibleName": { "type": "string", "mapping": "property" },
+    "text": { "type": "string", "mapping": "textContent" },
+    "width": { "type": "sap.ui.core.CSSSize", "mapping": "style" },
+    "height": { "type": "sap.ui.core.CSSSize", "mapping": "style" }
+  },
+  "aggregations": { "items": { "type": "@ui5/webcomponents-fiori.ITimelineItem", "multiple": true } },
+  "associations": {},
+  "events": {},
+  "getters": [],
+  "methods": [],
+  "defaultAggregation": "items"
+}

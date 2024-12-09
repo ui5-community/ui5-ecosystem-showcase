@@ -1,0 +1,16 @@
+{
+  "namespace": "@ui5/webcomponents-fiori",
+  "tag": "ui5-product-switch",
+  "interfaces": [],
+  "properties": {
+    "text": { "type": "string", "mapping": "textContent" },
+    "width": { "type": "sap.ui.core.CSSSize", "mapping": "style" },
+    "height": { "type": "sap.ui.core.CSSSize", "mapping": "style" }
+  },
+  "aggregations": { "items": { "type": "@ui5/webcomponents-fiori.IProductSwitchItem", "multiple": true } },
+  "associations": {},
+  "events": {},
+  "getters": [],
+  "methods": [],
+  "defaultAggregation": "items"
+}

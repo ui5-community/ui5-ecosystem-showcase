@@ -1,0 +1,19 @@
+{
+  "namespace": "@ui5/webcomponents-fiori",
+  "tag": "ui5-media-gallery-item",
+  "interfaces": ["@ui5/webcomponents-fiori.IMediaGalleryItem"],
+  "properties": {
+    "selected": { "type": "boolean", "mapping": "property", "defaultValue": false },
+    "enabled": { "type": "boolean", "defaultValue": "true", "mapping": { "type": "property", "to": "disabled", "formatter": "_mapEnabled" } },
+    "layout": { "type": "@ui5/webcomponents-fiori.MediaGalleryItemLayout", "mapping": "property", "defaultValue": "Square" },
+    "text": { "type": "string", "mapping": "textContent" },
+    "width": { "type": "sap.ui.core.CSSSize", "mapping": "style" },
+    "height": { "type": "sap.ui.core.CSSSize", "mapping": "style" }
+  },
+  "aggregations": { "content": { "type": "sap.ui.core.Control", "multiple": true }, "thumbnail": { "type": "sap.ui.core.Control", "multiple": true, "slot": "thumbnail" } },
+  "associations": {},
+  "events": {},
+  "getters": [],
+  "methods": [],
+  "defaultAggregation": "content"
+}

@@ -18,7 +18,7 @@
     "text": { "type": "string", "mapping": "textContent" },
     "width": { "type": "sap.ui.core.CSSSize", "mapping": "style" },
     "height": { "type": "sap.ui.core.CSSSize", "mapping": "style" },
-    "valueStateText": { "name": "valueStateText", "type": "string", "defaultValue": "\"\"", "mapping": { "type": "slot", "slotName": "valueStateMessage", "to": "div" } }
+    "valueStateText": { "name": "valueStateText", "type": "string", "defaultValue": "", "mapping": { "type": "slot", "slotName": "valueStateMessage", "to": "div" } }
   },
   "aggregations": { "items": { "type": "@ui5/webcomponents.IComboBoxItem", "multiple": true }, "icon": { "type": "@ui5/webcomponents.IIcon", "multiple": true, "slot": "icon" } },
   "associations": {
