@@ -1,0 +1,18 @@
+{
+  "namespace": "@ui5/webcomponents-ai",
+  "tag": "ui5-ai-button-state",
+  "interfaces": [],
+  "properties": {
+    "name": { "type": "string", "mapping": "property" },
+    "text": { "type": "string", "mapping": "property" },
+    "icon": { "type": "string", "mapping": "property" },
+    "endIcon": { "type": "string", "mapping": "property" },
+    "width": { "type": "sap.ui.core.CSSSize", "mapping": "style" },
+    "height": { "type": "sap.ui.core.CSSSize", "mapping": "style" }
+  },
+  "aggregations": {},
+  "associations": {},
+  "events": {},
+  "getters": [],
+  "methods": []
+}

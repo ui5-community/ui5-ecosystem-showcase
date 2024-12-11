@@ -1,0 +1,16 @@
+{
+  "namespace": "@ui5/webcomponents",
+  "tag": "ui5-suggestion-item-custom",
+  "interfaces": [],
+  "properties": {
+    "text": { "type": "string", "mapping": "property" },
+    "width": { "type": "sap.ui.core.CSSSize", "mapping": "style" },
+    "height": { "type": "sap.ui.core.CSSSize", "mapping": "style" }
+  },
+  "aggregations": { "content": { "type": "sap.ui.core.Control", "multiple": true } },
+  "associations": {},
+  "events": {},
+  "getters": [],
+  "methods": [],
+  "defaultAggregation": "content"
+}

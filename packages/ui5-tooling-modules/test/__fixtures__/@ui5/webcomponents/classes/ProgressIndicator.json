@@ -1,0 +1,20 @@
+{
+  "namespace": "@ui5/webcomponents",
+  "tag": "ui5-progress-indicator",
+  "interfaces": [],
+  "properties": {
+    "accessibleName": { "type": "string", "mapping": "property" },
+    "hideValue": { "type": "boolean", "mapping": "property", "defaultValue": false },
+    "value": { "type": "float", "mapping": "property", "defaultValue": 0 },
+    "displayValue": { "type": "string", "mapping": "property" },
+    "valueState": { "type": "@ui5/webcomponents-base.ValueState", "mapping": "property", "defaultValue": "None" },
+    "text": { "type": "string", "mapping": "textContent" },
+    "width": { "type": "sap.ui.core.CSSSize", "mapping": "style" },
+    "height": { "type": "sap.ui.core.CSSSize", "mapping": "style" }
+  },
+  "aggregations": {},
+  "associations": {},
+  "events": {},
+  "getters": [],
+  "methods": []
+}

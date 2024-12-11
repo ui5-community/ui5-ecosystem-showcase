@@ -1,0 +1,29 @@
+{
+  "namespace": "@ui5/webcomponents",
+  "tag": "ui5-li",
+  "interfaces": [],
+  "properties": {
+    "description": { "type": "string", "mapping": "property" },
+    "icon": { "type": "string", "mapping": "property" },
+    "iconEnd": { "type": "boolean", "mapping": "property", "defaultValue": false },
+    "additionalText": { "type": "string", "mapping": "property" },
+    "additionalTextState": { "type": "@ui5/webcomponents-base.ValueState", "mapping": "property", "defaultValue": "None" },
+    "movable": { "type": "boolean", "mapping": "property", "defaultValue": false },
+    "accessibleName": { "type": "string", "mapping": "property" },
+    "type": { "type": "@ui5/webcomponents.ListItemType", "mapping": "property", "defaultValue": "Active" },
+    "accessibilityAttributes": { "type": "object", "mapping": "property", "defaultValue": {} },
+    "navigated": { "type": "boolean", "mapping": "property", "defaultValue": false },
+    "tooltip": { "type": "string", "mapping": "property" },
+    "highlight": { "type": "@ui5/webcomponents.Highlight", "mapping": "property", "defaultValue": "None" },
+    "selected": { "type": "boolean", "mapping": "property", "defaultValue": false },
+    "text": { "type": "string", "mapping": "textContent" },
+    "width": { "type": "sap.ui.core.CSSSize", "mapping": "style" },
+    "height": { "type": "sap.ui.core.CSSSize", "mapping": "style" }
+  },
+  "aggregations": { "content": { "type": "sap.ui.core.Control", "multiple": true }, "image": { "type": "sap.ui.core.Control", "multiple": true, "slot": "image" } },
+  "associations": {},
+  "events": { "detailClick": {} },
+  "getters": [],
+  "methods": [],
+  "defaultAggregation": "content"
+}
