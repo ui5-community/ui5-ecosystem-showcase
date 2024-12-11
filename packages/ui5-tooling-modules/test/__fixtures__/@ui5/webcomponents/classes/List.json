@@ -14,6 +14,8 @@
     "loading": { "type": "boolean", "mapping": "property", "defaultValue": false },
     "loadingDelay": { "type": "float", "mapping": "property", "defaultValue": 1000 },
     "accessibleName": { "type": "string", "mapping": "property" },
+    "accessibleDescription": { "type": "string", "mapping": "property" },
+    "accessibleDescriptionRef": { "type": "string", "mapping": "property" },
     "accessibleRole": { "type": "@ui5/webcomponents.ListAccessibleRole", "mapping": "property", "defaultValue": "List" },
     "text": { "type": "string", "mapping": "textContent" },
     "width": { "type": "sap.ui.core.CSSSize", "mapping": "style" },

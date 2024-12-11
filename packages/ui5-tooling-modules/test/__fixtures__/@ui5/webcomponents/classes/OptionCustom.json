@@ -1,7 +1,7 @@
 {
   "namespace": "@ui5/webcomponents",
   "tag": "ui5-option-custom",
-  "interfaces": [],
+  "interfaces": ["@ui5/webcomponents.IOption"],
   "properties": {
     "displayText": { "type": "string", "mapping": "property" },
     "value": { "type": "string", "mapping": "property" },

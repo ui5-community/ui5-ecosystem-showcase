@@ -4,6 +4,8 @@
   "interfaces": [],
   "properties": {
     "readonly": { "type": "boolean", "mapping": "property", "defaultValue": false },
+    "multiLine": { "type": "boolean", "mapping": "property", "defaultValue": false },
+    "showClearAll": { "type": "boolean", "mapping": "property", "defaultValue": false },
     "enabled": { "type": "boolean", "defaultValue": "true", "mapping": { "type": "property", "to": "disabled", "formatter": "_mapEnabled" } },
     "accessibleName": { "type": "string", "mapping": "property" },
     "text": { "type": "string", "mapping": "textContent" },

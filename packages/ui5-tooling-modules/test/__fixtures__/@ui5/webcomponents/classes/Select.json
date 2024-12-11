@@ -15,7 +15,7 @@
     "height": { "type": "sap.ui.core.CSSSize", "mapping": "style" },
     "valueStateText": { "name": "valueStateText", "type": "string", "defaultValue": "", "mapping": { "type": "slot", "slotName": "valueStateMessage", "to": "div" } }
   },
-  "aggregations": { "options": { "type": "sap.ui.core.Control", "multiple": true }, "label": { "type": "sap.ui.core.Control", "multiple": true, "slot": "label" } },
+  "aggregations": { "options": { "type": "@ui5/webcomponents.IOption", "multiple": true }, "label": { "type": "sap.ui.core.Control", "multiple": true, "slot": "label" } },
   "associations": {
     "ariaLabelledBy": { "type": "sap.ui.core.Control", "multiple": true, "mapping": { "type": "property", "to": "accessibleNameRef", "formatter": "_getAriaLabelledByForRendering" } }
   },

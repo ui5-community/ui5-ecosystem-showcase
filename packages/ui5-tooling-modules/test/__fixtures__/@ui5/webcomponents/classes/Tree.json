@@ -8,6 +8,8 @@
     "headerText": { "type": "string", "mapping": "property" },
     "footerText": { "type": "string", "mapping": "property" },
     "accessibleName": { "type": "string", "mapping": "property" },
+    "accessibleDescription": { "type": "string", "mapping": "property" },
+    "accessibleDescriptionRef": { "type": "string", "mapping": "property" },
     "text": { "type": "string", "mapping": "textContent" },
     "width": { "type": "sap.ui.core.CSSSize", "mapping": "style" },
     "height": { "type": "sap.ui.core.CSSSize", "mapping": "style" }

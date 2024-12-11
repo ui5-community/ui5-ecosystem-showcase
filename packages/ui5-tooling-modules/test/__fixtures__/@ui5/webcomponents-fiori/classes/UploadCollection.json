@@ -14,7 +14,7 @@
   },
   "aggregations": { "items": { "type": "@ui5/webcomponents-fiori.UploadCollectionItem", "multiple": true }, "header": { "type": "sap.ui.core.Control", "multiple": true, "slot": "header" } },
   "associations": {},
-  "events": { "drop": {}, "itemDelete": {}, "selectionChange": {} },
+  "events": { "itemDelete": {}, "selectionChange": {} },
   "getters": [],
   "methods": [],
   "defaultAggregation": "items"

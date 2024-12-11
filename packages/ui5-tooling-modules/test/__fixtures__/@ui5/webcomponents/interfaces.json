@@ -10,6 +10,7 @@
   "IMenuItem",
   "IMultiComboBoxItem",
   "ISegmentedButtonItem",
+  "IOption",
   "ITab",
   "ITableFeature",
   "ITableGrowing"

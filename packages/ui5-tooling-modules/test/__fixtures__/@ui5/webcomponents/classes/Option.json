@@ -1,7 +1,7 @@
 {
   "namespace": "@ui5/webcomponents",
   "tag": "ui5-option",
-  "interfaces": [],
+  "interfaces": ["@ui5/webcomponents.IOption"],
   "properties": {
     "value": { "type": "string", "mapping": "property" },
     "icon": { "type": "string", "mapping": "property" },

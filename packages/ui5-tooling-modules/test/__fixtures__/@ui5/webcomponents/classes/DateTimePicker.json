@@ -27,7 +27,7 @@
   "associations": {
     "ariaLabelledBy": { "type": "sap.ui.core.Control", "multiple": true, "mapping": { "type": "property", "to": "accessibleNameRef", "formatter": "_getAriaLabelledByForRendering" } }
   },
-  "events": { "change": {}, "input": {}, "valueStateChange": {} },
+  "events": { "change": {}, "input": {}, "valueStateChange": {}, "open": {}, "close": {} },
   "getters": ["dateValue"],
   "methods": ["isValid", "isInValidRange", "formatValue"]
 }

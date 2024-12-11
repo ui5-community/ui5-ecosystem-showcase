@@ -12,6 +12,7 @@
     "tooltip": { "type": "string", "mapping": "property" },
     "accessibleName": { "type": "string", "mapping": "property" },
     "accessibilityAttributes": { "type": "object", "mapping": "property", "defaultValue": {} },
+    "accessibleDescription": { "type": "string", "mapping": "property" },
     "type": { "type": "@ui5/webcomponents.ButtonType", "mapping": "property", "defaultValue": "Button" },
     "accessibleRole": { "type": "@ui5/webcomponents.ButtonAccessibleRole", "mapping": "property", "defaultValue": "Button" },
     "text": { "type": "string", "mapping": "textContent" },

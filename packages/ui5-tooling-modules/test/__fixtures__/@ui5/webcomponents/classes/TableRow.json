@@ -4,6 +4,7 @@
   "interfaces": [],
   "properties": {
     "rowKey": { "type": "string", "mapping": "property", "defaultValue": "" },
+    "position": { "type": "float", "mapping": "property", "defaultValue": -1 },
     "interactive": { "type": "boolean", "mapping": "property", "defaultValue": false },
     "navigated": { "type": "boolean", "mapping": "property", "defaultValue": false },
     "text": { "type": "string", "mapping": "textContent" },

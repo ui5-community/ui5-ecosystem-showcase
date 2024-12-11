@@ -12,6 +12,7 @@
     "accessibleName": { "type": "string", "mapping": "property" },
     "accessibleRole": { "type": "@ui5/webcomponents.LinkAccessibleRole", "mapping": "property", "defaultValue": "Link" },
     "accessibilityAttributes": { "type": "object", "mapping": "property", "defaultValue": {} },
+    "accessibleDescription": { "type": "string", "mapping": "property" },
     "icon": { "type": "string", "mapping": "property" },
     "endIcon": { "type": "string", "mapping": "property" },
     "text": { "type": "string", "mapping": "textContent" },

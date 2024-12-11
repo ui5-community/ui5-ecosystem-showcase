@@ -11,6 +11,7 @@
     "labelInterval": { "type": "float", "mapping": "property", "defaultValue": 0 },
     "showTickmarks": { "type": "boolean", "mapping": "property", "defaultValue": false },
     "showTooltip": { "type": "boolean", "mapping": "property", "defaultValue": false },
+    "editableTooltip": { "type": "boolean", "mapping": "property", "defaultValue": false },
     "enabled": { "type": "boolean", "defaultValue": "true", "mapping": { "type": "property", "to": "disabled", "formatter": "_mapEnabled" } },
     "accessibleName": { "type": "string", "mapping": "property" },
     "text": { "type": "string", "mapping": "textContent" },

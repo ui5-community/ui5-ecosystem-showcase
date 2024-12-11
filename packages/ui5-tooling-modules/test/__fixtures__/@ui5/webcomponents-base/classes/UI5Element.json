@@ -23,6 +23,7 @@
     "getFocusDomRefAsync",
     "focus",
     "fireEvent",
+    "fireDecoratorEvent",
     "getSlottedNodes",
     "attachComponentStateFinalized",
     "detachComponentStateFinalized",

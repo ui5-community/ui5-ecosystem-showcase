@@ -3,8 +3,9 @@
   "tag": "ui5-form",
   "interfaces": [],
   "properties": {
-    "layout": { "type": "string", "mapping": "property", "defaultValue": "S1 M1 L2 XL2" },
+    "layout": { "type": "string", "mapping": "property", "defaultValue": "S1 M1 L2 XL3" },
     "labelSpan": { "type": "string", "mapping": "property", "defaultValue": "S12 M4 L4 XL4" },
+    "emptySpan": { "type": "string", "mapping": "property", "defaultValue": "S0 M0 L0 XL0" },
     "headerText": { "type": "string", "mapping": "property" },
     "itemSpacing": { "type": "@ui5/webcomponents.FormItemSpacing", "mapping": "property", "defaultValue": "Normal" },
     "text": { "type": "string", "mapping": "textContent" },

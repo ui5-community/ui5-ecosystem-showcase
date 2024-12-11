@@ -4,13 +4,14 @@
   "interfaces": ["@ui5/webcomponents.IMultiComboBoxItem"],
   "properties": {
     "headerText": { "type": "string", "mapping": "property" },
+    "headerAccessibleName": { "type": "string", "mapping": "property" },
     "text": { "type": "string", "mapping": "textContent" },
     "width": { "type": "sap.ui.core.CSSSize", "mapping": "style" },
     "height": { "type": "sap.ui.core.CSSSize", "mapping": "style" }
   },
   "aggregations": { "items": { "type": "@ui5/webcomponents.MultiComboBoxItem", "multiple": true } },
   "associations": {},
-  "events": {},
+  "events": { "moveOver": {}, "move": {} },
   "getters": [],
   "methods": [],
   "defaultAggregation": "items"

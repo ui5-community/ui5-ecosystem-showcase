@@ -118,18 +118,18 @@ test.serial("Verify ui5-metadata generation from 'custom-elements-internal.json'
 		version: "0.0.0",
 	});
 
-	// const webcAiNpmPackage = "@ui5/webcomponents-ai";
-	// const webcAiPath = require.resolve(`${webcAiNpmPackage}/dist/custom-elements-internal.json`, {
-	// 	paths: [appDir],
-	// });
-	// const webcAiJson = JSON.parse(readFileSync(webcAiPath, { encoding: "utf-8" }));
+	const webcAiNpmPackage = "@ui5/webcomponents-ai";
+	const webcAiPath = require.resolve(`${webcAiNpmPackage}/dist/custom-elements-internal.json`, {
+		paths: [appDir],
+	});
+	const webcAiJson = JSON.parse(readFileSync(webcAiPath, { encoding: "utf-8" }));
 
-	// WebComponentRegistry.register({
-	// 	customElementsMetadata: webcAiJson,
-	// 	namespace: webcAiNpmPackage,
-	// 	npmPackagePath: webcAiPath,
-	// 	version: "0.0.0",
-	// });
+	WebComponentRegistry.register({
+		customElementsMetadata: webcAiJson,
+		namespace: webcAiNpmPackage,
+		npmPackagePath: webcAiPath,
+		version: "0.0.0",
+	});
 
 	// write fixture files
 	if (generateFixtures) {
@@ -137,12 +137,12 @@ test.serial("Verify ui5-metadata generation from 'custom-elements-internal.json'
 		writeFixtures(WebComponentRegistry.getPackage(webcBaseNpmPackage));
 		writeFixtures(WebComponentRegistry.getPackage(webcNpmPackage));
 		writeFixtures(WebComponentRegistry.getPackage(webcFioriNpmPackage));
-		// writeFixtures(WebComponentRegistry.getPackage(webcAiNpmPackage));
+		writeFixtures(WebComponentRegistry.getPackage(webcAiNpmPackage));
 	}
 
 	// compare with fixture files
 	compareFixtures(WebComponentRegistry.getPackage(webcBaseNpmPackage));
 	compareFixtures(WebComponentRegistry.getPackage(webcNpmPackage));
 	compareFixtures(WebComponentRegistry.getPackage(webcFioriNpmPackage));
-	// compareFixtures(WebComponentRegistry.getPackage(webcAiNpmPackage));
+	compareFixtures(WebComponentRegistry.getPackage(webcAiNpmPackage));
 });

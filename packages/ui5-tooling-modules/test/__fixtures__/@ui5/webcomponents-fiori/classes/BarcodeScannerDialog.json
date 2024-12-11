@@ -8,7 +8,7 @@
     "width": { "type": "sap.ui.core.CSSSize", "mapping": "style" },
     "height": { "type": "sap.ui.core.CSSSize", "mapping": "style" }
   },
-  "aggregations": {},
+  "aggregations": { "header": { "type": "sap.ui.core.Control", "multiple": true, "slot": "header" }, "footer": { "type": "sap.ui.core.Control", "multiple": true, "slot": "footer" } },
   "associations": {},
   "events": { "close": {}, "scanSuccess": {}, "scanError": {} },
   "getters": [],
