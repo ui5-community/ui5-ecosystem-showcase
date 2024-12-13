@@ -70,6 +70,11 @@
           "name": "FormPage",
           "pattern": "formPage",
           "target": ["FormPage"]
+        },
+        {
+          "name": "ValueState",
+          "pattern": "valueState",
+          "target": ["ValueState"]
         }
       ],
       "targets": {
@@ -93,6 +98,13 @@
           "clearControlAggregation": false,
           "viewId": "formPage",
           "viewName": "form.FormPage"
+        },
+        "ValueState": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewId": "valueState",
+          "viewName": "messaging.ValueState"
         }
       }
     }

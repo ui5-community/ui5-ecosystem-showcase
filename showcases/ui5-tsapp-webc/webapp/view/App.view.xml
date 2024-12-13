@@ -1,5 +1,3 @@
 <mvc:View controllerName="ui5.ecosystem.demo.webctsapp.controller.App" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m">
-  <Shell id="shell">
-    <App id="app" />
-  </Shell>
+  <App id="app" />
 </mvc:View>

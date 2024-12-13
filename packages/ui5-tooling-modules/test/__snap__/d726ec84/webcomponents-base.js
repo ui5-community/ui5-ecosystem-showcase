@@ -518,13 +518,13 @@ sap.ui.define(['exports', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebCom
     };
 
     const VersionInfo = {
-        version: "2.3.0",
+        version: "2.5.0",
         major: 2,
-        minor: 3,
+        minor: 5,
         patch: 0,
         suffix: "",
         isNext: false,
-        buildTime: 1727888399,
+        buildTime: 1733409507,
     };
 
     let suf;
@@ -1840,7 +1840,7 @@ sap.ui.define(['exports', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebCom
     const pkg = {
     	"_ui5metadata": {
       "name": "@ui5/webcomponents-base",
-      "version": "2.3.0",
+      "version": "2.5.0",
       "dependencies": [
         "sap.ui.core"
       ],
@@ -1867,6 +1867,7 @@ sap.ui.define(['exports', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebCom
     	"None": "None",
     };
     DataType.registerEnum("@ui5/webcomponents-base.AnimationMode", pkg["AnimationMode"]);
+
     pkg["AriaHasPopup"] = {
     	"Dialog": "Dialog",
     	"Grid": "Grid",
@@ -1875,6 +1876,7 @@ sap.ui.define(['exports', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebCom
     	"Tree": "Tree",
     };
     DataType.registerEnum("@ui5/webcomponents-base.AriaHasPopup", pkg["AriaHasPopup"]);
+
     pkg["AriaRole"] = {
     	"AlertDialog": "AlertDialog",
     	"Button": "Button",
@@ -1882,6 +1884,7 @@ sap.ui.define(['exports', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebCom
     	"Link": "Link",
     };
     DataType.registerEnum("@ui5/webcomponents-base.AriaRole", pkg["AriaRole"]);
+
     pkg["CalendarType"] = {
     	"Gregorian": "Gregorian",
     	"Islamic": "Islamic",
@@ -1890,17 +1893,20 @@ sap.ui.define(['exports', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebCom
     	"Persian": "Persian",
     };
     DataType.registerEnum("@ui5/webcomponents-base.CalendarType", pkg["CalendarType"]);
+
     pkg["ItemNavigationBehavior"] = {
     	"Static": "Static",
     	"Cyclic": "Cyclic",
     };
     DataType.registerEnum("@ui5/webcomponents-base.ItemNavigationBehavior", pkg["ItemNavigationBehavior"]);
+
     pkg["MovePlacement"] = {
     	"On": "On",
     	"Before": "Before",
     	"After": "After",
     };
     DataType.registerEnum("@ui5/webcomponents-base.MovePlacement", pkg["MovePlacement"]);
+
     pkg["NavigationMode"] = {
     	"Auto": "Auto",
     	"Vertical": "Vertical",
@@ -1908,6 +1914,7 @@ sap.ui.define(['exports', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebCom
     	"Paging": "Paging",
     };
     DataType.registerEnum("@ui5/webcomponents-base.NavigationMode", pkg["NavigationMode"]);
+
     pkg["ValueState"] = {
     	"None": "None",
     	"Positive": "Positive",

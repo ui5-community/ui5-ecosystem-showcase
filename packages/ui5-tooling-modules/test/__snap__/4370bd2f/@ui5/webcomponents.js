@@ -3,7 +3,7 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 	const pkg = {
 		"_ui5metadata": {
 	  "name": "@ui5/webcomponents",
-	  "version": "2.3.0",
+	  "version": "2.5.0",
 	  "dependencies": [
 	    "sap.ui.core"
 	  ],
@@ -60,7 +60,7 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 	    "@ui5/webcomponents.TableSelectionMode",
 	    "@ui5/webcomponents.TagDesign",
 	    "@ui5/webcomponents.TagSize",
-	    "@ui5/webcomponents.EmptyIndicatorMode",
+	    "@ui5/webcomponents.TextEmptyIndicatorMode",
 	    "@ui5/webcomponents.TitleLevel",
 	    "@ui5/webcomponents.ToastPlacement",
 	    "@ui5/webcomponents.ToolbarAlign",
@@ -147,6 +147,7 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 	    "@ui5/webcomponents.TableHeaderRow",
 	    "@ui5/webcomponents.TableRow",
 	    "@ui5/webcomponents.TableSelection",
+	    "@ui5/webcomponents.TableVirtualizer",
 	    "@ui5/webcomponents.Tag",
 	    "@ui5/webcomponents.Text",
 	    "@ui5/webcomponents.TextArea",
@@ -184,16 +185,19 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"Placeholder": "Placeholder",
 	};
 	DataType.registerEnum("@ui5/webcomponents.AvatarColorScheme", pkg["AvatarColorScheme"]);
+
 	pkg["AvatarGroupType"] = {
 		"Group": "Group",
 		"Individual": "Individual",
 	};
 	DataType.registerEnum("@ui5/webcomponents.AvatarGroupType", pkg["AvatarGroupType"]);
+
 	pkg["AvatarShape"] = {
 		"Circle": "Circle",
 		"Square": "Square",
 	};
 	DataType.registerEnum("@ui5/webcomponents.AvatarShape", pkg["AvatarShape"]);
+
 	pkg["AvatarSize"] = {
 		"XS": "XS",
 		"S": "S",
@@ -202,12 +206,14 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"XL": "XL",
 	};
 	DataType.registerEnum("@ui5/webcomponents.AvatarSize", pkg["AvatarSize"]);
+
 	pkg["BackgroundDesign"] = {
 		"Solid": "Solid",
 		"Transparent": "Transparent",
 		"Translucent": "Translucent",
 	};
 	DataType.registerEnum("@ui5/webcomponents.BackgroundDesign", pkg["BackgroundDesign"]);
+
 	pkg["BarDesign"] = {
 		"Header": "Header",
 		"Subheader": "Subheader",
@@ -215,16 +221,19 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"FloatingFooter": "FloatingFooter",
 	};
 	DataType.registerEnum("@ui5/webcomponents.BarDesign", pkg["BarDesign"]);
+
 	pkg["BorderDesign"] = {
 		"Solid": "Solid",
 		"None": "None",
 	};
 	DataType.registerEnum("@ui5/webcomponents.BorderDesign", pkg["BorderDesign"]);
+
 	pkg["BreadcrumbsDesign"] = {
 		"Standard": "Standard",
 		"NoCurrentPage": "NoCurrentPage",
 	};
 	DataType.registerEnum("@ui5/webcomponents.BreadcrumbsDesign", pkg["BreadcrumbsDesign"]);
+
 	pkg["BreadcrumbsSeparator"] = {
 		"Slash": "Slash",
 		"BackSlash": "BackSlash",
@@ -234,22 +243,26 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"GreaterThan": "GreaterThan",
 	};
 	DataType.registerEnum("@ui5/webcomponents.BreadcrumbsSeparator", pkg["BreadcrumbsSeparator"]);
+
 	pkg["BusyIndicatorSize"] = {
 		"S": "S",
 		"M": "M",
 		"L": "L",
 	};
 	DataType.registerEnum("@ui5/webcomponents.BusyIndicatorSize", pkg["BusyIndicatorSize"]);
+
 	pkg["BusyIndicatorTextPlacement"] = {
 		"Top": "Top",
 		"Bottom": "Bottom",
 	};
 	DataType.registerEnum("@ui5/webcomponents.BusyIndicatorTextPlacement", pkg["BusyIndicatorTextPlacement"]);
+
 	pkg["ButtonAccessibleRole"] = {
 		"Button": "Button",
 		"Link": "Link",
 	};
 	DataType.registerEnum("@ui5/webcomponents.ButtonAccessibleRole", pkg["ButtonAccessibleRole"]);
+
 	pkg["ButtonDesign"] = {
 		"Default": "Default",
 		"Positive": "Positive",
@@ -259,12 +272,14 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"Attention": "Attention",
 	};
 	DataType.registerEnum("@ui5/webcomponents.ButtonDesign", pkg["ButtonDesign"]);
+
 	pkg["ButtonType"] = {
 		"Button": "Button",
 		"Submit": "Submit",
 		"Reset": "Reset",
 	};
 	DataType.registerEnum("@ui5/webcomponents.ButtonType", pkg["ButtonType"]);
+
 	pkg["CalendarLegendItemType"] = {
 		"None": "None",
 		"Working": "Working",
@@ -291,12 +306,14 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"Type20": "Type20",
 	};
 	DataType.registerEnum("@ui5/webcomponents.CalendarLegendItemType", pkg["CalendarLegendItemType"]);
+
 	pkg["CalendarSelectionMode"] = {
 		"Single": "Single",
 		"Multiple": "Multiple",
 		"Range": "Range",
 	};
 	DataType.registerEnum("@ui5/webcomponents.CalendarSelectionMode", pkg["CalendarSelectionMode"]);
+
 	pkg["CalendarWeekNumbering"] = {
 		"Default": "Default",
 		"ISO_8601": "ISO_8601",
@@ -304,16 +321,19 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"WesternTraditional": "WesternTraditional",
 	};
 	DataType.registerEnum("@ui5/webcomponents.CalendarWeekNumbering", pkg["CalendarWeekNumbering"]);
+
 	pkg["CarouselArrowsPlacement"] = {
 		"Content": "Content",
 		"Navigation": "Navigation",
 	};
 	DataType.registerEnum("@ui5/webcomponents.CarouselArrowsPlacement", pkg["CarouselArrowsPlacement"]);
+
 	pkg["CarouselPageIndicatorType"] = {
 		"Default": "Default",
 		"Numeric": "Numeric",
 	};
 	DataType.registerEnum("@ui5/webcomponents.CarouselPageIndicatorType", pkg["CarouselPageIndicatorType"]);
+
 	pkg["ComboBoxFilter"] = {
 		"StartsWithPerTerm": "StartsWithPerTerm",
 		"StartsWith": "StartsWith",
@@ -321,11 +341,13 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"None": "None",
 	};
 	DataType.registerEnum("@ui5/webcomponents.ComboBoxFilter", pkg["ComboBoxFilter"]);
+
 	pkg["FormItemSpacing"] = {
 		"Normal": "Normal",
 		"Large": "Large",
 	};
 	DataType.registerEnum("@ui5/webcomponents.FormItemSpacing", pkg["FormItemSpacing"]);
+
 	pkg["Highlight"] = {
 		"None": "None",
 		"Positive": "Positive",
@@ -334,6 +356,7 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"Information": "Information",
 	};
 	DataType.registerEnum("@ui5/webcomponents.Highlight", pkg["Highlight"]);
+
 	pkg["IconDesign"] = {
 		"Contrast": "Contrast",
 		"Critical": "Critical",
@@ -345,12 +368,14 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"Positive": "Positive",
 	};
 	DataType.registerEnum("@ui5/webcomponents.IconDesign", pkg["IconDesign"]);
+
 	pkg["IconMode"] = {
 		"Image": "Image",
 		"Decorative": "Decorative",
 		"Interactive": "Interactive",
 	};
 	DataType.registerEnum("@ui5/webcomponents.IconMode", pkg["IconMode"]);
+
 	pkg["InputType"] = {
 		"Text": "Text",
 		"Email": "Email",
@@ -361,17 +386,20 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"Search": "Search",
 	};
 	DataType.registerEnum("@ui5/webcomponents.InputType", pkg["InputType"]);
+
 	pkg["LinkAccessibleRole"] = {
 		"Link": "Link",
 		"Button": "Button",
 	};
 	DataType.registerEnum("@ui5/webcomponents.LinkAccessibleRole", pkg["LinkAccessibleRole"]);
+
 	pkg["LinkDesign"] = {
 		"Default": "Default",
 		"Subtle": "Subtle",
 		"Emphasized": "Emphasized",
 	};
 	DataType.registerEnum("@ui5/webcomponents.LinkDesign", pkg["LinkDesign"]);
+
 	pkg["ListAccessibleRole"] = {
 		"List": "List",
 		"Menu": "Menu",
@@ -379,12 +407,14 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"ListBox": "ListBox",
 	};
 	DataType.registerEnum("@ui5/webcomponents.ListAccessibleRole", pkg["ListAccessibleRole"]);
+
 	pkg["ListGrowingMode"] = {
 		"Button": "Button",
 		"Scroll": "Scroll",
 		"None": "None",
 	};
 	DataType.registerEnum("@ui5/webcomponents.ListGrowingMode", pkg["ListGrowingMode"]);
+
 	pkg["ListItemAccessibleRole"] = {
 		"ListItem": "ListItem",
 		"MenuItem": "MenuItem",
@@ -393,6 +423,7 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"None": "None",
 	};
 	DataType.registerEnum("@ui5/webcomponents.ListItemAccessibleRole", pkg["ListItemAccessibleRole"]);
+
 	pkg["ListItemType"] = {
 		"Inactive": "Inactive",
 		"Active": "Active",
@@ -400,6 +431,7 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"Navigation": "Navigation",
 	};
 	DataType.registerEnum("@ui5/webcomponents.ListItemType", pkg["ListItemType"]);
+
 	pkg["ListSelectionMode"] = {
 		"None": "None",
 		"Single": "Single",
@@ -410,12 +442,14 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"Delete": "Delete",
 	};
 	DataType.registerEnum("@ui5/webcomponents.ListSelectionMode", pkg["ListSelectionMode"]);
+
 	pkg["ListSeparator"] = {
 		"All": "All",
 		"Inner": "Inner",
 		"None": "None",
 	};
 	DataType.registerEnum("@ui5/webcomponents.ListSeparator", pkg["ListSeparator"]);
+
 	pkg["MessageStripDesign"] = {
 		"Information": "Information",
 		"Positive": "Positive",
@@ -425,22 +459,26 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"ColorSet2": "ColorSet2",
 	};
 	DataType.registerEnum("@ui5/webcomponents.MessageStripDesign", pkg["MessageStripDesign"]);
+
 	pkg["NotificationListGrowingMode"] = {
 		"Button": "Button",
 		"None": "None",
 	};
 	DataType.registerEnum("@ui5/webcomponents.NotificationListGrowingMode", pkg["NotificationListGrowingMode"]);
+
 	pkg["OverflowMode"] = {
 		"End": "End",
 		"StartAndEnd": "StartAndEnd",
 	};
 	DataType.registerEnum("@ui5/webcomponents.OverflowMode", pkg["OverflowMode"]);
+
 	pkg["PanelAccessibleRole"] = {
 		"Complementary": "Complementary",
 		"Form": "Form",
 		"Region": "Region",
 	};
 	DataType.registerEnum("@ui5/webcomponents.PanelAccessibleRole", pkg["PanelAccessibleRole"]);
+
 	pkg["PopoverHorizontalAlign"] = {
 		"Center": "Center",
 		"Start": "Start",
@@ -448,6 +486,7 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"Stretch": "Stretch",
 	};
 	DataType.registerEnum("@ui5/webcomponents.PopoverHorizontalAlign", pkg["PopoverHorizontalAlign"]);
+
 	pkg["PopoverPlacement"] = {
 		"Start": "Start",
 		"End": "End",
@@ -455,6 +494,7 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"Bottom": "Bottom",
 	};
 	DataType.registerEnum("@ui5/webcomponents.PopoverPlacement", pkg["PopoverPlacement"]);
+
 	pkg["PopoverVerticalAlign"] = {
 		"Center": "Center",
 		"Top": "Top",
@@ -462,12 +502,14 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"Stretch": "Stretch",
 	};
 	DataType.registerEnum("@ui5/webcomponents.PopoverVerticalAlign", pkg["PopoverVerticalAlign"]);
+
 	pkg["PopupAccessibleRole"] = {
 		"None": "None",
 		"Dialog": "Dialog",
 		"AlertDialog": "AlertDialog",
 	};
 	DataType.registerEnum("@ui5/webcomponents.PopupAccessibleRole", pkg["PopupAccessibleRole"]);
+
 	pkg["Priority"] = {
 		"High": "High",
 		"Medium": "Medium",
@@ -475,11 +517,13 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"None": "None",
 	};
 	DataType.registerEnum("@ui5/webcomponents.Priority", pkg["Priority"]);
+
 	pkg["SegmentedButtonSelectionMode"] = {
 		"Single": "Single",
 		"Multiple": "Multiple",
 	};
 	DataType.registerEnum("@ui5/webcomponents.SegmentedButtonSelectionMode", pkg["SegmentedButtonSelectionMode"]);
+
 	pkg["SemanticColor"] = {
 		"Default": "Default",
 		"Positive": "Positive",
@@ -488,16 +532,19 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"Neutral": "Neutral",
 	};
 	DataType.registerEnum("@ui5/webcomponents.SemanticColor", pkg["SemanticColor"]);
+
 	pkg["SwitchDesign"] = {
 		"Textual": "Textual",
 		"Graphical": "Graphical",
 	};
 	DataType.registerEnum("@ui5/webcomponents.SwitchDesign", pkg["SwitchDesign"]);
+
 	pkg["TabLayout"] = {
 		"Inline": "Inline",
 		"Standard": "Standard",
 	};
 	DataType.registerEnum("@ui5/webcomponents.TabLayout", pkg["TabLayout"]);
+
 	pkg["TableCellHorizontalAlign"] = {
 		"Left": "Left",
 		"Start": "Start",
@@ -506,22 +553,26 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"Center": "Center",
 	};
 	DataType.registerEnum("@ui5/webcomponents.TableCellHorizontalAlign", pkg["TableCellHorizontalAlign"]);
+
 	pkg["TableGrowingMode"] = {
 		"Button": "Button",
 		"Scroll": "Scroll",
 	};
 	DataType.registerEnum("@ui5/webcomponents.TableGrowingMode", pkg["TableGrowingMode"]);
+
 	pkg["TableOverflowMode"] = {
 		"Scroll": "Scroll",
 		"Popin": "Popin",
 	};
 	DataType.registerEnum("@ui5/webcomponents.TableOverflowMode", pkg["TableOverflowMode"]);
+
 	pkg["TableSelectionMode"] = {
 		"None": "None",
 		"Single": "Single",
 		"Multiple": "Multiple",
 	};
 	DataType.registerEnum("@ui5/webcomponents.TableSelectionMode", pkg["TableSelectionMode"]);
+
 	pkg["TagDesign"] = {
 		"Set1": "Set1",
 		"Set2": "Set2",
@@ -532,16 +583,19 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"Critical": "Critical",
 	};
 	DataType.registerEnum("@ui5/webcomponents.TagDesign", pkg["TagDesign"]);
+
 	pkg["TagSize"] = {
 		"S": "S",
 		"L": "L",
 	};
 	DataType.registerEnum("@ui5/webcomponents.TagSize", pkg["TagSize"]);
-	pkg["EmptyIndicatorMode"] = {
+
+	pkg["TextEmptyIndicatorMode"] = {
 		"Off": "Off",
 		"On": "On",
 	};
-	DataType.registerEnum("@ui5/webcomponents.EmptyIndicatorMode", pkg["EmptyIndicatorMode"]);
+	DataType.registerEnum("@ui5/webcomponents.TextEmptyIndicatorMode", pkg["TextEmptyIndicatorMode"]);
+
 	pkg["TitleLevel"] = {
 		"H1": "H1",
 		"H2": "H2",
@@ -551,6 +605,7 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"H6": "H6",
 	};
 	DataType.registerEnum("@ui5/webcomponents.TitleLevel", pkg["TitleLevel"]);
+
 	pkg["ToastPlacement"] = {
 		"TopStart": "TopStart",
 		"TopCenter": "TopCenter",
@@ -563,22 +618,26 @@ sap.ui.define(['./webcomponents-base', 'sap/ui/base/DataType', 'sap/base/strings
 		"BottomEnd": "BottomEnd",
 	};
 	DataType.registerEnum("@ui5/webcomponents.ToastPlacement", pkg["ToastPlacement"]);
+
 	pkg["ToolbarAlign"] = {
 		"Start": "Start",
 		"End": "End",
 	};
 	DataType.registerEnum("@ui5/webcomponents.ToolbarAlign", pkg["ToolbarAlign"]);
+
 	pkg["ToolbarDesign"] = {
 		"Solid": "Solid",
 		"Transparent": "Transparent",
 	};
 	DataType.registerEnum("@ui5/webcomponents.ToolbarDesign", pkg["ToolbarDesign"]);
+
 	pkg["ToolbarItemOverflowBehavior"] = {
 		"Default": "Default",
 		"NeverOverflow": "NeverOverflow",
 		"AlwaysOverflow": "AlwaysOverflow",
 	};
 	DataType.registerEnum("@ui5/webcomponents.ToolbarItemOverflowBehavior", pkg["ToolbarItemOverflowBehavior"]);
+
 	pkg["WrappingType"] = {
 		"None": "None",
 		"Normal": "Normal",

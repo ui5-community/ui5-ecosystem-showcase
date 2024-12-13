@@ -32,7 +32,7 @@ sap.ui.define(['sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponent', 's
 	const pkg = {
 		"_ui5metadata": {
 	  "name": "@ui5/webcomponents-base",
-	  "version": "2.3.0",
+	  "version": "2.5.0",
 	  "dependencies": [
 	    "sap.ui.core"
 	  ],
@@ -59,6 +59,7 @@ sap.ui.define(['sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponent', 's
 		"None": "None",
 	};
 	DataType.registerEnum("@ui5/webcomponents-base.AnimationMode", pkg["AnimationMode"]);
+
 	pkg["AriaHasPopup"] = {
 		"Dialog": "Dialog",
 		"Grid": "Grid",
@@ -67,6 +68,7 @@ sap.ui.define(['sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponent', 's
 		"Tree": "Tree",
 	};
 	DataType.registerEnum("@ui5/webcomponents-base.AriaHasPopup", pkg["AriaHasPopup"]);
+
 	pkg["AriaRole"] = {
 		"AlertDialog": "AlertDialog",
 		"Button": "Button",
@@ -74,6 +76,7 @@ sap.ui.define(['sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponent', 's
 		"Link": "Link",
 	};
 	DataType.registerEnum("@ui5/webcomponents-base.AriaRole", pkg["AriaRole"]);
+
 	pkg["CalendarType"] = {
 		"Gregorian": "Gregorian",
 		"Islamic": "Islamic",
@@ -82,17 +85,20 @@ sap.ui.define(['sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponent', 's
 		"Persian": "Persian",
 	};
 	DataType.registerEnum("@ui5/webcomponents-base.CalendarType", pkg["CalendarType"]);
+
 	pkg["ItemNavigationBehavior"] = {
 		"Static": "Static",
 		"Cyclic": "Cyclic",
 	};
 	DataType.registerEnum("@ui5/webcomponents-base.ItemNavigationBehavior", pkg["ItemNavigationBehavior"]);
+
 	pkg["MovePlacement"] = {
 		"On": "On",
 		"Before": "Before",
 		"After": "After",
 	};
 	DataType.registerEnum("@ui5/webcomponents-base.MovePlacement", pkg["MovePlacement"]);
+
 	pkg["NavigationMode"] = {
 		"Auto": "Auto",
 		"Vertical": "Vertical",
@@ -100,6 +106,7 @@ sap.ui.define(['sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponent', 's
 		"Paging": "Paging",
 	};
 	DataType.registerEnum("@ui5/webcomponents-base.NavigationMode", pkg["NavigationMode"]);
+
 	pkg["ValueState"] = {
 		"None": "None",
 		"Positive": "Positive",

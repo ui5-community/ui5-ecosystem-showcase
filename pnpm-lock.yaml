@@ -720,11 +720,11 @@ importers:
         specifier: ^2.46.1
         version: 2.46.1
       '@ui5/webcomponents':
-        specifier: ^2.3.0
-        version: 2.3.0
+        specifier: ^2.5.0
+        version: 2.5.0
       '@ui5/webcomponents-icons':
-        specifier: ^2.3.0
-        version: 2.3.0
+        specifier: ^2.5.0
+        version: 2.5.0
       axios:
         specifier: ^1.7.7
         version: 1.7.7(debug@4.3.7)
@@ -1124,11 +1124,14 @@ importers:
   showcases/ui5-tsapp-webc:
     dependencies:
       '@ui5/webcomponents':
-        specifier: ^2.3.0
-        version: 2.3.0
+        specifier: ^2.5.0
+        version: 2.5.0
+      '@ui5/webcomponents-ai':
+        specifier: ^2.5.0
+        version: 2.5.0
       '@ui5/webcomponents-fiori':
-        specifier: ^2.3.0
-        version: 2.3.0
+        specifier: ^2.5.0
+        version: 2.5.0
     devDependencies:
       '@types/openui5':
         specifier: 1.129.0
@@ -3200,29 +3203,32 @@ packages:
     peerDependencies:
       typescript: '>=5.2.0'
 
-  '@ui5/webcomponents-base@2.3.0':
-    resolution: {integrity: sha512-TxP65GLQjtVMSIRpgWGpXdCjz1Ec7KlO7dzde38Y4hC0BA1MNosn5+rLVwJdWUhALb+kJGYs4CMCqz4pm6sepQ==}
+  '@ui5/webcomponents-ai@2.5.0':
+    resolution: {integrity: sha512-F/DR3bc49dxlBw5Dwn4hNucGpzY0hmzymLTGeNddyLpKPUQhNvLNGwcLANtn/++Z3YNT6SRzaduMhdHcRlZ9pw==}
 
-  '@ui5/webcomponents-fiori@2.3.0':
-    resolution: {integrity: sha512-/FMnuzHZ4C48eF5JqchTCfHrIzrkupztkEjILazklPRuleiZMwAfZLqxp+v31CJvPDJEXLwv+rePRtrTsNxk/A==}
+  '@ui5/webcomponents-base@2.5.0':
+    resolution: {integrity: sha512-PRvQi+gKtzS7pMlUEvHGJ448Hhgce4Bey5nhnYIrSZJW9hgKn/XaydnvFwjQSbpOf88gmvor695jTnaLxgdFPw==}
 
-  '@ui5/webcomponents-icons-business-suite@2.3.0':
-    resolution: {integrity: sha512-KfPd6uILOm/64pigpijFjlu9BiZzdS7Pj+qbweYF9uCe/48ILH7Oc2lRXQPzBhX0jnv38k1ZhFGQMgfPnl+WPA==}
+  '@ui5/webcomponents-fiori@2.5.0':
+    resolution: {integrity: sha512-aqX0LLVvoDyJwpUQshxzUdisqmmUWIHna146eW4JigBvEVQadkP64JXcmfz0B1H6KPChTdlFTT4Wl70jBZY73w==}
 
-  '@ui5/webcomponents-icons-tnt@2.3.0':
-    resolution: {integrity: sha512-pv7VW09wolR0Asq/A2laOdNePEdFeZLVyScJS9OoQLBKvabcq7yyC4qugGIPsUaDpdNSGrigKMVcYSJs/OqQTQ==}
+  '@ui5/webcomponents-icons-business-suite@2.5.0':
+    resolution: {integrity: sha512-nDRcR8+XsQfcNPuUxcQwMvwEa6bJJ8O/XHQt3oe6gXJAa6oHTNMpFxNS65WSa8PFidMA7RgRyMMqajENjsEsKQ==}
 
-  '@ui5/webcomponents-icons@2.3.0':
-    resolution: {integrity: sha512-O1DvElbf9v0bf/0dHGg8woyE1qwnmwSJfzqNb0nd6yQCQm8d33TRrYSa1FgPvFphJQ/x0FBm/LGcFguo/1Lgow==}
+  '@ui5/webcomponents-icons-tnt@2.5.0':
+    resolution: {integrity: sha512-aliilP0pxCrvPw3CL2KaaeZB6gHVKExNDCuLRfos64+HSW6zEOrKXF8VD8WQ1P3+HPCgeY2VcLFfRaJrSdieqw==}
 
-  '@ui5/webcomponents-localization@2.3.0':
-    resolution: {integrity: sha512-tIzbb2sKIURhM4FqGShWyzWhy0ucY9nvWrCOZZjshf/u2yasgIe1L4bdKzM95FshL1Uvxmq3X5ua4QiTguLaMg==}
+  '@ui5/webcomponents-icons@2.5.0':
+    resolution: {integrity: sha512-rlwXOuTqZSIQ+KqMBx/WT92Qd9dWkoUeltJZVH9nj1nITwVkgTxwrL38ODUtbc1cztIoBSBM/qzgef3om+nUDQ==}
 
-  '@ui5/webcomponents-theming@2.3.0':
-    resolution: {integrity: sha512-4raqA6bTWWP8Rz9zfX0WNyYGuDMPI+BEGZ56HQvPe9856RWEt79bPbYNTM+zW5YT26eGZpZONYOu76LhOjImsA==}
+  '@ui5/webcomponents-localization@2.5.0':
+    resolution: {integrity: sha512-k85KJ70ayVWMQThOIlgT2bE1ULvl7Szvs3IjJVENa+HuxIC4LFBUESvzNjH7ccz9JT54f3xfOF2SnR6Xv6SuMA==}
 
-  '@ui5/webcomponents@2.3.0':
-    resolution: {integrity: sha512-CIlKYCkF3NIkM25ngAJi859BWrgERFxSCwQfLPbR8b0Py6lleygp/73puZyaRXhRezUse97r/CfCbfLn9GzrLg==}
+  '@ui5/webcomponents-theming@2.5.0':
+    resolution: {integrity: sha512-8RUtlPanhzuOC0btRr024C4KuhNFP0t1N/nfsNdHmwZfCHO4sdzJndP3M9w/NfUd6A/ji3DZFD69lriIWTT1/g==}
+
+  '@ui5/webcomponents@2.5.0':
+    resolution: {integrity: sha512-dsk9gU8UfDmMbyRAyNhr/tNPMC/Ve8XbCPf2xRZHtLjRlVrPGk9NY+V9lyqWc0GIpVEtouyJxgocy8hxUZFAVw==}
 
   '@vercel/nft@0.27.5':
     resolution: {integrity: sha512-b2A7M+4yMHdWKY7xCC+kBEcnMrpaSE84CnuauTjhKKoCEeej0byJMAB8h/RBVnw/HdZOAFVcxR0Izr3LL24FwA==}
@@ -3328,8 +3334,8 @@ packages:
     resolution: {integrity: sha512-nrUSn7hzt7J6JWgWGz78ZYI8wj+gdIJdk0Ynjpp8l+trkn58Uqsf6RYrYkEK+3X18EX+TNdtJI0WxAtc+L84SQ==}
     hasBin: true
 
-  '@zxing/library@0.17.1':
-    resolution: {integrity: sha512-RuiBZuteGaFXCle/b0X+g3peN8UpDc3pGe/J7hZBzKWaMZLbjensR7ja3vy47xWhXU4e8MICGqegPMxc2V2sow==}
+  '@zxing/library@0.21.3':
+    resolution: {integrity: sha512-hZHqFe2JyH/ZxviJZosZjV+2s6EDSY0O24R+FQmlWZBZXP9IqMo7S3nb3+2LBWxodJQkSurdQGnqE7KXqrYgow==}
     engines: {node: '>= 10.4.0'}
 
   '@zxing/text-encoding@0.9.0':
@@ -12604,49 +12610,56 @@ snapshots:
       typescript: 5.6.3
       yargs: 17.7.2
 
-  '@ui5/webcomponents-base@2.3.0':
+  '@ui5/webcomponents-ai@2.5.0':
+    dependencies:
+      '@ui5/webcomponents': 2.5.0
+      '@ui5/webcomponents-base': 2.5.0
+      '@ui5/webcomponents-icons': 2.5.0
+      '@ui5/webcomponents-theming': 2.5.0
+
+  '@ui5/webcomponents-base@2.5.0':
     dependencies:
       '@lit-labs/ssr-dom-shim': 1.2.1
       lit-html: 2.8.0
 
-  '@ui5/webcomponents-fiori@2.3.0':
+  '@ui5/webcomponents-fiori@2.5.0':
     dependencies:
-      '@ui5/webcomponents': 2.3.0
-      '@ui5/webcomponents-base': 2.3.0
-      '@ui5/webcomponents-icons': 2.3.0
-      '@ui5/webcomponents-theming': 2.3.0
-      '@zxing/library': 0.17.1
+      '@ui5/webcomponents': 2.5.0
+      '@ui5/webcomponents-base': 2.5.0
+      '@ui5/webcomponents-icons': 2.5.0
+      '@ui5/webcomponents-theming': 2.5.0
+      '@zxing/library': 0.21.3
 
-  '@ui5/webcomponents-icons-business-suite@2.3.0':
+  '@ui5/webcomponents-icons-business-suite@2.5.0':
     dependencies:
-      '@ui5/webcomponents-base': 2.3.0
+      '@ui5/webcomponents-base': 2.5.0
 
-  '@ui5/webcomponents-icons-tnt@2.3.0':
+  '@ui5/webcomponents-icons-tnt@2.5.0':
     dependencies:
-      '@ui5/webcomponents-base': 2.3.0
+      '@ui5/webcomponents-base': 2.5.0
 
-  '@ui5/webcomponents-icons@2.3.0':
+  '@ui5/webcomponents-icons@2.5.0':
     dependencies:
-      '@ui5/webcomponents-base': 2.3.0
+      '@ui5/webcomponents-base': 2.5.0
 
-  '@ui5/webcomponents-localization@2.3.0':
+  '@ui5/webcomponents-localization@2.5.0':
     dependencies:
       '@types/openui5': 1.129.0
-      '@ui5/webcomponents-base': 2.3.0
+      '@ui5/webcomponents-base': 2.5.0
 
-  '@ui5/webcomponents-theming@2.3.0':
+  '@ui5/webcomponents-theming@2.5.0':
     dependencies:
       '@sap-theming/theming-base-content': 11.17.1
-      '@ui5/webcomponents-base': 2.3.0
+      '@ui5/webcomponents-base': 2.5.0
 
-  '@ui5/webcomponents@2.3.0':
+  '@ui5/webcomponents@2.5.0':
     dependencies:
-      '@ui5/webcomponents-base': 2.3.0
-      '@ui5/webcomponents-icons': 2.3.0
-      '@ui5/webcomponents-icons-business-suite': 2.3.0
-      '@ui5/webcomponents-icons-tnt': 2.3.0
-      '@ui5/webcomponents-localization': 2.3.0
-      '@ui5/webcomponents-theming': 2.3.0
+      '@ui5/webcomponents-base': 2.5.0
+      '@ui5/webcomponents-icons': 2.5.0
+      '@ui5/webcomponents-icons-business-suite': 2.5.0
+      '@ui5/webcomponents-icons-tnt': 2.5.0
+      '@ui5/webcomponents-localization': 2.5.0
+      '@ui5/webcomponents-theming': 2.5.0
 
   '@vercel/nft@0.27.5(encoding@0.1.13)':
     dependencies:
@@ -12893,7 +12906,7 @@ snapshots:
     dependencies:
       argparse: 2.0.1
 
-  '@zxing/library@0.17.1':
+  '@zxing/library@0.21.3':
     dependencies:
       ts-custom-error: 3.3.1
     optionalDependencies:
