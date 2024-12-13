@@ -1,6 +1,6 @@
 {
   "name": "ui5-tsapp-webc",
-  "version": "0.7.8",
+  "version": "0.8.0",
   "description": "Showcase of a TypeScript setup for developing UI5 applications with UI5 Web Components",
   "private": true,
   "author": "Peter Muessig",
@@ -22,8 +22,8 @@
   },
   "dependencies": {
     "@ui5/webcomponents": "^2.5.0",
-    "@ui5/webcomponents-fiori": "^2.5.0",
-    "@ui5/webcomponents-ai": "^2.5.0"
+    "@ui5/webcomponents-ai": "^2.5.0",
+    "@ui5/webcomponents-fiori": "^2.5.0"
   },
   "devDependencies": {
     "@types/openui5": "1.129.0",

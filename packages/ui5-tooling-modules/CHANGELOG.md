@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.19.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.8...ui5-tooling-modules@3.19.0) (2024-12-13)
+
+
+### Features
+
+* **ui5-tooling-modules:** adds basic support for valueStates ([#1125](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1125)) ([8f37d3c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8f37d3c16046f1bbd700f7dabf9ae1c0cf66d2d4))
+
+
+
+
+
 ## [3.18.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.7...ui5-tooling-modules@3.18.8) (2024-12-13)
 
 

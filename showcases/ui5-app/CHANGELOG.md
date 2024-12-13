@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.45.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.44.17...ui5-app@0.45.0) (2024-12-13)
+
+
+### Features
+
+* **ui5-tooling-modules:** adds basic support for valueStates ([#1125](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1125)) ([8f37d3c](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8f37d3c16046f1bbd700f7dabf9ae1c0cf66d2d4))
+
+
+
+
+
 ## [0.44.17](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.44.16...ui5-app@0.44.17) (2024-12-13)
 
 **Note:** Version bump only for package ui5-app
