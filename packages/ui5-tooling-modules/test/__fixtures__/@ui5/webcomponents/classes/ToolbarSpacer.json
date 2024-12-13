@@ -1,17 +1,1 @@
-{
-  "namespace": "@ui5/webcomponents",
-  "tag": "ui5-toolbar-spacer",
-  "interfaces": [],
-  "properties": {
-    "width": { "type": "string", "mapping": "property" },
-    "overflowPriority": { "type": "@ui5/webcomponents.ToolbarItemOverflowBehavior", "mapping": "property", "defaultValue": "Default" },
-    "preventOverflowClosing": { "type": "boolean", "mapping": "property", "defaultValue": false },
-    "text": { "type": "string", "mapping": "textContent" },
-    "height": { "type": "sap.ui.core.CSSSize", "mapping": "style" }
-  },
-  "aggregations": {},
-  "associations": {},
-  "events": {},
-  "getters": [],
-  "methods": []
-}
+{"namespace":"@ui5/webcomponents","tag":"ui5-toolbar-spacer","interfaces":[],"properties":{"width":{"type":"string","mapping":"property"},"overflowPriority":{"type":"@ui5/webcomponents.ToolbarItemOverflowBehavior","mapping":"property","defaultValue":"Default"},"preventOverflowClosing":{"type":"boolean","mapping":"property","defaultValue":false},"text":{"type":"string","mapping":"textContent"},"height":{"type":"sap.ui.core.CSSSize","mapping":"style"}},"aggregations":{},"associations":{},"events":{},"getters":[],"methods":[]}
