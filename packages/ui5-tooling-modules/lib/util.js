@@ -1214,6 +1214,7 @@ module.exports = function (log, projectInfo) {
 								resolvedModules?.forEach((resolvedModule) => {
 									// entry module
 									resolvedModule.code = module.code;
+									resolvedModule.chunkName = module.name;
 								});
 							} else {
 								// chunk module
@@ -1270,6 +1271,18 @@ module.exports = function (log, projectInfo) {
 									//       in CDN cases, root resources are resolved against the CDN
 									moduleBasePath = path.posix.relative(`/${path.dirname(moduleName)}`, "/");
 								}
+								// modules are also generated as chunks but assigned to entry point modules. If those entry point modules
+								// are used in other modules, we also need to restore the entry point module name for the chunk name
+								bundleInfo.getModules().forEach(({ name, chunkName }) => {
+									// replace the modules having a relative path
+									const relativePath = "../".repeat(moduleName.split("/").length - 1) || "./";
+									module.code = module.code?.replace(`'${relativePath}${chunkName}'`, `'${moduleBasePath || "."}/${name}'`);
+									module.code = module.code?.replace(`"${relativePath}${chunkName}"`, `"${moduleBasePath || "."}/${name}"`);
+									// replace the modules aside
+									module.code = module.code?.replace(`'./${chunkName}'`, `'${moduleBasePath || "."}/${name}'`);
+									module.code = module.code?.replace(`"./${chunkName}"`, `"${moduleBasePath || "."}/${name}"`);
+								});
+								// identify and rewrite the chunks to be available under the namespace of the application
 								bundleInfo.getChunks().forEach((chunk) => {
 									const originalChunkName = chunk.originalName;
 									const chunkName = chunk.name;
