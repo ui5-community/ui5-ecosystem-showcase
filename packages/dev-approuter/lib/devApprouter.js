@@ -159,7 +159,14 @@ class DevApprouter {
 
 		// create and start the SAP Approuter
 		// https://help.sap.com/docs/btp/sap-business-technology-platform/extension-api-of-application-router
-		approuter().start({
+		const _approuter = approuter();
+		// helper: if used in a hybrid setup w/ xsuaa,
+		// this endpoint helps to debug auth(n,z) issues
+		// DANGER, WILL SMITH: you must not use this in production envs!
+		_approuter.beforeRequestHandler.use("/my-jwt", (req, res) => {
+			res.end(req.session.user.token.accessToken)
+		})
+		_approuter.start({
 			port: arPort,
 			xsappConfig: applyDependencyConfig(config),
 			extensions: [
