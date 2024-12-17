@@ -164,7 +164,7 @@ class DevApprouter {
 		// this endpoint helps to debug auth(n,z) issues
 		// DANGER, WILL SMITH: you must not use this in production envs!
 		_approuter.beforeRequestHandler.use("/my-jwt", (req, res) => {
-			res.end(req.session.user.token.accessToken)
+			res.end(req.session?.user?.token?.accessToken || "none")
 		})
 		_approuter.start({
 			port: arPort,
