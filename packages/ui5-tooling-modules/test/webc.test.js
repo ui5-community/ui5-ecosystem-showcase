@@ -63,7 +63,7 @@ test.serial("Verify ui5-metadata generation from 'custom-elements-internal.json'
 		Object.keys(webcRegistryEntry.classes).forEach((className) => {
 			const classJSON = JSON.stringify(webcRegistryEntry.classes[className]._ui5metadata);
 			const classFixtureForComparisonJSON = readFileSync(path.join(fixtureBase, `classes/${className}.json`), { encoding: "utf-8" });
-			t.is(classFixtureForComparisonJSON, classJSON, `Class ${className} JSON is equal to fixture`);
+			t.is(classFixtureForComparisonJSON, classJSON, `Class ${webcRegistryEntry.namespace}.${className} JSON is equal to fixture`);
 		});
 
 		// compare enums
