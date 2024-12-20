@@ -1,6 +1,6 @@
 const test = require("ava");
 const path = require("path");
-const { rmSync, readFileSync, writeFileSync, existsSync, mkdirSync } = require("fs");
+const { rmSync, readFileSync, writeFileSync, existsSync, mkdirSync, copyFileSync } = require("fs");
 
 const WebComponentRegistry = require("../lib/utils/WebComponentRegistry");
 
@@ -50,7 +50,8 @@ function writeFixtures(webcRegistryEntry) {
 // *****************************************************************************
 
 test.serial("Verify ui5-metadata generation from 'custom-elements-internal.json'", async (t) => {
-	const appDir = path.join(__dirname, "../../../showcases", "ui5-tsapp-webc");
+	const appDir = path.join(__dirname, generateFixtures ? "../../../showcases" : fixtureDir, "ui5-tsapp-webc");
+	const dist = generateFixtures ? "/dist" : "";
 
 	const compareFixtures = (webcRegistryEntry) => {
 		const fixtureBase = path.resolve(fixtureDir, webcRegistryEntry.namespace);
@@ -80,9 +81,13 @@ test.serial("Verify ui5-metadata generation from 'custom-elements-internal.json'
 	};
 
 	const webcBaseNpmPackage = "@ui5/webcomponents-base";
-	const webcBasePath = require.resolve(`${webcBaseNpmPackage}/dist/custom-elements-internal.json`, {
+	const webcBasePath = require.resolve(`${webcBaseNpmPackage}${dist}/custom-elements-internal.json`, {
 		paths: [appDir],
 	});
+	if (generateFixtures) {
+		ensurePathExists(path.resolve(fixtureDir, webcBaseNpmPackage));
+		copyFileSync(webcBasePath, path.resolve(fixtureDir, webcBaseNpmPackage, "custom-elements-internal.json"));
+	}
 	const webcBaseJson = JSON.parse(readFileSync(webcBasePath, { encoding: "utf-8" }));
 
 	WebComponentRegistry.register({
@@ -93,9 +98,13 @@ test.serial("Verify ui5-metadata generation from 'custom-elements-internal.json'
 	});
 
 	const webcNpmPackage = "@ui5/webcomponents";
-	const webcPath = require.resolve(`${webcNpmPackage}/dist/custom-elements-internal.json`, {
+	const webcPath = require.resolve(`${webcNpmPackage}${dist}/custom-elements-internal.json`, {
 		paths: [appDir],
 	});
+	if (generateFixtures) {
+		ensurePathExists(path.resolve(fixtureDir, webcNpmPackage));
+		copyFileSync(webcBasePath, path.resolve(fixtureDir, webcNpmPackage, "custom-elements-internal.json"));
+	}
 	const webcJson = JSON.parse(readFileSync(webcPath, { encoding: "utf-8" }));
 
 	WebComponentRegistry.register({
@@ -106,9 +115,13 @@ test.serial("Verify ui5-metadata generation from 'custom-elements-internal.json'
 	});
 
 	const webcFioriNpmPackage = "@ui5/webcomponents-fiori";
-	const webcFioriPath = require.resolve(`${webcFioriNpmPackage}/dist/custom-elements-internal.json`, {
+	const webcFioriPath = require.resolve(`${webcFioriNpmPackage}${dist}/custom-elements-internal.json`, {
 		paths: [appDir],
 	});
+	if (generateFixtures) {
+		ensurePathExists(path.resolve(fixtureDir, webcFioriNpmPackage));
+		copyFileSync(webcBasePath, path.resolve(fixtureDir, webcFioriNpmPackage, "custom-elements-internal.json"));
+	}
 	const webcFioriJson = JSON.parse(readFileSync(webcFioriPath, { encoding: "utf-8" }));
 
 	WebComponentRegistry.register({
@@ -119,9 +132,13 @@ test.serial("Verify ui5-metadata generation from 'custom-elements-internal.json'
 	});
 
 	const webcAiNpmPackage = "@ui5/webcomponents-ai";
-	const webcAiPath = require.resolve(`${webcAiNpmPackage}/dist/custom-elements-internal.json`, {
+	const webcAiPath = require.resolve(`${webcAiNpmPackage}${dist}/custom-elements-internal.json`, {
 		paths: [appDir],
 	});
+	if (generateFixtures) {
+		ensurePathExists(path.resolve(fixtureDir, webcAiNpmPackage));
+		copyFileSync(webcBasePath, path.resolve(fixtureDir, webcAiNpmPackage, "custom-elements-internal.json"));
+	}
 	const webcAiJson = JSON.parse(readFileSync(webcAiPath, { encoding: "utf-8" }));
 
 	WebComponentRegistry.register({
