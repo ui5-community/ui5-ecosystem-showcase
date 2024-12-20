@@ -1,6 +1,7 @@
 import Control from "sap/ui/core/Control";
 import RenderManager from "sap/ui/core/RenderManager";
 import type { MetadataOptions } from "sap/ui/core/Element";
+import CustomData from "sap/ui/core/CustomData";
 
 /**
  * @namespace ui5.ecosystem.demo.webctsapp.control
@@ -35,6 +36,14 @@ export default class HTMLElement extends Control {
 					if (value) {
 						rm.attr(name, value);
 					}
+				}
+			});
+
+			control.getCustomData().forEach((cdata: CustomData) => {
+				const key = cdata.getKey();
+				const value: string = cdata.getValue() as string;
+				if (value) {
+					rm.attr(key, value);
 				}
 			});
 
