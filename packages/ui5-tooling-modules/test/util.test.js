@@ -644,6 +644,7 @@ const webcContextModules = {
 			return { name, def };
 		},
 	},
+	"sap/ui/core/webc/WebComponentRenderer": function () {},
 	"sap/ui/core/EnabledPropagator": function () {},
 	"sap/base/strings/hyphenate": function (s) {
 		return s;
