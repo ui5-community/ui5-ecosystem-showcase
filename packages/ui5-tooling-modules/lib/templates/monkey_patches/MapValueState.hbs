@@ -1,0 +1,6 @@
+// Fixed with https://github.com/SAP/openui5/commit/111c4bcd1660f90714ed567fa8cb57fbc448591f in UI5 1.133.0
+
+WebComponent.prototype._mapValueState ??= function(sValueState) {
+	console.warn("ValueState mapping is not implemented for Web Components yet. Please use UI5 version 1.133.0 or higher.");
+	return sValueState;
+};

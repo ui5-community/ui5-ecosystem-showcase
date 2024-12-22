@@ -82,6 +82,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 			skipTransform: false,
 			watch: true,
 			watchDebounce: 100,
+			entryPoints: [],
 		},
 		options.configuration,
 	);
@@ -178,6 +179,11 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	// logic which bundles and watches the modules coming from the
 	// node_modules or dependencies via NPM package names
 	const requestedModules = new Set();
+	// inject the entrypoints from the configuration
+	config.entryPoints?.forEach((entry) => {
+		requestedModules.add(entry);
+	});
+	// start bundling
 	let whenBundled, scanTime, bundleTime;
 	const bundleAndWatch = async ({ moduleName, force }) => {
 		if (moduleName && !requestedModules.has(moduleName)) {

@@ -1,4 +1,4 @@
-sap.ui.define(['exports', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponent', 'sap/ui/base/DataType'], (function (exports, hyphenate, WebComponent, DataType) { 'use strict';
+sap.ui.define(['exports', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponent', 'sap/ui/core/webc/WebComponentRenderer', 'sap/ui/base/DataType'], (function (exports, hyphenate, WebComponent, WebComponentRenderer, DataType) { 'use strict';
 
     var class2type = {};
     var hasOwn = class2type.hasOwnProperty;
@@ -1807,7 +1807,10 @@ sap.ui.define(['exports', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebCom
     }
     registerFeature("OpenUI5Support", OpenUI5Support);
 
-    // Will be fixed with TBD in UI5 1.130
+    // this file contains all imports which are shared between the Monkey Patch files
+
+
+    // Fixed with https://github.com/SAP/openui5/commit/a4b5fe00b49e0e26e5fd845607a2b95db870d55a in UI5 1.133.0
 
     WebComponent.prototype.__attachCustomEventsListeners = function() {
     	// ##### MODIFICATION START #####
@@ -1834,6 +1837,13 @@ sap.ui.define(['exports', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebCom
     			oDomRef.removeEventListener(sCustomEventName, this.__handleCustomEventBound);
     		}
     	}
+    };
+
+    // Fixed with https://github.com/SAP/openui5/commit/111c4bcd1660f90714ed567fa8cb57fbc448591f in UI5 1.133.0
+
+    WebComponent.prototype._mapValueState ??= function(sValueState) {
+    	console.warn("ValueState mapping is not implemented for Web Components yet. Please use UI5 version 1.133.0 or higher.");
+    	return sValueState;
     };
     setCustomElementsScopingSuffix("mYsCoPeSuFfIx");
 
