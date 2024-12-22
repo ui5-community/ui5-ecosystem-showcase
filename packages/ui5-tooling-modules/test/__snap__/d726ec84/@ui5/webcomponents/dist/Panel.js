@@ -1,4 +1,4 @@
-sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/core/webc/WebComponent', 'sap/base/strings/hyphenate', 'sap/ui/base/DataType'], (function (_ui5_webcomponentsBase, _ui5_webcomponents, WebComponent, hyphenate, DataType) { 'use strict';
+sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/core/webc/WebComponent', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponentRenderer', 'sap/ui/base/DataType'], (function (_ui5_webcomponentsBase, _ui5_webcomponents, WebComponent, hyphenate, WebComponentRenderer, DataType) { 'use strict';
 
     const tasks = new WeakMap();
     class AnimationQueue {

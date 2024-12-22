@@ -55,8 +55,12 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 	// handlebars templates for the Web Components transformation
 	const webcTmplFnPackage = loadAndCompileTemplate("templates/Package.hbs");
 	const webcTmplFnControl = loadAndCompileTemplate("templates/WrapperControl.hbs");
-	const webcTmplFnMPAttributes = loadAndCompileTemplate("templates/monkey_patches/RenderAttributeProperties.hbs");
-	const webcTmplFnMPAllEvents = loadAndCompileTemplate("templates/monkey_patches/RegisterAllEvents.hbs");
+
+	// handlebars templates for the Web Components monkey patches
+	const webcTmplMPPreamble = loadAndCompileTemplate("templates/monkey_patches/_Preamble.hbs");
+	const webcTmplMPFnAttributes = loadAndCompileTemplate("templates/monkey_patches/RenderAttributeProperties.hbs");
+	const webcTmplMPFnAllEvents = loadAndCompileTemplate("templates/monkey_patches/RegisterAllEvents.hbs");
+	const webcTmplMPFnMapValueState = loadAndCompileTemplate("templates/monkey_patches/MapValueState.hbs");
 
 	// array of all web component classes
 	const webcModules = [];
@@ -291,16 +295,23 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 				});
 				// include the monkey patches for the Web Components base library
 				// only for UI5 versions < 1.128.0 we need the attributes fix
+				let monkeyPatches = [];
 				if (namespace === "@ui5/webcomponents-base" && lt(framework?.version || "0.0.0", "1.128.0")) {
-					const monkeyPatches = webcTmplFnMPAttributes();
-					return `${monkeyPatches}\n${code}`;
+					monkeyPatches.push(webcTmplMPFnAttributes());
 				}
-				// only for UI5 versions < 1.132.0 we need the events fix
-				if (namespace === "@ui5/webcomponents-base" && lt(framework?.version || "0.0.0", "1.132.0")) {
-					const monkeyPatches = webcTmplFnMPAllEvents();
-					return `${monkeyPatches}\n${code}`;
+				// only for UI5 versions < 1.133.0 we need...
+				if (namespace === "@ui5/webcomponents-base" && lt(framework?.version || "0.0.0", "1.133.0")) {
+					// ... the monkey patch to register all events
+					monkeyPatches.push(webcTmplMPFnAllEvents());
+					// ... the monkey patch to fix the value state mapping
+					monkeyPatches.push(webcTmplMPFnMapValueState());
 				}
-				return code;
+				// append the monkey patches to the code if needed
+				if (monkeyPatches.length > 0) {
+					return `${webcTmplMPPreamble()}\n${monkeyPatches.join("\n")}\n${code}`;
+				} else {
+					return code;
+				}
 			} else if (moduleInfo.attributes.ui5Type === "control") {
 				let clazz = moduleInfo.attributes.clazz;
 				// determine whether the clazz is based on the UI5Element superclass
