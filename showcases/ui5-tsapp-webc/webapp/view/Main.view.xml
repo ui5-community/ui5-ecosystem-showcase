@@ -5,9 +5,12 @@
   xmlns:core="sap.ui.core"
   xmlns:mvc="sap.ui.core.mvc"
   xmlns:c="ui5.ecosystem.demo.webctsapp.control"
+  xmlns:ca="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
   xmlns:webc="@ui5/webcomponents"
+  xmlns:fiori="@ui5/webcomponents-fiori"
   core:require="{
     Formatter: 'ui5/ecosystem/demo/webctsapp/model/Formatter',
+    iconUI5: '@ui5/webcomponents-icons/dist/sap-ui5',
     iconAI: '@ui5/webcomponents-icons/dist/ai',
     iconBiometric: '@ui5/webcomponents-icons/dist/biometric-face',
     iconBadge: '@ui5/webcomponents-icons/dist/badge',
@@ -18,10 +21,59 @@
     iconCopy: '@ui5/webcomponents-icons/dist/copy'
   }"
 >
-  <Page id="page" title="{formatter: 'Formatter.formatValue', path: 'i18n>appTitle'}">
-    <headerContent>
+  <Page id="page" showHeader="false">
+    <!-- <headerContent>
       <core:Icon color="#1873B4" src="sap-icon://sap-ui5" size="2rem" />
-    </headerContent>
+    </headerContent> -->
+    <!-- playground-fold-end -->
+
+    <fiori:ShellBar id="shellbar" primaryTitle="{formatter: 'Formatter.formatValue', path: 'i18n>appTitle'}" profileClick=".onProfileClick">
+      <fiori:profile>
+        <webc:Avatar id="profileAvatar">
+          <!-- <webc:Icon name="sap-ui5" /> -->
+          <c:HTMLElement tag="img" ca:src="https://sap.github.io/ui5-webcomponents/img/logos/LogoWater.svg" />
+        </webc:Avatar>
+      </fiori:profile>
+      <fiori:logo>
+        <!-- fun stuff... white data uri + css magic = color 😎 -->
+        <c:HTMLElement
+          tag="img"
+          ca:width="100px"
+          ca:height="30px"
+          ca:style="margin-top: -2px; filter: brightness(50%) sepia(100%) saturate(10000%) hue-rotate(190deg);"
+          ca:src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTk0IDYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnIGZpbGw9IiNmZmYiPjxwYXRoIGQ9Im0uMiAzMC41Yy4xLS44LjItMS43LjQtMi41LjctMy4yIDIuMi02LjEgNC40LTguNC43LS43IDEuNC0xLjQgMi4yLTIgMy0yLjMgNi4yLTQuMyA5LjMtNi40IDEuMi0uOCAyLjQtMS43IDMuNi0yLjYtLjMgMS41LTEuMSAyLjgtMi4zIDMuOS0xLjYgMS42LTMuNCAzLjItNSA0LjgtMi41IDIuMy00LjEgNS4yLTQuNyA4LjctMS4xIDUuOSAyLjEgMTIuMSA2LjYgMTQuMiAyLjYgMS4yIDUuMyAxLjMgNy44LS4zIDEuOC0xLjIgMi42LTMuNCAyLjItNS4yLS43LTIuNS0zLjktMy44LTYuMi0yLjQtLjIuMS0uNC4zLS42LjQtLjgtMS4zLS41LTMuMS43LTQuNSAxLjMtMS41IDIuOS0yLjYgNC43LTMuNSAyLjItMS4xIDQuNC0yLjEgNi4zLTMuNyAxLjUtMS4yIDIuNy0yLjYgMy4yLTQuNi45IDIuMS42IDQuMSAwIDYuMiAyLTEgMy42LTIuMiA0LjgtNC4xLjQgMi41LjIgNC44LS43IDcuMiAxLjItLjYgMi4xLTEuMSAzLjEtMS42LjMgMS40LS41IDMtMi43IDUuNSAxLjIgMS4xIDIuNSAxLjMgNCAuOCAyLjctLjkgNS0zLjkgNS4yLTYuOC4zLTMuNi0xLjEtNi42LTMuMy05LjMtMi41LTMuMS01LjctNS41LTktNy42LTIuMS0xLjMtNC4xLTIuNi01LjYtNC42LS40LS41LS42LTEuMS0xLTEuNyA1LjIgMi41IDEwLjMgNC45IDE1LjIgNy41IDQuMSAyLjMgNy43IDUuNiAxMC4xIDEwIDEuNyAzIDIuNyA2LjMgMyA5LjcuOCA3LjItLjcgMTMuOS01IDE5LjktNC43IDYuMy0xMC44IDEwLjItMTguNSAxMS41LTEuMi4yLTIuNC4zLTMuNi41LS43IDAtMS4zIDAtMiAwLS4xIDAtLjMtLjEtLjQtLjEtMS43LS4yLTMuNC0uMy01LS43LTEwLjQtMi43LTE3LjQtOS4yLTIwLjYtMTkuNC0uNi0xLjgtLjgtMy43LS44LTUuNS4xLTEuMy4xLTIuMy4yLTMuM3ptMjEuMi0yLjF2LjJjLjYuMiAxLjIuNCAxLjguNS4zIDAgLjYtLjIuOC0uNC4xLS4xLjEtLjYtLjEtLjhzLS42LS4zLS44LS4zYy0uNS4zLTEuMS42LTEuNy44eiIvPjxwYXRoIGQ9Im0xOTMuOCAzOS41Yy0uMS42LS4yIDEuMS0uNCAxLjcgMCAuMS0uMS4yLS4xLjQtLjQgMS0uOSAxLjktMS43IDIuNy0xLjEgMS4yLTIuNiAxLjktNC4xIDIuMy00LjEgMS04IC40LTExLjUtMi4xLS4zLS4yLS42LS40LS45LS43LjktMS4yIDEuOC0yLjMgMi42LTMuNSAxIC42IDEuOSAxLjIgMi44IDEuNiAxLjQuNyAyLjkuOSA0LjQuNyAyLjUtLjMgMy45LTIuNSAzLjQtNS4yLS42LTMuMS0zLjgtNC40LTYuOC0yLjYtLjQuMi0uOC41LTEuMS45LS41LjctMSAuNy0xLjcuNC0uOC0uMy0xLjYtLjUtMi40LS44LjMtNC4zLjYtOC43IDEtMTNoMTQuOGMtLjEgMS4zLS4yIDIuNi0uMyA0LTMuNSAwLTYuOSAwLTEwLjMgMC0uMiAxLjctLjMgMy40LS41IDUuMiAyLjEtMS41IDQuMy0xLjYgNi42LTEuMiAyLjEuMyA0IDEuNSA1IDMuMyAxLjQgMS45IDEuNiAzLjkgMS4yIDUuOXoiLz48cGF0aCBkPSJtMTU2LjUgMjIuM2g1LjN2LjggMTQuNWMwIDEuMS0uMiAyLjMtLjUgMy40LTEgMy41LTMuNSA1LjMtNi45IDUuOC0yIC4zLTMuOS4zLTUuOS0uMy0zLjYtMS02LTMuNy02LjItNy41cy0uMS03LjYtLjEtMTEuNGMwLTEuOCAwLTMuNSAwLTUuNGg1LjR2LjkgMTMuM2MwIC45LjEgMS45LjMgMi43LjUgMi4zIDEuOSAzLjMgNC4zIDMuM3MzLjctMS4yIDQuMS0zLjRjLjEtLjYuMi0xLjIuMi0xLjggMC00LjcgMC05LjQgMC0xNC4xIDAtLjIgMC0uNCAwLS44eiIvPjxwYXRoIGQ9Im04Mi4zIDM0LjNjMCAzLjEtLjYgNS45LTIuMiA4LjQtMy44IDUuOC0xMiA1LjktMTYgLjEtMy4xLTQuNi0zLjEtMTIuMy4xLTE2LjggMi4yLTMuMSA1LjMtNC41IDkuMS00LjEgMy42LjQgNi4xIDIuNSA3LjcgNS43LjkgMi4xIDEuMyA0LjQgMS4zIDYuN3ptLTE4LjIuMWMuMS45LjEgMS45LjMgMi44LjQgMi4yIDEuMSA0LjIgMi43IDUuNyAzLjYgMy41IDkuNSAyLjIgMTEuNi0yLjYgMS43LTMuOSAxLjctOCAwLTExLjktMS4yLTIuNy0zLjMtNC40LTYuNC00LjUtMy4yLS4xLTUuNCAxLjQtNi44IDQuMS0xLjEgMi4xLTEuNCA0LjItMS40IDYuNHoiLz48cGF0aCBkPSJtMTY2LjcgMjIuM2g1LjN2MjQuMmMtMS44IDAtMy41IDAtNS4zIDAgMC04IDAtMTYuMSAwLTI0LjJ6Ii8+PHBhdGggZD0ibTg2LjUgMjkuM2gyLjN2Mi4zYy41LS40IDEtLjggMS40LTEuMSAzLTIuNiA5LjEtMi4yIDEwLjkgMy40LjkgMi43LjkgNS41IDAgOC4zLTEuNyA1LjItNy41IDUuOS0xMC43IDMuNS0uNS0uNC0xLS43LTEuNi0xLjJ2NC40czAgMi45IDAgNC40Yy0uOCAwLTEuNSAwLTIuMyAwIDAtOC4xIDAtMTYgMC0yNHptMi4zIDguNmMwIC43LjEgMS41IDAgMi4yLS40IDEuOS43IDMgMi4yIDMuOS4yLjEuNC4zLjcuNCAyLjYgMS4zIDUuNi41IDYuOC0xLjggMS40LTIuOSAxLjQtNiAuMS04LjktLjgtMS44LTIuMy0yLjYtNC4zLTIuNy0yLjIgMC0zLjcgMS4zLTUuMSAyLjctLjEuMS0uMi41LS4yLjctLjIgMS4xLS4yIDIuMy0uMiAzLjV6Ii8+PHBhdGggZD0ibTExOS41IDM4LjRjLTQuMSAwLTguMiAwLTEyLjIgMC0uNSAyLjEgMS4xIDUuMiAzLjEgNi4xIDIuNiAxLjIgNS4zLjMgNy42LTIuNi41LjMuOS43IDEuNCAxLjEtMS4zIDItMyAzLjUtNS41IDMuOS01LjcuOC04LjctMy4yLTkuMS03LjgtLjItMi40LjEtNC43IDEuNS02LjggMi40LTMuNyA3LjUtNC41IDEwLjYtMS43IDEuOCAxLjcgMi40IDMuOCAyLjYgNi4yLjEuNSAwIDEgMCAxLjZ6bS0xMi4yLTEuOWg5LjljLjEtMy0xLjgtNS40LTQuNC01LjYtMy0uMS01LjMgMi4xLTUuNSA1LjZ6Ii8+PHBhdGggZD0ibTEyNiAzMS44Yy43LS41IDEuMy0xIDEuOS0xLjQgMS45LTEuMyA0LTEuOCA2LjItMS40czMuNSAxLjkgMy42IDQuMWMuMSAxLjIgMCAyLjQgMCAzLjV2OC45LjljLS44IDAtMS41IDAtMi4zIDAgMC0uMyAwLS42IDAtLjkgMC0zLjYgMC03LjIgMC0xMC44IDAtMy4yLTEuNi00LjMtNC43LTMuNy0xLjguMy0zLjIgMS41LTQuNSAyLjctLjEuMi0uMS42LS4xLjl2MTEgLjljLS44IDAtMS41IDAtMi4zIDAgMC01LjcgMC0xMS40IDAtMTcuMmgyLjNjLS4xLjgtLjEgMS42LS4xIDIuNXoiLz48L2c+PC9zdmc+"
+        />
+      </fiori:logo>
+    </fiori:ShellBar>
+
+    <fiori:UserMenu
+      id="userMenu"
+      opener="profileAvatar"
+      core:require="{
+        iconActionSetting: '@ui5/webcomponents-icons/dist/action-settings',
+        iconGlobe: '@ui5/webcomponents-icons/dist/globe',
+        iconOfficialService: '@ui5/webcomponents-icons/dist/official-service',
+        iconPrivate: '@ui5/webcomponents-icons/dist/private',
+        iconAccelerated: '@ui5/webcomponents-icons/dist/accelerated'
+      }"
+    >
+      <fiori:accounts>
+        <fiori:UserMenuAccount
+          avatarSrc="https://sap.github.io/ui5-webcomponents/img/logos/LogoWater.svg"
+          titleText="Alaina Chevalier"
+          subtitleText="aliana.chevalier@sap.com"
+          description="Delivery Manager, SAP SE"
+          selected="true"
+        />
+      </fiori:accounts>
+      <fiori:UserMenuItem icon="action-settings" text="Setting" />
+      <fiori:UserMenuItem icon="globe" text="Product-specific account action" />
+      <fiori:UserMenuItem icon="official-service" text="Legal Information">
+        <fiori:UserMenuItem icon="private" text="Private Policy" />
+        <fiori:UserMenuItem icon="accelerated" text="Terms of Use" />
+      </fiori:UserMenuItem>
+    </fiori:UserMenu>
+
     <content>
       <webc:Panel headerText="Test Pages" class="panelSpacing">
         <VBox alignItems="Center" justifyContent="Center" height="100%">

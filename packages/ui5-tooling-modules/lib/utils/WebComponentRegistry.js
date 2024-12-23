@@ -6,6 +6,10 @@ const camelize = (str) => {
 	return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
 };
 
+// the class name of the base class of all control wrappers
+// corresponds to the "sap.ui.core.webc.WebComponent" class at runtime.
+const UI5_ELEMENT_CLASS_NAME = "UI5Element";
+
 const _registry = {};
 
 const _classAliases = {};
@@ -44,6 +48,8 @@ class RegistryEntry {
 			this.#connectSuperclass(classDef);
 
 			// [3] create UI5 metadata for each classed based on the parsed custom elements metadata
+			//     Note: The order is important! We need to connect the superclass and create its metadata first.
+			//           We need a fully constructed parent chain later for ensuring UI5 defaults (refer to #ensureDefaults)
 			this.#createUI5Metadata(classDef);
 		});
 
@@ -107,7 +113,7 @@ class RegistryEntry {
 					`The class '${this.namespace}/${classDef.name}' has an unknown superclass '${classDef.superclass.package}/${superclassName}' using default '@ui5/webcomponents-base/UI5Element'!`,
 				);
 				const refPackage = WebComponentRegistry.getPackage("@ui5/webcomponents-base");
-				let superclassRef = (refPackage || this).classes["UI5Element"];
+				let superclassRef = (refPackage || this).classes[UI5_ELEMENT_CLASS_NAME];
 				classDef.superclass = superclassRef;
 			} else {
 				this.#connectSuperclass(superclassRef);
@@ -420,9 +426,35 @@ class RegistryEntry {
 		}
 	}
 
-	#ensureDefaults(ui5metadata) {
-		// a text property must exist and be mapped to "textContent"
-		if (!ui5metadata.properties["text"]) {
+	/**
+	 * Validates if the given property name is defined somewhere in the parent chain
+	 * @param {string} className the starting class for which we will traverse the parent chain
+	 * @param {string} propName the property to validate
+	 */
+	#ui5PropertyExistsInParentChain(classDef, propName) {
+		// we need to stop the recursion on the very top level
+		// The runtime base class does NOT provide any inherited properties!
+		if (classDef.name === UI5_ELEMENT_CLASS_NAME) {
+			return false;
+		}
+		// check self
+		const hasProp = !!classDef?._ui5metadata?.properties?.[propName];
+		if (hasProp) {
+			return true;
+		} else {
+			// if we didn't find the property on this class, we go one step higher in the chain
+			if (classDef?.superclass) {
+				return this.#ui5PropertyExistsInParentChain(classDef.superclass, propName);
+			} else {
+				// finally nothing found
+				return false;
+			}
+		}
+	}
+
+	#ensureDefaults(classDef, ui5metadata) {
+		if (!this.#ui5PropertyExistsInParentChain(classDef, "text")) {
+			// a text property must exist and be mapped to "textContent"
 			ui5metadata.properties["text"] = {
 				type: "string",
 				mapping: "textContent",
@@ -430,14 +462,14 @@ class RegistryEntry {
 		}
 
 		// cssProperties: [ "width", "height", "display" ]
-		if (!ui5metadata.properties["width"]) {
+		if (!this.#ui5PropertyExistsInParentChain(classDef, "width")) {
 			ui5metadata.properties["width"] = {
 				type: "sap.ui.core.CSSSize",
 				mapping: "style",
 			};
 		}
 
-		if (!ui5metadata.properties["height"]) {
+		if (!this.#ui5PropertyExistsInParentChain(classDef, "height")) {
 			ui5metadata.properties["height"] = {
 				type: "sap.ui.core.CSSSize",
 				mapping: "style",
@@ -551,7 +583,7 @@ class RegistryEntry {
 
 		this.#processUI5Interfaces(classDef, ui5metadata);
 
-		this.#ensureDefaults(ui5metadata);
+		this.#ensureDefaults(classDef, ui5metadata);
 
 		this.#patchUI5Specifics(classDef, ui5metadata);
 	}
