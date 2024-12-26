@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.3.4...dev-approuter@0.4.0) (2024-12-26)
+
+
+### Features
+
+* **dev-approuter:** add custom /my-jwt route for debugging auth(n,z) ([#1134](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1134)) ([3e7b72b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3e7b72b35403d964ad9977f6b77670d67e87b961)), closes [#1133](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1133)
+
+
+
+
+
 ## [0.3.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/dev-approuter@0.3.3...dev-approuter@0.3.4) (2024-12-04)
 
 **Note:** Version bump only for package dev-approuter
