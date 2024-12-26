@@ -55,6 +55,9 @@ The `dev-approuter` is a wrapper for the SAP Application Router, meaning your cu
         ...
     }
     ```
+  ...or by passing a port as environment variable: `PORT=5001 npm run dev`
+  
+4. Upon start, the `dev-approuter` exposes a custom endpoint `http://localhost:$port/my-jwt`. It echos the current JWT of the current (authenticated and authorized) user (or `none`) - this helps debugging auth(n,z) issues at dev time. 
 
 ## Adding and serving apps
 
