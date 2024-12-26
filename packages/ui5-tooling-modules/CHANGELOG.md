@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.19.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.19.0...ui5-tooling-modules@3.19.1) (2024-12-26)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** get rid of external module error in tests ([49ea178](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/49ea178896bf4f3cc8efd4f67da56b6b4093462e))
+* **ui5-tooling-modules:** inherited properties are not accidentally overwritten by subclass anymore ([#1136](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1136)) ([a71be3f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/a71be3f351484e79d6a8506396cda7cc7f64be7e))
+* **ui5-tooling-modules:** monkey patch mapValueState for older versions of UI5 ([#1137](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1137)) ([d0abfbf](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d0abfbf083ddffd28457f790da47e877383052f5))
+
+
+
+
+
 # [3.19.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.18.8...ui5-tooling-modules@3.19.0) (2024-12-13)
 
 
