@@ -13,6 +13,8 @@ import Input from "@ui5/webcomponents/Input";
 import { AvatarSize } from "@ui5/webcomponents";
 import Token from "@ui5/webcomponents/Token";
 
+import UserMenu from "@ui5/webcomponents-fiori/UserMenu";
+
 // import icons
 import "@ui5/webcomponents-icons/dist/Assets.js";
 import "@ui5/webcomponents-icons/dist/accept.js";
@@ -68,6 +70,11 @@ export default class Main extends Controller {
 
 	public onNavToValueState(): void {
 		this.getOwnerComponent().getRouter().navTo("ValueState");
+	}
+
+	public onProfileClick(evt: Event): void {
+		const um = this.getView()?.byId("userMenu") as UserMenu;
+		um?.setOpen(true);
 	}
 
 	public onBoo(): void {
