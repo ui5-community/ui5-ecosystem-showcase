@@ -1,4 +1,4 @@
-sap.ui.define(['sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponent', 'sap/ui/core/webc/WebComponentRenderer', 'sap/ui/base/DataType'], (function (hyphenate, WebComponent, WebComponentRenderer, DataType) { 'use strict';
+sap.ui.define(['sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponent', 'sap/ui/base/DataType'], (function (hyphenate, WebComponent, DataType) { 'use strict';
 
 	// this file contains all imports which are shared between the Monkey Patch files
 

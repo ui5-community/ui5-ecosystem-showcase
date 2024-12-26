@@ -1,4 +1,4 @@
-sap.ui.define(['exports', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponent', 'sap/ui/core/webc/WebComponentRenderer', 'sap/ui/base/DataType'], (function (exports, hyphenate, WebComponent, WebComponentRenderer, DataType) { 'use strict';
+sap.ui.define(['exports', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponent', 'sap/ui/base/DataType'], (function (exports, hyphenate, WebComponent, DataType) { 'use strict';
 
     var class2type = {};
     var hasOwn = class2type.hasOwnProperty;

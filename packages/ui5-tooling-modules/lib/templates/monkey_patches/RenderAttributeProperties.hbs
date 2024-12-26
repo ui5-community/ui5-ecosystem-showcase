@@ -1,5 +1,7 @@
 // Fixed with https://github.com/SAP/openui5/commit/7a4615e3fe55221ae9de9d876d3eed209f71a5b1 in UI5 1.128.0
 
+import WebComponentRenderer from "sap/ui/core/webc/WebComponentRenderer";
+
 WebComponentRenderer.renderAttributeProperties = function (oRm, oWebComponent) {
 	var oAttrProperties = oWebComponent.getMetadata().getPropertiesByMapping("property");
 	// ##### MODIFICATION START #####

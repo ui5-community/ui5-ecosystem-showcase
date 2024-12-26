@@ -1,4 +1,4 @@
-sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/core/webc/WebComponent', 'sap/ui/core/EnabledPropagator', 'ui5/ecosystem/demo/app/resources/@ui5/webcomponents-base', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponentRenderer', 'sap/ui/base/DataType'], (function (_ui5_webcomponents, WebComponent, EnabledPropagator, _ui5_webcomponentsBase, hyphenate, WebComponentRenderer, DataType) { 'use strict';
+sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/core/webc/WebComponent', 'sap/ui/core/EnabledPropagator', 'ui5/ecosystem/demo/app/resources/@ui5/webcomponents-base', 'sap/base/strings/hyphenate', 'sap/ui/base/DataType'], (function (_ui5_webcomponents, WebComponent, EnabledPropagator, _ui5_webcomponentsBase, hyphenate, DataType) { 'use strict';
 
     var class2type = {};
     var hasOwn = class2type.hasOwnProperty;
