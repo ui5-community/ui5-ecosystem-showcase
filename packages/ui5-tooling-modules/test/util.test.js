@@ -390,6 +390,7 @@ test.serial("Verify generation of firebase/firestore", async (t) => {
 	);
 	const firebase = await env.getModule("firebase/app");
 	t.true(firebase.retVal.__esModule);
+	t.true(typeof firebase.retVal.initializeApp === "function");
 	if (platform() !== "win32") {
 		t.is(firebase.code, readSnapFile(firebase.name, t.context.snapDir));
 	}
@@ -815,8 +816,8 @@ test.serial("Verify generation of fetch-mock", async (t) => {
 	});
 	const fetchMock = await env.getModule("fetch-mock");
 	t.true(fetchMock.retVal.__esModule);
-	t.is(typeof fetchMock.retVal.config, "object");
-	t.is(typeof fetchMock.retVal.fetchHandler, "function");
+	t.is(typeof fetchMock.retVal.default.config, "object");
+	t.is(typeof fetchMock.retVal.default.fetchHandler, "function");
 	if (platform() !== "win32") {
 		t.is(fetchMock.code, readSnapFile(fetchMock.name, t.context.snapDir));
 	}

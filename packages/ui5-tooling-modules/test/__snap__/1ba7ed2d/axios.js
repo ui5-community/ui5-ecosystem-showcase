@@ -1,4 +1,4 @@
-sap.ui.define(['exports'], (function (exports) { 'use strict';
+sap.ui.define((function () { 'use strict';
 
   var global$1 = (typeof global !== "undefined" ? global :
     typeof self !== "undefined" ? self :
@@ -226,769 +226,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     uptime: uptime
   };
 
-  function bind(fn, thisArg) {
-    return function wrap() {
-      return fn.apply(thisArg, arguments);
-    };
-  }
-
-  // utils is a library of generic helper functions non-specific to axios
-
-  const {toString: toString$1} = Object.prototype;
-  const {getPrototypeOf} = Object;
-
-  const kindOf = (cache => thing => {
-      const str = toString$1.call(thing);
-      return cache[str] || (cache[str] = str.slice(8, -1).toLowerCase());
-  })(Object.create(null));
-
-  const kindOfTest = (type) => {
-    type = type.toLowerCase();
-    return (thing) => kindOf(thing) === type
-  };
-
-  const typeOfTest = type => thing => typeof thing === type;
-
-  /**
-   * Determine if a value is an Array
-   *
-   * @param {Object} val The value to test
-   *
-   * @returns {boolean} True if value is an Array, otherwise false
-   */
-  const {isArray: isArray$1} = Array;
-
-  /**
-   * Determine if a value is undefined
-   *
-   * @param {*} val The value to test
-   *
-   * @returns {boolean} True if the value is undefined, otherwise false
-   */
-  const isUndefined = typeOfTest('undefined');
-
-  /**
-   * Determine if a value is a Buffer
-   *
-   * @param {*} val The value to test
-   *
-   * @returns {boolean} True if value is a Buffer, otherwise false
-   */
-  function isBuffer$1(val) {
-    return val !== null && !isUndefined(val) && val.constructor !== null && !isUndefined(val.constructor)
-      && isFunction(val.constructor.isBuffer) && val.constructor.isBuffer(val);
-  }
-
-  /**
-   * Determine if a value is an ArrayBuffer
-   *
-   * @param {*} val The value to test
-   *
-   * @returns {boolean} True if value is an ArrayBuffer, otherwise false
-   */
-  const isArrayBuffer = kindOfTest('ArrayBuffer');
-
-
-  /**
-   * Determine if a value is a view on an ArrayBuffer
-   *
-   * @param {*} val The value to test
-   *
-   * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
-   */
-  function isArrayBufferView(val) {
-    let result;
-    if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
-      result = ArrayBuffer.isView(val);
-    } else {
-      result = (val) && (val.buffer) && (isArrayBuffer(val.buffer));
-    }
-    return result;
-  }
-
-  /**
-   * Determine if a value is a String
-   *
-   * @param {*} val The value to test
-   *
-   * @returns {boolean} True if value is a String, otherwise false
-   */
-  const isString = typeOfTest('string');
-
-  /**
-   * Determine if a value is a Function
-   *
-   * @param {*} val The value to test
-   * @returns {boolean} True if value is a Function, otherwise false
-   */
-  const isFunction = typeOfTest('function');
-
-  /**
-   * Determine if a value is a Number
-   *
-   * @param {*} val The value to test
-   *
-   * @returns {boolean} True if value is a Number, otherwise false
-   */
-  const isNumber = typeOfTest('number');
-
-  /**
-   * Determine if a value is an Object
-   *
-   * @param {*} thing The value to test
-   *
-   * @returns {boolean} True if value is an Object, otherwise false
-   */
-  const isObject = (thing) => thing !== null && typeof thing === 'object';
-
-  /**
-   * Determine if a value is a Boolean
-   *
-   * @param {*} thing The value to test
-   * @returns {boolean} True if value is a Boolean, otherwise false
-   */
-  const isBoolean = thing => thing === true || thing === false;
-
-  /**
-   * Determine if a value is a plain Object
-   *
-   * @param {*} val The value to test
-   *
-   * @returns {boolean} True if value is a plain Object, otherwise false
-   */
-  const isPlainObject = (val) => {
-    if (kindOf(val) !== 'object') {
-      return false;
-    }
-
-    const prototype = getPrototypeOf(val);
-    return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in val) && !(Symbol.iterator in val);
-  };
-
-  /**
-   * Determine if a value is a Date
-   *
-   * @param {*} val The value to test
-   *
-   * @returns {boolean} True if value is a Date, otherwise false
-   */
-  const isDate = kindOfTest('Date');
-
-  /**
-   * Determine if a value is a File
-   *
-   * @param {*} val The value to test
-   *
-   * @returns {boolean} True if value is a File, otherwise false
-   */
-  const isFile = kindOfTest('File');
-
-  /**
-   * Determine if a value is a Blob
-   *
-   * @param {*} val The value to test
-   *
-   * @returns {boolean} True if value is a Blob, otherwise false
-   */
-  const isBlob = kindOfTest('Blob');
-
-  /**
-   * Determine if a value is a FileList
-   *
-   * @param {*} val The value to test
-   *
-   * @returns {boolean} True if value is a File, otherwise false
-   */
-  const isFileList = kindOfTest('FileList');
-
-  /**
-   * Determine if a value is a Stream
-   *
-   * @param {*} val The value to test
-   *
-   * @returns {boolean} True if value is a Stream, otherwise false
-   */
-  const isStream = (val) => isObject(val) && isFunction(val.pipe);
-
-  /**
-   * Determine if a value is a FormData
-   *
-   * @param {*} thing The value to test
-   *
-   * @returns {boolean} True if value is an FormData, otherwise false
-   */
-  const isFormData = (thing) => {
-    let kind;
-    return thing && (
-      (typeof FormData === 'function' && thing instanceof FormData) || (
-        isFunction(thing.append) && (
-          (kind = kindOf(thing)) === 'formdata' ||
-          // detect form-data instance
-          (kind === 'object' && isFunction(thing.toString) && thing.toString() === '[object FormData]')
-        )
-      )
-    )
-  };
-
-  /**
-   * Determine if a value is a URLSearchParams object
-   *
-   * @param {*} val The value to test
-   *
-   * @returns {boolean} True if value is a URLSearchParams object, otherwise false
-   */
-  const isURLSearchParams = kindOfTest('URLSearchParams');
-
-  const [isReadableStream, isRequest, isResponse, isHeaders] = ['ReadableStream', 'Request', 'Response', 'Headers'].map(kindOfTest);
-
-  /**
-   * Trim excess whitespace off the beginning and end of a string
-   *
-   * @param {String} str The String to trim
-   *
-   * @returns {String} The String freed of excess whitespace
-   */
-  const trim = (str) => str.trim ?
-    str.trim() : str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
-
-  /**
-   * Iterate over an Array or an Object invoking a function for each item.
-   *
-   * If `obj` is an Array callback will be called passing
-   * the value, index, and complete array for each item.
-   *
-   * If 'obj' is an Object callback will be called passing
-   * the value, key, and complete object for each property.
-   *
-   * @param {Object|Array} obj The object to iterate
-   * @param {Function} fn The callback to invoke for each item
-   *
-   * @param {Boolean} [allOwnKeys = false]
-   * @returns {any}
-   */
-  function forEach(obj, fn, {allOwnKeys = false} = {}) {
-    // Don't bother if no value provided
-    if (obj === null || typeof obj === 'undefined') {
-      return;
-    }
-
-    let i;
-    let l;
-
-    // Force an array if not already something iterable
-    if (typeof obj !== 'object') {
-      /*eslint no-param-reassign:0*/
-      obj = [obj];
-    }
-
-    if (isArray$1(obj)) {
-      // Iterate over array values
-      for (i = 0, l = obj.length; i < l; i++) {
-        fn.call(null, obj[i], i, obj);
-      }
-    } else {
-      // Iterate over object keys
-      const keys = allOwnKeys ? Object.getOwnPropertyNames(obj) : Object.keys(obj);
-      const len = keys.length;
-      let key;
-
-      for (i = 0; i < len; i++) {
-        key = keys[i];
-        fn.call(null, obj[key], key, obj);
-      }
-    }
-  }
-
-  function findKey(obj, key) {
-    key = key.toLowerCase();
-    const keys = Object.keys(obj);
-    let i = keys.length;
-    let _key;
-    while (i-- > 0) {
-      _key = keys[i];
-      if (key === _key.toLowerCase()) {
-        return _key;
-      }
-    }
-    return null;
-  }
-
-  const _global = (() => {
-    /*eslint no-undef:0*/
-    if (typeof globalThis !== "undefined") return globalThis;
-    return typeof self !== "undefined" ? self : (typeof window !== 'undefined' ? window : global$1)
-  })();
-
-  const isContextDefined = (context) => !isUndefined(context) && context !== _global;
-
-  /**
-   * Accepts varargs expecting each argument to be an object, then
-   * immutably merges the properties of each object and returns result.
-   *
-   * When multiple objects contain the same key the later object in
-   * the arguments list will take precedence.
-   *
-   * Example:
-   *
-   * ```js
-   * var result = merge({foo: 123}, {foo: 456});
-   * console.log(result.foo); // outputs 456
-   * ```
-   *
-   * @param {Object} obj1 Object to merge
-   *
-   * @returns {Object} Result of all merge properties
-   */
-  function merge(/* obj1, obj2, obj3, ... */) {
-    const {caseless} = isContextDefined(this) && this || {};
-    const result = {};
-    const assignValue = (val, key) => {
-      const targetKey = caseless && findKey(result, key) || key;
-      if (isPlainObject(result[targetKey]) && isPlainObject(val)) {
-        result[targetKey] = merge(result[targetKey], val);
-      } else if (isPlainObject(val)) {
-        result[targetKey] = merge({}, val);
-      } else if (isArray$1(val)) {
-        result[targetKey] = val.slice();
-      } else {
-        result[targetKey] = val;
-      }
-    };
-
-    for (let i = 0, l = arguments.length; i < l; i++) {
-      arguments[i] && forEach(arguments[i], assignValue);
-    }
-    return result;
-  }
-
-  /**
-   * Extends object a by mutably adding to it the properties of object b.
-   *
-   * @param {Object} a The object to be extended
-   * @param {Object} b The object to copy properties from
-   * @param {Object} thisArg The object to bind function to
-   *
-   * @param {Boolean} [allOwnKeys]
-   * @returns {Object} The resulting value of object a
-   */
-  const extend = (a, b, thisArg, {allOwnKeys}= {}) => {
-    forEach(b, (val, key) => {
-      if (thisArg && isFunction(val)) {
-        a[key] = bind(val, thisArg);
-      } else {
-        a[key] = val;
-      }
-    }, {allOwnKeys});
-    return a;
-  };
-
-  /**
-   * Remove byte order marker. This catches EF BB BF (the UTF-8 BOM)
-   *
-   * @param {string} content with BOM
-   *
-   * @returns {string} content value without BOM
-   */
-  const stripBOM = (content) => {
-    if (content.charCodeAt(0) === 0xFEFF) {
-      content = content.slice(1);
-    }
-    return content;
-  };
-
-  /**
-   * Inherit the prototype methods from one constructor into another
-   * @param {function} constructor
-   * @param {function} superConstructor
-   * @param {object} [props]
-   * @param {object} [descriptors]
-   *
-   * @returns {void}
-   */
-  const inherits = (constructor, superConstructor, props, descriptors) => {
-    constructor.prototype = Object.create(superConstructor.prototype, descriptors);
-    constructor.prototype.constructor = constructor;
-    Object.defineProperty(constructor, 'super', {
-      value: superConstructor.prototype
-    });
-    props && Object.assign(constructor.prototype, props);
-  };
-
-  /**
-   * Resolve object with deep prototype chain to a flat object
-   * @param {Object} sourceObj source object
-   * @param {Object} [destObj]
-   * @param {Function|Boolean} [filter]
-   * @param {Function} [propFilter]
-   *
-   * @returns {Object}
-   */
-  const toFlatObject = (sourceObj, destObj, filter, propFilter) => {
-    let props;
-    let i;
-    let prop;
-    const merged = {};
-
-    destObj = destObj || {};
-    // eslint-disable-next-line no-eq-null,eqeqeq
-    if (sourceObj == null) return destObj;
-
-    do {
-      props = Object.getOwnPropertyNames(sourceObj);
-      i = props.length;
-      while (i-- > 0) {
-        prop = props[i];
-        if ((!propFilter || propFilter(prop, sourceObj, destObj)) && !merged[prop]) {
-          destObj[prop] = sourceObj[prop];
-          merged[prop] = true;
-        }
-      }
-      sourceObj = filter !== false && getPrototypeOf(sourceObj);
-    } while (sourceObj && (!filter || filter(sourceObj, destObj)) && sourceObj !== Object.prototype);
-
-    return destObj;
-  };
-
-  /**
-   * Determines whether a string ends with the characters of a specified string
-   *
-   * @param {String} str
-   * @param {String} searchString
-   * @param {Number} [position= 0]
-   *
-   * @returns {boolean}
-   */
-  const endsWith = (str, searchString, position) => {
-    str = String(str);
-    if (position === undefined || position > str.length) {
-      position = str.length;
-    }
-    position -= searchString.length;
-    const lastIndex = str.indexOf(searchString, position);
-    return lastIndex !== -1 && lastIndex === position;
-  };
-
-
-  /**
-   * Returns new array from array like object or null if failed
-   *
-   * @param {*} [thing]
-   *
-   * @returns {?Array}
-   */
-  const toArray = (thing) => {
-    if (!thing) return null;
-    if (isArray$1(thing)) return thing;
-    let i = thing.length;
-    if (!isNumber(i)) return null;
-    const arr = new Array(i);
-    while (i-- > 0) {
-      arr[i] = thing[i];
-    }
-    return arr;
-  };
-
-  /**
-   * Checking if the Uint8Array exists and if it does, it returns a function that checks if the
-   * thing passed in is an instance of Uint8Array
-   *
-   * @param {TypedArray}
-   *
-   * @returns {Array}
-   */
-  // eslint-disable-next-line func-names
-  const isTypedArray = (TypedArray => {
-    // eslint-disable-next-line func-names
-    return thing => {
-      return TypedArray && thing instanceof TypedArray;
-    };
-  })(typeof Uint8Array !== 'undefined' && getPrototypeOf(Uint8Array));
-
-  /**
-   * For each entry in the object, call the function with the key and value.
-   *
-   * @param {Object<any, any>} obj - The object to iterate over.
-   * @param {Function} fn - The function to call for each entry.
-   *
-   * @returns {void}
-   */
-  const forEachEntry = (obj, fn) => {
-    const generator = obj && obj[Symbol.iterator];
-
-    const iterator = generator.call(obj);
-
-    let result;
-
-    while ((result = iterator.next()) && !result.done) {
-      const pair = result.value;
-      fn.call(obj, pair[0], pair[1]);
-    }
-  };
-
-  /**
-   * It takes a regular expression and a string, and returns an array of all the matches
-   *
-   * @param {string} regExp - The regular expression to match against.
-   * @param {string} str - The string to search.
-   *
-   * @returns {Array<boolean>}
-   */
-  const matchAll = (regExp, str) => {
-    let matches;
-    const arr = [];
-
-    while ((matches = regExp.exec(str)) !== null) {
-      arr.push(matches);
-    }
-
-    return arr;
-  };
-
-  /* Checking if the kindOfTest function returns true when passed an HTMLFormElement. */
-  const isHTMLForm = kindOfTest('HTMLFormElement');
-
-  const toCamelCase = str => {
-    return str.toLowerCase().replace(/[-_\s]([a-z\d])(\w*)/g,
-      function replacer(m, p1, p2) {
-        return p1.toUpperCase() + p2;
-      }
-    );
-  };
-
-  /* Creating a function that will check if an object has a property. */
-  const hasOwnProperty = (({hasOwnProperty}) => (obj, prop) => hasOwnProperty.call(obj, prop))(Object.prototype);
-
-  /**
-   * Determine if a value is a RegExp object
-   *
-   * @param {*} val The value to test
-   *
-   * @returns {boolean} True if value is a RegExp object, otherwise false
-   */
-  const isRegExp = kindOfTest('RegExp');
-
-  const reduceDescriptors = (obj, reducer) => {
-    const descriptors = Object.getOwnPropertyDescriptors(obj);
-    const reducedDescriptors = {};
-
-    forEach(descriptors, (descriptor, name) => {
-      let ret;
-      if ((ret = reducer(descriptor, name, obj)) !== false) {
-        reducedDescriptors[name] = ret || descriptor;
-      }
-    });
-
-    Object.defineProperties(obj, reducedDescriptors);
-  };
-
-  /**
-   * Makes all methods read-only
-   * @param {Object} obj
-   */
-
-  const freezeMethods = (obj) => {
-    reduceDescriptors(obj, (descriptor, name) => {
-      // skip restricted props in strict mode
-      if (isFunction(obj) && ['arguments', 'caller', 'callee'].indexOf(name) !== -1) {
-        return false;
-      }
-
-      const value = obj[name];
-
-      if (!isFunction(value)) return;
-
-      descriptor.enumerable = false;
-
-      if ('writable' in descriptor) {
-        descriptor.writable = false;
-        return;
-      }
-
-      if (!descriptor.set) {
-        descriptor.set = () => {
-          throw Error('Can not rewrite read-only method \'' + name + '\'');
-        };
-      }
-    });
-  };
-
-  const toObjectSet = (arrayOrString, delimiter) => {
-    const obj = {};
-
-    const define = (arr) => {
-      arr.forEach(value => {
-        obj[value] = true;
-      });
-    };
-
-    isArray$1(arrayOrString) ? define(arrayOrString) : define(String(arrayOrString).split(delimiter));
-
-    return obj;
-  };
-
-  const noop = () => {};
-
-  const toFiniteNumber = (value, defaultValue) => {
-    return value != null && Number.isFinite(value = +value) ? value : defaultValue;
-  };
-
-  const ALPHA = 'abcdefghijklmnopqrstuvwxyz';
-
-  const DIGIT = '0123456789';
-
-  const ALPHABET = {
-    DIGIT,
-    ALPHA,
-    ALPHA_DIGIT: ALPHA + ALPHA.toUpperCase() + DIGIT
-  };
-
-  const generateString = (size = 16, alphabet = ALPHABET.ALPHA_DIGIT) => {
-    let str = '';
-    const {length} = alphabet;
-    while (size--) {
-      str += alphabet[Math.random() * length|0];
-    }
-
-    return str;
-  };
-
-  /**
-   * If the thing is a FormData object, return true, otherwise return false.
-   *
-   * @param {unknown} thing - The thing to check.
-   *
-   * @returns {boolean}
-   */
-  function isSpecCompliantForm(thing) {
-    return !!(thing && isFunction(thing.append) && thing[Symbol.toStringTag] === 'FormData' && thing[Symbol.iterator]);
-  }
-
-  const toJSONObject = (obj) => {
-    const stack = new Array(10);
-
-    const visit = (source, i) => {
-
-      if (isObject(source)) {
-        if (stack.indexOf(source) >= 0) {
-          return;
-        }
-
-        if(!('toJSON' in source)) {
-          stack[i] = source;
-          const target = isArray$1(source) ? [] : {};
-
-          forEach(source, (value, key) => {
-            const reducedValue = visit(value, i + 1);
-            !isUndefined(reducedValue) && (target[key] = reducedValue);
-          });
-
-          stack[i] = undefined;
-
-          return target;
-        }
-      }
-
-      return source;
-    };
-
-    return visit(obj, 0);
-  };
-
-  const isAsyncFn = kindOfTest('AsyncFunction');
-
-  const isThenable = (thing) =>
-    thing && (isObject(thing) || isFunction(thing)) && isFunction(thing.then) && isFunction(thing.catch);
-
-  // original code
-  // https://github.com/DigitalBrainJS/AxiosPromise/blob/16deab13710ec09779922131f3fa5954320f83ab/lib/utils.js#L11-L34
-
-  const _setImmediate = ((setImmediateSupported, postMessageSupported) => {
-    if (setImmediateSupported) {
-      return setImmediate;
-    }
-
-    return postMessageSupported ? ((token, callbacks) => {
-      _global.addEventListener("message", ({source, data}) => {
-        if (source === _global && data === token) {
-          callbacks.length && callbacks.shift()();
-        }
-      }, false);
-
-      return (cb) => {
-        callbacks.push(cb);
-        _global.postMessage(token, "*");
-      }
-    })(`axios@${Math.random()}`, []) : (cb) => setTimeout(cb);
-  })(
-    typeof setImmediate === 'function',
-    isFunction(_global.postMessage)
-  );
-
-  const asap = typeof queueMicrotask !== 'undefined' ?
-    queueMicrotask.bind(_global) : ( typeof browser$1 !== 'undefined' && browser$1.nextTick || _setImmediate);
-
-  // *********************
-
-  var utils$1 = {
-    isArray: isArray$1,
-    isArrayBuffer,
-    isBuffer: isBuffer$1,
-    isFormData,
-    isArrayBufferView,
-    isString,
-    isNumber,
-    isBoolean,
-    isObject,
-    isPlainObject,
-    isReadableStream,
-    isRequest,
-    isResponse,
-    isHeaders,
-    isUndefined,
-    isDate,
-    isFile,
-    isBlob,
-    isRegExp,
-    isFunction,
-    isStream,
-    isURLSearchParams,
-    isTypedArray,
-    isFileList,
-    forEach,
-    merge,
-    extend,
-    trim,
-    stripBOM,
-    inherits,
-    toFlatObject,
-    kindOf,
-    kindOfTest,
-    endsWith,
-    toArray,
-    forEachEntry,
-    matchAll,
-    isHTMLForm,
-    hasOwnProperty,
-    hasOwnProp: hasOwnProperty, // an alias to avoid ESLint no-prototype-builtins detection
-    reduceDescriptors,
-    freezeMethods,
-    toObjectSet,
-    toCamelCase,
-    noop,
-    toFiniteNumber,
-    findKey,
-    global: _global,
-    isContextDefined,
-    ALPHABET,
-    generateString,
-    isSpecCompliantForm,
-    toJSONObject,
-    isAsyncFn,
-    isThenable,
-    setImmediate: _setImmediate,
-    asap
-  };
-
   var lookup = [];
   var revLookup = [];
   var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array;
@@ -1184,10 +421,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     buffer[offset + i - d] |= s * 128;
   }
 
-  var toString = {}.toString;
+  var toString$1 = {}.toString;
 
-  var isArray = Array.isArray || function (arr) {
-    return toString.call(arr) == '[object Array]';
+  var isArray$1 = Array.isArray || function (arr) {
+    return toString$1.call(arr) == '[object Array]';
   };
 
   /*!
@@ -1470,7 +707,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return fromArrayLike(that, obj)
       }
 
-      if (obj.type === 'Buffer' && isArray(obj.data)) {
+      if (obj.type === 'Buffer' && isArray$1(obj.data)) {
         return fromArrayLike(that, obj.data)
       }
     }
@@ -1487,7 +724,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     return length | 0
   }
-  Buffer.isBuffer = isBuffer;
+  Buffer.isBuffer = isBuffer$1;
   function internalIsBuffer (b) {
     return !!(b != null && b._isBuffer)
   }
@@ -1535,7 +772,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   };
 
   Buffer.concat = function concat (list, length) {
-    if (!isArray(list)) {
+    if (!isArray$1(list)) {
       throw new TypeError('"list" argument must be an Array of Buffers')
     }
 
@@ -2953,7 +2190,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   // the following is from is-buffer, also by Feross Aboukhadijeh and with same lisence
   // The _isBuffer check is for Safari 5-7 support, because it's missing
   // Object.prototype.constructor. Remove this eventually
-  function isBuffer(obj) {
+  function isBuffer$1(obj) {
     return obj != null && (!!obj._isBuffer || isFastBuffer(obj) || isSlowBuffer(obj))
   }
 
@@ -2966,6 +2203,771 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isFastBuffer(obj.slice(0, 0))
   }
 
+  var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+  function bind(fn, thisArg) {
+    return function wrap() {
+      return fn.apply(thisArg, arguments);
+    };
+  }
+
+  // utils is a library of generic helper functions non-specific to axios
+
+  const {toString} = Object.prototype;
+  const {getPrototypeOf} = Object;
+
+  const kindOf = (cache => thing => {
+      const str = toString.call(thing);
+      return cache[str] || (cache[str] = str.slice(8, -1).toLowerCase());
+  })(Object.create(null));
+
+  const kindOfTest = (type) => {
+    type = type.toLowerCase();
+    return (thing) => kindOf(thing) === type
+  };
+
+  const typeOfTest = type => thing => typeof thing === type;
+
+  /**
+   * Determine if a value is an Array
+   *
+   * @param {Object} val The value to test
+   *
+   * @returns {boolean} True if value is an Array, otherwise false
+   */
+  const {isArray} = Array;
+
+  /**
+   * Determine if a value is undefined
+   *
+   * @param {*} val The value to test
+   *
+   * @returns {boolean} True if the value is undefined, otherwise false
+   */
+  const isUndefined = typeOfTest('undefined');
+
+  /**
+   * Determine if a value is a Buffer
+   *
+   * @param {*} val The value to test
+   *
+   * @returns {boolean} True if value is a Buffer, otherwise false
+   */
+  function isBuffer(val) {
+    return val !== null && !isUndefined(val) && val.constructor !== null && !isUndefined(val.constructor)
+      && isFunction(val.constructor.isBuffer) && val.constructor.isBuffer(val);
+  }
+
+  /**
+   * Determine if a value is an ArrayBuffer
+   *
+   * @param {*} val The value to test
+   *
+   * @returns {boolean} True if value is an ArrayBuffer, otherwise false
+   */
+  const isArrayBuffer = kindOfTest('ArrayBuffer');
+
+
+  /**
+   * Determine if a value is a view on an ArrayBuffer
+   *
+   * @param {*} val The value to test
+   *
+   * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
+   */
+  function isArrayBufferView(val) {
+    let result;
+    if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
+      result = ArrayBuffer.isView(val);
+    } else {
+      result = (val) && (val.buffer) && (isArrayBuffer(val.buffer));
+    }
+    return result;
+  }
+
+  /**
+   * Determine if a value is a String
+   *
+   * @param {*} val The value to test
+   *
+   * @returns {boolean} True if value is a String, otherwise false
+   */
+  const isString = typeOfTest('string');
+
+  /**
+   * Determine if a value is a Function
+   *
+   * @param {*} val The value to test
+   * @returns {boolean} True if value is a Function, otherwise false
+   */
+  const isFunction = typeOfTest('function');
+
+  /**
+   * Determine if a value is a Number
+   *
+   * @param {*} val The value to test
+   *
+   * @returns {boolean} True if value is a Number, otherwise false
+   */
+  const isNumber = typeOfTest('number');
+
+  /**
+   * Determine if a value is an Object
+   *
+   * @param {*} thing The value to test
+   *
+   * @returns {boolean} True if value is an Object, otherwise false
+   */
+  const isObject = (thing) => thing !== null && typeof thing === 'object';
+
+  /**
+   * Determine if a value is a Boolean
+   *
+   * @param {*} thing The value to test
+   * @returns {boolean} True if value is a Boolean, otherwise false
+   */
+  const isBoolean = thing => thing === true || thing === false;
+
+  /**
+   * Determine if a value is a plain Object
+   *
+   * @param {*} val The value to test
+   *
+   * @returns {boolean} True if value is a plain Object, otherwise false
+   */
+  const isPlainObject = (val) => {
+    if (kindOf(val) !== 'object') {
+      return false;
+    }
+
+    const prototype = getPrototypeOf(val);
+    return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in val) && !(Symbol.iterator in val);
+  };
+
+  /**
+   * Determine if a value is a Date
+   *
+   * @param {*} val The value to test
+   *
+   * @returns {boolean} True if value is a Date, otherwise false
+   */
+  const isDate = kindOfTest('Date');
+
+  /**
+   * Determine if a value is a File
+   *
+   * @param {*} val The value to test
+   *
+   * @returns {boolean} True if value is a File, otherwise false
+   */
+  const isFile = kindOfTest('File');
+
+  /**
+   * Determine if a value is a Blob
+   *
+   * @param {*} val The value to test
+   *
+   * @returns {boolean} True if value is a Blob, otherwise false
+   */
+  const isBlob = kindOfTest('Blob');
+
+  /**
+   * Determine if a value is a FileList
+   *
+   * @param {*} val The value to test
+   *
+   * @returns {boolean} True if value is a File, otherwise false
+   */
+  const isFileList = kindOfTest('FileList');
+
+  /**
+   * Determine if a value is a Stream
+   *
+   * @param {*} val The value to test
+   *
+   * @returns {boolean} True if value is a Stream, otherwise false
+   */
+  const isStream = (val) => isObject(val) && isFunction(val.pipe);
+
+  /**
+   * Determine if a value is a FormData
+   *
+   * @param {*} thing The value to test
+   *
+   * @returns {boolean} True if value is an FormData, otherwise false
+   */
+  const isFormData = (thing) => {
+    let kind;
+    return thing && (
+      (typeof FormData === 'function' && thing instanceof FormData) || (
+        isFunction(thing.append) && (
+          (kind = kindOf(thing)) === 'formdata' ||
+          // detect form-data instance
+          (kind === 'object' && isFunction(thing.toString) && thing.toString() === '[object FormData]')
+        )
+      )
+    )
+  };
+
+  /**
+   * Determine if a value is a URLSearchParams object
+   *
+   * @param {*} val The value to test
+   *
+   * @returns {boolean} True if value is a URLSearchParams object, otherwise false
+   */
+  const isURLSearchParams = kindOfTest('URLSearchParams');
+
+  const [isReadableStream, isRequest, isResponse, isHeaders] = ['ReadableStream', 'Request', 'Response', 'Headers'].map(kindOfTest);
+
+  /**
+   * Trim excess whitespace off the beginning and end of a string
+   *
+   * @param {String} str The String to trim
+   *
+   * @returns {String} The String freed of excess whitespace
+   */
+  const trim = (str) => str.trim ?
+    str.trim() : str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+
+  /**
+   * Iterate over an Array or an Object invoking a function for each item.
+   *
+   * If `obj` is an Array callback will be called passing
+   * the value, index, and complete array for each item.
+   *
+   * If 'obj' is an Object callback will be called passing
+   * the value, key, and complete object for each property.
+   *
+   * @param {Object|Array} obj The object to iterate
+   * @param {Function} fn The callback to invoke for each item
+   *
+   * @param {Boolean} [allOwnKeys = false]
+   * @returns {any}
+   */
+  function forEach(obj, fn, {allOwnKeys = false} = {}) {
+    // Don't bother if no value provided
+    if (obj === null || typeof obj === 'undefined') {
+      return;
+    }
+
+    let i;
+    let l;
+
+    // Force an array if not already something iterable
+    if (typeof obj !== 'object') {
+      /*eslint no-param-reassign:0*/
+      obj = [obj];
+    }
+
+    if (isArray(obj)) {
+      // Iterate over array values
+      for (i = 0, l = obj.length; i < l; i++) {
+        fn.call(null, obj[i], i, obj);
+      }
+    } else {
+      // Iterate over object keys
+      const keys = allOwnKeys ? Object.getOwnPropertyNames(obj) : Object.keys(obj);
+      const len = keys.length;
+      let key;
+
+      for (i = 0; i < len; i++) {
+        key = keys[i];
+        fn.call(null, obj[key], key, obj);
+      }
+    }
+  }
+
+  function findKey(obj, key) {
+    key = key.toLowerCase();
+    const keys = Object.keys(obj);
+    let i = keys.length;
+    let _key;
+    while (i-- > 0) {
+      _key = keys[i];
+      if (key === _key.toLowerCase()) {
+        return _key;
+      }
+    }
+    return null;
+  }
+
+  const _global = (() => {
+    /*eslint no-undef:0*/
+    if (typeof globalThis !== "undefined") return globalThis;
+    return typeof self !== "undefined" ? self : (typeof window !== 'undefined' ? window : commonjsGlobal)
+  })();
+
+  const isContextDefined = (context) => !isUndefined(context) && context !== _global;
+
+  /**
+   * Accepts varargs expecting each argument to be an object, then
+   * immutably merges the properties of each object and returns result.
+   *
+   * When multiple objects contain the same key the later object in
+   * the arguments list will take precedence.
+   *
+   * Example:
+   *
+   * ```js
+   * var result = merge({foo: 123}, {foo: 456});
+   * console.log(result.foo); // outputs 456
+   * ```
+   *
+   * @param {Object} obj1 Object to merge
+   *
+   * @returns {Object} Result of all merge properties
+   */
+  function merge(/* obj1, obj2, obj3, ... */) {
+    const {caseless} = isContextDefined(this) && this || {};
+    const result = {};
+    const assignValue = (val, key) => {
+      const targetKey = caseless && findKey(result, key) || key;
+      if (isPlainObject(result[targetKey]) && isPlainObject(val)) {
+        result[targetKey] = merge(result[targetKey], val);
+      } else if (isPlainObject(val)) {
+        result[targetKey] = merge({}, val);
+      } else if (isArray(val)) {
+        result[targetKey] = val.slice();
+      } else {
+        result[targetKey] = val;
+      }
+    };
+
+    for (let i = 0, l = arguments.length; i < l; i++) {
+      arguments[i] && forEach(arguments[i], assignValue);
+    }
+    return result;
+  }
+
+  /**
+   * Extends object a by mutably adding to it the properties of object b.
+   *
+   * @param {Object} a The object to be extended
+   * @param {Object} b The object to copy properties from
+   * @param {Object} thisArg The object to bind function to
+   *
+   * @param {Boolean} [allOwnKeys]
+   * @returns {Object} The resulting value of object a
+   */
+  const extend = (a, b, thisArg, {allOwnKeys}= {}) => {
+    forEach(b, (val, key) => {
+      if (thisArg && isFunction(val)) {
+        a[key] = bind(val, thisArg);
+      } else {
+        a[key] = val;
+      }
+    }, {allOwnKeys});
+    return a;
+  };
+
+  /**
+   * Remove byte order marker. This catches EF BB BF (the UTF-8 BOM)
+   *
+   * @param {string} content with BOM
+   *
+   * @returns {string} content value without BOM
+   */
+  const stripBOM = (content) => {
+    if (content.charCodeAt(0) === 0xFEFF) {
+      content = content.slice(1);
+    }
+    return content;
+  };
+
+  /**
+   * Inherit the prototype methods from one constructor into another
+   * @param {function} constructor
+   * @param {function} superConstructor
+   * @param {object} [props]
+   * @param {object} [descriptors]
+   *
+   * @returns {void}
+   */
+  const inherits = (constructor, superConstructor, props, descriptors) => {
+    constructor.prototype = Object.create(superConstructor.prototype, descriptors);
+    constructor.prototype.constructor = constructor;
+    Object.defineProperty(constructor, 'super', {
+      value: superConstructor.prototype
+    });
+    props && Object.assign(constructor.prototype, props);
+  };
+
+  /**
+   * Resolve object with deep prototype chain to a flat object
+   * @param {Object} sourceObj source object
+   * @param {Object} [destObj]
+   * @param {Function|Boolean} [filter]
+   * @param {Function} [propFilter]
+   *
+   * @returns {Object}
+   */
+  const toFlatObject = (sourceObj, destObj, filter, propFilter) => {
+    let props;
+    let i;
+    let prop;
+    const merged = {};
+
+    destObj = destObj || {};
+    // eslint-disable-next-line no-eq-null,eqeqeq
+    if (sourceObj == null) return destObj;
+
+    do {
+      props = Object.getOwnPropertyNames(sourceObj);
+      i = props.length;
+      while (i-- > 0) {
+        prop = props[i];
+        if ((!propFilter || propFilter(prop, sourceObj, destObj)) && !merged[prop]) {
+          destObj[prop] = sourceObj[prop];
+          merged[prop] = true;
+        }
+      }
+      sourceObj = filter !== false && getPrototypeOf(sourceObj);
+    } while (sourceObj && (!filter || filter(sourceObj, destObj)) && sourceObj !== Object.prototype);
+
+    return destObj;
+  };
+
+  /**
+   * Determines whether a string ends with the characters of a specified string
+   *
+   * @param {String} str
+   * @param {String} searchString
+   * @param {Number} [position= 0]
+   *
+   * @returns {boolean}
+   */
+  const endsWith = (str, searchString, position) => {
+    str = String(str);
+    if (position === undefined || position > str.length) {
+      position = str.length;
+    }
+    position -= searchString.length;
+    const lastIndex = str.indexOf(searchString, position);
+    return lastIndex !== -1 && lastIndex === position;
+  };
+
+
+  /**
+   * Returns new array from array like object or null if failed
+   *
+   * @param {*} [thing]
+   *
+   * @returns {?Array}
+   */
+  const toArray = (thing) => {
+    if (!thing) return null;
+    if (isArray(thing)) return thing;
+    let i = thing.length;
+    if (!isNumber(i)) return null;
+    const arr = new Array(i);
+    while (i-- > 0) {
+      arr[i] = thing[i];
+    }
+    return arr;
+  };
+
+  /**
+   * Checking if the Uint8Array exists and if it does, it returns a function that checks if the
+   * thing passed in is an instance of Uint8Array
+   *
+   * @param {TypedArray}
+   *
+   * @returns {Array}
+   */
+  // eslint-disable-next-line func-names
+  const isTypedArray = (TypedArray => {
+    // eslint-disable-next-line func-names
+    return thing => {
+      return TypedArray && thing instanceof TypedArray;
+    };
+  })(typeof Uint8Array !== 'undefined' && getPrototypeOf(Uint8Array));
+
+  /**
+   * For each entry in the object, call the function with the key and value.
+   *
+   * @param {Object<any, any>} obj - The object to iterate over.
+   * @param {Function} fn - The function to call for each entry.
+   *
+   * @returns {void}
+   */
+  const forEachEntry = (obj, fn) => {
+    const generator = obj && obj[Symbol.iterator];
+
+    const iterator = generator.call(obj);
+
+    let result;
+
+    while ((result = iterator.next()) && !result.done) {
+      const pair = result.value;
+      fn.call(obj, pair[0], pair[1]);
+    }
+  };
+
+  /**
+   * It takes a regular expression and a string, and returns an array of all the matches
+   *
+   * @param {string} regExp - The regular expression to match against.
+   * @param {string} str - The string to search.
+   *
+   * @returns {Array<boolean>}
+   */
+  const matchAll = (regExp, str) => {
+    let matches;
+    const arr = [];
+
+    while ((matches = regExp.exec(str)) !== null) {
+      arr.push(matches);
+    }
+
+    return arr;
+  };
+
+  /* Checking if the kindOfTest function returns true when passed an HTMLFormElement. */
+  const isHTMLForm = kindOfTest('HTMLFormElement');
+
+  const toCamelCase = str => {
+    return str.toLowerCase().replace(/[-_\s]([a-z\d])(\w*)/g,
+      function replacer(m, p1, p2) {
+        return p1.toUpperCase() + p2;
+      }
+    );
+  };
+
+  /* Creating a function that will check if an object has a property. */
+  const hasOwnProperty = (({hasOwnProperty}) => (obj, prop) => hasOwnProperty.call(obj, prop))(Object.prototype);
+
+  /**
+   * Determine if a value is a RegExp object
+   *
+   * @param {*} val The value to test
+   *
+   * @returns {boolean} True if value is a RegExp object, otherwise false
+   */
+  const isRegExp = kindOfTest('RegExp');
+
+  const reduceDescriptors = (obj, reducer) => {
+    const descriptors = Object.getOwnPropertyDescriptors(obj);
+    const reducedDescriptors = {};
+
+    forEach(descriptors, (descriptor, name) => {
+      let ret;
+      if ((ret = reducer(descriptor, name, obj)) !== false) {
+        reducedDescriptors[name] = ret || descriptor;
+      }
+    });
+
+    Object.defineProperties(obj, reducedDescriptors);
+  };
+
+  /**
+   * Makes all methods read-only
+   * @param {Object} obj
+   */
+
+  const freezeMethods = (obj) => {
+    reduceDescriptors(obj, (descriptor, name) => {
+      // skip restricted props in strict mode
+      if (isFunction(obj) && ['arguments', 'caller', 'callee'].indexOf(name) !== -1) {
+        return false;
+      }
+
+      const value = obj[name];
+
+      if (!isFunction(value)) return;
+
+      descriptor.enumerable = false;
+
+      if ('writable' in descriptor) {
+        descriptor.writable = false;
+        return;
+      }
+
+      if (!descriptor.set) {
+        descriptor.set = () => {
+          throw Error('Can not rewrite read-only method \'' + name + '\'');
+        };
+      }
+    });
+  };
+
+  const toObjectSet = (arrayOrString, delimiter) => {
+    const obj = {};
+
+    const define = (arr) => {
+      arr.forEach(value => {
+        obj[value] = true;
+      });
+    };
+
+    isArray(arrayOrString) ? define(arrayOrString) : define(String(arrayOrString).split(delimiter));
+
+    return obj;
+  };
+
+  const noop = () => {};
+
+  const toFiniteNumber = (value, defaultValue) => {
+    return value != null && Number.isFinite(value = +value) ? value : defaultValue;
+  };
+
+  const ALPHA = 'abcdefghijklmnopqrstuvwxyz';
+
+  const DIGIT = '0123456789';
+
+  const ALPHABET = {
+    DIGIT,
+    ALPHA,
+    ALPHA_DIGIT: ALPHA + ALPHA.toUpperCase() + DIGIT
+  };
+
+  const generateString = (size = 16, alphabet = ALPHABET.ALPHA_DIGIT) => {
+    let str = '';
+    const {length} = alphabet;
+    while (size--) {
+      str += alphabet[Math.random() * length|0];
+    }
+
+    return str;
+  };
+
+  /**
+   * If the thing is a FormData object, return true, otherwise return false.
+   *
+   * @param {unknown} thing - The thing to check.
+   *
+   * @returns {boolean}
+   */
+  function isSpecCompliantForm(thing) {
+    return !!(thing && isFunction(thing.append) && thing[Symbol.toStringTag] === 'FormData' && thing[Symbol.iterator]);
+  }
+
+  const toJSONObject = (obj) => {
+    const stack = new Array(10);
+
+    const visit = (source, i) => {
+
+      if (isObject(source)) {
+        if (stack.indexOf(source) >= 0) {
+          return;
+        }
+
+        if(!('toJSON' in source)) {
+          stack[i] = source;
+          const target = isArray(source) ? [] : {};
+
+          forEach(source, (value, key) => {
+            const reducedValue = visit(value, i + 1);
+            !isUndefined(reducedValue) && (target[key] = reducedValue);
+          });
+
+          stack[i] = undefined;
+
+          return target;
+        }
+      }
+
+      return source;
+    };
+
+    return visit(obj, 0);
+  };
+
+  const isAsyncFn = kindOfTest('AsyncFunction');
+
+  const isThenable = (thing) =>
+    thing && (isObject(thing) || isFunction(thing)) && isFunction(thing.then) && isFunction(thing.catch);
+
+  // original code
+  // https://github.com/DigitalBrainJS/AxiosPromise/blob/16deab13710ec09779922131f3fa5954320f83ab/lib/utils.js#L11-L34
+
+  const _setImmediate = ((setImmediateSupported, postMessageSupported) => {
+    if (setImmediateSupported) {
+      return setImmediate;
+    }
+
+    return postMessageSupported ? ((token, callbacks) => {
+      _global.addEventListener("message", ({source, data}) => {
+        if (source === _global && data === token) {
+          callbacks.length && callbacks.shift()();
+        }
+      }, false);
+
+      return (cb) => {
+        callbacks.push(cb);
+        _global.postMessage(token, "*");
+      }
+    })(`axios@${Math.random()}`, []) : (cb) => setTimeout(cb);
+  })(
+    typeof setImmediate === 'function',
+    isFunction(_global.postMessage)
+  );
+
+  const asap = typeof queueMicrotask !== 'undefined' ?
+    queueMicrotask.bind(_global) : ( typeof browser$1 !== 'undefined' && browser$1.nextTick || _setImmediate);
+
+  // *********************
+
+  var utils$1 = {
+    isArray,
+    isArrayBuffer,
+    isBuffer,
+    isFormData,
+    isArrayBufferView,
+    isString,
+    isNumber,
+    isBoolean,
+    isObject,
+    isPlainObject,
+    isReadableStream,
+    isRequest,
+    isResponse,
+    isHeaders,
+    isUndefined,
+    isDate,
+    isFile,
+    isBlob,
+    isRegExp,
+    isFunction,
+    isStream,
+    isURLSearchParams,
+    isTypedArray,
+    isFileList,
+    forEach,
+    merge,
+    extend,
+    trim,
+    stripBOM,
+    inherits,
+    toFlatObject,
+    kindOf,
+    kindOfTest,
+    endsWith,
+    toArray,
+    forEachEntry,
+    matchAll,
+    isHTMLForm,
+    hasOwnProperty,
+    hasOwnProp: hasOwnProperty, // an alias to avoid ESLint no-prototype-builtins detection
+    reduceDescriptors,
+    freezeMethods,
+    toObjectSet,
+    toCamelCase,
+    noop,
+    toFiniteNumber,
+    findKey,
+    global: _global,
+    isContextDefined,
+    ALPHABET,
+    generateString,
+    isSpecCompliantForm,
+    toJSONObject,
+    isAsyncFn,
+    isThenable,
+    setImmediate: _setImmediate,
+    asap
+  };
+
   /**
    * Create an Error with the specified message, config, error code, request and response.
    *
@@ -2977,7 +2979,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    *
    * @returns {Error} The created error.
    */
-  function AxiosError$1(message, code, config, request, response) {
+  function AxiosError(message, code, config, request, response) {
     Error.call(this);
 
     if (Error.captureStackTrace) {
@@ -2997,7 +2999,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
   }
 
-  utils$1.inherits(AxiosError$1, Error, {
+  utils$1.inherits(AxiosError, Error, {
     toJSON: function toJSON() {
       return {
         // Standard
@@ -3019,7 +3021,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
   });
 
-  const prototype$1 = AxiosError$1.prototype;
+  const prototype$1 = AxiosError.prototype;
   const descriptors = {};
 
   [
@@ -3040,11 +3042,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     descriptors[code] = {value: code};
   });
 
-  Object.defineProperties(AxiosError$1, descriptors);
+  Object.defineProperties(AxiosError, descriptors);
   Object.defineProperty(prototype$1, 'isAxiosError', {value: true});
 
   // eslint-disable-next-line func-names
-  AxiosError$1.from = (error, code, config, request, response, customProps) => {
+  AxiosError.from = (error, code, config, request, response, customProps) => {
     const axiosError = Object.create(prototype$1);
 
     utils$1.toFlatObject(error, axiosError, function filter(obj) {
@@ -3053,7 +3055,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       return prop !== 'isAxiosError';
     });
 
-    AxiosError$1.call(axiosError, error.message, code, config, request, response);
+    AxiosError.call(axiosError, error.message, code, config, request, response);
 
     axiosError.cause = error;
 
@@ -3067,103 +3069,214 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   // eslint-disable-next-line strict
   var httpAdapter = null;
 
+  /**
+   * Determines if the given thing is a array or js object.
+   *
+   * @param {string} thing - The object or array to be visited.
+   *
+   * @returns {boolean}
+   */
   function isVisitable(thing) {
     return utils$1.isPlainObject(thing) || utils$1.isArray(thing);
   }
+
+  /**
+   * It removes the brackets from the end of a string
+   *
+   * @param {string} key - The key of the parameter.
+   *
+   * @returns {string} the key without the brackets.
+   */
   function removeBrackets(key) {
-    return utils$1.endsWith(key, "[]") ? key.slice(0, -2) : key;
+    return utils$1.endsWith(key, '[]') ? key.slice(0, -2) : key;
   }
+
+  /**
+   * It takes a path, a key, and a boolean, and returns a string
+   *
+   * @param {string} path - The path to the current key.
+   * @param {string} key - The key of the current object being iterated over.
+   * @param {string} dots - If true, the key will be rendered with dots instead of brackets.
+   *
+   * @returns {string} The path to the current key.
+   */
   function renderKey(path, key, dots) {
     if (!path) return key;
     return path.concat(key).map(function each(token, i) {
+      // eslint-disable-next-line no-param-reassign
       token = removeBrackets(token);
-      return !dots && i ? "[" + token + "]" : token;
-    }).join(dots ? "." : "");
+      return !dots && i ? '[' + token + ']' : token;
+    }).join(dots ? '.' : '');
   }
+
+  /**
+   * If the array is an array and none of its elements are visitable, then it's a flat array.
+   *
+   * @param {Array<any>} arr - The array to check
+   *
+   * @returns {boolean}
+   */
   function isFlatArray(arr) {
     return utils$1.isArray(arr) && !arr.some(isVisitable);
   }
+
   const predicates = utils$1.toFlatObject(utils$1, {}, null, function filter(prop) {
-    return (/^is[A-Z]/).test(prop);
+    return /^is[A-Z]/.test(prop);
   });
-  function toFormData$1(obj, formData, options) {
+
+  /**
+   * Convert a data object to FormData
+   *
+   * @param {Object} obj
+   * @param {?Object} [formData]
+   * @param {?Object} [options]
+   * @param {Function} [options.visitor]
+   * @param {Boolean} [options.metaTokens = true]
+   * @param {Boolean} [options.dots = false]
+   * @param {?Boolean} [options.indexes = false]
+   *
+   * @returns {Object}
+   **/
+
+  /**
+   * It converts an object into a FormData object
+   *
+   * @param {Object<any, any>} obj - The object to convert to form data.
+   * @param {string} formData - The FormData object to append to.
+   * @param {Object<string, any>} options
+   *
+   * @returns
+   */
+  function toFormData(obj, formData, options) {
     if (!utils$1.isObject(obj)) {
-      throw new TypeError("target must be an object");
+      throw new TypeError('target must be an object');
     }
+
+    // eslint-disable-next-line no-param-reassign
     formData = formData || new (FormData)();
+
+    // eslint-disable-next-line no-param-reassign
     options = utils$1.toFlatObject(options, {
       metaTokens: true,
       dots: false,
       indexes: false
     }, false, function defined(option, source) {
+      // eslint-disable-next-line no-eq-null,eqeqeq
       return !utils$1.isUndefined(source[option]);
     });
+
     const metaTokens = options.metaTokens;
+    // eslint-disable-next-line no-use-before-define
     const visitor = options.visitor || defaultVisitor;
     const dots = options.dots;
     const indexes = options.indexes;
-    const _Blob = options.Blob || typeof Blob !== "undefined" && Blob;
+    const _Blob = options.Blob || typeof Blob !== 'undefined' && Blob;
     const useBlob = _Blob && utils$1.isSpecCompliantForm(formData);
+
     if (!utils$1.isFunction(visitor)) {
-      throw new TypeError("visitor must be a function");
+      throw new TypeError('visitor must be a function');
     }
+
     function convertValue(value) {
-      if (value === null) return "";
+      if (value === null) return '';
+
       if (utils$1.isDate(value)) {
         return value.toISOString();
       }
+
       if (!useBlob && utils$1.isBlob(value)) {
-        throw new AxiosError$1("Blob is not supported. Use a Buffer instead.");
+        throw new AxiosError('Blob is not supported. Use a Buffer instead.');
       }
+
       if (utils$1.isArrayBuffer(value) || utils$1.isTypedArray(value)) {
-        return useBlob && typeof Blob === "function" ? new Blob([value]) : Buffer.from(value);
+        return useBlob && typeof Blob === 'function' ? new Blob([value]) : Buffer.from(value);
       }
+
       return value;
     }
+
+    /**
+     * Default visitor.
+     *
+     * @param {*} value
+     * @param {String|Number} key
+     * @param {Array<String|Number>} path
+     * @this {FormData}
+     *
+     * @returns {boolean} return true to visit the each prop of the value recursively
+     */
     function defaultVisitor(value, key, path) {
       let arr = value;
-      if (value && !path && typeof value === "object") {
-        if (utils$1.endsWith(key, "{}")) {
+
+      if (value && !path && typeof value === 'object') {
+        if (utils$1.endsWith(key, '{}')) {
+          // eslint-disable-next-line no-param-reassign
           key = metaTokens ? key : key.slice(0, -2);
+          // eslint-disable-next-line no-param-reassign
           value = JSON.stringify(value);
-        } else if (utils$1.isArray(value) && isFlatArray(value) || (utils$1.isFileList(value) || utils$1.endsWith(key, "[]")) && (arr = utils$1.toArray(value))) {
+        } else if (
+          (utils$1.isArray(value) && isFlatArray(value)) ||
+          ((utils$1.isFileList(value) || utils$1.endsWith(key, '[]')) && (arr = utils$1.toArray(value))
+          )) {
+          // eslint-disable-next-line no-param-reassign
           key = removeBrackets(key);
+
           arr.forEach(function each(el, index) {
-            !(utils$1.isUndefined(el) || el === null) && formData.append(indexes === true ? renderKey([key], index, dots) : indexes === null ? key : key + "[]", convertValue(el));
+            !(utils$1.isUndefined(el) || el === null) && formData.append(
+              // eslint-disable-next-line no-nested-ternary
+              indexes === true ? renderKey([key], index, dots) : (indexes === null ? key : key + '[]'),
+              convertValue(el)
+            );
           });
           return false;
         }
       }
+
       if (isVisitable(value)) {
         return true;
       }
+
       formData.append(renderKey(path, key, dots), convertValue(value));
+
       return false;
     }
+
     const stack = [];
+
     const exposedHelpers = Object.assign(predicates, {
       defaultVisitor,
       convertValue,
       isVisitable
     });
+
     function build(value, path) {
       if (utils$1.isUndefined(value)) return;
+
       if (stack.indexOf(value) !== -1) {
-        throw Error("Circular reference detected in " + path.join("."));
+        throw Error('Circular reference detected in ' + path.join('.'));
       }
+
       stack.push(value);
+
       utils$1.forEach(value, function each(el, key) {
-        const result = !(utils$1.isUndefined(el) || el === null) && visitor.call(formData, el, utils$1.isString(key) ? key.trim() : key, path, exposedHelpers);
+        const result = !(utils$1.isUndefined(el) || el === null) && visitor.call(
+          formData, el, utils$1.isString(key) ? key.trim() : key, path, exposedHelpers
+        );
+
         if (result === true) {
           build(el, path ? path.concat(key) : [key]);
         }
       });
+
       stack.pop();
     }
+
     if (!utils$1.isObject(obj)) {
-      throw new TypeError("data must be an object");
+      throw new TypeError('data must be an object');
     }
+
     build(obj);
+
     return formData;
   }
 
@@ -3201,7 +3314,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   function AxiosURLSearchParams(params, options) {
     this._pairs = [];
 
-    params && toFormData$1(params, this, options);
+    params && toFormData(params, this, options);
   }
 
   const prototype = AxiosURLSearchParams.prototype;
@@ -3345,6 +3458,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
   }
 
+  var InterceptorManager$1 = InterceptorManager;
+
   var transitionalDefaults = {
     silentJSONParsing: true,
     forcedJSONParsing: true,
@@ -3414,8 +3529,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   var utils = /*#__PURE__*/Object.freeze({
     __proto__: null,
     hasBrowserEnv: hasBrowserEnv,
-    hasStandardBrowserEnv: hasStandardBrowserEnv,
     hasStandardBrowserWebWorkerEnv: hasStandardBrowserWebWorkerEnv,
+    hasStandardBrowserEnv: hasStandardBrowserEnv,
     navigator: _navigator,
     origin: origin
   });
@@ -3426,7 +3541,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   };
 
   function toURLEncodedForm(data, options) {
-    return toFormData$1(data, new platform.classes.URLSearchParams(), Object.assign({
+    return toFormData(data, new platform.classes.URLSearchParams(), Object.assign({
       visitor: function(value, key, path, helpers) {
         if (platform.isNode && utils$1.isBuffer(value)) {
           this.append(key, value.toString('base64'));
@@ -3601,7 +3716,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         if ((isFileList = utils$1.isFileList(data)) || contentType.indexOf('multipart/form-data') > -1) {
           const _FormData = this.env && this.env.FormData;
 
-          return toFormData$1(
+          return toFormData(
             isFileList ? {'files[]': data} : data,
             _FormData && new _FormData(),
             this.formSerializer
@@ -3635,7 +3750,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         } catch (e) {
           if (strictJSONParsing) {
             if (e.name === 'SyntaxError') {
-              throw AxiosError$1.from(e, AxiosError$1.ERR_BAD_RESPONSE, this, null, this.response);
+              throw AxiosError.from(e, AxiosError.ERR_BAD_RESPONSE, this, null, this.response);
             }
             throw e;
           }
@@ -3677,6 +3792,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   utils$1.forEach(['delete', 'get', 'head', 'post', 'put', 'patch'], (method) => {
     defaults.headers[method] = {};
   });
+
+  var defaults$1 = defaults;
 
   // RawAxiosHeaders whose duplicates are ignored by node
   // c.f. https://nodejs.org/api/http.html#http_message_headers
@@ -3798,7 +3915,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     });
   }
 
-  let AxiosHeaders$1 = class AxiosHeaders {
+  class AxiosHeaders {
     constructor(headers) {
       headers && this.set(headers);
     }
@@ -4009,12 +4126,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
       return this;
     }
-  };
+  }
 
-  AxiosHeaders$1.accessor(['Content-Type', 'Content-Length', 'Accept', 'Accept-Encoding', 'User-Agent', 'Authorization']);
+  AxiosHeaders.accessor(['Content-Type', 'Content-Length', 'Accept', 'Accept-Encoding', 'User-Agent', 'Authorization']);
 
   // reserved names hotfix
-  utils$1.reduceDescriptors(AxiosHeaders$1.prototype, ({value}, key) => {
+  utils$1.reduceDescriptors(AxiosHeaders.prototype, ({value}, key) => {
     let mapped = key[0].toUpperCase() + key.slice(1); // map `set` => `Set`
     return {
       get: () => value,
@@ -4024,7 +4141,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
   });
 
-  utils$1.freezeMethods(AxiosHeaders$1);
+  utils$1.freezeMethods(AxiosHeaders);
+
+  var AxiosHeaders$1 = AxiosHeaders;
 
   /**
    * Transform the data for a request or a response
@@ -4035,7 +4154,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * @returns {*} The resulting transformed data
    */
   function transformData(fns, response) {
-    const config = this || defaults;
+    const config = this || defaults$1;
     const context = response || config;
     const headers = AxiosHeaders$1.from(context.headers);
     let data = context.data;
@@ -4049,7 +4168,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     return data;
   }
 
-  function isCancel$1(value) {
+  function isCancel(value) {
     return !!(value && value.__CANCEL__);
   }
 
@@ -4062,13 +4181,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    *
    * @returns {CanceledError} The created error.
    */
-  function CanceledError$1(message, config, request) {
+  function CanceledError(message, config, request) {
     // eslint-disable-next-line no-eq-null,eqeqeq
-    AxiosError$1.call(this, message == null ? 'canceled' : message, AxiosError$1.ERR_CANCELED, config, request);
+    AxiosError.call(this, message == null ? 'canceled' : message, AxiosError.ERR_CANCELED, config, request);
     this.name = 'CanceledError';
   }
 
-  utils$1.inherits(CanceledError$1, AxiosError$1, {
+  utils$1.inherits(CanceledError, AxiosError, {
     __CANCEL__: true
   });
 
@@ -4086,9 +4205,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     if (!response.status || !validateStatus || validateStatus(response.status)) {
       resolve(response);
     } else {
-      reject(new AxiosError$1(
+      reject(new AxiosError(
         'Request failed with status code ' + response.status,
-        [AxiosError$1.ERR_BAD_REQUEST, AxiosError$1.ERR_BAD_RESPONSE][Math.floor(response.status / 100) - 4],
+        [AxiosError.ERR_BAD_REQUEST, AxiosError.ERR_BAD_RESPONSE][Math.floor(response.status / 100) - 4],
         response.config,
         response.request,
         response
@@ -4395,7 +4514,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    *
    * @returns {Object} New object resulting from merging config2 to config1
    */
-  function mergeConfig$1(config1, config2) {
+  function mergeConfig(config1, config2) {
     // eslint-disable-next-line no-param-reassign
     config2 = config2 || {};
     const config = {};
@@ -4487,7 +4606,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   var resolveConfig = (config) => {
-    const newConfig = mergeConfig$1({}, config);
+    const newConfig = mergeConfig({}, config);
 
     let {data, withXSRFToken, xsrfHeaderName, xsrfCookieName, headers, auth} = newConfig;
 
@@ -4622,7 +4741,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           return;
         }
 
-        reject(new AxiosError$1('Request aborted', AxiosError$1.ECONNABORTED, config, request));
+        reject(new AxiosError('Request aborted', AxiosError.ECONNABORTED, config, request));
 
         // Clean up request
         request = null;
@@ -4632,7 +4751,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       request.onerror = function handleError() {
         // Real errors are hidden from us by the browser
         // onerror should only fire if it's a network error
-        reject(new AxiosError$1('Network Error', AxiosError$1.ERR_NETWORK, config, request));
+        reject(new AxiosError('Network Error', AxiosError.ERR_NETWORK, config, request));
 
         // Clean up request
         request = null;
@@ -4645,9 +4764,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         if (_config.timeoutErrorMessage) {
           timeoutErrorMessage = _config.timeoutErrorMessage;
         }
-        reject(new AxiosError$1(
+        reject(new AxiosError(
           timeoutErrorMessage,
-          transitional.clarifyTimeoutError ? AxiosError$1.ETIMEDOUT : AxiosError$1.ECONNABORTED,
+          transitional.clarifyTimeoutError ? AxiosError.ETIMEDOUT : AxiosError.ECONNABORTED,
           config,
           request));
 
@@ -4697,7 +4816,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           if (!request) {
             return;
           }
-          reject(!cancel || cancel.type ? new CanceledError$1(null, config, request) : cancel);
+          reject(!cancel || cancel.type ? new CanceledError(null, config, request) : cancel);
           request.abort();
           request = null;
         };
@@ -4711,7 +4830,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       const protocol = parseProtocol(_config.url);
 
       if (protocol && platform.protocols.indexOf(protocol) === -1) {
-        reject(new AxiosError$1('Unsupported protocol ' + protocol + ':', AxiosError$1.ERR_BAD_REQUEST, config));
+        reject(new AxiosError('Unsupported protocol ' + protocol + ':', AxiosError.ERR_BAD_REQUEST, config));
         return;
       }
 
@@ -4734,13 +4853,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           aborted = true;
           unsubscribe();
           const err = reason instanceof Error ? reason : this.reason;
-          controller.abort(err instanceof AxiosError$1 ? err : new CanceledError$1(err instanceof Error ? err.message : err));
+          controller.abort(err instanceof AxiosError ? err : new CanceledError(err instanceof Error ? err.message : err));
         }
       };
 
       let timer = timeout && setTimeout(() => {
         timer = null;
-        onabort(new AxiosError$1(`timeout ${timeout} of ms exceeded`, AxiosError$1.ETIMEDOUT));
+        onabort(new AxiosError(`timeout ${timeout} of ms exceeded`, AxiosError.ETIMEDOUT));
       }, timeout);
 
       const unsubscribe = () => {
@@ -4763,6 +4882,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       return signal;
     }
   };
+
+  var composeSignals$1 = composeSignals;
 
   const streamChunk = function* (chunk, chunkSize) {
     let len = chunk.byteLength;
@@ -4897,7 +5018,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     ['text', 'arrayBuffer', 'blob', 'formData', 'stream'].forEach(type => {
       !resolvers[type] && (resolvers[type] = utils$1.isFunction(res[type]) ? (res) => res[type]() :
         (_, config) => {
-          throw new AxiosError$1(`Response type '${type}' is not supported`, AxiosError$1.ERR_NOT_SUPPORT, config);
+          throw new AxiosError(`Response type '${type}' is not supported`, AxiosError.ERR_NOT_SUPPORT, config);
         });
     });
   })(new Response));
@@ -4956,7 +5077,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
     responseType = responseType ? (responseType + '').toLowerCase() : 'text';
 
-    let composedSignal = composeSignals([signal, cancelToken && cancelToken.toAbortSignal()], timeout);
+    let composedSignal = composeSignals$1([signal, cancelToken && cancelToken.toAbortSignal()], timeout);
 
     let request;
 
@@ -5058,14 +5179,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
       if (err && err.name === 'TypeError' && /fetch/i.test(err.message)) {
         throw Object.assign(
-          new AxiosError$1('Network Error', AxiosError$1.ERR_NETWORK, config, request),
+          new AxiosError('Network Error', AxiosError.ERR_NETWORK, config, request),
           {
             cause: err.cause || err
           }
         )
       }
 
-      throw AxiosError$1.from(err, err && err.code, config, request);
+      throw AxiosError.from(err, err && err.code, config, request);
     }
   });
 
@@ -5110,7 +5231,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           adapter = knownAdapters[(id = String(nameOrAdapter)).toLowerCase()];
 
           if (adapter === undefined) {
-            throw new AxiosError$1(`Unknown adapter '${id}'`);
+            throw new AxiosError(`Unknown adapter '${id}'`);
           }
         }
 
@@ -5132,7 +5253,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           (reasons.length > 1 ? 'since :\n' + reasons.map(renderReason).join('\n') : ' ' + renderReason(reasons[0])) :
           'as no adapter specified';
 
-        throw new AxiosError$1(
+        throw new AxiosError(
           `There is no suitable adapter to dispatch the request ` + s,
           'ERR_NOT_SUPPORT'
         );
@@ -5156,7 +5277,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
 
     if (config.signal && config.signal.aborted) {
-      throw new CanceledError$1(null, config);
+      throw new CanceledError(null, config);
     }
   }
 
@@ -5182,7 +5303,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       config.headers.setContentType('application/x-www-form-urlencoded', false);
     }
 
-    const adapter = adapters.getAdapter(config.adapter || defaults.adapter);
+    const adapter = adapters.getAdapter(config.adapter || defaults$1.adapter);
 
     return adapter(config).then(function onAdapterResolution(response) {
       throwIfCancellationRequested(config);
@@ -5198,7 +5319,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
       return response;
     }, function onAdapterRejection(reason) {
-      if (!isCancel$1(reason)) {
+      if (!isCancel(reason)) {
         throwIfCancellationRequested(config);
 
         // Transform response data
@@ -5216,7 +5337,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     });
   }
 
-  const VERSION$1 = "1.7.7";
+  const VERSION = "1.7.7";
 
   const validators$1 = {};
 
@@ -5240,15 +5361,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */
   validators$1.transitional = function transitional(validator, version, message) {
     function formatMessage(opt, desc) {
-      return '[Axios v' + VERSION$1 + '] Transitional option \'' + opt + '\'' + desc + (message ? '. ' + message : '');
+      return '[Axios v' + VERSION + '] Transitional option \'' + opt + '\'' + desc + (message ? '. ' + message : '');
     }
 
     // eslint-disable-next-line func-names
     return (value, opt, opts) => {
       if (validator === false) {
-        throw new AxiosError$1(
+        throw new AxiosError(
           formatMessage(opt, ' has been removed' + (version ? ' in ' + version : '')),
-          AxiosError$1.ERR_DEPRECATED
+          AxiosError.ERR_DEPRECATED
         );
       }
 
@@ -5279,7 +5400,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   function assertOptions(options, schema, allowUnknown) {
     if (typeof options !== 'object') {
-      throw new AxiosError$1('options must be an object', AxiosError$1.ERR_BAD_OPTION_VALUE);
+      throw new AxiosError('options must be an object', AxiosError.ERR_BAD_OPTION_VALUE);
     }
     const keys = Object.keys(options);
     let i = keys.length;
@@ -5290,12 +5411,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         const value = options[opt];
         const result = value === undefined || validator(value, opt, options);
         if (result !== true) {
-          throw new AxiosError$1('option ' + opt + ' must be ' + result, AxiosError$1.ERR_BAD_OPTION_VALUE);
+          throw new AxiosError('option ' + opt + ' must be ' + result, AxiosError.ERR_BAD_OPTION_VALUE);
         }
         continue;
       }
       if (allowUnknown !== true) {
-        throw new AxiosError$1('Unknown option ' + opt, AxiosError$1.ERR_BAD_OPTION);
+        throw new AxiosError('Unknown option ' + opt, AxiosError.ERR_BAD_OPTION);
       }
     }
   }
@@ -5314,12 +5435,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    *
    * @return {Axios} A new instance of Axios
    */
-  let Axios$1 = class Axios {
+  class Axios {
     constructor(instanceConfig) {
       this.defaults = instanceConfig;
       this.interceptors = {
-        request: new InterceptorManager(),
-        response: new InterceptorManager()
+        request: new InterceptorManager$1(),
+        response: new InterceptorManager$1()
       };
     }
 
@@ -5368,7 +5489,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         config = configOrUrl || {};
       }
 
-      config = mergeConfig$1(this.defaults, config);
+      config = mergeConfig(this.defaults, config);
 
       const {transitional, paramsSerializer, headers} = config;
 
@@ -5482,17 +5603,17 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
 
     getUri(config) {
-      config = mergeConfig$1(this.defaults, config);
+      config = mergeConfig(this.defaults, config);
       const fullPath = buildFullPath(config.baseURL, config.url);
       return buildURL(fullPath, config.params, config.paramsSerializer);
     }
-  };
+  }
 
   // Provide aliases for supported request methods
   utils$1.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
     /*eslint func-names:0*/
-    Axios$1.prototype[method] = function(url, config) {
-      return this.request(mergeConfig$1(config || {}, {
+    Axios.prototype[method] = function(url, config) {
+      return this.request(mergeConfig(config || {}, {
         method,
         url,
         data: (config || {}).data
@@ -5505,7 +5626,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
     function generateHTTPMethod(isForm) {
       return function httpMethod(url, data, config) {
-        return this.request(mergeConfig$1(config || {}, {
+        return this.request(mergeConfig(config || {}, {
           method,
           headers: isForm ? {
             'Content-Type': 'multipart/form-data'
@@ -5516,10 +5637,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       };
     }
 
-    Axios$1.prototype[method] = generateHTTPMethod();
+    Axios.prototype[method] = generateHTTPMethod();
 
-    Axios$1.prototype[method + 'Form'] = generateHTTPMethod(true);
+    Axios.prototype[method + 'Form'] = generateHTTPMethod(true);
   });
+
+  var Axios$1 = Axios;
 
   /**
    * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -5528,7 +5651,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    *
    * @returns {CancelToken}
    */
-  let CancelToken$1 = class CancelToken {
+  class CancelToken {
     constructor(executor) {
       if (typeof executor !== 'function') {
         throw new TypeError('executor must be a function.');
@@ -5576,7 +5699,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           return;
         }
 
-        token.reason = new CanceledError$1(message, config, request);
+        token.reason = new CanceledError(message, config, request);
         resolvePromise(token.reason);
       });
     }
@@ -5649,7 +5772,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         cancel
       };
     }
-  };
+  }
+
+  var CancelToken$1 = CancelToken;
 
   /**
    * Syntactic sugar for invoking a function and expanding an array for arguments.
@@ -5672,7 +5797,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    *
    * @returns {Function}
    */
-  function spread$1(callback) {
+  function spread(callback) {
     return function wrap(arr) {
       return callback.apply(null, arr);
     };
@@ -5685,11 +5810,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    *
    * @returns {boolean} True if the payload is an error thrown by Axios, otherwise false
    */
-  function isAxiosError$1(payload) {
+  function isAxiosError(payload) {
     return utils$1.isObject(payload) && (payload.isAxiosError === true);
   }
 
-  const HttpStatusCode$1 = {
+  const HttpStatusCode = {
     Continue: 100,
     SwitchingProtocols: 101,
     Processing: 102,
@@ -5755,9 +5880,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     NetworkAuthenticationRequired: 511,
   };
 
-  Object.entries(HttpStatusCode$1).forEach(([key, value]) => {
-    HttpStatusCode$1[value] = key;
+  Object.entries(HttpStatusCode).forEach(([key, value]) => {
+    HttpStatusCode[value] = key;
   });
+
+  var HttpStatusCode$1 = HttpStatusCode;
 
   /**
    * Create an instance of Axios
@@ -5778,27 +5905,27 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
     // Factory for creating new instances
     instance.create = function create(instanceConfig) {
-      return createInstance(mergeConfig$1(defaultConfig, instanceConfig));
+      return createInstance(mergeConfig(defaultConfig, instanceConfig));
     };
 
     return instance;
   }
 
   // Create the default instance to be exported
-  const axios = createInstance(defaults);
+  const axios = createInstance(defaults$1);
 
   // Expose Axios class to allow class inheritance
   axios.Axios = Axios$1;
 
   // Expose Cancel & CancelToken
-  axios.CanceledError = CanceledError$1;
+  axios.CanceledError = CanceledError;
   axios.CancelToken = CancelToken$1;
-  axios.isCancel = isCancel$1;
-  axios.VERSION = VERSION$1;
-  axios.toFormData = toFormData$1;
+  axios.isCancel = isCancel;
+  axios.VERSION = VERSION;
+  axios.toFormData = toFormData;
 
   // Expose AxiosError class
-  axios.AxiosError = AxiosError$1;
+  axios.AxiosError = AxiosError;
 
   // alias for CanceledError for backward compatibility
   axios.Cancel = axios.CanceledError;
@@ -5808,13 +5935,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     return Promise.all(promises);
   };
 
-  axios.spread = spread$1;
+  axios.spread = spread;
 
   // Expose isAxiosError
-  axios.isAxiosError = isAxiosError$1;
+  axios.isAxiosError = isAxiosError;
 
   // Expose mergeConfig
-  axios.mergeConfig = mergeConfig$1;
+  axios.mergeConfig = mergeConfig;
 
   axios.AxiosHeaders = AxiosHeaders$1;
 
@@ -5826,48 +5953,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   axios.default = axios;
 
-  // This module is intended to unwrap Axios default export as named.
-  // Keep top-level export same with static properties
-  // so that it can keep same with es module or cjs
-  const {
-    Axios,
-    AxiosError,
-    CanceledError,
-    isCancel,
-    CancelToken,
-    VERSION,
-    all,
-    Cancel,
-    isAxiosError,
-    spread,
-    toFormData,
-    AxiosHeaders,
-    HttpStatusCode,
-    formToJSON,
-    getAdapter,
-    mergeConfig
-  } = axios;
+  var axios_1 = axios;
 
-  let exp = axios?.default || axios || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
+  let exp = axios_1?.default || axios_1 || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
 
-  exports.Axios = Axios;
-  exports.AxiosError = AxiosError;
-  exports.AxiosHeaders = AxiosHeaders;
-  exports.Cancel = Cancel;
-  exports.CancelToken = CancelToken;
-  exports.CanceledError = CanceledError;
-  exports.HttpStatusCode = HttpStatusCode;
-  exports.VERSION = VERSION;
-  exports.all = all;
-  exports.default = exp;
-  exports.formToJSON = formToJSON;
-  exports.getAdapter = getAdapter;
-  exports.isAxiosError = isAxiosError;
-  exports.isCancel = isCancel;
-  exports.mergeConfig = mergeConfig;
-  exports.spread = spread;
-  exports.toFormData = toFormData;
-
-  Object.defineProperty(exports, '__esModule', { value: true });
+  return exp;
 
 }));
