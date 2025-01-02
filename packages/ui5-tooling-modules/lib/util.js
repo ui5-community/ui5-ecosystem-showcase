@@ -389,6 +389,20 @@ function findPackageJson(modulePath) {
 	return pkgJsonFile;
 }
 
+/**
+ * converts a wildcard pattern to a regular expression
+ * @param {string} pattern the pattern to convert
+ * @returns {RegExp} the regular expression
+ */
+function wildcardToRegex(pattern) {
+	// escape special characters
+	const escapedPattern = pattern.replace(/[.+^${}()|[\]\\]/g, "\\$&");
+	// replace the wildcard with a capture group
+	const regexPattern = escapedPattern.replace(/\*/g, "(.*)");
+	// return the regular expression
+	return new RegExp(`^${regexPattern}$`);
+}
+
 // the utiltiy module
 module.exports = function (log, projectInfo) {
 	/**
@@ -815,9 +829,7 @@ module.exports = function (log, projectInfo) {
 			} else {
 				// Implementation of the Node.js Package Entry Points mechanism
 				// https://nodejs.org/api/packages.html#package-entry-points
-				let pkgJsonFile,
-					relativeModulePath,
-					isEntryModule = true;
+				let pkgJsonFile, relativeModulePath;
 
 				// when resolving absolute files we lookup the package.json in the parent dirs
 				// for later resolution of the module path (e.g. the mapping in browsers field)
@@ -830,16 +842,17 @@ module.exports = function (log, projectInfo) {
 					if (modulePath === undefined) {
 						modulePath = getModulePathWithExtension(`${moduleName}${path.sep}index`);
 					}
+					// determine the relative module path to the package.json as the module resolution
+					// below resolves and maps the module path relative to the package.json only
+					if (modulePath) {
+						relativeModulePath = path.relative(path.dirname(pkgJsonFile), modulePath)?.replace(/\\/g, "/");
+					}
 				} else {
 					// lookup the package.json with the npm package name
 					const [, npmPackage, , , relModulePath] = npmPackageScopeRegEx.exec(moduleName) || [];
 					pkgJsonFile = findDependency(`${npmPackage}/package.json`, cwd, extendedDepPaths);
-					// short track if the module exists relative to the package.json
-					// we can skip the resolution using the package.json fields to find the module
+					// short track to derive the relative module path relative to the package.json
 					if (pkgJsonFile && relModulePath) {
-						const rootPath = path.dirname(pkgJsonFile);
-						modulePath = getModulePathWithExtension(path.join(rootPath, relModulePath)); // undefined if it doesn't exist
-						isEntryModule = false;
 						relativeModulePath = relModulePath;
 					}
 				}
@@ -851,90 +864,141 @@ module.exports = function (log, projectInfo) {
 					const rootPath = path.dirname(pkgJsonFile);
 					const pkgJson = getPackageJson(pkgJsonFile);
 
-					// entry modules must be resolved from the package.json fields
-					if (isEntryModule && modulePath === undefined) {
-						// exports first
-						if (pkgJson.exports) {
-							const exportsField = pkgJson.exports[relativeModulePath ? `./${relativeModulePath}` : "."];
-							let main;
-							if (typeof (main = exportsField?.browser?.default) === "string") {
-								//console.log("##################", moduleName, "exports[.][browser][default]", main);
-								modulePath = path.join(rootPath, main);
-							} else if (typeof (main = exportsField?.import?.default) === "string") {
-								//console.log("##################", moduleName, "exports[.][import][default]", main);
-								modulePath = path.join(rootPath, main);
-							} else if (typeof (main = exportsField?.import) === "string") {
-								//console.log("##################", moduleName, "exports[.][import]", main);
-								modulePath = path.join(rootPath, main);
-							} else if (typeof (main = pkgJson.exports?.import) === "string") {
-								//console.log("##################", moduleName, "exports[import]", main);
-								modulePath = path.join(rootPath, main);
-							} else if (typeof (main = exportsField?.require?.default) === "string") {
-								//console.log("##################", moduleName, "exports[.][require][default]", main);
-								modulePath = path.join(rootPath, main);
-							} else if (typeof (main = exportsField?.require) === "string") {
-								//console.log("##################", moduleName, "exports[.][require]", main);
-								modulePath = path.join(rootPath, main);
-							} else if (typeof (main = pkgJson.exports?.require) === "string") {
-								//console.log("##################", moduleName, "exports[require]", main);
-								modulePath = path.join(rootPath, main);
-							} else if (typeof (main = exportsField?.default) === "string") {
-								//console.log("##################", moduleName, "exports[.][default]", main);
-								modulePath = path.join(rootPath, main);
-							} else if (typeof (main = exportsField) === "string") {
-								//console.log("##################", moduleName, "exports[.]", main);
-								modulePath = path.join(rootPath, main);
-							} else if (Array.isArray((main = pkgJson.exports["."]))) {
-								//console.log("##################", moduleName, "exports[.][]", main.pop());
-								const entry = main.pop();
-								if (typeof entry?.import?.default === "string") {
-									modulePath = path.join(rootPath, entry.import.default);
-								} else if (typeof entry?.require?.default === "string") {
-									modulePath = path.join(rootPath, entry.require.default);
-								} else if (typeof entry?.default === "string") {
-									modulePath = path.join(rootPath, entry.default);
-								} else {
-									//console.error("#### UNKNOWN CASE ####", "exports[.]", moduleName, JSON.stringify(entry));
-								}
-							} else {
-								//console.error("#### UNKNOWN CASE ####", "exports", moduleName, JSON.stringify(pkgJson.exports));
-							}
-						} else if (typeof pkgJson.browser === "string") {
-							//console.log("##################", moduleName, "browser", pkgJson.browser);
-							modulePath = path.join(rootPath, pkgJson.browser);
-						} else if (typeof pkgJson.module === "string") {
-							//console.log("##################", moduleName, "module", pkgJson.module);
-							modulePath = path.join(rootPath, pkgJson.module);
-						} else if (typeof pkgJson.main === "string") {
-							//console.log("##################", moduleName, "main", pkgJson.main);
-							modulePath = path.join(rootPath, pkgJson.main);
-						} else {
-							// no configuration found, we lookup the index module
-							modulePath = getModulePathWithExtension(path.join(rootPath, "index"));
-						}
-					}
+					// all modules must be resolved from the package.json fields if available
+					// Hints about package.json exports resolution:
+					//  - https://nodejs.org/api/packages.html#packages_subpath_exports
+					//  - https://github.com/rollup/plugins/blob/master/packages/node-resolve/src/package/resolvePackageExports.ts
+					//  - https://webpack.js.org/guides/package-exports/
 
-					// if the package.json has a browser field we try to map the module path
-					// (a false value in the browser field means the module should be ignored)
-					if (typeof pkgJson.browser === "object") {
-						//console.log("##################", moduleName, "browser", pkgJson.browser);
-						const mappings =
-							packageJsonCache[pkgJsonFile + "~mappings"] ||
-							Object.fromEntries(
-								Object.entries(pkgJson.browser)
-									.filter(([key, value]) => {
-										return value !== false; // these modules should ideally be ignored => maybe we make them undefined
-									})
-									.map(([key, value]) => {
-										return [path.join(rootPath, key), path.join(rootPath, value)];
-									}),
-							);
-						if (!packageJsonCache[pkgJsonFile + "~mappings"]) {
-							packageJsonCache[pkgJsonFile + "~mappings"] = mappings;
+					// conditions means that exports is an object without any entry starting with a dot
+					// mappins means that exports is an object having no conditions
+					// conditions and mappings are mutually exclusive
+					const isConditions = (exports) => {
+						return exports && !Object.keys(exports).some((key) => key.startsWith("."));
+					};
+					const isMappings = (exports) => {
+						return exports && !isConditions(exports);
+					};
+
+					// the conditions and mappings to resolve the module path
+					const communityConditions = ["browser", "production" /*, "development"*/]; // could be injected from outside
+					const mainModuleConditions = ["esnext", "module", "main"];
+					const resolveConditions = [...communityConditions, ...mainModuleConditions, "import", "require", "default"]; // require is just the fallback!
+
+					// helper to resolve the target of a mapping:
+					//  - if the target is a string it is returned (and if needed the wildcard is replaced)
+					//  - if the target is an array the first resolved target is returned
+					//  - if the target is an object the first resolved target of the conditions is returned
+					const resolveTarget = (target, wildcardMatch) => {
+						if (typeof target === "string") {
+							if (!wildcardMatch) {
+								return target;
+							} else {
+								// replace the wildcard with the matched wildcard:
+								// determine the value of the wildcard in the exports field
+								return target.replace(/\*/g, wildcardMatch);
+							}
+						} else if (Array.isArray(target)) {
+							// resolve the target from the array of targets
+							for (const entry of target) {
+								const resolved = resolveTarget(entry, wildcardMatch);
+								if (resolved) {
+									return resolved;
+								}
+							}
+						} else if (target && typeof target === "object") {
+							// resolve the target of the conditions
+							for (const condition of resolveConditions) {
+								if (condition in target) {
+									let resolved = resolveTarget(target[condition], wildcardMatch);
+									if (resolved) {
+										return resolved;
+									}
+								}
+							}
+							// if no condition matches, check for a wildcard match
+							// which is typically a path mapping in the exports field
+							if (wildcardMatch in target) {
+								return target[wildcardMatch];
+							}
 						}
-						//console.log("##################", "before  ", modulePath);
-						modulePath = mappings[modulePath] || modulePath;
-						//console.log("##################", "after   ", modulePath);
+					};
+
+					// helper to resolve the given subpath from the exports field of the package.json
+					const resolveExports = (exports, subPath) => {
+						if (subPath.indexOf("*") === -1 && exports[subPath]) {
+							// no wildcard in the subPath and the subPath is a direct mapping
+							let resolved = exports[subPath];
+							if (typeof resolved === "object") {
+								resolved = resolveTarget(resolved);
+							}
+							return resolved;
+						} else {
+							// sort the export keys by the position of the wildcard
+							const exportKeys = Object.keys(exports)
+								.filter((v) => v.indexOf("*") !== -1)
+								.sort((a, b) => {
+									return b.indexOf("*") - a.indexOf("*");
+								});
+							// helper to lookup the first match for the subPath
+							const findMatch = (exportKeys, subPath) => {
+								for (const key of exportKeys) {
+									const re = wildcardToRegex(key);
+									const match = re.exec(subPath);
+									if (match) {
+										return { target: exports[key], wildcardMatch: match[1] };
+									}
+								}
+							};
+							// lookup the first match for the subPath
+							const match = findMatch(exportKeys, subPath);
+							if (match) {
+								let resolved = resolveTarget(match.target, match.wildcardMatch);
+								// check if another mapping is required (e.g. ./* to ./dist/* to ./dist/prod/*)
+								const resolvedMatch = findMatch(exportKeys, resolved);
+								if (resolvedMatch?.target !== match.target) {
+									resolved = resolveExports(exports, resolved);
+								}
+								return resolved;
+							}
+						}
+						return subPath;
+					};
+
+					// lookup the module path from the package.json browser or exports field
+					const { browser, exports } = pkgJson;
+					let subPath = relativeModulePath ? `./${relativeModulePath}` : ".";
+
+					let mainExport;
+					if (subPath === ".") {
+						// if the module is the main module of the package
+						if (typeof browser === "string") {
+							// if a browser field is a string value in the package.json
+							// the main module is defined in the browser field
+							// (an object value means it is a mapping used below!)
+							mainExport = browser;
+						} else if (typeof exports === "string" || Array.isArray(exports) || isConditions(exports)) {
+							// if exports is a string, an array or an object with conditions
+							// the main module is defined by the exports field
+							mainExport = exports;
+						} else if (isMappings(exports)) {
+							// if exports is an object with mappings it is defined in the "." exports field
+							mainExport = exports["."];
+						} else {
+							// lookup the entry modules in the package.json root (esnext, module, main, ...)
+							mainExport = pkgJson;
+						}
+						const resolved = resolveTarget(mainExport);
+						modulePath = resolved ? path.join(rootPath, resolved) : undefined;
+					} else if (isMappings(browser)) {
+						// if the module is a sub module of the package and the package has a browser field
+						// which contains
+						const resolved = resolveExports(browser, subPath);
+						modulePath = resolved ? path.join(rootPath, resolved) : undefined;
+					} else if (isMappings(exports)) {
+						// if the module is a sub module of the package
+						const resolved = resolveExports(exports, subPath);
+						modulePath = resolved ? path.join(rootPath, resolved) : undefined;
 					}
 
 					// check for the module path exists and is a file
@@ -1149,11 +1213,12 @@ module.exports = function (log, projectInfo) {
 					//   4) is no UI5 module
 					if (modulePath) {
 						if (/\.(m|c)?js$/.test(path.extname(modulePath).toLowerCase()) && !shouldSkipTransform(moduleName) && !(await shouldSkipModule(modulePath))) {
-							const module = bundleInfo.addModule({
+							const module = {
 								name: moduleName,
 								path: modulePath,
 								lastModified: new Date((await stat(modulePath)).mtime).getTime(),
-							});
+							};
+							bundleInfo.addModule(module);
 							lastModified = Math.max(lastModified, module.lastModified);
 						} else {
 							bundleInfo.addResource(that.getResource(moduleName, { cwd, depPaths }));
