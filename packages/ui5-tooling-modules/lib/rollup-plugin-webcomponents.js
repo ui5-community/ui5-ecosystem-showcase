@@ -7,6 +7,20 @@ const WebComponentRegistry = require("./utils/WebComponentRegistry");
 const { compile } = require("handlebars");
 const { lt, gte } = require("semver");
 
+// checks wehether the given class is based on UI5Element
+const isUI5Element = (clazz) => {
+	let superclass = clazz.superclass,
+		isClazzUI5Element = false;
+	while (superclass) {
+		if (superclass?.namespace === "@ui5/webcomponents-base" && superclass?.name === "UI5Element") {
+			isClazzUI5Element = true;
+			break;
+		}
+		superclass = superclass.superclass;
+	}
+	return isClazzUI5Element;
+};
+
 // TODO:
 //   - enabled - disabled mapping
 //   - Externalize UI5 Web Components specific code
@@ -265,6 +279,7 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 				let nonUI5TagsToRegister;
 				if (ui5WebCScopeSuffix) {
 					nonUI5TagsToRegister = Object.values(lib.customElements)
+						.filter((element) => isUI5Element(element))
 						.map((element) => element.tagName)
 						.filter((tag) => (tag ? !tag.startsWith("ui5-") : false));
 					if (nonUI5TagsToRegister.length === 0) {
@@ -315,21 +330,16 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 			} else if (moduleInfo.attributes.ui5Type === "control") {
 				let clazz = moduleInfo.attributes.clazz;
 				// determine whether the clazz is based on the UI5Element superclass
-				let superclass = clazz.superclass,
-					isUI5Element = false;
-				while (superclass) {
-					if (superclass?.namespace === "@ui5/webcomponents-base" && superclass?.name === "UI5Element") {
-						isUI5Element = true;
-						break;
-					}
-					superclass = superclass.superclass;
+				const isClazzUI5Element = isUI5Element(clazz);
+				if (ui5WebCScopeSuffix && !isClazzUI5Element) {
+					log.warn(`The Web Component "${clazz.name}" doesn't support scoping as it is not extending UI5Element!`);
 				}
 				// Extend the superclass with the WebComponent class and export it
 				const ui5Metadata = clazz._ui5metadata;
 				const ui5Class = `${ui5Metadata.namespace}.${clazz.name}`;
 				const namespace = ui5Metadata.namespace;
 				const metadataObject = Object.assign({}, ui5Metadata, {
-					tag: isUI5Element && ui5WebCScopeSuffix ? `${ui5Metadata.tag}-${ui5WebCScopeSuffix}` : ui5Metadata.tag, // only add the suffix for UI5 Web Components (scoping support)
+					tag: isClazzUI5Element && ui5WebCScopeSuffix ? `${ui5Metadata.tag}-${ui5WebCScopeSuffix}` : ui5Metadata.tag, // only add the suffix for UI5 Web Components (scoping support)
 					library: `${ui5Metadata.namespace}.library`, // if not defined, the library is derived from the namespace
 					designtime: `${ui5Metadata.namespace}/designtime/${clazz.name}.designtime`, // add a default designtime
 				});
