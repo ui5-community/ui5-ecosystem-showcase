@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.5.1...ui5-tooling-transpile@3.5.2) (2025-01-06)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** ensure forward slashes for type definitions ([#1144](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1144)) ([2a9d105](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2a9d1052887a17aa1f8c6bf0b57848b73893d0a2)), closes [#1143](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1143)
+
+
+
+
+
 ## [3.5.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.5.0...ui5-tooling-transpile@3.5.1) (2024-11-01)
 
 
