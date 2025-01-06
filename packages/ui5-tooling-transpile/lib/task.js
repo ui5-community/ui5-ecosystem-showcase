@@ -247,7 +247,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 							const relativePath = reModPath[1].slice(1, -1);
 							source = source.replaceAll(
 								reModPath[0],
-								reModPath[0].replaceAll(relativePath, path.join(moduleName, "..", relativePath))
+								reModPath[0].replaceAll(relativePath, path.posix.join(moduleName, "..", relativePath))
 							);
 						});
 						sourcesMap[resourcePath] = `declare module "${moduleName}" {\n${source}\n}`;
