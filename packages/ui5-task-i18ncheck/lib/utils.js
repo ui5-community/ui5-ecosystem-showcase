@@ -42,7 +42,7 @@ let ELEMENT_NODE = (NodeType.ELEMENT_NODE = 1);
 let readI18nUsageFromXML = (file_content, file_path) => {
 	// return new Promise<any[]>((resolve, reject) => {
 
-	let doc = new xmldom.DOMParser().parseFromString(file_content);
+	let doc = new xmldom.DOMParser().parseFromString(file_content, xmldom.MIME_TYPE.XML_APPLICATION);
 	let docEl = doc.documentElement;
 	let arr = [];
 	getI18nUsageInXMLRecursive(arr, file_path, docEl);
