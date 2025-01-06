@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-i18ncheck@3.1.1...ui5-task-i18ncheck@3.1.2) (2025-01-06)
+
+
+### Bug Fixes
+
+* **ui5-task-i18ncheck:** fix mime type issue for DOMParser creation ([#1142](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1142)) ([c295ef2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c295ef2ac6f0af9983519b243e6b0fcd5e04e207)), closes [#1141](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1141)
+
+
+
+
+
 ## [3.1.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-i18ncheck@3.1.0...ui5-task-i18ncheck@3.1.1) (2024-11-01)
 
 
