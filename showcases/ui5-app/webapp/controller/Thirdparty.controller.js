@@ -52,6 +52,8 @@ sap.ui.define(
 	) => {
 		"use strict";
 
+		console.log("Rewrite test: the second parameter must not be rewritten!", "xlsx");
+
 		console.log("[3rdParty] xlsx", xlsx);
 		console.log("[3rdParty] cmis", cmis);
 		console.log("[3rdParty] supabase", supabase);
