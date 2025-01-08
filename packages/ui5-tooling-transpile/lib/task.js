@@ -391,7 +391,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 					await workspace.write(indexDtsFile);
 				} else {
 					// error diagnostics
-					log.error(
+					throw new Error(
 						`The following errors occured during d.ts generation: \n${ts.formatDiagnostics(
 							result.diagnostics,
 							host
@@ -400,7 +400,11 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 				}
 			} catch (e) {
 				// typescript dependency should be available, otherwise we can't generate the dts files
+				// or if a d.ts file is not valid, the generation will fail and we report the error
 				log.error(`Generating d.ts failed! Reason: ${e.message}\n${e.stack}`);
+				if (config.failOnDtsErrors) {
+					throw e;
+				}
 			}
 		}
 	}

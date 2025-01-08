@@ -47,6 +47,9 @@ npm install ui5-tooling-transpile --save-dev
 - generateDts: `boolean`
   if enabled, the tooling extension will generate type definitions (`.d.ts`) files; by default for projects of type `library` this option is considered as `true` and for other projects such as `application` this option is considered as `false` by default (is only relevant in case of transformTypeScript is `true`)
 
+- failOnDtsErrors: `boolean`
+  if enabled, the tooling extension will fail during the generation of type definitions (`.d.ts`) files; this option is considered as `false` by default (is only relevant in case of generateDts is `true`)
+
 - omitTSFromBuildResult: `boolean`
   if enabled, the TypeScript sources will be omitted from the build result. This will disable the debugging support in the TypeScript sources (since the related source files aren't included anymore)
 
