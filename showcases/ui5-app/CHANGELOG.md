@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.45.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.45.5...ui5-app@0.45.6) (2025-01-08)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** ensure rewrites of deps only for require/define APIs ([#1147](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1147)) ([cf48106](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/cf4810687b8e81ef73c21d2d64d817cb3ad665de)), closes [#1146](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1146)
+
+
+
+
+
 ## [0.45.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.45.4...ui5-app@0.45.5) (2025-01-06)
 
 **Note:** Version bump only for package ui5-app

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.20.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.20.1...ui5-tooling-modules@3.20.2) (2025-01-08)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** ensure rewrites of deps only for require/define APIs ([#1147](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1147)) ([cf48106](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/cf4810687b8e81ef73c21d2d64d817cb3ad665de)), closes [#1146](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1146)
+
+
+
+
+
 ## [3.20.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.20.0...ui5-tooling-modules@3.20.1) (2025-01-04)
 
 
