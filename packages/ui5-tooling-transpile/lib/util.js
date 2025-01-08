@@ -333,6 +333,7 @@ module.exports = function (log) {
 				omitTSFromBuildResult: config.omitTSFromBuildResult,
 				generateTsInterfaces,
 				generateDts: config.generateDts,
+				failOnDtsErrors: config.failOnDtsErrors,
 				transpileDependencies: config.transpileDependencies,
 				transformAtStartup: config.transformAtStartup,
 				transformTypeScript,
