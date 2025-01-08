@@ -206,7 +206,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				// therefore we use regex to keep source formatting and sourcmap entry!
 				changed = content;
 				Object.keys(tokens).forEach((token) => {
-					changed = changed.replace(new RegExp(`(\\([^)]*["'])${token}(["'][^)]*\\))`, "g"), `$1${tokens[token]}$2`);
+					changed = changed.replace(new RegExp(`((?:require|requireSync|define|toUrl)(?:\\s*)(?:\\([^)]*["']))${token}(["'][^)]*\\))`, "g"), `$1${tokens[token]}$2`);
 				});
 			} else {
 				changed = content;
