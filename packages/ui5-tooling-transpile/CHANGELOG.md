@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.5.2...ui5-tooling-transpile@3.5.3) (2025-01-08)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** allow to break build with failOnDtsErrors=true ([#1148](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1148)) ([37ca8aa](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/37ca8aaf91e46ca596ed39315ab0f38f270ebebc)), closes [#1145](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1145)
+
+
+
+
+
 ## [3.5.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.5.1...ui5-tooling-transpile@3.5.2) (2025-01-06)
 
 
