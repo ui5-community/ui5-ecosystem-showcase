@@ -209,15 +209,15 @@ importers:
 
   packages/ui5-middleware-livereload:
     dependencies:
-      connect-livereload:
-        specifier: ^0.6.1
-        version: 0.6.1
-      livereload:
-        specifier: ^0.9.3
-        version: 0.9.3
+      chokidar:
+        specifier: ^4.0.1
+        version: 4.0.1
       portfinder:
         specifier: ^1.0.32
         version: 1.0.32
+      ws:
+        specifier: ^8.18.0
+        version: 8.18.0
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -4231,9 +4231,6 @@ packages:
     resolution: {integrity: sha512-hdBG8nXop42y2gWCqOV8y1O3uVk4cIU+SoxLCPyCUKRImyPiScoNiSulpHjoktRU1BdI0UzoUdxUa87thrcmHw==}
     engines: {node: '>= 0.8.0'}
 
-  connect-livereload@0.6.1:
-    resolution: {integrity: sha512-3R0kMOdL7CjJpU66fzAkCe6HNtd3AavCS4m+uW4KtJjrdGPT0SQEZieAYd+cm+lJoBznNQ4lqipYWkhBMgk00g==}
-
   connect@3.6.5:
     resolution: {integrity: sha512-B+WTJ0bDgjQugnbNF7fWGvwEgTj9Isdk3Y7yTZlgCuVe+hpl/do8frEMeimx7sRMPW3oZA+EsC9uDZL8MaaAwQ==}
     engines: {node: '>= 0.10.0'}
@@ -6614,14 +6611,6 @@ packages:
   lit-html@2.8.0:
     resolution: {integrity: sha512-o9t+MQM3P4y7M7yNzqAyjp7z+mQGa4NS4CxiyLqFPyFWyc4O+nodLrkrxSaCTrla6M5YOLaT3RpbbqjszB5g3Q==}
 
-  livereload-js@3.4.1:
-    resolution: {integrity: sha512-5MP0uUeVCec89ZbNOT/i97Mc+q3SxXmiUGhRFOTmhrGPn//uWVQdCvcLJDy64MSBR5MidFdOR7B9viumoavy6g==}
-
-  livereload@0.9.3:
-    resolution: {integrity: sha512-q7Z71n3i4X0R9xthAryBdNGVGAO2R5X+/xXpmKeuPMrteg+W2U8VusTKV3YiJbXZwKsOlFlHe+go6uSNjfxrZw==}
-    engines: {node: '>=8.0.0'}
-    hasBin: true
-
   load-json-file@4.0.0:
     resolution: {integrity: sha512-Kx8hMakjX03tiGTLAIdJ+lL0htKnXjEZN6hk/tozf/WOuYGdZBJrZ+rCJRbVCugsjB3jMLn9746NsQIf5VjBMw==}
     engines: {node: '>=4'}
@@ -7460,9 +7449,6 @@ packages:
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
     engines: {node: '>= 0.8.0'}
-
-  opts@2.0.2:
-    resolution: {integrity: sha512-k41FwbcLnlgnFh69f4qdUfvDQ+5vaSDnVPFI/y5XuhKRq97EnVVneO9F1ESVCdiVu4fCS2L8usX3mU331hB7pg==}
 
   ora@5.3.0:
     resolution: {integrity: sha512-zAKMgGXUim0Jyd6CXK9lraBnD3H5yPGBPPOkC23a2BG6hsm4Zu6OQSjQuEtV0BHDf4aKHcUFvJiGRrFuW3MG8g==}
@@ -14028,8 +14014,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  connect-livereload@0.6.1: {}
-
   connect@3.6.5:
     dependencies:
       debug: 2.6.9
@@ -17007,18 +16991,6 @@ snapshots:
     dependencies:
       '@types/trusted-types': 2.0.7
 
-  livereload-js@3.4.1: {}
-
-  livereload@0.9.3:
-    dependencies:
-      chokidar: 3.6.0
-      livereload-js: 3.4.1
-      opts: 2.0.2
-      ws: 7.5.10
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
   load-json-file@4.0.0:
     dependencies:
       graceful-fs: 4.2.11
@@ -17938,8 +17910,6 @@ snapshots:
       prelude-ls: 1.2.1
       type-check: 0.4.0
       word-wrap: 1.2.5
-
-  opts@2.0.2: {}
 
   ora@5.3.0:
     dependencies:
