@@ -344,6 +344,7 @@ module.exports = function (log) {
 				excludes,
 				filePattern,
 				omitTSFromBuildResult: config.omitTSFromBuildResult,
+				omitSourceMaps: config.omitSourceMaps,
 				generateTsInterfaces,
 				generateDts: config.generateDts,
 				failOnDtsErrors: config.failOnDtsErrors,
@@ -545,7 +546,7 @@ module.exports = function (log) {
 			}
 
 			// include the source maps
-			babelConfigOptions.sourceMaps = true;
+			babelConfigOptions.sourceMaps = configuration?.omitSourceMaps ? false : true;
 
 			// create the babel config file in the current working directory if missing
 			if (configuration?.generateBabelConfig) {
