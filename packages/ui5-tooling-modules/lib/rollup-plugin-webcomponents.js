@@ -64,7 +64,8 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 	const createShortHash = ({ name, version }) => {
 		return createHash("shake256", { outputLength: 4 }).update(`${name}@${version}`).digest("hex");
 	};
-	const ui5WebCScopeSuffix = !!scoping && (scopeSuffix || createShortHash(require(join(process.cwd(), "package.json"))));
+	// by default we use the package.json used to launch the process and fallback to the current working directory
+	const ui5WebCScopeSuffix = !!scoping && (scopeSuffix || createShortHash(require(process.env.npm_package_json || join(process.cwd(), "package.json"))));
 
 	// handlebars templates for the Web Components transformation
 	const webcTmplFnPackage = loadAndCompileTemplate("templates/Package.hbs");
