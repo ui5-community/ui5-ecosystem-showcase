@@ -1,5 +1,4 @@
 /* eslint-disable jsdoc/check-param-names */
-const path = require("path");
 
 /**
  * Custom middleware to transpile resources to JavaScript modules.
@@ -57,7 +56,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 						return !isFrameworkProject(reader?._readers?.[0]?._project);
 					})
 				]
-		  })
+			})
 		: resources.rootProject;
 
 	const outputCache = {};
@@ -123,8 +122,9 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 				config.debug && log.info(`Starting "@ui5/ts-interface-generator" in watch mode...`);
 				main({
 					watch: true,
-					logLevel: config.debug ? log.constructor.getLevel() : "error",
-					config: path.join(cwd, "tsconfig.json")
+					loglevel: config.debug ? log.constructor.getLevel() : "error",
+					config: config.tsConfigFile,
+					jsdoc: config.generateTsInterfacesJsDoc
 				});
 			} catch (e) {
 				log.error(e);
