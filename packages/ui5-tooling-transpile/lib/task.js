@@ -56,8 +56,9 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 				// run the interface generator
 				config.debug && log.info(`Executing "@ui5/ts-interface-generator"...`);
 				main({
-					//logLevel: config.debug ? log.constructor.getLevel() : "error",
-					config: config.tsConfigFile
+					loglevel: config.debug ? log.constructor.getLevel() : "error",
+					config: config.tsConfigFile,
+					jsdoc: config.generateTsInterfacesJsDoc
 				});
 				// reset the clear screen function
 				ts.sys.clearScreen = originalClearScreen;

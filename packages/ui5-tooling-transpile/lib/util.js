@@ -346,6 +346,7 @@ module.exports = function (log) {
 				omitTSFromBuildResult: config.omitTSFromBuildResult,
 				omitSourceMaps: config.omitSourceMaps,
 				generateTsInterfaces,
+				generateTsInterfacesJsDoc: config.generateTsInterfacesJsDoc,
 				generateDts: config.generateDts,
 				failOnDtsErrors: config.failOnDtsErrors,
 				transpileDependencies: config.transpileDependencies,
