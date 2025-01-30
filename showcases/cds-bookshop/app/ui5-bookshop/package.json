@@ -1,6 +1,6 @@
 {
   "name": "ui5-bookshop",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "UI5 bookshop application using custom tooling extensions",
   "private": true,
   "author": "Nicolai Schoenteich, Peter Muessig",

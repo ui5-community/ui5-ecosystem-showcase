@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@3.3.1...ui5-task-zipper@3.3.2) (2025-01-30)
+
+
+### Bug Fixes
+
+* **ui5-task-zipper:** also fix relative path in Component-preload.js ([#1152](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1152)) ([7b157d6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7b157d6d2142482dd5862a654c164f15d5ae2d90))
+
+
+
+
+
 ## [3.3.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@3.3.0...ui5-task-zipper@3.3.1) (2024-11-01)
 
 

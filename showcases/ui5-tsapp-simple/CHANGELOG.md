@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-simple@0.9.5...ui5-tsapp-simple@0.10.0) (2025-01-30)
+
+
+### Features
+
+* **ui5-tooling-transpile:** allow to omit source maps generation ([#1155](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1155)) ([4fc9f1d](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4fc9f1d98a5ac3c5e8cf753e23a378c52901b96d)), closes [#1151](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1151)
+* **ui5-tooling-transpile:** config to set interface JSDoc output ([#1156](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1156)) ([2e3e15b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2e3e15bc391fb1e6da952a2d79260462465782ad)), closes [#1109](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1109)
+* **ui5-tooling-transpile:** support alternative tsconfig.json ([#1154](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1154)) ([36a7bce](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/36a7bceacfb7dc1f1e993cbbbf29743d15fb161e)), closes [#1138](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1138)
+
+
+
+
+
 ## [0.9.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-simple@0.9.4...ui5-tsapp-simple@0.9.5) (2025-01-08)
 
 **Note:** Version bump only for package ui5-tsapp-simple
