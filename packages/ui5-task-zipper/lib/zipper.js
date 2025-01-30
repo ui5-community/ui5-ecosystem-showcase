@@ -22,14 +22,12 @@ const determineProjectName = (collection) => {
 };
 
 /**
- * Turn absolute data source paths in the manifest.json into relative paths
+ * Turn absolute data source paths in the into relative paths (for manifest.json and Component-preload.js)
  *
- * @param {Buffer} buffer Buffer of the manifest.json file
- * @param {object} zip ZipFile instance
- * returns {void}
+ * @param {object} content of the manifest
+ * returns {object} modified content of the manifest
  */
-const absoluteToRelativePaths = (buffer, zip) => {
-	const manifest = JSON.parse(buffer.toString("utf-8"));
+const absoluteToRelativePaths = (manifest) => {
 	if (manifest["sap.app"]["dataSources"]) {
 		for (const [dataSourceName, dataSource] of Object.entries(manifest["sap.app"]["dataSources"])) {
 			if (dataSource.uri?.substring(0, 1) === "/") {
@@ -37,7 +35,7 @@ const absoluteToRelativePaths = (buffer, zip) => {
 			}
 		}
 	}
-	zip.addBuffer(Buffer.from(JSON.stringify(manifest, null, 4), "utf-8"), "manifest.json");
+	return manifest;
 };
 
 /**
@@ -81,9 +79,9 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 						: dependencies._readers.filter((reader) => {
 								const projectName = determineProjectName(reader);
 								return includeDependencies.indexOf(projectName) !== -1;
-						  }),
+							}),
 					name: "Filtered reader collection of ui5-task-zipper",
-			  });
+				});
 
 	// retrieve the resource path prefix (to get all application resources)
 	const prefixPath = `/resources/${options.projectNamespace}/`;
@@ -118,7 +116,17 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 					return resource.getBuffer().then((buffer) => {
 						isDebug && log.info(`Adding ${resource.getPath()} to archive.`);
 						if (relativePaths && resourcePath === "manifest.json") {
-							absoluteToRelativePaths(buffer, zip);
+							let manifest = JSON.parse(buffer.toString("utf-8"));
+							manifest = absoluteToRelativePaths(manifest);
+							zip.addBuffer(Buffer.from(JSON.stringify(manifest, null, 4), "utf-8"), "manifest.json");
+						} else if (relativePaths && resourcePath === "Component-preload.js") {
+							const oldPreload = buffer.toString("utf-8");
+							const manifestStart = oldPreload.indexOf("manifest.json\":'{");
+							const manifestEnd = oldPreload.indexOf("}',", manifestStart);
+							const oldManifest = oldPreload.substring(manifestStart + 16, manifestEnd + 1);
+							const newManifest = absoluteToRelativePaths(JSON.parse(oldManifest));
+							const newPreload = oldPreload.replace(oldManifest, JSON.stringify(newManifest));
+							zip.addBuffer(Buffer.from(newPreload, "utf-8"), "Component-preload.js");
 						} else {
 							zip.addBuffer(buffer, resourcePath); // Replace first forward slash at the start of the path
 						}
@@ -126,7 +134,7 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 				} else {
 					log.warn(`Duplicate resource path found: ${resourcePath}! Skipping...`);
 				}
-			})
+			}),
 		);
 		// include the additional files from the project
 		const additionalFiles = options?.configuration?.additionalFiles;
