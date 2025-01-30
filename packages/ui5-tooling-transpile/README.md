@@ -56,6 +56,9 @@ npm install ui5-tooling-transpile --save-dev
 - omitTSFromBuildResult: `boolean`
   if enabled, the TypeScript sources will be omitted from the build result. This will disable the debugging support in the TypeScript sources (since the related source files aren't included anymore)
 
+- omitSourceMaps: `boolean`
+  if enabled, the SourceMaps will not be generated for the JavaScript sources created from the TypeScript sourcs
+
 - transpileDependencies: `boolean` (*experimental feature*)
   if enabled, the middleware also transpile the sources from the dependencies which is needed for development scenarios when referring to other projects (this configuration option is ignored by the task)
 
