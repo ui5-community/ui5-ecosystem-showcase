@@ -57,7 +57,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 				config.debug && log.info(`Executing "@ui5/ts-interface-generator"...`);
 				main({
 					//logLevel: config.debug ? log.constructor.getLevel() : "error",
-					config: path.join(cwd, "tsconfig.json")
+					config: config.tsConfigFile
 				});
 				// reset the clear screen function
 				ts.sys.clearScreen = originalClearScreen;
@@ -205,7 +205,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 				const ts = require(tsPath);
 
 				// read the tsconfig.json
-				const tsConfigFile = path.join(cwd, "tsconfig.json");
+				const { tsConfigFile } = config || {};
 				let tsOptions = {};
 				if (fs.existsSync(tsConfigFile)) {
 					tsOptions = JSONC.parse(fs.readFileSync(tsConfigFile, { encoding: "utf8" }));

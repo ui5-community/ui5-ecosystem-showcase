@@ -257,15 +257,28 @@ module.exports = function (log) {
 		createConfiguration: function createConfiguration({ configuration, isMiddleware }, cwd = process.cwd()) {
 			// extract the configuration
 			const config = configuration || {};
+			let tsConfig = "tsconfig.json";
+
+			// check the altTsConfig file to exist in the project
+			if (config.altTsConfig) {
+				if (!fs.existsSync(path.join(cwd, config.altTsConfig))) {
+					throw new Error(
+						`The specified altTsConfig file does not exist: ${config.altTsConfig} (cwd: ${cwd})`
+					);
+				} else {
+					tsConfig = config.altTsConfig;
+					config.debug && log.verbose(`Using tsconfig.json from: ${tsConfig} (cwd: ${cwd})`);
+				}
+			}
 
 			// if a tsconfig.json file exists, the project is a TypeScript project
-			const tscJsonPath = path.join(cwd, "tsconfig.json");
-			const isTypeScriptProject = fs.existsSync(tscJsonPath);
+			const tsConfigFile = path.join(cwd, tsConfig);
+			const isTypeScriptProject = fs.existsSync(tsConfigFile);
 
 			// read tsconfig.json to determine whether to transpile dependencies or not
-			if (isTypeScriptProject && !config.transpileDependencies && fs.existsSync(tscJsonPath)) {
-				const tscJson = JSONC.parse(fs.readFileSync(tscJsonPath, { encoding: "utf8" }));
-				const tsDeps = tscJson?.compilerOptions?.types?.filter((typePkgName) => {
+			if (isTypeScriptProject && !config.transpileDependencies && fs.existsSync(tsConfigFile)) {
+				const tsConfigJson = JSONC.parse(fs.readFileSync(tsConfigFile, { encoding: "utf8" }));
+				const tsDeps = tsConfigJson?.compilerOptions?.types?.filter((typePkgName) => {
 					try {
 						// if a type dependency includes a ui5.yaml we assume
 						// to support transpiling of dependencies - and in case
@@ -337,6 +350,7 @@ module.exports = function (log) {
 				transpileDependencies: config.transpileDependencies,
 				transformAtStartup: config.transformAtStartup,
 				transformTypeScript,
+				tsConfigFile,
 				transformModulesToUI5,
 				transformAsyncToPromise,
 				targetBrowsers: config.targetBrowsers,
