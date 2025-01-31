@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.20.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.20.4...ui5-tooling-modules@3.20.5) (2025-01-31)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** get location of package.json from environment variable if present ([#1158](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1158)) ([9188bf0](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9188bf0ec8baa7e746b5d13d361d46f737e01f5e))
+
+
+
+
+
 ## [3.20.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.20.3...ui5-tooling-modules@3.20.4) (2025-01-31)
 
 
