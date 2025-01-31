@@ -45,7 +45,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 			name: project.getFrameworkName(),
 			version: project.getFrameworkVersion(),
 		},
-		pkgJson: require(path.join(cwd, "package.json")),
+		pkgJson: require(process.env.npm_package_json || path.join(cwd, "package.json")),
 	};
 
 	const { scan, getBundleInfo, getResource, existsResource } = require("./util")(log, projectInfo);

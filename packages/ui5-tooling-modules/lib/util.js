@@ -228,7 +228,7 @@ function findDependency(dep, cwd = process.cwd(), depPaths = []) {
  * @returns {string[]} array of dependency root directories
  */
 function findDependencies({ cwd = process.cwd(), depPaths = [], linkedOnly, additionalDeps = [] } = {}, knownDeps = []) {
-	const pkgJson = getPackageJson(path.join(cwd, "package.json"));
+	const pkgJson = getPackageJson(process.env.npm_package_json || path.join(cwd, "package.json"));
 	let dependencies = [...Object.keys(pkgJson.dependencies || {}), ...Object.keys(pkgJson.optionalDependencies || {})];
 	if (additionalDeps?.length > 0) {
 		dependencies = dependencies.concat(additionalDeps);
