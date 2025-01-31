@@ -810,7 +810,7 @@ module.exports = function (log, projectInfo) {
 			const millis = Date.now();
 			log.verbose(`Resolving ${moduleName}...`);
 			// package.json of app
-			const pkg = getPackageJson(path.join(cwd, "package.json"));
+			const pkg = getPackageJson(process.env.npm_package_json || path.join(cwd, "package.json"));
 			// create the extended dependencies path (incl. direct dependencies for module lookup)
 			// hint: we include the direct dependencies to resolve the module path in the context
 			//       of the app (which is required e.g. when linking dependencies to the project)
