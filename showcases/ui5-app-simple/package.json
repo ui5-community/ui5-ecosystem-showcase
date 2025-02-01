@@ -1,6 +1,6 @@
 {
   "name": "ui5-app-simple",
-  "version": "0.8.37",
+  "version": "0.8.38",
   "description": "UI5 application using custom middlewares and tasks",
   "private": true,
   "author": "Volker Buzek, Peter Muessig",

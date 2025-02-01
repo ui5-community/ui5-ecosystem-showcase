@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.6.0...ui5-tooling-transpile@3.6.1) (2025-02-01)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** rewrite rel imports of control interfaces to abs ([#1160](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1160)) ([75d30ba](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/75d30ba630620c2b7b5ddb33244f9ab2fee1f43e)), closes [#1150](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1150)
+
+
+
+
+
 # [3.6.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.5.3...ui5-tooling-transpile@3.6.0) (2025-01-30)
 
 
