@@ -122,9 +122,10 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 						} else if (relativePaths && resourcePath === "Component-preload.js") {
 							const oldPreload = buffer.toString("utf-8");
 							const manifestStart = oldPreload.indexOf("manifest.json\":'{");
-							const manifestEnd = oldPreload.indexOf("}',", manifestStart);
+							const manifestEnd = oldPreload.indexOf("}'", manifestStart);
 							const oldManifest = oldPreload.substring(manifestStart + 16, manifestEnd + 1);
-							const newManifest = absoluteToRelativePaths(JSON.parse(oldManifest));
+							const oldManifestEscaped = oldManifest.replace(/\\'/g, '\\"');
+							const newManifest = absoluteToRelativePaths(JSON.parse(oldManifestEscaped));
 							const newPreload = oldPreload.replace(oldManifest, JSON.stringify(newManifest));
 							zip.addBuffer(Buffer.from(newPreload, "utf-8"), "Component-preload.js");
 						} else {
