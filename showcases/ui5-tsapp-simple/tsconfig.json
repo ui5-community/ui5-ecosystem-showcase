@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es2023",
+    "module": "es2022",
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "allowJs": true,
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "rootDir": "./webapp",
+    "paths": {
+      "ui5/ecosystem/demo/tsapp/*": ["./webapp/*"]
+    }
+  },
+  "include": ["./webapp/**/*"]
+}

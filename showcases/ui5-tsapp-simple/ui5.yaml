@@ -16,8 +16,9 @@ builder:
       afterTask: replaceVersion
       configuration:
         debug: true
-        altTsConfig: ./tsconfig-alt.json
+        altTsConfig: ./tsconfig-build.json
         omitSourceMaps: true
+        generateDts: true
         generateTsInterfaces: true
         generateTsInterfacesJsDoc: none
 server:
@@ -26,7 +27,6 @@ server:
       afterMiddleware: compression
       configuration:
         debug: true
-        altTsConfig: ./tsconfig-alt.json
     - name: ui5-middleware-livereload
       afterMiddleware: compression
       configuration:
