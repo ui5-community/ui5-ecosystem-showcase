@@ -1,14 +1,13 @@
-import Control from "sap/ui/core/Control";
-import RenderManager from "sap/ui/core/RenderManager";
 import type { MetadataOptions } from "sap/ui/core/Element";
+import OtherControl from "./OtherControl";
 
 /**
  * @namespace ui5.ecosystem.demo.simpletsapp.control
  */
-export default class SimpleControl extends Control {
+export default class SimpleControl extends OtherControl {
 	static readonly metadata: MetadataOptions = {
 		properties: {
-			text: "string",
+			additionalText: "string",
 		},
 	};
 
@@ -19,21 +18,6 @@ export default class SimpleControl extends Control {
 		super(id, settings);
 	}
 
-	static renderer = {
-		apiVersion: 2,
-		render: (rm: RenderManager, control: SimpleControl) => {
-			rm.openStart("div", control);
-			rm.style("font-size", "2rem");
-			rm.style("height", "2rem");
-			rm.style("display", "inline-block");
-			rm.style("color", "blue");
-			rm.style("padding", ".5rem");
-			rm.style("border", "1px dashed lightblue");
-			rm.style("margin-bottom", "5px");
-			rm.attr("title", "${project.version}");
-			rm.openEnd();
-			rm.text(control.getText());
-			rm.close("div");
-		},
-	};
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+	static renderer = (OtherControl.getMetadata() as any).getRenderer();
 }
