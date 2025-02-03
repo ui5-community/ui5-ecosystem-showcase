@@ -228,7 +228,7 @@ function findDependency(dep, cwd = process.cwd(), depPaths = []) {
  * @returns {string[]} array of dependency root directories
  */
 function findDependencies({ cwd = process.cwd(), depPaths = [], linkedOnly, additionalDeps = [] } = {}, knownDeps = []) {
-	const pkgJson = getPackageJson(process.env.npm_package_json || path.join(cwd, "package.json"));
+	const pkgJson = getPackageJson(path.join(cwd, "package.json"));
 	let dependencies = [...Object.keys(pkgJson.dependencies || {}), ...Object.keys(pkgJson.optionalDependencies || {})];
 	if (additionalDeps?.length > 0) {
 		dependencies = dependencies.concat(additionalDeps);
@@ -447,7 +447,6 @@ module.exports = function (log, projectInfo) {
 	const that = {
 		/**
 		 * scans the project resources
-		 * @param {object} projectInfo project information
 		 * @param {module:@ui5/fs/AbstractReader[]} reader resources reader
 		 * @param {object} [config] configuration
 		 * @param {boolean} [config.debug] debug mode
@@ -459,7 +458,7 @@ module.exports = function (log, projectInfo) {
 		 * @param {string[]} [options.depPaths] paths of the dependencies (in addition for cwd)
 		 * @returns {object} unique dependencies, resources, namespaces, chunks, ...
 		 */
-		scan: async function (projectInfo, reader, config, { cwd = process.cwd(), depPaths = [] }) {
+		scan: async function (reader, config, { cwd = process.cwd(), depPaths = [] }) {
 			const { parse } = await import("@typescript-eslint/typescript-estree");
 			const { walk } = await import("estree-walker");
 
@@ -810,7 +809,7 @@ module.exports = function (log, projectInfo) {
 			const millis = Date.now();
 			log.verbose(`Resolving ${moduleName}...`);
 			// package.json of app
-			const pkg = getPackageJson(process.env.npm_package_json || path.join(cwd, "package.json"));
+			const pkg = getPackageJson(path.join(cwd, "package.json"));
 			// create the extended dependencies path (incl. direct dependencies for module lookup)
 			// hint: we include the direct dependencies to resolve the module path in the context
 			//       of the app (which is required e.g. when linking dependencies to the project)
@@ -1094,6 +1093,7 @@ module.exports = function (log, projectInfo) {
 						resolveModule: function (moduleName) {
 							return that.resolveModule(moduleName, { cwd, depPaths });
 						},
+						pkgJson: projectInfo.pkgJson, // the current project package.json
 						getPackageJson, // use the cached package.json if possible
 						framework: projectInfo?.framework,
 						options: pluginOptions?.["webcomponents"],

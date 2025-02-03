@@ -1,5 +1,5 @@
 const path = require("path");
-const { createReadStream } = require("fs");
+const { createReadStream, existsSync } = require("fs");
 const { XMLParser, XMLBuilder } = require("fast-xml-parser");
 const minimatch = require("minimatch");
 const parseJS = require("./utils/parseJS");
@@ -33,7 +33,18 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	const { parse } = await import("@typescript-eslint/typescript-estree");
 	const { walk } = await import("estree-walker");
 
-	const cwd = taskUtil.getProject().getRootPath() || process.cwd();
+	// determine the current working directory and the package.json path
+	let cwd = taskUtil.getProject().getRootPath() || process.cwd();
+	let pkgJsonPath = path.join(cwd, "package.json");
+
+	// if the package.json is not in the root of the project, try to find it
+	// in the npm_package_json environment variable (used by npm scripts)
+	if (!existsSync(pkgJsonPath)) {
+		pkgJsonPath = process.env.npm_package_json;
+		cwd = path.dirname(pkgJsonPath);
+	}
+
+	// determine the project information
 	const project = taskUtil.getProject();
 	const projectInfo = {
 		name: project.getName(),
@@ -45,9 +56,11 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 			name: project.getFrameworkName(),
 			version: project.getFrameworkVersion(),
 		},
-		pkgJson: require(process.env.npm_package_json || path.join(cwd, "package.json")),
+		pkgJsonPath,
+		pkgJson: require(pkgJsonPath),
 	};
 
+	// utility to scan the project for dependencies and resources
 	const { scan, getBundleInfo, getResource, existsResource } = require("./util")(log, projectInfo);
 
 	// determine all paths for the dependencies
@@ -80,7 +93,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 
 	// scan the content of the project for unique dependencies, resources and more
 	const scanTime = Date.now();
-	const { uniqueModules, uniqueResources, uniqueNS } = await scan(projectInfo, workspace, config, { cwd, depPaths });
+	const { uniqueModules, uniqueResources, uniqueNS } = await scan(workspace, config, { cwd, depPaths });
 	config.debug && log.info(`Scanning took ${Date.now() - scanTime} millis`);
 
 	// list of included assets pattern (required for rewrite)

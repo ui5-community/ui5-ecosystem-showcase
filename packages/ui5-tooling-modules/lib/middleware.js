@@ -1,5 +1,5 @@
 const path = require("path");
-const { createReadStream } = require("fs");
+const { createReadStream, existsSync } = require("fs");
 const chokidar = require("chokidar");
 
 /**
@@ -48,7 +48,19 @@ const determineSourcePaths = (collection) => {
  */
 module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	const project = middlewareUtil.getProject();
-	const cwd = project.getRootPath() || process.cwd();
+
+	// determine the current working directory and the package.json path
+	let cwd = project.getRootPath() || process.cwd();
+	let pkgJsonPath = path.join(cwd, "package.json");
+
+	// if the package.json is not in the root of the project, try to find it
+	// in the npm_package_json environment variable (used by npm scripts)
+	if (!existsSync(pkgJsonPath)) {
+		pkgJsonPath = process.env.npm_package_json;
+		cwd = path.dirname(pkgJsonPath);
+	}
+
+	// determine the project information
 	const projectInfo = {
 		name: project.getName(),
 		version: project.getVersion(),
@@ -59,8 +71,11 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 			name: project.getFrameworkName(),
 			version: project.getFrameworkVersion(),
 		},
-		pkgJson: require(path.join(cwd, "package.json")),
+		pkgJsonPath,
+		pkgJson: require(pkgJsonPath),
 	};
+
+	// determine the dependencies and their paths
 	const depProjects = middlewareUtil
 		.getDependencies()
 		.map((dep) => middlewareUtil.getProject(dep))
@@ -70,6 +85,8 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 		name: `Reader collection of project ${project.getName()}`,
 		readers: [resources.rootProject, ...depProjects.map((prj) => prj.getReader())],
 	});
+
+	// utility to scan the project for dependencies and resources
 	const { scan, getBundleInfo, getResource, resolveModule } = require("./util")(log, projectInfo);
 
 	log.verbose(`Starting ui5-tooling-modules-middleware`);
@@ -192,7 +209,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 		if (force || !whenBundled) {
 			// first, we need to scan for all unique dependencies
 			scanTime = Date.now();
-			whenBundled = scan(projectInfo, depReaderCollection, config, { cwd, depPaths })
+			whenBundled = scan(depReaderCollection, config, { cwd, depPaths })
 				.then(({ uniqueModules }) => {
 					// second, we trigger the bundling of the unique dependencies
 					debug && log.info(`Scanning took ${Date.now() - scanTime} millis`);

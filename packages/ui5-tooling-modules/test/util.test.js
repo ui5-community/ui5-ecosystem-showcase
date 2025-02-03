@@ -157,6 +157,7 @@ async function getProjectInfo(cwd = process.cwd()) {
 		cwd,
 		workspaceName: "default",
 	});
+	const pkgJsonPath = process.env.npm_package_json || path.join(cwd, "package.json");
 	const project = graph.getRoot();
 	const projectInfo = {
 		name: project.getName(),
@@ -168,6 +169,8 @@ async function getProjectInfo(cwd = process.cwd()) {
 			name: project.getFrameworkName(),
 			version: project.getFrameworkVersion(),
 		},
+		pkgJsonPath,
+		pkgJson: require(pkgJsonPath),
 	};
 	return projectInfo;
 }
