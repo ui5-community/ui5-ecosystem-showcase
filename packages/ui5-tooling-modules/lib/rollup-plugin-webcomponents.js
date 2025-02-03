@@ -24,7 +24,7 @@ const isUI5Element = (clazz) => {
 // TODO:
 //   - enabled - disabled mapping
 //   - Externalize UI5 Web Components specific code
-module.exports = function ({ log, resolveModule, getPackageJson, framework, options } = {}) {
+module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framework, options } = {}) {
 	// derive the configuration from the provided options
 	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets } = Object.assign(
 		{
@@ -65,7 +65,7 @@ module.exports = function ({ log, resolveModule, getPackageJson, framework, opti
 		return createHash("shake256", { outputLength: 4 }).update(`${name}@${version}`).digest("hex");
 	};
 	// by default we use the package.json used to launch the process and fallback to the current working directory
-	const ui5WebCScopeSuffix = !!scoping && (scopeSuffix || createShortHash(require(process.env.npm_package_json || join(process.cwd(), "package.json"))));
+	const ui5WebCScopeSuffix = !!scoping && (scopeSuffix || createShortHash(pkgJson));
 
 	// handlebars templates for the Web Components transformation
 	const webcTmplFnPackage = loadAndCompileTemplate("templates/Package.hbs");
