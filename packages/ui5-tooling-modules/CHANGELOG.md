@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.20.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.20.5...ui5-tooling-modules@3.20.6) (2025-02-03)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** improved detection of relevant package.json and cwd ([#1161](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1161)) ([ed1dad8](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ed1dad8415f2fa533ca7bf25ed214258b0f6b2fb))
+
+
+
+
+
 ## [3.20.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.20.4...ui5-tooling-modules@3.20.5) (2025-01-31)
 
 
