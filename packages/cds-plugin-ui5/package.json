@@ -15,8 +15,8 @@
     "@ui5/project": "^4",
     "@ui5/server": "^4",
     "js-yaml": "^4.1.0",
-    "node-html-parser": "^6.1.13",
-    "semver": "^7.6.3"
+    "node-html-parser": "^7.0.1",
+    "semver": "^7.7.1"
   },
   "devDependencies": {
     "@sap/cds": "*",

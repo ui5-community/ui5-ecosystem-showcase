@@ -4,227 +4,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     typeof self !== "undefined" ? self :
     typeof window !== "undefined" ? window : {});
 
-  // shim for using process in browser
-  // based off https://github.com/defunctzombie/node-process/blob/master/browser.js
-
-  function defaultSetTimout() {
-      throw new Error('setTimeout has not been defined');
-  }
-  function defaultClearTimeout () {
-      throw new Error('clearTimeout has not been defined');
-  }
-  var cachedSetTimeout = defaultSetTimout;
-  var cachedClearTimeout = defaultClearTimeout;
-  if (typeof global$1.setTimeout === 'function') {
-      cachedSetTimeout = setTimeout;
-  }
-  if (typeof global$1.clearTimeout === 'function') {
-      cachedClearTimeout = clearTimeout;
-  }
-
-  function runTimeout(fun) {
-      if (cachedSetTimeout === setTimeout) {
-          //normal enviroments in sane situations
-          return setTimeout(fun, 0);
-      }
-      // if setTimeout wasn't available but was latter defined
-      if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-          cachedSetTimeout = setTimeout;
-          return setTimeout(fun, 0);
-      }
-      try {
-          // when when somebody has screwed with setTimeout but no I.E. maddness
-          return cachedSetTimeout(fun, 0);
-      } catch(e){
-          try {
-              // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-              return cachedSetTimeout.call(null, fun, 0);
-          } catch(e){
-              // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-              return cachedSetTimeout.call(this, fun, 0);
-          }
-      }
-
-
-  }
-  function runClearTimeout(marker) {
-      if (cachedClearTimeout === clearTimeout) {
-          //normal enviroments in sane situations
-          return clearTimeout(marker);
-      }
-      // if clearTimeout wasn't available but was latter defined
-      if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-          cachedClearTimeout = clearTimeout;
-          return clearTimeout(marker);
-      }
-      try {
-          // when when somebody has screwed with setTimeout but no I.E. maddness
-          return cachedClearTimeout(marker);
-      } catch (e){
-          try {
-              // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-              return cachedClearTimeout.call(null, marker);
-          } catch (e){
-              // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-              // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-              return cachedClearTimeout.call(this, marker);
-          }
-      }
-
-
-
-  }
-  var queue = [];
-  var draining = false;
-  var currentQueue;
-  var queueIndex = -1;
-
-  function cleanUpNextTick() {
-      if (!draining || !currentQueue) {
-          return;
-      }
-      draining = false;
-      if (currentQueue.length) {
-          queue = currentQueue.concat(queue);
-      } else {
-          queueIndex = -1;
-      }
-      if (queue.length) {
-          drainQueue();
-      }
-  }
-
-  function drainQueue() {
-      if (draining) {
-          return;
-      }
-      var timeout = runTimeout(cleanUpNextTick);
-      draining = true;
-
-      var len = queue.length;
-      while(len) {
-          currentQueue = queue;
-          queue = [];
-          while (++queueIndex < len) {
-              if (currentQueue) {
-                  currentQueue[queueIndex].run();
-              }
-          }
-          queueIndex = -1;
-          len = queue.length;
-      }
-      currentQueue = null;
-      draining = false;
-      runClearTimeout(timeout);
-  }
-  function nextTick(fun) {
-      var args = new Array(arguments.length - 1);
-      if (arguments.length > 1) {
-          for (var i = 1; i < arguments.length; i++) {
-              args[i - 1] = arguments[i];
-          }
-      }
-      queue.push(new Item(fun, args));
-      if (queue.length === 1 && !draining) {
-          runTimeout(drainQueue);
-      }
-  }
-  // v8 likes predictible objects
-  function Item(fun, array) {
-      this.fun = fun;
-      this.array = array;
-  }
-  Item.prototype.run = function () {
-      this.fun.apply(null, this.array);
-  };
-  var title = 'browser';
-  var platform = 'browser';
-  var browser = true;
+  if (typeof global$1.setTimeout === 'function') ;
+  if (typeof global$1.clearTimeout === 'function') ;
   var env = {};
-  var argv = [];
-  var version$2 = ''; // empty string to avoid regexp issues
-  var versions = {};
-  var release = {};
-  var config = {};
-
-  function noop() {}
-
-  var on = noop;
-  var addListener = noop;
-  var once = noop;
-  var off = noop;
-  var removeListener = noop;
-  var removeAllListeners = noop;
-  var emit = noop;
-
-  function binding(name) {
-      throw new Error('process.binding is not supported');
-  }
-
-  function cwd () { return '/' }
-  function chdir (dir) {
-      throw new Error('process.chdir is not supported');
-  }function umask() { return 0; }
 
   // from https://github.com/kumavis/browser-process-hrtime/blob/master/index.js
   var performance = global$1.performance || {};
-  var performanceNow =
-    performance.now        ||
+  performance.now        ||
     performance.mozNow     ||
     performance.msNow      ||
     performance.oNow       ||
     performance.webkitNow  ||
     function(){ return (new Date()).getTime() };
 
-  // generate timestamp or delta
-  // see http://nodejs.org/api/process.html#process_process_hrtime
-  function hrtime(previousTimestamp){
-    var clocktime = performanceNow.call(performance)*1e-3;
-    var seconds = Math.floor(clocktime);
-    var nanoseconds = Math.floor((clocktime%1)*1e9);
-    if (previousTimestamp) {
-      seconds = seconds - previousTimestamp[0];
-      nanoseconds = nanoseconds - previousTimestamp[1];
-      if (nanoseconds<0) {
-        seconds--;
-        nanoseconds += 1e9;
-      }
-    }
-    return [seconds,nanoseconds]
-  }
-
-  var startTime = new Date();
-  function uptime() {
-    var currentTime = new Date();
-    var dif = currentTime - startTime;
-    return dif / 1000;
-  }
-
   var browser$1 = {
-    nextTick: nextTick,
-    title: title,
-    browser: browser,
-    env: env,
-    argv: argv,
-    version: version$2,
-    versions: versions,
-    on: on,
-    addListener: addListener,
-    once: once,
-    off: off,
-    removeListener: removeListener,
-    removeAllListeners: removeAllListeners,
-    emit: emit,
-    binding: binding,
-    cwd: cwd,
-    chdir: chdir,
-    umask: umask,
-    hrtime: hrtime,
-    platform: platform,
-    release: release,
-    config: config,
-    uptime: uptime
-  };
+    env: env};
 
   const stringToByteArray$1 = function (str) {
     const out = [];
@@ -443,7 +237,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   };
   const getDefaultEmulatorHost = productName => {
     var _a, _b;
-    return (_b = (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.emulatorHosts) === null || _b === void 0 ? void 0 : _b[productName];
+    return (_b = (_a = getDefaults()) === null || _a === undefined ? undefined : _a.emulatorHosts) === null || _b === undefined ? undefined : _b[productName];
   };
   const getDefaultEmulatorHostnameAndPort = productName => {
     const host = getDefaultEmulatorHost(productName);
@@ -463,7 +257,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   };
   const getDefaultAppConfig = () => {
     var _a;
-    return (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.config;
+    return (_a = getDefaults()) === null || _a === undefined ? undefined : _a.config;
   };
   class Deferred {
     constructor() {
@@ -754,8 +548,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       getImmediate(options) {
           var _a;
           // if multipleInstances is not supported, use the default name
-          const normalizedIdentifier = this.normalizeInstanceIdentifier(options === null || options === void 0 ? void 0 : options.identifier);
-          const optional = (_a = options === null || options === void 0 ? void 0 : options.optional) !== null && _a !== void 0 ? _a : false;
+          const normalizedIdentifier = this.normalizeInstanceIdentifier(options === null || options === undefined ? undefined : options.identifier);
+          const optional = (_a = options === null || options === undefined ? undefined : options.optional) !== null && _a !== undefined ? _a : false;
           if (this.isInitialized(normalizedIdentifier) ||
               this.shouldAutoInitialize()) {
               try {
@@ -889,7 +683,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       onInit(callback, identifier) {
           var _a;
           const normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
-          const existingCallbacks = (_a = this.onInitCallbacks.get(normalizedIdentifier)) !== null && _a !== void 0 ? _a : new Set();
+          const existingCallbacks = (_a = this.onInitCallbacks.get(normalizedIdentifier)) !== null && _a !== undefined ? _a : new Set();
           existingCallbacks.add(callback);
           this.onInitCallbacks.set(normalizedIdentifier, existingCallbacks);
           const existingInstance = this.instances.get(normalizedIdentifier);
@@ -1076,7 +870,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	 * you set the log level to `INFO`, errors will still be logged, but `DEBUG` and
   	 * `VERBOSE` logs will not)
   	 */
-  	exports.LogLevel = void 0;
+  	exports.LogLevel = undefined;
   	(function (LogLevel) {
   	    LogLevel[LogLevel["DEBUG"] = 0] = "DEBUG";
   	    LogLevel[LogLevel["VERBOSE"] = 1] = "VERBOSE";
@@ -1249,7 +1043,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	                })
   	                    .filter(arg => arg)
   	                    .join(' ');
-  	                if (level >= (customLogLevel !== null && customLogLevel !== void 0 ? customLogLevel : instance.logLevel)) {
+  	                if (level >= (customLogLevel !== null && customLogLevel !== undefined ? customLogLevel : instance.logLevel)) {
   	                    logCallback({
   	                        level: exports.LogLevel[level].toLowerCase(),
   	                        message,
@@ -1579,11 +1373,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */
   function isVersionServiceProvider(provider) {
       const component = provider.getComponent();
-      return (component === null || component === void 0 ? void 0 : component.type) === "VERSION" /* ComponentType.VERSION */;
+      return (component === null || component === undefined ? undefined : component.type) === "VERSION" /* ComponentType.VERSION */;
   }
 
   const name$q = "@firebase/app";
-  const version$1 = "0.10.15";
+  const version$1 = "0.10.18";
 
   /**
    * @license
@@ -1654,7 +1448,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   const name$1 = "@firebase/firestore-compat";
 
   const name = "firebase";
-  const version = "11.0.1";
+  const version = "11.2.0";
 
   /**
    * @license
@@ -1705,7 +1499,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       [name$3]: 'fire-fst',
       [name$1]: 'fire-fst-compat',
       [name$2]: 'fire-vertex',
-      'fire-js': 'fire-js',
+      'fire-js': 'fire-js', // Platform identifier for JS SDK.
       [name]: 'fire-js-all'
   };
 
@@ -2240,7 +2034,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       var _a;
       // TODO: We can use this check to whitelist strings when/if we set up
       // a good whitelist system.
-      let library = (_a = PLATFORM_LOG_STRING[libraryKeyOrName]) !== null && _a !== void 0 ? _a : libraryKeyOrName;
+      let library = (_a = PLATFORM_LOG_STRING[libraryKeyOrName]) !== null && _a !== undefined ? _a : libraryKeyOrName;
       if (variant) {
           library += `-${variant}`;
       }
@@ -2356,7 +2150,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           else {
               const idbGetError = ERROR_FACTORY.create("idb-get" /* AppError.IDB_GET */, {
-                  originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
+                  originalErrorMessage: e === null || e === undefined ? undefined : e.message
               });
               logger.warn(idbGetError.message);
           }
@@ -2376,7 +2170,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           else {
               const idbGetError = ERROR_FACTORY.create("idb-set" /* AppError.IDB_WRITE */, {
-                  originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
+                  originalErrorMessage: e === null || e === undefined ? undefined : e.message
               });
               logger.warn(idbGetError.message);
           }
@@ -2587,7 +2381,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           else {
               const idbHeartbeatObject = await readHeartbeatsFromIndexedDB(this.app);
-              if (idbHeartbeatObject === null || idbHeartbeatObject === void 0 ? void 0 : idbHeartbeatObject.heartbeats) {
+              if (idbHeartbeatObject === null || idbHeartbeatObject === undefined ? undefined : idbHeartbeatObject.heartbeats) {
                   return idbHeartbeatObject;
               }
               else {
@@ -2605,7 +2399,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           else {
               const existingHeartbeatsObject = await this.read();
               return writeHeartbeatsToIndexedDB(this.app, {
-                  lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
+                  lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== undefined ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
                   heartbeats: heartbeatsObject.heartbeats
               });
           }
@@ -2620,7 +2414,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           else {
               const existingHeartbeatsObject = await this.read();
               return writeHeartbeatsToIndexedDB(this.app, {
-                  lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
+                  lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== undefined ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
                   heartbeats: [
                       ...existingHeartbeatsObject.heartbeats,
                       ...heartbeatsObject.heartbeats

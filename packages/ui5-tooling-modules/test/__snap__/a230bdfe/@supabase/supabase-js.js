@@ -86,7 +86,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          */
         invoke(functionName, options = {}) {
             var _a;
-            return __awaiter$7(this, void 0, void 0, function* () {
+            return __awaiter$7(this, undefined, undefined, function* () {
                 try {
                     const { headers, method, body: functionArgs } = options;
                     let _headers = {};
@@ -243,15 +243,15 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
 
     var require$$0 = /*@__PURE__*/getAugmentedNamespace(browser);
 
-    var PostgrestError$1 = {};
+    var PostgrestError$2 = {};
 
-    Object.defineProperty(PostgrestError$1, "__esModule", { value: true });
+    Object.defineProperty(PostgrestError$2, "__esModule", { value: true });
     /**
      * Error format
      *
      * {@link https://postgrest.org/en/stable/api.html?highlight=options#errors-and-http-status-codes}
      */
-    class PostgrestError extends Error {
+    let PostgrestError$1 = class PostgrestError extends Error {
         constructor(context) {
             super(context.message);
             this.name = 'PostgrestError';
@@ -259,8 +259,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             this.hint = context.hint;
             this.code = context.code;
         }
-    }
-    PostgrestError$1.default = PostgrestError;
+    };
+    PostgrestError$2.default = PostgrestError$1;
 
     var __importDefault$5 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
         return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -268,7 +268,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     Object.defineProperty(PostgrestBuilder$2, "__esModule", { value: true });
     // @ts-ignore
     const node_fetch_1 = __importDefault$5(require$$0);
-    const PostgrestError_1$1 = __importDefault$5(PostgrestError$1);
+    const PostgrestError_1$1 = __importDefault$5(PostgrestError$2);
     let PostgrestBuilder$1 = class PostgrestBuilder {
         constructor(builder) {
             this.shouldThrowOnError = false;
@@ -350,8 +350,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                             data = JSON.parse(body);
                         }
                     }
-                    const countHeader = (_a = this.headers['Prefer']) === null || _a === void 0 ? void 0 : _a.match(/count=(exact|planned|estimated)/);
-                    const contentRange = (_b = res.headers.get('content-range')) === null || _b === void 0 ? void 0 : _b.split('/');
+                    const countHeader = (_a = this.headers['Prefer']) === null || _a === undefined ? undefined : _a.match(/count=(exact|planned|estimated)/);
+                    const contentRange = (_b = res.headers.get('content-range')) === null || _b === undefined ? undefined : _b.split('/');
                     if (countHeader && contentRange && contentRange.length > 1) {
                         count = parseInt(contentRange[1]);
                     }
@@ -403,7 +403,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                             };
                         }
                     }
-                    if (error && this.isMaybeSingle && ((_c = error === null || error === void 0 ? void 0 : error.details) === null || _c === void 0 ? void 0 : _c.includes('0 rows'))) {
+                    if (error && this.isMaybeSingle && ((_c = error === null || error === undefined ? undefined : error.details) === null || _c === undefined ? undefined : _c.includes('0 rows'))) {
                         error = null;
                         status = 200;
                         statusText = 'OK';
@@ -426,10 +426,10 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     var _a, _b, _c;
                     return ({
                         error: {
-                            message: `${(_a = fetchError === null || fetchError === void 0 ? void 0 : fetchError.name) !== null && _a !== void 0 ? _a : 'FetchError'}: ${fetchError === null || fetchError === void 0 ? void 0 : fetchError.message}`,
-                            details: `${(_b = fetchError === null || fetchError === void 0 ? void 0 : fetchError.stack) !== null && _b !== void 0 ? _b : ''}`,
+                            message: `${(_a = fetchError === null || fetchError === undefined ? undefined : fetchError.name) !== null && _a !== undefined ? _a : 'FetchError'}: ${fetchError === null || fetchError === undefined ? undefined : fetchError.message}`,
+                            details: `${(_b = fetchError === null || fetchError === undefined ? undefined : fetchError.stack) !== null && _b !== undefined ? _b : ''}`,
                             hint: '',
-                            code: `${(_c = fetchError === null || fetchError === void 0 ? void 0 : fetchError.code) !== null && _c !== void 0 ? _c : ''}`,
+                            code: `${(_c = fetchError === null || fetchError === undefined ? undefined : fetchError.code) !== null && _c !== undefined ? _c : ''}`,
                         },
                         data: null,
                         count: null,
@@ -461,7 +461,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         select(columns) {
             // Remove whitespaces except when quoted
             let quoted = false;
-            const cleanedColumns = (columns !== null && columns !== void 0 ? columns : '*')
+            const cleanedColumns = (columns !== null && columns !== undefined ? columns : '*')
                 .split('')
                 .map((c) => {
                 if (/\s/.test(c) && !quoted) {
@@ -630,7 +630,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 .filter(Boolean)
                 .join('|');
             // An Accept header can carry multiple media types but postgrest-js always sends one
-            const forMediatype = (_a = this.headers['Accept']) !== null && _a !== void 0 ? _a : 'application/json';
+            const forMediatype = (_a = this.headers['Accept']) !== null && _a !== undefined ? _a : 'application/json';
             this.headers['Accept'] = `application/vnd.pgrst.plan+${format}; for="${forMediatype}"; options=${options};`;
             if (format === 'json')
                 return this;
@@ -644,7 +644,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          */
         rollback() {
             var _a;
-            if (((_a = this.headers['Prefer']) !== null && _a !== void 0 ? _a : '').trim().length > 0) {
+            if (((_a = this.headers['Prefer']) !== null && _a !== undefined ? _a : '').trim().length > 0) {
                 this.headers['Prefer'] += ',tx=rollback';
             }
             else {
@@ -1080,7 +1080,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             const method = head ? 'HEAD' : 'GET';
             // Remove whitespaces except when quoted
             let quoted = false;
-            const cleanedColumns = (columns !== null && columns !== void 0 ? columns : '*')
+            const cleanedColumns = (columns !== null && columns !== undefined ? columns : '*')
                 .split('')
                 .map((c) => {
                 if (/\s/.test(c) && !quoted) {
@@ -1318,11 +1318,11 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     var version$4 = {};
 
     Object.defineProperty(version$4, "__esModule", { value: true });
-    version$4.version = void 0;
+    version$4.version = undefined;
     version$4.version = '0.0.0-automated';
 
     Object.defineProperty(constants, "__esModule", { value: true });
-    constants.DEFAULT_HEADERS = void 0;
+    constants.DEFAULT_HEADERS = undefined;
     const version_1 = version$4;
     constants.DEFAULT_HEADERS = { 'X-Client-Info': `postgrest-js/${version_1.version}` };
 
@@ -1451,7 +1451,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         return (mod && mod.__esModule) ? mod : { "default": mod };
     };
     Object.defineProperty(cjs, "__esModule", { value: true });
-    cjs.PostgrestError = cjs.PostgrestBuilder = cjs.PostgrestTransformBuilder = cjs.PostgrestFilterBuilder = cjs.PostgrestQueryBuilder = cjs.PostgrestClient = void 0;
+    cjs.PostgrestError = cjs.PostgrestBuilder = cjs.PostgrestTransformBuilder = cjs.PostgrestFilterBuilder = cjs.PostgrestQueryBuilder = cjs.PostgrestClient = undefined;
     // Always update wrapper.mjs when updating this file.
     const PostgrestClient_1 = __importDefault(PostgrestClient$2);
     cjs.PostgrestClient = PostgrestClient_1.default;
@@ -1463,7 +1463,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     cjs.PostgrestTransformBuilder = PostgrestTransformBuilder_1.default;
     const PostgrestBuilder_1 = __importDefault(PostgrestBuilder$2);
     cjs.PostgrestBuilder = PostgrestBuilder_1.default;
-    const PostgrestError_1 = __importDefault(PostgrestError$1);
+    const PostgrestError_1 = __importDefault(PostgrestError$2);
     cjs.PostgrestError = PostgrestError_1.default;
     cjs.default = {
         PostgrestClient: PostgrestClient_1.default,
@@ -1480,9 +1480,10 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
       PostgrestFilterBuilder,
       PostgrestTransformBuilder,
       PostgrestBuilder,
+      PostgrestError,
     } = cjs;
 
-    const version$3 = '2.10.7';
+    const version$3 = '2.11.2';
 
     const DEFAULT_HEADERS$3 = { 'X-Client-Info': `realtime-js/${version$3}` };
     const VSN = '1.0.0';
@@ -1638,7 +1639,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
      */
     const convertChangeData = (columns, record, options = {}) => {
         var _a;
-        const skipTypes = (_a = options.skipTypes) !== null && _a !== void 0 ? _a : [];
+        const skipTypes = (_a = options.skipTypes) !== null && _a !== undefined ? _a : [];
         return Object.keys(record).reduce((acc, rec_key) => {
             acc[rec_key] = convertColumn(rec_key, columns, record, skipTypes);
             return acc;
@@ -1660,7 +1661,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
      */
     const convertColumn = (columnName, columns, record, skipTypes) => {
         const column = columns.find((x) => x.name === columnName);
-        const colType = column === null || column === void 0 ? void 0 : column.type;
+        const colType = column === null || column === undefined ? undefined : column.type;
         const value = record[columnName];
         if (colType && !skipTypes.includes(colType)) {
             return convertCell(colType, value);
@@ -1859,7 +1860,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         receive(status, callback) {
             var _a;
             if (this._hasReceived(status)) {
-                callback((_a = this.receivedResp) === null || _a === void 0 ? void 0 : _a.response);
+                callback((_a = this.receivedResp) === null || _a === undefined ? undefined : _a.response);
             }
             this.recHooks.push({ status, callback });
             return this;
@@ -1937,7 +1938,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 onLeave: () => { },
                 onSync: () => { },
             };
-            const events = (opts === null || opts === void 0 ? void 0 : opts.events) || {
+            const events = (opts === null || opts === undefined ? undefined : opts.events) || {
                 state: 'presence_state',
                 diff: 'presence_diff',
             };
@@ -2044,7 +2045,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             }
             this.map(joins, (key, newPresences) => {
                 var _a;
-                const currentPresences = (_a = state[key]) !== null && _a !== void 0 ? _a : [];
+                const currentPresences = (_a = state[key]) !== null && _a !== undefined ? _a : [];
                 state[key] = this.cloneDeep(newPresences);
                 if (currentPresences.length > 0) {
                     const joinedPresenceRefs = state[key].map((m) => m.presence_ref);
@@ -2227,38 +2228,37 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             }
             else {
                 const { config: { broadcast, presence, private: isPrivate }, } = this.params;
-                this._onError((e) => callback && callback('CHANNEL_ERROR', e));
-                this._onClose(() => callback && callback('CLOSED'));
+                this._onError((e) => callback === null || callback === undefined ? undefined : callback(exports.REALTIME_SUBSCRIBE_STATES.CHANNEL_ERROR, e));
+                this._onClose(() => callback === null || callback === undefined ? undefined : callback(exports.REALTIME_SUBSCRIBE_STATES.CLOSED));
                 const accessTokenPayload = {};
                 const config = {
                     broadcast,
                     presence,
-                    postgres_changes: (_b = (_a = this.bindings.postgres_changes) === null || _a === void 0 ? void 0 : _a.map((r) => r.filter)) !== null && _b !== void 0 ? _b : [],
+                    postgres_changes: (_b = (_a = this.bindings.postgres_changes) === null || _a === undefined ? undefined : _a.map((r) => r.filter)) !== null && _b !== undefined ? _b : [],
                     private: isPrivate,
                 };
-                if (this.socket.accessToken) {
-                    accessTokenPayload.access_token = this.socket.accessToken;
+                if (this.socket.accessTokenValue) {
+                    accessTokenPayload.access_token = this.socket.accessTokenValue;
                 }
                 this.updateJoinPayload(Object.assign({ config }, accessTokenPayload));
                 this.joinedOnce = true;
                 this._rejoin(timeout);
                 this.joinPush
-                    .receive('ok', ({ postgres_changes: serverPostgresFilters, }) => {
+                    .receive('ok', async ({ postgres_changes }) => {
                     var _a;
-                    this.socket.accessToken &&
-                        this.socket.setAuth(this.socket.accessToken);
-                    if (serverPostgresFilters === undefined) {
-                        callback && callback('SUBSCRIBED');
+                    this.socket.setAuth();
+                    if (postgres_changes === undefined) {
+                        callback === null || callback === undefined ? undefined : callback(exports.REALTIME_SUBSCRIBE_STATES.SUBSCRIBED);
                         return;
                     }
                     else {
                         const clientPostgresBindings = this.bindings.postgres_changes;
-                        const bindingsLen = (_a = clientPostgresBindings === null || clientPostgresBindings === void 0 ? void 0 : clientPostgresBindings.length) !== null && _a !== void 0 ? _a : 0;
+                        const bindingsLen = (_a = clientPostgresBindings === null || clientPostgresBindings === undefined ? undefined : clientPostgresBindings.length) !== null && _a !== undefined ? _a : 0;
                         const newPostgresBindings = [];
                         for (let i = 0; i < bindingsLen; i++) {
                             const clientPostgresBinding = clientPostgresBindings[i];
                             const { filter: { event, schema, table, filter }, } = clientPostgresBinding;
-                            const serverPostgresFilter = serverPostgresFilters && serverPostgresFilters[i];
+                            const serverPostgresFilter = postgres_changes && postgres_changes[i];
                             if (serverPostgresFilter &&
                                 serverPostgresFilter.event === event &&
                                 serverPostgresFilter.schema === schema &&
@@ -2268,23 +2268,21 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                             }
                             else {
                                 this.unsubscribe();
-                                callback &&
-                                    callback('CHANNEL_ERROR', new Error('mismatch between server and client bindings for postgres changes'));
+                                callback === null || callback === undefined ? undefined : callback(exports.REALTIME_SUBSCRIBE_STATES.CHANNEL_ERROR, new Error('mismatch between server and client bindings for postgres changes'));
                                 return;
                             }
                         }
                         this.bindings.postgres_changes = newPostgresBindings;
-                        callback && callback('SUBSCRIBED');
+                        callback && callback(exports.REALTIME_SUBSCRIBE_STATES.SUBSCRIBED);
                         return;
                     }
                 })
                     .receive('error', (error) => {
-                    callback &&
-                        callback('CHANNEL_ERROR', new Error(JSON.stringify(Object.values(error).join(', ') || 'error')));
+                    callback === null || callback === undefined ? undefined : callback(exports.REALTIME_SUBSCRIBE_STATES.CHANNEL_ERROR, new Error(JSON.stringify(Object.values(error).join(', ') || 'error')));
                     return;
                 })
                     .receive('timeout', () => {
-                    callback && callback('TIMED_OUT');
+                    callback === null || callback === undefined ? undefined : callback(exports.REALTIME_SUBSCRIBE_STATES.TIMED_OUT);
                     return;
                 });
             }
@@ -2322,12 +2320,13 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             var _a, _b;
             if (!this._canPush() && args.type === 'broadcast') {
                 const { event, payload: endpoint_payload } = args;
+                const authorization = this.socket.accessTokenValue
+                    ? `Bearer ${this.socket.accessTokenValue}`
+                    : '';
                 const options = {
                     method: 'POST',
                     headers: {
-                        Authorization: this.socket.accessToken
-                            ? `Bearer ${this.socket.accessToken}`
-                            : '',
+                        Authorization: authorization,
                         apikey: this.socket.apiKey ? this.socket.apiKey : '',
                         'Content-Type': 'application/json',
                     },
@@ -2360,7 +2359,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 return new Promise((resolve) => {
                     var _a, _b, _c;
                     const push = this._push(args.type, args, opts.timeout || this.timeout);
-                    if (args.type === 'broadcast' && !((_c = (_b = (_a = this.params) === null || _a === void 0 ? void 0 : _a.config) === null || _b === void 0 ? void 0 : _b.broadcast) === null || _c === void 0 ? void 0 : _c.ack)) {
+                    if (args.type === 'broadcast' && !((_c = (_b = (_a = this.params) === null || _a === undefined ? undefined : _a.config) === null || _b === undefined ? undefined : _b.broadcast) === null || _c === undefined ? undefined : _c.ack)) {
                         resolve('ok');
                     }
                     push.receive('ok', () => resolve('ok'));
@@ -2466,29 +2465,29 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 throw 'channel onMessage callbacks must return the payload, modified or unmodified';
             }
             if (['insert', 'update', 'delete'].includes(typeLower)) {
-                (_a = this.bindings.postgres_changes) === null || _a === void 0 ? void 0 : _a.filter((bind) => {
+                (_a = this.bindings.postgres_changes) === null || _a === undefined ? undefined : _a.filter((bind) => {
                     var _a, _b, _c;
-                    return (((_a = bind.filter) === null || _a === void 0 ? void 0 : _a.event) === '*' ||
-                        ((_c = (_b = bind.filter) === null || _b === void 0 ? void 0 : _b.event) === null || _c === void 0 ? void 0 : _c.toLocaleLowerCase()) === typeLower);
+                    return (((_a = bind.filter) === null || _a === undefined ? undefined : _a.event) === '*' ||
+                        ((_c = (_b = bind.filter) === null || _b === undefined ? undefined : _b.event) === null || _c === undefined ? undefined : _c.toLocaleLowerCase()) === typeLower);
                 }).map((bind) => bind.callback(handledPayload, ref));
             }
             else {
-                (_b = this.bindings[typeLower]) === null || _b === void 0 ? void 0 : _b.filter((bind) => {
+                (_b = this.bindings[typeLower]) === null || _b === undefined ? undefined : _b.filter((bind) => {
                     var _a, _b, _c, _d, _e, _f;
                     if (['broadcast', 'presence', 'postgres_changes'].includes(typeLower)) {
                         if ('id' in bind) {
                             const bindId = bind.id;
-                            const bindEvent = (_a = bind.filter) === null || _a === void 0 ? void 0 : _a.event;
+                            const bindEvent = (_a = bind.filter) === null || _a === undefined ? undefined : _a.event;
                             return (bindId &&
-                                ((_b = payload.ids) === null || _b === void 0 ? void 0 : _b.includes(bindId)) &&
+                                ((_b = payload.ids) === null || _b === undefined ? undefined : _b.includes(bindId)) &&
                                 (bindEvent === '*' ||
-                                    (bindEvent === null || bindEvent === void 0 ? void 0 : bindEvent.toLocaleLowerCase()) ===
-                                        ((_c = payload.data) === null || _c === void 0 ? void 0 : _c.type.toLocaleLowerCase())));
+                                    (bindEvent === null || bindEvent === undefined ? undefined : bindEvent.toLocaleLowerCase()) ===
+                                        ((_c = payload.data) === null || _c === undefined ? undefined : _c.type.toLocaleLowerCase())));
                         }
                         else {
-                            const bindEvent = (_e = (_d = bind === null || bind === void 0 ? void 0 : bind.filter) === null || _d === void 0 ? void 0 : _d.event) === null || _e === void 0 ? void 0 : _e.toLocaleLowerCase();
+                            const bindEvent = (_e = (_d = bind === null || bind === undefined ? undefined : bind.filter) === null || _d === undefined ? undefined : _d.event) === null || _e === undefined ? undefined : _e.toLocaleLowerCase();
                             return (bindEvent === '*' ||
-                                bindEvent === ((_f = payload === null || payload === void 0 ? void 0 : payload.event) === null || _f === void 0 ? void 0 : _f.toLocaleLowerCase()));
+                                bindEvent === ((_f = payload === null || payload === undefined ? undefined : payload.event) === null || _f === undefined ? undefined : _f.toLocaleLowerCase()));
                         }
                     }
                     else {
@@ -2554,7 +2553,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             const typeLower = type.toLocaleLowerCase();
             this.bindings[typeLower] = this.bindings[typeLower].filter((bind) => {
                 var _a;
-                return !(((_a = bind.type) === null || _a === void 0 ? void 0 : _a.toLocaleLowerCase()) === typeLower &&
+                return !(((_a = bind.type) === null || _a === undefined ? undefined : _a.toLocaleLowerCase()) === typeLower &&
                     RealtimeChannel.isEqual(bind.filter, filter));
             });
             return this;
@@ -2655,7 +2654,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          */
         constructor(endPoint, options) {
             var _a;
-            this.accessToken = null;
+            this.accessTokenValue = null;
             this.apiKey = null;
             this.channels = [];
             this.endPoint = '';
@@ -2677,6 +2676,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 error: [],
                 message: [],
             };
+            this.accessToken = null;
             /**
              * Use either custom fetch, if provided, or default fetch to make HTTP requests
              *
@@ -2697,52 +2697,53 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             };
             this.endPoint = `${endPoint}/${TRANSPORTS.websocket}`;
             this.httpEndpoint = httpEndpointURL(endPoint);
-            if (options === null || options === void 0 ? void 0 : options.transport) {
+            if (options === null || options === undefined ? undefined : options.transport) {
                 this.transport = options.transport;
             }
             else {
                 this.transport = null;
             }
-            if (options === null || options === void 0 ? void 0 : options.params)
+            if (options === null || options === undefined ? undefined : options.params)
                 this.params = options.params;
-            if (options === null || options === void 0 ? void 0 : options.headers)
+            if (options === null || options === undefined ? undefined : options.headers)
                 this.headers = Object.assign(Object.assign({}, this.headers), options.headers);
-            if (options === null || options === void 0 ? void 0 : options.timeout)
+            if (options === null || options === undefined ? undefined : options.timeout)
                 this.timeout = options.timeout;
-            if (options === null || options === void 0 ? void 0 : options.logger)
+            if (options === null || options === undefined ? undefined : options.logger)
                 this.logger = options.logger;
-            if (options === null || options === void 0 ? void 0 : options.heartbeatIntervalMs)
+            if (options === null || options === undefined ? undefined : options.heartbeatIntervalMs)
                 this.heartbeatIntervalMs = options.heartbeatIntervalMs;
-            const accessToken = (_a = options === null || options === void 0 ? void 0 : options.params) === null || _a === void 0 ? void 0 : _a.apikey;
-            if (accessToken) {
-                this.accessToken = accessToken;
-                this.apiKey = accessToken;
+            const accessTokenValue = (_a = options === null || options === undefined ? undefined : options.params) === null || _a === undefined ? undefined : _a.apikey;
+            if (accessTokenValue) {
+                this.accessTokenValue = accessTokenValue;
+                this.apiKey = accessTokenValue;
             }
-            this.reconnectAfterMs = (options === null || options === void 0 ? void 0 : options.reconnectAfterMs)
+            this.reconnectAfterMs = (options === null || options === undefined ? undefined : options.reconnectAfterMs)
                 ? options.reconnectAfterMs
                 : (tries) => {
                     return [1000, 2000, 5000, 10000][tries - 1] || 10000;
                 };
-            this.encode = (options === null || options === void 0 ? void 0 : options.encode)
+            this.encode = (options === null || options === undefined ? undefined : options.encode)
                 ? options.encode
                 : (payload, callback) => {
                     return callback(JSON.stringify(payload));
                 };
-            this.decode = (options === null || options === void 0 ? void 0 : options.decode)
+            this.decode = (options === null || options === undefined ? undefined : options.decode)
                 ? options.decode
                 : this.serializer.decode.bind(this.serializer);
             this.reconnectTimer = new Timer(async () => {
                 this.disconnect();
                 this.connect();
             }, this.reconnectAfterMs);
-            this.fetch = this._resolveFetch(options === null || options === void 0 ? void 0 : options.fetch);
-            if (options === null || options === void 0 ? void 0 : options.worker) {
+            this.fetch = this._resolveFetch(options === null || options === undefined ? undefined : options.fetch);
+            if (options === null || options === undefined ? undefined : options.worker) {
                 if (typeof window !== 'undefined' && !window.Worker) {
                     throw new Error('Web Worker is not supported');
                 }
-                this.worker = (options === null || options === void 0 ? void 0 : options.worker) || false;
-                this.workerUrl = options === null || options === void 0 ? void 0 : options.workerUrl;
+                this.worker = (options === null || options === undefined ? undefined : options.worker) || false;
+                this.workerUrl = options === null || options === undefined ? undefined : options.workerUrl;
             }
+            this.accessToken = (options === null || options === undefined ? undefined : options.accessToken) || null;
         }
         /**
          * Connects the socket, unless already connected.
@@ -2752,27 +2753,34 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 return;
             }
             if (this.transport) {
-                this.conn = new this.transport(this._endPointURL(), undefined, {
+                this.conn = new this.transport(this.endpointURL(), undefined, {
                     headers: this.headers,
                 });
                 return;
             }
             if (NATIVE_WEBSOCKET_AVAILABLE) {
-                this.conn = new WebSocket(this._endPointURL());
+                this.conn = new WebSocket(this.endpointURL());
                 this.setupConnection();
                 return;
             }
-            this.conn = new WSWebSocketDummy(this._endPointURL(), undefined, {
+            this.conn = new WSWebSocketDummy(this.endpointURL(), undefined, {
                 close: () => {
                     this.conn = null;
                 },
             });
             new Promise(function (resolve, reject) { require(['ui5/ecosystem/demo/app/resources/_dynamics/browser'], resolve, reject); }).then(function (n) { return n.browser; }).then(({ default: WS }) => {
-                this.conn = new WS(this._endPointURL(), undefined, {
+                this.conn = new WS(this.endpointURL(), undefined, {
                     headers: this.headers,
                 });
                 this.setupConnection();
             });
+        }
+        /**
+         * Returns the URL of the websocket.
+         * @returns string The URL of the websocket.
+         */
+        endpointURL() {
+            return this._appendParams(this.endPoint, Object.assign({}, this.params, { vsn: VSN }));
         }
         /**
          * Disconnects the socket.
@@ -2784,7 +2792,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             if (this.conn) {
                 this.conn.onclose = function () { }; // noop
                 if (code) {
-                    this.conn.close(code, reason !== null && reason !== void 0 ? reason : '');
+                    this.conn.close(code, reason !== null && reason !== undefined ? reason : '');
                 }
                 else {
                     this.conn.close();
@@ -2864,7 +2872,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             const callback = () => {
                 this.encode(data, (result) => {
                     var _a;
-                    (_a = this.conn) === null || _a === void 0 ? void 0 : _a.send(result);
+                    (_a = this.conn) === null || _a === undefined ? undefined : _a.send(result);
                 });
             };
             this.log('push', `${topic} ${event} (${ref})`, payload);
@@ -2878,16 +2886,72 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         /**
          * Sets the JWT access token used for channel subscription authorization and Realtime RLS.
          *
-         * @param token A JWT string.
+         * If param is null it will use the `accessToken` callback function or the token set on the client.
+         *
+         * On callback used, it will set the value of the token internal to the client.
+         *
+         * @param token A JWT string to override the token set on the client.
          */
-        setAuth(token) {
-            this.accessToken = token;
-            this.channels.forEach((channel) => {
-                token && channel.updateJoinPayload({ access_token: token });
-                if (channel.joinedOnce && channel._isJoined()) {
-                    channel._push(CHANNEL_EVENTS.access_token, { access_token: token });
+        async setAuth(token = null) {
+            let tokenToSend = token ||
+                (this.accessToken && (await this.accessToken())) ||
+                this.accessTokenValue;
+            if (tokenToSend) {
+                let parsed = null;
+                try {
+                    parsed = JSON.parse(atob(tokenToSend.split('.')[1]));
                 }
+                catch (_error) { }
+                if (parsed && parsed.exp) {
+                    let now = Math.floor(Date.now() / 1000);
+                    let valid = now - parsed.exp < 0;
+                    if (!valid) {
+                        this.log('auth', `InvalidJWTToken: Invalid value for JWT claim "exp" with value ${parsed.exp}`);
+                        return Promise.reject(`InvalidJWTToken: Invalid value for JWT claim "exp" with value ${parsed.exp}`);
+                    }
+                }
+                this.accessTokenValue = tokenToSend;
+                this.channels.forEach((channel) => {
+                    tokenToSend && channel.updateJoinPayload({ access_token: tokenToSend });
+                    if (channel.joinedOnce && channel._isJoined()) {
+                        channel._push(CHANNEL_EVENTS.access_token, {
+                            access_token: tokenToSend,
+                        });
+                    }
+                });
+            }
+        }
+        /**
+         * Sends a heartbeat message if the socket is connected.
+         */
+        async sendHeartbeat() {
+            var _a;
+            if (!this.isConnected()) {
+                return;
+            }
+            if (this.pendingHeartbeatRef) {
+                this.pendingHeartbeatRef = null;
+                this.log('transport', 'heartbeat timeout. Attempting to re-establish connection');
+                (_a = this.conn) === null || _a === undefined ? undefined : _a.close(WS_CLOSE_NORMAL, 'hearbeat timeout');
+                return;
+            }
+            this.pendingHeartbeatRef = this._makeRef();
+            this.push({
+                topic: 'phoenix',
+                event: 'heartbeat',
+                payload: {},
+                ref: this.pendingHeartbeatRef,
             });
+            this.setAuth();
+        }
+        /**
+         * Flushes send buffer
+         */
+        flushSendBuffer() {
+            if (this.isConnected() && this.sendBuffer.length > 0) {
+                this.sendBuffer.forEach((callback) => callback());
+                this.sendBuffer = [];
+            }
         }
         /**
          * Return the next message ref, accounting for overflows
@@ -2940,20 +3004,11 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 this.conn.onclose = (event) => this._onConnClose(event);
             }
         }
-        /**
-         * Returns the URL of the websocket.
-         *
-         * @internal
-         */
-        _endPointURL() {
-            return this._appendParams(this.endPoint, Object.assign({}, this.params, { vsn: VSN }));
-        }
         /** @internal */
         _onConnMessage(rawMessage) {
             this.decode(rawMessage.data, (msg) => {
                 let { topic, event, payload, ref } = msg;
-                if ((ref && ref === this.pendingHeartbeatRef) ||
-                    event === (payload === null || payload === void 0 ? void 0 : payload.type)) {
+                if (ref && ref === this.pendingHeartbeatRef) {
                     this.pendingHeartbeatRef = null;
                 }
                 this.log('receive', `${payload.status || ''} ${topic} ${event} ${(ref && '(' + ref + ')') || ''}`, payload);
@@ -2965,12 +3020,12 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
         /** @internal */
         async _onConnOpen() {
-            this.log('transport', `connected to ${this._endPointURL()}`);
-            this._flushSendBuffer();
+            this.log('transport', `connected to ${this.endpointURL()}`);
+            this.flushSendBuffer();
             this.reconnectTimer.reset();
             if (!this.worker) {
                 this.heartbeatTimer && clearInterval(this.heartbeatTimer);
-                this.heartbeatTimer = setInterval(() => this._sendHeartbeat(), this.heartbeatIntervalMs);
+                this.heartbeatTimer = setInterval(() => this.sendHeartbeat(), this.heartbeatIntervalMs);
             }
             else {
                 if (this.workerUrl) {
@@ -2987,7 +3042,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 };
                 this.workerRef.onmessage = (event) => {
                     if (event.data.event === 'keepAlive') {
-                        this._sendHeartbeat();
+                        this.sendHeartbeat();
                     }
                 };
                 this.workerRef.postMessage({
@@ -3023,34 +3078,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             const prefix = url.match(/\?/) ? '&' : '?';
             const query = new URLSearchParams(params);
             return `${url}${prefix}${query}`;
-        }
-        /** @internal */
-        _flushSendBuffer() {
-            if (this.isConnected() && this.sendBuffer.length > 0) {
-                this.sendBuffer.forEach((callback) => callback());
-                this.sendBuffer = [];
-            }
-        }
-        /** @internal */
-        _sendHeartbeat() {
-            var _a;
-            if (!this.isConnected()) {
-                return;
-            }
-            if (this.pendingHeartbeatRef) {
-                this.pendingHeartbeatRef = null;
-                this.log('transport', 'heartbeat timeout. Attempting to re-establish connection');
-                (_a = this.conn) === null || _a === void 0 ? void 0 : _a.close(WS_CLOSE_NORMAL, 'hearbeat timeout');
-                return;
-            }
-            this.pendingHeartbeatRef = this._makeRef();
-            this.push({
-                topic: 'phoenix',
-                event: 'heartbeat',
-                payload: {},
-                ref: this.pendingHeartbeatRef,
-            });
-            this.setAuth(this.accessToken);
         }
         _workerObjectUrl(url) {
             let result_url;
@@ -3917,8 +3944,8 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         byteOffset = 0;
       } else if (byteOffset > 0x7fffffff) {
         byteOffset = 0x7fffffff;
-      } else if (byteOffset < -0x80000000) {
-        byteOffset = -0x80000000;
+      } else if (byteOffset < -2147483648) {
+        byteOffset = -2147483648;
       }
       byteOffset = +byteOffset;  // Coerce to Number.
       if (isNaN(byteOffset)) {
@@ -4677,7 +4704,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
       value = +value;
       offset = offset | 0;
-      if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80);
+      if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -128);
       if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
       if (value < 0) value = 0xff + value + 1;
       this[offset] = (value & 0xff);
@@ -4687,7 +4714,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
       value = +value;
       offset = offset | 0;
-      if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
+      if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -32768);
       if (Buffer.TYPED_ARRAY_SUPPORT) {
         this[offset] = (value & 0xff);
         this[offset + 1] = (value >>> 8);
@@ -4700,7 +4727,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
       value = +value;
       offset = offset | 0;
-      if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
+      if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -32768);
       if (Buffer.TYPED_ARRAY_SUPPORT) {
         this[offset] = (value >>> 8);
         this[offset + 1] = (value & 0xff);
@@ -4713,7 +4740,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
       value = +value;
       offset = offset | 0;
-      if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
+      if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -2147483648);
       if (Buffer.TYPED_ARRAY_SUPPORT) {
         this[offset] = (value & 0xff);
         this[offset + 1] = (value >>> 8);
@@ -4728,7 +4755,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
       value = +value;
       offset = offset | 0;
-      if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
+      if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -2147483648);
       if (value < 0) value = 0xffffffff + value + 1;
       if (Buffer.TYPED_ARRAY_SUPPORT) {
         this[offset] = (value >>> 24);
@@ -5110,7 +5137,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
         return (...args) => _fetch(...args);
     };
-    const resolveResponse = () => __awaiter$6(void 0, void 0, void 0, function* () {
+    const resolveResponse = () => __awaiter$6(undefined, undefined, undefined, function* () {
         if (typeof Response === 'undefined') {
             // @ts-ignore
             return (yield Promise.resolve().then(function () { return browser; })).Response;
@@ -5142,9 +5169,9 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         });
     };
     const _getErrorMessage$1 = (err) => err.msg || err.message || err.error_description || err.error || JSON.stringify(err);
-    const handleError$1 = (error, reject, options) => __awaiter$5(void 0, void 0, void 0, function* () {
+    const handleError$1 = (error, reject, options) => __awaiter$5(undefined, undefined, undefined, function* () {
         const Res = yield resolveResponse();
-        if (error instanceof Res && !(options === null || options === void 0 ? void 0 : options.noResolveJson)) {
+        if (error instanceof Res && !(options === null || options === undefined ? undefined : options.noResolveJson)) {
             error
                 .json()
                 .then((err) => {
@@ -5159,24 +5186,24 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
     });
     const _getRequestParams$1 = (method, options, parameters, body) => {
-        const params = { method, headers: (options === null || options === void 0 ? void 0 : options.headers) || {} };
+        const params = { method, headers: (options === null || options === undefined ? undefined : options.headers) || {} };
         if (method === 'GET') {
             return params;
         }
-        params.headers = Object.assign({ 'Content-Type': 'application/json' }, options === null || options === void 0 ? void 0 : options.headers);
+        params.headers = Object.assign({ 'Content-Type': 'application/json' }, options === null || options === undefined ? undefined : options.headers);
         if (body) {
             params.body = JSON.stringify(body);
         }
         return Object.assign(Object.assign({}, params), parameters);
     };
     function _handleRequest$1(fetcher, method, url, options, parameters, body) {
-        return __awaiter$5(this, void 0, void 0, function* () {
+        return __awaiter$5(this, undefined, undefined, function* () {
             return new Promise((resolve, reject) => {
                 fetcher(url, _getRequestParams$1(method, options, parameters, body))
                     .then((result) => {
                     if (!result.ok)
                         throw result;
-                    if (options === null || options === void 0 ? void 0 : options.noResolveJson)
+                    if (options === null || options === undefined ? undefined : options.noResolveJson)
                         return result;
                     return result.json();
                 })
@@ -5186,27 +5213,27 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         });
     }
     function get(fetcher, url, options, parameters) {
-        return __awaiter$5(this, void 0, void 0, function* () {
+        return __awaiter$5(this, undefined, undefined, function* () {
             return _handleRequest$1(fetcher, 'GET', url, options, parameters);
         });
     }
     function post(fetcher, url, body, options, parameters) {
-        return __awaiter$5(this, void 0, void 0, function* () {
+        return __awaiter$5(this, undefined, undefined, function* () {
             return _handleRequest$1(fetcher, 'POST', url, options, parameters, body);
         });
     }
     function put(fetcher, url, body, options, parameters) {
-        return __awaiter$5(this, void 0, void 0, function* () {
+        return __awaiter$5(this, undefined, undefined, function* () {
             return _handleRequest$1(fetcher, 'PUT', url, options, parameters, body);
         });
     }
     function head(fetcher, url, options, parameters) {
-        return __awaiter$5(this, void 0, void 0, function* () {
+        return __awaiter$5(this, undefined, undefined, function* () {
             return _handleRequest$1(fetcher, 'HEAD', url, Object.assign(Object.assign({}, options), { noResolveJson: true }), parameters);
         });
     }
     function remove(fetcher, url, body, options, parameters) {
-        return __awaiter$5(this, void 0, void 0, function* () {
+        return __awaiter$5(this, undefined, undefined, function* () {
             return _handleRequest$1(fetcher, 'DELETE', url, options, parameters, body);
         });
     }
@@ -5248,7 +5275,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param fileBody The body of the file to be stored in the bucket.
          */
         uploadOrUpdate(method, path, fileBody, fileOptions) {
-            return __awaiter$4(this, void 0, void 0, function* () {
+            return __awaiter$4(this, undefined, undefined, function* () {
                 try {
                     let body;
                     const options = Object.assign(Object.assign({}, DEFAULT_FILE_OPTIONS), fileOptions);
@@ -5310,7 +5337,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param fileBody The body of the file to be stored in the bucket.
          */
         upload(path, fileBody, fileOptions) {
-            return __awaiter$4(this, void 0, void 0, function* () {
+            return __awaiter$4(this, undefined, undefined, function* () {
                 return this.uploadOrUpdate('POST', path, fileBody, fileOptions);
             });
         }
@@ -5321,7 +5348,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param fileBody The body of the file to be stored in the bucket.
          */
         uploadToSignedUrl(path, token, fileBody, fileOptions) {
-            return __awaiter$4(this, void 0, void 0, function* () {
+            return __awaiter$4(this, undefined, undefined, function* () {
                 const cleanPath = this._removeEmptyFolders(path);
                 const _path = this._getFinalPath(cleanPath);
                 const url = new URL(this.url + `/object/upload/sign/${_path}`);
@@ -5377,7 +5404,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param options.upsert If set to true, allows the file to be overwritten if it already exists.
          */
         createSignedUploadUrl(path, options) {
-            return __awaiter$4(this, void 0, void 0, function* () {
+            return __awaiter$4(this, undefined, undefined, function* () {
                 try {
                     let _path = this._getFinalPath(path);
                     const headers = Object.assign({}, this.headers);
@@ -5407,7 +5434,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param fileBody The body of the file to be stored in the bucket.
          */
         update(path, fileBody, fileOptions) {
-            return __awaiter$4(this, void 0, void 0, function* () {
+            return __awaiter$4(this, undefined, undefined, function* () {
                 return this.uploadOrUpdate('PUT', path, fileBody, fileOptions);
             });
         }
@@ -5419,7 +5446,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param options The destination options.
          */
         move(fromPath, toPath, options) {
-            return __awaiter$4(this, void 0, void 0, function* () {
+            return __awaiter$4(this, undefined, undefined, function* () {
                 try {
                     const data = yield post(this.fetch, `${this.url}/object/move`, {
                         bucketId: this.bucketId,
@@ -5445,7 +5472,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param options The destination options.
          */
         copy(fromPath, toPath, options) {
-            return __awaiter$4(this, void 0, void 0, function* () {
+            return __awaiter$4(this, undefined, undefined, function* () {
                 try {
                     const data = yield post(this.fetch, `${this.url}/object/copy`, {
                         bucketId: this.bucketId,
@@ -5472,7 +5499,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param options.transform Transform the asset before serving it to the client.
          */
         createSignedUrl(path, expiresIn, options) {
-            return __awaiter$4(this, void 0, void 0, function* () {
+            return __awaiter$4(this, undefined, undefined, function* () {
                 try {
                     let _path = this._getFinalPath(path);
                     let data = yield post(this.fetch, `${this.url}/object/sign/${_path}`, Object.assign({ expiresIn }, ((options === null || options === void 0 ? void 0 : options.transform) ? { transform: options.transform } : {})), { headers: this.headers });
@@ -5499,7 +5526,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param options.download triggers the file as a download if set to true. Set this parameter as the name of the file if you want to trigger the download with a different filename.
          */
         createSignedUrls(paths, expiresIn, options) {
-            return __awaiter$4(this, void 0, void 0, function* () {
+            return __awaiter$4(this, undefined, undefined, function* () {
                 try {
                     const data = yield post(this.fetch, `${this.url}/object/sign/${this.bucketId}`, { expiresIn, paths }, { headers: this.headers });
                     const downloadQueryParam = (options === null || options === void 0 ? void 0 : options.download)
@@ -5527,10 +5554,10 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param options.transform Transform the asset before serving it to the client.
          */
         download(path, options) {
-            return __awaiter$4(this, void 0, void 0, function* () {
-                const wantsTransformation = typeof (options === null || options === void 0 ? void 0 : options.transform) !== 'undefined';
+            return __awaiter$4(this, undefined, undefined, function* () {
+                const wantsTransformation = typeof (options === null || options === undefined ? undefined : options.transform) !== 'undefined';
                 const renderPath = wantsTransformation ? 'render/image/authenticated' : 'object';
-                const transformationQuery = this.transformOptsToQueryString((options === null || options === void 0 ? void 0 : options.transform) || {});
+                const transformationQuery = this.transformOptsToQueryString((options === null || options === undefined ? undefined : options.transform) || {});
                 const queryString = transformationQuery ? `?${transformationQuery}` : '';
                 try {
                     const _path = this._getFinalPath(path);
@@ -5554,7 +5581,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param path
          */
         info(path) {
-            return __awaiter$4(this, void 0, void 0, function* () {
+            return __awaiter$4(this, undefined, undefined, function* () {
                 const _path = this._getFinalPath(path);
                 try {
                     const data = yield get(this.fetch, `${this.url}/object/info/${_path}`, {
@@ -5575,7 +5602,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param path
          */
         exists(path) {
-            return __awaiter$4(this, void 0, void 0, function* () {
+            return __awaiter$4(this, undefined, undefined, function* () {
                 const _path = this._getFinalPath(path);
                 try {
                     yield head(this.fetch, `${this.url}/object/${_path}`, {
@@ -5586,7 +5613,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 catch (error) {
                     if (isStorageError(error) && error instanceof StorageUnknownError) {
                         const originalError = error.originalError;
-                        if ([400, 404].includes(originalError === null || originalError === void 0 ? void 0 : originalError.status)) {
+                        if ([400, 404].includes(originalError === null || originalError === undefined ? undefined : originalError.status)) {
                             return { data: false, error };
                         }
                     }
@@ -5605,15 +5632,15 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         getPublicUrl(path, options) {
             const _path = this._getFinalPath(path);
             const _queryString = [];
-            const downloadQueryParam = (options === null || options === void 0 ? void 0 : options.download)
+            const downloadQueryParam = (options === null || options === undefined ? undefined : options.download)
                 ? `download=${options.download === true ? '' : options.download}`
                 : '';
             if (downloadQueryParam !== '') {
                 _queryString.push(downloadQueryParam);
             }
-            const wantsTransformation = typeof (options === null || options === void 0 ? void 0 : options.transform) !== 'undefined';
+            const wantsTransformation = typeof (options === null || options === undefined ? undefined : options.transform) !== 'undefined';
             const renderPath = wantsTransformation ? 'render/image' : 'object';
-            const transformationQuery = this.transformOptsToQueryString((options === null || options === void 0 ? void 0 : options.transform) || {});
+            const transformationQuery = this.transformOptsToQueryString((options === null || options === undefined ? undefined : options.transform) || {});
             if (transformationQuery !== '') {
                 _queryString.push(transformationQuery);
             }
@@ -5631,7 +5658,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param paths An array of files to delete, including the path and file name. For example [`'folder/image.png'`].
          */
         remove(paths) {
-            return __awaiter$4(this, void 0, void 0, function* () {
+            return __awaiter$4(this, undefined, undefined, function* () {
                 try {
                     const data = yield remove(this.fetch, `${this.url}/object/${this.bucketId}`, { prefixes: paths }, { headers: this.headers });
                     return { data, error: null };
@@ -5708,7 +5735,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param path The folder path.
          */
         list(path, options, parameters) {
-            return __awaiter$4(this, void 0, void 0, function* () {
+            return __awaiter$4(this, undefined, undefined, function* () {
                 try {
                     const body = Object.assign(Object.assign(Object.assign({}, DEFAULT_SEARCH_OPTIONS), options), { prefix: path || '' });
                     const data = yield post(this.fetch, `${this.url}/object/list/${this.bucketId}`, body, { headers: this.headers }, parameters);
@@ -5782,7 +5809,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * Retrieves the details of all Storage buckets within an existing project.
          */
         listBuckets() {
-            return __awaiter$3(this, void 0, void 0, function* () {
+            return __awaiter$3(this, undefined, undefined, function* () {
                 try {
                     const data = yield get(this.fetch, `${this.url}/bucket`, { headers: this.headers });
                     return { data, error: null };
@@ -5801,7 +5828,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param id The unique identifier of the bucket you would like to retrieve.
          */
         getBucket(id) {
-            return __awaiter$3(this, void 0, void 0, function* () {
+            return __awaiter$3(this, undefined, undefined, function* () {
                 try {
                     const data = yield get(this.fetch, `${this.url}/bucket/${id}`, { headers: this.headers });
                     return { data, error: null };
@@ -5830,7 +5857,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         createBucket(id, options = {
             public: false,
         }) {
-            return __awaiter$3(this, void 0, void 0, function* () {
+            return __awaiter$3(this, undefined, undefined, function* () {
                 try {
                     const data = yield post(this.fetch, `${this.url}/bucket`, {
                         id,
@@ -5862,7 +5889,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * Each mime type specified can be a wildcard, e.g. image/*, or a specific mime type, e.g. image/png.
          */
         updateBucket(id, options) {
-            return __awaiter$3(this, void 0, void 0, function* () {
+            return __awaiter$3(this, undefined, undefined, function* () {
                 try {
                     const data = yield put(this.fetch, `${this.url}/bucket/${id}`, {
                         id,
@@ -5887,7 +5914,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param id The unique identifier of the bucket you would like to empty.
          */
         emptyBucket(id) {
-            return __awaiter$3(this, void 0, void 0, function* () {
+            return __awaiter$3(this, undefined, undefined, function* () {
                 try {
                     const data = yield post(this.fetch, `${this.url}/bucket/${id}/empty`, {}, { headers: this.headers });
                     return { data, error: null };
@@ -5907,7 +5934,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * @param id The unique identifier of the bucket you would like to delete.
          */
         deleteBucket(id) {
-            return __awaiter$3(this, void 0, void 0, function* () {
+            return __awaiter$3(this, undefined, undefined, function* () {
                 try {
                     const data = yield remove(this.fetch, `${this.url}/bucket/${id}`, {}, { headers: this.headers });
                     return { data, error: null };
@@ -5936,7 +5963,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
     }
 
-    const version$1 = '2.46.1';
+    const version$1 = '2.48.1';
 
     let JS_ENV = '';
     // @ts-ignore
@@ -5998,10 +6025,10 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     const fetchWithAuth = (supabaseKey, getAccessToken, customFetch) => {
         const fetch = resolveFetch$1(customFetch);
         const HeadersConstructor = resolveHeadersConstructor();
-        return (input, init) => __awaiter$2(void 0, void 0, void 0, function* () {
+        return (input, init) => __awaiter$2(undefined, undefined, undefined, function* () {
             var _a;
-            const accessToken = (_a = (yield getAccessToken())) !== null && _a !== void 0 ? _a : supabaseKey;
-            let headers = new HeadersConstructor(init === null || init === void 0 ? void 0 : init.headers);
+            const accessToken = (_a = (yield getAccessToken())) !== null && _a !== undefined ? _a : supabaseKey;
+            let headers = new HeadersConstructor(init === null || init === undefined ? undefined : init.headers);
             if (!headers.has('apikey')) {
                 headers.set('apikey', supabaseKey);
             }
@@ -6032,7 +6059,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             auth: Object.assign(Object.assign({}, DEFAULT_AUTH_OPTIONS), authOptions),
             realtime: Object.assign(Object.assign({}, DEFAULT_REALTIME_OPTIONS), realtimeOptions),
             global: Object.assign(Object.assign({}, DEFAULT_GLOBAL_OPTIONS), globalOptions),
-            accessToken: () => __awaiter$1(this, void 0, void 0, function* () { return ''; }),
+            accessToken: () => __awaiter$1(this, undefined, undefined, function* () { return ''; }),
         };
         if (options.accessToken) {
             result.accessToken = options.accessToken;
@@ -6044,7 +6071,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         return result;
     }
 
-    const version = '2.65.1';
+    const version = '2.67.3';
 
     const GOTRUE_URL = 'http://localhost:9999';
     const STORAGE_KEY = 'supabase.auth.token';
@@ -6068,7 +6095,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             return v.toString(16);
         });
     }
-    const isBrowser = () => typeof document !== 'undefined';
+    const isBrowser = () => typeof window !== 'undefined' && typeof document !== 'undefined';
     const localStorageWriteTests = {
         tested: false,
         writable: false,
@@ -6400,6 +6427,9 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             };
         }
     }
+    function isAuthImplicitGrantRedirectError(error) {
+        return isAuthError(error) && error.name === 'AuthImplicitGrantRedirectError';
+    }
     class AuthPKCEGrantCodeExchangeError extends CustomAuthError {
         constructor(message, details = null) {
             super(message, 'AuthPKCEGrantCodeExchangeError', 500, undefined);
@@ -6492,7 +6522,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             }
         }
         else if (errorCode === 'weak_password') {
-            throw new AuthWeakPasswordError(_getErrorMessage(data), error.status, ((_a = data.weak_password) === null || _a === void 0 ? void 0 : _a.reasons) || []);
+            throw new AuthWeakPasswordError(_getErrorMessage(data), error.status, ((_a = data.weak_password) === null || _a === undefined ? undefined : _a.reasons) || []);
         }
         else if (errorCode === 'session_not_found') {
             // The `session_id` inside the JWT does not correspond to a row in the
@@ -6503,33 +6533,33 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         throw new AuthApiError(_getErrorMessage(data), error.status || 500, errorCode);
     }
     const _getRequestParams = (method, options, parameters, body) => {
-        const params = { method, headers: (options === null || options === void 0 ? void 0 : options.headers) || {} };
+        const params = { method, headers: (options === null || options === undefined ? undefined : options.headers) || {} };
         if (method === 'GET') {
             return params;
         }
-        params.headers = Object.assign({ 'Content-Type': 'application/json;charset=UTF-8' }, options === null || options === void 0 ? void 0 : options.headers);
+        params.headers = Object.assign({ 'Content-Type': 'application/json;charset=UTF-8' }, options === null || options === undefined ? undefined : options.headers);
         params.body = JSON.stringify(body);
         return Object.assign(Object.assign({}, params), parameters);
     };
     async function _request(fetcher, method, url, options) {
         var _a;
-        const headers = Object.assign({}, options === null || options === void 0 ? void 0 : options.headers);
+        const headers = Object.assign({}, options === null || options === undefined ? undefined : options.headers);
         if (!headers[API_VERSION_HEADER_NAME]) {
             headers[API_VERSION_HEADER_NAME] = API_VERSIONS['2024-01-01'].name;
         }
-        if (options === null || options === void 0 ? void 0 : options.jwt) {
+        if (options === null || options === undefined ? undefined : options.jwt) {
             headers['Authorization'] = `Bearer ${options.jwt}`;
         }
-        const qs = (_a = options === null || options === void 0 ? void 0 : options.query) !== null && _a !== void 0 ? _a : {};
-        if (options === null || options === void 0 ? void 0 : options.redirectTo) {
+        const qs = (_a = options === null || options === undefined ? undefined : options.query) !== null && _a !== undefined ? _a : {};
+        if (options === null || options === undefined ? undefined : options.redirectTo) {
             qs['redirect_to'] = options.redirectTo;
         }
         const queryString = Object.keys(qs).length ? '?' + new URLSearchParams(qs).toString() : '';
         const data = await _handleRequest(fetcher, method, url + queryString, {
             headers,
-            noResolveJson: options === null || options === void 0 ? void 0 : options.noResolveJson,
-        }, {}, options === null || options === void 0 ? void 0 : options.body);
-        return (options === null || options === void 0 ? void 0 : options.xform) ? options === null || options === void 0 ? void 0 : options.xform(data) : { data: Object.assign({}, data), error: null };
+            noResolveJson: options === null || options === undefined ? undefined : options.noResolveJson,
+        }, {}, options === null || options === undefined ? undefined : options.body);
+        return (options === null || options === undefined ? undefined : options.xform) ? options === null || options === undefined ? undefined : options.xform(data) : { data: Object.assign({}, data), error: null };
     }
     async function _handleRequest(fetcher, method, url, options, parameters, body) {
         const requestParams = _getRequestParams(method, options, parameters, body);
@@ -6545,7 +6575,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         if (!result.ok) {
             await handleError(result);
         }
-        if (options === null || options === void 0 ? void 0 : options.noResolveJson) {
+        if (options === null || options === undefined ? undefined : options.noResolveJson) {
             return result;
         }
         try {
@@ -6564,7 +6594,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 session.expires_at = expiresAt(data.expires_in);
             }
         }
-        const user = (_a = data.user) !== null && _a !== void 0 ? _a : data;
+        const user = (_a = data.user) !== null && _a !== undefined ? _a : data;
         return { data: { session, user }, error: null };
     }
     function _sessionResponsePassword(data) {
@@ -6583,7 +6613,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     }
     function _userResponse(data) {
         var _a;
-        const user = (_a = data.user) !== null && _a !== void 0 ? _a : data;
+        const user = (_a = data.user) !== null && _a !== undefined ? _a : data;
         return { data: { user }, error: null };
     }
     function _ssoResponse(data) {
@@ -6826,7 +6856,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          * Delete a user. Requires a `service_role` key.
          *
          * @param id The user id you want to remove.
-         * @param shouldSoftDelete If true, then the user will be soft-deleted (setting `deleted_at` to the current timestamp and disabling their account while preserving their data) from the auth schema.
+         * @param shouldSoftDelete If true, then the user will be soft-deleted from the auth schema. Soft deletion allows user identification from the hashed user ID but is not reversible.
          * Defaults to false for backward compatibility.
          *
          * This function should only be called on a server. Never expose your `service_role` key in the browser.
@@ -7012,7 +7042,14 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             }, acquireTimeout);
         }
         // MDN article: https://developer.mozilla.org/en-US/docs/Web/API/LockManager/request
-        return await globalThis.navigator.locks.request(name, acquireTimeout === 0
+        // Wrapping navigator.locks.request() with a plain Promise is done as some
+        // libraries like zone.js patch the Promise object to track the execution
+        // context. However, it appears that most browsers use an internal promise
+        // implementation when using the navigator.locks.request() API causing them
+        // to lose context and emit confusing log messages or break certain features.
+        // This wrapping is believed to help zone.js track the execution context
+        // better.
+        return await Promise.resolve().then(() => globalThis.navigator.locks.request(name, acquireTimeout === 0
             ? {
                 mode: 'exclusive',
                 ifAvailable: true,
@@ -7059,7 +7096,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     return await fn();
                 }
             }
-        });
+        }));
     }
 
     polyfillGlobalThis(); // Make "globalThis" available
@@ -7138,7 +7175,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             if (settings.lock) {
                 this.lock = settings.lock;
             }
-            else if (isBrowser() && ((_a = globalThis === null || globalThis === void 0 ? void 0 : globalThis.navigator) === null || _a === void 0 ? void 0 : _a.locks)) {
+            else if (isBrowser() && ((_a = globalThis === null || globalThis === undefined ? undefined : globalThis.navigator) === null || _a === undefined ? undefined : _a.locks)) {
                 this.lock = navigatorLock;
             }
             else {
@@ -7178,7 +7215,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 catch (e) {
                     console.error('Failed to create a new BroadcastChannel, multi-tab state changes will not be available', e);
                 }
-                (_b = this.broadcastChannel) === null || _b === void 0 ? void 0 : _b.addEventListener('message', async (event) => {
+                (_b = this.broadcastChannel) === null || _b === undefined ? undefined : _b.addEventListener('message', async (event) => {
                     this._debug('received broadcast notification from other tab or client', event);
                     await this._notifyAllSubscribers(event.data.event, event.data.session, false); // broadcast = false so we don't get an endless loop of messages
                 });
@@ -7214,15 +7251,33 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          *    the whole lifetime of the client
          */
         async _initialize() {
+            var _a;
             try {
-                const isPKCEFlow = isBrowser() ? await this._isPKCEFlow() : false;
-                this._debug('#_initialize()', 'begin', 'is PKCE flow', isPKCEFlow);
-                if (isPKCEFlow || (this.detectSessionInUrl && this._isImplicitGrantFlow())) {
-                    const { data, error } = await this._getSessionFromURL(isPKCEFlow);
+                const params = parseParametersFromURL(window.location.href);
+                let callbackUrlType = 'none';
+                if (this._isImplicitGrantCallback(params)) {
+                    callbackUrlType = 'implicit';
+                }
+                else if (await this._isPKCECallback(params)) {
+                    callbackUrlType = 'pkce';
+                }
+                /**
+                 * Attempt to get the session from the URL only if these conditions are fulfilled
+                 *
+                 * Note: If the URL isn't one of the callback url types (implicit or pkce),
+                 * then there could be an existing session so we don't want to prematurely remove it
+                 */
+                if (isBrowser() && this.detectSessionInUrl && callbackUrlType !== 'none') {
+                    const { data, error } = await this._getSessionFromURL(params, callbackUrlType);
                     if (error) {
                         this._debug('#_initialize()', 'error detecting session from URL', error);
-                        if ((error === null || error === void 0 ? void 0 : error.code) === 'identity_already_exists') {
-                            return { error };
+                        if (isAuthImplicitGrantRedirectError(error)) {
+                            const errorCode = (_a = error.details) === null || _a === void 0 ? void 0 : _a.code;
+                            if (errorCode === 'identity_already_exists' ||
+                                errorCode === 'identity_not_found' ||
+                                errorCode === 'single_identity_not_deletable') {
+                                return { error };
+                            }
                         }
                         // failed login attempt via url,
                         // remove old session as in verifyOtp, signUp and signInWith*
@@ -7434,10 +7489,10 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         async signInWithOAuth(credentials) {
             var _a, _b, _c, _d;
             return await this._handleProviderSignIn(credentials.provider, {
-                redirectTo: (_a = credentials.options) === null || _a === void 0 ? void 0 : _a.redirectTo,
-                scopes: (_b = credentials.options) === null || _b === void 0 ? void 0 : _b.scopes,
-                queryParams: (_c = credentials.options) === null || _c === void 0 ? void 0 : _c.queryParams,
-                skipBrowserRedirect: (_d = credentials.options) === null || _d === void 0 ? void 0 : _d.skipBrowserRedirect,
+                redirectTo: (_a = credentials.options) === null || _a === undefined ? undefined : _a.redirectTo,
+                scopes: (_b = credentials.options) === null || _b === undefined ? undefined : _b.scopes,
+                queryParams: (_c = credentials.options) === null || _c === undefined ? undefined : _c.queryParams,
+                skipBrowserRedirect: (_d = credentials.options) === null || _d === undefined ? undefined : _d.skipBrowserRedirect,
             });
         }
         /**
@@ -7451,7 +7506,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
         async _exchangeCodeForSession(authCode) {
             const storageItem = await getItemAsync(this.storage, `${this.storageKey}-code-verifier`);
-            const [codeVerifier, redirectType] = (storageItem !== null && storageItem !== void 0 ? storageItem : '').split('/');
+            const [codeVerifier, redirectType] = (storageItem !== null && storageItem !== undefined ? storageItem : '').split('/');
             try {
                 const { data, error } = await _request(this.fetch, 'POST', `${this.url}/token?grant_type=pkce`, {
                     headers: this.headers,
@@ -7869,7 +7924,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                             get: (target, prop, receiver) => {
                                 if (!suppressWarning && prop === 'user') {
                                     // only show warning when the user object is being accessed from the server
-                                    console.warn('Using the user object as returned from supabase.auth.getSession() or from some supabase.auth.onAuthStateChange() events could be insecure! This value comes directly from the storage medium (usually cookies on the server) and many not be authentic. Use supabase.auth.getUser() instead which authenticates the data by contacting the Supabase Auth server.');
+                                    console.warn('Using the user object as returned from supabase.auth.getSession() or from some supabase.auth.onAuthStateChange() events could be insecure! This value comes directly from the storage medium (usually cookies on the server) and may not be authentic. Use supabase.auth.getUser() instead which authenticates the data by contacting the Supabase Auth server.');
                                     suppressWarning = true; // keeps this proxy instance from logging additional warnings
                                     this.suppressGetSessionWarning = true; // keeps this client's future proxy instances from warning
                                 }
@@ -8106,18 +8161,37 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         /**
          * Gets the session data from a URL string
          */
-        async _getSessionFromURL(isPKCEFlow) {
+        async _getSessionFromURL(params, callbackUrlType) {
             try {
                 if (!isBrowser())
                     throw new AuthImplicitGrantRedirectError('No browser detected.');
-                if (this.flowType === 'implicit' && !this._isImplicitGrantFlow()) {
-                    throw new AuthImplicitGrantRedirectError('Not a valid implicit grant flow url.');
+                // If there's an error in the URL, it doesn't matter what flow it is, we just return the error.
+                if (params.error || params.error_description || params.error_code) {
+                    // The error class returned implies that the redirect is from an implicit grant flow
+                    // but it could also be from a redirect error from a PKCE flow.
+                    throw new AuthImplicitGrantRedirectError(params.error_description || 'Error in URL with unspecified error_description', {
+                        error: params.error || 'unspecified_error',
+                        code: params.error_code || 'unspecified_code',
+                    });
                 }
-                else if (this.flowType == 'pkce' && !isPKCEFlow) {
-                    throw new AuthPKCEGrantCodeExchangeError('Not a valid PKCE flow url.');
+                // Checks for mismatches between the flowType initialised in the client and the URL parameters
+                switch (callbackUrlType) {
+                    case 'implicit':
+                        if (this.flowType === 'pkce') {
+                            throw new AuthPKCEGrantCodeExchangeError('Not a valid PKCE flow url.');
+                        }
+                        break;
+                    case 'pkce':
+                        if (this.flowType === 'implicit') {
+                            throw new AuthImplicitGrantRedirectError('Not a valid implicit grant flow url.');
+                        }
+                        break;
+                    default:
+                    // there's no mismatch so we continue
                 }
-                const params = parseParametersFromURL(window.location.href);
-                if (isPKCEFlow) {
+                // Since this is a redirect for PKCE, we attempt to retrieve the code from the URL for the code exchange
+                if (callbackUrlType === 'pkce') {
+                    this._debug('#_initialize()', 'begin', 'is PKCE flow', true);
                     if (!params.code)
                         throw new AuthPKCEGrantCodeExchangeError('No code detected.');
                     const { data, error } = await this._exchangeCodeForSession(params.code);
@@ -8127,12 +8201,6 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     url.searchParams.delete('code');
                     window.history.replaceState(window.history.state, '', url.toString());
                     return { data: { session: data.session, redirectType: null }, error: null };
-                }
-                if (params.error || params.error_description || params.error_code) {
-                    throw new AuthImplicitGrantRedirectError(params.error_description || 'Error in URL with unspecified error_description', {
-                        error: params.error || 'unspecified_error',
-                        code: params.error_code || 'unspecified_code',
-                    });
                 }
                 const { provider_token, provider_refresh_token, access_token, refresh_token, expires_in, expires_at, token_type, } = params;
                 if (!access_token || !expires_in || !refresh_token || !token_type) {
@@ -8183,15 +8251,13 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         /**
          * Checks if the current URL contains parameters given by an implicit oauth grant flow (https://www.rfc-editor.org/rfc/rfc6749.html#section-4.2)
          */
-        _isImplicitGrantFlow() {
-            const params = parseParametersFromURL(window.location.href);
-            return !!(isBrowser() && (params.access_token || params.error_description));
+        _isImplicitGrantCallback(params) {
+            return Boolean(params.access_token || params.error_description);
         }
         /**
          * Checks if the current URL and backing storage contain parameters given by a PKCE flow
          */
-        async _isPKCEFlow() {
-            const params = parseParametersFromURL(window.location.href);
+        async _isPKCECallback(params) {
             const currentStorageContent = await getItemAsync(this.storage, `${this.storageKey}-code-verifier`);
             return !!(params.code && currentStorageContent);
         }
@@ -8216,7 +8282,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 if (sessionError) {
                     return { error: sessionError };
                 }
-                const accessToken = (_a = data.session) === null || _a === void 0 ? void 0 : _a.access_token;
+                const accessToken = (_a = data.session) === null || _a === undefined ? undefined : _a.access_token;
                 if (accessToken) {
                     const { error } = await this.admin.signOut(accessToken, scope);
                     if (error) {
@@ -8270,7 +8336,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     this._debug('INITIAL_SESSION', 'callback id', id, 'session', session);
                 }
                 catch (err) {
-                    await ((_b = this.stateChangeEmitters.get(id)) === null || _b === void 0 ? void 0 : _b.callback('INITIAL_SESSION', null));
+                    await ((_b = this.stateChangeEmitters.get(id)) === null || _b === undefined ? undefined : _b.callback('INITIAL_SESSION', null));
                     this._debug('INITIAL_SESSION', 'callback id', id, 'error', err);
                     console.error(err);
                 }
@@ -8528,10 +8594,10 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                     if (!isAuthRetryableFetchError(error)) {
                         await this._removeSession();
                     }
-                    (_a = this.refreshingDeferred) === null || _a === void 0 ? void 0 : _a.resolve(result);
+                    (_a = this.refreshingDeferred) === null || _a === undefined ? undefined : _a.resolve(result);
                     return result;
                 }
-                (_b = this.refreshingDeferred) === null || _b === void 0 ? void 0 : _b.reject(error);
+                (_b = this.refreshingDeferred) === null || _b === undefined ? undefined : _b.reject(error);
                 throw error;
             }
             finally {
@@ -8734,7 +8800,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          */
         async _handleVisibilityChange() {
             this._debug('#_handleVisibilityChange()');
-            if (!isBrowser() || !(window === null || window === void 0 ? void 0 : window.addEventListener)) {
+            if (!isBrowser() || !(window === null || window === undefined ? undefined : window.addEventListener)) {
                 if (this.autoRefreshToken) {
                     // in non-browser environments the refresh token ticker runs always
                     this.startAutoRefresh();
@@ -8795,10 +8861,10 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
          */
         async _getUrlForProvider(url, provider, options) {
             const urlParams = [`provider=${encodeURIComponent(provider)}`];
-            if (options === null || options === void 0 ? void 0 : options.redirectTo) {
+            if (options === null || options === undefined ? undefined : options.redirectTo) {
                 urlParams.push(`redirect_to=${encodeURIComponent(options.redirectTo)}`);
             }
-            if (options === null || options === void 0 ? void 0 : options.scopes) {
+            if (options === null || options === undefined ? undefined : options.scopes) {
                 urlParams.push(`scopes=${encodeURIComponent(options.scopes)}`);
             }
             if (this.flowType === 'pkce') {
@@ -8809,11 +8875,11 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 });
                 urlParams.push(flowParams.toString());
             }
-            if (options === null || options === void 0 ? void 0 : options.queryParams) {
+            if (options === null || options === undefined ? undefined : options.queryParams) {
                 const query = new URLSearchParams(options.queryParams);
                 urlParams.push(query.toString());
             }
-            if (options === null || options === void 0 ? void 0 : options.skipBrowserRedirect) {
+            if (options === null || options === undefined ? undefined : options.skipBrowserRedirect) {
                 urlParams.push(`skip_http_redirect=${options.skipBrowserRedirect}`);
             }
             return `${url}?${urlParams.join('&')}`;
@@ -8956,7 +9022,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
             if (userError) {
                 return { data: null, error: userError };
             }
-            const factors = (user === null || user === void 0 ? void 0 : user.factors) || [];
+            const factors = (user === null || user === undefined ? undefined : user.factors) || [];
             const totp = factors.filter((factor) => factor.factor_type === 'totp' && factor.status === 'verified');
             const phone = factors.filter((factor) => factor.factor_type === 'phone' && factor.status === 'verified');
             return {
@@ -8991,7 +9057,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                         currentLevel = payload.aal;
                     }
                     let nextLevel = currentLevel;
-                    const verifiedFactors = (_b = (_a = session.user.factors) === null || _a === void 0 ? void 0 : _a.filter((factor) => factor.status === 'verified')) !== null && _b !== void 0 ? _b : [];
+                    const verifiedFactors = (_b = (_a = session.user.factors) === null || _a === undefined ? undefined : _a.filter((factor) => factor.status === 'verified')) !== null && _b !== undefined ? _b : [];
                     if (verifiedFactors.length > 0) {
                         nextLevel = 'aal2';
                     }
@@ -9061,11 +9127,11 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 auth: Object.assign(Object.assign({}, DEFAULT_AUTH_OPTIONS), { storageKey: defaultStorageKey }),
                 global: DEFAULT_GLOBAL_OPTIONS,
             };
-            const settings = applySettingDefaults(options !== null && options !== void 0 ? options : {}, DEFAULTS);
-            this.storageKey = (_a = settings.auth.storageKey) !== null && _a !== void 0 ? _a : '';
-            this.headers = (_b = settings.global.headers) !== null && _b !== void 0 ? _b : {};
+            const settings = applySettingDefaults(options !== null && options !== undefined ? options : {}, DEFAULTS);
+            this.storageKey = (_a = settings.auth.storageKey) !== null && _a !== undefined ? _a : '';
+            this.headers = (_b = settings.global.headers) !== null && _b !== undefined ? _b : {};
             if (!settings.accessToken) {
-                this.auth = this._initSupabaseAuthClient((_c = settings.auth) !== null && _c !== void 0 ? _c : {}, this.headers, settings.global.fetch);
+                this.auth = this._initSupabaseAuthClient((_c = settings.auth) !== null && _c !== undefined ? _c : {}, this.headers, settings.global.fetch);
             }
             else {
                 this.accessToken = settings.accessToken;
@@ -9076,7 +9142,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 });
             }
             this.fetch = fetchWithAuth(supabaseKey, this._getAccessToken.bind(this), settings.global.fetch);
-            this.realtime = this._initRealtimeClient(Object.assign({ headers: this.headers }, settings.realtime));
+            this.realtime = this._initRealtimeClient(Object.assign({ headers: this.headers, accessToken: this._getAccessToken.bind(this) }, settings.realtime));
             this.rest = new PostgrestClient(`${_supabaseUrl}/rest/v1`, {
                 headers: this.headers,
                 schema: settings.db.schema,
@@ -9180,16 +9246,15 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         }
         _getAccessToken() {
             var _a, _b;
-            return __awaiter(this, void 0, void 0, function* () {
+            return __awaiter(this, undefined, undefined, function* () {
                 if (this.accessToken) {
                     return yield this.accessToken();
                 }
                 const { data } = yield this.auth.getSession();
-                return (_b = (_a = data.session) === null || _a === void 0 ? void 0 : _a.access_token) !== null && _b !== void 0 ? _b : null;
+                return (_b = (_a = data.session) === null || _a === undefined ? undefined : _a.access_token) !== null && _b !== undefined ? _b : null;
             });
         }
         _initSupabaseAuthClient({ autoRefreshToken, persistSession, detectSessionInUrl, storage, storageKey, flowType, lock, debug, }, headers, fetch) {
-            var _a;
             const authHeaders = {
                 Authorization: `Bearer ${this.supabaseKey}`,
                 apikey: `${this.supabaseKey}`,
@@ -9208,28 +9273,25 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
                 fetch,
                 // auth checks if there is a custom authorizaiton header using this flag
                 // so it knows whether to return an error when getUser is called with no session
-                hasCustomAuthorizationHeader: (_a = 'Authorization' in this.headers) !== null && _a !== void 0 ? _a : false,
+                hasCustomAuthorizationHeader: 'Authorization' in this.headers,
             });
         }
         _initRealtimeClient(options) {
-            return new RealtimeClient(this.realtimeUrl, Object.assign(Object.assign({}, options), { params: Object.assign({ apikey: this.supabaseKey }, options === null || options === void 0 ? void 0 : options.params) }));
+            return new RealtimeClient(this.realtimeUrl, Object.assign(Object.assign({}, options), { params: Object.assign({ apikey: this.supabaseKey }, options === null || options === undefined ? undefined : options.params) }));
         }
         _listenForAuthEvents() {
             let data = this.auth.onAuthStateChange((event, session) => {
-                this._handleTokenChanged(event, 'CLIENT', session === null || session === void 0 ? void 0 : session.access_token);
+                this._handleTokenChanged(event, 'CLIENT', session === null || session === undefined ? undefined : session.access_token);
             });
             return data;
         }
         _handleTokenChanged(event, source, token) {
             if ((event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') &&
                 this.changedAccessToken !== token) {
-                // Token has changed
-                this.realtime.setAuth(token !== null && token !== void 0 ? token : null);
                 this.changedAccessToken = token;
             }
             else if (event === 'SIGNED_OUT') {
-                // Token is removed
-                this.realtime.setAuth(this.supabaseKey);
+                this.realtime.setAuth();
                 if (source == 'STORAGE')
                     this.auth.signOut();
                 this.changedAccessToken = undefined;
@@ -9266,6 +9328,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     exports.GoTrueAdminApi = GoTrueAdminApi;
     exports.GoTrueClient = GoTrueClient;
     exports.NavigatorLockAcquireTimeoutError = NavigatorLockAcquireTimeoutError;
+    exports.PostgrestError = PostgrestError;
     exports.REALTIME_CHANNEL_STATES = REALTIME_CHANNEL_STATES;
     exports.RealtimeChannel = RealtimeChannel;
     exports.RealtimeClient = RealtimeClient;
@@ -9275,6 +9338,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
     exports.createClient = createClient;
     exports.isAuthApiError = isAuthApiError;
     exports.isAuthError = isAuthError;
+    exports.isAuthImplicitGrantRedirectError = isAuthImplicitGrantRedirectError;
     exports.isAuthRetryableFetchError = isAuthRetryableFetchError;
     exports.isAuthSessionMissingError = isAuthSessionMissingError;
     exports.isAuthWeakPasswordError = isAuthWeakPasswordError;

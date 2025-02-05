@@ -109,7 +109,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   var TypeDescriptor$1 = {};
 
   Object.defineProperty(TypeDescriptor$1, "__esModule", { value: true });
-  TypeDescriptor$1.Type = void 0;
+  TypeDescriptor$1.Type = undefined;
   const valueTypes = new Set(['boolean', 'number', 'null', 'string', 'undefined']);
   const referenceTypes = new Set(['array', 'function', 'object', 'symbol']);
   const detectableTypes = new Set(['boolean', 'function', 'number', 'string', 'symbol']);
@@ -194,7 +194,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   TypeDescriptor$1.Type = TypeDescriptor;
 
   Object.defineProperty(isSubsetOf$1, "__esModule", { value: true });
-  var isSubsetOf_2 = isSubsetOf$1.isSubsetOf = void 0;
+  var isSubsetOf_2 = isSubsetOf$1.isSubsetOf = undefined;
   const typedescriptor_1 = TypeDescriptor$1;
   const allowedTypes = new Set(['array', 'object', 'function', 'null']);
   const isSubsetOf = function (subset, superset, visited = []) {
@@ -417,7 +417,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   const absoluteUrlRX = new RegExp("^[a-z]+://|^data:", "i");
   const protocolRelativeUrlRX = new RegExp("^//", "i");
   function hasCredentialsInUrl(url) {
-    const urlObject = new URL(url, protocolRelativeUrlRX.test(url) ? "http://dummy" : undefined);
+    const urlObject = new URL(url, !absoluteUrlRX.test(url) ? "http://dummy" : undefined);
     return Boolean(urlObject.username || urlObject.password);
   }
   function normalizeUrl(url, allowRelativeUrls) {
@@ -518,8 +518,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       (typeof matcher === 'object' && 'href' in matcher);
   const isFunctionMatcher = (matcher) => typeof matcher === 'function';
   const stringMatchers = {
-      begin: (targetString) => ({ url }) => url.indexOf(targetString) === 0,
-      end: (targetString) => ({ url }) => url.substr(-targetString.length) === targetString,
+      begin: (targetString) => ({ url }) => url.startsWith(targetString),
+      end: (targetString) => ({ url }) => url.endsWith(targetString),
+      include: (targetString) => ({ url }) => url.includes(targetString),
       glob: (targetString) => {
           const urlRX = globToRegexp(targetString);
           return ({ url }) => urlRX.test(url);
@@ -1324,12 +1325,19 @@ e.g. {"body": {"status: "registered"}}`);
           globalThis.fetch = this.config.fetch;
           return this;
       }
+      hardReset(options) {
+          this.clearHistory();
+          this.removeRoutes(options);
+          this.unmockGlobal();
+          return this;
+      }
       spy(matcher, name) {
+          const boundFetch = this.config.fetch.bind(globalThis);
           if (matcher) {
-              this.route(matcher, ({ args }) => this.config.fetch(...args), name);
+              this.route(matcher, ({ args }) => boundFetch(...args), name);
           }
           else {
-              this.catch(({ args }) => this.config.fetch(...args));
+              this.catch(({ args }) => boundFetch(...args));
           }
           return this;
       }

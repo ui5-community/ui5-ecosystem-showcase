@@ -3,6 +3,7 @@ const path = require("path");
 const { createHash, randomBytes } = require("crypto");
 const { rmSync, readFileSync, writeFileSync, existsSync, mkdirSync } = require("fs");
 const { platform } = require("os");
+const { runInContext, createContext } = require("vm");
 
 // *****************************************************************************
 // HELPERS START HERE!
@@ -31,68 +32,61 @@ function writeFile(resourceName, code, ctx) {
 
 // eslint-disable-next-line jsdoc/require-jsdoc
 async function runModule(resourceName, code, ctx) {
-	const fn = new Function(
-		["scope"],
-		`// ${resourceName}\n${ctx?.monkeyPatch || ""}Object.keys(scope).forEach(sym => { globalThis[sym] = scope[sym]; });\nconst window = self = global = globalThis;\n${code}`,
-	);
 	return new Promise((resolve, reject) => {
-		fn(
-			Object.assign(
-				{},
-				{
-					sap: {
-						ui: {
-							define: async function (name, deps, callback) {
-								if (typeof name === "function") {
-									callback = name;
-									name = undefined;
-								} else if (Array.isArray(name)) {
-									callback = deps;
-									deps = name;
-									name = undefined;
-								}
-								if (Array.isArray(deps)) {
-									const resolvedDeps = await Promise.all(
-										deps.map((dep) => getModule(/exports|require/.test(dep) ? dep : /^\.\.?\//.test(dep) ? path.join(resourceName, "..", dep) : dep, ctx)),
+		const context = createContext(
+			Object.assign({}, ctx.scope, {
+				sap: {
+					ui: {
+						define: async function (name, deps, callback) {
+							if (typeof name === "function") {
+								callback = name;
+								name = undefined;
+							} else if (Array.isArray(name)) {
+								callback = deps;
+								deps = name;
+								name = undefined;
+							}
+							if (Array.isArray(deps)) {
+								const resolvedDeps = await Promise.all(
+									deps.map((dep) => getModule(/exports|require/.test(dep) ? dep : /^\.\.?\//.test(dep) ? path.join(resourceName, "..", dep) : dep, ctx)),
+								);
+								try {
+									// INFO: put a breakpoint into the next line and the set the breakpoint for
+									//       "Caught Exceptions". This will let you stop where the error occurs!
+									let exports = callback.apply(
+										undefined,
+										resolvedDeps.map((dep) => dep.retVal),
 									);
-									try {
-										// INFO: put a breakpoint into the next line and the set the breakpoint for
-										//       "Caught Exceptions". This will let you stop where the error occurs!
-										let exports = callback.apply(
-											undefined,
-											resolvedDeps.map((dep) => dep.retVal),
-										);
-										let exportsIndex = deps.indexOf("exports");
-										exports = exportsIndex !== -1 ? resolvedDeps[exportsIndex].retVal : exports;
-										resolve(exports);
-									} catch (err) {
-										let { row } = /<anonymous>:(?<row>\d+):(?<col>\d+)/.exec(err.stack).groups;
-										row -= 6; // remove the six rows appended above
-										const codeLines = code.split("\n");
-										const beginRow = Math.max(0, row - 10);
-										const endRow = Math.min(codeLines.length - 1, beginRow + 20);
-										const codeSnippet = [];
-										for (let i = beginRow, l = endRow; i < l; i++) {
-											const lineNo = `[${i}]`.padEnd(`${endRow}`.length + 3);
-											if (i == row) {
-												codeSnippet.push(`${lineNo} >>>\t${codeLines[i]?.substring(0, 80)}${codeLines[i]?.length > 80 ? "..." : ""}`);
-											} else {
-												codeSnippet.push(`${lineNo}    \t${codeLines[i]?.substring(0, 80)}${codeLines[i]?.length > 80 ? "..." : ""}`);
-											}
+									let exportsIndex = deps.indexOf("exports");
+									exports = exportsIndex !== -1 ? resolvedDeps[exportsIndex].retVal : exports;
+									resolve(exports);
+								} catch (err) {
+									let { row } = /<anonymous>:(?<row>\d+):(?<col>\d+)/.exec(err.stack).groups;
+									row -= 4; // remove the six rows appended above
+									const codeLines = code.split("\n");
+									const beginRow = Math.max(0, row - 10);
+									const endRow = Math.min(codeLines.length - 1, beginRow + 20);
+									const codeSnippet = [];
+									for (let i = beginRow, l = endRow; i < l; i++) {
+										const lineNo = `[${i}]`.padEnd(`${endRow}`.length + 3);
+										if (i == row) {
+											codeSnippet.push(`${lineNo} >>>\t${codeLines[i]?.substring(0, 80)}${codeLines[i]?.length > 80 ? "..." : ""}`);
+										} else {
+											codeSnippet.push(`${lineNo}    \t${codeLines[i]?.substring(0, 80)}${codeLines[i]?.length > 80 ? "..." : ""}`);
 										}
-										console.error(`The following line caused the issue "${err.message}":\n\n${codeSnippet.join("\n")}\n\n`, err);
-										reject(err);
 									}
-								} else {
-									resolve(callback.apply(undefined));
+									console.error(`The following line caused the issue "${err.message}":\n\n${codeSnippet.join("\n")}\n\n`, err);
+									reject(err);
 								}
-							},
+							} else {
+								resolve(callback.apply(undefined));
+							}
 						},
 					},
 				},
-				ctx?.scope,
-			),
+			}),
 		);
+		runInContext(`// ${resourceName}\n${ctx?.monkeyPatch || ""}\nconst window = self = global = globalThis;\n${code}`, context);
 	});
 }
 
@@ -249,6 +243,8 @@ test.serial("Verify generation of jspdf", async (t) => {
 			log: t.context.log,
 			scope: {
 				navigator: {},
+				atob: function () {},
+				btoa: function () {},
 			},
 		},
 		{
@@ -320,6 +316,8 @@ test.serial("Verify generation of cmis", async (t) => {
 			location: {
 				host: "/",
 			},
+			TextEncoder: function () {},
+			TextDecoder: function () {},
 		},
 	});
 	const module = await env.getModule("cmis");
@@ -412,6 +410,7 @@ test.serial("Verify generation of @supabase/supabase-js", async (t) => {
 		log: t.context.log,
 		scope: {
 			WebSocket: function () {},
+			fetch: function () {},
 		},
 	});
 	const module = await env.getModule("@supabase/supabase-js");
@@ -525,27 +524,24 @@ test.serial("Verify generation of zod", async (t) => {
 test.serial("Verify generation of @luigi-project/container", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp"));
 	const env = await setupEnv(
-		["@luigi-project/container"],
-		{
+		["@luigi-project/container", "@luigi-project/container/LuigiContainer"],
+		Object.assign({}, webcomponentsContext, {
 			hash: t.context.hash,
 			tmpDir: t.context.tmpDir,
 			log: t.context.log,
-			scope: {
-				HTMLElement: function () {},
-				customElements: {
-					get: function () {},
-					define: function () {},
-				},
-			},
-		},
+			modules: webcContextModules,
+		}),
 		{
 			keepDynamicImports: ["@luigi-project/container"],
 		},
 	);
-	const module = await env.getModule("@luigi-project/container");
-	t.true(module.retVal.__esModule);
+	const modPackage = await env.getModule("@luigi-project/container");
+	t.true(modPackage.retVal._ui5metadata.name === "@luigi-project/container");
+	const modContainer = await env.getModule("@luigi-project/container/LuigiContainer");
+	t.true(modContainer.retVal.name === "@luigi-project/container.LuigiContainer");
 	if (platform() !== "win32") {
-		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
+		t.is(modPackage.code, readSnapFile(modPackage.name, t.context.snapDir));
+		t.is(modContainer.code, readSnapFile(modContainer.name, t.context.snapDir));
 	}
 });
 
@@ -567,8 +563,8 @@ test.serial("Verify generation of pdfMake", async (t) => {
 	}
 	const moduleFonts = await env.getModule("pdfmake/build/vfs_fonts");
 	t.true(moduleFonts.retVal.__esModule);
-	t.true(moduleFonts.retVal.pdfMake !== undefined);
-	t.true(Object.keys(moduleFonts.retVal.pdfMake.vfs).length > 0);
+	t.true(typeof moduleFonts.retVal === "object");
+	t.true(Object.keys(moduleFonts.retVal).length > 0);
 	if (platform() !== "win32") {
 		t.is(moduleFonts.code, readSnapFile(moduleFonts.name, t.context.snapDir));
 	}
@@ -580,6 +576,10 @@ test.serial("Verify generation of xml-js", async (t) => {
 		hash: t.context.hash,
 		tmpDir: t.context.tmpDir,
 		log: t.context.log,
+		scope: {
+			TextEncoder: function () {},
+			TextDecoder: function () {},
+		},
 	});
 	const module = await env.getModule("xml-js");
 	t.true(module.retVal.__esModule);
@@ -625,6 +625,11 @@ const webcomponentsContext = {
 		},
 		getComputedStyle: function () {
 			return {};
+		},
+		URLSearchParams: function () {
+			return {
+				forEach: function () {},
+			};
 		},
 	},
 	// running Web Components in the V8 engine causes "TypeError: can't redefine non-configurable property design"
@@ -684,12 +689,12 @@ test.serial("Verify generation of @ui5/webcomponents/dist/Panel Wrapper UI5 Cont
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
 	const env = await setupEnv(
 		["@ui5/webcomponents/dist/Panel"],
-		{
+		Object.assign({}, webcomponentsContext, {
 			hash: t.context.hash,
 			tmpDir: t.context.tmpDir,
 			log: t.context.log,
 			modules: webcContextModules,
-		},
+		}),
 		{
 			pluginOptions: {
 				webcomponents: {
@@ -736,12 +741,12 @@ test.serial("Verify generation of @ui5/webcomponents/dist/CheckBox Wrapper UI5 C
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
 	const env = await setupEnv(
 		["@ui5/webcomponents/dist/CheckBox"],
-		{
+		Object.assign({}, webcomponentsContext, {
 			hash: t.context.hash,
 			tmpDir: t.context.tmpDir,
 			log: t.context.log,
 			modules: webcContextModules,
-		},
+		}),
 		{
 			pluginOptions: {
 				webcomponents: {
@@ -795,7 +800,9 @@ test.serial("Verify generation of @opentelemetry", async (t) => {
 		hash: t.context.hash,
 		tmpDir: t.context.tmpDir,
 		log: t.context.log,
-		scope: {},
+		scope: {
+			performance: {},
+		},
 	});
 	const moduleOT_API = await env.getModule("@opentelemetry/api");
 	t.true(moduleOT_API.retVal.__esModule);

@@ -1,4 +1,15 @@
-<mvc:View controllerName="ui5.ecosystem.demo.tsapp.controller.Main" displayBlock="true" xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns:lib="ui5.ecosystem.demo.tslib">
+<mvc:View
+  controllerName="ui5.ecosystem.demo.tsapp.controller.Main"
+  displayBlock="true"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns:lib="ui5.ecosystem.demo.tslib"
+  xmlns:luigi="@luigi-project/container"
+  core:require="{
+        theming: 'sap/ui/core/Theming'
+  }"
+>
   <Page id="page" title="{i18n>appTitle}">
     <headerContent>
       <Text text="TypeScript-based UI5 Application" />
@@ -11,6 +22,7 @@
         <Button text="Download PDF" press="downloadPDF" />
         <Button text="Create Mail" press="createMail" />
         <lib:Example text="Hello World" />
+        <luigi:LuigiContainer viewurl="https://sdk.openui5.org/test-resources/sap/m/demokit/cart/webapp/index.html" theme="{= theming.getTheme() }" />
       </VBox>
     </content>
   </Page>

@@ -14,6 +14,6 @@
     "lint": "eslint lib"
   },
   "dependencies": {
-    "@xmldom/xmldom": "^0.9.5"
+    "@xmldom/xmldom": "^0.9.7"
   }
 }

@@ -42,7 +42,7 @@ sap.ui.define((function () { 'use strict';
 	      }
 	    }
 	    function isUndefined(input) {
-	      return input === void 0;
+	      return input === undefined;
 	    }
 	    function isNumber(input) {
 	      return typeof input === "number" || Object.prototype.toString.call(input) === "[object Number]";
@@ -2912,7 +2912,7 @@ sap.ui.define((function () { 'use strict';
 	      }
 	    }
 	    function localeErasConvertYear(era, year) {
-	      var dir = era.since <= era.until ? +1 : -1;
+	      var dir = era.since <= era.until ? 1 : -1;
 	      if (year === undefined) {
 	        return hooks(era.since).year();
 	      } else {
@@ -2961,7 +2961,7 @@ sap.ui.define((function () { 'use strict';
 	    function getEraYear() {
 	      var i, l, dir, val, eras = this.localeData().eras();
 	      for ((i = 0, l = eras.length); i < l; ++i) {
-	        dir = eras[i].since <= eras[i].until ? +1 : -1;
+	        dir = eras[i].since <= eras[i].until ? 1 : -1;
 	        val = this.clone().startOf("day").valueOf();
 	        if (eras[i].since <= val && val <= eras[i].until || eras[i].until <= val && val <= eras[i].since) {
 	          return (this.year() - hooks(eras[i].since).year()) * dir + eras[i].offset;

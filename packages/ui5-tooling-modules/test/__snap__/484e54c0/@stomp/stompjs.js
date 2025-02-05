@@ -417,7 +417,7 @@ sap.ui.define((function () { 'use strict';
 		    /**
 		     * Possible states for the IStompSocket
 		     */
-		    exports.StompSocketState = void 0;
+		    exports.StompSocketState = undefined;
 		    (function (StompSocketState) {
 		        StompSocketState[StompSocketState["CONNECTING"] = 0] = "CONNECTING";
 		        StompSocketState[StompSocketState["OPEN"] = 1] = "OPEN";
@@ -427,7 +427,7 @@ sap.ui.define((function () { 'use strict';
 		    /**
 		     * Possible activation state
 		     */
-		    exports.ActivationState = void 0;
+		    exports.ActivationState = undefined;
 		    (function (ActivationState) {
 		        ActivationState[ActivationState["ACTIVE"] = 0] = "ACTIVE";
 		        ActivationState[ActivationState["DEACTIVATING"] = 1] = "DEACTIVATING";

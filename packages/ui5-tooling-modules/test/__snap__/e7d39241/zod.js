@@ -162,6 +162,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return json.replace(/"([^"]+)":/g, "$1:");
     };
     class ZodError extends Error {
+        get errors() {
+            return this.issues;
+        }
         constructor(issues) {
             super();
             this.issues = [];
@@ -181,9 +184,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             }
             this.name = "ZodError";
             this.issues = issues;
-        }
-        get errors() {
-            return this.issues;
         }
         format(_mapper) {
             const mapper = _mapper ||
@@ -440,9 +440,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             data: ctx.data,
             path: ctx.path,
             errorMaps: [
-                ctx.common.contextualErrorMap,
-                ctx.schemaErrorMap,
-                overrideMap,
+                ctx.common.contextualErrorMap, // contextual error map is first priority
+                ctx.schemaErrorMap, // then schema-bound map if available
+                overrideMap, // then global override map
                 overrideMap === errorMap ? undefined : errorMap, // then global default map
             ].filter((x) => !!x),
         });
@@ -529,12 +529,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     ***************************************************************************** */
 
     function __classPrivateFieldGet(receiver, state, kind, f) {
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+        if (typeof state === "function" ? receiver !== state || true : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
         return state.get(receiver);
     }
 
     function __classPrivateFieldSet(receiver, state, value, kind, f) {
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+        if (typeof state === "function" ? receiver !== state || true : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
         return (state.set(receiver, value)), value;
     }
 
@@ -546,7 +546,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     var errorUtil;
     (function (errorUtil) {
         errorUtil.errToObj = (message) => typeof message === "string" ? { message } : message || {};
-        errorUtil.toString = (message) => typeof message === "string" ? message : message === null || message === void 0 ? void 0 : message.message;
+        errorUtil.toString = (message) => typeof message === "string" ? message : message === null || message === undefined ? undefined : message.message;
     })(errorUtil || (errorUtil = {}));
 
     var _ZodEnum_cache, _ZodNativeEnum_cache;
@@ -603,47 +603,18 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             var _a, _b;
             const { message } = params;
             if (iss.code === "invalid_enum_value") {
-                return { message: message !== null && message !== void 0 ? message : ctx.defaultError };
+                return { message: message !== null && message !== undefined ? message : ctx.defaultError };
             }
             if (typeof ctx.data === "undefined") {
-                return { message: (_a = message !== null && message !== void 0 ? message : required_error) !== null && _a !== void 0 ? _a : ctx.defaultError };
+                return { message: (_a = message !== null && message !== undefined ? message : required_error) !== null && _a !== undefined ? _a : ctx.defaultError };
             }
             if (iss.code !== "invalid_type")
                 return { message: ctx.defaultError };
-            return { message: (_b = message !== null && message !== void 0 ? message : invalid_type_error) !== null && _b !== void 0 ? _b : ctx.defaultError };
+            return { message: (_b = message !== null && message !== undefined ? message : invalid_type_error) !== null && _b !== undefined ? _b : ctx.defaultError };
         };
         return { errorMap: customMap, description };
     }
     class ZodType {
-        constructor(def) {
-            /** Alias of safeParseAsync */
-            this.spa = this.safeParseAsync;
-            this._def = def;
-            this.parse = this.parse.bind(this);
-            this.safeParse = this.safeParse.bind(this);
-            this.parseAsync = this.parseAsync.bind(this);
-            this.safeParseAsync = this.safeParseAsync.bind(this);
-            this.spa = this.spa.bind(this);
-            this.refine = this.refine.bind(this);
-            this.refinement = this.refinement.bind(this);
-            this.superRefine = this.superRefine.bind(this);
-            this.optional = this.optional.bind(this);
-            this.nullable = this.nullable.bind(this);
-            this.nullish = this.nullish.bind(this);
-            this.array = this.array.bind(this);
-            this.promise = this.promise.bind(this);
-            this.or = this.or.bind(this);
-            this.and = this.and.bind(this);
-            this.transform = this.transform.bind(this);
-            this.brand = this.brand.bind(this);
-            this.default = this.default.bind(this);
-            this.catch = this.catch.bind(this);
-            this.describe = this.describe.bind(this);
-            this.pipe = this.pipe.bind(this);
-            this.readonly = this.readonly.bind(this);
-            this.isNullable = this.isNullable.bind(this);
-            this.isOptional = this.isOptional.bind(this);
-        }
         get description() {
             return this._def.description;
         }
@@ -695,10 +666,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             const ctx = {
                 common: {
                     issues: [],
-                    async: (_a = params === null || params === void 0 ? void 0 : params.async) !== null && _a !== void 0 ? _a : false,
-                    contextualErrorMap: params === null || params === void 0 ? void 0 : params.errorMap,
+                    async: (_a = params === null || params === undefined ? undefined : params.async) !== null && _a !== undefined ? _a : false,
+                    contextualErrorMap: params === null || params === undefined ? undefined : params.errorMap,
                 },
-                path: (params === null || params === void 0 ? void 0 : params.path) || [],
+                path: (params === null || params === undefined ? undefined : params.path) || [],
                 schemaErrorMap: this._def.errorMap,
                 parent: null,
                 data,
@@ -706,6 +677,48 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             };
             const result = this._parseSync({ data, path: ctx.path, parent: ctx });
             return handleResult(ctx, result);
+        }
+        "~validate"(data) {
+            var _a, _b;
+            const ctx = {
+                common: {
+                    issues: [],
+                    async: !!this["~standard"].async,
+                },
+                path: [],
+                schemaErrorMap: this._def.errorMap,
+                parent: null,
+                data,
+                parsedType: getParsedType(data),
+            };
+            if (!this["~standard"].async) {
+                try {
+                    const result = this._parseSync({ data, path: [], parent: ctx });
+                    return isValid(result)
+                        ? {
+                            value: result.value,
+                        }
+                        : {
+                            issues: ctx.common.issues,
+                        };
+                }
+                catch (err) {
+                    if ((_b = (_a = err === null || err === undefined ? undefined : err.message) === null || _a === undefined ? undefined : _a.toLowerCase()) === null || _b === undefined ? undefined : _b.includes("encountered")) {
+                        this["~standard"].async = true;
+                    }
+                    ctx.common = {
+                        issues: [],
+                        async: true,
+                    };
+                }
+            }
+            return this._parseAsync({ data, path: [], parent: ctx }).then((result) => isValid(result)
+                ? {
+                    value: result.value,
+                }
+                : {
+                    issues: ctx.common.issues,
+                });
         }
         async parseAsync(data, params) {
             const result = await this.safeParseAsync(data, params);
@@ -717,10 +730,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             const ctx = {
                 common: {
                     issues: [],
-                    contextualErrorMap: params === null || params === void 0 ? void 0 : params.errorMap,
+                    contextualErrorMap: params === null || params === undefined ? undefined : params.errorMap,
                     async: true,
                 },
-                path: (params === null || params === void 0 ? void 0 : params.path) || [],
+                path: (params === null || params === undefined ? undefined : params.path) || [],
                 schemaErrorMap: this._def.errorMap,
                 parent: null,
                 data,
@@ -793,6 +806,40 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         superRefine(refinement) {
             return this._refinement(refinement);
         }
+        constructor(def) {
+            /** Alias of safeParseAsync */
+            this.spa = this.safeParseAsync;
+            this._def = def;
+            this.parse = this.parse.bind(this);
+            this.safeParse = this.safeParse.bind(this);
+            this.parseAsync = this.parseAsync.bind(this);
+            this.safeParseAsync = this.safeParseAsync.bind(this);
+            this.spa = this.spa.bind(this);
+            this.refine = this.refine.bind(this);
+            this.refinement = this.refinement.bind(this);
+            this.superRefine = this.superRefine.bind(this);
+            this.optional = this.optional.bind(this);
+            this.nullable = this.nullable.bind(this);
+            this.nullish = this.nullish.bind(this);
+            this.array = this.array.bind(this);
+            this.promise = this.promise.bind(this);
+            this.or = this.or.bind(this);
+            this.and = this.and.bind(this);
+            this.transform = this.transform.bind(this);
+            this.brand = this.brand.bind(this);
+            this.default = this.default.bind(this);
+            this.catch = this.catch.bind(this);
+            this.describe = this.describe.bind(this);
+            this.pipe = this.pipe.bind(this);
+            this.readonly = this.readonly.bind(this);
+            this.isNullable = this.isNullable.bind(this);
+            this.isOptional = this.isOptional.bind(this);
+            this["~standard"] = {
+                version: 1,
+                vendor: "zod",
+                validate: (data) => this["~validate"](data),
+            };
+        }
         optional() {
             return ZodOptional.create(this, this._def);
         }
@@ -803,7 +850,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             return this.nullable().optional();
         }
         array() {
-            return ZodArray.create(this, this._def);
+            return ZodArray.create(this);
         }
         promise() {
             return ZodPromise.create(this, this._def);
@@ -869,11 +916,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     const cuidRegex = /^c[^\s-]{8,}$/i;
     const cuid2Regex = /^[0-9a-z]+$/;
-    const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/;
+    const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/i;
     // const uuidRegex =
     //   /^([a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}|00000000-0000-0000-0000-000000000000)$/i;
     const uuidRegex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
     const nanoidRegex = /^[a-z0-9_-]{21}$/i;
+    const jwtRegex = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/;
     const durationRegex = /^[-+]?P(?!$)(?:(?:[-+]?\d+Y)|(?:[-+]?\d+[.,]\d+Y$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:(?:[-+]?\d+W)|(?:[-+]?\d+[.,]\d+W$))?(?:(?:[-+]?\d+D)|(?:[-+]?\d+[.,]\d+D$))?(?:T(?=[\d+-])(?:(?:[-+]?\d+H)|(?:[-+]?\d+[.,]\d+H$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:[-+]?\d+(?:[.,]\d+)?S)?)??$/;
     // from https://stackoverflow.com/a/46181/1550155
     // old version: too slow, didn't support unicode
@@ -895,9 +943,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     let emojiRegex;
     // faster, simpler, safer
     const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/;
-    const ipv6Regex = /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/;
+    const ipv4CidrRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\/(3[0-2]|[12]?[0-9])$/;
+    // const ipv6Regex =
+    // /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/;
+    const ipv6Regex = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/;
+    const ipv6CidrRegex = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/(12[0-8]|1[01][0-9]|[1-9]?[0-9])$/;
     // https://stackoverflow.com/questions/7860392/determine-if-string-is-in-base64-using-javascript
     const base64Regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+    // https://base64.guru/standards/base64url
+    const base64urlRegex = /^([0-9a-zA-Z-_]{4})*(([0-9a-zA-Z-_]{2}(==)?)|([0-9a-zA-Z-_]{3}(=)?))?$/;
     // simple
     // const dateRegexSource = `\\d{4}-\\d{2}-\\d{2}`;
     // no leap year validation
@@ -934,6 +988,38 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             return true;
         }
         if ((version === "v6" || !version) && ipv6Regex.test(ip)) {
+            return true;
+        }
+        return false;
+    }
+    function isValidJWT(jwt, alg) {
+        if (!jwtRegex.test(jwt))
+            return false;
+        try {
+            const [header] = jwt.split(".");
+            // Convert base64url to base64
+            const base64 = header
+                .replace(/-/g, "+")
+                .replace(/_/g, "/")
+                .padEnd(header.length + ((4 - (header.length % 4)) % 4), "=");
+            const decoded = JSON.parse(atob(base64));
+            if (typeof decoded !== "object" || decoded === null)
+                return false;
+            if (!decoded.typ || !decoded.alg)
+                return false;
+            if (alg && decoded.alg !== alg)
+                return false;
+            return true;
+        }
+        catch (_a) {
+            return false;
+        }
+    }
+    function isValidCidr(ip, version) {
+        if ((version === "v4" || !version) && ipv4CidrRegex.test(ip)) {
+            return true;
+        }
+        if ((version === "v6" || !version) && ipv6CidrRegex.test(ip)) {
             return true;
         }
         return false;
@@ -1219,11 +1305,44 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         status.dirty();
                     }
                 }
+                else if (check.kind === "jwt") {
+                    if (!isValidJWT(input.data, check.alg)) {
+                        ctx = this._getOrReturnCtx(input, ctx);
+                        addIssueToContext(ctx, {
+                            validation: "jwt",
+                            code: ZodIssueCode.invalid_string,
+                            message: check.message,
+                        });
+                        status.dirty();
+                    }
+                }
+                else if (check.kind === "cidr") {
+                    if (!isValidCidr(input.data, check.version)) {
+                        ctx = this._getOrReturnCtx(input, ctx);
+                        addIssueToContext(ctx, {
+                            validation: "cidr",
+                            code: ZodIssueCode.invalid_string,
+                            message: check.message,
+                        });
+                        status.dirty();
+                    }
+                }
                 else if (check.kind === "base64") {
                     if (!base64Regex.test(input.data)) {
                         ctx = this._getOrReturnCtx(input, ctx);
                         addIssueToContext(ctx, {
                             validation: "base64",
+                            code: ZodIssueCode.invalid_string,
+                            message: check.message,
+                        });
+                        status.dirty();
+                    }
+                }
+                else if (check.kind === "base64url") {
+                    if (!base64urlRegex.test(input.data)) {
+                        ctx = this._getOrReturnCtx(input, ctx);
+                        addIssueToContext(ctx, {
+                            validation: "base64url",
                             code: ZodIssueCode.invalid_string,
                             message: check.message,
                         });
@@ -1276,8 +1395,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         base64(message) {
             return this._addCheck({ kind: "base64", ...errorUtil.errToObj(message) });
         }
+        base64url(message) {
+            // base64url encoding is a modification of base64 that can safely be used in URLs and filenames
+            return this._addCheck({
+                kind: "base64url",
+                ...errorUtil.errToObj(message),
+            });
+        }
+        jwt(options) {
+            return this._addCheck({ kind: "jwt", ...errorUtil.errToObj(options) });
+        }
         ip(options) {
             return this._addCheck({ kind: "ip", ...errorUtil.errToObj(options) });
+        }
+        cidr(options) {
+            return this._addCheck({ kind: "cidr", ...errorUtil.errToObj(options) });
         }
         datetime(options) {
             var _a, _b;
@@ -1292,10 +1424,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             }
             return this._addCheck({
                 kind: "datetime",
-                precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
-                offset: (_a = options === null || options === void 0 ? void 0 : options.offset) !== null && _a !== void 0 ? _a : false,
-                local: (_b = options === null || options === void 0 ? void 0 : options.local) !== null && _b !== void 0 ? _b : false,
-                ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message),
+                precision: typeof (options === null || options === undefined ? undefined : options.precision) === "undefined" ? null : options === null || options === undefined ? undefined : options.precision,
+                offset: (_a = options === null || options === undefined ? undefined : options.offset) !== null && _a !== undefined ? _a : false,
+                local: (_b = options === null || options === undefined ? undefined : options.local) !== null && _b !== undefined ? _b : false,
+                ...errorUtil.errToObj(options === null || options === undefined ? undefined : options.message),
             });
         }
         date(message) {
@@ -1311,8 +1443,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             }
             return this._addCheck({
                 kind: "time",
-                precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
-                ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message),
+                precision: typeof (options === null || options === undefined ? undefined : options.precision) === "undefined" ? null : options === null || options === undefined ? undefined : options.precision,
+                ...errorUtil.errToObj(options === null || options === undefined ? undefined : options.message),
             });
         }
         duration(message) {
@@ -1329,8 +1461,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             return this._addCheck({
                 kind: "includes",
                 value: value,
-                position: options === null || options === void 0 ? void 0 : options.position,
-                ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message),
+                position: options === null || options === undefined ? undefined : options.position,
+                ...errorUtil.errToObj(options === null || options === undefined ? undefined : options.message),
             });
         }
         startsWith(value, message) {
@@ -1369,8 +1501,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             });
         }
         /**
-         * @deprecated Use z.string().min(1) instead.
-         * @see {@link ZodString.min}
+         * Equivalent to `.min(1)`
          */
         nonempty(message) {
             return this.min(1, errorUtil.errToObj(message));
@@ -1432,8 +1563,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         get isIP() {
             return !!this._def.checks.find((ch) => ch.kind === "ip");
         }
+        get isCIDR() {
+            return !!this._def.checks.find((ch) => ch.kind === "cidr");
+        }
         get isBase64() {
             return !!this._def.checks.find((ch) => ch.kind === "base64");
+        }
+        get isBase64url() {
+            // base64url encoding is a modification of base64 that can safely be used in URLs and filenames
+            return !!this._def.checks.find((ch) => ch.kind === "base64url");
         }
         get minLength() {
             let min = null;
@@ -1461,7 +1599,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return new ZodString({
             checks: [],
             typeName: exports.ZodFirstPartyTypeKind.ZodString,
-            coerce: (_a = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a !== void 0 ? _a : false,
+            coerce: (_a = params === null || params === undefined ? undefined : params.coerce) !== null && _a !== undefined ? _a : false,
             ...processCreateParams(params),
         });
     };
@@ -1715,7 +1853,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return new ZodNumber({
             checks: [],
             typeName: exports.ZodFirstPartyTypeKind.ZodNumber,
-            coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+            coerce: (params === null || params === undefined ? undefined : params.coerce) || false,
             ...processCreateParams(params),
         });
     };
@@ -1727,17 +1865,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
         _parse(input) {
             if (this._def.coerce) {
-                input.data = BigInt(input.data);
+                try {
+                    input.data = BigInt(input.data);
+                }
+                catch (_a) {
+                    return this._getInvalidInput(input);
+                }
             }
             const parsedType = this._getType(input);
             if (parsedType !== ZodParsedType.bigint) {
-                const ctx = this._getOrReturnCtx(input);
-                addIssueToContext(ctx, {
-                    code: ZodIssueCode.invalid_type,
-                    expected: ZodParsedType.bigint,
-                    received: ctx.parsedType,
-                });
-                return INVALID;
+                return this._getInvalidInput(input);
             }
             let ctx = undefined;
             const status = new ParseStatus();
@@ -1790,6 +1927,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 }
             }
             return { status: status.value, value: input.data };
+        }
+        _getInvalidInput(input) {
+            const ctx = this._getOrReturnCtx(input);
+            addIssueToContext(ctx, {
+                code: ZodIssueCode.invalid_type,
+                expected: ZodParsedType.bigint,
+                received: ctx.parsedType,
+            });
+            return INVALID;
         }
         gte(value, message) {
             return this.setLimit("min", value, true, errorUtil.toString(message));
@@ -1888,7 +2034,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return new ZodBigInt({
             checks: [],
             typeName: exports.ZodFirstPartyTypeKind.ZodBigInt,
-            coerce: (_a = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a !== void 0 ? _a : false,
+            coerce: (_a = params === null || params === undefined ? undefined : params.coerce) !== null && _a !== undefined ? _a : false,
             ...processCreateParams(params),
         });
     };
@@ -1913,7 +2059,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     ZodBoolean.create = (params) => {
         return new ZodBoolean({
             typeName: exports.ZodFirstPartyTypeKind.ZodBoolean,
-            coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+            coerce: (params === null || params === undefined ? undefined : params.coerce) || false,
             ...processCreateParams(params),
         });
     };
@@ -2023,7 +2169,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     ZodDate.create = (params) => {
         return new ZodDate({
             checks: [],
-            coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+            coerce: (params === null || params === undefined ? undefined : params.coerce) || false,
             typeName: exports.ZodFirstPartyTypeKind.ZodDate,
             ...processCreateParams(params),
         });
@@ -2451,10 +2597,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     ? {
                         errorMap: (issue, ctx) => {
                             var _a, _b, _c, _d;
-                            const defaultError = (_c = (_b = (_a = this._def).errorMap) === null || _b === void 0 ? void 0 : _b.call(_a, issue, ctx).message) !== null && _c !== void 0 ? _c : ctx.defaultError;
+                            const defaultError = (_c = (_b = (_a = this._def).errorMap) === null || _b === undefined ? undefined : _b.call(_a, issue, ctx).message) !== null && _c !== undefined ? _c : ctx.defaultError;
                             if (issue.code === "unrecognized_keys")
                                 return {
-                                    message: (_d = errorUtil.errToObj(message).message) !== null && _d !== void 0 ? _d : defaultError,
+                                    message: (_d = errorUtil.errToObj(message).message) !== null && _d !== undefined ? _d : defaultError,
                                 };
                             return {
                                 message: defaultError,
@@ -3464,7 +3610,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     class ZodEnum extends ZodType {
         constructor() {
             super(...arguments);
-            _ZodEnum_cache.set(this, void 0);
+            _ZodEnum_cache.set(this, undefined);
         }
         _parse(input) {
             if (typeof input.data !== "string") {
@@ -3534,7 +3680,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     class ZodNativeEnum extends ZodType {
         constructor() {
             super(...arguments);
-            _ZodNativeEnum_cache.set(this, void 0);
+            _ZodNativeEnum_cache.set(this, undefined);
         }
         _parse(input) {
             const nativeEnumValues = exports.util.getValidEnumValues(this._def.values);
@@ -4018,7 +4164,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         : typeof params === "string"
                             ? { message: params }
                             : params;
-                    const _fatal = (_b = (_a = p.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
+                    const _fatal = (_b = (_a = p.fatal) !== null && _a !== undefined ? _a : fatal) !== null && _b !== undefined ? _b : true;
                     const p2 = typeof p === "string" ? { message: p } : p;
                     ctx.addIssue({ code: "custom", ...p2, fatal: _fatal });
                 }

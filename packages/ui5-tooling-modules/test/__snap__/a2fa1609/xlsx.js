@@ -842,8 +842,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       byteOffset = 0;
     } else if (byteOffset > 0x7fffffff) {
       byteOffset = 0x7fffffff;
-    } else if (byteOffset < -0x80000000) {
-      byteOffset = -0x80000000;
+    } else if (byteOffset < -2147483648) {
+      byteOffset = -2147483648;
     }
     byteOffset = +byteOffset;  // Coerce to Number.
     if (isNaN(byteOffset)) {
@@ -1602,7 +1602,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
     value = +value;
     offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80);
+    if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -128);
     if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
     if (value < 0) value = 0xff + value + 1;
     this[offset] = (value & 0xff);
@@ -1612,7 +1612,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
     value = +value;
     offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
+    if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -32768);
     if (Buffer.TYPED_ARRAY_SUPPORT) {
       this[offset] = (value & 0xff);
       this[offset + 1] = (value >>> 8);
@@ -1625,7 +1625,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
     value = +value;
     offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
+    if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -32768);
     if (Buffer.TYPED_ARRAY_SUPPORT) {
       this[offset] = (value >>> 8);
       this[offset + 1] = (value & 0xff);
@@ -1638,7 +1638,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
     value = +value;
     offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
+    if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -2147483648);
     if (Buffer.TYPED_ARRAY_SUPPORT) {
       this[offset] = (value & 0xff);
       this[offset + 1] = (value >>> 8);
@@ -1653,7 +1653,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
     value = +value;
     offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
+    if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -2147483648);
     if (value < 0) value = 0xffffffff + value + 1;
     if (Buffer.TYPED_ARRAY_SUPPORT) {
       this[offset] = (value >>> 24);
@@ -1981,227 +1981,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isFastBuffer(obj.slice(0, 0))
   }
 
-  // shim for using process in browser
-  // based off https://github.com/defunctzombie/node-process/blob/master/browser.js
-
-  function defaultSetTimout() {
-      throw new Error('setTimeout has not been defined');
-  }
-  function defaultClearTimeout () {
-      throw new Error('clearTimeout has not been defined');
-  }
-  var cachedSetTimeout = defaultSetTimout;
-  var cachedClearTimeout = defaultClearTimeout;
-  if (typeof global$1.setTimeout === 'function') {
-      cachedSetTimeout = setTimeout;
-  }
-  if (typeof global$1.clearTimeout === 'function') {
-      cachedClearTimeout = clearTimeout;
-  }
-
-  function runTimeout(fun) {
-      if (cachedSetTimeout === setTimeout) {
-          //normal enviroments in sane situations
-          return setTimeout(fun, 0);
-      }
-      // if setTimeout wasn't available but was latter defined
-      if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-          cachedSetTimeout = setTimeout;
-          return setTimeout(fun, 0);
-      }
-      try {
-          // when when somebody has screwed with setTimeout but no I.E. maddness
-          return cachedSetTimeout(fun, 0);
-      } catch(e){
-          try {
-              // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-              return cachedSetTimeout.call(null, fun, 0);
-          } catch(e){
-              // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-              return cachedSetTimeout.call(this, fun, 0);
-          }
-      }
-
-
-  }
-  function runClearTimeout(marker) {
-      if (cachedClearTimeout === clearTimeout) {
-          //normal enviroments in sane situations
-          return clearTimeout(marker);
-      }
-      // if clearTimeout wasn't available but was latter defined
-      if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-          cachedClearTimeout = clearTimeout;
-          return clearTimeout(marker);
-      }
-      try {
-          // when when somebody has screwed with setTimeout but no I.E. maddness
-          return cachedClearTimeout(marker);
-      } catch (e){
-          try {
-              // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-              return cachedClearTimeout.call(null, marker);
-          } catch (e){
-              // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-              // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-              return cachedClearTimeout.call(this, marker);
-          }
-      }
-
-
-
-  }
-  var queue = [];
-  var draining = false;
-  var currentQueue;
-  var queueIndex = -1;
-
-  function cleanUpNextTick() {
-      if (!draining || !currentQueue) {
-          return;
-      }
-      draining = false;
-      if (currentQueue.length) {
-          queue = currentQueue.concat(queue);
-      } else {
-          queueIndex = -1;
-      }
-      if (queue.length) {
-          drainQueue();
-      }
-  }
-
-  function drainQueue() {
-      if (draining) {
-          return;
-      }
-      var timeout = runTimeout(cleanUpNextTick);
-      draining = true;
-
-      var len = queue.length;
-      while(len) {
-          currentQueue = queue;
-          queue = [];
-          while (++queueIndex < len) {
-              if (currentQueue) {
-                  currentQueue[queueIndex].run();
-              }
-          }
-          queueIndex = -1;
-          len = queue.length;
-      }
-      currentQueue = null;
-      draining = false;
-      runClearTimeout(timeout);
-  }
-  function nextTick(fun) {
-      var args = new Array(arguments.length - 1);
-      if (arguments.length > 1) {
-          for (var i = 1; i < arguments.length; i++) {
-              args[i - 1] = arguments[i];
-          }
-      }
-      queue.push(new Item(fun, args));
-      if (queue.length === 1 && !draining) {
-          runTimeout(drainQueue);
-      }
-  }
-  // v8 likes predictible objects
-  function Item(fun, array) {
-      this.fun = fun;
-      this.array = array;
-  }
-  Item.prototype.run = function () {
-      this.fun.apply(null, this.array);
-  };
-  var title = 'browser';
-  var platform = 'browser';
-  var browser = true;
-  var env = {};
-  var argv = [];
-  var version$1 = ''; // empty string to avoid regexp issues
   var versions = {};
-  var release = {};
-  var config = {};
-
-  function noop() {}
-
-  var on = noop;
-  var addListener = noop;
-  var once = noop;
-  var off = noop;
-  var removeListener = noop;
-  var removeAllListeners = noop;
-  var emit = noop;
-
-  function binding(name) {
-      throw new Error('process.binding is not supported');
-  }
-
-  function cwd () { return '/' }
-  function chdir (dir) {
-      throw new Error('process.chdir is not supported');
-  }function umask() { return 0; }
 
   // from https://github.com/kumavis/browser-process-hrtime/blob/master/index.js
   var performance = global$1.performance || {};
-  var performanceNow =
-    performance.now        ||
+  performance.now        ||
     performance.mozNow     ||
     performance.msNow      ||
     performance.oNow       ||
     performance.webkitNow  ||
     function(){ return (new Date()).getTime() };
 
-  // generate timestamp or delta
-  // see http://nodejs.org/api/process.html#process_process_hrtime
-  function hrtime(previousTimestamp){
-    var clocktime = performanceNow.call(performance)*1e-3;
-    var seconds = Math.floor(clocktime);
-    var nanoseconds = Math.floor((clocktime%1)*1e9);
-    if (previousTimestamp) {
-      seconds = seconds - previousTimestamp[0];
-      nanoseconds = nanoseconds - previousTimestamp[1];
-      if (nanoseconds<0) {
-        seconds--;
-        nanoseconds += 1e9;
-      }
-    }
-    return [seconds,nanoseconds]
-  }
-
-  var startTime = new Date();
-  function uptime() {
-    var currentTime = new Date();
-    var dif = currentTime - startTime;
-    return dif / 1000;
-  }
-
   var browser$1 = {
-    nextTick: nextTick,
-    title: title,
-    browser: browser,
-    env: env,
-    argv: argv,
-    version: version$1,
-    versions: versions,
-    on: on,
-    addListener: addListener,
-    once: once,
-    off: off,
-    removeListener: removeListener,
-    removeAllListeners: removeAllListeners,
-    emit: emit,
-    binding: binding,
-    cwd: cwd,
-    chdir: chdir,
-    umask: umask,
-    hrtime: hrtime,
-    platform: platform,
-    release: release,
-    config: config,
-    uptime: uptime
-  };
+    versions: versions};
 
   var XLSX = {};
   XLSX.version = "0.20.3";
@@ -2391,7 +2183,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     return o;
   }
   var has_buf = (function () {
-    return typeof Buffer !== "undefined" && typeof browser$1 !== "undefined" && typeof browser$1.versions !== "undefined" && !!"18.15.0";
+    return typeof Buffer !== "undefined" && typeof browser$1 !== "undefined" && typeof browser$1.versions !== "undefined" && true;
   })();
   var Buffer_from = (function () {
     if (typeof Buffer !== "undefined") {
@@ -5017,7 +4809,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             hash = (hash << 5 ^ d) & 32767;
             var match = -1, mlen = 0;
             if (match = addrs[hash]) {
-              match |= boff & ~32767;
+              match |= boff & -32768;
               if (match > boff) match -= 32768;
               if (match < boff) while (data[match + mlen] == data[boff + mlen] && mlen < 250) ++mlen;
             }
@@ -5907,7 +5699,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   var FDRE1 = /^(0?\d|1[0-2])(?:|:([0-5]?\d)(?:|(\.\d+)(?:|:([0-5]?\d))|:([0-5]?\d)(|\.\d+)))\s+([ap])m?$/;
   var FDRE2 = /^([01]?\d|2[0-3])(?:|:([0-5]?\d)(?:|(\.\d+)(?:|:([0-5]?\d))|:([0-5]?\d)(|\.\d+)))$/;
   var FDISO = /^(\d+)-(\d+)-(\d+)[T ](\d+):(\d+)(:\d+)(\.\d+)?[Z]?$/;
-  var utc_append_works = new Date("6/9/69 00:00 UTC").valueOf() == -17798400000;
+  var utc_append_works = new Date("6/9/69 00:00 UTC").valueOf() == -177984e5;
   function fuzzytime1(M) {
     if (!M[2]) return new Date(Date.UTC(1899, 11, 31, +M[1] % 12 + (M[7] == "p" ? 12 : 0), 0, 0, 0));
     if (M[3]) {
@@ -6502,9 +6294,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     "dc": "http://purl.org/dc/elements/1.1/",
     "dcterms": "http://purl.org/dc/terms/",
     "dcmitype": "http://purl.org/dc/dcmitype/",
-    "mx": "http://schemas.microsoft.com/office/mac/excel/2008/main",
     "r": "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
-    "sjs": "http://schemas.openxmlformats.org/package/2006/sheetjs/core-properties",
     "vt": "http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes",
     "xsi": "http://www.w3.org/2001/XMLSchema-instance",
     "xsd": "http://www.w3.org/2001/XMLSchema"
@@ -7411,9 +7201,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     write_XLWideString(str.t, o);
     o.write_shift(4, 1);
     write_StrRun({
-      ich: 0,
-      ifnt: 0
-    }, o);
+      }, o);
     return _null ? o.slice(0, o.l) : o;
   }
   function parse_XLSBCell(data) {
@@ -7477,9 +7265,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   function write_RkNumber(data, o) {
     if (o == null) o = new_buf(4);
     var fX100 = 0, fInt = 0, d100 = data * 100;
-    if (data == (data | 0) && data >= -(1 << 29) && data < 1 << 29) {
+    if (data == (data | 0) && data >= -536870912 && data < 1 << 29) {
       fInt = 1;
-    } else if (d100 == (d100 | 0) && d100 >= -(1 << 29) && d100 < 1 << 29) {
+    } else if (d100 == (d100 | 0) && d100 >= -536870912 && d100 < 1 << 29) {
       fInt = 1;
       fX100 = 1;
     }
@@ -8169,14 +7957,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
   var RELS = {
     WB: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument",
-    SHEET: "http://sheetjs.openxmlformats.org/officeDocument/2006/relationships/officeDocument",
     HLINK: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
     VML: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing",
     XPATH: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLinkPath",
     XMISS: "http://schemas.microsoft.com/office/2006/relationships/xlExternalLinkPath/xlPathMissing",
-    XLINK: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLink",
-    CXML: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml",
-    CXMLP: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps",
     CMNT: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments",
     CORE_PROPS: "http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties",
     EXT_PROPS: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties",
@@ -8184,18 +7968,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     SST: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings",
     STY: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles",
     THEME: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme",
-    CHART: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart",
-    CHARTEX: "http://schemas.microsoft.com/office/2014/relationships/chartEx",
     CS: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartsheet",
     WS: ["http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet", "http://purl.oclc.org/ooxml/officeDocument/relationships/worksheet"],
     DS: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/dialogsheet",
     MS: "http://schemas.microsoft.com/office/2006/relationships/xlMacrosheet",
-    IMG: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image",
     DRAW: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing",
     XLMETA: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sheetMetadata",
     TCMNT: "http://schemas.microsoft.com/office/2017/10/relationships/threadedComment",
     PEOPLE: "http://schemas.microsoft.com/office/2017/10/relationships/person",
-    CONN: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/connections",
     VBA: "http://schemas.microsoft.com/office/2006/relationships/vbaProject"
   };
   function get_rels_path(file) {
@@ -9308,7 +9088,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         F = 28;
         break;
       case ".":
-        F &= ~2;
+        F &= -3;
         break;
     }
     out.write_shift(4, 2);
@@ -9795,7 +9575,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     var name = data.name || "Arial";
     var b5 = opts && opts.biff == 5, w = b5 ? 15 + name.length : 16 + 2 * name.length;
     var o = new_buf(w);
-    o.write_shift(2, (data.sz || 12) * 20);
+    o.write_shift(2, (data.sz) * 20);
     o.write_shift(4, 0);
     o.write_shift(2, 400);
     o.write_shift(4, 0);
@@ -12258,11 +12038,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             case "d":
               var dc = datenum(cell.v);
               if ((dc | 0) == dc && dc >= -32768 && dc <= 32767) write_biff_rec(ba, 13, write_INTEGER(R, C, {
-                t: "n",
                 v: dc,
                 z: cell.z || table_fmt[14]
               })); else write_biff_rec(ba, 14, write_NUMBER(R, C, {
-                t: "n",
                 v: dc,
                 z: cell.z || table_fmt[14]
               }));
@@ -12488,7 +12266,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     function wk1_parse_rc(B, V, col) {
       var rel = V & 32768;
-      V &= ~32768;
+      V &= -32769;
       V = (rel ? B : 0) + (V >= 8192 ? V - 16384 : V);
       return (rel ? "" : "$") + (col ? encode_col(V) : encode_row(V));
     }
@@ -15180,8 +14958,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     o.write_shift(1, 0);
     write_BrtColor(font.color, o);
     var scheme = 0;
-    if (font.scheme == "major") scheme = 1;
-    if (font.scheme == "minor") scheme = 2;
+    scheme = 2;
     o.write_shift(1, scheme);
     write_XLWideString(font.name, o);
     return o.length > o.l ? o.slice(0, o.l) : o;
@@ -15259,7 +15036,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     if (!o) o = new_buf(12 + 4 * 10);
     o.write_shift(4, style.xfId);
     o.write_shift(2, 1);
-    o.write_shift(1, +style.builtinId);
+    o.write_shift(1, 0);
     o.write_shift(1, 0);
     write_XLNullableWideString(style.name || "", o);
     return o.length > o.l ? o.slice(0, o.l) : o;
@@ -15356,9 +15133,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         theme: 1
       },
       name: "Calibri",
-      family: 2,
-      scheme: "minor"
-    }));
+      family: 2}));
     write_record(ba, 612);
   }
   function write_FILLS_bin(ba) {
@@ -15382,11 +15157,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     var cnt = 1;
     write_record(ba, 626, write_UInt32LE(cnt));
     write_record(ba, 47, write_BrtXF({
-      numFmtId: 0,
-      fontId: 0,
-      fillId: 0,
-      borderId: 0
-    }, 65535));
+      numFmtId: 0}, 65535));
     write_record(ba, 627);
   }
   function write_CELLXFS_bin(ba, data) {
@@ -15401,7 +15172,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     write_record(ba, 619, write_UInt32LE(cnt));
     write_record(ba, 48, write_BrtStyle({
       xfId: 0,
-      builtinId: 0,
       name: "Normal"
     }));
     write_record(ba, 620);
@@ -15966,7 +15736,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           lastmeta.offsets.push(+y.i);
           break;
         default:
-          if (!pass && (opts == null ? void 0 : opts.WTF)) throw new Error("unrecognized " + y[0] + " in metadata");
+          if (!pass && (opts == null ? undefined : opts.WTF)) throw new Error("unrecognized " + y[0] + " in metadata");
       }
       return x;
     });
@@ -17628,12 +17398,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       s: {
         c: 0,
         r: 0
-      },
-      e: {
-        c: 0,
-        r: 0
-      }
-    };
+      }};
     var stack = [], e1, e2, c, ixti = 0, nameidx = 0, r, sname = "";
     if (!formula[0] || !formula[0][0]) return "";
     var last_sp = -1, sp = "";
@@ -20210,7 +19975,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     delete ws["!links"];
     if (ws["!margins"] != null) o[o.length] = write_ws_xml_margins(ws["!margins"]);
-    if (!opts || opts.ignoreEC || opts.ignoreEC == void 0) o[o.length] = writetag("ignoredErrors", writextag("ignoredError", null, {
+    if (!opts || opts.ignoreEC || opts.ignoreEC == undefined) o[o.length] = writetag("ignoredErrors", writextag("ignoredError", null, {
       numberStoredAsText: 1,
       sqref: ref
     }));
@@ -20313,8 +20078,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     if (o == null) o = new_buf(84 + 4 * str.length);
     var f = 192;
     if (outl) {
-      if (outl.above) f &= ~64;
-      if (outl.left) f &= ~128;
+      if (outl.above) f &= -65;
+      if (outl.left) f &= -129;
     }
     o.write_shift(1, f);
     for (var i = 1; i < 3; ++i) o.write_shift(1, 0);
@@ -20806,7 +20571,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           if (cm) {
             if (cm.type == "XLDAPR") p.D = true;
-            cm = void 0;
+            cm = undefined;
           }
           break;
         case 1:
@@ -20814,7 +20579,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           if (!opts.sheetStubs || pass) break;
           p = {
             t: "z",
-            v: void 0
+            v: undefined
           };
           C = val[0].c == -1 ? C + 1 : val[0].c;
           if (opts.dense) {
@@ -20827,7 +20592,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           if (refguess.e.c < C) refguess.e.c = C;
           if (cm) {
             if (cm.type == "XLDAPR") p.D = true;
-            cm = void 0;
+            cm = undefined;
           }
           break;
         case 176:
@@ -21059,24 +20824,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
         return true;
       case "n":
-        if (cell.v == (cell.v | 0) && cell.v > -1000 && cell.v < 1000) {
+        if (cell.v == (cell.v | 0) && cell.v > -1e3 && cell.v < 1000) {
           if (last_seen) write_record(ba, 13, write_BrtShortRk(cell, o)); else write_record(ba, 2, write_BrtCellRk(cell, o));
         } else if (!isFinite(cell.v)) {
           o.t = "e";
           if (isNaN(cell.v)) {
             if (last_seen) write_record(ba, 14, write_BrtShortError({
-              t: "e",
               v: 36
             }, o)); else write_record(ba, 3, write_BrtCellError({
-              t: "e",
               v: 36
             }, o));
           } else {
             if (last_seen) write_record(ba, 14, write_BrtShortError({
-              t: "e",
               v: 7
             }, o)); else write_record(ba, 3, write_BrtCellError({
-              t: "e",
               v: 7
             }, o));
           }
@@ -21225,7 +20986,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     write_MERGECELLS(ba, ws);
     write_HLINKS(ba, ws, rels);
     if (ws["!margins"]) write_record(ba, 476, write_BrtMargins(ws["!margins"]));
-    if (!opts || opts.ignoreEC || opts.ignoreEC == void 0) write_IGNOREECS(ba, ws);
+    if (!opts || opts.ignoreEC || opts.ignoreEC == undefined) write_IGNOREECS(ba, ws);
     write_LEGACYDRAWING(ba, ws, idx, rels);
     write_record(ba, 130);
     return ba.end();
@@ -22360,7 +22121,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       case "cell":
         if (Rn[1] === "/") {
           if (comments.length > 0) cell.c = comments;
-          if ((!opts.sheetRows || opts.sheetRows > r) && cell.v !== void 0) {
+          if ((!opts.sheetRows || opts.sheetRows > r) && cell.v !== undefined) {
             if (opts.dense) {
               if (!cursheet["!data"][r]) cursheet["!data"][r] = [];
               cursheet["!data"][r][c] = cell;
@@ -27916,13 +27677,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   function write_FONTS_biff8(ba, data, opts) {
     write_biff_rec(ba, 49, write_Font({
       sz: 12,
-      color: {
-        theme: 1
-      },
-      name: "Arial",
-      family: 2,
-      scheme: "minor"
-    }, opts));
+      name: "Arial"}, opts));
   }
   function write_FMTS_biff8(ba, NF, opts) {
     if (!NF) return;
@@ -30265,7 +30020,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     return u8concat(out);
   }
   function mappa(data, cb) {
-    return (data == null ? void 0 : data.map(function (d) {
+    return (data == null ? undefined : data.map(function (d) {
       return cb(d.data);
     })) || [];
   }
@@ -30291,7 +30046,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         });
         ptr.l += fl;
       });
-      if ((_a = ai[3]) == null ? void 0 : _a[0]) res.merge = varint_to_i32(ai[3][0].data) >>> 0 > 0;
+      if ((_a = ai[3]) == null ? undefined : _a[0]) res.merge = varint_to_i32(ai[3][0].data) >>> 0 > 0;
       out.push(res);
     }
     return out;
@@ -30465,11 +30220,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     var ctype = t & 255, ver = t >> 8;
     var fmt = ver >= 5 ? nfmt : ofmt;
     dur: if (flags & (ver > 4 ? 8 : 4) && cell.t == "n" && ctype == 7) {
-      var dstyle = ((_a = fmt[7]) == null ? void 0 : _a[0]) ? varint_to_i32(fmt[7][0].data) : -1;
+      var dstyle = ((_a = fmt[7]) == null ? undefined : _a[0]) ? varint_to_i32(fmt[7][0].data) : -1;
       if (dstyle == -1) break dur;
-      var dmin = ((_b = fmt[15]) == null ? void 0 : _b[0]) ? varint_to_i32(fmt[15][0].data) : -1;
-      var dmax = ((_c = fmt[16]) == null ? void 0 : _c[0]) ? varint_to_i32(fmt[16][0].data) : -1;
-      var auto = ((_d = fmt[40]) == null ? void 0 : _d[0]) ? varint_to_i32(fmt[40][0].data) : -1;
+      var dmin = ((_b = fmt[15]) == null ? undefined : _b[0]) ? varint_to_i32(fmt[15][0].data) : -1;
+      var dmax = ((_c = fmt[16]) == null ? undefined : _c[0]) ? varint_to_i32(fmt[16][0].data) : -1;
+      var auto = ((_d = fmt[40]) == null ? undefined : _d[0]) ? varint_to_i32(fmt[40][0].data) : -1;
       var d = cell.v, dd = d;
       autodur: if (auto) {
         if (d == 0) {
@@ -30576,7 +30331,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     var t = buf[v >= 4 ? 1 : 2];
     switch (t) {
       case 0:
-        return void 0;
+        return undefined;
       case 2:
         ret = {
           t: "n",
@@ -30591,7 +30346,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         break;
       case 5:
         {
-          if (opts == null ? void 0 : opts.cellDates) ret = {
+          if (opts == null ? undefined : opts.cellDates) ret = {
             t: "d",
             v: dt
           }; else ret = {
@@ -30698,7 +30453,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         break;
       case 5:
         {
-          if (opts == null ? void 0 : opts.cellDates) ret = {
+          if (opts == null ? undefined : opts.cellDates) ret = {
             t: "d",
             v: dt
           }; else ret = {
@@ -30793,7 +30548,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           if (cell.l) {
             var irsst = lut.rsst.findIndex(function (v) {
               var _a;
-              return v.v == s && v.l == ((_a = cell.l) == null ? void 0 : _a.Target);
+              return v.v == s && v.l == ((_a = cell.l) == null ? undefined : _a.Target);
             });
             if (irsst == -1) lut.rsst[irsst = lut.rsst.length] = {
               v: s,
@@ -30848,7 +30603,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           if (cell.l) {
             var irsst = lut.rsst.findIndex(function (v) {
               var _a;
-              return v.v == s && v.l == ((_a = cell.l) == null ? void 0 : _a.Target);
+              return v.v == s && v.l == ((_a = cell.l) == null ? undefined : _a.Target);
             });
             if (irsst == -1) lut.rsst[irsst = lut.rsst.length] = {
               v: s,
@@ -30942,7 +30697,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
   function numbers_add_oref(iwa, ref) {
     var _a;
-    var orefs = ((_a = iwa.messages[0].meta[5]) == null ? void 0 : _a[0]) ? parse_packed_varints(iwa.messages[0].meta[5][0].data) : [];
+    var orefs = ((_a = iwa.messages[0].meta[5]) == null ? undefined : _a[0]) ? parse_packed_varints(iwa.messages[0].meta[5][0].data) : [];
     var orefidx = orefs.indexOf(ref);
     if (orefidx == -1) {
       orefs.push(ref);
@@ -30954,7 +30709,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
   function numbers_del_oref(iwa, ref) {
     var _a;
-    var orefs = ((_a = iwa.messages[0].meta[5]) == null ? void 0 : _a[0]) ? parse_packed_varints(iwa.messages[0].meta[5][0].data) : [];
+    var orefs = ((_a = iwa.messages[0].meta[5]) == null ? undefined : _a[0]) ? parse_packed_varints(iwa.messages[0].meta[5][0].data) : [];
     iwa.messages[0].meta[5] = [{
       type: 2,
       data: write_packed_varints(orefs.filter(function (r) {
@@ -30990,19 +30745,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               }).join("")
             };
             data[key] = richtext;
-            sfields: if ((_a = tswpsa == null ? void 0 : tswpsa[11]) == null ? void 0 : _a[0]) {
-              var smartfields = (_b = parse_shallow(tswpsa[11][0].data)) == null ? void 0 : _b[1];
+            sfields: if ((_a = tswpsa == null ? undefined : tswpsa[11]) == null ? undefined : _a[0]) {
+              var smartfields = (_b = parse_shallow(tswpsa[11][0].data)) == null ? undefined : _b[1];
               if (!smartfields) break sfields;
               smartfields.forEach(function (sf) {
                 var _a2, _b2, _c;
                 var attr = parse_shallow(sf.data);
-                if ((_a2 = attr[2]) == null ? void 0 : _a2[0]) {
-                  var obj = M[parse_TSP_Reference((_b2 = attr[2]) == null ? void 0 : _b2[0].data)][0];
+                if ((_a2 = attr[2]) == null ? undefined : _a2[0]) {
+                  var obj = M[parse_TSP_Reference((_b2 = attr[2]) == null ? undefined : _b2[0].data)][0];
                   var objtype = varint_to_i32(obj.meta[1][0].data);
                   switch (objtype) {
                     case 2032:
                       var hlink = parse_shallow(obj.data);
-                      if (((_c = hlink == null ? void 0 : hlink[2]) == null ? void 0 : _c[0]) && !richtext.l) richtext.l = u8str(hlink[2][0].data);
+                      if (((_c = hlink == null ? undefined : hlink[2]) == null ? undefined : _c[0]) && !richtext.l) richtext.l = u8str(hlink[2][0].data);
                       break;
                     case 2039:
                       break;
@@ -31037,14 +30792,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     var pb = parse_shallow(u8);
     var R = varint_to_i32(pb[1][0].data) >>> 0;
     var cnt = varint_to_i32(pb[2][0].data) >>> 0;
-    var wide_offsets = ((_b = (_a = pb[8]) == null ? void 0 : _a[0]) == null ? void 0 : _b.data) && varint_to_i32(pb[8][0].data) > 0 || false;
+    var wide_offsets = ((_b = (_a = pb[8]) == null ? undefined : _a[0]) == null ? undefined : _b.data) && varint_to_i32(pb[8][0].data) > 0 || false;
     var used_storage_u8, used_storage;
-    if (((_d = (_c = pb[7]) == null ? void 0 : _c[0]) == null ? void 0 : _d.data) && type != 0) {
-      used_storage_u8 = (_f = (_e = pb[7]) == null ? void 0 : _e[0]) == null ? void 0 : _f.data;
-      used_storage = (_h = (_g = pb[6]) == null ? void 0 : _g[0]) == null ? void 0 : _h.data;
-    } else if (((_j = (_i = pb[4]) == null ? void 0 : _i[0]) == null ? void 0 : _j.data) && type != 1) {
-      used_storage_u8 = (_l = (_k = pb[4]) == null ? void 0 : _k[0]) == null ? void 0 : _l.data;
-      used_storage = (_n = (_m = pb[3]) == null ? void 0 : _m[0]) == null ? void 0 : _n.data;
+    if (((_d = (_c = pb[7]) == null ? undefined : _c[0]) == null ? undefined : _d.data) && type != 0) {
+      used_storage_u8 = (_f = (_e = pb[7]) == null ? undefined : _e[0]) == null ? undefined : _f.data;
+      used_storage = (_h = (_g = pb[6]) == null ? undefined : _g[0]) == null ? undefined : _h.data;
+    } else if (((_j = (_i = pb[4]) == null ? undefined : _i[0]) == null ? undefined : _j.data) && type != 1) {
+      used_storage_u8 = (_l = (_k = pb[4]) == null ? undefined : _k[0]) == null ? undefined : _l.data;
+      used_storage = (_n = (_m = pb[3]) == null ? undefined : _m[0]) == null ? undefined : _n.data;
     } else throw ("NUMBERS Tile missing ").concat(type, " cell storage");
     var width = wide_offsets ? 4 : 1;
     var used_storage_offsets = u8_to_dataview(used_storage_u8);
@@ -31066,7 +30821,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     var _a;
     var pb = parse_shallow(root.data);
     var storage = -1;
-    if ((_a = pb == null ? void 0 : pb[7]) == null ? void 0 : _a[0]) {
+    if ((_a = pb == null ? undefined : pb[7]) == null ? undefined : _a[0]) {
       if (varint_to_i32(pb[7][0].data) >>> 0) storage = 1; else storage = 0;
     }
     var ri = mappa(pb[5], function (u8) {
@@ -31091,13 +30846,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       a: ""
     };
     var csp = parse_shallow(data);
-    if ((_b = (_a = csp == null ? void 0 : csp[1]) == null ? void 0 : _a[0]) == null ? void 0 : _b.data) out.t = u8str((_d = (_c = csp == null ? void 0 : csp[1]) == null ? void 0 : _c[0]) == null ? void 0 : _d.data) || "";
-    if ((_f = (_e = csp == null ? void 0 : csp[3]) == null ? void 0 : _e[0]) == null ? void 0 : _f.data) {
-      var as = M[parse_TSP_Reference((_h = (_g = csp == null ? void 0 : csp[3]) == null ? void 0 : _g[0]) == null ? void 0 : _h.data)][0];
+    if ((_b = (_a = csp == null ? undefined : csp[1]) == null ? undefined : _a[0]) == null ? undefined : _b.data) out.t = u8str((_d = (_c = csp == null ? undefined : csp[1]) == null ? undefined : _c[0]) == null ? undefined : _d.data) || "";
+    if ((_f = (_e = csp == null ? undefined : csp[3]) == null ? undefined : _e[0]) == null ? undefined : _f.data) {
+      var as = M[parse_TSP_Reference((_h = (_g = csp == null ? undefined : csp[3]) == null ? undefined : _g[0]) == null ? undefined : _h.data)][0];
       var asp = parse_shallow(as.data);
-      if ((_j = (_i = asp[1]) == null ? void 0 : _i[0]) == null ? void 0 : _j.data) out.a = u8str(asp[1][0].data);
+      if ((_j = (_i = asp[1]) == null ? undefined : _i[0]) == null ? undefined : _j.data) out.a = u8str(asp[1][0].data);
     }
-    if (csp == null ? void 0 : csp[4]) {
+    if (csp == null ? undefined : csp[4]) {
       out.replies = [];
       csp[4].forEach(function (pi) {
         var cs = M[parse_TSP_Reference(pi.data)][0];
@@ -31162,16 +30917,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     var dense = ws["!data"] != null, dws = ws;
     var store = parse_shallow(pb[4][0].data);
     var lut = numbers_lut_new();
-    if ((_a = store[4]) == null ? void 0 : _a[0]) lut.sst = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[4][0].data)][0]);
-    if ((_b = store[6]) == null ? void 0 : _b[0]) lut.fmla = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[6][0].data)][0]);
-    if ((_c = store[11]) == null ? void 0 : _c[0]) lut.ofmt = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[11][0].data)][0]);
-    if ((_d = store[12]) == null ? void 0 : _d[0]) lut.ferr = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[12][0].data)][0]);
-    if ((_e = store[17]) == null ? void 0 : _e[0]) lut.rsst = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[17][0].data)][0]);
-    if ((_f = store[19]) == null ? void 0 : _f[0]) lut.cmnt = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[19][0].data)][0]);
-    if ((_g = store[22]) == null ? void 0 : _g[0]) lut.nfmt = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[22][0].data)][0]);
+    if ((_a = store[4]) == null ? undefined : _a[0]) lut.sst = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[4][0].data)][0]);
+    if ((_b = store[6]) == null ? undefined : _b[0]) lut.fmla = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[6][0].data)][0]);
+    if ((_c = store[11]) == null ? undefined : _c[0]) lut.ofmt = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[11][0].data)][0]);
+    if ((_d = store[12]) == null ? undefined : _d[0]) lut.ferr = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[12][0].data)][0]);
+    if ((_e = store[17]) == null ? undefined : _e[0]) lut.rsst = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[17][0].data)][0]);
+    if ((_f = store[19]) == null ? undefined : _f[0]) lut.cmnt = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[19][0].data)][0]);
+    if ((_g = store[22]) == null ? undefined : _g[0]) lut.nfmt = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[22][0].data)][0]);
     var tile = parse_shallow(store[3][0].data);
     var _R = 0;
-    if (!((_h = store[9]) == null ? void 0 : _h[0])) throw "NUMBERS file missing row tree";
+    if (!((_h = store[9]) == null ? undefined : _h[0])) throw "NUMBERS file missing row tree";
     var rtt = parse_shallow(store[9][0].data)[1].map(function (p) {
       return parse_shallow(p.data);
     });
@@ -31200,11 +30955,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       });
       _R += _tile.nrows;
     });
-    if ((_i = store[13]) == null ? void 0 : _i[0]) {
+    if ((_i = store[13]) == null ? undefined : _i[0]) {
       var ref = M[parse_TSP_Reference(store[13][0].data)][0];
       var mtype = varint_to_i32(ref.meta[1][0].data);
       if (mtype != 6144) throw new Error(("Expected merge type 6144, found ").concat(mtype));
-      ws["!merges"] = (_j = parse_shallow(ref.data)) == null ? void 0 : _j[1].map(function (pi) {
+      ws["!merges"] = (_j = parse_shallow(ref.data)) == null ? undefined : _j[1].map(function (pi) {
         var merge = parse_shallow(pi.data);
         var origin = u8_to_dataview(parse_shallow(merge[1][0].data)[1][0].data), size = u8_to_dataview(parse_shallow(merge[2][0].data)[1][0].data);
         return {
@@ -31219,28 +30974,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         };
       });
     }
-    if (!((_k = ws["!merges"]) == null ? void 0 : _k.length) && ((_l = pb[47]) == null ? void 0 : _l[0])) {
+    if (!((_k = ws["!merges"]) == null ? undefined : _k.length) && ((_l = pb[47]) == null ? undefined : _l[0])) {
       var merge_owner = parse_shallow(pb[47][0].data);
-      if ((_m = merge_owner[2]) == null ? void 0 : _m[0]) {
+      if ((_m = merge_owner[2]) == null ? undefined : _m[0]) {
         var formula_store = parse_shallow(merge_owner[2][0].data);
-        if ((_n = formula_store[3]) == null ? void 0 : _n[0]) {
+        if ((_n = formula_store[3]) == null ? undefined : _n[0]) {
           ws["!merges"] = mappa(formula_store[3], function (u) {
             var _a2, _b2, _c2, _d2, _e2;
             var formula_pair = parse_shallow(u);
             var formula = parse_shallow(formula_pair[2][0].data);
             var AST_node_array = parse_shallow(formula[1][0].data);
-            if (!((_a2 = AST_node_array[1]) == null ? void 0 : _a2[0])) return;
+            if (!((_a2 = AST_node_array[1]) == null ? undefined : _a2[0])) return;
             var AST_node0 = parse_shallow(AST_node_array[1][0].data);
             var AST_node_type = varint_to_i32(AST_node0[1][0].data);
             if (AST_node_type != 67) return;
             var AST_colon_tract = parse_shallow(AST_node0[40][0].data);
-            if (!((_b2 = AST_colon_tract[3]) == null ? void 0 : _b2[0]) || !((_c2 = AST_colon_tract[4]) == null ? void 0 : _c2[0])) return;
+            if (!((_b2 = AST_colon_tract[3]) == null ? undefined : _b2[0]) || !((_c2 = AST_colon_tract[4]) == null ? undefined : _c2[0])) return;
             var colrange = parse_shallow(AST_colon_tract[3][0].data);
             var rowrange = parse_shallow(AST_colon_tract[4][0].data);
             var c = varint_to_i32(colrange[1][0].data);
-            var C = ((_d2 = colrange[2]) == null ? void 0 : _d2[0]) ? varint_to_i32(colrange[2][0].data) : c;
+            var C = ((_d2 = colrange[2]) == null ? undefined : _d2[0]) ? varint_to_i32(colrange[2][0].data) : c;
             var r = varint_to_i32(rowrange[1][0].data);
-            var R = ((_e2 = rowrange[2]) == null ? void 0 : _e2[0]) ? varint_to_i32(rowrange[2][0].data) : r;
+            var R = ((_e2 = rowrange[2]) == null ? undefined : _e2[0]) ? varint_to_i32(rowrange[2][0].data) : r;
             return {
               s: {
                 r: r,
@@ -31263,7 +31018,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     var out = {
       "!ref": "A1"
     };
-    if (opts == null ? void 0 : opts.dense) out["!data"] = [];
+    if (opts == null ? undefined : opts.dense) out["!data"] = [];
     var tableref = M[parse_TSP_Reference(pb[2][0].data)];
     var mtype = varint_to_i32(tableref[0].meta[1][0].data);
     if (mtype != 6001) throw new Error(("6000 unexpected reference to ").concat(mtype));
@@ -31274,7 +31029,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     var _a;
     var pb = parse_shallow(root.data);
     var out = {
-      name: ((_a = pb[1]) == null ? void 0 : _a[0]) ? u8str(pb[1][0].data) : "",
+      name: ((_a = pb[1]) == null ? undefined : _a[0]) ? u8str(pb[1][0].data) : "",
       sheets: []
     };
     var shapeoffs = mappa(pb[2], parse_TSP_Reference);
@@ -31295,7 +31050,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
     };
     var pb = parse_shallow(root.data);
-    if ((_a = pb[2]) == null ? void 0 : _a[0]) throw new Error("Keynote presentations are not supported");
+    if ((_a = pb[2]) == null ? undefined : _a[0]) throw new Error("Keynote presentations are not supported");
     var sheetoffs = mappa(pb[1], parse_TSP_Reference);
     sheetoffs.forEach(function (off) {
       M[off].forEach(function (m) {
@@ -31339,8 +31094,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       });
     });
     if (!indices.length) throw new Error("File has no messages");
-    if (((_c = (_b = (_a = M == null ? void 0 : M[1]) == null ? void 0 : _a[0].meta) == null ? void 0 : _b[1]) == null ? void 0 : _c[0].data) && varint_to_i32(M[1][0].meta[1][0].data) == 10000) throw new Error("Pages documents are not supported");
-    var docroot = ((_g = (_f = (_e = (_d = M == null ? void 0 : M[1]) == null ? void 0 : _d[0]) == null ? void 0 : _e.meta) == null ? void 0 : _f[1]) == null ? void 0 : _g[0].data) && varint_to_i32(M[1][0].meta[1][0].data) == 1 && M[1][0];
+    if (((_c = (_b = (_a = M == null ? undefined : M[1]) == null ? undefined : _a[0].meta) == null ? undefined : _b[1]) == null ? undefined : _c[0].data) && varint_to_i32(M[1][0].meta[1][0].data) == 10000) throw new Error("Pages documents are not supported");
+    var docroot = ((_g = (_f = (_e = (_d = M == null ? undefined : M[1]) == null ? undefined : _d[0]) == null ? undefined : _e.meta) == null ? undefined : _f[1]) == null ? undefined : _g[0].data) && varint_to_i32(M[1][0].meta[1][0].data) == 1 && M[1][0];
     if (!docroot) indices.forEach(function (idx) {
       M[idx].forEach(function (iwam) {
         var mtype = varint_to_i32(iwam.meta[1][0].data) >>> 0;
@@ -31387,7 +31142,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       type: 0,
       data: write_varint49(1)
     }]];
-    if (!((_a = tri[6]) == null ? void 0 : _a[0]) || !((_b = tri[7]) == null ? void 0 : _b[0])) throw "Mutation only works on post-BNC storages!";
+    if (!((_a = tri[6]) == null ? undefined : _a[0]) || !((_b = tri[7]) == null ? undefined : _b[0])) throw "Mutation only works on post-BNC storages!";
     var cnt = 0;
     if (tri[7][0].data.length < 2 * data.length) {
       var new_7 = new Uint8Array(2 * data.length);
@@ -31403,7 +31158,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     var _dv = u8_to_dataview(tri[4][0].data), _last_offset = 0, _cell_storage = [];
     var width = 4 ;
     for (var C = 0; C < data.length; ++C) {
-      if (data[C] == null || data[C].t == "z" && !((_c = data[C].c) == null ? void 0 : _c.length) || data[C].t == "e") {
+      if (data[C] == null || data[C].t == "z" && !((_c = data[C].c) == null ? undefined : _c.length) || data[C].t == "e") {
         dv.setUint16(C * 2, 65535, true);
         _dv.setUint16(C * 2, 65535);
         continue;
@@ -31633,8 +31388,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     var parentidx = mlist[3].findIndex(function (m) {
       var _a, _b;
       var mm = parse_shallow(m.data);
-      if ((_a = mm[3]) == null ? void 0 : _a[0]) return u8str(mm[3][0].data) == loc;
-      if (((_b = mm[2]) == null ? void 0 : _b[0]) && u8str(mm[2][0].data) == loc) return true;
+      if ((_a = mm[3]) == null ? undefined : _a[0]) return u8str(mm[3][0].data) == loc;
+      if (((_b = mm[2]) == null ? undefined : _b[0]) && u8str(mm[2][0].data) == loc) return true;
       return false;
     });
     var parent = parse_shallow(mlist[3][parentidx].data);
@@ -31655,8 +31410,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     var parentidx = mlist[3].findIndex(function (m) {
       var _a, _b;
       var mm = parse_shallow(m.data);
-      if ((_a = mm[3]) == null ? void 0 : _a[0]) return u8str(mm[3][0].data) == loc;
-      if (((_b = mm[2]) == null ? void 0 : _b[0]) && u8str(mm[2][0].data) == loc) return true;
+      if ((_a = mm[3]) == null ? undefined : _a[0]) return u8str(mm[3][0].data) == loc;
+      if (((_b = mm[2]) == null ? undefined : _b[0]) && u8str(mm[2][0].data) == loc) return true;
       return false;
     });
     var parent = parse_shallow(mlist[3][parentidx].data);
@@ -31764,7 +31519,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       if (tma[70]) {
         var hsoa = parse_shallow(tma[70][0].data);
-        (_a = hsoa[2]) == null ? void 0 : _a.forEach(function (item) {
+        (_a = hsoa[2]) == null ? undefined : _a.forEach(function (item) {
           var hsa = parse_shallow(item.data);
           [2, 3].map(function (n) {
             return hsa[n][0];
@@ -31787,7 +31542,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       {
         [2, 4, 5, 6, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22].forEach(function (n) {
           var _a2;
-          if (!((_a2 = store[n]) == null ? void 0 : _a2[0])) return;
+          if (!((_a2 = store[n]) == null ? undefined : _a2[0])) return;
           var oldref = parse_TSP_Reference(store[n][0].data);
           var newref = get_unique_msgid({
             deps: [tmaref],
@@ -31815,7 +31570,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         });
         var row_headers = parse_shallow(store[1][0].data);
         {
-          (_b = row_headers[2]) == null ? void 0 : _b.forEach(function (tspref) {
+          (_b = row_headers[2]) == null ? undefined : _b.forEach(function (tspref) {
             var oldref = parse_TSP_Reference(tspref.data);
             var newref = get_unique_msgid({
               deps: [tmaref],
@@ -31961,10 +31716,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         a: "~54ee77S~",
         t: "... the people who are crazy enough to think they can change the world, are the ones who do."
       }],
-      ferr: [],
-      fmla: [],
-      nfmt: [],
-      ofmt: [],
       rsst: [{
         v: "~54ee77S~",
         l: "https://sheetjs.com/"
@@ -31982,7 +31733,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         numbers_iwa_doit(cfb, deps, row_header_ref, function (rowhead, _x) {
           var _a;
           var base_bucket = parse_shallow(rowhead.messages[0].data);
-          if ((_a = base_bucket == null ? void 0 : base_bucket[2]) == null ? void 0 : _a[0]) for (var R2 = 0; R2 < data.length; ++R2) {
+          if ((_a = base_bucket == null ? undefined : base_bucket[2]) == null ? undefined : _a[0]) for (var R2 = 0; R2 < data.length; ++R2) {
             var _bucket = parse_shallow(base_bucket[2][0].data);
             _bucket[1][0].data = write_varint49(R2);
             _bucket[4][0].data = write_varint49(data[R2].length);
@@ -32023,7 +31774,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             var mlst = mlist[3].filter(function (m) {
               return varint_to_i32(parse_shallow(m.data)[1][0].data) == tileref;
             });
-            return (mlst == null ? void 0 : mlst.length) ? varint_to_i32(parse_shallow(mlst[0].data)[12][0].data) : 0;
+            return (mlst == null ? undefined : mlst.length) ? varint_to_i32(parse_shallow(mlst[0].data)[12][0].data) : 0;
           })();
           {
             CFB.utils.cfb_del(cfb, deps[tileref].location);
@@ -33528,7 +33279,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           if (v == null) break;
           continue;
         case "e":
-          v = v == 0 ? null : void 0;
+          v = v == 0 ? null : undefined;
           break;
         case "s":
         case "b":

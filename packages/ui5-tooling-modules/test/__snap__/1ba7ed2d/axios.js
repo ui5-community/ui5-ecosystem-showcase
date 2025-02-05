@@ -137,94 +137,18 @@ sap.ui.define((function () { 'use strict';
   Item.prototype.run = function () {
       this.fun.apply(null, this.array);
   };
-  var title = 'browser';
-  var platform$2 = 'browser';
-  var browser = true;
-  var env = {};
-  var argv = [];
-  var version = ''; // empty string to avoid regexp issues
-  var versions = {};
-  var release = {};
-  var config = {};
-
-  function noop$1() {}
-
-  var on = noop$1;
-  var addListener = noop$1;
-  var once = noop$1;
-  var off = noop$1;
-  var removeListener = noop$1;
-  var removeAllListeners = noop$1;
-  var emit = noop$1;
-
-  function binding(name) {
-      throw new Error('process.binding is not supported');
-  }
-
-  function cwd () { return '/' }
-  function chdir (dir) {
-      throw new Error('process.chdir is not supported');
-  }function umask() { return 0; }
 
   // from https://github.com/kumavis/browser-process-hrtime/blob/master/index.js
   var performance = global$1.performance || {};
-  var performanceNow =
-    performance.now        ||
+  performance.now        ||
     performance.mozNow     ||
     performance.msNow      ||
     performance.oNow       ||
     performance.webkitNow  ||
     function(){ return (new Date()).getTime() };
 
-  // generate timestamp or delta
-  // see http://nodejs.org/api/process.html#process_process_hrtime
-  function hrtime(previousTimestamp){
-    var clocktime = performanceNow.call(performance)*1e-3;
-    var seconds = Math.floor(clocktime);
-    var nanoseconds = Math.floor((clocktime%1)*1e9);
-    if (previousTimestamp) {
-      seconds = seconds - previousTimestamp[0];
-      nanoseconds = nanoseconds - previousTimestamp[1];
-      if (nanoseconds<0) {
-        seconds--;
-        nanoseconds += 1e9;
-      }
-    }
-    return [seconds,nanoseconds]
-  }
-
-  var startTime = new Date();
-  function uptime() {
-    var currentTime = new Date();
-    var dif = currentTime - startTime;
-    return dif / 1000;
-  }
-
   var browser$1 = {
-    nextTick: nextTick,
-    title: title,
-    browser: browser,
-    env: env,
-    argv: argv,
-    version: version,
-    versions: versions,
-    on: on,
-    addListener: addListener,
-    once: once,
-    off: off,
-    removeListener: removeListener,
-    removeAllListeners: removeAllListeners,
-    emit: emit,
-    binding: binding,
-    cwd: cwd,
-    chdir: chdir,
-    umask: umask,
-    hrtime: hrtime,
-    platform: platform$2,
-    release: release,
-    config: config,
-    uptime: uptime
-  };
+    nextTick: nextTick};
 
   var lookup = [];
   var revLookup = [];
@@ -1064,8 +988,8 @@ sap.ui.define((function () { 'use strict';
       byteOffset = 0;
     } else if (byteOffset > 0x7fffffff) {
       byteOffset = 0x7fffffff;
-    } else if (byteOffset < -0x80000000) {
-      byteOffset = -0x80000000;
+    } else if (byteOffset < -2147483648) {
+      byteOffset = -2147483648;
     }
     byteOffset = +byteOffset;  // Coerce to Number.
     if (isNaN(byteOffset)) {
@@ -1824,7 +1748,7 @@ sap.ui.define((function () { 'use strict';
   Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
     value = +value;
     offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80);
+    if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -128);
     if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value);
     if (value < 0) value = 0xff + value + 1;
     this[offset] = (value & 0xff);
@@ -1834,7 +1758,7 @@ sap.ui.define((function () { 'use strict';
   Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
     value = +value;
     offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
+    if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -32768);
     if (Buffer.TYPED_ARRAY_SUPPORT) {
       this[offset] = (value & 0xff);
       this[offset + 1] = (value >>> 8);
@@ -1847,7 +1771,7 @@ sap.ui.define((function () { 'use strict';
   Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
     value = +value;
     offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000);
+    if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -32768);
     if (Buffer.TYPED_ARRAY_SUPPORT) {
       this[offset] = (value >>> 8);
       this[offset + 1] = (value & 0xff);
@@ -1860,7 +1784,7 @@ sap.ui.define((function () { 'use strict';
   Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
     value = +value;
     offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
+    if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -2147483648);
     if (Buffer.TYPED_ARRAY_SUPPORT) {
       this[offset] = (value & 0xff);
       this[offset + 1] = (value >>> 8);
@@ -1875,7 +1799,7 @@ sap.ui.define((function () { 'use strict';
   Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
     value = +value;
     offset = offset | 0;
-    if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000);
+    if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -2147483648);
     if (value < 0) value = 0xffffffff + value + 1;
     if (Buffer.TYPED_ARRAY_SUPPORT) {
       this[offset] = (value >>> 24);
@@ -3356,7 +3280,7 @@ sap.ui.define((function () { 'use strict';
    *
    * @param {string} url The base of the url (e.g., http://www.google.com)
    * @param {object} [params] The params to be appended
-   * @param {?object} options
+   * @param {?(object|Function)} options
    *
    * @returns {string} The formatted url
    */
@@ -3367,6 +3291,12 @@ sap.ui.define((function () { 'use strict';
     }
     
     const _encode = options && options.encode || encode;
+
+    if (utils$1.isFunction(options)) {
+      options = {
+        serialize: options
+      };
+    } 
 
     const serializeFn = options && options.serialize;
 
@@ -3665,7 +3595,7 @@ sap.ui.define((function () { 'use strict';
       }
     }
 
-    return (0, JSON.stringify)(rawValue);
+    return (encoder || JSON.stringify)(rawValue);
   }
 
   const defaults = {
@@ -4356,68 +4286,18 @@ sap.ui.define((function () { 'use strict';
 
   const asyncDecorator = (fn) => (...args) => utils$1.asap(() => fn(...args));
 
-  var isURLSameOrigin = platform.hasStandardBrowserEnv ?
+  var isURLSameOrigin = platform.hasStandardBrowserEnv ? ((origin, isMSIE) => (url) => {
+    url = new URL(url, platform.origin);
 
-  // Standard browser envs have full support of the APIs needed to test
-  // whether the request URL is of the same origin as current location.
-    (function standardBrowserEnv() {
-      const msie = platform.navigator && /(msie|trident)/i.test(platform.navigator.userAgent);
-      const urlParsingNode = document.createElement('a');
-      let originURL;
-
-      /**
-      * Parse a URL to discover its components
-      *
-      * @param {String} url The URL to be parsed
-      * @returns {Object}
-      */
-      function resolveURL(url) {
-        let href = url;
-
-        if (msie) {
-          // IE needs attribute set twice to normalize properties
-          urlParsingNode.setAttribute('href', href);
-          href = urlParsingNode.href;
-        }
-
-        urlParsingNode.setAttribute('href', href);
-
-        // urlParsingNode provides the UrlUtils interface - http://url.spec.whatwg.org/#urlutils
-        return {
-          href: urlParsingNode.href,
-          protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, '') : '',
-          host: urlParsingNode.host,
-          search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, '') : '',
-          hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
-          hostname: urlParsingNode.hostname,
-          port: urlParsingNode.port,
-          pathname: (urlParsingNode.pathname.charAt(0) === '/') ?
-            urlParsingNode.pathname :
-            '/' + urlParsingNode.pathname
-        };
-      }
-
-      originURL = resolveURL(window.location.href);
-
-      /**
-      * Determine if a URL shares the same origin as the current location
-      *
-      * @param {String} requestURL The URL to test
-      * @returns {boolean} True if URL shares the same origin, otherwise false
-      */
-      return function isURLSameOrigin(requestURL) {
-        const parsed = (utils$1.isString(requestURL)) ? resolveURL(requestURL) : requestURL;
-        return (parsed.protocol === originURL.protocol &&
-            parsed.host === originURL.host);
-      };
-    })() :
-
-    // Non standard browser envs (web workers, react-native) lack needed support.
-    (function nonStandardBrowserEnv() {
-      return function isURLSameOrigin() {
-        return true;
-      };
-    })();
+    return (
+      origin.protocol === url.protocol &&
+      origin.host === url.host &&
+      (isMSIE || origin.port === url.port)
+    );
+  })(
+    new URL(platform.origin),
+    platform.navigator && /(msie|trident)/i.test(platform.navigator.userAgent)
+  ) : () => true;
 
   var cookies = platform.hasStandardBrowserEnv ?
 
@@ -4519,7 +4399,7 @@ sap.ui.define((function () { 'use strict';
     config2 = config2 || {};
     const config = {};
 
-    function getMergedValue(target, source, caseless) {
+    function getMergedValue(target, source, prop, caseless) {
       if (utils$1.isPlainObject(target) && utils$1.isPlainObject(source)) {
         return utils$1.merge.call({caseless}, target, source);
       } else if (utils$1.isPlainObject(source)) {
@@ -4531,11 +4411,11 @@ sap.ui.define((function () { 'use strict';
     }
 
     // eslint-disable-next-line consistent-return
-    function mergeDeepProperties(a, b, caseless) {
+    function mergeDeepProperties(a, b, prop , caseless) {
       if (!utils$1.isUndefined(b)) {
-        return getMergedValue(a, b, caseless);
+        return getMergedValue(a, b, prop , caseless);
       } else if (!utils$1.isUndefined(a)) {
-        return getMergedValue(undefined, a, caseless);
+        return getMergedValue(undefined, a, prop , caseless);
       }
     }
 
@@ -4593,7 +4473,7 @@ sap.ui.define((function () { 'use strict';
       socketPath: defaultToConfig2,
       responseEncoding: defaultToConfig2,
       validateStatus: mergeDirectKeys,
-      headers: (a, b) => mergeDeepProperties(headersToObject(a), headersToObject(b), true)
+      headers: (a, b , prop) => mergeDeepProperties(headersToObject(a), headersToObject(b),prop, true)
     };
 
     utils$1.forEach(Object.keys(Object.assign({}, config1, config2)), function computeConfigValue(prop) {
@@ -5337,7 +5217,7 @@ sap.ui.define((function () { 'use strict';
     });
   }
 
-  const VERSION = "1.7.7";
+  const VERSION = "1.7.9";
 
   const validators$1 = {};
 
@@ -5386,6 +5266,14 @@ sap.ui.define((function () { 'use strict';
 
       return validator ? validator(value, opt, opts) : true;
     };
+  };
+
+  validators$1.spelling = function spelling(correctSpelling) {
+    return (value, opt) => {
+      // eslint-disable-next-line no-console
+      console.warn(`${opt} is likely a misspelling of ${correctSpelling}`);
+      return true;
+    }
   };
 
   /**
@@ -5457,9 +5345,9 @@ sap.ui.define((function () { 'use strict';
         return await this._request(configOrUrl, config);
       } catch (err) {
         if (err instanceof Error) {
-          let dummy;
+          let dummy = {};
 
-          Error.captureStackTrace ? Error.captureStackTrace(dummy = {}) : (dummy = new Error());
+          Error.captureStackTrace ? Error.captureStackTrace(dummy) : (dummy = new Error());
 
           // slice off the Error: ... line
           const stack = dummy.stack ? dummy.stack.replace(/^.+\n/, '') : '';
@@ -5513,6 +5401,11 @@ sap.ui.define((function () { 'use strict';
           }, true);
         }
       }
+
+      validator.assertOptions(config, {
+        baseUrl: validators.spelling('baseURL'),
+        withXsrfToken: validators.spelling('withXSRFToken')
+      }, true);
 
       // Set config.method
       config.method = (config.method || this.defaults.method || 'get').toLowerCase();

@@ -17,7 +17,7 @@
   ],
   "dependencies": {
     "@sap/cds": "^8",
-    "express": "^4.21.1",
+    "express": "^4.21.2",
     "passport": "^0.7.0",
     "sqlite3": "^5.1.7"
   },
@@ -25,8 +25,8 @@
     "@sap/eslint-plugin-cds": "^3",
     "cds-bookshop-ui5-viewer": "workspace:^",
     "cds-plugin-ui5": "workspace:^",
-    "eslint": "^9.13.0",
-    "globals": "^15.11.0",
+    "eslint": "^9.19.0",
+    "globals": "^15.14.0",
     "rimraf": "^6.0.1",
     "ui5-tsapp-simple": "workspace:^"
   },

@@ -14,10 +14,10 @@
     "lint": "eslint lib"
   },
   "dependencies": {
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.4.7",
     "etag": "^1.8.1",
     "fresh": "^0.5.2",
-    "https-proxy-agent": "^7.0.5",
+    "https-proxy-agent": "^7.0.6",
     "js-yaml": "^4.1.0",
     "node-fetch": "^2.7.0",
     "proxy-from-env": "^1.1.0"
