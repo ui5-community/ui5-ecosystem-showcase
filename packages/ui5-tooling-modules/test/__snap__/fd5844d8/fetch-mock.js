@@ -1,77 +1,145 @@
 sap.ui.define((function () { 'use strict';
 
-  var globToRegexp = function (glob, opts) {
-    if (typeof glob !== 'string') {
-      throw new TypeError('Expected a string');
-    }
+  var globToRegexp;
+  var hasRequiredGlobToRegexp;
 
-    var str = String(glob);
+  function requireGlobToRegexp () {
+  	if (hasRequiredGlobToRegexp) return globToRegexp;
+  	hasRequiredGlobToRegexp = 1;
+  	globToRegexp = function (glob, opts) {
+  	  if (typeof glob !== 'string') {
+  	    throw new TypeError('Expected a string');
+  	  }
 
-    // The regexp we are building, as a string.
-    var reStr = "";
+  	  var str = String(glob);
 
-    // RegExp flags (eg "i" ) to pass in to RegExp constructor.
-    var flags = "";
+  	  // The regexp we are building, as a string.
+  	  var reStr = "";
 
-    var c;
-    for (var i = 0, len = str.length; i < len; i++) {
-      c = str[i];
+  	  // Whether we are matching so called "extended" globs (like bash) and should
+  	  // support single character matching, matching ranges of characters, group
+  	  // matching, etc.
+  	  var extended = opts ? !!opts.extended : false;
 
-      switch (c) {
-      case "/":
-      case "$":
-      case "^":
-      case "+":
-      case ".":
-      case "(":
-      case ")":
-      case "=":
-      case "!":
-      case "|":
-        reStr += "\\" + c;
-        break;
+  	  // When globstar is _false_ (default), '/foo/*' is translated a regexp like
+  	  // '^\/foo\/.*$' which will match any string beginning with '/foo/'
+  	  // When globstar is _true_, '/foo/*' is translated to regexp like
+  	  // '^\/foo\/[^/]*$' which will match any string beginning with '/foo/' BUT
+  	  // which does not have a '/' to the right of it.
+  	  // E.g. with '/foo/*' these will match: '/foo/bar', '/foo/bar.txt' but
+  	  // these will not '/foo/bar/baz', '/foo/bar/baz.txt'
+  	  // Lastely, when globstar is _true_, '/foo/**' is equivelant to '/foo/*' when
+  	  // globstar is _false_
+  	  var globstar = opts ? !!opts.globstar : false;
 
-      case "?":
+  	  // If we are doing extended matching, this boolean is true when we are inside
+  	  // a group (eg {*.html,*.js}), and false otherwise.
+  	  var inGroup = false;
 
-      case "[":
-      case "]":
+  	  // RegExp flags (eg "i" ) to pass in to RegExp constructor.
+  	  var flags = opts && typeof( opts.flags ) === "string" ? opts.flags : "";
 
-      case "{":
+  	  var c;
+  	  for (var i = 0, len = str.length; i < len; i++) {
+  	    c = str[i];
 
-      case "}":
+  	    switch (c) {
+  	    case "/":
+  	    case "$":
+  	    case "^":
+  	    case "+":
+  	    case ".":
+  	    case "(":
+  	    case ")":
+  	    case "=":
+  	    case "!":
+  	    case "|":
+  	      reStr += "\\" + c;
+  	      break;
 
-      case ",":
-        reStr += "\\" + c;
-        break;
+  	    case "?":
+  	      if (extended) {
+  	        reStr += ".";
+  		    break;
+  	      }
 
-      case "*":
-        // Move over all consecutive "*"'s.
-        // Also store the previous and next characters
-        str[i - 1];
-        while(str[i + 1] === "*") {
-          i++;
-        }
-        str[i + 1];
+  	    case "[":
+  	    case "]":
+  	      if (extended) {
+  	        reStr += c;
+  		    break;
+  	      }
 
-        {
-          // globstar is disabled, so treat any number of "*" as one
-          reStr += ".*";
-        }
-        break;
+  	    case "{":
+  	      if (extended) {
+  	        inGroup = true;
+  		    reStr += "(";
+  		    break;
+  	      }
 
-      default:
-        reStr += c;
-      }
-    }
+  	    case "}":
+  	      if (extended) {
+  	        inGroup = false;
+  		    reStr += ")";
+  		    break;
+  	      }
 
-    // When regexp 'g' flag is specified don't
-    // constrain the regular expression with ^ & $
-    {
-      reStr = "^" + reStr + "$";
-    }
+  	    case ",":
+  	      if (inGroup) {
+  	        reStr += "|";
+  		    break;
+  	      }
+  	      reStr += "\\" + c;
+  	      break;
 
-    return new RegExp(reStr, flags);
-  };
+  	    case "*":
+  	      // Move over all consecutive "*"'s.
+  	      // Also store the previous and next characters
+  	      var prevChar = str[i - 1];
+  	      var starCount = 1;
+  	      while(str[i + 1] === "*") {
+  	        starCount++;
+  	        i++;
+  	      }
+  	      var nextChar = str[i + 1];
+
+  	      if (!globstar) {
+  	        // globstar is disabled, so treat any number of "*" as one
+  	        reStr += ".*";
+  	      } else {
+  	        // globstar is enabled, so determine if this is a globstar segment
+  	        var isGlobstar = starCount > 1                      // multiple "*"'s
+  	          && (prevChar === "/" || prevChar === undefined)   // from the start of the segment
+  	          && (nextChar === "/" || nextChar === undefined);   // to the end of the segment
+
+  	        if (isGlobstar) {
+  	          // it's a globstar, so match zero or more path segments
+  	          reStr += "((?:[^/]*(?:\/|$))*)";
+  	          i++; // move over the "/"
+  	        } else {
+  	          // it's not a globstar, so only match one path segment
+  	          reStr += "([^/]*)";
+  	        }
+  	      }
+  	      break;
+
+  	    default:
+  	      reStr += c;
+  	    }
+  	  }
+
+  	  // When regexp 'g' flag is specified don't
+  	  // constrain the regular expression with ^ & $
+  	  if (!flags || !~flags.indexOf('g')) {
+  	    reStr = "^" + reStr + "$";
+  	  }
+
+  	  return new RegExp(reStr, flags);
+  	};
+  	return globToRegexp;
+  }
+
+  var globToRegexpExports = requireGlobToRegexp();
 
   /**
    * @param {string|RegExp} input The route pattern
@@ -104,230 +172,246 @@ sap.ui.define((function () { 'use strict';
   	};
   }
 
-  var isSubsetOf$1 = {};
+  var isSubsetOf = {};
 
-  var TypeDescriptor$1 = {};
+  var TypeDescriptor = {};
 
-  Object.defineProperty(TypeDescriptor$1, "__esModule", { value: true });
-  TypeDescriptor$1.Type = undefined;
-  const valueTypes = new Set(['boolean', 'number', 'null', 'string', 'undefined']);
-  const referenceTypes = new Set(['array', 'function', 'object', 'symbol']);
-  const detectableTypes = new Set(['boolean', 'function', 'number', 'string', 'symbol']);
-  const typeConstructors = new Set([Boolean, Number, String]);
-  class TypeDescriptor {
-      constructor(value) {
-          this.name = TypeDescriptor.of(value);
-          this.isValueType = TypeDescriptor.isValueType(value);
-          this.isReferenceType = TypeDescriptor.isReferenceType(value);
-          this.isArray = TypeDescriptor.isArray(value);
-          this.isBoolean = TypeDescriptor.isBoolean(value);
-          this.isFunction = TypeDescriptor.isFunction(value);
-          this.isNull = TypeDescriptor.isNull(value);
-          this.isNumber = TypeDescriptor.isNumber(value);
-          this.isObject = TypeDescriptor.isObject(value);
-          this.isString = TypeDescriptor.isString(value);
-          this.isSymbol = TypeDescriptor.isSymbol(value);
-          this.isUndefined = TypeDescriptor.isUndefined(value);
-      }
-      static of(value) {
-          if (value === null) {
-              return 'null';
-          }
-          if (value === undefined) {
-              return 'undefined';
-          }
-          const detectedType = typeof value;
-          if (detectableTypes.has(detectedType)) {
-              return detectedType;
-          }
-          if (detectedType === 'object') {
-              if (Array.isArray(value)) {
-                  return 'array';
-              }
-              if (typeConstructors.has(value.constructor)) {
-                  return value.constructor.name.toLowerCase();
-              }
-              return detectedType;
-          }
-          throw new Error('Failed due to an unknown type.');
-      }
-      static from(value) {
-          return new TypeDescriptor(value);
-      }
-      static isValueType(value) {
-          return valueTypes.has(TypeDescriptor.of(value));
-      }
-      // eslint-disable-next-line @typescript-eslint/ban-types
-      static isReferenceType(value) {
-          return referenceTypes.has(TypeDescriptor.of(value));
-      }
-      static isArray(value) {
-          return TypeDescriptor.of(value) === 'array';
-      }
-      static isBoolean(value) {
-          return TypeDescriptor.of(value) === 'boolean';
-      }
-      // eslint-disable-next-line @typescript-eslint/ban-types
-      static isFunction(value) {
-          return TypeDescriptor.of(value) === 'function';
-      }
-      static isNull(value) {
-          return TypeDescriptor.of(value) === 'null';
-      }
-      static isNumber(value) {
-          return TypeDescriptor.of(value) === 'number';
-      }
-      // eslint-disable-next-line @typescript-eslint/ban-types
-      static isObject(value) {
-          return TypeDescriptor.of(value) === 'object';
-      }
-      static isString(value) {
-          return TypeDescriptor.of(value) === 'string';
-      }
-      static isSymbol(value) {
-          return TypeDescriptor.of(value) === 'symbol';
-      }
-      static isUndefined(value) {
-          return TypeDescriptor.of(value) === 'undefined';
-      }
+  var hasRequiredTypeDescriptor;
+
+  function requireTypeDescriptor () {
+  	if (hasRequiredTypeDescriptor) return TypeDescriptor;
+  	hasRequiredTypeDescriptor = 1;
+  	Object.defineProperty(TypeDescriptor, "__esModule", { value: true });
+  	TypeDescriptor.Type = undefined;
+  	const valueTypes = new Set(['boolean', 'number', 'null', 'string', 'undefined']);
+  	const referenceTypes = new Set(['array', 'function', 'object', 'symbol']);
+  	const detectableTypes = new Set(['boolean', 'function', 'number', 'string', 'symbol']);
+  	const typeConstructors = new Set([Boolean, Number, String]);
+  	let TypeDescriptor$1 = class TypeDescriptor {
+  	    constructor(value) {
+  	        this.name = TypeDescriptor.of(value);
+  	        this.isValueType = TypeDescriptor.isValueType(value);
+  	        this.isReferenceType = TypeDescriptor.isReferenceType(value);
+  	        this.isArray = TypeDescriptor.isArray(value);
+  	        this.isBoolean = TypeDescriptor.isBoolean(value);
+  	        this.isFunction = TypeDescriptor.isFunction(value);
+  	        this.isNull = TypeDescriptor.isNull(value);
+  	        this.isNumber = TypeDescriptor.isNumber(value);
+  	        this.isObject = TypeDescriptor.isObject(value);
+  	        this.isString = TypeDescriptor.isString(value);
+  	        this.isSymbol = TypeDescriptor.isSymbol(value);
+  	        this.isUndefined = TypeDescriptor.isUndefined(value);
+  	    }
+  	    static of(value) {
+  	        if (value === null) {
+  	            return 'null';
+  	        }
+  	        if (value === undefined) {
+  	            return 'undefined';
+  	        }
+  	        const detectedType = typeof value;
+  	        if (detectableTypes.has(detectedType)) {
+  	            return detectedType;
+  	        }
+  	        if (detectedType === 'object') {
+  	            if (Array.isArray(value)) {
+  	                return 'array';
+  	            }
+  	            if (typeConstructors.has(value.constructor)) {
+  	                return value.constructor.name.toLowerCase();
+  	            }
+  	            return detectedType;
+  	        }
+  	        throw new Error('Failed due to an unknown type.');
+  	    }
+  	    static from(value) {
+  	        return new TypeDescriptor(value);
+  	    }
+  	    static isValueType(value) {
+  	        return valueTypes.has(TypeDescriptor.of(value));
+  	    }
+  	    // eslint-disable-next-line @typescript-eslint/ban-types
+  	    static isReferenceType(value) {
+  	        return referenceTypes.has(TypeDescriptor.of(value));
+  	    }
+  	    static isArray(value) {
+  	        return TypeDescriptor.of(value) === 'array';
+  	    }
+  	    static isBoolean(value) {
+  	        return TypeDescriptor.of(value) === 'boolean';
+  	    }
+  	    // eslint-disable-next-line @typescript-eslint/ban-types
+  	    static isFunction(value) {
+  	        return TypeDescriptor.of(value) === 'function';
+  	    }
+  	    static isNull(value) {
+  	        return TypeDescriptor.of(value) === 'null';
+  	    }
+  	    static isNumber(value) {
+  	        return TypeDescriptor.of(value) === 'number';
+  	    }
+  	    // eslint-disable-next-line @typescript-eslint/ban-types
+  	    static isObject(value) {
+  	        return TypeDescriptor.of(value) === 'object';
+  	    }
+  	    static isString(value) {
+  	        return TypeDescriptor.of(value) === 'string';
+  	    }
+  	    static isSymbol(value) {
+  	        return TypeDescriptor.of(value) === 'symbol';
+  	    }
+  	    static isUndefined(value) {
+  	        return TypeDescriptor.of(value) === 'undefined';
+  	    }
+  	};
+  	TypeDescriptor.Type = TypeDescriptor$1;
+  	return TypeDescriptor;
   }
-  TypeDescriptor$1.Type = TypeDescriptor;
 
-  Object.defineProperty(isSubsetOf$1, "__esModule", { value: true });
-  var isSubsetOf_2 = isSubsetOf$1.isSubsetOf = undefined;
-  const typedescriptor_1 = TypeDescriptor$1;
-  const allowedTypes = new Set(['array', 'object', 'function', 'null']);
-  const isSubsetOf = function (subset, superset, visited = []) {
-      const subsetType = typedescriptor_1.Type.of(subset);
-      const supersetType = typedescriptor_1.Type.of(superset);
-      if (!allowedTypes.has(subsetType)) {
-          throw new Error(`Type '${subsetType}' is not supported.`);
-      }
-      if (!allowedTypes.has(supersetType)) {
-          throw new Error(`Type '${supersetType}' is not supported.`);
-      }
-      if (typedescriptor_1.Type.isFunction(subset)) {
-          if (!typedescriptor_1.Type.isFunction(superset)) {
-              throw new Error(`Types '${subsetType}' and '${supersetType}' do not match.`);
-          }
-          return subset.toString() === superset.toString();
-      }
-      if (typedescriptor_1.Type.isArray(subset)) {
-          if (!typedescriptor_1.Type.isArray(superset)) {
-              throw new Error(`Types '${subsetType}' and '${supersetType}' do not match.`);
-          }
-          if (subset.length > superset.length) {
-              return false;
-          }
-          for (const subsetItem of subset) {
-              const subsetItemType = typedescriptor_1.Type.of(subsetItem);
-              let isItemInSuperset;
-              switch (subsetItemType) {
-                  case 'array':
-                  case 'object':
-                  case 'function': {
-                      if (visited.includes(subsetItem)) {
-                          continue;
-                      }
-                      visited.push(subsetItem);
-                      isItemInSuperset = superset.some((supersetItem) => {
-                          try {
-                              return isSubsetOf(subsetItem, supersetItem, visited);
-                          }
-                          catch {
-                              return false;
-                          }
-                      });
-                      break;
-                  }
-                  default: {
-                      isItemInSuperset = superset.includes(subsetItem);
-                  }
-              }
-              if (!isItemInSuperset) {
-                  return false;
-              }
-          }
-          return true;
-      }
-      if (typedescriptor_1.Type.isObject(subset)) {
-          if (!typedescriptor_1.Type.isObject(superset) || typedescriptor_1.Type.isArray(superset)) {
-              throw new Error(`Types '${subsetType}' and '${supersetType}' do not match.`);
-          }
-          if (Object.keys(subset).length > Object.keys(superset).length) {
-              return false;
-          }
-          for (const [subsetKey, subsetValue] of Object.entries(subset)) {
-              const supersetValue = superset[subsetKey];
-              const subsetValueType = typedescriptor_1.Type.of(subsetValue);
-              switch (subsetValueType) {
-                  case 'array':
-                  case 'object':
-                  case 'function': {
-                      if (visited.includes(subsetValue)) {
-                          continue;
-                      }
-                      visited.push(subsetValue);
-                      try {
-                          const isInSuperset = isSubsetOf(subsetValue, supersetValue, visited);
-                          if (!isInSuperset) {
-                              return false;
-                          }
-                      }
-                      catch {
-                          return false;
-                      }
-                      break;
-                  }
-                  default: {
-                      if (subsetValue !== supersetValue) {
-                          return false;
-                      }
-                  }
-              }
-          }
-          return true;
-      }
-      if (typedescriptor_1.Type.isNull(subset)) {
-          if (!typedescriptor_1.Type.isNull(superset)) {
-              throw new Error(`Types '${subsetType}' and '${supersetType}' do not match.`);
-          }
-          return true;
-      }
-      throw new Error('Invalid operation.');
-  };
-  isSubsetOf_2 = isSubsetOf$1.isSubsetOf = isSubsetOf;
-  isSubsetOf.structural = function (subset, superset, visited = []) {
-      if (!typedescriptor_1.Type.isObject(subset)) {
-          throw new Error(`Type '${typedescriptor_1.Type.of(subset)}' is not supported.`);
-      }
-      if (!typedescriptor_1.Type.isObject(superset)) {
-          throw new Error(`Type '${typedescriptor_1.Type.of(superset)}' is not supported.`);
-      }
-      for (const [subsetKey, subsetValue] of Object.entries(subset)) {
-          if (superset[subsetKey] === undefined) {
-              return false;
-          }
-          const subsetValueType = typedescriptor_1.Type.of(subsetValue);
-          const supersetValue = superset[subsetKey];
-          if (subsetValueType === 'object') {
-              if (visited.includes(subsetValue)) {
-                  continue;
-              }
-              visited.push(subsetValue);
-              try {
-                  const isInSuperset = isSubsetOf.structural(subsetValue, supersetValue, visited);
-                  if (!isInSuperset) {
-                      return false;
-                  }
-              }
-              catch {
-                  return false;
-              }
-          }
-      }
-      return true;
-  };
+  var hasRequiredIsSubsetOf;
+
+  function requireIsSubsetOf () {
+  	if (hasRequiredIsSubsetOf) return isSubsetOf;
+  	hasRequiredIsSubsetOf = 1;
+  	Object.defineProperty(isSubsetOf, "__esModule", { value: true });
+  	isSubsetOf.isSubsetOf = undefined;
+  	const typedescriptor_1 = requireTypeDescriptor();
+  	const allowedTypes = new Set(['array', 'object', 'function', 'null']);
+  	const isSubsetOf$1 = function (subset, superset, visited = []) {
+  	    const subsetType = typedescriptor_1.Type.of(subset);
+  	    const supersetType = typedescriptor_1.Type.of(superset);
+  	    if (!allowedTypes.has(subsetType)) {
+  	        throw new Error(`Type '${subsetType}' is not supported.`);
+  	    }
+  	    if (!allowedTypes.has(supersetType)) {
+  	        throw new Error(`Type '${supersetType}' is not supported.`);
+  	    }
+  	    if (typedescriptor_1.Type.isFunction(subset)) {
+  	        if (!typedescriptor_1.Type.isFunction(superset)) {
+  	            throw new Error(`Types '${subsetType}' and '${supersetType}' do not match.`);
+  	        }
+  	        return subset.toString() === superset.toString();
+  	    }
+  	    if (typedescriptor_1.Type.isArray(subset)) {
+  	        if (!typedescriptor_1.Type.isArray(superset)) {
+  	            throw new Error(`Types '${subsetType}' and '${supersetType}' do not match.`);
+  	        }
+  	        if (subset.length > superset.length) {
+  	            return false;
+  	        }
+  	        for (const subsetItem of subset) {
+  	            const subsetItemType = typedescriptor_1.Type.of(subsetItem);
+  	            let isItemInSuperset;
+  	            switch (subsetItemType) {
+  	                case 'array':
+  	                case 'object':
+  	                case 'function': {
+  	                    if (visited.includes(subsetItem)) {
+  	                        continue;
+  	                    }
+  	                    visited.push(subsetItem);
+  	                    isItemInSuperset = superset.some((supersetItem) => {
+  	                        try {
+  	                            return isSubsetOf$1(subsetItem, supersetItem, visited);
+  	                        }
+  	                        catch {
+  	                            return false;
+  	                        }
+  	                    });
+  	                    break;
+  	                }
+  	                default: {
+  	                    isItemInSuperset = superset.includes(subsetItem);
+  	                }
+  	            }
+  	            if (!isItemInSuperset) {
+  	                return false;
+  	            }
+  	        }
+  	        return true;
+  	    }
+  	    if (typedescriptor_1.Type.isObject(subset)) {
+  	        if (!typedescriptor_1.Type.isObject(superset) || typedescriptor_1.Type.isArray(superset)) {
+  	            throw new Error(`Types '${subsetType}' and '${supersetType}' do not match.`);
+  	        }
+  	        if (Object.keys(subset).length > Object.keys(superset).length) {
+  	            return false;
+  	        }
+  	        for (const [subsetKey, subsetValue] of Object.entries(subset)) {
+  	            const supersetValue = superset[subsetKey];
+  	            const subsetValueType = typedescriptor_1.Type.of(subsetValue);
+  	            switch (subsetValueType) {
+  	                case 'array':
+  	                case 'object':
+  	                case 'function': {
+  	                    if (visited.includes(subsetValue)) {
+  	                        continue;
+  	                    }
+  	                    visited.push(subsetValue);
+  	                    try {
+  	                        const isInSuperset = isSubsetOf$1(subsetValue, supersetValue, visited);
+  	                        if (!isInSuperset) {
+  	                            return false;
+  	                        }
+  	                    }
+  	                    catch {
+  	                        return false;
+  	                    }
+  	                    break;
+  	                }
+  	                default: {
+  	                    if (subsetValue !== supersetValue) {
+  	                        return false;
+  	                    }
+  	                }
+  	            }
+  	        }
+  	        return true;
+  	    }
+  	    if (typedescriptor_1.Type.isNull(subset)) {
+  	        if (!typedescriptor_1.Type.isNull(superset)) {
+  	            throw new Error(`Types '${subsetType}' and '${supersetType}' do not match.`);
+  	        }
+  	        return true;
+  	    }
+  	    throw new Error('Invalid operation.');
+  	};
+  	isSubsetOf.isSubsetOf = isSubsetOf$1;
+  	isSubsetOf$1.structural = function (subset, superset, visited = []) {
+  	    if (!typedescriptor_1.Type.isObject(subset)) {
+  	        throw new Error(`Type '${typedescriptor_1.Type.of(subset)}' is not supported.`);
+  	    }
+  	    if (!typedescriptor_1.Type.isObject(superset)) {
+  	        throw new Error(`Type '${typedescriptor_1.Type.of(superset)}' is not supported.`);
+  	    }
+  	    for (const [subsetKey, subsetValue] of Object.entries(subset)) {
+  	        if (superset[subsetKey] === undefined) {
+  	            return false;
+  	        }
+  	        const subsetValueType = typedescriptor_1.Type.of(subsetValue);
+  	        const supersetValue = superset[subsetKey];
+  	        if (subsetValueType === 'object') {
+  	            if (visited.includes(subsetValue)) {
+  	                continue;
+  	            }
+  	            visited.push(subsetValue);
+  	            try {
+  	                const isInSuperset = isSubsetOf$1.structural(subsetValue, supersetValue, visited);
+  	                if (!isInSuperset) {
+  	                    return false;
+  	                }
+  	            }
+  	            catch {
+  	                return false;
+  	            }
+  	        }
+  	    }
+  	    return true;
+  	};
+  	return isSubsetOf;
+  }
+
+  var isSubsetOfExports = requireIsSubsetOf();
 
   var has = Object.prototype.hasOwnProperty;
 
@@ -522,7 +606,7 @@ sap.ui.define((function () { 'use strict';
       end: (targetString) => ({ url }) => url.endsWith(targetString),
       include: (targetString) => ({ url }) => url.includes(targetString),
       glob: (targetString) => {
-          const urlRX = globToRegexp(targetString);
+          const urlRX = globToRegexpExports(targetString);
           return ({ url }) => urlRX.test(url);
       },
       express: (targetString) => {
@@ -639,7 +723,7 @@ sap.ui.define((function () { 'use strict';
           catch { }
           return (sentBody &&
               (route.matchPartialBody
-                  ? isSubsetOf_2(expectedBody, sentBody)
+                  ? isSubsetOfExports.isSubsetOf(expectedBody, sentBody)
                   : dequal(expectedBody, sentBody)));
       };
   };
@@ -1350,8 +1434,15 @@ e.g. {"body": {"status: "registered"}}`);
       ...defaultFetchMockConfig,
   });
 
+  var namedExports = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    FetchMock: FetchMock,
+    default: fetchMock,
+    defaultFetchMockConfig: defaultFetchMockConfig
+  });
+
   const defaultExports = Object.isFrozen(fetchMock) ? Object.assign({}, fetchMock?.default || fetchMock || { __emptyModule: true }) : fetchMock;
-  defaultExports.default = Object.assign({}, fetchMock);
+  Object.keys(namedExports || {}).filter((key) => !defaultExports[key]).forEach((key) => defaultExports[key] = namedExports[key]);
   Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
   var index = Object.isFrozen(fetchMock) ? Object.freeze(defaultExports) : defaultExports;
 

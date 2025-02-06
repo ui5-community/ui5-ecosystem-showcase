@@ -440,8 +440,19 @@ sap.ui.define((function () { 'use strict';
 		'toUnicode': toUnicode
 	};
 
+	var namedExports = /*#__PURE__*/Object.freeze({
+		__proto__: null,
+		decode: decode,
+		default: punycode,
+		encode: encode,
+		toASCII: toASCII,
+		toUnicode: toUnicode,
+		ucs2decode: ucs2decode,
+		ucs2encode: ucs2encode
+	});
+
 	const defaultExports = Object.isFrozen(punycode) ? Object.assign({}, punycode?.default || punycode || { __emptyModule: true }) : punycode;
-	defaultExports.default = Object.assign({}, punycode);
+	Object.keys(namedExports || {}).filter((key) => !defaultExports[key]).forEach((key) => defaultExports[key] = namedExports[key]);
 	Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
 	var punycode_es6 = Object.isFrozen(punycode) ? Object.freeze(defaultExports) : defaultExports;
 

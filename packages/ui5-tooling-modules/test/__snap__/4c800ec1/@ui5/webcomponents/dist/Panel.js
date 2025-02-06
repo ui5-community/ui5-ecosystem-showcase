@@ -1030,8 +1030,13 @@ To prevent other runtimes from defining tags that you use, consider using scopin
     Panel$1.define();
     var defExp = Panel$1;
 
+    var namedExports = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        default: defExp
+    });
+
     const defaultExports = Object.isFrozen(defExp) ? Object.assign({}, defExp?.default || defExp || { __emptyModule: true }) : defExp;
-    defaultExports.default = Object.assign({}, defExp);
+    Object.keys(namedExports || {}).filter((key) => !defaultExports[key]).forEach((key) => defaultExports[key] = namedExports[key]);
     Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
     var Panel = Object.isFrozen(defExp) ? Object.freeze(defaultExports) : defaultExports;
 

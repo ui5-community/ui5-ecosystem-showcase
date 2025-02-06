@@ -296,6 +296,7 @@ test.serial("Verify generation of XLSX", async (t) => {
 	});
 	const module = await env.getModule("xlsx");
 	t.true(module.retVal.__esModule);
+	t.true(typeof module.retVal.version === "string");
 	if (platform() !== "win32") {
 		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
 	}
@@ -841,8 +842,8 @@ test.serial("Verify generation of fetch-mock", async (t) => {
 	});
 	const fetchMock = await env.getModule("fetch-mock");
 	t.true(fetchMock.retVal.__esModule);
-	t.is(typeof fetchMock.retVal.default.config, "object");
-	t.is(typeof fetchMock.retVal.default.fetchHandler, "function");
+	t.is(typeof fetchMock.retVal.config, "object");
+	t.is(typeof fetchMock.retVal.fetchHandler, "function");
 	if (platform() !== "win32") {
 		t.is(fetchMock.code, readSnapFile(fetchMock.name, t.context.snapDir));
 	}

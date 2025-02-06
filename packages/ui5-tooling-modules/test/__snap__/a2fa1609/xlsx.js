@@ -34061,6 +34061,7 @@ sap.ui.define((function () { 'use strict';
     to_xlml: write_xlml_stream,
     set_readable: set_readable
   };
+  const version = XLSX.version;
   var defExp = {
     parse_xlscfb,
     parse_zip,
@@ -34081,8 +34082,31 @@ sap.ui.define((function () { 'use strict';
     CFB
   };
 
+  var namedExports = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    CFB: CFB,
+    SSF: SSF,
+    default: defExp,
+    parse_xlscfb: parse_xlscfb,
+    parse_zip: parse_zip,
+    read: readSync,
+    readFile: readFileSync,
+    readFileSync: readFileSync,
+    set_cptable: set_cptable,
+    set_fs: set_fs,
+    stream: __stream,
+    utils: utils,
+    version: version,
+    write: writeSync,
+    writeFile: writeFileSync,
+    writeFileAsync: writeFileAsync,
+    writeFileSync: writeFileSync,
+    writeFileXLSX: writeFileSyncXLSX,
+    writeXLSX: writeSyncXLSX
+  });
+
   const defaultExports = Object.isFrozen(defExp) ? Object.assign({}, defExp?.default || defExp || { __emptyModule: true }) : defExp;
-  defaultExports.default = Object.assign({}, defExp);
+  Object.keys(namedExports || {}).filter((key) => !defaultExports[key]).forEach((key) => defaultExports[key] = namedExports[key]);
   Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
   var xlsx = Object.isFrozen(defExp) ? Object.freeze(defaultExports) : defaultExports;
 

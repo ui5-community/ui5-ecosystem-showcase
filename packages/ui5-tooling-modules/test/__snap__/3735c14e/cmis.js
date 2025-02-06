@@ -1,5 +1,20 @@
 sap.ui.define((function () { 'use strict';
 
+	function _mergeNamespaces(n, m) {
+		m.forEach(function (e) {
+			e && typeof e !== 'string' && !Array.isArray(e) && Object.keys(e).forEach(function (k) {
+				if (k !== 'default' && !(k in n)) {
+					var d = Object.getOwnPropertyDescriptor(e, k);
+					Object.defineProperty(n, k, d.get ? d : {
+						enumerable: true,
+						get: function () { return e[k]; }
+					});
+				}
+			});
+		});
+		return Object.freeze(n);
+	}
+
 	var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 	function getAugmentedNamespace(n) {
@@ -31,72 +46,104 @@ sap.ui.define((function () { 'use strict';
 
 	var cmis = {};
 
+	var nodePolyfill = {};
+
 	var browser$3 = {exports: {}};
 
-	(function (module, exports) {
+	var hasRequiredBrowser$1;
 
-		// ref: https://github.com/tc39/proposal-global
-		var getGlobal = function () {
-			// the only reliable means to get the global object is
-			// `Function('return this')()`
-			// However, this causes CSP violations in Chrome apps.
-			if (typeof self !== 'undefined') { return self; }
-			if (typeof window !== 'undefined') { return window; }
-			if (typeof commonjsGlobal !== 'undefined') { return commonjsGlobal; }
-			throw new Error('unable to locate global object');
+	function requireBrowser$1 () {
+		if (hasRequiredBrowser$1) return browser$3.exports;
+		hasRequiredBrowser$1 = 1;
+		(function (module, exports) {
+
+			// ref: https://github.com/tc39/proposal-global
+			var getGlobal = function () {
+				// the only reliable means to get the global object is
+				// `Function('return this')()`
+				// However, this causes CSP violations in Chrome apps.
+				if (typeof self !== 'undefined') { return self; }
+				if (typeof window !== 'undefined') { return window; }
+				if (typeof commonjsGlobal !== 'undefined') { return commonjsGlobal; }
+				throw new Error('unable to locate global object');
+			};
+
+			var globalObject = getGlobal();
+
+			module.exports = exports = globalObject.fetch;
+
+			// Needed for TypeScript and Webpack.
+			if (globalObject.fetch) {
+				exports.default = globalObject.fetch.bind(globalObject);
+			}
+
+			exports.Headers = globalObject.Headers;
+			exports.Request = globalObject.Request;
+			exports.Response = globalObject.Response; 
+		} (browser$3, browser$3.exports));
+		return browser$3.exports;
+	}
+
+	var node;
+	var hasRequiredNode;
+
+	function requireNode () {
+		if (hasRequiredNode) return node;
+		hasRequiredNode = 1;
+		var realFetch = requireBrowser$1();
+
+		var fetch = function (url, options) {
+		  // Support schemaless URIs on the server for parity with the browser.
+		  // Ex: //github.com/ -> https://github.com/
+		  if (/^\/\//.test(url)) {
+		    url = 'https:' + url;
+		  }
+		  return realFetch.call(this, url, options);
 		};
 
-		var globalObject = getGlobal();
+		fetch.fetch = fetch;
+		fetch.Response = realFetch.Response,
+		fetch.Headers = realFetch.Headers,
+		fetch.Request = realFetch.Request,
+		fetch.polyfill = false;
 
-		module.exports = exports = globalObject.fetch;
+		node = fetch;
+		return node;
+	}
 
-		// Needed for TypeScript and Webpack.
-		if (globalObject.fetch) {
-			exports.default = globalObject.fetch.bind(globalObject);
+	var hasRequiredNodePolyfill;
+
+	function requireNodePolyfill () {
+		if (hasRequiredNodePolyfill) return nodePolyfill;
+		hasRequiredNodePolyfill = 1;
+		var fetchNode = requireNode();
+		var fetch = fetchNode.fetch.bind({});
+
+		fetch.polyfill = true;
+
+		if (!commonjsGlobal.fetch) {
+		  commonjsGlobal.fetch = fetch;
+		  commonjsGlobal.Response = fetchNode.Response;
+		  commonjsGlobal.Headers = fetchNode.Headers;
+		  commonjsGlobal.Request = fetchNode.Request;
 		}
-
-		exports.Headers = globalObject.Headers;
-		exports.Request = globalObject.Request;
-		exports.Response = globalObject.Response; 
-	} (browser$3, browser$3.exports));
-
-	var browserExports = browser$3.exports;
-
-	var realFetch = browserExports;
-
-	var fetch$2 = function (url, options) {
-	  // Support schemaless URIs on the server for parity with the browser.
-	  // Ex: //github.com/ -> https://github.com/
-	  if (/^\/\//.test(url)) {
-	    url = 'https:' + url;
-	  }
-	  return realFetch.call(this, url, options);
-	};
-
-	fetch$2.fetch = fetch$2;
-	fetch$2.Response = realFetch.Response,
-	fetch$2.Headers = realFetch.Headers,
-	fetch$2.Request = realFetch.Request,
-	fetch$2.polyfill = false;
-
-	var node = fetch$2;
-
-	var fetchNode = node;
-	var fetch$1 = fetchNode.fetch.bind({});
-
-	fetch$1.polyfill = true;
-
-	if (!commonjsGlobal.fetch) {
-	  commonjsGlobal.fetch = fetch$1;
-	  commonjsGlobal.Response = fetchNode.Response;
-	  commonjsGlobal.Headers = fetchNode.Headers;
-	  commonjsGlobal.Request = fetchNode.Request;
+		return nodePolyfill;
 	}
 
 	var browser$2 = {};
 
-	browser$2.atob = self.atob.bind(self);
-	browser$2.btoa = self.btoa.bind(self);
+	var hasRequiredBrowser;
+
+	function requireBrowser () {
+		if (hasRequiredBrowser) return browser$2;
+		hasRequiredBrowser = 1;
+
+		browser$2.atob = self.atob.bind(self);
+		browser$2.btoa = self.btoa.bind(self);
+		return browser$2;
+	}
+
+	var lib = {exports: {}};
 
 	var global$1 = (typeof global !== "undefined" ? global :
 	  typeof self !== "undefined" ? self :
@@ -5369,24 +5416,24 @@ sap.ui.define((function () { 'use strict';
 	  cb(null, chunk);
 	};
 
-	inherits(Stream$3, EventEmitter);
-	Stream$3.Readable = Readable;
-	Stream$3.Writable = Writable;
-	Stream$3.Duplex = Duplex;
-	Stream$3.Transform = Transform;
-	Stream$3.PassThrough = PassThrough;
+	inherits(Stream, EventEmitter);
+	Stream.Readable = Readable;
+	Stream.Writable = Writable;
+	Stream.Duplex = Duplex;
+	Stream.Transform = Transform;
+	Stream.PassThrough = PassThrough;
 
 	// Backwards-compat with node 0.4.x
-	Stream$3.Stream = Stream$3;
+	Stream.Stream = Stream;
 
 	// old-style streams.  Note that the pipe method (the only relevant
 	// part of this class) is overridden in the Readable class.
 
-	function Stream$3() {
+	function Stream() {
 	  EventEmitter.call(this);
 	}
 
-	Stream$3.prototype.pipe = function(dest, options) {
+	Stream.prototype.pipe = function(dest, options) {
 	  var source = this;
 
 	  function ondata(chunk) {
@@ -5474,330 +5521,346 @@ sap.ui.define((function () { 'use strict';
 		Duplex: Duplex,
 		PassThrough: PassThrough,
 		Readable: Readable,
-		Stream: Stream$3,
+		Stream: Stream,
 		Transform: Transform,
 		Writable: Writable,
-		default: Stream$3
+		default: Stream
 	});
 
 	var require$$7 = /*@__PURE__*/getAugmentedNamespace(_polyfillNode_stream);
 
-	var Stream$2 = require$$7.Stream;
-	var util$2 = require$$1;
+	var delayed_stream;
+	var hasRequiredDelayed_stream;
 
-	var delayed_stream = DelayedStream$1;
-	function DelayedStream$1() {
-	  this.source = null;
-	  this.dataSize = 0;
-	  this.maxDataSize = 1024 * 1024;
-	  this.pauseStream = true;
+	function requireDelayed_stream () {
+		if (hasRequiredDelayed_stream) return delayed_stream;
+		hasRequiredDelayed_stream = 1;
+		var Stream = require$$7.Stream;
+		var util = require$$1;
 
-	  this._maxDataSizeExceeded = false;
-	  this._released = false;
-	  this._bufferedEvents = [];
+		delayed_stream = DelayedStream;
+		function DelayedStream() {
+		  this.source = null;
+		  this.dataSize = 0;
+		  this.maxDataSize = 1024 * 1024;
+		  this.pauseStream = true;
+
+		  this._maxDataSizeExceeded = false;
+		  this._released = false;
+		  this._bufferedEvents = [];
+		}
+		util.inherits(DelayedStream, Stream);
+
+		DelayedStream.create = function(source, options) {
+		  var delayedStream = new this();
+
+		  options = options || {};
+		  for (var option in options) {
+		    delayedStream[option] = options[option];
+		  }
+
+		  delayedStream.source = source;
+
+		  var realEmit = source.emit;
+		  source.emit = function() {
+		    delayedStream._handleEmit(arguments);
+		    return realEmit.apply(source, arguments);
+		  };
+
+		  source.on('error', function() {});
+		  if (delayedStream.pauseStream) {
+		    source.pause();
+		  }
+
+		  return delayedStream;
+		};
+
+		Object.defineProperty(DelayedStream.prototype, 'readable', {
+		  configurable: true,
+		  enumerable: true,
+		  get: function() {
+		    return this.source.readable;
+		  }
+		});
+
+		DelayedStream.prototype.setEncoding = function() {
+		  return this.source.setEncoding.apply(this.source, arguments);
+		};
+
+		DelayedStream.prototype.resume = function() {
+		  if (!this._released) {
+		    this.release();
+		  }
+
+		  this.source.resume();
+		};
+
+		DelayedStream.prototype.pause = function() {
+		  this.source.pause();
+		};
+
+		DelayedStream.prototype.release = function() {
+		  this._released = true;
+
+		  this._bufferedEvents.forEach(function(args) {
+		    this.emit.apply(this, args);
+		  }.bind(this));
+		  this._bufferedEvents = [];
+		};
+
+		DelayedStream.prototype.pipe = function() {
+		  var r = Stream.prototype.pipe.apply(this, arguments);
+		  this.resume();
+		  return r;
+		};
+
+		DelayedStream.prototype._handleEmit = function(args) {
+		  if (this._released) {
+		    this.emit.apply(this, args);
+		    return;
+		  }
+
+		  if (args[0] === 'data') {
+		    this.dataSize += args[1].length;
+		    this._checkIfMaxDataSizeExceeded();
+		  }
+
+		  this._bufferedEvents.push(args);
+		};
+
+		DelayedStream.prototype._checkIfMaxDataSizeExceeded = function() {
+		  if (this._maxDataSizeExceeded) {
+		    return;
+		  }
+
+		  if (this.dataSize <= this.maxDataSize) {
+		    return;
+		  }
+
+		  this._maxDataSizeExceeded = true;
+		  var message =
+		    'DelayedStream#maxDataSize of ' + this.maxDataSize + ' bytes exceeded.';
+		  this.emit('error', new Error(message));
+		};
+		return delayed_stream;
 	}
-	util$2.inherits(DelayedStream$1, Stream$2);
 
-	DelayedStream$1.create = function(source, options) {
-	  var delayedStream = new this();
+	var combined_stream;
+	var hasRequiredCombined_stream;
 
-	  options = options || {};
-	  for (var option in options) {
-	    delayedStream[option] = options[option];
-	  }
+	function requireCombined_stream () {
+		if (hasRequiredCombined_stream) return combined_stream;
+		hasRequiredCombined_stream = 1;
+		var util = require$$1;
+		var Stream = require$$7.Stream;
+		var DelayedStream = requireDelayed_stream();
 
-	  delayedStream.source = source;
+		combined_stream = CombinedStream;
+		function CombinedStream() {
+		  this.writable = false;
+		  this.readable = true;
+		  this.dataSize = 0;
+		  this.maxDataSize = 2 * 1024 * 1024;
+		  this.pauseStreams = true;
 
-	  var realEmit = source.emit;
-	  source.emit = function() {
-	    delayedStream._handleEmit(arguments);
-	    return realEmit.apply(source, arguments);
-	  };
+		  this._released = false;
+		  this._streams = [];
+		  this._currentStream = null;
+		  this._insideLoop = false;
+		  this._pendingNext = false;
+		}
+		util.inherits(CombinedStream, Stream);
 
-	  source.on('error', function() {});
-	  if (delayedStream.pauseStream) {
-	    source.pause();
-	  }
+		CombinedStream.create = function(options) {
+		  var combinedStream = new this();
 
-	  return delayedStream;
-	};
+		  options = options || {};
+		  for (var option in options) {
+		    combinedStream[option] = options[option];
+		  }
 
-	Object.defineProperty(DelayedStream$1.prototype, 'readable', {
-	  configurable: true,
-	  enumerable: true,
-	  get: function() {
-	    return this.source.readable;
-	  }
-	});
+		  return combinedStream;
+		};
 
-	DelayedStream$1.prototype.setEncoding = function() {
-	  return this.source.setEncoding.apply(this.source, arguments);
-	};
+		CombinedStream.isStreamLike = function(stream) {
+		  return (typeof stream !== 'function')
+		    && (typeof stream !== 'string')
+		    && (typeof stream !== 'boolean')
+		    && (typeof stream !== 'number')
+		    && (!Buffer.isBuffer(stream));
+		};
 
-	DelayedStream$1.prototype.resume = function() {
-	  if (!this._released) {
-	    this.release();
-	  }
+		CombinedStream.prototype.append = function(stream) {
+		  var isStreamLike = CombinedStream.isStreamLike(stream);
 
-	  this.source.resume();
-	};
+		  if (isStreamLike) {
+		    if (!(stream instanceof DelayedStream)) {
+		      var newStream = DelayedStream.create(stream, {
+		        maxDataSize: Infinity,
+		        pauseStream: this.pauseStreams,
+		      });
+		      stream.on('data', this._checkDataSize.bind(this));
+		      stream = newStream;
+		    }
 
-	DelayedStream$1.prototype.pause = function() {
-	  this.source.pause();
-	};
+		    this._handleErrors(stream);
 
-	DelayedStream$1.prototype.release = function() {
-	  this._released = true;
+		    if (this.pauseStreams) {
+		      stream.pause();
+		    }
+		  }
 
-	  this._bufferedEvents.forEach(function(args) {
-	    this.emit.apply(this, args);
-	  }.bind(this));
-	  this._bufferedEvents = [];
-	};
+		  this._streams.push(stream);
+		  return this;
+		};
 
-	DelayedStream$1.prototype.pipe = function() {
-	  var r = Stream$2.prototype.pipe.apply(this, arguments);
-	  this.resume();
-	  return r;
-	};
+		CombinedStream.prototype.pipe = function(dest, options) {
+		  Stream.prototype.pipe.call(this, dest, options);
+		  this.resume();
+		  return dest;
+		};
 
-	DelayedStream$1.prototype._handleEmit = function(args) {
-	  if (this._released) {
-	    this.emit.apply(this, args);
-	    return;
-	  }
+		CombinedStream.prototype._getNext = function() {
+		  this._currentStream = null;
 
-	  if (args[0] === 'data') {
-	    this.dataSize += args[1].length;
-	    this._checkIfMaxDataSizeExceeded();
-	  }
+		  if (this._insideLoop) {
+		    this._pendingNext = true;
+		    return; // defer call
+		  }
 
-	  this._bufferedEvents.push(args);
-	};
+		  this._insideLoop = true;
+		  try {
+		    do {
+		      this._pendingNext = false;
+		      this._realGetNext();
+		    } while (this._pendingNext);
+		  } finally {
+		    this._insideLoop = false;
+		  }
+		};
 
-	DelayedStream$1.prototype._checkIfMaxDataSizeExceeded = function() {
-	  if (this._maxDataSizeExceeded) {
-	    return;
-	  }
+		CombinedStream.prototype._realGetNext = function() {
+		  var stream = this._streams.shift();
 
-	  if (this.dataSize <= this.maxDataSize) {
-	    return;
-	  }
 
-	  this._maxDataSizeExceeded = true;
-	  var message =
-	    'DelayedStream#maxDataSize of ' + this.maxDataSize + ' bytes exceeded.';
-	  this.emit('error', new Error(message));
-	};
+		  if (typeof stream == 'undefined') {
+		    this.end();
+		    return;
+		  }
 
-	var util$1 = require$$1;
-	var Stream$1 = require$$7.Stream;
-	var DelayedStream = delayed_stream;
+		  if (typeof stream !== 'function') {
+		    this._pipeNext(stream);
+		    return;
+		  }
 
-	var combined_stream = CombinedStream$1;
-	function CombinedStream$1() {
-	  this.writable = false;
-	  this.readable = true;
-	  this.dataSize = 0;
-	  this.maxDataSize = 2 * 1024 * 1024;
-	  this.pauseStreams = true;
+		  var getStream = stream;
+		  getStream(function(stream) {
+		    var isStreamLike = CombinedStream.isStreamLike(stream);
+		    if (isStreamLike) {
+		      stream.on('data', this._checkDataSize.bind(this));
+		      this._handleErrors(stream);
+		    }
 
-	  this._released = false;
-	  this._streams = [];
-	  this._currentStream = null;
-	  this._insideLoop = false;
-	  this._pendingNext = false;
+		    this._pipeNext(stream);
+		  }.bind(this));
+		};
+
+		CombinedStream.prototype._pipeNext = function(stream) {
+		  this._currentStream = stream;
+
+		  var isStreamLike = CombinedStream.isStreamLike(stream);
+		  if (isStreamLike) {
+		    stream.on('end', this._getNext.bind(this));
+		    stream.pipe(this, {end: false});
+		    return;
+		  }
+
+		  var value = stream;
+		  this.write(value);
+		  this._getNext();
+		};
+
+		CombinedStream.prototype._handleErrors = function(stream) {
+		  var self = this;
+		  stream.on('error', function(err) {
+		    self._emitError(err);
+		  });
+		};
+
+		CombinedStream.prototype.write = function(data) {
+		  this.emit('data', data);
+		};
+
+		CombinedStream.prototype.pause = function() {
+		  if (!this.pauseStreams) {
+		    return;
+		  }
+
+		  if(this.pauseStreams && this._currentStream && typeof(this._currentStream.pause) == 'function') this._currentStream.pause();
+		  this.emit('pause');
+		};
+
+		CombinedStream.prototype.resume = function() {
+		  if (!this._released) {
+		    this._released = true;
+		    this.writable = true;
+		    this._getNext();
+		  }
+
+		  if(this.pauseStreams && this._currentStream && typeof(this._currentStream.resume) == 'function') this._currentStream.resume();
+		  this.emit('resume');
+		};
+
+		CombinedStream.prototype.end = function() {
+		  this._reset();
+		  this.emit('end');
+		};
+
+		CombinedStream.prototype.destroy = function() {
+		  this._reset();
+		  this.emit('close');
+		};
+
+		CombinedStream.prototype._reset = function() {
+		  this.writable = false;
+		  this._streams = [];
+		  this._currentStream = null;
+		};
+
+		CombinedStream.prototype._checkDataSize = function() {
+		  this._updateDataSize();
+		  if (this.dataSize <= this.maxDataSize) {
+		    return;
+		  }
+
+		  var message =
+		    'DelayedStream#maxDataSize of ' + this.maxDataSize + ' bytes exceeded.';
+		  this._emitError(new Error(message));
+		};
+
+		CombinedStream.prototype._updateDataSize = function() {
+		  this.dataSize = 0;
+
+		  var self = this;
+		  this._streams.forEach(function(stream) {
+		    if (!stream.dataSize) {
+		      return;
+		    }
+
+		    self.dataSize += stream.dataSize;
+		  });
+
+		  if (this._currentStream && this._currentStream.dataSize) {
+		    this.dataSize += this._currentStream.dataSize;
+		  }
+		};
+
+		CombinedStream.prototype._emitError = function(err) {
+		  this._reset();
+		  this.emit('error', err);
+		};
+		return combined_stream;
 	}
-	util$1.inherits(CombinedStream$1, Stream$1);
-
-	CombinedStream$1.create = function(options) {
-	  var combinedStream = new this();
-
-	  options = options || {};
-	  for (var option in options) {
-	    combinedStream[option] = options[option];
-	  }
-
-	  return combinedStream;
-	};
-
-	CombinedStream$1.isStreamLike = function(stream) {
-	  return (typeof stream !== 'function')
-	    && (typeof stream !== 'string')
-	    && (typeof stream !== 'boolean')
-	    && (typeof stream !== 'number')
-	    && (!Buffer.isBuffer(stream));
-	};
-
-	CombinedStream$1.prototype.append = function(stream) {
-	  var isStreamLike = CombinedStream$1.isStreamLike(stream);
-
-	  if (isStreamLike) {
-	    if (!(stream instanceof DelayedStream)) {
-	      var newStream = DelayedStream.create(stream, {
-	        maxDataSize: Infinity,
-	        pauseStream: this.pauseStreams,
-	      });
-	      stream.on('data', this._checkDataSize.bind(this));
-	      stream = newStream;
-	    }
-
-	    this._handleErrors(stream);
-
-	    if (this.pauseStreams) {
-	      stream.pause();
-	    }
-	  }
-
-	  this._streams.push(stream);
-	  return this;
-	};
-
-	CombinedStream$1.prototype.pipe = function(dest, options) {
-	  Stream$1.prototype.pipe.call(this, dest, options);
-	  this.resume();
-	  return dest;
-	};
-
-	CombinedStream$1.prototype._getNext = function() {
-	  this._currentStream = null;
-
-	  if (this._insideLoop) {
-	    this._pendingNext = true;
-	    return; // defer call
-	  }
-
-	  this._insideLoop = true;
-	  try {
-	    do {
-	      this._pendingNext = false;
-	      this._realGetNext();
-	    } while (this._pendingNext);
-	  } finally {
-	    this._insideLoop = false;
-	  }
-	};
-
-	CombinedStream$1.prototype._realGetNext = function() {
-	  var stream = this._streams.shift();
-
-
-	  if (typeof stream == 'undefined') {
-	    this.end();
-	    return;
-	  }
-
-	  if (typeof stream !== 'function') {
-	    this._pipeNext(stream);
-	    return;
-	  }
-
-	  var getStream = stream;
-	  getStream(function(stream) {
-	    var isStreamLike = CombinedStream$1.isStreamLike(stream);
-	    if (isStreamLike) {
-	      stream.on('data', this._checkDataSize.bind(this));
-	      this._handleErrors(stream);
-	    }
-
-	    this._pipeNext(stream);
-	  }.bind(this));
-	};
-
-	CombinedStream$1.prototype._pipeNext = function(stream) {
-	  this._currentStream = stream;
-
-	  var isStreamLike = CombinedStream$1.isStreamLike(stream);
-	  if (isStreamLike) {
-	    stream.on('end', this._getNext.bind(this));
-	    stream.pipe(this, {end: false});
-	    return;
-	  }
-
-	  var value = stream;
-	  this.write(value);
-	  this._getNext();
-	};
-
-	CombinedStream$1.prototype._handleErrors = function(stream) {
-	  var self = this;
-	  stream.on('error', function(err) {
-	    self._emitError(err);
-	  });
-	};
-
-	CombinedStream$1.prototype.write = function(data) {
-	  this.emit('data', data);
-	};
-
-	CombinedStream$1.prototype.pause = function() {
-	  if (!this.pauseStreams) {
-	    return;
-	  }
-
-	  if(this.pauseStreams && this._currentStream && typeof(this._currentStream.pause) == 'function') this._currentStream.pause();
-	  this.emit('pause');
-	};
-
-	CombinedStream$1.prototype.resume = function() {
-	  if (!this._released) {
-	    this._released = true;
-	    this.writable = true;
-	    this._getNext();
-	  }
-
-	  if(this.pauseStreams && this._currentStream && typeof(this._currentStream.resume) == 'function') this._currentStream.resume();
-	  this.emit('resume');
-	};
-
-	CombinedStream$1.prototype.end = function() {
-	  this._reset();
-	  this.emit('end');
-	};
-
-	CombinedStream$1.prototype.destroy = function() {
-	  this._reset();
-	  this.emit('close');
-	};
-
-	CombinedStream$1.prototype._reset = function() {
-	  this.writable = false;
-	  this._streams = [];
-	  this._currentStream = null;
-	};
-
-	CombinedStream$1.prototype._checkDataSize = function() {
-	  this._updateDataSize();
-	  if (this.dataSize <= this.maxDataSize) {
-	    return;
-	  }
-
-	  var message =
-	    'DelayedStream#maxDataSize of ' + this.maxDataSize + ' bytes exceeded.';
-	  this._emitError(new Error(message));
-	};
-
-	CombinedStream$1.prototype._updateDataSize = function() {
-	  this.dataSize = 0;
-
-	  var self = this;
-	  this._streams.forEach(function(stream) {
-	    if (!stream.dataSize) {
-	      return;
-	    }
-
-	    self.dataSize += stream.dataSize;
-	  });
-
-	  if (this._currentStream && this._currentStream.dataSize) {
-	    this.dataSize += this._currentStream.dataSize;
-	  }
-	};
-
-	CombinedStream$1.prototype._emitError = function(err) {
-	  this._reset();
-	  this.emit('error', err);
-	};
 
 	// Copyright Joyent, Inc. and other Node contributors.
 	//
@@ -18787,11 +18850,19 @@ sap.ui.define((function () { 'use strict';
 	 * MIT Licensed
 	 */
 
-	/**
-	 * Module exports.
-	 */
+	var mimeDb;
+	var hasRequiredMimeDb;
 
-	var mimeDb = require$$0;
+	function requireMimeDb () {
+		if (hasRequiredMimeDb) return mimeDb;
+		hasRequiredMimeDb = 1;
+		/**
+		 * Module exports.
+		 */
+
+		mimeDb = require$$0;
+		return mimeDb;
+	}
 
 	/*!
 	 * mime-types
@@ -18800,1088 +18871,1197 @@ sap.ui.define((function () { 'use strict';
 	 * MIT Licensed
 	 */
 
-	(function (exports) {
+	var hasRequiredMimeTypes;
+
+	function requireMimeTypes () {
+		if (hasRequiredMimeTypes) return mimeTypes;
+		hasRequiredMimeTypes = 1;
+		(function (exports) {
+
+			/**
+			 * Module dependencies.
+			 * @private
+			 */
+
+			var db = requireMimeDb();
+			var extname = require$$2.extname;
+
+			/**
+			 * Module variables.
+			 * @private
+			 */
+
+			var EXTRACT_TYPE_REGEXP = /^\s*([^;\s]*)(?:;|\s|$)/;
+			var TEXT_TYPE_REGEXP = /^text\//i;
+
+			/**
+			 * Module exports.
+			 * @public
+			 */
+
+			exports.charset = charset;
+			exports.charsets = { lookup: charset };
+			exports.contentType = contentType;
+			exports.extension = extension;
+			exports.extensions = Object.create(null);
+			exports.lookup = lookup;
+			exports.types = Object.create(null);
+
+			// Populate the extensions/types maps
+			populateMaps(exports.extensions, exports.types);
+
+			/**
+			 * Get the default charset for a MIME type.
+			 *
+			 * @param {string} type
+			 * @return {boolean|string}
+			 */
+
+			function charset (type) {
+			  if (!type || typeof type !== 'string') {
+			    return false
+			  }
+
+			  // TODO: use media-typer
+			  var match = EXTRACT_TYPE_REGEXP.exec(type);
+			  var mime = match && db[match[1].toLowerCase()];
+
+			  if (mime && mime.charset) {
+			    return mime.charset
+			  }
+
+			  // default text/* to utf-8
+			  if (match && TEXT_TYPE_REGEXP.test(match[1])) {
+			    return 'UTF-8'
+			  }
+
+			  return false
+			}
+
+			/**
+			 * Create a full Content-Type header given a MIME type or extension.
+			 *
+			 * @param {string} str
+			 * @return {boolean|string}
+			 */
+
+			function contentType (str) {
+			  // TODO: should this even be in this module?
+			  if (!str || typeof str !== 'string') {
+			    return false
+			  }
+
+			  var mime = str.indexOf('/') === -1
+			    ? exports.lookup(str)
+			    : str;
+
+			  if (!mime) {
+			    return false
+			  }
+
+			  // TODO: use content-type or other module
+			  if (mime.indexOf('charset') === -1) {
+			    var charset = exports.charset(mime);
+			    if (charset) mime += '; charset=' + charset.toLowerCase();
+			  }
+
+			  return mime
+			}
+
+			/**
+			 * Get the default extension for a MIME type.
+			 *
+			 * @param {string} type
+			 * @return {boolean|string}
+			 */
+
+			function extension (type) {
+			  if (!type || typeof type !== 'string') {
+			    return false
+			  }
+
+			  // TODO: use media-typer
+			  var match = EXTRACT_TYPE_REGEXP.exec(type);
+
+			  // get extensions
+			  var exts = match && exports.extensions[match[1].toLowerCase()];
+
+			  if (!exts || !exts.length) {
+			    return false
+			  }
+
+			  return exts[0]
+			}
+
+			/**
+			 * Lookup the MIME type for a file path/extension.
+			 *
+			 * @param {string} path
+			 * @return {boolean|string}
+			 */
+
+			function lookup (path) {
+			  if (!path || typeof path !== 'string') {
+			    return false
+			  }
+
+			  // get the extension ("ext" or ".ext" or full path)
+			  var extension = extname('x.' + path)
+			    .toLowerCase()
+			    .substr(1);
+
+			  if (!extension) {
+			    return false
+			  }
+
+			  return exports.types[extension] || false
+			}
+
+			/**
+			 * Populate the extensions and types maps.
+			 * @private
+			 */
+
+			function populateMaps (extensions, types) {
+			  // source preference (least -> most)
+			  var preference = ['nginx', 'apache', undefined, 'iana'];
+
+			  Object.keys(db).forEach(function forEachMimeType (type) {
+			    var mime = db[type];
+			    var exts = mime.extensions;
+
+			    if (!exts || !exts.length) {
+			      return
+			    }
+
+			    // mime -> extensions
+			    extensions[type] = exts;
+
+			    // extension -> mime
+			    for (var i = 0; i < exts.length; i++) {
+			      var extension = exts[i];
+
+			      if (types[extension]) {
+			        var from = preference.indexOf(db[types[extension]].source);
+			        var to = preference.indexOf(mime.source);
+
+			        if (types[extension] !== 'application/octet-stream' &&
+			          (from > to || (from === to && types[extension].substr(0, 12) === 'application/'))) {
+			          // skip the remapping
+			          continue
+			        }
+			      }
+
+			      // set the extension -> mime
+			      types[extension] = type;
+			    }
+			  });
+			} 
+		} (mimeTypes));
+		return mimeTypes;
+	}
+
+	var defer_1;
+	var hasRequiredDefer;
+
+	function requireDefer () {
+		if (hasRequiredDefer) return defer_1;
+		hasRequiredDefer = 1;
+		defer_1 = defer;
 
 		/**
-		 * Module dependencies.
-		 * @private
-		 */
-
-		var db = mimeDb;
-		var extname = require$$2.extname;
-
-		/**
-		 * Module variables.
-		 * @private
-		 */
-
-		var EXTRACT_TYPE_REGEXP = /^\s*([^;\s]*)(?:;|\s|$)/;
-		var TEXT_TYPE_REGEXP = /^text\//i;
-
-		/**
-		 * Module exports.
-		 * @public
-		 */
-
-		exports.charset = charset;
-		exports.charsets = { lookup: charset };
-		exports.contentType = contentType;
-		exports.extension = extension;
-		exports.extensions = Object.create(null);
-		exports.lookup = lookup;
-		exports.types = Object.create(null);
-
-		// Populate the extensions/types maps
-		populateMaps(exports.extensions, exports.types);
-
-		/**
-		 * Get the default charset for a MIME type.
+		 * Runs provided function on next iteration of the event loop
 		 *
-		 * @param {string} type
-		 * @return {boolean|string}
+		 * @param {function} fn - function to run
 		 */
+		function defer(fn)
+		{
+		  var nextTick = typeof setImmediate == 'function'
+		    ? setImmediate
+		    : (
+		      typeof browser$1 == 'object' && typeof browser$1.nextTick == 'function'
+		      ? browser$1.nextTick
+		      : null
+		    );
 
-		function charset (type) {
-		  if (!type || typeof type !== 'string') {
-		    return false
+		  if (nextTick)
+		  {
+		    nextTick(fn);
 		  }
-
-		  // TODO: use media-typer
-		  var match = EXTRACT_TYPE_REGEXP.exec(type);
-		  var mime = match && db[match[1].toLowerCase()];
-
-		  if (mime && mime.charset) {
-		    return mime.charset
+		  else
+		  {
+		    setTimeout(fn, 0);
 		  }
+		}
+		return defer_1;
+	}
 
-		  // default text/* to utf-8
-		  if (match && TEXT_TYPE_REGEXP.test(match[1])) {
-		    return 'UTF-8'
-		  }
+	var async_1;
+	var hasRequiredAsync;
 
-		  return false
+	function requireAsync () {
+		if (hasRequiredAsync) return async_1;
+		hasRequiredAsync = 1;
+		var defer = requireDefer();
+
+		// API
+		async_1 = async;
+
+		/**
+		 * Runs provided callback asynchronously
+		 * even if callback itself is not
+		 *
+		 * @param   {function} callback - callback to invoke
+		 * @returns {function} - augmented callback
+		 */
+		function async(callback)
+		{
+		  var isAsync = false;
+
+		  // check if async happened
+		  defer(function() { isAsync = true; });
+
+		  return function async_callback(err, result)
+		  {
+		    if (isAsync)
+		    {
+		      callback(err, result);
+		    }
+		    else
+		    {
+		      defer(function nextTick_callback()
+		      {
+		        callback(err, result);
+		      });
+		    }
+		  };
+		}
+		return async_1;
+	}
+
+	var abort_1;
+	var hasRequiredAbort;
+
+	function requireAbort () {
+		if (hasRequiredAbort) return abort_1;
+		hasRequiredAbort = 1;
+		// API
+		abort_1 = abort;
+
+		/**
+		 * Aborts leftover active jobs
+		 *
+		 * @param {object} state - current state object
+		 */
+		function abort(state)
+		{
+		  Object.keys(state.jobs).forEach(clean.bind(state));
+
+		  // reset leftover jobs
+		  state.jobs = {};
 		}
 
 		/**
-		 * Create a full Content-Type header given a MIME type or extension.
+		 * Cleans up leftover job by invoking abort function for the provided job id
 		 *
-		 * @param {string} str
-		 * @return {boolean|string}
+		 * @this  state
+		 * @param {string|number} key - job id to abort
 		 */
-
-		function contentType (str) {
-		  // TODO: should this even be in this module?
-		  if (!str || typeof str !== 'string') {
-		    return false
+		function clean(key)
+		{
+		  if (typeof this.jobs[key] == 'function')
+		  {
+		    this.jobs[key]();
 		  }
-
-		  var mime = str.indexOf('/') === -1
-		    ? exports.lookup(str)
-		    : str;
-
-		  if (!mime) {
-		    return false
-		  }
-
-		  // TODO: use content-type or other module
-		  if (mime.indexOf('charset') === -1) {
-		    var charset = exports.charset(mime);
-		    if (charset) mime += '; charset=' + charset.toLowerCase();
-		  }
-
-		  return mime
 		}
+		return abort_1;
+	}
+
+	var iterate_1;
+	var hasRequiredIterate;
+
+	function requireIterate () {
+		if (hasRequiredIterate) return iterate_1;
+		hasRequiredIterate = 1;
+		var async = requireAsync()
+		  , abort = requireAbort()
+		  ;
+
+		// API
+		iterate_1 = iterate;
 
 		/**
-		 * Get the default extension for a MIME type.
+		 * Iterates over each job object
 		 *
-		 * @param {string} type
-		 * @return {boolean|string}
+		 * @param {array|object} list - array or object (named list) to iterate over
+		 * @param {function} iterator - iterator to run
+		 * @param {object} state - current job status
+		 * @param {function} callback - invoked when all elements processed
 		 */
+		function iterate(list, iterator, state, callback)
+		{
+		  // store current index
+		  var key = state['keyedList'] ? state['keyedList'][state.index] : state.index;
 
-		function extension (type) {
-		  if (!type || typeof type !== 'string') {
-		    return false
-		  }
-
-		  // TODO: use media-typer
-		  var match = EXTRACT_TYPE_REGEXP.exec(type);
-
-		  // get extensions
-		  var exts = match && exports.extensions[match[1].toLowerCase()];
-
-		  if (!exts || !exts.length) {
-		    return false
-		  }
-
-		  return exts[0]
-		}
-
-		/**
-		 * Lookup the MIME type for a file path/extension.
-		 *
-		 * @param {string} path
-		 * @return {boolean|string}
-		 */
-
-		function lookup (path) {
-		  if (!path || typeof path !== 'string') {
-		    return false
-		  }
-
-		  // get the extension ("ext" or ".ext" or full path)
-		  var extension = extname('x.' + path)
-		    .toLowerCase()
-		    .substr(1);
-
-		  if (!extension) {
-		    return false
-		  }
-
-		  return exports.types[extension] || false
-		}
-
-		/**
-		 * Populate the extensions and types maps.
-		 * @private
-		 */
-
-		function populateMaps (extensions, types) {
-		  // source preference (least -> most)
-		  var preference = ['nginx', 'apache', undefined, 'iana'];
-
-		  Object.keys(db).forEach(function forEachMimeType (type) {
-		    var mime = db[type];
-		    var exts = mime.extensions;
-
-		    if (!exts || !exts.length) {
-		      return
+		  state.jobs[key] = runJob(iterator, key, list[key], function(error, output)
+		  {
+		    // don't repeat yourself
+		    // skip secondary callbacks
+		    if (!(key in state.jobs))
+		    {
+		      return;
 		    }
 
-		    // mime -> extensions
-		    extensions[type] = exts;
+		    // clean up jobs
+		    delete state.jobs[key];
 
-		    // extension -> mime
-		    for (var i = 0; i < exts.length; i++) {
-		      var extension = exts[i];
+		    if (error)
+		    {
+		      // don't process rest of the results
+		      // stop still active jobs
+		      // and reset the list
+		      abort(state);
+		    }
+		    else
+		    {
+		      state.results[key] = output;
+		    }
 
-		      if (types[extension]) {
-		        var from = preference.indexOf(db[types[extension]].source);
-		        var to = preference.indexOf(mime.source);
+		    // return salvaged results
+		    callback(error, state.results);
+		  });
+		}
 
-		        if (types[extension] !== 'application/octet-stream' &&
-		          (from > to || (from === to && types[extension].substr(0, 12) === 'application/'))) {
-		          // skip the remapping
-		          continue
-		        }
+		/**
+		 * Runs iterator over provided job element
+		 *
+		 * @param   {function} iterator - iterator to invoke
+		 * @param   {string|number} key - key/index of the element in the list of jobs
+		 * @param   {mixed} item - job description
+		 * @param   {function} callback - invoked after iterator is done with the job
+		 * @returns {function|mixed} - job abort function or something else
+		 */
+		function runJob(iterator, key, item, callback)
+		{
+		  var aborter;
+
+		  // allow shortcut if iterator expects only two arguments
+		  if (iterator.length == 2)
+		  {
+		    aborter = iterator(item, async(callback));
+		  }
+		  // otherwise go with full three arguments
+		  else
+		  {
+		    aborter = iterator(item, key, async(callback));
+		  }
+
+		  return aborter;
+		}
+		return iterate_1;
+	}
+
+	var state_1;
+	var hasRequiredState;
+
+	function requireState () {
+		if (hasRequiredState) return state_1;
+		hasRequiredState = 1;
+		// API
+		state_1 = state;
+
+		/**
+		 * Creates initial state object
+		 * for iteration over list
+		 *
+		 * @param   {array|object} list - list to iterate over
+		 * @param   {function|null} sortMethod - function to use for keys sort,
+		 *                                     or `null` to keep them as is
+		 * @returns {object} - initial state object
+		 */
+		function state(list, sortMethod)
+		{
+		  var isNamedList = !Array.isArray(list)
+		    , initState =
+		    {
+		      index    : 0,
+		      keyedList: isNamedList || sortMethod ? Object.keys(list) : null,
+		      jobs     : {},
+		      results  : isNamedList ? {} : [],
+		      size     : isNamedList ? Object.keys(list).length : list.length
+		    }
+		    ;
+
+		  if (sortMethod)
+		  {
+		    // sort array keys based on it's values
+		    // sort object's keys just on own merit
+		    initState.keyedList.sort(isNamedList ? sortMethod : function(a, b)
+		    {
+		      return sortMethod(list[a], list[b]);
+		    });
+		  }
+
+		  return initState;
+		}
+		return state_1;
+	}
+
+	var terminator_1;
+	var hasRequiredTerminator;
+
+	function requireTerminator () {
+		if (hasRequiredTerminator) return terminator_1;
+		hasRequiredTerminator = 1;
+		var abort = requireAbort()
+		  , async = requireAsync()
+		  ;
+
+		// API
+		terminator_1 = terminator;
+
+		/**
+		 * Terminates jobs in the attached state context
+		 *
+		 * @this  AsyncKitState#
+		 * @param {function} callback - final callback to invoke after termination
+		 */
+		function terminator(callback)
+		{
+		  if (!Object.keys(this.jobs).length)
+		  {
+		    return;
+		  }
+
+		  // fast forward iteration index
+		  this.index = this.size;
+
+		  // abort jobs
+		  abort(this);
+
+		  // send back results we have so far
+		  async(callback)(null, this.results);
+		}
+		return terminator_1;
+	}
+
+	var parallel_1;
+	var hasRequiredParallel;
+
+	function requireParallel () {
+		if (hasRequiredParallel) return parallel_1;
+		hasRequiredParallel = 1;
+		var iterate    = requireIterate()
+		  , initState  = requireState()
+		  , terminator = requireTerminator()
+		  ;
+
+		// Public API
+		parallel_1 = parallel;
+
+		/**
+		 * Runs iterator over provided array elements in parallel
+		 *
+		 * @param   {array|object} list - array or object (named list) to iterate over
+		 * @param   {function} iterator - iterator to run
+		 * @param   {function} callback - invoked when all elements processed
+		 * @returns {function} - jobs terminator
+		 */
+		function parallel(list, iterator, callback)
+		{
+		  var state = initState(list);
+
+		  while (state.index < (state['keyedList'] || list).length)
+		  {
+		    iterate(list, iterator, state, function(error, result)
+		    {
+		      if (error)
+		      {
+		        callback(error, result);
+		        return;
 		      }
 
-		      // set the extension -> mime
-		      types[extension] = type;
+		      // looks like it's the last one
+		      if (Object.keys(state.jobs).length === 0)
+		      {
+		        callback(null, state.results);
+		        return;
+		      }
+		    });
+
+		    state.index++;
+		  }
+
+		  return terminator.bind(state, callback);
+		}
+		return parallel_1;
+	}
+
+	var serialOrdered = {exports: {}};
+
+	var hasRequiredSerialOrdered;
+
+	function requireSerialOrdered () {
+		if (hasRequiredSerialOrdered) return serialOrdered.exports;
+		hasRequiredSerialOrdered = 1;
+		var iterate    = requireIterate()
+		  , initState  = requireState()
+		  , terminator = requireTerminator()
+		  ;
+
+		// Public API
+		serialOrdered.exports = serialOrdered$1;
+		// sorting helpers
+		serialOrdered.exports.ascending  = ascending;
+		serialOrdered.exports.descending = descending;
+
+		/**
+		 * Runs iterator over provided sorted array elements in series
+		 *
+		 * @param   {array|object} list - array or object (named list) to iterate over
+		 * @param   {function} iterator - iterator to run
+		 * @param   {function} sortMethod - custom sort function
+		 * @param   {function} callback - invoked when all elements processed
+		 * @returns {function} - jobs terminator
+		 */
+		function serialOrdered$1(list, iterator, sortMethod, callback)
+		{
+		  var state = initState(list, sortMethod);
+
+		  iterate(list, iterator, state, function iteratorHandler(error, result)
+		  {
+		    if (error)
+		    {
+		      callback(error, result);
+		      return;
 		    }
+
+		    state.index++;
+
+		    // are we there yet?
+		    if (state.index < (state['keyedList'] || list).length)
+		    {
+		      iterate(list, iterator, state, iteratorHandler);
+		      return;
+		    }
+
+		    // done here
+		    callback(null, state.results);
 		  });
-		} 
-	} (mimeTypes));
 
-	var defer_1 = defer$1;
+		  return terminator.bind(state, callback);
+		}
 
-	/**
-	 * Runs provided function on next iteration of the event loop
-	 *
-	 * @param {function} fn - function to run
-	 */
-	function defer$1(fn)
-	{
-	  var nextTick = typeof setImmediate == 'function'
-	    ? setImmediate
-	    : (
-	      typeof browser$1 == 'object' && typeof browser$1.nextTick == 'function'
-	      ? browser$1.nextTick
-	      : null
-	    );
+		/*
+		 * -- Sort methods
+		 */
 
-	  if (nextTick)
-	  {
-	    nextTick(fn);
-	  }
-	  else
-	  {
-	    setTimeout(fn, 0);
-	  }
+		/**
+		 * sort helper to sort array elements in ascending order
+		 *
+		 * @param   {mixed} a - an item to compare
+		 * @param   {mixed} b - an item to compare
+		 * @returns {number} - comparison result
+		 */
+		function ascending(a, b)
+		{
+		  return a < b ? -1 : a > b ? 1 : 0;
+		}
+
+		/**
+		 * sort helper to sort array elements in descending order
+		 *
+		 * @param   {mixed} a - an item to compare
+		 * @param   {mixed} b - an item to compare
+		 * @returns {number} - comparison result
+		 */
+		function descending(a, b)
+		{
+		  return -1 * ascending(a, b);
+		}
+		return serialOrdered.exports;
 	}
 
-	var defer = defer_1;
+	var serial_1;
+	var hasRequiredSerial;
 
-	// API
-	var async_1 = async$2;
+	function requireSerial () {
+		if (hasRequiredSerial) return serial_1;
+		hasRequiredSerial = 1;
+		var serialOrdered = requireSerialOrdered();
 
-	/**
-	 * Runs provided callback asynchronously
-	 * even if callback itself is not
-	 *
-	 * @param   {function} callback - callback to invoke
-	 * @returns {function} - augmented callback
-	 */
-	function async$2(callback)
-	{
-	  var isAsync = false;
+		// Public API
+		serial_1 = serial;
 
-	  // check if async happened
-	  defer(function() { isAsync = true; });
-
-	  return function async_callback(err, result)
-	  {
-	    if (isAsync)
-	    {
-	      callback(err, result);
-	    }
-	    else
-	    {
-	      defer(function nextTick_callback()
-	      {
-	        callback(err, result);
-	      });
-	    }
-	  };
+		/**
+		 * Runs iterator over provided array elements in series
+		 *
+		 * @param   {array|object} list - array or object (named list) to iterate over
+		 * @param   {function} iterator - iterator to run
+		 * @param   {function} callback - invoked when all elements processed
+		 * @returns {function} - jobs terminator
+		 */
+		function serial(list, iterator, callback)
+		{
+		  return serialOrdered(list, iterator, null, callback);
+		}
+		return serial_1;
 	}
 
-	// API
-	var abort_1 = abort$2;
+	var asynckit;
+	var hasRequiredAsynckit;
 
-	/**
-	 * Aborts leftover active jobs
-	 *
-	 * @param {object} state - current state object
-	 */
-	function abort$2(state)
-	{
-	  Object.keys(state.jobs).forEach(clean.bind(state));
-
-	  // reset leftover jobs
-	  state.jobs = {};
+	function requireAsynckit () {
+		if (hasRequiredAsynckit) return asynckit;
+		hasRequiredAsynckit = 1;
+		asynckit =
+		{
+		  parallel      : requireParallel(),
+		  serial        : requireSerial(),
+		  serialOrdered : requireSerialOrdered()
+		};
+		return asynckit;
 	}
 
-	/**
-	 * Cleans up leftover job by invoking abort function for the provided job id
-	 *
-	 * @this  state
-	 * @param {string|number} key - job id to abort
-	 */
-	function clean(key)
-	{
-	  if (typeof this.jobs[key] == 'function')
-	  {
-	    this.jobs[key]();
-	  }
+	var populate;
+	var hasRequiredPopulate;
+
+	function requirePopulate () {
+		if (hasRequiredPopulate) return populate;
+		hasRequiredPopulate = 1;
+		// populates missing values
+		populate = function(dst, src) {
+
+		  Object.keys(src).forEach(function(prop)
+		  {
+		    dst[prop] = dst[prop] || src[prop];
+		  });
+
+		  return dst;
+		};
+		return populate;
 	}
 
-	var async$1 = async_1
-	  , abort$1 = abort_1
-	  ;
+	var form_data;
+	var hasRequiredForm_data;
 
-	// API
-	var iterate_1 = iterate$2;
+	function requireForm_data () {
+		if (hasRequiredForm_data) return form_data;
+		hasRequiredForm_data = 1;
+		var CombinedStream = requireCombined_stream();
+		var util = require$$1;
+		var path = require$$2;
+		var http = require$$3;
+		var https = require$$4;
+		var parseUrl = require$$5.parse;
+		var fs = require$$6;
+		var Stream = require$$7.Stream;
+		var mime = requireMimeTypes();
+		var asynckit = requireAsynckit();
+		var populate = requirePopulate();
 
-	/**
-	 * Iterates over each job object
-	 *
-	 * @param {array|object} list - array or object (named list) to iterate over
-	 * @param {function} iterator - iterator to run
-	 * @param {object} state - current job status
-	 * @param {function} callback - invoked when all elements processed
-	 */
-	function iterate$2(list, iterator, state, callback)
-	{
-	  // store current index
-	  var key = state['keyedList'] ? state['keyedList'][state.index] : state.index;
+		// Public API
+		form_data = FormData;
 
-	  state.jobs[key] = runJob(iterator, key, list[key], function(error, output)
-	  {
-	    // don't repeat yourself
-	    // skip secondary callbacks
-	    if (!(key in state.jobs))
-	    {
-	      return;
-	    }
+		// make it a Stream
+		util.inherits(FormData, CombinedStream);
 
-	    // clean up jobs
-	    delete state.jobs[key];
+		/**
+		 * Create readable "multipart/form-data" streams.
+		 * Can be used to submit forms
+		 * and file uploads to other web applications.
+		 *
+		 * @constructor
+		 * @param {Object} options - Properties to be added/overriden for FormData and CombinedStream
+		 */
+		function FormData(options) {
+		  if (!(this instanceof FormData)) {
+		    return new FormData(options);
+		  }
 
-	    if (error)
-	    {
-	      // don't process rest of the results
-	      // stop still active jobs
-	      // and reset the list
-	      abort$1(state);
-	    }
-	    else
-	    {
-	      state.results[key] = output;
-	    }
+		  this._overheadLength = 0;
+		  this._valueLength = 0;
+		  this._valuesToMeasure = [];
 
-	    // return salvaged results
-	    callback(error, state.results);
-	  });
+		  CombinedStream.call(this);
+
+		  options = options || {};
+		  for (var option in options) {
+		    this[option] = options[option];
+		  }
+		}
+
+		FormData.LINE_BREAK = '\r\n';
+		FormData.DEFAULT_CONTENT_TYPE = 'application/octet-stream';
+
+		FormData.prototype.append = function(field, value, options) {
+
+		  options = options || {};
+
+		  // allow filename as single option
+		  if (typeof options == 'string') {
+		    options = {filename: options};
+		  }
+
+		  var append = CombinedStream.prototype.append.bind(this);
+
+		  // all that streamy business can't handle numbers
+		  if (typeof value == 'number') {
+		    value = '' + value;
+		  }
+
+		  // https://github.com/felixge/node-form-data/issues/38
+		  if (util.isArray(value)) {
+		    // Please convert your array into string
+		    // the way web server expects it
+		    this._error(new Error('Arrays are not supported.'));
+		    return;
+		  }
+
+		  var header = this._multiPartHeader(field, value, options);
+		  var footer = this._multiPartFooter();
+
+		  append(header);
+		  append(value);
+		  append(footer);
+
+		  // pass along options.knownLength
+		  this._trackLength(header, value, options);
+		};
+
+		FormData.prototype._trackLength = function(header, value, options) {
+		  var valueLength = 0;
+
+		  // used w/ getLengthSync(), when length is known.
+		  // e.g. for streaming directly from a remote server,
+		  // w/ a known file a size, and not wanting to wait for
+		  // incoming file to finish to get its size.
+		  if (options.knownLength != null) {
+		    valueLength += +options.knownLength;
+		  } else if (Buffer.isBuffer(value)) {
+		    valueLength = value.length;
+		  } else if (typeof value === 'string') {
+		    valueLength = Buffer.byteLength(value);
+		  }
+
+		  this._valueLength += valueLength;
+
+		  // @check why add CRLF? does this account for custom/multiple CRLFs?
+		  this._overheadLength +=
+		    Buffer.byteLength(header) +
+		    FormData.LINE_BREAK.length;
+
+		  // empty or either doesn't have path or not an http response or not a stream
+		  if (!value || ( !value.path && !(value.readable && value.hasOwnProperty('httpVersion')) && !(value instanceof Stream))) {
+		    return;
+		  }
+
+		  // no need to bother with the length
+		  if (!options.knownLength) {
+		    this._valuesToMeasure.push(value);
+		  }
+		};
+
+		FormData.prototype._lengthRetriever = function(value, callback) {
+
+		  if (value.hasOwnProperty('fd')) {
+
+		    // take read range into a account
+		    // `end` = Infinity –> read file till the end
+		    //
+		    // TODO: Looks like there is bug in Node fs.createReadStream
+		    // it doesn't respect `end` options without `start` options
+		    // Fix it when node fixes it.
+		    // https://github.com/joyent/node/issues/7819
+		    if (value.end != undefined && value.end != Infinity && value.start != undefined) {
+
+		      // when end specified
+		      // no need to calculate range
+		      // inclusive, starts with 0
+		      callback(null, value.end + 1 - (value.start ? value.start : 0));
+
+		    // not that fast snoopy
+		    } else {
+		      // still need to fetch file size from fs
+		      fs.stat(value.path, function(err, stat) {
+
+		        var fileSize;
+
+		        if (err) {
+		          callback(err);
+		          return;
+		        }
+
+		        // update final size based on the range options
+		        fileSize = stat.size - (value.start ? value.start : 0);
+		        callback(null, fileSize);
+		      });
+		    }
+
+		  // or http response
+		  } else if (value.hasOwnProperty('httpVersion')) {
+		    callback(null, +value.headers['content-length']);
+
+		  // or request stream http://github.com/mikeal/request
+		  } else if (value.hasOwnProperty('httpModule')) {
+		    // wait till response come back
+		    value.on('response', function(response) {
+		      value.pause();
+		      callback(null, +response.headers['content-length']);
+		    });
+		    value.resume();
+
+		  // something else
+		  } else {
+		    callback('Unknown stream');
+		  }
+		};
+
+		FormData.prototype._multiPartHeader = function(field, value, options) {
+		  // custom header specified (as string)?
+		  // it becomes responsible for boundary
+		  // (e.g. to handle extra CRLFs on .NET servers)
+		  if (typeof options.header == 'string') {
+		    return options.header;
+		  }
+
+		  var contentDisposition = this._getContentDisposition(value, options);
+		  var contentType = this._getContentType(value, options);
+
+		  var contents = '';
+		  var headers  = {
+		    // add custom disposition as third element or keep it two elements if not
+		    'Content-Disposition': ['form-data', 'name="' + field + '"'].concat(contentDisposition || []),
+		    // if no content type. allow it to be empty array
+		    'Content-Type': [].concat(contentType || [])
+		  };
+
+		  // allow custom headers.
+		  if (typeof options.header == 'object') {
+		    populate(headers, options.header);
+		  }
+
+		  var header;
+		  for (var prop in headers) {
+		    if (!headers.hasOwnProperty(prop)) continue;
+		    header = headers[prop];
+
+		    // skip nullish headers.
+		    if (header == null) {
+		      continue;
+		    }
+
+		    // convert all headers to arrays.
+		    if (!Array.isArray(header)) {
+		      header = [header];
+		    }
+
+		    // add non-empty headers.
+		    if (header.length) {
+		      contents += prop + ': ' + header.join('; ') + FormData.LINE_BREAK;
+		    }
+		  }
+
+		  return '--' + this.getBoundary() + FormData.LINE_BREAK + contents + FormData.LINE_BREAK;
+		};
+
+		FormData.prototype._getContentDisposition = function(value, options) {
+
+		  var filename
+		    , contentDisposition
+		    ;
+
+		  if (typeof options.filepath === 'string') {
+		    // custom filepath for relative paths
+		    filename = path.normalize(options.filepath).replace(/\\/g, '/');
+		  } else if (options.filename || value.name || value.path) {
+		    // custom filename take precedence
+		    // formidable and the browser add a name property
+		    // fs- and request- streams have path property
+		    filename = path.basename(options.filename || value.name || value.path);
+		  } else if (value.readable && value.hasOwnProperty('httpVersion')) {
+		    // or try http response
+		    filename = path.basename(value.client._httpMessage.path || '');
+		  }
+
+		  if (filename) {
+		    contentDisposition = 'filename="' + filename + '"';
+		  }
+
+		  return contentDisposition;
+		};
+
+		FormData.prototype._getContentType = function(value, options) {
+
+		  // use custom content-type above all
+		  var contentType = options.contentType;
+
+		  // or try `name` from formidable, browser
+		  if (!contentType && value.name) {
+		    contentType = mime.lookup(value.name);
+		  }
+
+		  // or try `path` from fs-, request- streams
+		  if (!contentType && value.path) {
+		    contentType = mime.lookup(value.path);
+		  }
+
+		  // or if it's http-reponse
+		  if (!contentType && value.readable && value.hasOwnProperty('httpVersion')) {
+		    contentType = value.headers['content-type'];
+		  }
+
+		  // or guess it from the filepath or filename
+		  if (!contentType && (options.filepath || options.filename)) {
+		    contentType = mime.lookup(options.filepath || options.filename);
+		  }
+
+		  // fallback to the default content type if `value` is not simple value
+		  if (!contentType && typeof value == 'object') {
+		    contentType = FormData.DEFAULT_CONTENT_TYPE;
+		  }
+
+		  return contentType;
+		};
+
+		FormData.prototype._multiPartFooter = function() {
+		  return function(next) {
+		    var footer = FormData.LINE_BREAK;
+
+		    var lastPart = (this._streams.length === 0);
+		    if (lastPart) {
+		      footer += this._lastBoundary();
+		    }
+
+		    next(footer);
+		  }.bind(this);
+		};
+
+		FormData.prototype._lastBoundary = function() {
+		  return '--' + this.getBoundary() + '--' + FormData.LINE_BREAK;
+		};
+
+		FormData.prototype.getHeaders = function(userHeaders) {
+		  var header;
+		  var formHeaders = {
+		    'content-type': 'multipart/form-data; boundary=' + this.getBoundary()
+		  };
+
+		  for (header in userHeaders) {
+		    if (userHeaders.hasOwnProperty(header)) {
+		      formHeaders[header.toLowerCase()] = userHeaders[header];
+		    }
+		  }
+
+		  return formHeaders;
+		};
+
+		FormData.prototype.setBoundary = function(boundary) {
+		  this._boundary = boundary;
+		};
+
+		FormData.prototype.getBoundary = function() {
+		  if (!this._boundary) {
+		    this._generateBoundary();
+		  }
+
+		  return this._boundary;
+		};
+
+		FormData.prototype.getBuffer = function() {
+		  var dataBuffer = new Buffer.alloc( 0 );
+		  var boundary = this.getBoundary();
+
+		  // Create the form content. Add Line breaks to the end of data.
+		  for (var i = 0, len = this._streams.length; i < len; i++) {
+		    if (typeof this._streams[i] !== 'function') {
+
+		      // Add content to the buffer.
+		      if(Buffer.isBuffer(this._streams[i])) {
+		        dataBuffer = Buffer.concat( [dataBuffer, this._streams[i]]);
+		      }else {
+		        dataBuffer = Buffer.concat( [dataBuffer, Buffer.from(this._streams[i])]);
+		      }
+
+		      // Add break after content.
+		      if (typeof this._streams[i] !== 'string' || this._streams[i].substring( 2, boundary.length + 2 ) !== boundary) {
+		        dataBuffer = Buffer.concat( [dataBuffer, Buffer.from(FormData.LINE_BREAK)] );
+		      }
+		    }
+		  }
+
+		  // Add the footer and return the Buffer object.
+		  return Buffer.concat( [dataBuffer, Buffer.from(this._lastBoundary())] );
+		};
+
+		FormData.prototype._generateBoundary = function() {
+		  // This generates a 50 character boundary similar to those used by Firefox.
+		  // They are optimized for boyer-moore parsing.
+		  var boundary = '--------------------------';
+		  for (var i = 0; i < 24; i++) {
+		    boundary += Math.floor(Math.random() * 10).toString(16);
+		  }
+
+		  this._boundary = boundary;
+		};
+
+		// Note: getLengthSync DOESN'T calculate streams length
+		// As workaround one can calculate file size manually
+		// and add it as knownLength option
+		FormData.prototype.getLengthSync = function() {
+		  var knownLength = this._overheadLength + this._valueLength;
+
+		  // Don't get confused, there are 3 "internal" streams for each keyval pair
+		  // so it basically checks if there is any value added to the form
+		  if (this._streams.length) {
+		    knownLength += this._lastBoundary().length;
+		  }
+
+		  // https://github.com/form-data/form-data/issues/40
+		  if (!this.hasKnownLength()) {
+		    // Some async length retrievers are present
+		    // therefore synchronous length calculation is false.
+		    // Please use getLength(callback) to get proper length
+		    this._error(new Error('Cannot calculate proper length in synchronous way.'));
+		  }
+
+		  return knownLength;
+		};
+
+		// Public API to check if length of added values is known
+		// https://github.com/form-data/form-data/issues/196
+		// https://github.com/form-data/form-data/issues/262
+		FormData.prototype.hasKnownLength = function() {
+		  var hasKnownLength = true;
+
+		  if (this._valuesToMeasure.length) {
+		    hasKnownLength = false;
+		  }
+
+		  return hasKnownLength;
+		};
+
+		FormData.prototype.getLength = function(cb) {
+		  var knownLength = this._overheadLength + this._valueLength;
+
+		  if (this._streams.length) {
+		    knownLength += this._lastBoundary().length;
+		  }
+
+		  if (!this._valuesToMeasure.length) {
+		    browser$1.nextTick(cb.bind(this, null, knownLength));
+		    return;
+		  }
+
+		  asynckit.parallel(this._valuesToMeasure, this._lengthRetriever, function(err, values) {
+		    if (err) {
+		      cb(err);
+		      return;
+		    }
+
+		    values.forEach(function(length) {
+		      knownLength += length;
+		    });
+
+		    cb(null, knownLength);
+		  });
+		};
+
+		FormData.prototype.submit = function(params, cb) {
+		  var request
+		    , options
+		    , defaults = {method: 'post'}
+		    ;
+
+		  // parse provided url if it's string
+		  // or treat it as options object
+		  if (typeof params == 'string') {
+
+		    params = parseUrl(params);
+		    options = populate({
+		      port: params.port,
+		      path: params.pathname,
+		      host: params.hostname,
+		      protocol: params.protocol
+		    }, defaults);
+
+		  // use custom params
+		  } else {
+
+		    options = populate(params, defaults);
+		    // if no port provided use default one
+		    if (!options.port) {
+		      options.port = options.protocol == 'https:' ? 443 : 80;
+		    }
+		  }
+
+		  // put that good code in getHeaders to some use
+		  options.headers = this.getHeaders(params.headers);
+
+		  // https if specified, fallback to http in any other case
+		  if (options.protocol == 'https:') {
+		    request = https.request(options);
+		  } else {
+		    request = http.request(options);
+		  }
+
+		  // get content length and fire away
+		  this.getLength(function(err, length) {
+		    if (err && err !== 'Unknown stream') {
+		      this._error(err);
+		      return;
+		    }
+
+		    // add content length
+		    if (length) {
+		      request.setHeader('Content-Length', length);
+		    }
+
+		    this.pipe(request);
+		    if (cb) {
+		      var onResponse;
+
+		      var callback = function (error, responce) {
+		        request.removeListener('error', callback);
+		        request.removeListener('response', onResponse);
+
+		        return cb.call(this, error, responce);
+		      };
+
+		      onResponse = callback.bind(this, null);
+
+		      request.on('error', callback);
+		      request.on('response', onResponse);
+		    }
+		  }.bind(this));
+
+		  return request;
+		};
+
+		FormData.prototype._error = function(err) {
+		  if (!this.error) {
+		    this.error = err;
+		    this.pause();
+		    this.emit('error', err);
+		  }
+		};
+
+		FormData.prototype.toString = function () {
+		  return '[object FormData]';
+		};
+		return form_data;
 	}
 
-	/**
-	 * Runs iterator over provided job element
-	 *
-	 * @param   {function} iterator - iterator to invoke
-	 * @param   {string|number} key - key/index of the element in the list of jobs
-	 * @param   {mixed} item - job description
-	 * @param   {function} callback - invoked after iterator is done with the job
-	 * @returns {function|mixed} - job abort function or something else
-	 */
-	function runJob(iterator, key, item, callback)
-	{
-	  var aborter;
+	var hasRequiredLib;
 
-	  // allow shortcut if iterator expects only two arguments
-	  if (iterator.length == 2)
-	  {
-	    aborter = iterator(item, async$1(callback));
-	  }
-	  // otherwise go with full three arguments
-	  else
-	  {
-	    aborter = iterator(item, key, async$1(callback));
-	  }
-
-	  return aborter;
+	function requireLib () {
+		if (hasRequiredLib) return lib.exports;
+		hasRequiredLib = 1;
+		commonjsGlobal.FormData = lib.exports = requireForm_data();
+		return lib.exports;
 	}
 
-	// API
-	var state_1 = state;
-
-	/**
-	 * Creates initial state object
-	 * for iteration over list
-	 *
-	 * @param   {array|object} list - list to iterate over
-	 * @param   {function|null} sortMethod - function to use for keys sort,
-	 *                                     or `null` to keep them as is
-	 * @returns {object} - initial state object
-	 */
-	function state(list, sortMethod)
-	{
-	  var isNamedList = !Array.isArray(list)
-	    , initState =
-	    {
-	      index    : 0,
-	      keyedList: isNamedList || sortMethod ? Object.keys(list) : null,
-	      jobs     : {},
-	      results  : isNamedList ? {} : [],
-	      size     : isNamedList ? Object.keys(list).length : list.length
-	    }
-	    ;
-
-	  if (sortMethod)
-	  {
-	    // sort array keys based on it's values
-	    // sort object's keys just on own merit
-	    initState.keyedList.sort(isNamedList ? sortMethod : function(a, b)
-	    {
-	      return sortMethod(list[a], list[b]);
-	    });
-	  }
-
-	  return initState;
-	}
-
-	var abort = abort_1
-	  , async = async_1
-	  ;
-
-	// API
-	var terminator_1 = terminator$2;
-
-	/**
-	 * Terminates jobs in the attached state context
-	 *
-	 * @this  AsyncKitState#
-	 * @param {function} callback - final callback to invoke after termination
-	 */
-	function terminator$2(callback)
-	{
-	  if (!Object.keys(this.jobs).length)
-	  {
-	    return;
-	  }
-
-	  // fast forward iteration index
-	  this.index = this.size;
-
-	  // abort jobs
-	  abort(this);
-
-	  // send back results we have so far
-	  async(callback)(null, this.results);
-	}
-
-	var iterate$1    = iterate_1
-	  , initState$1  = state_1
-	  , terminator$1 = terminator_1
-	  ;
-
-	// Public API
-	var parallel_1 = parallel;
-
-	/**
-	 * Runs iterator over provided array elements in parallel
-	 *
-	 * @param   {array|object} list - array or object (named list) to iterate over
-	 * @param   {function} iterator - iterator to run
-	 * @param   {function} callback - invoked when all elements processed
-	 * @returns {function} - jobs terminator
-	 */
-	function parallel(list, iterator, callback)
-	{
-	  var state = initState$1(list);
-
-	  while (state.index < (state['keyedList'] || list).length)
-	  {
-	    iterate$1(list, iterator, state, function(error, result)
-	    {
-	      if (error)
-	      {
-	        callback(error, result);
-	        return;
-	      }
-
-	      // looks like it's the last one
-	      if (Object.keys(state.jobs).length === 0)
-	      {
-	        callback(null, state.results);
-	        return;
-	      }
-	    });
-
-	    state.index++;
-	  }
-
-	  return terminator$1.bind(state, callback);
-	}
-
-	var serialOrdered$2 = {exports: {}};
-
-	var iterate    = iterate_1
-	  , initState  = state_1
-	  , terminator = terminator_1
-	  ;
-
-	// Public API
-	serialOrdered$2.exports = serialOrdered$1;
-	// sorting helpers
-	serialOrdered$2.exports.ascending  = ascending;
-	serialOrdered$2.exports.descending = descending;
-
-	/**
-	 * Runs iterator over provided sorted array elements in series
-	 *
-	 * @param   {array|object} list - array or object (named list) to iterate over
-	 * @param   {function} iterator - iterator to run
-	 * @param   {function} sortMethod - custom sort function
-	 * @param   {function} callback - invoked when all elements processed
-	 * @returns {function} - jobs terminator
-	 */
-	function serialOrdered$1(list, iterator, sortMethod, callback)
-	{
-	  var state = initState(list, sortMethod);
-
-	  iterate(list, iterator, state, function iteratorHandler(error, result)
-	  {
-	    if (error)
-	    {
-	      callback(error, result);
-	      return;
-	    }
-
-	    state.index++;
-
-	    // are we there yet?
-	    if (state.index < (state['keyedList'] || list).length)
-	    {
-	      iterate(list, iterator, state, iteratorHandler);
-	      return;
-	    }
-
-	    // done here
-	    callback(null, state.results);
-	  });
-
-	  return terminator.bind(state, callback);
-	}
-
-	/*
-	 * -- Sort methods
-	 */
-
-	/**
-	 * sort helper to sort array elements in ascending order
-	 *
-	 * @param   {mixed} a - an item to compare
-	 * @param   {mixed} b - an item to compare
-	 * @returns {number} - comparison result
-	 */
-	function ascending(a, b)
-	{
-	  return a < b ? -1 : a > b ? 1 : 0;
-	}
-
-	/**
-	 * sort helper to sort array elements in descending order
-	 *
-	 * @param   {mixed} a - an item to compare
-	 * @param   {mixed} b - an item to compare
-	 * @returns {number} - comparison result
-	 */
-	function descending(a, b)
-	{
-	  return -1 * ascending(a, b);
-	}
-
-	var serialOrderedExports = serialOrdered$2.exports;
-
-	var serialOrdered = serialOrderedExports;
-
-	// Public API
-	var serial_1 = serial;
-
-	/**
-	 * Runs iterator over provided array elements in series
-	 *
-	 * @param   {array|object} list - array or object (named list) to iterate over
-	 * @param   {function} iterator - iterator to run
-	 * @param   {function} callback - invoked when all elements processed
-	 * @returns {function} - jobs terminator
-	 */
-	function serial(list, iterator, callback)
-	{
-	  return serialOrdered(list, iterator, null, callback);
-	}
-
-	var asynckit$1 =
-	{
-	  parallel      : parallel_1,
-	  serial        : serial_1,
-	  serialOrdered : serialOrderedExports
-	};
-
-	// populates missing values
-	var populate$1 = function(dst, src) {
-
-	  Object.keys(src).forEach(function(prop)
-	  {
-	    dst[prop] = dst[prop] || src[prop];
-	  });
-
-	  return dst;
-	};
-
-	var CombinedStream = combined_stream;
-	var util = require$$1;
-	var path = require$$2;
-	var http = require$$3;
-	var https = require$$4;
-	var parseUrl = require$$5.parse;
-	var fs = require$$6;
-	var Stream = require$$7.Stream;
-	var mime = mimeTypes;
-	var asynckit = asynckit$1;
-	var populate = populate$1;
-
-	// Public API
-	var form_data = FormData$1;
-
-	// make it a Stream
-	util.inherits(FormData$1, CombinedStream);
-
-	/**
-	 * Create readable "multipart/form-data" streams.
-	 * Can be used to submit forms
-	 * and file uploads to other web applications.
-	 *
-	 * @constructor
-	 * @param {Object} options - Properties to be added/overriden for FormData and CombinedStream
-	 */
-	function FormData$1(options) {
-	  if (!(this instanceof FormData$1)) {
-	    return new FormData$1(options);
-	  }
-
-	  this._overheadLength = 0;
-	  this._valueLength = 0;
-	  this._valuesToMeasure = [];
-
-	  CombinedStream.call(this);
-
-	  options = options || {};
-	  for (var option in options) {
-	    this[option] = options[option];
-	  }
-	}
-
-	FormData$1.LINE_BREAK = '\r\n';
-	FormData$1.DEFAULT_CONTENT_TYPE = 'application/octet-stream';
-
-	FormData$1.prototype.append = function(field, value, options) {
-
-	  options = options || {};
-
-	  // allow filename as single option
-	  if (typeof options == 'string') {
-	    options = {filename: options};
-	  }
-
-	  var append = CombinedStream.prototype.append.bind(this);
-
-	  // all that streamy business can't handle numbers
-	  if (typeof value == 'number') {
-	    value = '' + value;
-	  }
-
-	  // https://github.com/felixge/node-form-data/issues/38
-	  if (util.isArray(value)) {
-	    // Please convert your array into string
-	    // the way web server expects it
-	    this._error(new Error('Arrays are not supported.'));
-	    return;
-	  }
-
-	  var header = this._multiPartHeader(field, value, options);
-	  var footer = this._multiPartFooter();
-
-	  append(header);
-	  append(value);
-	  append(footer);
-
-	  // pass along options.knownLength
-	  this._trackLength(header, value, options);
-	};
-
-	FormData$1.prototype._trackLength = function(header, value, options) {
-	  var valueLength = 0;
-
-	  // used w/ getLengthSync(), when length is known.
-	  // e.g. for streaming directly from a remote server,
-	  // w/ a known file a size, and not wanting to wait for
-	  // incoming file to finish to get its size.
-	  if (options.knownLength != null) {
-	    valueLength += +options.knownLength;
-	  } else if (Buffer.isBuffer(value)) {
-	    valueLength = value.length;
-	  } else if (typeof value === 'string') {
-	    valueLength = Buffer.byteLength(value);
-	  }
-
-	  this._valueLength += valueLength;
-
-	  // @check why add CRLF? does this account for custom/multiple CRLFs?
-	  this._overheadLength +=
-	    Buffer.byteLength(header) +
-	    FormData$1.LINE_BREAK.length;
-
-	  // empty or either doesn't have path or not an http response or not a stream
-	  if (!value || ( !value.path && !(value.readable && value.hasOwnProperty('httpVersion')) && !(value instanceof Stream))) {
-	    return;
-	  }
-
-	  // no need to bother with the length
-	  if (!options.knownLength) {
-	    this._valuesToMeasure.push(value);
-	  }
-	};
-
-	FormData$1.prototype._lengthRetriever = function(value, callback) {
-
-	  if (value.hasOwnProperty('fd')) {
-
-	    // take read range into a account
-	    // `end` = Infinity –> read file till the end
-	    //
-	    // TODO: Looks like there is bug in Node fs.createReadStream
-	    // it doesn't respect `end` options without `start` options
-	    // Fix it when node fixes it.
-	    // https://github.com/joyent/node/issues/7819
-	    if (value.end != undefined && value.end != Infinity && value.start != undefined) {
-
-	      // when end specified
-	      // no need to calculate range
-	      // inclusive, starts with 0
-	      callback(null, value.end + 1 - (value.start ? value.start : 0));
-
-	    // not that fast snoopy
-	    } else {
-	      // still need to fetch file size from fs
-	      fs.stat(value.path, function(err, stat) {
-
-	        var fileSize;
-
-	        if (err) {
-	          callback(err);
-	          return;
-	        }
-
-	        // update final size based on the range options
-	        fileSize = stat.size - (value.start ? value.start : 0);
-	        callback(null, fileSize);
-	      });
-	    }
-
-	  // or http response
-	  } else if (value.hasOwnProperty('httpVersion')) {
-	    callback(null, +value.headers['content-length']);
-
-	  // or request stream http://github.com/mikeal/request
-	  } else if (value.hasOwnProperty('httpModule')) {
-	    // wait till response come back
-	    value.on('response', function(response) {
-	      value.pause();
-	      callback(null, +response.headers['content-length']);
-	    });
-	    value.resume();
-
-	  // something else
-	  } else {
-	    callback('Unknown stream');
-	  }
-	};
-
-	FormData$1.prototype._multiPartHeader = function(field, value, options) {
-	  // custom header specified (as string)?
-	  // it becomes responsible for boundary
-	  // (e.g. to handle extra CRLFs on .NET servers)
-	  if (typeof options.header == 'string') {
-	    return options.header;
-	  }
-
-	  var contentDisposition = this._getContentDisposition(value, options);
-	  var contentType = this._getContentType(value, options);
-
-	  var contents = '';
-	  var headers  = {
-	    // add custom disposition as third element or keep it two elements if not
-	    'Content-Disposition': ['form-data', 'name="' + field + '"'].concat(contentDisposition || []),
-	    // if no content type. allow it to be empty array
-	    'Content-Type': [].concat(contentType || [])
-	  };
-
-	  // allow custom headers.
-	  if (typeof options.header == 'object') {
-	    populate(headers, options.header);
-	  }
-
-	  var header;
-	  for (var prop in headers) {
-	    if (!headers.hasOwnProperty(prop)) continue;
-	    header = headers[prop];
-
-	    // skip nullish headers.
-	    if (header == null) {
-	      continue;
-	    }
-
-	    // convert all headers to arrays.
-	    if (!Array.isArray(header)) {
-	      header = [header];
-	    }
-
-	    // add non-empty headers.
-	    if (header.length) {
-	      contents += prop + ': ' + header.join('; ') + FormData$1.LINE_BREAK;
-	    }
-	  }
-
-	  return '--' + this.getBoundary() + FormData$1.LINE_BREAK + contents + FormData$1.LINE_BREAK;
-	};
-
-	FormData$1.prototype._getContentDisposition = function(value, options) {
-
-	  var filename
-	    , contentDisposition
-	    ;
-
-	  if (typeof options.filepath === 'string') {
-	    // custom filepath for relative paths
-	    filename = path.normalize(options.filepath).replace(/\\/g, '/');
-	  } else if (options.filename || value.name || value.path) {
-	    // custom filename take precedence
-	    // formidable and the browser add a name property
-	    // fs- and request- streams have path property
-	    filename = path.basename(options.filename || value.name || value.path);
-	  } else if (value.readable && value.hasOwnProperty('httpVersion')) {
-	    // or try http response
-	    filename = path.basename(value.client._httpMessage.path || '');
-	  }
-
-	  if (filename) {
-	    contentDisposition = 'filename="' + filename + '"';
-	  }
-
-	  return contentDisposition;
-	};
-
-	FormData$1.prototype._getContentType = function(value, options) {
-
-	  // use custom content-type above all
-	  var contentType = options.contentType;
-
-	  // or try `name` from formidable, browser
-	  if (!contentType && value.name) {
-	    contentType = mime.lookup(value.name);
-	  }
-
-	  // or try `path` from fs-, request- streams
-	  if (!contentType && value.path) {
-	    contentType = mime.lookup(value.path);
-	  }
-
-	  // or if it's http-reponse
-	  if (!contentType && value.readable && value.hasOwnProperty('httpVersion')) {
-	    contentType = value.headers['content-type'];
-	  }
-
-	  // or guess it from the filepath or filename
-	  if (!contentType && (options.filepath || options.filename)) {
-	    contentType = mime.lookup(options.filepath || options.filename);
-	  }
-
-	  // fallback to the default content type if `value` is not simple value
-	  if (!contentType && typeof value == 'object') {
-	    contentType = FormData$1.DEFAULT_CONTENT_TYPE;
-	  }
-
-	  return contentType;
-	};
-
-	FormData$1.prototype._multiPartFooter = function() {
-	  return function(next) {
-	    var footer = FormData$1.LINE_BREAK;
-
-	    var lastPart = (this._streams.length === 0);
-	    if (lastPart) {
-	      footer += this._lastBoundary();
-	    }
-
-	    next(footer);
-	  }.bind(this);
-	};
-
-	FormData$1.prototype._lastBoundary = function() {
-	  return '--' + this.getBoundary() + '--' + FormData$1.LINE_BREAK;
-	};
-
-	FormData$1.prototype.getHeaders = function(userHeaders) {
-	  var header;
-	  var formHeaders = {
-	    'content-type': 'multipart/form-data; boundary=' + this.getBoundary()
-	  };
-
-	  for (header in userHeaders) {
-	    if (userHeaders.hasOwnProperty(header)) {
-	      formHeaders[header.toLowerCase()] = userHeaders[header];
-	    }
-	  }
-
-	  return formHeaders;
-	};
-
-	FormData$1.prototype.setBoundary = function(boundary) {
-	  this._boundary = boundary;
-	};
-
-	FormData$1.prototype.getBoundary = function() {
-	  if (!this._boundary) {
-	    this._generateBoundary();
-	  }
-
-	  return this._boundary;
-	};
-
-	FormData$1.prototype.getBuffer = function() {
-	  var dataBuffer = new Buffer.alloc( 0 );
-	  var boundary = this.getBoundary();
-
-	  // Create the form content. Add Line breaks to the end of data.
-	  for (var i = 0, len = this._streams.length; i < len; i++) {
-	    if (typeof this._streams[i] !== 'function') {
-
-	      // Add content to the buffer.
-	      if(Buffer.isBuffer(this._streams[i])) {
-	        dataBuffer = Buffer.concat( [dataBuffer, this._streams[i]]);
-	      }else {
-	        dataBuffer = Buffer.concat( [dataBuffer, Buffer.from(this._streams[i])]);
-	      }
-
-	      // Add break after content.
-	      if (typeof this._streams[i] !== 'string' || this._streams[i].substring( 2, boundary.length + 2 ) !== boundary) {
-	        dataBuffer = Buffer.concat( [dataBuffer, Buffer.from(FormData$1.LINE_BREAK)] );
-	      }
-	    }
-	  }
-
-	  // Add the footer and return the Buffer object.
-	  return Buffer.concat( [dataBuffer, Buffer.from(this._lastBoundary())] );
-	};
-
-	FormData$1.prototype._generateBoundary = function() {
-	  // This generates a 50 character boundary similar to those used by Firefox.
-	  // They are optimized for boyer-moore parsing.
-	  var boundary = '--------------------------';
-	  for (var i = 0; i < 24; i++) {
-	    boundary += Math.floor(Math.random() * 10).toString(16);
-	  }
-
-	  this._boundary = boundary;
-	};
-
-	// Note: getLengthSync DOESN'T calculate streams length
-	// As workaround one can calculate file size manually
-	// and add it as knownLength option
-	FormData$1.prototype.getLengthSync = function() {
-	  var knownLength = this._overheadLength + this._valueLength;
-
-	  // Don't get confused, there are 3 "internal" streams for each keyval pair
-	  // so it basically checks if there is any value added to the form
-	  if (this._streams.length) {
-	    knownLength += this._lastBoundary().length;
-	  }
-
-	  // https://github.com/form-data/form-data/issues/40
-	  if (!this.hasKnownLength()) {
-	    // Some async length retrievers are present
-	    // therefore synchronous length calculation is false.
-	    // Please use getLength(callback) to get proper length
-	    this._error(new Error('Cannot calculate proper length in synchronous way.'));
-	  }
-
-	  return knownLength;
-	};
-
-	// Public API to check if length of added values is known
-	// https://github.com/form-data/form-data/issues/196
-	// https://github.com/form-data/form-data/issues/262
-	FormData$1.prototype.hasKnownLength = function() {
-	  var hasKnownLength = true;
-
-	  if (this._valuesToMeasure.length) {
-	    hasKnownLength = false;
-	  }
-
-	  return hasKnownLength;
-	};
-
-	FormData$1.prototype.getLength = function(cb) {
-	  var knownLength = this._overheadLength + this._valueLength;
-
-	  if (this._streams.length) {
-	    knownLength += this._lastBoundary().length;
-	  }
-
-	  if (!this._valuesToMeasure.length) {
-	    browser$1.nextTick(cb.bind(this, null, knownLength));
-	    return;
-	  }
-
-	  asynckit.parallel(this._valuesToMeasure, this._lengthRetriever, function(err, values) {
-	    if (err) {
-	      cb(err);
-	      return;
-	    }
-
-	    values.forEach(function(length) {
-	      knownLength += length;
-	    });
-
-	    cb(null, knownLength);
-	  });
-	};
-
-	FormData$1.prototype.submit = function(params, cb) {
-	  var request
-	    , options
-	    , defaults = {method: 'post'}
-	    ;
-
-	  // parse provided url if it's string
-	  // or treat it as options object
-	  if (typeof params == 'string') {
-
-	    params = parseUrl(params);
-	    options = populate({
-	      port: params.port,
-	      path: params.pathname,
-	      host: params.hostname,
-	      protocol: params.protocol
-	    }, defaults);
-
-	  // use custom params
-	  } else {
-
-	    options = populate(params, defaults);
-	    // if no port provided use default one
-	    if (!options.port) {
-	      options.port = options.protocol == 'https:' ? 443 : 80;
-	    }
-	  }
-
-	  // put that good code in getHeaders to some use
-	  options.headers = this.getHeaders(params.headers);
-
-	  // https if specified, fallback to http in any other case
-	  if (options.protocol == 'https:') {
-	    request = https.request(options);
-	  } else {
-	    request = http.request(options);
-	  }
-
-	  // get content length and fire away
-	  this.getLength(function(err, length) {
-	    if (err && err !== 'Unknown stream') {
-	      this._error(err);
-	      return;
-	    }
-
-	    // add content length
-	    if (length) {
-	      request.setHeader('Content-Length', length);
-	    }
-
-	    this.pipe(request);
-	    if (cb) {
-	      var onResponse;
-
-	      var callback = function (error, responce) {
-	        request.removeListener('error', callback);
-	        request.removeListener('response', onResponse);
-
-	        return cb.call(this, error, responce);
-	      };
-
-	      onResponse = callback.bind(this, null);
-
-	      request.on('error', callback);
-	      request.on('response', onResponse);
-	    }
-	  }.bind(this));
-
-	  return request;
-	};
-
-	FormData$1.prototype._error = function(err) {
-	  if (!this.error) {
-	    this.error = err;
-	    this.pause();
-	    this.emit('error', err);
-	  }
-	};
-
-	FormData$1.prototype.toString = function () {
-	  return '[object FormData]';
-	};
-
-	commonjsGlobal.FormData = form_data;
+	var urlSearchParamsPolyfill = {};
 
 	/**
 	 *
@@ -19891,1056 +20071,1086 @@ sap.ui.define((function () { 'use strict';
 	 *
 	 */
 
-	(function(self) {
+	var hasRequiredUrlSearchParamsPolyfill;
 
-	    var nativeURLSearchParams = self.URLSearchParams ? self.URLSearchParams : null,
-	        isSupportObjectConstructor = nativeURLSearchParams && (new nativeURLSearchParams({a: 1})).toString() === 'a=1',
-	        // There is a bug in safari 10.1 (and earlier) that incorrectly decodes `%2B` as an empty space and not a plus.
-	        decodesPlusesCorrectly = nativeURLSearchParams && (new nativeURLSearchParams('s=%2B').get('s') === '+'),
-	        __URLSearchParams__ = "__URLSearchParams__",
-	        prototype = URLSearchParamsPolyfill.prototype,
-	        iterable = !!(self.Symbol && self.Symbol.iterator);
+	function requireUrlSearchParamsPolyfill () {
+		if (hasRequiredUrlSearchParamsPolyfill) return urlSearchParamsPolyfill;
+		hasRequiredUrlSearchParamsPolyfill = 1;
+		(function(self) {
 
-	    if (nativeURLSearchParams && isSupportObjectConstructor && decodesPlusesCorrectly) {
-	        return;
-	    }
+		    var nativeURLSearchParams = self.URLSearchParams ? self.URLSearchParams : null,
+		        isSupportObjectConstructor = nativeURLSearchParams && (new nativeURLSearchParams({a: 1})).toString() === 'a=1',
+		        // There is a bug in safari 10.1 (and earlier) that incorrectly decodes `%2B` as an empty space and not a plus.
+		        decodesPlusesCorrectly = nativeURLSearchParams && (new nativeURLSearchParams('s=%2B').get('s') === '+'),
+		        __URLSearchParams__ = "__URLSearchParams__",
+		        prototype = URLSearchParamsPolyfill.prototype,
+		        iterable = !!(self.Symbol && self.Symbol.iterator);
 
-
-	    /**
-	     * Make a URLSearchParams instance
-	     *
-	     * @param {object|string|URLSearchParams} search
-	     * @constructor
-	     */
-	    function URLSearchParamsPolyfill(search) {
-	        search = search || "";
-
-	        // support construct object with another URLSearchParams instance
-	        if (search instanceof URLSearchParams || search instanceof URLSearchParamsPolyfill) {
-	            search = search.toString();
-	        }
-
-	        this [__URLSearchParams__] = parseToDict(search);
-	    }
+		    if (nativeURLSearchParams && isSupportObjectConstructor && decodesPlusesCorrectly) {
+		        return;
+		    }
 
 
-	    /**
-	     * Appends a specified key/value pair as a new search parameter.
-	     *
-	     * @param {string} name
-	     * @param {string} value
-	     */
-	    prototype.append = function(name, value) {
-	        appendTo(this [__URLSearchParams__], name, value);
-	    };
+		    /**
+		     * Make a URLSearchParams instance
+		     *
+		     * @param {object|string|URLSearchParams} search
+		     * @constructor
+		     */
+		    function URLSearchParamsPolyfill(search) {
+		        search = search || "";
 
-	    /**
-	     * Deletes the given search parameter, and its associated value,
-	     * from the list of all search parameters.
-	     *
-	     * @param {string} name
-	     */
-	    prototype.delete = function(name) {
-	        delete this [__URLSearchParams__] [name];
-	    };
+		        // support construct object with another URLSearchParams instance
+		        if (search instanceof URLSearchParams || search instanceof URLSearchParamsPolyfill) {
+		            search = search.toString();
+		        }
 
-	    /**
-	     * Returns the first value associated to the given search parameter.
-	     *
-	     * @param {string} name
-	     * @returns {string|null}
-	     */
-	    prototype.get = function(name) {
-	        var dict = this [__URLSearchParams__];
-	        return name in dict ? dict[name][0] : null;
-	    };
-
-	    /**
-	     * Returns all the values association with a given search parameter.
-	     *
-	     * @param {string} name
-	     * @returns {Array}
-	     */
-	    prototype.getAll = function(name) {
-	        var dict = this [__URLSearchParams__];
-	        return name in dict ? dict [name].slice(0) : [];
-	    };
-
-	    /**
-	     * Returns a Boolean indicating if such a search parameter exists.
-	     *
-	     * @param {string} name
-	     * @returns {boolean}
-	     */
-	    prototype.has = function(name) {
-	        return name in this [__URLSearchParams__];
-	    };
-
-	    /**
-	     * Sets the value associated to a given search parameter to
-	     * the given value. If there were several values, delete the
-	     * others.
-	     *
-	     * @param {string} name
-	     * @param {string} value
-	     */
-	    prototype.set = function set(name, value) {
-	        this [__URLSearchParams__][name] = ['' + value];
-	    };
-
-	    /**
-	     * Returns a string containg a query string suitable for use in a URL.
-	     *
-	     * @returns {string}
-	     */
-	    prototype.toString = function() {
-	        var dict = this[__URLSearchParams__], query = [], i, key, name, value;
-	        for (key in dict) {
-	            name = encode(key);
-	            for (i = 0, value = dict[key]; i < value.length; i++) {
-	                query.push(name + '=' + encode(value[i]));
-	            }
-	        }
-	        return query.join('&');
-	    };
-
-	    // There is a bug in Safari 10.1 and `Proxy`ing it is not enough.
-	    var forSureUsePolyfill = !decodesPlusesCorrectly;
-	    var useProxy = (!forSureUsePolyfill && nativeURLSearchParams && !isSupportObjectConstructor && self.Proxy);
-	    /*
-	     * Apply polifill to global object and append other prototype into it
-	     */
-	    self.URLSearchParams = useProxy ?
-	        // Safari 10.0 doesn't support Proxy, so it won't extend URLSearchParams on safari 10.0
-	        new Proxy(nativeURLSearchParams, {
-	            construct: function(target, args) {
-	                return new target((new URLSearchParamsPolyfill(args[0]).toString()));
-	            }
-	        }) :
-	        URLSearchParamsPolyfill;
+		        this [__URLSearchParams__] = parseToDict(search);
+		    }
 
 
-	    var USPProto = self.URLSearchParams.prototype;
-
-	    USPProto.polyfill = true;
-
-	    /**
-	     *
-	     * @param {function} callback
-	     * @param {object} thisArg
-	     */
-	    USPProto.forEach = USPProto.forEach || function(callback, thisArg) {
-	        var dict = parseToDict(this.toString());
-	        Object.getOwnPropertyNames(dict).forEach(function(name) {
-	            dict[name].forEach(function(value) {
-	                callback.call(thisArg, value, name, this);
-	            }, this);
-	        }, this);
-	    };
-
-	    /**
-	     * Sort all name-value pairs
-	     */
-	    USPProto.sort = USPProto.sort || function() {
-	        var dict = parseToDict(this.toString()), keys = [], k, i, j;
-	        for (k in dict) {
-	            keys.push(k);
-	        }
-	        keys.sort();
-
-	        for (i = 0; i < keys.length; i++) {
-	            this.delete(keys[i]);
-	        }
-	        for (i = 0; i < keys.length; i++) {
-	            var key = keys[i], values = dict[key];
-	            for (j = 0; j < values.length; j++) {
-	                this.append(key, values[j]);
-	            }
-	        }
-	    };
-
-	    /**
-	     * Returns an iterator allowing to go through all keys of
-	     * the key/value pairs contained in this object.
-	     *
-	     * @returns {function}
-	     */
-	    USPProto.keys = USPProto.keys || function() {
-	        var items = [];
-	        this.forEach(function(item, name) {
-	            items.push([name]);
-	        });
-	        return makeIterator(items);
-	    };
-
-	    /**
-	     * Returns an iterator allowing to go through all values of
-	     * the key/value pairs contained in this object.
-	     *
-	     * @returns {function}
-	     */
-	    USPProto.values = USPProto.values || function() {
-	        var items = [];
-	        this.forEach(function(item) {
-	            items.push([item]);
-	        });
-	        return makeIterator(items);
-	    };
-
-	    /**
-	     * Returns an iterator allowing to go through all key/value
-	     * pairs contained in this object.
-	     *
-	     * @returns {function}
-	     */
-	    USPProto.entries = USPProto.entries || function() {
-	        var items = [];
-	        this.forEach(function(item, name) {
-	            items.push([name, item]);
-	        });
-	        return makeIterator(items);
-	    };
-
-
-	    if (iterable) {
-	        USPProto[self.Symbol.iterator] = USPProto[self.Symbol.iterator] || USPProto.entries;
-	    }
-
-
-	    function encode(str) {
-	        var replace = {
-	            '!': '%21',
-	            "'": '%27',
-	            '(': '%28',
-	            ')': '%29',
-	            '~': '%7E',
-	            '%20': '+',
-	            '%00': '\x00'
-	        };
-	        return encodeURIComponent(str).replace(/[!'\(\)~]|%20|%00/g, function(match) {
-	            return replace[match];
-	        });
-	    }
-
-	    function decode(str) {
-	        return decodeURIComponent(str.replace(/\+/g, ' '));
-	    }
-
-	    function makeIterator(arr) {
-	        var iterator = {
-	            next: function() {
-	                var value = arr.shift();
-	                return {done: value === undefined, value: value};
-	            }
-	        };
-
-	        if (iterable) {
-	            iterator[self.Symbol.iterator] = function() {
-	                return iterator;
-	            };
-	        }
-
-	        return iterator;
-	    }
-
-	    function parseToDict(search) {
-	        var dict = {};
-
-	        if (typeof search === "object") {
-	            for (var i in search) {
-	                if (search.hasOwnProperty(i)) {
-	                    var str = typeof search [i] === 'string' ? search [i] : JSON.stringify(search [i]);
-	                    appendTo(dict, i, str);
-	                }
-	            }
-
-	        } else {
-	            // remove first '?'
-	            if (search.indexOf("?") === 0) {
-	                search = search.slice(1);
-	            }
-
-	            var pairs = search.split("&");
-	            for (var j = 0; j < pairs.length; j++) {
-	                var value = pairs [j],
-	                    index = value.indexOf('=');
-
-	                if (-1 < index) {
-	                    appendTo(dict, decode(value.slice(0, index)), decode(value.slice(index + 1)));
-
-	                } else {
-	                    if (value) {
-	                        appendTo(dict, decode(value), '');
-	                    }
-	                }
-	            }
-	        }
-
-	        return dict;
-	    }
-
-	    function appendTo(dict, name, value) {
-	        if (name in dict) {
-	            dict[name].push('' + value);
-	        } else {
-	            dict[name] = ['' + value];
-	        }
-	    }
-
-	})(typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : (typeof window !== 'undefined' ? window : commonjsGlobal));
-
-	(function (exports) {
-		var __extends = (commonjsGlobal && commonjsGlobal.__extends) || (function () {
-		    var extendStatics = Object.setPrototypeOf ||
-		        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-		        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-		    return function (d, b) {
-		        extendStatics(d, b);
-		        function __() { this.constructor = d; }
-		        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+		    /**
+		     * Appends a specified key/value pair as a new search parameter.
+		     *
+		     * @param {string} name
+		     * @param {string} value
+		     */
+		    prototype.append = function(name, value) {
+		        appendTo(this [__URLSearchParams__], name, value);
 		    };
-		})();
-		Object.defineProperty(exports, "__esModule", { value: true });
 
-		var isomorphic_base64_1 = browser$2;
-		(function (cmis) {
-		    var Buffer = commonjsGlobal['Buffer'];
-		    var Options = (function () {
-		        function Options() {
-		            this.succinct = true;
+		    /**
+		     * Deletes the given search parameter, and its associated value,
+		     * from the list of all search parameters.
+		     *
+		     * @param {string} name
+		     */
+		    prototype.delete = function(name) {
+		        delete this [__URLSearchParams__] [name];
+		    };
+
+		    /**
+		     * Returns the first value associated to the given search parameter.
+		     *
+		     * @param {string} name
+		     * @returns {string|null}
+		     */
+		    prototype.get = function(name) {
+		        var dict = this [__URLSearchParams__];
+		        return name in dict ? dict[name][0] : null;
+		    };
+
+		    /**
+		     * Returns all the values association with a given search parameter.
+		     *
+		     * @param {string} name
+		     * @returns {Array}
+		     */
+		    prototype.getAll = function(name) {
+		        var dict = this [__URLSearchParams__];
+		        return name in dict ? dict [name].slice(0) : [];
+		    };
+
+		    /**
+		     * Returns a Boolean indicating if such a search parameter exists.
+		     *
+		     * @param {string} name
+		     * @returns {boolean}
+		     */
+		    prototype.has = function(name) {
+		        return name in this [__URLSearchParams__];
+		    };
+
+		    /**
+		     * Sets the value associated to a given search parameter to
+		     * the given value. If there were several values, delete the
+		     * others.
+		     *
+		     * @param {string} name
+		     * @param {string} value
+		     */
+		    prototype.set = function set(name, value) {
+		        this [__URLSearchParams__][name] = ['' + value];
+		    };
+
+		    /**
+		     * Returns a string containg a query string suitable for use in a URL.
+		     *
+		     * @returns {string}
+		     */
+		    prototype.toString = function() {
+		        var dict = this[__URLSearchParams__], query = [], i, key, name, value;
+		        for (key in dict) {
+		            name = encode(key);
+		            for (i = 0, value = dict[key]; i < value.length; i++) {
+		                query.push(name + '=' + encode(value[i]));
+		            }
 		        }
-		        return Options;
-		    }());
-		    var HTTPError = (function (_super) {
-		        __extends(HTTPError, _super);
-		        function HTTPError(response) {
-		            var _this = _super.call(this, response.statusText) || this;
-		            _this.response = response;
-		            return _this;
+		        return query.join('&');
+		    };
+
+		    // There is a bug in Safari 10.1 and `Proxy`ing it is not enough.
+		    var forSureUsePolyfill = !decodesPlusesCorrectly;
+		    var useProxy = (!forSureUsePolyfill && nativeURLSearchParams && !isSupportObjectConstructor && self.Proxy);
+		    /*
+		     * Apply polifill to global object and append other prototype into it
+		     */
+		    self.URLSearchParams = useProxy ?
+		        // Safari 10.0 doesn't support Proxy, so it won't extend URLSearchParams on safari 10.0
+		        new Proxy(nativeURLSearchParams, {
+		            construct: function(target, args) {
+		                return new target((new URLSearchParamsPolyfill(args[0]).toString()));
+		            }
+		        }) :
+		        URLSearchParamsPolyfill;
+
+
+		    var USPProto = self.URLSearchParams.prototype;
+
+		    USPProto.polyfill = true;
+
+		    /**
+		     *
+		     * @param {function} callback
+		     * @param {object} thisArg
+		     */
+		    USPProto.forEach = USPProto.forEach || function(callback, thisArg) {
+		        var dict = parseToDict(this.toString());
+		        Object.getOwnPropertyNames(dict).forEach(function(name) {
+		            dict[name].forEach(function(value) {
+		                callback.call(thisArg, value, name, this);
+		            }, this);
+		        }, this);
+		    };
+
+		    /**
+		     * Sort all name-value pairs
+		     */
+		    USPProto.sort = USPProto.sort || function() {
+		        var dict = parseToDict(this.toString()), keys = [], k, i, j;
+		        for (k in dict) {
+		            keys.push(k);
 		        }
-		        return HTTPError;
-		    }(Error));
-		    cmis.HTTPError = HTTPError;
-		    var CmisSession = (function () {
-		        function CmisSession(url) {
-		            this.options = { succinct: true };
-		            this.url = url;
+		        keys.sort();
+
+		        for (i = 0; i < keys.length; i++) {
+		            this.delete(keys[i]);
 		        }
-		        CmisSession.prototype.setProperties = function (options, properties) {
-		            var i = 0;
-		            for (var id in properties) {
-		                options['propertyId[' + i + ']'] = id;
-		                var propertyValue = properties[id];
-		                if (propertyValue !== null && propertyValue !== undefined) {
-		                    if (Object.prototype.toString.apply(propertyValue) == '[object Array]') {
-		                        var multiProperty = propertyValue;
-		                        for (var j = 0; j < multiProperty.length; j++) {
-		                            options['propertyValue[' + i + '][' + j + ']'] = multiProperty[j];
-		                        }
-		                    }
-		                    else {
-		                        options['propertyValue[' + i + ']'] = propertyValue;
-		                    }
-		                }
-		                i++;
+		        for (i = 0; i < keys.length; i++) {
+		            var key = keys[i], values = dict[key];
+		            for (j = 0; j < values.length; j++) {
+		                this.append(key, values[j]);
+		            }
+		        }
+		    };
+
+		    /**
+		     * Returns an iterator allowing to go through all keys of
+		     * the key/value pairs contained in this object.
+		     *
+		     * @returns {function}
+		     */
+		    USPProto.keys = USPProto.keys || function() {
+		        var items = [];
+		        this.forEach(function(item, name) {
+		            items.push([name]);
+		        });
+		        return makeIterator(items);
+		    };
+
+		    /**
+		     * Returns an iterator allowing to go through all values of
+		     * the key/value pairs contained in this object.
+		     *
+		     * @returns {function}
+		     */
+		    USPProto.values = USPProto.values || function() {
+		        var items = [];
+		        this.forEach(function(item) {
+		            items.push([item]);
+		        });
+		        return makeIterator(items);
+		    };
+
+		    /**
+		     * Returns an iterator allowing to go through all key/value
+		     * pairs contained in this object.
+		     *
+		     * @returns {function}
+		     */
+		    USPProto.entries = USPProto.entries || function() {
+		        var items = [];
+		        this.forEach(function(item, name) {
+		            items.push([name, item]);
+		        });
+		        return makeIterator(items);
+		    };
+
+
+		    if (iterable) {
+		        USPProto[self.Symbol.iterator] = USPProto[self.Symbol.iterator] || USPProto.entries;
+		    }
+
+
+		    function encode(str) {
+		        var replace = {
+		            '!': '%21',
+		            "'": '%27',
+		            '(': '%28',
+		            ')': '%29',
+		            '~': '%7E',
+		            '%20': '+',
+		            '%00': '\x00'
+		        };
+		        return encodeURIComponent(str).replace(/[!'\(\)~]|%20|%00/g, function(match) {
+		            return replace[match];
+		        });
+		    }
+
+		    function decode(str) {
+		        return decodeURIComponent(str.replace(/\+/g, ' '));
+		    }
+
+		    function makeIterator(arr) {
+		        var iterator = {
+		            next: function() {
+		                var value = arr.shift();
+		                return {done: value === undefined, value: value};
 		            }
 		        };
-		        CmisSession.prototype.setPolicies = function (options, policies) {
-		            for (var i = 0; i < policies.length; i++) {
-		                options['policy[' + i + ']'] = policies[i];
-		            }
-		        };
-		        CmisSession.prototype.setACEs = function (options, ACEs, action) {
-		            var i = 0;
-		            for (var id in ACEs) {
-		                options[action + 'ACEPrincipal[' + i + ']'] = id;
-		                var ace = ACEs[id];
-		                for (var j = 0; j < ace.length; j++) {
-		                    options[action + 'ACEPermission[' + i + '][' + j + ']'] = ACEs[id][j];
-		                }
-		                i++;
-		            }
-		        };
-		        CmisSession.prototype.setSecondaryTypeIds = function (options, secondaryTypeIds, action) {
-		            for (var i = 0; i < secondaryTypeIds.length; i++) {
-		                options[action + 'SecondaryTypeId[' + i + ']'] = secondaryTypeIds[i];
-		            }
-		        };
-		        CmisSession.prototype.http = function (method, url, options, multipartData) {
-		            var _this = this;
-		            var body = {};
-		            for (var k in this.options) {
-		                if (this.options[k] != null && this.options[k] !== undefined) {
-		                    body[k] = this.options[k];
-		                }
-		            }
-		            for (var k in options) {
-		                if (options[k] != null && options[k] !== undefined) {
-		                    body[k] = options[k];
-		                }
-		            }
-		            var auth;
-		            if (this.username && this.password) {
-		                auth = 'Basic ' + isomorphic_base64_1.btoa(this.username + ":" + this.password);
-		            }
-		            else if (this.token) {
-		                auth = "Bearer " + this.token;
-		            }
-		            var cfg = { method: method, headers: {} };
-		            if (auth) {
-		                cfg.headers['Authorization'] = auth;
-		            }
-		            else {
-		                cfg.credentials = 'include';
-		            }
-		            if (multipartData) {
-		                var formData = new FormData();
-		                var content = multipartData.content;
-		                if ('string' == typeof content) {
-		                    if (typeof (Blob) !== 'undefined')
-		                        content = new Blob([content]);
-		                }
-		                else if (typeof (Buffer) !== 'undefined') {
-		                    content = new Buffer(content);
-		                }
-		                formData.append('content', content, multipartData.mimeTypeExtension ? multipartData.filename + '.' + multipartData.mimeTypeExtension : multipartData.filename);
-		                for (var k in body) {
-		                    formData.append(k, '' + body[k]);
-		                }
-		                if (this.charset) {
-		                    formData.append('_charset_', this.charset);
-		                }
-		                cfg.body = formData;
-		            }
-		            else {
-		                var usp = new URLSearchParams();
-		                for (var k in body) {
-		                    usp.set(k, body[k]);
-		                }
-		                if (method !== 'GET') {
-		                    cfg.body = usp.toString();
-		                    cfg.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
-		                }
-		                else {
-		                    url = url + "?" + usp.toString();
-		                }
-		            }
-		            var response = fetch(url, cfg).then(function (res) {
-		                if (res.status < 200 || res.status > 299) {
-		                    throw new HTTPError(res);
-		                }
-		                return res;
-		            });
-		            if (this.errorHandler) {
-		                response.catch(function (err) { return _this.errorHandler(err); });
-		            }
-		            return response;
-		        };
-		        CmisSession.prototype.get = function (url, options) {
-		            return this.http('GET', url, options);
-		        };
-		        CmisSession.prototype.post = function (url, options, multipartData) {
-		            return this.http('POST', url, options, multipartData);
-		        };
-		        CmisSession.prototype.setToken = function (token) {
-		            this.token = token;
-		            return this;
-		        };
-		        CmisSession.prototype.setCredentials = function (username, password) {
-		            this.username = username;
-		            this.password = password;
-		            return this;
-		        };
-		        CmisSession.prototype.setCharset = function (charset) {
-		            this.charset = charset;
-		            return this;
-		        };
-		        CmisSession.prototype.setErrorHandler = function (handler) {
-		            this.errorHandler = handler;
-		        };
-		        CmisSession.prototype.loadRepositories = function () {
-		            var _this = this;
-		            return this.get(this.url, this.options).then(function (res) {
-		                return res.json().then(function (data) {
-		                    for (var repo in data) {
-		                        _this.defaultRepository = data[repo];
-		                        break;
-		                    }
-		                    _this.repositories = data;
-		                    return;
-		                });
-		            });
-		        };
-		        CmisSession.prototype.getRepositoryInfo = function () {
-		            return this.get(this.defaultRepository.repositoryUrl, { cmisselector: 'repositoryInfo' })
-		                .then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.getTypeChildren = function (typeId, includePropertyDefinitions, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.cmisselector = 'typeChildren';
-		            o.typeId = typeId;
-		            o.includePropertyDefinitions = includePropertyDefinitions;
-		            return this.get(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.getTypeDescendants = function (typeId, depth, includePropertyDefinitions) {
-		            return this.get(this.defaultRepository.repositoryUrl, {
-		                cmisselector: 'typeDescendants',
-		                typeId: typeId,
-		                includePropertyDefinitions: includePropertyDefinitions,
-		                depth: depth
-		            }).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.getTypeDefinition = function (typeId) {
-		            return this.get(this.defaultRepository.repositoryUrl, {
-		                cmisselector: 'typeDefinition',
-		                typeId: typeId,
-		            }).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.getCheckedOutDocs = function (objectId, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.cmisselector = 'checkedOut';
-		            return this.get(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.query = function (statement, searchAllVersions, options) {
-		            if (searchAllVersions === undefined) { searchAllVersions = false; }
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.cmisaction = 'query';
-		            o.statement = statement;
-		            o.searchAllVersions = searchAllVersions;
-		            return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.createType = function (type) {
-		            return this.post(this.defaultRepository.repositoryUrl, {
-		                cmisaction: 'createType',
-		                type: JSON.stringify(type)
-		            }).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.updateType = function (type) {
-		            return this.post(this.defaultRepository.repositoryUrl, {
-		                cmisaction: 'updateType',
-		                type: JSON.stringify(type)
-		            }).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.deleteType = function (typeId) {
-		            return this.post(this.defaultRepository.repositoryUrl, {
-		                cmisaction: 'deleteType',
-		                typeId: JSON.stringify(typeId)
-		            }).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.getObjectByPath = function (path, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.cmisselector = 'object';
-		            var sp = path.split('/');
-		            for (var i = sp.length - 1; i >= 0; i--) {
-		                sp[i] = encodeURIComponent(sp[i]);
-		            }
-		            return this.get(this.defaultRepository.rootFolderUrl + sp.join('/'), o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.getObject = function (objectId, returnVersion, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.cmisselector = 'object';
-		            o.objectId = objectId;
-		            o.returnVersion = returnVersion;
-		            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.createFolder = function (parentId, name, type, policies, addACEs, removeACEs) {
-		            if (type === undefined) { type = 'cmis:folder'; }
-		            if (policies === undefined) { policies = []; }
-		            if (addACEs === undefined) { addACEs = {}; }
-		            if (removeACEs === undefined) { removeACEs = {}; }
-		            var options = new Options();
-		            options.objectId = parentId;
-		            options.repositoryId = this.defaultRepository.repositoryId;
-		            options.cmisaction = 'createFolder';
-		            var properties = {
-		                'cmis:name': name,
-		                'cmis:objectTypeId': type
+
+		        if (iterable) {
+		            iterator[self.Symbol.iterator] = function() {
+		                return iterator;
 		            };
-		            this.setProperties(options, properties);
-		            this.setPolicies(options, policies);
-		            this.setACEs(options, addACEs, 'add');
-		            this.setACEs(options, removeACEs, 'remove');
-		            return this.post(this.defaultRepository.rootFolderUrl, options).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.getChildren = function (objectId, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.cmisselector = 'children';
-		            o.objectId = objectId;
-		            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.getDescendants = function (folderId, depth, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.cmisselector = 'descendants';
-		            if (depth) {
-		                o.depth = depth;
-		            }
-		            o.objectId = folderId;
-		            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.getFolderTree = function (folderId, depth, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.cmisselector = 'folderTree';
-		            if (depth) {
-		                o.depth = depth;
-		            }
-		            o.objectId = folderId;
-		            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.getFolderParent = function (folderId, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.cmisselector = 'parent';
-		            o.objectId = folderId;
-		            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.getParents = function (objectId, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.cmisselector = 'parents';
-		            o.objectId = objectId;
-		            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.getAllowableActions = function (objectId, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.cmisselector = 'allowableActions';
-		            o.objectId = objectId;
-		            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.getProperties = function (objectId, returnVersion, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.cmisselector = 'properties';
-		            o.objectId = objectId;
-		            o.returnVersion = returnVersion;
-		            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.updateProperties = function (objectId, properties, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.objectId = objectId;
-		            o.cmisaction = 'update';
-		            this.setProperties(options, properties);
-		            return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.moveObject = function (objectId, sourceFolderId, targetFolderId, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.objectId = objectId;
-		            o.cmisaction = 'move';
-		            o.targetFolderId = targetFolderId;
-		            o.sourceFolderId = sourceFolderId;
-		            return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.createDocument = function (parentId, content, input, mimeTypeExtension, versioningState, policies, addACEs, removeACEs, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            if ('string' == typeof input) {
-		                input = {
-		                    'cmis:name': input
-		                };
-		            }
-		            var properties = input || {};
-		            if (!properties['cmis:objectTypeId']) {
-		                properties['cmis:objectTypeId'] = 'cmis:document';
-		            }
-		            if (versioningState) {
-		                o.versioningState = versioningState;
-		            }
-		            o.objectId = parentId;
-		            this.setProperties(o, properties);
-		            if (policies) {
-		                this.setPolicies(o, policies);
-		            }
-		            if (addACEs) {
-		                this.setACEs(o, addACEs, 'add');
-		            }
-		            if (removeACEs) {
-		                this.setACEs(o, removeACEs, 'remove');
-		            }
-		            o.repositoryId = this.defaultRepository.repositoryId;
-		            o.cmisaction = 'createDocument';
-		            return this.post(this.defaultRepository.rootFolderUrl, o, {
-		                content: content,
-		                filename: properties['cmis:name'],
-		                mimeTypeExtension: mimeTypeExtension
-		            }).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.bulkUpdateProperties = function (objectIds, properties, addSecondaryTypeIds, removeSecondaryTypeIds) {
-		            if (properties === undefined) { properties = {}; }
-		            if (addSecondaryTypeIds === undefined) { addSecondaryTypeIds = []; }
-		            if (removeSecondaryTypeIds === undefined) { removeSecondaryTypeIds = []; }
-		            var options = new Options();
-		            for (var i = objectIds.length - 1; i >= 0; i--) {
-		                options['objectId[' + i + ']'] = objectIds[i];
-		            }
-		            options.objectIds = objectIds;
-		            this.setProperties(options, properties);
-		            this.setSecondaryTypeIds(options, addSecondaryTypeIds, 'add');
-		            this.setSecondaryTypeIds(options, removeSecondaryTypeIds, 'remove');
-		            options.cmisaction = 'bulkUpdate';
-		            return this.post(this.defaultRepository.repositoryUrl, options).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.getContentStream = function (objectId, download, streamId) {
-		            if (download === undefined) { download = 'inline'; }
-		            var options = new Options();
-		            options.cmisselector = 'content';
-		            options.objectId = objectId;
-		            options.download = download;
-		            return this.get(this.defaultRepository.rootFolderUrl, options);
-		        };
-		        CmisSession.prototype.createDocumentFromSource = function (parentId, sourceId, content, input, mimeTypeExtension, versioningState, policies, addACEs, removeACEs, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            if ('string' == typeof input) {
-		                input = {
-		                    'cmis:name': input
-		                };
-		            }
-		            var properties = input || {};
-		            if (!properties['cmis:objectTypeId']) {
-		                properties['cmis:objectTypeId'] = 'cmis:document';
-		            }
-		            if (versioningState) {
-		                o.versioningState = versioningState;
-		            }
-		            o.objectId = parentId;
-		            this.setProperties(o, properties);
-		            if (policies) {
-		                this.setPolicies(o, policies);
-		            }
-		            if (addACEs) {
-		                this.setACEs(o, addACEs, 'add');
-		            }
-		            if (removeACEs) {
-		                this.setACEs(o, removeACEs, 'remove');
-		            }
-		            o.repositoryId = this.defaultRepository.repositoryId;
-		            o.sourceId = sourceId;
-		            o.cmisaction = 'createDocumentFromSource';
-		            var multipartData = null;
-		            if (content) {
-		                multipartData = {
-		                    content: content,
-		                    filename: properties['cmis:name'],
-		                    mimeTypeExtension: mimeTypeExtension
-		                };
-		            }
-		            return this.post(this.defaultRepository.rootFolderUrl, o, multipartData).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.getContentStreamURL = function (objectId, download, streamId) {
-		            if (download === undefined) { download = 'inline'; }
-		            var options = new Options();
-		            options.cmisselector = 'content';
-		            options.objectId = objectId;
-		            options.download = download;
-		            options.streamId = streamId;
-		            var usp = new URLSearchParams();
-		            for (var k in options) {
-		                if (options[k] != null && options[k] !== undefined) {
-		                    usp.append(k, options[k]);
+		        }
+
+		        return iterator;
+		    }
+
+		    function parseToDict(search) {
+		        var dict = {};
+
+		        if (typeof search === "object") {
+		            for (var i in search) {
+		                if (search.hasOwnProperty(i)) {
+		                    var str = typeof search [i] === 'string' ? search [i] : JSON.stringify(search [i]);
+		                    appendTo(dict, i, str);
 		                }
 		            }
-		            for (var k in this.options) {
-		                if (!usp.has(k) && this.options[k] != null && this.options[k] !== undefined) {
-		                    usp.append(k, this.options[k]);
+
+		        } else {
+		            // remove first '?'
+		            if (search.indexOf("?") === 0) {
+		                search = search.slice(1);
+		            }
+
+		            var pairs = search.split("&");
+		            for (var j = 0; j < pairs.length; j++) {
+		                var value = pairs [j],
+		                    index = value.indexOf('=');
+
+		                if (-1 < index) {
+		                    appendTo(dict, decode(value.slice(0, index)), decode(value.slice(index + 1)));
+
+		                } else {
+		                    if (value) {
+		                        appendTo(dict, decode(value), '');
+		                    }
 		                }
 		            }
-		            return this.defaultRepository.rootFolderUrl + "?" + usp.toString();
-		        };
-		        CmisSession.prototype.getRenditions = function (objectId, options) {
-		            if (options === undefined) { options = {
-		                renditionFilter: '*'
-		            }; }
-		            var o = options;
-		            o.cmisselector = 'renditions';
-		            o.objectId = objectId;
-		            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.checkOut = function (objectId, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.objectId = objectId;
-		            o.cmisaction = 'checkOut';
-		            return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.cancelCheckOut = function (objectId) {
-		            var options = new Options();
-		            options.objectId = objectId;
-		            options.cmisaction = 'cancelCheckOut';
-		            return this.post(this.defaultRepository.rootFolderUrl, options);
-		        };
-		        CmisSession.prototype.checkIn = function (objectId, major, input, content, mimeTypeExtension, comment, policies, addACEs, removeACEs, options) {
-		            if (major === undefined) { major = false; }
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            if ('string' == typeof input) {
-		                input = {
-		                    'cmis:name': input
-		                };
-		            }
-		            var properties = input || {};
-		            if (comment) {
-		                o.checkinComment = comment;
-		            }
-		            o.major = major;
-		            o.objectId = objectId;
-		            this.setProperties(o, properties);
-		            if (policies) {
-		                this.setPolicies(o, policies);
-		            }
-		            if (addACEs) {
-		                this.setACEs(o, addACEs, 'add');
-		            }
-		            if (removeACEs) {
-		                this.setACEs(o, removeACEs, 'remove');
-		            }
-		            o.cmisaction = 'checkIn';
-		            return this.post(this.defaultRepository.rootFolderUrl, o, {
-		                content: content,
-		                mimeTypeExtension: mimeTypeExtension,
-		                filename: properties['cmis:name']
-		            }).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.getObjectOfLatestVersion = function (versionSeriesId, options) {
-		            if (options === undefined) { options = { major: false }; }
-		            var o = options;
-		            o.cmisselector = 'object';
-		            o.objectId = versionSeriesId;
-		            o.versionSeriesId = versionSeriesId;
-		            o.major = options.major;
-		            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.setContentStream = function (objectId, content, overwriteFlag, filename, options) {
-		            if (overwriteFlag === undefined) { overwriteFlag = false; }
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.objectId = objectId;
-		            o.overwriteFlag = overwriteFlag;
-		            o.cmisaction = 'setContent';
-		            return this.post(this.defaultRepository.rootFolderUrl, o, {
-		                content: content,
-		                filename: filename
-		            }).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.appendContentStream = function (objectId, content, isLastChunk, filename, options) {
-		            if (isLastChunk === undefined) { isLastChunk = false; }
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.objectId = objectId;
-		            o.cmisaction = 'appendContent';
-		            o.isLastChunk = isLastChunk;
-		            return this.post(this.defaultRepository.rootFolderUrl, o, {
-		                content: content,
-		                filename: filename
-		            }).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.deleteContentStream = function (objectId, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.objectId = objectId;
-		            o.cmisaction = 'deleteContent';
-		            return this.post(this.defaultRepository.rootFolderUrl, o);
-		        };
-		        CmisSession.prototype.getAllVersions = function (versionSeriesId, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.versionSeriesId = versionSeriesId;
-		            o.cmisselector = 'versions';
-		            return this.get(this.defaultRepository.rootFolderUrl, o);
-		        };
-		        CmisSession.prototype.getAppliedPolicies = function (objectId, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.objectId = objectId;
-		            o.cmisselector = 'policies';
-		            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.getACL = function (objectId, onlyBasicPermissions) {
-		            if (onlyBasicPermissions === undefined) { onlyBasicPermissions = false; }
-		            var options = new Options();
-		            options.objectId = objectId;
-		            options.onlyBasicPermissions = onlyBasicPermissions;
-		            options.cmisselector = 'acl';
-		            return this.get(this.defaultRepository.rootFolderUrl, options).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.deleteObject = function (objectId, allVersions) {
-		            if (allVersions === undefined) { allVersions = false; }
-		            var options = new Options();
-		            options.repositoryId = this.defaultRepository.repositoryId;
-		            options.cmisaction = 'delete';
-		            options.objectId = objectId;
-		            options.allVersions = allVersions;
-		            return this.post(this.defaultRepository.rootFolderUrl, options);
-		        };
-		        CmisSession.prototype.deleteTree = function (objectId, allVersions, unfileObjects, continueOnFailure) {
-		            if (allVersions === undefined) { allVersions = false; }
-		            if (continueOnFailure === undefined) { continueOnFailure = false; }
-		            var options = new Options();
-		            options.repositoryId = this.defaultRepository.repositoryId;
-		            options.cmisaction = 'deleteTree';
-		            options.objectId = objectId;
-		            options.allVersions = !!allVersions;
-		            if (unfileObjects) {
-		                options.unfileObjects = unfileObjects;
-		            }
-		            options.continueOnFailure = continueOnFailure;
-		            return this.post(this.defaultRepository.rootFolderUrl, options);
-		        };
-		        CmisSession.prototype.getContentChanges = function (changeLogToken, includeProperties, includePolicyIds, includeACL, options) {
-		            if (includeProperties === undefined) { includeProperties = false; }
-		            if (includePolicyIds === undefined) { includePolicyIds = false; }
-		            if (includeACL === undefined) { includeACL = false; }
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.cmisselector = 'contentChanges';
-		            if (changeLogToken) {
-		                o.changeLogToken = changeLogToken;
-		            }
-		            o.includeProperties = includeProperties;
-		            o.includePolicyIds = includePolicyIds;
-		            o.includeACL = includeACL;
-		            return this.get(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.createRelationship = function (properties, policies, addACEs, removeACEs, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            this.setProperties(o, properties);
-		            if (policies) {
-		                this.setPolicies(o, policies);
-		            }
-		            if (addACEs) {
-		                this.setACEs(o, addACEs, 'add');
-		            }
-		            if (removeACEs) {
-		                this.setACEs(o, removeACEs, 'remove');
-		            }
-		            o.cmisaction = 'createRelationship';
-		            return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.createPolicy = function (folderId, properties, policies, addACEs, removeACEs, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.objectId = folderId;
-		            this.setProperties(o, properties);
-		            if (policies) {
-		                this.setPolicies(o, policies);
-		            }
-		            if (addACEs) {
-		                this.setACEs(o, addACEs, 'add');
-		            }
-		            if (removeACEs) {
-		                this.setACEs(o, removeACEs, 'remove');
-		            }
-		            o.cmisaction = 'createPolicy';
-		            return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.createItem = function (folderId, properties, policies, addACEs, removeACEs, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.objectId = folderId;
-		            this.setProperties(o, properties);
-		            if (policies) {
-		                this.setPolicies(o, policies);
-		            }
-		            if (addACEs) {
-		                this.setACEs(o, addACEs, 'add');
-		            }
-		            if (removeACEs) {
-		                this.setACEs(o, removeACEs, 'remove');
-		            }
-		            o.cmisaction = 'createItem';
-		            return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.getLastResult = function () {
-		            return this.post(this.defaultRepository.repositoryUrl, { cmisaction: 'lastResult' }).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.addObjectToFolder = function (objectId, folderId, allVersions, options) {
-		            if (allVersions === undefined) { allVersions = false; }
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.objectId = objectId;
-		            o.cmisaction = 'addObjectToFolder';
-		            o.allVersions = allVersions;
-		            o.folderId = folderId;
-		            return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.removeObjectFromFolder = function (objectId, folderId, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.objectId = objectId;
-		            o.cmisaction = 'removeObjectFromFolder';
-		            o.folderId = folderId;
-		            return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.getObjectRelationships = function (objectId, includeSubRelationshipTypes, relationshipDirection, typeId, options) {
-		            if (includeSubRelationshipTypes === undefined) { includeSubRelationshipTypes = false; }
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.objectId = objectId;
-		            o.includeSubRelationshipTypes = includeSubRelationshipTypes;
-		            o.relationshipDirection = relationshipDirection || 'either';
-		            if (typeId) {
-		                o.typeId = typeId;
-		            }
-		            o.cmisselector = 'relationships';
-		            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.applyPolicy = function (objectId, policyId, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.objectId = objectId;
-		            o.policyId = policyId;
-		            o.cmisaction = 'applyPolicy';
-		            return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.removePolicy = function (objectId, policyId, options) {
-		            if (options === undefined) { options = {}; }
-		            var o = options;
-		            o.objectId = objectId;
-		            o.policyId = policyId;
-		            o.cmisaction = 'removePolicy';
-		            return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
-		        };
-		        CmisSession.prototype.applyACL = function (objectId, addACEs, removeACEs, propagation) {
-		            var options = new Options();
-		            options.objectId = objectId;
-		            options.cmisaction = 'applyACL';
-		            options.propagation = propagation;
-		            if (addACEs) {
-		                this.setACEs(options, addACEs, 'add');
-		            }
-		            if (removeACEs) {
-		                this.setACEs(options, removeACEs, 'remove');
-		            }
-		            return this.post(this.defaultRepository.rootFolderUrl, options).then(function (res) { return res.json(); });
-		        };
-		        return CmisSession;
-		    }());
-		    cmis.CmisSession = CmisSession;
-		})(exports.cmis || (exports.cmis = {}));
-		
-	} (cmis));
+		        }
 
-	(function (exports) {
-		var cmis$1 = cmis.cmis;
-		for (var ex in cmis$1){
-		    exports[ex] = cmis$1[ex];
-		} 
-	} (cmis$1));
+		        return dict;
+		    }
 
-	const defaultExports = Object.isFrozen(cmis$1) ? Object.assign({}, cmis$1?.default || cmis$1 || { __emptyModule: true }) : cmis$1;
-	defaultExports.default = Object.assign({}, cmis$1);
+		    function appendTo(dict, name, value) {
+		        if (name in dict) {
+		            dict[name].push('' + value);
+		        } else {
+		            dict[name] = ['' + value];
+		        }
+		    }
+
+		})(typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : (typeof window !== 'undefined' ? window : urlSearchParamsPolyfill));
+		return urlSearchParamsPolyfill;
+	}
+
+	var hasRequiredCmis$1;
+
+	function requireCmis$1 () {
+		if (hasRequiredCmis$1) return cmis;
+		hasRequiredCmis$1 = 1;
+		(function (exports) {
+			var __extends = (cmis && cmis.__extends) || (function () {
+			    var extendStatics = Object.setPrototypeOf ||
+			        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+			        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+			    return function (d, b) {
+			        extendStatics(d, b);
+			        function __() { this.constructor = d; }
+			        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+			    };
+			})();
+			Object.defineProperty(exports, "__esModule", { value: true });
+			requireNodePolyfill();
+			var isomorphic_base64_1 = requireBrowser();
+			requireLib();
+			requireUrlSearchParamsPolyfill();
+			(function (cmis) {
+			    var Buffer = commonjsGlobal['Buffer'];
+			    var Options = (function () {
+			        function Options() {
+			            this.succinct = true;
+			        }
+			        return Options;
+			    }());
+			    var HTTPError = (function (_super) {
+			        __extends(HTTPError, _super);
+			        function HTTPError(response) {
+			            var _this = _super.call(this, response.statusText) || this;
+			            _this.response = response;
+			            return _this;
+			        }
+			        return HTTPError;
+			    }(Error));
+			    cmis.HTTPError = HTTPError;
+			    var CmisSession = (function () {
+			        function CmisSession(url) {
+			            this.options = { succinct: true };
+			            this.url = url;
+			        }
+			        CmisSession.prototype.setProperties = function (options, properties) {
+			            var i = 0;
+			            for (var id in properties) {
+			                options['propertyId[' + i + ']'] = id;
+			                var propertyValue = properties[id];
+			                if (propertyValue !== null && propertyValue !== undefined) {
+			                    if (Object.prototype.toString.apply(propertyValue) == '[object Array]') {
+			                        var multiProperty = propertyValue;
+			                        for (var j = 0; j < multiProperty.length; j++) {
+			                            options['propertyValue[' + i + '][' + j + ']'] = multiProperty[j];
+			                        }
+			                    }
+			                    else {
+			                        options['propertyValue[' + i + ']'] = propertyValue;
+			                    }
+			                }
+			                i++;
+			            }
+			        };
+			        CmisSession.prototype.setPolicies = function (options, policies) {
+			            for (var i = 0; i < policies.length; i++) {
+			                options['policy[' + i + ']'] = policies[i];
+			            }
+			        };
+			        CmisSession.prototype.setACEs = function (options, ACEs, action) {
+			            var i = 0;
+			            for (var id in ACEs) {
+			                options[action + 'ACEPrincipal[' + i + ']'] = id;
+			                var ace = ACEs[id];
+			                for (var j = 0; j < ace.length; j++) {
+			                    options[action + 'ACEPermission[' + i + '][' + j + ']'] = ACEs[id][j];
+			                }
+			                i++;
+			            }
+			        };
+			        CmisSession.prototype.setSecondaryTypeIds = function (options, secondaryTypeIds, action) {
+			            for (var i = 0; i < secondaryTypeIds.length; i++) {
+			                options[action + 'SecondaryTypeId[' + i + ']'] = secondaryTypeIds[i];
+			            }
+			        };
+			        CmisSession.prototype.http = function (method, url, options, multipartData) {
+			            var _this = this;
+			            var body = {};
+			            for (var k in this.options) {
+			                if (this.options[k] != null && this.options[k] !== undefined) {
+			                    body[k] = this.options[k];
+			                }
+			            }
+			            for (var k in options) {
+			                if (options[k] != null && options[k] !== undefined) {
+			                    body[k] = options[k];
+			                }
+			            }
+			            var auth;
+			            if (this.username && this.password) {
+			                auth = 'Basic ' + isomorphic_base64_1.btoa(this.username + ":" + this.password);
+			            }
+			            else if (this.token) {
+			                auth = "Bearer " + this.token;
+			            }
+			            var cfg = { method: method, headers: {} };
+			            if (auth) {
+			                cfg.headers['Authorization'] = auth;
+			            }
+			            else {
+			                cfg.credentials = 'include';
+			            }
+			            if (multipartData) {
+			                var formData = new FormData();
+			                var content = multipartData.content;
+			                if ('string' == typeof content) {
+			                    if (typeof (Blob) !== 'undefined')
+			                        content = new Blob([content]);
+			                }
+			                else if (typeof (Buffer) !== 'undefined') {
+			                    content = new Buffer(content);
+			                }
+			                formData.append('content', content, multipartData.mimeTypeExtension ? multipartData.filename + '.' + multipartData.mimeTypeExtension : multipartData.filename);
+			                for (var k in body) {
+			                    formData.append(k, '' + body[k]);
+			                }
+			                if (this.charset) {
+			                    formData.append('_charset_', this.charset);
+			                }
+			                cfg.body = formData;
+			            }
+			            else {
+			                var usp = new URLSearchParams();
+			                for (var k in body) {
+			                    usp.set(k, body[k]);
+			                }
+			                if (method !== 'GET') {
+			                    cfg.body = usp.toString();
+			                    cfg.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
+			                }
+			                else {
+			                    url = url + "?" + usp.toString();
+			                }
+			            }
+			            var response = fetch(url, cfg).then(function (res) {
+			                if (res.status < 200 || res.status > 299) {
+			                    throw new HTTPError(res);
+			                }
+			                return res;
+			            });
+			            if (this.errorHandler) {
+			                response.catch(function (err) { return _this.errorHandler(err); });
+			            }
+			            return response;
+			        };
+			        CmisSession.prototype.get = function (url, options) {
+			            return this.http('GET', url, options);
+			        };
+			        CmisSession.prototype.post = function (url, options, multipartData) {
+			            return this.http('POST', url, options, multipartData);
+			        };
+			        CmisSession.prototype.setToken = function (token) {
+			            this.token = token;
+			            return this;
+			        };
+			        CmisSession.prototype.setCredentials = function (username, password) {
+			            this.username = username;
+			            this.password = password;
+			            return this;
+			        };
+			        CmisSession.prototype.setCharset = function (charset) {
+			            this.charset = charset;
+			            return this;
+			        };
+			        CmisSession.prototype.setErrorHandler = function (handler) {
+			            this.errorHandler = handler;
+			        };
+			        CmisSession.prototype.loadRepositories = function () {
+			            var _this = this;
+			            return this.get(this.url, this.options).then(function (res) {
+			                return res.json().then(function (data) {
+			                    for (var repo in data) {
+			                        _this.defaultRepository = data[repo];
+			                        break;
+			                    }
+			                    _this.repositories = data;
+			                    return;
+			                });
+			            });
+			        };
+			        CmisSession.prototype.getRepositoryInfo = function () {
+			            return this.get(this.defaultRepository.repositoryUrl, { cmisselector: 'repositoryInfo' })
+			                .then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.getTypeChildren = function (typeId, includePropertyDefinitions, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.cmisselector = 'typeChildren';
+			            o.typeId = typeId;
+			            o.includePropertyDefinitions = includePropertyDefinitions;
+			            return this.get(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.getTypeDescendants = function (typeId, depth, includePropertyDefinitions) {
+			            return this.get(this.defaultRepository.repositoryUrl, {
+			                cmisselector: 'typeDescendants',
+			                typeId: typeId,
+			                includePropertyDefinitions: includePropertyDefinitions,
+			                depth: depth
+			            }).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.getTypeDefinition = function (typeId) {
+			            return this.get(this.defaultRepository.repositoryUrl, {
+			                cmisselector: 'typeDefinition',
+			                typeId: typeId,
+			            }).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.getCheckedOutDocs = function (objectId, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.cmisselector = 'checkedOut';
+			            return this.get(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.query = function (statement, searchAllVersions, options) {
+			            if (searchAllVersions === undefined) { searchAllVersions = false; }
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.cmisaction = 'query';
+			            o.statement = statement;
+			            o.searchAllVersions = searchAllVersions;
+			            return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.createType = function (type) {
+			            return this.post(this.defaultRepository.repositoryUrl, {
+			                cmisaction: 'createType',
+			                type: JSON.stringify(type)
+			            }).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.updateType = function (type) {
+			            return this.post(this.defaultRepository.repositoryUrl, {
+			                cmisaction: 'updateType',
+			                type: JSON.stringify(type)
+			            }).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.deleteType = function (typeId) {
+			            return this.post(this.defaultRepository.repositoryUrl, {
+			                cmisaction: 'deleteType',
+			                typeId: JSON.stringify(typeId)
+			            }).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.getObjectByPath = function (path, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.cmisselector = 'object';
+			            var sp = path.split('/');
+			            for (var i = sp.length - 1; i >= 0; i--) {
+			                sp[i] = encodeURIComponent(sp[i]);
+			            }
+			            return this.get(this.defaultRepository.rootFolderUrl + sp.join('/'), o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.getObject = function (objectId, returnVersion, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.cmisselector = 'object';
+			            o.objectId = objectId;
+			            o.returnVersion = returnVersion;
+			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.createFolder = function (parentId, name, type, policies, addACEs, removeACEs) {
+			            if (type === undefined) { type = 'cmis:folder'; }
+			            if (policies === undefined) { policies = []; }
+			            if (addACEs === undefined) { addACEs = {}; }
+			            if (removeACEs === undefined) { removeACEs = {}; }
+			            var options = new Options();
+			            options.objectId = parentId;
+			            options.repositoryId = this.defaultRepository.repositoryId;
+			            options.cmisaction = 'createFolder';
+			            var properties = {
+			                'cmis:name': name,
+			                'cmis:objectTypeId': type
+			            };
+			            this.setProperties(options, properties);
+			            this.setPolicies(options, policies);
+			            this.setACEs(options, addACEs, 'add');
+			            this.setACEs(options, removeACEs, 'remove');
+			            return this.post(this.defaultRepository.rootFolderUrl, options).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.getChildren = function (objectId, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.cmisselector = 'children';
+			            o.objectId = objectId;
+			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.getDescendants = function (folderId, depth, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.cmisselector = 'descendants';
+			            if (depth) {
+			                o.depth = depth;
+			            }
+			            o.objectId = folderId;
+			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.getFolderTree = function (folderId, depth, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.cmisselector = 'folderTree';
+			            if (depth) {
+			                o.depth = depth;
+			            }
+			            o.objectId = folderId;
+			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.getFolderParent = function (folderId, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.cmisselector = 'parent';
+			            o.objectId = folderId;
+			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.getParents = function (objectId, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.cmisselector = 'parents';
+			            o.objectId = objectId;
+			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.getAllowableActions = function (objectId, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.cmisselector = 'allowableActions';
+			            o.objectId = objectId;
+			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.getProperties = function (objectId, returnVersion, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.cmisselector = 'properties';
+			            o.objectId = objectId;
+			            o.returnVersion = returnVersion;
+			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.updateProperties = function (objectId, properties, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.objectId = objectId;
+			            o.cmisaction = 'update';
+			            this.setProperties(options, properties);
+			            return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.moveObject = function (objectId, sourceFolderId, targetFolderId, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.objectId = objectId;
+			            o.cmisaction = 'move';
+			            o.targetFolderId = targetFolderId;
+			            o.sourceFolderId = sourceFolderId;
+			            return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.createDocument = function (parentId, content, input, mimeTypeExtension, versioningState, policies, addACEs, removeACEs, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            if ('string' == typeof input) {
+			                input = {
+			                    'cmis:name': input
+			                };
+			            }
+			            var properties = input || {};
+			            if (!properties['cmis:objectTypeId']) {
+			                properties['cmis:objectTypeId'] = 'cmis:document';
+			            }
+			            if (versioningState) {
+			                o.versioningState = versioningState;
+			            }
+			            o.objectId = parentId;
+			            this.setProperties(o, properties);
+			            if (policies) {
+			                this.setPolicies(o, policies);
+			            }
+			            if (addACEs) {
+			                this.setACEs(o, addACEs, 'add');
+			            }
+			            if (removeACEs) {
+			                this.setACEs(o, removeACEs, 'remove');
+			            }
+			            o.repositoryId = this.defaultRepository.repositoryId;
+			            o.cmisaction = 'createDocument';
+			            return this.post(this.defaultRepository.rootFolderUrl, o, {
+			                content: content,
+			                filename: properties['cmis:name'],
+			                mimeTypeExtension: mimeTypeExtension
+			            }).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.bulkUpdateProperties = function (objectIds, properties, addSecondaryTypeIds, removeSecondaryTypeIds) {
+			            if (properties === undefined) { properties = {}; }
+			            if (addSecondaryTypeIds === undefined) { addSecondaryTypeIds = []; }
+			            if (removeSecondaryTypeIds === undefined) { removeSecondaryTypeIds = []; }
+			            var options = new Options();
+			            for (var i = objectIds.length - 1; i >= 0; i--) {
+			                options['objectId[' + i + ']'] = objectIds[i];
+			            }
+			            options.objectIds = objectIds;
+			            this.setProperties(options, properties);
+			            this.setSecondaryTypeIds(options, addSecondaryTypeIds, 'add');
+			            this.setSecondaryTypeIds(options, removeSecondaryTypeIds, 'remove');
+			            options.cmisaction = 'bulkUpdate';
+			            return this.post(this.defaultRepository.repositoryUrl, options).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.getContentStream = function (objectId, download, streamId) {
+			            if (download === undefined) { download = 'inline'; }
+			            var options = new Options();
+			            options.cmisselector = 'content';
+			            options.objectId = objectId;
+			            options.download = download;
+			            return this.get(this.defaultRepository.rootFolderUrl, options);
+			        };
+			        CmisSession.prototype.createDocumentFromSource = function (parentId, sourceId, content, input, mimeTypeExtension, versioningState, policies, addACEs, removeACEs, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            if ('string' == typeof input) {
+			                input = {
+			                    'cmis:name': input
+			                };
+			            }
+			            var properties = input || {};
+			            if (!properties['cmis:objectTypeId']) {
+			                properties['cmis:objectTypeId'] = 'cmis:document';
+			            }
+			            if (versioningState) {
+			                o.versioningState = versioningState;
+			            }
+			            o.objectId = parentId;
+			            this.setProperties(o, properties);
+			            if (policies) {
+			                this.setPolicies(o, policies);
+			            }
+			            if (addACEs) {
+			                this.setACEs(o, addACEs, 'add');
+			            }
+			            if (removeACEs) {
+			                this.setACEs(o, removeACEs, 'remove');
+			            }
+			            o.repositoryId = this.defaultRepository.repositoryId;
+			            o.sourceId = sourceId;
+			            o.cmisaction = 'createDocumentFromSource';
+			            var multipartData = null;
+			            if (content) {
+			                multipartData = {
+			                    content: content,
+			                    filename: properties['cmis:name'],
+			                    mimeTypeExtension: mimeTypeExtension
+			                };
+			            }
+			            return this.post(this.defaultRepository.rootFolderUrl, o, multipartData).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.getContentStreamURL = function (objectId, download, streamId) {
+			            if (download === undefined) { download = 'inline'; }
+			            var options = new Options();
+			            options.cmisselector = 'content';
+			            options.objectId = objectId;
+			            options.download = download;
+			            options.streamId = streamId;
+			            var usp = new URLSearchParams();
+			            for (var k in options) {
+			                if (options[k] != null && options[k] !== undefined) {
+			                    usp.append(k, options[k]);
+			                }
+			            }
+			            for (var k in this.options) {
+			                if (!usp.has(k) && this.options[k] != null && this.options[k] !== undefined) {
+			                    usp.append(k, this.options[k]);
+			                }
+			            }
+			            return this.defaultRepository.rootFolderUrl + "?" + usp.toString();
+			        };
+			        CmisSession.prototype.getRenditions = function (objectId, options) {
+			            if (options === undefined) { options = {
+			                renditionFilter: '*'
+			            }; }
+			            var o = options;
+			            o.cmisselector = 'renditions';
+			            o.objectId = objectId;
+			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.checkOut = function (objectId, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.objectId = objectId;
+			            o.cmisaction = 'checkOut';
+			            return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.cancelCheckOut = function (objectId) {
+			            var options = new Options();
+			            options.objectId = objectId;
+			            options.cmisaction = 'cancelCheckOut';
+			            return this.post(this.defaultRepository.rootFolderUrl, options);
+			        };
+			        CmisSession.prototype.checkIn = function (objectId, major, input, content, mimeTypeExtension, comment, policies, addACEs, removeACEs, options) {
+			            if (major === undefined) { major = false; }
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            if ('string' == typeof input) {
+			                input = {
+			                    'cmis:name': input
+			                };
+			            }
+			            var properties = input || {};
+			            if (comment) {
+			                o.checkinComment = comment;
+			            }
+			            o.major = major;
+			            o.objectId = objectId;
+			            this.setProperties(o, properties);
+			            if (policies) {
+			                this.setPolicies(o, policies);
+			            }
+			            if (addACEs) {
+			                this.setACEs(o, addACEs, 'add');
+			            }
+			            if (removeACEs) {
+			                this.setACEs(o, removeACEs, 'remove');
+			            }
+			            o.cmisaction = 'checkIn';
+			            return this.post(this.defaultRepository.rootFolderUrl, o, {
+			                content: content,
+			                mimeTypeExtension: mimeTypeExtension,
+			                filename: properties['cmis:name']
+			            }).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.getObjectOfLatestVersion = function (versionSeriesId, options) {
+			            if (options === undefined) { options = { major: false }; }
+			            var o = options;
+			            o.cmisselector = 'object';
+			            o.objectId = versionSeriesId;
+			            o.versionSeriesId = versionSeriesId;
+			            o.major = options.major;
+			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.setContentStream = function (objectId, content, overwriteFlag, filename, options) {
+			            if (overwriteFlag === undefined) { overwriteFlag = false; }
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.objectId = objectId;
+			            o.overwriteFlag = overwriteFlag;
+			            o.cmisaction = 'setContent';
+			            return this.post(this.defaultRepository.rootFolderUrl, o, {
+			                content: content,
+			                filename: filename
+			            }).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.appendContentStream = function (objectId, content, isLastChunk, filename, options) {
+			            if (isLastChunk === undefined) { isLastChunk = false; }
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.objectId = objectId;
+			            o.cmisaction = 'appendContent';
+			            o.isLastChunk = isLastChunk;
+			            return this.post(this.defaultRepository.rootFolderUrl, o, {
+			                content: content,
+			                filename: filename
+			            }).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.deleteContentStream = function (objectId, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.objectId = objectId;
+			            o.cmisaction = 'deleteContent';
+			            return this.post(this.defaultRepository.rootFolderUrl, o);
+			        };
+			        CmisSession.prototype.getAllVersions = function (versionSeriesId, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.versionSeriesId = versionSeriesId;
+			            o.cmisselector = 'versions';
+			            return this.get(this.defaultRepository.rootFolderUrl, o);
+			        };
+			        CmisSession.prototype.getAppliedPolicies = function (objectId, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.objectId = objectId;
+			            o.cmisselector = 'policies';
+			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.getACL = function (objectId, onlyBasicPermissions) {
+			            if (onlyBasicPermissions === undefined) { onlyBasicPermissions = false; }
+			            var options = new Options();
+			            options.objectId = objectId;
+			            options.onlyBasicPermissions = onlyBasicPermissions;
+			            options.cmisselector = 'acl';
+			            return this.get(this.defaultRepository.rootFolderUrl, options).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.deleteObject = function (objectId, allVersions) {
+			            if (allVersions === undefined) { allVersions = false; }
+			            var options = new Options();
+			            options.repositoryId = this.defaultRepository.repositoryId;
+			            options.cmisaction = 'delete';
+			            options.objectId = objectId;
+			            options.allVersions = allVersions;
+			            return this.post(this.defaultRepository.rootFolderUrl, options);
+			        };
+			        CmisSession.prototype.deleteTree = function (objectId, allVersions, unfileObjects, continueOnFailure) {
+			            if (allVersions === undefined) { allVersions = false; }
+			            if (continueOnFailure === undefined) { continueOnFailure = false; }
+			            var options = new Options();
+			            options.repositoryId = this.defaultRepository.repositoryId;
+			            options.cmisaction = 'deleteTree';
+			            options.objectId = objectId;
+			            options.allVersions = !!allVersions;
+			            if (unfileObjects) {
+			                options.unfileObjects = unfileObjects;
+			            }
+			            options.continueOnFailure = continueOnFailure;
+			            return this.post(this.defaultRepository.rootFolderUrl, options);
+			        };
+			        CmisSession.prototype.getContentChanges = function (changeLogToken, includeProperties, includePolicyIds, includeACL, options) {
+			            if (includeProperties === undefined) { includeProperties = false; }
+			            if (includePolicyIds === undefined) { includePolicyIds = false; }
+			            if (includeACL === undefined) { includeACL = false; }
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.cmisselector = 'contentChanges';
+			            if (changeLogToken) {
+			                o.changeLogToken = changeLogToken;
+			            }
+			            o.includeProperties = includeProperties;
+			            o.includePolicyIds = includePolicyIds;
+			            o.includeACL = includeACL;
+			            return this.get(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.createRelationship = function (properties, policies, addACEs, removeACEs, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            this.setProperties(o, properties);
+			            if (policies) {
+			                this.setPolicies(o, policies);
+			            }
+			            if (addACEs) {
+			                this.setACEs(o, addACEs, 'add');
+			            }
+			            if (removeACEs) {
+			                this.setACEs(o, removeACEs, 'remove');
+			            }
+			            o.cmisaction = 'createRelationship';
+			            return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.createPolicy = function (folderId, properties, policies, addACEs, removeACEs, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.objectId = folderId;
+			            this.setProperties(o, properties);
+			            if (policies) {
+			                this.setPolicies(o, policies);
+			            }
+			            if (addACEs) {
+			                this.setACEs(o, addACEs, 'add');
+			            }
+			            if (removeACEs) {
+			                this.setACEs(o, removeACEs, 'remove');
+			            }
+			            o.cmisaction = 'createPolicy';
+			            return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.createItem = function (folderId, properties, policies, addACEs, removeACEs, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.objectId = folderId;
+			            this.setProperties(o, properties);
+			            if (policies) {
+			                this.setPolicies(o, policies);
+			            }
+			            if (addACEs) {
+			                this.setACEs(o, addACEs, 'add');
+			            }
+			            if (removeACEs) {
+			                this.setACEs(o, removeACEs, 'remove');
+			            }
+			            o.cmisaction = 'createItem';
+			            return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.getLastResult = function () {
+			            return this.post(this.defaultRepository.repositoryUrl, { cmisaction: 'lastResult' }).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.addObjectToFolder = function (objectId, folderId, allVersions, options) {
+			            if (allVersions === undefined) { allVersions = false; }
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.objectId = objectId;
+			            o.cmisaction = 'addObjectToFolder';
+			            o.allVersions = allVersions;
+			            o.folderId = folderId;
+			            return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.removeObjectFromFolder = function (objectId, folderId, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.objectId = objectId;
+			            o.cmisaction = 'removeObjectFromFolder';
+			            o.folderId = folderId;
+			            return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.getObjectRelationships = function (objectId, includeSubRelationshipTypes, relationshipDirection, typeId, options) {
+			            if (includeSubRelationshipTypes === undefined) { includeSubRelationshipTypes = false; }
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.objectId = objectId;
+			            o.includeSubRelationshipTypes = includeSubRelationshipTypes;
+			            o.relationshipDirection = relationshipDirection || 'either';
+			            if (typeId) {
+			                o.typeId = typeId;
+			            }
+			            o.cmisselector = 'relationships';
+			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.applyPolicy = function (objectId, policyId, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.objectId = objectId;
+			            o.policyId = policyId;
+			            o.cmisaction = 'applyPolicy';
+			            return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.removePolicy = function (objectId, policyId, options) {
+			            if (options === undefined) { options = {}; }
+			            var o = options;
+			            o.objectId = objectId;
+			            o.policyId = policyId;
+			            o.cmisaction = 'removePolicy';
+			            return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
+			        };
+			        CmisSession.prototype.applyACL = function (objectId, addACEs, removeACEs, propagation) {
+			            var options = new Options();
+			            options.objectId = objectId;
+			            options.cmisaction = 'applyACL';
+			            options.propagation = propagation;
+			            if (addACEs) {
+			                this.setACEs(options, addACEs, 'add');
+			            }
+			            if (removeACEs) {
+			                this.setACEs(options, removeACEs, 'remove');
+			            }
+			            return this.post(this.defaultRepository.rootFolderUrl, options).then(function (res) { return res.json(); });
+			        };
+			        return CmisSession;
+			    }());
+			    cmis.CmisSession = CmisSession;
+			})(exports.cmis || (exports.cmis = {}));
+			
+		} (cmis));
+		return cmis;
+	}
+
+	var hasRequiredCmis;
+
+	function requireCmis () {
+		if (hasRequiredCmis) return cmis$1;
+		hasRequiredCmis = 1;
+		(function (exports) {
+			var cmis = requireCmis$1().cmis;
+			for (var ex in cmis){
+			    exports[ex] = cmis[ex];
+			} 
+		} (cmis$1));
+		return cmis$1;
+	}
+
+	var cmisExports = requireCmis();
+
+	var namedExports = /*#__PURE__*/_mergeNamespaces({
+		__proto__: null,
+		default: cmisExports
+	}, [cmisExports]);
+
+	const defaultExports = Object.isFrozen(cmisExports) ? Object.assign({}, cmisExports?.default || cmisExports || { __emptyModule: true }) : cmisExports;
+	Object.keys(namedExports || {}).filter((key) => !defaultExports[key]).forEach((key) => defaultExports[key] = namedExports[key]);
 	Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
-	var index = Object.isFrozen(cmis$1) ? Object.freeze(defaultExports) : defaultExports;
+	var index = Object.isFrozen(cmisExports) ? Object.freeze(defaultExports) : defaultExports;
 
 	return index;
 
