@@ -20,6 +20,10 @@ builder:
       afterTask: ui5-tooling-transpile-task
       configuration:
         debug: true
+    - name: ui5-tooling-modules-task-jsdoc
+      afterTask: generateJsdoc
+      configuration:
+        debug: true
 server:
   customMiddleware:
     - name: ui5-tooling-transpile-middleware

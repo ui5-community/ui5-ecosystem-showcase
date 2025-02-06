@@ -15,3 +15,12 @@ kind: extension
 type: task
 task:
   path: lib/task.js
+---
+# https://sap.github.io/ui5-tooling/pages/extensibility/CustomTasks/
+specVersion: "3.0"
+metadata:
+  name: ui5-tooling-modules-task-jsdoc
+kind: extension
+type: task
+task:
+  path: lib/task-jsdoc.js
