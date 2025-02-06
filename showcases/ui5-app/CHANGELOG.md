@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.46.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.45.13...ui5-app@0.46.0) (2025-02-06)
+
+
+### Features
+
+* general dependencies update ([#1162](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1162)) ([5375d76](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5375d76496741433330d76ce59a89b39f7ad8a69))
+
+
+
+
+
 ## [0.45.13](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-app@0.45.12...ui5-app@0.45.13) (2025-02-03)
 
 **Note:** Version bump only for package ui5-app

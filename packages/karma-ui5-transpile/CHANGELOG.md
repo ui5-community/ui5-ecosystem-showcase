@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/karma-ui5-transpile@3.5.5...karma-ui5-transpile@3.5.6) (2025-02-06)
+
+**Note:** Version bump only for package karma-ui5-transpile
+
+
+
+
+
 ## [3.5.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/karma-ui5-transpile@3.5.4...karma-ui5-transpile@3.5.5) (2025-02-01)
 
 **Note:** Version bump only for package karma-ui5-transpile
