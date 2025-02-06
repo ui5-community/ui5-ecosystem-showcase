@@ -720,12 +720,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   const NOOP_OBSERVABLE_COUNTER_METRIC = new NoopObservableCounterMetric();
   const NOOP_OBSERVABLE_GAUGE_METRIC = new NoopObservableGaugeMetric();
   const NOOP_OBSERVABLE_UP_DOWN_COUNTER_METRIC = new NoopObservableUpDownCounterMetric();
-  /**
-   * Create a no-op Meter
-   */
-  function createNoopMeter() {
-      return NOOP_METER;
-  }
 
   /*
    * Copyright The OpenTelemetry Authors
@@ -743,11 +737,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * limitations under the License.
    */
   /** The Type of value. It describes how the data is reported. */
-  exports.ValueType = void 0;
+  var ValueType;
   (function (ValueType) {
       ValueType[ValueType["INT"] = 0] = "INT";
       ValueType[ValueType["DOUBLE"] = 1] = "DOUBLE";
-  })(exports.ValueType || (exports.ValueType = {}));
+  })(ValueType || (ValueType = {}));
 
   /*
    * Copyright The OpenTelemetry Authors
@@ -1826,22 +1820,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   /** Entrypoint for trace API */
   const trace = TraceAPI.getInstance();
 
-  exports.INVALID_SPANID = INVALID_SPANID;
   exports.INVALID_SPAN_CONTEXT = INVALID_SPAN_CONTEXT;
-  exports.INVALID_TRACEID = INVALID_TRACEID;
-  exports.ProxyTracer = ProxyTracer;
-  exports.ProxyTracerProvider = ProxyTracerProvider;
   exports.ROOT_CONTEXT = ROOT_CONTEXT;
   exports.baggageEntryMetadataFromString = baggageEntryMetadataFromString;
   exports.context = context;
   exports.createContextKey = createContextKey;
-  exports.createNoopMeter = createNoopMeter;
-  exports.defaultTextMapGetter = defaultTextMapGetter;
-  exports.defaultTextMapSetter = defaultTextMapSetter;
   exports.diag = diag;
   exports.global = global$1;
   exports.isSpanContextValid = isSpanContextValid;
-  exports.isValidSpanId = isValidSpanId;
   exports.isValidTraceId = isValidTraceId;
   exports.metrics = metrics;
   exports.propagation = propagation;

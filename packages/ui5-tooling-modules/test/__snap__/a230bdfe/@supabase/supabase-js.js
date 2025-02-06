@@ -9306,7 +9306,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
         return new SupabaseClient(supabaseUrl, supabaseKey, options);
     };
 
-    const __esModule = true;
+    const __esModule = true ;
 
     exports.AuthAdminApi = AuthAdminApi;
     exports.AuthApiError = AuthApiError;

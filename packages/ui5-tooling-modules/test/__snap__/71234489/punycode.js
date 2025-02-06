@@ -1,4 +1,4 @@
-sap.ui.define(['exports'], (function (exports) { 'use strict';
+sap.ui.define((function () { 'use strict';
 
 	/** Highest positive signed 32-bit float value */
 	const maxInt = 2147483647; // aka. 0x7FFFFFFF or 2^31-1
@@ -440,16 +440,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		'toUnicode': toUnicode
 	};
 
-	let exp = punycode?.default || punycode || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
+	const defaultExports = Object.isFrozen(punycode) ? Object.assign({}, punycode?.default || punycode || { __emptyModule: true }) : punycode;
+	defaultExports.default = Object.assign({}, punycode);
+	Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
+	var punycode_es6 = Object.isFrozen(punycode) ? Object.freeze(defaultExports) : defaultExports;
 
-	exports.decode = decode;
-	exports.default = exp;
-	exports.encode = encode;
-	exports.toASCII = toASCII;
-	exports.toUnicode = toUnicode;
-	exports.ucs2decode = ucs2decode;
-	exports.ucs2encode = ucs2encode;
-
-	Object.defineProperty(exports, '__esModule', { value: true });
+	return punycode_es6;
 
 }));

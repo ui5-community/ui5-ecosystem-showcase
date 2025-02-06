@@ -1,6 +1,6 @@
 sap.ui.define(['ui5/ecosystem/demo/app/resources/react/index2'], (function (index$1) { 'use strict';
 
-  var client = {exports: {}};
+  var client$1 = {exports: {}};
 
   var reactDomClient_production = {};
 
@@ -15781,13 +15781,16 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/react/index2'], (function (inde
     // DCE check should happen before ReactDOM bundle executes so that
     // DevTools can report bad minification during injection.
     checkDCE();
-    client.exports = reactDomClient_production;
+    client$1.exports = reactDomClient_production;
   }
 
-  var clientExports = client.exports;
+  var clientExports = client$1.exports;
 
-  let exp = clientExports?.default || clientExports || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
+  const defaultExports = Object.isFrozen(clientExports) ? Object.assign({}, clientExports?.default || clientExports || { __emptyModule: true }) : clientExports;
+  defaultExports.default = Object.assign({}, clientExports);
+  Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
+  var client = Object.isFrozen(clientExports) ? Object.freeze(defaultExports) : defaultExports;
 
-  return exp;
+  return client;
 
 }));

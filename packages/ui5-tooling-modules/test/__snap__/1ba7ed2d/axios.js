@@ -5805,51 +5805,54 @@ sap.ui.define((function () { 'use strict';
   }
 
   // Create the default instance to be exported
-  const axios = createInstance(defaults$1);
+  const axios$1 = createInstance(defaults$1);
 
   // Expose Axios class to allow class inheritance
-  axios.Axios = Axios$1;
+  axios$1.Axios = Axios$1;
 
   // Expose Cancel & CancelToken
-  axios.CanceledError = CanceledError;
-  axios.CancelToken = CancelToken$1;
-  axios.isCancel = isCancel;
-  axios.VERSION = VERSION;
-  axios.toFormData = toFormData;
+  axios$1.CanceledError = CanceledError;
+  axios$1.CancelToken = CancelToken$1;
+  axios$1.isCancel = isCancel;
+  axios$1.VERSION = VERSION;
+  axios$1.toFormData = toFormData;
 
   // Expose AxiosError class
-  axios.AxiosError = AxiosError;
+  axios$1.AxiosError = AxiosError;
 
   // alias for CanceledError for backward compatibility
-  axios.Cancel = axios.CanceledError;
+  axios$1.Cancel = axios$1.CanceledError;
 
   // Expose all/spread
-  axios.all = function all(promises) {
+  axios$1.all = function all(promises) {
     return Promise.all(promises);
   };
 
-  axios.spread = spread;
+  axios$1.spread = spread;
 
   // Expose isAxiosError
-  axios.isAxiosError = isAxiosError;
+  axios$1.isAxiosError = isAxiosError;
 
   // Expose mergeConfig
-  axios.mergeConfig = mergeConfig;
+  axios$1.mergeConfig = mergeConfig;
 
-  axios.AxiosHeaders = AxiosHeaders$1;
+  axios$1.AxiosHeaders = AxiosHeaders$1;
 
-  axios.formToJSON = thing => formDataToJSON(utils$1.isHTMLForm(thing) ? new FormData(thing) : thing);
+  axios$1.formToJSON = thing => formDataToJSON(utils$1.isHTMLForm(thing) ? new FormData(thing) : thing);
 
-  axios.getAdapter = adapters.getAdapter;
+  axios$1.getAdapter = adapters.getAdapter;
 
-  axios.HttpStatusCode = HttpStatusCode$1;
+  axios$1.HttpStatusCode = HttpStatusCode$1;
 
-  axios.default = axios;
+  axios$1.default = axios$1;
 
-  var axios_1 = axios;
+  var axios_1 = axios$1;
 
-  let exp = axios_1?.default || axios_1 || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
+  const defaultExports = Object.isFrozen(axios_1) ? Object.assign({}, axios_1?.default || axios_1 || { __emptyModule: true }) : axios_1;
+  defaultExports.default = Object.assign({}, axios_1);
+  Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
+  var axios = Object.isFrozen(axios_1) ? Object.freeze(defaultExports) : defaultExports;
 
-  return exp;
+  return axios;
 
 }));

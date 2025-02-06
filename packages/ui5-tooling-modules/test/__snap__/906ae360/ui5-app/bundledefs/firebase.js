@@ -5462,7 +5462,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       registerVersion("firestore-lite", "4.7.6", ""), registerVersion("firestore-lite", "4.7.6", "esm2017");
   }();
 
-  const __esModule = true;
+  const __esModule = true ;
 
   exports.__esModule = __esModule;
   exports.doc = doc;

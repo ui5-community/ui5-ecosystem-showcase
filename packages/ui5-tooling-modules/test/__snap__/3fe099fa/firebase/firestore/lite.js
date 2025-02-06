@@ -7397,7 +7397,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	    index_esm2017.registerVersion("firestore-lite", "4.7.6", ""), index_esm2017.registerVersion("firestore-lite", "4.7.6", "esm2017");
 	}();
 
-	const __esModule = true;
+	const __esModule = true ;
 
 	exports.AggregateField = AggregateField;
 	exports.AggregateQuerySnapshot = AggregateQuerySnapshot;

@@ -1,8 +1,8 @@
-sap.ui.define(['exports'], (function (exports) { 'use strict';
+sap.ui.define((function () { 'use strict';
 
-  var luxon = {};
+  var luxon$1 = {};
 
-  Object.defineProperty(luxon, "__esModule", {
+  Object.defineProperty(luxon$1, "__esModule", {
     value: true
   });
   function _defineProperties(target, props) {
@@ -5334,33 +5334,23 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
   }
   var VERSION = "3.5.0";
-  var DateTime_1 = luxon.DateTime = DateTime;
-  var Duration_1 = luxon.Duration = Duration;
-  var FixedOffsetZone_1 = luxon.FixedOffsetZone = FixedOffsetZone;
-  var IANAZone_1 = luxon.IANAZone = IANAZone;
-  var Info_1 = luxon.Info = Info;
-  var Interval_1 = luxon.Interval = Interval;
-  var InvalidZone_1 = luxon.InvalidZone = InvalidZone;
-  var Settings_1 = luxon.Settings = Settings;
-  var SystemZone_1 = luxon.SystemZone = SystemZone;
-  var VERSION_1 = luxon.VERSION = VERSION;
-  var Zone_1 = luxon.Zone = Zone;
+  luxon$1.DateTime = DateTime;
+  luxon$1.Duration = Duration;
+  luxon$1.FixedOffsetZone = FixedOffsetZone;
+  luxon$1.IANAZone = IANAZone;
+  luxon$1.Info = Info;
+  luxon$1.Interval = Interval;
+  luxon$1.InvalidZone = InvalidZone;
+  luxon$1.Settings = Settings;
+  luxon$1.SystemZone = SystemZone;
+  luxon$1.VERSION = VERSION;
+  luxon$1.Zone = Zone;
 
-  let exp = luxon?.default || luxon || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
+  const defaultExports = Object.isFrozen(luxon$1) ? Object.assign({}, luxon$1?.default || luxon$1 || { __emptyModule: true }) : luxon$1;
+  defaultExports.default = Object.assign({}, luxon$1);
+  Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
+  var luxon = Object.isFrozen(luxon$1) ? Object.freeze(defaultExports) : defaultExports;
 
-  exports.DateTime = DateTime_1;
-  exports.Duration = Duration_1;
-  exports.FixedOffsetZone = FixedOffsetZone_1;
-  exports.IANAZone = IANAZone_1;
-  exports.Info = Info_1;
-  exports.Interval = Interval_1;
-  exports.InvalidZone = InvalidZone_1;
-  exports.Settings = Settings_1;
-  exports.SystemZone = SystemZone_1;
-  exports.VERSION = VERSION_1;
-  exports.Zone = Zone_1;
-  exports.default = exp;
-
-  Object.defineProperty(exports, '__esModule', { value: true });
+  return luxon;
 
 }));

@@ -839,7 +839,7 @@ To prevent other runtimes from defining tags that you use, consider using scopin
       return (c > 3 && r && Object.defineProperty(target, key, r), r);
     });
     var Panel_1;
-    let Panel = Panel_1 = class Panel extends S$1 {
+    let Panel$1 = Panel_1 = class Panel extends S$1 {
       constructor() {
         super(...arguments);
         this.fixed = false;
@@ -985,39 +985,39 @@ To prevent other runtimes from defining tags that you use, consider using scopin
         return !this.header.length;
       }
     };
-    __decorate([s$3()], Panel.prototype, "headerText", undefined);
+    __decorate([s$3()], Panel$1.prototype, "headerText", undefined);
     __decorate([s$3({
       type: Boolean
-    })], Panel.prototype, "fixed", undefined);
+    })], Panel$1.prototype, "fixed", undefined);
     __decorate([s$3({
       type: Boolean
-    })], Panel.prototype, "collapsed", undefined);
+    })], Panel$1.prototype, "collapsed", undefined);
     __decorate([s$3({
       type: Boolean
-    })], Panel.prototype, "noAnimation", undefined);
-    __decorate([s$3()], Panel.prototype, "accessibleRole", undefined);
-    __decorate([s$3()], Panel.prototype, "headerLevel", undefined);
-    __decorate([s$3()], Panel.prototype, "accessibleName", undefined);
+    })], Panel$1.prototype, "noAnimation", undefined);
+    __decorate([s$3()], Panel$1.prototype, "accessibleRole", undefined);
+    __decorate([s$3()], Panel$1.prototype, "headerLevel", undefined);
+    __decorate([s$3()], Panel$1.prototype, "accessibleName", undefined);
     __decorate([s$3({
       type: Boolean
-    })], Panel.prototype, "stickyHeader", undefined);
+    })], Panel$1.prototype, "stickyHeader", undefined);
     __decorate([s$3({
       type: Boolean
-    })], Panel.prototype, "useAccessibleNameForToggleButton", undefined);
+    })], Panel$1.prototype, "useAccessibleNameForToggleButton", undefined);
     __decorate([s$3({
       type: Boolean
-    })], Panel.prototype, "_hasHeader", undefined);
+    })], Panel$1.prototype, "_hasHeader", undefined);
     __decorate([s$3({
       type: Boolean,
       noAttribute: true
-    })], Panel.prototype, "_contentExpanded", undefined);
+    })], Panel$1.prototype, "_contentExpanded", undefined);
     __decorate([s$3({
       type: Boolean,
       noAttribute: true
-    })], Panel.prototype, "_animationRunning", undefined);
-    __decorate([d$4()], Panel.prototype, "header", undefined);
-    __decorate([i$2("@ui5/webcomponents")], Panel, "i18nBundle", undefined);
-    Panel = Panel_1 = __decorate([m$2({
+    })], Panel$1.prototype, "_animationRunning", undefined);
+    __decorate([d$4()], Panel$1.prototype, "header", undefined);
+    __decorate([i$2("@ui5/webcomponents")], Panel$1, "i18nBundle", undefined);
+    Panel$1 = Panel_1 = __decorate([m$2({
       tag: "ui5-panel",
       fastNavigation: true,
       languageAware: true,
@@ -1026,12 +1026,15 @@ To prevent other runtimes from defining tags that you use, consider using scopin
       styles: panelCss
     }), l$4("toggle", {
       bubbles: true
-    })], Panel);
-    Panel.define();
-    var defaultExport = Panel;
+    })], Panel$1);
+    Panel$1.define();
+    var defExp = Panel$1;
 
-    let exp = defaultExport?.default || defaultExport || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
+    const defaultExports = Object.isFrozen(defExp) ? Object.assign({}, defExp?.default || defExp || { __emptyModule: true }) : defExp;
+    defaultExports.default = Object.assign({}, defExp);
+    Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
+    var Panel = Object.isFrozen(defExp) ? Object.freeze(defaultExports) : defaultExports;
 
-    return exp;
+    return Panel;
 
 }));

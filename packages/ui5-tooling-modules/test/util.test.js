@@ -233,6 +233,21 @@ test.serial("Verify generation of @stomp/stompjs", async (t) => {
 	}
 });
 
+test.serial("Verify generation of chart.js/auto", async (t) => {
+	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp"));
+	const env = await setupEnv(["chart.js/auto"], {
+		hash: t.context.hash,
+		tmpDir: t.context.tmpDir,
+		log: t.context.log,
+	});
+	const module = await env.getModule("chart.js/auto");
+	t.true(typeof module.retVal === "function");
+	t.true(module.retVal.__esModule);
+	if (platform() !== "win32") {
+		t.is(module.code, readSnapFile(module.name, t.context.snapDir, createShortHash(t.title)));
+	}
+});
+
 test.serial("Verify generation of jspdf", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-tsapp"));
 	const env = await setupEnv(

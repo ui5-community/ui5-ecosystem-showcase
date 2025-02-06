@@ -3170,7 +3170,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         $.signalR.version = "2.4.3";
     }(window.jQuery));
 
-    const __esModule = true;
+    const __esModule = true ;
 
     exports.__esModule = __esModule;
 

@@ -6,7 +6,7 @@ sap.ui.define((function () { 'use strict';
 		throw new Error('Could not dynamically require "' + path + '". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.');
 	}
 
-	var moment = {exports: {}};
+	var moment$1 = {exports: {}};
 
 	(function (module, exports) {
 	  (function (global, factory) {
@@ -3689,11 +3689,14 @@ sap.ui.define((function () { 'use strict';
 	    };
 	    return hooks;
 	  });
-	})(moment);
-	var momentExports = moment.exports;
+	})(moment$1);
+	var momentExports = moment$1.exports;
 
-	let exp = momentExports?.default || momentExports || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
+	const defaultExports = Object.isFrozen(momentExports) ? Object.assign({}, momentExports?.default || momentExports || { __emptyModule: true }) : momentExports;
+	defaultExports.default = Object.assign({}, momentExports);
+	Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
+	var moment = Object.isFrozen(momentExports) ? Object.freeze(defaultExports) : defaultExports;
 
-	return exp;
+	return moment;
 
 }));

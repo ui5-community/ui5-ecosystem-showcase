@@ -1,4 +1,4 @@
-sap.ui.define(['exports'], (function (exports) { 'use strict';
+sap.ui.define((function () { 'use strict';
 
   var globToRegexp = function (glob, opts) {
     if (typeof glob !== 'string') {
@@ -1350,12 +1350,11 @@ e.g. {"body": {"status: "registered"}}`);
       ...defaultFetchMockConfig,
   });
 
-  let exp = fetchMock?.default || fetchMock || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
+  const defaultExports = Object.isFrozen(fetchMock) ? Object.assign({}, fetchMock?.default || fetchMock || { __emptyModule: true }) : fetchMock;
+  defaultExports.default = Object.assign({}, fetchMock);
+  Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
+  var index = Object.isFrozen(fetchMock) ? Object.freeze(defaultExports) : defaultExports;
 
-  exports.FetchMock = FetchMock;
-  exports.default = exp;
-  exports.defaultFetchMockConfig = defaultFetchMockConfig;
-
-  Object.defineProperty(exports, '__esModule', { value: true });
+  return index;
 
 }));

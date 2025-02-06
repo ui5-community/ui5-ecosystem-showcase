@@ -1,6 +1,6 @@
 sap.ui.define(['ui5/ecosystem/demo/app/resources/_commonjsHelpers'], (function (_commonjsHelpers) { 'use strict';
 
-  var pdfmake = {exports: {}};
+  var pdfmake$1 = {exports: {}};
 
   /*! pdfmake v0.2.18, @license MIT, @link http://pdfmake.org */
 
@@ -74032,12 +74032,15 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/_commonjsHelpers'], (function (
   	;
   	});
   	
-  } (pdfmake));
+  } (pdfmake$1));
 
-  var pdfmakeExports = pdfmake.exports;
+  var pdfmakeExports = pdfmake$1.exports;
 
-  let exp = pdfmakeExports?.default || pdfmakeExports || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
+  const defaultExports = Object.isFrozen(pdfmakeExports) ? Object.assign({}, pdfmakeExports?.default || pdfmakeExports || { __emptyModule: true }) : pdfmakeExports;
+  defaultExports.default = Object.assign({}, pdfmakeExports);
+  Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
+  var pdfmake = Object.isFrozen(pdfmakeExports) ? Object.freeze(defaultExports) : defaultExports;
 
-  return exp;
+  return pdfmake;
 
 }));

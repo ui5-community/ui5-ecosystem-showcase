@@ -7469,8 +7469,11 @@ sap.ui.define((function () { 'use strict';
 	  json2xml: json2xml
 	};
 
-	let exp = lib?.default || lib || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
+	const defaultExports = Object.isFrozen(lib) ? Object.assign({}, lib?.default || lib || { __emptyModule: true }) : lib;
+	defaultExports.default = Object.assign({}, lib);
+	Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
+	var index = Object.isFrozen(lib) ? Object.freeze(defaultExports) : defaultExports;
 
-	return exp;
+	return index;
 
 }));

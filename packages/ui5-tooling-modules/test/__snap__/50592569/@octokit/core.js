@@ -1176,7 +1176,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   Octokit.VERSION = VERSION;
   Octokit.plugins = [];
 
-  const __esModule = true;
+  const __esModule = true ;
 
   exports.Octokit = Octokit;
   exports.__esModule = __esModule;

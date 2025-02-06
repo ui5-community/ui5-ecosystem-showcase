@@ -3865,7 +3865,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
       }
     }
 
-    const __esModule = true;
+    const __esModule = true ;
 
     exports.AlwaysOffSampler = AlwaysOffSampler;
     exports.AlwaysOnSampler = AlwaysOnSampler;

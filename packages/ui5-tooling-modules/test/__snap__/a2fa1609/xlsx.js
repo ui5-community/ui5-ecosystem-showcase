@@ -1,4 +1,4 @@
-sap.ui.define(['exports'], (function (exports) { 'use strict';
+sap.ui.define((function () { 'use strict';
 
   var global$1 = (typeof global !== "undefined" ? global :
     typeof self !== "undefined" ? self :
@@ -34061,8 +34061,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     to_xlml: write_xlml_stream,
     set_readable: set_readable
   };
-  const version = XLSX.version;
-  var defaultExport = {
+  var defExp = {
     parse_xlscfb,
     parse_zip,
     read: readSync,
@@ -34082,28 +34081,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     CFB
   };
 
-  let exp = defaultExport?.default || defaultExport || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
+  const defaultExports = Object.isFrozen(defExp) ? Object.assign({}, defExp?.default || defExp || { __emptyModule: true }) : defExp;
+  defaultExports.default = Object.assign({}, defExp);
+  Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
+  var xlsx = Object.isFrozen(defExp) ? Object.freeze(defaultExports) : defaultExports;
 
-  exports.CFB = CFB;
-  exports.SSF = SSF;
-  exports.default = exp;
-  exports.parse_xlscfb = parse_xlscfb;
-  exports.parse_zip = parse_zip;
-  exports.read = readSync;
-  exports.readFile = readFileSync;
-  exports.readFileSync = readFileSync;
-  exports.set_cptable = set_cptable;
-  exports.set_fs = set_fs;
-  exports.stream = __stream;
-  exports.utils = utils;
-  exports.version = version;
-  exports.write = writeSync;
-  exports.writeFile = writeFileSync;
-  exports.writeFileAsync = writeFileAsync;
-  exports.writeFileSync = writeFileSync;
-  exports.writeFileXLSX = writeFileSyncXLSX;
-  exports.writeXLSX = writeSyncXLSX;
-
-  Object.defineProperty(exports, '__esModule', { value: true });
+  return xlsx;
 
 }));

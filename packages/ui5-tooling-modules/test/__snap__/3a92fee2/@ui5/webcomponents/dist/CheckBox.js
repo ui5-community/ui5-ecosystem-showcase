@@ -557,7 +557,7 @@ To prevent other runtimes from defining tags that you use, consider using scopin
     var CheckBox_1;
     let isGlobalHandlerAttached = false;
     let activeCb;
-    let CheckBox = CheckBox_1 = class CheckBox extends S$1 {
+    let CheckBox$1 = CheckBox_1 = class CheckBox extends S$1 {
       get formValidityMessage() {
         return CheckBox_1.i18nBundle.getText(FORM_CHECKABLE_REQUIRED);
       }
@@ -715,35 +715,35 @@ To prevent other runtimes from defining tags that you use, consider using scopin
         return this.displayOnly && !this.disabled;
       }
     };
-    __decorate([s$3()], CheckBox.prototype, "accessibleNameRef", undefined);
-    __decorate([s$3()], CheckBox.prototype, "accessibleName", undefined);
+    __decorate([s$3()], CheckBox$1.prototype, "accessibleNameRef", undefined);
+    __decorate([s$3()], CheckBox$1.prototype, "accessibleName", undefined);
     __decorate([s$3({
       type: Boolean
-    })], CheckBox.prototype, "disabled", undefined);
+    })], CheckBox$1.prototype, "disabled", undefined);
     __decorate([s$3({
       type: Boolean
-    })], CheckBox.prototype, "readonly", undefined);
+    })], CheckBox$1.prototype, "readonly", undefined);
     __decorate([s$3({
       type: Boolean
-    })], CheckBox.prototype, "displayOnly", undefined);
+    })], CheckBox$1.prototype, "displayOnly", undefined);
     __decorate([s$3({
       type: Boolean
-    })], CheckBox.prototype, "required", undefined);
+    })], CheckBox$1.prototype, "required", undefined);
     __decorate([s$3({
       type: Boolean
-    })], CheckBox.prototype, "indeterminate", undefined);
+    })], CheckBox$1.prototype, "indeterminate", undefined);
     __decorate([s$3({
       type: Boolean
-    })], CheckBox.prototype, "checked", undefined);
-    __decorate([s$3()], CheckBox.prototype, "text", undefined);
-    __decorate([s$3()], CheckBox.prototype, "valueState", undefined);
-    __decorate([s$3()], CheckBox.prototype, "wrappingType", undefined);
-    __decorate([s$3()], CheckBox.prototype, "name", undefined);
+    })], CheckBox$1.prototype, "checked", undefined);
+    __decorate([s$3()], CheckBox$1.prototype, "text", undefined);
+    __decorate([s$3()], CheckBox$1.prototype, "valueState", undefined);
+    __decorate([s$3()], CheckBox$1.prototype, "wrappingType", undefined);
+    __decorate([s$3()], CheckBox$1.prototype, "name", undefined);
     __decorate([s$3({
       type: Boolean
-    })], CheckBox.prototype, "active", undefined);
-    __decorate([i$3("@ui5/webcomponents")], CheckBox, "i18nBundle", undefined);
-    CheckBox = CheckBox_1 = __decorate([m$2({
+    })], CheckBox$1.prototype, "active", undefined);
+    __decorate([i$3("@ui5/webcomponents")], CheckBox$1, "i18nBundle", undefined);
+    CheckBox$1 = CheckBox_1 = __decorate([m$2({
       tag: "ui5-checkbox",
       languageAware: true,
       formAssociated: true,
@@ -756,12 +756,15 @@ To prevent other runtimes from defining tags that you use, consider using scopin
     }), l$3("value-changed", {
       bubbles: true,
       cancelable: true
-    })], CheckBox);
-    CheckBox.define();
-    var defaultExport = CheckBox;
+    })], CheckBox$1);
+    CheckBox$1.define();
+    var defExp = CheckBox$1;
 
-    let exp = defaultExport?.default || defaultExport || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
+    const defaultExports = Object.isFrozen(defExp) ? Object.assign({}, defExp?.default || defExp || { __emptyModule: true }) : defExp;
+    defaultExports.default = Object.assign({}, defExp);
+    Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
+    var CheckBox = Object.isFrozen(defExp) ? Object.freeze(defaultExports) : defaultExports;
 
-    return exp;
+    return CheckBox;
 
 }));

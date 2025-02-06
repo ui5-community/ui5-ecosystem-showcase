@@ -2,7 +2,7 @@ sap.ui.define((function () { 'use strict';
 
 	var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
-	var stomp_umd = {exports: {}};
+	var stomp_umd$1 = {exports: {}};
 
 	(function (module, exports) {
 		(function (global, factory) {
@@ -1881,12 +1881,15 @@ sap.ui.define((function () { 'use strict';
 
 		}));
 		
-	} (stomp_umd, stomp_umd.exports));
+	} (stomp_umd$1, stomp_umd$1.exports));
 
-	var stomp_umdExports = stomp_umd.exports;
+	var stomp_umdExports = stomp_umd$1.exports;
 
-	let exp = stomp_umdExports?.default || stomp_umdExports || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
+	const defaultExports = Object.isFrozen(stomp_umdExports) ? Object.assign({}, stomp_umdExports?.default || stomp_umdExports || { __emptyModule: true }) : stomp_umdExports;
+	defaultExports.default = Object.assign({}, stomp_umdExports);
+	Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
+	var stomp_umd = Object.isFrozen(stomp_umdExports) ? Object.freeze(defaultExports) : defaultExports;
 
-	return exp;
+	return stomp_umd;
 
 }));

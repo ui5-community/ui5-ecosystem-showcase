@@ -20937,8 +20937,11 @@ sap.ui.define((function () { 'use strict';
 		} 
 	} (cmis$1));
 
-	let exp = cmis$1?.default || cmis$1 || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
+	const defaultExports = Object.isFrozen(cmis$1) ? Object.assign({}, cmis$1?.default || cmis$1 || { __emptyModule: true }) : cmis$1;
+	defaultExports.default = Object.assign({}, cmis$1);
+	Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
+	var index = Object.isFrozen(cmis$1) ? Object.freeze(defaultExports) : defaultExports;
 
-	return exp;
+	return index;
 
 }));
