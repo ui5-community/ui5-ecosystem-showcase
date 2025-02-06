@@ -1,3 +1,7 @@
+const path = require("path");
+const { existsSync } = require("fs");
+const WebComponentRegistry = require("./utils/WebComponentRegistry");
+
 /**
  * Custom task to create the UI5 AMD-like bundles for used ES imports from node_modules.
  *
@@ -12,7 +16,32 @@
  * @param {object} [parameters.options.configuration] Task configuration if given in ui5.yaml
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
-module.exports = async function ({ log /*, workspace, taskUtil, options*/ }) {
+module.exports = async function ({ log, workspace, taskUtil /*, options */ }) {
+	// determine the current working directory and the package.json path
+	let cwd = taskUtil.getProject().getRootPath() || process.cwd();
+	let pkgJsonPath = path.join(cwd, "package.json");
+
+	// if the package.json is not in the root of the project, try to find it
+	// in the npm_package_json environment variable (used by npm scripts)
+	if (!existsSync(pkgJsonPath)) {
+		pkgJsonPath = process.env.npm_package_json;
+		cwd = path.dirname(pkgJsonPath);
+	}
+	const pkgJson = require(pkgJsonPath);
+
+	for (const dep of Object.keys(pkgJson.dependencies)) {
+		console.log("XXX", WebComponentRegistry.getPackage(dep));
+	}
+
+	const apiJsons = await workspace.byGlob("/**/designtime/api.json");
+	if (apiJsons.length === 1) {
+		const apiJson = JSON.parse(await apiJsons[0].getString());
+		console.log("API JSON");
+		apiJson.__MODIFIED = "HURRAY";
+		apiJsons[0].setString(JSON.stringify(apiJson, null, 2));
+		await workspace.write(apiJsons[0]);
+	}
+
 	log.info("Hello World!");
 };
 

@@ -9,7 +9,7 @@
   "scripts": {
     "clean": "rimraf dist coverage",
     "build": "ui5 build --clean-dest",
-    "jsdoc": "ui5 build jsdoc",
+    "jsdoc": "ui5 build jsdoc --exclude-task buildThemes",
     "dev": "ui5 serve --port 8080 -o test-resources/ui5/ecosystem/demo/tslib/Example.html",
     "start": "ui5 serve  --port 8080 -o test-resources/ui5/ecosystem/demo/tslib/Example.html --config ui5-dist.yaml",
     "testsuite": "ui5 serve --open test-resources/ui5/ecosystem/demo/tslib/qunit/testsuite.qunit.html",
@@ -24,6 +24,10 @@
     "type": "git",
     "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
     "directory": "showcases/ui5-tslib"
+  },
+  "dependencies": {
+    "@ui5/webcomponents-base": "2.6.2",
+    "@ui5/webcomponents": "2.6.2"
   },
   "devDependencies": {
     "@types/openui5": "1.129.0",

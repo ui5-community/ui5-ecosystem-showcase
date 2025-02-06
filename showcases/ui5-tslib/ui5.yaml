@@ -7,9 +7,12 @@ framework:
   version: "1.129.0"
   libraries:
     - name: sap.ui.core
-    - name: themelib_sap_fiori_3
-    - name: themelib_sap_horizon
+    #- name: themelib_sap_fiori_3
+    #- name: themelib_sap_horizon
 builder:
+  jsdoc:
+    excludes:
+      - "ui5/ecosystem/demo/tslib/thirdparty/**"
   customTasks:
     - name: ui5-tooling-transpile-task
       afterTask: replaceVersion
