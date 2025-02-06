@@ -35,7 +35,7 @@
     "@ui5/server": "^3",
     "ava": "^6.2.0",
     "get-port": "^7.1.0",
-    "nock": "^14.0.0",
+    "nock": "^13.5.6",
     "node-tcp-proxy": "^0.0.28",
     "supertest": "^7.0.0",
     "superwstest": "^2.0.4",
