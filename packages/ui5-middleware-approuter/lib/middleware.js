@@ -27,6 +27,19 @@ const nextFreePort = async (basePort) => {
 }
 
 /**
+ * Replaces the oldUrl with the newUrl in the text.
+ *
+ * @param {string} text text to replace the url in
+ * @param {string} oldUrl old url to replace
+ * @param {string} newUrl new url to replace with
+ * @returns replaced text
+ */
+function replaceUrl(text, oldUrl, newUrl) {
+	const regex = new RegExp(oldUrl.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"), "gi")
+	return text.replace(regex, newUrl)
+}
+
+/**
  * Custom UI5 Server middleware "approuter"
  *
  * @param {object} parameters Parameters
@@ -311,10 +324,10 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 					req.baseUrl
 				}`
 			const referrerUrl = new URL(route.path, referrer).toString()
-			data = data.replaceAll(route.url, referrerUrl)
+			data = replaceUrl(data, `https://${route.url.substr(8)}`, referrerUrl)
 			// in some cases, the odata servers respond http instead of https in the content
 			if (route.url?.startsWith("https://")) {
-				data = data.replaceAll(`http://${route.url.substr(8)}`, referrerUrl)
+				data = replaceUrl(data, `http://${route.url.substr(8)}`, referrerUrl)
 			}
 			return new Buffer.from(data)
 		} else {

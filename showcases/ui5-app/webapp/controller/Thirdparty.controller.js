@@ -66,7 +66,7 @@ sap.ui.define(
 		console.log("[3rdParty] zod", zod);
 		console.log("[3rdParty] xmljs", xmljs);
 
-		pdfMake.vfs = pdfFonts.pdfMake.vfs;
+		pdfMake.addFonts(pdfFonts);
 		console.log("[3rdParty] pdfMake", pdfMake);
 
 		console.log("[3rdParty] firebase", firebase);

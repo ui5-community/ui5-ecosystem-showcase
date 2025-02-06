@@ -4,227 +4,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     typeof self !== "undefined" ? self :
     typeof window !== "undefined" ? window : {});
 
-  // shim for using process in browser
-  // based off https://github.com/defunctzombie/node-process/blob/master/browser.js
-
-  function defaultSetTimout() {
-      throw new Error('setTimeout has not been defined');
-  }
-  function defaultClearTimeout () {
-      throw new Error('clearTimeout has not been defined');
-  }
-  var cachedSetTimeout = defaultSetTimout;
-  var cachedClearTimeout = defaultClearTimeout;
-  if (typeof global$1.setTimeout === 'function') {
-      cachedSetTimeout = setTimeout;
-  }
-  if (typeof global$1.clearTimeout === 'function') {
-      cachedClearTimeout = clearTimeout;
-  }
-
-  function runTimeout(fun) {
-      if (cachedSetTimeout === setTimeout) {
-          //normal enviroments in sane situations
-          return setTimeout(fun, 0);
-      }
-      // if setTimeout wasn't available but was latter defined
-      if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-          cachedSetTimeout = setTimeout;
-          return setTimeout(fun, 0);
-      }
-      try {
-          // when when somebody has screwed with setTimeout but no I.E. maddness
-          return cachedSetTimeout(fun, 0);
-      } catch(e){
-          try {
-              // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-              return cachedSetTimeout.call(null, fun, 0);
-          } catch(e){
-              // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-              return cachedSetTimeout.call(this, fun, 0);
-          }
-      }
-
-
-  }
-  function runClearTimeout(marker) {
-      if (cachedClearTimeout === clearTimeout) {
-          //normal enviroments in sane situations
-          return clearTimeout(marker);
-      }
-      // if clearTimeout wasn't available but was latter defined
-      if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-          cachedClearTimeout = clearTimeout;
-          return clearTimeout(marker);
-      }
-      try {
-          // when when somebody has screwed with setTimeout but no I.E. maddness
-          return cachedClearTimeout(marker);
-      } catch (e){
-          try {
-              // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-              return cachedClearTimeout.call(null, marker);
-          } catch (e){
-              // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-              // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-              return cachedClearTimeout.call(this, marker);
-          }
-      }
-
-
-
-  }
-  var queue = [];
-  var draining = false;
-  var currentQueue;
-  var queueIndex = -1;
-
-  function cleanUpNextTick() {
-      if (!draining || !currentQueue) {
-          return;
-      }
-      draining = false;
-      if (currentQueue.length) {
-          queue = currentQueue.concat(queue);
-      } else {
-          queueIndex = -1;
-      }
-      if (queue.length) {
-          drainQueue();
-      }
-  }
-
-  function drainQueue() {
-      if (draining) {
-          return;
-      }
-      var timeout = runTimeout(cleanUpNextTick);
-      draining = true;
-
-      var len = queue.length;
-      while(len) {
-          currentQueue = queue;
-          queue = [];
-          while (++queueIndex < len) {
-              if (currentQueue) {
-                  currentQueue[queueIndex].run();
-              }
-          }
-          queueIndex = -1;
-          len = queue.length;
-      }
-      currentQueue = null;
-      draining = false;
-      runClearTimeout(timeout);
-  }
-  function nextTick(fun) {
-      var args = new Array(arguments.length - 1);
-      if (arguments.length > 1) {
-          for (var i = 1; i < arguments.length; i++) {
-              args[i - 1] = arguments[i];
-          }
-      }
-      queue.push(new Item(fun, args));
-      if (queue.length === 1 && !draining) {
-          runTimeout(drainQueue);
-      }
-  }
-  // v8 likes predictible objects
-  function Item(fun, array) {
-      this.fun = fun;
-      this.array = array;
-  }
-  Item.prototype.run = function () {
-      this.fun.apply(null, this.array);
-  };
-  var title = 'browser';
-  var platform = 'browser';
-  var browser = true;
+  if (typeof global$1.setTimeout === 'function') ;
+  if (typeof global$1.clearTimeout === 'function') ;
   var env = {};
-  var argv = [];
-  var version$3 = ''; // empty string to avoid regexp issues
-  var versions = {};
-  var release = {};
-  var config = {};
-
-  function noop() {}
-
-  var on = noop;
-  var addListener = noop;
-  var once = noop;
-  var off = noop;
-  var removeListener = noop;
-  var removeAllListeners = noop;
-  var emit = noop;
-
-  function binding(name) {
-      throw new Error('process.binding is not supported');
-  }
-
-  function cwd () { return '/' }
-  function chdir (dir) {
-      throw new Error('process.chdir is not supported');
-  }function umask() { return 0; }
 
   // from https://github.com/kumavis/browser-process-hrtime/blob/master/index.js
   var performance = global$1.performance || {};
-  var performanceNow =
-    performance.now        ||
+  performance.now        ||
     performance.mozNow     ||
     performance.msNow      ||
     performance.oNow       ||
     performance.webkitNow  ||
     function(){ return (new Date()).getTime() };
 
-  // generate timestamp or delta
-  // see http://nodejs.org/api/process.html#process_process_hrtime
-  function hrtime(previousTimestamp){
-    var clocktime = performanceNow.call(performance)*1e-3;
-    var seconds = Math.floor(clocktime);
-    var nanoseconds = Math.floor((clocktime%1)*1e9);
-    if (previousTimestamp) {
-      seconds = seconds - previousTimestamp[0];
-      nanoseconds = nanoseconds - previousTimestamp[1];
-      if (nanoseconds<0) {
-        seconds--;
-        nanoseconds += 1e9;
-      }
-    }
-    return [seconds,nanoseconds]
-  }
-
-  var startTime = new Date();
-  function uptime() {
-    var currentTime = new Date();
-    var dif = currentTime - startTime;
-    return dif / 1000;
-  }
-
   var browser$1 = {
-    nextTick: nextTick,
-    title: title,
-    browser: browser,
-    env: env,
-    argv: argv,
-    version: version$3,
-    versions: versions,
-    on: on,
-    addListener: addListener,
-    once: once,
-    off: off,
-    removeListener: removeListener,
-    removeAllListeners: removeAllListeners,
-    emit: emit,
-    binding: binding,
-    cwd: cwd,
-    chdir: chdir,
-    umask: umask,
-    hrtime: hrtime,
-    platform: platform,
-    release: release,
-    config: config,
-    uptime: uptime
-  };
+    env: env};
 
   const stringToByteArray$1 = function (str) {
     const out = [];
@@ -443,7 +237,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   };
   const getDefaultEmulatorHost = productName => {
     var _a, _b;
-    return (_b = (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.emulatorHosts) === null || _b === void 0 ? void 0 : _b[productName];
+    return (_b = (_a = getDefaults()) === null || _a === undefined ? undefined : _a.emulatorHosts) === null || _b === undefined ? undefined : _b[productName];
   };
   const getDefaultEmulatorHostnameAndPort = productName => {
     const host = getDefaultEmulatorHost(productName);
@@ -463,7 +257,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   };
   const getDefaultAppConfig = () => {
     var _a;
-    return (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.config;
+    return (_a = getDefaults()) === null || _a === undefined ? undefined : _a.config;
   };
   class Deferred {
     constructor() {
@@ -748,8 +542,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       getImmediate(options) {
           var _a;
           // if multipleInstances is not supported, use the default name
-          const normalizedIdentifier = this.normalizeInstanceIdentifier(options === null || options === void 0 ? void 0 : options.identifier);
-          const optional = (_a = options === null || options === void 0 ? void 0 : options.optional) !== null && _a !== void 0 ? _a : false;
+          const normalizedIdentifier = this.normalizeInstanceIdentifier(options === null || options === undefined ? undefined : options.identifier);
+          const optional = (_a = options === null || options === undefined ? undefined : options.optional) !== null && _a !== undefined ? _a : false;
           if (this.isInitialized(normalizedIdentifier) ||
               this.shouldAutoInitialize()) {
               try {
@@ -883,7 +677,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       onInit(callback, identifier) {
           var _a;
           const normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
-          const existingCallbacks = (_a = this.onInitCallbacks.get(normalizedIdentifier)) !== null && _a !== void 0 ? _a : new Set();
+          const existingCallbacks = (_a = this.onInitCallbacks.get(normalizedIdentifier)) !== null && _a !== undefined ? _a : new Set();
           existingCallbacks.add(callback);
           this.onInitCallbacks.set(normalizedIdentifier, existingCallbacks);
           const existingInstance = this.instances.get(normalizedIdentifier);
@@ -1033,234 +827,245 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
   }
 
+  var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
   var index_cjs = {};
 
-  (function (exports) {
+  var hasRequiredIndex_cjs;
 
-  	Object.defineProperty(exports, '__esModule', { value: true });
+  function requireIndex_cjs () {
+  	if (hasRequiredIndex_cjs) return index_cjs;
+  	hasRequiredIndex_cjs = 1;
+  	(function (exports) {
 
-  	/**
-  	 * @license
-  	 * Copyright 2017 Google LLC
-  	 *
-  	 * Licensed under the Apache License, Version 2.0 (the "License");
-  	 * you may not use this file except in compliance with the License.
-  	 * You may obtain a copy of the License at
-  	 *
-  	 *   http://www.apache.org/licenses/LICENSE-2.0
-  	 *
-  	 * Unless required by applicable law or agreed to in writing, software
-  	 * distributed under the License is distributed on an "AS IS" BASIS,
-  	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  	 * See the License for the specific language governing permissions and
-  	 * limitations under the License.
-  	 */
-  	/**
-  	 * A container for all of the Logger instances
-  	 */
-  	const instances = [];
-  	/**
-  	 * The JS SDK supports 5 log levels and also allows a user the ability to
-  	 * silence the logs altogether.
-  	 *
-  	 * The order is a follows:
-  	 * DEBUG < VERBOSE < INFO < WARN < ERROR
-  	 *
-  	 * All of the log types above the current log level will be captured (i.e. if
-  	 * you set the log level to `INFO`, errors will still be logged, but `DEBUG` and
-  	 * `VERBOSE` logs will not)
-  	 */
-  	exports.LogLevel = void 0;
-  	(function (LogLevel) {
-  	    LogLevel[LogLevel["DEBUG"] = 0] = "DEBUG";
-  	    LogLevel[LogLevel["VERBOSE"] = 1] = "VERBOSE";
-  	    LogLevel[LogLevel["INFO"] = 2] = "INFO";
-  	    LogLevel[LogLevel["WARN"] = 3] = "WARN";
-  	    LogLevel[LogLevel["ERROR"] = 4] = "ERROR";
-  	    LogLevel[LogLevel["SILENT"] = 5] = "SILENT";
-  	})(exports.LogLevel || (exports.LogLevel = {}));
-  	const levelStringToEnum = {
-  	    'debug': exports.LogLevel.DEBUG,
-  	    'verbose': exports.LogLevel.VERBOSE,
-  	    'info': exports.LogLevel.INFO,
-  	    'warn': exports.LogLevel.WARN,
-  	    'error': exports.LogLevel.ERROR,
-  	    'silent': exports.LogLevel.SILENT
-  	};
-  	/**
-  	 * The default log level
-  	 */
-  	const defaultLogLevel = exports.LogLevel.INFO;
-  	/**
-  	 * By default, `console.debug` is not displayed in the developer console (in
-  	 * chrome). To avoid forcing users to have to opt-in to these logs twice
-  	 * (i.e. once for firebase, and once in the console), we are sending `DEBUG`
-  	 * logs to the `console.log` function.
-  	 */
-  	const ConsoleMethod = {
-  	    [exports.LogLevel.DEBUG]: 'log',
-  	    [exports.LogLevel.VERBOSE]: 'log',
-  	    [exports.LogLevel.INFO]: 'info',
-  	    [exports.LogLevel.WARN]: 'warn',
-  	    [exports.LogLevel.ERROR]: 'error'
-  	};
-  	/**
-  	 * The default log handler will forward DEBUG, VERBOSE, INFO, WARN, and ERROR
-  	 * messages on to their corresponding console counterparts (if the log method
-  	 * is supported by the current log level)
-  	 */
-  	const defaultLogHandler = (instance, logType, ...args) => {
-  	    if (logType < instance.logLevel) {
-  	        return;
-  	    }
-  	    const now = new Date().toISOString();
-  	    const method = ConsoleMethod[logType];
-  	    if (method) {
-  	        console[method](`[${now}]  ${instance.name}:`, ...args);
-  	    }
-  	    else {
-  	        throw new Error(`Attempted to log a message with an invalid logType (value: ${logType})`);
-  	    }
-  	};
-  	class Logger {
-  	    /**
-  	     * Gives you an instance of a Logger to capture messages according to
-  	     * Firebase's logging scheme.
-  	     *
-  	     * @param name The name that the logs will be associated with
-  	     */
-  	    constructor(name) {
-  	        this.name = name;
-  	        /**
-  	         * The log level of the given Logger instance.
-  	         */
-  	        this._logLevel = defaultLogLevel;
-  	        /**
-  	         * The main (internal) log handler for the Logger instance.
-  	         * Can be set to a new function in internal package code but not by user.
-  	         */
-  	        this._logHandler = defaultLogHandler;
-  	        /**
-  	         * The optional, additional, user-defined log handler for the Logger instance.
-  	         */
-  	        this._userLogHandler = null;
-  	        /**
-  	         * Capture the current instance for later use
-  	         */
-  	        instances.push(this);
-  	    }
-  	    get logLevel() {
-  	        return this._logLevel;
-  	    }
-  	    set logLevel(val) {
-  	        if (!(val in exports.LogLevel)) {
-  	            throw new TypeError(`Invalid value "${val}" assigned to \`logLevel\``);
-  	        }
-  	        this._logLevel = val;
-  	    }
-  	    // Workaround for setter/getter having to be the same type.
-  	    setLogLevel(val) {
-  	        this._logLevel = typeof val === 'string' ? levelStringToEnum[val] : val;
-  	    }
-  	    get logHandler() {
-  	        return this._logHandler;
-  	    }
-  	    set logHandler(val) {
-  	        if (typeof val !== 'function') {
-  	            throw new TypeError('Value assigned to `logHandler` must be a function');
-  	        }
-  	        this._logHandler = val;
-  	    }
-  	    get userLogHandler() {
-  	        return this._userLogHandler;
-  	    }
-  	    set userLogHandler(val) {
-  	        this._userLogHandler = val;
-  	    }
-  	    /**
-  	     * The functions below are all based on the `console` interface
-  	     */
-  	    debug(...args) {
-  	        this._userLogHandler && this._userLogHandler(this, exports.LogLevel.DEBUG, ...args);
-  	        this._logHandler(this, exports.LogLevel.DEBUG, ...args);
-  	    }
-  	    log(...args) {
-  	        this._userLogHandler &&
-  	            this._userLogHandler(this, exports.LogLevel.VERBOSE, ...args);
-  	        this._logHandler(this, exports.LogLevel.VERBOSE, ...args);
-  	    }
-  	    info(...args) {
-  	        this._userLogHandler && this._userLogHandler(this, exports.LogLevel.INFO, ...args);
-  	        this._logHandler(this, exports.LogLevel.INFO, ...args);
-  	    }
-  	    warn(...args) {
-  	        this._userLogHandler && this._userLogHandler(this, exports.LogLevel.WARN, ...args);
-  	        this._logHandler(this, exports.LogLevel.WARN, ...args);
-  	    }
-  	    error(...args) {
-  	        this._userLogHandler && this._userLogHandler(this, exports.LogLevel.ERROR, ...args);
-  	        this._logHandler(this, exports.LogLevel.ERROR, ...args);
-  	    }
-  	}
-  	function setLogLevel(level) {
-  	    instances.forEach(inst => {
-  	        inst.setLogLevel(level);
-  	    });
-  	}
-  	function setUserLogHandler(logCallback, options) {
-  	    for (const instance of instances) {
-  	        let customLogLevel = null;
-  	        if (options && options.level) {
-  	            customLogLevel = levelStringToEnum[options.level];
-  	        }
-  	        if (logCallback === null) {
-  	            instance.userLogHandler = null;
-  	        }
-  	        else {
-  	            instance.userLogHandler = (instance, level, ...args) => {
-  	                const message = args
-  	                    .map(arg => {
-  	                    if (arg == null) {
-  	                        return null;
-  	                    }
-  	                    else if (typeof arg === 'string') {
-  	                        return arg;
-  	                    }
-  	                    else if (typeof arg === 'number' || typeof arg === 'boolean') {
-  	                        return arg.toString();
-  	                    }
-  	                    else if (arg instanceof Error) {
-  	                        return arg.message;
-  	                    }
-  	                    else {
-  	                        try {
-  	                            return JSON.stringify(arg);
-  	                        }
-  	                        catch (ignored) {
-  	                            return null;
-  	                        }
-  	                    }
-  	                })
-  	                    .filter(arg => arg)
-  	                    .join(' ');
-  	                if (level >= (customLogLevel !== null && customLogLevel !== void 0 ? customLogLevel : instance.logLevel)) {
-  	                    logCallback({
-  	                        level: exports.LogLevel[level].toLowerCase(),
-  	                        message,
-  	                        args,
-  	                        type: instance.name
-  	                    });
-  	                }
-  	            };
-  	        }
-  	    }
-  	}
+  		Object.defineProperty(exports, '__esModule', { value: true });
 
-  	exports.Logger = Logger;
-  	exports.setLogLevel = setLogLevel;
-  	exports.setUserLogHandler = setUserLogHandler;
-  	
-  } (index_cjs));
+  		/**
+  		 * @license
+  		 * Copyright 2017 Google LLC
+  		 *
+  		 * Licensed under the Apache License, Version 2.0 (the "License");
+  		 * you may not use this file except in compliance with the License.
+  		 * You may obtain a copy of the License at
+  		 *
+  		 *   http://www.apache.org/licenses/LICENSE-2.0
+  		 *
+  		 * Unless required by applicable law or agreed to in writing, software
+  		 * distributed under the License is distributed on an "AS IS" BASIS,
+  		 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  		 * See the License for the specific language governing permissions and
+  		 * limitations under the License.
+  		 */
+  		/**
+  		 * A container for all of the Logger instances
+  		 */
+  		const instances = [];
+  		/**
+  		 * The JS SDK supports 5 log levels and also allows a user the ability to
+  		 * silence the logs altogether.
+  		 *
+  		 * The order is a follows:
+  		 * DEBUG < VERBOSE < INFO < WARN < ERROR
+  		 *
+  		 * All of the log types above the current log level will be captured (i.e. if
+  		 * you set the log level to `INFO`, errors will still be logged, but `DEBUG` and
+  		 * `VERBOSE` logs will not)
+  		 */
+  		exports.LogLevel = undefined;
+  		(function (LogLevel) {
+  		    LogLevel[LogLevel["DEBUG"] = 0] = "DEBUG";
+  		    LogLevel[LogLevel["VERBOSE"] = 1] = "VERBOSE";
+  		    LogLevel[LogLevel["INFO"] = 2] = "INFO";
+  		    LogLevel[LogLevel["WARN"] = 3] = "WARN";
+  		    LogLevel[LogLevel["ERROR"] = 4] = "ERROR";
+  		    LogLevel[LogLevel["SILENT"] = 5] = "SILENT";
+  		})(exports.LogLevel || (exports.LogLevel = {}));
+  		const levelStringToEnum = {
+  		    'debug': exports.LogLevel.DEBUG,
+  		    'verbose': exports.LogLevel.VERBOSE,
+  		    'info': exports.LogLevel.INFO,
+  		    'warn': exports.LogLevel.WARN,
+  		    'error': exports.LogLevel.ERROR,
+  		    'silent': exports.LogLevel.SILENT
+  		};
+  		/**
+  		 * The default log level
+  		 */
+  		const defaultLogLevel = exports.LogLevel.INFO;
+  		/**
+  		 * By default, `console.debug` is not displayed in the developer console (in
+  		 * chrome). To avoid forcing users to have to opt-in to these logs twice
+  		 * (i.e. once for firebase, and once in the console), we are sending `DEBUG`
+  		 * logs to the `console.log` function.
+  		 */
+  		const ConsoleMethod = {
+  		    [exports.LogLevel.DEBUG]: 'log',
+  		    [exports.LogLevel.VERBOSE]: 'log',
+  		    [exports.LogLevel.INFO]: 'info',
+  		    [exports.LogLevel.WARN]: 'warn',
+  		    [exports.LogLevel.ERROR]: 'error'
+  		};
+  		/**
+  		 * The default log handler will forward DEBUG, VERBOSE, INFO, WARN, and ERROR
+  		 * messages on to their corresponding console counterparts (if the log method
+  		 * is supported by the current log level)
+  		 */
+  		const defaultLogHandler = (instance, logType, ...args) => {
+  		    if (logType < instance.logLevel) {
+  		        return;
+  		    }
+  		    const now = new Date().toISOString();
+  		    const method = ConsoleMethod[logType];
+  		    if (method) {
+  		        console[method](`[${now}]  ${instance.name}:`, ...args);
+  		    }
+  		    else {
+  		        throw new Error(`Attempted to log a message with an invalid logType (value: ${logType})`);
+  		    }
+  		};
+  		class Logger {
+  		    /**
+  		     * Gives you an instance of a Logger to capture messages according to
+  		     * Firebase's logging scheme.
+  		     *
+  		     * @param name The name that the logs will be associated with
+  		     */
+  		    constructor(name) {
+  		        this.name = name;
+  		        /**
+  		         * The log level of the given Logger instance.
+  		         */
+  		        this._logLevel = defaultLogLevel;
+  		        /**
+  		         * The main (internal) log handler for the Logger instance.
+  		         * Can be set to a new function in internal package code but not by user.
+  		         */
+  		        this._logHandler = defaultLogHandler;
+  		        /**
+  		         * The optional, additional, user-defined log handler for the Logger instance.
+  		         */
+  		        this._userLogHandler = null;
+  		        /**
+  		         * Capture the current instance for later use
+  		         */
+  		        instances.push(this);
+  		    }
+  		    get logLevel() {
+  		        return this._logLevel;
+  		    }
+  		    set logLevel(val) {
+  		        if (!(val in exports.LogLevel)) {
+  		            throw new TypeError(`Invalid value "${val}" assigned to \`logLevel\``);
+  		        }
+  		        this._logLevel = val;
+  		    }
+  		    // Workaround for setter/getter having to be the same type.
+  		    setLogLevel(val) {
+  		        this._logLevel = typeof val === 'string' ? levelStringToEnum[val] : val;
+  		    }
+  		    get logHandler() {
+  		        return this._logHandler;
+  		    }
+  		    set logHandler(val) {
+  		        if (typeof val !== 'function') {
+  		            throw new TypeError('Value assigned to `logHandler` must be a function');
+  		        }
+  		        this._logHandler = val;
+  		    }
+  		    get userLogHandler() {
+  		        return this._userLogHandler;
+  		    }
+  		    set userLogHandler(val) {
+  		        this._userLogHandler = val;
+  		    }
+  		    /**
+  		     * The functions below are all based on the `console` interface
+  		     */
+  		    debug(...args) {
+  		        this._userLogHandler && this._userLogHandler(this, exports.LogLevel.DEBUG, ...args);
+  		        this._logHandler(this, exports.LogLevel.DEBUG, ...args);
+  		    }
+  		    log(...args) {
+  		        this._userLogHandler &&
+  		            this._userLogHandler(this, exports.LogLevel.VERBOSE, ...args);
+  		        this._logHandler(this, exports.LogLevel.VERBOSE, ...args);
+  		    }
+  		    info(...args) {
+  		        this._userLogHandler && this._userLogHandler(this, exports.LogLevel.INFO, ...args);
+  		        this._logHandler(this, exports.LogLevel.INFO, ...args);
+  		    }
+  		    warn(...args) {
+  		        this._userLogHandler && this._userLogHandler(this, exports.LogLevel.WARN, ...args);
+  		        this._logHandler(this, exports.LogLevel.WARN, ...args);
+  		    }
+  		    error(...args) {
+  		        this._userLogHandler && this._userLogHandler(this, exports.LogLevel.ERROR, ...args);
+  		        this._logHandler(this, exports.LogLevel.ERROR, ...args);
+  		    }
+  		}
+  		function setLogLevel(level) {
+  		    instances.forEach(inst => {
+  		        inst.setLogLevel(level);
+  		    });
+  		}
+  		function setUserLogHandler(logCallback, options) {
+  		    for (const instance of instances) {
+  		        let customLogLevel = null;
+  		        if (options && options.level) {
+  		            customLogLevel = levelStringToEnum[options.level];
+  		        }
+  		        if (logCallback === null) {
+  		            instance.userLogHandler = null;
+  		        }
+  		        else {
+  		            instance.userLogHandler = (instance, level, ...args) => {
+  		                const message = args
+  		                    .map(arg => {
+  		                    if (arg == null) {
+  		                        return null;
+  		                    }
+  		                    else if (typeof arg === 'string') {
+  		                        return arg;
+  		                    }
+  		                    else if (typeof arg === 'number' || typeof arg === 'boolean') {
+  		                        return arg.toString();
+  		                    }
+  		                    else if (arg instanceof Error) {
+  		                        return arg.message;
+  		                    }
+  		                    else {
+  		                        try {
+  		                            return JSON.stringify(arg);
+  		                        }
+  		                        catch (ignored) {
+  		                            return null;
+  		                        }
+  		                    }
+  		                })
+  		                    .filter(arg => arg)
+  		                    .join(' ');
+  		                if (level >= (customLogLevel !== null && customLogLevel !== undefined ? customLogLevel : instance.logLevel)) {
+  		                    logCallback({
+  		                        level: exports.LogLevel[level].toLowerCase(),
+  		                        message,
+  		                        args,
+  		                        type: instance.name
+  		                    });
+  		                }
+  		            };
+  		        }
+  		    }
+  		}
+
+  		exports.Logger = Logger;
+  		exports.setLogLevel = setLogLevel;
+  		exports.setUserLogHandler = setUserLogHandler;
+  		
+  	} (index_cjs));
+  	return index_cjs;
+  }
+
+  var index_cjsExports = requireIndex_cjs();
 
   const instanceOfAny = (object, constructors) => constructors.some((c) => object instanceof c);
 
@@ -1573,11 +1378,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */
   function isVersionServiceProvider(provider) {
       const component = provider.getComponent();
-      return (component === null || component === void 0 ? void 0 : component.type) === "VERSION" /* ComponentType.VERSION */;
+      return (component === null || component === undefined ? undefined : component.type) === "VERSION" /* ComponentType.VERSION */;
   }
 
   const name$q = "@firebase/app";
-  const version$1 = "0.10.15";
+  const version$1 = "0.10.18";
 
   /**
    * @license
@@ -1595,7 +1400,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */
-  const logger = new index_cjs.Logger('@firebase/app');
+  const logger = new index_cjsExports.Logger('@firebase/app');
 
   const name$p = "@firebase/app-compat";
 
@@ -1648,7 +1453,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   const name$1 = "@firebase/firestore-compat";
 
   const name$r = "firebase";
-  const version$2 = "11.0.1";
+  const version$2 = "11.2.0";
 
   /**
    * @license
@@ -1699,7 +1504,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       [name$3]: 'fire-fst',
       [name$1]: 'fire-fst-compat',
       [name$2]: 'fire-vertex',
-      'fire-js': 'fire-js',
+      'fire-js': 'fire-js', // Platform identifier for JS SDK.
       [name$r]: 'fire-js-all'
   };
 
@@ -2001,7 +1806,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       var _a;
       // TODO: We can use this check to whitelist strings when/if we set up
       // a good whitelist system.
-      let library = (_a = PLATFORM_LOG_STRING[libraryKeyOrName]) !== null && _a !== void 0 ? _a : libraryKeyOrName;
+      let library = (_a = PLATFORM_LOG_STRING[libraryKeyOrName]) !== null && _a !== undefined ? _a : libraryKeyOrName;
       if (variant) {
           library += `-${variant}`;
       }
@@ -2092,7 +1897,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           else {
               const idbGetError = ERROR_FACTORY.create("idb-get" /* AppError.IDB_GET */, {
-                  originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
+                  originalErrorMessage: e === null || e === undefined ? undefined : e.message
               });
               logger.warn(idbGetError.message);
           }
@@ -2112,7 +1917,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           else {
               const idbGetError = ERROR_FACTORY.create("idb-set" /* AppError.IDB_WRITE */, {
-                  originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
+                  originalErrorMessage: e === null || e === undefined ? undefined : e.message
               });
               logger.warn(idbGetError.message);
           }
@@ -2323,7 +2128,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           else {
               const idbHeartbeatObject = await readHeartbeatsFromIndexedDB(this.app);
-              if (idbHeartbeatObject === null || idbHeartbeatObject === void 0 ? void 0 : idbHeartbeatObject.heartbeats) {
+              if (idbHeartbeatObject === null || idbHeartbeatObject === undefined ? undefined : idbHeartbeatObject.heartbeats) {
                   return idbHeartbeatObject;
               }
               else {
@@ -2341,7 +2146,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           else {
               const existingHeartbeatsObject = await this.read();
               return writeHeartbeatsToIndexedDB(this.app, {
-                  lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
+                  lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== undefined ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
                   heartbeats: heartbeatsObject.heartbeats
               });
           }
@@ -2356,7 +2161,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           else {
               const existingHeartbeatsObject = await this.read();
               return writeHeartbeatsToIndexedDB(this.app, {
-                  lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
+                  lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== undefined ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
                   heartbeats: [
                       ...existingHeartbeatsObject.heartbeats,
                       ...heartbeatsObject.heartbeats
@@ -2413,7 +2218,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   registerCoreComponents('');
 
   var name = "firebase";
-  var version = "11.0.1";
+  var version = "11.2.0";
 
   /**
    * @license
@@ -2432,6 +2237,50 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * limitations under the License.
    */
   registerVersion(name, version, 'app');
+
+  var bloom_blob_es2018 = {};
+
+  /** @license
+  Copyright The Closure Library Authors.
+  SPDX-License-Identifier: Apache-2.0
+  */
+
+  var hasRequiredBloom_blob_es2018;
+
+  function requireBloom_blob_es2018 () {
+  	if (hasRequiredBloom_blob_es2018) return bloom_blob_es2018;
+  	hasRequiredBloom_blob_es2018 = 1;
+  	(function() {var h;/** @license
+
+  	 Copyright The Closure Library Authors.
+  	 SPDX-License-Identifier: Apache-2.0
+  	*/
+  	function k(f,a){function c(){}c.prototype=a.prototype;f.D=a.prototype;f.prototype=new c;f.prototype.constructor=f;f.C=function(d,e,g){for(var b=Array(arguments.length-2),r=2;r<arguments.length;r++)b[r-2]=arguments[r];return a.prototype[e].apply(d,b)};}function l(){this.blockSize=-1;}function m(){this.blockSize=-1;this.blockSize=64;this.g=Array(4);this.B=Array(this.blockSize);this.o=this.h=0;this.s();}k(m,l);m.prototype.s=function(){this.g[0]=1732584193;this.g[1]=4023233417;this.g[2]=2562383102;this.g[3]=271733878;this.o=this.h=0;};
+  	function n(f,a,c){c||(c=0);var d=Array(16);if("string"===typeof a)for(var e=0;16>e;++e)d[e]=a.charCodeAt(c++)|a.charCodeAt(c++)<<8|a.charCodeAt(c++)<<16|a.charCodeAt(c++)<<24;else for(e=0;16>e;++e)d[e]=a[c++]|a[c++]<<8|a[c++]<<16|a[c++]<<24;a=f.g[0];c=f.g[1];e=f.g[2];var g=f.g[3];var b=a+(g^c&(e^g))+d[0]+3614090360&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[1]+3905402710&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+d[2]+606105819&4294967295;e=g+(b<<17&4294967295|b>>>15);
+  	b=c+(a^e&(g^a))+d[3]+3250441966&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+d[4]+4118548399&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[5]+1200080426&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+d[6]+2821735955&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+d[7]+4249261313&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+d[8]+1770035416&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[9]+2336552879&4294967295;g=a+(b<<12&4294967295|
+  	b>>>20);b=e+(c^g&(a^c))+d[10]+4294925233&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+d[11]+2304563134&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+d[12]+1804603682&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[13]+4254626195&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+d[14]+2792965006&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+d[15]+1236535329&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(e^g&(c^e))+d[1]+4129170786&4294967295;a=c+(b<<
+  	5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[6]+3225465664&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[11]+643717713&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[0]+3921069994&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+d[5]+3593408605&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[10]+38016083&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[15]+3634488961&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[4]+3889429448&4294967295;c=
+  	e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+d[9]+568446438&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[14]+3275163606&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[3]+4107603335&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[8]+1163531501&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+d[13]+2850285829&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[2]+4243563512&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[7]+1735328473&4294967295;
+  	e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[12]+2368359562&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(c^e^g)+d[5]+4294588738&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[8]+2272392833&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+d[11]+1839030562&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[14]+4259657740&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+d[1]+2763975236&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[4]+1272893353&4294967295;g=a+(b<<11&4294967295|
+  	b>>>21);b=e+(g^a^c)+d[7]+4139469664&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[10]+3200236656&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+d[13]+681279174&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[0]+3936430074&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+d[3]+3572445317&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[6]+76029189&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+d[9]+3654602809&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[12]+
+  	3873151461&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+d[15]+530742520&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[2]+3299628645&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(e^(c|~g))+d[0]+4096336452&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[7]+1126891415&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[14]+2878612391&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[5]+4237533241&4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[12]+1700485571&
+  	4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[3]+2399980690&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[10]+4293915773&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[1]+2240044497&4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[8]+1873313359&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[15]+4264355552&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[6]+2734768916&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[13]+1309151649&
+  	4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[4]+4149444226&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[11]+3174756917&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[2]+718787259&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[9]+3951481745&4294967295;f.g[0]=f.g[0]+a&4294967295;f.g[1]=f.g[1]+(e+(b<<21&4294967295|b>>>11))&4294967295;f.g[2]=f.g[2]+e&4294967295;f.g[3]=f.g[3]+g&4294967295;}
+  	m.prototype.u=function(f,a){ undefined===a&&(a=f.length);for(var c=a-this.blockSize,d=this.B,e=this.h,g=0;g<a;){if(0==e)for(;g<=c;)n(this,f,g),g+=this.blockSize;if("string"===typeof f)for(;g<a;){if(d[e++]=f.charCodeAt(g++),e==this.blockSize){n(this,d);e=0;break}}else for(;g<a;)if(d[e++]=f[g++],e==this.blockSize){n(this,d);e=0;break}}this.h=e;this.o+=a;};
+  	m.prototype.v=function(){var f=Array((56>this.h?this.blockSize:2*this.blockSize)-this.h);f[0]=128;for(var a=1;a<f.length-8;++a)f[a]=0;var c=8*this.o;for(a=f.length-8;a<f.length;++a)f[a]=c&255,c/=256;this.u(f);f=Array(16);for(a=c=0;4>a;++a)for(var d=0;32>d;d+=8)f[c++]=this.g[a]>>>d&255;return f};function p(f,a){var c=q;return Object.prototype.hasOwnProperty.call(c,f)?c[f]:c[f]=a(f)}function t(f,a){this.h=a;for(var c=[],d=true,e=f.length-1;0<=e;e--){var g=f[e]|0;d&&g==a||(c[e]=g,d=false);}this.g=c;}var q={};function u(f){return  -128<=f&&128>f?p(f,function(a){return new t([a|0],0>a?-1:0)}):new t([f|0],0>f?-1:0)}function v(f){if(isNaN(f)||!isFinite(f))return w;if(0>f)return x(v(-f));for(var a=[],c=1,d=0;f>=c;d++)a[d]=f/c|0,c*=4294967296;return new t(a,0)}
+  	function y(f,a){if(0==f.length)throw Error("number format error: empty string");a=a||10;if(2>a||36<a)throw Error("radix out of range: "+a);if("-"==f.charAt(0))return x(y(f.substring(1),a));if(0<=f.indexOf("-"))throw Error('number format error: interior "-" character');for(var c=v(Math.pow(a,8)),d=w,e=0;e<f.length;e+=8){var g=Math.min(8,f.length-e),b=parseInt(f.substring(e,e+g),a);8>g?(g=v(Math.pow(a,g)),d=d.j(g).add(v(b))):(d=d.j(c),d=d.add(v(b)));}return d}var w=u(0),z=u(1),A=u(16777216);h=t.prototype;
+  	h.m=function(){if(B(this))return -x(this).m();for(var f=0,a=1,c=0;c<this.g.length;c++){var d=this.i(c);f+=(0<=d?d:4294967296+d)*a;a*=4294967296;}return f};h.toString=function(f){f=f||10;if(2>f||36<f)throw Error("radix out of range: "+f);if(C(this))return "0";if(B(this))return "-"+x(this).toString(f);for(var a=v(Math.pow(f,6)),c=this,d="";;){var e=D(c,a).g;c=F(c,e.j(a));var g=((0<c.g.length?c.g[0]:c.h)>>>0).toString(f);c=e;if(C(c))return g+d;for(;6>g.length;)g="0"+g;d=g+d;}};
+  	h.i=function(f){return 0>f?0:f<this.g.length?this.g[f]:this.h};function C(f){if(0!=f.h)return  false;for(var a=0;a<f.g.length;a++)if(0!=f.g[a])return  false;return  true}function B(f){return  -1==f.h}h.l=function(f){f=F(this,f);return B(f)?-1:C(f)?0:1};function x(f){for(var a=f.g.length,c=[],d=0;d<a;d++)c[d]=~f.g[d];return (new t(c,~f.h)).add(z)}h.abs=function(){return B(this)?x(this):this};
+  	h.add=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0,e=0;e<=a;e++){var g=d+(this.i(e)&65535)+(f.i(e)&65535),b=(g>>>16)+(this.i(e)>>>16)+(f.i(e)>>>16);d=b>>>16;g&=65535;b&=65535;c[e]=b<<16|g;}return new t(c,c[c.length-1]&-2147483648?-1:0)};function F(f,a){return f.add(x(a))}
+  	h.j=function(f){if(C(this)||C(f))return w;if(B(this))return B(f)?x(this).j(x(f)):x(x(this).j(f));if(B(f))return x(this.j(x(f)));if(0>this.l(A)&&0>f.l(A))return v(this.m()*f.m());for(var a=this.g.length+f.g.length,c=[],d=0;d<2*a;d++)c[d]=0;for(d=0;d<this.g.length;d++)for(var e=0;e<f.g.length;e++){var g=this.i(d)>>>16,b=this.i(d)&65535,r=f.i(e)>>>16,E=f.i(e)&65535;c[2*d+2*e]+=b*E;G(c,2*d+2*e);c[2*d+2*e+1]+=g*E;G(c,2*d+2*e+1);c[2*d+2*e+1]+=b*r;G(c,2*d+2*e+1);c[2*d+2*e+2]+=g*r;G(c,2*d+2*e+2);}for(d=0;d<
+  	a;d++)c[d]=c[2*d+1]<<16|c[2*d];for(d=a;d<2*a;d++)c[d]=0;return new t(c,0)};function G(f,a){for(;(f[a]&65535)!=f[a];)f[a+1]+=f[a]>>>16,f[a]&=65535,a++;}function H(f,a){this.g=f;this.h=a;}
+  	function D(f,a){if(C(a))throw Error("division by zero");if(C(f))return new H(w,w);if(B(f))return a=D(x(f),a),new H(x(a.g),x(a.h));if(B(a))return a=D(f,x(a)),new H(x(a.g),a.h);if(30<f.g.length){if(B(f)||B(a))throw Error("slowDivide_ only works with positive integers.");for(var c=z,d=a;0>=d.l(f);)c=I(c),d=I(d);var e=J(c,1),g=J(d,1);d=J(d,2);for(c=J(c,2);!C(d);){var b=g.add(d);0>=b.l(f)&&(e=e.add(c),g=b);d=J(d,1);c=J(c,1);}a=F(f,e.j(a));return new H(e,a)}for(e=w;0<=f.l(a);){c=Math.max(1,Math.floor(f.m()/
+  	a.m()));d=Math.ceil(Math.log(c)/Math.LN2);d=48>=d?1:Math.pow(2,d-48);g=v(c);for(b=g.j(a);B(b)||0<b.l(f);)c-=d,g=v(c),b=g.j(a);C(g)&&(g=z);e=e.add(g);f=F(f,b);}return new H(e,f)}h.A=function(f){return D(this,f).h};h.and=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0;d<a;d++)c[d]=this.i(d)&f.i(d);return new t(c,this.h&f.h)};h.or=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0;d<a;d++)c[d]=this.i(d)|f.i(d);return new t(c,this.h|f.h)};
+  	h.xor=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0;d<a;d++)c[d]=this.i(d)^f.i(d);return new t(c,this.h^f.h)};function I(f){for(var a=f.g.length+1,c=[],d=0;d<a;d++)c[d]=f.i(d)<<1|f.i(d-1)>>>31;return new t(c,f.h)}function J(f,a){var c=a>>5;a%=32;for(var d=f.g.length-c,e=[],g=0;g<d;g++)e[g]=0<a?f.i(g+c)>>>a|f.i(g+c+1)<<32-a:f.i(g+c);return new t(e,f.h)}m.prototype.digest=m.prototype.v;m.prototype.reset=m.prototype.s;m.prototype.update=m.prototype.u;bloom_blob_es2018.Md5=m;t.prototype.add=t.prototype.add;t.prototype.multiply=t.prototype.j;t.prototype.modulo=t.prototype.A;t.prototype.compare=t.prototype.l;t.prototype.toNumber=t.prototype.m;t.prototype.toString=t.prototype.toString;t.prototype.getBits=t.prototype.i;t.fromNumber=v;t.fromString=y;bloom_blob_es2018.Integer=t;}).apply( typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : typeof self !== 'undefined' ? self  : typeof window !== 'undefined' ? window  : {});
+  	return bloom_blob_es2018;
+  }
+
+  var bloom_blob_es2018Exports = requireBloom_blob_es2018();
 
   /**
    * @license
@@ -2493,7 +2342,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */
-  let d = "11.0.0";
+  let f = "11.2.0";
 
   /**
    * @license
@@ -2511,28 +2360,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */
-  const f = new index_cjs.Logger("@firebase/firestore");
+  const E = new index_cjsExports.Logger("@firebase/firestore");
 
   function __PRIVATE_logDebug(t, ...e) {
-      if (f.logLevel <= index_cjs.LogLevel.DEBUG) {
+      if (E.logLevel <= index_cjsExports.LogLevel.DEBUG) {
           const r = e.map(__PRIVATE_argToString);
-          f.debug(`Firestore (${d}): ${t}`, ...r);
+          E.debug(`Firestore (${f}): ${t}`, ...r);
       }
   }
 
   function __PRIVATE_logError(t, ...e) {
-      if (f.logLevel <= index_cjs.LogLevel.ERROR) {
+      if (E.logLevel <= index_cjsExports.LogLevel.ERROR) {
           const r = e.map(__PRIVATE_argToString);
-          f.error(`Firestore (${d}): ${t}`, ...r);
+          E.error(`Firestore (${f}): ${t}`, ...r);
       }
   }
 
   /**
    * @internal
    */ function __PRIVATE_logWarn(t, ...e) {
-      if (f.logLevel <= index_cjs.LogLevel.WARN) {
+      if (E.logLevel <= index_cjsExports.LogLevel.WARN) {
           const r = e.map(__PRIVATE_argToString);
-          f.warn(`Firestore (${d}): ${t}`, ...r);
+          E.warn(`Firestore (${f}): ${t}`, ...r);
       }
   }
 
@@ -2593,7 +2442,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */ function fail(t = "Unexpected state") {
       // Log the failure in addition to throw an exception, just in case the
       // exception is swallowed.
-      const e = `FIRESTORE (${d}) INTERNAL ASSERTION FAILED: ` + t;
+      const e = `FIRESTORE (${f}) INTERNAL ASSERTION FAILED: ` + t;
       // NOTE: We don't use FirestoreError here because these are internal failures
       // that cannot be handled by the user. (Also it would create a circular
       // dependency between the error and assert modules which doesn't work.)
@@ -2633,7 +2482,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    * See the License for the specific language governing permissions and
    * limitations under the License.
-   */ const E = "ok", m = "cancelled", A = "unknown", T = "invalid-argument", R = "deadline-exceeded", P = "not-found", I = "permission-denied", p = "unauthenticated", y = "resource-exhausted", w = "failed-precondition", g = "aborted", F = "out-of-range", v = "unimplemented", D = "internal", b = "unavailable";
+   */ const m = "ok", A = "cancelled", T = "unknown", P = "invalid-argument", R = "deadline-exceeded", I = "not-found", p = "permission-denied", y = "unauthenticated", w = "resource-exhausted", g = "failed-precondition", F = "aborted", v = "out-of-range", D = "unimplemented", b = "internal", C = "unavailable";
 
   /** An error returned by a Firestore operation. */ class FirestoreError extends FirebaseError {
       /** @hideconstructor */
@@ -2869,7 +2718,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */
   class BasePath {
       constructor(t, e, r) {
-          void 0 === e ? e = 0 : e > t.length && fail(), void 0 === r ? r = t.length - e : r > t.length - e && fail(), 
+          undefined === e ? e = 0 : e > t.length && fail(), undefined === r ? r = t.length - e : r > t.length - e && fail(), 
           this.segments = t, this.offset = e, this.len = r;
       }
       get length() {
@@ -2888,7 +2737,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           return this.offset + this.length;
       }
       popFirst(t) {
-          return t = void 0 === t ? 1 : t, this.construct(this.segments, this.offset + t, this.length - t);
+          return t = undefined === t ? 1 : t, this.construct(this.segments, this.offset + t, this.length - t);
       }
       popLast() {
           return this.construct(this.segments, this.offset, this.length - 1);
@@ -2906,14 +2755,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           return 0 === this.length;
       }
       isPrefixOf(t) {
-          if (t.length < this.length) return !1;
-          for (let e = 0; e < this.length; e++) if (this.get(e) !== t.get(e)) return !1;
-          return !0;
+          if (t.length < this.length) return false;
+          for (let e = 0; e < this.length; e++) if (this.get(e) !== t.get(e)) return false;
+          return true;
       }
       isImmediateParentOf(t) {
-          if (this.length + 1 !== t.length) return !1;
-          for (let e = 0; e < this.length; e++) if (this.get(e) !== t.get(e)) return !1;
-          return !0;
+          if (this.length + 1 !== t.length) return false;
+          for (let e = 0; e < this.length; e++) if (this.get(e) !== t.get(e)) return false;
+          return true;
       }
       forEach(t) {
           for (let e = this.offset, r = this.limit(); e < r; e++) t(this.segments[e]);
@@ -2921,14 +2770,30 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       toArray() {
           return this.segments.slice(this.offset, this.limit());
       }
-      static comparator(t, e) {
+      /**
+       * Compare 2 paths segment by segment, prioritizing numeric IDs
+       * (e.g., "__id123__") in numeric ascending order, followed by string
+       * segments in lexicographical order.
+       */    static comparator(t, e) {
           const r = Math.min(t.length, e.length);
           for (let n = 0; n < r; n++) {
-              const r = t.get(n), i = e.get(n);
-              if (r < i) return -1;
-              if (r > i) return 1;
+              const r = BasePath.compareSegments(t.get(n), e.get(n));
+              if (0 !== r) return r;
           }
-          return t.length < e.length ? -1 : t.length > e.length ? 1 : 0;
+          return Math.sign(t.length - e.length);
+      }
+      static compareSegments(t, e) {
+          const r = BasePath.isNumericId(t), n = BasePath.isNumericId(e);
+          return r && !n ? -1 : !r && n ? 1 : r && n ? BasePath.extractNumericId(t).compare(BasePath.extractNumericId(e)) : 
+          // both non-numeric
+          t < e ? -1 : t > e ? 1 : 0;
+      }
+      // Checks if a segment is a numeric ID (starts with "__id" and ends with "__").
+      static isNumericId(t) {
+          return t.startsWith("__id") && t.endsWith("__");
+      }
+      static extractNumericId(t) {
+          return bloom_blob_es2018Exports.Integer.fromString(t.substring(4, t.length - 2));
       }
   }
 
@@ -2967,7 +2832,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           // for legacy reasons and should not be used frequently).
           const e = [];
           for (const r of t) {
-              if (r.indexOf("//") >= 0) throw new FirestoreError(T, `Invalid segment (${r}). Paths must not contain // in them.`);
+              if (r.indexOf("//") >= 0) throw new FirestoreError(P, `Invalid segment (${r}). Paths must not contain // in them.`);
               // Strip leading and trailing slashed.
                           e.push(...r.split("/").filter((t => t.length > 0)));
           }
@@ -2978,7 +2843,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
   }
 
-  const S = /^[_a-zA-Z][_a-zA-Z0-9]*$/;
+  const N = /^[_a-zA-Z][_a-zA-Z0-9]*$/;
 
   /**
    * A dot-separated path for navigating sub-objects within a document.
@@ -2991,7 +2856,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * Returns true if the string could be used as a segment in a field path
        * without escaping.
        */    static isValidIdentifier(t) {
-          return S.test(t);
+          return N.test(t);
       }
       canonicalString() {
           return this.toArray().map((t => (t = t.replace(/\\/g, "\\\\").replace(/`/g, "\\`"), 
@@ -3023,21 +2888,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           const e = [];
           let r = "", n = 0;
           const __PRIVATE_addCurrentSegment = () => {
-              if (0 === r.length) throw new FirestoreError(T, `Invalid field path (${t}). Paths must not be empty, begin with '.', end with '.', or contain '..'`);
+              if (0 === r.length) throw new FirestoreError(P, `Invalid field path (${t}). Paths must not be empty, begin with '.', end with '.', or contain '..'`);
               e.push(r), r = "";
           };
-          let i = !1;
+          let i = false;
           for (;n < t.length; ) {
               const e = t[n];
               if ("\\" === e) {
-                  if (n + 1 === t.length) throw new FirestoreError(T, "Path has trailing escape character: " + t);
+                  if (n + 1 === t.length) throw new FirestoreError(P, "Path has trailing escape character: " + t);
                   const e = t[n + 1];
-                  if ("\\" !== e && "." !== e && "`" !== e) throw new FirestoreError(T, "Path has invalid escape sequence: " + t);
+                  if ("\\" !== e && "." !== e && "`" !== e) throw new FirestoreError(P, "Path has invalid escape sequence: " + t);
                   r += e, n += 2;
               } else "`" === e ? (i = !i, n++) : "." !== e || i ? (r += e, n++) : (__PRIVATE_addCurrentSegment(), 
               n++);
           }
-          if (__PRIVATE_addCurrentSegment(), i) throw new FirestoreError(T, "Unterminated ` in path: " + t);
+          if (__PRIVATE_addCurrentSegment(), i) throw new FirestoreError(P, "Unterminated ` in path: " + t);
           return new FieldPath$1(e);
       }
       static emptyPath() {
@@ -3126,7 +2991,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */ function __PRIVATE_validateNonEmptyArgument(t, e, r) {
-      if (!r) throw new FirestoreError(T, `Function ${t}() cannot be called with an empty ${e}.`);
+      if (!r) throw new FirestoreError(P, `Function ${t}() cannot be called with an empty ${e}.`);
   }
 
   /**
@@ -3138,7 +3003,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * an even numbers of segments).
    */
   function __PRIVATE_validateDocumentPath(t) {
-      if (!DocumentKey.isDocumentKey(t)) throw new FirestoreError(T, `Invalid document reference. Document references must have an even number of segments, but ${t} has ${t.length}.`);
+      if (!DocumentKey.isDocumentKey(t)) throw new FirestoreError(P, `Invalid document reference. Document references must have an even number of segments, but ${t} has ${t.length}.`);
   }
 
   /**
@@ -3147,7 +3012,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */
   /** Returns a string describing the type / value of the provided input. */
   function __PRIVATE_valueDescription(t) {
-      if (void 0 === t) return "undefined";
+      if (undefined === t) return "undefined";
       if (null === t) return "null";
       if ("string" == typeof t) return t.length > 20 && (t = `${t.substring(0, 20)}...`), 
       JSON.stringify(t);
@@ -3182,10 +3047,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       // Unwrap Compat types
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       t = t._delegate), !(t instanceof e)) {
-          if (e.name === t.constructor.name) throw new FirestoreError(T, "Type does not match the expected instance. Did you pass a reference from a different Firestore SDK?");
+          if (e.name === t.constructor.name) throw new FirestoreError(P, "Type does not match the expected instance. Did you pass a reference from a different Firestore SDK?");
           {
               const r = __PRIVATE_valueDescription(t);
-              throw new FirestoreError(T, `Expected type '${e.name}', but it was: ${r}`);
+              throw new FirestoreError(P, `Expected type '${e.name}', but it was: ${r}`);
           }
       }
       return t;
@@ -3216,7 +3081,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */
   function __PRIVATE_cloneLongPollingOptions(t) {
       const e = {};
-      return void 0 !== t.timeoutSeconds && (e.timeoutSeconds = t.timeoutSeconds), e;
+      return undefined !== t.timeoutSeconds && (e.timeoutSeconds = t.timeoutSeconds), e;
   }
 
   /**
@@ -3238,7 +3103,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   /**
    * The value returned from the most recent invocation of
    * `generateUniqueDebugId()`, or null if it has never been invoked.
-   */ let N = null;
+   */ let O = null;
 
   /**
    * Generates and returns an initial value for `lastUniqueDebugId`.
@@ -3263,9 +3128,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * @return the 10-character generated ID (e.g. "0xa1b2c3d4").
    */
   function __PRIVATE_generateUniqueDebugId() {
-      return null === N ? N = function __PRIVATE_generateInitialUniqueDebugId() {
+      return null === O ? O = function __PRIVATE_generateInitialUniqueDebugId() {
           return 268435456 + Math.round(2147483648 * Math.random());
-      }() : N++, "0x" + N.toString(16);
+      }() : O++, "0x" + O.toString(16);
   }
 
   /** Returns whether the value represents -0. */ function __PRIVATE_isNegativeZero(t) {
@@ -3294,7 +3159,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */
-  const O = {
+  const q = {
       BatchGetDocuments: "batchGet",
       Commit: "commit",
       RunQuery: "runQuery",
@@ -3332,7 +3197,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * are used for reverse lookups from the webchannel stream. Do NOT change the
    * names of these identifiers or change this into a const enum.
    */
-  var q, B;
+  var B, $;
 
   /**
    * Converts an HTTP Status Code to the equivalent error code.
@@ -3342,8 +3207,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    *     Code.UNKNOWN.
    */
   function __PRIVATE_mapCodeFromHttpStatus(t) {
-      if (void 0 === t) return __PRIVATE_logError("RPC_ERROR", "HTTP error has no status"), 
-      A;
+      if (undefined === t) return __PRIVATE_logError("RPC_ERROR", "HTTP error has no status"), 
+      T;
       // The canonical error codes for Google APIs [1] specify mapping onto HTTP
       // status codes but the mapping is not bijective. In each case of ambiguity
       // this function chooses a primary error.
@@ -3353,66 +3218,66 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           switch (t) {
         case 200:
           // OK
-          return E;
+          return m;
 
         case 400:
           // Bad Request
-          return w;
+          return g;
 
           // Other possibilities based on the forward mapping
           // return Code.INVALID_ARGUMENT;
           // return Code.OUT_OF_RANGE;
                 case 401:
           // Unauthorized
-          return p;
+          return y;
 
         case 403:
           // Forbidden
-          return I;
+          return p;
 
         case 404:
           // Not Found
-          return P;
+          return I;
 
         case 409:
           // Conflict
-          return g;
+          return F;
 
           // Other possibilities:
           // return Code.ALREADY_EXISTS;
                 case 416:
           // Range Not Satisfiable
-          return F;
+          return v;
 
         case 429:
           // Too Many Requests
-          return y;
+          return w;
 
         case 499:
           // Client Closed Request
-          return m;
+          return A;
 
         case 500:
           // Internal Server Error
-          return A;
+          return T;
 
           // Other possibilities:
           // return Code.INTERNAL;
           // return Code.DATA_LOSS;
                 case 501:
           // Unimplemented
-          return v;
+          return D;
 
         case 503:
           // Service Unavailable
-          return b;
+          return C;
 
         case 504:
           // Gateway Timeout
           return R;
 
         default:
-          return t >= 200 && t < 300 ? E : t >= 400 && t < 500 ? w : t >= 500 && t < 600 ? D : A;
+          return t >= 200 && t < 300 ? m : t >= 400 && t < 500 ? g : t >= 500 && t < 600 ? b : T;
       }
   }
 
@@ -3435,13 +3300,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   /**
    * A Rest-based connection that relies on the native HTTP stack
    * (e.g. `fetch` or a polyfill).
-   */ (B = q || (q = {}))[B.OK = 0] = "OK", B[B.CANCELLED = 1] = "CANCELLED", B[B.UNKNOWN = 2] = "UNKNOWN", 
-  B[B.INVALID_ARGUMENT = 3] = "INVALID_ARGUMENT", B[B.DEADLINE_EXCEEDED = 4] = "DEADLINE_EXCEEDED", 
-  B[B.NOT_FOUND = 5] = "NOT_FOUND", B[B.ALREADY_EXISTS = 6] = "ALREADY_EXISTS", B[B.PERMISSION_DENIED = 7] = "PERMISSION_DENIED", 
-  B[B.UNAUTHENTICATED = 16] = "UNAUTHENTICATED", B[B.RESOURCE_EXHAUSTED = 8] = "RESOURCE_EXHAUSTED", 
-  B[B.FAILED_PRECONDITION = 9] = "FAILED_PRECONDITION", B[B.ABORTED = 10] = "ABORTED", 
-  B[B.OUT_OF_RANGE = 11] = "OUT_OF_RANGE", B[B.UNIMPLEMENTED = 12] = "UNIMPLEMENTED", 
-  B[B.INTERNAL = 13] = "INTERNAL", B[B.UNAVAILABLE = 14] = "UNAVAILABLE", B[B.DATA_LOSS = 15] = "DATA_LOSS";
+   */ ($ = B || (B = {}))[$.OK = 0] = "OK", $[$.CANCELLED = 1] = "CANCELLED", $[$.UNKNOWN = 2] = "UNKNOWN", 
+  $[$.INVALID_ARGUMENT = 3] = "INVALID_ARGUMENT", $[$.DEADLINE_EXCEEDED = 4] = "DEADLINE_EXCEEDED", 
+  $[$.NOT_FOUND = 5] = "NOT_FOUND", $[$.ALREADY_EXISTS = 6] = "ALREADY_EXISTS", $[$.PERMISSION_DENIED = 7] = "PERMISSION_DENIED", 
+  $[$.UNAUTHENTICATED = 16] = "UNAUTHENTICATED", $[$.RESOURCE_EXHAUSTED = 8] = "RESOURCE_EXHAUSTED", 
+  $[$.FAILED_PRECONDITION = 9] = "FAILED_PRECONDITION", $[$.ABORTED = 10] = "ABORTED", 
+  $[$.OUT_OF_RANGE = 11] = "OUT_OF_RANGE", $[$.UNIMPLEMENTED = 12] = "UNIMPLEMENTED", 
+  $[$.INTERNAL = 13] = "INTERNAL", $[$.UNAVAILABLE = 14] = "UNAVAILABLE", $[$.DATA_LOSS = 15] = "DATA_LOSS";
 
   class __PRIVATE_FetchConnection extends 
   /**
@@ -3449,24 +3314,24 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * HTTP).
    */
   class __PRIVATE_RestConnection {
+      get m() {
+          // Both `invokeRPC()` and `invokeStreamingRPC()` use their `path` arguments to determine
+          // where to run the query, and expect the `request` to NOT specify the "path".
+          return false;
+      }
       constructor(t) {
           this.databaseInfo = t, this.databaseId = t.databaseId;
           const e = t.ssl ? "https" : "http", r = encodeURIComponent(this.databaseId.projectId), n = encodeURIComponent(this.databaseId.database);
-          this.m = e + "://" + t.host, this.A = `projects/${r}/databases/${n}`, this.T = "(default)" === this.databaseId.database ? `project_id=${r}` : `project_id=${r}&database_id=${n}`;
+          this.A = e + "://" + t.host, this.T = `projects/${r}/databases/${n}`, this.P = "(default)" === this.databaseId.database ? `project_id=${r}` : `project_id=${r}&database_id=${n}`;
       }
-      get R() {
-          // Both `invokeRPC()` and `invokeStreamingRPC()` use their `path` arguments to determine
-          // where to run the query, and expect the `request` to NOT specify the "path".
-          return !1;
-      }
-      P(t, e, r, n, i) {
-          const s = __PRIVATE_generateUniqueDebugId(), o = this.V(t, e.toUriEncodedString());
+      R(t, e, r, n, i) {
+          const s = __PRIVATE_generateUniqueDebugId(), o = this.I(t, e.toUriEncodedString());
           __PRIVATE_logDebug("RestConnection", `Sending RPC '${t}' ${s}:`, o, r);
           const a = {
-              "google-cloud-resource-prefix": this.A,
-              "x-goog-request-params": this.T
+              "google-cloud-resource-prefix": this.T,
+              "x-goog-request-params": this.P
           };
-          return this.I(a, n, i), this.p(t, o, a, r).then((e => (__PRIVATE_logDebug("RestConnection", `Received RPC '${t}' ${s}: `, e), 
+          return this.V(a, n, i), this.p(t, o, a, r).then((e => (__PRIVATE_logDebug("RestConnection", `Received RPC '${t}' ${s}: `, e), 
           e)), (e => {
               throw __PRIVATE_logWarn("RestConnection", `RPC '${t}' ${s} failed with error: `, e, "url: ", o, "request:", r), 
               e;
@@ -3475,17 +3340,17 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       g(t, e, r, n, i, s) {
           // The REST API automatically aggregates all of the streamed results, so we
           // can just use the normal invoke() method.
-          return this.P(t, e, r, n, i);
+          return this.R(t, e, r, n, i);
       }
       /**
        * Modifies the headers for a request, adding any authorization token if
        * present and any additional headers for the request.
-       */    I(t, e, r) {
+       */    V(t, e, r) {
           t["X-Goog-Api-Client"] = 
           // SDK_VERSION is updated to different value at runtime depending on the entry point,
           // so we need to get its value when we need it in a function.
           function __PRIVATE_getGoogApiClientValue() {
-              return "gl-js/ fire/" + d;
+              return "gl-js/ fire/" + f;
           }(), 
           // Content-Type: text/plain will avoid preflight requests which might
           // mess with CORS and redirects by proxies. If we add custom headers
@@ -3494,9 +3359,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           t["Content-Type"] = "text/plain", this.databaseInfo.appId && (t["X-Firebase-GMPID"] = this.databaseInfo.appId), 
           e && e.headers.forEach(((e, r) => t[r] = e)), r && r.headers.forEach(((e, r) => t[r] = e));
       }
-      V(t, e) {
-          const r = O[t];
-          return `${this.m}/v1/${e}:${r}`;
+      I(t, e) {
+          const r = q[t];
+          return `${this.A}/v1/${e}:${r}`;
       }
       /**
        * Closes and cleans up any resources associated with the connection. This
@@ -3526,7 +3391,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           if (!o.ok) {
               let t = await o.json();
               Array.isArray(t) && (t = t[0]);
-              const e = null === (i = null == t ? void 0 : t.error) || void 0 === i ? void 0 : i.message;
+              const e = null === (i = null == t ? undefined : t.error) || undefined === i ? undefined : i.message;
               throw new FirestoreError(__PRIVATE_mapCodeFromHttpStatus(o.status), `Request failed with error: ${null != e ? e : o.statusText}`);
           }
           return o.json();
@@ -3742,10 +3607,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           return {
               next: () => t < this.binaryString.length ? {
                   value: this.binaryString.charCodeAt(t++),
-                  done: !1
+                  done: false
               } : {
-                  value: void 0,
-                  done: !0
+                  value: undefined,
+                  done: true
               }
           };
       }
@@ -3792,7 +3657,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   ByteString.EMPTY_BYTE_STRING = new ByteString("");
 
-  const $ = new RegExp(/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.(\d+))?Z$/);
+  const Q = new RegExp(/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.(\d+))?Z$/);
 
   /**
    * Converts the possible Proto values for a timestamp value into a "seconds and
@@ -3806,7 +3671,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           // (millis), so we do some custom parsing here.
           // Parse the nanos right out of the string.
           let e = 0;
-          const r = $.exec(t);
+          const r = Q.exec(t);
           if (__PRIVATE_hardAssert(!!r), r[1]) {
               // Pad the fraction out to 9 digits (nanos).
               let t = r[1];
@@ -3870,36 +3735,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */
   class Timestamp {
       /**
-       * Creates a new timestamp.
-       *
-       * @param seconds - The number of seconds of UTC time since Unix epoch
-       *     1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
-       *     9999-12-31T23:59:59Z inclusive.
-       * @param nanoseconds - The non-negative fractions of a second at nanosecond
-       *     resolution. Negative second values with fractions must still have
-       *     non-negative nanoseconds values that count forward in time. Must be
-       *     from 0 to 999,999,999 inclusive.
-       */
-      constructor(
-      /**
-       * The number of seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z.
-       */
-      t, 
-      /**
-       * The fractions of a second at nanosecond resolution.*
-       */
-      e) {
-          if (this.seconds = t, this.nanoseconds = e, e < 0) throw new FirestoreError(T, "Timestamp nanoseconds out of range: " + e);
-          if (e >= 1e9) throw new FirestoreError(T, "Timestamp nanoseconds out of range: " + e);
-          if (t < -62135596800) throw new FirestoreError(T, "Timestamp seconds out of range: " + t);
-          // This will break in the year 10,000.
-                  if (t >= 253402300800) throw new FirestoreError(T, "Timestamp seconds out of range: " + t);
-      }
-      /**
        * Creates a new timestamp with the current date, with millisecond precision.
        *
        * @returns a new timestamp representing the current date.
-       */    static now() {
+       */
+      static now() {
           return Timestamp.fromMillis(Date.now());
       }
       /**
@@ -3921,6 +3761,31 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        */    static fromMillis(t) {
           const e = Math.floor(t / 1e3), r = Math.floor(1e6 * (t - 1e3 * e));
           return new Timestamp(e, r);
+      }
+      /**
+       * Creates a new timestamp.
+       *
+       * @param seconds - The number of seconds of UTC time since Unix epoch
+       *     1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+       *     9999-12-31T23:59:59Z inclusive.
+       * @param nanoseconds - The non-negative fractions of a second at nanosecond
+       *     resolution. Negative second values with fractions must still have
+       *     non-negative nanoseconds values that count forward in time. Must be
+       *     from 0 to 999,999,999 inclusive.
+       */    constructor(
+      /**
+       * The number of seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z.
+       */
+      t, 
+      /**
+       * The fractions of a second at nanosecond resolution.*
+       */
+      e) {
+          if (this.seconds = t, this.nanoseconds = e, e < 0) throw new FirestoreError(P, "Timestamp nanoseconds out of range: " + e);
+          if (e >= 1e9) throw new FirestoreError(P, "Timestamp nanoseconds out of range: " + e);
+          if (t < -62135596800) throw new FirestoreError(P, "Timestamp seconds out of range: " + t);
+          // This will break in the year 10,000.
+                  if (t >= 253402300800) throw new FirestoreError(P, "Timestamp seconds out of range: " + t);
       }
       /**
        * Converts a `Timestamp` to a JavaScript `Date` object. This conversion
@@ -4014,7 +3879,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    *   localWriteTime.
    */ function __PRIVATE_isServerTimestamp(t) {
       var e, r;
-      return "server_timestamp" === (null === (r = ((null === (e = null == t ? void 0 : t.mapValue) || void 0 === e ? void 0 : e.fields) || {}).__type__) || void 0 === r ? void 0 : r.stringValue);
+      return "server_timestamp" === (null === (r = ((null === (e = null == t ? undefined : t.mapValue) || undefined === e ? undefined : e.fields) || {}).__type__) || undefined === r ? undefined : r.stringValue);
   }
 
   /**
@@ -4074,19 +3939,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /** Returns true if `value` is a VetorValue. */
       function __PRIVATE_isVectorValue(t) {
           var e, r;
-          return "__vector__" === (null === (r = ((null === (e = null == t ? void 0 : t.mapValue) || void 0 === e ? void 0 : e.fields) || {}).__type__) || void 0 === r ? void 0 : r.stringValue);
+          return "__vector__" === (null === (r = ((null === (e = null == t ? undefined : t.mapValue) || undefined === e ? undefined : e.fields) || {}).__type__) || undefined === r ? undefined : r.stringValue);
       }
       /** Creates a deep copy of `source`. */ (t) ? 10 /* TypeOrder.VectorValue */ : 11 /* TypeOrder.ObjectValue */ : fail();
   }
 
   /** Tests `left` and `right` for equality based on the backend semantics. */ function __PRIVATE_valueEquals(t, e) {
-      if (t === e) return !0;
+      if (t === e) return true;
       const r = __PRIVATE_typeOrder(t);
-      if (r !== __PRIVATE_typeOrder(e)) return !1;
+      if (r !== __PRIVATE_typeOrder(e)) return false;
       switch (r) {
         case 0 /* TypeOrder.NullValue */ :
         case 9007199254740991 /* TypeOrder.MaxValue */ :
-          return !0;
+          return true;
 
         case 1 /* TypeOrder.BooleanValue */ :
           return t.booleanValue === e.booleanValue;
@@ -4126,7 +3991,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                   const r = __PRIVATE_normalizeNumber(t.doubleValue), n = __PRIVATE_normalizeNumber(e.doubleValue);
                   return r === n ? __PRIVATE_isNegativeZero(r) === __PRIVATE_isNegativeZero(n) : isNaN(r) && isNaN(n);
               }
-              return !1;
+              return false;
           }(t, e);
 
         case 9 /* TypeOrder.ArrayValue */ :
@@ -4136,9 +4001,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         case 11 /* TypeOrder.ObjectValue */ :
           return function __PRIVATE_objectEquals(t, e) {
               const r = t.mapValue.fields || {}, n = e.mapValue.fields || {};
-              if (__PRIVATE_objectSize(r) !== __PRIVATE_objectSize(n)) return !1;
-              for (const t in r) if (r.hasOwnProperty(t) && (void 0 === n[t] || !__PRIVATE_valueEquals(r[t], n[t]))) return !1;
-              return !0;
+              if (__PRIVATE_objectSize(r) !== __PRIVATE_objectSize(n)) return false;
+              for (const t in r) if (r.hasOwnProperty(t) && (undefined === n[t] || !__PRIVATE_valueEquals(r[t], n[t]))) return false;
+              return true;
           }
           /** Returns true if the ArrayValue contains the specified element. */ (t, e);
 
@@ -4199,9 +4064,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * A version of a document in Firestore. This corresponds to the version
    * timestamp, such as update_time or read_time.
    */ class SnapshotVersion {
-      constructor(t) {
-          this.timestamp = t;
-      }
       static fromTimestamp(t) {
           return new SnapshotVersion(t);
       }
@@ -4210,6 +4072,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       static max() {
           return new SnapshotVersion(new Timestamp(253402300799, 999999999));
+      }
+      constructor(t) {
+          this.timestamp = t;
       }
       compareTo(t) {
           return this.timestamp._compareTo(t.timestamp);
@@ -4551,7 +4416,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       const r = function __PRIVATE_fullyQualifiedPrefixPath(t) {
           return new ResourcePath([ "projects", t.projectId, "databases", t.database ]);
       }(t).child("documents");
-      return void 0 === e ? r : r.child(e);
+      return undefined === e ? r : r.child(e);
   }
 
   function __PRIVATE_toName(t, e) {
@@ -4563,8 +4428,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           const e = ResourcePath.fromString(t);
           return __PRIVATE_hardAssert(__PRIVATE_isValidResourceName(e)), e;
       }(e);
-      if (r.get(1) !== t.databaseId.projectId) throw new FirestoreError(T, "Tried to deserialize key from different project: " + r.get(1) + " vs " + t.databaseId.projectId);
-      if (r.get(3) !== t.databaseId.database) throw new FirestoreError(T, "Tried to deserialize key from different database: " + r.get(3) + " vs " + t.databaseId.database);
+      if (r.get(1) !== t.databaseId.projectId) throw new FirestoreError(P, "Tried to deserialize key from different project: " + r.get(1) + " vs " + t.databaseId.projectId);
+      if (r.get(3) !== t.databaseId.database) throw new FirestoreError(P, "Tried to deserialize key from different database: " + r.get(3) + " vs " + t.databaseId.database);
       return new DocumentKey(function __PRIVATE_extractLocalPathFromResourceName(t) {
           return __PRIVATE_hardAssert(t.length > 4 && "documents" === t.get(4)), t.popFirst(5);
       }
@@ -4608,7 +4473,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */ function __PRIVATE_newSerializer(t) {
-      return new JsonProtoSerializer(t, /* useProto3Json= */ !0);
+      return new JsonProtoSerializer(t, /* useProto3Json= */ true);
   }
 
   /**
@@ -4639,25 +4504,25 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   class __PRIVATE_DatastoreImpl extends class Datastore {} {
       constructor(t, e, r, n) {
           super(), this.authCredentials = t, this.appCheckCredentials = e, this.connection = r, 
-          this.serializer = n, this.J = !1;
+          this.serializer = n, this.J = false;
       }
       Y() {
-          if (this.J) throw new FirestoreError(w, "The client has already been terminated.");
+          if (this.J) throw new FirestoreError(g, "The client has already been terminated.");
       }
-      /** Invokes the provided RPC with auth and AppCheck tokens. */    P(t, e, r, n) {
-          return this.Y(), Promise.all([ this.authCredentials.getToken(), this.appCheckCredentials.getToken() ]).then((([i, s]) => this.connection.P(t, __PRIVATE_toResourcePath(e, r), n, i, s))).catch((t => {
-              throw "FirebaseError" === t.name ? (t.code === p && (this.authCredentials.invalidateToken(), 
-              this.appCheckCredentials.invalidateToken()), t) : new FirestoreError(A, t.toString());
+      /** Invokes the provided RPC with auth and AppCheck tokens. */    R(t, e, r, n) {
+          return this.Y(), Promise.all([ this.authCredentials.getToken(), this.appCheckCredentials.getToken() ]).then((([i, s]) => this.connection.R(t, __PRIVATE_toResourcePath(e, r), n, i, s))).catch((t => {
+              throw "FirebaseError" === t.name ? (t.code === y && (this.authCredentials.invalidateToken(), 
+              this.appCheckCredentials.invalidateToken()), t) : new FirestoreError(T, t.toString());
           }));
       }
       /** Invokes the provided RPC with streamed results with auth and AppCheck tokens. */    g(t, e, r, n, i) {
           return this.Y(), Promise.all([ this.authCredentials.getToken(), this.appCheckCredentials.getToken() ]).then((([s, o]) => this.connection.g(t, __PRIVATE_toResourcePath(e, r), n, s, o, i))).catch((t => {
-              throw "FirebaseError" === t.name ? (t.code === p && (this.authCredentials.invalidateToken(), 
-              this.appCheckCredentials.invalidateToken()), t) : new FirestoreError(A, t.toString());
+              throw "FirebaseError" === t.name ? (t.code === y && (this.authCredentials.invalidateToken(), 
+              this.appCheckCredentials.invalidateToken()), t) : new FirestoreError(T, t.toString());
           }));
       }
       terminate() {
-          this.J = !0, this.connection.terminate();
+          this.J = true, this.connection.terminate();
       }
   }
 
@@ -4691,7 +4556,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    * See the License for the specific language governing permissions and
    * limitations under the License.
-   */ const k = new Map;
+   */ const U = new Map;
 
   /**
    * An instance map that ensures only one Datastore exists per Firestore
@@ -4703,8 +4568,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * instance is terminated.
    */
   function __PRIVATE_getDatastore(t) {
-      if (t._terminated) throw new FirestoreError(w, "The client has already been terminated.");
-      if (!k.has(t)) {
+      if (t._terminated) throw new FirestoreError(g, "The client has already been terminated.");
+      if (!U.has(t)) {
           __PRIVATE_logDebug("ComponentProvider", "Initializing Datastore");
           const e = function __PRIVATE_newConnection(t) {
               return new __PRIVATE_FetchConnection(t);
@@ -4729,9 +4594,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */ (t._databaseId, t.app.options.appId || "", t._persistenceKey, t._freezeSettings())), r = __PRIVATE_newSerializer(t._databaseId), n = function __PRIVATE_newDatastore(t, e, r, n) {
               return new __PRIVATE_DatastoreImpl(t, e, r, n);
           }(t._authCredentials, t._appCheckCredentials, e, r);
-          k.set(t, n);
+          U.set(t, n);
       }
-      return k.get(t);
+      return U.get(t);
   }
 
   /**
@@ -4746,29 +4611,29 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   class FirestoreSettingsImpl {
       constructor(t) {
           var e, r;
-          if (void 0 === t.host) {
-              if (void 0 !== t.ssl) throw new FirestoreError(T, "Can't provide ssl option if host option is not set");
+          if (undefined === t.host) {
+              if (undefined !== t.ssl) throw new FirestoreError(P, "Can't provide ssl option if host option is not set");
               this.host = "firestore.googleapis.com", this.ssl = true;
-          } else this.host = t.host, this.ssl = null === (e = t.ssl) || void 0 === e || e;
+          } else this.host = t.host, this.ssl = null === (e = t.ssl) || undefined === e || e;
           if (this.credentials = t.credentials, this.ignoreUndefinedProperties = !!t.ignoreUndefinedProperties, 
-          this.localCache = t.localCache, void 0 === t.cacheSizeBytes) this.cacheSizeBytes = 41943040; else {
-              if (-1 !== t.cacheSizeBytes && t.cacheSizeBytes < 1048576) throw new FirestoreError(T, "cacheSizeBytes must be at least 1048576");
+          this.localCache = t.localCache, undefined === t.cacheSizeBytes) this.cacheSizeBytes = 41943040; else {
+              if (-1 !== t.cacheSizeBytes && t.cacheSizeBytes < 1048576) throw new FirestoreError(P, "cacheSizeBytes must be at least 1048576");
               this.cacheSizeBytes = t.cacheSizeBytes;
           }
           !function __PRIVATE_validateIsNotUsedTogether(t, e, r, n) {
-              if (!0 === e && !0 === n) throw new FirestoreError(T, `${t} and ${r} cannot be used together.`);
+              if (true === e && true === n) throw new FirestoreError(P, `${t} and ${r} cannot be used together.`);
           }("experimentalForceLongPolling", t.experimentalForceLongPolling, "experimentalAutoDetectLongPolling", t.experimentalAutoDetectLongPolling), 
-          this.experimentalForceLongPolling = !!t.experimentalForceLongPolling, this.experimentalForceLongPolling ? this.experimentalAutoDetectLongPolling = !1 : void 0 === t.experimentalAutoDetectLongPolling ? this.experimentalAutoDetectLongPolling = true : 
+          this.experimentalForceLongPolling = !!t.experimentalForceLongPolling, this.experimentalForceLongPolling ? this.experimentalAutoDetectLongPolling = false : undefined === t.experimentalAutoDetectLongPolling ? this.experimentalAutoDetectLongPolling = true : 
           // For backwards compatibility, coerce the value to boolean even though
           // the TypeScript compiler has narrowed the type to boolean already.
           // noinspection PointlessBooleanExpressionJS
           this.experimentalAutoDetectLongPolling = !!t.experimentalAutoDetectLongPolling, 
-          this.experimentalLongPollingOptions = __PRIVATE_cloneLongPollingOptions(null !== (r = t.experimentalLongPollingOptions) && void 0 !== r ? r : {}), 
+          this.experimentalLongPollingOptions = __PRIVATE_cloneLongPollingOptions(null !== (r = t.experimentalLongPollingOptions) && undefined !== r ? r : {}), 
           function __PRIVATE_validateLongPollingOptions(t) {
-              if (void 0 !== t.timeoutSeconds) {
-                  if (isNaN(t.timeoutSeconds)) throw new FirestoreError(T, `invalid long polling timeout: ${t.timeoutSeconds} (must not be NaN)`);
-                  if (t.timeoutSeconds < 5) throw new FirestoreError(T, `invalid long polling timeout: ${t.timeoutSeconds} (minimum allowed value is 5)`);
-                  if (t.timeoutSeconds > 30) throw new FirestoreError(T, `invalid long polling timeout: ${t.timeoutSeconds} (maximum allowed value is 30)`);
+              if (undefined !== t.timeoutSeconds) {
+                  if (isNaN(t.timeoutSeconds)) throw new FirestoreError(P, `invalid long polling timeout: ${t.timeoutSeconds} (must not be NaN)`);
+                  if (t.timeoutSeconds < 5) throw new FirestoreError(P, `invalid long polling timeout: ${t.timeoutSeconds} (minimum allowed value is 5)`);
+                  if (t.timeoutSeconds > 30) throw new FirestoreError(P, `invalid long polling timeout: ${t.timeoutSeconds} (maximum allowed value is 30)`);
               }
           }
           /**
@@ -4809,7 +4674,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
            * Whether it's a Firestore or Firestore Lite instance.
            */
           this.type = "firestore-lite", this._persistenceKey = "(lite)", this._settings = new FirestoreSettingsImpl({}), 
-          this._settingsFrozen = !1, 
+          this._settingsFrozen = false, 
           // A task that is assigned when the terminate() is invoked and resolved when
           // all components have shut down. Otherwise, Firestore is not terminated,
           // which can mean either the FirestoreClient is in the process of starting,
@@ -4820,7 +4685,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * The {@link @firebase/app#FirebaseApp} associated with this `Firestore` service
        * instance.
        */    get app() {
-          if (!this._app) throw new FirestoreError(w, "Firestore was not initialized using the Firebase SDK. 'app' is not available");
+          if (!this._app) throw new FirestoreError(g, "Firestore was not initialized using the Firebase SDK. 'app' is not available");
           return this._app;
       }
       get _initialized() {
@@ -4830,8 +4695,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           return "notTerminated" !== this._terminateTask;
       }
       _setSettings(t) {
-          if (this._settingsFrozen) throw new FirestoreError(w, "Firestore has already been started and its settings can no longer be changed. You can only modify settings before calling any other methods on a Firestore object.");
-          this._settings = new FirestoreSettingsImpl(t), void 0 !== t.credentials && (this._authCredentials = function __PRIVATE_makeAuthCredentialsProvider(t) {
+          if (this._settingsFrozen) throw new FirestoreError(g, "Firestore has already been started and its settings can no longer be changed. You can only modify settings before calling any other methods on a Firestore object.");
+          this._settings = new FirestoreSettingsImpl(t), undefined !== t.credentials && (this._authCredentials = function __PRIVATE_makeAuthCredentialsProvider(t) {
               if (!t) return new __PRIVATE_EmptyAuthCredentialsProvider;
               switch (t.type) {
                 case "firstParty":
@@ -4841,7 +4706,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                   return t.client;
 
                 default:
-                  throw new FirestoreError(T, "makeAuthCredentialsProvider failed due to invalid credential type");
+                  throw new FirestoreError(P, "makeAuthCredentialsProvider failed due to invalid credential type");
               }
           }(t.credentials));
       }
@@ -4849,7 +4714,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           return this._settings;
       }
       _freezeSettings() {
-          return this._settingsFrozen = !0, this._settings;
+          return this._settingsFrozen = true, this._settings;
       }
       _delete() {
           // The `_terminateTask` must be assigned future that completes when
@@ -4878,8 +4743,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * Only ever called once.
        */    _terminate() {
           return function __PRIVATE_removeComponents(t) {
-              const e = k.get(t);
-              e && (__PRIVATE_logDebug("ComponentProvider", "Removing Datastore"), k.delete(t), 
+              const e = U.get(t);
+              e && (__PRIVATE_logDebug("ComponentProvider", "Removing Datastore"), U.delete(t), 
               e.terminate());
           }(this), Promise.resolve();
       }
@@ -4914,15 +4779,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       if ("firestore.googleapis.com" !== s.host && s.host !== o && __PRIVATE_logWarn("Host has been set in both settings() and connectFirestoreEmulator(), emulator host will be used."), 
       t._setSettings(Object.assign(Object.assign({}, s), {
           host: o,
-          ssl: !1
+          ssl: false
       })), n.mockUserToken) {
           let e, r;
           if ("string" == typeof n.mockUserToken) e = n.mockUserToken, r = User.MOCK_USER; else {
               // Let createMockUserToken validate first (catches common mistakes like
               // invalid field "uid" and missing field "sub" / "user_id".)
-              e = createMockUserToken(n.mockUserToken, null === (i = t._app) || void 0 === i ? void 0 : i.options.projectId);
+              e = createMockUserToken(n.mockUserToken, null === (i = t._app) || undefined === i ? undefined : i.options.projectId);
               const s = n.mockUserToken.sub || n.mockUserToken.user_id;
-              if (!s) throw new FirestoreError(T, "mockUserToken must contain 'sub' or 'user_id' field!");
+              if (!s) throw new FirestoreError(P, "mockUserToken must contain 'sub' or 'user_id' field!");
               r = new User(s);
           }
           t._authCredentials = new __PRIVATE_EmulatorAuthCredentialsProvider(new __PRIVATE_OAuthToken(e, r));
@@ -5049,7 +4914,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           /* converter= */ null, new DocumentKey(n));
       }
       {
-          if (!(t instanceof DocumentReference || t instanceof CollectionReference)) throw new FirestoreError(T, "Expected first argument to collection() to be a CollectionReference, a DocumentReference or FirebaseFirestore");
+          if (!(t instanceof DocumentReference || t instanceof CollectionReference)) throw new FirestoreError(P, "Expected first argument to collection() to be a CollectionReference, a DocumentReference or FirebaseFirestore");
           const n = t._path.child(ResourcePath.fromString(e, ...r));
           return __PRIVATE_validateDocumentPath(n), new DocumentReference(t.firestore, t instanceof CollectionReference ? t.converter : null, new DocumentKey(n));
       }
@@ -5087,7 +4952,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           try {
               return new Bytes(ByteString.fromBase64String(t));
           } catch (t) {
-              throw new FirestoreError(T, "Failed to construct data from Base64 string: " + t);
+              throw new FirestoreError(P, "Failed to construct data from Base64 string: " + t);
           }
       }
       /**
@@ -5159,7 +5024,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @param fieldNames - A list of field names.
        */
       constructor(...t) {
-          for (let e = 0; e < t.length; ++e) if (0 === t[e].length) throw new FirestoreError(T, "Invalid field name at argument $(i + 1). Field names must not be empty.");
+          for (let e = 0; e < t.length; ++e) if (0 === t[e].length) throw new FirestoreError(P, "Invalid field name at argument $(i + 1). Field names must not be empty.");
           this._internalPath = new FieldPath$1(t);
       }
       /**
@@ -5202,8 +5067,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @param longitude - The longitude as number between -180 and 180.
        */
       constructor(t, e) {
-          if (!isFinite(t) || t < -90 || t > 90) throw new FirestoreError(T, "Latitude must be a number between -90 and 90, but was: " + t);
-          if (!isFinite(e) || e < -180 || e > 180) throw new FirestoreError(T, "Longitude must be a number between -180 and 180, but was: " + e);
+          if (!isFinite(t) || t < -90 || t > 90) throw new FirestoreError(P, "Latitude must be a number between -90 and 90, but was: " + t);
+          if (!isFinite(e) || e < -180 || e > 180) throw new FirestoreError(P, "Longitude must be a number between -180 and 180, but was: " + e);
           this._lat = t, this._long = e;
       }
       /**
@@ -5303,16 +5168,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * Returns `true` if the two VectorValue has the same raw number arrays, returns `false` otherwise.
        */    isEqual(t) {
           return function __PRIVATE_isPrimitiveArrayEqual(t, e) {
-              if (t.length !== e.length) return !1;
-              for (let r = 0; r < t.length; ++r) if (t[r] !== e[r]) return !1;
-              return !0;
+              if (t.length !== e.length) return false;
+              for (let r = 0; r < t.length; ++r) if (t[r] !== e[r]) return false;
+              return true;
           }(this._values, t._values);
       }
   }
 
   /**
    * Matches any characters in a field path string that are reserved.
-   */ const j = new RegExp("[~\\*/\\[\\]]");
+   */ const z = new RegExp("[~\\*/\\[\\]]");
 
   /**
    * Wraps fromDotSeparatedString with an error message about the method that
@@ -5323,7 +5188,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * @param targetDoc - The document against which the field path will be
    * evaluated.
    */ function __PRIVATE_fieldPathFromDotSeparatedString(t, e, r) {
-      if (e.search(j) >= 0) throw __PRIVATE_createError(`Invalid field path (${e}). Paths must not contain '~', '*', '/', '[', or ']'`, t);
+      if (e.search(z) >= 0) throw __PRIVATE_createError(`Invalid field path (${e}). Paths must not contain '~', '*', '/', '[', or ']'`, t);
       try {
           return new FieldPath(...e.split("."))._internalPath;
       } catch (n) {
@@ -5335,7 +5200,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       let a = `Function ${e}() called with invalid data`;
       a += ". ";
       let u = "";
-      return new FirestoreError(T, a + t + u);
+      return new FirestoreError(P, a + t + u);
   }
 
   /**
@@ -5510,7 +5375,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @internal
        */    convertVectorValue(t) {
           var e, r, n;
-          const i = null === (n = null === (r = null === (e = t.fields) || void 0 === e ? void 0 : e.value.arrayValue) || void 0 === r ? void 0 : r.values) || void 0 === n ? void 0 : n.map((t => __PRIVATE_normalizeNumber(t.doubleValue)));
+          const i = null === (n = null === (r = null === (e = t.fields) || undefined === e ? undefined : e.value.arrayValue) || undefined === r ? undefined : r.values) || undefined === n ? undefined : n.map((t => __PRIVATE_normalizeNumber(t.doubleValue)));
           return new VectorValue(i);
       }
       convertGeoPoint(t) {
@@ -5588,10 +5453,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * @packageDocumentation
    */ !function __PRIVATE_registerFirestore() {
       !function __PRIVATE_setSDKVersion(t) {
-          d = t;
+          f = t;
       }(`${SDK_VERSION}_lite`), _registerComponent(new Component("firestore/lite", ((t, {instanceIdentifier: e, options: r}) => {
           const n = t.getProvider("app").getImmediate(), i = new Firestore(new __PRIVATE_LiteAuthCredentialsProvider(t.getProvider("auth-internal")), new __PRIVATE_LiteAppCheckTokenProvider(t.getProvider("app-check-internal")), function __PRIVATE_databaseIdFromApp(t, e) {
-              if (!Object.prototype.hasOwnProperty.apply(t.options, [ "projectId" ])) throw new FirestoreError(T, '"projectId" not provided in firebase.initializeApp.');
+              if (!Object.prototype.hasOwnProperty.apply(t.options, [ "projectId" ])) throw new FirestoreError(P, '"projectId" not provided in firebase.initializeApp.');
               return new DatabaseId(t.options.projectId, e);
           }
           /**
@@ -5611,12 +5476,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * limitations under the License.
    */ (n, e), n);
           return r && i._setSettings(r), i;
-      }), "PUBLIC").setMultipleInstances(!0)), 
+      }), "PUBLIC").setMultipleInstances(true)), 
       // RUNTIME_ENV and BUILD_TARGET are replaced by real values during the compilation
-      registerVersion("firestore-lite", "4.7.4", ""), registerVersion("firestore-lite", "4.7.4", "esm2017");
+      registerVersion("firestore-lite", "4.7.6", ""), registerVersion("firestore-lite", "4.7.6", "esm2017");
   }();
 
-  const __esModule = true;
+  const __esModule = true ;
 
   exports.__esModule = __esModule;
   exports.doc = doc;

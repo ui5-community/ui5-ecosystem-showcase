@@ -194,7 +194,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   const _global = _globalThis;
   function registerGlobal(type, instance, diag, allowOverride = false) {
       var _a;
-      const api = (_global[GLOBAL_OPENTELEMETRY_API_KEY] = (_a = _global[GLOBAL_OPENTELEMETRY_API_KEY]) !== null && _a !== void 0 ? _a : {
+      const api = (_global[GLOBAL_OPENTELEMETRY_API_KEY] = (_a = _global[GLOBAL_OPENTELEMETRY_API_KEY]) !== null && _a !== undefined ? _a : {
           version: VERSION,
       });
       if (!allowOverride && api[type]) {
@@ -215,11 +215,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
   function getGlobal(type) {
       var _a, _b;
-      const globalVersion = (_a = _global[GLOBAL_OPENTELEMETRY_API_KEY]) === null || _a === void 0 ? void 0 : _a.version;
+      const globalVersion = (_a = _global[GLOBAL_OPENTELEMETRY_API_KEY]) === null || _a === undefined ? undefined : _a.version;
       if (!globalVersion || !isCompatible(globalVersion)) {
           return;
       }
-      return (_b = _global[GLOBAL_OPENTELEMETRY_API_KEY]) === null || _b === void 0 ? void 0 : _b[type];
+      return (_b = _global[GLOBAL_OPENTELEMETRY_API_KEY]) === null || _b === undefined ? undefined : _b[type];
   }
   function unregisterGlobal(type, diag) {
       diag.debug(`@opentelemetry/api: Unregistering a global for ${type} v${VERSION}.`);
@@ -409,7 +409,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                   // Logging to the console might break the user application.
                   // Try to log to self. If a logger was previously registered it will receive the log.
                   const err = new Error('Cannot use diag as the logger for itself. Please use a DiagLogger implementation like ConsoleDiagLogger or a custom implementation');
-                  self.error((_a = err.stack) !== null && _a !== void 0 ? _a : err.message);
+                  self.error((_a = err.stack) !== null && _a !== undefined ? _a : err.message);
                   return false;
               }
               if (typeof optionsOrLogLevel === 'number') {
@@ -418,10 +418,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                   };
               }
               const oldLogger = getGlobal('diag');
-              const newLogger = createLogLevelDiagLogger((_b = optionsOrLogLevel.logLevel) !== null && _b !== void 0 ? _b : exports.DiagLogLevel.INFO, logger);
+              const newLogger = createLogLevelDiagLogger((_b = optionsOrLogLevel.logLevel) !== null && _b !== undefined ? _b : exports.DiagLogLevel.INFO, logger);
               // There already is an logger registered. We'll let it know before overwriting it.
               if (oldLogger && !optionsOrLogLevel.suppressOverrideMessage) {
-                  const stack = (_c = new Error().stack) !== null && _c !== void 0 ? _c : '<failed to generate stacktrace>';
+                  const stack = (_c = new Error().stack) !== null && _c !== undefined ? _c : '<failed to generate stacktrace>';
                   oldLogger.warn(`Current logger will be overwritten from ${stack}`);
                   newLogger.warn(`Current logger will overwrite one already registered from ${stack}`);
               }
@@ -1071,7 +1071,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */
   function getSpanContext(context) {
       var _a;
-      return (_a = getSpan(context)) === null || _a === void 0 ? void 0 : _a.spanContext();
+      return (_a = getSpan(context)) === null || _a === undefined ? undefined : _a.spanContext();
   }
 
   /*
@@ -1136,7 +1136,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   class NoopTracer {
       // startSpan starts a noop span.
       startSpan(name, options, context = contextApi.active()) {
-          const root = Boolean(options === null || options === void 0 ? void 0 : options.root);
+          const root = Boolean(options === null || options === undefined ? undefined : options.root);
           if (root) {
               return new NonRecordingSpan();
           }
@@ -1168,7 +1168,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               ctx = arg3;
               fn = arg4;
           }
-          const parentContext = ctx !== null && ctx !== void 0 ? ctx : contextApi.active();
+          const parentContext = ctx !== null && ctx !== undefined ? ctx : contextApi.active();
           const span = this.startSpan(name, opts, parentContext);
           const contextWithSpanSet = setSpan(parentContext, span);
           return contextApi.with(contextWithSpanSet, fn, undefined, span);
@@ -1288,11 +1288,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        */
       getTracer(name, version, options) {
           var _a;
-          return ((_a = this.getDelegateTracer(name, version, options)) !== null && _a !== void 0 ? _a : new ProxyTracer(this, name, version, options));
+          return ((_a = this.getDelegateTracer(name, version, options)) !== null && _a !== undefined ? _a : new ProxyTracer(this, name, version, options));
       }
       getDelegate() {
           var _a;
-          return (_a = this._delegate) !== null && _a !== void 0 ? _a : NOOP_TRACER_PROVIDER;
+          return (_a = this._delegate) !== null && _a !== undefined ? _a : NOOP_TRACER_PROVIDER;
       }
       /**
        * Set the delegate tracer provider
@@ -1302,7 +1302,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       getDelegateTracer(name, version, options) {
           var _a;
-          return (_a = this._delegate) === null || _a === void 0 ? void 0 : _a.getTracer(name, version, options);
+          return (_a = this._delegate) === null || _a === undefined ? undefined : _a.getTracer(name, version, options);
       }
   }
 

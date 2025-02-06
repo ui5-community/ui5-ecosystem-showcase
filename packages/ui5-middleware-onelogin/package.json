@@ -22,19 +22,19 @@
   },
   "dependencies": {
     "async-prompt": "^1.0.1",
-    "cookie": "^1.0.1",
-    "dotenv": "^16.4.5",
-    "playwright-chromium": "^1.48.2",
-    "playwright-core": "^1.48.2",
+    "cookie": "^1.0.2",
+    "dotenv": "^16.4.7",
+    "playwright-chromium": "^1.50.1",
+    "playwright-core": "^1.50.1",
     "sleep-promise": "^9.1.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.48.2",
+    "@playwright/test": "^1.50.1",
     "@types/cookie": "^1.0.0",
     "@types/express": "^5.0.0",
     "@types/prompt": "^1.1.9",
-    "eslint": "^9.13.0",
-    "globals": "^15.11.0",
-    "typescript-eslint": "^8.12.2"
+    "eslint": "^9.19.0",
+    "globals": "^15.14.0",
+    "typescript-eslint": "^8.23.0"
   }
 }

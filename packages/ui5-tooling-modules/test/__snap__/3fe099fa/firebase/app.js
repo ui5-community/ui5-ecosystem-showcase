@@ -1,7 +1,7 @@
 sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (function (exports, index_esm2017) { 'use strict';
 
 	var name = "firebase";
-	var version = "11.0.1";
+	var version = "11.2.0";
 
 	/**
 	 * @license
@@ -21,7 +21,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 */
 	index_esm2017.registerVersion(name, version, 'app');
 
-	const __esModule = true;
+	const __esModule = true ;
 
 	exports.FirebaseError = index_esm2017.FirebaseError;
 	exports.SDK_VERSION = index_esm2017.SDK_VERSION;

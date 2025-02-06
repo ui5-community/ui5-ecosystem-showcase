@@ -1272,8 +1272,11 @@ module.exports = function (log, projectInfo) {
 
 						// parse the rollup build result
 						output.forEach((module, i) => {
+							// determine the file name by removing the file extension
+							const moduleName = module.fileName.substring(0, module.fileName.length - 3);
 							// lookup the output module in the list of input modules
-							const resolvedModules = modules.filter((mod) => module?.facadeModuleId?.startsWith(mod.path));
+							// -> for web components package modules, the module name is the same as the file name (cause resolveModule returns the index module)
+							const resolvedModules = modules.filter((mod) => module?.facadeModuleId?.startsWith(mod.path) || mod.name === moduleName);
 							if (resolvedModules.length > 0) {
 								// one module could be resolved by multiple input modules (e.g. export aliases in package.json)
 								resolvedModules?.forEach((resolvedModule) => {
@@ -1299,18 +1302,16 @@ module.exports = function (log, projectInfo) {
 									} else {
 										filePath = "";
 									}
-									// remove the file extension (.js) from the filename
-									const fileName = module.fileName.substring(0, module.fileName.length - 3);
-									let chunkName = fileName;
+									let chunkName = moduleName;
 									// in case of dynamic entries we move them into a separate folder
 									// to allow to exclude them from the preload bundles easily
 									if (module.isDynamicEntry) {
-										chunkName = path.posix.join("_dynamics", fileName);
+										chunkName = path.posix.join("_dynamics", moduleName);
 									}
 									// add the chunk to the bundle info
 									bundleInfo.addChunk({
 										name: path.posix.join(filePath, chunkName),
-										originalName: fileName,
+										originalName: moduleName,
 										code: module.code,
 									});
 								} else if (module.source) {

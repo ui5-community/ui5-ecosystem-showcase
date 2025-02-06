@@ -196,6 +196,21 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/decorators/bound.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "bound",
+            "module": "dist/decorators/bound.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/decorators/customElement.js",
       "declarations": [],
       "exports": [
@@ -718,6 +733,21 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/renderer/JsxRenderer.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "jsxRenderer",
+            "module": "dist/renderer/JsxRenderer.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/renderer/LitRenderer.js",
       "declarations": [],
       "exports": [
@@ -936,150 +966,6 @@
           "declaration": {
             "name": "AnimationMode",
             "module": "dist/types/AnimationMode.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/types/AriaHasPopup.js",
-      "declarations": [
-        {
-          "kind": "enum",
-          "name": "AriaHasPopup",
-          "description": "Different types of ARIA hasPopup.",
-          "_ui5privacy": "public",
-          "members": [
-            {
-              "kind": "field",
-              "static": true,
-              "privacy": "public",
-              "description": "Dialog popup type.",
-              "default": "Dialog",
-              "name": "Dialog",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "static": true,
-              "privacy": "public",
-              "description": "Grid popup type.",
-              "default": "Grid",
-              "name": "Grid",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "static": true,
-              "privacy": "public",
-              "description": "ListBox popup type.",
-              "default": "ListBox",
-              "name": "ListBox",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "static": true,
-              "privacy": "public",
-              "description": "Menu popup type.",
-              "default": "Menu",
-              "name": "Menu",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "static": true,
-              "privacy": "public",
-              "description": "Tree popup type.",
-              "default": "Tree",
-              "name": "Tree",
-              "readonly": true
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "AriaHasPopup",
-            "module": "dist/types/AriaHasPopup.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/types/AriaLandmarkRole.js",
-      "declarations": [],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "AriaLandmarkRole",
-            "module": "dist/types/AriaLandmarkRole.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/types/AriaRole.js",
-      "declarations": [
-        {
-          "kind": "enum",
-          "name": "AriaRole",
-          "description": "Types of ARIA roles.",
-          "_ui5privacy": "public",
-          "members": [
-            {
-              "kind": "field",
-              "static": true,
-              "privacy": "public",
-              "description": "The ARIA role \"alertdialog\".",
-              "default": "AlertDialog",
-              "name": "AlertDialog",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "static": true,
-              "privacy": "public",
-              "description": "The ARIA role \"button\".",
-              "default": "Button",
-              "name": "Button",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "static": true,
-              "privacy": "public",
-              "description": "The ARIA role \"dialog\".",
-              "default": "Dialog",
-              "name": "Dialog",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "static": true,
-              "privacy": "public",
-              "description": "The ARIA role \"link\".",
-              "default": "Link",
-              "name": "Link",
-              "readonly": true
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "AriaRole",
-            "module": "dist/types/AriaRole.js"
           }
         }
       ]
@@ -1735,21 +1621,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "dist/util/getParentElement.js",
-      "declarations": [],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "getParentElement",
-            "module": "dist/util/getParentElement.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "dist/util/getSingletonElementInstance.js",
       "declarations": [],
       "exports": [
@@ -1765,6 +1636,21 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/util/hash2str.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "hash2str",
+            "module": "dist/util/hash2str.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/util/isElementClickable.js",
       "declarations": [],
       "exports": [
@@ -1774,21 +1660,6 @@
           "declaration": {
             "name": "isElementClickable",
             "module": "dist/util/isElementClickable.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/util/isElementContainingBlock.js",
-      "declarations": [],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "isElementContainingBlock",
-            "module": "dist/util/isElementContainingBlock.js"
           }
         }
       ]
@@ -1849,6 +1720,36 @@
           "declaration": {
             "name": "isValidPropertyName",
             "module": "dist/util/isValidPropertyName.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/util/throttle.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "throttle",
+            "module": "dist/util/throttle.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/util/toLowercaseEnumValue.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "toLowercaseEnumValue",
+            "module": "dist/util/toLowercaseEnumValue.js"
           }
         }
       ]
@@ -2764,6 +2665,24 @@
           }
         }
       ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/jsx-dev-runtime.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/jsx-runtime.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/jsx-utils.js",
+      "declarations": [],
+      "exports": []
     },
     {
       "kind": "javascript-module",

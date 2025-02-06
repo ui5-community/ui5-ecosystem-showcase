@@ -1,6 +1,6 @@
-sap.ui.define(['exports'], (function (exports) { 'use strict';
+sap.ui.define((function () { 'use strict';
 
-    exports.util = void 0;
+    var util;
     (function (util) {
         util.assertEqual = (val) => val;
         function assertIs(_arg) { }
@@ -62,8 +62,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             }
             return value;
         };
-    })(exports.util || (exports.util = {}));
-    exports.objectUtil = void 0;
+    })(util || (util = {}));
+    var objectUtil;
     (function (objectUtil) {
         objectUtil.mergeShapes = (first, second) => {
             return {
@@ -71,8 +71,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 ...second, // second overwrites first
             };
         };
-    })(exports.objectUtil || (exports.objectUtil = {}));
-    const ZodParsedType = exports.util.arrayToEnum([
+    })(objectUtil || (objectUtil = {}));
+    const ZodParsedType = util.arrayToEnum([
         "string",
         "nan",
         "number",
@@ -139,7 +139,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
     };
 
-    const ZodIssueCode = exports.util.arrayToEnum([
+    const ZodIssueCode = util.arrayToEnum([
         "invalid_type",
         "invalid_literal",
         "custom",
@@ -162,6 +162,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return json.replace(/"([^"]+)":/g, "$1:");
     };
     class ZodError extends Error {
+        get errors() {
+            return this.issues;
+        }
         constructor(issues) {
             super();
             this.issues = [];
@@ -181,9 +184,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             }
             this.name = "ZodError";
             this.issues = issues;
-        }
-        get errors() {
-            return this.issues;
         }
         format(_mapper) {
             const mapper = _mapper ||
@@ -243,7 +243,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             return this.message;
         }
         get message() {
-            return JSON.stringify(this.issues, exports.util.jsonStringifyReplacer, 2);
+            return JSON.stringify(this.issues, util.jsonStringifyReplacer, 2);
         }
         get isEmpty() {
             return this.issues.length === 0;
@@ -283,19 +283,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 }
                 break;
             case ZodIssueCode.invalid_literal:
-                message = `Invalid literal value, expected ${JSON.stringify(issue.expected, exports.util.jsonStringifyReplacer)}`;
+                message = `Invalid literal value, expected ${JSON.stringify(issue.expected, util.jsonStringifyReplacer)}`;
                 break;
             case ZodIssueCode.unrecognized_keys:
-                message = `Unrecognized key(s) in object: ${exports.util.joinValues(issue.keys, ", ")}`;
+                message = `Unrecognized key(s) in object: ${util.joinValues(issue.keys, ", ")}`;
                 break;
             case ZodIssueCode.invalid_union:
                 message = `Invalid input`;
                 break;
             case ZodIssueCode.invalid_union_discriminator:
-                message = `Invalid discriminator value. Expected ${exports.util.joinValues(issue.options)}`;
+                message = `Invalid discriminator value. Expected ${util.joinValues(issue.options)}`;
                 break;
             case ZodIssueCode.invalid_enum_value:
-                message = `Invalid enum value. Expected ${exports.util.joinValues(issue.options)}, received '${issue.received}'`;
+                message = `Invalid enum value. Expected ${util.joinValues(issue.options)}, received '${issue.received}'`;
                 break;
             case ZodIssueCode.invalid_arguments:
                 message = `Invalid function arguments`;
@@ -321,7 +321,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         message = `Invalid input: must end with "${issue.validation.endsWith}"`;
                     }
                     else {
-                        exports.util.assertNever(issue.validation);
+                        util.assertNever(issue.validation);
                     }
                 }
                 else if (issue.validation !== "regex") {
@@ -391,7 +391,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 break;
             default:
                 message = _ctx.defaultError;
-                exports.util.assertNever(issue);
+                util.assertNever(issue);
         }
         return { message };
     };
@@ -440,9 +440,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             data: ctx.data,
             path: ctx.path,
             errorMaps: [
-                ctx.common.contextualErrorMap,
-                ctx.schemaErrorMap,
-                overrideMap,
+                ctx.common.contextualErrorMap, // contextual error map is first priority
+                ctx.schemaErrorMap, // then schema-bound map if available
+                overrideMap, // then global override map
                 overrideMap === errorMap ? undefined : errorMap, // then global default map
             ].filter((x) => !!x),
         });
@@ -529,12 +529,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     ***************************************************************************** */
 
     function __classPrivateFieldGet(receiver, state, kind, f) {
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+        if (typeof state === "function" ? receiver !== state || true : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
         return state.get(receiver);
     }
 
     function __classPrivateFieldSet(receiver, state, value, kind, f) {
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+        if (typeof state === "function" ? receiver !== state || true : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
         return (state.set(receiver, value)), value;
     }
 
@@ -546,7 +546,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     var errorUtil;
     (function (errorUtil) {
         errorUtil.errToObj = (message) => typeof message === "string" ? { message } : message || {};
-        errorUtil.toString = (message) => typeof message === "string" ? message : message === null || message === void 0 ? void 0 : message.message;
+        errorUtil.toString = (message) => typeof message === "string" ? message : message === null || message === undefined ? undefined : message.message;
     })(errorUtil || (errorUtil = {}));
 
     var _ZodEnum_cache, _ZodNativeEnum_cache;
@@ -603,47 +603,18 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             var _a, _b;
             const { message } = params;
             if (iss.code === "invalid_enum_value") {
-                return { message: message !== null && message !== void 0 ? message : ctx.defaultError };
+                return { message: message !== null && message !== undefined ? message : ctx.defaultError };
             }
             if (typeof ctx.data === "undefined") {
-                return { message: (_a = message !== null && message !== void 0 ? message : required_error) !== null && _a !== void 0 ? _a : ctx.defaultError };
+                return { message: (_a = message !== null && message !== undefined ? message : required_error) !== null && _a !== undefined ? _a : ctx.defaultError };
             }
             if (iss.code !== "invalid_type")
                 return { message: ctx.defaultError };
-            return { message: (_b = message !== null && message !== void 0 ? message : invalid_type_error) !== null && _b !== void 0 ? _b : ctx.defaultError };
+            return { message: (_b = message !== null && message !== undefined ? message : invalid_type_error) !== null && _b !== undefined ? _b : ctx.defaultError };
         };
         return { errorMap: customMap, description };
     }
     class ZodType {
-        constructor(def) {
-            /** Alias of safeParseAsync */
-            this.spa = this.safeParseAsync;
-            this._def = def;
-            this.parse = this.parse.bind(this);
-            this.safeParse = this.safeParse.bind(this);
-            this.parseAsync = this.parseAsync.bind(this);
-            this.safeParseAsync = this.safeParseAsync.bind(this);
-            this.spa = this.spa.bind(this);
-            this.refine = this.refine.bind(this);
-            this.refinement = this.refinement.bind(this);
-            this.superRefine = this.superRefine.bind(this);
-            this.optional = this.optional.bind(this);
-            this.nullable = this.nullable.bind(this);
-            this.nullish = this.nullish.bind(this);
-            this.array = this.array.bind(this);
-            this.promise = this.promise.bind(this);
-            this.or = this.or.bind(this);
-            this.and = this.and.bind(this);
-            this.transform = this.transform.bind(this);
-            this.brand = this.brand.bind(this);
-            this.default = this.default.bind(this);
-            this.catch = this.catch.bind(this);
-            this.describe = this.describe.bind(this);
-            this.pipe = this.pipe.bind(this);
-            this.readonly = this.readonly.bind(this);
-            this.isNullable = this.isNullable.bind(this);
-            this.isOptional = this.isOptional.bind(this);
-        }
         get description() {
             return this._def.description;
         }
@@ -695,10 +666,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             const ctx = {
                 common: {
                     issues: [],
-                    async: (_a = params === null || params === void 0 ? void 0 : params.async) !== null && _a !== void 0 ? _a : false,
-                    contextualErrorMap: params === null || params === void 0 ? void 0 : params.errorMap,
+                    async: (_a = params === null || params === undefined ? undefined : params.async) !== null && _a !== undefined ? _a : false,
+                    contextualErrorMap: params === null || params === undefined ? undefined : params.errorMap,
                 },
-                path: (params === null || params === void 0 ? void 0 : params.path) || [],
+                path: (params === null || params === undefined ? undefined : params.path) || [],
                 schemaErrorMap: this._def.errorMap,
                 parent: null,
                 data,
@@ -706,6 +677,48 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             };
             const result = this._parseSync({ data, path: ctx.path, parent: ctx });
             return handleResult(ctx, result);
+        }
+        "~validate"(data) {
+            var _a, _b;
+            const ctx = {
+                common: {
+                    issues: [],
+                    async: !!this["~standard"].async,
+                },
+                path: [],
+                schemaErrorMap: this._def.errorMap,
+                parent: null,
+                data,
+                parsedType: getParsedType(data),
+            };
+            if (!this["~standard"].async) {
+                try {
+                    const result = this._parseSync({ data, path: [], parent: ctx });
+                    return isValid(result)
+                        ? {
+                            value: result.value,
+                        }
+                        : {
+                            issues: ctx.common.issues,
+                        };
+                }
+                catch (err) {
+                    if ((_b = (_a = err === null || err === undefined ? undefined : err.message) === null || _a === undefined ? undefined : _a.toLowerCase()) === null || _b === undefined ? undefined : _b.includes("encountered")) {
+                        this["~standard"].async = true;
+                    }
+                    ctx.common = {
+                        issues: [],
+                        async: true,
+                    };
+                }
+            }
+            return this._parseAsync({ data, path: [], parent: ctx }).then((result) => isValid(result)
+                ? {
+                    value: result.value,
+                }
+                : {
+                    issues: ctx.common.issues,
+                });
         }
         async parseAsync(data, params) {
             const result = await this.safeParseAsync(data, params);
@@ -717,10 +730,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             const ctx = {
                 common: {
                     issues: [],
-                    contextualErrorMap: params === null || params === void 0 ? void 0 : params.errorMap,
+                    contextualErrorMap: params === null || params === undefined ? undefined : params.errorMap,
                     async: true,
                 },
-                path: (params === null || params === void 0 ? void 0 : params.path) || [],
+                path: (params === null || params === undefined ? undefined : params.path) || [],
                 schemaErrorMap: this._def.errorMap,
                 parent: null,
                 data,
@@ -786,12 +799,46 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         _refinement(refinement) {
             return new ZodEffects({
                 schema: this,
-                typeName: exports.ZodFirstPartyTypeKind.ZodEffects,
+                typeName: ZodFirstPartyTypeKind.ZodEffects,
                 effect: { type: "refinement", refinement },
             });
         }
         superRefine(refinement) {
             return this._refinement(refinement);
+        }
+        constructor(def) {
+            /** Alias of safeParseAsync */
+            this.spa = this.safeParseAsync;
+            this._def = def;
+            this.parse = this.parse.bind(this);
+            this.safeParse = this.safeParse.bind(this);
+            this.parseAsync = this.parseAsync.bind(this);
+            this.safeParseAsync = this.safeParseAsync.bind(this);
+            this.spa = this.spa.bind(this);
+            this.refine = this.refine.bind(this);
+            this.refinement = this.refinement.bind(this);
+            this.superRefine = this.superRefine.bind(this);
+            this.optional = this.optional.bind(this);
+            this.nullable = this.nullable.bind(this);
+            this.nullish = this.nullish.bind(this);
+            this.array = this.array.bind(this);
+            this.promise = this.promise.bind(this);
+            this.or = this.or.bind(this);
+            this.and = this.and.bind(this);
+            this.transform = this.transform.bind(this);
+            this.brand = this.brand.bind(this);
+            this.default = this.default.bind(this);
+            this.catch = this.catch.bind(this);
+            this.describe = this.describe.bind(this);
+            this.pipe = this.pipe.bind(this);
+            this.readonly = this.readonly.bind(this);
+            this.isNullable = this.isNullable.bind(this);
+            this.isOptional = this.isOptional.bind(this);
+            this["~standard"] = {
+                version: 1,
+                vendor: "zod",
+                validate: (data) => this["~validate"](data),
+            };
         }
         optional() {
             return ZodOptional.create(this, this._def);
@@ -803,7 +850,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             return this.nullable().optional();
         }
         array() {
-            return ZodArray.create(this, this._def);
+            return ZodArray.create(this);
         }
         promise() {
             return ZodPromise.create(this, this._def);
@@ -818,7 +865,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             return new ZodEffects({
                 ...processCreateParams(this._def),
                 schema: this,
-                typeName: exports.ZodFirstPartyTypeKind.ZodEffects,
+                typeName: ZodFirstPartyTypeKind.ZodEffects,
                 effect: { type: "transform", transform },
             });
         }
@@ -828,12 +875,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 ...processCreateParams(this._def),
                 innerType: this,
                 defaultValue: defaultValueFunc,
-                typeName: exports.ZodFirstPartyTypeKind.ZodDefault,
+                typeName: ZodFirstPartyTypeKind.ZodDefault,
             });
         }
         brand() {
             return new ZodBranded({
-                typeName: exports.ZodFirstPartyTypeKind.ZodBranded,
+                typeName: ZodFirstPartyTypeKind.ZodBranded,
                 type: this,
                 ...processCreateParams(this._def),
             });
@@ -844,7 +891,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 ...processCreateParams(this._def),
                 innerType: this,
                 catchValue: catchValueFunc,
-                typeName: exports.ZodFirstPartyTypeKind.ZodCatch,
+                typeName: ZodFirstPartyTypeKind.ZodCatch,
             });
         }
         describe(description) {
@@ -869,11 +916,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     const cuidRegex = /^c[^\s-]{8,}$/i;
     const cuid2Regex = /^[0-9a-z]+$/;
-    const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/;
+    const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/i;
     // const uuidRegex =
     //   /^([a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}|00000000-0000-0000-0000-000000000000)$/i;
     const uuidRegex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
     const nanoidRegex = /^[a-z0-9_-]{21}$/i;
+    const jwtRegex = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/;
     const durationRegex = /^[-+]?P(?!$)(?:(?:[-+]?\d+Y)|(?:[-+]?\d+[.,]\d+Y$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:(?:[-+]?\d+W)|(?:[-+]?\d+[.,]\d+W$))?(?:(?:[-+]?\d+D)|(?:[-+]?\d+[.,]\d+D$))?(?:T(?=[\d+-])(?:(?:[-+]?\d+H)|(?:[-+]?\d+[.,]\d+H$))?(?:(?:[-+]?\d+M)|(?:[-+]?\d+[.,]\d+M$))?(?:[-+]?\d+(?:[.,]\d+)?S)?)??$/;
     // from https://stackoverflow.com/a/46181/1550155
     // old version: too slow, didn't support unicode
@@ -895,9 +943,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     let emojiRegex;
     // faster, simpler, safer
     const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/;
-    const ipv6Regex = /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/;
+    const ipv4CidrRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\/(3[0-2]|[12]?[0-9])$/;
+    // const ipv6Regex =
+    // /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/;
+    const ipv6Regex = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/;
+    const ipv6CidrRegex = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/(12[0-8]|1[01][0-9]|[1-9]?[0-9])$/;
     // https://stackoverflow.com/questions/7860392/determine-if-string-is-in-base64-using-javascript
     const base64Regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+    // https://base64.guru/standards/base64url
+    const base64urlRegex = /^([0-9a-zA-Z-_]{4})*(([0-9a-zA-Z-_]{2}(==)?)|([0-9a-zA-Z-_]{3}(=)?))?$/;
     // simple
     // const dateRegexSource = `\\d{4}-\\d{2}-\\d{2}`;
     // no leap year validation
@@ -934,6 +988,38 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             return true;
         }
         if ((version === "v6" || !version) && ipv6Regex.test(ip)) {
+            return true;
+        }
+        return false;
+    }
+    function isValidJWT(jwt, alg) {
+        if (!jwtRegex.test(jwt))
+            return false;
+        try {
+            const [header] = jwt.split(".");
+            // Convert base64url to base64
+            const base64 = header
+                .replace(/-/g, "+")
+                .replace(/_/g, "/")
+                .padEnd(header.length + ((4 - (header.length % 4)) % 4), "=");
+            const decoded = JSON.parse(atob(base64));
+            if (typeof decoded !== "object" || decoded === null)
+                return false;
+            if (!decoded.typ || !decoded.alg)
+                return false;
+            if (alg && decoded.alg !== alg)
+                return false;
+            return true;
+        }
+        catch (_a) {
+            return false;
+        }
+    }
+    function isValidCidr(ip, version) {
+        if ((version === "v4" || !version) && ipv4CidrRegex.test(ip)) {
+            return true;
+        }
+        if ((version === "v6" || !version) && ipv6CidrRegex.test(ip)) {
             return true;
         }
         return false;
@@ -1219,6 +1305,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         status.dirty();
                     }
                 }
+                else if (check.kind === "jwt") {
+                    if (!isValidJWT(input.data, check.alg)) {
+                        ctx = this._getOrReturnCtx(input, ctx);
+                        addIssueToContext(ctx, {
+                            validation: "jwt",
+                            code: ZodIssueCode.invalid_string,
+                            message: check.message,
+                        });
+                        status.dirty();
+                    }
+                }
+                else if (check.kind === "cidr") {
+                    if (!isValidCidr(input.data, check.version)) {
+                        ctx = this._getOrReturnCtx(input, ctx);
+                        addIssueToContext(ctx, {
+                            validation: "cidr",
+                            code: ZodIssueCode.invalid_string,
+                            message: check.message,
+                        });
+                        status.dirty();
+                    }
+                }
                 else if (check.kind === "base64") {
                     if (!base64Regex.test(input.data)) {
                         ctx = this._getOrReturnCtx(input, ctx);
@@ -1230,8 +1338,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         status.dirty();
                     }
                 }
+                else if (check.kind === "base64url") {
+                    if (!base64urlRegex.test(input.data)) {
+                        ctx = this._getOrReturnCtx(input, ctx);
+                        addIssueToContext(ctx, {
+                            validation: "base64url",
+                            code: ZodIssueCode.invalid_string,
+                            message: check.message,
+                        });
+                        status.dirty();
+                    }
+                }
                 else {
-                    exports.util.assertNever(check);
+                    util.assertNever(check);
                 }
             }
             return { status: status.value, value: input.data };
@@ -1276,8 +1395,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         base64(message) {
             return this._addCheck({ kind: "base64", ...errorUtil.errToObj(message) });
         }
+        base64url(message) {
+            // base64url encoding is a modification of base64 that can safely be used in URLs and filenames
+            return this._addCheck({
+                kind: "base64url",
+                ...errorUtil.errToObj(message),
+            });
+        }
+        jwt(options) {
+            return this._addCheck({ kind: "jwt", ...errorUtil.errToObj(options) });
+        }
         ip(options) {
             return this._addCheck({ kind: "ip", ...errorUtil.errToObj(options) });
+        }
+        cidr(options) {
+            return this._addCheck({ kind: "cidr", ...errorUtil.errToObj(options) });
         }
         datetime(options) {
             var _a, _b;
@@ -1292,10 +1424,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             }
             return this._addCheck({
                 kind: "datetime",
-                precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
-                offset: (_a = options === null || options === void 0 ? void 0 : options.offset) !== null && _a !== void 0 ? _a : false,
-                local: (_b = options === null || options === void 0 ? void 0 : options.local) !== null && _b !== void 0 ? _b : false,
-                ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message),
+                precision: typeof (options === null || options === undefined ? undefined : options.precision) === "undefined" ? null : options === null || options === undefined ? undefined : options.precision,
+                offset: (_a = options === null || options === undefined ? undefined : options.offset) !== null && _a !== undefined ? _a : false,
+                local: (_b = options === null || options === undefined ? undefined : options.local) !== null && _b !== undefined ? _b : false,
+                ...errorUtil.errToObj(options === null || options === undefined ? undefined : options.message),
             });
         }
         date(message) {
@@ -1311,8 +1443,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             }
             return this._addCheck({
                 kind: "time",
-                precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
-                ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message),
+                precision: typeof (options === null || options === undefined ? undefined : options.precision) === "undefined" ? null : options === null || options === undefined ? undefined : options.precision,
+                ...errorUtil.errToObj(options === null || options === undefined ? undefined : options.message),
             });
         }
         duration(message) {
@@ -1329,8 +1461,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             return this._addCheck({
                 kind: "includes",
                 value: value,
-                position: options === null || options === void 0 ? void 0 : options.position,
-                ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message),
+                position: options === null || options === undefined ? undefined : options.position,
+                ...errorUtil.errToObj(options === null || options === undefined ? undefined : options.message),
             });
         }
         startsWith(value, message) {
@@ -1369,8 +1501,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             });
         }
         /**
-         * @deprecated Use z.string().min(1) instead.
-         * @see {@link ZodString.min}
+         * Equivalent to `.min(1)`
          */
         nonempty(message) {
             return this.min(1, errorUtil.errToObj(message));
@@ -1432,8 +1563,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         get isIP() {
             return !!this._def.checks.find((ch) => ch.kind === "ip");
         }
+        get isCIDR() {
+            return !!this._def.checks.find((ch) => ch.kind === "cidr");
+        }
         get isBase64() {
             return !!this._def.checks.find((ch) => ch.kind === "base64");
+        }
+        get isBase64url() {
+            // base64url encoding is a modification of base64 that can safely be used in URLs and filenames
+            return !!this._def.checks.find((ch) => ch.kind === "base64url");
         }
         get minLength() {
             let min = null;
@@ -1460,8 +1598,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         var _a;
         return new ZodString({
             checks: [],
-            typeName: exports.ZodFirstPartyTypeKind.ZodString,
-            coerce: (_a = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a !== void 0 ? _a : false,
+            typeName: ZodFirstPartyTypeKind.ZodString,
+            coerce: (_a = params === null || params === undefined ? undefined : params.coerce) !== null && _a !== undefined ? _a : false,
             ...processCreateParams(params),
         });
     };
@@ -1499,7 +1637,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             const status = new ParseStatus();
             for (const check of this._def.checks) {
                 if (check.kind === "int") {
-                    if (!exports.util.isInteger(input.data)) {
+                    if (!util.isInteger(input.data)) {
                         ctx = this._getOrReturnCtx(input, ctx);
                         addIssueToContext(ctx, {
                             code: ZodIssueCode.invalid_type,
@@ -1566,7 +1704,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     }
                 }
                 else {
-                    exports.util.assertNever(check);
+                    util.assertNever(check);
                 }
             }
             return { status: status.value, value: input.data };
@@ -1689,7 +1827,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
         get isInt() {
             return !!this._def.checks.find((ch) => ch.kind === "int" ||
-                (ch.kind === "multipleOf" && exports.util.isInteger(ch.value)));
+                (ch.kind === "multipleOf" && util.isInteger(ch.value)));
         }
         get isFinite() {
             let max = null, min = null;
@@ -1714,8 +1852,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     ZodNumber.create = (params) => {
         return new ZodNumber({
             checks: [],
-            typeName: exports.ZodFirstPartyTypeKind.ZodNumber,
-            coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+            typeName: ZodFirstPartyTypeKind.ZodNumber,
+            coerce: (params === null || params === undefined ? undefined : params.coerce) || false,
             ...processCreateParams(params),
         });
     };
@@ -1727,17 +1865,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
         _parse(input) {
             if (this._def.coerce) {
-                input.data = BigInt(input.data);
+                try {
+                    input.data = BigInt(input.data);
+                }
+                catch (_a) {
+                    return this._getInvalidInput(input);
+                }
             }
             const parsedType = this._getType(input);
             if (parsedType !== ZodParsedType.bigint) {
-                const ctx = this._getOrReturnCtx(input);
-                addIssueToContext(ctx, {
-                    code: ZodIssueCode.invalid_type,
-                    expected: ZodParsedType.bigint,
-                    received: ctx.parsedType,
-                });
-                return INVALID;
+                return this._getInvalidInput(input);
             }
             let ctx = undefined;
             const status = new ParseStatus();
@@ -1786,10 +1923,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     }
                 }
                 else {
-                    exports.util.assertNever(check);
+                    util.assertNever(check);
                 }
             }
             return { status: status.value, value: input.data };
+        }
+        _getInvalidInput(input) {
+            const ctx = this._getOrReturnCtx(input);
+            addIssueToContext(ctx, {
+                code: ZodIssueCode.invalid_type,
+                expected: ZodParsedType.bigint,
+                received: ctx.parsedType,
+            });
+            return INVALID;
         }
         gte(value, message) {
             return this.setLimit("min", value, true, errorUtil.toString(message));
@@ -1887,8 +2033,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         var _a;
         return new ZodBigInt({
             checks: [],
-            typeName: exports.ZodFirstPartyTypeKind.ZodBigInt,
-            coerce: (_a = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a !== void 0 ? _a : false,
+            typeName: ZodFirstPartyTypeKind.ZodBigInt,
+            coerce: (_a = params === null || params === undefined ? undefined : params.coerce) !== null && _a !== undefined ? _a : false,
             ...processCreateParams(params),
         });
     };
@@ -1912,8 +2058,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     ZodBoolean.create = (params) => {
         return new ZodBoolean({
-            typeName: exports.ZodFirstPartyTypeKind.ZodBoolean,
-            coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+            typeName: ZodFirstPartyTypeKind.ZodBoolean,
+            coerce: (params === null || params === undefined ? undefined : params.coerce) || false,
             ...processCreateParams(params),
         });
     };
@@ -1971,7 +2117,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     }
                 }
                 else {
-                    exports.util.assertNever(check);
+                    util.assertNever(check);
                 }
             }
             return {
@@ -2023,8 +2169,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     ZodDate.create = (params) => {
         return new ZodDate({
             checks: [],
-            coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
-            typeName: exports.ZodFirstPartyTypeKind.ZodDate,
+            coerce: (params === null || params === undefined ? undefined : params.coerce) || false,
+            typeName: ZodFirstPartyTypeKind.ZodDate,
             ...processCreateParams(params),
         });
     };
@@ -2045,7 +2191,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     ZodSymbol.create = (params) => {
         return new ZodSymbol({
-            typeName: exports.ZodFirstPartyTypeKind.ZodSymbol,
+            typeName: ZodFirstPartyTypeKind.ZodSymbol,
             ...processCreateParams(params),
         });
     };
@@ -2066,7 +2212,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     ZodUndefined.create = (params) => {
         return new ZodUndefined({
-            typeName: exports.ZodFirstPartyTypeKind.ZodUndefined,
+            typeName: ZodFirstPartyTypeKind.ZodUndefined,
             ...processCreateParams(params),
         });
     };
@@ -2087,7 +2233,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     ZodNull.create = (params) => {
         return new ZodNull({
-            typeName: exports.ZodFirstPartyTypeKind.ZodNull,
+            typeName: ZodFirstPartyTypeKind.ZodNull,
             ...processCreateParams(params),
         });
     };
@@ -2103,7 +2249,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     ZodAny.create = (params) => {
         return new ZodAny({
-            typeName: exports.ZodFirstPartyTypeKind.ZodAny,
+            typeName: ZodFirstPartyTypeKind.ZodAny,
             ...processCreateParams(params),
         });
     };
@@ -2119,7 +2265,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     ZodUnknown.create = (params) => {
         return new ZodUnknown({
-            typeName: exports.ZodFirstPartyTypeKind.ZodUnknown,
+            typeName: ZodFirstPartyTypeKind.ZodUnknown,
             ...processCreateParams(params),
         });
     };
@@ -2136,7 +2282,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     ZodNever.create = (params) => {
         return new ZodNever({
-            typeName: exports.ZodFirstPartyTypeKind.ZodNever,
+            typeName: ZodFirstPartyTypeKind.ZodNever,
             ...processCreateParams(params),
         });
     };
@@ -2157,7 +2303,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     ZodVoid.create = (params) => {
         return new ZodVoid({
-            typeName: exports.ZodFirstPartyTypeKind.ZodVoid,
+            typeName: ZodFirstPartyTypeKind.ZodVoid,
             ...processCreateParams(params),
         });
     };
@@ -2258,7 +2404,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             minLength: null,
             maxLength: null,
             exactLength: null,
-            typeName: exports.ZodFirstPartyTypeKind.ZodArray,
+            typeName: ZodFirstPartyTypeKind.ZodArray,
             ...processCreateParams(params),
         });
     };
@@ -2344,7 +2490,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             if (this._cached !== null)
                 return this._cached;
             const shape = this._def.shape();
-            const keys = exports.util.objectKeys(shape);
+            const keys = util.objectKeys(shape);
             return (this._cached = { shape, keys });
         }
         _parse(input) {
@@ -2451,10 +2597,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     ? {
                         errorMap: (issue, ctx) => {
                             var _a, _b, _c, _d;
-                            const defaultError = (_c = (_b = (_a = this._def).errorMap) === null || _b === void 0 ? void 0 : _b.call(_a, issue, ctx).message) !== null && _c !== void 0 ? _c : ctx.defaultError;
+                            const defaultError = (_c = (_b = (_a = this._def).errorMap) === null || _b === undefined ? undefined : _b.call(_a, issue, ctx).message) !== null && _c !== undefined ? _c : ctx.defaultError;
                             if (issue.code === "unrecognized_keys")
                                 return {
-                                    message: (_d = errorUtil.errToObj(message).message) !== null && _d !== void 0 ? _d : defaultError,
+                                    message: (_d = errorUtil.errToObj(message).message) !== null && _d !== undefined ? _d : defaultError,
                                 };
                             return {
                                 message: defaultError,
@@ -2515,7 +2661,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     ...this._def.shape(),
                     ...merging._def.shape(),
                 }),
-                typeName: exports.ZodFirstPartyTypeKind.ZodObject,
+                typeName: ZodFirstPartyTypeKind.ZodObject,
             });
             return merged;
         }
@@ -2586,7 +2732,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
         pick(mask) {
             const shape = {};
-            exports.util.objectKeys(mask).forEach((key) => {
+            util.objectKeys(mask).forEach((key) => {
                 if (mask[key] && this.shape[key]) {
                     shape[key] = this.shape[key];
                 }
@@ -2598,7 +2744,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
         omit(mask) {
             const shape = {};
-            exports.util.objectKeys(this.shape).forEach((key) => {
+            util.objectKeys(this.shape).forEach((key) => {
                 if (!mask[key]) {
                     shape[key] = this.shape[key];
                 }
@@ -2616,7 +2762,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
         partial(mask) {
             const newShape = {};
-            exports.util.objectKeys(this.shape).forEach((key) => {
+            util.objectKeys(this.shape).forEach((key) => {
                 const fieldSchema = this.shape[key];
                 if (mask && !mask[key]) {
                     newShape[key] = fieldSchema;
@@ -2632,7 +2778,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
         required(mask) {
             const newShape = {};
-            exports.util.objectKeys(this.shape).forEach((key) => {
+            util.objectKeys(this.shape).forEach((key) => {
                 if (mask && !mask[key]) {
                     newShape[key] = this.shape[key];
                 }
@@ -2651,7 +2797,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             });
         }
         keyof() {
-            return createZodEnum(exports.util.objectKeys(this.shape));
+            return createZodEnum(util.objectKeys(this.shape));
         }
     }
     ZodObject.create = (shape, params) => {
@@ -2659,7 +2805,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             shape: () => shape,
             unknownKeys: "strip",
             catchall: ZodNever.create(),
-            typeName: exports.ZodFirstPartyTypeKind.ZodObject,
+            typeName: ZodFirstPartyTypeKind.ZodObject,
             ...processCreateParams(params),
         });
     };
@@ -2668,7 +2814,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             shape: () => shape,
             unknownKeys: "strict",
             catchall: ZodNever.create(),
-            typeName: exports.ZodFirstPartyTypeKind.ZodObject,
+            typeName: ZodFirstPartyTypeKind.ZodObject,
             ...processCreateParams(params),
         });
     };
@@ -2677,7 +2823,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             shape,
             unknownKeys: "strip",
             catchall: ZodNever.create(),
-            typeName: exports.ZodFirstPartyTypeKind.ZodObject,
+            typeName: ZodFirstPartyTypeKind.ZodObject,
             ...processCreateParams(params),
         });
     };
@@ -2773,7 +2919,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     ZodUnion.create = (types, params) => {
         return new ZodUnion({
             options: types,
-            typeName: exports.ZodFirstPartyTypeKind.ZodUnion,
+            typeName: ZodFirstPartyTypeKind.ZodUnion,
             ...processCreateParams(params),
         });
     };
@@ -2799,7 +2945,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
         else if (type instanceof ZodNativeEnum) {
             // eslint-disable-next-line ban/ban
-            return exports.util.objectValues(type.enum);
+            return util.objectValues(type.enum);
         }
         else if (type instanceof ZodDefault) {
             return getDiscriminator(type._def.innerType);
@@ -2900,7 +3046,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 }
             }
             return new ZodDiscriminatedUnion({
-                typeName: exports.ZodFirstPartyTypeKind.ZodDiscriminatedUnion,
+                typeName: ZodFirstPartyTypeKind.ZodDiscriminatedUnion,
                 discriminator,
                 options,
                 optionsMap,
@@ -2915,8 +3061,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             return { valid: true, data: a };
         }
         else if (aType === ZodParsedType.object && bType === ZodParsedType.object) {
-            const bKeys = exports.util.objectKeys(b);
-            const sharedKeys = exports.util
+            const bKeys = util.objectKeys(b);
+            const sharedKeys = util
                 .objectKeys(a)
                 .filter((key) => bKeys.indexOf(key) !== -1);
             const newObj = { ...a, ...b };
@@ -3004,7 +3150,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return new ZodIntersection({
             left: left,
             right: right,
-            typeName: exports.ZodFirstPartyTypeKind.ZodIntersection,
+            typeName: ZodFirstPartyTypeKind.ZodIntersection,
             ...processCreateParams(params),
         });
     };
@@ -3073,7 +3219,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         }
         return new ZodTuple({
             items: schemas,
-            typeName: exports.ZodFirstPartyTypeKind.ZodTuple,
+            typeName: ZodFirstPartyTypeKind.ZodTuple,
             rest: null,
             ...processCreateParams(params),
         });
@@ -3120,14 +3266,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 return new ZodRecord({
                     keyType: first,
                     valueType: second,
-                    typeName: exports.ZodFirstPartyTypeKind.ZodRecord,
+                    typeName: ZodFirstPartyTypeKind.ZodRecord,
                     ...processCreateParams(third),
                 });
             }
             return new ZodRecord({
                 keyType: ZodString.create(),
                 valueType: first,
-                typeName: exports.ZodFirstPartyTypeKind.ZodRecord,
+                typeName: ZodFirstPartyTypeKind.ZodRecord,
                 ...processCreateParams(second),
             });
         }
@@ -3195,7 +3341,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return new ZodMap({
             valueType,
             keyType,
-            typeName: exports.ZodFirstPartyTypeKind.ZodMap,
+            typeName: ZodFirstPartyTypeKind.ZodMap,
             ...processCreateParams(params),
         });
     };
@@ -3281,7 +3427,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             valueType,
             minSize: null,
             maxSize: null,
-            typeName: exports.ZodFirstPartyTypeKind.ZodSet,
+            typeName: ZodFirstPartyTypeKind.ZodSet,
             ...processCreateParams(params),
         });
     };
@@ -3408,7 +3554,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     ? args
                     : ZodTuple.create([]).rest(ZodUnknown.create())),
                 returns: returns || ZodUnknown.create(),
-                typeName: exports.ZodFirstPartyTypeKind.ZodFunction,
+                typeName: ZodFirstPartyTypeKind.ZodFunction,
                 ...processCreateParams(params),
             });
         }
@@ -3426,7 +3572,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     ZodLazy.create = (getter, params) => {
         return new ZodLazy({
             getter: getter,
-            typeName: exports.ZodFirstPartyTypeKind.ZodLazy,
+            typeName: ZodFirstPartyTypeKind.ZodLazy,
             ...processCreateParams(params),
         });
     };
@@ -3450,28 +3596,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     ZodLiteral.create = (value, params) => {
         return new ZodLiteral({
             value: value,
-            typeName: exports.ZodFirstPartyTypeKind.ZodLiteral,
+            typeName: ZodFirstPartyTypeKind.ZodLiteral,
             ...processCreateParams(params),
         });
     };
     function createZodEnum(values, params) {
         return new ZodEnum({
             values,
-            typeName: exports.ZodFirstPartyTypeKind.ZodEnum,
+            typeName: ZodFirstPartyTypeKind.ZodEnum,
             ...processCreateParams(params),
         });
     }
     class ZodEnum extends ZodType {
         constructor() {
             super(...arguments);
-            _ZodEnum_cache.set(this, void 0);
+            _ZodEnum_cache.set(this, undefined);
         }
         _parse(input) {
             if (typeof input.data !== "string") {
                 const ctx = this._getOrReturnCtx(input);
                 const expectedValues = this._def.values;
                 addIssueToContext(ctx, {
-                    expected: exports.util.joinValues(expectedValues),
+                    expected: util.joinValues(expectedValues),
                     received: ctx.parsedType,
                     code: ZodIssueCode.invalid_type,
                 });
@@ -3534,26 +3680,26 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     class ZodNativeEnum extends ZodType {
         constructor() {
             super(...arguments);
-            _ZodNativeEnum_cache.set(this, void 0);
+            _ZodNativeEnum_cache.set(this, undefined);
         }
         _parse(input) {
-            const nativeEnumValues = exports.util.getValidEnumValues(this._def.values);
+            const nativeEnumValues = util.getValidEnumValues(this._def.values);
             const ctx = this._getOrReturnCtx(input);
             if (ctx.parsedType !== ZodParsedType.string &&
                 ctx.parsedType !== ZodParsedType.number) {
-                const expectedValues = exports.util.objectValues(nativeEnumValues);
+                const expectedValues = util.objectValues(nativeEnumValues);
                 addIssueToContext(ctx, {
-                    expected: exports.util.joinValues(expectedValues),
+                    expected: util.joinValues(expectedValues),
                     received: ctx.parsedType,
                     code: ZodIssueCode.invalid_type,
                 });
                 return INVALID;
             }
             if (!__classPrivateFieldGet(this, _ZodNativeEnum_cache)) {
-                __classPrivateFieldSet(this, _ZodNativeEnum_cache, new Set(exports.util.getValidEnumValues(this._def.values)));
+                __classPrivateFieldSet(this, _ZodNativeEnum_cache, new Set(util.getValidEnumValues(this._def.values)));
             }
             if (!__classPrivateFieldGet(this, _ZodNativeEnum_cache).has(input.data)) {
-                const expectedValues = exports.util.objectValues(nativeEnumValues);
+                const expectedValues = util.objectValues(nativeEnumValues);
                 addIssueToContext(ctx, {
                     received: ctx.data,
                     code: ZodIssueCode.invalid_enum_value,
@@ -3571,7 +3717,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     ZodNativeEnum.create = (values, params) => {
         return new ZodNativeEnum({
             values: values,
-            typeName: exports.ZodFirstPartyTypeKind.ZodNativeEnum,
+            typeName: ZodFirstPartyTypeKind.ZodNativeEnum,
             ...processCreateParams(params),
         });
     };
@@ -3604,7 +3750,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     ZodPromise.create = (schema, params) => {
         return new ZodPromise({
             type: schema,
-            typeName: exports.ZodFirstPartyTypeKind.ZodPromise,
+            typeName: ZodFirstPartyTypeKind.ZodPromise,
             ...processCreateParams(params),
         });
     };
@@ -3613,7 +3759,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             return this._def.schema;
         }
         sourceType() {
-            return this._def.schema._def.typeName === exports.ZodFirstPartyTypeKind.ZodEffects
+            return this._def.schema._def.typeName === ZodFirstPartyTypeKind.ZodEffects
                 ? this._def.schema.sourceType()
                 : this._def.schema;
         }
@@ -3736,13 +3882,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                     });
                 }
             }
-            exports.util.assertNever(effect);
+            util.assertNever(effect);
         }
     }
     ZodEffects.create = (schema, effect, params) => {
         return new ZodEffects({
             schema,
-            typeName: exports.ZodFirstPartyTypeKind.ZodEffects,
+            typeName: ZodFirstPartyTypeKind.ZodEffects,
             effect,
             ...processCreateParams(params),
         });
@@ -3751,7 +3897,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         return new ZodEffects({
             schema,
             effect: { type: "preprocess", transform: preprocess },
-            typeName: exports.ZodFirstPartyTypeKind.ZodEffects,
+            typeName: ZodFirstPartyTypeKind.ZodEffects,
             ...processCreateParams(params),
         });
     };
@@ -3770,7 +3916,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     ZodOptional.create = (type, params) => {
         return new ZodOptional({
             innerType: type,
-            typeName: exports.ZodFirstPartyTypeKind.ZodOptional,
+            typeName: ZodFirstPartyTypeKind.ZodOptional,
             ...processCreateParams(params),
         });
     };
@@ -3789,7 +3935,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     ZodNullable.create = (type, params) => {
         return new ZodNullable({
             innerType: type,
-            typeName: exports.ZodFirstPartyTypeKind.ZodNullable,
+            typeName: ZodFirstPartyTypeKind.ZodNullable,
             ...processCreateParams(params),
         });
     };
@@ -3813,7 +3959,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     ZodDefault.create = (type, params) => {
         return new ZodDefault({
             innerType: type,
-            typeName: exports.ZodFirstPartyTypeKind.ZodDefault,
+            typeName: ZodFirstPartyTypeKind.ZodDefault,
             defaultValue: typeof params.default === "function"
                 ? params.default
                 : () => params.default,
@@ -3874,7 +4020,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     ZodCatch.create = (type, params) => {
         return new ZodCatch({
             innerType: type,
-            typeName: exports.ZodFirstPartyTypeKind.ZodCatch,
+            typeName: ZodFirstPartyTypeKind.ZodCatch,
             catchValue: typeof params.catch === "function" ? params.catch : () => params.catch,
             ...processCreateParams(params),
         });
@@ -3896,7 +4042,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
     ZodNaN.create = (params) => {
         return new ZodNaN({
-            typeName: exports.ZodFirstPartyTypeKind.ZodNaN,
+            typeName: ZodFirstPartyTypeKind.ZodNaN,
             ...processCreateParams(params),
         });
     };
@@ -3969,7 +4115,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             return new ZodPipeline({
                 in: a,
                 out: b,
-                typeName: exports.ZodFirstPartyTypeKind.ZodPipeline,
+                typeName: ZodFirstPartyTypeKind.ZodPipeline,
             });
         }
     }
@@ -3993,7 +4139,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     ZodReadonly.create = (type, params) => {
         return new ZodReadonly({
             innerType: type,
-            typeName: exports.ZodFirstPartyTypeKind.ZodReadonly,
+            typeName: ZodFirstPartyTypeKind.ZodReadonly,
             ...processCreateParams(params),
         });
     };
@@ -4018,7 +4164,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                         : typeof params === "string"
                             ? { message: params }
                             : params;
-                    const _fatal = (_b = (_a = p.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
+                    const _fatal = (_b = (_a = p.fatal) !== null && _a !== undefined ? _a : fatal) !== null && _b !== undefined ? _b : true;
                     const p2 = typeof p === "string" ? { message: p } : p;
                     ctx.addIssue({ code: "custom", ...p2, fatal: _fatal });
                 }
@@ -4028,7 +4174,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     const late = {
         object: ZodObject.lazycreate,
     };
-    exports.ZodFirstPartyTypeKind = void 0;
+    var ZodFirstPartyTypeKind;
     (function (ZodFirstPartyTypeKind) {
         ZodFirstPartyTypeKind["ZodString"] = "ZodString";
         ZodFirstPartyTypeKind["ZodNumber"] = "ZodNumber";
@@ -4066,7 +4212,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         ZodFirstPartyTypeKind["ZodBranded"] = "ZodBranded";
         ZodFirstPartyTypeKind["ZodPipeline"] = "ZodPipeline";
         ZodFirstPartyTypeKind["ZodReadonly"] = "ZodReadonly";
-    })(exports.ZodFirstPartyTypeKind || (exports.ZodFirstPartyTypeKind = {}));
+    })(ZodFirstPartyTypeKind || (ZodFirstPartyTypeKind = {}));
     const instanceOfType = (
     // const instanceOfType = <T extends new (...args: any[]) => any>(
     cls, params = {
@@ -4137,8 +4283,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         isDirty: isDirty,
         isValid: isValid,
         isAsync: isAsync,
-        get util () { return exports.util; },
-        get objectUtil () { return exports.objectUtil; },
+        get util () { return util; },
+        get objectUtil () { return objectUtil; },
         ZodParsedType: ZodParsedType,
         getParsedType: getParsedType,
         ZodType: ZodType,
@@ -4185,7 +4331,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         Schema: ZodType,
         ZodSchema: ZodType,
         late: late,
-        get ZodFirstPartyTypeKind () { return exports.ZodFirstPartyTypeKind; },
+        get ZodFirstPartyTypeKind () { return ZodFirstPartyTypeKind; },
         coerce: coerce,
         any: anyType,
         array: arrayType,
@@ -4232,115 +4378,124 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         ZodError: ZodError
     });
 
-    let exp = z?.default || z || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
+    var namedExports = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        BRAND: BRAND,
+        DIRTY: DIRTY,
+        EMPTY_PATH: EMPTY_PATH,
+        INVALID: INVALID,
+        NEVER: NEVER,
+        OK: OK,
+        ParseStatus: ParseStatus,
+        Schema: ZodType,
+        ZodAny: ZodAny,
+        ZodArray: ZodArray,
+        ZodBigInt: ZodBigInt,
+        ZodBoolean: ZodBoolean,
+        ZodBranded: ZodBranded,
+        ZodCatch: ZodCatch,
+        ZodDate: ZodDate,
+        ZodDefault: ZodDefault,
+        ZodDiscriminatedUnion: ZodDiscriminatedUnion,
+        ZodEffects: ZodEffects,
+        ZodEnum: ZodEnum,
+        ZodError: ZodError,
+        get ZodFirstPartyTypeKind () { return ZodFirstPartyTypeKind; },
+        ZodFunction: ZodFunction,
+        ZodIntersection: ZodIntersection,
+        ZodIssueCode: ZodIssueCode,
+        ZodLazy: ZodLazy,
+        ZodLiteral: ZodLiteral,
+        ZodMap: ZodMap,
+        ZodNaN: ZodNaN,
+        ZodNativeEnum: ZodNativeEnum,
+        ZodNever: ZodNever,
+        ZodNull: ZodNull,
+        ZodNullable: ZodNullable,
+        ZodNumber: ZodNumber,
+        ZodObject: ZodObject,
+        ZodOptional: ZodOptional,
+        ZodParsedType: ZodParsedType,
+        ZodPipeline: ZodPipeline,
+        ZodPromise: ZodPromise,
+        ZodReadonly: ZodReadonly,
+        ZodRecord: ZodRecord,
+        ZodSchema: ZodType,
+        ZodSet: ZodSet,
+        ZodString: ZodString,
+        ZodSymbol: ZodSymbol,
+        ZodTransformer: ZodEffects,
+        ZodTuple: ZodTuple,
+        ZodType: ZodType,
+        ZodUndefined: ZodUndefined,
+        ZodUnion: ZodUnion,
+        ZodUnknown: ZodUnknown,
+        ZodVoid: ZodVoid,
+        addIssueToContext: addIssueToContext,
+        any: anyType,
+        array: arrayType,
+        bigint: bigIntType,
+        boolean: booleanType,
+        coerce: coerce,
+        custom: custom,
+        date: dateType,
+        datetimeRegex: datetimeRegex,
+        default: z,
+        defaultErrorMap: errorMap,
+        discriminatedUnion: discriminatedUnionType,
+        effect: effectsType,
+        enum: enumType,
+        function: functionType,
+        getErrorMap: getErrorMap,
+        getParsedType: getParsedType,
+        instanceof: instanceOfType,
+        intersection: intersectionType,
+        isAborted: isAborted,
+        isAsync: isAsync,
+        isDirty: isDirty,
+        isValid: isValid,
+        late: late,
+        lazy: lazyType,
+        literal: literalType,
+        makeIssue: makeIssue,
+        map: mapType,
+        nan: nanType,
+        nativeEnum: nativeEnumType,
+        never: neverType,
+        null: nullType,
+        nullable: nullableType,
+        number: numberType,
+        object: objectType,
+        get objectUtil () { return objectUtil; },
+        oboolean: oboolean,
+        onumber: onumber,
+        optional: optionalType,
+        ostring: ostring,
+        pipeline: pipelineType,
+        preprocess: preprocessType,
+        promise: promiseType,
+        quotelessJson: quotelessJson,
+        record: recordType,
+        set: setType,
+        setErrorMap: setErrorMap,
+        strictObject: strictObjectType,
+        string: stringType,
+        symbol: symbolType,
+        transformer: effectsType,
+        tuple: tupleType,
+        undefined: undefinedType,
+        union: unionType,
+        unknown: unknownType,
+        get util () { return util; },
+        void: voidType,
+        z: z
+    });
 
-    exports.BRAND = BRAND;
-    exports.DIRTY = DIRTY;
-    exports.EMPTY_PATH = EMPTY_PATH;
-    exports.INVALID = INVALID;
-    exports.NEVER = NEVER;
-    exports.OK = OK;
-    exports.ParseStatus = ParseStatus;
-    exports.Schema = ZodType;
-    exports.ZodAny = ZodAny;
-    exports.ZodArray = ZodArray;
-    exports.ZodBigInt = ZodBigInt;
-    exports.ZodBoolean = ZodBoolean;
-    exports.ZodBranded = ZodBranded;
-    exports.ZodCatch = ZodCatch;
-    exports.ZodDate = ZodDate;
-    exports.ZodDefault = ZodDefault;
-    exports.ZodDiscriminatedUnion = ZodDiscriminatedUnion;
-    exports.ZodEffects = ZodEffects;
-    exports.ZodEnum = ZodEnum;
-    exports.ZodError = ZodError;
-    exports.ZodFunction = ZodFunction;
-    exports.ZodIntersection = ZodIntersection;
-    exports.ZodIssueCode = ZodIssueCode;
-    exports.ZodLazy = ZodLazy;
-    exports.ZodLiteral = ZodLiteral;
-    exports.ZodMap = ZodMap;
-    exports.ZodNaN = ZodNaN;
-    exports.ZodNativeEnum = ZodNativeEnum;
-    exports.ZodNever = ZodNever;
-    exports.ZodNull = ZodNull;
-    exports.ZodNullable = ZodNullable;
-    exports.ZodNumber = ZodNumber;
-    exports.ZodObject = ZodObject;
-    exports.ZodOptional = ZodOptional;
-    exports.ZodParsedType = ZodParsedType;
-    exports.ZodPipeline = ZodPipeline;
-    exports.ZodPromise = ZodPromise;
-    exports.ZodReadonly = ZodReadonly;
-    exports.ZodRecord = ZodRecord;
-    exports.ZodSchema = ZodType;
-    exports.ZodSet = ZodSet;
-    exports.ZodString = ZodString;
-    exports.ZodSymbol = ZodSymbol;
-    exports.ZodTransformer = ZodEffects;
-    exports.ZodTuple = ZodTuple;
-    exports.ZodType = ZodType;
-    exports.ZodUndefined = ZodUndefined;
-    exports.ZodUnion = ZodUnion;
-    exports.ZodUnknown = ZodUnknown;
-    exports.ZodVoid = ZodVoid;
-    exports.addIssueToContext = addIssueToContext;
-    exports.any = anyType;
-    exports.array = arrayType;
-    exports.bigint = bigIntType;
-    exports.boolean = booleanType;
-    exports.coerce = coerce;
-    exports.custom = custom;
-    exports.date = dateType;
-    exports.datetimeRegex = datetimeRegex;
-    exports.default = exp;
-    exports.defaultErrorMap = errorMap;
-    exports.discriminatedUnion = discriminatedUnionType;
-    exports.effect = effectsType;
-    exports.enum = enumType;
-    exports.function = functionType;
-    exports.getErrorMap = getErrorMap;
-    exports.getParsedType = getParsedType;
-    exports.instanceof = instanceOfType;
-    exports.intersection = intersectionType;
-    exports.isAborted = isAborted;
-    exports.isAsync = isAsync;
-    exports.isDirty = isDirty;
-    exports.isValid = isValid;
-    exports.late = late;
-    exports.lazy = lazyType;
-    exports.literal = literalType;
-    exports.makeIssue = makeIssue;
-    exports.map = mapType;
-    exports.nan = nanType;
-    exports.nativeEnum = nativeEnumType;
-    exports.never = neverType;
-    exports.null = nullType;
-    exports.nullable = nullableType;
-    exports.number = numberType;
-    exports.object = objectType;
-    exports.oboolean = oboolean;
-    exports.onumber = onumber;
-    exports.optional = optionalType;
-    exports.ostring = ostring;
-    exports.pipeline = pipelineType;
-    exports.preprocess = preprocessType;
-    exports.promise = promiseType;
-    exports.quotelessJson = quotelessJson;
-    exports.record = recordType;
-    exports.set = setType;
-    exports.setErrorMap = setErrorMap;
-    exports.strictObject = strictObjectType;
-    exports.string = stringType;
-    exports.symbol = symbolType;
-    exports.transformer = effectsType;
-    exports.tuple = tupleType;
-    exports.undefined = undefinedType;
-    exports.union = unionType;
-    exports.unknown = unknownType;
-    exports.void = voidType;
-    exports.z = z;
+    const defaultExports = Object.isFrozen(z) ? Object.assign({}, z?.default || z || { __emptyModule: true }) : z;
+    Object.keys(namedExports || {}).filter((key) => !defaultExports[key]).forEach((key) => defaultExports[key] = namedExports[key]);
+    Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
+    var index = Object.isFrozen(z) ? Object.freeze(defaultExports) : defaultExports;
 
-    Object.defineProperty(exports, '__esModule', { value: true });
+    return index;
 
 }));

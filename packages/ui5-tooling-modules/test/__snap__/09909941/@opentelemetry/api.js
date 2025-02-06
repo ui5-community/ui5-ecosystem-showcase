@@ -1,4 +1,4 @@
-sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (function (exports, traceApi) { 'use strict';
+sap.ui.define(['ui5/ecosystem/demo/app/resources/trace-api'], (function (traceApi) { 'use strict';
 
     /*
      * Copyright The OpenTelemetry Authors
@@ -224,7 +224,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * limitations under the License.
      */
     // Default export.
-    var defaultExport = {
+    var defExp = {
         context: traceApi.context,
         diag: traceApi.diag,
         metrics: traceApi.metrics,
@@ -232,55 +232,43 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
         trace: traceApi.trace,
     };
 
-    let exp = defaultExport?.default || defaultExport || { __emptyModule: true };try { Object.defineProperty(exp, "__" + "esModule", { value: true }); exp.default = exp; } catch (ex) {}
+    var namedExports = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        DiagConsoleLogger: DiagConsoleLogger,
+        get DiagLogLevel () { return traceApi.DiagLogLevel; },
+        INVALID_SPANID: traceApi.INVALID_SPANID,
+        INVALID_SPAN_CONTEXT: traceApi.INVALID_SPAN_CONTEXT,
+        INVALID_TRACEID: traceApi.INVALID_TRACEID,
+        ProxyTracer: traceApi.ProxyTracer,
+        ProxyTracerProvider: traceApi.ProxyTracerProvider,
+        ROOT_CONTEXT: traceApi.ROOT_CONTEXT,
+        get SamplingDecision () { return traceApi.SamplingDecision; },
+        get SpanKind () { return traceApi.SpanKind; },
+        get SpanStatusCode () { return traceApi.SpanStatusCode; },
+        get TraceFlags () { return traceApi.TraceFlags; },
+        get ValueType () { return traceApi.ValueType; },
+        baggageEntryMetadataFromString: traceApi.baggageEntryMetadataFromString,
+        context: traceApi.context,
+        createContextKey: traceApi.createContextKey,
+        createNoopMeter: traceApi.createNoopMeter,
+        createTraceState: createTraceState,
+        default: defExp,
+        defaultTextMapGetter: traceApi.defaultTextMapGetter,
+        defaultTextMapSetter: traceApi.defaultTextMapSetter,
+        diag: traceApi.diag,
+        isSpanContextValid: traceApi.isSpanContextValid,
+        isValidSpanId: traceApi.isValidSpanId,
+        isValidTraceId: traceApi.isValidTraceId,
+        metrics: traceApi.metrics,
+        propagation: traceApi.propagation,
+        trace: traceApi.trace
+    });
 
-    Object.defineProperty(exports, "DiagLogLevel", {
-        enumerable: true,
-        get: function () { return traceApi.DiagLogLevel; }
-    });
-    exports.INVALID_SPANID = traceApi.INVALID_SPANID;
-    exports.INVALID_SPAN_CONTEXT = traceApi.INVALID_SPAN_CONTEXT;
-    exports.INVALID_TRACEID = traceApi.INVALID_TRACEID;
-    exports.ProxyTracer = traceApi.ProxyTracer;
-    exports.ProxyTracerProvider = traceApi.ProxyTracerProvider;
-    exports.ROOT_CONTEXT = traceApi.ROOT_CONTEXT;
-    Object.defineProperty(exports, "SamplingDecision", {
-        enumerable: true,
-        get: function () { return traceApi.SamplingDecision; }
-    });
-    Object.defineProperty(exports, "SpanKind", {
-        enumerable: true,
-        get: function () { return traceApi.SpanKind; }
-    });
-    Object.defineProperty(exports, "SpanStatusCode", {
-        enumerable: true,
-        get: function () { return traceApi.SpanStatusCode; }
-    });
-    Object.defineProperty(exports, "TraceFlags", {
-        enumerable: true,
-        get: function () { return traceApi.TraceFlags; }
-    });
-    Object.defineProperty(exports, "ValueType", {
-        enumerable: true,
-        get: function () { return traceApi.ValueType; }
-    });
-    exports.baggageEntryMetadataFromString = traceApi.baggageEntryMetadataFromString;
-    exports.context = traceApi.context;
-    exports.createContextKey = traceApi.createContextKey;
-    exports.createNoopMeter = traceApi.createNoopMeter;
-    exports.defaultTextMapGetter = traceApi.defaultTextMapGetter;
-    exports.defaultTextMapSetter = traceApi.defaultTextMapSetter;
-    exports.diag = traceApi.diag;
-    exports.isSpanContextValid = traceApi.isSpanContextValid;
-    exports.isValidSpanId = traceApi.isValidSpanId;
-    exports.isValidTraceId = traceApi.isValidTraceId;
-    exports.metrics = traceApi.metrics;
-    exports.propagation = traceApi.propagation;
-    exports.trace = traceApi.trace;
-    exports.DiagConsoleLogger = DiagConsoleLogger;
-    exports.createTraceState = createTraceState;
-    exports.default = exp;
+    const defaultExports = Object.isFrozen(defExp) ? Object.assign({}, defExp?.default || defExp || { __emptyModule: true }) : defExp;
+    Object.keys(namedExports || {}).filter((key) => !defaultExports[key]).forEach((key) => defaultExports[key] = namedExports[key]);
+    Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
+    var index = Object.isFrozen(defExp) ? Object.freeze(defaultExports) : defaultExports;
 
-    Object.defineProperty(exports, '__esModule', { value: true });
+    return index;
 
 }));

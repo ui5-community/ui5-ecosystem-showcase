@@ -42,14 +42,12 @@ sap.ui.define(['sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponent', 's
 	const pkg = {
 		"_ui5metadata": {
 	  "name": "@ui5/webcomponents-base",
-	  "version": "2.5.0",
+	  "version": "2.7.0",
 	  "dependencies": [
 	    "sap.ui.core"
 	  ],
 	  "types": [
 	    "@ui5/webcomponents-base.AnimationMode",
-	    "@ui5/webcomponents-base.AriaHasPopup",
-	    "@ui5/webcomponents-base.AriaRole",
 	    "@ui5/webcomponents-base.CalendarType",
 	    "@ui5/webcomponents-base.ItemNavigationBehavior",
 	    "@ui5/webcomponents-base.MovePlacement",
@@ -69,23 +67,6 @@ sap.ui.define(['sap/base/strings/hyphenate', 'sap/ui/core/webc/WebComponent', 's
 		"None": "None",
 	};
 	DataType.registerEnum("@ui5/webcomponents-base.AnimationMode", pkg["AnimationMode"]);
-
-	pkg["AriaHasPopup"] = {
-		"Dialog": "Dialog",
-		"Grid": "Grid",
-		"ListBox": "ListBox",
-		"Menu": "Menu",
-		"Tree": "Tree",
-	};
-	DataType.registerEnum("@ui5/webcomponents-base.AriaHasPopup", pkg["AriaHasPopup"]);
-
-	pkg["AriaRole"] = {
-		"AlertDialog": "AlertDialog",
-		"Button": "Button",
-		"Dialog": "Dialog",
-		"Link": "Link",
-	};
-	DataType.registerEnum("@ui5/webcomponents-base.AriaRole", pkg["AriaRole"]);
 
 	pkg["CalendarType"] = {
 		"Gregorian": "Gregorian",

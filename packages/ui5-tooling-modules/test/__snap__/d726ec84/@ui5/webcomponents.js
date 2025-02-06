@@ -3,7 +3,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'sap/ui/ba
 	const pkg = {
 		"_ui5metadata": {
 	  "name": "@ui5/webcomponents",
-	  "version": "2.5.0",
+	  "version": "2.7.0",
 	  "dependencies": [
 	    "sap.ui.core"
 	  ],
@@ -20,6 +20,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'sap/ui/ba
 	    "@ui5/webcomponents.BusyIndicatorSize",
 	    "@ui5/webcomponents.BusyIndicatorTextPlacement",
 	    "@ui5/webcomponents.ButtonAccessibleRole",
+	    "@ui5/webcomponents.ButtonBadgeDesign",
 	    "@ui5/webcomponents.ButtonDesign",
 	    "@ui5/webcomponents.ButtonType",
 	    "@ui5/webcomponents.CalendarLegendItemType",
@@ -28,6 +29,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'sap/ui/ba
 	    "@ui5/webcomponents.CarouselArrowsPlacement",
 	    "@ui5/webcomponents.CarouselPageIndicatorType",
 	    "@ui5/webcomponents.ComboBoxFilter",
+	    "@ui5/webcomponents.ExpandableTextOverflowMode",
 	    "@ui5/webcomponents.FormItemSpacing",
 	    "@ui5/webcomponents.Highlight",
 	    "@ui5/webcomponents.IconDesign",
@@ -50,6 +52,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'sap/ui/ba
 	    "@ui5/webcomponents.PopoverVerticalAlign",
 	    "@ui5/webcomponents.PopupAccessibleRole",
 	    "@ui5/webcomponents.Priority",
+	    "@ui5/webcomponents.RatingIndicatorSize",
 	    "@ui5/webcomponents.SegmentedButtonSelectionMode",
 	    "@ui5/webcomponents.SemanticColor",
 	    "@ui5/webcomponents.SwitchDesign",
@@ -77,6 +80,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'sap/ui/ba
 	    "@ui5/webcomponents.BreadcrumbsItem",
 	    "@ui5/webcomponents.BusyIndicator",
 	    "@ui5/webcomponents.Button",
+	    "@ui5/webcomponents.ButtonBadge",
 	    "@ui5/webcomponents.Calendar",
 	    "@ui5/webcomponents.CalendarDate",
 	    "@ui5/webcomponents.CalendarDateRange",
@@ -97,6 +101,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'sap/ui/ba
 	    "@ui5/webcomponents.DateRangePicker",
 	    "@ui5/webcomponents.DateTimePicker",
 	    "@ui5/webcomponents.Dialog",
+	    "@ui5/webcomponents.ExpandableText",
 	    "@ui5/webcomponents.FileUploader",
 	    "@ui5/webcomponents.Form",
 	    "@ui5/webcomponents.FormGroup",
@@ -146,6 +151,8 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'sap/ui/ba
 	    "@ui5/webcomponents.TableHeaderCell",
 	    "@ui5/webcomponents.TableHeaderRow",
 	    "@ui5/webcomponents.TableRow",
+	    "@ui5/webcomponents.TableRowAction",
+	    "@ui5/webcomponents.TableRowActionNavigation",
 	    "@ui5/webcomponents.TableSelection",
 	    "@ui5/webcomponents.TableVirtualizer",
 	    "@ui5/webcomponents.Tag",
@@ -263,6 +270,13 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'sap/ui/ba
 	};
 	DataType.registerEnum("@ui5/webcomponents.ButtonAccessibleRole", pkg["ButtonAccessibleRole"]);
 
+	pkg["ButtonBadgeDesign"] = {
+		"InlineText": "InlineText",
+		"OverlayText": "OverlayText",
+		"AttentionDot": "AttentionDot",
+	};
+	DataType.registerEnum("@ui5/webcomponents.ButtonBadgeDesign", pkg["ButtonBadgeDesign"]);
+
 	pkg["ButtonDesign"] = {
 		"Default": "Default",
 		"Positive": "Positive",
@@ -341,6 +355,12 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'sap/ui/ba
 		"None": "None",
 	};
 	DataType.registerEnum("@ui5/webcomponents.ComboBoxFilter", pkg["ComboBoxFilter"]);
+
+	pkg["ExpandableTextOverflowMode"] = {
+		"InPlace": "InPlace",
+		"Popover": "Popover",
+	};
+	DataType.registerEnum("@ui5/webcomponents.ExpandableTextOverflowMode", pkg["ExpandableTextOverflowMode"]);
 
 	pkg["FormItemSpacing"] = {
 		"Normal": "Normal",
@@ -517,6 +537,13 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'sap/ui/ba
 		"None": "None",
 	};
 	DataType.registerEnum("@ui5/webcomponents.Priority", pkg["Priority"]);
+
+	pkg["RatingIndicatorSize"] = {
+		"S": "S",
+		"M": "M",
+		"L": "L",
+	};
+	DataType.registerEnum("@ui5/webcomponents.RatingIndicatorSize", pkg["RatingIndicatorSize"]);
 
 	pkg["SegmentedButtonSelectionMode"] = {
 		"Single": "Single",
