@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.22.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.21.0...ui5-tooling-modules@3.22.0) (2025-02-07)
+
+
+### Features
+
+* **ui5-tooling-modules:** de-support AMD modules to ensure copyright headers ([#1167](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1167)) ([83cd60b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/83cd60be34a8ea96a12eb7890b7477793e67cdb5)), closes [#1163](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1163)
+
+
+
+
+
 # [3.21.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.20.6...ui5-tooling-modules@3.21.0) (2025-02-06)
 
 
