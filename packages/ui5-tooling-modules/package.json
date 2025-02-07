@@ -25,7 +25,6 @@
     "timeout": "20s"
   },
   "dependencies": {
-    "@buxlabs/amd-to-es6": "^0.16.3",
     "@javascript-obfuscator/escodegen": "^2.3.0",
     "@rollup/plugin-commonjs": "^28.0.2",
     "@rollup/plugin-inject": "^5.0.5",

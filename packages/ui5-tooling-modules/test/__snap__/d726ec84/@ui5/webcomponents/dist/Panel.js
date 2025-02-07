@@ -3856,131 +3856,254 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'ui5/ecosy
   var iconCss = `:host{-webkit-tap-highlight-color:rgba(0,0,0,0)}:host([hidden]){display:none}:host([invalid]){display:none}:host(:not([hidden]).ui5_hovered){opacity:.7}:host{display:inline-block;width:1rem;height:1rem;color:var(--sapContent_IconColor);fill:currentColor;outline:none}:host([design="Contrast"]){color:var(--sapContent_ContrastIconColor)}:host([design="Critical"]){color:var(--sapCriticalElementColor)}:host([design="Information"]){color:var(--sapInformativeElementColor)}:host([design="Negative"]){color:var(--sapNegativeElementColor)}:host([design="Neutral"]){color:var(--sapNeutralElementColor)}:host([design="NonInteractive"]){color:var(--sapContent_NonInteractiveIconColor)}:host([design="Positive"]){color:var(--sapPositiveElementColor)}:host([mode="Interactive"][desktop]) .ui5-icon-root:focus,:host([mode="Interactive"]) .ui5-icon-root:focus-visible{outline:var(--sapContent_FocusWidth) var(--sapContent_FocusStyle) var(--sapContent_FocusColor);border-radius:var(--ui5-v2-7-0-icon-focus-border-radius)}.ui5-icon-root{display:flex;height:100%;width:100%;outline:none;vertical-align:top}:host([mode="Interactive"]){cursor:pointer}.ui5-icon-root:not([dir=ltr]){transform:var(--_ui5-v2-7-0_icon_transform_scale);transform-origin:center}
 `;
 
-  var __decorate$2 = this && this.__decorate || (function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc); else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return (c > 3 && r && Object.defineProperty(target, key, r), r);
-  });
-  const ICON_NOT_FOUND = "ICON_NOT_FOUND";
-  let Icon = class Icon extends S$2 {
-    constructor() {
-      super(...arguments);
-      this.design = "Default";
-      this.showTooltip = false;
-      this.mode = "Image";
-      this.pathData = [];
-      this.invalid = false;
-    }
-    _onkeydown(e) {
-      if (this.mode !== IconMode$1.Interactive) {
-        return;
-      }
-      if (b$2(e)) {
-        this.fireDecoratorEvent("click");
-      }
-      if (i$8(e)) {
-        e.preventDefault();
-      }
-    }
-    _onkeyup(e) {
-      if (this.mode === IconMode$1.Interactive && i$8(e)) {
-        this.fireDecoratorEvent("click");
-      }
-    }
-    get _dir() {
-      return this.ltr ? "ltr" : undefined;
-    }
-    get effectiveAriaHidden() {
-      return this.mode === IconMode$1.Decorative ? "true" : undefined;
-    }
-    get _tabIndex() {
-      return this.mode === IconMode$1.Interactive ? 0 : undefined;
-    }
-    get effectiveAccessibleRole() {
-      switch (this.mode) {
-        case IconMode$1.Interactive:
-          return "button";
-        case IconMode$1.Decorative:
-          return "presentation";
-        default:
-          return "img";
-      }
-    }
-    onEnterDOM() {
-      if (_ui5_webcomponentsBase.f()) {
-        this.setAttribute("desktop", "");
-      }
-    }
-    async onBeforeRendering() {
-      const name = this.name;
-      if (!name) {
-        return console.warn("Icon name property is required", this);
-      }
-      let iconData = u$2(name);
-      if (!iconData) {
-        iconData = await n$2(name);
-      }
-      if (!iconData) {
-        this.invalid = true;
-        return console.warn(`Required icon is not registered. Invalid icon name: ${this.name}`);
-      }
-      if (iconData === ICON_NOT_FOUND) {
-        this.invalid = true;
-        return console.warn(`Required icon is not registered. You can either import the icon as a module in order to use it e.g. "@ui5/webcomponents-icons/dist/${name.replace("sap-icon://", "")}.js", or setup a JSON build step and import "@ui5/webcomponents-icons/dist/AllIcons.js".`);
-      }
-      this.viewBox = iconData.viewBox || "0 0 512 512";
-      if (iconData.customTemplate) {
-        iconData.pathData = [];
-        this.customSvg = n$6(iconData.customTemplate, this);
-      }
-      this.invalid = false;
-      this.pathData = Array.isArray(iconData.pathData) ? iconData.pathData : [iconData.pathData];
-      this.accData = iconData.accData;
-      this.ltr = iconData.ltr;
-      this.packageName = iconData.packageName;
-      if (this.accessibleName) {
-        this.effectiveAccessibleName = this.accessibleName;
-      } else if (this.accData) {
-        const i18nBundle = await f$4(this.packageName);
-        this.effectiveAccessibleName = i18nBundle.getText(this.accData) || undefined;
-      } else {
-        this.effectiveAccessibleName = undefined;
-      }
-    }
-    get hasIconTooltip() {
-      return this.showTooltip && this.effectiveAccessibleName;
-    }
+  var __decorate$2 = (this && this.__decorate) || function (decorators, target, key, desc) {
+      var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+      if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+      else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+      return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
-  __decorate$2([s$a()], Icon.prototype, "design", undefined);
-  __decorate$2([s$a()], Icon.prototype, "name", undefined);
-  __decorate$2([s$a()], Icon.prototype, "accessibleName", undefined);
-  __decorate$2([s$a({
-    type: Boolean
-  })], Icon.prototype, "showTooltip", undefined);
-  __decorate$2([s$a()], Icon.prototype, "mode", undefined);
-  __decorate$2([s$a({
-    type: Array
-  })], Icon.prototype, "pathData", undefined);
-  __decorate$2([s$a({
-    type: Object,
-    noAttribute: true
-  })], Icon.prototype, "accData", undefined);
-  __decorate$2([s$a({
-    type: Boolean
-  })], Icon.prototype, "invalid", undefined);
-  __decorate$2([s$a({
-    noAttribute: true
-  })], Icon.prototype, "effectiveAccessibleName", undefined);
-  Icon = __decorate$2([m$5({
-    tag: "ui5-icon",
-    languageAware: true,
-    themeAware: true,
-    renderer: d,
-    template: IconTemplate,
-    styles: iconCss
-  }), l$3("click", {
-    bubbles: true
-  })], Icon);
+  const ICON_NOT_FOUND = "ICON_NOT_FOUND";
+  /**
+   * @class
+   * ### Overview
+   *
+   * The `ui5-icon` component represents an SVG icon.
+   * There are two main scenarios how the `ui5-icon` component is used:
+   * as a purely decorative element,
+   * or as an interactive element that can be focused and clicked.
+   *
+   * ### Usage
+   *
+   * 1. **Get familiar with the icons collections.**
+   *
+   * Before displaying an icon, you need to explore the icons collections to find and import the desired icon.
+   *
+   * Currently there are 3 icons collection, available as 3 npm packages:
+   *
+   * - [@ui5/webcomponents-icons](https://www.npmjs.com/package/@ui5/webcomponents-icons) represents the "SAP-icons" collection and includes the following
+   * [icons](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#/overview/SAP-icons).
+   * - [@ui5/webcomponents-icons-tnt](https://www.npmjs.com/package/@ui5/webcomponents-icons-tnt) represents the "tnt" collection and includes the following
+   * [icons](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#/overview/SAP-icons-TNT).
+   * - [@ui5/webcomponents-icons-business-suite](https://www.npmjs.com/package/@ui5/webcomponents-icons-business-suite) represents the "business-suite" collection and includes the following
+   * [icons](https://ui5.sap.com/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#/overview/BusinessSuiteInAppSymbols).
+   *
+   * 2. **After exploring the icons collections, add one or more of the packages as dependencies to your project.**
+   *
+   * `npm i @ui5/webcomponents-icons`
+   * `npm i @ui5/webcomponents-icons-tnt`
+   * `npm i @ui5/webcomponents-icons-business-suite`
+   *
+   * 3. **Then, import the desired icon**.
+   *
+   * `import "@ui5/\{package_name\}/dist/\{icon_name\}.js";`
+   *
+   * **For Example**:
+   *
+   * For the standard "SAP-icons" icon collection, import an icon from the `@ui5/webcomponents-icons` package:
+   *
+   * `import "@ui5/webcomponents-icons/dist/employee.js";`
+   *
+   * For the "tnt" (SAP Fiori Tools) icon collection, import an icon from the `@ui5/webcomponents-icons-tnt` package:
+   *
+   * `import "@ui5/webcomponents-icons-tnt/dist/antenna.js";`
+   *
+   * For the "business-suite" (SAP Business Suite) icon collection, import an icon from the `@ui5/webcomponents-icons-business-suite` package:
+   *
+   * `import "@ui5/webcomponents-icons-business-suite/dist/ab-testing.js";`
+   *
+   * 4. **Display the icon using the `ui5-icon` web component.**
+   * Set the icon collection ("SAP-icons", "tnt" or "business-suite" - "SAP-icons" is the default icon collection and can be skipped)
+   * and the icon name to the `name` property.
+   *
+   * `<ui5-icon name="employee"></ui5-icon>`
+   * `<ui5-icon name="tnt/antenna"></ui5-icon>`
+   * `<ui5-icon name="business-suite/ab-testing"></ui5-icon>`
+   *
+   * ### Keyboard Handling
+   *
+   * - [Space] / [Enter] or [Return] - Fires the `click` event if the `mode` property is set to `Interactive`.
+   * - [Shift] - If [Space] / [Enter] or [Return] is pressed, pressing [Shift] releases the ui5-icon without triggering the click event.
+   *
+   * ### ES6 Module Import
+   *
+   * `import "@ui5/webcomponents/dist/Icon.js";`
+   * @csspart root - Used to style the outermost wrapper of the `ui5-icon`.
+   * @constructor
+   * @extends UI5Element
+   * @implements {IIcon}
+   * @public
+   */
+  let Icon = class Icon extends S$2 {
+      constructor() {
+          super(...arguments);
+          /**
+           * Defines the component semantic design.
+           * @default "Default"
+           * @public
+           * @since 1.9.2
+           */
+          this.design = "Default";
+          /**
+           * Defines whether the component should have a tooltip.
+           *
+           * **Note:** The tooltip text should be provided via the `accessible-name` property.
+           * @default false
+           * @public
+           */
+          this.showTooltip = false;
+          /**
+           * Defines the mode of the component.
+           * @default "Image"
+           * @public
+           * @since 2.0.0
+           */
+          this.mode = "Image";
+          /**
+           * @private
+           */
+          this.pathData = [];
+          /**
+          * @private
+          */
+          this.invalid = false;
+      }
+      _onkeydown(e) {
+          if (this.mode !== IconMode$1.Interactive) {
+              return;
+          }
+          if (b$2(e)) {
+              this.fireDecoratorEvent("click");
+          }
+          if (i$8(e)) {
+              e.preventDefault(); // prevent scrolling
+          }
+      }
+      _onkeyup(e) {
+          if (this.mode === IconMode$1.Interactive && i$8(e)) {
+              this.fireDecoratorEvent("click");
+          }
+      }
+      /**
+      * Enforce "ltr" direction, based on the icons collection metadata.
+      */
+      get _dir() {
+          return this.ltr ? "ltr" : undefined;
+      }
+      get effectiveAriaHidden() {
+          return this.mode === IconMode$1.Decorative ? "true" : undefined;
+      }
+      get _tabIndex() {
+          return this.mode === IconMode$1.Interactive ? 0 : undefined;
+      }
+      get effectiveAccessibleRole() {
+          switch (this.mode) {
+              case IconMode$1.Interactive:
+                  return "button";
+              case IconMode$1.Decorative:
+                  return "presentation";
+              default:
+                  return "img";
+          }
+      }
+      onEnterDOM() {
+          if (_ui5_webcomponentsBase.f()) {
+              this.setAttribute("desktop", "");
+          }
+      }
+      async onBeforeRendering() {
+          const name = this.name;
+          if (!name) {
+              /* eslint-disable-next-line */
+              return console.warn("Icon name property is required", this);
+          }
+          let iconData = u$2(name);
+          if (!iconData) {
+              iconData = await n$2(name);
+          }
+          if (!iconData) {
+              this.invalid = true;
+              /* eslint-disable-next-line */
+              return console.warn(`Required icon is not registered. Invalid icon name: ${this.name}`);
+          }
+          if (iconData === ICON_NOT_FOUND) {
+              this.invalid = true;
+              /* eslint-disable-next-line */
+              return console.warn(`Required icon is not registered. You can either import the icon as a module in order to use it e.g. "@ui5/webcomponents-icons/dist/${name.replace("sap-icon://", "")}.js", or setup a JSON build step and import "@ui5/webcomponents-icons/dist/AllIcons.js".`);
+          }
+          this.viewBox = iconData.viewBox || "0 0 512 512";
+          if (iconData.customTemplate) {
+              iconData.pathData = [];
+              this.customSvg = n$6(iconData.customTemplate, this);
+          }
+          // in case a new valid name is set, show the icon
+          this.invalid = false;
+          this.pathData = Array.isArray(iconData.pathData) ? iconData.pathData : [iconData.pathData];
+          this.accData = iconData.accData;
+          this.ltr = iconData.ltr;
+          this.packageName = iconData.packageName;
+          if (this.accessibleName) {
+              this.effectiveAccessibleName = this.accessibleName;
+          }
+          else if (this.accData) {
+              const i18nBundle = await f$4(this.packageName);
+              this.effectiveAccessibleName = i18nBundle.getText(this.accData) || undefined;
+          }
+          else {
+              this.effectiveAccessibleName = undefined;
+          }
+      }
+      get hasIconTooltip() {
+          return this.showTooltip && this.effectiveAccessibleName;
+      }
+  };
+  __decorate$2([
+      s$a()
+  ], Icon.prototype, "design", undefined);
+  __decorate$2([
+      s$a()
+  ], Icon.prototype, "name", undefined);
+  __decorate$2([
+      s$a()
+  ], Icon.prototype, "accessibleName", undefined);
+  __decorate$2([
+      s$a({ type: Boolean })
+  ], Icon.prototype, "showTooltip", undefined);
+  __decorate$2([
+      s$a()
+  ], Icon.prototype, "mode", undefined);
+  __decorate$2([
+      s$a({ type: Array })
+  ], Icon.prototype, "pathData", undefined);
+  __decorate$2([
+      s$a({ type: Object, noAttribute: true })
+  ], Icon.prototype, "accData", undefined);
+  __decorate$2([
+      s$a({ type: Boolean })
+  ], Icon.prototype, "invalid", undefined);
+  __decorate$2([
+      s$a({ noAttribute: true })
+  ], Icon.prototype, "effectiveAccessibleName", undefined);
+  Icon = __decorate$2([
+      m$5({
+          tag: "ui5-icon",
+          languageAware: true,
+          themeAware: true,
+          renderer: d,
+          template: IconTemplate,
+          styles: iconCss,
+      })
+      /**
+       * Fired on mouseup, `SPACE` and `ENTER`.
+       * - on mouse click, the icon fires native `click` event
+       * - on `SPACE` and `ENTER`, the icon fires custom `click` event
+       * @private
+       * @since 1.0.0-rc.8
+       */
+      ,
+      l$3("click", {
+          bubbles: true,
+      })
+  ], Icon);
   Icon.define();
   var Icon$1 = Icon;
 
@@ -4007,266 +4130,411 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'ui5/ecosy
   var buttonCss = `:host{vertical-align:middle}.ui5-hidden-text{position:absolute;clip:rect(1px,1px,1px,1px);user-select:none;left:-1000px;top:-1000px;pointer-events:none;font-size:0}:host(:not([hidden])){display:inline-block}:host{min-width:var(--_ui5-v2-7-0_button_base_min_width);height:var(--_ui5-v2-7-0_button_base_height);line-height:normal;font-family:var(--_ui5-v2-7-0_button_fontFamily);font-size:var(--sapFontSize);text-shadow:var(--_ui5-v2-7-0_button_text_shadow);border-radius:var(--_ui5-v2-7-0_button_border_radius);cursor:pointer;background-color:var(--sapButton_Background);border:var(--sapButton_BorderWidth) solid var(--sapButton_BorderColor);color:var(--sapButton_TextColor);box-sizing:border-box;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ui5-button-root{min-width:inherit;cursor:inherit;height:100%;width:100%;box-sizing:border-box;display:flex;justify-content:center;align-items:center;outline:none;padding:0 var(--_ui5-v2-7-0_button_base_padding);position:relative;background:transparent;border:none;color:inherit;text-shadow:inherit;font:inherit;white-space:inherit;overflow:inherit;text-overflow:inherit;letter-spacing:inherit;word-spacing:inherit;line-height:inherit;-webkit-user-select:none;-moz-user-select:none;user-select:none}:host(:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]):hover),:host(:not([hidden]):not([disabled]).ui5_hovered){background:var(--sapButton_Hover_Background);border:1px solid var(--sapButton_Hover_BorderColor);color:var(--sapButton_Hover_TextColor)}.ui5-button-icon,.ui5-button-end-icon{color:inherit;flex-shrink:0}.ui5-button-end-icon{margin-inline-start:var(--_ui5-v2-7-0_button_base_icon_margin)}:host([icon-only]:not([has-end-icon])) .ui5-button-root{min-width:auto;padding:0}:host([icon-only]) .ui5-button-text{display:none}.ui5-button-text{outline:none;position:relative;white-space:inherit;overflow:inherit;text-overflow:inherit}:host([has-icon]:not(:empty)) .ui5-button-text{margin-inline-start:var(--_ui5-v2-7-0_button_base_icon_margin)}:host([has-end-icon]:not([has-icon]):empty) .ui5-button-end-icon{margin-inline-start:0}:host([disabled]){opacity:var(--sapContent_DisabledOpacity);pointer-events:unset;cursor:default}:host([has-icon]:not([icon-only]):not([has-end-icon])) .ui5-button-text{min-width:calc(var(--_ui5-v2-7-0_button_base_min_width) - var(--_ui5-v2-7-0_button_base_icon_margin) - 1rem)}:host([disabled]:active){pointer-events:none}:host([desktop]:not([active])) .ui5-button-root:focus-within:after,:host(:not([active])) .ui5-button-root:focus-visible:after,:host([desktop][active][design="Emphasized"]) .ui5-button-root:focus-within:after,:host([active][design="Emphasized"]) .ui5-button-root:focus-visible:after,:host([desktop][active]) .ui5-button-root:focus-within:before,:host([active]) .ui5-button-root:focus-visible:before{content:"";position:absolute;box-sizing:border-box;inset:.0625rem;border:var(--_ui5-v2-7-0_button_focused_border);border-radius:var(--_ui5-v2-7-0_button_focused_border_radius)}:host([desktop][active]) .ui5-button-root:focus-within:before,:host([active]) .ui5-button-root:focus-visible:before{border-color:var(--_ui5-v2-7-0_button_pressed_focused_border_color)}:host([design="Emphasized"][desktop]) .ui5-button-root:focus-within:after,:host([design="Emphasized"]) .ui5-button-root:focus-visible:after{border-color:var(--_ui5-v2-7-0_button_emphasized_focused_border_color)}:host([design="Emphasized"][desktop]) .ui5-button-root:focus-within:before,:host([design="Emphasized"]) .ui5-button-root:focus-visible:before{content:"";position:absolute;box-sizing:border-box;inset:.0625rem;border:var(--_ui5-v2-7-0_button_emphasized_focused_border_before);border-radius:var(--_ui5-v2-7-0_button_focused_border_radius)}.ui5-button-root::-moz-focus-inner{border:0}bdi{display:block;white-space:inherit;overflow:inherit;text-overflow:inherit}:host([ui5-button][active]:not([disabled]):not([non-interactive])){background-image:none;background-color:var(--sapButton_Active_Background);border-color:var(--sapButton_Active_BorderColor);color:var(--sapButton_Active_TextColor)}:host([design="Positive"]){background-color:var(--sapButton_Accept_Background);border-color:var(--sapButton_Accept_BorderColor);color:var(--sapButton_Accept_TextColor)}:host([design="Positive"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]):hover),:host([design="Positive"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]).ui5_hovered){background-color:var(--sapButton_Accept_Hover_Background);border-color:var(--sapButton_Accept_Hover_BorderColor);color:var(--sapButton_Accept_Hover_TextColor)}:host([ui5-button][design="Positive"][active]:not([non-interactive])){background-color:var(--sapButton_Accept_Active_Background);border-color:var(--sapButton_Accept_Active_BorderColor);color:var(--sapButton_Accept_Active_TextColor)}:host([design="Negative"]){background-color:var(--sapButton_Reject_Background);border-color:var(--sapButton_Reject_BorderColor);color:var(--sapButton_Reject_TextColor)}:host([design="Negative"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]):hover),:host([design="Negative"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]).ui5_hovered){background-color:var(--sapButton_Reject_Hover_Background);border-color:var(--sapButton_Reject_Hover_BorderColor);color:var(--sapButton_Reject_Hover_TextColor)}:host([ui5-button][design="Negative"][active]:not([non-interactive])){background-color:var(--sapButton_Reject_Active_Background);border-color:var(--sapButton_Reject_Active_BorderColor);color:var(--sapButton_Reject_Active_TextColor)}:host([design="Attention"]){background-color:var(--sapButton_Attention_Background);border-color:var(--sapButton_Attention_BorderColor);color:var(--sapButton_Attention_TextColor)}:host([design="Attention"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]):hover),:host([design="Attention"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]).ui5_hovered){background-color:var(--sapButton_Attention_Hover_Background);border-color:var(--sapButton_Attention_Hover_BorderColor);color:var(--sapButton_Attention_Hover_TextColor)}:host([ui5-button][design="Attention"][active]:not([non-interactive])){background-color:var(--sapButton_Attention_Active_Background);border-color:var(--sapButton_Attention_Active_BorderColor);color:var(--sapButton_Attention_Active_TextColor)}:host([design="Emphasized"]){background-color:var(--sapButton_Emphasized_Background);border-color:var(--sapButton_Emphasized_BorderColor);border-width:var(--_ui5-v2-7-0_button_emphasized_border_width);color:var(--sapButton_Emphasized_TextColor);font-family:var(--sapFontBoldFamily )}:host([design="Emphasized"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]):hover),:host([design="Emphasized"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]).ui5_hovered){background-color:var(--sapButton_Emphasized_Hover_Background);border-color:var(--sapButton_Emphasized_Hover_BorderColor);border-width:var(--_ui5-v2-7-0_button_emphasized_border_width);color:var(--sapButton_Emphasized_Hover_TextColor)}:host([ui5-button][design="Empasized"][active]:not([non-interactive])){background-color:var(--sapButton_Emphasized_Active_Background);border-color:var(--sapButton_Emphasized_Active_BorderColor);color:var(--sapButton_Emphasized_Active_TextColor)}:host([design="Emphasized"][desktop]) .ui5-button-root:focus-within:after,:host([design="Emphasized"]) .ui5-button-root:focus-visible:after{border-color:var(--_ui5-v2-7-0_button_emphasized_focused_border_color);outline:none}:host([design="Emphasized"][desktop][active]:not([non-interactive])) .ui5-button-root:focus-within:after,:host([design="Emphasized"][active]:not([non-interactive])) .ui5-button-root:focus-visible:after{border-color:var(--_ui5-v2-7-0_button_emphasized_focused_active_border_color)}:host([design="Transparent"]){background-color:var(--sapButton_Lite_Background);color:var(--sapButton_Lite_TextColor);border-color:var(--sapButton_Lite_BorderColor)}:host([design="Transparent"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]):hover),:host([design="Transparent"]:not([active]):not([non-interactive]):not([_is-touch]):not([disabled]).ui5_hovered){background-color:var(--sapButton_Lite_Hover_Background);border-color:var(--sapButton_Lite_Hover_BorderColor);color:var(--sapButton_Lite_Hover_TextColor)}:host([ui5-button][design="Transparent"][active]:not([non-interactive])){background-color:var(--sapButton_Lite_Active_Background);border-color:var(--sapButton_Lite_Active_BorderColor);color:var(--sapButton_Active_TextColor)}:host([ui5-segmented-button-item][active][desktop]) .ui5-button-root:focus-within:after,:host([ui5-segmented-button-item][active]) .ui5-button-root:focus-visible:after,:host([pressed][desktop]) .ui5-button-root:focus-within:after,:host([pressed]) .ui5-button-root:focus-visible:after{border-color:var(--_ui5-v2-7-0_button_pressed_focused_border_color);outline:none}:host([ui5-segmented-button-item][desktop]:not(:last-child)) .ui5-button-root:focus-within:after,:host([ui5-segmented-button-item]:not(:last-child)) .ui5-button-root:focus-visible:after{border-top-right-radius:var(--_ui5-v2-7-0_button_focused_inner_border_radius);border-bottom-right-radius:var(--_ui5-v2-7-0_button_focused_inner_border_radius)}:host([ui5-segmented-button-item][desktop]:not(:first-child)) .ui5-button-root:focus-within:after,:host([ui5-segmented-button-item]:not(:first-child)) .ui5-button-root:focus-visible:after{border-top-left-radius:var(--_ui5-v2-7-0_button_focused_inner_border_radius);border-bottom-left-radius:var(--_ui5-v2-7-0_button_focused_inner_border_radius)}::slotted([slot="badge"][design="InlineText"]){pointer-events:initial;font-family:"72override",var(--sapFontFamily);font-size:var(--sapFontSmallSize);padding-inline-start:.25rem;--_ui5-v2-7-0-tag-height: .625rem}::slotted([slot="badge"][design="OverlayText"]){pointer-events:initial;position:absolute;top:0;inset-inline-end:0;margin:-.5rem;z-index:1000;font-family:"72override",var(--sapFontFamily);font-size:var(--sapFontSmallSize);--_ui5-v2-7-0-tag-height: .625rem}::slotted([slot="badge"][design="AttentionDot"]){pointer-events:initial;content:"";position:absolute;top:0;inset-inline-end:0;margin:-.25rem;z-index:1000}:host(:state(has-overlay-badge)){overflow:visible;margin-right:5px}
 `;
 
-  var __decorate$1 = this && this.__decorate || (function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc); else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return (c > 3 && r && Object.defineProperty(target, key, r), r);
-  });
+  var __decorate$1 = (this && this.__decorate) || function (decorators, target, key, desc) {
+      var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+      if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+      else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+      return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
   var Button_1;
   let isGlobalHandlerAttached = false;
   let activeButton = null;
+  /**
+   * @class
+   *
+   * ### Overview
+   *
+   * The `ui5-button` component represents a simple push button.
+   * It enables users to trigger actions by clicking or tapping the `ui5-button`, or by pressing
+   * certain keyboard keys, such as Enter.
+   *
+   * ### Usage
+   *
+   * For the `ui5-button` UI, you can define text, icon, or both. You can also specify
+   * whether the text or the icon is displayed first.
+   *
+   * You can choose from a set of predefined types that offer different
+   * styling to correspond to the triggered action.
+   *
+   * You can set the `ui5-button` as enabled or disabled. An enabled
+   * `ui5-button` can be pressed by clicking or tapping it. The button changes
+   * its style to provide visual feedback to the user that it is pressed or hovered over with
+   * the mouse cursor. A disabled `ui5-button` appears inactive and cannot be pressed.
+   *
+   * ### ES6 Module Import
+   *
+   * `import "@ui5/webcomponents/dist/Button.js";`
+   * @csspart button - Used to style the native button element
+   * @csspart icon - Used to style the icon in the native button element
+   * @csspart endIcon - Used to style the end icon in the native button element
+   * @constructor
+   * @extends UI5Element
+   * @implements { IButton }
+   * @public
+   */
   let Button = Button_1 = class Button extends S$2 {
-    constructor() {
-      super();
-      this.design = "Default";
-      this.disabled = false;
-      this.submits = false;
-      this.accessibilityAttributes = {};
-      this.type = "Button";
-      this.accessibleRole = "Button";
-      this.active = false;
-      this.iconOnly = false;
-      this.hasIcon = false;
-      this.hasEndIcon = false;
-      this.nonInteractive = false;
-      this._iconSettings = {};
-      this.forcedTabIndex = "0";
-      this._isTouch = false;
-      this._cancelAction = false;
-      this._deactivate = () => {
-        if (activeButton) {
-          activeButton._setActiveState(false);
-        }
-      };
-      if (!isGlobalHandlerAttached) {
-        document.addEventListener("mouseup", this._deactivate);
-        isGlobalHandlerAttached = true;
+      constructor() {
+          super();
+          /**
+           * Defines the component design.
+           * @default "Default"
+           * @public
+           */
+          this.design = "Default";
+          /**
+           * Defines whether the component is disabled.
+           * A disabled component can't be pressed or
+           * focused, and it is not in the tab chain.
+           * @default false
+           * @public
+           */
+          this.disabled = false;
+          /**
+           * When set to `true`, the component will
+           * automatically submit the nearest HTML form element on `press`.
+           *
+           * **Note:** This property is only applicable within the context of an HTML Form element.`
+           * @default false
+           * @public
+           * @deprecated Set the "type" property to "Submit" to achieve the same result. The "submits" property is ignored if "type" is set to any value other than "Button".
+           */
+          this.submits = false;
+          /**
+           * Defines the additional accessibility attributes that will be applied to the component.
+           * The following fields are supported:
+           *
+           * - **expanded**: Indicates whether the button, or another grouping element it controls, is currently expanded or collapsed.
+           * Accepts the following string values: `true` or `false`
+           *
+           * - **hasPopup**: Indicates the availability and type of interactive popup element, such as menu or dialog, that can be triggered by the button.
+           * Accepts the following string values: `dialog`, `grid`, `listbox`, `menu` or `tree`.
+           *
+           * - **controls**: Identifies the element (or elements) whose contents or presence are controlled by the button element.
+           * Accepts a lowercase string value.
+           *
+           * @public
+           * @since 1.2.0
+           * @default {}
+           */
+          this.accessibilityAttributes = {};
+          /**
+           * Defines whether the button has special form-related functionality.
+           *
+           * **Note:** This property is only applicable within the context of an HTML Form element.
+           * @default "Button"
+           * @public
+           * @since 1.15.0
+           */
+          this.type = "Button";
+          /**
+           * Describes the accessibility role of the button.
+           *
+           * **Note:** Use <code>ButtonAccessibleRole.Link</code> role only with a press handler, which performs a navigation. In all other scenarios the default button semantics are recommended.
+           *
+           * @default "Button"
+           * @public
+           * @since 1.23
+           */
+          this.accessibleRole = "Button";
+          /**
+           * Used to switch the active state (pressed or not) of the component.
+           * @private
+           */
+          this.active = false;
+          /**
+           * Defines if a content has been added to the default slot
+           * @private
+           */
+          this.iconOnly = false;
+          /**
+           * Indicates if the elements has a slotted icon
+           * @private
+           */
+          this.hasIcon = false;
+          /**
+           * Indicates if the elements has a slotted end icon
+           * @private
+           */
+          this.hasEndIcon = false;
+          /**
+           * Indicates if the element is focusable
+           * @private
+           */
+          this.nonInteractive = false;
+          /**
+           * @private
+           */
+          this._iconSettings = {};
+          /**
+           * Defines the tabIndex of the component.
+           * @private
+           */
+          this.forcedTabIndex = "0";
+          /**
+           * @since 1.0.0-rc.13
+           * @private
+           */
+          this._isTouch = false;
+          this._cancelAction = false;
+          this._deactivate = () => {
+              if (activeButton) {
+                  activeButton._setActiveState(false);
+              }
+          };
+          if (!isGlobalHandlerAttached) {
+              document.addEventListener("mouseup", this._deactivate);
+              isGlobalHandlerAttached = true;
+          }
       }
-    }
-    _ontouchstart() {
-      if (this.nonInteractive) {
-        return;
+      _ontouchstart() {
+          if (this.nonInteractive) {
+              return;
+          }
+          this._setActiveState(true);
       }
-      this._setActiveState(true);
-    }
-    onEnterDOM() {
-      if (_ui5_webcomponentsBase.f()) {
-        this.setAttribute("desktop", "");
+      onEnterDOM() {
+          if (_ui5_webcomponentsBase.f()) {
+              this.setAttribute("desktop", "");
+          }
       }
-    }
-    async onBeforeRendering() {
-      this._setBadgeOverlayStyle();
-      this.hasIcon = !!this.icon;
-      this.hasEndIcon = !!this.endIcon;
-      this.iconOnly = this.isIconOnly;
-      this.buttonTitle = this.tooltip || await this.getDefaultTooltip();
-    }
-    _setBadgeOverlayStyle() {
-      const needsOverflowVisible = this.badge.length && (this.badge[0].design === ButtonBadgeDesign$1.AttentionDot || this.badge[0].design === ButtonBadgeDesign$1.OverlayText);
-      if (needsOverflowVisible) {
-        this._internals.states.add("has-overlay-badge");
-      } else {
-        this._internals.states.delete("has-overlay-badge");
+      async onBeforeRendering() {
+          this._setBadgeOverlayStyle();
+          this.hasIcon = !!this.icon;
+          this.hasEndIcon = !!this.endIcon;
+          this.iconOnly = this.isIconOnly;
+          this.buttonTitle = this.tooltip || await this.getDefaultTooltip();
       }
-    }
-    _onclick() {
-      if (this.nonInteractive) {
-        return;
+      _setBadgeOverlayStyle() {
+          const needsOverflowVisible = this.badge.length && (this.badge[0].design === ButtonBadgeDesign$1.AttentionDot || this.badge[0].design === ButtonBadgeDesign$1.OverlayText);
+          if (needsOverflowVisible) {
+              this._internals.states.add("has-overlay-badge");
+          }
+          else {
+              this._internals.states.delete("has-overlay-badge");
+          }
       }
-      if (this._isSubmit) {
-        i$6(this);
+      _onclick() {
+          if (this.nonInteractive) {
+              return;
+          }
+          if (this._isSubmit) {
+              i$6(this);
+          }
+          if (this._isReset) {
+              m$4(this);
+          }
+          if (_ui5_webcomponentsBase.h$2()) {
+              this.getDomRef()?.focus();
+          }
       }
-      if (this._isReset) {
-        m$4(this);
+      _onmousedown() {
+          if (this.nonInteractive) {
+              return;
+          }
+          this._setActiveState(true);
+          activeButton = this; // eslint-disable-line
       }
-      if (_ui5_webcomponentsBase.h$2()) {
-        this.getDomRef()?.focus();
+      _ontouchend(e) {
+          if (this.disabled) {
+              e.preventDefault();
+              e.stopPropagation();
+          }
+          if (this.active) {
+              this._setActiveState(false);
+          }
+          if (activeButton) {
+              activeButton._setActiveState(false);
+          }
       }
-    }
-    _onmousedown() {
-      if (this.nonInteractive) {
-        return;
+      _onkeydown(e) {
+          this._cancelAction = io(e) || H$1(e);
+          if (i$8(e) || b$2(e)) {
+              this._setActiveState(true);
+          }
+          else if (this._cancelAction) {
+              this._setActiveState(false);
+          }
       }
-      this._setActiveState(true);
-      activeButton = this;
-    }
-    _ontouchend(e) {
-      if (this.disabled) {
-        e.preventDefault();
-        e.stopPropagation();
+      _onkeyup(e) {
+          if (this._cancelAction) {
+              e.preventDefault();
+          }
+          if (i$8(e) || b$2(e)) {
+              if (this.active) {
+                  this._setActiveState(false);
+              }
+          }
       }
-      if (this.active) {
-        this._setActiveState(false);
+      _onfocusout() {
+          if (this.nonInteractive) {
+              return;
+          }
+          if (this.active) {
+              this._setActiveState(false);
+          }
       }
-      if (activeButton) {
-        activeButton._setActiveState(false);
+      _setActiveState(active) {
+          const eventPrevented = !this.fireDecoratorEvent("active-state-change");
+          if (eventPrevented) {
+              return;
+          }
+          this.active = active;
       }
-    }
-    _onkeydown(e) {
-      this._cancelAction = io(e) || H$1(e);
-      if (i$8(e) || b$2(e)) {
-        this._setActiveState(true);
-      } else if (this._cancelAction) {
-        this._setActiveState(false);
+      get _hasPopup() {
+          return this.accessibilityAttributes.hasPopup;
       }
-    }
-    _onkeyup(e) {
-      if (this._cancelAction) {
-        e.preventDefault();
+      get hasButtonType() {
+          return this.design !== ButtonDesign$1.Default && this.design !== ButtonDesign$1.Transparent;
       }
-      if (i$8(e) || b$2(e)) {
-        if (this.active) {
-          this._setActiveState(false);
-        }
+      get isIconOnly() {
+          return !t(this.text);
       }
-    }
-    _onfocusout() {
-      if (this.nonInteractive) {
-        return;
+      static typeTextMappings() {
+          return {
+              "Positive": BUTTON_ARIA_TYPE_ACCEPT,
+              "Negative": BUTTON_ARIA_TYPE_REJECT,
+              "Emphasized": BUTTON_ARIA_TYPE_EMPHASIZED,
+          };
       }
-      if (this.active) {
-        this._setActiveState(false);
+      getDefaultTooltip() {
+          if (!l()) {
+              return;
+          }
+          return A$2(this.icon);
       }
-    }
-    _setActiveState(active) {
-      const eventPrevented = !this.fireDecoratorEvent("active-state-change");
-      if (eventPrevented) {
-        return;
+      get buttonTypeText() {
+          return Button_1.i18nBundle.getText(Button_1.typeTextMappings()[this.design]);
       }
-      this.active = active;
-    }
-    get _hasPopup() {
-      return this.accessibilityAttributes.hasPopup;
-    }
-    get hasButtonType() {
-      return this.design !== ButtonDesign$1.Default && this.design !== ButtonDesign$1.Transparent;
-    }
-    get isIconOnly() {
-      return !t(this.text);
-    }
-    static typeTextMappings() {
-      return {
-        "Positive": BUTTON_ARIA_TYPE_ACCEPT,
-        "Negative": BUTTON_ARIA_TYPE_REJECT,
-        "Emphasized": BUTTON_ARIA_TYPE_EMPHASIZED
-      };
-    }
-    getDefaultTooltip() {
-      if (!l()) {
-        return;
+      get effectiveAccRole() {
+          return n(this.accessibleRole);
       }
-      return A$2(this.icon);
-    }
-    get buttonTypeText() {
-      return Button_1.i18nBundle.getText(Button_1.typeTextMappings()[this.design]);
-    }
-    get effectiveAccRole() {
-      return n(this.accessibleRole);
-    }
-    get tabIndexValue() {
-      if (this.disabled) {
-        return;
+      get tabIndexValue() {
+          if (this.disabled) {
+              return;
+          }
+          const tabindex = this.getAttribute("tabindex");
+          if (tabindex) {
+              return Number.parseInt(tabindex);
+          }
+          return this.nonInteractive ? -1 : Number.parseInt(this.forcedTabIndex);
       }
-      const tabindex = this.getAttribute("tabindex");
-      if (tabindex) {
-        return Number.parseInt(tabindex);
+      get showIconTooltip() {
+          return l() && this.iconOnly && !this.tooltip;
       }
-      return this.nonInteractive ? -1 : Number.parseInt(this.forcedTabIndex);
-    }
-    get showIconTooltip() {
-      return l() && this.iconOnly && !this.tooltip;
-    }
-    get ariaLabelText() {
-      return A(this);
-    }
-    get ariaDescribedbyText() {
-      return this.hasButtonType ? "ui5-button-hiddenText-type" : undefined;
-    }
-    get ariaDescriptionText() {
-      return this.accessibleDescription === "" ? undefined : this.accessibleDescription;
-    }
-    get _isSubmit() {
-      return this.type === ButtonType$1.Submit || this.submits;
-    }
-    get _isReset() {
-      return this.type === ButtonType$1.Reset;
-    }
-    get shouldRenderBadge() {
-      return !!this.badge.length && (!!this.badge[0].text.length || this.badge[0].design === ButtonBadgeDesign$1.AttentionDot);
-    }
+      get ariaLabelText() {
+          return A(this);
+      }
+      get ariaDescribedbyText() {
+          return this.hasButtonType ? "ui5-button-hiddenText-type" : undefined;
+      }
+      get ariaDescriptionText() {
+          return this.accessibleDescription === "" ? undefined : this.accessibleDescription;
+      }
+      get _isSubmit() {
+          return this.type === ButtonType$1.Submit || this.submits;
+      }
+      get _isReset() {
+          return this.type === ButtonType$1.Reset;
+      }
+      get shouldRenderBadge() {
+          return !!this.badge.length && (!!this.badge[0].text.length || this.badge[0].design === ButtonBadgeDesign$1.AttentionDot);
+      }
   };
-  __decorate$1([s$a()], Button.prototype, "design", undefined);
-  __decorate$1([s$a({
-    type: Boolean
-  })], Button.prototype, "disabled", undefined);
-  __decorate$1([s$a()], Button.prototype, "icon", undefined);
-  __decorate$1([s$a()], Button.prototype, "endIcon", undefined);
-  __decorate$1([s$a({
-    type: Boolean
-  })], Button.prototype, "submits", undefined);
-  __decorate$1([s$a()], Button.prototype, "tooltip", undefined);
-  __decorate$1([s$a()], Button.prototype, "accessibleName", undefined);
-  __decorate$1([s$a()], Button.prototype, "accessibleNameRef", undefined);
-  __decorate$1([s$a({
-    type: Object
-  })], Button.prototype, "accessibilityAttributes", undefined);
-  __decorate$1([s$a()], Button.prototype, "accessibleDescription", undefined);
-  __decorate$1([s$a()], Button.prototype, "type", undefined);
-  __decorate$1([s$a()], Button.prototype, "accessibleRole", undefined);
-  __decorate$1([s$a({
-    type: Boolean
-  })], Button.prototype, "active", undefined);
-  __decorate$1([s$a({
-    type: Boolean
-  })], Button.prototype, "iconOnly", undefined);
-  __decorate$1([s$a({
-    type: Boolean
-  })], Button.prototype, "hasIcon", undefined);
-  __decorate$1([s$a({
-    type: Boolean
-  })], Button.prototype, "hasEndIcon", undefined);
-  __decorate$1([s$a({
-    type: Boolean
-  })], Button.prototype, "nonInteractive", undefined);
-  __decorate$1([s$a({
-    noAttribute: true
-  })], Button.prototype, "buttonTitle", undefined);
-  __decorate$1([s$a({
-    type: Object
-  })], Button.prototype, "_iconSettings", undefined);
-  __decorate$1([s$a({
-    noAttribute: true
-  })], Button.prototype, "forcedTabIndex", undefined);
-  __decorate$1([s$a({
-    type: Boolean
-  })], Button.prototype, "_isTouch", undefined);
-  __decorate$1([s$a({
-    type: Boolean,
-    noAttribute: true
-  })], Button.prototype, "_cancelAction", undefined);
-  __decorate$1([d$5({
-    type: Node,
-    "default": true
-  })], Button.prototype, "text", undefined);
-  __decorate$1([d$5({
-    type: HTMLElement,
-    invalidateOnChildChange: true
-  })], Button.prototype, "badge", undefined);
-  __decorate$1([i("@ui5/webcomponents")], Button, "i18nBundle", undefined);
-  Button = Button_1 = __decorate$1([m$5({
-    tag: "ui5-button",
-    formAssociated: true,
-    languageAware: true,
-    renderer: d,
-    template: ButtonTemplate,
-    styles: buttonCss,
-    shadowRootOptions: {
-      delegatesFocus: true
-    }
-  }), l$3("active-state-change", {
-    bubbles: true,
-    cancelable: true
-  })], Button);
+  __decorate$1([
+      s$a()
+  ], Button.prototype, "design", undefined);
+  __decorate$1([
+      s$a({ type: Boolean })
+  ], Button.prototype, "disabled", undefined);
+  __decorate$1([
+      s$a()
+  ], Button.prototype, "icon", undefined);
+  __decorate$1([
+      s$a()
+  ], Button.prototype, "endIcon", undefined);
+  __decorate$1([
+      s$a({ type: Boolean })
+  ], Button.prototype, "submits", undefined);
+  __decorate$1([
+      s$a()
+  ], Button.prototype, "tooltip", undefined);
+  __decorate$1([
+      s$a()
+  ], Button.prototype, "accessibleName", undefined);
+  __decorate$1([
+      s$a()
+  ], Button.prototype, "accessibleNameRef", undefined);
+  __decorate$1([
+      s$a({ type: Object })
+  ], Button.prototype, "accessibilityAttributes", undefined);
+  __decorate$1([
+      s$a()
+  ], Button.prototype, "accessibleDescription", undefined);
+  __decorate$1([
+      s$a()
+  ], Button.prototype, "type", undefined);
+  __decorate$1([
+      s$a()
+  ], Button.prototype, "accessibleRole", undefined);
+  __decorate$1([
+      s$a({ type: Boolean })
+  ], Button.prototype, "active", undefined);
+  __decorate$1([
+      s$a({ type: Boolean })
+  ], Button.prototype, "iconOnly", undefined);
+  __decorate$1([
+      s$a({ type: Boolean })
+  ], Button.prototype, "hasIcon", undefined);
+  __decorate$1([
+      s$a({ type: Boolean })
+  ], Button.prototype, "hasEndIcon", undefined);
+  __decorate$1([
+      s$a({ type: Boolean })
+  ], Button.prototype, "nonInteractive", undefined);
+  __decorate$1([
+      s$a({ noAttribute: true })
+  ], Button.prototype, "buttonTitle", undefined);
+  __decorate$1([
+      s$a({ type: Object })
+  ], Button.prototype, "_iconSettings", undefined);
+  __decorate$1([
+      s$a({ noAttribute: true })
+  ], Button.prototype, "forcedTabIndex", undefined);
+  __decorate$1([
+      s$a({ type: Boolean })
+  ], Button.prototype, "_isTouch", undefined);
+  __decorate$1([
+      s$a({ type: Boolean, noAttribute: true })
+  ], Button.prototype, "_cancelAction", undefined);
+  __decorate$1([
+      d$5({ type: Node, "default": true })
+  ], Button.prototype, "text", undefined);
+  __decorate$1([
+      d$5({ type: HTMLElement, invalidateOnChildChange: true })
+  ], Button.prototype, "badge", undefined);
+  __decorate$1([
+      i("@ui5/webcomponents")
+  ], Button, "i18nBundle", undefined);
+  Button = Button_1 = __decorate$1([
+      m$5({
+          tag: "ui5-button",
+          formAssociated: true,
+          languageAware: true,
+          renderer: d,
+          template: ButtonTemplate,
+          styles: buttonCss,
+          shadowRootOptions: { delegatesFocus: true },
+      })
+      /**
+       * Fired whenever the active state of the component changes.
+       * @private
+       */
+      ,
+      l$3("active-state-change", {
+          bubbles: true,
+          cancelable: true,
+      })
+  ], Button);
   Button.define();
   var Button$1 = Button;
 
@@ -4318,200 +4586,326 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents-base', 'ui5/ecosy
   var panelCss = `.ui5-hidden-text{position:absolute;clip:rect(1px,1px,1px,1px);user-select:none;left:-1000px;top:-1000px;pointer-events:none;font-size:0}:host(:not([hidden])){display:block}:host{font-family:"72override",var(--sapFontFamily);background-color:var(--sapGroup_TitleBackground);border-radius:var(--_ui5-v2-7-0_panel_border_radius)}:host(:not([collapsed])){border-bottom:var(--_ui5-v2-7-0_panel_border_bottom)}:host([fixed]) .ui5-panel-header{padding-left:1rem}.ui5-panel-header{min-height:var(--_ui5-v2-7-0_panel_header_height);width:100%;position:relative;display:flex;justify-content:flex-start;align-items:center;outline:none;box-sizing:border-box;padding-right:var(--_ui5-v2-7-0_panel_header_padding_right);font-family:"72override",var(--sapFontHeaderFamily);font-size:var(--sapGroup_Title_FontSize);font-weight:400;color:var(--sapGroup_TitleTextColor)}.ui5-panel-header-icon{color:var(--_ui5-v2-7-0_panel_icon_color)}.ui5-panel-header-button-animated{transition:transform .4s ease-out}:host(:not([_has-header]):not([fixed])) .ui5-panel-header{cursor:pointer}:host(:not([_has-header]):not([fixed])) .ui5-panel-header:focus:after{content:"";position:absolute;pointer-events:none;z-index:2;border:var(--_ui5-v2-7-0_panel_focus_border);border-radius:var(--_ui5-v2-7-0_panel_border_radius);top:var(--_ui5-v2-7-0_panel_focus_offset);bottom:var(--_ui5-v2-7-0_panel_focus_bottom_offset);left:var(--_ui5-v2-7-0_panel_focus_offset);right:var(--_ui5-v2-7-0_panel_focus_offset)}:host(:not([collapsed]):not([_has-header]):not([fixed])) .ui5-panel-header:focus:after{border-radius:var(--_ui5-v2-7-0_panel_border_radius_expanded)}:host(:not([collapsed])) .ui5-panel-header-button:not(.ui5-panel-header-button-with-icon),:host(:not([collapsed])) .ui5-panel-header-icon-wrapper [ui5-icon]{transform:var(--_ui5-v2-7-0_panel_toggle_btn_rotation)}:host([fixed]) .ui5-panel-header-title{width:100%}.ui5-panel-heading-wrapper.ui5-panel-heading-wrapper-sticky{position:sticky;top:0;background-color:var(--_ui5-v2-7-0_panel_header_background_color);z-index:100;border-radius:var(--_ui5-v2-7-0_panel_border_radius)}.ui5-panel-header-title{width:calc(100% - var(--_ui5-v2-7-0_panel_button_root_width));overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ui5-panel-content{padding:var(--_ui5-v2-7-0_panel_content_padding);background-color:var(--sapGroup_ContentBackground);outline:none;border-bottom-left-radius:var(--_ui5-v2-7-0_panel_border_radius);border-bottom-right-radius:var(--_ui5-v2-7-0_panel_border_radius);overflow:auto}.ui5-panel-header-button-root{display:flex;justify-content:center;align-items:center;flex-shrink:0;width:var(--_ui5-v2-7-0_panel_button_root_width);height:var(--_ui5-v2-7-0_panel_button_root_height);padding:var(--_ui5-v2-7-0_panel_header_button_wrapper_padding);box-sizing:border-box}:host([fixed]:not([collapsed]):not([_has-header])) .ui5-panel-header,:host([collapsed]) .ui5-panel-header{border-bottom:.0625rem solid var(--sapGroup_TitleBorderColor)}:host([collapsed]) .ui5-panel-header{border-bottom-left-radius:var(--_ui5-v2-7-0_panel_border_radius);border-bottom-right-radius:var(--_ui5-v2-7-0_panel_border_radius)}:host(:not([fixed]):not([collapsed])) .ui5-panel-header{border-bottom:var(--_ui5-v2-7-0_panel_default_header_border)}[ui5-button].ui5-panel-header-button{display:flex;justify-content:center;align-items:center;min-width:initial;height:100%;width:100%}.ui5-panel-header-icon-wrapper{display:flex;justify-content:center;align-items:center}.ui5-panel-header-icon-wrapper,.ui5-panel-header-icon-wrapper .ui5-panel-header-icon{color:inherit}.ui5-panel-header-icon-wrapper,[ui5-button].ui5-panel-header-button-with-icon [ui5-icon]{pointer-events:none}.ui5-panel-root{height:100%;display:flex;flex-direction:column}
 `;
 
-  var __decorate = this && this.__decorate || (function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc); else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return (c > 3 && r && Object.defineProperty(target, key, r), r);
-  });
-  var Panel_1;
-  let Panel = Panel_1 = class Panel extends S$2 {
-    constructor() {
-      super(...arguments);
-      this.fixed = false;
-      this.collapsed = false;
-      this.noAnimation = false;
-      this.accessibleRole = "Form";
-      this.headerLevel = "H2";
-      this.stickyHeader = false;
-      this.useAccessibleNameForToggleButton = false;
-      this._hasHeader = false;
-      this._contentExpanded = false;
-      this._animationRunning = false;
-    }
-    onBeforeRendering() {
-      if (!this._animationRunning) {
-        this._contentExpanded = !this.collapsed;
-      }
-      this._hasHeader = !!this.header.length;
-    }
-    shouldToggle(element) {
-      const customContent = this.header.length;
-      if (customContent) {
-        return element.classList.contains("ui5-panel-header-button");
-      }
-      return true;
-    }
-    get shouldNotAnimate() {
-      return this.noAnimation || d$7() === _ui5_webcomponentsBase.u.None;
-    }
-    _headerClick(e) {
-      if (!this.shouldToggle(e.target)) {
-        return;
-      }
-      this._toggleOpen();
-    }
-    _toggleButtonClick(e) {
-      if (e.x === 0 && e.y === 0) {
-        e.stopImmediatePropagation();
-      }
-    }
-    _headerKeyDown(e) {
-      if (!this.shouldToggle(e.target)) {
-        return;
-      }
-      if (b$2(e)) {
-        e.preventDefault();
-      }
-      if (i$8(e)) {
-        e.preventDefault();
-      }
-    }
-    _headerKeyUp(e) {
-      if (!this.shouldToggle(e.target)) {
-        return;
-      }
-      if (b$2(e)) {
-        this._toggleOpen();
-      }
-      if (i$8(e)) {
-        this._toggleOpen();
-      }
-    }
-    _toggleOpen() {
-      if (this.fixed) {
-        return;
-      }
-      this.collapsed = !this.collapsed;
-      if (this.shouldNotAnimate) {
-        this.fireDecoratorEvent("toggle");
-        return;
-      }
-      this._animationRunning = true;
-      const elements = this.getDomRef().querySelectorAll(".ui5-panel-content");
-      const animations = [];
-      [].forEach.call(elements, oElement => {
-        if (this.collapsed) {
-          animations.push(u$6(oElement).promise());
-        } else {
-          animations.push(b$3(oElement).promise());
-        }
-      });
-      Promise.all(animations).then(() => {
-        this._animationRunning = false;
-        this._contentExpanded = !this.collapsed;
-        this.fireDecoratorEvent("toggle");
-      });
-    }
-    _headerOnTarget(target) {
-      return target.classList.contains("sapMPanelWrappingDiv");
-    }
-    get toggleButtonTitle() {
-      return Panel_1.i18nBundle.getText(PANEL_ICON);
-    }
-    get expanded() {
-      return !this.collapsed;
-    }
-    get accRole() {
-      return this.accessibleRole.toLowerCase();
-    }
-    get effectiveAccessibleName() {
-      return typeof this.accessibleName === "string" && this.accessibleName.length ? this.accessibleName : undefined;
-    }
-    get accInfo() {
-      return {
-        "button": {
-          "accessibilityAttributes": {
-            "expanded": this.expanded
-          },
-          "title": this.toggleButtonTitle,
-          "ariaLabelButton": !this.nonFocusableButton && this.useAccessibleNameForToggleButton ? this.effectiveAccessibleName : undefined
-        },
-        "ariaExpanded": this.nonFixedInternalHeader ? this.expanded : undefined,
-        "ariaControls": this.nonFixedInternalHeader ? `${this._id}-content` : undefined,
-        "ariaLabelledby": this.nonFocusableButton ? this.ariaLabelledbyReference : undefined,
-        "role": this.nonFixedInternalHeader ? "button" : undefined
-      };
-    }
-    get ariaLabelledbyReference() {
-      return this.nonFocusableButton && this.headerText && !this.fixed ? `${this._id}-header-title` : undefined;
-    }
-    get fixedPanelAriaLabelledbyReference() {
-      return this.fixed && !this.effectiveAccessibleName ? `${this._id}-header-title` : undefined;
-    }
-    get headerAriaLevel() {
-      return Number.parseInt(this.headerLevel.slice(1));
-    }
-    get headerTabIndex() {
-      return this.header.length || this.fixed ? -1 : 0;
-    }
-    get headingWrapperAriaLevel() {
-      return !this._hasHeader ? this.headerAriaLevel : undefined;
-    }
-    get headingWrapperRole() {
-      return !this._hasHeader ? "heading" : undefined;
-    }
-    get nonFixedInternalHeader() {
-      return !this._hasHeader && !this.fixed;
-    }
-    get hasHeaderOrHeaderText() {
-      return this._hasHeader || this.headerText;
-    }
-    get nonFocusableButton() {
-      return !this.header.length;
-    }
+  var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+      var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+      if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+      else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+      return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
-  __decorate([s$a()], Panel.prototype, "headerText", undefined);
-  __decorate([s$a({
-    type: Boolean
-  })], Panel.prototype, "fixed", undefined);
-  __decorate([s$a({
-    type: Boolean
-  })], Panel.prototype, "collapsed", undefined);
-  __decorate([s$a({
-    type: Boolean
-  })], Panel.prototype, "noAnimation", undefined);
-  __decorate([s$a()], Panel.prototype, "accessibleRole", undefined);
-  __decorate([s$a()], Panel.prototype, "headerLevel", undefined);
-  __decorate([s$a()], Panel.prototype, "accessibleName", undefined);
-  __decorate([s$a({
-    type: Boolean
-  })], Panel.prototype, "stickyHeader", undefined);
-  __decorate([s$a({
-    type: Boolean
-  })], Panel.prototype, "useAccessibleNameForToggleButton", undefined);
-  __decorate([s$a({
-    type: Boolean
-  })], Panel.prototype, "_hasHeader", undefined);
-  __decorate([s$a({
-    type: Boolean,
-    noAttribute: true
-  })], Panel.prototype, "_contentExpanded", undefined);
-  __decorate([s$a({
-    type: Boolean,
-    noAttribute: true
-  })], Panel.prototype, "_animationRunning", undefined);
-  __decorate([d$5()], Panel.prototype, "header", undefined);
-  __decorate([i("@ui5/webcomponents")], Panel, "i18nBundle", undefined);
-  Panel = Panel_1 = __decorate([m$5({
-    tag: "ui5-panel",
-    fastNavigation: true,
-    languageAware: true,
-    renderer: d,
-    template: PanelTemplate,
-    styles: panelCss
-  }), l$3("toggle", {
-    bubbles: true
-  })], Panel);
+  var Panel_1;
+  /**
+   * @class
+   *
+   * ### Overview
+   *
+   * The `ui5-panel` component is a container which has a header and a
+   * content area and is used
+   * for grouping and displaying information. It can be collapsed to save space on the screen.
+   *
+   * ### Guidelines:
+   *
+   * - Nesting two or more panels is not recommended.
+   * - Do not stack too many panels on one page.
+   *
+   * ### Structure
+   * The panel's header area consists of a title bar with a header text or custom header.
+   *
+   * The header is clickable and can be used to toggle between the expanded and collapsed state. It includes an icon which rotates depending on the state.
+   *
+   * The custom header can be set through the `header` slot and it may contain arbitraray content, such as: title, buttons or any other HTML elements.
+   *
+   * The content area can contain an arbitrary set of controls.
+   *
+   * **Note:** The custom header is not clickable out of the box, but in this case the icon is interactive and allows to show/hide the content area.
+   *
+   * ### Responsive Behavior
+   *
+   * - If the width of the panel is set to 100% (default), the panel and its children are
+   * resized responsively,
+   * depending on its parent container.
+   * - If the panel has a fixed height, it will take up the space even if the panel is
+   * collapsed.
+   * - When the panel is expandable (the `fixed` property is set to `false`),
+   * an arrow icon (pointing to the right) appears in front of the header.
+   * - When the animation is activated, expand/collapse uses a smooth animation to open or
+   * close the content area.
+   * - When the panel expands/collapses, the arrow icon rotates 90 degrees
+   * clockwise/counter-clockwise.
+   *
+   * ### Keyboard Handling
+   *
+   * #### Fast Navigation
+   * This component provides a build in fast navigation group which can be used via [F6] / [Shift] + [F6] / [Ctrl] + [Alt/Option] / [Down] or [Ctrl] + [Alt/Option] + [Up].
+   * In order to use this functionality, you need to import the following module:
+   * `import "@ui5/webcomponents-base/dist/features/F6Navigation.js"`
+   *
+   * ### ES6 Module Import
+   *
+   * `import "@ui5/webcomponents/dist/Panel.js";`
+   * @constructor
+   * @extends UI5Element
+   * @public
+   * @slot {Array<Node>} default - Defines the content of the component. The content is visible only when the component is expanded.
+   * @csspart header - Used to style the wrapper of the header.
+   * @csspart content - Used to style the wrapper of the content.
+   */
+  let Panel = Panel_1 = class Panel extends S$2 {
+      constructor() {
+          super(...arguments);
+          /**
+           * Determines whether the component is in a fixed state that is not
+           * expandable/collapsible by user interaction.
+           * @default false
+           * @public
+           */
+          this.fixed = false;
+          /**
+           * Indicates whether the component is collapsed and only the header is displayed.
+           * @default false
+           * @public
+           */
+          this.collapsed = false;
+          /**
+           * Indicates whether the transition between the expanded and the collapsed state of the component is animated. By default the animation is enabled.
+           * @default false
+           * @public
+           * @since 1.0.0-rc.16
+           */
+          this.noAnimation = false;
+          /**
+           * Sets the accessible ARIA role of the component.
+           * Depending on the usage, you can change the role from the default `Form`
+           * to `Region` or `Complementary`.
+           * @default "Form"
+           * @public
+           */
+          this.accessibleRole = "Form";
+          /**
+           * Defines the "aria-level" of component heading,
+           * set by the `headerText`.
+           * @default "H2"
+           * @public
+          */
+          this.headerLevel = "H2";
+          /**
+           * Indicates whether the Panel header is sticky or not.
+           * If stickyHeader is set to true, then whenever you scroll the content or
+           * the application, the header of the panel will be always visible and
+           * a solid color will be used for its design.
+           * @default false
+           * @public
+           * @since 1.16.0-rc.1
+           */
+          this.stickyHeader = false;
+          /**
+           * When set to `true`, the `accessibleName` property will be
+           * applied not only on the panel root itself, but on its toggle button too.
+           * **Note:** This property only has effect if `accessibleName` is set and a header slot is provided.
+           * @default false
+           * @private
+            */
+          this.useAccessibleNameForToggleButton = false;
+          /**
+           * @private
+           */
+          this._hasHeader = false;
+          this._contentExpanded = false;
+          this._animationRunning = false;
+      }
+      onBeforeRendering() {
+          // If the animation is running, it will set the content expanded state at the end
+          if (!this._animationRunning) {
+              this._contentExpanded = !this.collapsed;
+          }
+          this._hasHeader = !!this.header.length;
+      }
+      shouldToggle(element) {
+          const customContent = this.header.length;
+          if (customContent) {
+              return element.classList.contains("ui5-panel-header-button");
+          }
+          return true;
+      }
+      get shouldNotAnimate() {
+          return this.noAnimation || d$7() === _ui5_webcomponentsBase.u.None;
+      }
+      _headerClick(e) {
+          if (!this.shouldToggle(e.target)) {
+              return;
+          }
+          this._toggleOpen();
+      }
+      _toggleButtonClick(e) {
+          if (e.x === 0 && e.y === 0) {
+              e.stopImmediatePropagation();
+          }
+      }
+      _headerKeyDown(e) {
+          if (!this.shouldToggle(e.target)) {
+              return;
+          }
+          if (b$2(e)) {
+              e.preventDefault();
+          }
+          if (i$8(e)) {
+              e.preventDefault();
+          }
+      }
+      _headerKeyUp(e) {
+          if (!this.shouldToggle(e.target)) {
+              return;
+          }
+          if (b$2(e)) {
+              this._toggleOpen();
+          }
+          if (i$8(e)) {
+              this._toggleOpen();
+          }
+      }
+      _toggleOpen() {
+          if (this.fixed) {
+              return;
+          }
+          this.collapsed = !this.collapsed;
+          if (this.shouldNotAnimate) {
+              this.fireDecoratorEvent("toggle");
+              return;
+          }
+          this._animationRunning = true;
+          const elements = this.getDomRef().querySelectorAll(".ui5-panel-content");
+          const animations = [];
+          [].forEach.call(elements, oElement => {
+              if (this.collapsed) {
+                  animations.push(u$6(oElement).promise());
+              }
+              else {
+                  animations.push(b$3(oElement).promise());
+              }
+          });
+          Promise.all(animations).then(() => {
+              this._animationRunning = false;
+              this._contentExpanded = !this.collapsed;
+              this.fireDecoratorEvent("toggle");
+          });
+      }
+      _headerOnTarget(target) {
+          return target.classList.contains("sapMPanelWrappingDiv");
+      }
+      get toggleButtonTitle() {
+          return Panel_1.i18nBundle.getText(PANEL_ICON);
+      }
+      get expanded() {
+          return !this.collapsed;
+      }
+      get accRole() {
+          return this.accessibleRole.toLowerCase();
+      }
+      get effectiveAccessibleName() {
+          return typeof this.accessibleName === "string" && this.accessibleName.length ? this.accessibleName : undefined;
+      }
+      get accInfo() {
+          return {
+              "button": {
+                  "accessibilityAttributes": {
+                      "expanded": this.expanded,
+                  },
+                  "title": this.toggleButtonTitle,
+                  "ariaLabelButton": !this.nonFocusableButton && this.useAccessibleNameForToggleButton ? this.effectiveAccessibleName : undefined,
+              },
+              "ariaExpanded": this.nonFixedInternalHeader ? this.expanded : undefined,
+              "ariaControls": this.nonFixedInternalHeader ? `${this._id}-content` : undefined,
+              "ariaLabelledby": this.nonFocusableButton ? this.ariaLabelledbyReference : undefined,
+              "role": this.nonFixedInternalHeader ? "button" : undefined,
+          };
+      }
+      get ariaLabelledbyReference() {
+          return (this.nonFocusableButton && this.headerText && !this.fixed) ? `${this._id}-header-title` : undefined;
+      }
+      get fixedPanelAriaLabelledbyReference() {
+          return this.fixed && !this.effectiveAccessibleName ? `${this._id}-header-title` : undefined;
+      }
+      get headerAriaLevel() {
+          return Number.parseInt(this.headerLevel.slice(1));
+      }
+      get headerTabIndex() {
+          return (this.header.length || this.fixed) ? -1 : 0;
+      }
+      get headingWrapperAriaLevel() {
+          return !this._hasHeader ? this.headerAriaLevel : undefined;
+      }
+      get headingWrapperRole() {
+          return !this._hasHeader ? "heading" : undefined;
+      }
+      get nonFixedInternalHeader() {
+          return !this._hasHeader && !this.fixed;
+      }
+      get hasHeaderOrHeaderText() {
+          return this._hasHeader || this.headerText;
+      }
+      get nonFocusableButton() {
+          return !this.header.length;
+      }
+  };
+  __decorate([
+      s$a()
+  ], Panel.prototype, "headerText", undefined);
+  __decorate([
+      s$a({ type: Boolean })
+  ], Panel.prototype, "fixed", undefined);
+  __decorate([
+      s$a({ type: Boolean })
+  ], Panel.prototype, "collapsed", undefined);
+  __decorate([
+      s$a({ type: Boolean })
+  ], Panel.prototype, "noAnimation", undefined);
+  __decorate([
+      s$a()
+  ], Panel.prototype, "accessibleRole", undefined);
+  __decorate([
+      s$a()
+  ], Panel.prototype, "headerLevel", undefined);
+  __decorate([
+      s$a()
+  ], Panel.prototype, "accessibleName", undefined);
+  __decorate([
+      s$a({ type: Boolean })
+  ], Panel.prototype, "stickyHeader", undefined);
+  __decorate([
+      s$a({ type: Boolean })
+  ], Panel.prototype, "useAccessibleNameForToggleButton", undefined);
+  __decorate([
+      s$a({ type: Boolean })
+  ], Panel.prototype, "_hasHeader", undefined);
+  __decorate([
+      s$a({ type: Boolean, noAttribute: true })
+  ], Panel.prototype, "_contentExpanded", undefined);
+  __decorate([
+      s$a({ type: Boolean, noAttribute: true })
+  ], Panel.prototype, "_animationRunning", undefined);
+  __decorate([
+      d$5()
+  ], Panel.prototype, "header", undefined);
+  __decorate([
+      i("@ui5/webcomponents")
+  ], Panel, "i18nBundle", undefined);
+  Panel = Panel_1 = __decorate([
+      m$5({
+          tag: "ui5-panel",
+          fastNavigation: true,
+          languageAware: true,
+          renderer: d,
+          template: PanelTemplate,
+          styles: panelCss,
+      })
+      /**
+       * Fired when the component is expanded/collapsed by user interaction.
+       * @public
+       */
+      ,
+      l$3("toggle", {
+          bubbles: true,
+      })
+  ], Panel);
   Panel.define();
 
   const WrapperClass = WebComponent.extend("@ui5/webcomponents.Panel", {

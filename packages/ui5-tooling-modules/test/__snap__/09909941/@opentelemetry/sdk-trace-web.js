@@ -361,172 +361,258 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
         TracesSamplerValues["TraceIdRatio"] = "traceidratio";
     })(TracesSamplerValues || (TracesSamplerValues = {}));
 
-    const DEFAULT_LIST_SEPARATOR = ",";
-    const ENVIRONMENT_BOOLEAN_KEYS = ["OTEL_SDK_DISABLED"];
+    /*
+     * Copyright The OpenTelemetry Authors
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *      https://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+    const DEFAULT_LIST_SEPARATOR = ',';
+    /**
+     * Environment interface to define all names
+     */
+    const ENVIRONMENT_BOOLEAN_KEYS = ['OTEL_SDK_DISABLED'];
     function isEnvVarABoolean(key) {
-      return ENVIRONMENT_BOOLEAN_KEYS.indexOf(key) > -1;
+        return (ENVIRONMENT_BOOLEAN_KEYS.indexOf(key) > -1);
     }
-    const ENVIRONMENT_NUMBERS_KEYS = ["OTEL_BSP_EXPORT_TIMEOUT", "OTEL_BSP_MAX_EXPORT_BATCH_SIZE", "OTEL_BSP_MAX_QUEUE_SIZE", "OTEL_BSP_SCHEDULE_DELAY", "OTEL_BLRP_EXPORT_TIMEOUT", "OTEL_BLRP_MAX_EXPORT_BATCH_SIZE", "OTEL_BLRP_MAX_QUEUE_SIZE", "OTEL_BLRP_SCHEDULE_DELAY", "OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT", "OTEL_ATTRIBUTE_COUNT_LIMIT", "OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT", "OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT", "OTEL_LOGRECORD_ATTRIBUTE_VALUE_LENGTH_LIMIT", "OTEL_LOGRECORD_ATTRIBUTE_COUNT_LIMIT", "OTEL_SPAN_EVENT_COUNT_LIMIT", "OTEL_SPAN_LINK_COUNT_LIMIT", "OTEL_SPAN_ATTRIBUTE_PER_EVENT_COUNT_LIMIT", "OTEL_SPAN_ATTRIBUTE_PER_LINK_COUNT_LIMIT", "OTEL_EXPORTER_OTLP_TIMEOUT", "OTEL_EXPORTER_OTLP_TRACES_TIMEOUT", "OTEL_EXPORTER_OTLP_METRICS_TIMEOUT", "OTEL_EXPORTER_OTLP_LOGS_TIMEOUT", "OTEL_EXPORTER_JAEGER_AGENT_PORT"];
+    const ENVIRONMENT_NUMBERS_KEYS = [
+        'OTEL_BSP_EXPORT_TIMEOUT',
+        'OTEL_BSP_MAX_EXPORT_BATCH_SIZE',
+        'OTEL_BSP_MAX_QUEUE_SIZE',
+        'OTEL_BSP_SCHEDULE_DELAY',
+        'OTEL_BLRP_EXPORT_TIMEOUT',
+        'OTEL_BLRP_MAX_EXPORT_BATCH_SIZE',
+        'OTEL_BLRP_MAX_QUEUE_SIZE',
+        'OTEL_BLRP_SCHEDULE_DELAY',
+        'OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT',
+        'OTEL_ATTRIBUTE_COUNT_LIMIT',
+        'OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT',
+        'OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT',
+        'OTEL_LOGRECORD_ATTRIBUTE_VALUE_LENGTH_LIMIT',
+        'OTEL_LOGRECORD_ATTRIBUTE_COUNT_LIMIT',
+        'OTEL_SPAN_EVENT_COUNT_LIMIT',
+        'OTEL_SPAN_LINK_COUNT_LIMIT',
+        'OTEL_SPAN_ATTRIBUTE_PER_EVENT_COUNT_LIMIT',
+        'OTEL_SPAN_ATTRIBUTE_PER_LINK_COUNT_LIMIT',
+        'OTEL_EXPORTER_OTLP_TIMEOUT',
+        'OTEL_EXPORTER_OTLP_TRACES_TIMEOUT',
+        'OTEL_EXPORTER_OTLP_METRICS_TIMEOUT',
+        'OTEL_EXPORTER_OTLP_LOGS_TIMEOUT',
+        'OTEL_EXPORTER_JAEGER_AGENT_PORT',
+    ];
     function isEnvVarANumber(key) {
-      return ENVIRONMENT_NUMBERS_KEYS.indexOf(key) > -1;
+        return (ENVIRONMENT_NUMBERS_KEYS.indexOf(key) > -1);
     }
-    const ENVIRONMENT_LISTS_KEYS = ["OTEL_NO_PATCH_MODULES", "OTEL_PROPAGATORS", "OTEL_SEMCONV_STABILITY_OPT_IN"];
+    const ENVIRONMENT_LISTS_KEYS = [
+        'OTEL_NO_PATCH_MODULES',
+        'OTEL_PROPAGATORS',
+        'OTEL_SEMCONV_STABILITY_OPT_IN',
+    ];
     function isEnvVarAList(key) {
-      return ENVIRONMENT_LISTS_KEYS.indexOf(key) > -1;
+        return ENVIRONMENT_LISTS_KEYS.indexOf(key) > -1;
     }
     const DEFAULT_ATTRIBUTE_VALUE_LENGTH_LIMIT = Infinity;
     const DEFAULT_ATTRIBUTE_COUNT_LIMIT = 128;
     const DEFAULT_SPAN_ATTRIBUTE_PER_EVENT_COUNT_LIMIT = 128;
     const DEFAULT_SPAN_ATTRIBUTE_PER_LINK_COUNT_LIMIT = 128;
+    /**
+     * Default environment variables
+     */
     const DEFAULT_ENVIRONMENT = {
-      OTEL_SDK_DISABLED: false,
-      CONTAINER_NAME: "",
-      ECS_CONTAINER_METADATA_URI_V4: "",
-      ECS_CONTAINER_METADATA_URI: "",
-      HOSTNAME: "",
-      KUBERNETES_SERVICE_HOST: "",
-      NAMESPACE: "",
-      OTEL_BSP_EXPORT_TIMEOUT: 30000,
-      OTEL_BSP_MAX_EXPORT_BATCH_SIZE: 512,
-      OTEL_BSP_MAX_QUEUE_SIZE: 2048,
-      OTEL_BSP_SCHEDULE_DELAY: 5000,
-      OTEL_BLRP_EXPORT_TIMEOUT: 30000,
-      OTEL_BLRP_MAX_EXPORT_BATCH_SIZE: 512,
-      OTEL_BLRP_MAX_QUEUE_SIZE: 2048,
-      OTEL_BLRP_SCHEDULE_DELAY: 5000,
-      OTEL_EXPORTER_JAEGER_AGENT_HOST: "",
-      OTEL_EXPORTER_JAEGER_AGENT_PORT: 6832,
-      OTEL_EXPORTER_JAEGER_ENDPOINT: "",
-      OTEL_EXPORTER_JAEGER_PASSWORD: "",
-      OTEL_EXPORTER_JAEGER_USER: "",
-      OTEL_EXPORTER_OTLP_ENDPOINT: "",
-      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "",
-      OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: "",
-      OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: "",
-      OTEL_EXPORTER_OTLP_HEADERS: "",
-      OTEL_EXPORTER_OTLP_TRACES_HEADERS: "",
-      OTEL_EXPORTER_OTLP_METRICS_HEADERS: "",
-      OTEL_EXPORTER_OTLP_LOGS_HEADERS: "",
-      OTEL_EXPORTER_OTLP_TIMEOUT: 10000,
-      OTEL_EXPORTER_OTLP_TRACES_TIMEOUT: 10000,
-      OTEL_EXPORTER_OTLP_METRICS_TIMEOUT: 10000,
-      OTEL_EXPORTER_OTLP_LOGS_TIMEOUT: 10000,
-      OTEL_EXPORTER_ZIPKIN_ENDPOINT: "http://localhost:9411/api/v2/spans",
-      OTEL_LOG_LEVEL: traceApi.DiagLogLevel.INFO,
-      OTEL_NO_PATCH_MODULES: [],
-      OTEL_PROPAGATORS: ["tracecontext", "baggage"],
-      OTEL_RESOURCE_ATTRIBUTES: "",
-      OTEL_SERVICE_NAME: "",
-      OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT: DEFAULT_ATTRIBUTE_VALUE_LENGTH_LIMIT,
-      OTEL_ATTRIBUTE_COUNT_LIMIT: DEFAULT_ATTRIBUTE_COUNT_LIMIT,
-      OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT: DEFAULT_ATTRIBUTE_VALUE_LENGTH_LIMIT,
-      OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT: DEFAULT_ATTRIBUTE_COUNT_LIMIT,
-      OTEL_LOGRECORD_ATTRIBUTE_VALUE_LENGTH_LIMIT: DEFAULT_ATTRIBUTE_VALUE_LENGTH_LIMIT,
-      OTEL_LOGRECORD_ATTRIBUTE_COUNT_LIMIT: DEFAULT_ATTRIBUTE_COUNT_LIMIT,
-      OTEL_SPAN_EVENT_COUNT_LIMIT: 128,
-      OTEL_SPAN_LINK_COUNT_LIMIT: 128,
-      OTEL_SPAN_ATTRIBUTE_PER_EVENT_COUNT_LIMIT: DEFAULT_SPAN_ATTRIBUTE_PER_EVENT_COUNT_LIMIT,
-      OTEL_SPAN_ATTRIBUTE_PER_LINK_COUNT_LIMIT: DEFAULT_SPAN_ATTRIBUTE_PER_LINK_COUNT_LIMIT,
-      OTEL_TRACES_EXPORTER: "",
-      OTEL_TRACES_SAMPLER: TracesSamplerValues.ParentBasedAlwaysOn,
-      OTEL_TRACES_SAMPLER_ARG: "",
-      OTEL_LOGS_EXPORTER: "",
-      OTEL_EXPORTER_OTLP_INSECURE: "",
-      OTEL_EXPORTER_OTLP_TRACES_INSECURE: "",
-      OTEL_EXPORTER_OTLP_METRICS_INSECURE: "",
-      OTEL_EXPORTER_OTLP_LOGS_INSECURE: "",
-      OTEL_EXPORTER_OTLP_CERTIFICATE: "",
-      OTEL_EXPORTER_OTLP_TRACES_CERTIFICATE: "",
-      OTEL_EXPORTER_OTLP_METRICS_CERTIFICATE: "",
-      OTEL_EXPORTER_OTLP_LOGS_CERTIFICATE: "",
-      OTEL_EXPORTER_OTLP_COMPRESSION: "",
-      OTEL_EXPORTER_OTLP_TRACES_COMPRESSION: "",
-      OTEL_EXPORTER_OTLP_METRICS_COMPRESSION: "",
-      OTEL_EXPORTER_OTLP_LOGS_COMPRESSION: "",
-      OTEL_EXPORTER_OTLP_CLIENT_KEY: "",
-      OTEL_EXPORTER_OTLP_TRACES_CLIENT_KEY: "",
-      OTEL_EXPORTER_OTLP_METRICS_CLIENT_KEY: "",
-      OTEL_EXPORTER_OTLP_LOGS_CLIENT_KEY: "",
-      OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE: "",
-      OTEL_EXPORTER_OTLP_TRACES_CLIENT_CERTIFICATE: "",
-      OTEL_EXPORTER_OTLP_METRICS_CLIENT_CERTIFICATE: "",
-      OTEL_EXPORTER_OTLP_LOGS_CLIENT_CERTIFICATE: "",
-      OTEL_EXPORTER_OTLP_PROTOCOL: "http/protobuf",
-      OTEL_EXPORTER_OTLP_TRACES_PROTOCOL: "http/protobuf",
-      OTEL_EXPORTER_OTLP_METRICS_PROTOCOL: "http/protobuf",
-      OTEL_EXPORTER_OTLP_LOGS_PROTOCOL: "http/protobuf",
-      OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE: "cumulative",
-      OTEL_SEMCONV_STABILITY_OPT_IN: []
+        OTEL_SDK_DISABLED: false,
+        CONTAINER_NAME: '',
+        ECS_CONTAINER_METADATA_URI_V4: '',
+        ECS_CONTAINER_METADATA_URI: '',
+        HOSTNAME: '',
+        KUBERNETES_SERVICE_HOST: '',
+        NAMESPACE: '',
+        OTEL_BSP_EXPORT_TIMEOUT: 30000,
+        OTEL_BSP_MAX_EXPORT_BATCH_SIZE: 512,
+        OTEL_BSP_MAX_QUEUE_SIZE: 2048,
+        OTEL_BSP_SCHEDULE_DELAY: 5000,
+        OTEL_BLRP_EXPORT_TIMEOUT: 30000,
+        OTEL_BLRP_MAX_EXPORT_BATCH_SIZE: 512,
+        OTEL_BLRP_MAX_QUEUE_SIZE: 2048,
+        OTEL_BLRP_SCHEDULE_DELAY: 5000,
+        OTEL_EXPORTER_JAEGER_AGENT_HOST: '',
+        OTEL_EXPORTER_JAEGER_AGENT_PORT: 6832,
+        OTEL_EXPORTER_JAEGER_ENDPOINT: '',
+        OTEL_EXPORTER_JAEGER_PASSWORD: '',
+        OTEL_EXPORTER_JAEGER_USER: '',
+        OTEL_EXPORTER_OTLP_ENDPOINT: '',
+        OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: '',
+        OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: '',
+        OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: '',
+        OTEL_EXPORTER_OTLP_HEADERS: '',
+        OTEL_EXPORTER_OTLP_TRACES_HEADERS: '',
+        OTEL_EXPORTER_OTLP_METRICS_HEADERS: '',
+        OTEL_EXPORTER_OTLP_LOGS_HEADERS: '',
+        OTEL_EXPORTER_OTLP_TIMEOUT: 10000,
+        OTEL_EXPORTER_OTLP_TRACES_TIMEOUT: 10000,
+        OTEL_EXPORTER_OTLP_METRICS_TIMEOUT: 10000,
+        OTEL_EXPORTER_OTLP_LOGS_TIMEOUT: 10000,
+        OTEL_EXPORTER_ZIPKIN_ENDPOINT: 'http://localhost:9411/api/v2/spans',
+        OTEL_LOG_LEVEL: traceApi.DiagLogLevel.INFO,
+        OTEL_NO_PATCH_MODULES: [],
+        OTEL_PROPAGATORS: ['tracecontext', 'baggage'],
+        OTEL_RESOURCE_ATTRIBUTES: '',
+        OTEL_SERVICE_NAME: '',
+        OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT: DEFAULT_ATTRIBUTE_VALUE_LENGTH_LIMIT,
+        OTEL_ATTRIBUTE_COUNT_LIMIT: DEFAULT_ATTRIBUTE_COUNT_LIMIT,
+        OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT: DEFAULT_ATTRIBUTE_VALUE_LENGTH_LIMIT,
+        OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT: DEFAULT_ATTRIBUTE_COUNT_LIMIT,
+        OTEL_LOGRECORD_ATTRIBUTE_VALUE_LENGTH_LIMIT: DEFAULT_ATTRIBUTE_VALUE_LENGTH_LIMIT,
+        OTEL_LOGRECORD_ATTRIBUTE_COUNT_LIMIT: DEFAULT_ATTRIBUTE_COUNT_LIMIT,
+        OTEL_SPAN_EVENT_COUNT_LIMIT: 128,
+        OTEL_SPAN_LINK_COUNT_LIMIT: 128,
+        OTEL_SPAN_ATTRIBUTE_PER_EVENT_COUNT_LIMIT: DEFAULT_SPAN_ATTRIBUTE_PER_EVENT_COUNT_LIMIT,
+        OTEL_SPAN_ATTRIBUTE_PER_LINK_COUNT_LIMIT: DEFAULT_SPAN_ATTRIBUTE_PER_LINK_COUNT_LIMIT,
+        OTEL_TRACES_EXPORTER: '',
+        OTEL_TRACES_SAMPLER: TracesSamplerValues.ParentBasedAlwaysOn,
+        OTEL_TRACES_SAMPLER_ARG: '',
+        OTEL_LOGS_EXPORTER: '',
+        OTEL_EXPORTER_OTLP_INSECURE: '',
+        OTEL_EXPORTER_OTLP_TRACES_INSECURE: '',
+        OTEL_EXPORTER_OTLP_METRICS_INSECURE: '',
+        OTEL_EXPORTER_OTLP_LOGS_INSECURE: '',
+        OTEL_EXPORTER_OTLP_CERTIFICATE: '',
+        OTEL_EXPORTER_OTLP_TRACES_CERTIFICATE: '',
+        OTEL_EXPORTER_OTLP_METRICS_CERTIFICATE: '',
+        OTEL_EXPORTER_OTLP_LOGS_CERTIFICATE: '',
+        OTEL_EXPORTER_OTLP_COMPRESSION: '',
+        OTEL_EXPORTER_OTLP_TRACES_COMPRESSION: '',
+        OTEL_EXPORTER_OTLP_METRICS_COMPRESSION: '',
+        OTEL_EXPORTER_OTLP_LOGS_COMPRESSION: '',
+        OTEL_EXPORTER_OTLP_CLIENT_KEY: '',
+        OTEL_EXPORTER_OTLP_TRACES_CLIENT_KEY: '',
+        OTEL_EXPORTER_OTLP_METRICS_CLIENT_KEY: '',
+        OTEL_EXPORTER_OTLP_LOGS_CLIENT_KEY: '',
+        OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE: '',
+        OTEL_EXPORTER_OTLP_TRACES_CLIENT_CERTIFICATE: '',
+        OTEL_EXPORTER_OTLP_METRICS_CLIENT_CERTIFICATE: '',
+        OTEL_EXPORTER_OTLP_LOGS_CLIENT_CERTIFICATE: '',
+        OTEL_EXPORTER_OTLP_PROTOCOL: 'http/protobuf',
+        OTEL_EXPORTER_OTLP_TRACES_PROTOCOL: 'http/protobuf',
+        OTEL_EXPORTER_OTLP_METRICS_PROTOCOL: 'http/protobuf',
+        OTEL_EXPORTER_OTLP_LOGS_PROTOCOL: 'http/protobuf',
+        OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE: 'cumulative',
+        OTEL_SEMCONV_STABILITY_OPT_IN: [],
     };
+    /**
+     * @param key
+     * @param environment
+     * @param values
+     */
     function parseBoolean(key, environment, values) {
-      if (typeof values[key] === "undefined") {
-        return;
-      }
-      const value = String(values[key]);
-      environment[key] = value.toLowerCase() === "true";
+        if (typeof values[key] === 'undefined') {
+            return;
+        }
+        const value = String(values[key]);
+        // support case-insensitive "true"
+        environment[key] = value.toLowerCase() === 'true';
     }
+    /**
+     * Parses a variable as number with number validation
+     * @param name
+     * @param environment
+     * @param values
+     * @param min
+     * @param max
+     */
     function parseNumber(name, environment, values, min = -Infinity, max = Infinity) {
-      if (typeof values[name] !== "undefined") {
-        const value = Number(values[name]);
-        if (!isNaN(value)) {
-          if (value < min) {
-            environment[name] = min;
-          } else if (value > max) {
-            environment[name] = max;
-          } else {
-            environment[name] = value;
-          }
-        }
-      }
-    }
-    function parseStringList(name, output, input, separator = DEFAULT_LIST_SEPARATOR) {
-      const givenValue = input[name];
-      if (typeof givenValue === "string") {
-        output[name] = givenValue.split(separator).map(v => v.trim());
-      }
-    }
-    const logLevelMap = {
-      ALL: traceApi.DiagLogLevel.ALL,
-      VERBOSE: traceApi.DiagLogLevel.VERBOSE,
-      DEBUG: traceApi.DiagLogLevel.DEBUG,
-      INFO: traceApi.DiagLogLevel.INFO,
-      WARN: traceApi.DiagLogLevel.WARN,
-      ERROR: traceApi.DiagLogLevel.ERROR,
-      NONE: traceApi.DiagLogLevel.NONE
-    };
-    function setLogLevelFromEnv(key, environment, values) {
-      const value = values[key];
-      if (typeof value === "string") {
-        const theLevel = logLevelMap[value.toUpperCase()];
-        if (theLevel != null) {
-          environment[key] = theLevel;
-        }
-      }
-    }
-    function parseEnvironment(values) {
-      const environment = {};
-      for (const env in DEFAULT_ENVIRONMENT) {
-        const key = env;
-        switch (key) {
-          case "OTEL_LOG_LEVEL":
-            setLogLevelFromEnv(key, environment, values);
-            break;
-          default:
-            if (isEnvVarABoolean(key)) {
-              parseBoolean(key, environment, values);
-            } else if (isEnvVarANumber(key)) {
-              parseNumber(key, environment, values);
-            } else if (isEnvVarAList(key)) {
-              parseStringList(key, environment, values);
-            } else {
-              const value = values[key];
-              if (typeof value !== "undefined" && value !== null) {
-                environment[key] = String(value);
-              }
+        if (typeof values[name] !== 'undefined') {
+            const value = Number(values[name]);
+            if (!isNaN(value)) {
+                if (value < min) {
+                    environment[name] = min;
+                }
+                else if (value > max) {
+                    environment[name] = max;
+                }
+                else {
+                    environment[name] = value;
+                }
             }
         }
-      }
-      return environment;
+    }
+    /**
+     * Parses list-like strings from input into output.
+     * @param name
+     * @param environment
+     * @param values
+     * @param separator
+     */
+    function parseStringList(name, output, input, separator = DEFAULT_LIST_SEPARATOR) {
+        const givenValue = input[name];
+        if (typeof givenValue === 'string') {
+            output[name] = givenValue.split(separator).map(v => v.trim());
+        }
+    }
+    // The support string -> DiagLogLevel mappings
+    const logLevelMap = {
+        ALL: traceApi.DiagLogLevel.ALL,
+        VERBOSE: traceApi.DiagLogLevel.VERBOSE,
+        DEBUG: traceApi.DiagLogLevel.DEBUG,
+        INFO: traceApi.DiagLogLevel.INFO,
+        WARN: traceApi.DiagLogLevel.WARN,
+        ERROR: traceApi.DiagLogLevel.ERROR,
+        NONE: traceApi.DiagLogLevel.NONE,
+    };
+    /**
+     * Environmentally sets log level if valid log level string is provided
+     * @param key
+     * @param environment
+     * @param values
+     */
+    function setLogLevelFromEnv(key, environment, values) {
+        const value = values[key];
+        if (typeof value === 'string') {
+            const theLevel = logLevelMap[value.toUpperCase()];
+            if (theLevel != null) {
+                environment[key] = theLevel;
+            }
+        }
+    }
+    /**
+     * Parses environment values
+     * @param values
+     */
+    function parseEnvironment(values) {
+        const environment = {};
+        for (const env in DEFAULT_ENVIRONMENT) {
+            const key = env;
+            switch (key) {
+                case 'OTEL_LOG_LEVEL':
+                    setLogLevelFromEnv(key, environment, values);
+                    break;
+                default:
+                    if (isEnvVarABoolean(key)) {
+                        parseBoolean(key, environment, values);
+                    }
+                    else if (isEnvVarANumber(key)) {
+                        parseNumber(key, environment, values);
+                    }
+                    else if (isEnvVarAList(key)) {
+                        parseStringList(key, environment, values);
+                    }
+                    else {
+                        const value = values[key];
+                        if (typeof value !== 'undefined' && value !== null) {
+                            environment[key] = String(value);
+                        }
+                    }
+            }
+        }
+        return environment;
     }
 
     /*
@@ -3654,215 +3740,339 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
         PerformanceTimingNames["UNLOAD_EVENT_START"] = "unloadEventStart";
     })(exports.PerformanceTimingNames || (exports.PerformanceTimingNames = {}));
 
+    /*
+     * Copyright The OpenTelemetry Authors
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *      https://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+    // Used to normalize relative URLs
     let urlNormalizingAnchor;
     function getUrlNormalizingAnchor() {
-      if (!urlNormalizingAnchor) {
-        urlNormalizingAnchor = document.createElement("a");
-      }
-      return urlNormalizingAnchor;
+        if (!urlNormalizingAnchor) {
+            urlNormalizingAnchor = document.createElement('a');
+        }
+        return urlNormalizingAnchor;
     }
+    /**
+     * Helper function to be able to use enum as typed key in type and in interface when using forEach
+     * @param obj
+     * @param key
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function hasKey(obj, key) {
-      return (key in obj);
+        return key in obj;
     }
+    /**
+     * Helper function for starting an event on span based on {@link PerformanceEntries}
+     * @param span
+     * @param performanceName name of performance entry for time start
+     * @param entries
+     * @param refPerfName name of performance entry to use for reference
+     */
     function addSpanNetworkEvent(span, performanceName, entries, refPerfName) {
-      let perfTime = undefined;
-      let refTime = undefined;
-      if (hasKey(entries, performanceName) && typeof entries[performanceName] === "number") {
-        perfTime = entries[performanceName];
-      }
-      const refName = refPerfName || exports.PerformanceTimingNames.FETCH_START;
-      if (hasKey(entries, refName) && typeof entries[refName] === "number") {
-        refTime = entries[refName];
-      }
-      if (perfTime !== undefined && refTime !== undefined && perfTime >= refTime) {
-        span.addEvent(performanceName, perfTime);
-        return span;
-      }
-      return undefined;
+        let perfTime = undefined;
+        let refTime = undefined;
+        if (hasKey(entries, performanceName) &&
+            typeof entries[performanceName] === 'number') {
+            perfTime = entries[performanceName];
+        }
+        const refName = refPerfName || exports.PerformanceTimingNames.FETCH_START;
+        // Use a reference time which is the earliest possible value so that the performance timings that are earlier should not be added
+        // using FETCH START time in case no reference is provided
+        if (hasKey(entries, refName) && typeof entries[refName] === 'number') {
+            refTime = entries[refName];
+        }
+        if (perfTime !== undefined && refTime !== undefined && perfTime >= refTime) {
+            span.addEvent(performanceName, perfTime);
+            return span;
+        }
+        return undefined;
     }
+    /**
+     * Helper function for adding network events and content length attributes
+     * @param span
+     * @param resource
+     * @param ignoreNetworkEvents
+     */
     function addSpanNetworkEvents(span, resource, ignoreNetworkEvents = false) {
-      if (!ignoreNetworkEvents) {
-        addSpanNetworkEvent(span, exports.PerformanceTimingNames.FETCH_START, resource);
-        addSpanNetworkEvent(span, exports.PerformanceTimingNames.DOMAIN_LOOKUP_START, resource);
-        addSpanNetworkEvent(span, exports.PerformanceTimingNames.DOMAIN_LOOKUP_END, resource);
-        addSpanNetworkEvent(span, exports.PerformanceTimingNames.CONNECT_START, resource);
-        if (hasKey(resource, "name") && resource["name"].startsWith("https:")) {
-          addSpanNetworkEvent(span, exports.PerformanceTimingNames.SECURE_CONNECTION_START, resource);
+        if (!ignoreNetworkEvents) {
+            addSpanNetworkEvent(span, exports.PerformanceTimingNames.FETCH_START, resource);
+            addSpanNetworkEvent(span, exports.PerformanceTimingNames.DOMAIN_LOOKUP_START, resource);
+            addSpanNetworkEvent(span, exports.PerformanceTimingNames.DOMAIN_LOOKUP_END, resource);
+            addSpanNetworkEvent(span, exports.PerformanceTimingNames.CONNECT_START, resource);
+            if (hasKey(resource, 'name') &&
+                resource['name'].startsWith('https:')) {
+                addSpanNetworkEvent(span, exports.PerformanceTimingNames.SECURE_CONNECTION_START, resource);
+            }
+            addSpanNetworkEvent(span, exports.PerformanceTimingNames.CONNECT_END, resource);
+            addSpanNetworkEvent(span, exports.PerformanceTimingNames.REQUEST_START, resource);
+            addSpanNetworkEvent(span, exports.PerformanceTimingNames.RESPONSE_START, resource);
+            addSpanNetworkEvent(span, exports.PerformanceTimingNames.RESPONSE_END, resource);
         }
-        addSpanNetworkEvent(span, exports.PerformanceTimingNames.CONNECT_END, resource);
-        addSpanNetworkEvent(span, exports.PerformanceTimingNames.REQUEST_START, resource);
-        addSpanNetworkEvent(span, exports.PerformanceTimingNames.RESPONSE_START, resource);
-        addSpanNetworkEvent(span, exports.PerformanceTimingNames.RESPONSE_END, resource);
-      }
-      const encodedLength = resource[exports.PerformanceTimingNames.ENCODED_BODY_SIZE];
-      if (encodedLength !== undefined) {
-        span.setAttribute(SEMATTRS_HTTP_RESPONSE_CONTENT_LENGTH, encodedLength);
-      }
-      const decodedLength = resource[exports.PerformanceTimingNames.DECODED_BODY_SIZE];
-      if (decodedLength !== undefined && encodedLength !== decodedLength) {
-        span.setAttribute(SEMATTRS_HTTP_RESPONSE_CONTENT_LENGTH_UNCOMPRESSED, decodedLength);
-      }
+        const encodedLength = resource[exports.PerformanceTimingNames.ENCODED_BODY_SIZE];
+        if (encodedLength !== undefined) {
+            span.setAttribute(SEMATTRS_HTTP_RESPONSE_CONTENT_LENGTH, encodedLength);
+        }
+        const decodedLength = resource[exports.PerformanceTimingNames.DECODED_BODY_SIZE];
+        // Spec: Not set if transport encoding not used (in which case encoded and decoded sizes match)
+        if (decodedLength !== undefined && encodedLength !== decodedLength) {
+            span.setAttribute(SEMATTRS_HTTP_RESPONSE_CONTENT_LENGTH_UNCOMPRESSED, decodedLength);
+        }
     }
+    /**
+     * sort resources by startTime
+     * @param filteredResources
+     */
     function sortResources(filteredResources) {
-      return filteredResources.slice().sort((a, b) => {
-        const valueA = a[exports.PerformanceTimingNames.FETCH_START];
-        const valueB = b[exports.PerformanceTimingNames.FETCH_START];
-        if (valueA > valueB) {
-          return 1;
-        } else if (valueA < valueB) {
-          return -1;
-        }
-        return 0;
-      });
-    }
-    function getOrigin() {
-      return typeof location !== "undefined" ? location.origin : undefined;
-    }
-    function getResource(spanUrl, startTimeHR, endTimeHR, resources, ignoredResources = new WeakSet(), initiatorType) {
-      const parsedSpanUrl = parseUrl(spanUrl);
-      spanUrl = parsedSpanUrl.toString();
-      const filteredResources = filterResourcesForSpan(spanUrl, startTimeHR, endTimeHR, resources, ignoredResources, initiatorType);
-      if (filteredResources.length === 0) {
-        return {
-          mainRequest: undefined
-        };
-      }
-      if (filteredResources.length === 1) {
-        return {
-          mainRequest: filteredResources[0]
-        };
-      }
-      const sorted = sortResources(filteredResources);
-      if (parsedSpanUrl.origin !== getOrigin() && sorted.length > 1) {
-        let corsPreFlightRequest = sorted[0];
-        let mainRequest = findMainRequest(sorted, corsPreFlightRequest[exports.PerformanceTimingNames.RESPONSE_END], endTimeHR);
-        const responseEnd = corsPreFlightRequest[exports.PerformanceTimingNames.RESPONSE_END];
-        const fetchStart = mainRequest[exports.PerformanceTimingNames.FETCH_START];
-        if (fetchStart < responseEnd) {
-          mainRequest = corsPreFlightRequest;
-          corsPreFlightRequest = undefined;
-        }
-        return {
-          corsPreFlightRequest,
-          mainRequest
-        };
-      } else {
-        return {
-          mainRequest: filteredResources[0]
-        };
-      }
-    }
-    function findMainRequest(resources, corsPreFlightRequestEndTime, spanEndTimeHR) {
-      const spanEndTime = hrTimeToNanoseconds(spanEndTimeHR);
-      const minTime = hrTimeToNanoseconds(timeInputToHrTime(corsPreFlightRequestEndTime));
-      let mainRequest = resources[1];
-      let bestGap;
-      const length = resources.length;
-      for (let i = 1; i < length; i++) {
-        const resource = resources[i];
-        const resourceStartTime = hrTimeToNanoseconds(timeInputToHrTime(resource[exports.PerformanceTimingNames.FETCH_START]));
-        const resourceEndTime = hrTimeToNanoseconds(timeInputToHrTime(resource[exports.PerformanceTimingNames.RESPONSE_END]));
-        const currentGap = spanEndTime - resourceEndTime;
-        if (resourceStartTime >= minTime && (!bestGap || currentGap < bestGap)) {
-          bestGap = currentGap;
-          mainRequest = resource;
-        }
-      }
-      return mainRequest;
-    }
-    function filterResourcesForSpan(spanUrl, startTimeHR, endTimeHR, resources, ignoredResources, initiatorType) {
-      const startTime = hrTimeToNanoseconds(startTimeHR);
-      const endTime = hrTimeToNanoseconds(endTimeHR);
-      let filteredResources = resources.filter(resource => {
-        const resourceStartTime = hrTimeToNanoseconds(timeInputToHrTime(resource[exports.PerformanceTimingNames.FETCH_START]));
-        const resourceEndTime = hrTimeToNanoseconds(timeInputToHrTime(resource[exports.PerformanceTimingNames.RESPONSE_END]));
-        return resource.initiatorType.toLowerCase() === (initiatorType || "xmlhttprequest") && resource.name === spanUrl && resourceStartTime >= startTime && resourceEndTime <= endTime;
-      });
-      if (filteredResources.length > 0) {
-        filteredResources = filteredResources.filter(resource => {
-          return !ignoredResources.has(resource);
+        return filteredResources.slice().sort((a, b) => {
+            const valueA = a[exports.PerformanceTimingNames.FETCH_START];
+            const valueB = b[exports.PerformanceTimingNames.FETCH_START];
+            if (valueA > valueB) {
+                return 1;
+            }
+            else if (valueA < valueB) {
+                return -1;
+            }
+            return 0;
         });
-      }
-      return filteredResources;
     }
-    function parseUrl(url) {
-      if (typeof URL === "function") {
-        return new URL(url, typeof document !== "undefined" ? document.baseURI : typeof location !== "undefined" ? location.href : undefined);
-      }
-      const element = getUrlNormalizingAnchor();
-      element.href = url;
-      return element;
+    /** Returns the origin if present (if in browser context). */
+    function getOrigin() {
+        return typeof location !== 'undefined' ? location.origin : undefined;
     }
-    function normalizeUrl(url) {
-      const urlLike = parseUrl(url);
-      return urlLike.href;
-    }
-    function getElementXPath(target, optimised) {
-      if (target.nodeType === Node.DOCUMENT_NODE) {
-        return "/";
-      }
-      const targetValue = getNodeValue(target, optimised);
-      if (optimised && targetValue.indexOf("@id") > 0) {
-        return targetValue;
-      }
-      let xpath = "";
-      if (target.parentNode) {
-        xpath += getElementXPath(target.parentNode, false);
-      }
-      xpath += targetValue;
-      return xpath;
-    }
-    function getNodeIndex(target) {
-      if (!target.parentNode) {
-        return 0;
-      }
-      const allowedTypes = [target.nodeType];
-      if (target.nodeType === Node.CDATA_SECTION_NODE) {
-        allowedTypes.push(Node.TEXT_NODE);
-      }
-      let elements = Array.from(target.parentNode.childNodes);
-      elements = elements.filter(element => {
-        const localName = element.localName;
-        return allowedTypes.indexOf(element.nodeType) >= 0 && localName === target.localName;
-      });
-      if (elements.length >= 1) {
-        return elements.indexOf(target) + 1;
-      }
-      return 0;
-    }
-    function getNodeValue(target, optimised) {
-      const nodeType = target.nodeType;
-      const index = getNodeIndex(target);
-      let nodeValue = "";
-      if (nodeType === Node.ELEMENT_NODE) {
-        const id = target.getAttribute("id");
-        if (optimised && id) {
-          return `//*[@id="${id}"]`;
+    /**
+     * Get closest performance resource ignoring the resources that have been
+     * already used.
+     * @param spanUrl
+     * @param startTimeHR
+     * @param endTimeHR
+     * @param resources
+     * @param ignoredResources
+     * @param initiatorType
+     */
+    function getResource(spanUrl, startTimeHR, endTimeHR, resources, ignoredResources = new WeakSet(), initiatorType) {
+        // de-relativize the URL before usage (does no harm to absolute URLs)
+        const parsedSpanUrl = parseUrl(spanUrl);
+        spanUrl = parsedSpanUrl.toString();
+        const filteredResources = filterResourcesForSpan(spanUrl, startTimeHR, endTimeHR, resources, ignoredResources, initiatorType);
+        if (filteredResources.length === 0) {
+            return {
+                mainRequest: undefined,
+            };
         }
-        nodeValue = target.localName;
-      } else if (nodeType === Node.TEXT_NODE || nodeType === Node.CDATA_SECTION_NODE) {
-        nodeValue = "text()";
-      } else if (nodeType === Node.COMMENT_NODE) {
-        nodeValue = "comment()";
-      } else {
-        return "";
-      }
-      if (nodeValue && index > 1) {
-        return `/${nodeValue}[${index}]`;
-      }
-      return `/${nodeValue}`;
+        if (filteredResources.length === 1) {
+            return {
+                mainRequest: filteredResources[0],
+            };
+        }
+        const sorted = sortResources(filteredResources);
+        if (parsedSpanUrl.origin !== getOrigin() && sorted.length > 1) {
+            let corsPreFlightRequest = sorted[0];
+            let mainRequest = findMainRequest(sorted, corsPreFlightRequest[exports.PerformanceTimingNames.RESPONSE_END], endTimeHR);
+            const responseEnd = corsPreFlightRequest[exports.PerformanceTimingNames.RESPONSE_END];
+            const fetchStart = mainRequest[exports.PerformanceTimingNames.FETCH_START];
+            // no corsPreFlightRequest
+            if (fetchStart < responseEnd) {
+                mainRequest = corsPreFlightRequest;
+                corsPreFlightRequest = undefined;
+            }
+            return {
+                corsPreFlightRequest,
+                mainRequest,
+            };
+        }
+        else {
+            return {
+                mainRequest: filteredResources[0],
+            };
+        }
     }
+    /**
+     * Will find the main request skipping the cors pre flight requests
+     * @param resources
+     * @param corsPreFlightRequestEndTime
+     * @param spanEndTimeHR
+     */
+    function findMainRequest(resources, corsPreFlightRequestEndTime, spanEndTimeHR) {
+        const spanEndTime = hrTimeToNanoseconds(spanEndTimeHR);
+        const minTime = hrTimeToNanoseconds(timeInputToHrTime(corsPreFlightRequestEndTime));
+        let mainRequest = resources[1];
+        let bestGap;
+        const length = resources.length;
+        for (let i = 1; i < length; i++) {
+            const resource = resources[i];
+            const resourceStartTime = hrTimeToNanoseconds(timeInputToHrTime(resource[exports.PerformanceTimingNames.FETCH_START]));
+            const resourceEndTime = hrTimeToNanoseconds(timeInputToHrTime(resource[exports.PerformanceTimingNames.RESPONSE_END]));
+            const currentGap = spanEndTime - resourceEndTime;
+            if (resourceStartTime >= minTime && (!bestGap || currentGap < bestGap)) {
+                bestGap = currentGap;
+                mainRequest = resource;
+            }
+        }
+        return mainRequest;
+    }
+    /**
+     * Filter all resources that has started and finished according to span start time and end time.
+     *     It will return the closest resource to a start time
+     * @param spanUrl
+     * @param startTimeHR
+     * @param endTimeHR
+     * @param resources
+     * @param ignoredResources
+     */
+    function filterResourcesForSpan(spanUrl, startTimeHR, endTimeHR, resources, ignoredResources, initiatorType) {
+        const startTime = hrTimeToNanoseconds(startTimeHR);
+        const endTime = hrTimeToNanoseconds(endTimeHR);
+        let filteredResources = resources.filter(resource => {
+            const resourceStartTime = hrTimeToNanoseconds(timeInputToHrTime(resource[exports.PerformanceTimingNames.FETCH_START]));
+            const resourceEndTime = hrTimeToNanoseconds(timeInputToHrTime(resource[exports.PerformanceTimingNames.RESPONSE_END]));
+            return (resource.initiatorType.toLowerCase() ===
+                (initiatorType || 'xmlhttprequest') &&
+                resource.name === spanUrl &&
+                resourceStartTime >= startTime &&
+                resourceEndTime <= endTime);
+        });
+        if (filteredResources.length > 0) {
+            filteredResources = filteredResources.filter(resource => {
+                return !ignoredResources.has(resource);
+            });
+        }
+        return filteredResources;
+    }
+    /**
+     * Parses url using URL constructor or fallback to anchor element.
+     * @param url
+     */
+    function parseUrl(url) {
+        if (typeof URL === 'function') {
+            return new URL(url, typeof document !== 'undefined'
+                ? document.baseURI
+                : typeof location !== 'undefined' // Some JS runtimes (e.g. Deno) don't define this
+                    ? location.href
+                    : undefined);
+        }
+        const element = getUrlNormalizingAnchor();
+        element.href = url;
+        return element;
+    }
+    /**
+     * Parses url using URL constructor or fallback to anchor element and serialize
+     * it to a string.
+     *
+     * Performs the steps described in https://html.spec.whatwg.org/multipage/urls-and-fetching.html#parse-a-url
+     *
+     * @param url
+     */
+    function normalizeUrl(url) {
+        const urlLike = parseUrl(url);
+        return urlLike.href;
+    }
+    /**
+     * Get element XPath
+     * @param target - target element
+     * @param optimised - when id attribute of element is present the xpath can be
+     * simplified to contain id
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+    function getElementXPath(target, optimised) {
+        if (target.nodeType === Node.DOCUMENT_NODE) {
+            return '/';
+        }
+        const targetValue = getNodeValue(target, optimised);
+        if (optimised && targetValue.indexOf('@id') > 0) {
+            return targetValue;
+        }
+        let xpath = '';
+        if (target.parentNode) {
+            xpath += getElementXPath(target.parentNode, false);
+        }
+        xpath += targetValue;
+        return xpath;
+    }
+    /**
+     * get node index within the siblings
+     * @param target
+     */
+    function getNodeIndex(target) {
+        if (!target.parentNode) {
+            return 0;
+        }
+        const allowedTypes = [target.nodeType];
+        if (target.nodeType === Node.CDATA_SECTION_NODE) {
+            allowedTypes.push(Node.TEXT_NODE);
+        }
+        let elements = Array.from(target.parentNode.childNodes);
+        elements = elements.filter((element) => {
+            const localName = element.localName;
+            return (allowedTypes.indexOf(element.nodeType) >= 0 &&
+                localName === target.localName);
+        });
+        if (elements.length >= 1) {
+            return elements.indexOf(target) + 1; // xpath starts from 1
+        }
+        // if there are no other similar child xpath doesn't need index
+        return 0;
+    }
+    /**
+     * get node value for xpath
+     * @param target
+     * @param optimised
+     */
+    function getNodeValue(target, optimised) {
+        const nodeType = target.nodeType;
+        const index = getNodeIndex(target);
+        let nodeValue = '';
+        if (nodeType === Node.ELEMENT_NODE) {
+            const id = target.getAttribute('id');
+            if (optimised && id) {
+                return `//*[@id="${id}"]`;
+            }
+            nodeValue = target.localName;
+        }
+        else if (nodeType === Node.TEXT_NODE ||
+            nodeType === Node.CDATA_SECTION_NODE) {
+            nodeValue = 'text()';
+        }
+        else if (nodeType === Node.COMMENT_NODE) {
+            nodeValue = 'comment()';
+        }
+        else {
+            return '';
+        }
+        // if index is 1 it can be omitted in xpath
+        if (nodeValue && index > 1) {
+            return `/${nodeValue}[${index}]`;
+        }
+        return `/${nodeValue}`;
+    }
+    /**
+     * Checks if trace headers should be propagated
+     * @param spanUrl
+     * @private
+     */
     function shouldPropagateTraceHeaders(spanUrl, propagateTraceHeaderCorsUrls) {
-      let propagateTraceHeaderUrls = propagateTraceHeaderCorsUrls || [];
-      if (typeof propagateTraceHeaderUrls === "string" || propagateTraceHeaderUrls instanceof RegExp) {
-        propagateTraceHeaderUrls = [propagateTraceHeaderUrls];
-      }
-      const parsedSpanUrl = parseUrl(spanUrl);
-      if (parsedSpanUrl.origin === getOrigin()) {
-        return true;
-      } else {
-        return propagateTraceHeaderUrls.some(propagateTraceHeaderUrl => urlMatches(spanUrl, propagateTraceHeaderUrl));
-      }
+        let propagateTraceHeaderUrls = propagateTraceHeaderCorsUrls || [];
+        if (typeof propagateTraceHeaderUrls === 'string' ||
+            propagateTraceHeaderUrls instanceof RegExp) {
+            propagateTraceHeaderUrls = [propagateTraceHeaderUrls];
+        }
+        const parsedSpanUrl = parseUrl(spanUrl);
+        if (parsedSpanUrl.origin === getOrigin()) {
+            return true;
+        }
+        else {
+            return propagateTraceHeaderUrls.some(propagateTraceHeaderUrl => urlMatches(spanUrl, propagateTraceHeaderUrl));
+        }
     }
 
     const __esModule = true ;
