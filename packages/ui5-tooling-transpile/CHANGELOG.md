@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.7.0...ui5-tooling-transpile@3.7.1) (2025-02-07)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** fix undefined issue in source map generation ([#1169](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1169)) ([b980626](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b9806262610aee0a872628c28e4eeeb89d3790a9))
+
+
+
+
+
 # [3.7.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.6.1...ui5-tooling-transpile@3.7.0) (2025-02-06)
 
 
