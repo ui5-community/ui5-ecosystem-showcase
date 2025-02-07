@@ -233,7 +233,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 					debug && log.info(`Bundling took ${Date.now() - bundleTime} millis`);
 					bundleInfo.getEntries().forEach((entry) => {
 						if (entry.path) {
-							watcher.add(entry.path);
+							watcher?.add(entry.path);
 							debug && log.verbose(`[FSWATCHER] File ${entry.path} has been added`);
 						}
 					});

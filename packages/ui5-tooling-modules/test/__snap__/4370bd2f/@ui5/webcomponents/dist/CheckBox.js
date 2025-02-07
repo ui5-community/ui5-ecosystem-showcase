@@ -46,35 +46,15 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/@ui5/webcomponents', 'sap/ui/co
 
   let i$h,s$l="";const u$b=new Map,r$j=m$c("Runtimes",[]),x$2=()=>{if(i$h===undefined){i$h=r$j.length;const e=e$d;r$j.push({...e,get scopingSuffix(){return c$g()},get registeredTags(){return $$2()},get scopingRules(){return m$b()},alias:s$l,description:`Runtime ${i$h} - ver ${e.version}${""}`});}},I$6=()=>i$h,b$5=(e,m)=>{const o=`${e},${m}`;if(u$b.has(o))return u$b.get(o);const t=r$j[e],n=r$j[m];if(!t||!n)throw new Error("Invalid runtime index supplied");if(t.isNext||n.isNext)return t.buildTime-n.buildTime;const c=t.major-n.major;if(c)return c;const a=t.minor-n.minor;if(a)return a;const f=t.patch-n.patch;if(f)return f;const l=new Intl.Collator(undefined,{numeric:true,sensitivity:"base"}).compare(t.suffix,n.suffix);return u$b.set(o,l),l},$$3=()=>r$j;
 
-  const m$a = m$c("Tags", new Map()), d$d = new Set();
-  let s$k = new Map(), c$f;
-  const g$7 = -1, h$6 = e => {
-    (d$d.add(e), m$a.set(e, I$6()));
-  }, w$7 = e => d$d.has(e), $$2 = () => [...d$d.values()], y$7 = e => {
-    let n = m$a.get(e);
-    (n === undefined && (n = g$7), s$k.has(n) || s$k.set(n, new Set()), s$k.get(n).add(e), c$f || (c$f = setTimeout(() => {
-      (R$3(), s$k = new Map(), c$f = undefined);
-    }, 1000)));
-  }, R$3 = () => {
-    const e = $$3(), n = I$6(), l = e[n];
-    let t = "Multiple UI5 Web Components instances detected.";
-    (e.length > 1 && (t = `${t}
-Loading order (versions before 1.1.0 not listed): ${e.map(i => `
-${i.description}`).join("")}`), [...s$k.keys()].forEach(i => {
-      let o, r;
-      i === g$7 ? (o = 1, r = {
-        description: "Older unknown runtime"
-      }) : (o = b$5(n, i), r = e[i]);
-      let a;
-      (o > 0 ? a = "an older" : o < 0 ? a = "a newer" : a = "the same", t = `${t}
+  const m$a=m$c("Tags",new Map),d$d=new Set;let s$k=new Map,c$f;const g$7=-1,h$6=e=>{d$d.add(e),m$a.set(e,I$6());},w$7=e=>d$d.has(e),$$2=()=>[...d$d.values()],y$7=e=>{let n=m$a.get(e);n===undefined&&(n=g$7),s$k.has(n)||s$k.set(n,new Set),s$k.get(n).add(e),c$f||(c$f=setTimeout(()=>{R$3(),s$k=new Map,c$f=undefined;},1e3));},R$3=()=>{const e=$$3(),n=I$6(),l=e[n];let t="Multiple UI5 Web Components instances detected.";e.length>1&&(t=`${t}
+Loading order (versions before 1.1.0 not listed): ${e.map(i=>`
+${i.description}`).join("")}`),[...s$k.keys()].forEach(i=>{let o,r;i===g$7?(o=1,r={description:"Older unknown runtime"}):(o=b$5(n,i),r=e[i]);let a;o>0?a="an older":o<0?a="a newer":a="the same",t=`${t}
 
-"${l.description}" failed to define ${s$k.get(i).size} tag(s) as they were defined by a runtime of ${a} version "${r.description}": ${[...s$k.get(i)].sort().join(", ")}.`, o > 0 ? t = `${t}
-WARNING! If your code uses features of the above web components, unavailable in ${r.description}, it might not work as expected!` : t = `${t}
-Since the above web components were defined by the same or newer version runtime, they should be compatible with your code.`);
-    }), t = `${t}
+"${l.description}" failed to define ${s$k.get(i).size} tag(s) as they were defined by a runtime of ${a} version "${r.description}": ${[...s$k.get(i)].sort().join(", ")}.`,o>0?t=`${t}
+WARNING! If your code uses features of the above web components, unavailable in ${r.description}, it might not work as expected!`:t=`${t}
+Since the above web components were defined by the same or newer version runtime, they should be compatible with your code.`;}),t=`${t}
 
-To prevent other runtimes from defining tags that you use, consider using scoping or have third-party libraries use scoping: https://github.com/SAP/ui5-webcomponents/blob/main/docs/2-advanced/06-scoping.md.`, console.warn(t));
-  };
+To prevent other runtimes from defining tags that you use, consider using scoping or have third-party libraries use scoping: https://github.com/SAP/ui5-webcomponents/blob/main/docs/2-advanced/06-scoping.md.`,console.warn(t);};
 
   const t$f=new Set,n$l=e=>{t$f.add(e);},r$i=e=>t$f.has(e);
 
@@ -3849,48 +3829,104 @@ To prevent other runtimes from defining tags that you use, consider using scopin
   var labelCss = `:host(:not([hidden])){display:inline-flex}:host{max-width:100%;color:var(--sapContent_LabelColor);font-family:"72override",var(--sapFontFamily);font-size:var(--sapFontSize);font-weight:400;cursor:text}.ui5-label-root{width:100%;cursor:inherit}:host{white-space:normal}:host([wrapping-type="None"]){white-space:nowrap}:host([wrapping-type="None"]) .ui5-label-root{display:inline-flex}:host([wrapping-type="None"]) .ui5-label-text-wrapper{text-overflow:ellipsis;overflow:hidden;display:inline-block;vertical-align:top;flex:0 1 auto;min-width:0}:host([show-colon]) .ui5-label-required-colon:before{content:attr(data-ui5-colon)}:host([required]) .ui5-label-required-colon:after{content:"*";color:var(--sapField_RequiredColor);font-size:var(--sapFontLargeSize);font-weight:700;position:relative;font-style:normal;vertical-align:middle;line-height:0}.ui5-label-text-wrapper{padding-inline-end:.075rem}:host([required][show-colon]) .ui5-label-required-colon:after{margin-inline-start:.125rem}:host([show-colon]) .ui5-label-required-colon{margin-inline-start:-.05rem;white-space:pre}
 `;
 
-  var __decorate$2 = this && this.__decorate || (function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc); else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return (c > 3 && r && Object.defineProperty(target, key, r), r);
-  });
-  var Label_1;
-  let Label = Label_1 = class Label extends S$3 {
-    constructor() {
-      super(...arguments);
-      this.showColon = false;
-      this.required = false;
-      this.wrappingType = "Normal";
-    }
-    _onclick() {
-      if (!this.for) {
-        return;
-      }
-      const elementToFocus = this.getRootNode().querySelector(`[id="${this.for}"]`);
-      if (elementToFocus) {
-        elementToFocus.focus();
-      }
-    }
-    get _colonSymbol() {
-      return Label_1.i18nBundle.getText(LABEL_COLON);
-    }
+  var __decorate$2 = (this && this.__decorate) || function (decorators, target, key, desc) {
+      var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+      if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+      else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+      return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
-  __decorate$2([s$c()], Label.prototype, "for", undefined);
-  __decorate$2([s$c({
-    type: Boolean
-  })], Label.prototype, "showColon", undefined);
-  __decorate$2([s$c({
-    type: Boolean
-  })], Label.prototype, "required", undefined);
-  __decorate$2([s$c()], Label.prototype, "wrappingType", undefined);
-  __decorate$2([i("@ui5/webcomponents")], Label, "i18nBundle", undefined);
-  Label = Label_1 = __decorate$2([m$5({
-    tag: "ui5-label",
-    renderer: d,
-    template: LabelTemplate,
-    styles: labelCss,
-    languageAware: true
-  })], Label);
+  var Label_1;
+  /**
+   * @class
+   *
+   * ### Overview
+   *
+   * The `ui5-label` is a component used to represent a label for elements like input, textarea, select.
+   * The `for` property of the `ui5-label` must be the same as the id attribute of the related input element.
+   * Screen readers read out the label, when the user focuses the labelled control.
+   *
+   * The `ui5-label` appearance can be influenced by properties,
+   * such as `required` and `wrappingType`.
+   * The appearance of the Label can be configured in a limited way by using the design property.
+   * For a broader choice of designs, you can use custom styles.
+   *
+   * ### ES6 Module Import
+   *
+   * `import "@ui5/webcomponents/dist/Label";`
+   * @constructor
+   * @extends UI5Element
+   * @public
+   * @slot {Array<Node>} default - Defines the text of the component.
+   *
+   * **Note:** Although this slot accepts HTML Elements, it is strongly recommended that you only use text in order to preserve the intended design.
+   */
+  let Label = Label_1 = class Label extends S$3 {
+      constructor() {
+          super(...arguments);
+          /**
+           * Defines whether colon is added to the component text.
+           *
+           * **Note:** Usually used in forms.
+           * @default false
+           * @public
+           */
+          this.showColon = false;
+          /**
+           * Defines whether an asterisk character is added to the component text.
+           *
+           * **Note:** Usually indicates that user input (bound with the `for` property) is required.
+           * In that case the `required` property of
+           * the corresponding input should also be set.
+           * @default false
+           * @public
+           */
+          this.required = false;
+          /**
+           * Defines how the text of a component will be displayed when there is not enough space.
+           *
+           * **Note:** for option "Normal" the text will wrap and the words will not be broken based on hyphenation.
+           * @default "Normal"
+           * @public
+           */
+          this.wrappingType = "Normal";
+      }
+      _onclick() {
+          if (!this.for) {
+              return;
+          }
+          const elementToFocus = this.getRootNode().querySelector(`[id="${this.for}"]`);
+          if (elementToFocus) {
+              elementToFocus.focus();
+          }
+      }
+      get _colonSymbol() {
+          return Label_1.i18nBundle.getText(LABEL_COLON);
+      }
+  };
+  __decorate$2([
+      s$c()
+  ], Label.prototype, "for", undefined);
+  __decorate$2([
+      s$c({ type: Boolean })
+  ], Label.prototype, "showColon", undefined);
+  __decorate$2([
+      s$c({ type: Boolean })
+  ], Label.prototype, "required", undefined);
+  __decorate$2([
+      s$c()
+  ], Label.prototype, "wrappingType", undefined);
+  __decorate$2([
+      i("@ui5/webcomponents")
+  ], Label, "i18nBundle", undefined);
+  Label = Label_1 = __decorate$2([
+      m$5({
+          tag: "ui5-label",
+          renderer: d,
+          template: LabelTemplate,
+          styles: labelCss,
+          languageAware: true,
+      })
+  ], Label);
   Label.define();
   var Label$1 = Label;
 
@@ -3935,131 +3971,254 @@ To prevent other runtimes from defining tags that you use, consider using scopin
   var iconCss = `:host{-webkit-tap-highlight-color:rgba(0,0,0,0)}:host([hidden]){display:none}:host([invalid]){display:none}:host(:not([hidden]).ui5_hovered){opacity:.7}:host{display:inline-block;width:1rem;height:1rem;color:var(--sapContent_IconColor);fill:currentColor;outline:none}:host([design="Contrast"]){color:var(--sapContent_ContrastIconColor)}:host([design="Critical"]){color:var(--sapCriticalElementColor)}:host([design="Information"]){color:var(--sapInformativeElementColor)}:host([design="Negative"]){color:var(--sapNegativeElementColor)}:host([design="Neutral"]){color:var(--sapNeutralElementColor)}:host([design="NonInteractive"]){color:var(--sapContent_NonInteractiveIconColor)}:host([design="Positive"]){color:var(--sapPositiveElementColor)}:host([mode="Interactive"][desktop]) .ui5-icon-root:focus,:host([mode="Interactive"]) .ui5-icon-root:focus-visible{outline:var(--sapContent_FocusWidth) var(--sapContent_FocusStyle) var(--sapContent_FocusColor);border-radius:var(--ui5-v2-7-0-icon-focus-border-radius)}.ui5-icon-root{display:flex;height:100%;width:100%;outline:none;vertical-align:top}:host([mode="Interactive"]){cursor:pointer}.ui5-icon-root:not([dir=ltr]){transform:var(--_ui5-v2-7-0_icon_transform_scale);transform-origin:center}
 `;
 
-  var __decorate$1 = this && this.__decorate || (function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc); else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return (c > 3 && r && Object.defineProperty(target, key, r), r);
-  });
-  const ICON_NOT_FOUND = "ICON_NOT_FOUND";
-  let Icon = class Icon extends S$3 {
-    constructor() {
-      super(...arguments);
-      this.design = "Default";
-      this.showTooltip = false;
-      this.mode = "Image";
-      this.pathData = [];
-      this.invalid = false;
-    }
-    _onkeydown(e) {
-      if (this.mode !== IconMode$1.Interactive) {
-        return;
-      }
-      if (b$3(e)) {
-        this.fireDecoratorEvent("click");
-      }
-      if (i$8(e)) {
-        e.preventDefault();
-      }
-    }
-    _onkeyup(e) {
-      if (this.mode === IconMode$1.Interactive && i$8(e)) {
-        this.fireDecoratorEvent("click");
-      }
-    }
-    get _dir() {
-      return this.ltr ? "ltr" : undefined;
-    }
-    get effectiveAriaHidden() {
-      return this.mode === IconMode$1.Decorative ? "true" : undefined;
-    }
-    get _tabIndex() {
-      return this.mode === IconMode$1.Interactive ? 0 : undefined;
-    }
-    get effectiveAccessibleRole() {
-      switch (this.mode) {
-        case IconMode$1.Interactive:
-          return "button";
-        case IconMode$1.Decorative:
-          return "presentation";
-        default:
-          return "img";
-      }
-    }
-    onEnterDOM() {
-      if (f$8()) {
-        this.setAttribute("desktop", "");
-      }
-    }
-    async onBeforeRendering() {
-      const name = this.name;
-      if (!name) {
-        return console.warn("Icon name property is required", this);
-      }
-      let iconData = u$4(name);
-      if (!iconData) {
-        iconData = await n$3(name);
-      }
-      if (!iconData) {
-        this.invalid = true;
-        return console.warn(`Required icon is not registered. Invalid icon name: ${this.name}`);
-      }
-      if (iconData === ICON_NOT_FOUND) {
-        this.invalid = true;
-        return console.warn(`Required icon is not registered. You can either import the icon as a module in order to use it e.g. "@ui5/webcomponents-icons/dist/${name.replace("sap-icon://", "")}.js", or setup a JSON build step and import "@ui5/webcomponents-icons/dist/AllIcons.js".`);
-      }
-      this.viewBox = iconData.viewBox || "0 0 512 512";
-      if (iconData.customTemplate) {
-        iconData.pathData = [];
-        this.customSvg = n$7(iconData.customTemplate, this);
-      }
-      this.invalid = false;
-      this.pathData = Array.isArray(iconData.pathData) ? iconData.pathData : [iconData.pathData];
-      this.accData = iconData.accData;
-      this.ltr = iconData.ltr;
-      this.packageName = iconData.packageName;
-      if (this.accessibleName) {
-        this.effectiveAccessibleName = this.accessibleName;
-      } else if (this.accData) {
-        const i18nBundle = await f$5(this.packageName);
-        this.effectiveAccessibleName = i18nBundle.getText(this.accData) || undefined;
-      } else {
-        this.effectiveAccessibleName = undefined;
-      }
-    }
-    get hasIconTooltip() {
-      return this.showTooltip && this.effectiveAccessibleName;
-    }
+  var __decorate$1 = (this && this.__decorate) || function (decorators, target, key, desc) {
+      var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+      if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+      else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+      return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
-  __decorate$1([s$c()], Icon.prototype, "design", undefined);
-  __decorate$1([s$c()], Icon.prototype, "name", undefined);
-  __decorate$1([s$c()], Icon.prototype, "accessibleName", undefined);
-  __decorate$1([s$c({
-    type: Boolean
-  })], Icon.prototype, "showTooltip", undefined);
-  __decorate$1([s$c()], Icon.prototype, "mode", undefined);
-  __decorate$1([s$c({
-    type: Array
-  })], Icon.prototype, "pathData", undefined);
-  __decorate$1([s$c({
-    type: Object,
-    noAttribute: true
-  })], Icon.prototype, "accData", undefined);
-  __decorate$1([s$c({
-    type: Boolean
-  })], Icon.prototype, "invalid", undefined);
-  __decorate$1([s$c({
-    noAttribute: true
-  })], Icon.prototype, "effectiveAccessibleName", undefined);
-  Icon = __decorate$1([m$5({
-    tag: "ui5-icon",
-    languageAware: true,
-    themeAware: true,
-    renderer: d,
-    template: IconTemplate,
-    styles: iconCss
-  }), l$2("click", {
-    bubbles: true
-  })], Icon);
+  const ICON_NOT_FOUND = "ICON_NOT_FOUND";
+  /**
+   * @class
+   * ### Overview
+   *
+   * The `ui5-icon` component represents an SVG icon.
+   * There are two main scenarios how the `ui5-icon` component is used:
+   * as a purely decorative element,
+   * or as an interactive element that can be focused and clicked.
+   *
+   * ### Usage
+   *
+   * 1. **Get familiar with the icons collections.**
+   *
+   * Before displaying an icon, you need to explore the icons collections to find and import the desired icon.
+   *
+   * Currently there are 3 icons collection, available as 3 npm packages:
+   *
+   * - [@ui5/webcomponents-icons](https://www.npmjs.com/package/@ui5/webcomponents-icons) represents the "SAP-icons" collection and includes the following
+   * [icons](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#/overview/SAP-icons).
+   * - [@ui5/webcomponents-icons-tnt](https://www.npmjs.com/package/@ui5/webcomponents-icons-tnt) represents the "tnt" collection and includes the following
+   * [icons](https://sdk.openui5.org/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#/overview/SAP-icons-TNT).
+   * - [@ui5/webcomponents-icons-business-suite](https://www.npmjs.com/package/@ui5/webcomponents-icons-business-suite) represents the "business-suite" collection and includes the following
+   * [icons](https://ui5.sap.com/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#/overview/BusinessSuiteInAppSymbols).
+   *
+   * 2. **After exploring the icons collections, add one or more of the packages as dependencies to your project.**
+   *
+   * `npm i @ui5/webcomponents-icons`
+   * `npm i @ui5/webcomponents-icons-tnt`
+   * `npm i @ui5/webcomponents-icons-business-suite`
+   *
+   * 3. **Then, import the desired icon**.
+   *
+   * `import "@ui5/\{package_name\}/dist/\{icon_name\}.js";`
+   *
+   * **For Example**:
+   *
+   * For the standard "SAP-icons" icon collection, import an icon from the `@ui5/webcomponents-icons` package:
+   *
+   * `import "@ui5/webcomponents-icons/dist/employee.js";`
+   *
+   * For the "tnt" (SAP Fiori Tools) icon collection, import an icon from the `@ui5/webcomponents-icons-tnt` package:
+   *
+   * `import "@ui5/webcomponents-icons-tnt/dist/antenna.js";`
+   *
+   * For the "business-suite" (SAP Business Suite) icon collection, import an icon from the `@ui5/webcomponents-icons-business-suite` package:
+   *
+   * `import "@ui5/webcomponents-icons-business-suite/dist/ab-testing.js";`
+   *
+   * 4. **Display the icon using the `ui5-icon` web component.**
+   * Set the icon collection ("SAP-icons", "tnt" or "business-suite" - "SAP-icons" is the default icon collection and can be skipped)
+   * and the icon name to the `name` property.
+   *
+   * `<ui5-icon name="employee"></ui5-icon>`
+   * `<ui5-icon name="tnt/antenna"></ui5-icon>`
+   * `<ui5-icon name="business-suite/ab-testing"></ui5-icon>`
+   *
+   * ### Keyboard Handling
+   *
+   * - [Space] / [Enter] or [Return] - Fires the `click` event if the `mode` property is set to `Interactive`.
+   * - [Shift] - If [Space] / [Enter] or [Return] is pressed, pressing [Shift] releases the ui5-icon without triggering the click event.
+   *
+   * ### ES6 Module Import
+   *
+   * `import "@ui5/webcomponents/dist/Icon.js";`
+   * @csspart root - Used to style the outermost wrapper of the `ui5-icon`.
+   * @constructor
+   * @extends UI5Element
+   * @implements {IIcon}
+   * @public
+   */
+  let Icon = class Icon extends S$3 {
+      constructor() {
+          super(...arguments);
+          /**
+           * Defines the component semantic design.
+           * @default "Default"
+           * @public
+           * @since 1.9.2
+           */
+          this.design = "Default";
+          /**
+           * Defines whether the component should have a tooltip.
+           *
+           * **Note:** The tooltip text should be provided via the `accessible-name` property.
+           * @default false
+           * @public
+           */
+          this.showTooltip = false;
+          /**
+           * Defines the mode of the component.
+           * @default "Image"
+           * @public
+           * @since 2.0.0
+           */
+          this.mode = "Image";
+          /**
+           * @private
+           */
+          this.pathData = [];
+          /**
+          * @private
+          */
+          this.invalid = false;
+      }
+      _onkeydown(e) {
+          if (this.mode !== IconMode$1.Interactive) {
+              return;
+          }
+          if (b$3(e)) {
+              this.fireDecoratorEvent("click");
+          }
+          if (i$8(e)) {
+              e.preventDefault(); // prevent scrolling
+          }
+      }
+      _onkeyup(e) {
+          if (this.mode === IconMode$1.Interactive && i$8(e)) {
+              this.fireDecoratorEvent("click");
+          }
+      }
+      /**
+      * Enforce "ltr" direction, based on the icons collection metadata.
+      */
+      get _dir() {
+          return this.ltr ? "ltr" : undefined;
+      }
+      get effectiveAriaHidden() {
+          return this.mode === IconMode$1.Decorative ? "true" : undefined;
+      }
+      get _tabIndex() {
+          return this.mode === IconMode$1.Interactive ? 0 : undefined;
+      }
+      get effectiveAccessibleRole() {
+          switch (this.mode) {
+              case IconMode$1.Interactive:
+                  return "button";
+              case IconMode$1.Decorative:
+                  return "presentation";
+              default:
+                  return "img";
+          }
+      }
+      onEnterDOM() {
+          if (f$8()) {
+              this.setAttribute("desktop", "");
+          }
+      }
+      async onBeforeRendering() {
+          const name = this.name;
+          if (!name) {
+              /* eslint-disable-next-line */
+              return console.warn("Icon name property is required", this);
+          }
+          let iconData = u$4(name);
+          if (!iconData) {
+              iconData = await n$3(name);
+          }
+          if (!iconData) {
+              this.invalid = true;
+              /* eslint-disable-next-line */
+              return console.warn(`Required icon is not registered. Invalid icon name: ${this.name}`);
+          }
+          if (iconData === ICON_NOT_FOUND) {
+              this.invalid = true;
+              /* eslint-disable-next-line */
+              return console.warn(`Required icon is not registered. You can either import the icon as a module in order to use it e.g. "@ui5/webcomponents-icons/dist/${name.replace("sap-icon://", "")}.js", or setup a JSON build step and import "@ui5/webcomponents-icons/dist/AllIcons.js".`);
+          }
+          this.viewBox = iconData.viewBox || "0 0 512 512";
+          if (iconData.customTemplate) {
+              iconData.pathData = [];
+              this.customSvg = n$7(iconData.customTemplate, this);
+          }
+          // in case a new valid name is set, show the icon
+          this.invalid = false;
+          this.pathData = Array.isArray(iconData.pathData) ? iconData.pathData : [iconData.pathData];
+          this.accData = iconData.accData;
+          this.ltr = iconData.ltr;
+          this.packageName = iconData.packageName;
+          if (this.accessibleName) {
+              this.effectiveAccessibleName = this.accessibleName;
+          }
+          else if (this.accData) {
+              const i18nBundle = await f$5(this.packageName);
+              this.effectiveAccessibleName = i18nBundle.getText(this.accData) || undefined;
+          }
+          else {
+              this.effectiveAccessibleName = undefined;
+          }
+      }
+      get hasIconTooltip() {
+          return this.showTooltip && this.effectiveAccessibleName;
+      }
+  };
+  __decorate$1([
+      s$c()
+  ], Icon.prototype, "design", undefined);
+  __decorate$1([
+      s$c()
+  ], Icon.prototype, "name", undefined);
+  __decorate$1([
+      s$c()
+  ], Icon.prototype, "accessibleName", undefined);
+  __decorate$1([
+      s$c({ type: Boolean })
+  ], Icon.prototype, "showTooltip", undefined);
+  __decorate$1([
+      s$c()
+  ], Icon.prototype, "mode", undefined);
+  __decorate$1([
+      s$c({ type: Array })
+  ], Icon.prototype, "pathData", undefined);
+  __decorate$1([
+      s$c({ type: Object, noAttribute: true })
+  ], Icon.prototype, "accData", undefined);
+  __decorate$1([
+      s$c({ type: Boolean })
+  ], Icon.prototype, "invalid", undefined);
+  __decorate$1([
+      s$c({ noAttribute: true })
+  ], Icon.prototype, "effectiveAccessibleName", undefined);
+  Icon = __decorate$1([
+      m$5({
+          tag: "ui5-icon",
+          languageAware: true,
+          themeAware: true,
+          renderer: d,
+          template: IconTemplate,
+          styles: iconCss,
+      })
+      /**
+       * Fired on mouseup, `SPACE` and `ENTER`.
+       * - on mouse click, the icon fires native `click` event
+       * - on `SPACE` and `ENTER`, the icon fires custom `click` event
+       * @private
+       * @since 1.0.0-rc.8
+       */
+      ,
+      l$2("click", {
+          bubbles: true,
+      })
+  ], Icon);
   Icon.define();
   var Icon$1 = Icon;
 
@@ -4157,214 +4316,359 @@ To prevent other runtimes from defining tags that you use, consider using scopin
       return border;
   }
 
-  var __decorate = this && this.__decorate || (function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc); else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return (c > 3 && r && Object.defineProperty(target, key, r), r);
-  });
+  var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+      var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+      if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+      else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+      return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
   var CheckBox_1;
   let isGlobalHandlerAttached = false;
   let activeCb;
+  /**
+   * @class
+   *
+   * ### Overview
+   *
+   * Allows the user to set a binary value, such as true/false or yes/no for an item.
+   *
+   * The `ui5-checkbox` component consists of a box and a label that describes its purpose.
+   * If it's checked, an indicator is displayed inside the box.
+   * To check/uncheck the `ui5-checkbox`, the user has to click or tap the square
+   * box or its label.
+   *
+   * The `ui5-checkbox` component only has 2 states - checked and unchecked.
+   * Clicking or tapping toggles the `ui5-checkbox` between checked and unchecked state.
+   *
+   * ### Usage
+   *
+   * You can define the checkbox text with via the `text` property. If the text exceeds the available width, it is truncated by default.
+   * In case you prefer text to truncate, set the `wrappingType` property to "None".
+   * The touchable area for toggling the `ui5-checkbox` ends where the text ends.
+   *
+   * You can disable the `ui5-checkbox` by setting the `disabled` property to
+   * `true`,
+   * or use the `ui5-checkbox` in read-only mode by setting the `readonly`
+   * property to `true`.
+   *
+   * ### Keyboard Handling
+   *
+   * The user can use the following keyboard shortcuts to toggle the checked state of the `ui5-checkbox`.
+   *
+   * - [Space],[Enter] - Toggles between different states: checked, not checked.
+   *
+   * ### ES6 Module Import
+   *
+   * `import "@ui5/webcomponents/dist/CheckBox.js";`
+   * @constructor
+   * @extends UI5Element
+   * @public
+   * @csspart root - Used to style the outermost wrapper of the `ui5-checkbox`
+   * @csspart label - Used to style the label of the `ui5-checkbox`
+   * @csspart icon - Used to style the icon of the `ui5-checkbox`
+   */
   let CheckBox = CheckBox_1 = class CheckBox extends S$3 {
-    get formValidityMessage() {
-      return CheckBox_1.i18nBundle.getText(FORM_CHECKABLE_REQUIRED);
-    }
-    get formValidity() {
-      return {
-        valueMissing: this.required && !this.checked
-      };
-    }
-    async formElementAnchor() {
-      return this.getFocusDomRefAsync();
-    }
-    get formFormattedValue() {
-      return this.checked ? "on" : null;
-    }
-    constructor() {
-      super();
-      this.disabled = false;
-      this.readonly = false;
-      this.displayOnly = false;
-      this.required = false;
-      this.indeterminate = false;
-      this.checked = false;
-      this.valueState = "None";
-      this.wrappingType = "Normal";
-      this.active = false;
-      this._deactivate = () => {
-        if (activeCb) {
-          activeCb.active = false;
-        }
-      };
-      if (!isGlobalHandlerAttached) {
-        document.addEventListener("mouseup", this._deactivate);
-        isGlobalHandlerAttached = true;
+      get formValidityMessage() {
+          return CheckBox_1.i18nBundle.getText(FORM_CHECKABLE_REQUIRED);
       }
-    }
-    onEnterDOM() {
-      if (f$8()) {
-        this.setAttribute("desktop", "");
+      get formValidity() {
+          return { valueMissing: this.required && !this.checked };
       }
-    }
-    _onclick() {
-      this.toggle();
-    }
-    _onmousedown() {
-      if (this.readonly || this.disabled) {
-        return;
+      async formElementAnchor() {
+          return this.getFocusDomRefAsync();
       }
-      this.active = true;
-      activeCb = this;
-    }
-    _onmouseup() {
-      this.active = false;
-    }
-    _onfocusout() {
-      this.active = false;
-    }
-    _onkeydown(e) {
-      if (i$8(e)) {
-        e.preventDefault();
+      get formFormattedValue() {
+          return this.checked ? "on" : null;
       }
-      if (this.readonly || this.disabled) {
-        return;
-      }
-      if (b$3(e)) {
-        this.toggle();
-      }
-      this.active = true;
-    }
-    _onkeyup(e) {
-      if (i$8(e)) {
-        this.toggle();
-      }
-      this.active = false;
-    }
-    toggle() {
-      if (this.canToggle()) {
-        const lastState = {
-          checked: this.checked,
-          indeterminate: this.indeterminate
-        };
-        if (this.indeterminate) {
+      constructor() {
+          super();
+          /**
+           * Defines whether the component is disabled.
+           *
+           * **Note:** A disabled component is completely noninteractive.
+           * @default false
+           * @public
+           */
+          this.disabled = false;
+          /**
+           * Defines whether the component is read-only.
+           *
+           * **Note:** A read-only component is not editable,
+           * but still provides visual feedback upon user interaction.
+           * @default false
+           * @public
+           */
+          this.readonly = false;
+          /**
+           * Determines whether the `ui5-checkbox` is in display only state.
+           *
+           * When set to `true`, the `ui5-checkbox` is not interactive, not editable, not focusable
+           * and not in the tab chain. This setting is used for forms in review mode.
+           *
+           * **Note:** When the property `disabled` is set to `true` this property has no effect.
+           * @since 1.22.0
+           * @public
+           * @default false
+           */
+          this.displayOnly = false;
+          /**
+           * Defines whether the component is required.
+           * @default false
+           * @public
+           * @since 1.3.0
+           */
+          this.required = false;
+          /**
+          * Defines whether the component is displayed as partially checked.
+          *
+          * **Note:** The indeterminate state can be set only programmatically and can’t be achieved by user
+          * interaction and the resulting visual state depends on the values of the `indeterminate`
+          * and `checked` properties:
+          *
+          * -  If the component is checked and indeterminate, it will be displayed as partially checked
+          * -  If the component is checked and it is not indeterminate, it will be displayed as checked
+          * -  If the component is not checked, it will be displayed as not checked regardless value of the indeterminate attribute
+          * @default false
+          * @public
+          * @since 1.0.0-rc.15
+          */
           this.indeterminate = false;
-          this.checked = true;
-        } else {
-          this.checked = !this.checked;
-        }
-        const changePrevented = !this.fireDecoratorEvent("change");
-        const valueChangePrevented = !this.fireDecoratorEvent("value-changed");
-        if (changePrevented || valueChangePrevented) {
-          this.checked = lastState.checked;
-          this.indeterminate = lastState.indeterminate;
-        }
+          /**
+           * Defines if the component is checked.
+           *
+           * **Note:** The property can be changed with user interaction,
+           * either by cliking/tapping on the component, or by
+           * pressing the Enter or Space key.
+           * @default false
+           * @formEvents change
+           * @formProperty
+           * @public
+           */
+          this.checked = false;
+          /**
+           * Defines the value state of the component.
+           * @default "None"
+           * @public
+           */
+          this.valueState = "None";
+          /**
+           * Defines whether the component text wraps when there is not enough space.
+           *
+           * **Note:** for option "Normal" the text will wrap and the words will not be broken based on hyphenation.
+           * **Note:** for option "None" the text will be truncated with an ellipsis.
+           * @default "Normal"
+           * @public
+           */
+          this.wrappingType = "Normal";
+          /**
+           * Defines the active state (pressed or not) of the component.
+           * @private
+           */
+          this.active = false;
+          this._deactivate = () => {
+              if (activeCb) {
+                  activeCb.active = false;
+              }
+          };
+          if (!isGlobalHandlerAttached) {
+              document.addEventListener("mouseup", this._deactivate);
+              isGlobalHandlerAttached = true;
+          }
       }
-      return this;
-    }
-    canToggle() {
-      return !(this.disabled || this.readonly || this.displayOnly);
-    }
-    valueStateTextMappings() {
-      return {
-        "Negative": CheckBox_1.i18nBundle.getText(VALUE_STATE_ERROR),
-        "Critical": CheckBox_1.i18nBundle.getText(VALUE_STATE_WARNING),
-        "Positive": CheckBox_1.i18nBundle.getText(VALUE_STATE_SUCCESS)
-      };
-    }
-    get ariaLabelText() {
-      return A(this);
-    }
-    get classes() {
-      return {
-        main: {
-          "ui5-checkbox--hoverable": !this.disabled && !this.readonly && f$8()
-        }
-      };
-    }
-    get ariaReadonly() {
-      return this.readonly || this.displayOnly ? "true" : undefined;
-    }
-    get effectiveAriaDisabled() {
-      return this.disabled ? "true" : undefined;
-    }
-    get effectiveAriaChecked() {
-      return this.indeterminate && this.checked ? "mixed" : this.checked;
-    }
-    get ariaLabelledBy() {
-      if (!this.ariaLabelText) {
-        return this.text ? `${this._id}-label` : undefined;
+      onEnterDOM() {
+          if (f$8()) {
+              this.setAttribute("desktop", "");
+          }
       }
-      return undefined;
-    }
-    get ariaDescribedBy() {
-      return this.hasValueState ? `${this._id}-descr` : undefined;
-    }
-    get hasValueState() {
-      return this.valueState !== o$1.None;
-    }
-    get valueStateText() {
-      if (this.valueState !== o$1.None && this.valueState !== o$1.Information) {
-        return this.valueStateTextMappings()[this.valueState];
+      _onclick() {
+          this.toggle();
       }
-    }
-    get effectiveTabIndex() {
-      const tabindex = this.getAttribute("tabindex");
-      if (this.tabbable) {
-        return tabindex ? parseInt(tabindex) : 0;
+      _onmousedown() {
+          if (this.readonly || this.disabled) {
+              return;
+          }
+          this.active = true;
+          activeCb = this; // eslint-disable-line
       }
-    }
-    get tabbable() {
-      return !this.disabled && !this.displayOnly;
-    }
-    get isCompletelyChecked() {
-      return this.checked && !this.indeterminate;
-    }
-    get isDisplayOnly() {
-      return this.displayOnly && !this.disabled;
-    }
+      _onmouseup() {
+          this.active = false;
+      }
+      _onfocusout() {
+          this.active = false;
+      }
+      _onkeydown(e) {
+          if (i$8(e)) {
+              e.preventDefault();
+          }
+          if (this.readonly || this.disabled) {
+              return;
+          }
+          if (b$3(e)) {
+              this.toggle();
+          }
+          this.active = true;
+      }
+      _onkeyup(e) {
+          if (i$8(e)) {
+              this.toggle();
+          }
+          this.active = false;
+      }
+      toggle() {
+          if (this.canToggle()) {
+              const lastState = {
+                  checked: this.checked,
+                  indeterminate: this.indeterminate,
+              };
+              if (this.indeterminate) {
+                  this.indeterminate = false;
+                  this.checked = true;
+              }
+              else {
+                  this.checked = !this.checked;
+              }
+              const changePrevented = !this.fireDecoratorEvent("change");
+              // Angular two way data binding
+              const valueChangePrevented = !this.fireDecoratorEvent("value-changed");
+              if (changePrevented || valueChangePrevented) {
+                  this.checked = lastState.checked;
+                  this.indeterminate = lastState.indeterminate;
+              }
+          }
+          return this;
+      }
+      canToggle() {
+          return !(this.disabled || this.readonly || this.displayOnly);
+      }
+      valueStateTextMappings() {
+          return {
+              "Negative": CheckBox_1.i18nBundle.getText(VALUE_STATE_ERROR),
+              "Critical": CheckBox_1.i18nBundle.getText(VALUE_STATE_WARNING),
+              "Positive": CheckBox_1.i18nBundle.getText(VALUE_STATE_SUCCESS),
+          };
+      }
+      get ariaLabelText() {
+          return A(this);
+      }
+      get classes() {
+          return {
+              main: {
+                  "ui5-checkbox--hoverable": !this.disabled && !this.readonly && f$8(),
+              },
+          };
+      }
+      get ariaReadonly() {
+          return this.readonly || this.displayOnly ? "true" : undefined;
+      }
+      get effectiveAriaDisabled() {
+          return this.disabled ? "true" : undefined;
+      }
+      get effectiveAriaChecked() {
+          return this.indeterminate && this.checked ? "mixed" : this.checked;
+      }
+      get ariaLabelledBy() {
+          if (!this.ariaLabelText) {
+              return this.text ? `${this._id}-label` : undefined;
+          }
+          return undefined;
+      }
+      get ariaDescribedBy() {
+          return this.hasValueState ? `${this._id}-descr` : undefined;
+      }
+      get hasValueState() {
+          return this.valueState !== o$1.None;
+      }
+      get valueStateText() {
+          if (this.valueState !== o$1.None && this.valueState !== o$1.Information) {
+              return this.valueStateTextMappings()[this.valueState];
+          }
+      }
+      get effectiveTabIndex() {
+          const tabindex = this.getAttribute("tabindex");
+          if (this.tabbable) {
+              return tabindex ? parseInt(tabindex) : 0;
+          }
+      }
+      get tabbable() {
+          return !this.disabled && !this.displayOnly;
+      }
+      get isCompletelyChecked() {
+          return this.checked && !this.indeterminate;
+      }
+      get isDisplayOnly() {
+          return this.displayOnly && !this.disabled;
+      }
   };
-  __decorate([s$c()], CheckBox.prototype, "accessibleNameRef", undefined);
-  __decorate([s$c()], CheckBox.prototype, "accessibleName", undefined);
-  __decorate([s$c({
-    type: Boolean
-  })], CheckBox.prototype, "disabled", undefined);
-  __decorate([s$c({
-    type: Boolean
-  })], CheckBox.prototype, "readonly", undefined);
-  __decorate([s$c({
-    type: Boolean
-  })], CheckBox.prototype, "displayOnly", undefined);
-  __decorate([s$c({
-    type: Boolean
-  })], CheckBox.prototype, "required", undefined);
-  __decorate([s$c({
-    type: Boolean
-  })], CheckBox.prototype, "indeterminate", undefined);
-  __decorate([s$c({
-    type: Boolean
-  })], CheckBox.prototype, "checked", undefined);
-  __decorate([s$c()], CheckBox.prototype, "text", undefined);
-  __decorate([s$c()], CheckBox.prototype, "valueState", undefined);
-  __decorate([s$c()], CheckBox.prototype, "wrappingType", undefined);
-  __decorate([s$c()], CheckBox.prototype, "name", undefined);
-  __decorate([s$c({
-    type: Boolean
-  })], CheckBox.prototype, "active", undefined);
-  __decorate([i("@ui5/webcomponents")], CheckBox, "i18nBundle", undefined);
-  CheckBox = CheckBox_1 = __decorate([m$5({
-    tag: "ui5-checkbox",
-    languageAware: true,
-    formAssociated: true,
-    renderer: d,
-    template: CheckBoxTemplate,
-    styles: checkboxCss
-  }), l$2("change", {
-    bubbles: true,
-    cancelable: true
-  }), l$2("value-changed", {
-    bubbles: true,
-    cancelable: true
-  })], CheckBox);
+  __decorate([
+      s$c()
+  ], CheckBox.prototype, "accessibleNameRef", undefined);
+  __decorate([
+      s$c()
+  ], CheckBox.prototype, "accessibleName", undefined);
+  __decorate([
+      s$c({ type: Boolean })
+  ], CheckBox.prototype, "disabled", undefined);
+  __decorate([
+      s$c({ type: Boolean })
+  ], CheckBox.prototype, "readonly", undefined);
+  __decorate([
+      s$c({ type: Boolean })
+  ], CheckBox.prototype, "displayOnly", undefined);
+  __decorate([
+      s$c({ type: Boolean })
+  ], CheckBox.prototype, "required", undefined);
+  __decorate([
+      s$c({ type: Boolean })
+  ], CheckBox.prototype, "indeterminate", undefined);
+  __decorate([
+      s$c({ type: Boolean })
+  ], CheckBox.prototype, "checked", undefined);
+  __decorate([
+      s$c()
+  ], CheckBox.prototype, "text", undefined);
+  __decorate([
+      s$c()
+  ], CheckBox.prototype, "valueState", undefined);
+  __decorate([
+      s$c()
+  ], CheckBox.prototype, "wrappingType", undefined);
+  __decorate([
+      s$c()
+  ], CheckBox.prototype, "name", undefined);
+  __decorate([
+      s$c({ type: Boolean })
+  ], CheckBox.prototype, "active", undefined);
+  __decorate([
+      i("@ui5/webcomponents")
+  ], CheckBox, "i18nBundle", undefined);
+  CheckBox = CheckBox_1 = __decorate([
+      m$5({
+          tag: "ui5-checkbox",
+          languageAware: true,
+          formAssociated: true,
+          renderer: d,
+          template: CheckBoxTemplate,
+          styles: checkboxCss,
+      })
+      /**
+       * Fired when the component checked state changes.
+       * @public
+       */
+      ,
+      l$2("change", {
+          bubbles: true,
+          cancelable: true,
+      })
+      /**
+       * Fired to make Angular two way data binding work properly.
+       * @private
+       */
+      ,
+      l$2("value-changed", {
+          bubbles: true,
+          cancelable: true,
+      })
+  ], CheckBox);
   CheckBox.define();
 
   const WrapperClass = WebComponent.extend("@ui5/webcomponents.CheckBox", {

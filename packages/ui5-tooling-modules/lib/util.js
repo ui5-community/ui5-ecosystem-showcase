@@ -9,7 +9,6 @@ const commonjs = require("@rollup/plugin-commonjs");
 const json = require("@rollup/plugin-json");
 const nodePolyfills = require("rollup-plugin-polyfill-node");
 const nodePolyfillsOverride = require("./rollup-plugin-polyfill-node-override");
-const amdCustom = require("./rollup-plugin-amd-custom");
 const skipAssets = require("./rollup-plugin-skip-assets");
 const injectESModule = require("./rollup-plugin-inject-esmodule");
 const logger = require("./rollup-plugin-logger");
@@ -1078,7 +1077,6 @@ module.exports = function (log, projectInfo) {
 					commonjs({
 						defaultIsModuleExports: true,
 					}),
-					amdCustom(),
 					// node polyfills/resolution must happen after
 					// commonjs and amd to ensure e.g. exports is
 					// properly handled by those plugins
@@ -1261,7 +1259,13 @@ module.exports = function (log, projectInfo) {
 						options.afterPlugins.push(dynamicImports({ findPackageJson, keepDynamicImports }));
 						// when minifying the code, we add the terser plugin
 						if (minify) {
-							options.afterPlugins.push(require("@rollup/plugin-terser")());
+							options.afterPlugins.push(
+								require("@rollup/plugin-terser")({
+									output: {
+										comments: /^!/, // Keeps comments starting with "!"
+									},
+								}),
+							);
 						}
 						const nameOfModules = modules.map((module) => module.name);
 						//const millis = Date.now();

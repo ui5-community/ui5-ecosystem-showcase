@@ -38,35 +38,15 @@ sap.ui.define(['exports', 'sap/base/strings/hyphenate', 'sap/ui/core/webc/WebCom
 
 	let i$7,s$6="";const u$5=new Map,r$7=m$7("Runtimes",[]),x$1=()=>{if(i$7===undefined){i$7=r$7.length;const e=e$4;r$7.push({...e,get scopingSuffix(){return c$5()},get registeredTags(){return $$1()},get scopingRules(){return m$6()},alias:s$6,description:`Runtime ${i$7} - ver ${e.version}${""}`});}},I$3=()=>i$7,b$2=(e,m)=>{const o=`${e},${m}`;if(u$5.has(o))return u$5.get(o);const t=r$7[e],n=r$7[m];if(!t||!n)throw new Error("Invalid runtime index supplied");if(t.isNext||n.isNext)return t.buildTime-n.buildTime;const c=t.major-n.major;if(c)return c;const a=t.minor-n.minor;if(a)return a;const f=t.patch-n.patch;if(f)return f;const l=new Intl.Collator(undefined,{numeric:true,sensitivity:"base"}).compare(t.suffix,n.suffix);return u$5.set(o,l),l},$$2=()=>r$7;
 
-	const m$5 = m$7("Tags", new Map()), d$6 = new Set();
-	let s$5 = new Map(), c$4;
-	const g$2 = -1, h$5 = e => {
-	  (d$6.add(e), m$5.set(e, I$3()));
-	}, w$4 = e => d$6.has(e), $$1 = () => [...d$6.values()], y$3 = e => {
-	  let n = m$5.get(e);
-	  (n === undefined && (n = g$2), s$5.has(n) || s$5.set(n, new Set()), s$5.get(n).add(e), c$4 || (c$4 = setTimeout(() => {
-	    (R$2(), s$5 = new Map(), c$4 = undefined);
-	  }, 1000)));
-	}, R$2 = () => {
-	  const e = $$2(), n = I$3(), l = e[n];
-	  let t = "Multiple UI5 Web Components instances detected.";
-	  (e.length > 1 && (t = `${t}
-Loading order (versions before 1.1.0 not listed): ${e.map(i => `
-${i.description}`).join("")}`), [...s$5.keys()].forEach(i => {
-	    let o, r;
-	    i === g$2 ? (o = 1, r = {
-	      description: "Older unknown runtime"
-	    }) : (o = b$2(n, i), r = e[i]);
-	    let a;
-	    (o > 0 ? a = "an older" : o < 0 ? a = "a newer" : a = "the same", t = `${t}
+	const m$5=m$7("Tags",new Map),d$6=new Set;let s$5=new Map,c$4;const g$2=-1,h$5=e=>{d$6.add(e),m$5.set(e,I$3());},w$4=e=>d$6.has(e),$$1=()=>[...d$6.values()],y$3=e=>{let n=m$5.get(e);n===undefined&&(n=g$2),s$5.has(n)||s$5.set(n,new Set),s$5.get(n).add(e),c$4||(c$4=setTimeout(()=>{R$2(),s$5=new Map,c$4=undefined;},1e3));},R$2=()=>{const e=$$2(),n=I$3(),l=e[n];let t="Multiple UI5 Web Components instances detected.";e.length>1&&(t=`${t}
+Loading order (versions before 1.1.0 not listed): ${e.map(i=>`
+${i.description}`).join("")}`),[...s$5.keys()].forEach(i=>{let o,r;i===g$2?(o=1,r={description:"Older unknown runtime"}):(o=b$2(n,i),r=e[i]);let a;o>0?a="an older":o<0?a="a newer":a="the same",t=`${t}
 
-"${l.description}" failed to define ${s$5.get(i).size} tag(s) as they were defined by a runtime of ${a} version "${r.description}": ${[...s$5.get(i)].sort().join(", ")}.`, o > 0 ? t = `${t}
-WARNING! If your code uses features of the above web components, unavailable in ${r.description}, it might not work as expected!` : t = `${t}
-Since the above web components were defined by the same or newer version runtime, they should be compatible with your code.`);
-	  }), t = `${t}
+"${l.description}" failed to define ${s$5.get(i).size} tag(s) as they were defined by a runtime of ${a} version "${r.description}": ${[...s$5.get(i)].sort().join(", ")}.`,o>0?t=`${t}
+WARNING! If your code uses features of the above web components, unavailable in ${r.description}, it might not work as expected!`:t=`${t}
+Since the above web components were defined by the same or newer version runtime, they should be compatible with your code.`;}),t=`${t}
 
-To prevent other runtimes from defining tags that you use, consider using scoping or have third-party libraries use scoping: https://github.com/SAP/ui5-webcomponents/blob/main/docs/2-advanced/06-scoping.md.`, console.warn(t));
-	};
+To prevent other runtimes from defining tags that you use, consider using scoping or have third-party libraries use scoping: https://github.com/SAP/ui5-webcomponents/blob/main/docs/2-advanced/06-scoping.md.`,console.warn(t);};
 
 	const t$9=new Set,n$6=e=>{t$9.add(e);},r$6=e=>t$9.has(e);
 
@@ -165,7 +145,7 @@ To prevent other runtimes from defining tags that you use, consider using scopin
 		console.warn("ValueState mapping is not implemented for Web Components yet. Please use UI5 version 1.133.0 or higher.");
 		return sValueState;
 	};
-	u$6("0e372412");
+	u$6("961975ed");
 
 	const pkg = {
 		"_ui5metadata": {
