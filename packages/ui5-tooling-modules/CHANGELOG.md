@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.22.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.22.0...ui5-tooling-modules@3.22.1) (2025-02-10)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** avoid issues with modified id in import-meta rollup plugin ([#1170](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1170)) ([21cd701](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/21cd7012d7e7ee1c9e0c0c847f8da5a4a7b8ab27))
+
+
+
+
+
 # [3.22.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.21.0...ui5-tooling-modules@3.22.0) (2025-02-07)
 
 
