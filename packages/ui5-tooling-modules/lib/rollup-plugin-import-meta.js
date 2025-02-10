@@ -18,11 +18,19 @@ module.exports = function () {
 				// resolve the module
 				const resolvedModule = await this.resolve(moduleId, id);
 				if (resolvedModule) {
+					// remove the query parameter from the id
+					let resolvedModuleId = resolvedModule.id;
+					if (resolvedModuleId.indexOf("?")) {
+						resolvedModuleId = resolvedModuleId.substring(0, resolvedModuleId.indexOf("?"));
+					}
+					if (resolvedModuleId.startsWith("\0")) {
+						resolvedModuleId = resolvedModuleId.substring(1);
+					}
 					// create a prebuilt chunk with the resolved module
 					this.emitFile({
 						type: "prebuilt-chunk",
-						fileName: path.basename(resolvedModule.id),
-						code: readFileSync(resolvedModule.id, { encoding: "utf8" }),
+						fileName: path.basename(resolvedModuleId),
+						code: readFileSync(resolvedModuleId, { encoding: "utf8" }),
 					});
 					// replace the URL constructor with the prebuilt chunk
 					return code.replace(urlMatch[1], `${JSON.stringify(path.basename(resolvedModule.id))}, import.meta.url`);
