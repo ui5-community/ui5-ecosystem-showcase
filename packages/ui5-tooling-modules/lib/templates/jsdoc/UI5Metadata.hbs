@@ -1,0 +1,39 @@
+{
+  "tag": "{{tag}}",
+  "library": "{{library}}",
+  "designtime": "{{designtime}}",
+
+  "namespace": "{{metadata.namespace}}",
+  "interfaces": {{{json metadata.interfaces}}},
+
+  "properties": {
+  {{#each metadata.properties}}
+    {{jsDoc @root.classDef "properties" @key}}
+    "{{@key}}": {{{json this}}},
+  {{/each}}
+  },
+
+  "aggregations": {
+  {{#each metadata.aggregations}}
+    {{jsDoc @root.classDef "aggregations" @key}}
+    "{{@key}}": {{{json this}}},
+  {{/each}}
+  },
+
+  "associations": {
+  {{#each metadata.associations}}
+    {{jsDoc @root.classDef "associations" @key}}
+    "{{@key}}": {{{json this}}},
+  {{/each}}
+  },
+
+  "events": {
+  {{#each metadata.events}}
+    {{jsDoc @root.classDef "events" @key}}
+    "{{@key}}": {{{json this}}},
+  {{/each}}
+  },
+
+  "getters": {{{json metadata.getters}}},
+  "methods": {{{json metadata.methods}}}
+}

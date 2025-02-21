@@ -1,3 +1,5 @@
+const JSDocSerializer = require("./JSDocSerializer");
+
 /**
  * Camelize the dashes.
  * Used to transform event names.
@@ -28,9 +30,11 @@ class RegistryEntry {
 		this.customElements = {};
 		this.classes = {};
 		this.enums = {};
-		this.interfaces = new Set();
+		this.interfaces = {};
 
 		this.#processMetadata();
+
+		JSDocSerializer.prepare(this);
 
 		console.log(`Metadata processed for package ${namespace}.`);
 	}
@@ -55,6 +59,9 @@ class RegistryEntry {
 
 		// [4] prepare enum objects
 		this.#prepareEnums();
+
+		// [5] prepare interface definitions
+		this.#prepareInterfaces();
 	}
 
 	#parseDeclaration(decl) {
@@ -66,7 +73,7 @@ class RegistryEntry {
 				this.enums[decl.name] = decl;
 				break;
 			case "interface":
-				this.interfaces.add(decl.name);
+				this.interfaces[decl.name] = decl;
 				break;
 			default:
 				console.error("unknown declaration kind:", decl.kind);
@@ -140,7 +147,7 @@ class RegistryEntry {
 	}
 
 	#checkForInterfaceOrClassType(type) {
-		if (this.interfaces.has(type) || this.classes[type]) {
+		if (this.interfaces[type] || this.classes[type]) {
 			return this.prefixns(type);
 		}
 	}
@@ -417,7 +424,7 @@ class RegistryEntry {
 	#processUI5Interfaces(classDef, ui5metadata) {
 		if (Array.isArray(classDef._ui5implements)) {
 			classDef._ui5implements.forEach((interfaceDef) => {
-				if (this.interfaces.has(interfaceDef.name)) {
+				if (this.interfaces[interfaceDef.name]) {
 					ui5metadata.interfaces.push(this.prefixns(interfaceDef.name));
 				}
 			});
@@ -595,7 +602,8 @@ class RegistryEntry {
 	}
 
 	/**
-	 * Prepares the UI5 enum objects for the "package.hbs" template.
+	 * Prepares the UI5 enum objects and enriches them with appropriate JSDoc.
+	 * Used in the respective HBS template.
 	 */
 	#prepareEnums() {
 		Object.keys(this.enums).forEach((enumName) => {
@@ -604,10 +612,27 @@ class RegistryEntry {
 			const enumMembers = this.enums[enumName].members;
 			enumMembers.forEach((member) => {
 				// Key<>Value must be identical!
-				enumValues.push(member.name);
+				enumValues.push({ name: member.name, description: member.description || "" });
 			});
 
-			this.enums[enumName] = enumValues;
+			// prepare enum info object for HBS template later
+			this.enums[enumName] = {
+				name: enumName,
+				prefixedName: this.prefixns(enumName),
+				description: this.enums[enumName].description || "",
+				values: enumValues,
+			};
+		});
+	}
+
+	/**
+	 * Prepares the UI5 interface definitions and enriches them with appropriate JSDoc.
+	 * Used in the respective HBS template.
+	 */
+	#prepareInterfaces() {
+		Object.keys(this.interfaces).forEach((interfaceName) => {
+			const interfaceDef = this.interfaces[interfaceName];
+			interfaceDef.prefixedName = this.prefixns(interfaceName);
 		});
 	}
 }
