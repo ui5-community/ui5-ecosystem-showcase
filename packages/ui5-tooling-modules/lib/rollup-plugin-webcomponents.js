@@ -301,6 +301,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 					metadata,
 					namespace,
 					enums: lib.enums,
+					interfaces: lib.interfaces,
 					hasEnums: Object.keys(lib.enums).length > 0,
 					dependencies: lib.dependencies,
 					isBaseLib: namespace === "@ui5/webcomponents-base",
@@ -344,6 +345,8 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 					library: `${ui5Metadata.namespace}.library`, // if not defined, the library is derived from the namespace
 					designtime: `${ui5Metadata.namespace}/designtime/${clazz.name}.designtime`, // add a default designtime
 				});
+
+				// TODO: Execute Handlebars Template from
 				const metadata = JSON.stringify(metadataObject, undefined, 2);
 				const webcModule = moduleInfo.attributes.absModulePath;
 				const webcClass = webcModule.replace(/\\/g, "/"); // is the absolute path of the original Web Component class
@@ -367,10 +370,14 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 					webcBaseClass = `${namespace}/${module}`;
 				}
 
+				// JSDoc Serialization for the class header
+				const jsDocClassHeader = clazz._jsDoc?.classHeader;
+
 				// generate the WebComponentControl code
 				const code = webcTmplFnControl({
 					ui5Class,
 					namespace,
+					jsDocClassHeader,
 					metadata,
 					webcClass,
 					webcBaseClass,

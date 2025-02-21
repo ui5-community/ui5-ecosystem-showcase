@@ -37,14 +37,21 @@ const pkg = {
 	"_ui5metadata": {{{metadata}}}
 };
 
+// Interfaces
+{{#each interfaces}}
+{{this._jsDoc}}
+{{/each}}
+
+// Enums
 {{#each enums}}
-pkg["{{@key}}"] = {
-{{#each this}}
-	"{{this}}": "{{this}}",
+{{this._jsDoc}}
+pkg["{{this.name}}"] = {
+{{#each this.values}}
+	{{this._jsDoc}}
+	"{{this.name}}": "{{this.name}}",
 {{/each}}
 };
-registerEnum("{{../namespace}}.{{@key}}", pkg["{{@key}}"]);
-
+registerEnum("{{this.prefixedName}}", pkg["{{this.name}}"]);
 {{/each}}
 
 export default pkg;
