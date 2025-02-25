@@ -8,28 +8,28 @@
 
   "properties": {
   {{#each metadata.properties}}
-    {{jsDoc @root.classDef "properties" @key}}
+{{{jsDoc @root.jsDoc "properties" @key}}}
     "{{@key}}": {{{json this}}},
   {{/each}}
   },
 
   "aggregations": {
   {{#each metadata.aggregations}}
-    {{jsDoc @root.classDef "aggregations" @key}}
+{{{jsDoc @root.jsDoc "aggregations" @key}}}
     "{{@key}}": {{{json this}}},
   {{/each}}
   },
 
   "associations": {
   {{#each metadata.associations}}
-    {{jsDoc @root.classDef "associations" @key}}
+{{{jsDoc @root.jsDoc "associations" @key}}}
     "{{@key}}": {{{json this}}},
   {{/each}}
   },
 
   "events": {
   {{#each metadata.events}}
-    {{jsDoc @root.classDef "events" @key}}
+{{{jsDoc @root.jsDoc "events" @key}}}
     "{{@key}}": {{{json this}}},
   {{/each}}
   },

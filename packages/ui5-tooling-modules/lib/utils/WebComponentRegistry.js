@@ -271,6 +271,8 @@ class RegistryEntry {
 					formatter: "_getAriaLabelledByForRendering",
 				},
 			};
+			// Since we change the naming from "accessibleNameRef" to "ariaLabelledBy", we can't pass the propDef directly to the JSDocSerializer!
+			JSDocSerializer.writeDoc(classDef, "associations", { name: "ariaLabelledBy", description: propDef.description });
 			return true;
 		} else if (propDef.name === "disabled") {
 			// "disabled" maps to "enabled" in UI5
@@ -285,6 +287,9 @@ class RegistryEntry {
 					formatter: "_mapEnabled",
 				},
 			};
+			// Since we flip the naming from "disabled" to "enabled", we can't pass the propDef directly to the JSDocSerializer!
+			JSDocSerializer.writeDoc(classDef, "properties", { name: "enabled", description: propDef.description });
+
 			return true;
 		} else if (propDef.name === "textDirection") {
 			// text direction needs to be mapped to the native "dir"
@@ -297,6 +302,7 @@ class RegistryEntry {
 					formatter: "_mapTextDirection",
 				},
 			};
+			JSDocSerializer.writeDoc(classDef, "properties", propDef);
 			return true;
 		}
 
@@ -342,6 +348,7 @@ class RegistryEntry {
 						to: propDef.name, // the name of the webc's attribute
 					},
 				};
+				JSDocSerializer.writeDoc(classDef, "associations", propDef);
 			} else {
 				let defaultValue = propDef.default;
 				if (defaultValue) {
@@ -358,6 +365,7 @@ class RegistryEntry {
 					mapping: "property",
 					defaultValue: defaultValue,
 				};
+				JSDocSerializer.writeDoc(classDef, "properties", propDef);
 			}
 		} else if (propDef.kind === "method") {
 			// Methods are proxied through the core.WebComponent base class
@@ -412,6 +420,8 @@ class RegistryEntry {
 			multiple: true,
 			slot: slotName,
 		};
+		// note: in case we changed the name of the aggregation (e.g. default), we can't pass the slotDef directly!
+		JSDocSerializer.writeDoc(classDef, "aggregations", { name: aggregationName, description: slotDef.description });
 	}
 
 	#processEvents(ui5metadata, eventDef) {
@@ -466,6 +476,7 @@ class RegistryEntry {
 				type: "string",
 				mapping: "textContent",
 			};
+			JSDocSerializer.writeDoc(classDef, "properties", { name: "text", description: "The text-content of the Web Component." });
 		}
 
 		// cssProperties: [ "width", "height", "display" ]
@@ -474,6 +485,7 @@ class RegistryEntry {
 				type: "sap.ui.core.CSSSize",
 				mapping: "style",
 			};
+			JSDocSerializer.writeDoc(classDef, "properties", { name: "width", description: "The 'width' of the Web Component in <code>sap.ui.core.CSSSize</code>." });
 		}
 
 		if (!this.#ui5PropertyExistsInParentChain(classDef, "height")) {
@@ -481,6 +493,7 @@ class RegistryEntry {
 				type: "sap.ui.core.CSSSize",
 				mapping: "style",
 			};
+			JSDocSerializer.writeDoc(classDef, "properties", { name: "height", description: "The 'height' of the Web Component in <code>sap.ui.core.CSSSize</code>." });
 		}
 	}
 
@@ -494,6 +507,8 @@ class RegistryEntry {
 	 */
 	#patchUI5Specifics(classDef, ui5metadata) {
 		const { tag } = ui5metadata;
+
+		// TODO: This whole method needs to be adapted to correctly write JSDoc
 
 		// The label has a couple of specifics that are not fully reflected in the custom elements.
 		if (tag === "ui5-label") {
@@ -572,6 +587,20 @@ class RegistryEntry {
 			getters: [],
 			methods: [],
 		});
+
+		// we track the JSDoc extracted from the custom elements manifest separately,
+		// as they are not part of the runtime metadata
+		// TODO: Move this to the JSDocSerializer, note to self: just for debugging atm
+		classDef._jsDoc = {
+			classHeader: "",
+			metadata: "",
+			properties: {},
+			aggregations: {},
+			associations: {},
+			events: {},
+			getters: {},
+			methods: {},
+		};
 
 		// we track a couple of UI5 specifics like interfaces and mixins separately
 		classDef._ui5specifics = {};
