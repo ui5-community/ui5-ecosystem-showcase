@@ -373,6 +373,7 @@ class RegistryEntry {
 		} else if (propDef.kind === "method") {
 			// Methods are proxied through the core.WebComponent base class
 			// e.g. DatePicker#isValid or Toolbar#isOverflowOpen
+			// TODO: Track parameters & write JSDoc
 			ui5metadata.methods.push(propDef.name);
 		}
 	}
@@ -428,6 +429,7 @@ class RegistryEntry {
 	}
 
 	#processEvents(ui5metadata, eventDef) {
+		// TODO: Track parameters & write JSDoc
 		ui5metadata.events[camelize(eventDef.name)] = {};
 	}
 
@@ -596,17 +598,7 @@ class RegistryEntry {
 
 		// we track the JSDoc extracted from the custom elements manifest separately,
 		// as they are not part of the runtime metadata
-		// TODO: Move this to the JSDocSerializer, note to self: just for debugging atm
-		classDef._jsDoc = {
-			classHeader: "",
-			metadata: "",
-			properties: {},
-			aggregations: {},
-			associations: {},
-			events: {},
-			getters: {},
-			methods: {},
-		};
+		JSDocSerializer.initClass(classDef);
 
 		// we track a couple of UI5 specifics like interfaces and mixins separately
 		classDef._ui5specifics = {};
