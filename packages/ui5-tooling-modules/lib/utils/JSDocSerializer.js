@@ -7,14 +7,14 @@ const handlebars = require("handlebars");
  * Helper function to stringify objects into valid JSON from within HBS templates.
  */
 handlebars.registerHelper("json", function (context) {
-	return JSON.stringify(context, undefined, 2);
+	return JSON.stringify(context);
 });
 
 /**
  * Helper function to retrieve a JSDoc comment the respective class and type, e.g. "properties".
  */
-handlebars.registerHelper("jsDoc", function (classDef, entityType, entityName) {
-	return classDef._jsDoc[entityType][entityName];
+handlebars.registerHelper("jsDoc", function (jsDoc, entityType, entityName) {
+	return jsDoc[entityType][entityName];
 });
 
 /**
@@ -93,10 +93,12 @@ function _serializeClassHeader(classDef) {
  * @param {string} entityType the entity type, either: "properties", "aggregations", "associations", "events"
  */
 function _prepareEntity(classDef, entityType) {
-	const metadata = classDef._ui5metadata;
-	Object.keys(metadata[entityType]).forEach((entityName) => {
-		const obj = metadata[entityType][entityName];
-		classDef._jsDoc[entityType][entityName] = Templates.ui5metadataEntity({
+	const jsDoc = classDef._jsDoc;
+
+	Object.keys(jsDoc[entityType]).forEach((entityName) => {
+		const obj = jsDoc[entityType][entityName];
+		// write the JSDoc comment back to the entity
+		jsDoc[entityType][entityName] = Templates.ui5metadataEntity({
 			description: obj.description,
 		});
 	});
@@ -113,17 +115,25 @@ function _prepareUI5Metadata(classDef) {
 	// * library
 	// * designtime
 
-	const metadata = classDef._ui5metadata;
-
 	// prepare all metadata entities
-	["properties", "aggregations", "associations", "events"].forEach((entityType) => {
+	[
+		"properties",
+		"aggregations",
+		"associations",
+		// TODO: process "events" separately, since they have arguments and parameters
+		//       "methods" and "getters" might need to be placed a the end of the control wrapper (refer to the original wrapper controls in sap.ui.webc.main)
+		/*"events", "getters", "methods"*/
+	].forEach((entityType) => {
 		_prepareEntity(classDef, entityType);
 	});
 
 	// only for debugging
-	// call this in the rollup plugin with the modified metadata
-	const metadataSerialized = JSDocSerializer.serializeMetadata(classDef, metadata);
-	return metadataSerialized;
+	// call this in the rollup plugin after the metadata was enriched with tag, library etc.
+	JSDocSerializer.serializeMetadata(classDef);
+	const metadata = classDef._jsDoc.metadata;
+	if (!metadata) {
+		console.log(`JSDocSerializer: No metadata written for class '${classDef.name}'.`);
+	}
 }
 
 const JSDocSerializer = {
@@ -132,26 +142,18 @@ const JSDocSerializer = {
 	 * @param {WebComponentRegistryEntry} registryEntry the registry entry for a web component package
 	 */
 	prepare(registryEntry) {
-		// class headers
+		// Classes (used in WrapperControl.hbs)
 		Object.keys(registryEntry.classes).forEach((className) => {
 			const classDef = registryEntry.classes[className];
 			// we track the serialized JSDoc independently from the class' ui5-metadata
-			classDef._jsDoc = {
-				classHeader: _serializeClassHeader(classDef),
-				properties: {},
-				aggregations: {},
-				associations: {},
-				events: {},
-			};
+			classDef._jsDoc.classHeader = _serializeClassHeader(classDef);
 
-			// TODO: Write description for properties, aggregations, etc. into the definition objects
-			//       Or write them directly into the _jsDoc object?
-			//         --> then we need to create the "_jsDoc" object beforehand for each class.
-
+			// the serialized metadata as a single string, can be inlined in the control wrappers later
 			_prepareUI5Metadata(classDef);
 		});
 
-		// interfaces
+		// Package (used in Package.hbs)
+		//   [1] interfaces
 		Object.keys(registryEntry.interfaces).forEach((interfaceName) => {
 			const interfaceDef = registryEntry.interfaces[interfaceName];
 			interfaceDef._jsDoc = Templates.interface({
@@ -160,7 +162,7 @@ const JSDocSerializer = {
 			});
 		});
 
-		// enums
+		//   [2] enums
 		Object.keys(registryEntry.enums).forEach((enumName) => {
 			const enumDef = registryEntry.enums[enumName];
 			enumDef._jsDoc = Templates.enumHeader({
@@ -179,11 +181,22 @@ const JSDocSerializer = {
 	 * @param {ManagedObjectMetadata} metadata UI5 wrapper control metadata
 	 * @returns
 	 */
-	serializeMetadata(classDef, metadata) {
-		return Templates.ui5metadata({
-			classDef,
-			metadata,
+	serializeMetadata(classDef) {
+		classDef._jsDoc.metadata = Templates.ui5metadata({
+			jsDoc: classDef._jsDoc,
+			metadata: classDef._ui5metadata,
 		});
+		return classDef._jsDoc.metadata;
+	},
+
+	/**
+	 * Writes the a JSDoc comment into the given class definition based on the given entity infos.
+	 * @param {object} classDef the class definition from the custom elements manifest
+	 * @param {string} entityType a UI5 metadata entity, e.g. "properties"
+	 * @param {object} entityDef the entity definition from the custom elements manifest
+	 */
+	writeDoc(classDef, entityType, entityDef) {
+		classDef._jsDoc[entityType][entityDef.name] = { description: entityDef.description };
 	},
 };
 
