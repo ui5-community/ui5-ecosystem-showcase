@@ -176,6 +176,24 @@ const JSDocSerializer = {
 	},
 
 	/**
+	 * Initializes the class for tracking the serialized JSDoc comments.
+	 * The JSDoc comments are tracked separately from the UI5 metadata as they are not part of the runtime.
+	 * @param {object} classDef the class definition from the custom elements manifest
+	 */
+	initClass(classDef) {
+		classDef._jsDoc = {
+			classHeader: "",
+			metadata: "",
+			properties: {},
+			aggregations: {},
+			associations: {},
+			events: {},
+			getters: {},
+			methods: {},
+		};
+	},
+
+	/**
 	 * Serializes the UI5 metadata of the given class.
 	 * @param {WebComponentRegistryEntry.classDef} classDef A class definition from the custom elements manifest
 	 * @param {ManagedObjectMetadata} metadata UI5 wrapper control metadata
