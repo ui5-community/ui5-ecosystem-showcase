@@ -3,6 +3,15 @@ const { readFileSync } = require("fs");
 
 const handlebars = require("handlebars");
 
+const UI5MetadataEntities = {
+	PROPERTIES: "properties",
+	AGGREGATIONS: "aggregations",
+	ASSOCIATIONS: "associations",
+	EVENTS: "events",
+	GETTERS: "getters",
+	METHODS: "methods",
+};
+
 /**
  * Helper function to stringify objects into valid JSON from within HBS templates.
  */
@@ -14,7 +23,8 @@ handlebars.registerHelper("json", function (context) {
  * Helper function to retrieve a JSDoc comment the respective class and type, e.g. "properties".
  */
 handlebars.registerHelper("jsDoc", function (jsDoc, entityType, entityName) {
-	return jsDoc[entityType][entityName];
+	const base = jsDoc[entityType][entityName];
+	return base;
 });
 
 /**
@@ -24,6 +34,7 @@ const Templates = {
 	classHeader: loadAndCompileTemplate("../templates/jsdoc/ClassHeader.hbs"),
 	ui5metadataEntity: loadAndCompileTemplate("../templates/jsdoc/UI5MetadataEntity.hbs"),
 	ui5metadata: loadAndCompileTemplate("../templates/jsdoc/UI5Metadata.hbs"),
+	event: loadAndCompileTemplate("../templates/jsdoc/UI5MetadataEvent.hbs"),
 	enumHeader: loadAndCompileTemplate("../templates/jsdoc/EnumHeader.hbs"),
 	enumValue: loadAndCompileTemplate("../templates/jsdoc/EnumValue.hbs"),
 	interface: loadAndCompileTemplate("../templates/jsdoc/Interface.hbs"),
@@ -104,6 +115,16 @@ function _prepareEntity(classDef, entityType) {
 	});
 }
 
+// function _prepareEvents(classDef) {
+// 	const ui5metadata = classDef._ui5metadata;
+// 	const jsDoc = classDef._jsDoc;
+
+// 	Object.keys(jsDoc[UI5MetadataEntities.EVENTS]).forEach((eventName) => {
+// 		const event = jsDoc[UI5MetadataEntities.EVENTS][eventName];
+// 		const jsDocEvent = Templates.event({ event, jsDoc });
+// 	});
+// }
+
 /**
  * Serializes the UI5 metadata of a class including the JSDoc comments.
  * @param {object} classDef the class definition from the custom elements manifest
@@ -115,17 +136,16 @@ function _prepareUI5Metadata(classDef) {
 	// * library
 	// * designtime
 
-	// prepare all metadata entities
-	[
-		"properties",
-		"aggregations",
-		"associations",
-		// TODO: process "events" separately, since they have arguments and parameters
-		//       "methods" and "getters" might need to be placed a the end of the control wrapper (refer to the original wrapper controls in sap.ui.webc.main)
-		/*"events", "getters", "methods"*/
-	].forEach((entityType) => {
+	// prepare simple metadata entities
+	["properties", "aggregations", "associations"].forEach((entityType) => {
 		_prepareEntity(classDef, entityType);
 	});
+
+	// prepare events
+	// TODO: enable events
+	// _prepareEvents(classDef);
+
+	// TODO: enable serialize getters and setters JSDoc comments
 
 	// only for debugging
 	// call this in the rollup plugin after the metadata was enriched with tag, library etc.
@@ -214,7 +234,13 @@ const JSDocSerializer = {
 	 * @param {object} entityDef the entity definition from the custom elements manifest
 	 */
 	writeDoc(classDef, entityType, entityDef) {
-		classDef._jsDoc[entityType][entityDef.name] = { description: entityDef.description };
+		// for events we receive a deeper object structure that is already correctly formatted
+		if (entityType === UI5MetadataEntities.EVENTS) {
+			classDef._jsDoc[entityType][entityDef.name] = entityDef;
+		} else {
+			// we unwrap the objects here to prevent accidental side effects
+			classDef._jsDoc[entityType][entityDef.name] = { description: entityDef.description };
+		}
 	},
 };
 
