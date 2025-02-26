@@ -138,8 +138,12 @@ class RegistryEntry {
 	#normalizeType(type) {
 		if (type) {
 			const lowerCaseName = type.toLowerCase();
-			if (type.toLowerCase() === "number") {
+			if (lowerCaseName === "number") {
 				return "float";
+			}
+			// HTMLElements are a valid type for event parameters
+			if (lowerCaseName === "htmlelement") {
+				return "HTMLElement";
 			}
 			return lowerCaseName;
 		}
@@ -428,9 +432,42 @@ class RegistryEntry {
 		JSDocSerializer.writeDoc(classDef, "aggregations", { name: aggregationName, description: slotDef.description });
 	}
 
-	#processEvents(ui5metadata, eventDef) {
-		// TODO: Track parameters & write JSDoc
-		ui5metadata.events[camelize(eventDef.name)] = {};
+	/**
+	 * Parses the given event definition object and extracts the event parameters.
+	 * The event parameters are also tracking their respective JSDoc description texts.
+	 * @param {object} eventDef the event definition object from the custom elements metadata
+	 * @returns the parsed event parameters
+	 */
+	#parseEventParameters(eventDef) {
+		const parameters = eventDef._ui5parameters;
+		const parsedParams = {};
+		const jsDocParams = {};
+		parameters?.forEach((param) => {
+			const type = this.#extractUi5Type(param.type);
+			parsedParams[param.name] = {
+				type: type.ui5Type,
+			};
+			jsDocParams[param.name] = {
+				description: param.description,
+			};
+		});
+		return { parsedParams, jsDocParams };
+	}
+
+	#processEvents(classDef, ui5metadata, eventDef) {
+		// Same as with other entities we track the UI5 Metadata and the JSDoc separately
+		const { parsedParams, jsDocParams } = this.#parseEventParameters(eventDef);
+		const camelizedName = camelize(eventDef.name);
+
+		ui5metadata.events[camelizedName] = {
+			parameters: parsedParams,
+		};
+
+		JSDocSerializer.writeDoc(classDef, "events", {
+			name: camelizedName,
+			description: eventDef.description,
+			parameters: jsDocParams,
+		});
 	}
 
 	#processUI5Interfaces(classDef, ui5metadata) {
@@ -612,7 +649,7 @@ class RegistryEntry {
 		});
 
 		classDef.events?.forEach((eventDef) => {
-			this.#processEvents(ui5metadata, eventDef);
+			this.#processEvents(classDef, ui5metadata, eventDef);
 		});
 
 		this.#processUI5Interfaces(classDef, ui5metadata);

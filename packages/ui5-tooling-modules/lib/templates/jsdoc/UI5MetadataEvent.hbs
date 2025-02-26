@@ -5,8 +5,10 @@
 {{#if event.parameters}}
     "parameters": {
     {{#each event.parameters}}
-{{jsDoc @root.jsDoc "events" ../event.name @key}}
-    "{{name}}": {{{json this}}},
+    /**
+     * {{{this.description}}}
+     */
+    "{{@key}}": {{{json this}}},
     {{/each}}
     }
 {{/if}}
