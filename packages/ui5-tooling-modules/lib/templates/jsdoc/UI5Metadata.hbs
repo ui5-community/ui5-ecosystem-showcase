@@ -1,38 +1,51 @@
 {
-  "tag": "{{tag}}",
-  "library": "{{library}}",
-  "designtime": "{{designtime}}",
+  "tag": "{{metadata.tag}}",
+  "library": "{{metadata.library}}",
+  "designtime": "{{metadata.designtime}}",
 
   "namespace": "{{metadata.namespace}}",
   "interfaces": {{{json metadata.interfaces}}},
 
+  "defaultAggregation": "{{metadata.defaultAggregation}}",
+
   "properties": {
   {{#each metadata.properties}}
-{{{jsDoc @root.jsDoc "properties" @key}}}
+{{{lookup (lookup @root.jsDoc "properties") @key}}}
     "{{@key}}": {{{json this}}},
   {{/each}}
   },
 
   "aggregations": {
   {{#each metadata.aggregations}}
-{{{jsDoc @root.jsDoc "aggregations" @key}}}
+{{{lookup (lookup @root.jsDoc "aggregations") @key}}}
     "{{@key}}": {{{json this}}},
   {{/each}}
   },
 
   "associations": {
   {{#each metadata.associations}}
-{{{jsDoc @root.jsDoc "associations" @key}}}
+{{{lookup (lookup @root.jsDoc "associations") @key}}}
     "{{@key}}": {{{json this}}},
   {{/each}}
   },
 
   "events": {
-  {{#each metadata.events}}
-    "{{@key}}": {{{json this}}},
-  {{/each}}
+    {{#each jsDoc.events}}
+{{{this.serializedJsDoc}}}
+    {{/each}}
   },
 
-  "getters": {{{json metadata.getters}}},
-  "methods": {{{json metadata.methods}}}
+  "getters": [
+    {{#each metadata.getters}}
+{{{lookup (lookup (lookup @root.jsDoc "getters") this) "serializedJsDoc"}}}
+      "{{this}}",
+    {{/each}}
+  ],
+
+  "methods": [
+    {{#each metadata.methods}}
+{{{lookup (lookup (lookup @root.jsDoc "methods") this) "serializedJsDoc"}}}
+      "{{this}}",
+    {{/each}}
+  ]
 }

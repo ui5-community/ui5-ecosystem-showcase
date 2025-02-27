@@ -3,9 +3,20 @@ const JSDocSerializer = require("./JSDocSerializer");
 /**
  * Camelize the dashes.
  * Used to transform event names.
+ * @param {string} str the string to camelize
+ * @returns {string} the camelized string
  */
 const camelize = (str) => {
 	return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+};
+
+/**
+ * Calculates the name for the UI5 level getter function based on the web components native function name.
+ * @param {string} functionName the name of the web components native function
+ * @returns the generated UI5 getter function name
+ */
+const calculateGetterName = (functionName) => {
+	return "get" + functionName.substr(0, 1).toUpperCase() + functionName.substr(1);
 };
 
 // the class name of the base class of all control wrappers
@@ -342,9 +353,16 @@ class RegistryEntry {
 			classDef._ui5implementsFormContent ??= propDef._ui5formProperty;
 
 			if (propDef.readonly) {
-				// calculated readonly fields -> WebC base class will generate getters
+				// calculated readonly fields -> UI5's WebComponentsMetadata class will generate getters
 				// e.g. AvatarGroup#getColorScheme
 				ui5metadata.getters.push(propDef.name);
+
+				// jsdoc must contain the generated name at UI5 runtime
+				JSDocSerializer.writeDoc(classDef, "getters", {
+					name: propDef.name,
+					getterName: calculateGetterName(propDef.name),
+					description: propDef.description,
+				});
 			} else if (ui5TypeInfo.isInterfaceOrClassType) {
 				console.warn(`[interface or class type given for property] ${classDef.name} - property ${propDef.name}`);
 			} else if (ui5TypeInfo.isAssociation) {
@@ -377,8 +395,15 @@ class RegistryEntry {
 		} else if (propDef.kind === "method") {
 			// Methods are proxied through the core.WebComponent base class
 			// e.g. DatePicker#isValid or Toolbar#isOverflowOpen
-			// TODO: Track parameters & write JSDoc
 			ui5metadata.methods.push(propDef.name);
+
+			// method have parameters (unlike getters)
+			const jsDocParams = this.#parseMethodParameters(propDef);
+			JSDocSerializer.writeDoc(classDef, "methods", {
+				name: propDef.name,
+				description: propDef.description,
+				parameters: jsDocParams,
+			});
 		}
 	}
 
@@ -452,6 +477,20 @@ class RegistryEntry {
 			};
 		});
 		return { parsedParams, jsDocParams };
+	}
+
+	#parseMethodParameters(methodDef) {
+		const parameters = methodDef.parameters;
+		const jsDocParams = {};
+		parameters?.forEach((param) => {
+			const type = this.#extractUi5Type(param.type);
+			jsDocParams[param.name] = {
+				name: param.name,
+				type: type.ui5Type,
+				description: param.description,
+			};
+		});
+		return jsDocParams;
 	}
 
 	#processEvents(classDef, ui5metadata, eventDef) {

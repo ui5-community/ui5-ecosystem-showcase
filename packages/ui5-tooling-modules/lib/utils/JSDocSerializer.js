@@ -3,28 +3,18 @@ const { readFileSync } = require("fs");
 
 const handlebars = require("handlebars");
 
-const UI5MetadataEntities = {
-	PROPERTIES: "properties",
-	AGGREGATIONS: "aggregations",
-	ASSOCIATIONS: "associations",
-	EVENTS: "events",
-	GETTERS: "getters",
-	METHODS: "methods",
-};
-
 /**
  * Helper function to stringify objects into valid JSON from within HBS templates.
+ * @param {object} context the object to stringify
+ * @param {number} space the depth of the JSON stringification
+ * @returns {string} the JSON string
  */
-handlebars.registerHelper("json", function (context) {
-	return JSON.stringify(context);
+handlebars.registerHelper("json", function (context, space) {
+	return JSON.stringify(context, null, space);
 });
 
-/**
- * Helper function to retrieve a JSDoc comment the respective class and type, e.g. "properties".
- */
-handlebars.registerHelper("jsDoc", function (jsDoc, entityType, entityName) {
-	const base = jsDoc[entityType][entityName];
-	return base;
+handlebars.registerHelper("escapeType", function (str) {
+	return `{${str}}`;
 });
 
 /**
@@ -32,9 +22,10 @@ handlebars.registerHelper("jsDoc", function (jsDoc, entityType, entityName) {
  */
 const Templates = {
 	classHeader: loadAndCompileTemplate("../templates/jsdoc/ClassHeader.hbs"),
-	ui5metadataEntity: loadAndCompileTemplate("../templates/jsdoc/UI5MetadataEntity.hbs"),
+	basicComment: loadAndCompileTemplate("../templates/jsdoc/BasicComment.hbs"),
 	ui5metadata: loadAndCompileTemplate("../templates/jsdoc/UI5Metadata.hbs"),
-	event: loadAndCompileTemplate("../templates/jsdoc/UI5MetadataEvent.hbs"),
+	event: loadAndCompileTemplate("../templates/jsdoc/Event.hbs"),
+	methodsAndGetters: loadAndCompileTemplate("../templates/jsdoc/MethodsAndGetter.hbs"),
 	enumHeader: loadAndCompileTemplate("../templates/jsdoc/EnumHeader.hbs"),
 	enumValue: loadAndCompileTemplate("../templates/jsdoc/EnumValue.hbs"),
 	interface: loadAndCompileTemplate("../templates/jsdoc/Interface.hbs"),
@@ -60,7 +51,6 @@ function slash2dot(s) {
 /**
  * Renders the class header as a JSDoc comment.
  * @param {object} classDef the class definition from the custom elements manifest
- * @returns {string} the JSDoc comment for the class header
  */
 function _serializeClassHeader(classDef) {
 	// find superclass name, either another wrapper OR the core WebComponent base class
@@ -90,12 +80,15 @@ function _serializeClassHeader(classDef) {
 	// @extends
 	const extendsTag = superclassName ? `${superclassName}` : "";
 
-	// @alias
-	const alias = `${namespace}.${classDef.name}`;
+	// @alias (we use this later also for methods and getters)
+	classDef._jsDoc.alias = `${namespace}.${classDef.name}`;
 
-	const templatedHeader = Templates.classHeader({ description, extendsTag, alias });
-
-	return templatedHeader;
+	// and finally we template the class header preamble
+	classDef._jsDoc.classHeader = Templates.classHeader({
+		description,
+		extendsTag,
+		alias: classDef._jsDoc.alias,
+	});
 }
 
 /**
@@ -109,29 +102,86 @@ function _prepareEntity(classDef, entityType) {
 	Object.keys(jsDoc[entityType]).forEach((entityName) => {
 		const obj = jsDoc[entityType][entityName];
 		// write the JSDoc comment back to the entity
-		jsDoc[entityType][entityName] = Templates.ui5metadataEntity({
+		jsDoc[entityType][entityName] = Templates.basicComment({
 			description: obj.description,
 		});
 	});
 }
 
-// function _prepareEvents(classDef) {
-// 	const ui5metadata = classDef._ui5metadata;
-// 	const jsDoc = classDef._jsDoc;
+/**
+ * Prepares the JSDoc for each event defined on the given class.
+ * Parameters will also be serialized.
+ * @param {object} classDef the class definition from the custom elements manifest
+ */
+function _prepareEvents(classDef) {
+	const ui5metadata = classDef._ui5metadata;
+	const jsDoc = classDef._jsDoc;
 
-// 	Object.keys(jsDoc[UI5MetadataEntities.EVENTS]).forEach((eventName) => {
-// 		const event = jsDoc[UI5MetadataEntities.EVENTS][eventName];
-// 		const jsDocEvent = Templates.event({ event, jsDoc });
-// 	});
-// }
+	// we serialize the events one by one
+	// they will be combined in the UI5Metadata HBS template later
+	const metadataEvents = ui5metadata.events;
+	Object.keys(metadataEvents).forEach((eventName) => {
+		const event = metadataEvents[eventName];
+		const eventJsDoc = jsDoc.events[eventName];
+		const parametersJsDoc = eventJsDoc.parameters;
+
+		// template parameters if any
+		Object.keys(parametersJsDoc).forEach((paramName) => {
+			const param = parametersJsDoc[paramName];
+			parametersJsDoc[paramName] = Templates.basicComment({
+				description: param.description,
+			});
+		});
+
+		// final templating combining the event itself and all its parameters
+		eventJsDoc.serializedJsDoc = Templates.event({
+			eventName: eventName,
+			description: eventJsDoc.description,
+			parametersJsDoc,
+			event,
+		});
+	});
+}
+
+/**
+ * Prepares the JSDoc comments for all getters and methods of the given class.
+ * @param {object} classDef the class definition from the custom elements manifest
+ */
+function _prepareGettersAndMethods(classDef) {
+	const ui5metadata = classDef._ui5metadata;
+	const jsDoc = classDef._jsDoc;
+
+	// note: in the UI5 metadata "getters" is an array, in the jsDoc we key it with the name
+	ui5metadata.getters.forEach((name) => {
+		const getterDef = jsDoc.getters[name];
+		getterDef.serializedJsDoc = Templates.methodsAndGetters({
+			description: getterDef.description,
+			// function names on the instance use the "#" syntax
+			alias: `${jsDoc.alias}#${getterDef.getterName}`,
+		});
+	});
+
+	// note: in the UI5 metadata "methods" is an array, in the jsDoc we key it with the name
+	ui5metadata.methods.forEach((name) => {
+		const methodDef = jsDoc.methods[name];
+		methodDef.serializedJsDoc = Templates.methodsAndGetters({
+			description: methodDef.description,
+			parameters: methodDef.parameters,
+			// function names on the instance use the "#" syntax
+			// methods are taken as-is, unlike getters (s.a.)
+			alias: `${jsDoc.alias}#${name}`,
+		});
+	});
+}
 
 /**
  * Serializes the UI5 metadata of a class including the JSDoc comments.
  * @param {object} classDef the class definition from the custom elements manifest
  */
 function _prepareUI5Metadata(classDef) {
-	// The following metadata values are filled by the rollup plugin
+	// The following metadata values are filled by the rollup plugin atm.
 	// the tag specifically needs a scoping suffix
+	// TODO: Move this into the registry
 	// * tag
 	// * library
 	// * designtime
@@ -141,19 +191,19 @@ function _prepareUI5Metadata(classDef) {
 		_prepareEntity(classDef, entityType);
 	});
 
-	// prepare events
-	// TODO: enable events
-	// _prepareEvents(classDef);
+	// serialize each event + its parameters
+	_prepareEvents(classDef);
 
-	// TODO: enable serialize getters and setters JSDoc comments
+	// serialize getters and setters JSDoc comments
+	_prepareGettersAndMethods(classDef);
 
-	// only for debugging
-	// call this in the rollup plugin after the metadata was enriched with tag, library etc.
-	JSDocSerializer.serializeMetadata(classDef);
-	const metadata = classDef._jsDoc.metadata;
-	if (!metadata) {
-		console.log(`JSDocSerializer: No metadata written for class '${classDef.name}'.`);
-	}
+	// TODO: only for debugging
+	//       call this in the rollup plugin after the metadata was enriched with tag, library etc.
+	// JSDocSerializer.serializeMetadata(classDef);
+	// const metadata = classDef._jsDoc.metadata;
+	// if (!metadata) {
+	// 	console.log(`JSDocSerializer: No metadata written for class '${classDef.name}'.`);
+	// }
 }
 
 const JSDocSerializer = {
@@ -166,7 +216,7 @@ const JSDocSerializer = {
 		Object.keys(registryEntry.classes).forEach((className) => {
 			const classDef = registryEntry.classes[className];
 			// we track the serialized JSDoc independently from the class' ui5-metadata
-			classDef._jsDoc.classHeader = _serializeClassHeader(classDef);
+			_serializeClassHeader(classDef);
 
 			// the serialized metadata as a single string, can be inlined in the control wrappers later
 			_prepareUI5Metadata(classDef);
@@ -234,13 +284,8 @@ const JSDocSerializer = {
 	 * @param {object} entityDef the entity definition from the custom elements manifest
 	 */
 	writeDoc(classDef, entityType, entityDef) {
-		// for events we receive a deeper object structure that is already correctly formatted
-		if (entityType === UI5MetadataEntities.EVENTS) {
-			classDef._jsDoc[entityType][entityDef.name] = entityDef;
-		} else {
-			// we unwrap the objects here to prevent accidental side effects
-			classDef._jsDoc[entityType][entityDef.name] = { description: entityDef.description };
-		}
+		// we clone the objects here to prevent accidental side effects
+		classDef._jsDoc[entityType][entityDef.name] = Object.assign({}, entityDef);
 	},
 };
 
