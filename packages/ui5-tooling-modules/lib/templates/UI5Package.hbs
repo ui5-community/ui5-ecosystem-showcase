@@ -1,13 +1,13 @@
 /*!
  * ${copyright}
  */
-sap.ui.define([
-  "sap/ui/core/webc/WebComponent"{{#if hasEnums}},
-  "sap/ui/base/DataType"{{/if}}{{#each dependencies}},
-  "{{this}}"{{/each}}
-], function(
-  WebComponent{{#if hasEnums}},
-  DataType{{/if}}
+sap.ui.define([{{#if isBaseLib}}
+  "sap/ui/core/webc/WebComponent",{{/if}}{{#if hasEnums}}
+  "sap/ui/base/DataType",{{/if}}{{#each dependencies}}
+  "{{this}}",{{/each}}
+], function({{#if isBaseLib}}
+  WebComponent,{{/if}}{{#if hasEnums}}
+  DataType,{{/if}}
 ) {
   "use strict";
   {{#if hasEnums}}
