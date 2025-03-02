@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.23.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.23.0...ui5-tooling-modules@3.23.1) (2025-03-02)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** fix error for generation of webc packages without enums ([#1173](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1173)) ([22a428b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/22a428bfa0494d14996708616662c324d7aae64a))
+* **ui5-tooling-modules:** improvements for handlebars templates ([76d37ea](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/76d37ea61699fbb81ad2fc5f8286a774760c9c43))
+
+
+
+
+
 # [3.23.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.22.1...ui5-tooling-modules@3.23.0) (2025-03-02)
 
 
