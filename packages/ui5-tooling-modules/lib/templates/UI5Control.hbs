@@ -1,0 +1,30 @@
+/*!
+ * ${copyright}
+ */
+sap.ui.define([
+  "{{webcBaseClass}}",{{#if needsLabelEnablement}}
+  "sap/ui/core/LabelEnablement",{{/if}}{{#if needsEnabledPropagator}}
+  "sap/ui/core/EnabledPropagator",{{/if}}{{#if needsMessageMixin}}
+  "sap/ui/core/message/MessageMixin",{{/if}}
+  "{{namespace}}",{{#if importWebCModule}}
+  "{{webcClass}}",{{/if}}
+], function(
+  WebComponentBaseClass,{{#if needsLabelEnablement}}
+  LabelEnablement,{{/if}}{{#if needsEnabledPropagator}}
+  EnabledPropagator,{{/if}}{{#if needsMessageMixin}}
+  MessageMixin,{{/if}}
+) {
+  "use strict";
+
+  const WrapperClass = WebComponentBaseClass.extend("{{ui5Class}}", {
+    metadata:
+{{{metadata}}}
+  });
+  {{#if needsLabelEnablement}}
+  LabelEnablement.enrich(WrapperClass.prototype);{{/if}}{{#if needsEnabledPropagator}}
+  EnabledPropagator.call(WrapperClass.prototype);{{/if}}{{#if needsMessageMixin}}
+  MessageMixin.call(WrapperClass.prototype);{{/if}}
+
+  return WrapperClass;
+
+});

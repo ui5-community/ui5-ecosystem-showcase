@@ -15,10 +15,6 @@ import Token from "@ui5/webcomponents/Token";
 
 import UserMenu from "@ui5/webcomponents-fiori/UserMenu";
 
-// import icons
-import "@ui5/webcomponents-icons/dist/Assets.js";
-import "@ui5/webcomponents-icons/dist/accept.js";
-
 console.log(AvatarSize);
 
 function injectStyle() {

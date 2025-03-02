@@ -31,7 +31,12 @@ module.exports = function (/* { log } = {} */) {
 				// keeping the name and just adding a "?query" to the end
 				// ensures that preserveModules will generate the original
 				// entry name for this entry.
-				if (Object.keys(moduleInfo.attributes || {}).length === 0) {
+				// AND:
+				// we also ignore the modules with UI5 meta (web components)
+				// as they are already handled by the rollup-plugin-webcomponents
+				const hasAttributes = Object.keys(moduleInfo.attributes || {}).length === 0;
+				const isUI5WebComponent = !!moduleInfo.meta?.ui5;
+				if (hasAttributes && !isUI5WebComponent) {
 					return {
 						id: `${resolution.id}${PROXY_SUFFIX}`,
 					};
