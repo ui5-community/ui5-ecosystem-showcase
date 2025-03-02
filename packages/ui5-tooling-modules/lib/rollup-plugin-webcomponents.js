@@ -84,6 +84,8 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 		return npmPackageScopeRegEx.exec(source)?.[1];
 	};
 
+	let executionContext = {};
+
 	// helper function to load a NPM package and its custom elements metadata
 	const loadedNpmPackages = [];
 	const loadNpmPackage = (npmPackage, emitFile) => {
@@ -145,14 +147,17 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 
 					// assign the dependencies
 					registryEntry.dependencies = libraryDependencies;
-
-					// tell rollup to create a chunk for the Web Components npm package
-					emitFile({
-						type: "chunk",
-						id: npmPackage,
-					});
 				}
 			}
+		}
+		const emittedNpmPackages = (executionContext.emittedNpmPackages = executionContext.emittedNpmPackages || []);
+		if (!skip && registryEntry && !emittedNpmPackages.includes(npmPackage)) {
+			// tell rollup to create a chunk for the Web Components npm package
+			emitFile({
+				type: "chunk",
+				id: registryEntry.namespace,
+			});
+			emittedNpmPackages.push(npmPackage);
 		}
 		return registryEntry;
 	};
@@ -188,8 +193,8 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 	// Helpers for the generation of the UI5 assets (packages and controls)
 	// =========================================================================
 
-	const emittedPackages = [];
 	const buildPackage = ({ source, package }, emitFile) => {
+		const emittedPackages = (executionContext.emittedPackages = executionContext.emittedPackages || []);
 		if (emittedPackages.includes(source)) {
 			return;
 		}
@@ -235,11 +240,11 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 		emittedPackages.push(source);
 	};
 
-	const emittedWrappers = {};
 	const buildWrapper = ({ source, clazz, webcSource }, emitFile) => {
 		const resolvedSource = `${clazz.package}/${clazz.module.slice(0, -3)}`;
 		const rootPath = `${posix.relative(dirname(source), "") || "."}/`;
 
+		const emittedWrappers = (executionContext.emittedWrappers = executionContext.emittedWrappers || {});
 		if (emittedWrappers[source]) {
 			return;
 		} else if (emittedWrappers[resolvedSource] && emittedWrappers[resolvedSource] !== source) {
@@ -329,6 +334,14 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 
 	return {
 		name: "webcomponents",
+		async buildStart() {
+			if (skip) {
+				return null;
+			}
+
+			// clear the execution context
+			executionContext = {};
+		},
 		async resolveId(source, importer, { /*attributes, custom,*/ isEntry }) {
 			if (skip) {
 				return null;

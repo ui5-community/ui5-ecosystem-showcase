@@ -49,6 +49,6 @@ sap.ui.define((function () { 'use strict';
 
 	class t{static{this.html=n;}static{this.svg=u;}static{this.unsafeStatic=o;}}s$2("LitStatic",t);
 
-	u$3("035f9093");
+	u$3("384423de");
 
 }));
