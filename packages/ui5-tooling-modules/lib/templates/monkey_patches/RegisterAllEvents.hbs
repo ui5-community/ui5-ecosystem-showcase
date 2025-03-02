@@ -1,28 +1,33 @@
 // Fixed with https://github.com/SAP/openui5/commit/a4b5fe00b49e0e26e5fd845607a2b95db870d55a in UI5 1.133.0
 
-WebComponent.prototype.__attachCustomEventsListeners = function() {
-	// ##### MODIFICATION START #####
-	var oEvents = this.getMetadata().getAllEvents();
-	// ##### MODIFICATION END #####
-	for (var sEventName in oEvents) {
-		var sCustomEventName = hyphenate(sEventName);
-		this.getDomRef().addEventListener(sCustomEventName, this.__handleCustomEventBound);
-	}
-};
-
-WebComponent.prototype.__detachCustomEventsListeners = function() {
-	var oDomRef = this.getDomRef();
-	if (!oDomRef) {
-		return;
-	}
-
-	// ##### MODIFICATION START #####
-	var oEvents = this.getMetadata().getAllEvents();
-	// ##### MODIFICATION END #####
-	for (var sEventName in oEvents) {
-		if (oEvents.hasOwnProperty(sEventName)) {
+if (!WebComponent.__CustomEventsListeners__isPatched) {
+	WebComponent.prototype.__attachCustomEventsListeners = function() {
+		// ##### MODIFICATION START #####
+		var hyphenate = sap.ui.require("sap/base/strings/hyphenate");
+		var oEvents = this.getMetadata().getAllEvents();
+		// ##### MODIFICATION END #####
+		for (var sEventName in oEvents) {
 			var sCustomEventName = hyphenate(sEventName);
-			oDomRef.removeEventListener(sCustomEventName, this.__handleCustomEventBound);
+			this.getDomRef().addEventListener(sCustomEventName, this.__handleCustomEventBound);
 		}
-	}
-};
+	};
+
+	WebComponent.prototype.__detachCustomEventsListeners = function() {
+		var oDomRef = this.getDomRef();
+		if (!oDomRef) {
+			return;
+		}
+
+		// ##### MODIFICATION START #####
+		var hyphenate = sap.ui.require("sap/base/strings/hyphenate");
+		var oEvents = this.getMetadata().getAllEvents();
+		// ##### MODIFICATION END #####
+		for (var sEventName in oEvents) {
+			if (oEvents.hasOwnProperty(sEventName)) {
+				var sCustomEventName = hyphenate(sEventName);
+				oDomRef.removeEventListener(sCustomEventName, this.__handleCustomEventBound);
+			}
+		}
+	};
+	WebComponent.__CustomEventsListeners__isPatched = true;
+}

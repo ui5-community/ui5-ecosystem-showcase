@@ -324,6 +324,12 @@ class BundleInfo {
 	getBundledResources() {
 		return this._entries.filter((entry) => /^(module|chunk|resource)$/.test(entry.type));
 	}
+	getRelatedPaths() {
+		return this._entries
+			.map((e) => e.relatedPaths)
+			.flat()
+			.filter((e) => typeof e === "string");
+	}
 }
 
 // local cache of resolved module paths
@@ -1159,8 +1165,6 @@ module.exports = function (log, projectInfo) {
 		 * @param {object} [config.pluginOptions] configuration options for the rollup plugins (e.g. webcomponents)
 		 * @param {boolean} [config.skipCache] skip the module cache
 		 * @param {boolean} [config.persistentCache] flag whether the cache should be persistent
-		 * @param {boolean} [config.debug] debug mode
-		 * @param {boolean|string} [config.chunksPath] the relative path for the chunks to be stored (defaults to "chunks", if value is true, chunks are put into the closest modules folder)
 		 * @param {string} [config.dynamicEntriesPath] the relative path for dynamic entries (defaults to "_dynamics")
 		 * @param {boolean|string[]} [config.skipTransform] flag or array of globs to verify whether the module transformation should be skipped
 		 * @param {boolean|string[]} [config.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
@@ -1175,7 +1179,7 @@ module.exports = function (log, projectInfo) {
 		 */
 		getBundleInfo: async function getBundleInfo(
 			moduleNames,
-			{ pluginOptions, skipCache, persistentCache, debug, chunksPath, dynamicEntriesPath, skipTransform, keepDynamicImports, generatedCode, minify, inject } = {},
+			{ pluginOptions, skipCache, persistentCache, dynamicEntriesPath, skipTransform, keepDynamicImports, generatedCode, minify, inject } = {},
 			{ cwd = process.cwd(), depPaths = [], isMiddleware } = {},
 		) {
 			let bundling = false;
@@ -1275,101 +1279,69 @@ module.exports = function (log, projectInfo) {
 						//console.table(Object.entries(perfmetrics.resolveModules).filter(([key, value]) => value > 10).sort(([keyA, valueA], [keyB, valueB]) => valueB - valueA).map(([key, value]) => `${value}ms for ${key}`));
 
 						// parse the rollup build result
-						output.forEach((module, i) => {
+						dynamicEntriesPath = dynamicEntriesPath || "_dynamics";
+						for (const module of output) {
 							// determine the file name by removing the file extension
 							const moduleName = module.fileName.substring(0, module.fileName.length - 3);
 							// lookup the output module in the list of input modules
-							// -> for web components package modules, the module name is the same as the file name (cause resolveModule returns the index module)
-							const resolvedModules = modules.filter((mod) => module?.facadeModuleId?.startsWith(mod.path) || mod.name === moduleName);
-							if (resolvedModules.length > 0) {
+							// -> for web components modules, we replace the module 1:1 but can't set the isEntry flag
+							//    therefore we need to find whether there is an exact module match!
+							const isEntryModule = module.isEntry || modules.find((mod) => mod.name === moduleName);
+							const resolvedModules = isEntryModule && modules.filter((mod) => module?.facadeModuleId?.startsWith(mod.path) || mod.name === moduleName);
+							if (resolvedModules?.length > 0) {
 								// one module could be resolved by multiple input modules (e.g. export aliases in package.json)
-								resolvedModules?.forEach((resolvedModule) => {
-									// entry module
-									resolvedModule.code = module.code;
+								for (const resolvedModule of resolvedModules) {
 									resolvedModule.chunkName = module.name;
-								});
+									resolvedModule.code = module.code;
+									resolvedModule.relatedPaths = Object.keys(module.modules || {}).filter((m) => existsSyncAndIsFile(m));
+									resolvedModule.imports = module.imports;
+									resolvedModule.dynamicImports = module.dynamicImports;
+								}
 							} else {
 								// chunk module
-								if (module.code) {
-									// find the module to which the chunk primarily belongs
-									let filePath = chunksPath || "";
-									if (chunksPath === true) {
-										const referencedModuleIndex = output.findIndex((m) => m.isEntry && m.imports?.indexOf(module.fileName) !== -1);
-										const referencedModule = modules[Math.max(referencedModuleIndex, 0)];
-										filePath = referencedModule.name;
-									} else if (typeof filePath === "string") {
-										filePath = filePath
-											.split(/[\\/]/)
-											.map(sanitize)
-											.filter((s) => !/^\.*$/.test(s))
-											.join("/");
-									} else {
-										filePath = "";
-									}
-									let chunkName = moduleName;
-									// in case of dynamic entries we move them into a separate folder
-									// to allow to exclude them from the preload bundles easily
-									if (module.isDynamicEntry) {
-										chunkName = path.posix.join("_dynamics", moduleName);
-									}
-									// add the chunk to the bundle info
-									bundleInfo.addChunk({
-										name: path.posix.join(filePath, chunkName),
-										originalName: moduleName,
-										code: module.code,
-									});
-								} else if (module.source) {
-									// should never occur!
-									console.error(`Found should never occur module: ${module}`);
+								let chunkName = moduleName;
+								// in case of dynamic entries we move them into a separate folder
+								// to allow to exclude them from the preload bundles easily
+								if (module.isDynamicEntry) {
+									chunkName = path.posix.join(dynamicEntriesPath, moduleName); // TODO: shift the imports!
 								}
+								// add the chunk to the bundle info
+								bundleInfo.addChunk({
+									name: chunkName, //path.posix.join(filePath, chunkName),
+									originalName: moduleName,
+									code: module.code,
+									relatedPaths: Object.keys(module.modules || {}).filter((m) => existsSyncAndIsFile(m)),
+									imports: module.imports,
+									dynamicImports: module.dynamicImports,
+								});
 							}
-						});
+						}
 
-						// utility to fix the relative paths of the chunk imports
-						const fixImports = (bundleInfo) => {
-							bundleInfo.getEntries().forEach((module) => {
-								const moduleName = module.name;
-								let moduleBasePath;
-								let { namespace: projectNamespace, type: projectType } = projectInfo || {};
-								if (projectType === "application" && projectNamespace) {
-									// for applications we need to adjust the module base path so that the
-									// modules are resolved relative to the project namespace (to support CDN cases)
-									moduleBasePath = path.posix.join(projectNamespace, "resources");
-								} else {
-									// HINT: UI5 module loader first resolves the paths of modules and then match
-									//       it against the central modules =>
-									//       in CDN cases, root resources are resolved against the CDN
-									moduleBasePath = path.posix.relative(`/${path.dirname(moduleName)}`, "/");
-								}
-								// modules are also generated as chunks but assigned to entry point modules. If those entry point modules
-								// are used in other modules, we also need to restore the entry point module name for the chunk name
-								bundleInfo.getModules().forEach(({ name, chunkName }) => {
-									// replace the modules having a relative path
-									const relativePath = "../".repeat(moduleName.split("/").length - 1) || "./";
-									module.code = module.code?.replace(`'${relativePath}${chunkName}'`, `'${moduleBasePath || "."}/${name}'`);
-									module.code = module.code?.replace(`"${relativePath}${chunkName}"`, `"${moduleBasePath || "."}/${name}"`);
-									// replace the modules aside
-									module.code = module.code?.replace(`'./${chunkName}'`, `'${moduleBasePath || "."}/${name}'`);
-									module.code = module.code?.replace(`"./${chunkName}"`, `"${moduleBasePath || "."}/${name}"`);
-								});
-								// identify and rewrite the chunks to be available under the namespace of the application
-								bundleInfo.getChunks().forEach((chunk) => {
-									const originalChunkName = chunk.originalName;
-									const chunkName = chunk.name;
-									// replace the modules having a relative path
-									const relativePath = "../".repeat(moduleName.split("/").length - 1) || "./";
-									module.code = module.code?.replace(`'${relativePath}${originalChunkName}'`, `'${moduleBasePath || "."}/${chunkName}'`);
-									module.code = module.code?.replace(`"${relativePath}${originalChunkName}"`, `"${moduleBasePath || "."}/${chunkName}"`);
-									// replace the modules aside
-									module.code = module.code?.replace(`'./${originalChunkName}'`, `'${moduleBasePath || "."}/${chunkName}'`);
-									module.code = module.code?.replace(`"./${originalChunkName}"`, `"${moduleBasePath || "."}/${chunkName}"`);
-								});
-							});
-							return bundleInfo;
+						// helper to replace imports in the code
+						const replaceImports = function (code, importName, replacement) {
+							return code.replace(new RegExp(`((?:require|define|toUrl)(?:\\s*)(?:\\([^)]*["']))${importName}(["'][^)]*\\))`, "g"), `$1${replacement}$2`);
 						};
 
+						// fix the imports for shifted modules
+						for (const module of bundleInfo.getEntries()) {
+							const relativePath = `${path.posix.relative(path.dirname(module.name), "") || "."}/`;
+							// resources determined via getResource do not have imports or dynamicImports (we need this extra check)
+							if ((module.imports?.length || 0) > 0 || (module.dynamicImports?.length || 0) > 0) {
+								let modifiedCode = module.code;
+								for (const importFile of module.imports) {
+									const importName = importFile.slice(0, path.extname(importFile).length * -1);
+									modifiedCode = replaceImports(modifiedCode, `./${importName}`, `${relativePath}${importName}`);
+								}
+								for (const importFile of module.dynamicImports) {
+									const importName = importFile.slice(0, path.extname(importFile).length * -1);
+									modifiedCode = replaceImports(modifiedCode, `./${importName}`, `${relativePath}${path.posix.join(dynamicEntriesPath, importName)}`);
+								}
+								module.code = modifiedCode;
+							}
+						}
+
 						// cache the output
-						BundleInfoCache.store(cacheKey, fixImports(bundleInfo), bundleCacheOptions);
+						BundleInfoCache.store(cacheKey, bundleInfo, bundleCacheOptions);
 					} else {
 						// retrieve the cached output
 						bundleInfo = BundleInfoCache.get(cacheKey, bundleCacheOptions);

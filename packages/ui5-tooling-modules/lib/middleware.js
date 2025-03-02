@@ -42,7 +42,6 @@ const determineSourcePaths = (collection) => {
  * @param {boolean} [parameters.options.configuration.skipCache] Flag whether the module cache for the bundles should be skipped
  * @param {boolean} [parameters.options.configuration.persistentCache] Flag whether the module cache for the bundles should be persistent
  * @param {boolean|string[]} [parameters.options.configuration.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
- * @param {boolean|string} [parameters.options.configuration.chunksPath] the relative path for the chunks to be stored (defaults to "chunks", if value is true, chunks are put into the closest modules folder)
  * @param {boolean|string} [parameters.options.configuration.dynamicEntriesPath] the relative path for dynamic entries (defaults to "_dynamics")
  * @returns {Function} Middleware function to use
  */
@@ -231,13 +230,15 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 				})
 				.then((bundleInfo) => {
 					debug && log.info(`Bundling took ${Date.now() - bundleTime} millis`);
-					bundleInfo.getEntries().forEach((entry) => {
-						if (entry.path) {
-							watcher?.add(entry.path);
-							debug && log.verbose(`[FSWATCHER] File ${entry.path} has been added`);
-						}
-					});
-					onChangeCallback = () => bundleAndWatch({ force: true });
+					if (watcher) {
+						const relatedPaths = bundleInfo.getRelatedPaths();
+						debug && log.info(`Watching ${relatedPaths?.length} files...`);
+						relatedPaths?.forEach((p) => {
+							watcher.add(p);
+							debug && log.verbose(`[FSWATCHER] File ${p} has been added`);
+						});
+						onChangeCallback = () => bundleAndWatch({ force: true });
+					}
 					return bundleInfo;
 				});
 		}
@@ -288,14 +289,16 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 				resource = getResource(moduleName, { cwd, depPaths, isMiddleware: true });
 			}
 
+			let bundleInfo = whenBundled && (await whenBundled);
+
 			// if a resource has been found in node_modules, we will
 			// trigger the bundling process and watch the bundled resources
-			if (resource || existsPackage) {
+			if (!bundleInfo?.getEntry(moduleName) && (resource || existsPackage)) {
 				bundleAndWatch({ moduleName });
 			}
 
 			// if the resource is a bundled resource, we need to wait for it
-			const bundleInfo = whenBundled && (await whenBundled);
+			bundleInfo = whenBundled && (await whenBundled);
 			if (bundleInfo?.error) {
 				log.error(bundleInfo.error);
 			}

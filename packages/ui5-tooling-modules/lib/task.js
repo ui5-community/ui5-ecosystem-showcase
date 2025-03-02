@@ -25,7 +25,6 @@ const sanitize = require("sanitize-filename");
  * @param {boolean|string[]} [parameters.options.configuration.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
  * @param {boolean|string[]} [parameters.options.configuration.skipTransform] flag or array of globs to verify whether the module transformation should be skipped
  * @param {boolean} [parameters.options.configuration.minify] minify the generated code
- * @param {boolean|string} [parameters.options.configuration.chunksPath] the relative path for the chunks to be stored (defaults to "chunks", if value is true, chunks are put into the closest modules folder)
  * @param {boolean|string} [parameters.options.configuration.dynamicEntriesPath] the relative path for dynamic entries (defaults to "_dynamics")
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
@@ -236,13 +235,21 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	function rewriteXMLDeps(node, bundledResources, ns = {}) {
 		let changed = false;
 		if (node) {
+			// parse the namespace
+			const localNs = Object.assign(
+				ns,
+				Object.fromEntries(
+					Object.entries(node[":@"] || {})
+						.filter(([key]) => /@_xmlns(?::(.*))?/.exec(key))
+						.map(([key, value]) => [/@_xmlns(?::(.*))?/.exec(key)[1] || "", value]),
+				),
+			);
 			// attributes
 			Object.keys(node)
 				.filter((key) => key.startsWith("@_"))
 				.forEach((key) => {
 					const nsParts = /@_xmlns(?::(.*))?/.exec(key);
 					if (nsParts) {
-						ns[nsParts[1] || ""] = node[key];
 						// namespace (default namespace => "")
 						const namespace = node[key].replace(/\./g, "/");
 						if (
@@ -256,7 +263,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 						return;
 					}
 					const requireParts = /@_(?:(.*):)?require/.exec(key);
-					if (requireParts && ns[requireParts[1]] === "sap.ui.core") {
+					if (requireParts && localNs[requireParts[1] || ""] === "sap.ui.core") {
 						try {
 							const requires = parseJS(node[key]);
 							for (const [key, value] of Object.entries(requires)) {
@@ -281,7 +288,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 							// skip #text nodes
 							let module = nodeParts[2];
 							if (module !== "#text") {
-								changed = rewriteXMLDeps(child, bundledResources, ns) || changed;
+								changed = rewriteXMLDeps(child, bundledResources, localNs) || changed;
 							}
 						}
 					});
@@ -301,14 +308,16 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 		process.exit(1);
 	}
 	const bundledResources = bundleInfo.getBundledResources().map((entry) => entry.name);
+	const ignoreResources = [];
 	await Promise.all(
 		bundleInfo.getEntries().map(async (entry) => {
 			config.debug && log.info(`Processing ${entry.type}: ${entry.name}`);
 			const newResource = resourceFactory.createResource({
 				path: `/resources/${rewriteDep(entry.name, bundledResources)}.js`,
-				string: rewriteJSDeps(entry.code, bundledResources, entry.name),
+				string: entry.code, //rewriteJSDeps(entry.code, bundledResources, entry.name),
 			});
 			await workspace.write(newResource);
+			ignoreResources.push(newResource.getPath());
 		}),
 	);
 	config.debug && log.info(`Bundling took ${Date.now() - bundleTime} millis`);
@@ -373,7 +382,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 		await Promise.all(
 			allJsXmlResources.map(async (res) => {
 				const resourcePath = res.getPath();
-				if (resourcePath.endsWith(".js")) {
+				if (resourcePath.endsWith(".js") && !ignoreResources.includes(resourcePath)) {
 					if (!shouldSkipTransform(resourcePath)) {
 						const content = await res.getString();
 						const newContent = rewriteJSDeps(content, bundledResources, resourcePath);

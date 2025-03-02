@@ -25,26 +25,3 @@ scopingRules.include.push(/^{{{this}}}$/);
 {{/each}}
 setCustomElementsScopingRules(scopingRules);
 {{/if}}
-
-{{#if hasEnums}}
-import { registerEnum } from "sap/ui/base/DataType";
-{{/if}}
-{{#each dependencies}}
-import "{{this}}";
-{{/each}}
-
-const pkg = {
-	"_ui5metadata": {{{metadata}}}
-};
-
-{{#each enums}}
-pkg["{{@key}}"] = {
-{{#each this}}
-	"{{this}}": "{{this}}",
-{{/each}}
-};
-registerEnum("{{../namespace}}.{{@key}}", pkg["{{@key}}"]);
-
-{{/each}}
-
-export default pkg;
