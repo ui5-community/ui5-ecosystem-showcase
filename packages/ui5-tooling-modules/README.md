@@ -111,6 +111,10 @@ The following configuration options are relevant for the `task` and the `middlew
   Flag to indicate that the generated code should be minified (in case of excluding thirdparty resources from minification in general, this option can be used to minify just the generated code)
   &nbsp;
 
+- *sourcemap*: `boolean` *experimental feature*
+  Flag to indicate that the sourcemap generation should be enabled. By default the option is diabled. Possible values are `true`, `false`, `"inline"`, and `hidden`.
+  &nbsp;
+
 The following configuration options are relevant for the `task` and the `middleware` which allow you to directly configure rollup plugins which is used as follows:
 
 ```yaml
