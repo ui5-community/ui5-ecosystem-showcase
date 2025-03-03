@@ -253,7 +253,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				type: "prebuilt-chunk",
 				id: source,
 				fileName: `${source}.js`,
-				code: `sap.ui.define(["${rootPath}${emittedWrappers[resolvedSource]}"], function(mod) { return mod; });`,
+				code: `/*!\n * \${copyright}\n */\nsap.ui.define(["${rootPath}${emittedWrappers[resolvedSource]}"], function(mod) { return mod; });`,
 			});
 			emittedWrappers[source] = source;
 			return;

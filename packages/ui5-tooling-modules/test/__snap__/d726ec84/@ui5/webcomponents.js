@@ -3,7 +3,7 @@
  */
 sap.ui.define([
   "sap/ui/base/DataType",
-  "../@ui5/webcomponents-base",
+  "ui5/ecosystem/demo/app/resources/@ui5/webcomponents-base",
 ], function(
   DataType,
 ) {
@@ -186,7 +186,7 @@ sap.ui.define([
     "@ui5/webcomponents.TreeItemCustom"
   ],
   "elements": [],
-  "rootPath": "../"
+  "rootPath": "ui5/ecosystem/demo/app/resources/"
 }
   };
 

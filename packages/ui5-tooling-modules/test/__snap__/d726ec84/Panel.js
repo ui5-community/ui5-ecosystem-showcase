@@ -1,4 +1,4 @@
-sap.ui.define(['./webcomponents'], (function (webcomponents) { 'use strict';
+sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents'], (function (webcomponents) { 'use strict';
 
     const s$c=new Map,o$7=new Map,n$f=new Map,c$9=e=>{if(!s$c.has(e)){const a=b$3(e.split("-"));s$c.set(e,a);}return s$c.get(e)},l$9=e=>{if(!o$7.has(e)){const a=e.replace(/([a-z])([A-Z])/g,"$1-$2").toLowerCase();o$7.set(e,a);}return o$7.get(e)},p$3=e=>l$9(e),b$3=e=>e.map((a,t)=>t===0?a.toLowerCase():a.charAt(0).toUpperCase()+a.slice(1).toLowerCase()).join(""),C$2=e=>{const a=n$f.get(e);if(a)return a;const t=c$9(e),r=t.charAt(0).toUpperCase()+t.slice(1);return n$f.set(e,r),r};
 

@@ -21,7 +21,7 @@ sap.ui.define([
     "@luigi-project/container.LuigiCompoundContainer"
   ],
   "elements": [],
-  "rootPath": "../"
+  "rootPath": "ui5/ecosystem/demo/tsapp/resources/"
 }
   };
 
