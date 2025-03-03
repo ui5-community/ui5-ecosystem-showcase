@@ -223,6 +223,7 @@ server:
       afterMiddleware: ui5-tooling-transpile-middleware
       configuration:
         debug: true
+        #sourcemap: true
         additionalDependencies:
           - "xlsx"
         #skipCache: true

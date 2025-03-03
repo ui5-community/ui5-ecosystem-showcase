@@ -26,6 +26,7 @@ const sanitize = require("sanitize-filename");
  * @param {boolean|string[]} [parameters.options.configuration.skipTransform] flag or array of globs to verify whether the module transformation should be skipped
  * @param {boolean} [parameters.options.configuration.minify] minify the generated code
  * @param {boolean|string} [parameters.options.configuration.dynamicEntriesPath] the relative path for dynamic entries (defaults to "_dynamics")
+ * @param {boolean|string} [parameters.options.configuration.sourcemap] configures the generation of sourcemaps (default: false, possible values: true|false, "inline", "hidden")
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ log, workspace, taskUtil, options }) {
@@ -75,6 +76,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 			debug: false,
 			skipTransform: false,
 			addToNamespace: true,
+			sourcemap: false,
 		},
 		options.configuration,
 	);
@@ -312,10 +314,18 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	await Promise.all(
 		bundleInfo.getEntries().map(async (entry) => {
 			config.debug && log.info(`Processing ${entry.type}: ${entry.name}`);
-			const newResource = resourceFactory.createResource({
-				path: `/resources/${rewriteDep(entry.name, bundledResources)}.js`,
-				string: entry.code, //rewriteJSDeps(entry.code, bundledResources, entry.name),
-			});
+			let newResource;
+			if (entry.type === "resource") {
+				newResource = resourceFactory.createResource({
+					path: `/resources/${rewriteDep(entry.name, bundledResources)}`,
+					string: entry.code,
+				});
+			} else {
+				newResource = resourceFactory.createResource({
+					path: `/resources/${rewriteDep(entry.name, bundledResources)}.js`,
+					string: entry.code, //rewriteJSDeps(entry.code, bundledResources, entry.name),
+				});
+			}
 			await workspace.write(newResource);
 			ignoreResources.push(newResource.getPath());
 		}),
