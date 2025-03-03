@@ -3,8 +3,8 @@
  */
 sap.ui.define([
   "sap/ui/core/webc/WebComponent",
-  "../../../@ui5/webcomponents",
-  "../../../Panel",
+  "ui5/ecosystem/demo/app/resources/@ui5/webcomponents",
+  "ui5/ecosystem/demo/app/resources/Panel",
 ], function(
   WebComponentBaseClass,
 ) {

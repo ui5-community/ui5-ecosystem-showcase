@@ -1,4 +1,4 @@
-sap.ui.define(['./jspdf.es.min2'], (function (jspdf_es_min) { 'use strict';
+sap.ui.define(['ui5/ecosystem/demo/tsapp/resources/jspdf.es.min2'], (function (jspdf_es_min) { 'use strict';
 
 
 

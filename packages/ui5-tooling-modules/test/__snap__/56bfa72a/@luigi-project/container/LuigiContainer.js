@@ -3,8 +3,8 @@
  */
 sap.ui.define([
   "sap/ui/core/webc/WebComponent",
-  "../../@luigi-project/container",
-  "../../LuigiContainer",
+  "ui5/ecosystem/demo/tsapp/resources/@luigi-project/container",
+  "ui5/ecosystem/demo/tsapp/resources/LuigiContainer",
 ], function(
   WebComponentBaseClass,
 ) {

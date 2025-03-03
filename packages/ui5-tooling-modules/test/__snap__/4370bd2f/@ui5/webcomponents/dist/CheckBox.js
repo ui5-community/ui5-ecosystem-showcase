@@ -4,8 +4,8 @@
 sap.ui.define([
   "sap/ui/core/webc/WebComponent",
   "sap/ui/core/EnabledPropagator",
-  "../../../@ui5/webcomponents",
-  "../../../CheckBox",
+  "ui5/ecosystem/demo/app/resources/@ui5/webcomponents",
+  "ui5/ecosystem/demo/app/resources/CheckBox",
 ], function(
   WebComponentBaseClass,
   EnabledPropagator,

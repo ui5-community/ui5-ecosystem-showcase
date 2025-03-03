@@ -1,4 +1,4 @@
-sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use strict';
+sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (function (exports, traceApi) { 'use strict';
 
     /*
      * Copyright The OpenTelemetry Authors
