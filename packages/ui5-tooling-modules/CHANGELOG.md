@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.24.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.0...ui5-tooling-modules@3.24.1) (2025-03-03)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** support cdn scenario with latest changes ([#1175](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1175)) ([8ad68bd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8ad68bd27be4aed685775dce45dfad5827856f40))
+
+
+
+
+
 # [3.24.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.23.2...ui5-tooling-modules@3.24.0) (2025-03-03)
 
 
