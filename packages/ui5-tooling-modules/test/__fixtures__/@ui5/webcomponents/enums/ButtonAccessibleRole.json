@@ -1,1 +1,1 @@
-["Button","Link"]
+{"name":"ButtonAccessibleRole","prefixedName":"@ui5/webcomponents.ButtonAccessibleRole","description":"Button accessible roles.","values":[{"name":"Button","description":"Represents Default (button) ARIA role.","_jsDoc":"/**\n * Represents Default (button) ARIA role.\n * @public\n */"},{"name":"Link","description":"Represents the ARIA role \"link\".","_jsDoc":"/**\n * Represents the ARIA role \"link\".\n * @public\n */"}],"_jsDoc":"/**\n * Button accessible roles.\n * @enum {string}\n * @public\n * @alias @ui5.webcomponents.ButtonAccessibleRole\n */"}
