@@ -171,8 +171,8 @@ The following configuration options are just relevant for the `task`:
 
 The following configuration options are just relevant for the `middleware`:
 
-- *watch*: `boolean` *experimental flag*
-  For development scenarios, the server is listening to changes of the source files of the project and its dependencies and triggers the generation of the bundle if the used NPM packages have been changed (defaults to `true`)
+- *watch*: `boolean|String[]` *experimental flag*
+  For development scenarios, the server is listening to changes of the source files of the project and its dependencies and triggers the generation of the bundle if the used NPM packages have been changed (defaults to `true`) - additionally, you can pass a list of folders or files to watch for changes for special cases
   &nbsp;
 
 ## Usage

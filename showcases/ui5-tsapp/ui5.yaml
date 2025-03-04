@@ -15,6 +15,8 @@ customConfiguration:
   config-ui5-tooling-modules: &cfgModules
     debug: true
     minify: true
+    watch:
+      - "../ui5-tsapp-webc/webapp"
 type: application
 framework:
   name: OpenUI5
