@@ -327,7 +327,9 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				});
 			}
 			await workspace.write(newResource);
-			ignoreResources.push(newResource.getPath());
+			if (!config.addToNamespace) {
+				ignoreResources.push(newResource.getPath());
+			}
 		}),
 	);
 	config.debug && log.info(`Bundling took ${Date.now() - bundleTime} millis`);
