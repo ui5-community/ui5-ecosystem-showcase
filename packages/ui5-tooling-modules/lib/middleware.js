@@ -108,7 +108,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	let onChangeCallback;
 	let watcher;
 	if (watch) {
-		const pathsToWatch = []; //[cwd, ...depPaths].map((depPath) => `${depPath}`);
+		const pathsToWatch = Array.isArray(watch) ? watch.filter((p) => typeof p === "string").map((p) => path.join(cwd, p)) : [];
 		determineSourcePaths(project.getReader()).forEach((p) => pathsToWatch.push(p));
 		depProjects.forEach((dep) => {
 			determineSourcePaths(dep.getReader()).forEach((p) => pathsToWatch.push(p));
