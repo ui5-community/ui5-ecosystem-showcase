@@ -10,9 +10,9 @@ const camelize = (str) => {
 // corresponds to the "sap.ui.core.webc.WebComponent" class at runtime.
 const UI5_ELEMENT_CLASS_NAME = "UI5Element";
 
-const _registry = {};
+let _registry = {};
 
-const _classAliases = {};
+let _classAliases = {};
 
 // TODO: Make "classes" into... a class :)
 //       Get's rid of passing the "classDef" and the "ui5metadata" around.
@@ -642,6 +642,11 @@ const WebComponentRegistry = {
 		if (!_classAliases[alias]) {
 			_classAliases[alias] = obj;
 		}
+	},
+
+	clear() {
+		_registry = {};
+		_classAliases = {};
 	},
 };
 
