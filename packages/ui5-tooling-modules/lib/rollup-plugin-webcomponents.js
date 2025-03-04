@@ -2,6 +2,7 @@ const { join, dirname, extname, posix } = require("path");
 const { readFileSync, existsSync } = require("fs");
 const { createHash } = require("crypto");
 
+const JSDocSerializer = require("./utils/JSDocSerializer");
 const { lt, gte } = require("semver");
 const { compile } = require("handlebars");
 
@@ -224,6 +225,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			isBaseLib,
 			metadata,
 			namespace,
+			interfaces: package.interfaces,
 			hasEnums: Object.keys(package.enums).length > 0,
 			enums: package.enums,
 			dependencies: package.dependencies?.map((dep) => `${rootPath}${dep}`),
@@ -258,12 +260,8 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			const ui5Metadata = clazz._ui5metadata;
 			const ui5Class = `${ui5Metadata.namespace}.${clazz.name}`;
 			const namespace = ui5Metadata.namespace;
-			const metadataObject = Object.assign({}, ui5Metadata, {
-				tag: ui5Metadata.tag && (isClazzUI5Element && ui5WebCScopeSuffix ? `${ui5Metadata.tag}-${ui5WebCScopeSuffix}` : ui5Metadata.tag), // only add the suffix for UI5 Web Components (scoping support)
-				library: `${ui5Metadata.namespace}.library`, // if not defined, the library is derived from the namespace
-				designtime: `${ui5Metadata.namespace}/designtime/${clazz.name}.designtime`, // add a default designtime
-			});
-			const metadata = JSON.stringify(metadataObject, undefined, 2);
+
+			const metadata = JSDocSerializer.serializeMetadata(clazz);
 			const webcClass = chunkName && posix.relative(dirname(resolvedSource), chunkName);
 
 			// UI5 specific features
@@ -289,10 +287,14 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				}
 			}
 
+			// JSDoc Serialization for the class header
+			const jsDocClassHeader = clazz._jsDoc?.classHeader;
+
 			// generate the WebComponentControl code
 			const rootPath = `${posix.relative(dirname(resolvedSource), "") || "."}/`;
 			const code = webcTmplFnUI5Control({
 				ui5Class,
+				jsDocClassHeader,
 				namespace: `${rootPath}${namespace}`,
 				metadata,
 				webcClass,
