@@ -84,10 +84,9 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 		return npmPackageScopeRegEx.exec(source)?.[1];
 	};
 
-	let executionContext = {};
-
 	// helper function to load a NPM package and its custom elements metadata
 	const loadedNpmPackages = [];
+	const emittedNpmPackages = [];
 	const loadNpmPackage = (npmPackage, emitFile) => {
 		let registryEntry = WebComponentRegistry.getPackage(npmPackage);
 		if (!registryEntry && !loadedNpmPackages.includes(npmPackage)) {
@@ -150,7 +149,6 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				}
 			}
 		}
-		const emittedNpmPackages = (executionContext.emittedNpmPackages = executionContext.emittedNpmPackages || []);
 		if (!skip && registryEntry && !emittedNpmPackages.includes(npmPackage)) {
 			// tell rollup to create a chunk for the Web Components npm package
 			emitFile({
@@ -193,8 +191,8 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 	// Helpers for the generation of the UI5 assets (packages and controls)
 	// =========================================================================
 
+	const emittedPackages = [];
 	const buildPackage = ({ source, package }, emitFile) => {
-		const emittedPackages = (executionContext.emittedPackages = executionContext.emittedPackages || []);
 		if (emittedPackages.includes(source)) {
 			return;
 		}
@@ -240,11 +238,11 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 		emittedPackages.push(source);
 	};
 
+	const emittedWrappers = {};
 	const buildWrapper = ({ source, clazz, webcSource }, emitFile) => {
 		const resolvedSource = `${clazz.package}/${clazz.module.slice(0, -3)}`;
 		const rootPath = `${posix.relative(dirname(source), "") || "."}/`;
 
-		const emittedWrappers = (executionContext.emittedWrappers = executionContext.emittedWrappers || {});
 		if (emittedWrappers[source]) {
 			return;
 		} else if (emittedWrappers[resolvedSource] && emittedWrappers[resolvedSource] !== source) {
@@ -339,8 +337,8 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				return null;
 			}
 
-			// clear the execution context
-			executionContext = {};
+			// clear the registry to ensure that the Web Components are reloaded
+			WebComponentRegistry.clear();
 		},
 		async resolveId(source, importer, { /*attributes, custom,*/ isEntry }) {
 			if (skip) {
