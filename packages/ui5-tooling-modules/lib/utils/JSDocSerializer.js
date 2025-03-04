@@ -273,6 +273,7 @@ const JSDocSerializer = {
 		classDef._jsDoc.metadata = Templates.ui5metadata({
 			jsDoc: classDef._jsDoc,
 			metadata: classDef._ui5metadata,
+			className: classDef.name,
 		});
 		return classDef._jsDoc.metadata;
 	},
