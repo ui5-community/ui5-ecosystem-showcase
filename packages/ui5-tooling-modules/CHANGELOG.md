@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.24.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.2...ui5-tooling-modules@3.24.3) (2025-03-04)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** ensure to rewrite deps when addToNamespace ([ff6a002](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ff6a0023b9b11f26ba179d98b0416e6e937fd859))
+
+
+
+
+
 ## [3.24.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.1...ui5-tooling-modules@3.24.2) (2025-03-04)
 
 
