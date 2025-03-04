@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.16.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.16.8...ui5-tsapp@0.16.9) (2025-03-04)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** support watching of additional files/folders ([#1176](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1176)) ([294d757](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/294d7579159c2369fab2948ad1390e057b3c7bfe))
+
+
+
+
+
 ## [0.16.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.16.7...ui5-tsapp@0.16.8) (2025-03-03)
 
 **Note:** Version bump only for package ui5-tsapp
