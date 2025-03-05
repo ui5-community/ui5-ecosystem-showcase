@@ -27,6 +27,7 @@ sap.ui.define([
 }
   };
 
+<<<<<<< HEAD
 	if (WebCPackage) {
 		Object.keys(WebCPackage).forEach((key) => {
 			if (key !== "default") {
@@ -38,6 +39,11 @@ sap.ui.define([
 			}
 		});
 	}
+=======
+  // Enums
+
+  // Interfaces
+>>>>>>> abaefd90 (chore(ui5-tooling-modules): update test snapshots for new JSDoc content)
 
 
 
