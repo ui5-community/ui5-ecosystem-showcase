@@ -163,6 +163,7 @@ sap.ui.define([
     "updateContext",
     "sendCustomMessage",
     "closeAlert",
+    "notifyAlertClosed",
     "init"
   ],
   "library": "@luigi-project/container.library",
