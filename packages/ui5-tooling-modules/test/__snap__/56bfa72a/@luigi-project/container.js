@@ -25,6 +25,9 @@ sap.ui.define([
 }
   };
 
+  // Enums
+
+  // Interfaces
 
 
   return pkg;
