@@ -1103,6 +1103,7 @@ module.exports = function (log, projectInfo) {
 						resolveModule: function (moduleName) {
 							return that.resolveModule(moduleName, { cwd, depPaths });
 						},
+						contextNamespace: projectInfo.namespace, // app|lib namespace used for class names & JSDoc references
 						pkgJson: projectInfo.pkgJson, // the current project package.json
 						getPackageJson, // use the cached package.json if possible
 						framework: projectInfo?.framework,

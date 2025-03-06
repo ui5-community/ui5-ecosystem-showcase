@@ -8,7 +8,7 @@ const { compile } = require("handlebars");
 
 const WebComponentRegistry = require("./utils/WebComponentRegistry");
 
-module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framework, options } = {}) {
+module.exports = function ({ log, resolveModule, contextNamespace, pkgJson, getPackageJson, framework, options } = {}) {
 	// derive the configuration from the provided options
 	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets } = Object.assign(
 		{
@@ -64,20 +64,6 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 	// =========================================================================
 	// Helpers to determine the Web Component classes and their metadata
 	// =========================================================================
-
-	// checks wehether the given class is based on UI5Element
-	const isUI5Element = (clazz) => {
-		let superclass = clazz.superclass,
-			isClazzUI5Element = false;
-		while (superclass) {
-			if (superclass?.namespace === "@ui5/webcomponents-base" && superclass?.name === "UI5Element") {
-				isClazzUI5Element = true;
-				break;
-			}
-			superclass = superclass.superclass;
-		}
-		return isClazzUI5Element;
-	};
 
 	// helper function to extract the npm package name from a module name
 	const getNpmPackageName = (source) => {
@@ -141,6 +127,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 					registryEntry = WebComponentRegistry.register({
 						customElementsMetadata,
 						namespace: npmPackage,
+						contextNamespace,
 						scopeSuffix: ui5WebCScopeSuffix,
 						npmPackagePath,
 						version: packageJson.version,
@@ -253,7 +240,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			log.verbose(`Emitting Web Component wrapper: ${resolvedSource}`);
 
 			// determine whether the clazz is based on the UI5Element superclass
-			const isClazzUI5Element = isUI5Element(clazz);
+			const isClazzUI5Element = WebComponentRegistry.isUI5ElementSubclass(clazz);
 			if (ui5WebCScopeSuffix && !isClazzUI5Element) {
 				log.warn(`The Web Component "${source}" doesn't support scoping as it is not extending UI5Element!`);
 			}
@@ -428,7 +415,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				let nonUI5TagsToRegister;
 				if (ui5WebCScopeSuffix) {
 					nonUI5TagsToRegister = Object.values(customElements)
-						.filter((element) => isUI5Element(element))
+						.filter((element) => WebComponentRegistry.isUI5ElementSubclass(element))
 						.map((element) => element.tagName)
 						.filter((tag) => (tag ? !tag.startsWith("ui5-") : false));
 					if (nonUI5TagsToRegister.length === 0) {
