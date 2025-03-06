@@ -141,6 +141,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 					registryEntry = WebComponentRegistry.register({
 						customElementsMetadata,
 						namespace: npmPackage,
+						scopeSuffix: ui5WebCScopeSuffix,
 						npmPackagePath,
 						version: packageJson.version,
 					});

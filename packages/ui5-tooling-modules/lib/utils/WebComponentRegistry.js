@@ -19,6 +19,20 @@ const calculateGetterName = (functionName) => {
 	return "get" + functionName.substr(0, 1).toUpperCase() + functionName.substr(1);
 };
 
+// checks wehether the given class is based on UI5Element
+const isUI5ElementSubclass = (classDef) => {
+	let superclass = classDef.superclass,
+		isUI5ElementSubclass = false;
+	while (superclass) {
+		if (superclass?.namespace === "@ui5/webcomponents-base" && superclass?.name === "UI5Element") {
+			isUI5ElementSubclass = true;
+			break;
+		}
+		superclass = superclass.superclass;
+	}
+	return isUI5ElementSubclass;
+};
+
 // the class name of the base class of all control wrappers
 // corresponds to the "sap.ui.core.webc.WebComponent" class at runtime.
 const UI5_ELEMENT_CLASS_NAME = "UI5Element";
@@ -32,9 +46,10 @@ let _classAliases = {};
 class RegistryEntry {
 	#customElementsMetadata = {};
 
-	constructor({ customElementsMetadata, namespace, npmPackagePath, version }) {
+	constructor({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version }) {
 		this.#customElementsMetadata = customElementsMetadata;
 		this.namespace = namespace;
+		this.scopeSuffix = scopeSuffix;
 		this.npmPackagePath = npmPackagePath;
 		this.version = version;
 
@@ -61,6 +76,8 @@ class RegistryEntry {
 		Object.keys(this.classes).forEach((className) => {
 			const classDef = this.classes[className];
 			this.#connectSuperclass(classDef);
+
+			this.#calculateScopedTagName(classDef);
 
 			// [3] create UI5 metadata for each classed based on the parsed custom elements metadata
 			//     Note: The order is important! We need to connect the superclass and create its metadata first.
@@ -142,6 +159,15 @@ class RegistryEntry {
 
 	prefixns(str) {
 		return `${this.namespace}.${str}`;
+	}
+
+	#calculateScopedTagName(classDef) {
+		// only scope UI5Element subclasses
+		if (this.scopeSuffix && isUI5ElementSubclass(classDef)) {
+			if (classDef.tagName) {
+				classDef.scopedTagName = `${classDef.tagName}-${this.scopeSuffix}`;
+			}
+		}
 	}
 
 	// --- UI5 Metadata transformer below ---
@@ -661,7 +687,7 @@ class RegistryEntry {
 	#createUI5Metadata(classDef) {
 		const ui5metadata = (classDef._ui5metadata = {
 			namespace: this.namespace,
-			tag: classDef.tagName,
+			tag: classDef.scopedTagName || classDef.tagName,
 			interfaces: [],
 			properties: {},
 			aggregations: {},
@@ -735,10 +761,10 @@ class RegistryEntry {
 }
 
 const WebComponentRegistry = {
-	register({ customElementsMetadata, namespace, npmPackagePath, version }) {
+	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version }) {
 		let entry = _registry[namespace];
 		if (!entry) {
-			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, npmPackagePath, version });
+			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version });
 
 			// track all classes also via their module name,
 			// so we can access them faster during resource resolution later on

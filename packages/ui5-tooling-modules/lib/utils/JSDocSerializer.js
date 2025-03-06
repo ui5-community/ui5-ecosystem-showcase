@@ -181,10 +181,6 @@ function _prepareGettersAndMethods(classDef) {
 function _prepareUI5Metadata(classDef) {
 	// The following metadata values are filled by the rollup plugin atm.
 	// the tag specifically needs a scoping suffix
-	// TODO: Move this into the registry
-	// * tag
-	// * library
-	// * designtime
 
 	// prepare simple metadata entities
 	["properties", "aggregations", "associations"].forEach((entityType) => {
