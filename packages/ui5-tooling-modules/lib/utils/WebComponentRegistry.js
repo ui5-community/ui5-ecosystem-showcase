@@ -19,20 +19,6 @@ const calculateGetterName = (functionName) => {
 	return "get" + functionName.substr(0, 1).toUpperCase() + functionName.substr(1);
 };
 
-// checks wehether the given class is based on UI5Element
-const isUI5ElementSubclass = (classDef) => {
-	let superclass = classDef.superclass,
-		isUI5ElementSubclass = false;
-	while (superclass) {
-		if (superclass?.namespace === "@ui5/webcomponents-base" && superclass?.name === "UI5Element") {
-			isUI5ElementSubclass = true;
-			break;
-		}
-		superclass = superclass.superclass;
-	}
-	return isUI5ElementSubclass;
-};
-
 // the class name of the base class of all control wrappers
 // corresponds to the "sap.ui.core.webc.WebComponent" class at runtime.
 const UI5_ELEMENT_CLASS_NAME = "UI5Element";
@@ -163,7 +149,7 @@ class RegistryEntry {
 
 	#calculateScopedTagName(classDef) {
 		// only scope UI5Element subclasses
-		if (this.scopeSuffix && isUI5ElementSubclass(classDef)) {
+		if (this.scopeSuffix && WebComponentRegistry.isUI5ElementSubclass(classDef)) {
 			if (classDef.tagName) {
 				classDef.scopedTagName = `${classDef.tagName}-${this.scopeSuffix}`;
 			}
@@ -610,15 +596,19 @@ class RegistryEntry {
 	 *
 	 * Most things patched in this function should eventually be available generically in the custom elements metadta.
 	 *
+	 * @param {object} classDef the class definition object
 	 * @param {object} ui5metadata the UI5 metadata object
 	 */
 	#patchUI5Specifics(classDef, ui5metadata) {
-		const { tag } = ui5metadata;
+		// The tag of UI5 web components might be scoped with a suffix depending on the project configuration
+		// we need to make tag.includes(...) checks instead of strict comparisons!
+		let { tag } = ui5metadata;
+		tag ??= ""; // ensure we have a string to work with, as some classes don't have a tag e.g. abstract base classes
 
 		// TODO: This whole method needs to be adapted to correctly write JSDoc
 
 		// The label has a couple of specifics that are not fully reflected in the custom elements.
-		if (tag === "ui5-label") {
+		if (tag.includes("ui5-label")) {
 			// the ui5-label has as default slot, but no aggregations on the retrofit layer...
 			ui5metadata.aggregations = [];
 			// the "for" attribute is called "labelFor" in the retrofit...
@@ -636,7 +626,7 @@ class RegistryEntry {
 			ui5metadata.interfaces.push("sap.ui.core.Label");
 			// Additionally, all such controls must apply the "sap/ui/core/LabelEnablement" (see "../templates/WrapperControl.hbs")
 			classDef._ui5specifics.needsLabelEnablement = true;
-		} else if (tag === "ui5-multi-input") {
+		} else if (tag.includes("ui5-multi-input")) {
 			// TODO: Multi Input needs to implement the functions defined in "sap.ui.core.ISemanticFormContent"...
 			ui5metadata.interfaces.push("sap.ui.core.ISemanticFormContent");
 		} else if (tag === "ui5-shellbar") {
@@ -801,6 +791,26 @@ const WebComponentRegistry = {
 	clear() {
 		_registry = {};
 		_classAliases = {};
+	},
+
+	/**
+	 * Helper function to check whether the given class inherits from UI5Element, the base class for all
+	 * UI5 web components.
+	 *
+	 * @param {object} classDef a class definition from a WebComponentRegistry entry
+	 * @returns {boolean} whether the class inherits from UI5Element
+	 */
+	isUI5ElementSubclass(classDef) {
+		let superclass = classDef.superclass,
+			isUI5ElementSubclass = false;
+		while (superclass) {
+			if (superclass?.namespace === "@ui5/webcomponents-base" && superclass?.name === "UI5Element") {
+				isUI5ElementSubclass = true;
+				break;
+			}
+			superclass = superclass.superclass;
+		}
+		return isUI5ElementSubclass;
 	},
 };
 
