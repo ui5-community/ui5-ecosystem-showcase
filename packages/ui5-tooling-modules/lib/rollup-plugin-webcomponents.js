@@ -141,6 +141,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 					registryEntry = WebComponentRegistry.register({
 						customElementsMetadata,
 						namespace: npmPackage,
+						scopeSuffix: ui5WebCScopeSuffix,
 						npmPackagePath,
 						version: packageJson.version,
 					});
@@ -271,10 +272,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 		const ui5Metadata = clazz._ui5metadata;
 		const ui5Class = `${ui5Metadata.namespace}.${clazz.name}`;
 		const namespace = ui5Metadata.namespace;
-		// TODO: move this to WebComponentRegistry? e.g. hand over suffix when registering a new package?
-		Object.assign(ui5Metadata, {
-			tag: ui5Metadata.tag && (isClazzUI5Element && ui5WebCScopeSuffix ? `${ui5Metadata.tag}-${ui5WebCScopeSuffix}` : ui5Metadata.tag), // only add the suffix for UI5 Web Components (scoping support)
-		});
+
 		const metadata = JSDocSerializer.serializeMetadata(clazz);
 		const webcClass = webcSource;
 
