@@ -119,6 +119,14 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 		}
 		// watch the files
 		let debounceTimer;
+		const triggerChangeCallback = (file) => {
+			if (typeof onChangeCallback === "function") {
+				clearTimeout(debounceTimer);
+				debounceTimer = setTimeout(() => {
+					onChangeCallback(file);
+				}, watchDebounce);
+			}
+		};
 		watcher = chokidar
 			.watch(pathsToWatch, {
 				ignored: (file, stats) => {
@@ -138,24 +146,21 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 					log.verbose(`[FSWATCHER] File ${file} has been added`);
 				}
 				watcher.add(file);
+				triggerChangeCallback(file);
 			})
 			.on("unlink", (file) => {
 				if (debug) {
 					log.verbose(`[FSWATCHER] File ${file} has been removed`);
 				}
 				watcher.unwatch(file);
+				triggerChangeCallback(file);
 			})
 			.on("change", (file) => {
 				if (debug) {
 					log.verbose(`[FSWATCHER] File ${file} has been changed`);
 				}
 				log.info(`File ${file} has been changed. Checking for dependencies changes...`);
-				if (typeof onChangeCallback === "function") {
-					clearTimeout(debounceTimer);
-					debounceTimer = setTimeout(() => {
-						onChangeCallback();
-					}, watchDebounce);
-				}
+				triggerChangeCallback(file);
 			});
 	}
 
@@ -201,7 +206,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	});
 	// start bundling
 	let whenBundled, scanTime, bundleTime;
-	const bundleAndWatch = async ({ moduleName, force }) => {
+	const bundleAndWatch = async ({ moduleName, force, skipCache }) => {
 		if (moduleName && !requestedModules.has(moduleName)) {
 			requestedModules.add(moduleName);
 		}
@@ -226,7 +231,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 							);
 							modules.push(mod);
 						});
-					return getBundleInfo(modules, config, { cwd, depPaths, isMiddleware: true });
+					return getBundleInfo(modules, Object.assign({}, config, { skipCache }), { cwd, depPaths, isMiddleware: true });
 				})
 				.then((bundleInfo) => {
 					debug && log.info(`Bundling took ${Date.now() - bundleTime} millis`);
@@ -237,7 +242,11 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 							watcher.add(p);
 							debug && log.verbose(`[FSWATCHER] File ${p} has been added`);
 						});
-						onChangeCallback = () => bundleAndWatch({ force: true });
+						onChangeCallback = function (file) {
+							// the bundling should only be retriggered when the file is part of the related paths
+							const shouldSkipCache = relatedPaths.includes(file);
+							bundleAndWatch({ force: true, skipCache: shouldSkipCache });
+						};
 					}
 					return bundleInfo;
 				});
