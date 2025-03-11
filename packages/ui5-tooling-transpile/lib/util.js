@@ -502,6 +502,12 @@ module.exports = function (log) {
 					});
 				}
 			}
+			// disable the modules conversion as this is handled by the transform-ui5 preset
+			if (envPreset.length === 1) {
+				envPreset.push({});
+			}
+			envPreset[1].modules = false;
+			// add the env preset to the presets
 			babelConfigOptions.presets.push(envPreset);
 
 			// add the presets to enable transformation of ES modules to

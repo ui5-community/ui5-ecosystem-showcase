@@ -1,6 +1,7 @@
 const test = require("ava");
 const path = require("path");
 const fs = require("fs");
+// eslint-disable-next-line no-redeclare
 const crypto = require("crypto");
 
 //const cwd = process.cwd();
@@ -121,7 +122,8 @@ test("inject configuration options", async (t) => {
 						{
 							targets: {
 								browsers: "defaults"
-							}
+							},
+							modules: false
 						}
 					],
 					"transform-ui5",
@@ -159,7 +161,8 @@ test("inject configuration options", async (t) => {
 						{
 							targets: {
 								browsers: "defaults"
-							}
+							},
+							modules: false
 						}
 					],
 					[
@@ -205,7 +208,8 @@ test("inject configuration options", async (t) => {
 						{
 							targets: {
 								browsers: "defaults"
-							}
+							},
+							modules: false
 						}
 					],
 					[

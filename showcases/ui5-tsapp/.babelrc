@@ -1,5 +1,5 @@
 {
-	"presets": ["@babel/preset-env", "transform-ui5", "@babel/preset-typescript"],
+	"presets": [["@babel/preset-env", { "modules": false }], "transform-ui5", "@babel/preset-typescript"],
 	"plugins": [
 		[
 			"transform-async-to-promises",
