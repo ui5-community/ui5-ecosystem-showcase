@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.16.12](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.16.11...ui5-tsapp@0.16.12) (2025-03-11)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** avoid top-level use strict directive ([#1181](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1181)) ([62642c0](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/62642c02d8fcf0754f6a342bf229348a09e70774))
+
+
+
+
+
 ## [0.16.11](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.16.10...ui5-tsapp@0.16.11) (2025-03-09)
 
 **Note:** Version bump only for package ui5-tsapp
