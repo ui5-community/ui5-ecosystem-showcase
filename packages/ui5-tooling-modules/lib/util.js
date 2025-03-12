@@ -1376,7 +1376,12 @@ module.exports = function (log, projectInfo) {
 							// therefore we make all paths absolute...
 							let moduleBasePath;
 							let { namespace: projectNamespace, type: projectType } = projectInfo || {};
-							if (!addToNamespace && projectType === "application" && projectNamespace) {
+							// in case of running in the middleware, we need to adjust the module base path
+							// to ensure that the modules are resolved relative to the project namespace
+							// and in addition if the addToNamespace flag isn't set we also need to adjust
+							// the module base path to ensure that the modules are resolved relative to the
+							// project namespace (to support CDN cases)
+							if ((isMiddleware || !addToNamespace) && projectType === "application" && projectNamespace) {
 								// for applications we need to adjust the module base path so that the
 								// modules are resolved relative to the project namespace (to support CDN cases)
 								moduleBasePath = `${path.posix.join(projectNamespace, "resources")}/`;
