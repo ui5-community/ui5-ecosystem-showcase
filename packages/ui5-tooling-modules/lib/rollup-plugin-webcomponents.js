@@ -238,92 +238,95 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 		emittedPackages.push(source);
 	};
 
-	const emittedWrappers = {};
-	const buildWrapper = ({ source, clazz, webcSource }, emitFile) => {
+	const emittedWrappers = [];
+	const buildWrapper = ({ source, clazz, chunkName }, emitFile) => {
 		const resolvedSource = `${clazz.package}/${clazz.module.slice(0, -3)}`;
-		const rootPath = `${posix.relative(dirname(source), "") || "."}/`;
 
-		if (emittedWrappers[source]) {
-			return;
-		} else if (emittedWrappers[resolvedSource] && emittedWrappers[resolvedSource] !== source) {
-			//console.log(`Re-exporting Web Component: ${source} for class ${resolvedSource}`);
+		// we always create the original Web Component class which is found in the
+		// respective package (e.g. @ui5/webcomponents-base/dist/ComboBox)
+		if (!emittedWrappers.includes(resolvedSource)) {
+			log.verbose(`Emitting Web Component wrapper: ${resolvedSource}`);
+
+			// determine whether the clazz is based on the UI5Element superclass
+			const isClazzUI5Element = isUI5Element(clazz);
+			if (ui5WebCScopeSuffix && !isClazzUI5Element) {
+				log.warn(`The Web Component "${source}" doesn't support scoping as it is not extending UI5Element!`);
+			}
+			// Extend the superclass with the WebComponent class and export it
+			const ui5Metadata = clazz._ui5metadata;
+			const ui5Class = `${ui5Metadata.namespace}.${clazz.name}`;
+			const namespace = ui5Metadata.namespace;
+			const metadataObject = Object.assign({}, ui5Metadata, {
+				tag: ui5Metadata.tag && (isClazzUI5Element && ui5WebCScopeSuffix ? `${ui5Metadata.tag}-${ui5WebCScopeSuffix}` : ui5Metadata.tag), // only add the suffix for UI5 Web Components (scoping support)
+				library: `${ui5Metadata.namespace}.library`, // if not defined, the library is derived from the namespace
+				designtime: `${ui5Metadata.namespace}/designtime/${clazz.name}.designtime`, // add a default designtime
+			});
+			const metadata = JSON.stringify(metadataObject, undefined, 2);
+			const webcClass = chunkName && posix.relative(dirname(resolvedSource), chunkName);
+
+			// UI5 specific features
+			const needsLabelEnablement = clazz._ui5specifics.needsLabelEnablement;
+			const needsEnabledPropagator = clazz._ui5specifics.needsEnabledPropagator;
+			const needsMessageMixin = clazz._ui5specifics.needsMessageMixin;
+
+			// Determine the superclass UI5 module name and import it
+			let webcBaseClass = "sap/ui/core/webc/WebComponent";
+			const ui5Superclass = clazz.superclass;
+			if (ui5Superclass?._ui5metadata && !(ui5Superclass.namespace === "@ui5/webcomponents-base" && ui5Superclass.name === "UI5Element")) {
+				const { module } = clazz.superclass;
+				const { namespace } = clazz.superclass._ui5metadata;
+				webcBaseClass = `${namespace}/${module.slice(0, -3)}`;
+				if (!emittedWrappers.includes(webcBaseClass)) {
+					buildWrapper(
+						{
+							source: webcBaseClass,
+							clazz: clazz.superclass,
+						},
+						emitFile,
+					);
+				}
+			}
+
+			// generate the WebComponentControl code
+			const rootPath = `${posix.relative(dirname(resolvedSource), "") || "."}/`;
+			const code = webcTmplFnUI5Control({
+				ui5Class,
+				namespace: `${rootPath}${namespace}`,
+				metadata,
+				webcClass,
+				webcBaseClass: webcBaseClass !== "sap/ui/core/webc/WebComponent" ? `${rootPath}${webcBaseClass}` : webcBaseClass,
+				needsLabelEnablement,
+				needsEnabledPropagator,
+				needsMessageMixin,
+				importWebCModule: !!webcClass,
+			});
+
+			emitFile({
+				type: "prebuilt-chunk",
+				id: resolvedSource,
+				fileName: `${resolvedSource}.js`,
+				code,
+			});
+
+			// mark the source as emitted
+			emittedWrappers.push(resolvedSource);
+		}
+
+		// construct a substitute for the Web Component if the source is not the resolved source
+		if (resolvedSource !== source && !emittedWrappers.includes(source)) {
+			log.verbose(`Emitting Web Component wrapper substitute: ${source}`);
+			const rootPath = `${posix.relative(dirname(source), "") || "."}/`;
 			emitFile({
 				type: "prebuilt-chunk",
 				id: source,
 				fileName: `${source}.js`,
-				code: `/*!\n * \${copyright}\n */\nsap.ui.define(["${rootPath}${emittedWrappers[resolvedSource]}"], function(mod) { return mod; });`,
+				code: `/*!\n * \${copyright}\n */\nsap.ui.define(["${rootPath}${resolvedSource}"], function(mod) { return mod; });`,
 			});
-			emittedWrappers[source] = source;
-			return;
-		} else if (emittedWrappers[resolvedSource]) {
-			// already emitted
-			return;
+			// mark the substitute as emitted
+			emittedWrappers.push(source);
+			// log a warning that a substitute is used
+			log.warn(`Module "${source}" is a substitute! Please use "${resolvedSource}" instead to avoid additional modules!`);
 		}
-
-		// determine whether the clazz is based on the UI5Element superclass
-		const isClazzUI5Element = isUI5Element(clazz);
-		if (ui5WebCScopeSuffix && !isClazzUI5Element) {
-			log.warn(`The Web Component "${source}" doesn't support scoping as it is not extending UI5Element!`);
-		}
-		// Extend the superclass with the WebComponent class and export it
-		const ui5Metadata = clazz._ui5metadata;
-		const ui5Class = `${ui5Metadata.namespace}.${clazz.name}`;
-		const namespace = ui5Metadata.namespace;
-		const metadataObject = Object.assign({}, ui5Metadata, {
-			tag: ui5Metadata.tag && (isClazzUI5Element && ui5WebCScopeSuffix ? `${ui5Metadata.tag}-${ui5WebCScopeSuffix}` : ui5Metadata.tag), // only add the suffix for UI5 Web Components (scoping support)
-			library: `${ui5Metadata.namespace}.library`, // if not defined, the library is derived from the namespace
-			designtime: `${ui5Metadata.namespace}/designtime/${clazz.name}.designtime`, // add a default designtime
-		});
-		const metadata = JSON.stringify(metadataObject, undefined, 2);
-		const webcClass = webcSource;
-
-		// UI5 specific features
-		const needsLabelEnablement = clazz._ui5specifics.needsLabelEnablement;
-		const needsEnabledPropagator = clazz._ui5specifics.needsEnabledPropagator;
-		const needsMessageMixin = clazz._ui5specifics.needsMessageMixin;
-
-		// Determine the superclass UI5 module name and import it
-		let webcBaseClass = "sap/ui/core/webc/WebComponent";
-		const ui5Superclass = clazz.superclass;
-		if (ui5Superclass?._ui5metadata && !(ui5Superclass.namespace === "@ui5/webcomponents-base" && ui5Superclass.name === "UI5Element")) {
-			const { module } = clazz.superclass;
-			const { namespace } = clazz.superclass._ui5metadata;
-			webcBaseClass = `${namespace}/${module.slice(0, -3)}`;
-			if (emittedWrappers[webcBaseClass]) {
-				webcBaseClass = emittedWrappers[webcBaseClass]; // resolve the superclass if already emitted
-			} else {
-				buildWrapper(
-					{
-						source: webcBaseClass,
-						clazz: clazz.superclass,
-					},
-					emitFile,
-				);
-			}
-		}
-
-		// generate the WebComponentControl code
-		const code = webcTmplFnUI5Control({
-			ui5Class,
-			namespace: `${rootPath}${namespace}`,
-			metadata,
-			webcClass,
-			webcBaseClass: webcBaseClass !== "sap/ui/core/webc/WebComponent" ? `${rootPath}${webcBaseClass}` : webcBaseClass,
-			needsLabelEnablement,
-			needsEnabledPropagator,
-			needsMessageMixin,
-			importWebCModule: !!webcClass,
-		});
-
-		emitFile({
-			type: "prebuilt-chunk",
-			id: source,
-			fileName: `${source}.js`,
-			code,
-		});
-
-		// mark the source as emitted
-		emittedWrappers[resolvedSource] = source;
 	};
 
 	// =========================================================================
@@ -354,16 +357,27 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				if ((clazz = lookupWebComponentsClass(source, this.emitFile))) {
 					const modulePath = `${clazz.package}/${clazz.module}`;
 					const absModulePath = resolveModule(modulePath);
+					// we need to add the different sources to the Web Component metadata
+					// as the same Web Component can have different entry points!
+					const moduleInfo = this.getModuleInfo(absModulePath);
+					const ui5 = Object.assign(
+						{
+							sources: [],
+							type: "webcomponent",
+							clazz,
+							modulePath,
+							absModulePath,
+						},
+						moduleInfo?.meta?.ui5,
+					);
+					if (!ui5.sources.includes(source)) {
+						ui5.sources.push(source);
+					}
+					// resolve the module to the absolute path
 					return {
 						id: absModulePath,
 						meta: {
-							ui5: {
-								source,
-								type: "webcomponent",
-								clazz,
-								modulePath,
-								absModulePath,
-							},
+							ui5,
 						},
 					};
 				}
@@ -450,9 +464,16 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 					let type = moduleInfo?.meta?.ui5?.type;
 					if (type) {
 						if (type === "webcomponent") {
-							const { source, clazz } = moduleInfo.meta.ui5;
-							const webcSource = posix.relative(dirname(source), chunk.name);
-							buildWrapper({ source, clazz, webcSource }, this.emitFile);
+							const { clazz, sources } = moduleInfo.meta.ui5;
+							/*
+							if (sources.length > 1) {
+								log.warn(`The Web Component "${clazz.name}" has multiple entry points: ${sources.join(", ")}`);
+							}
+							*/
+							for (const source of sources) {
+								// emit the Web Component wrapper
+								buildWrapper({ source, clazz, chunkName: chunk.name }, this.emitFile);
+							}
 						} else if (type === "package") {
 							const { source, package } = moduleInfo.meta.ui5;
 							buildPackage({ source, package }, this.emitFile);

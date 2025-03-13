@@ -7,13 +7,13 @@ import VBox from "sap/m/VBox";
 import Popup from "sap/ui/core/Popup";
 import Event from "sap/ui/base/Event";
 
-import Button from "@ui5/webcomponents/Button";
-import DatePicker from "@ui5/webcomponents/DatePicker";
-import Input from "@ui5/webcomponents/Input";
+import Button from "@ui5/webcomponents/dist/Button";
+import DatePicker from "@ui5/webcomponents/dist/DatePicker";
+import Input from "@ui5/webcomponents/dist/Input";
 import { AvatarSize } from "@ui5/webcomponents";
-import Token from "@ui5/webcomponents/Token";
+import Token from "@ui5/webcomponents/dist/Token";
 
-import UserMenu from "@ui5/webcomponents-fiori/UserMenu";
+import UserMenu from "@ui5/webcomponents-fiori/dist/UserMenu";
 
 console.log(AvatarSize);
 
