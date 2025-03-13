@@ -1,4 +1,4 @@
-<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns:webc="@ui5/webcomponents" xmlns:fiori="@ui5/webcomponents-fiori" xmlns:m="sap.m">
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns:webc="@ui5/webcomponents/dist" xmlns:fiori="@ui5/webcomponents-fiori/dist" xmlns:m="sap.m">
   <fiori:NotificationList>
     <fiori:NotificationListItem
       id="firstNotificationListItem"

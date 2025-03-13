@@ -140,6 +140,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 						return false;
 					}
 				},
+				ignoreInitial: true,
 			})
 			.on("add", (file) => {
 				if (debug) {
