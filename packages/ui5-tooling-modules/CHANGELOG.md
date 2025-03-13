@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.24.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.5...ui5-tooling-modules@3.24.6) (2025-03-13)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** special handling of substitutes for webc ([#1183](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1183)) ([487423a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/487423acb707f57cf3545c152a2b282e6470d83b))
+
+
+
+
+
 ## [3.24.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.4...ui5-tooling-modules@3.24.5) (2025-03-12)
 
 

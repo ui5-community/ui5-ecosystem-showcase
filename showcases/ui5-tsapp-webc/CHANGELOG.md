@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.11.6...ui5-tsapp-webc@0.11.7) (2025-03-13)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** special handling of substitutes for webc ([#1183](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1183)) ([487423a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/487423acb707f57cf3545c152a2b282e6470d83b))
+
+
+
+
+
 ## [0.11.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.11.5...ui5-tsapp-webc@0.11.6) (2025-03-12)
 
 **Note:** Version bump only for package ui5-tsapp-webc
