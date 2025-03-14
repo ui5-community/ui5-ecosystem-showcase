@@ -18,14 +18,14 @@ sap.ui.define([
  * @public
  * @alias @luigi-project.container.LuigiContainer
  */
-  const WrapperClass = WebComponentBaseClass.extend("@luigi-project/container.LuigiContainer", {
+  const WrapperClass = WebComponentBaseClass.extend("ui5.ecosystem.demo.tsapp.thirdparty.@luigi-project.container.LuigiContainer", {
     metadata:
 {
   "tag": "luigi-container",
 
-  "namespace": "@luigi-project/container",
+  "namespace": "ui5.ecosystem.demo.tsapp.thirdparty.@luigi-project.container",
 
-  "designtime": "@luigi-project/container/designtime/LuigiContainer.designtime",
+  "designtime": "ui5/ecosystem/demo/tsapp/thirdparty/@luigi-project/container/designtime/LuigiContainer.designtime",
 
   "interfaces": [],
 
