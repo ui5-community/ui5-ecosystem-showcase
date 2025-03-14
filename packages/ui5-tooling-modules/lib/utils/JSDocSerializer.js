@@ -49,6 +49,15 @@ function slash2dot(s) {
 }
 
 /**
+ * Converts dots in a string to slashes.
+ * @param {string} s the dotted string
+ * @returns {string} the slashed string
+ */
+function dot2slash(s) {
+	return s.replace(/\./g, "/");
+}
+
+/**
  * Renders the class header as a JSDoc comment.
  * @param {object} classDef the class definition from the custom elements manifest
  */
@@ -192,14 +201,6 @@ function _prepareUI5Metadata(classDef) {
 
 	// serialize getters and setters JSDoc comments
 	_prepareGettersAndMethods(classDef);
-
-	// TODO: only for debugging
-	//       call this in the rollup plugin after the metadata was enriched with tag, library etc.
-	// JSDocSerializer.serializeMetadata(classDef);
-	// const metadata = classDef._jsDoc.metadata;
-	// if (!metadata) {
-	// 	console.log(`JSDocSerializer: No metadata written for class '${classDef.name}'.`);
-	// }
 }
 
 const JSDocSerializer = {
@@ -269,6 +270,7 @@ const JSDocSerializer = {
 		classDef._jsDoc.metadata = Templates.ui5metadata({
 			jsDoc: classDef._jsDoc,
 			metadata: classDef._ui5metadata,
+			designtimeNamespace: dot2slash(classDef._ui5metadata.qualifiedNamespace),
 			className: classDef.name,
 		});
 		return classDef._jsDoc.metadata;

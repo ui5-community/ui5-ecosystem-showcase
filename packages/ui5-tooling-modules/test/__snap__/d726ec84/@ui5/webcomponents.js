@@ -229,7 +229,7 @@ sap.ui.define([
  * Different types of AvatarColorScheme.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.AvatarColorScheme
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.AvatarColorScheme
  */
   pkg["AvatarColorScheme"] = {
     /**
@@ -288,12 +288,12 @@ sap.ui.define([
  */
     "Placeholder": "Placeholder",
   };
-  registerEnum("@ui5/webcomponents.AvatarColorScheme", pkg["AvatarColorScheme"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.AvatarColorScheme", pkg["AvatarColorScheme"]);
   /**
  * Different types of AvatarGroupType.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.AvatarGroupType
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.AvatarGroupType
  */
   pkg["AvatarGroupType"] = {
     /**
@@ -307,12 +307,12 @@ sap.ui.define([
  */
     "Individual": "Individual",
   };
-  registerEnum("@ui5/webcomponents.AvatarGroupType", pkg["AvatarGroupType"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.AvatarGroupType", pkg["AvatarGroupType"]);
   /**
  * Different types of AvatarShape.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.AvatarShape
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.AvatarShape
  */
   pkg["AvatarShape"] = {
     /**
@@ -326,12 +326,12 @@ sap.ui.define([
  */
     "Square": "Square",
   };
-  registerEnum("@ui5/webcomponents.AvatarShape", pkg["AvatarShape"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.AvatarShape", pkg["AvatarShape"]);
   /**
  * Different types of AvatarSize.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.AvatarSize
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.AvatarSize
  */
   pkg["AvatarSize"] = {
     /**
@@ -365,12 +365,12 @@ font size - 3rem
  */
     "XL": "XL",
   };
-  registerEnum("@ui5/webcomponents.AvatarSize", pkg["AvatarSize"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.AvatarSize", pkg["AvatarSize"]);
   /**
  * Defines background designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.BackgroundDesign
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BackgroundDesign
  */
   pkg["BackgroundDesign"] = {
     /**
@@ -389,12 +389,12 @@ font size - 3rem
  */
     "Translucent": "Translucent",
   };
-  registerEnum("@ui5/webcomponents.BackgroundDesign", pkg["BackgroundDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BackgroundDesign", pkg["BackgroundDesign"]);
   /**
  * Different types of Bar design
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.BarDesign
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BarDesign
  */
   pkg["BarDesign"] = {
     /**
@@ -418,12 +418,12 @@ font size - 3rem
  */
     "FloatingFooter": "FloatingFooter",
   };
-  registerEnum("@ui5/webcomponents.BarDesign", pkg["BarDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BarDesign", pkg["BarDesign"]);
   /**
  * Defines border designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.BorderDesign
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BorderDesign
  */
   pkg["BorderDesign"] = {
     /**
@@ -437,12 +437,12 @@ font size - 3rem
  */
     "None": "None",
   };
-  registerEnum("@ui5/webcomponents.BorderDesign", pkg["BorderDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BorderDesign", pkg["BorderDesign"]);
   /**
  * Different  Breadcrumbs designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.BreadcrumbsDesign
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BreadcrumbsDesign
  */
   pkg["BreadcrumbsDesign"] = {
     /**
@@ -457,12 +457,12 @@ The last item contains only plain text and is not a link.
  */
     "NoCurrentPage": "NoCurrentPage",
   };
-  registerEnum("@ui5/webcomponents.BreadcrumbsDesign", pkg["BreadcrumbsDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BreadcrumbsDesign", pkg["BreadcrumbsDesign"]);
   /**
  * Different Breadcrumbs separators.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.BreadcrumbsSeparator
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BreadcrumbsSeparator
  */
   pkg["BreadcrumbsSeparator"] = {
     /**
@@ -496,12 +496,12 @@ The last item contains only plain text and is not a link.
  */
     "GreaterThan": "GreaterThan",
   };
-  registerEnum("@ui5/webcomponents.BreadcrumbsSeparator", pkg["BreadcrumbsSeparator"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BreadcrumbsSeparator", pkg["BreadcrumbsSeparator"]);
   /**
  * Different BusyIndicator sizes.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.BusyIndicatorSize
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BusyIndicatorSize
  */
   pkg["BusyIndicatorSize"] = {
     /**
@@ -520,12 +520,12 @@ The last item contains only plain text and is not a link.
  */
     "L": "L",
   };
-  registerEnum("@ui5/webcomponents.BusyIndicatorSize", pkg["BusyIndicatorSize"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BusyIndicatorSize", pkg["BusyIndicatorSize"]);
   /**
  * Different BusyIndicator text placements.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.BusyIndicatorTextPlacement
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BusyIndicatorTextPlacement
  */
   pkg["BusyIndicatorTextPlacement"] = {
     /**
@@ -539,12 +539,12 @@ The last item contains only plain text and is not a link.
  */
     "Bottom": "Bottom",
   };
-  registerEnum("@ui5/webcomponents.BusyIndicatorTextPlacement", pkg["BusyIndicatorTextPlacement"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BusyIndicatorTextPlacement", pkg["BusyIndicatorTextPlacement"]);
   /**
  * Button accessible roles.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ButtonAccessibleRole
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ButtonAccessibleRole
  */
   pkg["ButtonAccessibleRole"] = {
     /**
@@ -558,12 +558,12 @@ The last item contains only plain text and is not a link.
  */
     "Link": "Link",
   };
-  registerEnum("@ui5/webcomponents.ButtonAccessibleRole", pkg["ButtonAccessibleRole"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ButtonAccessibleRole", pkg["ButtonAccessibleRole"]);
   /**
  * Determines where the badge will be placed and how it will be styled.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ButtonBadgeDesign
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ButtonBadgeDesign
  */
   pkg["ButtonBadgeDesign"] = {
     /**
@@ -584,12 +584,12 @@ The last item contains only plain text and is not a link.
  */
     "AttentionDot": "AttentionDot",
   };
-  registerEnum("@ui5/webcomponents.ButtonBadgeDesign", pkg["ButtonBadgeDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ButtonBadgeDesign", pkg["ButtonBadgeDesign"]);
   /**
  * Different Button designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ButtonDesign
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ButtonDesign
  */
   pkg["ButtonDesign"] = {
     /**
@@ -623,12 +623,12 @@ The last item contains only plain text and is not a link.
  */
     "Attention": "Attention",
   };
-  registerEnum("@ui5/webcomponents.ButtonDesign", pkg["ButtonDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ButtonDesign", pkg["ButtonDesign"]);
   /**
  * Determines if the button has special form-related functionality.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ButtonType
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ButtonType
  */
   pkg["ButtonType"] = {
     /**
@@ -647,12 +647,12 @@ The last item contains only plain text and is not a link.
  */
     "Reset": "Reset",
   };
-  registerEnum("@ui5/webcomponents.ButtonType", pkg["ButtonType"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ButtonType", pkg["ButtonType"]);
   /**
  * Enum for calendar legend items&#x27; types.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.CalendarLegendItemType
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CalendarLegendItemType
  */
   pkg["CalendarLegendItemType"] = {
     /**
@@ -771,12 +771,12 @@ The last item contains only plain text and is not a link.
  */
     "Type20": "Type20",
   };
-  registerEnum("@ui5/webcomponents.CalendarLegendItemType", pkg["CalendarLegendItemType"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CalendarLegendItemType", pkg["CalendarLegendItemType"]);
   /**
  * Different Calendar selection mode.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.CalendarSelectionMode
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CalendarSelectionMode
  */
   pkg["CalendarSelectionMode"] = {
     /**
@@ -795,7 +795,7 @@ The last item contains only plain text and is not a link.
  */
     "Range": "Range",
   };
-  registerEnum("@ui5/webcomponents.CalendarSelectionMode", pkg["CalendarSelectionMode"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CalendarSelectionMode", pkg["CalendarSelectionMode"]);
   /**
  * The &lt;code&gt;CalendarWeekNumbering&lt;/code&gt; enum defines how to calculate calendar weeks. Each
 value defines:
@@ -803,7 +803,7 @@ value defines:
 - The first week of the year.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.CalendarWeekNumbering
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CalendarWeekNumbering
  */
   pkg["CalendarWeekNumbering"] = {
     /**
@@ -835,12 +835,12 @@ Sunday is first day of the week, the week containing January 1st is first week o
  */
     "WesternTraditional": "WesternTraditional",
   };
-  registerEnum("@ui5/webcomponents.CalendarWeekNumbering", pkg["CalendarWeekNumbering"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CalendarWeekNumbering", pkg["CalendarWeekNumbering"]);
   /**
  * Different Carousel arrows placement.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.CarouselArrowsPlacement
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CarouselArrowsPlacement
  */
   pkg["CarouselArrowsPlacement"] = {
     /**
@@ -854,12 +854,12 @@ Sunday is first day of the week, the week containing January 1st is first week o
  */
     "Navigation": "Navigation",
   };
-  registerEnum("@ui5/webcomponents.CarouselArrowsPlacement", pkg["CarouselArrowsPlacement"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CarouselArrowsPlacement", pkg["CarouselArrowsPlacement"]);
   /**
  * Different Carousel page indicator types.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.CarouselPageIndicatorType
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CarouselPageIndicatorType
  */
   pkg["CarouselPageIndicatorType"] = {
     /**
@@ -874,12 +874,12 @@ If there are more pages, the page indicator will switch to displaying the curren
  */
     "Numeric": "Numeric",
   };
-  registerEnum("@ui5/webcomponents.CarouselPageIndicatorType", pkg["CarouselPageIndicatorType"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CarouselPageIndicatorType", pkg["CarouselPageIndicatorType"]);
   /**
  * Different filtering types of the ComboBox.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ComboBoxFilter
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ComboBoxFilter
  */
   pkg["ComboBoxFilter"] = {
     /**
@@ -903,12 +903,12 @@ If there are more pages, the page indicator will switch to displaying the curren
  */
     "None": "None",
   };
-  registerEnum("@ui5/webcomponents.ComboBoxFilter", pkg["ComboBoxFilter"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ComboBoxFilter", pkg["ComboBoxFilter"]);
   /**
  * Overflow Mode.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ExpandableTextOverflowMode
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ExpandableTextOverflowMode
  */
   pkg["ExpandableTextOverflowMode"] = {
     /**
@@ -922,12 +922,12 @@ If there are more pages, the page indicator will switch to displaying the curren
  */
     "Popover": "Popover",
   };
-  registerEnum("@ui5/webcomponents.ExpandableTextOverflowMode", pkg["ExpandableTextOverflowMode"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ExpandableTextOverflowMode", pkg["ExpandableTextOverflowMode"]);
   /**
  * Different Button designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.FormItemSpacing
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.FormItemSpacing
  */
   pkg["FormItemSpacing"] = {
     /**
@@ -941,12 +941,12 @@ If there are more pages, the page indicator will switch to displaying the curren
  */
     "Large": "Large",
   };
-  registerEnum("@ui5/webcomponents.FormItemSpacing", pkg["FormItemSpacing"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.FormItemSpacing", pkg["FormItemSpacing"]);
   /**
  * Different types of Highlight .
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.Highlight
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.Highlight
  */
   pkg["Highlight"] = {
     /**
@@ -975,12 +975,12 @@ If there are more pages, the page indicator will switch to displaying the curren
  */
     "Information": "Information",
   };
-  registerEnum("@ui5/webcomponents.Highlight", pkg["Highlight"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.Highlight", pkg["Highlight"]);
   /**
  * Different Icon semantic designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.IconDesign
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IconDesign
  */
   pkg["IconDesign"] = {
     /**
@@ -1024,12 +1024,12 @@ If there are more pages, the page indicator will switch to displaying the curren
  */
     "Positive": "Positive",
   };
-  registerEnum("@ui5/webcomponents.IconDesign", pkg["IconDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IconDesign", pkg["IconDesign"]);
   /**
  * Different Icon modes.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.IconMode
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IconMode
  */
   pkg["IconMode"] = {
     /**
@@ -1053,12 +1053,12 @@ This mode also supports focus and press handling to enhance interactivity.
  */
     "Interactive": "Interactive",
   };
-  registerEnum("@ui5/webcomponents.IconMode", pkg["IconMode"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IconMode", pkg["IconMode"]);
   /**
  * Different input types.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.InputType
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.InputType
  */
   pkg["InputType"] = {
     /**
@@ -1097,17 +1097,21 @@ This mode also supports focus and press handling to enhance interactivity.
  */
     "Search": "Search",
   };
+<<<<<<< HEAD
   registerEnum("@ui5/webcomponents.InputType", pkg["InputType"]);
   pkg["InteractiveAreaSize"] = {
     "Normal": "Normal",
     "Large": "Large",
   };
   registerEnum("@ui5/webcomponents.InteractiveAreaSize", pkg["InteractiveAreaSize"]);
+=======
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.InputType", pkg["InputType"]);
+>>>>>>> 9f1d24f5 (feat(ui5-tooling-modules): first part of namespacing for classes and jsdoc)
   /**
  * Link accessible roles.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.LinkAccessibleRole
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.LinkAccessibleRole
  */
   pkg["LinkAccessibleRole"] = {
     /**
@@ -1121,12 +1125,12 @@ This mode also supports focus and press handling to enhance interactivity.
  */
     "Button": "Button",
   };
-  registerEnum("@ui5/webcomponents.LinkAccessibleRole", pkg["LinkAccessibleRole"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.LinkAccessibleRole", pkg["LinkAccessibleRole"]);
   /**
  * Different link designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.LinkDesign
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.LinkDesign
  */
   pkg["LinkDesign"] = {
     /**
@@ -1145,12 +1149,12 @@ This mode also supports focus and press handling to enhance interactivity.
  */
     "Emphasized": "Emphasized",
   };
-  registerEnum("@ui5/webcomponents.LinkDesign", pkg["LinkDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.LinkDesign", pkg["LinkDesign"]);
   /**
  * List accessible roles.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ListAccessibleRole
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListAccessibleRole
  */
   pkg["ListAccessibleRole"] = {
     /**
@@ -1174,12 +1178,12 @@ This mode also supports focus and press handling to enhance interactivity.
  */
     "ListBox": "ListBox",
   };
-  registerEnum("@ui5/webcomponents.ListAccessibleRole", pkg["ListAccessibleRole"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListAccessibleRole", pkg["ListAccessibleRole"]);
   /**
  * Different list growing modes.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ListGrowingMode
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListGrowingMode
  */
   pkg["ListGrowingMode"] = {
     /**
@@ -1199,12 +1203,12 @@ at the bottom.
  */
     "None": "None",
   };
-  registerEnum("@ui5/webcomponents.ListGrowingMode", pkg["ListGrowingMode"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListGrowingMode", pkg["ListGrowingMode"]);
   /**
  * ListItem accessible roles.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ListItemAccessibleRole
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListItemAccessibleRole
  */
   pkg["ListItemAccessibleRole"] = {
     /**
@@ -1233,12 +1237,12 @@ at the bottom.
  */
     "None": "None",
   };
-  registerEnum("@ui5/webcomponents.ListItemAccessibleRole", pkg["ListItemAccessibleRole"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListItemAccessibleRole", pkg["ListItemAccessibleRole"]);
   /**
  * Different list item types.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ListItemType
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListItemType
  */
   pkg["ListItemType"] = {
     /**
@@ -1262,12 +1266,12 @@ at the bottom.
  */
     "Navigation": "Navigation",
   };
-  registerEnum("@ui5/webcomponents.ListItemType", pkg["ListItemType"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListItemType", pkg["ListItemType"]);
   /**
  * Different list selection modes.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ListSelectionMode
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListSelectionMode
  */
   pkg["ListSelectionMode"] = {
     /**
@@ -1308,12 +1312,12 @@ at the bottom.
  */
     "Delete": "Delete",
   };
-  registerEnum("@ui5/webcomponents.ListSelectionMode", pkg["ListSelectionMode"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListSelectionMode", pkg["ListSelectionMode"]);
   /**
  * Different types of list items separators.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ListSeparator
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListSeparator
  */
   pkg["ListSeparator"] = {
     /**
@@ -1333,12 +1337,12 @@ Note: This enumeration depends on the theme.
  */
     "None": "None",
   };
-  registerEnum("@ui5/webcomponents.ListSeparator", pkg["ListSeparator"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListSeparator", pkg["ListSeparator"]);
   /**
  * MessageStrip designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.MessageStripDesign
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.MessageStripDesign
  */
   pkg["MessageStripDesign"] = {
     /**
@@ -1372,12 +1376,12 @@ Note: This enumeration depends on the theme.
  */
     "ColorSet2": "ColorSet2",
   };
-  registerEnum("@ui5/webcomponents.MessageStripDesign", pkg["MessageStripDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.MessageStripDesign", pkg["MessageStripDesign"]);
   /**
  * Different notification list growing modes.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.NotificationListGrowingMode
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.NotificationListGrowingMode
  */
   pkg["NotificationListGrowingMode"] = {
     /**
@@ -1392,12 +1396,12 @@ at the bottom.
  */
     "None": "None",
   };
-  registerEnum("@ui5/webcomponents.NotificationListGrowingMode", pkg["NotificationListGrowingMode"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.NotificationListGrowingMode", pkg["NotificationListGrowingMode"]);
   /**
  * Tabs overflow mode in TabContainer.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.OverflowMode
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.OverflowMode
  */
   pkg["OverflowMode"] = {
     /**
@@ -1411,12 +1415,12 @@ at the bottom.
  */
     "StartAndEnd": "StartAndEnd",
   };
-  registerEnum("@ui5/webcomponents.OverflowMode", pkg["OverflowMode"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.OverflowMode", pkg["OverflowMode"]);
   /**
  * Panel accessible roles.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.PanelAccessibleRole
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PanelAccessibleRole
  */
   pkg["PanelAccessibleRole"] = {
     /**
@@ -1438,12 +1442,12 @@ A section of a page, that is important enough to be included in a page summary o
  */
     "Region": "Region",
   };
-  registerEnum("@ui5/webcomponents.PanelAccessibleRole", pkg["PanelAccessibleRole"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PanelAccessibleRole", pkg["PanelAccessibleRole"]);
   /**
  * Popover horizontal align types.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.PopoverHorizontalAlign
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PopoverHorizontalAlign
  */
   pkg["PopoverHorizontalAlign"] = {
     /**
@@ -1467,12 +1471,12 @@ A section of a page, that is important enough to be included in a page summary o
  */
     "Stretch": "Stretch",
   };
-  registerEnum("@ui5/webcomponents.PopoverHorizontalAlign", pkg["PopoverHorizontalAlign"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PopoverHorizontalAlign", pkg["PopoverHorizontalAlign"]);
   /**
  * Popover placements.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.PopoverPlacement
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PopoverPlacement
  */
   pkg["PopoverPlacement"] = {
     /**
@@ -1496,12 +1500,12 @@ A section of a page, that is important enough to be included in a page summary o
  */
     "Bottom": "Bottom",
   };
-  registerEnum("@ui5/webcomponents.PopoverPlacement", pkg["PopoverPlacement"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PopoverPlacement", pkg["PopoverPlacement"]);
   /**
  * Popover vertical align types.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.PopoverVerticalAlign
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PopoverVerticalAlign
  */
   pkg["PopoverVerticalAlign"] = {
     /**
@@ -1525,12 +1529,12 @@ A section of a page, that is important enough to be included in a page summary o
  */
     "Stretch": "Stretch",
   };
-  registerEnum("@ui5/webcomponents.PopoverVerticalAlign", pkg["PopoverVerticalAlign"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PopoverVerticalAlign", pkg["PopoverVerticalAlign"]);
   /**
  * Popup accessible roles.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.PopupAccessibleRole
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PopupAccessibleRole
  */
   pkg["PopupAccessibleRole"] = {
     /**
@@ -1549,12 +1553,12 @@ A section of a page, that is important enough to be included in a page summary o
  */
     "AlertDialog": "AlertDialog",
   };
-  registerEnum("@ui5/webcomponents.PopupAccessibleRole", pkg["PopupAccessibleRole"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PopupAccessibleRole", pkg["PopupAccessibleRole"]);
   /**
  * Different types of Priority.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.Priority
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.Priority
  */
   pkg["Priority"] = {
     /**
@@ -1578,13 +1582,13 @@ A section of a page, that is important enough to be included in a page summary o
  */
     "None": "None",
   };
-  registerEnum("@ui5/webcomponents.Priority", pkg["Priority"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.Priority", pkg["Priority"]);
   /**
  * Types of icon sizes used in the RatingIndicator.
 Provides predefined size categories to ensure consistent scaling and spacing of icons.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.RatingIndicatorSize
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.RatingIndicatorSize
  */
   pkg["RatingIndicatorSize"] = {
     /**
@@ -1604,12 +1608,12 @@ Offers a balanced appearance for most scenarios.
  */
     "L": "L",
   };
-  registerEnum("@ui5/webcomponents.RatingIndicatorSize", pkg["RatingIndicatorSize"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.RatingIndicatorSize", pkg["RatingIndicatorSize"]);
   /**
  * Different SegmentedButton selection modes.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.SegmentedButtonSelectionMode
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.SegmentedButtonSelectionMode
  */
   pkg["SegmentedButtonSelectionMode"] = {
     /**
@@ -1623,12 +1627,12 @@ Offers a balanced appearance for most scenarios.
  */
     "Multiple": "Multiple",
   };
-  registerEnum("@ui5/webcomponents.SegmentedButtonSelectionMode", pkg["SegmentedButtonSelectionMode"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.SegmentedButtonSelectionMode", pkg["SegmentedButtonSelectionMode"]);
   /**
  * Different types of SemanticColor.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.SemanticColor
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.SemanticColor
  */
   pkg["SemanticColor"] = {
     /**
@@ -1657,12 +1661,12 @@ Offers a balanced appearance for most scenarios.
  */
     "Neutral": "Neutral",
   };
-  registerEnum("@ui5/webcomponents.SemanticColor", pkg["SemanticColor"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.SemanticColor", pkg["SemanticColor"]);
   /**
  * Different types of Switch designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.SwitchDesign
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.SwitchDesign
  */
   pkg["SwitchDesign"] = {
     /**
@@ -1676,12 +1680,12 @@ Offers a balanced appearance for most scenarios.
  */
     "Graphical": "Graphical",
   };
-  registerEnum("@ui5/webcomponents.SwitchDesign", pkg["SwitchDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.SwitchDesign", pkg["SwitchDesign"]);
   /**
  * Tab layout of TabContainer.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.TabLayout
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TabLayout
  */
   pkg["TabLayout"] = {
     /**
@@ -1695,12 +1699,12 @@ Offers a balanced appearance for most scenarios.
  */
     "Standard": "Standard",
   };
-  registerEnum("@ui5/webcomponents.TabLayout", pkg["TabLayout"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TabLayout", pkg["TabLayout"]);
   /**
  * Alignment of the &amp;lt;ui5-table-cell&amp;gt; component.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.TableCellHorizontalAlign
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TableCellHorizontalAlign
  */
   pkg["TableCellHorizontalAlign"] = {
     /**
@@ -1729,12 +1733,12 @@ Offers a balanced appearance for most scenarios.
  */
     "Center": "Center",
   };
-  registerEnum("@ui5/webcomponents.TableCellHorizontalAlign", pkg["TableCellHorizontalAlign"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TableCellHorizontalAlign", pkg["TableCellHorizontalAlign"]);
   /**
  * Growing mode of the &amp;lt;ui5-table&amp;gt; component.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.TableGrowingMode
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TableGrowingMode
  */
   pkg["TableGrowingMode"] = {
     /**
@@ -1750,12 +1754,12 @@ Offers a balanced appearance for most scenarios.
  */
     "Scroll": "Scroll",
   };
-  registerEnum("@ui5/webcomponents.TableGrowingMode", pkg["TableGrowingMode"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TableGrowingMode", pkg["TableGrowingMode"]);
   /**
  * Column mode of the &amp;lt;ui5-table&amp;gt; component.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.TableOverflowMode
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TableOverflowMode
  */
   pkg["TableOverflowMode"] = {
     /**
@@ -1769,12 +1773,12 @@ Offers a balanced appearance for most scenarios.
  */
     "Popin": "Popin",
   };
-  registerEnum("@ui5/webcomponents.TableOverflowMode", pkg["TableOverflowMode"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TableOverflowMode", pkg["TableOverflowMode"]);
   /**
  * Selection modes of the &amp;lt;ui5-table&amp;gt; component.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.TableSelectionMode
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TableSelectionMode
  */
   pkg["TableSelectionMode"] = {
     /**
@@ -1793,12 +1797,12 @@ Offers a balanced appearance for most scenarios.
  */
     "Multiple": "Multiple",
   };
-  registerEnum("@ui5/webcomponents.TableSelectionMode", pkg["TableSelectionMode"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TableSelectionMode", pkg["TableSelectionMode"]);
   /**
  * Defines tag design types.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.TagDesign
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TagDesign
  */
   pkg["TagDesign"] = {
     /**
@@ -1837,12 +1841,12 @@ Offers a balanced appearance for most scenarios.
  */
     "Critical": "Critical",
   };
-  registerEnum("@ui5/webcomponents.TagDesign", pkg["TagDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TagDesign", pkg["TagDesign"]);
   /**
  * Predefined sizes for the tag.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.TagSize
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TagSize
  */
   pkg["TagSize"] = {
     /**
@@ -1856,12 +1860,12 @@ Offers a balanced appearance for most scenarios.
  */
     "L": "L",
   };
-  registerEnum("@ui5/webcomponents.TagSize", pkg["TagSize"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TagSize", pkg["TagSize"]);
   /**
  * Empty Indicator Mode.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.TextEmptyIndicatorMode
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TextEmptyIndicatorMode
  */
   pkg["TextEmptyIndicatorMode"] = {
     /**
@@ -1875,12 +1879,12 @@ Offers a balanced appearance for most scenarios.
  */
     "On": "On",
   };
-  registerEnum("@ui5/webcomponents.TextEmptyIndicatorMode", pkg["TextEmptyIndicatorMode"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TextEmptyIndicatorMode", pkg["TextEmptyIndicatorMode"]);
   /**
  * Different types of Title level.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.TitleLevel
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TitleLevel
  */
   pkg["TitleLevel"] = {
     /**
@@ -1914,12 +1918,12 @@ Offers a balanced appearance for most scenarios.
  */
     "H6": "H6",
   };
-  registerEnum("@ui5/webcomponents.TitleLevel", pkg["TitleLevel"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TitleLevel", pkg["TitleLevel"]);
   /**
  * Toast placement.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ToastPlacement
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ToastPlacement
  */
   pkg["ToastPlacement"] = {
     /**
@@ -1969,12 +1973,12 @@ Default placement (no selection)
  */
     "BottomEnd": "BottomEnd",
   };
-  registerEnum("@ui5/webcomponents.ToastPlacement", pkg["ToastPlacement"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ToastPlacement", pkg["ToastPlacement"]);
   /**
  * Defines which direction the items of ui5-toolbar will be aligned.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ToolbarAlign
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ToolbarAlign
  */
   pkg["ToolbarAlign"] = {
     /**
@@ -1988,12 +1992,12 @@ Default placement (no selection)
  */
     "End": "End",
   };
-  registerEnum("@ui5/webcomponents.ToolbarAlign", pkg["ToolbarAlign"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ToolbarAlign", pkg["ToolbarAlign"]);
   /**
  * Defines the available toolbar designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ToolbarDesign
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ToolbarDesign
  */
   pkg["ToolbarDesign"] = {
     /**
@@ -2007,12 +2011,12 @@ Default placement (no selection)
  */
     "Transparent": "Transparent",
   };
-  registerEnum("@ui5/webcomponents.ToolbarDesign", pkg["ToolbarDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ToolbarDesign", pkg["ToolbarDesign"]);
   /**
  * Defines the priority of the toolbar item to go inside overflow popover.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ToolbarItemOverflowBehavior
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ToolbarItemOverflowBehavior
  */
   pkg["ToolbarItemOverflowBehavior"] = {
     /**
@@ -2031,12 +2035,12 @@ Default placement (no selection)
  */
     "AlwaysOverflow": "AlwaysOverflow",
   };
-  registerEnum("@ui5/webcomponents.ToolbarItemOverflowBehavior", pkg["ToolbarItemOverflowBehavior"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ToolbarItemOverflowBehavior", pkg["ToolbarItemOverflowBehavior"]);
   /**
  * Different types of wrapping.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.WrappingType
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.WrappingType
  */
   pkg["WrappingType"] = {
     /**
@@ -2050,18 +2054,18 @@ Default placement (no selection)
  */
     "Normal": "Normal",
   };
-  registerEnum("@ui5/webcomponents.WrappingType", pkg["WrappingType"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.WrappingType", pkg["WrappingType"]);
 
   // Interfaces
   /**
  * Interface for components that represent an avatar and may be slotted in numerous higher-order components such as `ui5-avatar-group`
- * @name @ui5.webcomponents.IAvatarGroupItem
+ * @name ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IAvatarGroupItem
  * @interface
  * @public
  */
   /**
  * Interface for components that may be used as a button inside numerous higher-order components
- * @name @ui5.webcomponents.IButton
+ * @name ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IButton
  * @interface
  * @public
  */
@@ -2069,37 +2073,37 @@ Default placement (no selection)
  * Interface for components that may be slotted inside a `ui5-calendar`.
 
 **Note:** Use with `ui5-date` or `ui5-date-range` as calendar date selection types.
- * @name @ui5.webcomponents.ICalendarSelectedDates
+ * @name ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ICalendarSelectedDates
  * @interface
  * @public
  */
   /**
  * Interface for components that may be used inside a `ui5-color-palette` or `ui5-color-palette-popover`
- * @name @ui5.webcomponents.IColorPaletteItem
+ * @name ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IColorPaletteItem
  * @interface
  * @public
  */
   /**
  * Interface for components that may be slotted inside a `ui5-combobox`
- * @name @ui5.webcomponents.IComboBoxItem
+ * @name ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IComboBoxItem
  * @interface
  * @public
  */
   /**
  * Interface for components that can be slotted inside `ui5-form` as items.
- * @name @ui5.webcomponents.IFormItem
+ * @name ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IFormItem
  * @interface
  * @public
  */
   /**
  * Interface for components that represent an icon, usable in numerous higher-order components
- * @name @ui5.webcomponents.IIcon
+ * @name ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IIcon
  * @interface
  * @public
  */
   /**
  * Interface for components that represent a suggestion item, usable in `ui5-input`
- * @name @ui5.webcomponents.IInputSuggestionItem
+ * @name ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IInputSuggestionItem
  * @interface
  * @public
  */
@@ -2107,25 +2111,25 @@ Default placement (no selection)
  * Interface for components that may be slotted inside a `ui5-menu`.
 
 **Note:** Use with `ui5-menu-item` or `ui5-menu-separator`. Implementing the interface does not guarantee that any other classes can work with the `ui5-menu`.
- * @name @ui5.webcomponents.IMenuItem
+ * @name ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IMenuItem
  * @interface
  * @public
  */
   /**
  * Interface for components that may be slotted inside a `ui5-multi-combobox` as items
- * @name @ui5.webcomponents.IMultiComboBoxItem
+ * @name ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IMultiComboBoxItem
  * @interface
  * @public
  */
   /**
  * Interface for components that may be slotted inside `ui5-segmented-button` as items
- * @name @ui5.webcomponents.ISegmentedButtonItem
+ * @name ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ISegmentedButtonItem
  * @interface
  * @public
  */
   /**
  * Interface for components that may be slotted inside `ui5-select` as options
- * @name @ui5.webcomponents.IOption
+ * @name ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IOption
  * @interface
  * @public
  */
@@ -2133,20 +2137,20 @@ Default placement (no selection)
  * Interface for components that may be slotted inside `ui5-tabcontainer` as items
 
 **Note:** Use directly `ui5-tab` or `ui5-tab-seprator`. Implementing the interface does not guarantee that the class can work as a tab.
- * @name @ui5.webcomponents.ITab
+ * @name ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ITab
  * @interface
  * @public
  */
   /**
  * Interface for components that can be slotted inside the `features` slot of the `ui5-table`.
- * @name @ui5.webcomponents.ITableFeature
+ * @name ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ITableFeature
  * @interface
  * @public
  */
   /**
  * Interface for components that can be slotted inside the `features` slot of the `ui5-table`
 and provide growing/data loading functionality.
- * @name @ui5.webcomponents.ITableGrowing
+ * @name ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ITableGrowing
  * @interface
  * @public
  */

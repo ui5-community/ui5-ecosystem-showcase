@@ -11,6 +11,15 @@ const camelize = (str) => {
 };
 
 /**
+ * Converts slashes in a string to dots.
+ * @param {string} s the slahed string
+ * @returns {string} the dotted string
+ */
+function slash2dot(s) {
+	return s?.replace(/\//g, ".");
+}
+
+/**
  * Calculates the name for the UI5 level getter function based on the web components native function name.
  * @param {string} functionName the name of the web components native function
  * @returns the generated UI5 getter function name
@@ -32,11 +41,13 @@ let _classAliases = {};
 class RegistryEntry {
 	#customElementsMetadata = {};
 
-	constructor({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version }) {
+	constructor({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, moduleBasePath, version }) {
 		this.#customElementsMetadata = customElementsMetadata;
 		this.namespace = namespace;
 		this.scopeSuffix = scopeSuffix;
 		this.npmPackagePath = npmPackagePath;
+		this.moduleBasePath = moduleBasePath;
+		this.qualifiedNamespace = `${slash2dot(this.moduleBasePath)}.${slash2dot(this.namespace)}`;
 		this.version = version;
 
 		this.customElements = {};
@@ -48,7 +59,7 @@ class RegistryEntry {
 
 		JSDocSerializer.prepare(this);
 
-		console.log(`Metadata processed for package ${namespace}.`);
+		console.log(`Metadata processed for package ${namespace}. Module base path: ${moduleBasePath}.`);
 	}
 
 	#processMetadata() {
@@ -69,6 +80,9 @@ class RegistryEntry {
 			//     Note: The order is important! We need to connect the superclass and create its metadata first.
 			//           We need a fully constructed parent chain later for ensuring UI5 defaults (refer to #ensureDefaults)
 			this.#createUI5Metadata(classDef);
+
+			// TODO: Find a better place for the name calculation
+			classDef._ui5ClassName = `${this.qualifiedNamespace}.${classDef.name}`;
 		});
 
 		// [4] prepare enum objects
@@ -144,7 +158,7 @@ class RegistryEntry {
 	}
 
 	prefixns(str) {
-		return `${this.namespace}.${str}`;
+		return `${this.qualifiedNamespace}.${str}`;
 	}
 
 	#calculateScopedTagName(classDef) {
@@ -677,6 +691,7 @@ class RegistryEntry {
 	#createUI5Metadata(classDef) {
 		const ui5metadata = (classDef._ui5metadata = {
 			namespace: this.namespace,
+			qualifiedNamespace: this.qualifiedNamespace,
 			tag: classDef.scopedTagName || classDef.tagName,
 			interfaces: [],
 			properties: {},
@@ -751,10 +766,10 @@ class RegistryEntry {
 }
 
 const WebComponentRegistry = {
-	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version }) {
+	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, moduleBasePath }) {
 		let entry = _registry[namespace];
 		if (!entry) {
-			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version });
+			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, moduleBasePath, version });
 
 			// track all classes also via their module name,
 			// so we can access them faster during resource resolution later on

@@ -1104,7 +1104,6 @@ module.exports = function (log, projectInfo) {
 						resolveModule: function (moduleName) {
 							return that.resolveModule(moduleName, { cwd, depPaths });
 						},
-						contextNamespace: projectInfo.namespace, // app|lib namespace used for class names & JSDoc references
 						pkgJson: projectInfo.pkgJson, // the current project package.json
 						getPackageJson, // use the cached package.json if possible
 						framework: projectInfo?.framework,
@@ -1305,6 +1304,12 @@ module.exports = function (log, projectInfo) {
 							);
 						}
 						const nameOfModules = modules.map((module) => module.name);
+
+						options.pluginOptions ??= {};
+						options.pluginOptions.webcomponents ??= {};
+						// TODO: Not hard-code "thirdparty", evaluate addToNamespace
+						options.pluginOptions.webcomponents.moduleBasePath = `${path.posix.join(projectInfo.namespace, "thirdparty")}`;
+
 						//const millis = Date.now();
 						const output = await that.createBundle(nameOfModules, options);
 						//console.log(`createBundle overall duration: ${Date.now() - millis}ms`);

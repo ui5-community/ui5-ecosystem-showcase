@@ -8,9 +8,9 @@ const { compile } = require("handlebars");
 
 const WebComponentRegistry = require("./utils/WebComponentRegistry");
 
-module.exports = function ({ log, resolveModule, contextNamespace, pkgJson, getPackageJson, framework, options } = {}) {
+module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framework, options } = {}) {
 	// derive the configuration from the provided options
-	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets } = Object.assign(
+	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, moduleBasePath } = Object.assign(
 		{
 			skip: false,
 			scoping: true,
@@ -127,7 +127,7 @@ module.exports = function ({ log, resolveModule, contextNamespace, pkgJson, getP
 					registryEntry = WebComponentRegistry.register({
 						customElementsMetadata,
 						namespace: npmPackage,
-						contextNamespace,
+						moduleBasePath,
 						scopeSuffix: ui5WebCScopeSuffix,
 						npmPackagePath,
 						version: packageJson.version,
@@ -246,7 +246,7 @@ module.exports = function ({ log, resolveModule, contextNamespace, pkgJson, getP
 			}
 			// Extend the superclass with the WebComponent class and export it
 			const ui5Metadata = clazz._ui5metadata;
-			const ui5Class = `${ui5Metadata.namespace}.${clazz.name}`;
+			const ui5ClassName = clazz._ui5ClassName;
 			const namespace = ui5Metadata.namespace;
 
 			const metadata = JSDocSerializer.serializeMetadata(clazz);
@@ -281,7 +281,7 @@ module.exports = function ({ log, resolveModule, contextNamespace, pkgJson, getP
 			// generate the WebComponentControl code
 			const rootPath = `${posix.relative(dirname(resolvedSource), "") || "."}/`;
 			const code = webcTmplFnUI5Control({
-				ui5Class,
+				ui5ClassName: ui5ClassName,
 				jsDocClassHeader,
 				namespace: `${rootPath}${namespace}`,
 				metadata,
