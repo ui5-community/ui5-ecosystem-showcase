@@ -39,7 +39,7 @@ sap.ui.define([
  * Different types of AnimationMode.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents-base.AnimationMode
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.AnimationMode
  */
   pkg["AnimationMode"] = {
     /**
@@ -63,12 +63,12 @@ sap.ui.define([
  */
     "None": "None",
   };
-  registerEnum("@ui5/webcomponents-base.AnimationMode", pkg["AnimationMode"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.AnimationMode", pkg["AnimationMode"]);
   /**
  * Different calendar types.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents-base.CalendarType
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.CalendarType
  */
   pkg["CalendarType"] = {
     /**
@@ -97,12 +97,12 @@ sap.ui.define([
  */
     "Persian": "Persian",
   };
-  registerEnum("@ui5/webcomponents-base.CalendarType", pkg["CalendarType"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.CalendarType", pkg["CalendarType"]);
   /**
  * Different behavior for ItemNavigation.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents-base.ItemNavigationBehavior
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.ItemNavigationBehavior
  */
   pkg["ItemNavigationBehavior"] = {
     /**
@@ -116,12 +116,12 @@ sap.ui.define([
  */
     "Cyclic": "Cyclic",
   };
-  registerEnum("@ui5/webcomponents-base.ItemNavigationBehavior", pkg["ItemNavigationBehavior"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.ItemNavigationBehavior", pkg["ItemNavigationBehavior"]);
   /**
  * Placements of a moved element relative to a target element.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents-base.MovePlacement
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.MovePlacement
  */
   pkg["MovePlacement"] = {
     /**
@@ -140,12 +140,12 @@ sap.ui.define([
  */
     "After": "After",
   };
-  registerEnum("@ui5/webcomponents-base.MovePlacement", pkg["MovePlacement"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.MovePlacement", pkg["MovePlacement"]);
   /**
  * Different navigation modes for ItemNavigation.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents-base.NavigationMode
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.NavigationMode
  */
   pkg["NavigationMode"] = {
     /**
@@ -169,12 +169,12 @@ sap.ui.define([
  */
     "Paging": "Paging",
   };
-  registerEnum("@ui5/webcomponents-base.NavigationMode", pkg["NavigationMode"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.NavigationMode", pkg["NavigationMode"]);
   /**
  * Different types of ValueStates.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents-base.ValueState
+ * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.ValueState
  */
   pkg["ValueState"] = {
     /**
@@ -203,7 +203,7 @@ sap.ui.define([
  */
     "Information": "Information",
   };
-  registerEnum("@ui5/webcomponents-base.ValueState", pkg["ValueState"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.ValueState", pkg["ValueState"]);
 
   // Interfaces
 

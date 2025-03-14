@@ -51,14 +51,14 @@ The user can use the following keyboard shortcuts to toggle the checked state of
  * @public
  * @alias @ui5.webcomponents.CheckBox
  */
-  const WrapperClass = WebComponentBaseClass.extend("@ui5/webcomponents.CheckBox", {
+  const WrapperClass = WebComponentBaseClass.extend("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CheckBox", {
     metadata:
 {
   "tag": "ui5-checkbox",
 
-  "namespace": "@ui5/webcomponents",
+  "namespace": "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents",
 
-  "designtime": "@ui5/webcomponents/designtime/CheckBox.designtime",
+  "designtime": "ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents/designtime/CheckBox.designtime",
 
   "interfaces": ["sap.ui.core.IFormContent"],
 
@@ -122,14 +122,14 @@ pressing the Enter or Space key.
 /**
  * Defines the value state of the component.
  */
-    "valueState": {"type":"@ui5/webcomponents-base.ValueState","mapping":"property","defaultValue":"None"},
+    "valueState": {"type":"ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.ValueState","mapping":"property","defaultValue":"None"},
 /**
  * Defines whether the component text wraps when there is not enough space.
 
 **Note:** for option "Normal" the text will wrap and the words will not be broken based on hyphenation.
 **Note:** for option "None" the text will be truncated with an ellipsis.
  */
-    "wrappingType": {"type":"@ui5/webcomponents.WrappingType","mapping":"property","defaultValue":"Normal"},
+    "wrappingType": {"type":"ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.WrappingType","mapping":"property","defaultValue":"Normal"},
 /**
  * Determines the name by which the component will be identified upon submission in an HTML form.
 
