@@ -1,11 +1,13 @@
 /*!
  * ${copyright}
  */
-sap.ui.define([{{#if isBaseLib}}
+sap.ui.define([
+	"{{webcPackage}}",{{#if isBaseLib}}
   "sap/ui/core/webc/WebComponent",{{/if}}{{#if hasEnums}}
   "sap/ui/base/DataType",{{/if}}{{#each dependencies}}
   "{{this}}",{{/each}}
-], function({{#if isBaseLib}}
+], function(
+	WebCPackage,{{#if isBaseLib}}
   WebComponent,{{/if}}{{#if hasEnums}}
   DataType,{{/if}}
 ) {
@@ -18,6 +20,18 @@ sap.ui.define([{{#if isBaseLib}}
     "_ui5metadata":
 {{{metadata}}}
   };
+
+	if (WebCPackage) {
+		Object.keys(WebCPackage).forEach((key) => {
+			if (key !== "default") {
+				pkg[key] = WebCPackage[key];
+			} else {
+				if (typeof WebCPackage[key] === "object") {
+					Object.assign(pkg, WebCPackage[key]);
+				}
+			}
+		});
+	}
 
   {{#each enums}}
   pkg["{{@key}}"] = {
@@ -38,5 +52,5 @@ sap.ui.define([{{#if isBaseLib}}
 	// ====================
 	{{/if}}
 
-  return pkg;
+	return pkg;
 });
