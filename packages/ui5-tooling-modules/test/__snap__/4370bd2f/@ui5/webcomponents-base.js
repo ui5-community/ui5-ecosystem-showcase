@@ -2,9 +2,11 @@
  * ${copyright}
  */
 sap.ui.define([
+	"ui5/ecosystem/demo/app/resources/webcomponents-base",
   "sap/ui/core/webc/WebComponent",
   "sap/ui/base/DataType",
 ], function(
+	WebCPackage,
   WebComponent,
   DataType,
 ) {
@@ -33,6 +35,18 @@ sap.ui.define([
   "rootPath": "ui5/ecosystem/demo/app/resources/"
 }
   };
+
+	if (WebCPackage) {
+		Object.keys(WebCPackage).forEach((key) => {
+			if (key !== "default") {
+				pkg[key] = WebCPackage[key];
+			} else {
+				if (typeof WebCPackage[key] === "object") {
+					Object.assign(pkg, WebCPackage[key]);
+				}
+			}
+		});
+	}
 
   pkg["AnimationMode"] = {
     "Full": "Full",
@@ -143,5 +157,5 @@ if (!WebComponent.___mapValueState__isPatched) {
 	// MONKEY PATCHES END
 	// ====================
 
-  return pkg;
+	return pkg;
 });

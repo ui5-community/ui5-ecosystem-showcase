@@ -2,7 +2,9 @@
  * ${copyright}
  */
 sap.ui.define([
+	"ui5/ecosystem/demo/tsapp/resources/container",
 ], function(
+	WebCPackage,
 ) {
   "use strict";
 
@@ -25,7 +27,19 @@ sap.ui.define([
 }
   };
 
+	if (WebCPackage) {
+		Object.keys(WebCPackage).forEach((key) => {
+			if (key !== "default") {
+				pkg[key] = WebCPackage[key];
+			} else {
+				if (typeof WebCPackage[key] === "object") {
+					Object.assign(pkg, WebCPackage[key]);
+				}
+			}
+		});
+	}
 
 
-  return pkg;
+
+	return pkg;
 });

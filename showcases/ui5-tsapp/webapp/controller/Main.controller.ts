@@ -8,8 +8,7 @@ import { Chart } from "chart.js";
 import capitalize from "ui5/ecosystem/demo/tslib/util/capitalize";
 import camelizeSomething from "../utils/camelizeSomething";
 import WebComponent from "sap/ui/core/webc/WebComponent";
-import {} from /* TODO: default as LuigiEvents */ "@luigi-project/container";
-//import type LuigiEvents from "@luigi-project/container";
+import LuigiEvents, { LuigiContainer } from "@luigi-project/container";
 
 function limitString(string = "", limit = 40) {
 	return string.substring(0, limit);
@@ -67,7 +66,8 @@ export default class Main extends Controller {
 	public onInit(): void {
 		// TODO: add and remove event handler
 		const oLuigi = this.byId("luigi") as WebComponent;
-		oLuigi.attachBrowserEvent("show-alert-request", (event: Event) => {
+		console.log(`The LuigiContainer as named export is no Web Component!`, LuigiContainer);
+		oLuigi.attachBrowserEvent(LuigiEvents.ALERT_REQUEST, (event: Event) => {
 			const detail = (event as CustomEvent).detail as { text: string };
 			MessageBox.show(`Hello World, ${detail.text}!`);
 		});
