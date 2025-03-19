@@ -1,4 +1,4 @@
-const { join, dirname, posix } = require("path");
+const { join, dirname, extname, posix } = require("path");
 const { readFileSync, existsSync } = require("fs");
 const { createHash } = require("crypto");
 
@@ -463,6 +463,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			for (const file in bundle) {
 				const chunk = bundle[file];
 				if (chunk.type === "chunk" && chunk.isEntry) {
+					const chunkName = chunk.fileName.slice(0, extname(chunk.fileName).length * -1);
 					const moduleInfo = this.getModuleInfo(chunk.facadeModuleId);
 					let type = moduleInfo?.meta?.ui5?.type;
 					if (type) {
@@ -475,11 +476,11 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 							*/
 							for (const source of sources) {
 								// emit the Web Component wrapper
-								buildWrapper({ source, clazz, chunkName: chunk.name }, this.emitFile);
+								buildWrapper({ source, clazz, chunkName }, this.emitFile);
 							}
 						} else if (type === "package") {
 							const { source, package } = moduleInfo.meta.ui5;
-							buildPackage({ source, package, chunkName: chunk.name }, this.emitFile);
+							buildPackage({ source, package, chunkName }, this.emitFile);
 						}
 						// mark the chunk as not an entry to avoid it being moved to
 						// the proper namespace by the post-processing in utils.js
