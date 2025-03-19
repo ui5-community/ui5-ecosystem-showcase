@@ -1006,8 +1006,8 @@ importers:
   showcases/ui5-tsapp:
     dependencies:
       '@luigi-project/container':
-        specifier: 1.5.0
-        version: 1.5.0
+        specifier: 1.6.0
+        version: 1.6.0
       '@stomp/stompjs':
         specifier: ^7.0.0
         version: 7.0.0
@@ -2269,8 +2269,8 @@ packages:
     resolution: {integrity: sha512-/gKJun8NNiWGZJkGzI/Ragc53cOdcLNdzjLaIa+GEjguQs0ulsurx8WN0jijdK9yPqDvziX995sMRLyLt1uZMQ==}
     engines: {node: '>= 0.4'}
 
-  '@luigi-project/container@1.5.0':
-    resolution: {integrity: sha512-ddgmkl8IIxoFd0pvyyld/4bU5RGveGa9Ulr+aJUa8Q+k+X7b4LB4kb+EeIuh3Ui0X4zsjrdAuSF9Yt8apyIVpg==}
+  '@luigi-project/container@1.6.0':
+    resolution: {integrity: sha512-vKatjbZCPdKMbzyjait3shcF3L/96UA6ytiB7W69/BGFfRa1/u4hsD87RKTdoKG3Ny0UpyUWq232mAd2GX+DRA==}
 
   '@mapbox/node-pre-gyp@1.0.11':
     resolution: {integrity: sha512-Yhlar6v9WQgUp/He7BdgzOz8lqMQ8sU+jkCq7Wx8Myc5YFJLbEe7lgui/V7G1qB1DJykHSGwreceSaD60Y0PUQ==}
@@ -11422,7 +11422,7 @@ snapshots:
     dependencies:
       call-bind: 1.0.7
 
-  '@luigi-project/container@1.5.0': {}
+  '@luigi-project/container@1.6.0': {}
 
   '@mapbox/node-pre-gyp@1.0.11(encoding@0.1.13)':
     dependencies:

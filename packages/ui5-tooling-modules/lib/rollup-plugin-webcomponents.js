@@ -192,7 +192,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 	// =========================================================================
 
 	const emittedPackages = [];
-	const buildPackage = ({ source, package }, emitFile) => {
+	const buildPackage = ({ source, package, chunkName }, emitFile) => {
 		if (emittedPackages.includes(source)) {
 			return;
 		}
@@ -219,6 +219,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 		const isBaseLib = namespace === "@ui5/webcomponents-base";
 
 		// generate the library code
+		const webcPackage = chunkName && posix.relative(dirname(source), chunkName);
 		const code = webcTmplFnUI5Package({
 			isBaseLib,
 			metadata,
@@ -227,6 +228,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			enums: package.enums,
 			dependencies: package.dependencies?.map((dep) => `${rootPath}${dep}`),
 			monkeyPatches: isBaseLib ? webcTmplMonkeyPatches.join("\n") : "",
+			webcPackage,
 		});
 
 		emitFile({
@@ -446,6 +448,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 					enrichBusyIndicator,
 					nonUI5TagsToRegister,
 					assetsModule,
+					webcPackageModule: resolveModule(namespace),
 				});
 				return code;
 			}
@@ -464,7 +467,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 					let type = moduleInfo?.meta?.ui5?.type;
 					if (type) {
 						if (type === "webcomponent") {
-							const { clazz, sources } = moduleInfo.meta.ui5;
+							const { sources, clazz } = moduleInfo.meta.ui5;
 							/*
 							if (sources.length > 1) {
 								log.warn(`The Web Component "${clazz.name}" has multiple entry points: ${sources.join(", ")}`);
@@ -476,7 +479,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 							}
 						} else if (type === "package") {
 							const { source, package } = moduleInfo.meta.ui5;
-							buildPackage({ source, package }, this.emitFile);
+							buildPackage({ source, package, chunkName: chunk.name }, this.emitFile);
 						}
 						// mark the chunk as not an entry to avoid it being moved to
 						// the proper namespace by the post-processing in utils.js

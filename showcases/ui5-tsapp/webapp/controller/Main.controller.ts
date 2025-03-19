@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import Controller from "sap/ui/core/mvc/Controller";
 import MessageBox from "sap/m/MessageBox";
 import { version, utils, write } from "xlsx";
@@ -7,6 +7,8 @@ import { Client } from "@stomp/stompjs";
 import { Chart } from "chart.js";
 import capitalize from "ui5/ecosystem/demo/tslib/util/capitalize";
 import camelizeSomething from "../utils/camelizeSomething";
+import WebComponent from "sap/ui/core/webc/WebComponent";
+import LuigiEvents, { LuigiContainer } from "@luigi-project/container";
 
 function limitString(string = "", limit = 40) {
 	return string.substring(0, limit);
@@ -61,6 +63,16 @@ import("moment")
  * @namespace ui5.ecosystem.demo.tsapp.controller
  */
 export default class Main extends Controller {
+	public onInit(): void {
+		// TODO: add and remove event handler
+		const oLuigi = this.byId("luigi") as WebComponent;
+		console.log(`The LuigiContainer as named export is no Web Component!`, LuigiContainer);
+		oLuigi.attachBrowserEvent(LuigiEvents.ALERT_REQUEST, (event: Event) => {
+			const detail = (event as CustomEvent).detail as { text: string };
+			MessageBox.show(`Hello World, ${detail.text}!`);
+		});
+	}
+
 	public sayHello(): void {
 		// using regular imports
 		const text: string = capitalize("ui5");

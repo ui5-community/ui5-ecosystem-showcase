@@ -2,9 +2,11 @@
  * ${copyright}
  */
 sap.ui.define([
+	"ui5/ecosystem/demo/app/resources/webcomponents",
   "sap/ui/base/DataType",
   "ui5/ecosystem/demo/app/resources/@ui5/webcomponents-base",
 ], function(
+	WebCPackage,
   DataType,
 ) {
   "use strict";
@@ -189,6 +191,18 @@ sap.ui.define([
   "rootPath": "ui5/ecosystem/demo/app/resources/"
 }
   };
+
+	if (WebCPackage) {
+		Object.keys(WebCPackage).forEach((key) => {
+			if (key !== "default") {
+				pkg[key] = WebCPackage[key];
+			} else {
+				if (typeof WebCPackage[key] === "object") {
+					Object.assign(pkg, WebCPackage[key]);
+				}
+			}
+		});
+	}
 
   pkg["AvatarColorScheme"] = {
     "Accent1": "Accent1",
@@ -623,5 +637,5 @@ sap.ui.define([
   registerEnum("@ui5/webcomponents.WrappingType", pkg["WrappingType"]);
 
 
-  return pkg;
+	return pkg;
 });

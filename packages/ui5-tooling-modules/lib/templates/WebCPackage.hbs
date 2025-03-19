@@ -25,3 +25,8 @@ scopingRules.include.push(/^{{{this}}}$/);
 {{/each}}
 setCustomElementsScopingRules(scopingRules);
 {{/if}}
+
+{{#if webcPackageModule}}
+import * as PackageModule from "{{webcPackageModule}}";
+export default PackageModule;
+{{/if}}
