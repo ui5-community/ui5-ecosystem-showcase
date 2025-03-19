@@ -87,7 +87,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   		  var diff = a.sortIndex - b.sortIndex;
   		  return 0 !== diff ? diff : a.id - b.id;
   		}
-  		exports.unstable_now = undefined;
+  		exports.unstable_now = void 0;
   		if ("object" === typeof performance && "function" === typeof performance.now) {
   		  var localPerformance = performance;
   		  exports.unstable_now = function () {
@@ -441,7 +441,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	  REACT_PORTAL_TYPE = Symbol.for("react.portal");
   	function createPortal$1(children, containerInfo, implementation) {
   	  var key =
-  	    3 < arguments.length && undefined !== arguments[3] ? arguments[3] : null;
+  	    3 < arguments.length && void 0 !== arguments[3] ? arguments[3] : null;
   	  return {
   	    $$typeof: REACT_PORTAL_TYPE,
   	    key: null == key ? null : "" + key,
@@ -461,7 +461,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	  Internals;
   	reactDom_production.createPortal = function (children, container) {
   	  var key =
-  	    2 < arguments.length && undefined !== arguments[2] ? arguments[2] : null;
+  	    2 < arguments.length && void 0 !== arguments[2] ? arguments[2] : null;
   	  if (
   	    !container ||
   	    (1 !== container.nodeType &&
@@ -491,7 +491,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	            ? "use-credentials" === options
   	              ? options
   	              : ""
-  	            : undefined))
+  	            : void 0))
   	      : (options = null),
   	    Internals.d.C(href, options));
   	};
@@ -503,15 +503,15 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    var as = options.as,
   	      crossOrigin = getCrossOriginStringAs(as, options.crossOrigin),
   	      integrity =
-  	        "string" === typeof options.integrity ? options.integrity : undefined,
+  	        "string" === typeof options.integrity ? options.integrity : void 0,
   	      fetchPriority =
   	        "string" === typeof options.fetchPriority
   	          ? options.fetchPriority
-  	          : undefined;
+  	          : void 0;
   	    "style" === as
   	      ? Internals.d.S(
   	          href,
-  	          "string" === typeof options.precedence ? options.precedence : undefined,
+  	          "string" === typeof options.precedence ? options.precedence : void 0,
   	          {
   	            crossOrigin: crossOrigin,
   	            integrity: integrity,
@@ -523,7 +523,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	          crossOrigin: crossOrigin,
   	          integrity: integrity,
   	          fetchPriority: fetchPriority,
-  	          nonce: "string" === typeof options.nonce ? options.nonce : undefined
+  	          nonce: "string" === typeof options.nonce ? options.nonce : void 0
   	        });
   	  }
   	};
@@ -538,8 +538,8 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	        Internals.d.M(href, {
   	          crossOrigin: crossOrigin,
   	          integrity:
-  	            "string" === typeof options.integrity ? options.integrity : undefined,
-  	          nonce: "string" === typeof options.nonce ? options.nonce : undefined
+  	            "string" === typeof options.integrity ? options.integrity : void 0,
+  	          nonce: "string" === typeof options.nonce ? options.nonce : void 0
   	        });
   	      }
   	    } else null == options && Internals.d.M(href);
@@ -556,22 +556,22 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    Internals.d.L(href, as, {
   	      crossOrigin: crossOrigin,
   	      integrity:
-  	        "string" === typeof options.integrity ? options.integrity : undefined,
-  	      nonce: "string" === typeof options.nonce ? options.nonce : undefined,
-  	      type: "string" === typeof options.type ? options.type : undefined,
+  	        "string" === typeof options.integrity ? options.integrity : void 0,
+  	      nonce: "string" === typeof options.nonce ? options.nonce : void 0,
+  	      type: "string" === typeof options.type ? options.type : void 0,
   	      fetchPriority:
   	        "string" === typeof options.fetchPriority
   	          ? options.fetchPriority
-  	          : undefined,
+  	          : void 0,
   	      referrerPolicy:
   	        "string" === typeof options.referrerPolicy
   	          ? options.referrerPolicy
-  	          : undefined,
+  	          : void 0,
   	      imageSrcSet:
-  	        "string" === typeof options.imageSrcSet ? options.imageSrcSet : undefined,
+  	        "string" === typeof options.imageSrcSet ? options.imageSrcSet : void 0,
   	      imageSizes:
-  	        "string" === typeof options.imageSizes ? options.imageSizes : undefined,
-  	      media: "string" === typeof options.media ? options.media : undefined
+  	        "string" === typeof options.imageSizes ? options.imageSizes : void 0,
+  	      media: "string" === typeof options.media ? options.media : void 0
   	    });
   	  }
   	};
@@ -583,10 +583,10 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	        as:
   	          "string" === typeof options.as && "script" !== options.as
   	            ? options.as
-  	            : undefined,
+  	            : void 0,
   	        crossOrigin: crossOrigin,
   	        integrity:
-  	          "string" === typeof options.integrity ? options.integrity : undefined
+  	          "string" === typeof options.integrity ? options.integrity : void 0
   	      });
   	    } else Internals.d.m(href);
   	};
@@ -749,7 +749,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	  prefix,
   	  suffix;
   	function describeBuiltInComponentFrame(name) {
-  	  if (undefined === prefix)
+  	  if (void 0 === prefix)
   	    try {
   	      throw Error();
   	    } catch (x) {
@@ -769,7 +769,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	  if (!fn || reentry) return "";
   	  reentry = true;
   	  var previousPrepareStackTrace = Error.prepareStackTrace;
-  	  Error.prepareStackTrace = undefined;
+  	  Error.prepareStackTrace = void 0;
   	  try {
   	    var RunInRootFrame = {
   	      DetermineComponentFrameRoot: function () {
@@ -1414,7 +1414,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	  var updatePriority = ReactDOMSharedInternals.p;
   	  if (0 !== updatePriority) return updatePriority;
   	  updatePriority = window.event;
-  	  return undefined === updatePriority ? 32 : getEventPriority(updatePriority.type);
+  	  return void 0 === updatePriority ? 32 : getEventPriority(updatePriority.type);
   	}
   	function runWithPriority(priority, fn) {
   	  var previousPriority = ReactDOMSharedInternals.p;
@@ -1666,7 +1666,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	  return node !== lastValue ? (tracker.setValue(node), true) : false;
   	}
   	function getActiveElement(doc) {
-  	  doc = doc || ("undefined" !== typeof document ? document : undefined);
+  	  doc = doc || ("undefined" !== typeof document ? document : void 0);
   	  if ("undefined" === typeof doc) return null;
   	  try {
   	    return doc.activeElement || doc.body;
@@ -1746,7 +1746,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    if (
   	      !(
   	        ("submit" !== type && "reset" !== type) ||
-  	        (undefined !== value && null !== value)
+  	        (void 0 !== value && null !== value)
   	      )
   	    )
   	      return;
@@ -2167,7 +2167,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    startValue[startLength - end] === endValue[endLength - end];
   	    end++
   	  );
-  	  return (fallbackText = endValue.slice(start, 1 < end ? 1 - end : undefined));
+  	  return (fallbackText = endValue.slice(start, 1 < end ? 1 - end : void 0));
   	}
   	function getEventCharCode(nativeEvent) {
   	  var keyCode = nativeEvent.keyCode;
@@ -2269,7 +2269,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    button: 0,
   	    buttons: 0,
   	    relatedTarget: function (event) {
-  	      return undefined === event.relatedTarget
+  	      return void 0 === event.relatedTarget
   	        ? event.fromElement === event.srcElement
   	          ? event.toElement
   	          : event.fromElement
@@ -2723,7 +2723,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	        }
   	        node = node.parentNode;
   	      }
-  	      node = undefined;
+  	      node = void 0;
   	    }
   	    node = getLeafNode(node);
   	  }
@@ -2795,7 +2795,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	      if (
   	        ((priorSelectionInformation = priorSelectionRange.start),
   	        (curFocusedElem = priorSelectionRange.end),
-  	        undefined === curFocusedElem &&
+  	        void 0 === curFocusedElem &&
   	          (curFocusedElem = priorSelectionInformation),
   	        "selectionStart" in containerInfo)
   	      )
@@ -2816,7 +2816,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	        var length = containerInfo.textContent.length,
   	          start = Math.min(priorSelectionRange.start, length);
   	        priorSelectionRange =
-  	          undefined === priorSelectionRange.end
+  	          void 0 === priorSelectionRange.end
   	            ? start
   	            : Math.min(priorSelectionRange.end, length);
   	        !curFocusedElem.extend &&
@@ -3054,7 +3054,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	function createCapturedValueAtFiber(value, source) {
   	  if ("object" === typeof value && null !== value) {
   	    var existing = CapturedStacks.get(value);
-  	    if (undefined !== existing) return existing;
+  	    if (void 0 !== existing) return existing;
   	    source = {
   	      value: value,
   	      source: source,
@@ -3294,7 +3294,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	function noop$3() {}
   	function trackUsedThenable(thenableState, thenable, index) {
   	  index = thenableState[index];
-  	  undefined === index
+  	  void 0 === index
   	    ? thenableState.push(thenable)
   	    : index !== thenable && (thenable.then(noop$3, noop$3), (thenable = index));
   	  switch (thenable.status) {
@@ -3360,7 +3360,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	}
   	function coerceRef(workInProgress, element) {
   	  element = element.props.ref;
-  	  workInProgress.ref = undefined !== element ? element : null;
+  	  workInProgress.ref = void 0 !== element ? element : null;
   	}
   	function throwOnInvalidObjectType(returnFiber, newChild) {
   	  if (newChild.$$typeof === REACT_LEGACY_ELEMENT_TYPE)
@@ -4122,7 +4122,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	        null === state || "$?" === state.data || "$!" === state.data)
   	      )
   	        return node;
-  	    } else if (19 === node.tag && undefined !== node.memoizedProps.revealOrder) {
+  	    } else if (19 === node.tag && void 0 !== node.memoizedProps.revealOrder) {
   	      if (0 !== (node.flags & 128)) return node;
   	    } else if (null !== node.child) {
   	      node.child.return = node;
@@ -4192,7 +4192,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    currentEntangledLane = requestTransitionLane();
   	    currentEntangledActionThenable = {
   	      status: "pending",
-  	      value: undefined,
+  	      value: void 0,
   	      then: function (resolve) {
   	        entangledListeners.push(resolve);
   	      }
@@ -4236,7 +4236,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	      thenableWithOverride.status = "rejected";
   	      thenableWithOverride.reason = error;
   	      for (error = 0; error < listeners.length; error++)
-  	        (0, listeners[error])(undefined);
+  	        (0, listeners[error])(void 0);
   	    }
   	  );
   	  return thenableWithOverride;
@@ -4496,7 +4496,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    (currentlyRenderingFiber$1.updateQueue = updateQueue));
   	  updateQueue.memoCache = memoCache;
   	  updateQueue = memoCache.data[memoCache.index];
-  	  if (undefined === updateQueue)
+  	  if (void 0 === updateQueue)
   	    for (
   	      updateQueue = memoCache.data[memoCache.index] = Array(size), current = 0;
   	      current < size;
@@ -4643,7 +4643,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    hook = updateWorkInProgressHook(),
   	    isHydrating$jscomp$0 = isHydrating;
   	  if (isHydrating$jscomp$0) {
-  	    if (undefined === getServerSnapshot) throw Error(formatProdErrorMessage(407));
+  	    if (void 0 === getServerSnapshot) throw Error(formatProdErrorMessage(407));
   	    getServerSnapshot = getServerSnapshot();
   	  } else getServerSnapshot = getSnapshot();
   	  var snapshotChanged = !objectIs(
@@ -4671,7 +4671,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	        getServerSnapshot,
   	        getSnapshot
   	      ),
-  	      { destroy: undefined },
+  	      { destroy: void 0 },
   	      null
   	    );
   	    if (null === workInProgressRoot) throw Error(formatProdErrorMessage(349));
@@ -4977,7 +4977,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    pushEffect(
   	      9,
   	      actionStateActionEffect.bind(null, actionQueue, action),
-  	      { destroy: undefined },
+  	      { destroy: void 0 },
   	      null
   	    ));
   	  return [currentStateHook, dispatch, stateHook];
@@ -5021,13 +5021,13 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	  hook.memoizedState = pushEffect(
   	    1 | hookFlags,
   	    create,
-  	    { destroy: undefined },
-  	    undefined === deps ? null : deps
+  	    { destroy: void 0 },
+  	    void 0 === deps ? null : deps
   	  );
   	}
   	function updateEffectImpl(fiberFlags, hookFlags, create, deps) {
   	  var hook = updateWorkInProgressHook();
-  	  deps = undefined === deps ? null : deps;
+  	  deps = void 0 === deps ? null : deps;
   	  var inst = hook.memoizedState.inst;
   	  null !== currentHook &&
   	  null !== deps &&
@@ -5056,7 +5056,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	      "function" === typeof refCleanup ? refCleanup() : ref(null);
   	    };
   	  }
-  	  if (null !== ref && undefined !== ref)
+  	  if (null !== ref && void 0 !== ref)
   	    return (
   	      (create = create()),
   	      (ref.current = create),
@@ -5066,13 +5066,13 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    );
   	}
   	function updateImperativeHandle(ref, create, deps) {
-  	  deps = null !== deps && undefined !== deps ? deps.concat([ref]) : null;
+  	  deps = null !== deps && void 0 !== deps ? deps.concat([ref]) : null;
   	  updateEffectImpl(4, 4, imperativeHandleEffect.bind(null, create, ref), deps);
   	}
   	function mountDebugValue() {}
   	function updateCallback(callback, deps) {
   	  var hook = updateWorkInProgressHook();
-  	  deps = undefined === deps ? null : deps;
+  	  deps = void 0 === deps ? null : deps;
   	  var prevState = hook.memoizedState;
   	  if (null !== deps && areHookInputsEqual(deps, prevState[1]))
   	    return prevState[0];
@@ -5081,7 +5081,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	}
   	function updateMemo(nextCreate, deps) {
   	  var hook = updateWorkInProgressHook();
-  	  deps = undefined === deps ? null : deps;
+  	  deps = void 0 === deps ? null : deps;
   	  var prevState = hook.memoizedState;
   	  if (null !== deps && areHookInputsEqual(deps, prevState[1]))
   	    return prevState[0];
@@ -5098,7 +5098,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	  return prevState;
   	}
   	function mountDeferredValueImpl(hook, value, initialValue) {
-  	  if (undefined === initialValue || 0 !== (renderLanes & 1073741824))
+  	  if (void 0 === initialValue || 0 !== (renderLanes & 1073741824))
   	    return (hook.memoizedState = value);
   	  hook.memoizedState = initialValue;
   	  hook = requestDeferredLane();
@@ -5390,14 +5390,14 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	  useCallback: function (callback, deps) {
   	    mountWorkInProgressHook().memoizedState = [
   	      callback,
-  	      undefined === deps ? null : deps
+  	      void 0 === deps ? null : deps
   	    ];
   	    return callback;
   	  },
   	  useContext: readContext,
   	  useEffect: mountEffect,
   	  useImperativeHandle: function (ref, create, deps) {
-  	    deps = null !== deps && undefined !== deps ? deps.concat([ref]) : null;
+  	    deps = null !== deps && void 0 !== deps ? deps.concat([ref]) : null;
   	    mountEffectImpl(
   	      4194308,
   	      4,
@@ -5413,7 +5413,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	  },
   	  useMemo: function (nextCreate, deps) {
   	    var hook = mountWorkInProgressHook();
-  	    deps = undefined === deps ? null : deps;
+  	    deps = void 0 === deps ? null : deps;
   	    var nextValue = nextCreate();
   	    if (shouldDoubleInvokeUserFnsInHooksDEV) {
   	      setIsStrictModeForDevtools(true);
@@ -5428,7 +5428,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	  },
   	  useReducer: function (reducer, initialArg, init) {
   	    var hook = mountWorkInProgressHook();
-  	    if (undefined !== init) {
+  	    if (void 0 !== init) {
   	      var initialState = init(initialArg);
   	      if (shouldDoubleInvokeUserFnsInHooksDEV) {
   	        setIsStrictModeForDevtools(true);
@@ -5488,7 +5488,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    var fiber = currentlyRenderingFiber$1,
   	      hook = mountWorkInProgressHook();
   	    if (isHydrating) {
-  	      if (undefined === getServerSnapshot)
+  	      if (void 0 === getServerSnapshot)
   	        throw Error(formatProdErrorMessage(407));
   	      getServerSnapshot = getServerSnapshot();
   	    } else {
@@ -5513,7 +5513,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	        getServerSnapshot,
   	        getSnapshot
   	      ),
-  	      { destroy: undefined },
+  	      { destroy: void 0 },
   	      null
   	    );
   	    return getServerSnapshot;
@@ -5683,7 +5683,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	  ctor = workInProgress.memoizedState;
   	  getDerivedStateFromProps = getDerivedStateFromProps(nextProps, ctor);
   	  getDerivedStateFromProps =
-  	    null === getDerivedStateFromProps || undefined === getDerivedStateFromProps
+  	    null === getDerivedStateFromProps || void 0 === getDerivedStateFromProps
   	      ? ctor
   	      : assign({}, ctor, getDerivedStateFromProps);
   	  workInProgress.memoizedState = getDerivedStateFromProps;
@@ -5701,7 +5701,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    var lane = requestUpdateLane(),
   	      update = createUpdate(lane);
   	    update.payload = payload;
-  	    undefined !== callback && null !== callback && (update.callback = callback);
+  	    void 0 !== callback && null !== callback && (update.callback = callback);
   	    payload = enqueueUpdate(inst, update, lane);
   	    null !== payload &&
   	      (scheduleUpdateOnFiber(payload, inst, lane),
@@ -5713,7 +5713,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	      update = createUpdate(lane);
   	    update.tag = 1;
   	    update.payload = payload;
-  	    undefined !== callback && null !== callback && (update.callback = callback);
+  	    void 0 !== callback && null !== callback && (update.callback = callback);
   	    payload = enqueueUpdate(inst, update, lane);
   	    null !== payload &&
   	      (scheduleUpdateOnFiber(payload, inst, lane),
@@ -5724,7 +5724,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    var lane = requestUpdateLane(),
   	      update = createUpdate(lane);
   	    update.tag = 2;
-  	    undefined !== callback && null !== callback && (update.callback = callback);
+  	    void 0 !== callback && null !== callback && (update.callback = callback);
   	    callback = enqueueUpdate(inst, update, lane);
   	    null !== callback &&
   	      (scheduleUpdateOnFiber(callback, inst, lane),
@@ -5771,7 +5771,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	  if ((Component = Component.defaultProps)) {
   	    newProps === baseProps && (newProps = assign({}, newProps));
   	    for (var propName$67 in Component)
-  	      undefined === newProps[propName$67] &&
+  	      void 0 === newProps[propName$67] &&
   	        (newProps[propName$67] = Component[propName$67]);
   	  }
   	  return newProps;
@@ -6087,7 +6087,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    if (
   	      "function" === typeof type &&
   	      !shouldConstruct(type) &&
-  	      undefined === type.defaultProps &&
+  	      void 0 === type.defaultProps &&
   	      null === Component.compare
   	    )
   	      return (
@@ -6266,7 +6266,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    workInProgress,
   	    Component,
   	    nextProps,
-  	    undefined,
+  	    void 0,
   	    renderLanes
   	  );
   	  nextProps = checkDidRenderIdHook();
@@ -6324,7 +6324,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	      (context = readContext(contextType));
   	    context = new Component(nextProps, context);
   	    workInProgress.memoizedState =
-  	      null !== context.state && undefined !== context.state ? context.state : null;
+  	      null !== context.state && void 0 !== context.state ? context.state : null;
   	    context.updater = classComponentUpdater;
   	    workInProgress.stateNode = context;
   	    context._reactInternals = workInProgress;
@@ -7078,7 +7078,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	      );
   	      break;
   	    case "together":
-  	      initSuspenseListRenderState(workInProgress, false, null, null, undefined);
+  	      initSuspenseListRenderState(workInProgress, false, null, null, void 0);
   	      break;
   	    default:
   	      workInProgress.memoizedState = null;
@@ -7259,7 +7259,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	                renderLanes
   	              )));
   	        else {
-  	          if (undefined !== lazyComponent && null !== lazyComponent)
+  	          if (void 0 !== lazyComponent && null !== lazyComponent)
   	            if (
   	              ((init = lazyComponent.$$typeof), init === REACT_FORWARD_REF_TYPE)
   	            ) {
@@ -8033,7 +8033,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	                "function" === typeof workInProgress
   	                  ? workInProgress.call(instance, newState, updateLane)
   	                  : workInProgress;
-  	              if (null === updateLane || undefined === updateLane) break a;
+  	              if (null === updateLane || void 0 === updateLane) break a;
   	              newState = assign({}, newState, updateLane);
   	              break a;
   	            case 2:
@@ -8300,7 +8300,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	            ? ((before = parent.parentNode), before.insertBefore(node, parent))
   	            : ((before = parent), before.appendChild(node)),
   	          (parent = parent._reactRootContainer),
-  	          (null !== parent && undefined !== parent) ||
+  	          (null !== parent && void 0 !== parent) ||
   	            null !== before.onclick ||
   	            (before.onclick = noop$1));
   	  else if (4 !== tag && 27 !== tag && ((node = node.child), null !== node))
@@ -8423,7 +8423,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	            break;
   	          case 1:
   	            if (0 !== (root & 1024) && null !== focusNode) {
-  	              root = undefined;
+  	              root = void 0;
   	              JSCompiler_temp = firstChild;
   	              anchorOffset = focusNode.memoizedProps;
   	              focusNode = focusNode.memoizedState;
@@ -10820,7 +10820,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    getCacheForType: function (resourceType) {
   	      var cache = readContext(CacheContext),
   	        cacheForType = cache.data.get(resourceType);
-  	      undefined === cacheForType &&
+  	      void 0 === cacheForType &&
   	        ((cacheForType = resourceType()),
   	        cache.data.set(resourceType, cacheForType));
   	      return cacheForType;
@@ -11499,7 +11499,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	        next,
   	        next.pendingProps,
   	        next.type,
-  	        undefined,
+  	        void 0,
   	        workInProgressRootRenderLanes
   	      );
   	      break;
@@ -11868,7 +11868,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    pingCache.set(wakeable, threadIDs);
   	  } else
   	    (threadIDs = pingCache.get(wakeable)),
-  	      undefined === threadIDs &&
+  	      void 0 === threadIDs &&
   	        ((threadIDs = new Set()), pingCache.set(wakeable, threadIDs));
   	  threadIDs.has(lanes) ||
   	    ((workInProgressRootDidAttachPingListener = true),
@@ -12285,7 +12285,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	      event = _dispatchQueue$i.event;
   	    _dispatchQueue$i = _dispatchQueue$i.listeners;
   	    a: {
-  	      var previousInstance = undefined;
+  	      var previousInstance = void 0;
   	      if (eventSystemFlags)
   	        for (
   	          var i$jscomp$0 = _dispatchQueue$i.length - 1;
@@ -12335,7 +12335,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	}
   	function listenToNonDelegatedEvent(domEventName, targetElement) {
   	  var JSCompiler_inline_result = targetElement[internalEventHandlersKey];
-  	  undefined === JSCompiler_inline_result &&
+  	  void 0 === JSCompiler_inline_result &&
   	    (JSCompiler_inline_result = targetElement[internalEventHandlersKey] =
   	      new Set());
   	  var listenerSetKey = domEventName + "__bubble";
@@ -12395,20 +12395,20 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    eventSystemFlags,
   	    targetContainer
   	  );
-  	  listenerWrapper = undefined;
+  	  listenerWrapper = void 0;
   	  !passiveBrowserEventsSupported ||
   	    ("touchstart" !== domEventName &&
   	      "touchmove" !== domEventName &&
   	      "wheel" !== domEventName) ||
   	    (listenerWrapper = true);
   	  isCapturePhaseListener
-  	    ? undefined !== listenerWrapper
+  	    ? void 0 !== listenerWrapper
   	      ? targetContainer.addEventListener(domEventName, eventSystemFlags, {
   	          capture: true,
   	          passive: listenerWrapper
   	        })
   	      : targetContainer.addEventListener(domEventName, eventSystemFlags, true)
-  	    : undefined !== listenerWrapper
+  	    : void 0 !== listenerWrapper
   	      ? targetContainer.addEventListener(domEventName, eventSystemFlags, {
   	          passive: listenerWrapper
   	        })
@@ -13337,7 +13337,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	            "o" === key[0] &&
   	            "n" === key[1] &&
   	            ((props = key.endsWith("Capture")),
-  	            (tag = key.slice(2, props ? key.length - 7 : undefined)),
+  	            (tag = key.slice(2, props ? key.length - 7 : void 0)),
   	            (prevValue = domElement[internalPropsKey] || null),
   	            (prevValue = null != prevValue ? prevValue[key] : null),
   	            "function" === typeof prevValue &&
@@ -13574,14 +13574,14 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	        for (propValue$186 in props)
   	          props.hasOwnProperty(propValue$186) &&
   	            ((hasSrc = props[propValue$186]),
-  	            undefined !== hasSrc &&
+  	            void 0 !== hasSrc &&
   	              setPropOnCustomElement(
   	                domElement,
   	                tag,
   	                propValue$186,
   	                hasSrc,
   	                props,
-  	                undefined
+  	                void 0
   	              ));
   	        return;
   	      }
@@ -13880,13 +13880,13 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	        for (var propKey$229 in lastProps)
   	          (propKey$203 = lastProps[propKey$229]),
   	            lastProps.hasOwnProperty(propKey$229) &&
-  	              undefined !== propKey$203 &&
+  	              void 0 !== propKey$203 &&
   	              !nextProps.hasOwnProperty(propKey$229) &&
   	              setPropOnCustomElement(
   	                domElement,
   	                tag,
   	                propKey$229,
-  	                undefined,
+  	                void 0,
   	                nextProps,
   	                propKey$203
   	              );
@@ -13895,7 +13895,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	            (propKey = lastProps[defaultChecked]),
   	            !nextProps.hasOwnProperty(defaultChecked) ||
   	              propKey$203 === propKey ||
-  	              (undefined === propKey$203 && undefined === propKey) ||
+  	              (void 0 === propKey$203 && void 0 === propKey) ||
   	              setPropOnCustomElement(
   	                domElement,
   	                tag,
@@ -13975,9 +13975,9 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	  currentPopstateTransitionEvent = null;
   	  return false;
   	}
-  	var scheduleTimeout = "function" === typeof setTimeout ? setTimeout : undefined,
-  	  cancelTimeout = "function" === typeof clearTimeout ? clearTimeout : undefined,
-  	  localPromise = "function" === typeof Promise ? Promise : undefined,
+  	var scheduleTimeout = "function" === typeof setTimeout ? setTimeout : void 0,
+  	  cancelTimeout = "function" === typeof clearTimeout ? clearTimeout : void 0,
+  	  localPromise = "function" === typeof Promise ? Promise : void 0,
   	  scheduleMicrotask =
   	    "function" === typeof queueMicrotask
   	      ? queueMicrotask
@@ -14267,7 +14267,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	        {
   	          rel: "preload",
   	          href:
-  	            "image" === as && options && options.imageSrcSet ? undefined : href,
+  	            "image" === as && options && options.imageSrcSet ? void 0 : href,
   	          as: as
   	        },
   	        options
@@ -15040,7 +15040,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    : (container.pendingContext = parentComponent);
   	  container = createUpdate(lane);
   	  container.payload = { element: element };
-  	  callback = undefined === callback ? null : callback;
+  	  callback = void 0 === callback ? null : callback;
   	  null !== callback && (container.callback = callback);
   	  element = enqueueUpdate(rootFiber, container, lane);
   	  null !== element &&
@@ -15679,7 +15679,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	  );
   	ReactDOMSharedInternals.findDOMNode = function (componentOrElement) {
   	  var fiber = componentOrElement._reactInternals;
-  	  if (undefined === fiber) {
+  	  if (void 0 === fiber) {
   	    if ("function" === typeof componentOrElement.render)
   	      throw Error(formatProdErrorMessage(188));
   	    componentOrElement = Object.keys(componentOrElement).join(",");
@@ -15724,16 +15724,16 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    onRecoverableError = defaultOnRecoverableError,
   	    transitionCallbacks = null;
   	  null !== options &&
-  	    undefined !== options &&
+  	    void 0 !== options &&
   	    (true === options.unstable_strictMode && (isStrictMode = true),
-  	    undefined !== options.identifierPrefix &&
+  	    void 0 !== options.identifierPrefix &&
   	      (identifierPrefix = options.identifierPrefix),
-  	    undefined !== options.onUncaughtError &&
+  	    void 0 !== options.onUncaughtError &&
   	      (onUncaughtError = options.onUncaughtError),
-  	    undefined !== options.onCaughtError && (onCaughtError = options.onCaughtError),
-  	    undefined !== options.onRecoverableError &&
+  	    void 0 !== options.onCaughtError && (onCaughtError = options.onCaughtError),
+  	    void 0 !== options.onRecoverableError &&
   	      (onRecoverableError = options.onRecoverableError),
-  	    undefined !== options.unstable_transitionCallbacks &&
+  	    void 0 !== options.unstable_transitionCallbacks &&
   	      (transitionCallbacks = options.unstable_transitionCallbacks));
   	  options = createFiberRoot(
   	    container,
@@ -15765,18 +15765,18 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   	    transitionCallbacks = null,
   	    formState = null;
   	  null !== options &&
-  	    undefined !== options &&
+  	    void 0 !== options &&
   	    (true === options.unstable_strictMode && (isStrictMode = true),
-  	    undefined !== options.identifierPrefix &&
+  	    void 0 !== options.identifierPrefix &&
   	      (identifierPrefix = options.identifierPrefix),
-  	    undefined !== options.onUncaughtError &&
+  	    void 0 !== options.onUncaughtError &&
   	      (onUncaughtError = options.onUncaughtError),
-  	    undefined !== options.onCaughtError && (onCaughtError = options.onCaughtError),
-  	    undefined !== options.onRecoverableError &&
+  	    void 0 !== options.onCaughtError && (onCaughtError = options.onCaughtError),
+  	    void 0 !== options.onRecoverableError &&
   	      (onRecoverableError = options.onRecoverableError),
-  	    undefined !== options.unstable_transitionCallbacks &&
+  	    void 0 !== options.unstable_transitionCallbacks &&
   	      (transitionCallbacks = options.unstable_transitionCallbacks),
-  	    undefined !== options.formState && (formState = options.formState));
+  	    void 0 !== options.formState && (formState = options.formState));
   	  initialChildren = createFiberRoot(
   	    container,
   	    1,

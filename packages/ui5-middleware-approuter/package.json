@@ -23,12 +23,12 @@
     "timeout": "20s"
   },
   "dependencies": {
-    "@sap/approuter": "^19.0.0",
+    "@sap/approuter": "^19.0.4",
     "content-type": "^1.0.5",
     "dotenv": "^16.4.7",
     "http-proxy-middleware": "^2.0.7",
     "mime-types": "^2.1.35",
-    "portfinder": "^1.0.32",
+    "portfinder": "^1.0.35",
     "ui5-utils-express": "workspace:^"
   },
   "devDependencies": {
@@ -42,6 +42,6 @@
     "replace-in-file": "^8.3.0",
     "supertest": "^7.0.0",
     "ui5-middleware-websocket": "workspace:^",
-    "wait-on": "^8.0.2"
+    "wait-on": "^8.0.3"
   }
 }

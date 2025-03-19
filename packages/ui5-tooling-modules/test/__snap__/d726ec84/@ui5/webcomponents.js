@@ -16,7 +16,7 @@ sap.ui.define([
     "_ui5metadata":
 {
   "name": "@ui5/webcomponents",
-  "version": "2.7.0",
+  "version": "2.8.0",
   "dependencies": [
     "sap.ui.core"
   ],
@@ -48,6 +48,7 @@ sap.ui.define([
     "@ui5/webcomponents.IconDesign",
     "@ui5/webcomponents.IconMode",
     "@ui5/webcomponents.InputType",
+    "@ui5/webcomponents.InteractiveAreaSize",
     "@ui5/webcomponents.LinkAccessibleRole",
     "@ui5/webcomponents.LinkDesign",
     "@ui5/webcomponents.ListAccessibleRole",
@@ -162,11 +163,14 @@ sap.ui.define([
     "@ui5/webcomponents.TableCell",
     "@ui5/webcomponents.TableGrowing",
     "@ui5/webcomponents.TableHeaderCell",
+    "@ui5/webcomponents.TableHeaderCellActionAI",
     "@ui5/webcomponents.TableHeaderRow",
     "@ui5/webcomponents.TableRow",
     "@ui5/webcomponents.TableRowAction",
     "@ui5/webcomponents.TableRowActionNavigation",
     "@ui5/webcomponents.TableSelection",
+    "@ui5/webcomponents.TableSelectionMulti",
+    "@ui5/webcomponents.TableSelectionSingle",
     "@ui5/webcomponents.TableVirtualizer",
     "@ui5/webcomponents.Tag",
     "@ui5/webcomponents.Text",
@@ -406,6 +410,11 @@ sap.ui.define([
     "Search": "Search",
   };
   registerEnum("@ui5/webcomponents.InputType", pkg["InputType"]);
+  pkg["InteractiveAreaSize"] = {
+    "Normal": "Normal",
+    "Large": "Large",
+  };
+  registerEnum("@ui5/webcomponents.InteractiveAreaSize", pkg["InteractiveAreaSize"]);
   pkg["LinkAccessibleRole"] = {
     "Link": "Link",
     "Button": "Button",

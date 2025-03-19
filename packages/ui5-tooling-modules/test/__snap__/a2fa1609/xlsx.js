@@ -7660,10 +7660,14 @@ sap.ui.define((function () { 'use strict';
   /* 9.3 Relationships */
   var RELS = ({
   	WB: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument",
+  	SHEET: "http://sheetjs.openxmlformats.org/officeDocument/2006/relationships/officeDocument",
   	HLINK: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
   	VML: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing",
   	XPATH: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLinkPath",
   	XMISS: "http://schemas.microsoft.com/office/2006/relationships/xlExternalLinkPath/xlPathMissing",
+  	XLINK: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLink",
+  	CXML: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml",
+  	CXMLP: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps",
   	CMNT: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments",
   	CORE_PROPS: "http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties",
   	EXT_PROPS: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties',
@@ -7671,6 +7675,8 @@ sap.ui.define((function () { 'use strict';
   	SST: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings",
   	STY: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles",
   	THEME: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme",
+  	CHART: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart",
+  	CHARTEX: "http://schemas.microsoft.com/office/2014/relationships/chartEx",
   	CS: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartsheet",
   	WS: [
   		"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet",
@@ -7678,10 +7684,12 @@ sap.ui.define((function () { 'use strict';
   	],
   	DS: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/dialogsheet",
   	MS: "http://schemas.microsoft.com/office/2006/relationships/xlMacrosheet",
+  	IMG: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image",
   	DRAW: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing",
   	XLMETA: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sheetMetadata",
   	TCMNT: "http://schemas.microsoft.com/office/2017/10/relationships/threadedComment",
   	PEOPLE: "http://schemas.microsoft.com/office/2017/10/relationships/person",
+  	CONN: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/connections",
   	VBA: "http://schemas.microsoft.com/office/2006/relationships/vbaProject"
   }/*:any*/);
 
@@ -14431,7 +14439,7 @@ sap.ui.define((function () { 'use strict';
           lastmeta.offsets.push(+y.i);
           break;
         default:
-          if (!pass && (opts == null ? undefined : opts.WTF))
+          if (!pass && (opts == null ? void 0 : opts.WTF))
             throw new Error("unrecognized " + y[0] + " in metadata");
       }
       return x;
@@ -18405,7 +18413,7 @@ sap.ui.define((function () { 'use strict';
   	/* customProperties */
   	/* cellWatches */
 
-  	if(!opts || opts.ignoreEC || (opts.ignoreEC == (undefined))) o[o.length] = writetag("ignoredErrors", writextag("ignoredError", null, {numberStoredAsText:1, sqref:ref}));
+  	if(!opts || opts.ignoreEC || (opts.ignoreEC == (void 0))) o[o.length] = writetag("ignoredErrors", writextag("ignoredError", null, {numberStoredAsText:1, sqref:ref}));
 
   	/* smartTags */
 
@@ -19042,14 +19050,14 @@ sap.ui.define((function () { 'use strict';
   				}
   				if(cm) {
   					if(cm.type == 'XLDAPR') p.D = true;
-  					cm = undefined;
+  					cm = void 0;
   				}
   				break;
 
   			case 0x0001: /* 'BrtCellBlank' */
   			case 0x000C: /* 'BrtShortBlank' */
   				if(!opts.sheetStubs || pass) break;
-  				p = ({t:'z',v:undefined}/*:any*/);
+  				p = ({t:'z',v:void 0}/*:any*/);
   				C = val[0].c == -1 ? C + 1 : val[0].c;
   				if(opts.dense) { if(!s["!data"][R]) s["!data"][R] = []; s["!data"][R][C] = p; }
   				else s[encode_col(C) + rr] = p;
@@ -19059,7 +19067,7 @@ sap.ui.define((function () { 'use strict';
   				if(refguess.e.c < C) refguess.e.c = C;
   				if(cm) {
   					if(cm.type == 'XLDAPR') p.D = true;
-  					cm = undefined;
+  					cm = void 0;
   				}
   				break;
 
@@ -19458,7 +19466,7 @@ sap.ui.define((function () { 'use strict';
   	/* [COLBRK] */
   	/* *BrtBigName */
   	/* [CELLWATCHES] */
-  	if(!opts || opts.ignoreEC || (opts.ignoreEC == (undefined))) write_IGNOREECS(ba, ws);
+  	if(!opts || opts.ignoreEC || (opts.ignoreEC == (void 0))) write_IGNOREECS(ba, ws);
   	/* [SMARTTAGS] */
   	/* [BrtDrawing] */
   	write_LEGACYDRAWING(ba, ws, idx, rels);
@@ -20681,7 +20689,7 @@ sap.ui.define((function () { 'use strict';
   		case 'cell' /*case 'Cell'*/:
   			if(Rn[1]==='/'){
   				if(comments.length > 0) cell.c = comments;
-  				if((!opts.sheetRows || opts.sheetRows > r) && cell.v !== undefined) {
+  				if((!opts.sheetRows || opts.sheetRows > r) && cell.v !== void 0) {
   					if(opts.dense) {
   						if(!cursheet["!data"][r]) cursheet["!data"][r] = [];
   						cursheet["!data"][r][c] = cell;
@@ -26279,7 +26287,7 @@ sap.ui.define((function () { 'use strict';
     return u8concat(out);
   }
   function mappa(data, cb) {
-    return (data == null ? undefined : data.map(function(d) {
+    return (data == null ? void 0 : data.map(function(d) {
       return cb(d.data);
     })) || [];
   }
@@ -26303,7 +26311,7 @@ sap.ui.define((function () { 'use strict';
         });
         ptr.l += fl;
       });
-      if ((_a = ai[3]) == null ? undefined : _a[0])
+      if ((_a = ai[3]) == null ? void 0 : _a[0])
         res.merge = varint_to_i32(ai[3][0].data) >>> 0 > 0;
       out.push(res);
     }
@@ -26480,12 +26488,12 @@ sap.ui.define((function () { 'use strict';
     var fmt = ver >= 5 ? nfmt : ofmt;
     dur:
       if (flags & (ver > 4 ? 8 : 4) && cell.t == "n" && ctype == 7) {
-        var dstyle = ((_a = fmt[7]) == null ? undefined : _a[0]) ? varint_to_i32(fmt[7][0].data) : -1;
+        var dstyle = ((_a = fmt[7]) == null ? void 0 : _a[0]) ? varint_to_i32(fmt[7][0].data) : -1;
         if (dstyle == -1)
           break dur;
-        var dmin = ((_b = fmt[15]) == null ? undefined : _b[0]) ? varint_to_i32(fmt[15][0].data) : -1;
-        var dmax = ((_c = fmt[16]) == null ? undefined : _c[0]) ? varint_to_i32(fmt[16][0].data) : -1;
-        var auto = ((_d = fmt[40]) == null ? undefined : _d[0]) ? varint_to_i32(fmt[40][0].data) : -1;
+        var dmin = ((_b = fmt[15]) == null ? void 0 : _b[0]) ? varint_to_i32(fmt[15][0].data) : -1;
+        var dmax = ((_c = fmt[16]) == null ? void 0 : _c[0]) ? varint_to_i32(fmt[16][0].data) : -1;
+        var auto = ((_d = fmt[40]) == null ? void 0 : _d[0]) ? varint_to_i32(fmt[40][0].data) : -1;
         var d = cell.v, dd = d;
         autodur:
           if (auto) {
@@ -26627,7 +26635,7 @@ sap.ui.define((function () { 'use strict';
     var t = buf[v >= 4 ? 1 : 2];
     switch (t) {
       case 0:
-        return undefined;
+        return void 0;
       case 2:
         ret = { t: "n", v: ieee };
         break;
@@ -26636,7 +26644,7 @@ sap.ui.define((function () { 'use strict';
         break;
       case 5:
         {
-          if (opts == null ? undefined : opts.cellDates)
+          if (opts == null ? void 0 : opts.cellDates)
             ret = { t: "d", v: dt };
           else
             ret = { t: "n", v: dc / 86400 + 35430, z: table_fmt[14] };
@@ -26721,7 +26729,7 @@ sap.ui.define((function () { 'use strict';
         break;
       case 5:
         {
-          if (opts == null ? undefined : opts.cellDates)
+          if (opts == null ? void 0 : opts.cellDates)
             ret = { t: "d", v: dt };
           else
             ret = { t: "n", v: dc / 86400 + 35430, z: table_fmt[14] };
@@ -26801,7 +26809,7 @@ sap.ui.define((function () { 'use strict';
           if (cell.l) {
             var irsst = lut.rsst.findIndex(function(v) {
               var _a;
-              return v.v == s && v.l == ((_a = cell.l) == null ? undefined : _a.Target);
+              return v.v == s && v.l == ((_a = cell.l) == null ? void 0 : _a.Target);
             });
             if (irsst == -1)
               lut.rsst[irsst = lut.rsst.length] = { v: s, l: cell.l.Target };
@@ -26855,7 +26863,7 @@ sap.ui.define((function () { 'use strict';
           if (cell.l) {
             var irsst = lut.rsst.findIndex(function(v) {
               var _a;
-              return v.v == s && v.l == ((_a = cell.l) == null ? undefined : _a.Target);
+              return v.v == s && v.l == ((_a = cell.l) == null ? void 0 : _a.Target);
             });
             if (irsst == -1)
               lut.rsst[irsst = lut.rsst.length] = { v: s, l: cell.l.Target };
@@ -26948,7 +26956,7 @@ sap.ui.define((function () { 'use strict';
   }
   function numbers_add_oref(iwa, ref) {
     var _a;
-    var orefs = ((_a = iwa.messages[0].meta[5]) == null ? undefined : _a[0]) ? parse_packed_varints(iwa.messages[0].meta[5][0].data) : [];
+    var orefs = ((_a = iwa.messages[0].meta[5]) == null ? void 0 : _a[0]) ? parse_packed_varints(iwa.messages[0].meta[5][0].data) : [];
     var orefidx = orefs.indexOf(ref);
     if (orefidx == -1) {
       orefs.push(ref);
@@ -26957,7 +26965,7 @@ sap.ui.define((function () { 'use strict';
   }
   function numbers_del_oref(iwa, ref) {
     var _a;
-    var orefs = ((_a = iwa.messages[0].meta[5]) == null ? undefined : _a[0]) ? parse_packed_varints(iwa.messages[0].meta[5][0].data) : [];
+    var orefs = ((_a = iwa.messages[0].meta[5]) == null ? void 0 : _a[0]) ? parse_packed_varints(iwa.messages[0].meta[5][0].data) : [];
     iwa.messages[0].meta[5] = [{ type: 2, data: write_packed_varints(orefs.filter(function(r) {
       return r != ref;
     })) }];
@@ -26991,20 +26999,20 @@ sap.ui.define((function () { 'use strict';
             }).join("") };
             data[key] = richtext;
             sfields:
-              if ((_a = tswpsa == null ? undefined : tswpsa[11]) == null ? undefined : _a[0]) {
-                var smartfields = (_b = parse_shallow(tswpsa[11][0].data)) == null ? undefined : _b[1];
+              if ((_a = tswpsa == null ? void 0 : tswpsa[11]) == null ? void 0 : _a[0]) {
+                var smartfields = (_b = parse_shallow(tswpsa[11][0].data)) == null ? void 0 : _b[1];
                 if (!smartfields)
                   break sfields;
                 smartfields.forEach(function(sf) {
                   var _a2, _b2, _c;
                   var attr = parse_shallow(sf.data);
-                  if ((_a2 = attr[2]) == null ? undefined : _a2[0]) {
-                    var obj = M[parse_TSP_Reference((_b2 = attr[2]) == null ? undefined : _b2[0].data)][0];
+                  if ((_a2 = attr[2]) == null ? void 0 : _a2[0]) {
+                    var obj = M[parse_TSP_Reference((_b2 = attr[2]) == null ? void 0 : _b2[0].data)][0];
                     var objtype = varint_to_i32(obj.meta[1][0].data);
                     switch (objtype) {
                       case 2032:
                         var hlink = parse_shallow(obj.data);
-                        if (((_c = hlink == null ? undefined : hlink[2]) == null ? undefined : _c[0]) && !richtext.l)
+                        if (((_c = hlink == null ? void 0 : hlink[2]) == null ? void 0 : _c[0]) && !richtext.l)
                           richtext.l = u8str(hlink[2][0].data);
                         break;
                       case 2039:
@@ -27040,14 +27048,14 @@ sap.ui.define((function () { 'use strict';
     var pb = parse_shallow(u8);
     var R = varint_to_i32(pb[1][0].data) >>> 0;
     var cnt = varint_to_i32(pb[2][0].data) >>> 0;
-    var wide_offsets = ((_b = (_a = pb[8]) == null ? undefined : _a[0]) == null ? undefined : _b.data) && varint_to_i32(pb[8][0].data) > 0 || false;
+    var wide_offsets = ((_b = (_a = pb[8]) == null ? void 0 : _a[0]) == null ? void 0 : _b.data) && varint_to_i32(pb[8][0].data) > 0 || false;
     var used_storage_u8, used_storage;
-    if (((_d = (_c = pb[7]) == null ? undefined : _c[0]) == null ? undefined : _d.data) && type != 0) {
-      used_storage_u8 = (_f = (_e = pb[7]) == null ? undefined : _e[0]) == null ? undefined : _f.data;
-      used_storage = (_h = (_g = pb[6]) == null ? undefined : _g[0]) == null ? undefined : _h.data;
-    } else if (((_j = (_i = pb[4]) == null ? undefined : _i[0]) == null ? undefined : _j.data) && type != 1) {
-      used_storage_u8 = (_l = (_k = pb[4]) == null ? undefined : _k[0]) == null ? undefined : _l.data;
-      used_storage = (_n = (_m = pb[3]) == null ? undefined : _m[0]) == null ? undefined : _n.data;
+    if (((_d = (_c = pb[7]) == null ? void 0 : _c[0]) == null ? void 0 : _d.data) && type != 0) {
+      used_storage_u8 = (_f = (_e = pb[7]) == null ? void 0 : _e[0]) == null ? void 0 : _f.data;
+      used_storage = (_h = (_g = pb[6]) == null ? void 0 : _g[0]) == null ? void 0 : _h.data;
+    } else if (((_j = (_i = pb[4]) == null ? void 0 : _i[0]) == null ? void 0 : _j.data) && type != 1) {
+      used_storage_u8 = (_l = (_k = pb[4]) == null ? void 0 : _k[0]) == null ? void 0 : _l.data;
+      used_storage = (_n = (_m = pb[3]) == null ? void 0 : _m[0]) == null ? void 0 : _n.data;
     } else
       throw "NUMBERS Tile missing ".concat(type, " cell storage");
     var width = wide_offsets ? 4 : 1;
@@ -27071,7 +27079,7 @@ sap.ui.define((function () { 'use strict';
     var _a;
     var pb = parse_shallow(root.data);
     var storage = -1;
-    if ((_a = pb == null ? undefined : pb[7]) == null ? undefined : _a[0]) {
+    if ((_a = pb == null ? void 0 : pb[7]) == null ? void 0 : _a[0]) {
       if (varint_to_i32(pb[7][0].data) >>> 0)
         storage = 1;
       else
@@ -27098,15 +27106,15 @@ sap.ui.define((function () { 'use strict';
     var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j;
     var out = { t: "", a: "" };
     var csp = parse_shallow(data);
-    if ((_b = (_a = csp == null ? undefined : csp[1]) == null ? undefined : _a[0]) == null ? undefined : _b.data)
-      out.t = u8str((_d = (_c = csp == null ? undefined : csp[1]) == null ? undefined : _c[0]) == null ? undefined : _d.data) || "";
-    if ((_f = (_e = csp == null ? undefined : csp[3]) == null ? undefined : _e[0]) == null ? undefined : _f.data) {
-      var as = M[parse_TSP_Reference((_h = (_g = csp == null ? undefined : csp[3]) == null ? undefined : _g[0]) == null ? undefined : _h.data)][0];
+    if ((_b = (_a = csp == null ? void 0 : csp[1]) == null ? void 0 : _a[0]) == null ? void 0 : _b.data)
+      out.t = u8str((_d = (_c = csp == null ? void 0 : csp[1]) == null ? void 0 : _c[0]) == null ? void 0 : _d.data) || "";
+    if ((_f = (_e = csp == null ? void 0 : csp[3]) == null ? void 0 : _e[0]) == null ? void 0 : _f.data) {
+      var as = M[parse_TSP_Reference((_h = (_g = csp == null ? void 0 : csp[3]) == null ? void 0 : _g[0]) == null ? void 0 : _h.data)][0];
       var asp = parse_shallow(as.data);
-      if ((_j = (_i = asp[1]) == null ? undefined : _i[0]) == null ? undefined : _j.data)
+      if ((_j = (_i = asp[1]) == null ? void 0 : _i[0]) == null ? void 0 : _j.data)
         out.a = u8str(asp[1][0].data);
     }
-    if (csp == null ? undefined : csp[4]) {
+    if (csp == null ? void 0 : csp[4]) {
       out.replies = [];
       csp[4].forEach(function(pi) {
         var cs = M[parse_TSP_Reference(pi.data)][0];
@@ -27150,23 +27158,23 @@ sap.ui.define((function () { 'use strict';
     var dense = ws["!data"] != null, dws = ws;
     var store = parse_shallow(pb[4][0].data);
     var lut = numbers_lut_new();
-    if ((_a = store[4]) == null ? undefined : _a[0])
+    if ((_a = store[4]) == null ? void 0 : _a[0])
       lut.sst = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[4][0].data)][0]);
-    if ((_b = store[6]) == null ? undefined : _b[0])
+    if ((_b = store[6]) == null ? void 0 : _b[0])
       lut.fmla = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[6][0].data)][0]);
-    if ((_c = store[11]) == null ? undefined : _c[0])
+    if ((_c = store[11]) == null ? void 0 : _c[0])
       lut.ofmt = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[11][0].data)][0]);
-    if ((_d = store[12]) == null ? undefined : _d[0])
+    if ((_d = store[12]) == null ? void 0 : _d[0])
       lut.ferr = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[12][0].data)][0]);
-    if ((_e = store[17]) == null ? undefined : _e[0])
+    if ((_e = store[17]) == null ? void 0 : _e[0])
       lut.rsst = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[17][0].data)][0]);
-    if ((_f = store[19]) == null ? undefined : _f[0])
+    if ((_f = store[19]) == null ? void 0 : _f[0])
       lut.cmnt = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[19][0].data)][0]);
-    if ((_g = store[22]) == null ? undefined : _g[0])
+    if ((_g = store[22]) == null ? void 0 : _g[0])
       lut.nfmt = parse_TST_TableDataList(M, M[parse_TSP_Reference(store[22][0].data)][0]);
     var tile = parse_shallow(store[3][0].data);
     var _R = 0;
-    if (!((_h = store[9]) == null ? undefined : _h[0]))
+    if (!((_h = store[9]) == null ? void 0 : _h[0]))
       throw "NUMBERS file missing row tree";
     var rtt = parse_shallow(store[9][0].data)[1].map(function(p) {
       return parse_shallow(p.data);
@@ -27199,12 +27207,12 @@ sap.ui.define((function () { 'use strict';
       });
       _R += _tile.nrows;
     });
-    if ((_i = store[13]) == null ? undefined : _i[0]) {
+    if ((_i = store[13]) == null ? void 0 : _i[0]) {
       var ref = M[parse_TSP_Reference(store[13][0].data)][0];
       var mtype = varint_to_i32(ref.meta[1][0].data);
       if (mtype != 6144)
         throw new Error("Expected merge type 6144, found ".concat(mtype));
-      ws["!merges"] = (_j = parse_shallow(ref.data)) == null ? undefined : _j[1].map(function(pi) {
+      ws["!merges"] = (_j = parse_shallow(ref.data)) == null ? void 0 : _j[1].map(function(pi) {
         var merge = parse_shallow(pi.data);
         var origin = u8_to_dataview(parse_shallow(merge[1][0].data)[1][0].data), size = u8_to_dataview(parse_shallow(merge[2][0].data)[1][0].data);
         return {
@@ -27216,31 +27224,31 @@ sap.ui.define((function () { 'use strict';
         };
       });
     }
-    if (!((_k = ws["!merges"]) == null ? undefined : _k.length) && ((_l = pb[47]) == null ? undefined : _l[0])) {
+    if (!((_k = ws["!merges"]) == null ? void 0 : _k.length) && ((_l = pb[47]) == null ? void 0 : _l[0])) {
       var merge_owner = parse_shallow(pb[47][0].data);
-      if ((_m = merge_owner[2]) == null ? undefined : _m[0]) {
+      if ((_m = merge_owner[2]) == null ? void 0 : _m[0]) {
         var formula_store = parse_shallow(merge_owner[2][0].data);
-        if ((_n = formula_store[3]) == null ? undefined : _n[0]) {
+        if ((_n = formula_store[3]) == null ? void 0 : _n[0]) {
           ws["!merges"] = mappa(formula_store[3], function(u) {
             var _a2, _b2, _c2, _d2, _e2;
             var formula_pair = parse_shallow(u);
             var formula = parse_shallow(formula_pair[2][0].data);
             var AST_node_array = parse_shallow(formula[1][0].data);
-            if (!((_a2 = AST_node_array[1]) == null ? undefined : _a2[0]))
+            if (!((_a2 = AST_node_array[1]) == null ? void 0 : _a2[0]))
               return;
             var AST_node0 = parse_shallow(AST_node_array[1][0].data);
             var AST_node_type = varint_to_i32(AST_node0[1][0].data);
             if (AST_node_type != 67)
               return;
             var AST_colon_tract = parse_shallow(AST_node0[40][0].data);
-            if (!((_b2 = AST_colon_tract[3]) == null ? undefined : _b2[0]) || !((_c2 = AST_colon_tract[4]) == null ? undefined : _c2[0]))
+            if (!((_b2 = AST_colon_tract[3]) == null ? void 0 : _b2[0]) || !((_c2 = AST_colon_tract[4]) == null ? void 0 : _c2[0]))
               return;
             var colrange = parse_shallow(AST_colon_tract[3][0].data);
             var rowrange = parse_shallow(AST_colon_tract[4][0].data);
             var c = varint_to_i32(colrange[1][0].data);
-            var C = ((_d2 = colrange[2]) == null ? undefined : _d2[0]) ? varint_to_i32(colrange[2][0].data) : c;
+            var C = ((_d2 = colrange[2]) == null ? void 0 : _d2[0]) ? varint_to_i32(colrange[2][0].data) : c;
             var r = varint_to_i32(rowrange[1][0].data);
-            var R = ((_e2 = rowrange[2]) == null ? undefined : _e2[0]) ? varint_to_i32(rowrange[2][0].data) : r;
+            var R = ((_e2 = rowrange[2]) == null ? void 0 : _e2[0]) ? varint_to_i32(rowrange[2][0].data) : r;
             return { s: { r: r, c: c }, e: { r: R, c: C } };
           }).filter(function(x) {
             return x != null;
@@ -27252,7 +27260,7 @@ sap.ui.define((function () { 'use strict';
   function parse_TST_TableInfoArchive(M, root, opts) {
     var pb = parse_shallow(root.data);
     var out = { "!ref": "A1" };
-    if (opts == null ? undefined : opts.dense)
+    if (opts == null ? void 0 : opts.dense)
       out["!data"] = [];
     var tableref = M[parse_TSP_Reference(pb[2][0].data)];
     var mtype = varint_to_i32(tableref[0].meta[1][0].data);
@@ -27265,7 +27273,7 @@ sap.ui.define((function () { 'use strict';
     var _a;
     var pb = parse_shallow(root.data);
     var out = {
-      name: ((_a = pb[1]) == null ? undefined : _a[0]) ? u8str(pb[1][0].data) : "",
+      name: ((_a = pb[1]) == null ? void 0 : _a[0]) ? u8str(pb[1][0].data) : "",
       sheets: []
     };
     var shapeoffs = mappa(pb[2], parse_TSP_Reference);
@@ -27283,7 +27291,7 @@ sap.ui.define((function () { 'use strict';
     var out = book_new();
     out.Workbook = { WBProps: { date1904: true } };
     var pb = parse_shallow(root.data);
-    if ((_a = pb[2]) == null ? undefined : _a[0])
+    if ((_a = pb[2]) == null ? void 0 : _a[0])
       throw new Error("Keynote presentations are not supported");
     var sheetoffs = mappa(pb[1], parse_TSP_Reference);
     sheetoffs.forEach(function(off) {
@@ -27333,9 +27341,9 @@ sap.ui.define((function () { 'use strict';
     });
     if (!indices.length)
       throw new Error("File has no messages");
-    if (((_c = (_b = (_a = M == null ? undefined : M[1]) == null ? undefined : _a[0].meta) == null ? undefined : _b[1]) == null ? undefined : _c[0].data) && varint_to_i32(M[1][0].meta[1][0].data) == 1e4)
+    if (((_c = (_b = (_a = M == null ? void 0 : M[1]) == null ? void 0 : _a[0].meta) == null ? void 0 : _b[1]) == null ? void 0 : _c[0].data) && varint_to_i32(M[1][0].meta[1][0].data) == 1e4)
       throw new Error("Pages documents are not supported");
-    var docroot = ((_g = (_f = (_e = (_d = M == null ? undefined : M[1]) == null ? undefined : _d[0]) == null ? undefined : _e.meta) == null ? undefined : _f[1]) == null ? undefined : _g[0].data) && varint_to_i32(M[1][0].meta[1][0].data) == 1 && M[1][0];
+    var docroot = ((_g = (_f = (_e = (_d = M == null ? void 0 : M[1]) == null ? void 0 : _d[0]) == null ? void 0 : _e.meta) == null ? void 0 : _f[1]) == null ? void 0 : _g[0].data) && varint_to_i32(M[1][0].meta[1][0].data) == 1 && M[1][0];
     if (!docroot)
       indices.forEach(function(idx) {
         M[idx].forEach(function(iwam) {
@@ -27369,7 +27377,7 @@ sap.ui.define((function () { 'use strict';
       })) }],
       [{ type: 0, data: write_varint49(1) }]
     ];
-    if (!((_a = tri[6]) == null ? undefined : _a[0]) || !((_b = tri[7]) == null ? undefined : _b[0]))
+    if (!((_a = tri[6]) == null ? void 0 : _a[0]) || !((_b = tri[7]) == null ? void 0 : _b[0]))
       throw "Mutation only works on post-BNC storages!";
     var cnt = 0;
     if (tri[7][0].data.length < 2 * data.length) {
@@ -27386,7 +27394,7 @@ sap.ui.define((function () { 'use strict';
     var _dv = u8_to_dataview(tri[4][0].data), _last_offset = 0, _cell_storage = [];
     var width = 4 ;
     for (var C = 0; C < data.length; ++C) {
-      if (data[C] == null || data[C].t == "z" && !((_c = data[C].c) == null ? undefined : _c.length) || data[C].t == "e") {
+      if (data[C] == null || data[C].t == "z" && !((_c = data[C].c) == null ? void 0 : _c.length) || data[C].t == "e") {
         dv.setUint16(C * 2, 65535, true);
         _dv.setUint16(C * 2, 65535);
         continue;
@@ -27600,9 +27608,9 @@ sap.ui.define((function () { 'use strict';
     var parentidx = mlist[3].findIndex(function(m) {
       var _a, _b;
       var mm = parse_shallow(m.data);
-      if ((_a = mm[3]) == null ? undefined : _a[0])
+      if ((_a = mm[3]) == null ? void 0 : _a[0])
         return u8str(mm[3][0].data) == loc;
-      if (((_b = mm[2]) == null ? undefined : _b[0]) && u8str(mm[2][0].data) == loc)
+      if (((_b = mm[2]) == null ? void 0 : _b[0]) && u8str(mm[2][0].data) == loc)
         return true;
       return false;
     });
@@ -27625,9 +27633,9 @@ sap.ui.define((function () { 'use strict';
     var parentidx = mlist[3].findIndex(function(m) {
       var _a, _b;
       var mm = parse_shallow(m.data);
-      if ((_a = mm[3]) == null ? undefined : _a[0])
+      if ((_a = mm[3]) == null ? void 0 : _a[0])
         return u8str(mm[3][0].data) == loc;
-      if (((_b = mm[2]) == null ? undefined : _b[0]) && u8str(mm[2][0].data) == loc)
+      if (((_b = mm[2]) == null ? void 0 : _b[0]) && u8str(mm[2][0].data) == loc)
         return true;
       return false;
     });
@@ -27729,7 +27737,7 @@ sap.ui.define((function () { 'use strict';
       }
       if (tma[70]) {
         var hsoa = parse_shallow(tma[70][0].data);
-        (_a = hsoa[2]) == null ? undefined : _a.forEach(function(item) {
+        (_a = hsoa[2]) == null ? void 0 : _a.forEach(function(item) {
           var hsa = parse_shallow(item.data);
           [2, 3].map(function(n) {
             return hsa[n][0];
@@ -27778,7 +27786,7 @@ sap.ui.define((function () { 'use strict';
       {
         [2, 4, 5, 6, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22].forEach(function(n) {
           var _a2;
-          if (!((_a2 = store[n]) == null ? undefined : _a2[0]))
+          if (!((_a2 = store[n]) == null ? void 0 : _a2[0]))
             return;
           var oldref = parse_TSP_Reference(store[n][0].data);
           var newref = get_unique_msgid({ deps: [tmaref], location: deps[oldref].location, type: deps[oldref].type }, deps);
@@ -27806,7 +27814,7 @@ sap.ui.define((function () { 'use strict';
         });
         var row_headers = parse_shallow(store[1][0].data);
         {
-          (_b = row_headers[2]) == null ? undefined : _b.forEach(function(tspref) {
+          (_b = row_headers[2]) == null ? void 0 : _b.forEach(function(tspref) {
             var oldref = parse_TSP_Reference(tspref.data);
             var newref = get_unique_msgid({ deps: [tmaref], location: deps[oldref].location, type: deps[oldref].type }, deps);
             numbers_del_oref(tmaroot, oldref);
@@ -27946,7 +27954,7 @@ sap.ui.define((function () { 'use strict';
         numbers_iwa_doit(cfb, deps, row_header_ref, function(rowhead, _x) {
           var _a;
           var base_bucket = parse_shallow(rowhead.messages[0].data);
-          if ((_a = base_bucket == null ? undefined : base_bucket[2]) == null ? undefined : _a[0])
+          if ((_a = base_bucket == null ? void 0 : base_bucket[2]) == null ? void 0 : _a[0])
             for (var R2 = 0; R2 < data.length; ++R2) {
               var _bucket = parse_shallow(base_bucket[2][0].data);
               _bucket[1][0].data = write_varint49(R2);
@@ -27979,7 +27987,7 @@ sap.ui.define((function () { 'use strict';
             var mlst = mlist[3].filter(function(m) {
               return varint_to_i32(parse_shallow(m.data)[1][0].data) == tileref;
             });
-            return (mlst == null ? undefined : mlst.length) ? varint_to_i32(parse_shallow(mlst[0].data)[12][0].data) : 0;
+            return (mlst == null ? void 0 : mlst.length) ? varint_to_i32(parse_shallow(mlst[0].data)[12][0].data) : 0;
           }();
           {
             CFB.utils.cfb_del(cfb, deps[tileref].location);
@@ -29336,7 +29344,7 @@ sap.ui.define((function () { 'use strict';
   		var v = val.v;
   		switch(val.t){
   			case 'z': if(v == null) break; continue;
-  			case 'e': v = (v == 0 ? null : undefined); break;
+  			case 'e': v = (v == 0 ? null : void 0); break;
   			case 's': case 'b':
   			case 'n': if(!val.z || !fmt_is_date(val.z)) break;
   			v = numdate(v); // TODO: date1904 setting should also be stored in worksheet object

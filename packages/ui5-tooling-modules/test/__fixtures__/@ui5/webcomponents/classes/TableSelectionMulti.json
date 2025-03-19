@@ -1,0 +1,1 @@
+{"namespace":"@ui5/webcomponents","tag":"ui5-table-selection-multi","interfaces":[],"properties":{"selected":{"type":"string","mapping":"property"}},"aggregations":{},"associations":{},"events":{"change":{}},"getters":[],"methods":["getSelectedRows","areAllRowsSelected","getSelectedAsSet","setSelectedAsSet","getRowKey","getRowByKey","isSelected","setSelected"]}
