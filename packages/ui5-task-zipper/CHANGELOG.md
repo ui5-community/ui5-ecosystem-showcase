@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@3.4.0...ui5-task-zipper@3.4.1) (2025-03-19)
+
+
+### Bug Fixes
+
+* **ui5-task-zipper:** recreate escaped single quotes in Component-preload.js ([#1168](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1168)) ([a672eab](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/a672eab867ed2dd3eee7e551715ec1ef9da6a2a1))
+
+
+
+
+
 # [3.4.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-zipper@3.3.3...ui5-task-zipper@3.4.0) (2025-02-06)
 
 

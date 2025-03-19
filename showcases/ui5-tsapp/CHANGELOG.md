@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.16.15](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.16.14...ui5-tsapp@0.16.15) (2025-03-19)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** support re-export of main package modules for webc packages ([c61afbd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c61afbd6db9a6665690248c3516ba3756bcd91d3))
+
+
+
+
+
 ## [0.16.14](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.16.13...ui5-tsapp@0.16.14) (2025-03-13)
 
 **Note:** Version bump only for package ui5-tsapp
