@@ -321,8 +321,14 @@ class BundleInfo {
 	getResources() {
 		return this._entries.filter((entry) => entry.type === "resource");
 	}
+	addScript(entryInfo) {
+		return this._entries.push(Object.assign(entryInfo, { type: "script" }));
+	}
+	getScripts() {
+		return this._entries.filter((entry) => entry.type === "script");
+	}
 	getBundledResources() {
-		return this._entries.filter((entry) => /^(module|chunk|resource)$/.test(entry.type));
+		return this._entries.filter((entry) => /^(module|chunk|resource|script)$/.test(entry.type));
 	}
 	getRelatedPaths() {
 		return this._entries
@@ -1216,7 +1222,11 @@ module.exports = function (log, projectInfo) {
 					//   3) should not be skipped from transformation
 					//   4) is no UI5 module
 					if (modulePath) {
-						if (/\.(m|c)?js$/.test(path.extname(modulePath).toLowerCase()) && !shouldSkipTransform(moduleName) && !(await shouldSkipModule(modulePath))) {
+						const skipModule = await shouldSkipModule(modulePath);
+						const skipTransform = shouldSkipTransform(moduleName);
+						const isCMJSModule = /\.(m|c)?js$/.test(path.extname(modulePath).toLowerCase());
+						const isModule = isCMJSModule && !skipTransform && !skipModule;
+						if (isModule) {
 							const module = {
 								name: moduleName,
 								path: modulePath,
@@ -1224,6 +1234,8 @@ module.exports = function (log, projectInfo) {
 							};
 							bundleInfo.addModule(module);
 							lastModified = Math.max(lastModified, module.lastModified);
+						} else if (isCMJSModule) {
+							bundleInfo.addScript(that.getResource(moduleName, { cwd, depPaths, isMiddleware }));
 						} else {
 							bundleInfo.addResource(that.getResource(moduleName, { cwd, depPaths, isMiddleware }));
 						}
