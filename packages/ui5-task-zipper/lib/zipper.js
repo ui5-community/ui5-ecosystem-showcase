@@ -124,9 +124,10 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
 							const manifestStart = oldPreload.indexOf("manifest.json\":'{");
 							const manifestEnd = oldPreload.indexOf("}'", manifestStart);
 							const oldManifest = oldPreload.substring(manifestStart + 16, manifestEnd + 1);
-							const oldManifestEscaped = oldManifest.replace(/\\'/g, '\\"');
-							const newManifest = absoluteToRelativePaths(JSON.parse(oldManifestEscaped));
-							const newPreload = oldPreload.replace(oldManifest, JSON.stringify(newManifest));
+							const oldManifestNoEscapedSingleQuotes = oldManifest.replace(/\\'/g, "REPLACE_WITH_ESCAPED_SINGLE_QUOTE");
+							const newManifest = absoluteToRelativePaths(JSON.parse(oldManifestNoEscapedSingleQuotes));
+							const newManifestEscapedSingleQuotes = JSON.stringify(newManifest).replace(/REPLACE_WITH_ESCAPED_SINGLE_QUOTE/g, "\\'");
+							const newPreload = oldPreload.replace(oldManifest, newManifestEscapedSingleQuotes);
 							zip.addBuffer(Buffer.from(newPreload, "utf-8"), "Component-preload.js");
 						} else {
 							zip.addBuffer(buffer, resourcePath); // Replace first forward slash at the start of the path
