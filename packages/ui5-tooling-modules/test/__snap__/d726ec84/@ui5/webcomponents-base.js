@@ -17,7 +17,7 @@ sap.ui.define([
     "_ui5metadata":
 {
   "name": "@ui5/webcomponents-base",
-  "version": "2.7.0",
+  "version": "2.8.0",
   "dependencies": [
     "sap.ui.core"
   ],
@@ -27,6 +27,7 @@ sap.ui.define([
     "@ui5/webcomponents-base.ItemNavigationBehavior",
     "@ui5/webcomponents-base.MovePlacement",
     "@ui5/webcomponents-base.NavigationMode",
+    "@ui5/webcomponents-base.SortOrder",
     "@ui5/webcomponents-base.ValueState"
   ],
   "interfaces": [],
@@ -81,6 +82,12 @@ sap.ui.define([
     "Paging": "Paging",
   };
   registerEnum("@ui5/webcomponents-base.NavigationMode", pkg["NavigationMode"]);
+  pkg["SortOrder"] = {
+    "None": "None",
+    "Ascending": "Ascending",
+    "Descending": "Descending",
+  };
+  registerEnum("@ui5/webcomponents-base.SortOrder", pkg["SortOrder"]);
   pkg["ValueState"] = {
     "None": "None",
     "Positive": "Positive",
@@ -107,50 +114,6 @@ if (!WebComponent.__setProperty__isPatched) {
 		return fnOriginalSetProperty.apply(this, [sPropName, v, bSupressInvalidate]);
 	};
 	WebComponent.__setProperty__isPatched = true;
-}
-
-// Fixed with https://github.com/SAP/openui5/commit/a4b5fe00b49e0e26e5fd845607a2b95db870d55a in UI5 1.133.0
-
-if (!WebComponent.__CustomEventsListeners__isPatched) {
-	WebComponent.prototype.__attachCustomEventsListeners = function() {
-		// ##### MODIFICATION START #####
-		var hyphenate = sap.ui.require("sap/base/strings/hyphenate");
-		var oEvents = this.getMetadata().getAllEvents();
-		// ##### MODIFICATION END #####
-		for (var sEventName in oEvents) {
-			var sCustomEventName = hyphenate(sEventName);
-			this.getDomRef().addEventListener(sCustomEventName, this.__handleCustomEventBound);
-		}
-	};
-
-	WebComponent.prototype.__detachCustomEventsListeners = function() {
-		var oDomRef = this.getDomRef();
-		if (!oDomRef) {
-			return;
-		}
-
-		// ##### MODIFICATION START #####
-		var hyphenate = sap.ui.require("sap/base/strings/hyphenate");
-		var oEvents = this.getMetadata().getAllEvents();
-		// ##### MODIFICATION END #####
-		for (var sEventName in oEvents) {
-			if (oEvents.hasOwnProperty(sEventName)) {
-				var sCustomEventName = hyphenate(sEventName);
-				oDomRef.removeEventListener(sCustomEventName, this.__handleCustomEventBound);
-			}
-		}
-	};
-	WebComponent.__CustomEventsListeners__isPatched = true;
-}
-
-// Fixed with https://github.com/SAP/openui5/commit/111c4bcd1660f90714ed567fa8cb57fbc448591f in UI5 1.133.0
-
-if (!WebComponent.___mapValueState__isPatched) {
-	WebComponent.prototype._mapValueState ??= function(sValueState) {
-		console.warn("ValueState mapping is not implemented for Web Components yet. Please use UI5 version 1.133.0 or higher.");
-		return sValueState;
-	};
-	WebComponent.___mapValueState__isPatched = true;
 }
 
 	// ====================

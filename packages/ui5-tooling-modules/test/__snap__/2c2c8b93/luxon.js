@@ -872,7 +872,7 @@ sap.ui.define((function () { 'use strict';
 
   	var intlLFCache = {};
   	function getCachedLF(locString, opts) {
-  	  if (opts === undefined) {
+  	  if (opts === void 0) {
   	    opts = {};
   	  }
   	  var key = JSON.stringify([locString, opts]);
@@ -885,7 +885,7 @@ sap.ui.define((function () { 'use strict';
   	}
   	var intlDTCache = {};
   	function getCachedDTF(locString, opts) {
-  	  if (opts === undefined) {
+  	  if (opts === void 0) {
   	    opts = {};
   	  }
   	  var key = JSON.stringify([locString, opts]);
@@ -898,7 +898,7 @@ sap.ui.define((function () { 'use strict';
   	}
   	var intlNumCache = {};
   	function getCachedINF(locString, opts) {
-  	  if (opts === undefined) {
+  	  if (opts === void 0) {
   	    opts = {};
   	  }
   	  var key = JSON.stringify([locString, opts]);
@@ -911,7 +911,7 @@ sap.ui.define((function () { 'use strict';
   	}
   	var intlRelCache = {};
   	function getCachedRTF(locString, opts) {
-  	  if (opts === undefined) {
+  	  if (opts === void 0) {
   	    opts = {};
   	  }
   	  var _opts = opts;
@@ -1192,7 +1192,7 @@ sap.ui.define((function () { 'use strict';
   	    return Locale.create(opts.locale, opts.numberingSystem, opts.outputCalendar, opts.weekSettings, opts.defaultToEN);
   	  };
   	  Locale.create = function create(locale, numberingSystem, outputCalendar, weekSettings, defaultToEN) {
-  	    if (defaultToEN === undefined) {
+  	    if (defaultToEN === void 0) {
   	      defaultToEN = false;
   	    }
   	    var specifiedLocale = locale || Settings.defaultLocale;
@@ -1210,7 +1210,7 @@ sap.ui.define((function () { 'use strict';
   	    intlRelCache = {};
   	  };
   	  Locale.fromObject = function fromObject(_temp) {
-  	    var _ref2 = _temp === undefined ? {} : _temp,
+  	    var _ref2 = _temp === void 0 ? {} : _temp,
   	      locale = _ref2.locale,
   	      numberingSystem = _ref2.numberingSystem,
   	      outputCalendar = _ref2.outputCalendar,
@@ -1254,7 +1254,7 @@ sap.ui.define((function () { 'use strict';
   	    }
   	  };
   	  _proto4.redefaultToEN = function redefaultToEN(alts) {
-  	    if (alts === undefined) {
+  	    if (alts === void 0) {
   	      alts = {};
   	    }
   	    return this.clone(_extends({}, alts, {
@@ -1262,7 +1262,7 @@ sap.ui.define((function () { 'use strict';
   	    }));
   	  };
   	  _proto4.redefaultToSystem = function redefaultToSystem(alts) {
-  	    if (alts === undefined) {
+  	    if (alts === void 0) {
   	      alts = {};
   	    }
   	    return this.clone(_extends({}, alts, {
@@ -1271,7 +1271,7 @@ sap.ui.define((function () { 'use strict';
   	  };
   	  _proto4.months = function months$1(length, format) {
   	    var _this2 = this;
-  	    if (format === undefined) {
+  	    if (format === void 0) {
   	      format = false;
   	    }
   	    return listStuff(this, length, months, function () {
@@ -1292,7 +1292,7 @@ sap.ui.define((function () { 'use strict';
   	  };
   	  _proto4.weekdays = function weekdays$1(length, format) {
   	    var _this3 = this;
-  	    if (format === undefined) {
+  	    if (format === void 0) {
   	      format = false;
   	    }
   	    return listStuff(this, length, weekdays, function () {
@@ -1358,7 +1358,7 @@ sap.ui.define((function () { 'use strict';
   	    return matching ? matching.value : null;
   	  };
   	  _proto4.numberFormatter = function numberFormatter(opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    // this forcesimple option is never used (the only caller short-circuits on it, but it seems safer to leave)
@@ -1366,19 +1366,19 @@ sap.ui.define((function () { 'use strict';
   	    return new PolyNumberFormatter(this.intl, opts.forceSimple || this.fastNumbers, opts);
   	  };
   	  _proto4.dtFormatter = function dtFormatter(dt, intlOpts) {
-  	    if (intlOpts === undefined) {
+  	    if (intlOpts === void 0) {
   	      intlOpts = {};
   	    }
   	    return new PolyDateFormatter(dt, this.intl, intlOpts);
   	  };
   	  _proto4.relFormatter = function relFormatter(opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    return new PolyRelFormatter(this.intl, this.isEnglish(), opts);
   	  };
   	  _proto4.listFormatter = function listFormatter(opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    return getCachedLF(this.intl, opts);
@@ -1749,7 +1749,7 @@ sap.ui.define((function () { 'use strict';
   	}
   	function digitRegex(_ref, append) {
   	  var numberingSystem = _ref.numberingSystem;
-  	  if (append === undefined) {
+  	  if (append === void 0) {
   	    append = "";
   	  }
   	  var ns = numberingSystem || "latn";
@@ -2007,10 +2007,10 @@ sap.ui.define((function () { 'use strict';
   	 */
 
   	function gregorianToWeek(gregObj, minDaysInFirstWeek, startOfWeek) {
-  	  if (minDaysInFirstWeek === undefined) {
+  	  if (minDaysInFirstWeek === void 0) {
   	    minDaysInFirstWeek = 4;
   	  }
-  	  if (startOfWeek === undefined) {
+  	  if (startOfWeek === void 0) {
   	    startOfWeek = 1;
   	  }
   	  var year = gregObj.year,
@@ -2036,10 +2036,10 @@ sap.ui.define((function () { 'use strict';
   	  }, timeObject(gregObj));
   	}
   	function weekToGregorian(weekData, minDaysInFirstWeek, startOfWeek) {
-  	  if (minDaysInFirstWeek === undefined) {
+  	  if (minDaysInFirstWeek === void 0) {
   	    minDaysInFirstWeek = 4;
   	  }
-  	  if (startOfWeek === undefined) {
+  	  if (startOfWeek === void 0) {
   	    startOfWeek = 1;
   	  }
   	  var weekYear = weekData.weekYear,
@@ -2121,10 +2121,10 @@ sap.ui.define((function () { 'use strict';
   	  }
   	}
   	function hasInvalidWeekData(obj, minDaysInFirstWeek, startOfWeek) {
-  	  if (minDaysInFirstWeek === undefined) {
+  	  if (minDaysInFirstWeek === void 0) {
   	    minDaysInFirstWeek = 4;
   	  }
-  	  if (startOfWeek === undefined) {
+  	  if (startOfWeek === void 0) {
   	    startOfWeek = 1;
   	  }
   	  var validYear = isInteger(obj.weekYear),
@@ -2277,7 +2277,7 @@ sap.ui.define((function () { 'use strict';
   	  return x - n * Math.floor(x / n);
   	}
   	function padStart(input, n) {
-  	  if (n === undefined) {
+  	  if (n === void 0) {
   	    n = 2;
   	  }
   	  var isNeg = input < 0;
@@ -2313,7 +2313,7 @@ sap.ui.define((function () { 'use strict';
   	  }
   	}
   	function roundTo(number, digits, towardZero) {
-  	  if (towardZero === undefined) {
+  	  if (towardZero === void 0) {
   	    towardZero = false;
   	  }
   	  var factor = Math.pow(10, digits),
@@ -2360,10 +2360,10 @@ sap.ui.define((function () { 'use strict';
   	  return -fwdlw + minDaysInFirstWeek - 1;
   	}
   	function weeksInWeekYear(weekYear, minDaysInFirstWeek, startOfWeek) {
-  	  if (minDaysInFirstWeek === undefined) {
+  	  if (minDaysInFirstWeek === void 0) {
   	    minDaysInFirstWeek = 4;
   	  }
-  	  if (startOfWeek === undefined) {
+  	  if (startOfWeek === void 0) {
   	    startOfWeek = 1;
   	  }
   	  var weekOffset = firstWeekOffset(weekYear, minDaysInFirstWeek, startOfWeek);
@@ -2379,7 +2379,7 @@ sap.ui.define((function () { 'use strict';
   	// PARSING
 
   	function parseZoneInfo(ts, offsetFormat, locale, timeZone) {
-  	  if (timeZone === undefined) {
+  	  if (timeZone === void 0) {
   	    timeZone = null;
   	  }
   	  var date = new Date(ts),
@@ -2530,10 +2530,10 @@ sap.ui.define((function () { 'use strict';
   	  return eras(length)[dt.year < 0 ? 0 : 1];
   	}
   	function formatRelativeTime(unit, count, numeric, narrow) {
-  	  if (numeric === undefined) {
+  	  if (numeric === void 0) {
   	    numeric = "always";
   	  }
-  	  if (narrow === undefined) {
+  	  if (narrow === void 0) {
   	    narrow = false;
   	  }
   	  var units = {
@@ -2607,7 +2607,7 @@ sap.ui.define((function () { 'use strict';
   	 */
   	var Formatter = /*#__PURE__*/function () {
   	  Formatter.create = function create(locale, opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    return new Formatter(locale, opts);
@@ -2672,7 +2672,7 @@ sap.ui.define((function () { 'use strict';
   	    return df.format();
   	  };
   	  _proto.dtFormatter = function dtFormatter(dt, opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    return this.loc.dtFormatter(dt, _extends({}, this.opts, opts));
@@ -2691,7 +2691,7 @@ sap.ui.define((function () { 'use strict';
   	    return this.dtFormatter(dt, opts).resolvedOptions();
   	  };
   	  _proto.num = function num(n, p) {
-  	    if (p === undefined) {
+  	    if (p === void 0) {
   	      p = 0;
   	    }
   	    // we get some perf out of doing this here, annoyingly
@@ -3151,7 +3151,7 @@ sap.ui.define((function () { 'use strict';
   	  var hasNegativePrefix = s[0] === "-";
   	  var negativeSeconds = secondStr && secondStr[0] === "-";
   	  var maybeNegate = function maybeNegate(num, force) {
-  	    if (force === undefined) {
+  	    if (force === void 0) {
   	      force = false;
   	    }
   	    return num !== undefined && (force || num && hasNegativePrefix) ? -num : num;
@@ -3387,7 +3387,7 @@ sap.ui.define((function () { 'use strict';
 
   	// clone really means "create another instance just like this one, but with these changes"
   	function clone$1(dur, alts, clear) {
-  	  if (clear === undefined) {
+  	  if (clear === void 0) {
   	    clear = false;
   	  }
   	  // deep merge for vals
@@ -3563,7 +3563,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {Duration}
   	   */;
   	  Duration.fromObject = function fromObject(obj, opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    if (obj == null || typeof obj !== "object") {
@@ -3656,7 +3656,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {Duration}
   	   */;
   	  Duration.invalid = function invalid(reason, explanation) {
-  	    if (explanation === undefined) {
+  	    if (explanation === void 0) {
   	      explanation = null;
   	    }
   	    if (!reason) {
@@ -3737,7 +3737,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {string}
   	   */
   	  _proto.toFormat = function toFormat(fmt, opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    // reverse-compat since 1.2; we always round down now, never up, and we do it by default
@@ -3763,7 +3763,7 @@ sap.ui.define((function () { 'use strict';
   	   */;
   	  _proto.toHuman = function toHuman(opts) {
   	    var _this = this;
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    if (!this.isValid) return INVALID$2;
@@ -3843,7 +3843,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {string}
   	   */;
   	  _proto.toISOTime = function toISOTime(opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    if (!this.isValid) return null;
@@ -3991,7 +3991,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {Duration}
   	   */;
   	  _proto.reconfigure = function reconfigure(_temp) {
-  	    var _ref = _temp === undefined ? {} : _temp,
+  	    var _ref = _temp === void 0 ? {} : _temp,
   	      locale = _ref.locale,
   	      numberingSystem = _ref.numberingSystem,
   	      conversionAccuracy = _ref.conversionAccuracy,
@@ -4369,7 +4369,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {Interval}
   	   */
   	  Interval.invalid = function invalid(reason, explanation) {
-  	    if (explanation === undefined) {
+  	    if (explanation === void 0) {
   	      explanation = null;
   	    }
   	    if (!reason) {
@@ -4494,7 +4494,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {number}
   	   */
   	  _proto.length = function length(unit) {
-  	    if (unit === undefined) {
+  	    if (unit === void 0) {
   	      unit = "milliseconds";
   	    }
   	    return this.isValid ? this.toDuration.apply(this, [unit]).get(unit) : NaN;
@@ -4510,7 +4510,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {number}
   	   */;
   	  _proto.count = function count(unit, opts) {
-  	    if (unit === undefined) {
+  	    if (unit === void 0) {
   	      unit = "milliseconds";
   	    }
   	    if (!this.isValid) return NaN;
@@ -4582,7 +4582,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {Interval}
   	   */;
   	  _proto.set = function set(_temp) {
-  	    var _ref = _temp === undefined ? {} : _temp,
+  	    var _ref = _temp === void 0 ? {} : _temp,
   	      start = _ref.start,
   	      end = _ref.end;
   	    if (!this.isValid) return this;
@@ -4860,10 +4860,10 @@ sap.ui.define((function () { 'use strict';
   	   * @return {string}
   	   */;
   	  _proto.toLocaleString = function toLocaleString(formatOpts, opts) {
-  	    if (formatOpts === undefined) {
+  	    if (formatOpts === void 0) {
   	      formatOpts = DATE_SHORT;
   	    }
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    return this.isValid ? Formatter.create(this.s.loc.clone(opts), formatOpts).formatInterval(this) : INVALID$1;
@@ -4915,9 +4915,9 @@ sap.ui.define((function () { 'use strict';
   	   * @return {string}
   	   */;
   	  _proto.toFormat = function toFormat(dateFormat, _temp2) {
-  	    var _ref3 = _temp2 === undefined ? {} : _temp2,
+  	    var _ref3 = _temp2 === void 0 ? {} : _temp2,
   	      _ref3$separator = _ref3.separator,
-  	      separator = _ref3$separator === undefined ? " – " : _ref3$separator;
+  	      separator = _ref3$separator === void 0 ? " – " : _ref3$separator;
   	    if (!this.isValid) return INVALID$1;
   	    return "" + this.s.toFormat(dateFormat) + separator + this.e.toFormat(dateFormat);
   	  }
@@ -5011,7 +5011,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {boolean}
   	   */
   	  Info.hasDST = function hasDST(zone) {
-  	    if (zone === undefined) {
+  	    if (zone === void 0) {
   	      zone = Settings.defaultZone;
   	    }
   	    var proto = DateTime.now().setZone(zone).set({
@@ -5057,11 +5057,11 @@ sap.ui.define((function () { 'use strict';
   	   * @returns {number} the start of the week, 1 for Monday through 7 for Sunday
   	   */;
   	  Info.getStartOfWeek = function getStartOfWeek(_temp) {
-  	    var _ref = _temp === undefined ? {} : _temp,
+  	    var _ref = _temp === void 0 ? {} : _temp,
   	      _ref$locale = _ref.locale,
-  	      locale = _ref$locale === undefined ? null : _ref$locale,
+  	      locale = _ref$locale === void 0 ? null : _ref$locale,
   	      _ref$locObj = _ref.locObj,
-  	      locObj = _ref$locObj === undefined ? null : _ref$locObj;
+  	      locObj = _ref$locObj === void 0 ? null : _ref$locObj;
   	    return (locObj || Locale.create(locale)).getStartOfWeek();
   	  }
 
@@ -5074,11 +5074,11 @@ sap.ui.define((function () { 'use strict';
   	   * @returns {number}
   	   */;
   	  Info.getMinimumDaysInFirstWeek = function getMinimumDaysInFirstWeek(_temp2) {
-  	    var _ref2 = _temp2 === undefined ? {} : _temp2,
+  	    var _ref2 = _temp2 === void 0 ? {} : _temp2,
   	      _ref2$locale = _ref2.locale,
-  	      locale = _ref2$locale === undefined ? null : _ref2$locale,
+  	      locale = _ref2$locale === void 0 ? null : _ref2$locale,
   	      _ref2$locObj = _ref2.locObj,
-  	      locObj = _ref2$locObj === undefined ? null : _ref2$locObj;
+  	      locObj = _ref2$locObj === void 0 ? null : _ref2$locObj;
   	    return (locObj || Locale.create(locale)).getMinDaysInFirstWeek();
   	  }
 
@@ -5090,11 +5090,11 @@ sap.ui.define((function () { 'use strict';
   	   * @returns {number[]} an array of weekdays, 1 for Monday through 7 for Sunday
   	   */;
   	  Info.getWeekendWeekdays = function getWeekendWeekdays(_temp3) {
-  	    var _ref3 = _temp3 === undefined ? {} : _temp3,
+  	    var _ref3 = _temp3 === void 0 ? {} : _temp3,
   	      _ref3$locale = _ref3.locale,
-  	      locale = _ref3$locale === undefined ? null : _ref3$locale,
+  	      locale = _ref3$locale === void 0 ? null : _ref3$locale,
   	      _ref3$locObj = _ref3.locObj,
-  	      locObj = _ref3$locObj === undefined ? null : _ref3$locObj;
+  	      locObj = _ref3$locObj === void 0 ? null : _ref3$locObj;
   	    // copy the array, because we cache it internally
   	    return (locObj || Locale.create(locale)).getWeekendDays().slice();
   	  }
@@ -5117,18 +5117,18 @@ sap.ui.define((function () { 'use strict';
   	   * @return {Array}
   	   */;
   	  Info.months = function months(length, _temp4) {
-  	    if (length === undefined) {
+  	    if (length === void 0) {
   	      length = "long";
   	    }
-  	    var _ref4 = _temp4 === undefined ? {} : _temp4,
+  	    var _ref4 = _temp4 === void 0 ? {} : _temp4,
   	      _ref4$locale = _ref4.locale,
-  	      locale = _ref4$locale === undefined ? null : _ref4$locale,
+  	      locale = _ref4$locale === void 0 ? null : _ref4$locale,
   	      _ref4$numberingSystem = _ref4.numberingSystem,
-  	      numberingSystem = _ref4$numberingSystem === undefined ? null : _ref4$numberingSystem,
+  	      numberingSystem = _ref4$numberingSystem === void 0 ? null : _ref4$numberingSystem,
   	      _ref4$locObj = _ref4.locObj,
-  	      locObj = _ref4$locObj === undefined ? null : _ref4$locObj,
+  	      locObj = _ref4$locObj === void 0 ? null : _ref4$locObj,
   	      _ref4$outputCalendar = _ref4.outputCalendar,
-  	      outputCalendar = _ref4$outputCalendar === undefined ? "gregory" : _ref4$outputCalendar;
+  	      outputCalendar = _ref4$outputCalendar === void 0 ? "gregory" : _ref4$outputCalendar;
   	    return (locObj || Locale.create(locale, numberingSystem, outputCalendar)).months(length);
   	  }
 
@@ -5146,18 +5146,18 @@ sap.ui.define((function () { 'use strict';
   	   * @return {Array}
   	   */;
   	  Info.monthsFormat = function monthsFormat(length, _temp5) {
-  	    if (length === undefined) {
+  	    if (length === void 0) {
   	      length = "long";
   	    }
-  	    var _ref5 = _temp5 === undefined ? {} : _temp5,
+  	    var _ref5 = _temp5 === void 0 ? {} : _temp5,
   	      _ref5$locale = _ref5.locale,
-  	      locale = _ref5$locale === undefined ? null : _ref5$locale,
+  	      locale = _ref5$locale === void 0 ? null : _ref5$locale,
   	      _ref5$numberingSystem = _ref5.numberingSystem,
-  	      numberingSystem = _ref5$numberingSystem === undefined ? null : _ref5$numberingSystem,
+  	      numberingSystem = _ref5$numberingSystem === void 0 ? null : _ref5$numberingSystem,
   	      _ref5$locObj = _ref5.locObj,
-  	      locObj = _ref5$locObj === undefined ? null : _ref5$locObj,
+  	      locObj = _ref5$locObj === void 0 ? null : _ref5$locObj,
   	      _ref5$outputCalendar = _ref5.outputCalendar,
-  	      outputCalendar = _ref5$outputCalendar === undefined ? "gregory" : _ref5$outputCalendar;
+  	      outputCalendar = _ref5$outputCalendar === void 0 ? "gregory" : _ref5$outputCalendar;
   	    return (locObj || Locale.create(locale, numberingSystem, outputCalendar)).months(length, true);
   	  }
 
@@ -5176,16 +5176,16 @@ sap.ui.define((function () { 'use strict';
   	   * @return {Array}
   	   */;
   	  Info.weekdays = function weekdays(length, _temp6) {
-  	    if (length === undefined) {
+  	    if (length === void 0) {
   	      length = "long";
   	    }
-  	    var _ref6 = _temp6 === undefined ? {} : _temp6,
+  	    var _ref6 = _temp6 === void 0 ? {} : _temp6,
   	      _ref6$locale = _ref6.locale,
-  	      locale = _ref6$locale === undefined ? null : _ref6$locale,
+  	      locale = _ref6$locale === void 0 ? null : _ref6$locale,
   	      _ref6$numberingSystem = _ref6.numberingSystem,
-  	      numberingSystem = _ref6$numberingSystem === undefined ? null : _ref6$numberingSystem,
+  	      numberingSystem = _ref6$numberingSystem === void 0 ? null : _ref6$numberingSystem,
   	      _ref6$locObj = _ref6.locObj,
-  	      locObj = _ref6$locObj === undefined ? null : _ref6$locObj;
+  	      locObj = _ref6$locObj === void 0 ? null : _ref6$locObj;
   	    return (locObj || Locale.create(locale, numberingSystem, null)).weekdays(length);
   	  }
 
@@ -5202,16 +5202,16 @@ sap.ui.define((function () { 'use strict';
   	   * @return {Array}
   	   */;
   	  Info.weekdaysFormat = function weekdaysFormat(length, _temp7) {
-  	    if (length === undefined) {
+  	    if (length === void 0) {
   	      length = "long";
   	    }
-  	    var _ref7 = _temp7 === undefined ? {} : _temp7,
+  	    var _ref7 = _temp7 === void 0 ? {} : _temp7,
   	      _ref7$locale = _ref7.locale,
-  	      locale = _ref7$locale === undefined ? null : _ref7$locale,
+  	      locale = _ref7$locale === void 0 ? null : _ref7$locale,
   	      _ref7$numberingSystem = _ref7.numberingSystem,
-  	      numberingSystem = _ref7$numberingSystem === undefined ? null : _ref7$numberingSystem,
+  	      numberingSystem = _ref7$numberingSystem === void 0 ? null : _ref7$numberingSystem,
   	      _ref7$locObj = _ref7.locObj,
-  	      locObj = _ref7$locObj === undefined ? null : _ref7$locObj;
+  	      locObj = _ref7$locObj === void 0 ? null : _ref7$locObj;
   	    return (locObj || Locale.create(locale, numberingSystem, null)).weekdays(length, true);
   	  }
 
@@ -5224,9 +5224,9 @@ sap.ui.define((function () { 'use strict';
   	   * @return {Array}
   	   */;
   	  Info.meridiems = function meridiems(_temp8) {
-  	    var _ref8 = _temp8 === undefined ? {} : _temp8,
+  	    var _ref8 = _temp8 === void 0 ? {} : _temp8,
   	      _ref8$locale = _ref8.locale,
-  	      locale = _ref8$locale === undefined ? null : _ref8$locale;
+  	      locale = _ref8$locale === void 0 ? null : _ref8$locale;
   	    return Locale.create(locale).meridiems();
   	  }
 
@@ -5241,12 +5241,12 @@ sap.ui.define((function () { 'use strict';
   	   * @return {Array}
   	   */;
   	  Info.eras = function eras(length, _temp9) {
-  	    if (length === undefined) {
+  	    if (length === void 0) {
   	      length = "short";
   	    }
-  	    var _ref9 = _temp9 === undefined ? {} : _temp9,
+  	    var _ref9 = _temp9 === void 0 ? {} : _temp9,
   	      _ref9$locale = _ref9.locale,
-  	      locale = _ref9$locale === undefined ? null : _ref9$locale;
+  	      locale = _ref9$locale === void 0 ? null : _ref9$locale;
   	    return Locale.create(locale, null, "gregory").eras(length);
   	  }
 
@@ -5360,7 +5360,7 @@ sap.ui.define((function () { 'use strict';
 
   	var MISSING_FTP = "missing Intl.DateTimeFormat.formatToParts support";
   	function intUnit(regex, post) {
-  	  if (post === undefined) {
+  	  if (post === void 0) {
   	    post = function post(i) {
   	      return i;
   	    };
@@ -6025,7 +6025,7 @@ sap.ui.define((function () { 'use strict';
   	// if you want to output a technical format (e.g. RFC 2822), this helper
   	// helps handle the details
   	function toTechFormat(dt, format, allowZ) {
-  	  if (allowZ === undefined) {
+  	  if (allowZ === void 0) {
   	    allowZ = true;
   	  }
   	  return dt.isValid ? Formatter.create(Locale.create("en-US"), {
@@ -6479,7 +6479,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {DateTime}
   	   */;
   	  DateTime.fromJSDate = function fromJSDate(date, options) {
-  	    if (options === undefined) {
+  	    if (options === void 0) {
   	      options = {};
   	    }
   	    var ts = isDate(date) ? date.valueOf() : NaN;
@@ -6509,7 +6509,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {DateTime}
   	   */;
   	  DateTime.fromMillis = function fromMillis(milliseconds, options) {
-  	    if (options === undefined) {
+  	    if (options === void 0) {
   	      options = {};
   	    }
   	    if (!isNumber(milliseconds)) {
@@ -6538,7 +6538,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {DateTime}
   	   */;
   	  DateTime.fromSeconds = function fromSeconds(seconds, options) {
-  	    if (options === undefined) {
+  	    if (options === void 0) {
   	      options = {};
   	    }
   	    if (!isNumber(seconds)) {
@@ -6586,7 +6586,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {DateTime}
   	   */;
   	  DateTime.fromObject = function fromObject(obj, opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    obj = obj || {};
@@ -6699,7 +6699,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {DateTime}
   	   */;
   	  DateTime.fromISO = function fromISO(text, opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    var _parseISODate = parseISODate(text),
@@ -6724,7 +6724,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {DateTime}
   	   */;
   	  DateTime.fromRFC2822 = function fromRFC2822(text, opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    var _parseRFC2822Date = parseRFC2822Date(text),
@@ -6750,7 +6750,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {DateTime}
   	   */;
   	  DateTime.fromHTTP = function fromHTTP(text, opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    var _parseHTTPDate = parseHTTPDate(text),
@@ -6774,7 +6774,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {DateTime}
   	   */;
   	  DateTime.fromFormat = function fromFormat(text, fmt, opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    if (isUndefined(text) || isUndefined(fmt)) {
@@ -6782,9 +6782,9 @@ sap.ui.define((function () { 'use strict';
   	    }
   	    var _opts = opts,
   	      _opts$locale = _opts.locale,
-  	      locale = _opts$locale === undefined ? null : _opts$locale,
+  	      locale = _opts$locale === void 0 ? null : _opts$locale,
   	      _opts$numberingSystem = _opts.numberingSystem,
-  	      numberingSystem = _opts$numberingSystem === undefined ? null : _opts$numberingSystem,
+  	      numberingSystem = _opts$numberingSystem === void 0 ? null : _opts$numberingSystem,
   	      localeToUse = Locale.fromOpts({
   	        locale: locale,
   	        numberingSystem: numberingSystem,
@@ -6806,7 +6806,7 @@ sap.ui.define((function () { 'use strict';
   	   * @deprecated use fromFormat instead
   	   */;
   	  DateTime.fromString = function fromString(text, fmt, opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    return DateTime.fromFormat(text, fmt, opts);
@@ -6834,7 +6834,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {DateTime}
   	   */;
   	  DateTime.fromSQL = function fromSQL(text, opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    var _parseSQL = parseSQL(text),
@@ -6850,7 +6850,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {DateTime}
   	   */;
   	  DateTime.invalid = function invalid(reason, explanation) {
-  	    if (explanation === undefined) {
+  	    if (explanation === void 0) {
   	      explanation = null;
   	    }
   	    if (!reason) {
@@ -6882,7 +6882,7 @@ sap.ui.define((function () { 'use strict';
   	   * @returns {string}
   	   */;
   	  DateTime.parseFormatForOpts = function parseFormatForOpts(formatOpts, localeOpts) {
-  	    if (localeOpts === undefined) {
+  	    if (localeOpts === void 0) {
   	      localeOpts = {};
   	    }
   	    var tokenList = formatOptsToTokens(formatOpts, Locale.fromObject(localeOpts));
@@ -6899,7 +6899,7 @@ sap.ui.define((function () { 'use strict';
   	   * @returns {string}
   	   */;
   	  DateTime.expandFormat = function expandFormat(fmt, localeOpts) {
-  	    if (localeOpts === undefined) {
+  	    if (localeOpts === void 0) {
   	      localeOpts = {};
   	    }
   	    var expanded = expandMacroTokens(Formatter.parseFormat(fmt), Locale.fromObject(localeOpts));
@@ -6980,7 +6980,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {Object}
   	   */
   	  _proto.resolvedLocaleOptions = function resolvedLocaleOptions(opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    var _Formatter$create$res = Formatter.create(this.loc.clone(opts), opts).resolvedOptions(this),
@@ -7005,10 +7005,10 @@ sap.ui.define((function () { 'use strict';
   	   * @return {DateTime}
   	   */;
   	  _proto.toUTC = function toUTC(offset, opts) {
-  	    if (offset === undefined) {
+  	    if (offset === void 0) {
   	      offset = 0;
   	    }
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    return this.setZone(FixedOffsetZone.instance(offset), opts);
@@ -7034,11 +7034,11 @@ sap.ui.define((function () { 'use strict';
   	   * @return {DateTime}
   	   */;
   	  _proto.setZone = function setZone(zone, _temp) {
-  	    var _ref2 = _temp === undefined ? {} : _temp,
+  	    var _ref2 = _temp === void 0 ? {} : _temp,
   	      _ref2$keepLocalTime = _ref2.keepLocalTime,
-  	      keepLocalTime = _ref2$keepLocalTime === undefined ? false : _ref2$keepLocalTime,
+  	      keepLocalTime = _ref2$keepLocalTime === void 0 ? false : _ref2$keepLocalTime,
   	      _ref2$keepCalendarTim = _ref2.keepCalendarTime,
-  	      keepCalendarTime = _ref2$keepCalendarTim === undefined ? false : _ref2$keepCalendarTim;
+  	      keepCalendarTime = _ref2$keepCalendarTim === void 0 ? false : _ref2$keepCalendarTim;
   	    zone = normalizeZone(zone, Settings.defaultZone);
   	    if (zone.equals(this.zone)) {
   	      return this;
@@ -7066,7 +7066,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {DateTime}
   	   */;
   	  _proto.reconfigure = function reconfigure(_temp2) {
-  	    var _ref3 = _temp2 === undefined ? {} : _temp2,
+  	    var _ref3 = _temp2 === void 0 ? {} : _temp2,
   	      locale = _ref3.locale,
   	      numberingSystem = _ref3.numberingSystem,
   	      outputCalendar = _ref3.outputCalendar;
@@ -7190,9 +7190,9 @@ sap.ui.define((function () { 'use strict';
   	   * @return {DateTime}
   	   */;
   	  _proto.startOf = function startOf(unit, _temp3) {
-  	    var _ref4 = _temp3 === undefined ? {} : _temp3,
+  	    var _ref4 = _temp3 === void 0 ? {} : _temp3,
   	      _ref4$useLocaleWeeks = _ref4.useLocaleWeeks,
-  	      useLocaleWeeks = _ref4$useLocaleWeeks === undefined ? false : _ref4$useLocaleWeeks;
+  	      useLocaleWeeks = _ref4$useLocaleWeeks === void 0 ? false : _ref4$useLocaleWeeks;
   	    if (!this.isValid) return this;
   	    var o = {},
   	      normalizedUnit = Duration.normalizeUnit(unit);
@@ -7271,7 +7271,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {string}
   	   */;
   	  _proto.toFormat = function toFormat(fmt, opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    return this.isValid ? Formatter.create(this.loc.redefaultToEN(opts)).formatDateTimeFromString(this, fmt) : INVALID;
@@ -7297,10 +7297,10 @@ sap.ui.define((function () { 'use strict';
   	   * @return {string}
   	   */;
   	  _proto.toLocaleString = function toLocaleString(formatOpts, opts) {
-  	    if (formatOpts === undefined) {
+  	    if (formatOpts === void 0) {
   	      formatOpts = DATE_SHORT;
   	    }
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    return this.isValid ? Formatter.create(this.loc.clone(opts), formatOpts).formatDateTime(this) : INVALID;
@@ -7320,7 +7320,7 @@ sap.ui.define((function () { 'use strict';
   	   *                                   //=> ]
   	   */;
   	  _proto.toLocaleParts = function toLocaleParts(opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    return this.isValid ? Formatter.create(this.loc.clone(opts), opts).formatDateTimeParts(this) : [];
@@ -7341,17 +7341,17 @@ sap.ui.define((function () { 'use strict';
   	   * @return {string}
   	   */;
   	  _proto.toISO = function toISO(_temp4) {
-  	    var _ref5 = _temp4 === undefined ? {} : _temp4,
+  	    var _ref5 = _temp4 === void 0 ? {} : _temp4,
   	      _ref5$format = _ref5.format,
-  	      format = _ref5$format === undefined ? "extended" : _ref5$format,
+  	      format = _ref5$format === void 0 ? "extended" : _ref5$format,
   	      _ref5$suppressSeconds = _ref5.suppressSeconds,
-  	      suppressSeconds = _ref5$suppressSeconds === undefined ? false : _ref5$suppressSeconds,
+  	      suppressSeconds = _ref5$suppressSeconds === void 0 ? false : _ref5$suppressSeconds,
   	      _ref5$suppressMillise = _ref5.suppressMilliseconds,
-  	      suppressMilliseconds = _ref5$suppressMillise === undefined ? false : _ref5$suppressMillise,
+  	      suppressMilliseconds = _ref5$suppressMillise === void 0 ? false : _ref5$suppressMillise,
   	      _ref5$includeOffset = _ref5.includeOffset,
-  	      includeOffset = _ref5$includeOffset === undefined ? true : _ref5$includeOffset,
+  	      includeOffset = _ref5$includeOffset === void 0 ? true : _ref5$includeOffset,
   	      _ref5$extendedZone = _ref5.extendedZone,
-  	      extendedZone = _ref5$extendedZone === undefined ? false : _ref5$extendedZone;
+  	      extendedZone = _ref5$extendedZone === void 0 ? false : _ref5$extendedZone;
   	    if (!this.isValid) {
   	      return null;
   	    }
@@ -7371,9 +7371,9 @@ sap.ui.define((function () { 'use strict';
   	   * @return {string}
   	   */;
   	  _proto.toISODate = function toISODate(_temp5) {
-  	    var _ref6 = _temp5 === undefined ? {} : _temp5,
+  	    var _ref6 = _temp5 === void 0 ? {} : _temp5,
   	      _ref6$format = _ref6.format,
-  	      format = _ref6$format === undefined ? "extended" : _ref6$format;
+  	      format = _ref6$format === void 0 ? "extended" : _ref6$format;
   	    if (!this.isValid) {
   	      return null;
   	    }
@@ -7405,19 +7405,19 @@ sap.ui.define((function () { 'use strict';
   	   * @return {string}
   	   */;
   	  _proto.toISOTime = function toISOTime(_temp6) {
-  	    var _ref7 = _temp6 === undefined ? {} : _temp6,
+  	    var _ref7 = _temp6 === void 0 ? {} : _temp6,
   	      _ref7$suppressMillise = _ref7.suppressMilliseconds,
-  	      suppressMilliseconds = _ref7$suppressMillise === undefined ? false : _ref7$suppressMillise,
+  	      suppressMilliseconds = _ref7$suppressMillise === void 0 ? false : _ref7$suppressMillise,
   	      _ref7$suppressSeconds = _ref7.suppressSeconds,
-  	      suppressSeconds = _ref7$suppressSeconds === undefined ? false : _ref7$suppressSeconds,
+  	      suppressSeconds = _ref7$suppressSeconds === void 0 ? false : _ref7$suppressSeconds,
   	      _ref7$includeOffset = _ref7.includeOffset,
-  	      includeOffset = _ref7$includeOffset === undefined ? true : _ref7$includeOffset,
+  	      includeOffset = _ref7$includeOffset === void 0 ? true : _ref7$includeOffset,
   	      _ref7$includePrefix = _ref7.includePrefix,
-  	      includePrefix = _ref7$includePrefix === undefined ? false : _ref7$includePrefix,
+  	      includePrefix = _ref7$includePrefix === void 0 ? false : _ref7$includePrefix,
   	      _ref7$extendedZone = _ref7.extendedZone,
-  	      extendedZone = _ref7$extendedZone === undefined ? false : _ref7$extendedZone,
+  	      extendedZone = _ref7$extendedZone === void 0 ? false : _ref7$extendedZone,
   	      _ref7$format = _ref7.format,
-  	      format = _ref7$format === undefined ? "extended" : _ref7$format;
+  	      format = _ref7$format === void 0 ? "extended" : _ref7$format;
   	    if (!this.isValid) {
   	      return null;
   	    }
@@ -7472,13 +7472,13 @@ sap.ui.define((function () { 'use strict';
   	   * @return {string}
   	   */;
   	  _proto.toSQLTime = function toSQLTime(_temp7) {
-  	    var _ref8 = _temp7 === undefined ? {} : _temp7,
+  	    var _ref8 = _temp7 === void 0 ? {} : _temp7,
   	      _ref8$includeOffset = _ref8.includeOffset,
-  	      includeOffset = _ref8$includeOffset === undefined ? true : _ref8$includeOffset,
+  	      includeOffset = _ref8$includeOffset === void 0 ? true : _ref8$includeOffset,
   	      _ref8$includeZone = _ref8.includeZone,
-  	      includeZone = _ref8$includeZone === undefined ? false : _ref8$includeZone,
+  	      includeZone = _ref8$includeZone === void 0 ? false : _ref8$includeZone,
   	      _ref8$includeOffsetSp = _ref8.includeOffsetSpace,
-  	      includeOffsetSpace = _ref8$includeOffsetSp === undefined ? true : _ref8$includeOffsetSp;
+  	      includeOffsetSpace = _ref8$includeOffsetSp === void 0 ? true : _ref8$includeOffsetSp;
   	    var fmt = "HH:mm:ss.SSS";
   	    if (includeZone || includeOffset) {
   	      if (includeOffsetSpace) {
@@ -7506,7 +7506,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {string}
   	   */;
   	  _proto.toSQL = function toSQL(opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    if (!this.isValid) {
@@ -7591,7 +7591,7 @@ sap.ui.define((function () { 'use strict';
   	   * @return {Object}
   	   */;
   	  _proto.toObject = function toObject(opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    if (!this.isValid) return {};
@@ -7630,10 +7630,10 @@ sap.ui.define((function () { 'use strict';
   	   * @return {Duration}
   	   */;
   	  _proto.diff = function diff(otherDateTime, unit, opts) {
-  	    if (unit === undefined) {
+  	    if (unit === void 0) {
   	      unit = "milliseconds";
   	    }
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    if (!this.isValid || !otherDateTime.isValid) {
@@ -7660,10 +7660,10 @@ sap.ui.define((function () { 'use strict';
   	   * @return {Duration}
   	   */;
   	  _proto.diffNow = function diffNow(unit, opts) {
-  	    if (unit === undefined) {
+  	    if (unit === void 0) {
   	      unit = "milliseconds";
   	    }
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    return this.diff(DateTime.now(), unit, opts);
@@ -7728,7 +7728,7 @@ sap.ui.define((function () { 'use strict';
   	   * @example DateTime.now().minus({ hours: 36 }).toRelative({ round: false }) //=> "1.5 days ago"
   	   */;
   	  _proto.toRelative = function toRelative(options) {
-  	    if (options === undefined) {
+  	    if (options === void 0) {
   	      options = {};
   	    }
   	    if (!this.isValid) return null;
@@ -7763,7 +7763,7 @@ sap.ui.define((function () { 'use strict';
   	   * @example DateTime.now().minus({ days: 2 }).toRelativeCalendar() //=> "2 days ago"
   	   */;
   	  _proto.toRelativeCalendar = function toRelativeCalendar(options) {
-  	    if (options === undefined) {
+  	    if (options === void 0) {
   	      options = {};
   	    }
   	    if (!this.isValid) return null;
@@ -7820,14 +7820,14 @@ sap.ui.define((function () { 'use strict';
   	   * @return {Object}
   	   */;
   	  DateTime.fromFormatExplain = function fromFormatExplain(text, fmt, options) {
-  	    if (options === undefined) {
+  	    if (options === void 0) {
   	      options = {};
   	    }
   	    var _options = options,
   	      _options$locale = _options.locale,
-  	      locale = _options$locale === undefined ? null : _options$locale,
+  	      locale = _options$locale === void 0 ? null : _options$locale,
   	      _options$numberingSys = _options.numberingSystem,
-  	      numberingSystem = _options$numberingSys === undefined ? null : _options$numberingSys,
+  	      numberingSystem = _options$numberingSys === void 0 ? null : _options$numberingSys,
   	      localeToUse = Locale.fromOpts({
   	        locale: locale,
   	        numberingSystem: numberingSystem,
@@ -7840,7 +7840,7 @@ sap.ui.define((function () { 'use strict';
   	   * @deprecated use fromFormatExplain instead
   	   */;
   	  DateTime.fromStringExplain = function fromStringExplain(text, fmt, options) {
-  	    if (options === undefined) {
+  	    if (options === void 0) {
   	      options = {};
   	    }
   	    return DateTime.fromFormatExplain(text, fmt, options);
@@ -7859,14 +7859,14 @@ sap.ui.define((function () { 'use strict';
   	   * @returns {TokenParser} - opaque object to be used
   	   */;
   	  DateTime.buildFormatParser = function buildFormatParser(fmt, options) {
-  	    if (options === undefined) {
+  	    if (options === void 0) {
   	      options = {};
   	    }
   	    var _options2 = options,
   	      _options2$locale = _options2.locale,
-  	      locale = _options2$locale === undefined ? null : _options2$locale,
+  	      locale = _options2$locale === void 0 ? null : _options2$locale,
   	      _options2$numberingSy = _options2.numberingSystem,
-  	      numberingSystem = _options2$numberingSy === undefined ? null : _options2$numberingSy,
+  	      numberingSystem = _options2$numberingSy === void 0 ? null : _options2$numberingSy,
   	      localeToUse = Locale.fromOpts({
   	        locale: locale,
   	        numberingSystem: numberingSystem,
@@ -7886,7 +7886,7 @@ sap.ui.define((function () { 'use strict';
   	   * @returns {DateTime}
   	   */;
   	  DateTime.fromFormatParser = function fromFormatParser(text, formatParser, opts) {
-  	    if (opts === undefined) {
+  	    if (opts === void 0) {
   	      opts = {};
   	    }
   	    if (isUndefined(text) || isUndefined(formatParser)) {
@@ -7894,9 +7894,9 @@ sap.ui.define((function () { 'use strict';
   	    }
   	    var _opts2 = opts,
   	      _opts2$locale = _opts2.locale,
-  	      locale = _opts2$locale === undefined ? null : _opts2$locale,
+  	      locale = _opts2$locale === void 0 ? null : _opts2$locale,
   	      _opts2$numberingSyste = _opts2.numberingSystem,
-  	      numberingSystem = _opts2$numberingSyste === undefined ? null : _opts2$numberingSyste,
+  	      numberingSystem = _opts2$numberingSyste === void 0 ? null : _opts2$numberingSyste,
   	      localeToUse = Locale.fromOpts({
   	        locale: locale,
   	        numberingSystem: numberingSystem,
@@ -8612,7 +8612,7 @@ sap.ui.define((function () { 'use strict';
   	luxon$1.SystemZone = SystemZone;
   	luxon$1.VERSION = VERSION;
   	luxon$1.Zone = Zone;
-  	//# sourceMappingURL=luxon.js.map
+  	
   	return luxon$1;
   }
 

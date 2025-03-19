@@ -30,7 +30,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 		3873151461&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+d[15]+530742520&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[2]+3299628645&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(e^(c|~g))+d[0]+4096336452&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[7]+1126891415&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[14]+2878612391&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[5]+4237533241&4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[12]+1700485571&
 		4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[3]+2399980690&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[10]+4293915773&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[1]+2240044497&4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[8]+1873313359&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[15]+4264355552&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[6]+2734768916&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[13]+1309151649&
 		4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[4]+4149444226&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[11]+3174756917&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[2]+718787259&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[9]+3951481745&4294967295;f.g[0]=f.g[0]+a&4294967295;f.g[1]=f.g[1]+(e+(b<<21&4294967295|b>>>11))&4294967295;f.g[2]=f.g[2]+e&4294967295;f.g[3]=f.g[3]+g&4294967295;}
-		m.prototype.u=function(f,a){ undefined===a&&(a=f.length);for(var c=a-this.blockSize,d=this.B,e=this.h,g=0;g<a;){if(0==e)for(;g<=c;)n(this,f,g),g+=this.blockSize;if("string"===typeof f)for(;g<a;){if(d[e++]=f.charCodeAt(g++),e==this.blockSize){n(this,d);e=0;break}}else for(;g<a;)if(d[e++]=f[g++],e==this.blockSize){n(this,d);e=0;break}}this.h=e;this.o+=a;};
+		m.prototype.u=function(f,a){ void 0===a&&(a=f.length);for(var c=a-this.blockSize,d=this.B,e=this.h,g=0;g<a;){if(0==e)for(;g<=c;)n(this,f,g),g+=this.blockSize;if("string"===typeof f)for(;g<a;){if(d[e++]=f.charCodeAt(g++),e==this.blockSize){n(this,d);e=0;break}}else for(;g<a;)if(d[e++]=f[g++],e==this.blockSize){n(this,d);e=0;break}}this.h=e;this.o+=a;};
 		m.prototype.v=function(){var f=Array((56>this.h?this.blockSize:2*this.blockSize)-this.h);f[0]=128;for(var a=1;a<f.length-8;++a)f[a]=0;var c=8*this.o;for(a=f.length-8;a<f.length;++a)f[a]=c&255,c/=256;this.u(f);f=Array(16);for(a=c=0;4>a;++a)for(var d=0;32>d;d+=8)f[c++]=this.g[a]>>>d&255;return f};function p(f,a){var c=q;return Object.prototype.hasOwnProperty.call(c,f)?c[f]:c[f]=a(f)}function t(f,a){this.h=a;for(var c=[],d=true,e=f.length-1;0<=e;e--){var g=f[e]|0;d&&g==a||(c[e]=g,d=false);}this.g=c;}var q={};function u(f){return  -128<=f&&128>f?p(f,function(a){return new t([a|0],0>a?-1:0)}):new t([f|0],0>f?-1:0)}function v(f){if(isNaN(f)||!isFinite(f))return w;if(0>f)return x(v(-f));for(var a=[],c=1,d=0;f>=c;d++)a[d]=f/c|0,c*=4294967296;return new t(a,0)}
 		function y(f,a){if(0==f.length)throw Error("number format error: empty string");a=a||10;if(2>a||36<a)throw Error("radix out of range: "+a);if("-"==f.charAt(0))return x(y(f.substring(1),a));if(0<=f.indexOf("-"))throw Error('number format error: interior "-" character');for(var c=v(Math.pow(a,8)),d=w,e=0;e<f.length;e+=8){var g=Math.min(8,f.length-e),b=parseInt(f.substring(e,e+g),a);8>g?(g=v(Math.pow(a,g)),d=d.j(g).add(v(b))):(d=d.j(c),d=d.add(v(b)));}return d}var w=u(0),z=u(1),A=u(16777216);h=t.prototype;
 		h.m=function(){if(B(this))return -x(this).m();for(var f=0,a=1,c=0;c<this.g.length;c++){var d=this.i(c);f+=(0<=d?d:4294967296+d)*a;a*=4294967296;}return f};h.toString=function(f){f=f||10;if(2>f||36<f)throw Error("radix out of range: "+f);if(C(this))return "0";if(B(this))return "-"+x(this).toString(f);for(var a=v(Math.pow(f,6)),c=this,d="";;){var e=D(c,a).g;c=F(c,e.j(a));var g=((0<c.g.length?c.g[0]:c.h)>>>0).toString(f);c=e;if(C(c))return g+d;for(;6>g.length;)g="0"+g;d=g+d;}};
@@ -45,6 +45,8 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	}
 
 	var bloom_blob_es2018Exports = requireBloom_blob_es2018();
+
+	const E = "4.7.9";
 
 	/**
 	 * @license
@@ -65,8 +67,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	/**
 	 * Simple wrapper around a nullable UID. Mostly exists to make code more
 	 * readable.
-	 */
-	class User {
+	 */ class User {
 	    constructor(t) {
 	        this.uid = t;
 	    }
@@ -106,7 +107,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * See the License for the specific language governing permissions and
 	 * limitations under the License.
 	 */
-	let f = "11.2.0";
+	let m = "11.4.0";
 
 	/**
 	 * @license
@@ -124,7 +125,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * See the License for the specific language governing permissions and
 	 * limitations under the License.
 	 */
-	const E = new index_esm2017.index_cjsExports.Logger("@firebase/firestore");
+	const A = new index_esm2017.index_cjsExports.Logger("@firebase/firestore");
 
 	/**
 	 * Sets the verbosity of Cloud Firestore logs (debug, error, or silent).
@@ -139,29 +140,29 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 *     <li><code>`silent` to turn off logging.</li>
 	 *   </ul>
 	 */ function setLogLevel(t) {
-	    E.setLogLevel(t);
+	    A.setLogLevel(t);
 	}
 
 	function __PRIVATE_logDebug(t, ...e) {
-	    if (E.logLevel <= index_esm2017.index_cjsExports.LogLevel.DEBUG) {
+	    if (A.logLevel <= index_esm2017.index_cjsExports.LogLevel.DEBUG) {
 	        const r = e.map(__PRIVATE_argToString);
-	        E.debug(`Firestore (${f}): ${t}`, ...r);
+	        A.debug(`Firestore (${m}): ${t}`, ...r);
 	    }
 	}
 
 	function __PRIVATE_logError(t, ...e) {
-	    if (E.logLevel <= index_esm2017.index_cjsExports.LogLevel.ERROR) {
+	    if (A.logLevel <= index_esm2017.index_cjsExports.LogLevel.ERROR) {
 	        const r = e.map(__PRIVATE_argToString);
-	        E.error(`Firestore (${f}): ${t}`, ...r);
+	        A.error(`Firestore (${m}): ${t}`, ...r);
 	    }
 	}
 
 	/**
 	 * @internal
 	 */ function __PRIVATE_logWarn(t, ...e) {
-	    if (E.logLevel <= index_esm2017.index_cjsExports.LogLevel.WARN) {
+	    if (A.logLevel <= index_esm2017.index_cjsExports.LogLevel.WARN) {
 	        const r = e.map(__PRIVATE_argToString);
-	        E.warn(`Firestore (${f}): ${t}`, ...r);
+	        A.warn(`Firestore (${m}): ${t}`, ...r);
 	    }
 	}
 
@@ -222,7 +223,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 */ function fail(t = "Unexpected state") {
 	    // Log the failure in addition to throw an exception, just in case the
 	    // exception is swallowed.
-	    const e = `FIRESTORE (${f}) INTERNAL ASSERTION FAILED: ` + t;
+	    const e = `FIRESTORE (${m}) INTERNAL ASSERTION FAILED: ` + t;
 	    // NOTE: We don't use FirestoreError here because these are internal failures
 	    // that cannot be handled by the user. (Also it would create a circular
 	    // dependency between the error and assert modules which doesn't work.)
@@ -262,7 +263,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	 * See the License for the specific language governing permissions and
 	 * limitations under the License.
-	 */ const m = "ok", A = "cancelled", T = "unknown", P = "invalid-argument", R = "deadline-exceeded", I = "not-found", V = "already-exists", p = "permission-denied", y = "unauthenticated", w = "resource-exhausted", g = "failed-precondition", F = "aborted", v = "out-of-range", D = "unimplemented", b = "internal", C = "unavailable", S = "data-loss";
+	 */ const T = "ok", P = "cancelled", R = "unknown", I = "invalid-argument", V = "deadline-exceeded", p = "not-found", y = "already-exists", w = "permission-denied", g = "unauthenticated", F = "resource-exhausted", v = "failed-precondition", D = "aborted", b = "out-of-range", C = "unimplemented", S = "internal", N = "unavailable", O = "data-loss";
 
 	/** An error returned by a Firestore operation. */ class FirestoreError extends index_esm2017.FirebaseError {
 	    /** @hideconstructor */
@@ -436,13 +437,14 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	}
 
 	/** AppCheck token provider for the Lite SDK. */ class __PRIVATE_LiteAppCheckTokenProvider {
-	    constructor(t) {
-	        this.h = t, this.appCheck = null, t.onInit((t => {
+	    constructor(e, r) {
+	        this.h = r, this.appCheck = null, this.m = null, index_esm2017._isFirebaseServerApp(e) && e.settings.appCheckToken && (this.m = e.settings.appCheckToken), 
+	        r.onInit((t => {
 	            this.appCheck = t;
 	        }));
 	    }
 	    getToken() {
-	        return this.appCheck ? this.appCheck.getToken().then((t => t ? (__PRIVATE_hardAssert("string" == typeof t.token), 
+	        return this.m ? Promise.resolve(new AppCheckToken(this.m)) : this.appCheck ? this.appCheck.getToken().then((t => t ? (__PRIVATE_hardAssert("string" == typeof t.token), 
 	        new AppCheckToken(t.token)) : null)) : Promise.resolve(null);
 	    }
 	    invalidateToken() {}
@@ -496,20 +498,20 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	    }
 	}
 
-	/** The default database name for a project. */
+	/** The default database name for a project. */ const q = "(default)";
+
 	/**
 	 * Represents the database ID a Firestore client is associated with.
 	 * @internal
-	 */
-	class DatabaseId {
+	 */ class DatabaseId {
 	    constructor(t, e) {
-	        this.projectId = t, this.database = e || "(default)";
+	        this.projectId = t, this.database = e || q;
 	    }
 	    static empty() {
 	        return new DatabaseId("", "");
 	    }
 	    get isDefaultDatabase() {
-	        return "(default)" === this.database;
+	        return this.database === q;
 	    }
 	    isEqual(t) {
 	        return t instanceof DatabaseId && t.projectId === this.projectId && t.database === this.database;
@@ -517,11 +519,28 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	}
 
 	/**
-	 * Path represents an ordered sequence of string segments.
+	 * @license
+	 * Copyright 2017 Google LLC
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *   http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
 	 */
-	class BasePath {
+	const B = "__name__";
+
+	/**
+	 * Path represents an ordered sequence of string segments.
+	 */ class BasePath {
 	    constructor(t, e, r) {
-	        undefined === e ? e = 0 : e > t.length && fail(), undefined === r ? r = t.length - e : r > t.length - e && fail(), 
+	        void 0 === e ? e = 0 : e > t.length && fail(), void 0 === r ? r = t.length - e : r > t.length - e && fail(), 
 	        this.segments = t, this.offset = e, this.len = r;
 	    }
 	    get length() {
@@ -540,7 +559,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        return this.offset + this.length;
 	    }
 	    popFirst(t) {
-	        return t = undefined === t ? 1 : t, this.construct(this.segments, this.offset + t, this.length - t);
+	        return t = void 0 === t ? 1 : t, this.construct(this.segments, this.offset + t, this.length - t);
 	    }
 	    popLast() {
 	        return this.construct(this.segments, this.offset, this.length - 1);
@@ -635,7 +654,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        // for legacy reasons and should not be used frequently).
 	        const e = [];
 	        for (const r of t) {
-	            if (r.indexOf("//") >= 0) throw new FirestoreError(P, `Invalid segment (${r}). Paths must not contain // in them.`);
+	            if (r.indexOf("//") >= 0) throw new FirestoreError(I, `Invalid segment (${r}). Paths must not contain // in them.`);
 	            // Strip leading and trailing slashed.
 	                        e.push(...r.split("/").filter((t => t.length > 0)));
 	        }
@@ -646,7 +665,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	    }
 	}
 
-	const N = /^[_a-zA-Z][_a-zA-Z0-9]*$/;
+	const $ = /^[_a-zA-Z][_a-zA-Z0-9]*$/;
 
 	/**
 	 * A dot-separated path for navigating sub-objects within a document.
@@ -659,7 +678,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	     * Returns true if the string could be used as a segment in a field path
 	     * without escaping.
 	     */    static isValidIdentifier(t) {
-	        return N.test(t);
+	        return $.test(t);
 	    }
 	    canonicalString() {
 	        return this.toArray().map((t => (t = t.replace(/\\/g, "\\\\").replace(/`/g, "\\`"), 
@@ -671,12 +690,12 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	    /**
 	     * Returns true if this field references the key of a document.
 	     */    isKeyField() {
-	        return 1 === this.length && "__name__" === this.get(0);
+	        return 1 === this.length && this.get(0) === B;
 	    }
 	    /**
 	     * The field designating the key of a document.
 	     */    static keyField() {
-	        return new FieldPath$1([ "__name__" ]);
+	        return new FieldPath$1([ B ]);
 	    }
 	    /**
 	     * Parses a field string from the given server-formatted string.
@@ -691,21 +710,21 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        const e = [];
 	        let r = "", n = 0;
 	        const __PRIVATE_addCurrentSegment = () => {
-	            if (0 === r.length) throw new FirestoreError(P, `Invalid field path (${t}). Paths must not be empty, begin with '.', end with '.', or contain '..'`);
+	            if (0 === r.length) throw new FirestoreError(I, `Invalid field path (${t}). Paths must not be empty, begin with '.', end with '.', or contain '..'`);
 	            e.push(r), r = "";
 	        };
 	        let i = false;
 	        for (;n < t.length; ) {
 	            const e = t[n];
 	            if ("\\" === e) {
-	                if (n + 1 === t.length) throw new FirestoreError(P, "Path has trailing escape character: " + t);
+	                if (n + 1 === t.length) throw new FirestoreError(I, "Path has trailing escape character: " + t);
 	                const e = t[n + 1];
-	                if ("\\" !== e && "." !== e && "`" !== e) throw new FirestoreError(P, "Path has invalid escape sequence: " + t);
+	                if ("\\" !== e && "." !== e && "`" !== e) throw new FirestoreError(I, "Path has invalid escape sequence: " + t);
 	                r += e, n += 2;
 	            } else "`" === e ? (i = !i, n++) : "." !== e || i ? (r += e, n++) : (__PRIVATE_addCurrentSegment(), 
 	            n++);
 	        }
-	        if (__PRIVATE_addCurrentSegment(), i) throw new FirestoreError(P, "Unterminated ` in path: " + t);
+	        if (__PRIVATE_addCurrentSegment(), i) throw new FirestoreError(I, "Unterminated ` in path: " + t);
 	        return new FieldPath$1(e);
 	    }
 	    static emptyPath() {
@@ -794,7 +813,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * See the License for the specific language governing permissions and
 	 * limitations under the License.
 	 */ function __PRIVATE_validateNonEmptyArgument(t, e, r) {
-	    if (!r) throw new FirestoreError(P, `Function ${t}() cannot be called with an empty ${e}.`);
+	    if (!r) throw new FirestoreError(I, `Function ${t}() cannot be called with an empty ${e}.`);
 	}
 
 	/**
@@ -806,14 +825,14 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * an even numbers of segments).
 	 */
 	function __PRIVATE_validateDocumentPath(t) {
-	    if (!DocumentKey.isDocumentKey(t)) throw new FirestoreError(P, `Invalid document reference. Document references must have an even number of segments, but ${t} has ${t.length}.`);
+	    if (!DocumentKey.isDocumentKey(t)) throw new FirestoreError(I, `Invalid document reference. Document references must have an even number of segments, but ${t} has ${t.length}.`);
 	}
 
 	/**
 	 * Validates that `path` refers to a collection (indicated by the fact it
 	 * contains an odd numbers of segments).
 	 */ function __PRIVATE_validateCollectionPath(t) {
-	    if (DocumentKey.isDocumentKey(t)) throw new FirestoreError(P, `Invalid collection reference. Collection references must have an odd number of segments, but ${t} has ${t.length}.`);
+	    if (DocumentKey.isDocumentKey(t)) throw new FirestoreError(I, `Invalid collection reference. Collection references must have an odd number of segments, but ${t} has ${t.length}.`);
 	}
 
 	/**
@@ -822,7 +841,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 */
 	/** Returns a string describing the type / value of the provided input. */
 	function __PRIVATE_valueDescription(t) {
-	    if (undefined === t) return "undefined";
+	    if (void 0 === t) return "undefined";
 	    if (null === t) return "null";
 	    if ("string" == typeof t) return t.length > 20 && (t = `${t.substring(0, 20)}...`), 
 	    JSON.stringify(t);
@@ -857,17 +876,17 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	    // Unwrap Compat types
 	    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 	    t = t._delegate), !(t instanceof e)) {
-	        if (e.name === t.constructor.name) throw new FirestoreError(P, "Type does not match the expected instance. Did you pass a reference from a different Firestore SDK?");
+	        if (e.name === t.constructor.name) throw new FirestoreError(I, "Type does not match the expected instance. Did you pass a reference from a different Firestore SDK?");
 	        {
 	            const r = __PRIVATE_valueDescription(t);
-	            throw new FirestoreError(P, `Expected type '${e.name}', but it was: ${r}`);
+	            throw new FirestoreError(I, `Expected type '${e.name}', but it was: ${r}`);
 	        }
 	    }
 	    return t;
 	}
 
 	function __PRIVATE_validatePositiveNumber(t, e) {
-	    if (e <= 0) throw new FirestoreError(P, `Function ${t}() requires a positive number, but it was: ${e}.`);
+	    if (e <= 0) throw new FirestoreError(I, `Function ${t}() requires a positive number, but it was: ${e}.`);
 	}
 
 	/**
@@ -895,7 +914,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 */
 	function __PRIVATE_cloneLongPollingOptions(t) {
 	    const e = {};
-	    return undefined !== t.timeoutSeconds && (e.timeoutSeconds = t.timeoutSeconds), e;
+	    return void 0 !== t.timeoutSeconds && (e.timeoutSeconds = t.timeoutSeconds), e;
 	}
 
 	/**
@@ -917,7 +936,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	/**
 	 * The value returned from the most recent invocation of
 	 * `generateUniqueDebugId()`, or null if it has never been invoked.
-	 */ let O = null;
+	 */ let Q = null;
 
 	/**
 	 * Generates and returns an initial value for `lastUniqueDebugId`.
@@ -942,9 +961,9 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * @return the 10-character generated ID (e.g. "0xa1b2c3d4").
 	 */
 	function __PRIVATE_generateUniqueDebugId() {
-	    return null === O ? O = function __PRIVATE_generateInitialUniqueDebugId() {
+	    return null === Q ? Q = function __PRIVATE_generateInitialUniqueDebugId() {
 	        return 268435456 + Math.round(2147483648 * Math.random());
-	    }() : O++, "0x" + O.toString(16);
+	    }() : Q++, "0x" + Q.toString(16);
 	}
 
 	/**
@@ -995,7 +1014,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * See the License for the specific language governing permissions and
 	 * limitations under the License.
 	 */
-	const q = {
+	const L = "RestConnection", M = {
 	    BatchGetDocuments: "batchGet",
 	    Commit: "commit",
 	    RunQuery: "runQuery",
@@ -1007,6 +1026,69 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 *
 	 * We use array notation to avoid mangling.
 	 */
+	/**
+	 * Base class for all Rest-based connections to the backend (WebChannel and
+	 * HTTP).
+	 */
+	class __PRIVATE_RestConnection {
+	    get A() {
+	        // Both `invokeRPC()` and `invokeStreamingRPC()` use their `path` arguments to determine
+	        // where to run the query, and expect the `request` to NOT specify the "path".
+	        return false;
+	    }
+	    constructor(t) {
+	        this.databaseInfo = t, this.databaseId = t.databaseId;
+	        const e = t.ssl ? "https" : "http", r = encodeURIComponent(this.databaseId.projectId), n = encodeURIComponent(this.databaseId.database);
+	        this.T = e + "://" + t.host, this.P = `projects/${r}/databases/${n}`, this.R = this.databaseId.database === q ? `project_id=${r}` : `project_id=${r}&database_id=${n}`;
+	    }
+	    I(t, e, r, n, i) {
+	        const s = __PRIVATE_generateUniqueDebugId(), o = this.V(t, e.toUriEncodedString());
+	        __PRIVATE_logDebug(L, `Sending RPC '${t}' ${s}:`, o, r);
+	        const a = {
+	            "google-cloud-resource-prefix": this.P,
+	            "x-goog-request-params": this.R
+	        };
+	        return this.p(a, n, i), this.F(t, o, a, r).then((e => (__PRIVATE_logDebug(L, `Received RPC '${t}' ${s}: `, e), 
+	        e)), (e => {
+	            throw __PRIVATE_logWarn(L, `RPC '${t}' ${s} failed with error: `, e, "url: ", o, "request:", r), 
+	            e;
+	        }));
+	    }
+	    v(t, e, r, n, i, s) {
+	        // The REST API automatically aggregates all of the streamed results, so we
+	        // can just use the normal invoke() method.
+	        return this.I(t, e, r, n, i);
+	    }
+	    /**
+	     * Modifies the headers for a request, adding any authorization token if
+	     * present and any additional headers for the request.
+	     */    p(t, e, r) {
+	        t["X-Goog-Api-Client"] = 
+	        // SDK_VERSION is updated to different value at runtime depending on the entry point,
+	        // so we need to get its value when we need it in a function.
+	        function __PRIVATE_getGoogApiClientValue() {
+	            return "gl-js/ fire/" + m;
+	        }(), 
+	        // Content-Type: text/plain will avoid preflight requests which might
+	        // mess with CORS and redirects by proxies. If we add custom headers
+	        // we will need to change this code to potentially use the $httpOverwrite
+	        // parameter supported by ESF to avoid triggering preflight requests.
+	        t["Content-Type"] = "text/plain", this.databaseInfo.appId && (t["X-Firebase-GMPID"] = this.databaseInfo.appId), 
+	        e && e.headers.forEach(((e, r) => t[r] = e)), r && r.headers.forEach(((e, r) => t[r] = e));
+	    }
+	    V(t, e) {
+	        const r = M[t];
+	        return `${this.T}/v1/${e}:${r}`;
+	    }
+	    /**
+	     * Closes and cleans up any resources associated with the connection. This
+	     * implementation is a no-op because there are no resources associated
+	     * with the RestConnection that need to be cleaned up.
+	     */    terminate() {
+	        // No-op
+	    }
+	}
+
 	/**
 	 * @license
 	 * Copyright 2017 Google LLC
@@ -1032,8 +1114,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * Important! The names of these identifiers matter because the string forms
 	 * are used for reverse lookups from the webchannel stream. Do NOT change the
 	 * names of these identifiers or change this into a const enum.
-	 */
-	var B, $;
+	 */ var x, k;
 
 	/**
 	 * Converts an HTTP Status Code to the equivalent error code.
@@ -1043,8 +1124,8 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 *     Code.UNKNOWN.
 	 */
 	function __PRIVATE_mapCodeFromHttpStatus(t) {
-	    if (undefined === t) return __PRIVATE_logError("RPC_ERROR", "HTTP error has no status"), 
-	    T;
+	    if (void 0 === t) return __PRIVATE_logError("RPC_ERROR", "HTTP error has no status"), 
+	    R;
 	    // The canonical error codes for Google APIs [1] specify mapping onto HTTP
 	    // status codes but the mapping is not bijective. In each case of ambiguity
 	    // this function chooses a primary error.
@@ -1054,66 +1135,66 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        switch (t) {
 	      case 200:
 	        // OK
-	        return m;
+	        return T;
 
 	      case 400:
 	        // Bad Request
-	        return g;
+	        return v;
 
 	        // Other possibilities based on the forward mapping
 	        // return Code.INVALID_ARGUMENT;
 	        // return Code.OUT_OF_RANGE;
 	              case 401:
 	        // Unauthorized
-	        return y;
+	        return g;
 
 	      case 403:
 	        // Forbidden
-	        return p;
+	        return w;
 
 	      case 404:
 	        // Not Found
-	        return I;
+	        return p;
 
 	      case 409:
 	        // Conflict
-	        return F;
+	        return D;
 
 	        // Other possibilities:
 	        // return Code.ALREADY_EXISTS;
 	              case 416:
 	        // Range Not Satisfiable
-	        return v;
+	        return b;
 
 	      case 429:
 	        // Too Many Requests
-	        return w;
+	        return F;
 
 	      case 499:
 	        // Client Closed Request
-	        return A;
+	        return P;
 
 	      case 500:
 	        // Internal Server Error
-	        return T;
+	        return R;
 
 	        // Other possibilities:
 	        // return Code.INTERNAL;
 	        // return Code.DATA_LOSS;
 	              case 501:
 	        // Unimplemented
-	        return D;
+	        return C;
 
 	      case 503:
 	        // Service Unavailable
-	        return C;
+	        return N;
 
 	      case 504:
 	        // Gateway Timeout
-	        return R;
+	        return V;
 
 	      default:
-	        return t >= 200 && t < 300 ? m : t >= 400 && t < 500 ? g : t >= 500 && t < 600 ? b : T;
+	        return t >= 200 && t < 300 ? T : t >= 400 && t < 500 ? v : t >= 500 && t < 600 ? S : R;
 	    }
 	}
 
@@ -1136,81 +1217,19 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	/**
 	 * A Rest-based connection that relies on the native HTTP stack
 	 * (e.g. `fetch` or a polyfill).
-	 */ ($ = B || (B = {}))[$.OK = 0] = "OK", $[$.CANCELLED = 1] = "CANCELLED", $[$.UNKNOWN = 2] = "UNKNOWN", 
-	$[$.INVALID_ARGUMENT = 3] = "INVALID_ARGUMENT", $[$.DEADLINE_EXCEEDED = 4] = "DEADLINE_EXCEEDED", 
-	$[$.NOT_FOUND = 5] = "NOT_FOUND", $[$.ALREADY_EXISTS = 6] = "ALREADY_EXISTS", $[$.PERMISSION_DENIED = 7] = "PERMISSION_DENIED", 
-	$[$.UNAUTHENTICATED = 16] = "UNAUTHENTICATED", $[$.RESOURCE_EXHAUSTED = 8] = "RESOURCE_EXHAUSTED", 
-	$[$.FAILED_PRECONDITION = 9] = "FAILED_PRECONDITION", $[$.ABORTED = 10] = "ABORTED", 
-	$[$.OUT_OF_RANGE = 11] = "OUT_OF_RANGE", $[$.UNIMPLEMENTED = 12] = "UNIMPLEMENTED", 
-	$[$.INTERNAL = 13] = "INTERNAL", $[$.UNAVAILABLE = 14] = "UNAVAILABLE", $[$.DATA_LOSS = 15] = "DATA_LOSS";
+	 */ (k = x || (x = {}))[k.OK = 0] = "OK", k[k.CANCELLED = 1] = "CANCELLED", k[k.UNKNOWN = 2] = "UNKNOWN", 
+	k[k.INVALID_ARGUMENT = 3] = "INVALID_ARGUMENT", k[k.DEADLINE_EXCEEDED = 4] = "DEADLINE_EXCEEDED", 
+	k[k.NOT_FOUND = 5] = "NOT_FOUND", k[k.ALREADY_EXISTS = 6] = "ALREADY_EXISTS", k[k.PERMISSION_DENIED = 7] = "PERMISSION_DENIED", 
+	k[k.UNAUTHENTICATED = 16] = "UNAUTHENTICATED", k[k.RESOURCE_EXHAUSTED = 8] = "RESOURCE_EXHAUSTED", 
+	k[k.FAILED_PRECONDITION = 9] = "FAILED_PRECONDITION", k[k.ABORTED = 10] = "ABORTED", 
+	k[k.OUT_OF_RANGE = 11] = "OUT_OF_RANGE", k[k.UNIMPLEMENTED = 12] = "UNIMPLEMENTED", 
+	k[k.INTERNAL = 13] = "INTERNAL", k[k.UNAVAILABLE = 14] = "UNAVAILABLE", k[k.DATA_LOSS = 15] = "DATA_LOSS";
 
-	class __PRIVATE_FetchConnection extends 
-	/**
-	 * Base class for all Rest-based connections to the backend (WebChannel and
-	 * HTTP).
-	 */
-	class __PRIVATE_RestConnection {
-	    get m() {
-	        // Both `invokeRPC()` and `invokeStreamingRPC()` use their `path` arguments to determine
-	        // where to run the query, and expect the `request` to NOT specify the "path".
-	        return false;
-	    }
-	    constructor(t) {
-	        this.databaseInfo = t, this.databaseId = t.databaseId;
-	        const e = t.ssl ? "https" : "http", r = encodeURIComponent(this.databaseId.projectId), n = encodeURIComponent(this.databaseId.database);
-	        this.A = e + "://" + t.host, this.T = `projects/${r}/databases/${n}`, this.P = "(default)" === this.databaseId.database ? `project_id=${r}` : `project_id=${r}&database_id=${n}`;
-	    }
-	    R(t, e, r, n, i) {
-	        const s = __PRIVATE_generateUniqueDebugId(), o = this.I(t, e.toUriEncodedString());
-	        __PRIVATE_logDebug("RestConnection", `Sending RPC '${t}' ${s}:`, o, r);
-	        const a = {
-	            "google-cloud-resource-prefix": this.T,
-	            "x-goog-request-params": this.P
-	        };
-	        return this.V(a, n, i), this.p(t, o, a, r).then((e => (__PRIVATE_logDebug("RestConnection", `Received RPC '${t}' ${s}: `, e), 
-	        e)), (e => {
-	            throw __PRIVATE_logWarn("RestConnection", `RPC '${t}' ${s} failed with error: `, e, "url: ", o, "request:", r), 
-	            e;
-	        }));
-	    }
-	    g(t, e, r, n, i, s) {
-	        // The REST API automatically aggregates all of the streamed results, so we
-	        // can just use the normal invoke() method.
-	        return this.R(t, e, r, n, i);
-	    }
-	    /**
-	     * Modifies the headers for a request, adding any authorization token if
-	     * present and any additional headers for the request.
-	     */    V(t, e, r) {
-	        t["X-Goog-Api-Client"] = 
-	        // SDK_VERSION is updated to different value at runtime depending on the entry point,
-	        // so we need to get its value when we need it in a function.
-	        function __PRIVATE_getGoogApiClientValue() {
-	            return "gl-js/ fire/" + f;
-	        }(), 
-	        // Content-Type: text/plain will avoid preflight requests which might
-	        // mess with CORS and redirects by proxies. If we add custom headers
-	        // we will need to change this code to potentially use the $httpOverwrite
-	        // parameter supported by ESF to avoid triggering preflight requests.
-	        t["Content-Type"] = "text/plain", this.databaseInfo.appId && (t["X-Firebase-GMPID"] = this.databaseInfo.appId), 
-	        e && e.headers.forEach(((e, r) => t[r] = e)), r && r.headers.forEach(((e, r) => t[r] = e));
-	    }
-	    I(t, e) {
-	        const r = q[t];
-	        return `${this.A}/v1/${e}:${r}`;
-	    }
-	    /**
-	     * Closes and cleans up any resources associated with the connection. This
-	     * implementation is a no-op because there are no resources associated
-	     * with the RestConnection that need to be cleaned up.
-	     */    terminate() {
-	        // No-op
-	    }
-	} {
-	    F(t, e) {
+	class __PRIVATE_FetchConnection extends __PRIVATE_RestConnection {
+	    D(t, e) {
 	        throw new Error("Not supported by FetchConnection");
 	    }
-	    async p(t, e, r, n) {
+	    async F(t, e, r, n) {
 	        var i;
 	        const s = JSON.stringify(n);
 	        let o;
@@ -1227,7 +1246,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        if (!o.ok) {
 	            let t = await o.json();
 	            Array.isArray(t) && (t = t[0]);
-	            const e = null === (i = null == t ? undefined : t.error) || undefined === i ? undefined : i.message;
+	            const e = null === (i = null == t ? void 0 : t.error) || void 0 === i ? void 0 : i.message;
 	            throw new FirestoreError(__PRIVATE_mapCodeFromHttpStatus(o.status), `Request failed with error: ${null != e ? e : o.statusText}`);
 	        }
 	        return o.json();
@@ -1331,7 +1350,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 */ class __PRIVATE_AutoId {
 	    static newId() {
 	        // Alphanumeric characters
-	        const t = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", e = Math.floor(256 / t.length) * t.length;
+	        const t = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", e = 62 * Math.floor(256 / 62);
 	        // The largest byte value that is a multiple of `char.length`.
 	                let r = "";
 	        for (;r.length < 20; ) {
@@ -1339,7 +1358,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	            for (let i = 0; i < n.length; ++i) 
 	            // Only accept values that are [0, maxMultiple), this ensures they can
 	            // be evenly mapped to indices of `chars` via a modulo operation.
-	            r.length < 20 && n[i] < e && (r += t.charAt(n[i] % t.length));
+	            r.length < 20 && n[i] < e && (r += t.charAt(n[i] % 62));
 	        }
 	        return r;
 	    }
@@ -1487,7 +1506,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	                value: this.binaryString.charCodeAt(t++),
 	                done: false
 	            } : {
-	                value: undefined,
+	                value: void 0,
 	                done: true
 	            }
 	        };
@@ -1535,7 +1554,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 
 	ByteString.EMPTY_BYTE_STRING = new ByteString("");
 
-	const Q = new RegExp(/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.(\d+))?Z$/);
+	const U = new RegExp(/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.(\d+))?Z$/);
 
 	/**
 	 * Converts the possible Proto values for a timestamp value into a "seconds and
@@ -1549,7 +1568,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        // (millis), so we do some custom parsing here.
 	        // Parse the nanos right out of the string.
 	        let e = 0;
-	        const r = Q.exec(t);
+	        const r = U.exec(t);
 	        if (__PRIVATE_hardAssert(!!r), r[1]) {
 	            // Pad the fraction out to 9 digits (nanos).
 	            let t = r[1];
@@ -1597,6 +1616,9 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * limitations under the License.
 	 */
 	// The earliest date supported by Firestore timestamps (0001-01-01T00:00:00Z).
+	const j = -62135596800, z = 1e6;
+
+	// Number of nanoseconds in a millisecond.
 	/**
 	 * A `Timestamp` represents a point in time independent of any time zone or
 	 * calendar, represented as seconds and fractions of seconds at nanosecond
@@ -1637,7 +1659,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	     * @returns A new `Timestamp` representing the same point in time as the given
 	     *     number of milliseconds.
 	     */    static fromMillis(t) {
-	        const e = Math.floor(t / 1e3), r = Math.floor(1e6 * (t - 1e3 * e));
+	        const e = Math.floor(t / 1e3), r = Math.floor((t - 1e3 * e) * z);
 	        return new Timestamp(e, r);
 	    }
 	    /**
@@ -1659,11 +1681,11 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	     * The fractions of a second at nanosecond resolution.*
 	     */
 	    e) {
-	        if (this.seconds = t, this.nanoseconds = e, e < 0) throw new FirestoreError(P, "Timestamp nanoseconds out of range: " + e);
-	        if (e >= 1e9) throw new FirestoreError(P, "Timestamp nanoseconds out of range: " + e);
-	        if (t < -62135596800) throw new FirestoreError(P, "Timestamp seconds out of range: " + t);
+	        if (this.seconds = t, this.nanoseconds = e, e < 0) throw new FirestoreError(I, "Timestamp nanoseconds out of range: " + e);
+	        if (e >= 1e9) throw new FirestoreError(I, "Timestamp nanoseconds out of range: " + e);
+	        if (t < j) throw new FirestoreError(I, "Timestamp seconds out of range: " + t);
 	        // This will break in the year 10,000.
-	                if (t >= 253402300800) throw new FirestoreError(P, "Timestamp seconds out of range: " + t);
+	                if (t >= 253402300800) throw new FirestoreError(I, "Timestamp seconds out of range: " + t);
 	    }
 	    /**
 	     * Converts a `Timestamp` to a JavaScript `Date` object. This conversion
@@ -1682,7 +1704,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	     * @returns The point in time corresponding to this timestamp, represented as
 	     *     the number of milliseconds since Unix epoch 1970-01-01T00:00:00Z.
 	     */    toMillis() {
-	        return 1e3 * this.seconds + this.nanoseconds / 1e6;
+	        return 1e3 * this.seconds + this.nanoseconds / z;
 	    }
 	    _compareTo(t) {
 	        return this.seconds === t.seconds ? __PRIVATE_primitiveComparator(this.nanoseconds, t.nanoseconds) : __PRIVATE_primitiveComparator(this.seconds, t.seconds);
@@ -1715,7 +1737,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        // the expected ordering. The <seconds> translation is done to avoid having
 	        // a leading negative sign (i.e. a leading '-' character) in its string
 	        // representation, which would affect its lexicographical ordering.
-	        const t = this.seconds - -62135596800;
+	        const t = this.seconds - j;
 	        // Note: Up to 12 decimal digits are required to represent all valid
 	        // 'seconds' values.
 	                return String(t).padStart(12, "0") + "." + String(this.nanoseconds).padStart(9, "0");
@@ -1757,7 +1779,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 *   localWriteTime.
 	 */ function __PRIVATE_isServerTimestamp(t) {
 	    var e, r;
-	    return "server_timestamp" === (null === (r = ((null === (e = null == t ? undefined : t.mapValue) || undefined === e ? undefined : e.fields) || {}).__type__) || undefined === r ? undefined : r.stringValue);
+	    return "server_timestamp" === (null === (r = ((null === (e = null == t ? void 0 : t.mapValue) || void 0 === e ? void 0 : e.fields) || {}).__type__) || void 0 === r ? void 0 : r.stringValue);
 	}
 
 	/**
@@ -1792,15 +1814,15 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	 * See the License for the specific language governing permissions and
 	 * limitations under the License.
-	 */ const L = {
-	    };
+	 */ const W = "__type__", K = "__max__", G = {
+	    }, H = "__vector__", J = "value";
 
 	/** Extracts the backend's type order for the provided value. */
 	function __PRIVATE_typeOrder(t) {
 	    return "nullValue" in t ? 0 /* TypeOrder.NullValue */ : "booleanValue" in t ? 1 /* TypeOrder.BooleanValue */ : "integerValue" in t || "doubleValue" in t ? 2 /* TypeOrder.NumberValue */ : "timestampValue" in t ? 3 /* TypeOrder.TimestampValue */ : "stringValue" in t ? 5 /* TypeOrder.StringValue */ : "bytesValue" in t ? 6 /* TypeOrder.BlobValue */ : "referenceValue" in t ? 7 /* TypeOrder.RefValue */ : "geoPointValue" in t ? 8 /* TypeOrder.GeoPointValue */ : "arrayValue" in t ? 9 /* TypeOrder.ArrayValue */ : "mapValue" in t ? __PRIVATE_isServerTimestamp(t) ? 4 /* TypeOrder.ServerTimestampValue */ : 
 	    /** Returns true if the Value represents the canonical {@link #MAX_VALUE} . */
 	    function __PRIVATE_isMaxValue(t) {
-	        return "__max__" === (((t.mapValue || {}).fields || {}).__type__ || {}).stringValue;
+	        return (((t.mapValue || {}).fields || {}).__type__ || {}).stringValue === K;
 	    }
 	    /**
 	 * @license
@@ -1835,7 +1857,8 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	    /** Returns true if `value` is a VetorValue. */
 	    function __PRIVATE_isVectorValue(t) {
 	        var e, r;
-	        return "__vector__" === (null === (r = ((null === (e = null == t ? undefined : t.mapValue) || undefined === e ? undefined : e.fields) || {}).__type__) || undefined === r ? undefined : r.stringValue);
+	        const n = null === (r = ((null === (e = null == t ? void 0 : t.mapValue) || void 0 === e ? void 0 : e.fields) || {})[W]) || void 0 === r ? void 0 : r.stringValue;
+	        return n === H;
 	    }
 	    /** Creates a deep copy of `source`. */ (t) ? 10 /* TypeOrder.VectorValue */ : 11 /* TypeOrder.ObjectValue */ : fail();
 	}
@@ -1898,7 +1921,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        return function __PRIVATE_objectEquals(t, e) {
 	            const r = t.mapValue.fields || {}, n = e.mapValue.fields || {};
 	            if (__PRIVATE_objectSize(r) !== __PRIVATE_objectSize(n)) return false;
-	            for (const t in r) if (r.hasOwnProperty(t) && (undefined === n[t] || !__PRIVATE_valueEquals(r[t], n[t]))) return false;
+	            for (const t in r) if (r.hasOwnProperty(t) && (void 0 === n[t] || !__PRIVATE_valueEquals(r[t], n[t]))) return false;
 	            return true;
 	        }
 	        /** Returns true if the ArrayValue contains the specified element. */ (t, e);
@@ -1909,7 +1932,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	}
 
 	function __PRIVATE_arrayValueContains(t, e) {
-	    return undefined !== (t.values || []).find((t => __PRIVATE_valueEquals(t, e)));
+	    return void 0 !== (t.values || []).find((t => __PRIVATE_valueEquals(t, e)));
 	}
 
 	function __PRIVATE_valueCompare(t, e) {
@@ -1970,16 +1993,16 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	      case 10 /* TypeOrder.VectorValue */ :
 	        return function __PRIVATE_compareVectors(t, e) {
 	            var r, n, i, s;
-	            const o = t.fields || {}, a = e.fields || {}, u = null === (r = o.value) || undefined === r ? undefined : r.arrayValue, _ = null === (n = a.value) || undefined === n ? undefined : n.arrayValue, c = __PRIVATE_primitiveComparator((null === (i = null == u ? undefined : u.values) || undefined === i ? undefined : i.length) || 0, (null === (s = null == _ ? undefined : _.values) || undefined === s ? undefined : s.length) || 0);
+	            const o = t.fields || {}, a = e.fields || {}, u = null === (r = o[J]) || void 0 === r ? void 0 : r.arrayValue, _ = null === (n = a[J]) || void 0 === n ? void 0 : n.arrayValue, c = __PRIVATE_primitiveComparator((null === (i = null == u ? void 0 : u.values) || void 0 === i ? void 0 : i.length) || 0, (null === (s = null == _ ? void 0 : _.values) || void 0 === s ? void 0 : s.length) || 0);
 	            if (0 !== c) return c;
 	            return __PRIVATE_compareArrays(u, _);
 	        }(t.mapValue, e.mapValue);
 
 	      case 11 /* TypeOrder.ObjectValue */ :
 	        return function __PRIVATE_compareMaps(t, e) {
-	            if (t === L && e === L) return 0;
-	            if (t === L) return 1;
-	            if (e === L) return -1;
+	            if (t === G && e === G) return 0;
+	            if (t === G) return 1;
+	            if (e === G) return -1;
 	            const r = t.fields || {}, n = Object.keys(r), i = e.fields || {}, s = Object.keys(i);
 	            // Even though MapValues are likely sorted correctly based on their insertion
 	            // order (e.g. when received from the backend), local modifications can bring
@@ -2154,7 +2177,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 
 	class CompositeFilter extends Filter {
 	    constructor(t, e) {
-	        super(), this.filters = t, this.op = e, this.v = null;
+	        super(), this.filters = t, this.op = e, this.C = null;
 	    }
 	    /**
 	     * Creates a filter based on the provided arguments.
@@ -2164,11 +2187,11 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	    matches(t) {
 	        return function __PRIVATE_compositeFilterIsConjunction(t) {
 	            return "and" /* CompositeOperator.AND */ === t.op;
-	        }(this) ? undefined === this.filters.find((e => !e.matches(t))) : undefined !== this.filters.find((e => e.matches(t)));
+	        }(this) ? void 0 === this.filters.find((e => !e.matches(t))) : void 0 !== this.filters.find((e => e.matches(t)));
 	    }
 	    getFlattenedFilters() {
-	        return null !== this.v || (this.v = this.filters.reduce(((t, e) => t.concat(e.getFlattenedFilters())), [])), 
-	        this.v;
+	        return null !== this.C || (this.C = this.filters.reduce(((t, e) => t.concat(e.getFlattenedFilters())), [])), 
+	        this.C;
 	    }
 	    // Returns a mutable copy of `this.filters`
 	    getFilters() {
@@ -2218,7 +2241,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 
 	function __PRIVATE_extractDocumentKeysFromArrayValue(t, e) {
 	    var r;
-	    return ((null === (r = e.arrayValue) || undefined === r ? undefined : r.values) || []).map((t => DocumentKey.fromName(t.referenceValue)));
+	    return ((null === (r = e.arrayValue) || void 0 === r ? void 0 : r.values) || []).map((t => DocumentKey.fromName(t.referenceValue)));
 	}
 
 	/** A Filter that implements the array-contains operator. */ class __PRIVATE_ArrayContainsFilter extends FieldFilter {
@@ -2730,7 +2753,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	     * Iterates over `elem`s such that: start &lt;= elem until false is returned.
 	     */    forEachWhile(t, e) {
 	        let r;
-	        for (r = undefined !== e ? this.data.getIteratorFrom(e) : this.data.getIterator(); r.hasNext(); ) {
+	        for (r = void 0 !== e ? this.data.getIteratorFrom(e) : this.data.getIterator(); r.hasNext(); ) {
 	            if (!t(r.getNext().key)) return;
 	        }
 	    }
@@ -3121,7 +3144,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	class __PRIVATE_TargetImpl {
 	    constructor(t, e = null, r = [], n = [], i = null, s = null, o = null) {
 	        this.path = t, this.collectionGroup = e, this.orderBy = r, this.filters = n, this.limit = i, 
-	        this.startAt = s, this.endAt = o, this.D = null;
+	        this.startAt = s, this.endAt = o, this.S = null;
 	    }
 	}
 
@@ -3166,15 +3189,15 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	     */
 	    constructor(t, e = null, r = [], n = [], i = null, s = "F" /* LimitType.First */ , o = null, a = null) {
 	        this.path = t, this.collectionGroup = e, this.explicitOrderBy = r, this.filters = n, 
-	        this.limit = i, this.limitType = s, this.startAt = o, this.endAt = a, this.C = null, 
+	        this.limit = i, this.limitType = s, this.startAt = o, this.endAt = a, this.N = null, 
 	        // The corresponding `Target` of this `Query` instance, for use with
 	        // non-aggregate queries.
-	        this.S = null, 
+	        this.O = null, 
 	        // The corresponding `Target` of this `Query` instance, for use with
 	        // aggregate queries. Unlike targets for non-aggregate queries,
 	        // aggregate query targets do not contain normalized order-bys, they only
 	        // contain explicit order-bys.
-	        this.N = null, this.startAt, this.endAt;
+	        this.q = null, this.startAt, this.endAt;
 	    }
 	}
 
@@ -3195,11 +3218,11 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * order-bys.
 	 */ function __PRIVATE_queryNormalizedOrderBy(t) {
 	    const e = __PRIVATE_debugCast(t);
-	    if (null === e.C) {
-	        e.C = [];
+	    if (null === e.N) {
+	        e.N = [];
 	        const t = new Set;
 	        // Any explicit order by fields should be added as is.
-	                for (const r of e.explicitOrderBy) e.C.push(r), t.add(r.field.canonicalString());
+	                for (const r of e.explicitOrderBy) e.N.push(r), t.add(r.field.canonicalString());
 	        // The order of the implicit ordering always matches the last explicit order by.
 	                const r = e.explicitOrderBy.length > 0 ? e.explicitOrderBy[e.explicitOrderBy.length - 1].dir : "asc" /* Direction.ASCENDING */ , n = 
 	        // Returns the sorted set of inequality filter fields used in this query.
@@ -3221,20 +3244,20 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        // Note: `SortedSet<FieldPath>` sorts the key field before other fields. However, we want the key
 	        // field to be sorted last.
 	                n.forEach((n => {
-	            t.has(n.canonicalString()) || n.isKeyField() || e.C.push(new OrderBy(n, r));
+	            t.has(n.canonicalString()) || n.isKeyField() || e.N.push(new OrderBy(n, r));
 	        })), 
 	        // Add the document key field to the last if it is not explicitly ordered.
-	        t.has(FieldPath$1.keyField().canonicalString()) || e.C.push(new OrderBy(FieldPath$1.keyField(), r));
+	        t.has(FieldPath$1.keyField().canonicalString()) || e.N.push(new OrderBy(FieldPath$1.keyField(), r));
 	    }
-	    return e.C;
+	    return e.N;
 	}
 
 	/**
 	 * Converts this `Query` instance to its corresponding `Target` representation.
 	 */ function __PRIVATE_queryToTarget(t) {
 	    const e = __PRIVATE_debugCast(t);
-	    return e.S || (e.S = __PRIVATE__queryToTarget(e, __PRIVATE_queryNormalizedOrderBy(t))), 
-	    e.S;
+	    return e.O || (e.O = __PRIVATE__queryToTarget(e, __PRIVATE_queryNormalizedOrderBy(t))), 
+	    e.O;
 	}
 
 	/**
@@ -3347,7 +3370,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	    constructor() {
 	        // Make sure that the structural type of `TransformOperation` is unique.
 	        // See https://github.com/microsoft/TypeScript/issues/5451
-	        this._ = undefined;
+	        this._ = void 0;
 	    }
 	}
 
@@ -3372,7 +3395,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * arithmetic is used and precision loss can occur for values greater than 2^53.
 	 */ class __PRIVATE_NumericIncrementTransformOperation extends TransformOperation {
 	    constructor(t, e) {
-	        super(), this.serializer = t, this.O = e;
+	        super(), this.serializer = t, this.B = e;
 	    }
 	}
 
@@ -3410,13 +3433,13 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        return new Precondition;
 	    }
 	    /** Creates a new Precondition with an exists flag. */    static exists(t) {
-	        return new Precondition(undefined, t);
+	        return new Precondition(void 0, t);
 	    }
 	    /** Creates a new Precondition based on a version a document exists at. */    static updateTime(t) {
 	        return new Precondition(t);
 	    }
 	    /** Returns whether this Precondition is empty. */    get isNone() {
-	        return undefined === this.updateTime && undefined === this.exists;
+	        return void 0 === this.updateTime && void 0 === this.exists;
 	    }
 	    isEqual(t) {
 	        return this.exists === t.exists && (this.updateTime ? !!t.updateTime && this.updateTime.isEqual(t.updateTime) : !t.updateTime);
@@ -3544,13 +3567,13 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	 * See the License for the specific language governing permissions and
 	 * limitations under the License.
-	 */ const M = (() => {
+	 */ const Y = (() => {
 	    const t = {
 	        asc: "ASCENDING",
 	        desc: "DESCENDING"
 	    };
 	    return t;
-	})(), x = (() => {
+	})(), Z = (() => {
 	    const t = {
 	        "<": "LESS_THAN",
 	        "<=": "LESS_THAN_OR_EQUAL",
@@ -3564,7 +3587,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        "array-contains-any": "ARRAY_CONTAINS_ANY"
 	    };
 	    return t;
-	})(), k = (() => {
+	})(), X = (() => {
 	    const t = {
 	        and: "AND",
 	        or: "OR"
@@ -3641,7 +3664,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	    const r = function __PRIVATE_fullyQualifiedPrefixPath(t) {
 	        return new ResourcePath([ "projects", t.projectId, "databases", t.database ]);
 	    }(t).child("documents");
-	    return undefined === e ? r : r.child(e);
+	    return void 0 === e ? r : r.child(e);
 	}
 
 	function __PRIVATE_toName(t, e) {
@@ -3653,8 +3676,8 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        const e = ResourcePath.fromString(t);
 	        return __PRIVATE_hardAssert(__PRIVATE_isValidResourceName(e)), e;
 	    }(e);
-	    if (r.get(1) !== t.databaseId.projectId) throw new FirestoreError(P, "Tried to deserialize key from different project: " + r.get(1) + " vs " + t.databaseId.projectId);
-	    if (r.get(3) !== t.databaseId.database) throw new FirestoreError(P, "Tried to deserialize key from different database: " + r.get(3) + " vs " + t.databaseId.database);
+	    if (r.get(1) !== t.databaseId.projectId) throw new FirestoreError(I, "Tried to deserialize key from different project: " + r.get(1) + " vs " + t.databaseId.projectId);
+	    if (r.get(3) !== t.databaseId.database) throw new FirestoreError(I, "Tried to deserialize key from different database: " + r.get(3) + " vs " + t.databaseId.database);
 	    return new DocumentKey(function __PRIVATE_extractLocalPathFromResourceName(t) {
 	        return __PRIVATE_hardAssert(t.length > 4 && "documents" === t.get(4)), t.popFirst(5);
 	    }
@@ -3719,13 +3742,13 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        };
 	        if (r instanceof __PRIVATE_NumericIncrementTransformOperation) return {
 	            fieldPath: e.field.canonicalString(),
-	            increment: r.O
+	            increment: r.B
 	        };
 	        throw fail();
 	    }(0, t)))), e.precondition.isNone || (r.currentDocument = function __PRIVATE_toPrecondition(t, e) {
-	        return undefined !== e.updateTime ? {
+	        return void 0 !== e.updateTime ? {
 	            updateTime: __PRIVATE_toVersion(t, e.updateTime)
-	        } : undefined !== e.exists ? {
+	        } : void 0 !== e.exists ? {
 	            exists: e.exists
 	        } : fail();
 	    }(t, e.precondition)), r;
@@ -3782,22 +3805,22 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	    }
 	    // visible for testing
 	    (e.endAt)), {
-	        q: r,
+	        $: r,
 	        parent: i
 	    };
 	}
 
 	function __PRIVATE_toDirection(t) {
-	    return M[t];
+	    return Y[t];
 	}
 
 	// visible for testing
 	function __PRIVATE_toOperatorName(t) {
-	    return x[t];
+	    return Z[t];
 	}
 
 	function __PRIVATE_toCompositeOperatorName(t) {
-	    return k[t];
+	    return X[t];
 	}
 
 	function __PRIVATE_toFieldPathReference(t) {
@@ -3935,9 +3958,9 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	     * Note that jitter will still be applied, so the actual delay could be as
 	     * much as 1.5*maxDelayMs.
 	     */ , i = 6e4) {
-	        this.B = t, this.timerId = e, this.$ = r, this.L = n, this.M = i, this.k = 0, this.U = null, 
+	        this.L = t, this.timerId = e, this.M = r, this.k = n, this.U = i, this.j = 0, this.W = null, 
 	        /** The last backoff attempt, as epoch milliseconds. */
-	        this.j = Date.now(), this.reset();
+	        this.K = Date.now(), this.reset();
 	    }
 	    /**
 	     * Resets the backoff delay.
@@ -3946,40 +3969,40 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	     * (i.e. due to an error), initialDelayMs (plus jitter) will be used, and
 	     * subsequent ones will increase according to the backoffFactor.
 	     */    reset() {
-	        this.k = 0;
+	        this.j = 0;
 	    }
 	    /**
 	     * Resets the backoff delay to the maximum delay (e.g. for use after a
 	     * RESOURCE_EXHAUSTED error).
-	     */    W() {
-	        this.k = this.M;
+	     */    G() {
+	        this.j = this.U;
 	    }
 	    /**
 	     * Returns a promise that resolves after currentDelayMs, and increases the
 	     * delay for any subsequent attempts. If there was a pending backoff operation
 	     * already, it will be canceled.
-	     */    K(t) {
+	     */    H(t) {
 	        // Cancel any pending backoff operation.
 	        this.cancel();
 	        // First schedule using the current base (which may be 0 and should be
 	        // honored as such).
-	        const e = Math.floor(this.k + this.G()), r = Math.max(0, Date.now() - this.j), n = Math.max(0, e - r);
+	        const e = Math.floor(this.j + this.J()), r = Math.max(0, Date.now() - this.K), n = Math.max(0, e - r);
 	        // Guard against lastAttemptTime being in the future due to a clock change.
-	                n > 0 && __PRIVATE_logDebug("ExponentialBackoff", `Backing off for ${n} ms (base delay: ${this.k} ms, delay with jitter: ${e} ms, last attempt: ${r} ms ago)`), 
-	        this.U = this.B.enqueueAfterDelay(this.timerId, n, (() => (this.j = Date.now(), 
+	                n > 0 && __PRIVATE_logDebug("ExponentialBackoff", `Backing off for ${n} ms (base delay: ${this.j} ms, delay with jitter: ${e} ms, last attempt: ${r} ms ago)`), 
+	        this.W = this.L.enqueueAfterDelay(this.timerId, n, (() => (this.K = Date.now(), 
 	        t()))), 
 	        // Apply backoff factor to determine next delay and ensure it is within
 	        // bounds.
-	        this.k *= this.L, this.k < this.$ && (this.k = this.$), this.k > this.M && (this.k = this.M);
+	        this.j *= this.k, this.j < this.M && (this.j = this.M), this.j > this.U && (this.j = this.U);
 	    }
-	    H() {
-	        null !== this.U && (this.U.skipDelay(), this.U = null);
+	    Y() {
+	        null !== this.W && (this.W.skipDelay(), this.W = null);
 	    }
 	    cancel() {
-	        null !== this.U && (this.U.cancel(), this.U = null);
+	        null !== this.W && (this.W.cancel(), this.W = null);
 	    }
-	    /** Returns a random value in the range [-currentBaseMs/2, currentBaseMs/2] */    G() {
-	        return (Math.random() - .5) * this.k;
+	    /** Returns a random value in the range [-currentBaseMs/2, currentBaseMs/2] */    J() {
+	        return (Math.random() - .5) * this.j;
 	    }
 	}
 
@@ -4003,33 +4026,33 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * Datastore and its related methods are a wrapper around the external Google
 	 * Cloud Datastore grpc API, which provides an interface that is more convenient
 	 * for the rest of the client SDK architecture to consume.
-	 */
+	 */ class Datastore {}
+
 	/**
 	 * An implementation of Datastore that exposes additional state for internal
 	 * consumption.
-	 */
-	class __PRIVATE_DatastoreImpl extends class Datastore {} {
+	 */ class __PRIVATE_DatastoreImpl extends Datastore {
 	    constructor(t, e, r, n) {
 	        super(), this.authCredentials = t, this.appCheckCredentials = e, this.connection = r, 
-	        this.serializer = n, this.J = false;
+	        this.serializer = n, this.Z = false;
 	    }
-	    Y() {
-	        if (this.J) throw new FirestoreError(g, "The client has already been terminated.");
+	    X() {
+	        if (this.Z) throw new FirestoreError(v, "The client has already been terminated.");
 	    }
-	    /** Invokes the provided RPC with auth and AppCheck tokens. */    R(t, e, r, n) {
-	        return this.Y(), Promise.all([ this.authCredentials.getToken(), this.appCheckCredentials.getToken() ]).then((([i, s]) => this.connection.R(t, __PRIVATE_toResourcePath(e, r), n, i, s))).catch((t => {
-	            throw "FirebaseError" === t.name ? (t.code === y && (this.authCredentials.invalidateToken(), 
-	            this.appCheckCredentials.invalidateToken()), t) : new FirestoreError(T, t.toString());
+	    /** Invokes the provided RPC with auth and AppCheck tokens. */    I(t, e, r, n) {
+	        return this.X(), Promise.all([ this.authCredentials.getToken(), this.appCheckCredentials.getToken() ]).then((([i, s]) => this.connection.I(t, __PRIVATE_toResourcePath(e, r), n, i, s))).catch((t => {
+	            throw "FirebaseError" === t.name ? (t.code === g && (this.authCredentials.invalidateToken(), 
+	            this.appCheckCredentials.invalidateToken()), t) : new FirestoreError(R, t.toString());
 	        }));
 	    }
-	    /** Invokes the provided RPC with streamed results with auth and AppCheck tokens. */    g(t, e, r, n, i) {
-	        return this.Y(), Promise.all([ this.authCredentials.getToken(), this.appCheckCredentials.getToken() ]).then((([s, o]) => this.connection.g(t, __PRIVATE_toResourcePath(e, r), n, s, o, i))).catch((t => {
-	            throw "FirebaseError" === t.name ? (t.code === y && (this.authCredentials.invalidateToken(), 
-	            this.appCheckCredentials.invalidateToken()), t) : new FirestoreError(T, t.toString());
+	    /** Invokes the provided RPC with streamed results with auth and AppCheck tokens. */    v(t, e, r, n, i) {
+	        return this.X(), Promise.all([ this.authCredentials.getToken(), this.appCheckCredentials.getToken() ]).then((([s, o]) => this.connection.v(t, __PRIVATE_toResourcePath(e, r), n, s, o, i))).catch((t => {
+	            throw "FirebaseError" === t.name ? (t.code === g && (this.authCredentials.invalidateToken(), 
+	            this.appCheckCredentials.invalidateToken()), t) : new FirestoreError(R, t.toString());
 	        }));
 	    }
 	    terminate() {
-	        this.J = true, this.connection.terminate();
+	        this.Z = true, this.connection.terminate();
 	    }
 	}
 
@@ -4039,13 +4062,13 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	    const r = __PRIVATE_debugCast(t), n = {
 	        writes: e.map((t => toMutation(r.serializer, t)))
 	    };
-	    await r.R("Commit", r.serializer.databaseId, ResourcePath.emptyPath(), n);
+	    await r.I("Commit", r.serializer.databaseId, ResourcePath.emptyPath(), n);
 	}
 
 	async function __PRIVATE_invokeBatchGetDocumentsRpc(t, e) {
 	    const r = __PRIVATE_debugCast(t), n = {
 	        documents: e.map((t => __PRIVATE_toName(r.serializer, t)))
-	    }, i = await r.g("BatchGetDocuments", r.serializer.databaseId, ResourcePath.emptyPath(), n, e.length), s = new Map;
+	    }, i = await r.v("BatchGetDocuments", r.serializer.databaseId, ResourcePath.emptyPath(), n, e.length), s = new Map;
 	    i.forEach((t => {
 	        const e = __PRIVATE_fromBatchGetDocumentsResponse(r.serializer, t);
 	        s.set(e.key.toString(), e);
@@ -4058,8 +4081,8 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	}
 
 	async function __PRIVATE_invokeRunQueryRpc(t, e) {
-	    const r = __PRIVATE_debugCast(t), {q: n, parent: i} = __PRIVATE_toQueryTarget(r.serializer, __PRIVATE_queryToTarget(e));
-	    return (await r.g("RunQuery", r.serializer.databaseId, i, {
+	    const r = __PRIVATE_debugCast(t), {$: n, parent: i} = __PRIVATE_toQueryTarget(r.serializer, __PRIVATE_queryToTarget(e));
+	    return (await r.v("RunQuery", r.serializer.databaseId, i, {
 	        structuredQuery: n.structuredQuery
 	    })).filter((t => !!t.document)).map((t => function __PRIVATE_fromDocument(t, e, r) {
 	        const n = fromName(t, e.name), i = __PRIVATE_fromVersion(e.updateTime), s = e.createTime ? __PRIVATE_fromVersion(e.createTime) : SnapshotVersion.min(), o = new ObjectValue({
@@ -4068,13 +4091,13 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	            }
 	        }), a = MutableDocument.newFoundDocument(n, i, s, o);
 	        return r ? a.setHasCommittedMutations() : a;
-	    }(r.serializer, t.document, undefined)));
+	    }(r.serializer, t.document, void 0)));
 	}
 
 	async function __PRIVATE_invokeRunAggregationQueryRpc(t, e, r) {
 	    var n;
-	    const i = __PRIVATE_debugCast(t), {request: s, Z: o, parent: a} = function __PRIVATE_toRunAggregationQueryRequest(t, e, r, n) {
-	        const {q: i, parent: s} = __PRIVATE_toQueryTarget(t, e), o = {}, a = [];
+	    const i = __PRIVATE_debugCast(t), {request: s, tt: o, parent: a} = function __PRIVATE_toRunAggregationQueryRequest(t, e, r, n) {
+	        const {$: i, parent: s} = __PRIVATE_toQueryTarget(t, e), o = {}, a = [];
 	        let u = 0;
 	        return r.forEach((t => {
 	            // Map all client-side aliases to a unique short-form
@@ -4103,24 +4126,24 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	                },
 	                parent: i.parent
 	            },
-	            Z: o,
+	            tt: o,
 	            parent: s
 	        };
 	    }(i.serializer, function __PRIVATE_queryToAggregateTarget(t) {
 	        const e = __PRIVATE_debugCast(t);
-	        return e.N || (
+	        return e.q || (
 	        // Do not include implicit order-bys for aggregate queries.
-	        e.N = __PRIVATE__queryToTarget(e, t.explicitOrderBy)), e.N;
+	        e.q = __PRIVATE__queryToTarget(e, t.explicitOrderBy)), e.q;
 	    }(e), r);
-	    i.connection.m || delete s.parent;
-	    const u = (await i.g("RunAggregationQuery", i.serializer.databaseId, a, s, 
+	    i.connection.A || delete s.parent;
+	    const u = (await i.v("RunAggregationQuery", i.serializer.databaseId, a, s, 
 	    /*expectedResponseCount=*/ 1)).filter((t => !!t.result));
 	    // Omit RunAggregationQueryResponse that only contain readTimes.
 	        __PRIVATE_hardAssert(1 === u.length);
 	    // Remap the short-form aliases that were sent to the server
 	    // to the client-side aliases. Users will access the results
 	    // using the client-side alias.
-	    const _ = null === (n = u[0].result) || undefined === n ? undefined : n.aggregateFields;
+	    const _ = null === (n = u[0].result) || void 0 === n ? void 0 : n.aggregateFields;
 	    return Object.keys(_).reduce(((t, e) => (t[o[e]] = _[e], t)), {});
 	}
 
@@ -4139,7 +4162,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	 * See the License for the specific language governing permissions and
 	 * limitations under the License.
-	 */ const U = new Map;
+	 */ const tt = "ComponentProvider", et = new Map;
 
 	/**
 	 * An instance map that ensures only one Datastore exists per Firestore
@@ -4151,9 +4174,9 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * instance is terminated.
 	 */
 	function __PRIVATE_getDatastore(t) {
-	    if (t._terminated) throw new FirestoreError(g, "The client has already been terminated.");
-	    if (!U.has(t)) {
-	        __PRIVATE_logDebug("ComponentProvider", "Initializing Datastore");
+	    if (t._terminated) throw new FirestoreError(v, "The client has already been terminated.");
+	    if (!et.has(t)) {
+	        __PRIVATE_logDebug(tt, "Initializing Datastore");
 	        const e = function __PRIVATE_newConnection(t) {
 	            return new __PRIVATE_FetchConnection(t);
 	        }(function __PRIVATE_makeDatabaseInfo(t, e, r, n) {
@@ -4177,15 +4200,50 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 */ (t._databaseId, t.app.options.appId || "", t._persistenceKey, t._freezeSettings())), r = __PRIVATE_newSerializer(t._databaseId), n = function __PRIVATE_newDatastore(t, e, r, n) {
 	            return new __PRIVATE_DatastoreImpl(t, e, r, n);
 	        }(t._authCredentials, t._appCheckCredentials, e, r);
-	        U.set(t, n);
+	        et.set(t, n);
 	    }
-	    return U.get(t);
+	    return et.get(t);
 	}
 
 	/**
 	 * Removes all components associated with the provided instance. Must be called
 	 * when the `Firestore` instance is terminated.
 	 */
+	/**
+	 * @license
+	 * Copyright 2020 Google LLC
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *   http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	const rt = 1048576, nt = "firestore.googleapis.com", it = true;
+
+	/**
+	 * @license
+	 * Copyright 2020 Google LLC
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *   http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	// settings() defaults:
 	/**
 	 * A concrete type describing all the values that can be applied via a
 	 * user-supplied `FirestoreSettings` object. This is a separate type so that
@@ -4194,29 +4252,29 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	class FirestoreSettingsImpl {
 	    constructor(t) {
 	        var e, r;
-	        if (undefined === t.host) {
-	            if (undefined !== t.ssl) throw new FirestoreError(P, "Can't provide ssl option if host option is not set");
-	            this.host = "firestore.googleapis.com", this.ssl = true;
-	        } else this.host = t.host, this.ssl = null === (e = t.ssl) || undefined === e || e;
+	        if (void 0 === t.host) {
+	            if (void 0 !== t.ssl) throw new FirestoreError(I, "Can't provide ssl option if host option is not set");
+	            this.host = nt, this.ssl = it;
+	        } else this.host = t.host, this.ssl = null !== (e = t.ssl) && void 0 !== e ? e : it;
 	        if (this.credentials = t.credentials, this.ignoreUndefinedProperties = !!t.ignoreUndefinedProperties, 
-	        this.localCache = t.localCache, undefined === t.cacheSizeBytes) this.cacheSizeBytes = 41943040; else {
-	            if (-1 !== t.cacheSizeBytes && t.cacheSizeBytes < 1048576) throw new FirestoreError(P, "cacheSizeBytes must be at least 1048576");
+	        this.localCache = t.localCache, void 0 === t.cacheSizeBytes) this.cacheSizeBytes = 41943040; else {
+	            if (-1 !== t.cacheSizeBytes && t.cacheSizeBytes < rt) throw new FirestoreError(I, "cacheSizeBytes must be at least 1048576");
 	            this.cacheSizeBytes = t.cacheSizeBytes;
 	        }
 	        !function __PRIVATE_validateIsNotUsedTogether(t, e, r, n) {
-	            if (true === e && true === n) throw new FirestoreError(P, `${t} and ${r} cannot be used together.`);
+	            if (true === e && true === n) throw new FirestoreError(I, `${t} and ${r} cannot be used together.`);
 	        }("experimentalForceLongPolling", t.experimentalForceLongPolling, "experimentalAutoDetectLongPolling", t.experimentalAutoDetectLongPolling), 
-	        this.experimentalForceLongPolling = !!t.experimentalForceLongPolling, this.experimentalForceLongPolling ? this.experimentalAutoDetectLongPolling = false : undefined === t.experimentalAutoDetectLongPolling ? this.experimentalAutoDetectLongPolling = true : 
+	        this.experimentalForceLongPolling = !!t.experimentalForceLongPolling, this.experimentalForceLongPolling ? this.experimentalAutoDetectLongPolling = false : void 0 === t.experimentalAutoDetectLongPolling ? this.experimentalAutoDetectLongPolling = true : 
 	        // For backwards compatibility, coerce the value to boolean even though
 	        // the TypeScript compiler has narrowed the type to boolean already.
 	        // noinspection PointlessBooleanExpressionJS
 	        this.experimentalAutoDetectLongPolling = !!t.experimentalAutoDetectLongPolling, 
-	        this.experimentalLongPollingOptions = __PRIVATE_cloneLongPollingOptions(null !== (r = t.experimentalLongPollingOptions) && undefined !== r ? r : {}), 
+	        this.experimentalLongPollingOptions = __PRIVATE_cloneLongPollingOptions(null !== (r = t.experimentalLongPollingOptions) && void 0 !== r ? r : {}), 
 	        function __PRIVATE_validateLongPollingOptions(t) {
-	            if (undefined !== t.timeoutSeconds) {
-	                if (isNaN(t.timeoutSeconds)) throw new FirestoreError(P, `invalid long polling timeout: ${t.timeoutSeconds} (must not be NaN)`);
-	                if (t.timeoutSeconds < 5) throw new FirestoreError(P, `invalid long polling timeout: ${t.timeoutSeconds} (minimum allowed value is 5)`);
-	                if (t.timeoutSeconds > 30) throw new FirestoreError(P, `invalid long polling timeout: ${t.timeoutSeconds} (maximum allowed value is 30)`);
+	            if (void 0 !== t.timeoutSeconds) {
+	                if (isNaN(t.timeoutSeconds)) throw new FirestoreError(I, `invalid long polling timeout: ${t.timeoutSeconds} (must not be NaN)`);
+	                if (t.timeoutSeconds < 5) throw new FirestoreError(I, `invalid long polling timeout: ${t.timeoutSeconds} (minimum allowed value is 5)`);
+	                if (t.timeoutSeconds > 30) throw new FirestoreError(I, `invalid long polling timeout: ${t.timeoutSeconds} (maximum allowed value is 30)`);
 	            }
 	        }
 	        /**
@@ -4257,7 +4315,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	         * Whether it's a Firestore or Firestore Lite instance.
 	         */
 	        this.type = "firestore-lite", this._persistenceKey = "(lite)", this._settings = new FirestoreSettingsImpl({}), 
-	        this._settingsFrozen = false, 
+	        this._settingsFrozen = false, this._emulatorOptions = {}, 
 	        // A task that is assigned when the terminate() is invoked and resolved when
 	        // all components have shut down. Otherwise, Firestore is not terminated,
 	        // which can mean either the FirestoreClient is in the process of starting,
@@ -4268,7 +4326,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	     * The {@link @firebase/app#FirebaseApp} associated with this `Firestore` service
 	     * instance.
 	     */    get app() {
-	        if (!this._app) throw new FirestoreError(g, "Firestore was not initialized using the Firebase SDK. 'app' is not available");
+	        if (!this._app) throw new FirestoreError(v, "Firestore was not initialized using the Firebase SDK. 'app' is not available");
 	        return this._app;
 	    }
 	    get _initialized() {
@@ -4278,8 +4336,9 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        return "notTerminated" !== this._terminateTask;
 	    }
 	    _setSettings(t) {
-	        if (this._settingsFrozen) throw new FirestoreError(g, "Firestore has already been started and its settings can no longer be changed. You can only modify settings before calling any other methods on a Firestore object.");
-	        this._settings = new FirestoreSettingsImpl(t), undefined !== t.credentials && (this._authCredentials = function __PRIVATE_makeAuthCredentialsProvider(t) {
+	        if (this._settingsFrozen) throw new FirestoreError(v, "Firestore has already been started and its settings can no longer be changed. You can only modify settings before calling any other methods on a Firestore object.");
+	        this._settings = new FirestoreSettingsImpl(t), this._emulatorOptions = t.emulatorOptions || {}, 
+	        void 0 !== t.credentials && (this._authCredentials = function __PRIVATE_makeAuthCredentialsProvider(t) {
 	            if (!t) return new __PRIVATE_EmptyAuthCredentialsProvider;
 	            switch (t.type) {
 	              case "firstParty":
@@ -4289,12 +4348,15 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	                return t.client;
 
 	              default:
-	                throw new FirestoreError(P, "makeAuthCredentialsProvider failed due to invalid credential type");
+	                throw new FirestoreError(I, "makeAuthCredentialsProvider failed due to invalid credential type");
 	            }
 	        }(t.credentials));
 	    }
 	    _getSettings() {
 	        return this._settings;
+	    }
+	    _getEmulatorOptions() {
+	        return this._emulatorOptions;
 	    }
 	    _freezeSettings() {
 	        return this._settingsFrozen = true, this._settings;
@@ -4326,25 +4388,24 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	     * Only ever called once.
 	     */    _terminate() {
 	        return function __PRIVATE_removeComponents(t) {
-	            const e = U.get(t);
-	            e && (__PRIVATE_logDebug("ComponentProvider", "Removing Datastore"), U.delete(t), 
-	            e.terminate());
+	            const e = et.get(t);
+	            e && (__PRIVATE_logDebug(tt, "Removing Datastore"), et.delete(t), e.terminate());
 	        }(this), Promise.resolve();
 	    }
 	}
 
 	function initializeFirestore(t, e, r) {
-	    r || (r = "(default)");
+	    r || (r = q);
 	    const n = index_esm2017._getProvider(t, "firestore/lite");
-	    if (n.isInitialized(r)) throw new FirestoreError(g, "Firestore can only be initialized once per app.");
+	    if (n.isInitialized(r)) throw new FirestoreError(v, "Firestore can only be initialized once per app.");
 	    return n.initialize({
 	        options: e,
 	        instanceIdentifier: r
 	    });
 	}
 
-	function getFirestore(e, r) {
-	    const n = "object" == typeof e ? e : index_esm2017.getApp(), i = "string" == typeof e ? e : r || "(default)", s = index_esm2017._getProvider(n, "firestore/lite").getImmediate({
+	function getFirestore(t, r) {
+	    const n = "object" == typeof t ? t : index_esm2017.getApp(), i = "string" == typeof t ? t : r || "(default)", s = index_esm2017._getProvider(n, "firestore/lite").getImmediate({
 	        identifier: i
 	    });
 	    if (!s._initialized) {
@@ -4368,19 +4429,25 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * Security Rules.
 	 */ function connectFirestoreEmulator(t, e, r, n = {}) {
 	    var i;
-	    const s = (t = __PRIVATE_cast(t, Firestore))._getSettings(), o = `${e}:${r}`;
-	    if ("firestore.googleapis.com" !== s.host && s.host !== o && __PRIVATE_logWarn("Host has been set in both settings() and connectFirestoreEmulator(), emulator host will be used."), 
-	    t._setSettings(Object.assign(Object.assign({}, s), {
-	        host: o,
-	        ssl: false
-	    })), n.mockUserToken) {
+	    const s = (t = __PRIVATE_cast(t, Firestore))._getSettings(), o = Object.assign(Object.assign({}, s), {
+	        emulatorOptions: t._getEmulatorOptions()
+	    }), a = `${e}:${r}`;
+	    s.host !== nt && s.host !== a && __PRIVATE_logWarn("Host has been set in both settings() and connectFirestoreEmulator(), emulator host will be used.");
+	    const u = Object.assign(Object.assign({}, s), {
+	        host: a,
+	        ssl: false,
+	        emulatorOptions: n
+	    });
+	    // No-op if the new configuration matches the current configuration. This supports SSR
+	    // enviornments which might call `connectFirestoreEmulator` multiple times as a standard practice.
+	        if (!index_esm2017.deepEqual(u, o) && (t._setSettings(u), n.mockUserToken)) {
 	        let e, r;
 	        if ("string" == typeof n.mockUserToken) e = n.mockUserToken, r = User.MOCK_USER; else {
 	            // Let createMockUserToken validate first (catches common mistakes like
 	            // invalid field "uid" and missing field "sub" / "user_id".)
-	            e = index_esm2017.createMockUserToken(n.mockUserToken, null === (i = t._app) || undefined === i ? undefined : i.options.projectId);
+	            e = index_esm2017.createMockUserToken(n.mockUserToken, null === (i = t._app) || void 0 === i ? void 0 : i.options.projectId);
 	            const s = n.mockUserToken.sub || n.mockUserToken.user_id;
-	            if (!s) throw new FirestoreError(P, "mockUserToken must contain 'sub' or 'user_id' field!");
+	            if (!s) throw new FirestoreError(I, "mockUserToken must contain 'sub' or 'user_id' field!");
 	            r = new User(s);
 	        }
 	        t._authCredentials = new __PRIVATE_EmulatorAuthCredentialsProvider(new __PRIVATE_OAuthToken(e, r));
@@ -4599,7 +4666,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        return __PRIVATE_validateCollectionPath(n), new CollectionReference(t, /* converter= */ null, n);
 	    }
 	    {
-	        if (!(t instanceof DocumentReference || t instanceof CollectionReference)) throw new FirestoreError(P, "Expected first argument to collection() to be a CollectionReference, a DocumentReference or FirebaseFirestore");
+	        if (!(t instanceof DocumentReference || t instanceof CollectionReference)) throw new FirestoreError(I, "Expected first argument to collection() to be a CollectionReference, a DocumentReference or FirebaseFirestore");
 	        const n = t._path.child(ResourcePath.fromString(e, ...r));
 	        return __PRIVATE_validateCollectionPath(n), new CollectionReference(t.firestore, 
 	        /* converter= */ null, n);
@@ -4620,7 +4687,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * @returns The created `Query`.
 	 */ function collectionGroup(t, e) {
 	    if (t = __PRIVATE_cast(t, Firestore), __PRIVATE_validateNonEmptyArgument("collectionGroup", "collection id", e), 
-	    e.indexOf("/") >= 0) throw new FirestoreError(P, `Invalid collection ID '${e}' passed to function collectionGroup(). Collection IDs must not contain '/'.`);
+	    e.indexOf("/") >= 0) throw new FirestoreError(I, `Invalid collection ID '${e}' passed to function collectionGroup(). Collection IDs must not contain '/'.`);
 	    return new Query(t, 
 	    /* converter= */ null, function __PRIVATE_newQueryForCollectionGroup(t) {
 	        return new __PRIVATE_QueryImpl(ResourcePath.emptyPath(), t);
@@ -4638,7 +4705,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        /* converter= */ null, new DocumentKey(n));
 	    }
 	    {
-	        if (!(t instanceof DocumentReference || t instanceof CollectionReference)) throw new FirestoreError(P, "Expected first argument to collection() to be a CollectionReference, a DocumentReference or FirebaseFirestore");
+	        if (!(t instanceof DocumentReference || t instanceof CollectionReference)) throw new FirestoreError(I, "Expected first argument to collection() to be a CollectionReference, a DocumentReference or FirebaseFirestore");
 	        const n = t._path.child(ResourcePath.fromString(e, ...r));
 	        return __PRIVATE_validateDocumentPath(n), new DocumentReference(t.firestore, t instanceof CollectionReference ? t.converter : null, new DocumentKey(n));
 	    }
@@ -4699,7 +4766,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        try {
 	            return new Bytes(ByteString.fromBase64String(t));
 	        } catch (t) {
-	            throw new FirestoreError(P, "Failed to construct data from Base64 string: " + t);
+	            throw new FirestoreError(I, "Failed to construct data from Base64 string: " + t);
 	        }
 	    }
 	    /**
@@ -4771,7 +4838,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	     * @param fieldNames - A list of field names.
 	     */
 	    constructor(...t) {
-	        for (let e = 0; e < t.length; ++e) if (0 === t[e].length) throw new FirestoreError(P, "Invalid field name at argument $(i + 1). Field names must not be empty.");
+	        for (let e = 0; e < t.length; ++e) if (0 === t[e].length) throw new FirestoreError(I, "Invalid field name at argument $(i + 1). Field names must not be empty.");
 	        this._internalPath = new FieldPath$1(t);
 	    }
 	    /**
@@ -4788,7 +4855,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * Returns a special sentinel `FieldPath` to refer to the ID of a document.
 	 * It can be used in queries to sort or filter by the document ID.
 	 */ function documentId() {
-	    return new FieldPath("__name__");
+	    return new FieldPath(B);
 	}
 
 	/**
@@ -4850,8 +4917,8 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	     * @param longitude - The longitude as number between -180 and 180.
 	     */
 	    constructor(t, e) {
-	        if (!isFinite(t) || t < -90 || t > 90) throw new FirestoreError(P, "Latitude must be a number between -90 and 90, but was: " + t);
-	        if (!isFinite(e) || e < -180 || e > 180) throw new FirestoreError(P, "Longitude must be a number between -180 and 180, but was: " + e);
+	        if (!isFinite(t) || t < -90 || t > 90) throw new FirestoreError(I, "Latitude must be a number between -90 and 90, but was: " + t);
+	        if (!isFinite(e) || e < -180 || e > 180) throw new FirestoreError(I, "Longitude must be a number between -180 and 180, but was: " + e);
 	        this._lat = t, this._long = e;
 	    }
 	    /**
@@ -4929,7 +4996,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 */
 	/**
 	 * Represents a vector type in Firestore documents.
-	 * Create an instance with {@link FieldValue.vector}.
+	 * Create an instance with <code>{@link vector}</code>.
 	 *
 	 * @class VectorValue
 	 */
@@ -4948,7 +5015,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        return this._values.map((t => t));
 	    }
 	    /**
-	     * Returns `true` if the two VectorValue has the same raw number arrays, returns `false` otherwise.
+	     * Returns `true` if the two `VectorValue` values have the same raw number arrays, returns `false` otherwise.
 	     */    isEqual(t) {
 	        return function __PRIVATE_isPrimitiveArrayEqual(t, e) {
 	            if (t.length !== e.length) return false;
@@ -4973,7 +5040,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	 * See the License for the specific language governing permissions and
 	 * limitations under the License.
-	 */ const j = /^__.*__$/;
+	 */ const st = /^__.*__$/;
 
 	/** The result of parsing document data (e.g. for a setData call). */ class ParsedSetData {
 	    constructor(t, e, r) {
@@ -5036,55 +5103,55 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        this.settings = t, this.databaseId = e, this.serializer = r, this.ignoreUndefinedProperties = n, 
 	        // Minor hack: If fieldTransforms is undefined, we assume this is an
 	        // external call and we need to validate the entire path.
-	        undefined === i && this.X(), this.fieldTransforms = i || [], this.fieldMask = s || [];
+	        void 0 === i && this.et(), this.fieldTransforms = i || [], this.fieldMask = s || [];
 	    }
 	    get path() {
 	        return this.settings.path;
 	    }
-	    get tt() {
-	        return this.settings.tt;
+	    get rt() {
+	        return this.settings.rt;
 	    }
-	    /** Returns a new context with the specified settings overwritten. */    et(t) {
+	    /** Returns a new context with the specified settings overwritten. */    nt(t) {
 	        return new __PRIVATE_ParseContextImpl(Object.assign(Object.assign({}, this.settings), t), this.databaseId, this.serializer, this.ignoreUndefinedProperties, this.fieldTransforms, this.fieldMask);
 	    }
-	    rt(t) {
+	    it(t) {
 	        var e;
-	        const r = null === (e = this.path) || undefined === e ? undefined : e.child(t), n = this.et({
+	        const r = null === (e = this.path) || void 0 === e ? void 0 : e.child(t), n = this.nt({
 	            path: r,
-	            nt: false
+	            st: false
 	        });
-	        return n.it(t), n;
-	    }
-	    st(t) {
-	        var e;
-	        const r = null === (e = this.path) || undefined === e ? undefined : e.child(t), n = this.et({
-	            path: r,
-	            nt: false
-	        });
-	        return n.X(), n;
-	    }
-	    ot(t) {
-	        // TODO(b/34871131): We don't support array paths right now; so make path
-	        // undefined.
-	        return this.et({
-	            path: undefined,
-	            nt: true
-	        });
+	        return n.ot(t), n;
 	    }
 	    ut(t) {
-	        return __PRIVATE_createError(t, this.settings.methodName, this.settings._t || false, this.path, this.settings.ct);
+	        var e;
+	        const r = null === (e = this.path) || void 0 === e ? void 0 : e.child(t), n = this.nt({
+	            path: r,
+	            st: false
+	        });
+	        return n.et(), n;
+	    }
+	    _t(t) {
+	        // TODO(b/34871131): We don't support array paths right now; so make path
+	        // undefined.
+	        return this.nt({
+	            path: void 0,
+	            st: true
+	        });
+	    }
+	    ct(t) {
+	        return __PRIVATE_createError(t, this.settings.methodName, this.settings.lt || false, this.path, this.settings.ht);
 	    }
 	    /** Returns 'true' if 'fieldPath' was traversed when creating this context. */    contains(t) {
-	        return undefined !== this.fieldMask.find((e => t.isPrefixOf(e))) || undefined !== this.fieldTransforms.find((e => t.isPrefixOf(e.field)));
+	        return void 0 !== this.fieldMask.find((e => t.isPrefixOf(e))) || void 0 !== this.fieldTransforms.find((e => t.isPrefixOf(e.field)));
 	    }
-	    X() {
+	    et() {
 	        // TODO(b/34871131): Remove null check once we have proper paths for fields
 	        // within arrays.
-	        if (this.path) for (let t = 0; t < this.path.length; t++) this.it(this.path.get(t));
+	        if (this.path) for (let t = 0; t < this.path.length; t++) this.ot(this.path.get(t));
 	    }
-	    it(t) {
-	        if (0 === t.length) throw this.ut("Document fields must not be empty");
-	        if (__PRIVATE_isWrite(this.tt) && j.test(t)) throw this.ut('Document fields cannot begin and end with "__"');
+	    ot(t) {
+	        if (0 === t.length) throw this.ct("Document fields must not be empty");
+	        if (__PRIVATE_isWrite(this.rt) && st.test(t)) throw this.ct('Document fields cannot begin and end with "__"');
 	    }
 	}
 
@@ -5095,14 +5162,14 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	    constructor(t, e, r) {
 	        this.databaseId = t, this.ignoreUndefinedProperties = e, this.serializer = r || __PRIVATE_newSerializer(t);
 	    }
-	    /** Creates a new top-level parse context. */    lt(t, e, r, n = false) {
+	    /** Creates a new top-level parse context. */    dt(t, e, r, n = false) {
 	        return new __PRIVATE_ParseContextImpl({
-	            tt: t,
+	            rt: t,
 	            methodName: e,
-	            ct: r,
+	            ht: r,
 	            path: FieldPath$1.emptyPath(),
-	            nt: false,
-	            _t: n
+	            st: false,
+	            lt: n
 	        }, this.databaseId, this.serializer, this.ignoreUndefinedProperties);
 	    }
 	}
@@ -5113,7 +5180,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	}
 
 	/** Parse document data from a set() call. */ function __PRIVATE_parseSetData(t, e, r, n, i, s = {}) {
-	    const o = t.lt(s.merge || s.mergeFields ? 2 /* UserDataSource.MergeSet */ : 0 /* UserDataSource.Set */ , e, r, i);
+	    const o = t.dt(s.merge || s.mergeFields ? 2 /* UserDataSource.MergeSet */ : 0 /* UserDataSource.Set */ , e, r, i);
 	    __PRIVATE_validatePlainObject("Data must be an object, but it was:", o, n);
 	    const a = __PRIVATE_parseObject(n, o);
 	    let u, _;
@@ -5121,7 +5188,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        const t = [];
 	        for (const n of s.mergeFields) {
 	            const i = __PRIVATE_fieldPathFromArgument$1(e, n, r);
-	            if (!o.contains(i)) throw new FirestoreError(P, `Field '${i}' is specified in your field mask but missing from your input data.`);
+	            if (!o.contains(i)) throw new FirestoreError(I, `Field '${i}' is specified in your field mask but missing from your input data.`);
 	            __PRIVATE_fieldMaskContains(t, i) || t.push(i);
 	        }
 	        u = new FieldMask(t), _ = o.fieldTransforms.filter((t => u.covers(t.field)));
@@ -5131,7 +5198,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 
 	class __PRIVATE_DeleteFieldValueImpl extends FieldValue {
 	    _toFieldTransform(t) {
-	        if (2 /* UserDataSource.MergeSet */ !== t.tt) throw 1 /* UserDataSource.Update */ === t.tt ? t.ut(`${this._methodName}() can only appear at the top level of your update data`) : t.ut(`${this._methodName}() cannot be used with set() unless you pass {merge:true}`);
+	        if (2 /* UserDataSource.MergeSet */ !== t.rt) throw 1 /* UserDataSource.Update */ === t.rt ? t.ct(`${this._methodName}() can only appear at the top level of your update data`) : t.ct(`${this._methodName}() cannot be used with set() unless you pass {merge:true}`);
 	        // No transform to add for a delete, but we need to add it to our
 	        // fieldMask so it gets deleted.
 	        return t.fieldMask.push(t.path), null;
@@ -5158,10 +5225,10 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * @param arrayElement - Whether or not the FieldValue has an array.
 	 */ function __PRIVATE_createSentinelChildContext(t, e, r) {
 	    return new __PRIVATE_ParseContextImpl({
-	        tt: 3 /* UserDataSource.Argument */ ,
-	        ct: e.settings.ct,
+	        rt: 3 /* UserDataSource.Argument */ ,
+	        ht: e.settings.ht,
 	        methodName: t._methodName,
-	        nt: r
+	        st: r
 	    }, e.databaseId, e.serializer, e.ignoreUndefinedProperties);
 	}
 
@@ -5176,47 +5243,47 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 
 	class __PRIVATE_ArrayUnionFieldValueImpl extends FieldValue {
 	    constructor(t, e) {
-	        super(t), this.ht = e;
+	        super(t), this.ft = e;
 	    }
 	    _toFieldTransform(t) {
 	        const e = __PRIVATE_createSentinelChildContext(this, t, 
-	        /*array=*/ true), r = this.ht.map((t => __PRIVATE_parseData(t, e))), n = new __PRIVATE_ArrayUnionTransformOperation(r);
+	        /*array=*/ true), r = this.ft.map((t => __PRIVATE_parseData(t, e))), n = new __PRIVATE_ArrayUnionTransformOperation(r);
 	        return new FieldTransform(t.path, n);
 	    }
 	    isEqual(t) {
-	        return t instanceof __PRIVATE_ArrayUnionFieldValueImpl && index_esm2017.deepEqual(this.ht, t.ht);
+	        return t instanceof __PRIVATE_ArrayUnionFieldValueImpl && index_esm2017.deepEqual(this.ft, t.ft);
 	    }
 	}
 
 	class __PRIVATE_ArrayRemoveFieldValueImpl extends FieldValue {
 	    constructor(t, e) {
-	        super(t), this.ht = e;
+	        super(t), this.ft = e;
 	    }
 	    _toFieldTransform(t) {
 	        const e = __PRIVATE_createSentinelChildContext(this, t, 
-	        /*array=*/ true), r = this.ht.map((t => __PRIVATE_parseData(t, e))), n = new __PRIVATE_ArrayRemoveTransformOperation(r);
+	        /*array=*/ true), r = this.ft.map((t => __PRIVATE_parseData(t, e))), n = new __PRIVATE_ArrayRemoveTransformOperation(r);
 	        return new FieldTransform(t.path, n);
 	    }
 	    isEqual(t) {
-	        return t instanceof __PRIVATE_ArrayRemoveFieldValueImpl && index_esm2017.deepEqual(this.ht, t.ht);
+	        return t instanceof __PRIVATE_ArrayRemoveFieldValueImpl && index_esm2017.deepEqual(this.ft, t.ft);
 	    }
 	}
 
 	class __PRIVATE_NumericIncrementFieldValueImpl extends FieldValue {
 	    constructor(t, e) {
-	        super(t), this.dt = e;
+	        super(t), this.Et = e;
 	    }
 	    _toFieldTransform(t) {
-	        const e = new __PRIVATE_NumericIncrementTransformOperation(t.serializer, toNumber(t.serializer, this.dt));
+	        const e = new __PRIVATE_NumericIncrementTransformOperation(t.serializer, toNumber(t.serializer, this.Et));
 	        return new FieldTransform(t.path, e);
 	    }
 	    isEqual(t) {
-	        return t instanceof __PRIVATE_NumericIncrementFieldValueImpl && this.dt === t.dt;
+	        return t instanceof __PRIVATE_NumericIncrementFieldValueImpl && this.Et === t.Et;
 	    }
 	}
 
 	/** Parse update data from an update() call. */ function __PRIVATE_parseUpdateData(t, e, r, n) {
-	    const i = t.lt(1 /* UserDataSource.Update */ , e, r);
+	    const i = t.dt(1 /* UserDataSource.Update */ , e, r);
 	    __PRIVATE_validatePlainObject("Data must be an object, but it was:", i, n);
 	    const s = [], o = ObjectValue.empty();
 	    forEach(n, ((t, n) => {
@@ -5224,7 +5291,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        // For Compat types, we have to "extract" the underlying types before
 	        // performing validation.
 	                n = index_esm2017.getModularInstance(n);
-	        const u = i.st(a);
+	        const u = i.ut(a);
 	        if (n instanceof __PRIVATE_DeleteFieldValueImpl) 
 	        // Add it to the field mask, but don't add anything to updateData.
 	        s.push(a); else {
@@ -5237,8 +5304,8 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	}
 
 	/** Parse update data from a list of field/value arguments. */ function __PRIVATE_parseUpdateVarargs(t, e, r, n, i, s) {
-	    const o = t.lt(1 /* UserDataSource.Update */ , e, r), a = [ __PRIVATE_fieldPathFromArgument$1(e, n, r) ], u = [ i ];
-	    if (s.length % 2 != 0) throw new FirestoreError(P, `Function ${e}() needs to be called with an even number of arguments that alternate between field names and values.`);
+	    const o = t.dt(1 /* UserDataSource.Update */ , e, r), a = [ __PRIVATE_fieldPathFromArgument$1(e, n, r) ], u = [ i ];
+	    if (s.length % 2 != 0) throw new FirestoreError(I, `Function ${e}() needs to be called with an even number of arguments that alternate between field names and values.`);
 	    for (let t = 0; t < s.length; t += 2) a.push(__PRIVATE_fieldPathFromArgument$1(e, s[t])), 
 	    u.push(s[t + 1]);
 	    const _ = [], c = ObjectValue.empty();
@@ -5250,7 +5317,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        // For Compat types, we have to "extract" the underlying types before
 	        // performing validation.
 	                r = index_esm2017.getModularInstance(r);
-	        const n = o.st(e);
+	        const n = o.ut(e);
 	        if (r instanceof __PRIVATE_DeleteFieldValueImpl) 
 	        // Add it to the field mask, but don't add anything to updateData.
 	        _.push(e); else {
@@ -5258,8 +5325,8 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	            null != t && (_.push(e), c.set(e, t));
 	        }
 	    }
-	    const h = new FieldMask(_);
-	    return new ParsedUpdateData(c, h, o.fieldTransforms);
+	    const l = new FieldMask(_);
+	    return new ParsedUpdateData(c, l, o.fieldTransforms);
 	}
 
 	/**
@@ -5269,7 +5336,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * @param allowArrays - Whether the query value is an array that may directly
 	 * contain additional arrays (e.g. the operand of an `in` query).
 	 */ function __PRIVATE_parseQueryValue(t, e, r, n = false) {
-	    return __PRIVATE_parseData(r, t.lt(n ? 4 /* UserDataSource.ArrayArgument */ : 3 /* UserDataSource.Argument */ , e));
+	    return __PRIVATE_parseData(r, t.dt(n ? 4 /* UserDataSource.ArrayArgument */ : 3 /* UserDataSource.Argument */ , e));
 	}
 
 	/**
@@ -5298,8 +5365,8 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 */
 	    return function __PRIVATE_parseSentinelFieldValue(t, e) {
 	        // Sentinels are only supported with writes, and not within arrays.
-	        if (!__PRIVATE_isWrite(e.tt)) throw e.ut(`${t._methodName}() can only be used with update() and set()`);
-	        if (!e.path) throw e.ut(`${t._methodName}() is not currently supported inside arrays`);
+	        if (!__PRIVATE_isWrite(e.rt)) throw e.ct(`${t._methodName}() can only be used with update() and set()`);
+	        if (!e.path) throw e.ct(`${t._methodName}() is not currently supported inside arrays`);
 	        const r = t._toFieldTransform(e);
 	        r && e.fieldTransforms.push(r);
 	    }
@@ -5308,7 +5375,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 *
 	 * @returns The parsed value
 	 */ (t, e), null;
-	    if (undefined === t && e.ignoreUndefinedProperties) 
+	    if (void 0 === t && e.ignoreUndefinedProperties) 
 	    // If the input is undefined it can never participate in the fieldMask, so
 	    // don't handle this below. If `ignoreUndefinedProperties` is false,
 	    // `parseScalarValue` will reject an undefined value.
@@ -5323,12 +5390,12 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        // the set of values to be included for the IN query) that may directly
 	        // contain additional arrays (each representing an individual field
 	        // value), so we disable this validation.
-	        if (e.settings.nt && 4 /* UserDataSource.ArrayArgument */ !== e.tt) throw e.ut("Nested arrays are not supported");
+	        if (e.settings.st && 4 /* UserDataSource.ArrayArgument */ !== e.rt) throw e.ct("Nested arrays are not supported");
 	        return function __PRIVATE_parseArray(t, e) {
 	            const r = [];
 	            let n = 0;
 	            for (const i of t) {
-	                let t = __PRIVATE_parseData(i, e.ot(n));
+	                let t = __PRIVATE_parseData(i, e._t(n));
 	                null == t && (
 	                // Just include nulls in the array for fields being replaced with a
 	                // sentinel.
@@ -5380,7 +5447,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        };
 	        if (t instanceof DocumentReference) {
 	            const r = e.databaseId, n = t.firestore._databaseId;
-	            if (!n.isEqual(r)) throw e.ut(`Document reference is for database ${n.projectId}/${n.database} but should be for database ${r.projectId}/${r.database}`);
+	            if (!n.isEqual(r)) throw e.ct(`Document reference is for database ${n.projectId}/${n.database} but should be for database ${r.projectId}/${r.database}`);
 	            return {
 	                referenceValue: __PRIVATE_toResourceName(t.firestore._databaseId || e.databaseId, t._key.path)
 	            };
@@ -5390,22 +5457,23 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * Creates a new VectorValue proto value (using the internal format).
 	 */
 	        return function __PRIVATE_parseVectorValue(t, e) {
-	            return {
-	                mapValue: {
-	                    fields: {
-	                        __type__: {
-	                            stringValue: "__vector__"
-	                        },
-	                        value: {
-	                            arrayValue: {
-	                                values: t.toArray().map((t => {
-	                                    if ("number" != typeof t) throw e.ut("VectorValues must only contain numeric values.");
-	                                    return __PRIVATE_toDouble(e.serializer, t);
-	                                }))
-	                            }
+	            const r = {
+	                fields: {
+	                    [W]: {
+	                        stringValue: H
+	                    },
+	                    [J]: {
+	                        arrayValue: {
+	                            values: t.toArray().map((t => {
+	                                if ("number" != typeof t) throw e.ct("VectorValues must only contain numeric values.");
+	                                return __PRIVATE_toDouble(e.serializer, t);
+	                            }))
 	                        }
 	                    }
 	                }
+	            };
+	            return {
+	                mapValue: r
 	            };
 	        }
 	        /**
@@ -5415,7 +5483,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * GeoPoints, etc. are not considered to look like JSON objects since they map
 	 * to specific FieldValue types other than ObjectValue.
 	 */ (t, e);
-	        throw e.ut(`Unsupported field value: ${__PRIVATE_valueDescription(t)}`);
+	        throw e.ct(`Unsupported field value: ${__PRIVATE_valueDescription(t)}`);
 	    }(t, e);
 	}
 
@@ -5425,7 +5493,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        for (const e in t) if (Object.prototype.hasOwnProperty.call(t, e)) return false;
 	        return true;
 	    }(t) ? forEach(t, ((t, n) => {
-	        const i = __PRIVATE_parseData(n, e.rt(t));
+	        const i = __PRIVATE_parseData(n, e.it(t));
 	        null != i && (r[t] = i);
 	    })) : 
 	    // If we encounter an empty object, we explicitly add it to the update
@@ -5446,7 +5514,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        return "object" == typeof t && null !== t && (Object.getPrototypeOf(t) === Object.prototype || null === Object.getPrototypeOf(t));
 	    }(r)) {
 	        const n = __PRIVATE_valueDescription(r);
-	        throw "an object" === n ? e.ut(t + " a custom object") : e.ut(t + " " + n);
+	        throw "an object" === n ? e.ct(t + " a custom object") : e.ct(t + " " + n);
 	    }
 	}
 
@@ -5460,12 +5528,12 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	    if ("string" == typeof e) return __PRIVATE_fieldPathFromDotSeparatedString(t, e);
 	    throw __PRIVATE_createError("Field path arguments must be of type string or ", t, 
 	    /* hasConverter= */ false, 
-	    /* path= */ undefined, r);
+	    /* path= */ void 0, r);
 	}
 
 	/**
 	 * Matches any characters in a field path string that are reserved.
-	 */ const z = new RegExp("[~\\*/\\[\\]]");
+	 */ const ot = new RegExp("[~\\*/\\[\\]]");
 
 	/**
 	 * Wraps fromDotSeparatedString with an error message about the method that
@@ -5476,25 +5544,25 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * @param targetDoc - The document against which the field path will be
 	 * evaluated.
 	 */ function __PRIVATE_fieldPathFromDotSeparatedString(t, e, r) {
-	    if (e.search(z) >= 0) throw __PRIVATE_createError(`Invalid field path (${e}). Paths must not contain '~', '*', '/', '[', or ']'`, t, 
+	    if (e.search(ot) >= 0) throw __PRIVATE_createError(`Invalid field path (${e}). Paths must not contain '~', '*', '/', '[', or ']'`, t, 
 	    /* hasConverter= */ false, 
-	    /* path= */ undefined, r);
+	    /* path= */ void 0, r);
 	    try {
 	        return new FieldPath(...e.split("."))._internalPath;
 	    } catch (n) {
 	        throw __PRIVATE_createError(`Invalid field path (${e}). Paths must not be empty, begin with '.', end with '.', or contain '..'`, t, 
 	        /* hasConverter= */ false, 
-	        /* path= */ undefined, r);
+	        /* path= */ void 0, r);
 	    }
 	}
 
 	function __PRIVATE_createError(t, e, r, n, i) {
-	    const s = n && !n.isEmpty(), o = undefined !== i;
+	    const s = n && !n.isEmpty(), o = void 0 !== i;
 	    let a = `Function ${e}() called with invalid data`;
 	    r && (a += " (via `toFirestore()`)"), a += ". ";
 	    let u = "";
 	    return (s || o) && (u += " (found", s && (u += ` in field ${n}`), o && (u += ` in document ${i}`), 
-	    u += ")"), new FirestoreError(P, a + t + u);
+	    u += ")"), new FirestoreError(I, a + t + u);
 	}
 
 	/** Checks `haystack` if FieldPath `needle` is present. Runs in O(n). */ function __PRIVATE_fieldMaskContains(t, e) {
@@ -5691,7 +5759,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	    let n = [];
 	    e instanceof AppliableConstraint && n.push(e), n = n.concat(r), function __PRIVATE_validateQueryConstraintArray(t) {
 	        const e = t.filter((t => t instanceof QueryCompositeFilterConstraint)).length, r = t.filter((t => t instanceof QueryFieldFilterConstraint)).length;
-	        if (e > 1 || e > 0 && r > 0) throw new FirestoreError(P, "InvalidQuery. When using composite filters, you cannot use more than one filter at the top level. Consider nesting the multiple filters within an `and(...)` statement. For example: change `query(query, where(...), or(...))` to `query(query, and(where(...), or(...)))`.");
+	        if (e > 1 || e > 0 && r > 0) throw new FirestoreError(I, "InvalidQuery. When using composite filters, you cannot use more than one filter at the top level. Consider nesting the multiple filters within an `and(...)` statement. For example: change `query(query, where(...), or(...))` to `query(query, and(where(...), or(...)))`.");
 	    }
 	    /**
 	 * @license
@@ -5745,7 +5813,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        const e = __PRIVATE_newUserDataReader(t.firestore), r = function __PRIVATE_newQueryFilter(t, e, r, n, i, s, o) {
 	            let a;
 	            if (i.isKeyField()) {
-	                if ("array-contains" /* Operator.ARRAY_CONTAINS */ === s || "array-contains-any" /* Operator.ARRAY_CONTAINS_ANY */ === s) throw new FirestoreError(P, `Invalid Query. You can't perform '${s}' queries on documentId().`);
+	                if ("array-contains" /* Operator.ARRAY_CONTAINS */ === s || "array-contains-any" /* Operator.ARRAY_CONTAINS_ANY */ === s) throw new FirestoreError(I, `Invalid Query. You can't perform '${s}' queries on documentId().`);
 	                if ("in" /* Operator.IN */ === s || "not-in" /* Operator.NOT_IN */ === s) {
 	                    __PRIVATE_validateDisjunctiveFilterElements(o, s);
 	                    const e = [];
@@ -5759,7 +5827,8 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	            } else "in" /* Operator.IN */ !== s && "not-in" /* Operator.NOT_IN */ !== s && "array-contains-any" /* Operator.ARRAY_CONTAINS_ANY */ !== s || __PRIVATE_validateDisjunctiveFilterElements(o, s), 
 	            a = __PRIVATE_parseQueryValue(r, e, o, 
 	            /* allowArrays= */ "in" /* Operator.IN */ === s || "not-in" /* Operator.NOT_IN */ === s);
-	            return FieldFilter.create(i, s, a);
+	            const u = FieldFilter.create(i, s, a);
+	            return u;
 	        }(t._query, "where", e, t.firestore._databaseId, this._field, this._op, this._value);
 	        return r;
 	    }
@@ -5872,9 +5941,10 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	    }
 	    _apply(t) {
 	        const e = function __PRIVATE_newQueryOrderBy(t, e, r) {
-	            if (null !== t.startAt) throw new FirestoreError(P, "Invalid query. You must not call startAt() or startAfter() before calling orderBy().");
-	            if (null !== t.endAt) throw new FirestoreError(P, "Invalid query. You must not call endAt() or endBefore() before calling orderBy().");
-	            return new OrderBy(e, r);
+	            if (null !== t.startAt) throw new FirestoreError(I, "Invalid query. You must not call startAt() or startAfter() before calling orderBy().");
+	            if (null !== t.endAt) throw new FirestoreError(I, "Invalid query. You must not call endAt() or endBefore() before calling orderBy().");
+	            const n = new OrderBy(e, r);
+	            return n;
 	        }
 	        /**
 	 * Create a `Bound` from a query and a document.
@@ -6033,7 +6103,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 
 	/** Helper function to create a bound from a document or fields */ function __PRIVATE_newQueryBoundFromDocOrFields(t, e, r, n) {
 	    if (r[0] = index_esm2017.getModularInstance(r[0]), r[0] instanceof DocumentSnapshot) return function __PRIVATE_newQueryBoundFromDocument(t, e, r, n, i) {
-	        if (!n) throw new FirestoreError(I, `Can't use a DocumentSnapshot that doesn't exist for ${r}().`);
+	        if (!n) throw new FirestoreError(p, `Can't use a DocumentSnapshot that doesn't exist for ${r}().`);
 	        const s = [];
 	        // Because people expect to continue/end a query at the exact document
 	        // provided, we need to use the implicit sort order rather than the explicit
@@ -6044,10 +6114,10 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        // results.
 	                for (const r of __PRIVATE_queryNormalizedOrderBy(t)) if (r.field.isKeyField()) s.push(__PRIVATE_refValue(e, n.key)); else {
 	            const t = n.data.field(r.field);
-	            if (__PRIVATE_isServerTimestamp(t)) throw new FirestoreError(P, 'Invalid query. You are trying to start or end a query using a document for which the field "' + r.field + '" is an uncommitted server timestamp. (Since the value of this field is unknown, you cannot start/end a query with it.)');
+	            if (__PRIVATE_isServerTimestamp(t)) throw new FirestoreError(I, 'Invalid query. You are trying to start or end a query using a document for which the field "' + r.field + '" is an uncommitted server timestamp. (Since the value of this field is unknown, you cannot start/end a query with it.)');
 	            if (null === t) {
 	                const t = r.field.canonicalString();
-	                throw new FirestoreError(P, `Invalid query. You are trying to start or end a query using a document for which the field '${t}' (used as the orderBy) does not exist.`);
+	                throw new FirestoreError(I, `Invalid query. You are trying to start or end a query using a document for which the field '${t}' (used as the orderBy) does not exist.`);
 	            }
 	            s.push(t);
 	        }
@@ -6061,15 +6131,15 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        return function __PRIVATE_newQueryBoundFromFields(t, e, r, n, i, s) {
 	            // Use explicit order by's because it has to match the query the user made
 	            const o = t.explicitOrderBy;
-	            if (i.length > o.length) throw new FirestoreError(P, `Too many arguments provided to ${n}(). The number of arguments must be less than or equal to the number of orderBy() clauses`);
+	            if (i.length > o.length) throw new FirestoreError(I, `Too many arguments provided to ${n}(). The number of arguments must be less than or equal to the number of orderBy() clauses`);
 	            const a = [];
 	            for (let s = 0; s < i.length; s++) {
 	                const u = i[s];
 	                if (o[s].field.isKeyField()) {
-	                    if ("string" != typeof u) throw new FirestoreError(P, `Invalid query. Expected a string for document ID in ${n}(), but got a ${typeof u}`);
-	                    if (!__PRIVATE_isCollectionGroupQuery(t) && -1 !== u.indexOf("/")) throw new FirestoreError(P, `Invalid query. When querying a collection and ordering by documentId(), the value passed to ${n}() must be a plain document ID, but '${u}' contains a slash.`);
+	                    if ("string" != typeof u) throw new FirestoreError(I, `Invalid query. Expected a string for document ID in ${n}(), but got a ${typeof u}`);
+	                    if (!__PRIVATE_isCollectionGroupQuery(t) && -1 !== u.indexOf("/")) throw new FirestoreError(I, `Invalid query. When querying a collection and ordering by documentId(), the value passed to ${n}() must be a plain document ID, but '${u}' contains a slash.`);
 	                    const r = t.path.child(ResourcePath.fromString(u));
-	                    if (!DocumentKey.isDocumentKey(r)) throw new FirestoreError(P, `Invalid query. When querying a collection group and ordering by documentId(), the value passed to ${n}() must result in a valid document path, but '${r}' is not because it contains an odd number of segments.`);
+	                    if (!DocumentKey.isDocumentKey(r)) throw new FirestoreError(I, `Invalid query. When querying a collection group and ordering by documentId(), the value passed to ${n}() must result in a valid document path, but '${r}' is not because it contains an odd number of segments.`);
 	                    const i = new DocumentKey(r);
 	                    a.push(__PRIVATE_refValue(e, i));
 	                } else {
@@ -6089,21 +6159,21 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 
 	function __PRIVATE_parseDocumentIdValue(t, e, r) {
 	    if ("string" == typeof (r = index_esm2017.getModularInstance(r))) {
-	        if ("" === r) throw new FirestoreError(P, "Invalid query. When querying with documentId(), you must provide a valid document ID, but it was an empty string.");
-	        if (!__PRIVATE_isCollectionGroupQuery(e) && -1 !== r.indexOf("/")) throw new FirestoreError(P, `Invalid query. When querying a collection by documentId(), you must provide a plain document ID, but '${r}' contains a '/' character.`);
+	        if ("" === r) throw new FirestoreError(I, "Invalid query. When querying with documentId(), you must provide a valid document ID, but it was an empty string.");
+	        if (!__PRIVATE_isCollectionGroupQuery(e) && -1 !== r.indexOf("/")) throw new FirestoreError(I, `Invalid query. When querying a collection by documentId(), you must provide a plain document ID, but '${r}' contains a '/' character.`);
 	        const n = e.path.child(ResourcePath.fromString(r));
-	        if (!DocumentKey.isDocumentKey(n)) throw new FirestoreError(P, `Invalid query. When querying a collection group by documentId(), the value provided must result in a valid document path, but '${n}' is not because it has an odd number of segments (${n.length}).`);
+	        if (!DocumentKey.isDocumentKey(n)) throw new FirestoreError(I, `Invalid query. When querying a collection group by documentId(), the value provided must result in a valid document path, but '${n}' is not because it has an odd number of segments (${n.length}).`);
 	        return __PRIVATE_refValue(t, new DocumentKey(n));
 	    }
 	    if (r instanceof DocumentReference) return __PRIVATE_refValue(t, r._key);
-	    throw new FirestoreError(P, `Invalid query. When querying with documentId(), you must provide a valid string or a DocumentReference, but it was: ${__PRIVATE_valueDescription(r)}.`);
+	    throw new FirestoreError(I, `Invalid query. When querying with documentId(), you must provide a valid string or a DocumentReference, but it was: ${__PRIVATE_valueDescription(r)}.`);
 	}
 
 	/**
 	 * Validates that the value passed into a disjunctive filter satisfies all
 	 * array requirements.
 	 */ function __PRIVATE_validateDisjunctiveFilterElements(t, e) {
-	    if (!Array.isArray(t) || 0 === t.length) throw new FirestoreError(P, `Invalid Query. A non-empty array is required for '${e.toString()}' filters.`);
+	    if (!Array.isArray(t) || 0 === t.length) throw new FirestoreError(I, `Invalid Query. A non-empty array is required for '${e.toString()}' filters.`);
 	}
 
 	/**
@@ -6137,48 +6207,14 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	    }(e.op));
 	    if (null !== r) 
 	    // Special case when it's a duplicate op to give a slightly clearer error message.
-	    throw r === e.op ? new FirestoreError(P, `Invalid query. You cannot use more than one '${e.op.toString()}' filter.`) : new FirestoreError(P, `Invalid query. You cannot use '${e.op.toString()}' filters with '${r.toString()}' filters.`);
+	    throw r === e.op ? new FirestoreError(I, `Invalid query. You cannot use more than one '${e.op.toString()}' filter.`) : new FirestoreError(I, `Invalid query. You cannot use '${e.op.toString()}' filters with '${r.toString()}' filters.`);
 	}
 
 	function __PRIVATE_validateQueryFilterConstraint(t, e) {
-	    if (!(e instanceof QueryFieldFilterConstraint || e instanceof QueryCompositeFilterConstraint)) throw new FirestoreError(P, `Function ${t}() requires AppliableConstraints created with a call to 'where(...)', 'or(...)', or 'and(...)'.`);
+	    if (!(e instanceof QueryFieldFilterConstraint || e instanceof QueryCompositeFilterConstraint)) throw new FirestoreError(I, `Function ${t}() requires AppliableConstraints created with a call to 'where(...)', 'or(...)', or 'and(...)'.`);
 	}
 
-	/**
-	 * @license
-	 * Copyright 2020 Google LLC
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 *   http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 */
-	/**
-	 * Converts custom model object of type T into `DocumentData` by applying the
-	 * converter if it exists.
-	 *
-	 * This function is used when converting user objects to `DocumentData`
-	 * because we want to provide the user with a more specific error message if
-	 * their `set()` or fails due to invalid data originating from a `toFirestore()`
-	 * call.
-	 */
-	function __PRIVATE_applyFirestoreDataConverter(t, e, r) {
-	    let n;
-	    // Cast to `any` in order to satisfy the union type constraint on
-	    // toFirestore().
-	    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-	    return n = t ? r && (r.merge || r.mergeFields) ? t.toFirestore(e, r) : t.toFirestore(e) : e, 
-	    n;
-	}
-
-	class __PRIVATE_LiteUserDataWriter extends class AbstractUserDataWriter {
+	class AbstractUserDataWriter {
 	    convertValue(t, e = "none") {
 	        switch (__PRIVATE_typeOrder(t)) {
 	          case 0 /* TypeOrder.NullValue */ :
@@ -6236,7 +6272,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	     * @internal
 	     */    convertVectorValue(t) {
 	        var e, r, n;
-	        const i = null === (n = null === (r = null === (e = t.fields) || undefined === e ? undefined : e.value.arrayValue) || undefined === r ? undefined : r.values) || undefined === n ? undefined : n.map((t => __PRIVATE_normalizeNumber(t.doubleValue)));
+	        const i = null === (n = null === (r = null === (e = t.fields) || void 0 === e ? void 0 : e[J].arrayValue) || void 0 === r ? void 0 : r.values) || void 0 === n ? void 0 : n.map((t => __PRIVATE_normalizeNumber(t.doubleValue)));
 	        return new VectorValue(i);
 	    }
 	    convertGeoPoint(t) {
@@ -6271,7 +6307,42 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        __PRIVATE_logError(`Document ${i} contains a document reference within a different database (${n.projectId}/${n.database}) which is not supported. It will be treated as a reference in the current database (${e.projectId}/${e.database}) instead.`), 
 	        i;
 	    }
-	} {
+	}
+
+	/**
+	 * @license
+	 * Copyright 2020 Google LLC
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *   http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	/**
+	 * Converts custom model object of type T into `DocumentData` by applying the
+	 * converter if it exists.
+	 *
+	 * This function is used when converting user objects to `DocumentData`
+	 * because we want to provide the user with a more specific error message if
+	 * their `set()` or fails due to invalid data originating from a `toFirestore()`
+	 * call.
+	 */ function __PRIVATE_applyFirestoreDataConverter(t, e, r) {
+	    let n;
+	    // Cast to `any` in order to satisfy the union type constraint on
+	    // toFirestore().
+	    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+	    return n = t ? r && (r.merge || r.mergeFields) ? t.toFirestore(e, r) : t.toFirestore(e) : e, 
+	    n;
+	}
+
+	class __PRIVATE_LiteUserDataWriter extends AbstractUserDataWriter {
 	    constructor(t) {
 	        super(), this.firestore = t;
 	    }
@@ -6318,7 +6389,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * @returns A Promise that will be resolved with the results of the query.
 	 */ function getDocs(t) {
 	    (function __PRIVATE_validateHasExplicitOrderByForLimitToLast(t) {
-	        if ("L" /* LimitType.Last */ === t.limitType && 0 === t.explicitOrderBy.length) throw new FirestoreError(D, "limitToLast() queries require specifying at least one orderBy() clause");
+	        if ("L" /* LimitType.Last */ === t.limitType && 0 === t.explicitOrderBy.length) throw new FirestoreError(C, "limitToLast() queries require specifying at least one orderBy() clause");
 	    })((t = __PRIVATE_cast(t, Query))._query);
 	    const e = __PRIVATE_getDatastore(t.firestore), r = new __PRIVATE_LiteUserDataWriter(t.firestore);
 	    return __PRIVATE_invokeRunQueryRpc(e, t._query).then((e => {
@@ -6447,8 +6518,8 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	    }(e, ((t, e) => new __PRIVATE_AggregateImpl(e, t.aggregateType, t._internalFieldPath)));
 	    // Run the aggregation and convert the results
 	    return __PRIVATE_invokeRunAggregationQueryRpc(n, t._query, i).then((e => function __PRIVATE_convertToAggregateQuerySnapshot(t, e, r) {
-	        const n = new __PRIVATE_LiteUserDataWriter(t);
-	        return new AggregateQuerySnapshot(e, n, r);
+	        const n = new __PRIVATE_LiteUserDataWriter(t), i = new AggregateQuerySnapshot(e, n, r);
+	        return i;
 	    }
 	    /**
 	 * Create an AggregateField object that can be used to compute the sum of
@@ -6483,7 +6554,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * @param right Compare this AggregateField to the `left`.
 	 */ function aggregateFieldEqual(t, e) {
 	    var r, n;
-	    return t instanceof AggregateField && e instanceof AggregateField && t.aggregateType === e.aggregateType && (null === (r = t._internalFieldPath) || undefined === r ? undefined : r.canonicalString()) === (null === (n = e._internalFieldPath) || undefined === n ? undefined : n.canonicalString());
+	    return t instanceof AggregateField && e instanceof AggregateField && t.aggregateType === e.aggregateType && (null === (r = t._internalFieldPath) || void 0 === r ? void 0 : r.canonicalString()) === (null === (n = e._internalFieldPath) || void 0 === n ? void 0 : n.canonicalString());
 	}
 
 	/**
@@ -6665,12 +6736,12 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        return this._verifyNotCommitted(), this._committed = true, this._mutations.length > 0 ? this._commitHandler(this._mutations) : Promise.resolve();
 	    }
 	    _verifyNotCommitted() {
-	        if (this._committed) throw new FirestoreError(g, "A write batch can no longer be used after commit() has been called.");
+	        if (this._committed) throw new FirestoreError(v, "A write batch can no longer be used after commit() has been called.");
 	    }
 	}
 
 	function __PRIVATE_validateReference(t, e) {
-	    if ((t = index_esm2017.getModularInstance(t)).firestore !== e) throw new FirestoreError(P, "Provided document reference is from a different Firestore instance.");
+	    if ((t = index_esm2017.getModularInstance(t)).firestore !== e) throw new FirestoreError(I, "Provided document reference is from a different Firestore instance.");
 	    return t;
 	}
 
@@ -6729,7 +6800,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        this.writtenDocs = new Set;
 	    }
 	    async lookup(t) {
-	        if (this.ensureCommitNotCalled(), this.mutations.length > 0) throw this.lastTransactionError = new FirestoreError(P, "Firestore transactions require all reads to be executed before all writes."), 
+	        if (this.ensureCommitNotCalled(), this.mutations.length > 0) throw this.lastTransactionError = new FirestoreError(I, "Firestore transactions require all reads to be executed before all writes."), 
 	        this.lastTransactionError;
 	        const e = await __PRIVATE_invokeBatchGetDocumentsRpc(this.datastore, t);
 	        return e.forEach((t => this.recordVersion(t))), e;
@@ -6773,7 +6844,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        if (r) {
 	            if (!e.isEqual(r)) 
 	            // This transaction will fail no matter what.
-	            throw new FirestoreError(F, "Document version changed between two reads.");
+	            throw new FirestoreError(D, "Document version changed between two reads.");
 	        } else this.readVersions.set(t.key.toString(), e);
 	    }
 	    /**
@@ -6800,7 +6871,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	            // express that to the backend, we have to validate locally.
 	            // Note: this can change once we can send separate verify writes in the
 	            // transaction.
-	            throw new FirestoreError(P, "Can't update a document that doesn't exist.");
+	            throw new FirestoreError(I, "Can't update a document that doesn't exist.");
 	            // Document exists, base precondition on document update time.
 	                        return Precondition.updateTime(e);
 	        }
@@ -6829,7 +6900,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	 * See the License for the specific language governing permissions and
 	 * limitations under the License.
-	 */ const W = {
+	 */ const at = {
 	    maxAttempts: 5
 	};
 
@@ -6856,26 +6927,26 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	class __PRIVATE_TransactionRunner {
 	    constructor(t, e, r, n, i) {
 	        this.asyncQueue = t, this.datastore = e, this.options = r, this.updateFunction = n, 
-	        this.deferred = i, this.ft = r.maxAttempts, this.Et = new __PRIVATE_ExponentialBackoff(this.asyncQueue, "transaction_retry" /* TimerId.TransactionRetry */);
+	        this.deferred = i, this.At = r.maxAttempts, this.Tt = new __PRIVATE_ExponentialBackoff(this.asyncQueue, "transaction_retry" /* TimerId.TransactionRetry */);
 	    }
-	    /** Runs the transaction and sets the result on deferred. */    At() {
-	        this.ft -= 1, this.Tt();
+	    /** Runs the transaction and sets the result on deferred. */    Pt() {
+	        this.At -= 1, this.Rt();
 	    }
-	    Tt() {
-	        this.Et.K((async () => {
-	            const t = new Transaction$1(this.datastore), e = this.Pt(t);
+	    Rt() {
+	        this.Tt.H((async () => {
+	            const t = new Transaction$1(this.datastore), e = this.It(t);
 	            e && e.then((e => {
 	                this.asyncQueue.enqueueAndForget((() => t.commit().then((() => {
 	                    this.deferred.resolve(e);
 	                })).catch((t => {
-	                    this.Rt(t);
+	                    this.Vt(t);
 	                }))));
 	            })).catch((t => {
-	                this.Rt(t);
+	                this.Vt(t);
 	            }));
 	        }));
 	    }
-	    Pt(t) {
+	    It(t) {
 	        try {
 	            const e = this.updateFunction(t);
 	            return !__PRIVATE_isNullOrUndefined(e) && e.catch && e.then ? e : (this.deferred.reject(Error("Transaction callback must return a Promise")), 
@@ -6885,11 +6956,11 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	            return this.deferred.reject(t), null;
 	        }
 	    }
-	    Rt(t) {
-	        this.ft > 0 && this.It(t) ? (this.ft -= 1, this.asyncQueue.enqueueAndForget((() => (this.Tt(), 
+	    Vt(t) {
+	        this.At > 0 && this.yt(t) ? (this.At -= 1, this.asyncQueue.enqueueAndForget((() => (this.Rt(), 
 	        Promise.resolve())))) : this.deferred.reject(t);
 	    }
-	    It(t) {
+	    yt(t) {
 	        if ("FirebaseError" === t.name) {
 	            // In transactions, the backend will fail outdated reads with FAILED_PRECONDITION and
 	            // non-matching document versions with ABORTED. These errors should be retried.
@@ -6903,33 +6974,36 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 */
 	            function __PRIVATE_isPermanentError(t) {
 	                switch (t) {
-	                  default:
+	                  case T:
 	                    return fail();
 
-	                  case A:
-	                  case T:
+	                  case P:
 	                  case R:
-	                  case w:
-	                  case b:
-	                  case C:
+	                  case V:
+	                  case F:
+	                  case S:
+	                  case N:
 	 // Unauthenticated means something went wrong with our token and we need
 	                    // to retry with new credentials which will happen automatically.
-	                                      case y:
+	                                      case g:
 	                    return false;
 
-	                  case P:
 	                  case I:
-	                  case V:
 	                  case p:
-	                  case g:
+	                  case y:
+	                  case w:
+	                  case v:
 	 // Aborted might be retried in some scenarios, but that is dependent on
 	                    // the context and should handled individually by the calling code.
 	                    // See https://cloud.google.com/apis/design/errors.
-	                                      case F:
-	                  case v:
-	                  case D:
-	                  case S:
+	                                      case D:
+	                  case b:
+	                  case C:
+	                  case O:
 	                    return true;
+
+	                  default:
+	                    return fail();
 	                }
 	            }(e);
 	        }
@@ -7033,7 +7107,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	     * As long as the operation has not yet been run, calling cancel() provides a
 	     * guarantee that the operation will not be run.
 	     */    cancel(t) {
-	        null !== this.timerHandle && (this.clearTimeout(), this.deferred.reject(new FirestoreError(A, "Operation cancelled" + (t ? ": " + t : ""))));
+	        null !== this.timerHandle && (this.clearTimeout(), this.deferred.reject(new FirestoreError(P, "Operation cancelled" + (t ? ": " + t : ""))));
 	    }
 	    handleDelayElapsed() {
 	        this.asyncQueue.enqueueAndForget((() => null !== this.timerHandle ? (this.clearTimeout(), 
@@ -7060,41 +7134,43 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	 * See the License for the specific language governing permissions and
 	 * limitations under the License.
-	 */ class __PRIVATE_AsyncQueueImpl {
+	 */ const ut = "AsyncQueue";
+
+	class __PRIVATE_AsyncQueueImpl {
 	    constructor(t = Promise.resolve()) {
 	        // A list of retryable operations. Retryable operations are run in order and
 	        // retried with backoff.
-	        this.Vt = [], 
+	        this.wt = [], 
 	        // Is this AsyncQueue being shut down? Once it is set to true, it will not
 	        // be changed again.
-	        this.yt = false, 
+	        this.gt = false, 
 	        // Operations scheduled to be queued in the future. Operations are
 	        // automatically removed after they are run or canceled.
-	        this.wt = [], 
+	        this.Ft = [], 
 	        // visible for testing
-	        this.gt = null, 
+	        this.vt = null, 
 	        // Flag set while there's an outstanding AsyncQueue operation, used for
 	        // assertion sanity-checks.
-	        this.Ft = false, 
+	        this.Dt = false, 
 	        // Enabled during shutdown on Safari to prevent future access to IndexedDB.
-	        this.vt = false, 
+	        this.bt = false, 
 	        // List of TimerIds to fast-forward delays for.
-	        this.Dt = [], 
+	        this.Ct = [], 
 	        // Backoff timer used to schedule retries for retryable operations
-	        this.Et = new __PRIVATE_ExponentialBackoff(this, "async_queue_retry" /* TimerId.AsyncQueueRetry */), 
+	        this.Tt = new __PRIVATE_ExponentialBackoff(this, "async_queue_retry" /* TimerId.AsyncQueueRetry */), 
 	        // Visibility handler that triggers an immediate retry of all retryable
 	        // operations. Meant to speed up recovery when we regain file system access
 	        // after page comes into foreground.
-	        this.bt = () => {
+	        this.St = () => {
 	            const t = getDocument();
-	            t && __PRIVATE_logDebug("AsyncQueue", "Visibility state changed to " + t.visibilityState), 
-	            this.Et.H();
-	        }, this.Ct = t;
+	            t && __PRIVATE_logDebug(ut, "Visibility state changed to " + t.visibilityState), 
+	            this.Tt.Y();
+	        }, this.Nt = t;
 	        const e = getDocument();
-	        e && "function" == typeof e.addEventListener && e.addEventListener("visibilitychange", this.bt);
+	        e && "function" == typeof e.addEventListener && e.addEventListener("visibilitychange", this.St);
 	    }
 	    get isShuttingDown() {
-	        return this.yt;
+	        return this.gt;
 	    }
 	    /**
 	     * Adds a new operation to the queue without waiting for it to complete (i.e.
@@ -7104,38 +7180,38 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	        this.enqueue(t);
 	    }
 	    enqueueAndForgetEvenWhileRestricted(t) {
-	        this.St(), 
+	        this.Ot(), 
 	        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-	        this.Nt(t);
+	        this.qt(t);
 	    }
 	    enterRestrictedMode(t) {
-	        if (!this.yt) {
-	            this.yt = true, this.vt = t || false;
+	        if (!this.gt) {
+	            this.gt = true, this.bt = t || false;
 	            const e = getDocument();
-	            e && "function" == typeof e.removeEventListener && e.removeEventListener("visibilitychange", this.bt);
+	            e && "function" == typeof e.removeEventListener && e.removeEventListener("visibilitychange", this.St);
 	        }
 	    }
 	    enqueue(t) {
-	        if (this.St(), this.yt) 
+	        if (this.Ot(), this.gt) 
 	        // Return a Promise which never resolves.
 	        return new Promise((() => {}));
 	        // Create a deferred Promise that we can return to the callee. This
 	        // allows us to return a "hanging Promise" only to the callee and still
 	        // advance the queue even when the operation is not run.
 	                const e = new __PRIVATE_Deferred;
-	        return this.Nt((() => this.yt && this.vt ? Promise.resolve() : (t().then(e.resolve, e.reject), 
+	        return this.qt((() => this.gt && this.bt ? Promise.resolve() : (t().then(e.resolve, e.reject), 
 	        e.promise))).then((() => e.promise));
 	    }
 	    enqueueRetryable(t) {
-	        this.enqueueAndForget((() => (this.Vt.push(t), this.Ot())));
+	        this.enqueueAndForget((() => (this.wt.push(t), this.Bt())));
 	    }
 	    /**
 	     * Runs the next operation from the retryable queue. If the operation fails,
 	     * reschedules with backoff.
-	     */    async Ot() {
-	        if (0 !== this.Vt.length) {
+	     */    async Bt() {
+	        if (0 !== this.wt.length) {
 	            try {
-	                await this.Vt[0](), this.Vt.shift(), this.Et.reset();
+	                await this.wt[0](), this.wt.shift(), this.Tt.reset();
 	            } catch (t) {
 	                if (!
 	                /**
@@ -7159,27 +7235,11 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	                    // Use name equality, as instanceof checks on errors don't work with errors
 	                    // that wrap other errors.
 	                    return "IndexedDbTransactionError" === t.name;
-	                }
-	                /**
-	 * @license
-	 * Copyright 2020 Google LLC
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 *   http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 */ (t)) throw t;
+	                }(t)) throw t;
 	 // Failure will be handled by AsyncQueue
-	                                __PRIVATE_logDebug("AsyncQueue", "Operation failed with retryable error: " + t);
+	                                __PRIVATE_logDebug(ut, "Operation failed with retryable error: " + t);
 	            }
-	            this.Vt.length > 0 && 
+	            this.wt.length > 0 && 
 	            // If there are additional operations, we re-schedule `retryNextOp()`.
 	            // This is necessary to run retryable operations that failed during
 	            // their initial attempt since we don't know whether they are already
@@ -7190,12 +7250,12 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	            // Since `backoffAndRun()` cancels an existing backoff and schedules a
 	            // new backoff on every call, there is only ever a single additional
 	            // operation in the queue.
-	            this.Et.K((() => this.Ot()));
+	            this.Tt.H((() => this.Bt()));
 	        }
 	    }
-	    Nt(t) {
-	        const e = this.Ct.then((() => (this.Ft = true, t().catch((t => {
-	            this.gt = t, this.Ft = false;
+	    qt(t) {
+	        const e = this.Nt.then((() => (this.Dt = true, t().catch((t => {
+	            this.vt = t, this.Dt = false;
 	            const e = 
 	            /**
 	 * Chrome includes Error.message in Error.stack. Other browsers do not.
@@ -7236,38 +7296,38 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	            // all further attempts to chain (via .then) will just short-circuit
 	            // and return the rejected Promise.
 	            throw __PRIVATE_logError("INTERNAL UNHANDLED ERROR: ", e), t;
-	        })).then((t => (this.Ft = false, t))))));
-	        return this.Ct = e, e;
+	        })).then((t => (this.Dt = false, t))))));
+	        return this.Nt = e, e;
 	    }
 	    enqueueAfterDelay(t, e, r) {
-	        this.St(), 
+	        this.Ot(), 
 	        // Fast-forward delays for timerIds that have been overridden.
-	        this.Dt.indexOf(t) > -1 && (e = 0);
-	        const n = DelayedOperation.createAndSchedule(this, t, e, r, (t => this.qt(t)));
-	        return this.wt.push(n), n;
+	        this.Ct.indexOf(t) > -1 && (e = 0);
+	        const n = DelayedOperation.createAndSchedule(this, t, e, r, (t => this.$t(t)));
+	        return this.Ft.push(n), n;
 	    }
-	    St() {
-	        this.gt && fail();
+	    Ot() {
+	        this.vt && fail();
 	    }
 	    verifyOperationInProgress() {}
 	    /**
 	     * Waits until all currently queued tasks are finished executing. Delayed
 	     * operations are not run.
-	     */    async Bt() {
+	     */    async Qt() {
 	        // Operations in the queue prior to draining may have enqueued additional
 	        // operations. Keep draining the queue until the tail is no longer advanced,
 	        // which indicates that no more new operations were enqueued and that all
 	        // operations were executed.
 	        let t;
 	        do {
-	            t = this.Ct, await t;
-	        } while (t !== this.Ct);
+	            t = this.Nt, await t;
+	        } while (t !== this.Nt);
 	    }
 	    /**
 	     * For Tests: Determine if a delayed operation with a particular TimerId
 	     * exists.
-	     */    $t(t) {
-	        for (const e of this.wt) if (e.timerId === t) return true;
+	     */    Lt(t) {
+	        for (const e of this.Ft) if (e.timerId === t) return true;
 	        return false;
 	    }
 	    /**
@@ -7276,25 +7336,25 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	     * @param lastTimerId - Delayed operations up to and including this TimerId
 	     * will be drained. Pass TimerId.All to run all delayed operations.
 	     * @returns a Promise that resolves once all operations have been run.
-	     */    Qt(t) {
+	     */    Mt(t) {
 	        // Note that draining may generate more delayed ops, so we do that first.
-	        return this.Bt().then((() => {
+	        return this.Qt().then((() => {
 	            // Run ops in the same order they'd run if they ran naturally.
 	            /* eslint-disable-next-line @typescript-eslint/no-floating-promises */
-	            this.wt.sort(((t, e) => t.targetTimeMs - e.targetTimeMs));
-	            for (const e of this.wt) if (e.skipDelay(), "all" /* TimerId.All */ !== t && e.timerId === t) break;
-	            return this.Bt();
+	            this.Ft.sort(((t, e) => t.targetTimeMs - e.targetTimeMs));
+	            for (const e of this.Ft) if (e.skipDelay(), "all" /* TimerId.All */ !== t && e.timerId === t) break;
+	            return this.Qt();
 	        }));
 	    }
 	    /**
 	     * For Tests: Skip all subsequent delays for a timer id.
-	     */    Lt(t) {
-	        this.Dt.push(t);
+	     */    xt(t) {
+	        this.Ct.push(t);
 	    }
-	    /** Called once a DelayedOperation is run or canceled. */    qt(t) {
+	    /** Called once a DelayedOperation is run or canceled. */    $t(t) {
 	        // NOTE: indexOf / slice are O(n), but delayedOperations is expected to be small.
-	        const e = this.wt.indexOf(t);
-	        /* eslint-disable-next-line @typescript-eslint/no-floating-promises */        this.wt.splice(e, 1);
+	        const e = this.Ft.indexOf(t);
+	        /* eslint-disable-next-line @typescript-eslint/no-floating-promises */        this.Ft.splice(e, 1);
 	    }
 	}
 
@@ -7360,14 +7420,14 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * `updateFunction `is returned here. Otherwise, if the transaction failed, a
 	 * rejected promise with the corresponding failure error is returned.
 	 */ function runTransaction(t, e, r) {
-	    const n = __PRIVATE_getDatastore(t = __PRIVATE_cast(t, Firestore)), i = Object.assign(Object.assign({}, W), r);
+	    const n = __PRIVATE_getDatastore(t = __PRIVATE_cast(t, Firestore)), i = Object.assign(Object.assign({}, at), r);
 	    !function __PRIVATE_validateTransactionOptions(t) {
-	        if (t.maxAttempts < 1) throw new FirestoreError(P, "Max attempts must be at least 1");
+	        if (t.maxAttempts < 1) throw new FirestoreError(I, "Max attempts must be at least 1");
 	    }(i);
 	    const s = new __PRIVATE_Deferred;
 	    return new __PRIVATE_TransactionRunner(function __PRIVATE_newAsyncQueue() {
 	        return new __PRIVATE_AsyncQueueImpl;
-	    }(), n, i, (r => e(new Transaction(t, r))), s).At(), s.promise;
+	    }(), n, i, (r => e(new Transaction(t, r))), s).Pt(), s.promise;
 	}
 
 	/**
@@ -7379,32 +7439,16 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (fu
 	 * @packageDocumentation
 	 */ !function __PRIVATE_registerFirestore() {
 	    !function __PRIVATE_setSDKVersion(t) {
-	        f = t;
+	        m = t;
 	    }(`${index_esm2017.SDK_VERSION}_lite`), index_esm2017._registerComponent(new index_esm2017.Component("firestore/lite", ((t, {instanceIdentifier: e, options: r}) => {
-	        const n = t.getProvider("app").getImmediate(), i = new Firestore(new __PRIVATE_LiteAuthCredentialsProvider(t.getProvider("auth-internal")), new __PRIVATE_LiteAppCheckTokenProvider(t.getProvider("app-check-internal")), function __PRIVATE_databaseIdFromApp(t, e) {
-	            if (!Object.prototype.hasOwnProperty.apply(t.options, [ "projectId" ])) throw new FirestoreError(P, '"projectId" not provided in firebase.initializeApp.');
+	        const n = t.getProvider("app").getImmediate(), i = new Firestore(new __PRIVATE_LiteAuthCredentialsProvider(t.getProvider("auth-internal")), new __PRIVATE_LiteAppCheckTokenProvider(n, t.getProvider("app-check-internal")), function __PRIVATE_databaseIdFromApp(t, e) {
+	            if (!Object.prototype.hasOwnProperty.apply(t.options, [ "projectId" ])) throw new FirestoreError(I, '"projectId" not provided in firebase.initializeApp.');
 	            return new DatabaseId(t.options.projectId, e);
-	        }
-	        /**
-	 * @license
-	 * Copyright 2017 Google LLC
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 *   http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 */ (n, e), n);
+	        }(n, e), n);
 	        return r && i._setSettings(r), i;
 	    }), "PUBLIC").setMultipleInstances(true)), 
 	    // RUNTIME_ENV and BUILD_TARGET are replaced by real values during the compilation
-	    index_esm2017.registerVersion("firestore-lite", "4.7.6", ""), index_esm2017.registerVersion("firestore-lite", "4.7.6", "esm2017");
+	    index_esm2017.registerVersion("firestore-lite", E, ""), index_esm2017.registerVersion("firestore-lite", E, "esm2017");
 	}();
 
 	const __esModule = true ;

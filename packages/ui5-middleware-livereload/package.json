@@ -16,7 +16,7 @@
   "dependencies": {
     "connect-livereload": "^0.6.1",
     "livereload": "^0.9.3",
-    "portfinder": "^1.0.32",
+    "portfinder": "^1.0.35",
     "yargs": "^17.7.2"
   }
 }
