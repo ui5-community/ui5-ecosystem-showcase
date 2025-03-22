@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.7.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.7.3...ui5-tooling-transpile@3.7.4) (2025-03-22)
+
+
+### Bug Fixes
+
+* **ui5-tooling-transpile:** omit ts and tsx from build result ([#1188](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1188)) ([3e67f1f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3e67f1f196b2d12c35608e7a9b346d0dd797fa7a))
+
+
+
+
+
 ## [3.7.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.7.2...ui5-tooling-transpile@3.7.3) (2025-03-19)
 
 **Note:** Version bump only for package ui5-tooling-transpile
