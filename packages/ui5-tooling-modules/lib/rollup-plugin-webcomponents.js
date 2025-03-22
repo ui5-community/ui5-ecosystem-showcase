@@ -448,7 +448,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 					enrichBusyIndicator,
 					nonUI5TagsToRegister,
 					assetsModule,
-					webcPackageModule: resolveModule(namespace),
+					webcPackageModule: resolveModule(namespace)?.replace(/\\/g, "/"),
 				});
 				return code;
 			}
