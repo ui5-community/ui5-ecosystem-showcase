@@ -226,7 +226,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 				for await (const resourcePath of Object.keys(sourcesMap)) {
 					// declare the modules as an ambient module (with full module namespace)
 					let source = sourcesMap[resourcePath];
-					let moduleName = /^\/resources\/(.*)\.ts$/.exec(resourcePath)?.[1];
+					let moduleName = /^\/resources\/(.*)\.tsx?$/.exec(resourcePath)?.[1];
 					if (moduleName) {
 						// rewrite all imports with their fully qualified name
 						const relativeModulePaths = [...source.matchAll(/import.+("\.{1,2}[^"]+"|'\.{1,2}[^']+')/g)];
