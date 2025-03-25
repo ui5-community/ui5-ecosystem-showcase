@@ -1,6 +1,6 @@
 {
   "name": "karma-ui5-transpile",
-  "version": "3.5.10",
+  "version": "3.5.11",
   "description": "Preprocessor transpiles code of UI5 projects",
   "author": "Peter Muessig",
   "license": "Apache-2.0",
