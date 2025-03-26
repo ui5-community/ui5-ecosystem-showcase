@@ -16,7 +16,7 @@ sap.ui.define([
     "_ui5metadata":
 {
   "name": "@ui5/webcomponents",
-  "version": "2.8.0",
+  "version": "2.7.0",
   "dependencies": [
     "sap.ui.core"
   ],
@@ -48,7 +48,6 @@ sap.ui.define([
     "@ui5/webcomponents.IconDesign",
     "@ui5/webcomponents.IconMode",
     "@ui5/webcomponents.InputType",
-    "@ui5/webcomponents.InteractiveAreaSize",
     "@ui5/webcomponents.LinkAccessibleRole",
     "@ui5/webcomponents.LinkDesign",
     "@ui5/webcomponents.ListAccessibleRole",
@@ -179,14 +178,11 @@ sap.ui.define([
     "@ui5/webcomponents.TableCell",
     "@ui5/webcomponents.TableGrowing",
     "@ui5/webcomponents.TableHeaderCell",
-    "@ui5/webcomponents.TableHeaderCellActionAI",
     "@ui5/webcomponents.TableHeaderRow",
     "@ui5/webcomponents.TableRow",
     "@ui5/webcomponents.TableRowAction",
     "@ui5/webcomponents.TableRowActionNavigation",
     "@ui5/webcomponents.TableSelection",
-    "@ui5/webcomponents.TableSelectionMulti",
-    "@ui5/webcomponents.TableSelectionSingle",
     "@ui5/webcomponents.TableVirtualizer",
     "@ui5/webcomponents.Tag",
     "@ui5/webcomponents.Text",
@@ -224,7 +220,6 @@ sap.ui.define([
 		});
 	}
 
-  // Enums
   /**
  * Different types of AvatarColorScheme.
  * @enum {string}
@@ -233,57 +228,57 @@ sap.ui.define([
  */
   pkg["AvatarColorScheme"] = {
     /**
- *
+ * 
  * @public
  */
     "Accent1": "Accent1",
     /**
- *
+ * 
  * @public
  */
     "Accent2": "Accent2",
     /**
- *
+ * 
  * @public
  */
     "Accent3": "Accent3",
     /**
- *
+ * 
  * @public
  */
     "Accent4": "Accent4",
     /**
- *
+ * 
  * @public
  */
     "Accent5": "Accent5",
     /**
- *
+ * 
  * @public
  */
     "Accent6": "Accent6",
     /**
- *
+ * 
  * @public
  */
     "Accent7": "Accent7",
     /**
- *
+ * 
  * @public
  */
     "Accent8": "Accent8",
     /**
- *
+ * 
  * @public
  */
     "Accent9": "Accent9",
     /**
- *
+ * 
  * @public
  */
     "Accent10": "Accent10",
     /**
- *
+ * 
  * @public
  */
     "Placeholder": "Placeholder",
@@ -950,27 +945,27 @@ If there are more pages, the page indicator will switch to displaying the curren
  */
   pkg["Highlight"] = {
     /**
- *
+ * 
  * @public
  */
     "None": "None",
     /**
- *
+ * 
  * @public
  */
     "Positive": "Positive",
     /**
- *
+ * 
  * @public
  */
     "Critical": "Critical",
     /**
- *
+ * 
  * @public
  */
     "Negative": "Negative",
     /**
- *
+ * 
  * @public
  */
     "Information": "Information",
@@ -1097,16 +1092,7 @@ This mode also supports focus and press handling to enhance interactivity.
  */
     "Search": "Search",
   };
-<<<<<<< HEAD
-  registerEnum("@ui5/webcomponents.InputType", pkg["InputType"]);
-  pkg["InteractiveAreaSize"] = {
-    "Normal": "Normal",
-    "Large": "Large",
-  };
-  registerEnum("@ui5/webcomponents.InteractiveAreaSize", pkg["InteractiveAreaSize"]);
-=======
   registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.InputType", pkg["InputType"]);
->>>>>>> 9f1d24f5 (feat(ui5-tooling-modules): first part of namespacing for classes and jsdoc)
   /**
  * Link accessible roles.
  * @enum {string}
@@ -1509,7 +1495,7 @@ A section of a page, that is important enough to be included in a page summary o
  */
   pkg["PopoverVerticalAlign"] = {
     /**
- *
+ * 
  * @public
  */
     "Center": "Center",
@@ -1708,27 +1694,27 @@ Offers a balanced appearance for most scenarios.
  */
   pkg["TableCellHorizontalAlign"] = {
     /**
- *
+ * 
  * @public
  */
     "Left": "Left",
     /**
- *
+ * 
  * @public
  */
     "Start": "Start",
     /**
- *
+ * 
  * @public
  */
     "Right": "Right",
     /**
- *
+ * 
  * @public
  */
     "End": "End",
     /**
- *
+ * 
  * @public
  */
     "Center": "Center",

@@ -370,18 +370,8 @@ sap.ui.define([
     }
 },
   },
-<<<<<<< HEAD
-  "getters": [],
-  "methods": [
-    "updateContext",
-    "sendCustomMessage",
-    "closeAlert",
-    "notifyAlertClosed",
-    "init"
-=======
 
   "getters": [
->>>>>>> abaefd90 (chore(ui5-tooling-modules): update test snapshots for new JSDoc content)
   ],
 
   "methods": [

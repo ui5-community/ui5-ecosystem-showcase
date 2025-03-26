@@ -12,7 +12,7 @@ sap.ui.define([
     "_ui5metadata":
 {
   "name": "@luigi-project/container",
-  "version": "1.6.0",
+  "version": "1.5.0",
   "dependencies": [
     "sap.ui.core"
   ],
@@ -27,7 +27,6 @@ sap.ui.define([
 }
   };
 
-<<<<<<< HEAD
 	if (WebCPackage) {
 		Object.keys(WebCPackage).forEach((key) => {
 			if (key !== "default") {
@@ -39,12 +38,9 @@ sap.ui.define([
 			}
 		});
 	}
-=======
-  // Enums
+
 
   // Interfaces
->>>>>>> abaefd90 (chore(ui5-tooling-modules): update test snapshots for new JSDoc content)
-
 
 
 	return pkg;

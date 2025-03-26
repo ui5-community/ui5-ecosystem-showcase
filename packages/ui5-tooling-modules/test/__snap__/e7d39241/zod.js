@@ -546,7 +546,7 @@ sap.ui.define((function () { 'use strict';
     var errorUtil;
     (function (errorUtil) {
         errorUtil.errToObj = (message) => typeof message === "string" ? { message } : message || {};
-        errorUtil.toString = (message) => typeof message === "string" ? message : message === null || message === void 0 ? void 0 : message.message;
+        errorUtil.toString = (message) => typeof message === "string" ? message : message === null || message === undefined ? undefined : message.message;
     })(errorUtil || (errorUtil = {}));
 
     var _ZodEnum_cache, _ZodNativeEnum_cache;
@@ -603,14 +603,14 @@ sap.ui.define((function () { 'use strict';
             var _a, _b;
             const { message } = params;
             if (iss.code === "invalid_enum_value") {
-                return { message: message !== null && message !== void 0 ? message : ctx.defaultError };
+                return { message: message !== null && message !== undefined ? message : ctx.defaultError };
             }
             if (typeof ctx.data === "undefined") {
-                return { message: (_a = message !== null && message !== void 0 ? message : required_error) !== null && _a !== void 0 ? _a : ctx.defaultError };
+                return { message: (_a = message !== null && message !== undefined ? message : required_error) !== null && _a !== undefined ? _a : ctx.defaultError };
             }
             if (iss.code !== "invalid_type")
                 return { message: ctx.defaultError };
-            return { message: (_b = message !== null && message !== void 0 ? message : invalid_type_error) !== null && _b !== void 0 ? _b : ctx.defaultError };
+            return { message: (_b = message !== null && message !== undefined ? message : invalid_type_error) !== null && _b !== undefined ? _b : ctx.defaultError };
         };
         return { errorMap: customMap, description };
     }
@@ -666,10 +666,10 @@ sap.ui.define((function () { 'use strict';
             const ctx = {
                 common: {
                     issues: [],
-                    async: (_a = params === null || params === void 0 ? void 0 : params.async) !== null && _a !== void 0 ? _a : false,
-                    contextualErrorMap: params === null || params === void 0 ? void 0 : params.errorMap,
+                    async: (_a = params === null || params === undefined ? undefined : params.async) !== null && _a !== undefined ? _a : false,
+                    contextualErrorMap: params === null || params === undefined ? undefined : params.errorMap,
                 },
-                path: (params === null || params === void 0 ? void 0 : params.path) || [],
+                path: (params === null || params === undefined ? undefined : params.path) || [],
                 schemaErrorMap: this._def.errorMap,
                 parent: null,
                 data,
@@ -703,7 +703,7 @@ sap.ui.define((function () { 'use strict';
                         };
                 }
                 catch (err) {
-                    if ((_b = (_a = err === null || err === void 0 ? void 0 : err.message) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === null || _b === void 0 ? void 0 : _b.includes("encountered")) {
+                    if ((_b = (_a = err === null || err === undefined ? undefined : err.message) === null || _a === undefined ? undefined : _a.toLowerCase()) === null || _b === undefined ? undefined : _b.includes("encountered")) {
                         this["~standard"].async = true;
                     }
                     ctx.common = {
@@ -730,10 +730,10 @@ sap.ui.define((function () { 'use strict';
             const ctx = {
                 common: {
                     issues: [],
-                    contextualErrorMap: params === null || params === void 0 ? void 0 : params.errorMap,
+                    contextualErrorMap: params === null || params === undefined ? undefined : params.errorMap,
                     async: true,
                 },
-                path: (params === null || params === void 0 ? void 0 : params.path) || [],
+                path: (params === null || params === undefined ? undefined : params.path) || [],
                 schemaErrorMap: this._def.errorMap,
                 parent: null,
                 data,
@@ -1424,10 +1424,10 @@ sap.ui.define((function () { 'use strict';
             }
             return this._addCheck({
                 kind: "datetime",
-                precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
-                offset: (_a = options === null || options === void 0 ? void 0 : options.offset) !== null && _a !== void 0 ? _a : false,
-                local: (_b = options === null || options === void 0 ? void 0 : options.local) !== null && _b !== void 0 ? _b : false,
-                ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message),
+                precision: typeof (options === null || options === undefined ? undefined : options.precision) === "undefined" ? null : options === null || options === undefined ? undefined : options.precision,
+                offset: (_a = options === null || options === undefined ? undefined : options.offset) !== null && _a !== undefined ? _a : false,
+                local: (_b = options === null || options === undefined ? undefined : options.local) !== null && _b !== undefined ? _b : false,
+                ...errorUtil.errToObj(options === null || options === undefined ? undefined : options.message),
             });
         }
         date(message) {
@@ -1443,8 +1443,8 @@ sap.ui.define((function () { 'use strict';
             }
             return this._addCheck({
                 kind: "time",
-                precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
-                ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message),
+                precision: typeof (options === null || options === undefined ? undefined : options.precision) === "undefined" ? null : options === null || options === undefined ? undefined : options.precision,
+                ...errorUtil.errToObj(options === null || options === undefined ? undefined : options.message),
             });
         }
         duration(message) {
@@ -1461,8 +1461,8 @@ sap.ui.define((function () { 'use strict';
             return this._addCheck({
                 kind: "includes",
                 value: value,
-                position: options === null || options === void 0 ? void 0 : options.position,
-                ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message),
+                position: options === null || options === undefined ? undefined : options.position,
+                ...errorUtil.errToObj(options === null || options === undefined ? undefined : options.message),
             });
         }
         startsWith(value, message) {
@@ -1599,7 +1599,7 @@ sap.ui.define((function () { 'use strict';
         return new ZodString({
             checks: [],
             typeName: ZodFirstPartyTypeKind.ZodString,
-            coerce: (_a = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a !== void 0 ? _a : false,
+            coerce: (_a = params === null || params === undefined ? undefined : params.coerce) !== null && _a !== undefined ? _a : false,
             ...processCreateParams(params),
         });
     };
@@ -1853,7 +1853,7 @@ sap.ui.define((function () { 'use strict';
         return new ZodNumber({
             checks: [],
             typeName: ZodFirstPartyTypeKind.ZodNumber,
-            coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+            coerce: (params === null || params === undefined ? undefined : params.coerce) || false,
             ...processCreateParams(params),
         });
     };
@@ -2034,7 +2034,7 @@ sap.ui.define((function () { 'use strict';
         return new ZodBigInt({
             checks: [],
             typeName: ZodFirstPartyTypeKind.ZodBigInt,
-            coerce: (_a = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a !== void 0 ? _a : false,
+            coerce: (_a = params === null || params === undefined ? undefined : params.coerce) !== null && _a !== undefined ? _a : false,
             ...processCreateParams(params),
         });
     };
@@ -2059,7 +2059,7 @@ sap.ui.define((function () { 'use strict';
     ZodBoolean.create = (params) => {
         return new ZodBoolean({
             typeName: ZodFirstPartyTypeKind.ZodBoolean,
-            coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+            coerce: (params === null || params === undefined ? undefined : params.coerce) || false,
             ...processCreateParams(params),
         });
     };
@@ -2169,7 +2169,7 @@ sap.ui.define((function () { 'use strict';
     ZodDate.create = (params) => {
         return new ZodDate({
             checks: [],
-            coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+            coerce: (params === null || params === undefined ? undefined : params.coerce) || false,
             typeName: ZodFirstPartyTypeKind.ZodDate,
             ...processCreateParams(params),
         });
@@ -2597,10 +2597,10 @@ sap.ui.define((function () { 'use strict';
                     ? {
                         errorMap: (issue, ctx) => {
                             var _a, _b, _c, _d;
-                            const defaultError = (_c = (_b = (_a = this._def).errorMap) === null || _b === void 0 ? void 0 : _b.call(_a, issue, ctx).message) !== null && _c !== void 0 ? _c : ctx.defaultError;
+                            const defaultError = (_c = (_b = (_a = this._def).errorMap) === null || _b === undefined ? undefined : _b.call(_a, issue, ctx).message) !== null && _c !== undefined ? _c : ctx.defaultError;
                             if (issue.code === "unrecognized_keys")
                                 return {
-                                    message: (_d = errorUtil.errToObj(message).message) !== null && _d !== void 0 ? _d : defaultError,
+                                    message: (_d = errorUtil.errToObj(message).message) !== null && _d !== undefined ? _d : defaultError,
                                 };
                             return {
                                 message: defaultError,
@@ -3610,7 +3610,7 @@ sap.ui.define((function () { 'use strict';
     class ZodEnum extends ZodType {
         constructor() {
             super(...arguments);
-            _ZodEnum_cache.set(this, void 0);
+            _ZodEnum_cache.set(this, undefined);
         }
         _parse(input) {
             if (typeof input.data !== "string") {
@@ -3680,7 +3680,7 @@ sap.ui.define((function () { 'use strict';
     class ZodNativeEnum extends ZodType {
         constructor() {
             super(...arguments);
-            _ZodNativeEnum_cache.set(this, void 0);
+            _ZodNativeEnum_cache.set(this, undefined);
         }
         _parse(input) {
             const nativeEnumValues = util.getValidEnumValues(this._def.values);
@@ -4143,23 +4143,7 @@ sap.ui.define((function () { 'use strict';
             ...processCreateParams(params),
         });
     };
-    ////////////////////////////////////////
-    ////////////////////////////////////////
-    //////////                    //////////
-    //////////      z.custom      //////////
-    //////////                    //////////
-    ////////////////////////////////////////
-    ////////////////////////////////////////
-    function cleanParams(params, data) {
-        const p = typeof params === "function"
-            ? params(data)
-            : typeof params === "string"
-                ? { message: params }
-                : params;
-        const p2 = typeof p === "string" ? { message: p } : p;
-        return p2;
-    }
-    function custom(check, _params = {}, 
+    function custom(check, params = {}, 
     /**
      * @deprecated
      *
@@ -4174,23 +4158,16 @@ sap.ui.define((function () { 'use strict';
         if (check)
             return ZodAny.create().superRefine((data, ctx) => {
                 var _a, _b;
-                const r = check(data);
-                if (r instanceof Promise) {
-                    return r.then((r) => {
-                        var _a, _b;
-                        if (!r) {
-                            const params = cleanParams(_params, data);
-                            const _fatal = (_b = (_a = params.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
-                            ctx.addIssue({ code: "custom", ...params, fatal: _fatal });
-                        }
-                    });
+                if (!check(data)) {
+                    const p = typeof params === "function"
+                        ? params(data)
+                        : typeof params === "string"
+                            ? { message: params }
+                            : params;
+                    const _fatal = (_b = (_a = p.fatal) !== null && _a !== undefined ? _a : fatal) !== null && _b !== undefined ? _b : true;
+                    const p2 = typeof p === "string" ? { message: p } : p;
+                    ctx.addIssue({ code: "custom", ...p2, fatal: _fatal });
                 }
-                if (!r) {
-                    const params = cleanParams(_params, data);
-                    const _fatal = (_b = (_a = params.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
-                    ctx.addIssue({ code: "custom", ...params, fatal: _fatal });
-                }
-                return;
             });
         return ZodAny.create();
     }
