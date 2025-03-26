@@ -511,6 +511,7 @@ sap.ui.define([
 >>>>>>> a6c3721a (chore(ui5-tooling-modules): update test snapshots for new JSDoc content)
   },
 <<<<<<< HEAD
+<<<<<<< HEAD
   "getters": [],
   "methods": [
     "updateContext",
@@ -521,9 +522,10 @@ sap.ui.define([
     "updateViewUrl",
     "init"
 =======
+=======
+>>>>>>> 33ad4fb8 (feat(ui5-tooling-modules): rebase and fixture generation)
 
   "getters": [
->>>>>>> abaefd90 (chore(ui5-tooling-modules): update test snapshots for new JSDoc content)
   ],
 
   "methods": [

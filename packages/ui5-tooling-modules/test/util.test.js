@@ -554,7 +554,7 @@ test.serial("Verify generation of @luigi-project/container", async (t) => {
 	const modPackage = await env.getModule("@luigi-project/container");
 	t.true(modPackage.retVal._ui5metadata.name === "@luigi-project/container");
 	const modContainer = await env.getModule("@luigi-project/container/LuigiContainer");
-	t.true(modContainer.retVal.name === "@luigi-project/container.LuigiContainer");
+	t.true(modContainer.retVal.name === "ui5.ecosystem.demo.tsapp.thirdparty.@luigi-project.container.LuigiContainer");
 	if (platform() !== "win32") {
 		t.is(modPackage.code, readSnapFile(modPackage.name, t.context.snapDir));
 		t.is(modContainer.code, readSnapFile(modContainer.name, t.context.snapDir));

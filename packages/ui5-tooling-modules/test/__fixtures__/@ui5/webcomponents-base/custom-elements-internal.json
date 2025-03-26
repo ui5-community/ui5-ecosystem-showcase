@@ -1212,58 +1212,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "dist/types/SortOrder.js",
-      "declarations": [
-        {
-          "kind": "enum",
-          "name": "SortOrder",
-          "description": "Defines the sort order.",
-          "_ui5privacy": "public",
-          "_ui5since": "2.8.0",
-          "members": [
-            {
-              "kind": "field",
-              "static": true,
-              "privacy": "public",
-              "description": "Sorting is not applied.",
-              "default": "None",
-              "name": "None",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "static": true,
-              "privacy": "public",
-              "description": "Sorting is applied in ascending order.",
-              "default": "Ascending",
-              "name": "Ascending",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "static": true,
-              "privacy": "public",
-              "description": "Sorting is applied in descending order.",
-              "default": "Descending",
-              "name": "Descending",
-              "readonly": true
-            }
-          ]
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "SortOrder",
-            "module": "dist/types/SortOrder.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "dist/types/ValueState.js",
       "declarations": [
         {

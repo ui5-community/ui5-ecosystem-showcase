@@ -16,7 +16,7 @@ sap.ui.define([
     "_ui5metadata":
 {
   "name": "@ui5/webcomponents",
-  "version": "2.8.0",
+  "version": "2.7.0",
   "dependencies": [
     "sap.ui.core"
   ],
@@ -48,7 +48,6 @@ sap.ui.define([
     "@ui5/webcomponents.IconDesign",
     "@ui5/webcomponents.IconMode",
     "@ui5/webcomponents.InputType",
-    "@ui5/webcomponents.InteractiveAreaSize",
     "@ui5/webcomponents.LinkAccessibleRole",
     "@ui5/webcomponents.LinkDesign",
     "@ui5/webcomponents.ListAccessibleRole",
@@ -179,14 +178,11 @@ sap.ui.define([
     "@ui5/webcomponents.TableCell",
     "@ui5/webcomponents.TableGrowing",
     "@ui5/webcomponents.TableHeaderCell",
-    "@ui5/webcomponents.TableHeaderCellActionAI",
     "@ui5/webcomponents.TableHeaderRow",
     "@ui5/webcomponents.TableRow",
     "@ui5/webcomponents.TableRowAction",
     "@ui5/webcomponents.TableRowActionNavigation",
     "@ui5/webcomponents.TableSelection",
-    "@ui5/webcomponents.TableSelectionMulti",
-    "@ui5/webcomponents.TableSelectionSingle",
     "@ui5/webcomponents.TableVirtualizer",
     "@ui5/webcomponents.Tag",
     "@ui5/webcomponents.Text",
@@ -212,7 +208,6 @@ sap.ui.define([
 }
   };
 
-<<<<<<< HEAD
 	if (WebCPackage) {
 		Object.keys(WebCPackage).forEach((key) => {
 			if (key !== "default") {
@@ -225,15 +220,12 @@ sap.ui.define([
 		});
 	}
 
-=======
-  // Enums
   /**
  * Different types of AvatarColorScheme.
  * @enum {string}
  * @public
  * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.AvatarColorScheme
  */
->>>>>>> abaefd90 (chore(ui5-tooling-modules): update test snapshots for new JSDoc content)
   pkg["AvatarColorScheme"] = {
     /**
  * 
@@ -1100,25 +1092,13 @@ This mode also supports focus and press handling to enhance interactivity.
  */
     "Search": "Search",
   };
-<<<<<<< HEAD
-  registerEnum("@ui5/webcomponents.InputType", pkg["InputType"]);
-<<<<<<< HEAD
-  pkg["InteractiveAreaSize"] = {
-    "Normal": "Normal",
-    "Large": "Large",
-  };
-  registerEnum("@ui5/webcomponents.InteractiveAreaSize", pkg["InteractiveAreaSize"]);
-=======
-=======
   registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.InputType", pkg["InputType"]);
->>>>>>> 9f1d24f5 (feat(ui5-tooling-modules): first part of namespacing for classes and jsdoc)
   /**
  * Link accessible roles.
  * @enum {string}
  * @public
  * @alias ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.LinkAccessibleRole
  */
->>>>>>> abaefd90 (chore(ui5-tooling-modules): update test snapshots for new JSDoc content)
   pkg["LinkAccessibleRole"] = {
     /**
  * Represents Default (link) ARIA role.

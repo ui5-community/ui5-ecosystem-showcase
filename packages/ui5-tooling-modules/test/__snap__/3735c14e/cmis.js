@@ -24,7 +24,7 @@ sap.ui.define((function () { 'use strict';
 	}
 
 	function getAugmentedNamespace(n) {
-	  if (Object.prototype.hasOwnProperty.call(n, '__esModule')) return n;
+	  if (n.__esModule) return n;
 	  var f = n.default;
 		if (typeof f == "function") {
 			var a = function a () {
@@ -2829,7 +2829,7 @@ sap.ui.define((function () { 'use strict';
 	}
 
 	function isUndefined(arg) {
-		return arg === void 0;
+		return arg === undefined;
 	}
 
 	function isRegExp(re) {
@@ -20576,7 +20576,7 @@ sap.ui.define((function () { 'use strict';
 			                .then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.getTypeChildren = function (typeId, includePropertyDefinitions, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.cmisselector = 'typeChildren';
 			            o.typeId = typeId;
@@ -20598,14 +20598,14 @@ sap.ui.define((function () { 'use strict';
 			            }).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.getCheckedOutDocs = function (objectId, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.cmisselector = 'checkedOut';
 			            return this.get(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.query = function (statement, searchAllVersions, options) {
-			            if (searchAllVersions === void 0) { searchAllVersions = false; }
-			            if (options === void 0) { options = {}; }
+			            if (searchAllVersions === undefined) { searchAllVersions = false; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.cmisaction = 'query';
 			            o.statement = statement;
@@ -20631,7 +20631,7 @@ sap.ui.define((function () { 'use strict';
 			            }).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.getObjectByPath = function (path, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.cmisselector = 'object';
 			            var sp = path.split('/');
@@ -20641,7 +20641,7 @@ sap.ui.define((function () { 'use strict';
 			            return this.get(this.defaultRepository.rootFolderUrl + sp.join('/'), o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.getObject = function (objectId, returnVersion, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.cmisselector = 'object';
 			            o.objectId = objectId;
@@ -20649,10 +20649,10 @@ sap.ui.define((function () { 'use strict';
 			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.createFolder = function (parentId, name, type, policies, addACEs, removeACEs) {
-			            if (type === void 0) { type = 'cmis:folder'; }
-			            if (policies === void 0) { policies = []; }
-			            if (addACEs === void 0) { addACEs = {}; }
-			            if (removeACEs === void 0) { removeACEs = {}; }
+			            if (type === undefined) { type = 'cmis:folder'; }
+			            if (policies === undefined) { policies = []; }
+			            if (addACEs === undefined) { addACEs = {}; }
+			            if (removeACEs === undefined) { removeACEs = {}; }
 			            var options = new Options();
 			            options.objectId = parentId;
 			            options.repositoryId = this.defaultRepository.repositoryId;
@@ -20668,14 +20668,14 @@ sap.ui.define((function () { 'use strict';
 			            return this.post(this.defaultRepository.rootFolderUrl, options).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.getChildren = function (objectId, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.cmisselector = 'children';
 			            o.objectId = objectId;
 			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.getDescendants = function (folderId, depth, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.cmisselector = 'descendants';
 			            if (depth) {
@@ -20685,7 +20685,7 @@ sap.ui.define((function () { 'use strict';
 			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.getFolderTree = function (folderId, depth, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.cmisselector = 'folderTree';
 			            if (depth) {
@@ -20695,28 +20695,28 @@ sap.ui.define((function () { 'use strict';
 			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.getFolderParent = function (folderId, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.cmisselector = 'parent';
 			            o.objectId = folderId;
 			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.getParents = function (objectId, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.cmisselector = 'parents';
 			            o.objectId = objectId;
 			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.getAllowableActions = function (objectId, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.cmisselector = 'allowableActions';
 			            o.objectId = objectId;
 			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.getProperties = function (objectId, returnVersion, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.cmisselector = 'properties';
 			            o.objectId = objectId;
@@ -20724,7 +20724,7 @@ sap.ui.define((function () { 'use strict';
 			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.updateProperties = function (objectId, properties, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.objectId = objectId;
 			            o.cmisaction = 'update';
@@ -20732,7 +20732,7 @@ sap.ui.define((function () { 'use strict';
 			            return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.moveObject = function (objectId, sourceFolderId, targetFolderId, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.objectId = objectId;
 			            o.cmisaction = 'move';
@@ -20741,7 +20741,7 @@ sap.ui.define((function () { 'use strict';
 			            return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.createDocument = function (parentId, content, input, mimeTypeExtension, versioningState, policies, addACEs, removeACEs, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            if ('string' == typeof input) {
 			                input = {
@@ -20775,9 +20775,9 @@ sap.ui.define((function () { 'use strict';
 			            }).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.bulkUpdateProperties = function (objectIds, properties, addSecondaryTypeIds, removeSecondaryTypeIds) {
-			            if (properties === void 0) { properties = {}; }
-			            if (addSecondaryTypeIds === void 0) { addSecondaryTypeIds = []; }
-			            if (removeSecondaryTypeIds === void 0) { removeSecondaryTypeIds = []; }
+			            if (properties === undefined) { properties = {}; }
+			            if (addSecondaryTypeIds === undefined) { addSecondaryTypeIds = []; }
+			            if (removeSecondaryTypeIds === undefined) { removeSecondaryTypeIds = []; }
 			            var options = new Options();
 			            for (var i = objectIds.length - 1; i >= 0; i--) {
 			                options['objectId[' + i + ']'] = objectIds[i];
@@ -20790,7 +20790,7 @@ sap.ui.define((function () { 'use strict';
 			            return this.post(this.defaultRepository.repositoryUrl, options).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.getContentStream = function (objectId, download, streamId) {
-			            if (download === void 0) { download = 'inline'; }
+			            if (download === undefined) { download = 'inline'; }
 			            var options = new Options();
 			            options.cmisselector = 'content';
 			            options.objectId = objectId;
@@ -20798,7 +20798,7 @@ sap.ui.define((function () { 'use strict';
 			            return this.get(this.defaultRepository.rootFolderUrl, options);
 			        };
 			        CmisSession.prototype.createDocumentFromSource = function (parentId, sourceId, content, input, mimeTypeExtension, versioningState, policies, addACEs, removeACEs, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            if ('string' == typeof input) {
 			                input = {
@@ -20837,7 +20837,7 @@ sap.ui.define((function () { 'use strict';
 			            return this.post(this.defaultRepository.rootFolderUrl, o, multipartData).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.getContentStreamURL = function (objectId, download, streamId) {
-			            if (download === void 0) { download = 'inline'; }
+			            if (download === undefined) { download = 'inline'; }
 			            var options = new Options();
 			            options.cmisselector = 'content';
 			            options.objectId = objectId;
@@ -20857,7 +20857,7 @@ sap.ui.define((function () { 'use strict';
 			            return this.defaultRepository.rootFolderUrl + "?" + usp.toString();
 			        };
 			        CmisSession.prototype.getRenditions = function (objectId, options) {
-			            if (options === void 0) { options = {
+			            if (options === undefined) { options = {
 			                renditionFilter: '*'
 			            }; }
 			            var o = options;
@@ -20866,7 +20866,7 @@ sap.ui.define((function () { 'use strict';
 			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.checkOut = function (objectId, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.objectId = objectId;
 			            o.cmisaction = 'checkOut';
@@ -20879,8 +20879,8 @@ sap.ui.define((function () { 'use strict';
 			            return this.post(this.defaultRepository.rootFolderUrl, options);
 			        };
 			        CmisSession.prototype.checkIn = function (objectId, major, input, content, mimeTypeExtension, comment, policies, addACEs, removeACEs, options) {
-			            if (major === void 0) { major = false; }
-			            if (options === void 0) { options = {}; }
+			            if (major === undefined) { major = false; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            if ('string' == typeof input) {
 			                input = {
@@ -20911,7 +20911,7 @@ sap.ui.define((function () { 'use strict';
 			            }).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.getObjectOfLatestVersion = function (versionSeriesId, options) {
-			            if (options === void 0) { options = { major: false }; }
+			            if (options === undefined) { options = { major: false }; }
 			            var o = options;
 			            o.cmisselector = 'object';
 			            o.objectId = versionSeriesId;
@@ -20920,8 +20920,8 @@ sap.ui.define((function () { 'use strict';
 			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.setContentStream = function (objectId, content, overwriteFlag, filename, options) {
-			            if (overwriteFlag === void 0) { overwriteFlag = false; }
-			            if (options === void 0) { options = {}; }
+			            if (overwriteFlag === undefined) { overwriteFlag = false; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.objectId = objectId;
 			            o.overwriteFlag = overwriteFlag;
@@ -20932,8 +20932,8 @@ sap.ui.define((function () { 'use strict';
 			            }).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.appendContentStream = function (objectId, content, isLastChunk, filename, options) {
-			            if (isLastChunk === void 0) { isLastChunk = false; }
-			            if (options === void 0) { options = {}; }
+			            if (isLastChunk === undefined) { isLastChunk = false; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.objectId = objectId;
 			            o.cmisaction = 'appendContent';
@@ -20944,28 +20944,28 @@ sap.ui.define((function () { 'use strict';
 			            }).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.deleteContentStream = function (objectId, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.objectId = objectId;
 			            o.cmisaction = 'deleteContent';
 			            return this.post(this.defaultRepository.rootFolderUrl, o);
 			        };
 			        CmisSession.prototype.getAllVersions = function (versionSeriesId, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.versionSeriesId = versionSeriesId;
 			            o.cmisselector = 'versions';
 			            return this.get(this.defaultRepository.rootFolderUrl, o);
 			        };
 			        CmisSession.prototype.getAppliedPolicies = function (objectId, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.objectId = objectId;
 			            o.cmisselector = 'policies';
 			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.getACL = function (objectId, onlyBasicPermissions) {
-			            if (onlyBasicPermissions === void 0) { onlyBasicPermissions = false; }
+			            if (onlyBasicPermissions === undefined) { onlyBasicPermissions = false; }
 			            var options = new Options();
 			            options.objectId = objectId;
 			            options.onlyBasicPermissions = onlyBasicPermissions;
@@ -20973,7 +20973,7 @@ sap.ui.define((function () { 'use strict';
 			            return this.get(this.defaultRepository.rootFolderUrl, options).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.deleteObject = function (objectId, allVersions) {
-			            if (allVersions === void 0) { allVersions = false; }
+			            if (allVersions === undefined) { allVersions = false; }
 			            var options = new Options();
 			            options.repositoryId = this.defaultRepository.repositoryId;
 			            options.cmisaction = 'delete';
@@ -20982,8 +20982,8 @@ sap.ui.define((function () { 'use strict';
 			            return this.post(this.defaultRepository.rootFolderUrl, options);
 			        };
 			        CmisSession.prototype.deleteTree = function (objectId, allVersions, unfileObjects, continueOnFailure) {
-			            if (allVersions === void 0) { allVersions = false; }
-			            if (continueOnFailure === void 0) { continueOnFailure = false; }
+			            if (allVersions === undefined) { allVersions = false; }
+			            if (continueOnFailure === undefined) { continueOnFailure = false; }
 			            var options = new Options();
 			            options.repositoryId = this.defaultRepository.repositoryId;
 			            options.cmisaction = 'deleteTree';
@@ -20996,10 +20996,10 @@ sap.ui.define((function () { 'use strict';
 			            return this.post(this.defaultRepository.rootFolderUrl, options);
 			        };
 			        CmisSession.prototype.getContentChanges = function (changeLogToken, includeProperties, includePolicyIds, includeACL, options) {
-			            if (includeProperties === void 0) { includeProperties = false; }
-			            if (includePolicyIds === void 0) { includePolicyIds = false; }
-			            if (includeACL === void 0) { includeACL = false; }
-			            if (options === void 0) { options = {}; }
+			            if (includeProperties === undefined) { includeProperties = false; }
+			            if (includePolicyIds === undefined) { includePolicyIds = false; }
+			            if (includeACL === undefined) { includeACL = false; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.cmisselector = 'contentChanges';
 			            if (changeLogToken) {
@@ -21011,7 +21011,7 @@ sap.ui.define((function () { 'use strict';
 			            return this.get(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.createRelationship = function (properties, policies, addACEs, removeACEs, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            this.setProperties(o, properties);
 			            if (policies) {
@@ -21027,7 +21027,7 @@ sap.ui.define((function () { 'use strict';
 			            return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.createPolicy = function (folderId, properties, policies, addACEs, removeACEs, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.objectId = folderId;
 			            this.setProperties(o, properties);
@@ -21044,7 +21044,7 @@ sap.ui.define((function () { 'use strict';
 			            return this.post(this.defaultRepository.repositoryUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.createItem = function (folderId, properties, policies, addACEs, removeACEs, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.objectId = folderId;
 			            this.setProperties(o, properties);
@@ -21064,8 +21064,8 @@ sap.ui.define((function () { 'use strict';
 			            return this.post(this.defaultRepository.repositoryUrl, { cmisaction: 'lastResult' }).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.addObjectToFolder = function (objectId, folderId, allVersions, options) {
-			            if (allVersions === void 0) { allVersions = false; }
-			            if (options === void 0) { options = {}; }
+			            if (allVersions === undefined) { allVersions = false; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.objectId = objectId;
 			            o.cmisaction = 'addObjectToFolder';
@@ -21074,7 +21074,7 @@ sap.ui.define((function () { 'use strict';
 			            return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.removeObjectFromFolder = function (objectId, folderId, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.objectId = objectId;
 			            o.cmisaction = 'removeObjectFromFolder';
@@ -21082,8 +21082,8 @@ sap.ui.define((function () { 'use strict';
 			            return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.getObjectRelationships = function (objectId, includeSubRelationshipTypes, relationshipDirection, typeId, options) {
-			            if (includeSubRelationshipTypes === void 0) { includeSubRelationshipTypes = false; }
-			            if (options === void 0) { options = {}; }
+			            if (includeSubRelationshipTypes === undefined) { includeSubRelationshipTypes = false; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.objectId = objectId;
 			            o.includeSubRelationshipTypes = includeSubRelationshipTypes;
@@ -21095,7 +21095,7 @@ sap.ui.define((function () { 'use strict';
 			            return this.get(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.applyPolicy = function (objectId, policyId, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.objectId = objectId;
 			            o.policyId = policyId;
@@ -21103,7 +21103,7 @@ sap.ui.define((function () { 'use strict';
 			            return this.post(this.defaultRepository.rootFolderUrl, o).then(function (res) { return res.json(); });
 			        };
 			        CmisSession.prototype.removePolicy = function (objectId, policyId, options) {
-			            if (options === void 0) { options = {}; }
+			            if (options === undefined) { options = {}; }
 			            var o = options;
 			            o.objectId = objectId;
 			            o.policyId = policyId;

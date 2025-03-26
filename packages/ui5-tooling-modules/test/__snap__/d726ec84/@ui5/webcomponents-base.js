@@ -2,17 +2,11 @@
  * ${copyright}
  */
 sap.ui.define([
-<<<<<<< HEAD
 	"ui5/ecosystem/demo/app/resources/webcomponents-base",
   "sap/ui/core/webc/WebComponent",
   "sap/ui/base/DataType",
 ], function(
 	WebCPackage,
-=======
-  "sap/ui/core/webc/WebComponent",
-  "sap/ui/base/DataType",
-], function(
->>>>>>> abaefd90 (chore(ui5-tooling-modules): update test snapshots for new JSDoc content)
   WebComponent,
   DataType,
 ) {
@@ -23,11 +17,7 @@ sap.ui.define([
     "_ui5metadata":
 {
   "name": "@ui5/webcomponents-base",
-<<<<<<< HEAD
-  "version": "2.8.0",
-=======
   "version": "2.7.0",
->>>>>>> abaefd90 (chore(ui5-tooling-modules): update test snapshots for new JSDoc content)
   "dependencies": [
     "sap.ui.core"
   ],
@@ -37,10 +27,6 @@ sap.ui.define([
     "@ui5/webcomponents-base.ItemNavigationBehavior",
     "@ui5/webcomponents-base.MovePlacement",
     "@ui5/webcomponents-base.NavigationMode",
-<<<<<<< HEAD
-    "@ui5/webcomponents-base.SortOrder",
-=======
->>>>>>> abaefd90 (chore(ui5-tooling-modules): update test snapshots for new JSDoc content)
     "@ui5/webcomponents-base.ValueState"
   ],
   "interfaces": [],
@@ -50,7 +36,6 @@ sap.ui.define([
 }
   };
 
-<<<<<<< HEAD
 	if (WebCPackage) {
 		Object.keys(WebCPackage).forEach((key) => {
 			if (key !== "default") {
@@ -63,52 +48,6 @@ sap.ui.define([
 		});
 	}
 
-  pkg["AnimationMode"] = {
-    "Full": "Full",
-    "Basic": "Basic",
-    "Minimal": "Minimal",
-    "None": "None",
-  };
-  registerEnum("@ui5/webcomponents-base.AnimationMode", pkg["AnimationMode"]);
-  pkg["CalendarType"] = {
-    "Gregorian": "Gregorian",
-    "Islamic": "Islamic",
-    "Japanese": "Japanese",
-    "Buddhist": "Buddhist",
-    "Persian": "Persian",
-  };
-  registerEnum("@ui5/webcomponents-base.CalendarType", pkg["CalendarType"]);
-  pkg["ItemNavigationBehavior"] = {
-    "Static": "Static",
-    "Cyclic": "Cyclic",
-  };
-  registerEnum("@ui5/webcomponents-base.ItemNavigationBehavior", pkg["ItemNavigationBehavior"]);
-  pkg["MovePlacement"] = {
-    "On": "On",
-    "Before": "Before",
-    "After": "After",
-  };
-  registerEnum("@ui5/webcomponents-base.MovePlacement", pkg["MovePlacement"]);
-  pkg["NavigationMode"] = {
-    "Auto": "Auto",
-    "Vertical": "Vertical",
-    "Horizontal": "Horizontal",
-    "Paging": "Paging",
-  };
-  registerEnum("@ui5/webcomponents-base.NavigationMode", pkg["NavigationMode"]);
-  pkg["SortOrder"] = {
-    "None": "None",
-    "Ascending": "Ascending",
-    "Descending": "Descending",
-  };
-  registerEnum("@ui5/webcomponents-base.SortOrder", pkg["SortOrder"]);
-  pkg["ValueState"] = {
-    "None": "None",
-    "Positive": "Positive",
-    "Critical": "Critical",
-    "Negative": "Negative",
-=======
-  // Enums
   /**
  * Different types of AnimationMode.
  * @enum {string}
@@ -275,22 +214,15 @@ sap.ui.define([
  * 
  * @public
  */
->>>>>>> abaefd90 (chore(ui5-tooling-modules): update test snapshots for new JSDoc content)
     "Information": "Information",
   };
   registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.ValueState", pkg["ValueState"]);
 
-<<<<<<< HEAD
-	// ====================
-	// MONKEY PATCHES BEGIN
-	// ====================
-=======
   // Interfaces
 
   // ====================
   // MONKEY PATCHES BEGIN
   // ====================
->>>>>>> abaefd90 (chore(ui5-tooling-modules): update test snapshots for new JSDoc content)
 // Helper to fix a conversion between "number" and "core.CSSSize".
 // WebC attribute is a number and is written back to the Control
 // wrapper via sap.ui.core.webc.WebComponent base class.
@@ -307,61 +239,9 @@ if (!WebComponent.__setProperty__isPatched) {
 	WebComponent.__setProperty__isPatched = true;
 }
 
-<<<<<<< HEAD
-	// ====================
-	// MONKEY PATCHES END
-	// ====================
-
-	return pkg;
-=======
-// Fixed with https://github.com/SAP/openui5/commit/a4b5fe00b49e0e26e5fd845607a2b95db870d55a in UI5 1.133.0
-
-if (!WebComponent.__CustomEventsListeners__isPatched) {
-	WebComponent.prototype.__attachCustomEventsListeners = function() {
-		// ##### MODIFICATION START #####
-		var hyphenate = sap.ui.require("sap/base/strings/hyphenate");
-		var oEvents = this.getMetadata().getAllEvents();
-		// ##### MODIFICATION END #####
-		for (var sEventName in oEvents) {
-			var sCustomEventName = hyphenate(sEventName);
-			this.getDomRef().addEventListener(sCustomEventName, this.__handleCustomEventBound);
-		}
-	};
-
-	WebComponent.prototype.__detachCustomEventsListeners = function() {
-		var oDomRef = this.getDomRef();
-		if (!oDomRef) {
-			return;
-		}
-
-		// ##### MODIFICATION START #####
-		var hyphenate = sap.ui.require("sap/base/strings/hyphenate");
-		var oEvents = this.getMetadata().getAllEvents();
-		// ##### MODIFICATION END #####
-		for (var sEventName in oEvents) {
-			if (oEvents.hasOwnProperty(sEventName)) {
-				var sCustomEventName = hyphenate(sEventName);
-				oDomRef.removeEventListener(sCustomEventName, this.__handleCustomEventBound);
-			}
-		}
-	};
-	WebComponent.__CustomEventsListeners__isPatched = true;
-}
-
-// Fixed with https://github.com/SAP/openui5/commit/111c4bcd1660f90714ed567fa8cb57fbc448591f in UI5 1.133.0
-
-if (!WebComponent.___mapValueState__isPatched) {
-	WebComponent.prototype._mapValueState ??= function(sValueState) {
-		console.warn("ValueState mapping is not implemented for Web Components yet. Please use UI5 version 1.133.0 or higher.");
-		return sValueState;
-	};
-	WebComponent.___mapValueState__isPatched = true;
-}
-
   // ====================
   // MONKEY PATCHES END
   // ====================
 
-  return pkg;
->>>>>>> abaefd90 (chore(ui5-tooling-modules): update test snapshots for new JSDoc content)
+	return pkg;
 });
