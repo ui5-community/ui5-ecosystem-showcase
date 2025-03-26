@@ -28,7 +28,7 @@ const fs = require("fs");
  * root directory to the given router.
  * @param {import("express").Router} router Express Router instance
  * @param {applyUI5MiddlewareOptions} options configuration options
- * @returns {UI5AppInfo} UI5 application information object
+ * @returns {Promise<UI5AppInfo>} UI5 application information object
  */
 module.exports = async function applyUI5Middleware(router, options) {
 	const { graphFromPackageDependencies } = await import("@ui5/project/graph");
@@ -117,6 +117,9 @@ module.exports = async function applyUI5Middleware(router, options) {
 		},
 	});
 	await middlewareManager.applyMiddleware(router);
+
+	// REVISIT: everything that follows has no effect if lazy loading is active.
+	//          just live with it???
 
 	// for Fiori elements based applications we need to invalidate the view cache
 	const isFioriElementsBased = rootProject.getFrameworkDependencies().find((lib) => lib.name.startsWith("sap.fe"));
