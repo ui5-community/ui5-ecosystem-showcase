@@ -1,0 +1,13 @@
+/**
+ * {{{description}}}
+ */
+"{{eventName}}": {
+{{#if event.parameters}}
+    "parameters": {
+    {{#each event.parameters}}
+{{{lookup @root.parametersJsDoc @key}}}
+        "{{@key}}": {{{json this}}},
+    {{/each}}
+    }
+{{/if}}
+},

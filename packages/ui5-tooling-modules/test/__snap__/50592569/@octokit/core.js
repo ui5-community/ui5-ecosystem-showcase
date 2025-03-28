@@ -285,7 +285,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   // pkg/dist-src/util/remove-undefined-properties.js
   function removeUndefinedProperties(obj) {
     for (const key in obj) {
-      if (obj[key] === void 0) {
+      if (obj[key] === undefined) {
         delete obj[key];
       }
     }
@@ -372,7 +372,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
   }
   function isDefined(value) {
-    return value !== void 0 && value !== null;
+    return value !== undefined && value !== null;
   }
   function isKeyOperator(operator) {
     return operator === ";" || operator === "&" || operator === "?";
@@ -842,7 +842,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
             url,
             status,
             headers,
-            data: void 0
+            data: undefined
           },
           request: requestOptions
         });

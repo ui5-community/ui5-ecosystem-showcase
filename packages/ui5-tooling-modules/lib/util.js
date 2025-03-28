@@ -1286,6 +1286,12 @@ module.exports = function (log, projectInfo) {
 							);
 						}
 						const nameOfModules = modules.map((module) => module.name);
+
+						options.pluginOptions ??= {};
+						options.pluginOptions.webcomponents ??= {};
+						// TODO: Not hard-code "thirdparty", evaluate addToNamespace
+						options.pluginOptions.webcomponents.moduleBasePath = `${path.posix.join(projectInfo.namespace, "thirdparty")}`;
+
 						//const millis = Date.now();
 						const output = await that.createBundle(nameOfModules, options);
 						//console.log(`createBundle overall duration: ${Date.now() - millis}ms`);
