@@ -34,14 +34,14 @@ sap.ui.define([
 	}
 
   {{#each enums}}
-  {{this._jsDoc}}
+  {{{this._jsDoc}}}
   pkg["{{this.name}}"] = {
   {{#each this.values}}
     {{this._jsDoc}}
     "{{this.name}}": "{{this.name}}",
   {{/each}}
   };
-  registerEnum("{{this.prefixedName}}", pkg["{{this.name}}"]);
+  registerEnum("{{this._ui5QualifiedName}}", pkg["{{this.name}}"]);
   {{/each}}
 
   // Interfaces

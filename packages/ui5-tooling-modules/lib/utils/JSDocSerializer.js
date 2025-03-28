@@ -40,21 +40,27 @@ function loadAndCompileTemplate(templatePath) {
 }
 
 /**
- * Converts slashes in a string to dots.
- * @param {string} s the slahed string
- * @returns {string} the dotted string
- */
-function slash2dot(s) {
-	return s.replace(/\//g, ".");
-}
-
-/**
  * Converts dots in a string to slashes.
  * @param {string} s the dotted string
  * @returns {string} the slashed string
  */
 function dot2slash(s) {
 	return s.replace(/\./g, "/");
+}
+
+/**
+ * Escapes a name in JSDoc syntax. The escapings are done per segment,
+ * e.g. my.lib."@ui5"."webcomponents-fiori".dist.Button
+ * @param {string} name the name to escape in JSDoc syntax
+ * @returns the escaped name
+ */
+function escapeName(name) {
+	return name
+		.split(".")
+		.map((part) => {
+			return part.includes("-") || part.includes("@") ? `"${part}"` : part;
+		})
+		.join(".");
 }
 
 /**
@@ -68,16 +74,11 @@ function _serializeClassHeader(classDef) {
 		// we reached the very top of the inheritance chain
 		superclassName = "sap.ui.core.webc.WebComponent";
 	} else if (superclassName) {
-		let { namespace } = classDef.superclass._ui5metadata;
-		namespace = slash2dot(namespace);
-		superclassName = `${namespace}.${superclassName}`;
+		superclassName = classDef.superclass._ui5QualifiedName;
 	} else {
 		// TODO: what do we do with the classes that don't have a superclass?
-		console.warn(`No superclass found for class ${classDef.name}`);
+		console.warn(`No superclass found for class ${classDef._ui5QualifiedName}`);
 	}
-
-	let { namespace } = classDef._ui5metadata;
-	namespace = slash2dot(namespace);
 
 	// TODO: The descriptions can contain non JSDoc compliant characters, e.g. `*` or `@`
 	//       Looks like markdown(?)
@@ -87,16 +88,17 @@ function _serializeClassHeader(classDef) {
 	const description = `${classDef.description}`;
 
 	// @extends
-	const extendsTag = superclassName ? `${superclassName}` : "";
+	const extendsTag = escapeName(superclassName ? `${superclassName}` : "");
 
-	// @alias (we use this later also for methods and getters)
-	classDef._jsDoc.alias = `${namespace}.${classDef.name}`;
+	// @alias (we use this later also as the origin for methods and getters, e.g. my.project.thirdparty.webc.dist.Class#myMethod)
+	classDef._jsDoc.alias = escapeName(`${classDef._ui5QualifiedName}`);
 
 	// and finally we template the class header preamble
 	classDef._jsDoc.classHeader = Templates.classHeader({
 		description,
 		extendsTag,
 		alias: classDef._jsDoc.alias,
+		aliasSlashed: classDef._ui5QualifiedNameSlashes,
 	});
 }
 
@@ -166,6 +168,7 @@ function _prepareGettersAndMethods(classDef) {
 		getterDef.serializedJsDoc = Templates.methodsAndGetters({
 			description: getterDef.description,
 			// function names on the instance use the "#" syntax
+			// the alias of the class is already escaped!
 			alias: `${jsDoc.alias}#${getterDef.getterName}`,
 		});
 	});
@@ -178,6 +181,7 @@ function _prepareGettersAndMethods(classDef) {
 			parameters: methodDef.parameters,
 			// function names on the instance use the "#" syntax
 			// methods are taken as-is, unlike getters (s.a.)
+			// the alias of the class is already escaped!
 			alias: `${jsDoc.alias}#${name}`,
 		});
 	});
@@ -225,7 +229,10 @@ const JSDocSerializer = {
 			const interfaceDef = registryEntry.interfaces[interfaceName];
 			interfaceDef._jsDoc = Templates.interface({
 				description: interfaceDef.description,
-				alias: slash2dot(interfaceDef.prefixedName),
+				alias: escapeName(interfaceDef._ui5QualifiedName),
+				name: interfaceName,
+				// TODO: workaround for missing name escaping in the UI5 JSDoc build
+				package: interfaceDef._ui5QualifiedNameSlashes,
 			});
 		});
 
@@ -234,7 +241,10 @@ const JSDocSerializer = {
 			const enumDef = registryEntry.enums[enumName];
 			enumDef._jsDoc = Templates.enumHeader({
 				description: enumDef.description,
-				alias: slash2dot(enumDef.prefixedName),
+				alias: escapeName(enumDef._ui5QualifiedName),
+				name: enumName,
+				// TODO: workaround for missing name escaping in the UI5 JSDoc build
+				package: enumDef._ui5QualifiedNameSlashes,
 			});
 			enumDef.values.forEach((value) => {
 				value._jsDoc = Templates.enumValue({ description: value.description });
