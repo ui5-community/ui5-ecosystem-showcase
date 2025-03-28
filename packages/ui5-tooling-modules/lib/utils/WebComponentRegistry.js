@@ -47,7 +47,9 @@ class RegistryEntry {
 		this.scopeSuffix = scopeSuffix;
 		this.npmPackagePath = npmPackagePath;
 		this.moduleBasePath = moduleBasePath;
-		this.qualifiedNamespace = `${slash2dot(this.moduleBasePath)}.${slash2dot(this.namespace)}`;
+		// TODO: respect "removeScopePrefix", how?
+		// TODO: the conversion of "-" to "_" is a workaround for the UI5 JSDoc build until we solve the escaping issue
+		this.qualifiedNamespace = `${slash2dot(this.moduleBasePath)}.${slash2dot(this.namespace.replace(/^@/, "").replace(/-/g, "_"))}`;
 		this.version = version;
 
 		this.customElements = {};
@@ -62,6 +64,20 @@ class RegistryEntry {
 		console.log(`Metadata processed for package ${namespace}. Module base path: ${moduleBasePath}.`);
 	}
 
+	#deriveUi5ClassNames(classDef) {
+		// Calculate fully qualified class name based on the module name from the custom elements manifest
+		// e.g. dist/Avatar.js -> dist.Avatar
+		let convertedClassName = classDef.module.replace(/\//g, ".");
+		convertedClassName = convertedClassName.replace(/\.js$/, "");
+		classDef._derivedUi5ClassName = convertedClassName;
+
+		classDef._ui5QualifiedName = `${this.qualifiedNamespace}.${classDef._derivedUi5ClassName}`;
+
+		// TODO: Ideally not needed in the future once we have a solution for escaping in the UI5 JDSDoc build
+		//       Also remember to remove the "@ui5-module-override" directives in the HBS templates!
+		classDef._ui5QualifiedNameSlashes = classDef._ui5QualifiedName.replace(/\./g, "/");
+	}
+
 	#processMetadata() {
 		// [1] parsing the metadata
 		this.#customElementsMetadata.modules?.forEach((module) => {
@@ -72,6 +88,9 @@ class RegistryEntry {
 		// [2] Connect superclasses
 		Object.keys(this.classes).forEach((className) => {
 			const classDef = this.classes[className];
+
+			this.#deriveUi5ClassNames(classDef);
+
 			this.#connectSuperclass(classDef);
 
 			this.#calculateScopedTagName(classDef);
@@ -80,9 +99,6 @@ class RegistryEntry {
 			//     Note: The order is important! We need to connect the superclass and create its metadata first.
 			//           We need a fully constructed parent chain later for ensuring UI5 defaults (refer to #ensureDefaults)
 			this.#createUI5Metadata(classDef);
-
-			// TODO: Find a better place for the name calculation
-			classDef._ui5ClassName = `${this.qualifiedNamespace}.${classDef.name}`;
 		});
 
 		// [4] prepare enum objects
@@ -133,6 +149,7 @@ class RegistryEntry {
 			const [npmPackage, ...nameParts] = superclassName.split(".");
 			classDef.superclass = {
 				name: nameParts.join("."),
+				_ui5QualifiedName: nameParts.join("."), // TODO: what is this?
 				package: npmPackage,
 				file: `dist/${nameParts.join("/")}.js`,
 			};
@@ -188,8 +205,10 @@ class RegistryEntry {
 	}
 
 	#checkForInterfaceOrClassType(type) {
-		if (this.interfaces[type] || this.classes[type]) {
+		if (this.interfaces[type]) {
 			return this.prefixns(type);
+		} else if (this.classes[type]) {
+			return this.classes[type]._ui5QualifiedName;
 		}
 	}
 
@@ -682,7 +701,7 @@ class RegistryEntry {
 				// this is an interesting inconsistency that does not occur in the UI5 web components
 				// we report it here for custom web component development
 				console.warn(
-					`The class '${this.namespace}/${classDef.name}' defines a slot called 'valueStateMessage', but does not provide a corresponding 'valueState' property! A UI5 control expects both to be present for correct 'valueState' handling.`,
+					`The class '${classDef._ui5QualifiedName}' defines a slot called 'valueStateMessage', but does not provide a corresponding 'valueState' property! A UI5 control expects both to be present for correct 'valueState' handling.`,
 				);
 			}
 		}
@@ -746,7 +765,10 @@ class RegistryEntry {
 			// prepare enum info object for HBS template later
 			this.enums[enumName] = {
 				name: enumName,
-				prefixedName: this.prefixns(enumName),
+				_ui5QualifiedName: this.prefixns(enumName),
+				// TODO: Ideally not needed in the future once we have a solution for escaping in the UI5 JDSDoc build
+				//       Also remember to remove the "@ui5-module-override" directives in the HBS templates!
+				_ui5QualifiedNameSlashes: this.qualifiedNamespace.replace(/\./g, "/"),
 				description: this.enums[enumName].description || "",
 				values: enumValues,
 			};
@@ -760,7 +782,10 @@ class RegistryEntry {
 	#prepareInterfaces() {
 		Object.keys(this.interfaces).forEach((interfaceName) => {
 			const interfaceDef = this.interfaces[interfaceName];
-			interfaceDef.prefixedName = this.prefixns(interfaceName);
+			interfaceDef._ui5QualifiedName = this.prefixns(interfaceName);
+			// TODO: Ideally not needed in the future once we have a solution for escaping in the UI5 JDSDoc build
+			//       Also remember to remove the "@ui5-module-override" directives in the HBS templates!
+			interfaceDef._ui5QualifiedNameSlashes = this.qualifiedNamespace.replace(/\./g, "/");
 		});
 	}
 }

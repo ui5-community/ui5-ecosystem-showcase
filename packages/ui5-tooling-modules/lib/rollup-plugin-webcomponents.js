@@ -194,9 +194,9 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			name: namespace,
 			version,
 			dependencies: ["sap.ui.core"],
-			types: Object.keys(package.enums).map((enumName) => `${namespace}.${enumName}`),
-			interfaces: Object.keys(package.interfaces).map((interfaceName) => `${namespace}.${interfaceName}`),
-			controls: Object.keys(package.customElements).map((elementName) => `${namespace}.${elementName}`),
+			types: Object.keys(package.enums).map((enumName) => package.enums[enumName]._ui5QualifiedName),
+			interfaces: Object.keys(package.interfaces).map((interfaceName) => package.interfaces[interfaceName]._ui5QualifiedName),
+			controls: Object.keys(package.customElements).map((elementName) => package.customElements[elementName]._ui5QualifiedName),
 			elements: [
 				/* do we have any? */
 			],
@@ -246,7 +246,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			}
 			// Extend the superclass with the WebComponent class and export it
 			const ui5Metadata = clazz._ui5metadata;
-			const ui5ClassName = clazz._ui5ClassName;
+			const ui5ClassName = clazz._ui5QualifiedName;
 			const namespace = ui5Metadata.namespace;
 
 			const metadata = JSDocSerializer.serializeMetadata(clazz);
