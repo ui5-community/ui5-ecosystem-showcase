@@ -17,6 +17,10 @@ sap.ui.define((function () { 'use strict';
 
 	var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
+	function getDefaultExportFromCjs (x) {
+		return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+	}
+
 	function getAugmentedNamespace(n) {
 	  if (Object.prototype.hasOwnProperty.call(n, '__esModule')) return n;
 	  var f = n.default;
@@ -21141,16 +21145,17 @@ sap.ui.define((function () { 'use strict';
 	}
 
 	var cmisExports = requireCmis();
+	var defExp = /*@__PURE__*/getDefaultExportFromCjs(cmisExports);
 
 	var namedExports = /*#__PURE__*/_mergeNamespaces({
 		__proto__: null,
-		default: cmisExports
+		default: defExp
 	}, [cmisExports]);
 
-	const defaultExports = Object.isFrozen(cmisExports) ? Object.assign({}, cmisExports?.default || cmisExports || { __emptyModule: true }) : cmisExports;
+	const defaultExports = Object.isFrozen(defExp) ? Object.assign({}, defExp?.default || defExp || { __emptyModule: true }) : defExp;
 	Object.keys(namedExports || {}).filter((key) => !defaultExports[key]).forEach((key) => defaultExports[key] = namedExports[key]);
 	Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
-	var index = Object.isFrozen(cmisExports) ? Object.freeze(defaultExports) : defaultExports;
+	var index = Object.isFrozen(defExp) ? Object.freeze(defaultExports) : defaultExports;
 
 	return index;
 

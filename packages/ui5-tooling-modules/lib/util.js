@@ -1087,7 +1087,7 @@ module.exports = function (log, projectInfo) {
 					json(),
 					instructions(),
 					commonjs({
-						defaultIsModuleExports: true,
+						defaultIsModuleExports: "preferred",
 					}),
 					// node polyfills/resolution must happen after
 					// commonjs and amd to ensure e.g. exports is

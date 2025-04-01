@@ -15842,16 +15842,17 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index) { '
   }
 
   var clientExports = requireClient();
+  var defExp = /*@__PURE__*/index.getDefaultExportFromCjs(clientExports);
 
   var namedExports = /*#__PURE__*/_mergeNamespaces({
     __proto__: null,
-    default: clientExports
+    default: defExp
   }, [clientExports]);
 
-  const defaultExports = Object.isFrozen(clientExports) ? Object.assign({}, clientExports?.default || clientExports || { __emptyModule: true }) : clientExports;
+  const defaultExports = Object.isFrozen(defExp) ? Object.assign({}, defExp?.default || defExp || { __emptyModule: true }) : defExp;
   Object.keys(namedExports || {}).filter((key) => !defaultExports[key]).forEach((key) => defaultExports[key] = namedExports[key]);
   Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
-  var client = Object.isFrozen(clientExports) ? Object.freeze(defaultExports) : defaultExports;
+  var client = Object.isFrozen(defExp) ? Object.freeze(defaultExports) : defaultExports;
 
   return client;
 
