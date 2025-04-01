@@ -17,6 +17,10 @@ sap.ui.define((function () { 'use strict';
 
 	var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
+	function getDefaultExportFromCjs (x) {
+		return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+	}
+
 	var global$1 = (typeof global !== "undefined" ? global :
 	  typeof self !== "undefined" ? self :
 	  typeof window !== "undefined" ? window : {});
@@ -5860,16 +5864,17 @@ sap.ui.define((function () { 'use strict';
 	}
 
 	var axiosExports = requireAxios();
+	var defExp = /*@__PURE__*/getDefaultExportFromCjs(axiosExports);
 
 	var namedExports = /*#__PURE__*/_mergeNamespaces({
 		__proto__: null,
-		default: axiosExports
+		default: defExp
 	}, [axiosExports]);
 
-	const defaultExports = Object.isFrozen(axiosExports) ? Object.assign({}, axiosExports?.default || axiosExports || { __emptyModule: true }) : axiosExports;
+	const defaultExports = Object.isFrozen(defExp) ? Object.assign({}, defExp?.default || defExp || { __emptyModule: true }) : defExp;
 	Object.keys(namedExports || {}).filter((key) => !defaultExports[key]).forEach((key) => defaultExports[key] = namedExports[key]);
 	Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
-	var axios = Object.isFrozen(axiosExports) ? Object.freeze(defaultExports) : defaultExports;
+	var axios = Object.isFrozen(defExp) ? Object.freeze(defaultExports) : defaultExports;
 
 	return axios;
 

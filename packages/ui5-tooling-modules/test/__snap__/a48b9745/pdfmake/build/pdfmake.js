@@ -1,4 +1,4 @@
-sap.ui.define((function () { 'use strict';
+sap.ui.define(['ui5/ecosystem/demo/app/resources/_commonjsHelpers'], (function (_commonjsHelpers) { 'use strict';
 
   function _mergeNamespaces(n, m) {
     m.forEach(function (e) {
@@ -74058,16 +74058,17 @@ sap.ui.define((function () { 'use strict';
   }
 
   var pdfmakeExports = requirePdfmake();
+  var defExp = /*@__PURE__*/_commonjsHelpers.getDefaultExportFromCjs(pdfmakeExports);
 
   var namedExports = /*#__PURE__*/_mergeNamespaces({
     __proto__: null,
-    default: pdfmakeExports
+    default: defExp
   }, [pdfmakeExports]);
 
-  const defaultExports = Object.isFrozen(pdfmakeExports) ? Object.assign({}, pdfmakeExports?.default || pdfmakeExports || { __emptyModule: true }) : pdfmakeExports;
+  const defaultExports = Object.isFrozen(defExp) ? Object.assign({}, defExp?.default || defExp || { __emptyModule: true }) : defExp;
   Object.keys(namedExports || {}).filter((key) => !defaultExports[key]).forEach((key) => defaultExports[key] = namedExports[key]);
   Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
-  var pdfmake = Object.isFrozen(pdfmakeExports) ? Object.freeze(defaultExports) : defaultExports;
+  var pdfmake = Object.isFrozen(defExp) ? Object.freeze(defaultExports) : defaultExports;
 
   return pdfmake;
 

@@ -16,16 +16,17 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index$1) {
 	}
 
 	var reactExports = index$1.requireReact();
+	var defExp = /*@__PURE__*/index$1.getDefaultExportFromCjs(reactExports);
 
 	var namedExports = /*#__PURE__*/_mergeNamespaces({
 		__proto__: null,
-		default: reactExports
+		default: defExp
 	}, [reactExports]);
 
-	const defaultExports = Object.isFrozen(reactExports) ? Object.assign({}, reactExports?.default || reactExports || { __emptyModule: true }) : reactExports;
+	const defaultExports = Object.isFrozen(defExp) ? Object.assign({}, defExp?.default || defExp || { __emptyModule: true }) : defExp;
 	Object.keys(namedExports || {}).filter((key) => !defaultExports[key]).forEach((key) => defaultExports[key] = namedExports[key]);
 	Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
-	var index = Object.isFrozen(reactExports) ? Object.freeze(defaultExports) : defaultExports;
+	var index = Object.isFrozen(defExp) ? Object.freeze(defaultExports) : defaultExports;
 
 	return index;
 

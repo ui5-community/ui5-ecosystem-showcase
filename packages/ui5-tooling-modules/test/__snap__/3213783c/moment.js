@@ -15,6 +15,10 @@ sap.ui.define((function () { 'use strict';
 		return Object.freeze(n);
 	}
 
+	function getDefaultExportFromCjs (x) {
+		return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+	}
+
 	function commonjsRequire(path) {
 		throw new Error('Could not dynamically require "' + path + '". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.');
 	}
@@ -5712,16 +5716,17 @@ sap.ui.define((function () { 'use strict';
 	}
 
 	var momentExports = requireMoment();
+	var defExp = /*@__PURE__*/getDefaultExportFromCjs(momentExports);
 
 	var namedExports = /*#__PURE__*/_mergeNamespaces({
 		__proto__: null,
-		default: momentExports
+		default: defExp
 	}, [momentExports]);
 
-	const defaultExports = Object.isFrozen(momentExports) ? Object.assign({}, momentExports?.default || momentExports || { __emptyModule: true }) : momentExports;
+	const defaultExports = Object.isFrozen(defExp) ? Object.assign({}, defExp?.default || defExp || { __emptyModule: true }) : defExp;
 	Object.keys(namedExports || {}).filter((key) => !defaultExports[key]).forEach((key) => defaultExports[key] = namedExports[key]);
 	Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
-	var moment = Object.isFrozen(momentExports) ? Object.freeze(defaultExports) : defaultExports;
+	var moment = Object.isFrozen(defExp) ? Object.freeze(defaultExports) : defaultExports;
 
 	return moment;
 

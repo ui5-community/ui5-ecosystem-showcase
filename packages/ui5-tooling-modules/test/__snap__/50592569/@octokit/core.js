@@ -32,6 +32,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
+  function getDefaultExportFromCjs (x) {
+  	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+  }
+
   var beforeAfterHook = {exports: {}};
 
   var register_1;
@@ -614,6 +618,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   var browserExports = requireBrowser();
+  var nodeFetch = /*@__PURE__*/getDefaultExportFromCjs(browserExports);
 
   class Deprecation extends Error {
     constructor(message) {
@@ -630,7 +635,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   }
 
-  var once = {exports: {}};
+  var once$1 = {exports: {}};
 
   var wrappy_1;
   var hasRequiredWrappy;
@@ -677,16 +682,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   var hasRequiredOnce;
 
   function requireOnce () {
-  	if (hasRequiredOnce) return once.exports;
+  	if (hasRequiredOnce) return once$1.exports;
   	hasRequiredOnce = 1;
   	var wrappy = requireWrappy();
-  	once.exports = wrappy(once$1);
-  	once.exports.strict = wrappy(onceStrict);
+  	once$1.exports = wrappy(once);
+  	once$1.exports.strict = wrappy(onceStrict);
 
-  	once$1.proto = once$1(function () {
+  	once.proto = once(function () {
   	  Object.defineProperty(Function.prototype, 'once', {
   	    value: function () {
-  	      return once$1(this)
+  	      return once(this)
   	    },
   	    configurable: true
   	  });
@@ -699,7 +704,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	  });
   	});
 
-  	function once$1 (fn) {
+  	function once (fn) {
   	  var f = function () {
   	    if (f.called) return f.value
   	    f.called = true;
@@ -721,13 +726,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	  f.called = false;
   	  return f
   	}
-  	return once.exports;
+  	return once$1.exports;
   }
 
   var onceExports = requireOnce();
+  var once = /*@__PURE__*/getDefaultExportFromCjs(onceExports);
 
-  const logOnceCode = onceExports((deprecation) => console.warn(deprecation));
-  const logOnceHeaders = onceExports((deprecation) => console.warn(deprecation));
+  const logOnceCode = once((deprecation) => console.warn(deprecation));
+  const logOnceHeaders = once((deprecation) => console.warn(deprecation));
   /**
    * Error with extra properties to help with debugging
    */
@@ -800,7 +806,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     let status;
     let url;
     const fetch = requestOptions.request && requestOptions.request.fetch || globalThis.fetch || /* istanbul ignore next */
-    browserExports;
+    nodeFetch;
     return fetch(
       requestOptions.url,
       Object.assign(

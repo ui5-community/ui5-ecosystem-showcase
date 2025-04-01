@@ -15,6 +15,10 @@ sap.ui.define((function () { 'use strict';
 		return Object.freeze(n);
 	}
 
+	function getDefaultExportFromCjs (x) {
+		return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+	}
+
 	var index_umd$2 = {exports: {}};
 
 	var index_umd$1 = index_umd$2.exports;
@@ -32,16 +36,17 @@ sap.ui.define((function () { 'use strict';
 	}
 
 	var index_umdExports = requireIndex_umd();
+	var defExp = /*@__PURE__*/getDefaultExportFromCjs(index_umdExports);
 
 	var namedExports = /*#__PURE__*/_mergeNamespaces({
 		__proto__: null,
-		default: index_umdExports
+		default: defExp
 	}, [index_umdExports]);
 
-	const defaultExports = Object.isFrozen(index_umdExports) ? Object.assign({}, index_umdExports?.default || index_umdExports || { __emptyModule: true }) : index_umdExports;
+	const defaultExports = Object.isFrozen(defExp) ? Object.assign({}, defExp?.default || defExp || { __emptyModule: true }) : defExp;
 	Object.keys(namedExports || {}).filter((key) => !defaultExports[key]).forEach((key) => defaultExports[key] = namedExports[key]);
 	Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
-	var index_umd = Object.isFrozen(index_umdExports) ? Object.freeze(defaultExports) : defaultExports;
+	var index_umd = Object.isFrozen(defExp) ? Object.freeze(defaultExports) : defaultExports;
 
 	return index_umd;
 

@@ -15,6 +15,10 @@ sap.ui.define((function () { 'use strict';
 		return Object.freeze(n);
 	}
 
+	function getDefaultExportFromCjs (x) {
+		return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+	}
+
 	function getAugmentedNamespace(n) {
 	  if (Object.prototype.hasOwnProperty.call(n, '__esModule')) return n;
 	  var f = n.default;
@@ -7569,16 +7573,17 @@ sap.ui.define((function () { 'use strict';
 	}
 
 	var libExports = requireLib();
+	var defExp = /*@__PURE__*/getDefaultExportFromCjs(libExports);
 
 	var namedExports = /*#__PURE__*/_mergeNamespaces({
 		__proto__: null,
-		default: libExports
+		default: defExp
 	}, [libExports]);
 
-	const defaultExports = Object.isFrozen(libExports) ? Object.assign({}, libExports?.default || libExports || { __emptyModule: true }) : libExports;
+	const defaultExports = Object.isFrozen(defExp) ? Object.assign({}, defExp?.default || defExp || { __emptyModule: true }) : defExp;
 	Object.keys(namedExports || {}).filter((key) => !defaultExports[key]).forEach((key) => defaultExports[key] = namedExports[key]);
 	Object.defineProperty(defaultExports, "__" + "esModule", { value: true });
-	var index = Object.isFrozen(libExports) ? Object.freeze(defaultExports) : defaultExports;
+	var index = Object.isFrozen(defExp) ? Object.freeze(defaultExports) : defaultExports;
 
 	return index;
 
