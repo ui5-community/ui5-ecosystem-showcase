@@ -234,7 +234,7 @@ function findDependencies({ cwd = process.cwd(), depPaths = [], linkedOnly, addi
 	}
 	if (linkedOnly) {
 		dependencies = dependencies.filter((dep) => {
-			const version = pkgJson.dependencies[dep] || pkgJson.optionalDependencies[dep];
+			const version = pkgJson.dependencies?.[dep] || pkgJson.optionalDependencies?.[dep];
 			return !isValidVersion(version);
 		});
 	}
