@@ -510,6 +510,9 @@ class RegistryEntry {
 		} else if (tag === "ui5-multi-input") {
 			// TODO: Multi Input needs to implement the functions defined in "sap.ui.core.ISemanticFormContent"...
 			ui5metadata.interfaces.push("sap.ui.core.ISemanticFormContent");
+		} else if (tag === "ui5-shellbar") {
+			ui5metadata.interfaces.push("sap.m.IBar");
+			ui5metadata.interfaces.push("sap.tnt.IToolHeader");
 		}
 
 		// If a "valueStateMessage" slot is present, we need a special property mapping
