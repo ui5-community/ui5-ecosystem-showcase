@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.24.12](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.11...ui5-tooling-modules@3.24.12) (2025-04-03)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** avoid undefined issues in dep lookup ([#1197](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1197)) ([f053c9f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f053c9f7ad50b368cf3e4f7a9bea6f87d6e58d68))
+
+
+
+
+
 ## [3.24.11](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.10...ui5-tooling-modules@3.24.11) (2025-04-01)
 
 
