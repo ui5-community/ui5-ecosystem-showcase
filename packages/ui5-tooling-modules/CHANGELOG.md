@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.24.13](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.12...ui5-tooling-modules@3.24.13) (2025-04-03)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** support special settings for ui5-shellbar ([7c9e5d6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7c9e5d62caa93d040f6437fdad68f72808642493))
+
+
+
+
+
 ## [3.24.12](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.11...ui5-tooling-modules@3.24.12) (2025-04-03)
 
 
