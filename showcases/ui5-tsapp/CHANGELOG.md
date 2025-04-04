@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.16.23](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.16.22...ui5-tsapp@0.16.23) (2025-04-04)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** support primitive array types for webc ([#1198](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1198)) ([dceae64](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/dceae6442720ce2b9a4c32a202eaf0fc1d79e9e9))
+
+
+
+
+
 ## [0.16.22](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.16.21...ui5-tsapp@0.16.22) (2025-04-03)
 
 **Note:** Version bump only for package ui5-tsapp

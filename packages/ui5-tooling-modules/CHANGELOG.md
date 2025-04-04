@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.24.14](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.13...ui5-tooling-modules@3.24.14) (2025-04-04)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** support primitive array types for webc ([#1198](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1198)) ([dceae64](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/dceae6442720ce2b9a4c32a202eaf0fc1d79e9e9))
+
+
+
+
+
 ## [3.24.13](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.12...ui5-tooling-modules@3.24.13) (2025-04-03)
 
 
