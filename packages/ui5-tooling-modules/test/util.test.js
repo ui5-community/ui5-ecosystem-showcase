@@ -609,6 +609,7 @@ const webcomponentsContext = {
 		HTMLElement: function () {},
 		Element: function () {},
 		Node: function () {},
+		Event: function () {},
 		CSSStyleSheet: function () {
 			this.replaceSync = function () {};
 		},
