@@ -22,7 +22,14 @@
         <Button text="Download PDF" press="downloadPDF" />
         <Button text="Create Mail" press="createMail" />
         <lib:Example text="Hello World" />
-        <luigi:LuigiContainer id="luigi" viewurl="https://luigiwebcomponents.gitlab.io/luigiwebcomponentmf/main.js" webcomponent="true" context='\{"label": "Luigi"}' theme="{= theming.getTheme() }" />
+        <luigi:LuigiContainer
+          id="luigi"
+          viewurl="https://luigiwebcomponents.gitlab.io/luigiwebcomponentmf/main.js"
+          webcomponent="true"
+          activeFeatureToggleList='ft1,ft2'
+          context='\{"label": "Luigi"}'
+          theme="{= theming.getTheme() }"
+        />
       </VBox>
     </content>
   </Page>

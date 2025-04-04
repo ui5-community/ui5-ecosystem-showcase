@@ -219,6 +219,9 @@ class RegistryEntry {
 				multiple,
 			};
 		} else {
+			// determine the primitive type from the array type
+			parsedType = arrayTypeMatch?.[1] || parsedType;
+
 			// case 5: primitive types
 			return {
 				origType: parsedType,

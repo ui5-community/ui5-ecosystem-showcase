@@ -18,11 +18,11 @@ sap.ui.define([
   "interfaces": [],
   "properties": {
     "activeFeatureToggleList": {
-      "type": "any[]",
+      "type": "string[]",
       "mapping": "property"
     },
     "allowRules": {
-      "type": "any[]",
+      "type": "string[]",
       "mapping": "property"
     },
     "anchor": {
@@ -78,7 +78,7 @@ sap.ui.define([
       "mapping": "property"
     },
     "sandboxRules": {
-      "type": "any[]",
+      "type": "string[]",
       "mapping": "property"
     },
     "searchParams": {
@@ -129,7 +129,6 @@ sap.ui.define([
     "getContextRequest": {},
     "navigationRequest": {},
     "showAlertRequest": {},
-    "closeAlertRequest": {},
     "initialized": {},
     "addSearchParamsRequest": {},
     "addNodeParamsRequest": {},
@@ -141,21 +140,20 @@ sap.ui.define([
     "runtimeErrorHandlingRequest": {},
     "setAnchorRequest": {},
     "setThirdPartyCookiesRequest": {},
-    "navigateBackRequest": {},
     "getCurrentRouteRequest": {},
     "reportNavigationCompletedRequest": {},
     "updateModalPathDataRequest": {},
+    "updateModalSettingsRequest": {},
     "checkPathExistsRequest": {},
     "setDirtyStatusRequest": {},
     "setViewgroupDataRequest": {},
-    "setDocumentTitleRequest": {},
     "openUserSettingsRequest": {},
     "closeUserSettingsRequest": {},
     "collapseLeftnavRequest": {},
     "updateTopNavigationRequest": {},
-    "pathExistsRequest": {},
     "goBackRequest": {},
     "hasBackRequest": {},
+    "addBackdropRequest": {},
     "removeBackdropRequest": {}
   },
   "getters": [],
@@ -164,6 +162,8 @@ sap.ui.define([
     "sendCustomMessage",
     "closeAlert",
     "notifyAlertClosed",
+    "notifyConfirmationModalClosed",
+    "updateViewUrl",
     "init"
   ],
   "library": "@luigi-project/container.library",
