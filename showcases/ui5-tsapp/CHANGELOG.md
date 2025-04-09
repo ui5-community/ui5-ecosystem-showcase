@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.16.24](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.16.23...ui5-tsapp@0.16.24) (2025-04-09)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** keep comments for xml and sourcemaps for js ([#1201](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1201)) ([1958f37](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1958f37724cdfc0c0fc2da73fb08058692ebb79e))
+
+
+
+
+
 ## [0.16.23](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.16.22...ui5-tsapp@0.16.23) (2025-04-04)
 
 

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.24.15](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.14...ui5-tooling-modules@3.24.15) (2025-04-09)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** keep comments for xml and sourcemaps for js ([#1201](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1201)) ([1958f37](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1958f37724cdfc0c0fc2da73fb08058692ebb79e))
+* **ui5-tooling-modules:** properly consider additionalDependencies ([#1199](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1199)) ([94daeee](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/94daeeef8e49964dad1bb3950c6cacf2ab95c094))
+
+
+
+
+
 ## [3.24.14](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.13...ui5-tooling-modules@3.24.14) (2025-04-04)
 
 
