@@ -1,5 +1,5 @@
 const path = require("path");
-const { createReadStream, existsSync } = require("fs");
+const { createReadStream, readFileSync, existsSync } = require("fs");
 const chokidar = require("chokidar");
 
 /**
@@ -48,6 +48,22 @@ const determineSourcePaths = (collection) => {
 module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	const project = middlewareUtil.getProject();
 
+	log.verbose(`Starting ui5-tooling-modules-middleware`);
+
+	// derive the configuration and default values
+	const config = Object.assign(
+		{
+			debug: false,
+			persistentCache: true,
+			skipTransform: false,
+			watch: true,
+			watchDebounce: 100,
+			entryPoints: [],
+		},
+		options.configuration,
+	);
+	let { debug, skipTransform, watch, watchDebounce } = config;
+
 	// determine the current working directory and the package.json path
 	let cwd = project.getRootPath() || process.cwd();
 	let pkgJsonPath = path.join(cwd, "package.json");
@@ -78,7 +94,21 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	const depProjects = middlewareUtil
 		.getDependencies()
 		.map((dep) => middlewareUtil.getProject(dep))
-		.filter((prj) => !prj.isFrameworkProject());
+		.filter((prj) => {
+			// we skip the framework projects, except of we explicitly add them
+			// to the additionalDependencies in the configuration as these deps
+			// typically don't have dependencies in the package.json
+			// (except when listed in the additionalDependencies)
+			if (prj.isFrameworkProject()) {
+				const pkgJsonFile = path.join(prj.getRootPath(), "package.json");
+				if (existsSync(pkgJsonFile)) {
+					const pkgJson = JSON.parse(readFileSync(pkgJsonFile, { encoding: "utf-8" }));
+					return config.additionalDependencies?.includes(pkgJson.name);
+				}
+				return false;
+			}
+			return true;
+		});
 	const depPaths = depProjects.map((prj) => prj.getRootPath());
 	const depReaderCollection = middlewareUtil.resourceFactory.createReaderCollection({
 		name: `Reader collection of project ${project.getName()}`,
@@ -87,22 +117,6 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 
 	// utility to scan the project for dependencies and resources
 	const { scan, getBundleInfo, getResource, resolveModule } = require("./util")(log, projectInfo);
-
-	log.verbose(`Starting ui5-tooling-modules-middleware`);
-
-	// derive the configuration and default values
-	const config = Object.assign(
-		{
-			debug: false,
-			persistentCache: true,
-			skipTransform: false,
-			watch: true,
-			watchDebounce: 100,
-			entryPoints: [],
-		},
-		options.configuration,
-	);
-	let { debug, skipTransform, watch, watchDebounce } = config;
 
 	// should we watch the files?
 	let onChangeCallback;
@@ -265,7 +279,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	const existsNpmPackageForResource = (source) => {
 		const npmPackage = getNpmPackageName(source);
 		if (npmPackageCache[npmPackage] === undefined) {
-			const existsPackage = !!resolveModule(`${npmPackage}/package.json`, { cwd, depPaths, isMiddleware: true });
+			const existsPackage = !!resolveModule(`${npmPackage}/package.json`, { cwd, depPaths, additionalDeps: config.additionalDependencies, isMiddleware: true });
 			npmPackageCache[npmPackage] = existsPackage;
 		}
 		return npmPackageCache[npmPackage];
