@@ -100,10 +100,13 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 			// typically don't have dependencies in the package.json
 			// (except when listed in the additionalDependencies)
 			if (prj.isFrameworkProject()) {
-				const pkgJsonFile = path.join(prj.getRootPath(), "package.json");
-				if (existsSync(pkgJsonFile)) {
-					const pkgJson = JSON.parse(readFileSync(pkgJsonFile, { encoding: "utf-8" }));
-					return config.additionalDependencies?.includes(pkgJson.name);
+				if (Array.isArray(config.additionalDependencies) && config.additionalDependencies.length > 0) {
+					// check if the framework project is listed in the additionalDependencies
+					const pkgJsonFile = path.join(prj.getRootPath(), "package.json");
+					if (existsSync(pkgJsonFile)) {
+						const pkgJson = JSON.parse(readFileSync(pkgJsonFile, { encoding: "utf-8" }));
+						return config.additionalDependencies?.includes(pkgJson.name);
+					}
 				}
 				return false;
 			}
