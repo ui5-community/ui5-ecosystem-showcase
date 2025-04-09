@@ -35,6 +35,7 @@ builder:
       - "ui5/ecosystem/demo/tsapp/thirdparty/**"
   componentPreload:
     excludes:
+      - "ui5/ecosystem/demo/tsapp/thirdparty/_dynamics/**"
       - "ui5/ecosystem/demo/tsapp/thirdparty/@stomp/**"
       - "ui5/ecosystem/demo/tsapp/thirdparty/jspdf*.js"
       - "ui5/ecosystem/demo/tsapp/thirdparty/xlsx.js"

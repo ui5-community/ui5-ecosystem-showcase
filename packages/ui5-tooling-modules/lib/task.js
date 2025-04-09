@@ -363,6 +363,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 		const rewriteTime = Date.now();
 		const parser = new XMLParser({
 			attributeNamePrefix: "@_",
+			commentPropName: "#comment",
 			ignoreAttributes: false,
 			ignoreNameSpace: false,
 			processEntities: false,
@@ -372,6 +373,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 		});
 		const builder = new XMLBuilder({
 			attributeNamePrefix: "@_",
+			commentPropName: "#comment",
 			ignoreAttributes: false,
 			ignoreNameSpace: false,
 			processEntities: false,
@@ -379,6 +381,10 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 			suppressBooleanAttributes: true,
 			preserveOrder: true,
 			format: true,
+			attributeValueProcessor: (name, value) => {
+				// Escape double quotes inside attribute values
+				return value.replace(/"/g, "&quot;");
+			},
 		});
 
 		// check whether the current resource should be skipped or not (based on module name)
@@ -390,7 +396,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				: config.skipTransform;
 		};
 
-		const allJsXmlResources = await workspace.byGlob("/**/*.{js,xml}");
+		const allJsXmlResources = await workspace.byGlob("/**/*.{js,view.xml,fragment.xml}");
 		await Promise.all(
 			allJsXmlResources.map(async (res) => {
 				const resourcePath = res.getPath();
@@ -400,13 +406,26 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 						const newContent = rewriteJSDeps(content, bundledResources, resourcePath);
 						if (newContent /* false in case of rewrite issues! */ && newContent != content) {
 							config.debug && log.info(`Rewriting JS resource: ${resourcePath}`);
-							res.setString(newContent);
-							await workspace.write(res);
+							if (/\/\/# sourceMappingURL=.*$/.test(newContent)) {
+								// in case of a sourcemap is already available, we need to create a new resource
+								// to avoid later in the minification process to remove the sourcemap
+								// e.g. for the TS to JS transpilation using Babel
+								const newResource = resourceFactory.createResource({
+									path: resourcePath,
+									string: newContent,
+								});
+								await workspace.write(newResource);
+							} else {
+								// in case of no sourcemap is available, we can just rewrite the resource
+								// as the minifier will add the sourcemap later
+								res.setString(newContent);
+								await workspace.write(res);
+							}
 						}
 					} else {
 						config.debug && log.info(`Skipping rewriting of resource "${resourcePath}"...`);
 					}
-				} else if (resourcePath.endsWith(".xml")) {
+				} else if (resourcePath.endsWith(".view.xml") || resourcePath.endsWith(".fragment.xml")) {
 					const content = await res.getString();
 					const xmldom = parser.parse(content);
 					if (rewriteXMLDeps(xmldom, bundledResources)) {
