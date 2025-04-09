@@ -222,7 +222,7 @@ function findDependency(dep, cwd = process.cwd(), depPaths = []) {
  * @param {string} [options.cwd] current working directory
  * @param {string[]} [options.depPaths] list of dependency paths
  * @param {boolean} [options.linkedOnly] find only the linked dependencies
- * @param {string[]} [options.additionalDeps] list of additional dependencies (e.g. dev dependencies to inlude)
+ * @param {string[]} [options.additionalDeps] list of additional dependencies (e.g. dev dependencies to include)
  * @param {string[]} [knownDeps] list of known dependencies
  * @returns {string[]} array of dependency root directories
  */
@@ -801,10 +801,11 @@ module.exports = function (log, projectInfo) {
 		 * @param {object} options configuration options
 		 * @param {string} options.cwd current working directory
 		 * @param {string[]} options.depPaths paths of the dependencies (in addition for cwd)
+		 * @param {string[]} [options.additionalDeps] list of additional dependencies (e.g. dev dependencies to include)
 		 * @returns {string} the path of the module in the filesystem
 		 */
 		// ignore module paths starting with a segment from the ignore list (TODO: maybe a better check?)
-		resolveModule: function resolveModule(moduleName, { cwd = process.cwd(), depPaths = [] } = {}) {
+		resolveModule: function resolveModule(moduleName, { cwd = process.cwd(), depPaths = [], additionalDeps = [] } = {}) {
 			// create a cache key for the module and check the cache
 			const cacheKey = createHash("md5")
 				.update(`${[moduleName, cwd, ...depPaths].sort().join(",")}`)
@@ -825,7 +826,7 @@ module.exports = function (log, projectInfo) {
 			// hint: we include the direct dependencies to resolve the module path in the context
 			//       of the app (which is required e.g. when linking dependencies to the project)
 			if (!findDependenciesCache[cwd]) {
-				findDependenciesCache[cwd] = findDependencies({ cwd, depPaths, linkedOnly: true });
+				findDependenciesCache[cwd] = findDependencies({ cwd, depPaths, additionalDeps, linkedOnly: true });
 			}
 			const extendedDepPaths = [...depPaths, ...findDependenciesCache[cwd]];
 			// no module found => resolve it
