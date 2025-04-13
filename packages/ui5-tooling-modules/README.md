@@ -171,6 +171,10 @@ The following configuration options are just relevant for the `task`:
 
 The following configuration options are just relevant for the `middleware`:
 
+- *useRelativeModulePaths*: `boolean` *experimental flag*
+  Usually, the middleware converts the module paths to absolute modules paths relative to the `application` project. In some special cases, in which the application doesn't register its namespace in the start page, it is better to use relative module paths for the local development (e.g. the UI5 testsuite application serving many test pages for different controls). For `library` projects this option is always turned on as for library projects they are not served in the root context of the server, they are also served via the `resources` + namespace URL.
+  &nbsp;
+
 - *watch*: `boolean|String[]` *experimental flag*
   For development scenarios, the server is listening to changes of the source files of the project and its dependencies and triggers the generation of the bundle if the used NPM packages have been changed (defaults to `true`) - additionally, you can pass a list of folders or files to watch for changes for special cases
   &nbsp;
