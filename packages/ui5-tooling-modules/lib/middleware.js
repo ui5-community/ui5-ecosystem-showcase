@@ -43,6 +43,7 @@ const determineSourcePaths = (collection) => {
  * @param {boolean} [parameters.options.configuration.persistentCache] Flag whether the module cache for the bundles should be persistent
  * @param {boolean|string[]} [parameters.options.configuration.keepDynamicImports] List of NPM packages for which the dynamic imports should be kept or boolean (defaults to true)
  * @param {boolean|string} [parameters.options.configuration.dynamicEntriesPath] the relative path for dynamic entries (defaults to "_dynamics")
+ * @param {boolean} [parameters.options.configuration.useRelativeModulePaths] Flag whether the modules should use relative paths instead of absolute paths (for applications)
  * @returns {Function} Middleware function to use
  */
 module.exports = async function ({ log, resources, options, middlewareUtil }) {
@@ -59,6 +60,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 			watch: true,
 			watchDebounce: 100,
 			entryPoints: [],
+			useRelativeModulePaths: false,
 		},
 		options.configuration,
 	);
