@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.24.16](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.15...ui5-tooling-modules@3.24.16) (2025-04-13)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** support UI5 testsuite scenario ([#1202](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1202)) ([ee5c50a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ee5c50a4dc4eb258d3b98df6d3b7bc05ee63f6a2))
+
+
+
+
+
 ## [3.24.15](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.14...ui5-tooling-modules@3.24.15) (2025-04-09)
 
 
