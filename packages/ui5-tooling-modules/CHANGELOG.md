@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.24.17](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.16...ui5-tooling-modules@3.24.17) (2025-04-14)
+
+
+### Bug Fixes
+
+* **ui5-tooling-module:** ensure exports for mods using exports.default ([#1203](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1203)) ([50740c5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/50740c587687dc9c407fe80ff78e108e4c5a5216))
+
+
+
+
+
 ## [3.24.16](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.15...ui5-tooling-modules@3.24.16) (2025-04-13)
 
 
