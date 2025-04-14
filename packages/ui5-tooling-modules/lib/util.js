@@ -1149,6 +1149,22 @@ module.exports = function (log, projectInfo) {
 				amd: {
 					define: "sap.ui.define",
 				},
+				intro: (s) => {
+					// FIX: if the module contains "exports.default" we need to
+					// add the exports variable to the bundle to ensure that
+					// the module can be used in the UI5 context
+					// (this happens e.g. when using the WebC Button solely)
+					let hasExportsDefault = false;
+					Object.values(s.modules || {}).forEach((m) => {
+						if (/\sexports.default/g.test(m.code)) {
+							hasExportsDefault = true;
+						}
+					});
+					if (hasExportsDefault) {
+						return "var exports = exports || {};";
+					}
+					return "";
+				},
 				generatedCode,
 				chunkFileNames: (chunkInfo) => {
 					let { name } = chunkInfo;

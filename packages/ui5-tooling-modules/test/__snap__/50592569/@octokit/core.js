@@ -1,5 +1,7 @@
 sap.ui.define(['exports'], (function (exports) { 'use strict';
 
+  var exports = exports || {};
+
   var global$1 = (typeof global !== "undefined" ? global :
     typeof self !== "undefined" ? self :
     typeof window !== "undefined" ? window : {});

@@ -781,6 +781,58 @@ test.serial("Verify generation of @ui5/webcomponents/dist/CheckBox Wrapper UI5 C
 	}
 });
 
+test.serial("Verify generation of @ui5/webcomponents/Button", async (t) => {
+	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
+	const env = await setupEnv(
+		["@ui5/webcomponents/Button"],
+		Object.assign({}, webcomponentsContext, {
+			hash: t.context.hash,
+			tmpDir: t.context.tmpDir,
+			log: t.context.log,
+			modules: webcContextModules,
+		}),
+		{
+			pluginOptions: {
+				webcomponents: {
+					skip: true,
+				},
+			},
+		},
+	);
+	const module = await env.getModule("@ui5/webcomponents/Button");
+	t.true(module.retVal.__esModule);
+	if (platform() !== "win32") {
+		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
+	}
+});
+
+test.serial("Verify generation of @ui5/webcomponents/Button Wrapper UI5 Control", async (t) => {
+	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
+	const env = await setupEnv(
+		["@ui5/webcomponents/Button"],
+		Object.assign({}, webcomponentsContext, {
+			hash: t.context.hash,
+			tmpDir: t.context.tmpDir,
+			log: t.context.log,
+			modules: webcContextModules,
+		}),
+		{
+			pluginOptions: {
+				webcomponents: {
+					scoping: false,
+				},
+			},
+		},
+	);
+	const module = await env.getModule("@ui5/webcomponents/Button");
+	t.deepEqual(module.retVal.name, "@ui5/webcomponents.Button");
+	t.deepEqual(module.retVal.def.metadata.tag, "ui5-button");
+	t.deepEqual(module.retVal.def.metadata.library, "@ui5/webcomponents.library");
+	if (platform() !== "win32") {
+		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
+	}
+});
+
 test.serial("Verify generation of signalr/punycode", async (t) => {
 	process.chdir(path.resolve(cwd, "../../showcases/ui5-app"));
 	const jQuery = function () {
