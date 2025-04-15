@@ -10,7 +10,7 @@ const WebComponentRegistry = require("./utils/WebComponentRegistry");
 
 module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framework, options } = {}) {
 	// derive the configuration from the provided options
-	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, moduleBasePath } = Object.assign(
+	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, moduleBasePath, removeScopePrefix } = Object.assign(
 		{
 			skip: false,
 			scoping: true,
@@ -128,6 +128,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 						customElementsMetadata,
 						namespace: npmPackage,
 						moduleBasePath,
+						removeScopePrefix,
 						scopeSuffix: ui5WebCScopeSuffix,
 						npmPackagePath,
 						version: packageJson.version,

@@ -16,7 +16,8 @@ sap.ui.define([
  * @extends 
  * @constructor
  * @public
- * @alias @luigi-project.container.LuigiContainer
+ * @alias ui5.ecosystem.demo.tsapp.thirdparty."@luigi-project".container.LuigiContainer
+ * @ui5-module-override ui5/ecosystem/demo/tsapp/thirdparty/@luigi-project/container/LuigiContainer
  */
   const WrapperClass = WebComponentBaseClass.extend("ui5.ecosystem.demo.tsapp.thirdparty.@luigi-project.container.LuigiContainer", {
     metadata:
@@ -32,112 +33,6 @@ sap.ui.define([
   "defaultAggregation": "",
 
   "properties": {
-<<<<<<< HEAD
-    "activeFeatureToggleList": {
-      "type": "string[]",
-      "mapping": "property"
-    },
-    "allowRules": {
-      "type": "string[]",
-      "mapping": "property"
-    },
-    "anchor": {
-      "type": "string",
-      "mapping": "property"
-    },
-    "authData": {
-      "type": "object",
-      "mapping": "property"
-    },
-    "clientPermissions": {
-      "type": "object",
-      "mapping": "property"
-    },
-    "context": {
-      "type": "any",
-      "mapping": "property"
-    },
-    "deferInit": {
-      "type": "boolean",
-      "mapping": "property"
-    },
-    "dirtyStatus": {
-      "type": "boolean",
-      "mapping": "property"
-    },
-    "documentTitle": {
-      "type": "string",
-      "mapping": "property"
-    },
-    "hasBack": {
-      "type": "boolean",
-      "mapping": "property"
-    },
-    "label": {
-      "type": "string",
-      "mapping": "property"
-    },
-    "locale": {
-      "type": "string",
-      "mapping": "property"
-    },
-    "noShadow": {
-      "type": "boolean",
-      "mapping": "property"
-    },
-    "nodeParams": {
-      "type": "object",
-      "mapping": "property"
-    },
-    "pathParams": {
-      "type": "object",
-      "mapping": "property"
-    },
-    "sandboxRules": {
-      "type": "string[]",
-      "mapping": "property"
-    },
-    "searchParams": {
-      "type": "object",
-      "mapping": "property"
-    },
-    "skipCookieCheck": {
-      "type": "string",
-      "mapping": "property"
-    },
-    "skipInitCheck": {
-      "type": "boolean",
-      "mapping": "property"
-    },
-    "theme": {
-      "type": "string",
-      "mapping": "property"
-    },
-    "userSettings": {
-      "type": "object",
-      "mapping": "property"
-    },
-    "viewurl": {
-      "type": "string",
-      "mapping": "property"
-    },
-    "webcomponent": {
-      "type": "any",
-      "mapping": "property"
-    },
-    "text": {
-      "type": "string",
-      "mapping": "textContent"
-    },
-    "width": {
-      "type": "sap.ui.core.CSSSize",
-      "mapping": "style"
-    },
-    "height": {
-      "type": "sap.ui.core.CSSSize",
-      "mapping": "style"
-    }
-=======
 /**
  * 
  */
@@ -242,7 +137,6 @@ sap.ui.define([
  * The 'height' of the Web Component in <code>sap.ui.core.CSSSize</code>.
  */
     "height": {"type":"sap.ui.core.CSSSize","mapping":"style"},
->>>>>>> a6c3721a (chore(ui5-tooling-modules): update test snapshots for new JSDoc content)
   },
 
   "aggregations": {
@@ -252,38 +146,6 @@ sap.ui.define([
   },
 
   "events": {
-<<<<<<< HEAD
-    "customMessage": {},
-    "getContextRequest": {},
-    "navigationRequest": {},
-    "showAlertRequest": {},
-    "initialized": {},
-    "addSearchParamsRequest": {},
-    "addNodeParamsRequest": {},
-    "showConfirmationModalRequest": {},
-    "showLoadingIndicatorRequest": {},
-    "hideLoadingIndicatorRequest": {},
-    "setCurrentLocaleRequest": {},
-    "setStorageRequest": {},
-    "runtimeErrorHandlingRequest": {},
-    "setAnchorRequest": {},
-    "setThirdPartyCookiesRequest": {},
-    "getCurrentRouteRequest": {},
-    "reportNavigationCompletedRequest": {},
-    "updateModalPathDataRequest": {},
-    "updateModalSettingsRequest": {},
-    "checkPathExistsRequest": {},
-    "setDirtyStatusRequest": {},
-    "setViewgroupDataRequest": {},
-    "openUserSettingsRequest": {},
-    "closeUserSettingsRequest": {},
-    "collapseLeftnavRequest": {},
-    "updateTopNavigationRequest": {},
-    "goBackRequest": {},
-    "hasBackRequest": {},
-    "addBackdropRequest": {},
-    "removeBackdropRequest": {}
-=======
 /**
  * Event fired when the micro frontend sends a custom message.
  */
@@ -508,22 +370,7 @@ sap.ui.define([
     "parameters": {
     }
 },
->>>>>>> a6c3721a (chore(ui5-tooling-modules): update test snapshots for new JSDoc content)
   },
-<<<<<<< HEAD
-<<<<<<< HEAD
-  "getters": [],
-  "methods": [
-    "updateContext",
-    "sendCustomMessage",
-    "closeAlert",
-    "notifyAlertClosed",
-    "notifyConfirmationModalClosed",
-    "updateViewUrl",
-    "init"
-=======
-=======
->>>>>>> 33ad4fb8 (feat(ui5-tooling-modules): rebase and fixture generation)
 
   "getters": [
   ],
@@ -532,28 +379,28 @@ sap.ui.define([
 /**
  * 
  * @public
- * @name @luigi-project.container.LuigiContainer#updateContext
+ * @name ui5.ecosystem.demo.tsapp.thirdparty."@luigi-project".container.LuigiContainer#updateContext
  * @function
  */
       "updateContext",
 /**
  * 
  * @public
- * @name @luigi-project.container.LuigiContainer#sendCustomMessage
+ * @name ui5.ecosystem.demo.tsapp.thirdparty."@luigi-project".container.LuigiContainer#sendCustomMessage
  * @function
  */
       "sendCustomMessage",
 /**
  * 
  * @public
- * @name @luigi-project.container.LuigiContainer#closeAlert
+ * @name ui5.ecosystem.demo.tsapp.thirdparty."@luigi-project".container.LuigiContainer#closeAlert
  * @function
  */
       "closeAlert",
 /**
  * 
  * @public
- * @name @luigi-project.container.LuigiContainer#init
+ * @name ui5.ecosystem.demo.tsapp.thirdparty."@luigi-project".container.LuigiContainer#init
  * @function
  */
       "init",

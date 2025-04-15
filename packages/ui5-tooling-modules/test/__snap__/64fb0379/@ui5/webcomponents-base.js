@@ -17,18 +17,17 @@ sap.ui.define([
     "_ui5metadata":
 {
   "name": "@ui5/webcomponents-base",
-  "version": "2.8.0",
+  "version": "2.7.0",
   "dependencies": [
     "sap.ui.core"
   ],
   "types": [
-    "@ui5/webcomponents-base.AnimationMode",
-    "@ui5/webcomponents-base.CalendarType",
-    "@ui5/webcomponents-base.ItemNavigationBehavior",
-    "@ui5/webcomponents-base.MovePlacement",
-    "@ui5/webcomponents-base.NavigationMode",
-    "@ui5/webcomponents-base.SortOrder",
-    "@ui5/webcomponents-base.ValueState"
+    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.AnimationMode",
+    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.CalendarType",
+    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.ItemNavigationBehavior",
+    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.MovePlacement",
+    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.NavigationMode",
+    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.ValueState"
   ],
   "interfaces": [],
   "controls": [],
@@ -49,57 +48,187 @@ sap.ui.define([
 		});
 	}
 
+  /**
+ * Different types of AnimationMode.
+ * @enum {string}
+ * @public
+ * @alias ui5.ecosystem.demo.app.thirdparty."@ui5"."webcomponents-base".AnimationMode
+ * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents-base AnimationMode
+ */
   pkg["AnimationMode"] = {
+    /**
+ * 
+ * @public
+ */
     "Full": "Full",
+    /**
+ * 
+ * @public
+ */
     "Basic": "Basic",
+    /**
+ * 
+ * @public
+ */
     "Minimal": "Minimal",
+    /**
+ * 
+ * @public
+ */
     "None": "None",
   };
-  registerEnum("@ui5/webcomponents-base.AnimationMode", pkg["AnimationMode"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.AnimationMode", pkg["AnimationMode"]);
+  /**
+ * Different calendar types.
+ * @enum {string}
+ * @public
+ * @alias ui5.ecosystem.demo.app.thirdparty."@ui5"."webcomponents-base".CalendarType
+ * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents-base CalendarType
+ */
   pkg["CalendarType"] = {
+    /**
+ * 
+ * @public
+ */
     "Gregorian": "Gregorian",
+    /**
+ * 
+ * @public
+ */
     "Islamic": "Islamic",
+    /**
+ * 
+ * @public
+ */
     "Japanese": "Japanese",
+    /**
+ * 
+ * @public
+ */
     "Buddhist": "Buddhist",
+    /**
+ * 
+ * @public
+ */
     "Persian": "Persian",
   };
-  registerEnum("@ui5/webcomponents-base.CalendarType", pkg["CalendarType"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.CalendarType", pkg["CalendarType"]);
+  /**
+ * Different behavior for ItemNavigation.
+ * @enum {string}
+ * @public
+ * @alias ui5.ecosystem.demo.app.thirdparty."@ui5"."webcomponents-base".ItemNavigationBehavior
+ * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents-base ItemNavigationBehavior
+ */
   pkg["ItemNavigationBehavior"] = {
+    /**
+ * Static behavior: navigations stops at the first or last item.
+ * @public
+ */
     "Static": "Static",
+    /**
+ * Cycling behavior: navigating past the last item continues with the first and vice versa.
+ * @public
+ */
     "Cyclic": "Cyclic",
   };
-  registerEnum("@ui5/webcomponents-base.ItemNavigationBehavior", pkg["ItemNavigationBehavior"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.ItemNavigationBehavior", pkg["ItemNavigationBehavior"]);
+  /**
+ * Placements of a moved element relative to a target element.
+ * @enum {string}
+ * @public
+ * @alias ui5.ecosystem.demo.app.thirdparty."@ui5"."webcomponents-base".MovePlacement
+ * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents-base MovePlacement
+ */
   pkg["MovePlacement"] = {
+    /**
+ * 
+ * @public
+ */
     "On": "On",
+    /**
+ * 
+ * @public
+ */
     "Before": "Before",
+    /**
+ * 
+ * @public
+ */
     "After": "After",
   };
-  registerEnum("@ui5/webcomponents-base.MovePlacement", pkg["MovePlacement"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.MovePlacement", pkg["MovePlacement"]);
+  /**
+ * Different navigation modes for ItemNavigation.
+ * @enum {string}
+ * @public
+ * @alias ui5.ecosystem.demo.app.thirdparty."@ui5"."webcomponents-base".NavigationMode
+ * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents-base NavigationMode
+ */
   pkg["NavigationMode"] = {
+    /**
+ * 
+ * @public
+ */
     "Auto": "Auto",
+    /**
+ * 
+ * @public
+ */
     "Vertical": "Vertical",
+    /**
+ * 
+ * @public
+ */
     "Horizontal": "Horizontal",
+    /**
+ * 
+ * @public
+ */
     "Paging": "Paging",
   };
-  registerEnum("@ui5/webcomponents-base.NavigationMode", pkg["NavigationMode"]);
-  pkg["SortOrder"] = {
-    "None": "None",
-    "Ascending": "Ascending",
-    "Descending": "Descending",
-  };
-  registerEnum("@ui5/webcomponents-base.SortOrder", pkg["SortOrder"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.NavigationMode", pkg["NavigationMode"]);
+  /**
+ * Different types of ValueStates.
+ * @enum {string}
+ * @public
+ * @alias ui5.ecosystem.demo.app.thirdparty."@ui5"."webcomponents-base".ValueState
+ * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents-base ValueState
+ */
   pkg["ValueState"] = {
+    /**
+ * 
+ * @public
+ */
     "None": "None",
+    /**
+ * 
+ * @public
+ */
     "Positive": "Positive",
+    /**
+ * 
+ * @public
+ */
     "Critical": "Critical",
+    /**
+ * 
+ * @public
+ */
     "Negative": "Negative",
+    /**
+ * 
+ * @public
+ */
     "Information": "Information",
   };
-  registerEnum("@ui5/webcomponents-base.ValueState", pkg["ValueState"]);
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.ValueState", pkg["ValueState"]);
 
-	// ====================
-	// MONKEY PATCHES BEGIN
-	// ====================
+  // Interfaces
+
+  // ====================
+  // MONKEY PATCHES BEGIN
+  // ====================
 // Helper to fix a conversion between "number" and "core.CSSSize".
 // WebC attribute is a number and is written back to the Control
 // wrapper via sap.ui.core.webc.WebComponent base class.
@@ -116,9 +245,9 @@ if (!WebComponent.__setProperty__isPatched) {
 	WebComponent.__setProperty__isPatched = true;
 }
 
-	// ====================
-	// MONKEY PATCHES END
-	// ====================
+  // ====================
+  // MONKEY PATCHES END
+  // ====================
 
 	return pkg;
 });

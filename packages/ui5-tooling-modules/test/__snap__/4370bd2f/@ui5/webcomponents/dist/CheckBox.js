@@ -49,9 +49,10 @@ The user can use the following keyboard shortcuts to toggle the checked state of
  * @extends sap.ui.core.webc.WebComponent
  * @constructor
  * @public
- * @alias @ui5.webcomponents.CheckBox
+ * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.dist.CheckBox
+ * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents/dist/CheckBox
  */
-  const WrapperClass = WebComponentBaseClass.extend("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CheckBox", {
+  const WrapperClass = WebComponentBaseClass.extend("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.CheckBox", {
     metadata:
 {
   "tag": "ui5-checkbox",

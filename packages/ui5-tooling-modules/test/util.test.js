@@ -721,7 +721,7 @@ test.serial("Verify generation of @ui5/webcomponents/dist/Panel Wrapper UI5 Cont
 		},
 	);
 	const module = await env.getModule("@ui5/webcomponents/dist/Panel");
-	t.deepEqual(module.retVal.name, "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.Panel");
+	t.deepEqual(module.retVal.name, "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Panel");
 	t.deepEqual(module.retVal.def.metadata.tag, "ui5-panel-mYsCoPeSuFfIx");
 	if (platform() !== "win32") {
 		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
@@ -772,7 +772,7 @@ test.serial("Verify generation of @ui5/webcomponents/dist/CheckBox Wrapper UI5 C
 		},
 	);
 	const module = await env.getModule("@ui5/webcomponents/dist/CheckBox");
-	t.deepEqual(module.retVal.name, "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CheckBox");
+	t.deepEqual(module.retVal.name, "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.CheckBox");
 	t.deepEqual(module.retVal.def.metadata.tag, "ui5-checkbox");
 	if (platform() !== "win32") {
 		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
@@ -823,9 +823,8 @@ test.serial("Verify generation of @ui5/webcomponents/Button Wrapper UI5 Control"
 		},
 	);
 	const module = await env.getModule("@ui5/webcomponents/Button");
-	t.deepEqual(module.retVal.name, "@ui5/webcomponents.Button");
+	t.deepEqual(module.retVal.name, "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Button");
 	t.deepEqual(module.retVal.def.metadata.tag, "ui5-button");
-	t.deepEqual(module.retVal.def.metadata.library, "@ui5/webcomponents.library");
 	if (platform() !== "win32") {
 		t.is(module.code, readSnapFile(module.name, t.context.snapDir));
 	}

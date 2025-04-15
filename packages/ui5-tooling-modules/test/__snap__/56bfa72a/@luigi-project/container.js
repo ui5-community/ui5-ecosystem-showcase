@@ -12,19 +12,15 @@ sap.ui.define([
     "_ui5metadata":
 {
   "name": "@luigi-project/container",
-<<<<<<< HEAD
-  "version": "1.6.0-dev.20250430700",
-=======
   "version": "1.5.0",
->>>>>>> 33ad4fb8 (feat(ui5-tooling-modules): rebase and fixture generation)
   "dependencies": [
     "sap.ui.core"
   ],
   "types": [],
   "interfaces": [],
   "controls": [
-    "@luigi-project/container.LuigiContainer",
-    "@luigi-project/container.LuigiCompoundContainer"
+    "ui5.ecosystem.demo.tsapp.thirdparty.@luigi-project.container.LuigiContainer",
+    "ui5.ecosystem.demo.tsapp.thirdparty.@luigi-project.container.LuigiCompoundContainer"
   ],
   "elements": [],
   "rootPath": "ui5/ecosystem/demo/tsapp/resources/"

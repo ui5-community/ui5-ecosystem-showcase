@@ -61,9 +61,10 @@ In order to use this functionality, you need to import the following module:
  * @extends sap.ui.core.webc.WebComponent
  * @constructor
  * @public
- * @alias @ui5.webcomponents.Panel
+ * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.dist.Panel
+ * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents/dist/Panel
  */
-  const WrapperClass = WebComponentBaseClass.extend("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.Panel", {
+  const WrapperClass = WebComponentBaseClass.extend("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Panel", {
     metadata:
 {
   "tag": "ui5-panel-mYsCoPeSuFfIx",

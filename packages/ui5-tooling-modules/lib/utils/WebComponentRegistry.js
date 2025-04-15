@@ -41,15 +41,16 @@ let _classAliases = {};
 class RegistryEntry {
 	#customElementsMetadata = {};
 
-	constructor({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, moduleBasePath, version }) {
+	constructor({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, moduleBasePath, removeScopePrefix, version }) {
 		this.#customElementsMetadata = customElementsMetadata;
 		this.namespace = namespace;
 		this.scopeSuffix = scopeSuffix;
 		this.npmPackagePath = npmPackagePath;
 		this.moduleBasePath = moduleBasePath;
-		// TODO: respect "removeScopePrefix", how?
-		// TODO: the conversion of "-" to "_" is a workaround for the UI5 JSDoc build until we solve the escaping issue
-		this.qualifiedNamespace = `${slash2dot(this.moduleBasePath)}.${slash2dot(this.namespace.replace(/^@/, "").replace(/-/g, "_"))}`;
+		this.qualifiedNamespace = `${slash2dot(this.moduleBasePath)}.${slash2dot(removeScopePrefix ? this.namespace.replace(/^@/, "") : this.namespace)}`;
+		// TODO: The following conversion of "-" to "_" is a workaround for testing the UI5 JSDoc build.
+		//       Only needed until we solve the escaping issue of segments like "@ui5" or "webcomponents-fiori".
+		// this.qualifiedNamespace = this.qualifiedNamespace.replace(/-/g, "_");
 		this.version = version;
 
 		this.customElements = {};
@@ -791,10 +792,10 @@ class RegistryEntry {
 }
 
 const WebComponentRegistry = {
-	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, moduleBasePath }) {
+	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, moduleBasePath, removeScopePrefix }) {
 		let entry = _registry[namespace];
 		if (!entry) {
-			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, moduleBasePath, version });
+			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, moduleBasePath, removeScopePrefix, version });
 
 			// track all classes also via their module name,
 			// so we can access them faster during resource resolution later on
