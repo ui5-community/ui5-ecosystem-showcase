@@ -19,25 +19,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */
-  // Updates to this file should also be replicated to @opentelemetry/core too.
-  /**
-   * - globalThis (New standard)
-   * - self (Will return the current window instance for supported browsers)
-   * - window (fallback for older browser implementations)
-   * - global (NodeJS implementation)
-   * - <object> (When all else fails)
-   */
   /** only globals that common to node and browsers are allowed */
-  // eslint-disable-next-line node/no-unsupported-features/es-builtins, no-undef
-  const _globalThis = typeof globalThis === 'object'
-      ? globalThis
-      : typeof self === 'object'
-          ? self
-          : typeof window === 'object'
-              ? window
-              : typeof global$1 === 'object'
-                  ? global$1
-                  : {};
+  // eslint-disable-next-line node/no-unsupported-features/es-builtins
+  const _globalThis = typeof globalThis === 'object' ? globalThis : global$1;
 
   /*
    * Copyright The OpenTelemetry Authors
