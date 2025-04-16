@@ -103,7 +103,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		    $$typeof: REACT_ELEMENT_TYPE,
 		    type: type,
 		    key: key,
-		    ref: undefined !== self ? self : null,
+		    ref: void 0 !== self ? self : null,
 		    props: props
 		  };
 		}
@@ -111,9 +111,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		  return ReactElement(
 		    oldElement.type,
 		    newKey,
-		    undefined,
-		    undefined,
-		    undefined,
+		    void 0,
+		    void 0,
+		    void 0,
 		    oldElement.props
 		  );
 		}
@@ -388,22 +388,22 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		  };
 		};
 		react_production.cloneElement = function (element, config, children) {
-		  if (null === element || undefined === element)
+		  if (null === element || void 0 === element)
 		    throw Error(
 		      "The argument must be a React element, but you passed " + element + "."
 		    );
 		  var props = assign({}, element.props),
 		    key = element.key,
-		    owner = undefined;
+		    owner = void 0;
 		  if (null != config)
-		    for (propName in (undefined !== config.ref && (owner = undefined),
-		    undefined !== config.key && (key = "" + config.key),
+		    for (propName in (void 0 !== config.ref && (owner = void 0),
+		    void 0 !== config.key && (key = "" + config.key),
 		    config))
 		      !hasOwnProperty.call(config, propName) ||
 		        "key" === propName ||
 		        "__self" === propName ||
 		        "__source" === propName ||
-		        ("ref" === propName && undefined === config.ref) ||
+		        ("ref" === propName && void 0 === config.ref) ||
 		        (props[propName] = config[propName]);
 		  var propName = arguments.length - 2;
 		  if (1 === propName) props.children = children;
@@ -412,7 +412,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		      childArray[i] = arguments[i + 2];
 		    props.children = childArray;
 		  }
-		  return ReactElement(element.type, key, undefined, undefined, owner, props);
+		  return ReactElement(element.type, key, void 0, void 0, owner, props);
 		};
 		react_production.createContext = function (defaultValue) {
 		  defaultValue = {
@@ -435,7 +435,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		    props = {},
 		    key = null;
 		  if (null != config)
-		    for (propName in (undefined !== config.key && (key = "" + config.key), config))
+		    for (propName in (void 0 !== config.key && (key = "" + config.key), config))
 		      hasOwnProperty.call(config, propName) &&
 		        "key" !== propName &&
 		        "__self" !== propName &&
@@ -450,9 +450,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		  }
 		  if (type && type.defaultProps)
 		    for (propName in ((childrenLength = type.defaultProps), childrenLength))
-		      undefined === props[propName] &&
+		      void 0 === props[propName] &&
 		        (props[propName] = childrenLength[propName]);
-		  return ReactElement(type, key, undefined, undefined, null, props);
+		  return ReactElement(type, key, void 0, void 0, null, props);
 		};
 		react_production.createRef = function () {
 		  return { current: null };
@@ -472,7 +472,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		  return {
 		    $$typeof: REACT_MEMO_TYPE,
 		    type: type,
-		    compare: undefined === compare ? null : compare
+		    compare: void 0 === compare ? null : compare
 		  };
 		};
 		react_production.startTransition = function (scope) {

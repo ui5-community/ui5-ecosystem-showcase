@@ -53,6 +53,25 @@ sap.ui.define((function () { 'use strict';
 			     */
 			    class FrameImpl {
 			        /**
+			         * body of the frame
+			         */
+			        get body() {
+			            if (!this._body && this.isBinaryBody) {
+			                this._body = new TextDecoder().decode(this._binaryBody);
+			            }
+			            return this._body || '';
+			        }
+			        /**
+			         * body as Uint8Array
+			         */
+			        get binaryBody() {
+			            if (!this._binaryBody && !this.isBinaryBody) {
+			                this._binaryBody = new TextEncoder().encode(this._body);
+			            }
+			            // At this stage it will definitely have a valid value
+			            return this._binaryBody;
+			        }
+			        /**
 			         * Frame constructor. `command`, `headers` and `body` are available as properties.
 			         *
 			         * @internal
@@ -71,25 +90,6 @@ sap.ui.define((function () { 'use strict';
 			            }
 			            this.escapeHeaderValues = escapeHeaderValues || false;
 			            this.skipContentLengthHeader = skipContentLengthHeader || false;
-			        }
-			        /**
-			         * body of the frame
-			         */
-			        get body() {
-			            if (!this._body && this.isBinaryBody) {
-			                this._body = new TextDecoder().decode(this._binaryBody);
-			            }
-			            return this._body || '';
-			        }
-			        /**
-			         * body as Uint8Array
-			         */
-			        get binaryBody() {
-			            if (!this._binaryBody && !this.isBinaryBody) {
-			                this._binaryBody = new TextEncoder().encode(this._body);
-			            }
-			            // At this stage it will definitely have a valid value
-			            return this._binaryBody;
 			        }
 			        /**
 			         * deserialize a STOMP Frame from raw data.
@@ -441,22 +441,22 @@ sap.ui.define((function () { 'use strict';
 			    /**
 			     * Possible states for the IStompSocket
 			     */
-			    exports.StompSocketState = undefined;
+			    exports.StompSocketState = void 0;
 			    (function (StompSocketState) {
 			        StompSocketState[StompSocketState["CONNECTING"] = 0] = "CONNECTING";
 			        StompSocketState[StompSocketState["OPEN"] = 1] = "OPEN";
 			        StompSocketState[StompSocketState["CLOSING"] = 2] = "CLOSING";
 			        StompSocketState[StompSocketState["CLOSED"] = 3] = "CLOSED";
-			    })(exports.StompSocketState = exports.StompSocketState || (exports.StompSocketState = {}));
+			    })(exports.StompSocketState || (exports.StompSocketState = {}));
 			    /**
 			     * Possible activation state
 			     */
-			    exports.ActivationState = undefined;
+			    exports.ActivationState = void 0;
 			    (function (ActivationState) {
 			        ActivationState[ActivationState["ACTIVE"] = 0] = "ACTIVE";
 			        ActivationState[ActivationState["DEACTIVATING"] = 1] = "DEACTIVATING";
 			        ActivationState[ActivationState["INACTIVE"] = 2] = "INACTIVE";
-			    })(exports.ActivationState = exports.ActivationState || (exports.ActivationState = {}));
+			    })(exports.ActivationState || (exports.ActivationState = {}));
 
 			    /**
 			     * Supported STOMP versions
@@ -542,6 +542,12 @@ sap.ui.define((function () { 'use strict';
 			     * @internal
 			     */
 			    class StompHandler {
+			        get connectedVersion() {
+			            return this._connectedVersion;
+			        }
+			        get connected() {
+			            return this._connected;
+			        }
 			        constructor(_client, _webSocket, config) {
 			            this._client = _client;
 			            this._webSocket = _webSocket;
@@ -632,12 +638,6 @@ sap.ui.define((function () { 'use strict';
 			            this.onUnhandledMessage = config.onUnhandledMessage;
 			            this.onUnhandledReceipt = config.onUnhandledReceipt;
 			            this.onUnhandledFrame = config.onUnhandledFrame;
-			        }
-			        get connectedVersion() {
-			            return this._connectedVersion;
-			        }
-			        get connected() {
-			            return this._connected;
 			        }
 			        start() {
 			            const parser = new Parser(
@@ -926,6 +926,46 @@ sap.ui.define((function () { 'use strict';
 			     */
 			    class Client {
 			        /**
+			         * Underlying WebSocket instance, READONLY.
+			         */
+			        get webSocket() {
+			            return this._stompHandler?._webSocket;
+			        }
+			        /**
+			         * Disconnection headers.
+			         */
+			        get disconnectHeaders() {
+			            return this._disconnectHeaders;
+			        }
+			        set disconnectHeaders(value) {
+			            this._disconnectHeaders = value;
+			            if (this._stompHandler) {
+			                this._stompHandler.disconnectHeaders = this._disconnectHeaders;
+			            }
+			        }
+			        /**
+			         * `true` if there is an active connection to STOMP Broker
+			         */
+			        get connected() {
+			            return !!this._stompHandler && this._stompHandler.connected;
+			        }
+			        /**
+			         * version of STOMP protocol negotiated with the server, READONLY
+			         */
+			        get connectedVersion() {
+			            return this._stompHandler ? this._stompHandler.connectedVersion : undefined;
+			        }
+			        /**
+			         * if the client is active (connected or going to reconnect)
+			         */
+			        get active() {
+			            return this.state === exports.ActivationState.ACTIVE;
+			        }
+			        _changeState(state) {
+			            this.state = state;
+			            this.onChangeState(state);
+			        }
+			        /**
 			         * Create an instance.
 			         */
 			        constructor(conf = {}) {
@@ -1030,46 +1070,6 @@ sap.ui.define((function () { 'use strict';
 			            this._disconnectHeaders = {};
 			            // Apply configuration
 			            this.configure(conf);
-			        }
-			        /**
-			         * Underlying WebSocket instance, READONLY.
-			         */
-			        get webSocket() {
-			            return this._stompHandler?._webSocket;
-			        }
-			        /**
-			         * Disconnection headers.
-			         */
-			        get disconnectHeaders() {
-			            return this._disconnectHeaders;
-			        }
-			        set disconnectHeaders(value) {
-			            this._disconnectHeaders = value;
-			            if (this._stompHandler) {
-			                this._stompHandler.disconnectHeaders = this._disconnectHeaders;
-			            }
-			        }
-			        /**
-			         * `true` if there is an active connection to STOMP Broker
-			         */
-			        get connected() {
-			            return !!this._stompHandler && this._stompHandler.connected;
-			        }
-			        /**
-			         * version of STOMP protocol negotiated with the server, READONLY
-			         */
-			        get connectedVersion() {
-			            return this._stompHandler ? this._stompHandler.connectedVersion : undefined;
-			        }
-			        /**
-			         * if the client is active (connected or going to reconnect)
-			         */
-			        get active() {
-			            return this.state === exports.ActivationState.ACTIVE;
-			        }
-			        _changeState(state) {
-			            this.state = state;
-			            this.onChangeState(state);
 			        }
 			        /**
 			         * Update configuration.

@@ -20,6 +20,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   var browser$1 = {
     env: env};
 
+  const getDefaultsFromPostinstall = () => (undefined);
+
   /**
    * @license
    * Copyright 2017 Google LLC
@@ -432,7 +434,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */
   const getDefaults = () => {
       try {
-          return (getDefaultsFromGlobal() ||
+          return (getDefaultsFromPostinstall() ||
+              getDefaultsFromGlobal() ||
               getDefaultsFromEnvVariable() ||
               getDefaultsFromCookie());
       }
@@ -453,7 +456,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * @returns a URL host formatted like `127.0.0.1:9999` or `[::1]:4000` if available
    * @public
    */
-  const getDefaultEmulatorHost = (productName) => { var _a, _b; return (_b = (_a = getDefaults()) === null || _a === undefined ? undefined : _a.emulatorHosts) === null || _b === undefined ? undefined : _b[productName]; };
+  const getDefaultEmulatorHost = (productName) => { var _a, _b; return (_b = (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.emulatorHosts) === null || _b === void 0 ? void 0 : _b[productName]; };
   /**
    * Returns emulator hostname and port stored in the __FIREBASE_DEFAULTS__ object
    * for the given product.
@@ -483,7 +486,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * Returns Firebase app config stored in the __FIREBASE_DEFAULTS__ object.
    * @public
    */
-  const getDefaultAppConfig = () => { var _a; return (_a = getDefaults()) === null || _a === undefined ? undefined : _a.config; };
+  const getDefaultAppConfig = () => { var _a; return (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.config; };
 
   /**
    * @license
@@ -935,8 +938,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       getImmediate(options) {
           var _a;
           // if multipleInstances is not supported, use the default name
-          const normalizedIdentifier = this.normalizeInstanceIdentifier(options === null || options === undefined ? undefined : options.identifier);
-          const optional = (_a = options === null || options === undefined ? undefined : options.optional) !== null && _a !== undefined ? _a : false;
+          const normalizedIdentifier = this.normalizeInstanceIdentifier(options === null || options === void 0 ? void 0 : options.identifier);
+          const optional = (_a = options === null || options === void 0 ? void 0 : options.optional) !== null && _a !== void 0 ? _a : false;
           if (this.isInitialized(normalizedIdentifier) ||
               this.shouldAutoInitialize()) {
               try {
@@ -1070,7 +1073,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       onInit(callback, identifier) {
           var _a;
           const normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
-          const existingCallbacks = (_a = this.onInitCallbacks.get(normalizedIdentifier)) !== null && _a !== undefined ? _a : new Set();
+          const existingCallbacks = (_a = this.onInitCallbacks.get(normalizedIdentifier)) !== null && _a !== void 0 ? _a : new Set();
           existingCallbacks.add(callback);
           this.onInitCallbacks.set(normalizedIdentifier, existingCallbacks);
           const existingInstance = this.instances.get(normalizedIdentifier);
@@ -1262,7 +1265,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   		 * you set the log level to `INFO`, errors will still be logged, but `DEBUG` and
   		 * `VERBOSE` logs will not)
   		 */
-  		exports.LogLevel = undefined;
+  		exports.LogLevel = void 0;
   		(function (LogLevel) {
   		    LogLevel[LogLevel["DEBUG"] = 0] = "DEBUG";
   		    LogLevel[LogLevel["VERBOSE"] = 1] = "VERBOSE";
@@ -1435,7 +1438,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   		                })
   		                    .filter(arg => arg)
   		                    .join(' ');
-  		                if (level >= (customLogLevel !== null && customLogLevel !== undefined ? customLogLevel : instance.logLevel)) {
+  		                if (level >= (customLogLevel !== null && customLogLevel !== void 0 ? customLogLevel : instance.logLevel)) {
   		                    logCallback({
   		                        level: exports.LogLevel[level].toLowerCase(),
   		                        message,
@@ -1769,11 +1772,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */
   function isVersionServiceProvider(provider) {
       const component = provider.getComponent();
-      return (component === null || component === undefined ? undefined : component.type) === "VERSION" /* ComponentType.VERSION */;
+      return (component === null || component === void 0 ? void 0 : component.type) === "VERSION" /* ComponentType.VERSION */;
   }
 
   const name$q = "@firebase/app";
-  const version$1 = "0.10.18";
+  const version$1 = "0.11.2";
 
   /**
    * @license
@@ -1844,7 +1847,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   const name$1 = "@firebase/firestore-compat";
 
   const name = "firebase";
-  const version = "11.2.0";
+  const version = "11.4.0";
 
   /**
    * @license
@@ -2022,6 +2025,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * @internal
    */
   function _isFirebaseServerApp(obj) {
+      if (obj === null || obj === undefined) {
+          return false;
+      }
       return obj.settings !== undefined;
   }
   /**
@@ -2152,6 +2158,27 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */
+  // Parse the token and check to see if the `exp` claim is in the future.
+  // Reports an error to the console if the token or claim could not be parsed, or if `exp` is in
+  // the past.
+  function validateTokenTTL(base64Token, tokenName) {
+      const secondPart = base64Decode(base64Token.split('.')[1]);
+      if (secondPart === null) {
+          console.error(`FirebaseServerApp ${tokenName} is invalid: second part could not be parsed.`);
+          return;
+      }
+      const expClaim = JSON.parse(secondPart).exp;
+      if (expClaim === undefined) {
+          console.error(`FirebaseServerApp ${tokenName} is invalid: expiration claim could not be parsed`);
+          return;
+      }
+      const exp = JSON.parse(secondPart).exp * 1000;
+      const now = new Date().getTime();
+      const diff = exp - now;
+      if (diff <= 0) {
+          console.error(`FirebaseServerApp ${tokenName} is invalid: the token has expired.`);
+      }
+  }
   class FirebaseServerAppImpl extends FirebaseAppImpl {
       constructor(options, serverConfig, name, container) {
           // Build configuration parameters for the FirebaseAppImpl base class.
@@ -2173,6 +2200,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           // Now construct the data for the FirebaseServerAppImpl.
           this._serverConfig = Object.assign({ automaticDataCollectionEnabled }, serverConfig);
+          // Ensure that the current time is within the `authIdtoken` window of validity.
+          if (this._serverConfig.authIdToken) {
+              validateTokenTTL(this._serverConfig.authIdToken, 'authIdToken');
+          }
+          // Ensure that the current time is within the `appCheckToken` window of validity.
+          if (this._serverConfig.appCheckToken) {
+              validateTokenTTL(this._serverConfig.appCheckToken, 'appCheckToken');
+          }
           this._finalizationRegistry = null;
           if (typeof FinalizationRegistry !== 'undefined') {
               this._finalizationRegistry = new FinalizationRegistry(() => {
@@ -2430,7 +2465,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       var _a;
       // TODO: We can use this check to whitelist strings when/if we set up
       // a good whitelist system.
-      let library = (_a = PLATFORM_LOG_STRING[libraryKeyOrName]) !== null && _a !== undefined ? _a : libraryKeyOrName;
+      let library = (_a = PLATFORM_LOG_STRING[libraryKeyOrName]) !== null && _a !== void 0 ? _a : libraryKeyOrName;
       if (variant) {
           library += `-${variant}`;
       }
@@ -2546,7 +2581,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           else {
               const idbGetError = ERROR_FACTORY.create("idb-get" /* AppError.IDB_GET */, {
-                  originalErrorMessage: e === null || e === undefined ? undefined : e.message
+                  originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
               });
               logger.warn(idbGetError.message);
           }
@@ -2566,7 +2601,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           else {
               const idbGetError = ERROR_FACTORY.create("idb-set" /* AppError.IDB_WRITE */, {
-                  originalErrorMessage: e === null || e === undefined ? undefined : e.message
+                  originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
               });
               logger.warn(idbGetError.message);
           }
@@ -2593,8 +2628,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * limitations under the License.
    */
   const MAX_HEADER_BYTES = 1024;
-  // 30 days
-  const STORED_HEARTBEAT_RETENTION_MAX_MILLIS = 30 * 24 * 60 * 60 * 1000;
+  const MAX_NUM_STORED_HEARTBEATS = 30;
   class HeartbeatServiceImpl {
       constructor(container) {
           this.container = container;
@@ -2648,14 +2682,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               else {
                   // There is no entry for this date. Create one.
                   this._heartbeatsCache.heartbeats.push({ date, agent });
+                  // If the number of stored heartbeats exceeds the maximum number of stored heartbeats, remove the heartbeat with the earliest date.
+                  // Since this is executed each time a heartbeat is pushed, the limit can only be exceeded by one, so only one needs to be removed.
+                  if (this._heartbeatsCache.heartbeats.length > MAX_NUM_STORED_HEARTBEATS) {
+                      const earliestHeartbeatIdx = getEarliestHeartbeatIdx(this._heartbeatsCache.heartbeats);
+                      this._heartbeatsCache.heartbeats.splice(earliestHeartbeatIdx, 1);
+                  }
               }
-              // Remove entries older than 30 days.
-              this._heartbeatsCache.heartbeats =
-                  this._heartbeatsCache.heartbeats.filter(singleDateHeartbeat => {
-                      const hbTimestamp = new Date(singleDateHeartbeat.date).valueOf();
-                      const now = Date.now();
-                      return now - hbTimestamp <= STORED_HEARTBEAT_RETENTION_MAX_MILLIS;
-                  });
               return this._storage.overwrite(this._heartbeatsCache);
           }
           catch (e) {
@@ -2777,7 +2810,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           else {
               const idbHeartbeatObject = await readHeartbeatsFromIndexedDB(this.app);
-              if (idbHeartbeatObject === null || idbHeartbeatObject === undefined ? undefined : idbHeartbeatObject.heartbeats) {
+              if (idbHeartbeatObject === null || idbHeartbeatObject === void 0 ? void 0 : idbHeartbeatObject.heartbeats) {
                   return idbHeartbeatObject;
               }
               else {
@@ -2795,7 +2828,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           else {
               const existingHeartbeatsObject = await this.read();
               return writeHeartbeatsToIndexedDB(this.app, {
-                  lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== undefined ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
+                  lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
                   heartbeats: heartbeatsObject.heartbeats
               });
           }
@@ -2810,7 +2843,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           else {
               const existingHeartbeatsObject = await this.read();
               return writeHeartbeatsToIndexedDB(this.app, {
-                  lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== undefined ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
+                  lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
                   heartbeats: [
                       ...existingHeartbeatsObject.heartbeats,
                       ...heartbeatsObject.heartbeats
@@ -2829,6 +2862,24 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       return base64urlEncodeWithoutPadding(
       // heartbeatsCache wrapper properties
       JSON.stringify({ version: 2, heartbeats: heartbeatsCache })).length;
+  }
+  /**
+   * Returns the index of the heartbeat with the earliest date.
+   * If the heartbeats array is empty, -1 is returned.
+   */
+  function getEarliestHeartbeatIdx(heartbeats) {
+      if (heartbeats.length === 0) {
+          return -1;
+      }
+      let earliestHeartbeatIdx = 0;
+      let earliestHeartbeatDate = heartbeats[0].date;
+      for (let i = 1; i < heartbeats.length; i++) {
+          if (heartbeats[i].date < earliestHeartbeatDate) {
+              earliestHeartbeatDate = heartbeats[i].date;
+              earliestHeartbeatIdx = i;
+          }
+      }
+      return earliestHeartbeatIdx;
   }
 
   /**

@@ -20,7 +20,7 @@ sap.ui.define((function () { 'use strict';
 	}
 
 	function getAugmentedNamespace(n) {
-	  if (n.__esModule) return n;
+	  if (Object.prototype.hasOwnProperty.call(n, '__esModule')) return n;
 	  var f = n.default;
 		if (typeof f == "function") {
 			var a = function a () {
@@ -3104,7 +3104,7 @@ sap.ui.define((function () { 'use strict';
 	}
 
 	function isUndefined(arg) {
-		return arg === undefined;
+		return arg === void 0;
 	}
 
 	function isRegExp(re) {

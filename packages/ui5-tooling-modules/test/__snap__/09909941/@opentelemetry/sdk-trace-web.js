@@ -333,7 +333,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
         try {
             delegateHandler(ex);
         }
-        catch (_a) { } // eslint-disable-line no-empty
+        catch { } // eslint-disable-line no-empty
     }
 
     /*
@@ -351,332 +351,9 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    var TracesSamplerValues;
-    (function (TracesSamplerValues) {
-        TracesSamplerValues["AlwaysOff"] = "always_off";
-        TracesSamplerValues["AlwaysOn"] = "always_on";
-        TracesSamplerValues["ParentBasedAlwaysOff"] = "parentbased_always_off";
-        TracesSamplerValues["ParentBasedAlwaysOn"] = "parentbased_always_on";
-        TracesSamplerValues["ParentBasedTraceIdRatio"] = "parentbased_traceidratio";
-        TracesSamplerValues["TraceIdRatio"] = "traceidratio";
-    })(TracesSamplerValues || (TracesSamplerValues = {}));
-
-    /*
-     * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     */
-    const DEFAULT_LIST_SEPARATOR = ',';
-    /**
-     * Environment interface to define all names
-     */
-    const ENVIRONMENT_BOOLEAN_KEYS = ['OTEL_SDK_DISABLED'];
-    function isEnvVarABoolean(key) {
-        return (ENVIRONMENT_BOOLEAN_KEYS.indexOf(key) > -1);
+    function getNumberFromEnv(_) {
+        return undefined;
     }
-    const ENVIRONMENT_NUMBERS_KEYS = [
-        'OTEL_BSP_EXPORT_TIMEOUT',
-        'OTEL_BSP_MAX_EXPORT_BATCH_SIZE',
-        'OTEL_BSP_MAX_QUEUE_SIZE',
-        'OTEL_BSP_SCHEDULE_DELAY',
-        'OTEL_BLRP_EXPORT_TIMEOUT',
-        'OTEL_BLRP_MAX_EXPORT_BATCH_SIZE',
-        'OTEL_BLRP_MAX_QUEUE_SIZE',
-        'OTEL_BLRP_SCHEDULE_DELAY',
-        'OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT',
-        'OTEL_ATTRIBUTE_COUNT_LIMIT',
-        'OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT',
-        'OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT',
-        'OTEL_LOGRECORD_ATTRIBUTE_VALUE_LENGTH_LIMIT',
-        'OTEL_LOGRECORD_ATTRIBUTE_COUNT_LIMIT',
-        'OTEL_SPAN_EVENT_COUNT_LIMIT',
-        'OTEL_SPAN_LINK_COUNT_LIMIT',
-        'OTEL_SPAN_ATTRIBUTE_PER_EVENT_COUNT_LIMIT',
-        'OTEL_SPAN_ATTRIBUTE_PER_LINK_COUNT_LIMIT',
-        'OTEL_EXPORTER_OTLP_TIMEOUT',
-        'OTEL_EXPORTER_OTLP_TRACES_TIMEOUT',
-        'OTEL_EXPORTER_OTLP_METRICS_TIMEOUT',
-        'OTEL_EXPORTER_OTLP_LOGS_TIMEOUT',
-        'OTEL_EXPORTER_JAEGER_AGENT_PORT',
-    ];
-    function isEnvVarANumber(key) {
-        return (ENVIRONMENT_NUMBERS_KEYS.indexOf(key) > -1);
-    }
-    const ENVIRONMENT_LISTS_KEYS = [
-        'OTEL_NO_PATCH_MODULES',
-        'OTEL_PROPAGATORS',
-        'OTEL_SEMCONV_STABILITY_OPT_IN',
-    ];
-    function isEnvVarAList(key) {
-        return ENVIRONMENT_LISTS_KEYS.indexOf(key) > -1;
-    }
-    const DEFAULT_ATTRIBUTE_VALUE_LENGTH_LIMIT = Infinity;
-    const DEFAULT_ATTRIBUTE_COUNT_LIMIT = 128;
-    const DEFAULT_SPAN_ATTRIBUTE_PER_EVENT_COUNT_LIMIT = 128;
-    const DEFAULT_SPAN_ATTRIBUTE_PER_LINK_COUNT_LIMIT = 128;
-    /**
-     * Default environment variables
-     */
-    const DEFAULT_ENVIRONMENT = {
-        OTEL_SDK_DISABLED: false,
-        CONTAINER_NAME: '',
-        ECS_CONTAINER_METADATA_URI_V4: '',
-        ECS_CONTAINER_METADATA_URI: '',
-        HOSTNAME: '',
-        KUBERNETES_SERVICE_HOST: '',
-        NAMESPACE: '',
-        OTEL_BSP_EXPORT_TIMEOUT: 30000,
-        OTEL_BSP_MAX_EXPORT_BATCH_SIZE: 512,
-        OTEL_BSP_MAX_QUEUE_SIZE: 2048,
-        OTEL_BSP_SCHEDULE_DELAY: 5000,
-        OTEL_BLRP_EXPORT_TIMEOUT: 30000,
-        OTEL_BLRP_MAX_EXPORT_BATCH_SIZE: 512,
-        OTEL_BLRP_MAX_QUEUE_SIZE: 2048,
-        OTEL_BLRP_SCHEDULE_DELAY: 5000,
-        OTEL_EXPORTER_JAEGER_AGENT_HOST: '',
-        OTEL_EXPORTER_JAEGER_AGENT_PORT: 6832,
-        OTEL_EXPORTER_JAEGER_ENDPOINT: '',
-        OTEL_EXPORTER_JAEGER_PASSWORD: '',
-        OTEL_EXPORTER_JAEGER_USER: '',
-        OTEL_EXPORTER_OTLP_ENDPOINT: '',
-        OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: '',
-        OTEL_EXPORTER_OTLP_METRICS_ENDPOINT: '',
-        OTEL_EXPORTER_OTLP_LOGS_ENDPOINT: '',
-        OTEL_EXPORTER_OTLP_HEADERS: '',
-        OTEL_EXPORTER_OTLP_TRACES_HEADERS: '',
-        OTEL_EXPORTER_OTLP_METRICS_HEADERS: '',
-        OTEL_EXPORTER_OTLP_LOGS_HEADERS: '',
-        OTEL_EXPORTER_OTLP_TIMEOUT: 10000,
-        OTEL_EXPORTER_OTLP_TRACES_TIMEOUT: 10000,
-        OTEL_EXPORTER_OTLP_METRICS_TIMEOUT: 10000,
-        OTEL_EXPORTER_OTLP_LOGS_TIMEOUT: 10000,
-        OTEL_EXPORTER_ZIPKIN_ENDPOINT: 'http://localhost:9411/api/v2/spans',
-        OTEL_LOG_LEVEL: traceApi.DiagLogLevel.INFO,
-        OTEL_NO_PATCH_MODULES: [],
-        OTEL_PROPAGATORS: ['tracecontext', 'baggage'],
-        OTEL_RESOURCE_ATTRIBUTES: '',
-        OTEL_SERVICE_NAME: '',
-        OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT: DEFAULT_ATTRIBUTE_VALUE_LENGTH_LIMIT,
-        OTEL_ATTRIBUTE_COUNT_LIMIT: DEFAULT_ATTRIBUTE_COUNT_LIMIT,
-        OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT: DEFAULT_ATTRIBUTE_VALUE_LENGTH_LIMIT,
-        OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT: DEFAULT_ATTRIBUTE_COUNT_LIMIT,
-        OTEL_LOGRECORD_ATTRIBUTE_VALUE_LENGTH_LIMIT: DEFAULT_ATTRIBUTE_VALUE_LENGTH_LIMIT,
-        OTEL_LOGRECORD_ATTRIBUTE_COUNT_LIMIT: DEFAULT_ATTRIBUTE_COUNT_LIMIT,
-        OTEL_SPAN_EVENT_COUNT_LIMIT: 128,
-        OTEL_SPAN_LINK_COUNT_LIMIT: 128,
-        OTEL_SPAN_ATTRIBUTE_PER_EVENT_COUNT_LIMIT: DEFAULT_SPAN_ATTRIBUTE_PER_EVENT_COUNT_LIMIT,
-        OTEL_SPAN_ATTRIBUTE_PER_LINK_COUNT_LIMIT: DEFAULT_SPAN_ATTRIBUTE_PER_LINK_COUNT_LIMIT,
-        OTEL_TRACES_EXPORTER: '',
-        OTEL_TRACES_SAMPLER: TracesSamplerValues.ParentBasedAlwaysOn,
-        OTEL_TRACES_SAMPLER_ARG: '',
-        OTEL_LOGS_EXPORTER: '',
-        OTEL_EXPORTER_OTLP_INSECURE: '',
-        OTEL_EXPORTER_OTLP_TRACES_INSECURE: '',
-        OTEL_EXPORTER_OTLP_METRICS_INSECURE: '',
-        OTEL_EXPORTER_OTLP_LOGS_INSECURE: '',
-        OTEL_EXPORTER_OTLP_CERTIFICATE: '',
-        OTEL_EXPORTER_OTLP_TRACES_CERTIFICATE: '',
-        OTEL_EXPORTER_OTLP_METRICS_CERTIFICATE: '',
-        OTEL_EXPORTER_OTLP_LOGS_CERTIFICATE: '',
-        OTEL_EXPORTER_OTLP_COMPRESSION: '',
-        OTEL_EXPORTER_OTLP_TRACES_COMPRESSION: '',
-        OTEL_EXPORTER_OTLP_METRICS_COMPRESSION: '',
-        OTEL_EXPORTER_OTLP_LOGS_COMPRESSION: '',
-        OTEL_EXPORTER_OTLP_CLIENT_KEY: '',
-        OTEL_EXPORTER_OTLP_TRACES_CLIENT_KEY: '',
-        OTEL_EXPORTER_OTLP_METRICS_CLIENT_KEY: '',
-        OTEL_EXPORTER_OTLP_LOGS_CLIENT_KEY: '',
-        OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE: '',
-        OTEL_EXPORTER_OTLP_TRACES_CLIENT_CERTIFICATE: '',
-        OTEL_EXPORTER_OTLP_METRICS_CLIENT_CERTIFICATE: '',
-        OTEL_EXPORTER_OTLP_LOGS_CLIENT_CERTIFICATE: '',
-        OTEL_EXPORTER_OTLP_PROTOCOL: 'http/protobuf',
-        OTEL_EXPORTER_OTLP_TRACES_PROTOCOL: 'http/protobuf',
-        OTEL_EXPORTER_OTLP_METRICS_PROTOCOL: 'http/protobuf',
-        OTEL_EXPORTER_OTLP_LOGS_PROTOCOL: 'http/protobuf',
-        OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE: 'cumulative',
-        OTEL_SEMCONV_STABILITY_OPT_IN: [],
-    };
-    /**
-     * @param key
-     * @param environment
-     * @param values
-     */
-    function parseBoolean(key, environment, values) {
-        if (typeof values[key] === 'undefined') {
-            return;
-        }
-        const value = String(values[key]);
-        // support case-insensitive "true"
-        environment[key] = value.toLowerCase() === 'true';
-    }
-    /**
-     * Parses a variable as number with number validation
-     * @param name
-     * @param environment
-     * @param values
-     * @param min
-     * @param max
-     */
-    function parseNumber(name, environment, values, min = -Infinity, max = Infinity) {
-        if (typeof values[name] !== 'undefined') {
-            const value = Number(values[name]);
-            if (!isNaN(value)) {
-                if (value < min) {
-                    environment[name] = min;
-                }
-                else if (value > max) {
-                    environment[name] = max;
-                }
-                else {
-                    environment[name] = value;
-                }
-            }
-        }
-    }
-    /**
-     * Parses list-like strings from input into output.
-     * @param name
-     * @param environment
-     * @param values
-     * @param separator
-     */
-    function parseStringList(name, output, input, separator = DEFAULT_LIST_SEPARATOR) {
-        const givenValue = input[name];
-        if (typeof givenValue === 'string') {
-            output[name] = givenValue.split(separator).map(v => v.trim());
-        }
-    }
-    // The support string -> DiagLogLevel mappings
-    const logLevelMap = {
-        ALL: traceApi.DiagLogLevel.ALL,
-        VERBOSE: traceApi.DiagLogLevel.VERBOSE,
-        DEBUG: traceApi.DiagLogLevel.DEBUG,
-        INFO: traceApi.DiagLogLevel.INFO,
-        WARN: traceApi.DiagLogLevel.WARN,
-        ERROR: traceApi.DiagLogLevel.ERROR,
-        NONE: traceApi.DiagLogLevel.NONE,
-    };
-    /**
-     * Environmentally sets log level if valid log level string is provided
-     * @param key
-     * @param environment
-     * @param values
-     */
-    function setLogLevelFromEnv(key, environment, values) {
-        const value = values[key];
-        if (typeof value === 'string') {
-            const theLevel = logLevelMap[value.toUpperCase()];
-            if (theLevel != null) {
-                environment[key] = theLevel;
-            }
-        }
-    }
-    /**
-     * Parses environment values
-     * @param values
-     */
-    function parseEnvironment(values) {
-        const environment = {};
-        for (const env in DEFAULT_ENVIRONMENT) {
-            const key = env;
-            switch (key) {
-                case 'OTEL_LOG_LEVEL':
-                    setLogLevelFromEnv(key, environment, values);
-                    break;
-                default:
-                    if (isEnvVarABoolean(key)) {
-                        parseBoolean(key, environment, values);
-                    }
-                    else if (isEnvVarANumber(key)) {
-                        parseNumber(key, environment, values);
-                    }
-                    else if (isEnvVarAList(key)) {
-                        parseStringList(key, environment, values);
-                    }
-                    else {
-                        const value = values[key];
-                        if (typeof value !== 'undefined' && value !== null) {
-                            environment[key] = String(value);
-                        }
-                    }
-            }
-        }
-        return environment;
-    }
-
-    /*
-     * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     */
-    // Updates to this file should also be replicated to @opentelemetry/api too.
-    /**
-     * - globalThis (New standard)
-     * - self (Will return the current window instance for supported browsers)
-     * - window (fallback for older browser implementations)
-     * - global (NodeJS implementation)
-     * - <object> (When all else fails)
-     */
-    /** only globals that common to node and browsers are allowed */
-    // eslint-disable-next-line node/no-unsupported-features/es-builtins, no-undef
-    const _globalThis = typeof globalThis === 'object'
-        ? globalThis
-        : typeof self === 'object'
-            ? self
-            : typeof window === 'object'
-                ? window
-                : typeof traceApi.global === 'object'
-                    ? traceApi.global
-                    : {};
-
-    /*
-     * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     */
-    /**
-     * Gets the environment variables
-     */
-    function getEnv() {
-        const globalEnv = parseEnvironment(_globalThis);
-        return Object.assign({}, DEFAULT_ENVIRONMENT, globalEnv);
-    }
-    function getEnvWithoutDefaults() {
-        return parseEnvironment(_globalThis);
-    }
-
-    Array(32);
 
     /*
      * Copyright The OpenTelemetry Authors
@@ -711,7 +388,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * limitations under the License.
      */
     // this is autogenerated file, see scripts/version-update.js
-    const VERSION$1 = '1.30.1';
+    const VERSION$1 = '2.0.0';
 
     /*
      * Copyright The OpenTelemetry Authors
@@ -780,7 +457,6 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * limitations under the License.
      */
     const TMP_PROCESS_RUNTIME_NAME = 'process.runtime.name';
-    const TMP_SERVICE_NAME = 'service.name';
     const TMP_TELEMETRY_SDK_NAME = 'telemetry.sdk.name';
     const TMP_TELEMETRY_SDK_LANGUAGE = 'telemetry.sdk.language';
     const TMP_TELEMETRY_SDK_VERSION = 'telemetry.sdk.version';
@@ -790,14 +466,6 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * @deprecated Use ATTR_PROCESS_RUNTIME_NAME in [incubating entry-point]({@link https://github.com/open-telemetry/opentelemetry-js/blob/main/semantic-conventions/README.md#unstable-semconv}).
      */
     const SEMRESATTRS_PROCESS_RUNTIME_NAME = TMP_PROCESS_RUNTIME_NAME;
-    /**
-     * Logical name of the service.
-     *
-     * Note: MUST be the same for all instances of horizontally scaled services. If the value was not specified, SDKs MUST fallback to `unknown_service:` concatenated with [`process.executable.name`](process.md#process), e.g. `unknown_service:bash`. If `process.executable.name` is not available, the value MUST be set to `unknown_service`.
-     *
-     * @deprecated Use ATTR_SERVICE_NAME.
-     */
-    const SEMRESATTRS_SERVICE_NAME = TMP_SERVICE_NAME;
     /**
      * The name of the telemetry SDK as defined above.
      *
@@ -823,6 +491,62 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * @deprecated Use TELEMETRY_SDK_LANGUAGE_VALUE_WEBJS.
      */
     const TELEMETRYSDKLANGUAGEVALUES_WEBJS = TMP_TELEMETRYSDKLANGUAGEVALUES_WEBJS;
+
+    /*
+     * Copyright The OpenTelemetry Authors
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *      https://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+    //----------------------------------------------------------------------------------------------------------
+    // DO NOT EDIT, this is an Auto-generated file from scripts/semconv/templates/registry/stable/attributes.ts.j2
+    //----------------------------------------------------------------------------------------------------------
+    /**
+     * ASP.NET Core exception middleware handling result
+     *
+     * @example handled
+     * @example unhandled
+     */
+    /**
+     * Logical name of the service.
+     *
+     * @example shoppingcart
+     *
+     * @note **MUST** be the same for all instances of horizontally scaled services. If the value was not specified, SDKs **MUST** fallback to `unknown_service:` concatenated with [`process.executable.name`](process.md), e.g. `unknown_service:bash`. If `process.executable.name` is not available, the value **MUST** be set to `unknown_service`.
+     */
+    const ATTR_SERVICE_NAME = 'service.name';
+    /**
+     * The language of the telemetry SDK.
+     */
+    const ATTR_TELEMETRY_SDK_LANGUAGE = 'telemetry.sdk.language';
+    /**
+     * The name of the telemetry SDK as defined above.
+     *
+     * @example opentelemetry
+     *
+     * @note The OpenTelemetry SDK **MUST** set the `telemetry.sdk.name` attribute to `opentelemetry`.
+     * If another SDK, like a fork or a vendor-provided implementation, is used, this SDK **MUST** set the
+     * `telemetry.sdk.name` attribute to the fully-qualified class or module name of this SDK's main entry point
+     * or another suitable identifier depending on the language.
+     * The identifier `opentelemetry` is reserved and **MUST NOT** be used in this case.
+     * All custom identifiers **SHOULD** be stable across different versions of an implementation.
+     */
+    const ATTR_TELEMETRY_SDK_NAME = 'telemetry.sdk.name';
+    /**
+     * The version string of the telemetry SDK.
+     *
+     * @example 1.2.3
+     */
+    const ATTR_TELEMETRY_SDK_VERSION = 'telemetry.sdk.version';
 
     /*
      * Copyright The OpenTelemetry Authors
@@ -1039,14 +763,15 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      */
     /** Combines multiple propagators into a single propagator. */
     class CompositePropagator {
+        _propagators;
+        _fields;
         /**
          * Construct a composite propagator from a list of propagators.
          *
          * @param [config] Configuration object for composite propagator
          */
         constructor(config = {}) {
-            var _a;
-            this._propagators = (_a = config.propagators) !== null && _a !== undefined ? _a : [];
+            this._propagators = config.propagators ?? [];
             this._fields = Array.from(new Set(this._propagators
                 // older propagators may not have fields function, null check to be sure
                 .map(p => (typeof p.fields === 'function' ? p.fields() : []))
@@ -1167,8 +892,8 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * beginning of the list.
      */
     class TraceState {
+        _internalState = new Map();
         constructor(rawTraceState) {
-            this._internalState = new Map();
             if (rawTraceState)
                 this._parse(rawTraceState);
         }
@@ -1375,24 +1100,11 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
     const funcProto = Function.prototype;
     const funcToString = funcProto.toString;
     const objectCtorString = funcToString.call(Object);
-    const getPrototype = overArg(Object.getPrototypeOf, Object);
+    const getPrototypeOf = Object.getPrototypeOf;
     const objectProto = Object.prototype;
     const hasOwnProperty = objectProto.hasOwnProperty;
     const symToStringTag = Symbol ? Symbol.toStringTag : undefined;
     const nativeObjectToString = objectProto.toString;
-    /**
-     * Creates a unary function that invokes `func` with its argument transformed.
-     *
-     * @private
-     * @param {Function} func The function to wrap.
-     * @param {Function} transform The argument transform.
-     * @returns {Function} Returns the new function.
-     */
-    function overArg(func, transform) {
-        return function (arg) {
-            return func(transform(arg));
-        };
-    }
     /**
      * Checks if `value` is a plain object, that is, an object created by the
      * `Object` constructor or one with a `[[Prototype]]` of `null`.
@@ -1425,7 +1137,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
         if (!isObjectLike(value) || baseGetTag(value) !== objectTag) {
             return false;
         }
-        const proto = getPrototype(value);
+        const proto = getPrototypeOf(value);
         if (proto === null) {
             return true;
         }
@@ -1712,6 +1424,9 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * limitations under the License.
      */
     class Deferred {
+        _promise;
+        _resolve;
+        _reject;
         constructor() {
             this._promise = new Promise((resolve, reject) => {
                 this._resolve = resolve;
@@ -1748,11 +1463,13 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * Bind the callback and only invoke the callback once regardless how many times `BindOnceFuture.call` is invoked.
      */
     class BindOnceFuture {
+        _callback;
+        _that;
+        _isCalled = false;
+        _deferred = new Deferred();
         constructor(_callback, _that) {
             this._callback = _callback;
             this._that = _that;
-            this._isCalled = false;
-            this._deferred = new Deferred();
         }
         get isCalled() {
             return this._isCalled;
@@ -1773,6 +1490,31 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
             return this._deferred.promise;
         }
     }
+
+    /*
+     * Copyright The OpenTelemetry Authors
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *      https://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+    ({
+        ALL: traceApi.DiagLogLevel.ALL,
+        VERBOSE: traceApi.DiagLogLevel.VERBOSE,
+        DEBUG: traceApi.DiagLogLevel.DEBUG,
+        INFO: traceApi.DiagLogLevel.INFO,
+        WARN: traceApi.DiagLogLevel.WARN,
+        ERROR: traceApi.DiagLogLevel.ERROR,
+        NONE: traceApi.DiagLogLevel.NONE,
+    });
 
     /*
      * Copyright The OpenTelemetry Authors
@@ -1838,6 +1580,156 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
+    function defaultServiceName() {
+        return 'unknown_service';
+    }
+
+    /*
+     * Copyright The OpenTelemetry Authors
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *      https://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+    const isPromiseLike = (val) => {
+        return (val !== null &&
+            typeof val === 'object' &&
+            typeof val.then === 'function');
+    };
+
+    /*
+     * Copyright The OpenTelemetry Authors
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *      https://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+    class ResourceImpl {
+        _rawAttributes;
+        _asyncAttributesPending = false;
+        _memoizedAttributes;
+        static FromAttributeList(attributes) {
+            const res = new ResourceImpl({});
+            res._rawAttributes = attributes;
+            res._asyncAttributesPending =
+                attributes.filter(([_, val]) => isPromiseLike(val)).length > 0;
+            return res;
+        }
+        constructor(
+        /**
+         * A dictionary of attributes with string keys and values that provide
+         * information about the entity as numbers, strings or booleans
+         * TODO: Consider to add check/validation on attributes.
+         */
+        resource) {
+            const attributes = resource.attributes ?? {};
+            this._rawAttributes = Object.entries(attributes).map(([k, v]) => {
+                if (isPromiseLike(v)) {
+                    // side-effect
+                    this._asyncAttributesPending = true;
+                }
+                return [k, v];
+            });
+        }
+        get asyncAttributesPending() {
+            return this._asyncAttributesPending;
+        }
+        async waitForAsyncAttributes() {
+            if (!this.asyncAttributesPending) {
+                return;
+            }
+            for (let i = 0; i < this._rawAttributes.length; i++) {
+                const [k, v] = this._rawAttributes[i];
+                try {
+                    this._rawAttributes[i] = [k, isPromiseLike(v) ? await v : v];
+                }
+                catch (err) {
+                    traceApi.diag.debug("a resource's async attributes promise rejected: %s", err);
+                    this._rawAttributes[i] = [k, undefined];
+                }
+            }
+            this._asyncAttributesPending = false;
+        }
+        get attributes() {
+            if (this.asyncAttributesPending) {
+                traceApi.diag.error('Accessing resource attributes before async attributes settled');
+            }
+            if (this._memoizedAttributes) {
+                return this._memoizedAttributes;
+            }
+            const attrs = {};
+            for (const [k, v] of this._rawAttributes) {
+                if (isPromiseLike(v)) {
+                    traceApi.diag.debug(`Unsettled resource attribute ${k} skipped`);
+                    continue;
+                }
+                if (v != null) {
+                    attrs[k] ??= v;
+                }
+            }
+            // only memoize output if all attributes are settled
+            if (!this._asyncAttributesPending) {
+                this._memoizedAttributes = attrs;
+            }
+            return attrs;
+        }
+        getRawAttributes() {
+            return this._rawAttributes;
+        }
+        merge(resource) {
+            if (resource == null)
+                return this;
+            // Order is important
+            // Spec states incoming attributes override existing attributes
+            return ResourceImpl.FromAttributeList([
+                ...resource.getRawAttributes(),
+                ...this.getRawAttributes(),
+            ]);
+        }
+    }
+    function resourceFromAttributes(attributes) {
+        return ResourceImpl.FromAttributeList(Object.entries(attributes));
+    }
+    function defaultResource() {
+        return resourceFromAttributes({
+            [ATTR_SERVICE_NAME]: defaultServiceName(),
+            [ATTR_TELEMETRY_SDK_LANGUAGE]: SDK_INFO[ATTR_TELEMETRY_SDK_LANGUAGE],
+            [ATTR_TELEMETRY_SDK_NAME]: SDK_INFO[ATTR_TELEMETRY_SDK_NAME],
+            [ATTR_TELEMETRY_SDK_VERSION]: SDK_INFO[ATTR_TELEMETRY_SDK_VERSION],
+        });
+    }
+
+    /*
+     * Copyright The OpenTelemetry Authors
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *      https://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
     // Event name definitions
     const ExceptionEventName = 'exception';
 
@@ -1859,47 +1751,59 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
     /**
      * This class represents a span.
      */
-    class Span {
+    class SpanImpl {
+        // Below properties are included to implement ReadableSpan for export
+        // purposes but are not intended to be written-to directly.
+        _spanContext;
+        kind;
+        parentSpanContext;
+        attributes = {};
+        links = [];
+        events = [];
+        startTime;
+        resource;
+        instrumentationScope;
+        _droppedAttributesCount = 0;
+        _droppedEventsCount = 0;
+        _droppedLinksCount = 0;
+        name;
+        status = {
+            code: traceApi.SpanStatusCode.UNSET,
+        };
+        endTime = [0, 0];
+        _ended = false;
+        _duration = [-1, -1];
+        _spanProcessor;
+        _spanLimits;
+        _attributeValueLengthLimit;
+        _performanceStartTime;
+        _performanceOffset;
+        _startTimeProvided;
         /**
-         * Constructs a new Span instance.
-         *
-         * @deprecated calling Span constructor directly is not supported. Please use tracer.startSpan.
-         * */
-        constructor(parentTracer, context, spanName, spanContext, kind, parentSpanId, links = [], startTime, _deprecatedClock, // keeping this argument even though it is unused to ensure backwards compatibility
-        attributes) {
-            this.attributes = {};
-            this.links = [];
-            this.events = [];
-            this._droppedAttributesCount = 0;
-            this._droppedEventsCount = 0;
-            this._droppedLinksCount = 0;
-            this.status = {
-                code: traceApi.SpanStatusCode.UNSET,
-            };
-            this.endTime = [0, 0];
-            this._ended = false;
-            this._duration = [-1, -1];
-            this.name = spanName;
-            this._spanContext = spanContext;
-            this.parentSpanId = parentSpanId;
-            this.kind = kind;
-            this.links = links;
+         * Constructs a new SpanImpl instance.
+         */
+        constructor(opts) {
             const now = Date.now();
+            this._spanContext = opts.spanContext;
             this._performanceStartTime = otperformance.now();
             this._performanceOffset =
                 now - (this._performanceStartTime + getTimeOrigin());
-            this._startTimeProvided = startTime != null;
-            this.startTime = this._getTime(startTime !== null && startTime !== undefined ? startTime : now);
-            this.resource = parentTracer.resource;
-            this.instrumentationLibrary = parentTracer.instrumentationLibrary;
-            this._spanLimits = parentTracer.getSpanLimits();
+            this._startTimeProvided = opts.startTime != null;
+            this._spanLimits = opts.spanLimits;
             this._attributeValueLengthLimit =
                 this._spanLimits.attributeValueLengthLimit || 0;
-            if (attributes != null) {
-                this.setAttributes(attributes);
+            this._spanProcessor = opts.spanProcessor;
+            this.name = opts.name;
+            this.parentSpanContext = opts.parentSpanContext;
+            this.kind = opts.kind;
+            this.links = opts.links || [];
+            this.startTime = this._getTime(opts.startTime ?? now);
+            this.resource = opts.resource;
+            this.instrumentationScope = opts.scope;
+            if (opts.attributes != null) {
+                this.setAttributes(opts.attributes);
             }
-            this._spanProcessor = parentTracer.getActiveSpanProcessor();
-            this._spanProcessor.onStart(this, context);
+            this._spanProcessor.onStart(this, opts.context);
         }
         spanContext() {
             return this._spanContext;
@@ -1915,8 +1819,9 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
                 traceApi.diag.warn(`Invalid attribute value set for key: ${key}`);
                 return this;
             }
-            if (Object.keys(this.attributes).length >=
-                this._spanLimits.attributeCountLimit &&
+            const { attributeCountLimit } = this._spanLimits;
+            if (attributeCountLimit !== undefined &&
+                Object.keys(this.attributes).length >= attributeCountLimit &&
                 !Object.prototype.hasOwnProperty.call(this.attributes, key)) {
                 this._droppedAttributesCount++;
                 return this;
@@ -1940,12 +1845,14 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
         addEvent(name, attributesOrStartTime, timeStamp) {
             if (this._isSpanEnded())
                 return this;
-            if (this._spanLimits.eventCountLimit === 0) {
+            const { eventCountLimit } = this._spanLimits;
+            if (eventCountLimit === 0) {
                 traceApi.diag.warn('No events allowed.');
                 this._droppedEventsCount++;
                 return this;
             }
-            if (this.events.length >= this._spanLimits.eventCountLimit) {
+            if (eventCountLimit !== undefined &&
+                this.events.length >= eventCountLimit) {
                 if (this._droppedEventsCount === 0) {
                     traceApi.diag.debug('Dropping extra events.');
                 }
@@ -1978,7 +1885,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
         setStatus(status) {
             if (this._isSpanEnded())
                 return this;
-            this.status = Object.assign({}, status);
+            this.status = { ...status };
             // When using try-catch, the caught "error" is of type `any`. When then assigning `any` to `status.message`,
             // TypeScript will not error. While this can happen during use of any API, it is more common on Span#setStatus()
             // as it's likely used in a catch-block. Therefore, we validate if `status.message` is actually a string, null, or
@@ -2084,7 +1991,8 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
         }
         _isSpanEnded() {
             if (this._ended) {
-                traceApi.diag.warn(`Can not execute the operation on ended Span {traceId: ${this._spanContext.traceId}, spanId: ${this._spanContext.spanId}}`);
+                const error = new Error(`Operation attempted on ended Span {traceId: ${this._spanContext.traceId}, spanId: ${this._spanContext.spanId}}`);
+                traceApi.diag.warn(`Cannot execute the operation on ended Span {traceId: ${this._spanContext.traceId}, spanId: ${this._spanContext.spanId}}`, error);
             }
             return this._ended;
         }
@@ -2242,21 +2150,25 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * or delegates to `delegateSampler` for root spans.
      */
     class ParentBasedSampler {
+        _root;
+        _remoteParentSampled;
+        _remoteParentNotSampled;
+        _localParentSampled;
+        _localParentNotSampled;
         constructor(config) {
-            var _a, _b, _c, _d;
             this._root = config.root;
             if (!this._root) {
                 globalErrorHandler(new Error('ParentBasedSampler must have a root sampler configured'));
                 this._root = new AlwaysOnSampler();
             }
             this._remoteParentSampled =
-                (_a = config.remoteParentSampled) !== null && _a !== undefined ? _a : new AlwaysOnSampler();
+                config.remoteParentSampled ?? new AlwaysOnSampler();
             this._remoteParentNotSampled =
-                (_b = config.remoteParentNotSampled) !== null && _b !== undefined ? _b : new AlwaysOffSampler();
+                config.remoteParentNotSampled ?? new AlwaysOffSampler();
             this._localParentSampled =
-                (_c = config.localParentSampled) !== null && _c !== undefined ? _c : new AlwaysOnSampler();
+                config.localParentSampled ?? new AlwaysOnSampler();
             this._localParentNotSampled =
-                (_d = config.localParentNotSampled) !== null && _d !== undefined ? _d : new AlwaysOffSampler();
+                config.localParentNotSampled ?? new AlwaysOffSampler();
         }
         shouldSample(context, traceId, spanName, spanKind, attributes, links) {
             const parentContext = traceApi.trace.getSpanContext(context);
@@ -2296,6 +2208,8 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      */
     /** Sampler that samples a given fraction of traces based of trace id deterministically. */
     class TraceIdRatioBasedSampler {
+        _ratio;
+        _upperBound;
         constructor(_ratio = 0) {
             this._ratio = _ratio;
             this._ratio = this._normalize(_ratio);
@@ -2342,7 +2256,6 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    const FALLBACK_OTEL_TRACES_SAMPLER = TracesSamplerValues.AlwaysOn;
     const DEFAULT_RATIO = 1;
     /**
      * Load default configuration. For fields with primitive values, any user-provided
@@ -2353,70 +2266,59 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
     // object needs to be wrapped in this function and called when needed otherwise
     // envs are parsed before tests are ran - causes tests using these envs to fail
     function loadDefaultConfig() {
-        const env = getEnv();
         return {
-            sampler: buildSamplerFromEnv(env),
+            sampler: buildSamplerFromEnv(),
             forceFlushTimeoutMillis: 30000,
             generalLimits: {
-                attributeValueLengthLimit: env.OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT,
-                attributeCountLimit: env.OTEL_ATTRIBUTE_COUNT_LIMIT,
+                attributeValueLengthLimit: Infinity,
+                attributeCountLimit: 128,
             },
             spanLimits: {
-                attributeValueLengthLimit: env.OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT,
-                attributeCountLimit: env.OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT,
-                linkCountLimit: env.OTEL_SPAN_LINK_COUNT_LIMIT,
-                eventCountLimit: env.OTEL_SPAN_EVENT_COUNT_LIMIT,
-                attributePerEventCountLimit: env.OTEL_SPAN_ATTRIBUTE_PER_EVENT_COUNT_LIMIT,
-                attributePerLinkCountLimit: env.OTEL_SPAN_ATTRIBUTE_PER_LINK_COUNT_LIMIT,
+                attributeValueLengthLimit: Infinity,
+                attributeCountLimit: 128,
+                linkCountLimit: 128,
+                eventCountLimit: 128,
+                attributePerEventCountLimit: 128,
+                attributePerLinkCountLimit: 128,
             },
-            mergeResourceWithDefaults: true,
         };
     }
     /**
      * Based on environment, builds a sampler, complies with specification.
-     * @param environment optional, by default uses getEnv(), but allows passing a value to reuse parsed environment
      */
-    function buildSamplerFromEnv(environment = getEnv()) {
-        switch (environment.OTEL_TRACES_SAMPLER) {
-            case TracesSamplerValues.AlwaysOn:
+    function buildSamplerFromEnv() {
+        const sampler = "parentbased_always_on" /* TracesSamplerValues.ParentBasedAlwaysOn */;
+        switch (sampler) {
+            case "always_on" /* TracesSamplerValues.AlwaysOn */:
                 return new AlwaysOnSampler();
-            case TracesSamplerValues.AlwaysOff:
+            case "always_off" /* TracesSamplerValues.AlwaysOff */:
                 return new AlwaysOffSampler();
-            case TracesSamplerValues.ParentBasedAlwaysOn:
+            case "parentbased_always_on" /* TracesSamplerValues.ParentBasedAlwaysOn */:
                 return new ParentBasedSampler({
                     root: new AlwaysOnSampler(),
                 });
-            case TracesSamplerValues.ParentBasedAlwaysOff:
+            case "parentbased_always_off" /* TracesSamplerValues.ParentBasedAlwaysOff */:
                 return new ParentBasedSampler({
                     root: new AlwaysOffSampler(),
                 });
-            case TracesSamplerValues.TraceIdRatio:
-                return new TraceIdRatioBasedSampler(getSamplerProbabilityFromEnv(environment));
-            case TracesSamplerValues.ParentBasedTraceIdRatio:
+            case "traceidratio" /* TracesSamplerValues.TraceIdRatio */:
+                return new TraceIdRatioBasedSampler(getSamplerProbabilityFromEnv());
+            case "parentbased_traceidratio" /* TracesSamplerValues.ParentBasedTraceIdRatio */:
                 return new ParentBasedSampler({
-                    root: new TraceIdRatioBasedSampler(getSamplerProbabilityFromEnv(environment)),
+                    root: new TraceIdRatioBasedSampler(getSamplerProbabilityFromEnv()),
                 });
             default:
-                traceApi.diag.error(`OTEL_TRACES_SAMPLER value "${environment.OTEL_TRACES_SAMPLER} invalid, defaulting to ${FALLBACK_OTEL_TRACES_SAMPLER}".`);
-                return new AlwaysOnSampler();
+                traceApi.diag.error(`OTEL_TRACES_SAMPLER value "${sampler}" invalid, defaulting to "${"parentbased_always_on" /* TracesSamplerValues.ParentBasedAlwaysOn */}".`);
+                return new ParentBasedSampler({
+                    root: new AlwaysOnSampler(),
+                });
         }
     }
-    function getSamplerProbabilityFromEnv(environment) {
-        if (environment.OTEL_TRACES_SAMPLER_ARG === undefined ||
-            environment.OTEL_TRACES_SAMPLER_ARG === '') {
+    function getSamplerProbabilityFromEnv() {
+        {
             traceApi.diag.error(`OTEL_TRACES_SAMPLER_ARG is blank, defaulting to ${DEFAULT_RATIO}.`);
             return DEFAULT_RATIO;
         }
-        const probability = Number(environment.OTEL_TRACES_SAMPLER_ARG);
-        if (isNaN(probability)) {
-            traceApi.diag.error(`OTEL_TRACES_SAMPLER_ARG=${environment.OTEL_TRACES_SAMPLER_ARG} was given, but it is invalid, defaulting to ${DEFAULT_RATIO}.`);
-            return DEFAULT_RATIO;
-        }
-        if (probability < 0 || probability > 1) {
-            traceApi.diag.error(`OTEL_TRACES_SAMPLER_ARG=${environment.OTEL_TRACES_SAMPLER_ARG} was given, but it is out of range ([0..1]), defaulting to ${DEFAULT_RATIO}.`);
-            return DEFAULT_RATIO;
-        }
-        return probability;
     }
 
     /*
@@ -2434,6 +2336,8 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
+    const DEFAULT_ATTRIBUTE_COUNT_LIMIT = 128;
+    const DEFAULT_ATTRIBUTE_VALUE_LENGTH_LIMIT = Infinity;
     /**
      * Function to merge Default configuration (as specified in './config') with
      * user provided configurations.
@@ -2454,19 +2358,25 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * @param userConfig User provided tracer configuration
      */
     function reconfigureLimits(userConfig) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
         const spanLimits = Object.assign({}, userConfig.spanLimits);
-        const parsedEnvConfig = getEnvWithoutDefaults();
         /**
          * Reassign span attribute count limit to use first non null value defined by user or use default value
          */
         spanLimits.attributeCountLimit =
-            (_f = (_e = (_d = (_b = (_a = userConfig.spanLimits) === null || _a === undefined ? undefined : _a.attributeCountLimit) !== null && _b !== undefined ? _b : (_c = userConfig.generalLimits) === null || _c === undefined ? undefined : _c.attributeCountLimit) !== null && _d !== undefined ? _d : parsedEnvConfig.OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT) !== null && _e !== undefined ? _e : parsedEnvConfig.OTEL_ATTRIBUTE_COUNT_LIMIT) !== null && _f !== undefined ? _f : DEFAULT_ATTRIBUTE_COUNT_LIMIT;
+            userConfig.spanLimits?.attributeCountLimit ??
+                userConfig.generalLimits?.attributeCountLimit ??
+                getNumberFromEnv() ??
+                getNumberFromEnv() ??
+                DEFAULT_ATTRIBUTE_COUNT_LIMIT;
         /**
          * Reassign span attribute value length limit to use first non null value defined by user or use default value
          */
         spanLimits.attributeValueLengthLimit =
-            (_m = (_l = (_k = (_h = (_g = userConfig.spanLimits) === null || _g === undefined ? undefined : _g.attributeValueLengthLimit) !== null && _h !== undefined ? _h : (_j = userConfig.generalLimits) === null || _j === undefined ? undefined : _j.attributeValueLengthLimit) !== null && _k !== undefined ? _k : parsedEnvConfig.OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT) !== null && _l !== undefined ? _l : parsedEnvConfig.OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT) !== null && _m !== undefined ? _m : DEFAULT_ATTRIBUTE_VALUE_LENGTH_LIMIT;
+            userConfig.spanLimits?.attributeValueLengthLimit ??
+                userConfig.generalLimits?.attributeValueLengthLimit ??
+                getNumberFromEnv() ??
+                getNumberFromEnv() ??
+                DEFAULT_ATTRIBUTE_VALUE_LENGTH_LIMIT;
         return Object.assign({}, userConfig, { spanLimits });
     }
 
@@ -2490,28 +2400,34 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * the SDK then pushes them to the exporter pipeline.
      */
     class BatchSpanProcessorBase {
+        _exporter;
+        _maxExportBatchSize;
+        _maxQueueSize;
+        _scheduledDelayMillis;
+        _exportTimeoutMillis;
+        _isExporting = false;
+        _finishedSpans = [];
+        _timer;
+        _shutdownOnce;
+        _droppedSpansCount = 0;
         constructor(_exporter, config) {
             this._exporter = _exporter;
-            this._isExporting = false;
-            this._finishedSpans = [];
-            this._droppedSpansCount = 0;
-            const env = getEnv();
             this._maxExportBatchSize =
-                typeof (config === null || config === undefined ? undefined : config.maxExportBatchSize) === 'number'
+                typeof config?.maxExportBatchSize === 'number'
                     ? config.maxExportBatchSize
-                    : env.OTEL_BSP_MAX_EXPORT_BATCH_SIZE;
+                    : (512);
             this._maxQueueSize =
-                typeof (config === null || config === undefined ? undefined : config.maxQueueSize) === 'number'
+                typeof config?.maxQueueSize === 'number'
                     ? config.maxQueueSize
-                    : env.OTEL_BSP_MAX_QUEUE_SIZE;
+                    : (2048);
             this._scheduledDelayMillis =
-                typeof (config === null || config === undefined ? undefined : config.scheduledDelayMillis) === 'number'
+                typeof config?.scheduledDelayMillis === 'number'
                     ? config.scheduledDelayMillis
-                    : env.OTEL_BSP_SCHEDULE_DELAY;
+                    : (5000);
             this._exportTimeoutMillis =
-                typeof (config === null || config === undefined ? undefined : config.exportTimeoutMillis) === 'number'
+                typeof config?.exportTimeoutMillis === 'number'
                     ? config.exportTimeoutMillis
-                    : env.OTEL_BSP_EXPORT_TIMEOUT;
+                    : (30000);
             this._shutdownOnce = new BindOnceFuture(this._shutdown, this);
             if (this._maxExportBatchSize > this._maxQueueSize) {
                 traceApi.diag.warn('BatchSpanProcessor: maxExportBatchSize must be smaller or equal to maxQueueSize, setting maxExportBatchSize to match maxQueueSize');
@@ -2612,13 +2528,13 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
                         spans = this._finishedSpans.splice(0, this._maxExportBatchSize);
                     }
                     const doExport = () => this._exporter.export(spans, result => {
-                        var _a;
                         clearTimeout(timer);
                         if (result.code === ExportResultCode.SUCCESS) {
                             resolve();
                         }
                         else {
-                            reject((_a = result.error) !== null && _a !== undefined ? _a : new Error('BatchSpanProcessor: span export failed'));
+                            reject(result.error ??
+                                new Error('BatchSpanProcessor: span export failed'));
                         }
                     });
                     let pendingResources = null;
@@ -2626,7 +2542,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
                         const span = spans[i];
                         if (span.resource.asyncAttributesPending &&
                             span.resource.waitForAsyncAttributes) {
-                            pendingResources !== null && pendingResources !== undefined ? pendingResources : (pendingResources = []);
+                            pendingResources ??= [];
                             pendingResources.push(span.resource.waitForAsyncAttributes());
                         }
                     }
@@ -2694,12 +2610,14 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * limitations under the License.
      */
     class BatchSpanProcessor extends BatchSpanProcessorBase {
+        _visibilityChangeListener;
+        _pageHideListener;
         constructor(_exporter, config) {
             super(_exporter, config);
             this.onInit(config);
         }
         onInit(config) {
-            if ((config === null || config === undefined ? undefined : config.disableAutoFlushOnDocumentHide) !== true &&
+            if (config?.disableAutoFlushOnDocumentHide !== true &&
                 typeof document !== 'undefined') {
                 this._visibilityChangeListener = () => {
                     if (document.visibilityState === 'hidden') {
@@ -2748,18 +2666,16 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
     const SPAN_ID_BYTES = 8;
     const TRACE_ID_BYTES = 16;
     class RandomIdGenerator {
-        constructor() {
-            /**
-             * Returns a random 16-byte trace ID formatted/encoded as a 32 lowercase hex
-             * characters corresponding to 128 bits.
-             */
-            this.generateTraceId = getIdGenerator(TRACE_ID_BYTES);
-            /**
-             * Returns a random 8-byte span ID formatted/encoded as a 16 lowercase hex
-             * characters corresponding to 64 bits.
-             */
-            this.generateSpanId = getIdGenerator(SPAN_ID_BYTES);
-        }
+        /**
+         * Returns a random 16-byte trace ID formatted/encoded as a 32 lowercase hex
+         * characters corresponding to 128 bits.
+         */
+        generateTraceId = getIdGenerator(TRACE_ID_BYTES);
+        /**
+         * Returns a random 8-byte span ID formatted/encoded as a 16 lowercase hex
+         * characters corresponding to 64 bits.
+         */
+        generateSpanId = getIdGenerator(SPAN_ID_BYTES);
     }
     const SHARED_CHAR_CODES_ARRAY = Array(32);
     function getIdGenerator(bytes) {
@@ -2794,25 +2710,31 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * This class represents a basic tracer.
      */
     class Tracer {
+        _sampler;
+        _generalLimits;
+        _spanLimits;
+        _idGenerator;
+        instrumentationScope;
+        _resource;
+        _spanProcessor;
         /**
          * Constructs a new Tracer instance.
          */
-        constructor(instrumentationLibrary, config, _tracerProvider) {
-            this._tracerProvider = _tracerProvider;
+        constructor(instrumentationScope, config, resource, spanProcessor) {
             const localConfig = mergeConfig(config);
             this._sampler = localConfig.sampler;
             this._generalLimits = localConfig.generalLimits;
             this._spanLimits = localConfig.spanLimits;
             this._idGenerator = config.idGenerator || new RandomIdGenerator();
-            this.resource = _tracerProvider.resource;
-            this.instrumentationLibrary = instrumentationLibrary;
+            this._resource = resource;
+            this._spanProcessor = spanProcessor;
+            this.instrumentationScope = instrumentationScope;
         }
         /**
          * Starts a new Span or returns the default NoopSpan based on the sampling
          * decision.
          */
         startSpan(name, options = {}, context = traceApi.context.active()) {
-            var _a, _b, _c;
             // remove span from context in case a root span is requested via options
             if (options.root) {
                 context = traceApi.trace.deleteSpan(context);
@@ -2823,11 +2745,11 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
                 const nonRecordingSpan = traceApi.trace.wrapSpanContext(traceApi.INVALID_SPAN_CONTEXT);
                 return nonRecordingSpan;
             }
-            const parentSpanContext = parentSpan === null || parentSpan === undefined ? undefined : parentSpan.spanContext();
+            const parentSpanContext = parentSpan?.spanContext();
             const spanId = this._idGenerator.generateSpanId();
+            let validParentSpanContext;
             let traceId;
             let traceState;
-            let parentSpanId;
             if (!parentSpanContext ||
                 !traceApi.trace.isSpanContextValid(parentSpanContext)) {
                 // New root span.
@@ -2837,10 +2759,10 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
                 // New child span.
                 traceId = parentSpanContext.traceId;
                 traceState = parentSpanContext.traceState;
-                parentSpanId = parentSpanContext.spanId;
+                validParentSpanContext = parentSpanContext;
             }
-            const spanKind = (_a = options.kind) !== null && _a !== undefined ? _a : traceApi.SpanKind.INTERNAL;
-            const links = ((_b = options.links) !== null && _b !== undefined ? _b : []).map(link => {
+            const spanKind = options.kind ?? traceApi.SpanKind.INTERNAL;
+            const links = (options.links ?? []).map(link => {
                 return {
                     context: link.context,
                     attributes: sanitizeAttributes(link.attributes),
@@ -2849,7 +2771,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
             const attributes = sanitizeAttributes(options.attributes);
             // make sampling decision
             const samplingResult = this._sampler.shouldSample(context, traceId, name, spanKind, attributes, links);
-            traceState = (_c = samplingResult.traceState) !== null && _c !== undefined ? _c : traceState;
+            traceState = samplingResult.traceState ?? traceState;
             const traceFlags = samplingResult.decision === traceApi.SamplingDecision.RECORD_AND_SAMPLED
                 ? traceApi.TraceFlags.SAMPLED
                 : traceApi.TraceFlags.NONE;
@@ -2862,7 +2784,20 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
             // Set initial span attributes. The attributes object may have been mutated
             // by the sampler, so we sanitize the merged attributes before setting them.
             const initAttributes = sanitizeAttributes(Object.assign(attributes, samplingResult.attributes));
-            const span = new Span(this, context, name, spanContext, spanKind, parentSpanId, links, options.startTime, undefined, initAttributes);
+            const span = new SpanImpl({
+                resource: this._resource,
+                scope: this.instrumentationScope,
+                context,
+                spanContext,
+                name,
+                kind: spanKind,
+                links,
+                parentSpanContext: validParentSpanContext,
+                attributes: initAttributes,
+                startTime: options.startTime,
+                spanProcessor: this._spanProcessor,
+                spanLimits: this._spanLimits,
+            });
             return span;
         }
         startActiveSpan(name, arg2, arg3, arg4) {
@@ -2884,7 +2819,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
                 ctx = arg3;
                 fn = arg4;
             }
-            const parentContext = ctx !== null && ctx !== undefined ? ctx : traceApi.context.active();
+            const parentContext = ctx ?? traceApi.context.active();
             const span = this.startSpan(name, opts, parentContext);
             const contextWithSpanSet = traceApi.trace.setSpan(parentContext, span);
             return traceApi.context.with(contextWithSpanSet, fn, undefined, span);
@@ -2897,134 +2832,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
         getSpanLimits() {
             return this._spanLimits;
         }
-        getActiveSpanProcessor() {
-            return this._tracerProvider.getActiveSpanProcessor();
-        }
     }
-
-    /*
-     * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     */
-    function defaultServiceName() {
-        return 'unknown_service';
-    }
-
-    /*
-     * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     */
-    /**
-     * A Resource describes the entity for which a signals (metrics or trace) are
-     * collected.
-     */
-    class Resource {
-        constructor(
-        /**
-         * A dictionary of attributes with string keys and values that provide
-         * information about the entity as numbers, strings or booleans
-         * TODO: Consider to add check/validation on attributes.
-         */
-        attributes, asyncAttributesPromise) {
-            var _a;
-            this._attributes = attributes;
-            this.asyncAttributesPending = asyncAttributesPromise != null;
-            this._syncAttributes = (_a = this._attributes) !== null && _a !== undefined ? _a : {};
-            this._asyncAttributesPromise = asyncAttributesPromise === null || asyncAttributesPromise === undefined ? undefined : asyncAttributesPromise.then(asyncAttributes => {
-                this._attributes = Object.assign({}, this._attributes, asyncAttributes);
-                this.asyncAttributesPending = false;
-                return asyncAttributes;
-            }, err => {
-                traceApi.diag.debug("a resource's async attributes promise rejected: %s", err);
-                this.asyncAttributesPending = false;
-                return {};
-            });
-        }
-        /**
-         * Returns an empty Resource
-         */
-        static empty() {
-            return Resource.EMPTY;
-        }
-        /**
-         * Returns a Resource that identifies the SDK in use.
-         */
-        static default() {
-            return new Resource({
-                [SEMRESATTRS_SERVICE_NAME]: defaultServiceName(),
-                [SEMRESATTRS_TELEMETRY_SDK_LANGUAGE]: SDK_INFO[SEMRESATTRS_TELEMETRY_SDK_LANGUAGE],
-                [SEMRESATTRS_TELEMETRY_SDK_NAME]: SDK_INFO[SEMRESATTRS_TELEMETRY_SDK_NAME],
-                [SEMRESATTRS_TELEMETRY_SDK_VERSION]: SDK_INFO[SEMRESATTRS_TELEMETRY_SDK_VERSION],
-            });
-        }
-        get attributes() {
-            var _a;
-            if (this.asyncAttributesPending) {
-                traceApi.diag.error('Accessing resource attributes before async attributes settled');
-            }
-            return (_a = this._attributes) !== null && _a !== undefined ? _a : {};
-        }
-        /**
-         * Returns a promise that will never be rejected. Resolves when all async attributes have finished being added to
-         * this Resource's attributes. This is useful in exporters to block until resource detection
-         * has finished.
-         */
-        async waitForAsyncAttributes() {
-            if (this.asyncAttributesPending) {
-                await this._asyncAttributesPromise;
-            }
-        }
-        /**
-         * Returns a new, merged {@link Resource} by merging the current Resource
-         * with the other Resource. In case of a collision, other Resource takes
-         * precedence.
-         *
-         * @param other the Resource that will be merged with this.
-         * @returns the newly merged Resource.
-         */
-        merge(other) {
-            var _a;
-            if (!other)
-                return this;
-            // SpanAttributes from other resource overwrite attributes from this resource.
-            const mergedSyncAttributes = Object.assign(Object.assign({}, this._syncAttributes), ((_a = other._syncAttributes) !== null && _a !== undefined ? _a : other.attributes));
-            if (!this._asyncAttributesPromise &&
-                !other._asyncAttributesPromise) {
-                return new Resource(mergedSyncAttributes);
-            }
-            const mergedAttributesPromise = Promise.all([
-                this._asyncAttributesPromise,
-                other._asyncAttributesPromise,
-            ]).then(([thisAsyncAttributes, otherAsyncAttributes]) => {
-                var _a;
-                return Object.assign(Object.assign(Object.assign(Object.assign({}, this._syncAttributes), thisAsyncAttributes), ((_a = other._syncAttributes) !== null && _a !== undefined ? _a : other.attributes)), otherAsyncAttributes);
-            });
-            return new Resource(mergedSyncAttributes, mergedAttributesPromise);
-        }
-    }
-    Resource.EMPTY = new Resource({});
 
     /*
      * Copyright The OpenTelemetry Authors
@@ -3046,6 +2854,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * received events to a list of {@link SpanProcessor}s.
      */
     class MultiSpanProcessor {
+        _spanProcessors;
         constructor(_spanProcessors) {
             this._spanProcessors = _spanProcessors;
         }
@@ -3103,138 +2912,62 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    /** No-op implementation of SpanProcessor */
-    class NoopSpanProcessor {
-        onStart(_span, _context) { }
-        onEnd(_span) { }
-        shutdown() {
-            return Promise.resolve();
-        }
-        forceFlush() {
-            return Promise.resolve();
-        }
-    }
-
-    /*
-     * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     */
-    exports.ForceFlushState = void 0;
+    var ForceFlushState;
     (function (ForceFlushState) {
         ForceFlushState[ForceFlushState["resolved"] = 0] = "resolved";
         ForceFlushState[ForceFlushState["timeout"] = 1] = "timeout";
         ForceFlushState[ForceFlushState["error"] = 2] = "error";
         ForceFlushState[ForceFlushState["unresolved"] = 3] = "unresolved";
-    })(exports.ForceFlushState || (exports.ForceFlushState = {}));
+    })(ForceFlushState || (ForceFlushState = {}));
     /**
      * This class represents a basic tracer provider which platform libraries can extend
      */
     class BasicTracerProvider {
+        _config;
+        _tracers = new Map();
+        _resource;
+        _activeSpanProcessor;
         constructor(config = {}) {
-            var _a, _b;
-            this._registeredSpanProcessors = [];
-            this._tracers = new Map();
             const mergedConfig = merge({}, loadDefaultConfig(), reconfigureLimits(config));
-            this.resource = (_a = mergedConfig.resource) !== null && _a !== undefined ? _a : Resource.empty();
-            if (mergedConfig.mergeResourceWithDefaults) {
-                this.resource = Resource.default().merge(this.resource);
-            }
+            this._resource = mergedConfig.resource ?? defaultResource();
             this._config = Object.assign({}, mergedConfig, {
-                resource: this.resource,
+                resource: this._resource,
             });
-            if ((_b = config.spanProcessors) === null || _b === undefined ? undefined : _b.length) {
-                this._registeredSpanProcessors = [...config.spanProcessors];
-                this.activeSpanProcessor = new MultiSpanProcessor(this._registeredSpanProcessors);
+            const spanProcessors = [];
+            if (config.spanProcessors?.length) {
+                spanProcessors.push(...config.spanProcessors);
             }
-            else {
-                const defaultExporter = this._buildExporterFromEnv();
-                if (defaultExporter !== undefined) {
-                    const batchProcessor = new BatchSpanProcessor(defaultExporter);
-                    this.activeSpanProcessor = batchProcessor;
-                }
-                else {
-                    this.activeSpanProcessor = new NoopSpanProcessor();
-                }
-            }
+            this._activeSpanProcessor = new MultiSpanProcessor(spanProcessors);
         }
         getTracer(name, version, options) {
-            const key = `${name}@${version || ''}:${(options === null || options === undefined ? undefined : options.schemaUrl) || ''}`;
+            const key = `${name}@${version || ''}:${options?.schemaUrl || ''}`;
             if (!this._tracers.has(key)) {
-                this._tracers.set(key, new Tracer({ name, version, schemaUrl: options === null || options === undefined ? undefined : options.schemaUrl }, this._config, this));
+                this._tracers.set(key, new Tracer({ name, version, schemaUrl: options?.schemaUrl }, this._config, this._resource, this._activeSpanProcessor));
             }
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             return this._tracers.get(key);
         }
-        /**
-         * @deprecated please use {@link TracerConfig} spanProcessors property
-         * Adds a new {@link SpanProcessor} to this tracer.
-         * @param spanProcessor the new SpanProcessor to be added.
-         */
-        addSpanProcessor(spanProcessor) {
-            if (this._registeredSpanProcessors.length === 0) {
-                // since we might have enabled by default a batchProcessor, we disable it
-                // before adding the new one
-                this.activeSpanProcessor
-                    .shutdown()
-                    .catch(err => traceApi.diag.error('Error while trying to shutdown current span processor', err));
-            }
-            this._registeredSpanProcessors.push(spanProcessor);
-            this.activeSpanProcessor = new MultiSpanProcessor(this._registeredSpanProcessors);
-        }
-        getActiveSpanProcessor() {
-            return this.activeSpanProcessor;
-        }
-        /**
-         * Register this TracerProvider for use with the OpenTelemetry API.
-         * Undefined values may be replaced with defaults, and
-         * null values will be skipped.
-         *
-         * @param config Configuration object for SDK registration
-         */
-        register(config = {}) {
-            traceApi.trace.setGlobalTracerProvider(this);
-            if (config.propagator === undefined) {
-                config.propagator = this._buildPropagatorFromEnv();
-            }
-            if (config.contextManager) {
-                traceApi.context.setGlobalContextManager(config.contextManager);
-            }
-            if (config.propagator) {
-                traceApi.propagation.setGlobalPropagator(config.propagator);
-            }
-        }
         forceFlush() {
             const timeout = this._config.forceFlushTimeoutMillis;
-            const promises = this._registeredSpanProcessors.map((spanProcessor) => {
+            const promises = this._activeSpanProcessor['_spanProcessors'].map((spanProcessor) => {
                 return new Promise(resolve => {
                     let state;
                     const timeoutInterval = setTimeout(() => {
                         resolve(new Error(`Span processor did not completed within timeout period of ${timeout} ms`));
-                        state = exports.ForceFlushState.timeout;
+                        state = ForceFlushState.timeout;
                     }, timeout);
                     spanProcessor
                         .forceFlush()
                         .then(() => {
                         clearTimeout(timeoutInterval);
-                        if (state !== exports.ForceFlushState.timeout) {
-                            state = exports.ForceFlushState.resolved;
+                        if (state !== ForceFlushState.timeout) {
+                            state = ForceFlushState.resolved;
                             resolve(state);
                         }
                     })
                         .catch(error => {
                         clearTimeout(timeoutInterval);
-                        state = exports.ForceFlushState.error;
+                        state = ForceFlushState.error;
                         resolve(error);
                     });
                 });
@@ -3242,7 +2975,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
             return new Promise((resolve, reject) => {
                 Promise.all(promises)
                     .then(results => {
-                    const errors = results.filter(result => result !== exports.ForceFlushState.resolved);
+                    const errors = results.filter(result => result !== ForceFlushState.resolved);
                     if (errors.length > 0) {
                         reject(errors);
                     }
@@ -3254,67 +2987,9 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
             });
         }
         shutdown() {
-            return this.activeSpanProcessor.shutdown();
-        }
-        /**
-         * TS cannot yet infer the type of this.constructor:
-         * https://github.com/Microsoft/TypeScript/issues/3841#issuecomment-337560146
-         * There is no need to override either of the getters in your child class.
-         * The type of the registered component maps should be the same across all
-         * classes in the inheritance tree.
-         */
-        _getPropagator(name) {
-            var _a;
-            return (_a = this.constructor._registeredPropagators.get(name)) === null || _a === undefined ? undefined : _a();
-        }
-        _getSpanExporter(name) {
-            var _a;
-            return (_a = this.constructor._registeredExporters.get(name)) === null || _a === undefined ? undefined : _a();
-        }
-        _buildPropagatorFromEnv() {
-            // per spec, propagators from env must be deduplicated
-            const uniquePropagatorNames = Array.from(new Set(getEnv().OTEL_PROPAGATORS));
-            const propagators = uniquePropagatorNames.map(name => {
-                const propagator = this._getPropagator(name);
-                if (!propagator) {
-                    traceApi.diag.warn(`Propagator "${name}" requested through environment variable is unavailable.`);
-                }
-                return propagator;
-            });
-            const validPropagators = propagators.reduce((list, item) => {
-                if (item) {
-                    list.push(item);
-                }
-                return list;
-            }, []);
-            if (validPropagators.length === 0) {
-                return;
-            }
-            else if (uniquePropagatorNames.length === 1) {
-                return validPropagators[0];
-            }
-            else {
-                return new CompositePropagator({
-                    propagators: validPropagators,
-                });
-            }
-        }
-        _buildExporterFromEnv() {
-            const exporterName = getEnv().OTEL_TRACES_EXPORTER;
-            if (exporterName === 'none' || exporterName === '')
-                return;
-            const exporter = this._getSpanExporter(exporterName);
-            if (!exporter) {
-                traceApi.diag.error(`Exporter "${exporterName}" requested through environment variable is unavailable.`);
-            }
-            return exporter;
+            return this._activeSpanProcessor.shutdown();
         }
     }
-    BasicTracerProvider._registeredPropagators = new Map([
-        ['tracecontext', () => new W3CTraceContextPropagator()],
-        ['baggage', () => new W3CBaggagePropagator()],
-    ]);
-    BasicTracerProvider._registeredExporters = new Map();
 
     /*
      * Copyright The OpenTelemetry Authors
@@ -3365,15 +3040,14 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
          * @param span
          */
         _exportInfo(span) {
-            var _a;
             return {
                 resource: {
                     attributes: span.resource.attributes,
                 },
-                instrumentationScope: span.instrumentationLibrary,
+                instrumentationScope: span.instrumentationScope,
                 traceId: span.spanContext().traceId,
-                parentId: span.parentSpanId,
-                traceState: (_a = span.spanContext().traceState) === null || _a === undefined ? undefined : _a.serialize(),
+                parentSpanContext: span.parentSpanContext,
+                traceState: span.spanContext().traceState?.serialize(),
                 name: span.name,
                 id: span.spanContext().spanId,
                 kind: span.kind,
@@ -3421,14 +3095,12 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * method.
      */
     class InMemorySpanExporter {
-        constructor() {
-            this._finishedSpans = [];
-            /**
-             * Indicates if the exporter has been "shutdown."
-             * When false, exported spans will not be stored in-memory.
-             */
-            this._stopped = false;
-        }
+        _finishedSpans = [];
+        /**
+         * Indicates if the exporter has been "shutdown."
+         * When false, exported spans will not be stored in-memory.
+         */
+        _stopped = false;
         export(spans, resultCallback) {
             if (this._stopped)
                 return resultCallback({
@@ -3481,53 +3153,42 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * NOTE: This {@link SpanProcessor} exports every ended span individually instead of batching spans together, which causes significant performance overhead with most exporters. For production use, please consider using the {@link BatchSpanProcessor} instead.
      */
     class SimpleSpanProcessor {
+        _exporter;
+        _shutdownOnce;
+        _pendingExports;
         constructor(_exporter) {
             this._exporter = _exporter;
             this._shutdownOnce = new BindOnceFuture(this._shutdown, this);
-            this._unresolvedExports = new Set();
+            this._pendingExports = new Set();
         }
         async forceFlush() {
-            // await unresolved resources before resolving
-            await Promise.all(Array.from(this._unresolvedExports));
+            await Promise.all(Array.from(this._pendingExports));
             if (this._exporter.forceFlush) {
                 await this._exporter.forceFlush();
             }
         }
         onStart(_span, _parentContext) { }
         onEnd(span) {
-            var _a, _b;
             if (this._shutdownOnce.isCalled) {
                 return;
             }
             if ((span.spanContext().traceFlags & traceApi.TraceFlags.SAMPLED) === 0) {
                 return;
             }
-            const doExport = () => internal
-                ._export(this._exporter, [span])
-                .then((result) => {
-                var _a;
-                if (result.code !== ExportResultCode.SUCCESS) {
-                    globalErrorHandler((_a = result.error) !== null && _a !== undefined ? _a : new Error(`SimpleSpanProcessor: span export failed (status ${result})`));
-                }
-            })
-                .catch(error => {
-                globalErrorHandler(error);
-            });
-            // Avoid scheduling a promise to make the behavior more predictable and easier to test
+            const pendingExport = this._doExport(span).catch(err => globalErrorHandler(err));
+            // Enqueue this export to the pending list so it can be flushed by the user.
+            this._pendingExports.add(pendingExport);
+            pendingExport.finally(() => this._pendingExports.delete(pendingExport));
+        }
+        async _doExport(span) {
             if (span.resource.asyncAttributesPending) {
-                const exportPromise = (_b = (_a = span.resource).waitForAsyncAttributes) === null || _b === undefined ? undefined : _b.call(_a).then(() => {
-                    if (exportPromise != null) {
-                        this._unresolvedExports.delete(exportPromise);
-                    }
-                    return doExport();
-                }, err => globalErrorHandler(err));
-                // store the unresolved exports
-                if (exportPromise != null) {
-                    this._unresolvedExports.add(exportPromise);
-                }
+                // Ensure resource is fully resolved before exporting.
+                await span.resource.waitForAsyncAttributes?.();
             }
-            else {
-                void doExport();
+            const result = await internal._export(this._exporter, [span]);
+            if (result.code !== ExportResultCode.SUCCESS) {
+                throw (result.error ??
+                    new Error(`SimpleSpanProcessor: span export failed (status ${result})`));
             }
         }
         shutdown() {
@@ -3553,21 +3214,46 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
+    /** No-op implementation of SpanProcessor */
+    class NoopSpanProcessor {
+        onStart(_span, _context) { }
+        onEnd(_span) { }
+        shutdown() {
+            return Promise.resolve();
+        }
+        forceFlush() {
+            return Promise.resolve();
+        }
+    }
+
+    /*
+     * Copyright The OpenTelemetry Authors
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *      https://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
     /**
      * Stack Context Manager for managing the state in web
      * it doesn't fully support the async calls though
      */
     class StackContextManager {
-        constructor() {
-            /**
-             * whether the context manager is enabled or not
-             */
-            this._enabled = false;
-            /**
-             * Keeps the reference to current context
-             */
-            this._currentContext = traceApi.ROOT_CONTEXT;
-        }
+        /**
+         * whether the context manager is enabled or not
+         */
+        _enabled = false;
+        /**
+         * Keeps the reference to current context
+         */
+        _currentContext = traceApi.ROOT_CONTEXT;
         /**
          *
          * @param context
@@ -3663,6 +3349,38 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
+    function setupContextManager(contextManager) {
+        // null means 'do not register'
+        if (contextManager === null) {
+            return;
+        }
+        // undefined means 'register default'
+        if (contextManager === undefined) {
+            const defaultContextManager = new StackContextManager();
+            defaultContextManager.enable();
+            traceApi.context.setGlobalContextManager(defaultContextManager);
+            return;
+        }
+        contextManager.enable();
+        traceApi.context.setGlobalContextManager(contextManager);
+    }
+    function setupPropagator(propagator) {
+        // null means 'do not register'
+        if (propagator === null) {
+            return;
+        }
+        // undefined means 'register default'
+        if (propagator === undefined) {
+            traceApi.propagation.setGlobalPropagator(new CompositePropagator({
+                propagators: [
+                    new W3CTraceContextPropagator(),
+                    new W3CBaggagePropagator(),
+                ],
+            }));
+            return;
+        }
+        traceApi.propagation.setGlobalPropagator(propagator);
+    }
     /**
      * This class represents a web tracer with {@link StackContextManager}
      */
@@ -3673,13 +3391,6 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
          */
         constructor(config = {}) {
             super(config);
-            if (config.contextManager) {
-                throw ('contextManager should be defined in register method not in' +
-                    ' constructor');
-            }
-            if (config.propagator) {
-                throw 'propagator should be defined in register method not in constructor';
-            }
         }
         /**
          * Register this TracerProvider for use with the OpenTelemetry API.
@@ -3689,13 +3400,9 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
          * @param config Configuration object for SDK registration
          */
         register(config = {}) {
-            if (config.contextManager === undefined) {
-                config.contextManager = new StackContextManager();
-            }
-            if (config.contextManager) {
-                config.contextManager.enable();
-            }
-            super.register(config);
+            traceApi.trace.setGlobalTracerProvider(this);
+            setupPropagator(config.propagator);
+            setupContextManager(config.contextManager);
         }
     }
 
@@ -3736,6 +3443,7 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
         PerformanceTimingNames["RESPONSE_END"] = "responseEnd";
         PerformanceTimingNames["RESPONSE_START"] = "responseStart";
         PerformanceTimingNames["SECURE_CONNECTION_START"] = "secureConnectionStart";
+        PerformanceTimingNames["START_TIME"] = "startTime";
         PerformanceTimingNames["UNLOAD_EVENT_END"] = "unloadEventEnd";
         PerformanceTimingNames["UNLOAD_EVENT_START"] = "unloadEventStart";
     })(exports.PerformanceTimingNames || (exports.PerformanceTimingNames = {}));
@@ -3768,7 +3476,6 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * @param obj
      * @param key
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function hasKey(obj, key) {
         return key in obj;
     }
@@ -3777,24 +3484,13 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * @param span
      * @param performanceName name of performance entry for time start
      * @param entries
-     * @param refPerfName name of performance entry to use for reference
+     * @param ignoreZeros
      */
-    function addSpanNetworkEvent(span, performanceName, entries, refPerfName) {
-        let perfTime = undefined;
-        let refTime = undefined;
+    function addSpanNetworkEvent(span, performanceName, entries, ignoreZeros = true) {
         if (hasKey(entries, performanceName) &&
-            typeof entries[performanceName] === 'number') {
-            perfTime = entries[performanceName];
-        }
-        const refName = refPerfName || exports.PerformanceTimingNames.FETCH_START;
-        // Use a reference time which is the earliest possible value so that the performance timings that are earlier should not be added
-        // using FETCH START time in case no reference is provided
-        if (hasKey(entries, refName) && typeof entries[refName] === 'number') {
-            refTime = entries[refName];
-        }
-        if (perfTime !== undefined && refTime !== undefined && perfTime >= refTime) {
-            span.addEvent(performanceName, perfTime);
-            return span;
+            typeof entries[performanceName] === 'number' &&
+            !(ignoreZeros && entries[performanceName] === 0)) {
+            return span.addEvent(performanceName, entries[performanceName]);
         }
         return undefined;
     }
@@ -3803,21 +3499,22 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
      * @param span
      * @param resource
      * @param ignoreNetworkEvents
+     * @param ignoreZeros
      */
-    function addSpanNetworkEvents(span, resource, ignoreNetworkEvents = false) {
+    function addSpanNetworkEvents(span, resource, ignoreNetworkEvents = false, ignoreZeros) {
+        if (ignoreZeros === undefined) {
+            ignoreZeros = resource[exports.PerformanceTimingNames.START_TIME] !== 0;
+        }
         if (!ignoreNetworkEvents) {
-            addSpanNetworkEvent(span, exports.PerformanceTimingNames.FETCH_START, resource);
-            addSpanNetworkEvent(span, exports.PerformanceTimingNames.DOMAIN_LOOKUP_START, resource);
-            addSpanNetworkEvent(span, exports.PerformanceTimingNames.DOMAIN_LOOKUP_END, resource);
-            addSpanNetworkEvent(span, exports.PerformanceTimingNames.CONNECT_START, resource);
-            if (hasKey(resource, 'name') &&
-                resource['name'].startsWith('https:')) {
-                addSpanNetworkEvent(span, exports.PerformanceTimingNames.SECURE_CONNECTION_START, resource);
-            }
-            addSpanNetworkEvent(span, exports.PerformanceTimingNames.CONNECT_END, resource);
-            addSpanNetworkEvent(span, exports.PerformanceTimingNames.REQUEST_START, resource);
-            addSpanNetworkEvent(span, exports.PerformanceTimingNames.RESPONSE_START, resource);
-            addSpanNetworkEvent(span, exports.PerformanceTimingNames.RESPONSE_END, resource);
+            addSpanNetworkEvent(span, exports.PerformanceTimingNames.FETCH_START, resource, ignoreZeros);
+            addSpanNetworkEvent(span, exports.PerformanceTimingNames.DOMAIN_LOOKUP_START, resource, ignoreZeros);
+            addSpanNetworkEvent(span, exports.PerformanceTimingNames.DOMAIN_LOOKUP_END, resource, ignoreZeros);
+            addSpanNetworkEvent(span, exports.PerformanceTimingNames.CONNECT_START, resource, ignoreZeros);
+            addSpanNetworkEvent(span, exports.PerformanceTimingNames.SECURE_CONNECTION_START, resource, ignoreZeros);
+            addSpanNetworkEvent(span, exports.PerformanceTimingNames.CONNECT_END, resource, ignoreZeros);
+            addSpanNetworkEvent(span, exports.PerformanceTimingNames.REQUEST_START, resource, ignoreZeros);
+            addSpanNetworkEvent(span, exports.PerformanceTimingNames.RESPONSE_START, resource, ignoreZeros);
+            addSpanNetworkEvent(span, exports.PerformanceTimingNames.RESPONSE_END, resource, ignoreZeros);
         }
         const encodedLength = resource[exports.PerformanceTimingNames.ENCODED_BODY_SIZE];
         if (encodedLength !== undefined) {
@@ -4087,10 +3784,8 @@ sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/trace-api'], (functi
     exports.ParentBasedSampler = ParentBasedSampler;
     exports.RandomIdGenerator = RandomIdGenerator;
     exports.SimpleSpanProcessor = SimpleSpanProcessor;
-    exports.Span = Span;
     exports.StackContextManager = StackContextManager;
     exports.TraceIdRatioBasedSampler = TraceIdRatioBasedSampler;
-    exports.Tracer = Tracer;
     exports.WebTracerProvider = WebTracerProvider;
     exports.__esModule = __esModule;
     exports.addSpanNetworkEvent = addSpanNetworkEvent;

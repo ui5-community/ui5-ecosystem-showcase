@@ -22,7 +22,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents', 'ui5/ecosystem/
 
   const l="scroll",p=webcomponents.l$1()?"touchend":"mouseup";class v extends webcomponents.i{constructor(t){super();this.supportsTouch=webcomponents.l$1();this.containerComponent=t,this.mouseMove=this.ontouchmove.bind(this),this.mouseUp=this.ontouchend.bind(this),this.touchStart=this.ontouchstart.bind(this),this.supportsTouch=webcomponents.l$1(),this.cachedValue={dragX:0,dragY:0},this.startX=0,this.startY=0,this.supportsTouch?(t.addEventListener("touchstart",this.touchStart,{passive:true}),t.addEventListener("touchmove",this.mouseMove,{passive:true}),t.addEventListener("touchend",this.mouseUp,{passive:true})):t.addEventListener("mousedown",this.touchStart,{passive:true});}set scrollContainer(t){this._container=t;}get scrollContainer(){return this._container}async scrollTo(t,e,s=0,o=0){let r=this.scrollContainer.clientHeight>0&&this.scrollContainer.clientWidth>0;for(;!r&&s>0;)await new Promise(n=>{setTimeout(()=>{r=this.scrollContainer.clientHeight>0&&this.scrollContainer.clientWidth>0,s--,n();},o);});this._container.scrollLeft=t,this._container.scrollTop=e;}move(t,e,s){if(s){this._container.scrollLeft+=t,this._container.scrollTop+=e;return}if(this._container)return n$2(this._container,t,e)}getScrollLeft(){return this._container.scrollLeft}getScrollTop(){return this._container.scrollTop}_isTouchInside(t){let e=null;this.supportsTouch&&t instanceof TouchEvent&&(e=t.touches[0]);const s=this._container.getBoundingClientRect(),o=this.supportsTouch?e.clientX:t.x,r=this.supportsTouch?e.clientY:t.y;return o>=s.left&&o<=s.right&&r>=s.top&&r<=s.bottom}ontouchstart(t){let e=null;this.supportsTouch&&t instanceof TouchEvent&&(e=t.touches[0]),e?(this.startX=e.pageX,this.startY=e.pageY):(document.addEventListener("mouseup",this.mouseUp,{passive:true}),document.addEventListener("mousemove",this.mouseMove,{passive:true})),e&&(this._prevDragX=e.pageX,this._prevDragY=e.pageY),t instanceof MouseEvent&&(this._prevDragX=t.x,this._prevDragY=t.y),this._canScroll=this._isTouchInside(t);}ontouchmove(t){if(!this._canScroll)return;const e=this._container,s=this.supportsTouch?t.touches[0]:null,o=this.supportsTouch?s.pageX:t.x,r=this.supportsTouch?s.pageY:t.y;e.scrollLeft+=this._prevDragX-o,e.scrollTop+=this._prevDragY-r,this.fireEvent(l,{isLeft:o>this._prevDragX,isRight:o<this._prevDragX}),this.cachedValue.dragX=this._prevDragX,this.cachedValue.dragY=this._prevDragY,this._prevDragX=o,this._prevDragY=r;}ontouchend(t){if(this.supportsTouch){const h=Math.abs(t.changedTouches[0].pageX-this.startX),c=Math.abs(t.changedTouches[0].pageY-this.startY);if(h<10&&c<10)return}if(!this._canScroll)return;const e=this._container,s=this.supportsTouch?t.changedTouches[0].pageX:t.x,o=this.supportsTouch?t.changedTouches[0].pageY:t.y;e.scrollLeft+=this._prevDragX-s,e.scrollTop+=this._prevDragY-o;const n=s===this._prevDragX?this.cachedValue.dragX:s;this.fireEvent(p,{isLeft:n<this._prevDragX,isRight:n>this._prevDragX}),this._prevDragX=s,this._prevDragY=o,this.supportsTouch||(document.removeEventListener("mousemove",this.mouseMove),document.removeEventListener("mouseup",this.mouseUp));}}
 
-  const n=new webcomponents.i,t="directionChange",a=e=>{n.attachEvent(t,e);},c=e=>{n.detachEvent(t,e);},o=()=>n.fireEvent(t,undefined);
+  const n=new webcomponents.i,t="directionChange",a=e=>{n.attachEvent(t,e);},c=e=>{n.detachEvent(t,e);},o=()=>n.fireEvent(t,void 0);
 
   const i=async()=>{const e=o();await Promise.all(e),await webcomponents.C({rtlAware:true});};
 
@@ -106,7 +106,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents', 'ui5/ecosystem/
     RegisteredIconCollection: webcomponents.t,
     ResizeHandler: f,
     ScrollEnablement: v,
-    UI5Element: webcomponents.S,
+    UI5Element: webcomponents.b,
     URLListValidator: webcomponents.oURLListValidator,
     addCustomCSS: webcomponents.g,
     applyDirection: i,
@@ -116,7 +116,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents', 'ui5/ecosystem/
     attachThemeLoaded: webcomponents.o,
     cancelRender: webcomponents.h,
     customElement: Keys.m,
-    default: webcomponents.S,
+    default: webcomponents.b,
     detachDirectionChange: c,
     detachLanguageChange: webcomponents.r$1,
     detachThemeLoaded: webcomponents.n,
@@ -130,7 +130,7 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents', 'ui5/ecosystem/
     getDefaultTheme: webcomponents.g$1,
     getEffectiveDir: webcomponents.r$2,
     getEffectiveIconCollection: webcomponents.i$3,
-    getEffectiveScopingSuffixForTag: webcomponents.p,
+    getEffectiveScopingSuffixForTag: webcomponents.g$2,
     getFetchDefaultLanguage: webcomponents.c$2,
     getFirstDayOfWeek: webcomponents.n$1,
     getI18nBundle: webcomponents.f,
@@ -139,10 +139,10 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents', 'ui5/ecosystem/
     getNoConflict: webcomponents.o$1,
     getTheme: webcomponents.r$3,
     isAndroid: webcomponents.P$1,
-    isChrome: webcomponents.g$2,
+    isChrome: webcomponents.g$3,
     isCombi: webcomponents.m$3,
     isDesktop: webcomponents.f$1,
-    isFirefox: webcomponents.b,
+    isFirefox: webcomponents.b$1,
     isIOS: webcomponents.w,
     isPhone: webcomponents.d$2,
     isSafari: webcomponents.h$1,
@@ -152,20 +152,20 @@ sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents', 'ui5/ecosystem/
     registerI18nLoader: webcomponents.$,
     registerIconLoader: webcomponents.T,
     registerLocaleDataLoader: webcomponents.C$1,
-    registerThemePropertiesLoader: webcomponents.p$1,
+    registerThemePropertiesLoader: webcomponents.p,
     renderDeferred: webcomponents.l$2,
     renderFinished: webcomponents.f$2,
     renderImmediately: webcomponents.c$3,
     sanitizeHTML: fnSanitizeHTML,
     scroll: n$2,
     setAnimationMode: webcomponents.m$4,
-    setCustomElementsScopingRules: webcomponents.a$1,
-    setCustomElementsScopingSuffix: webcomponents.u$1,
+    setCustomElementsScopingRules: webcomponents.p$1,
+    setCustomElementsScopingSuffix: webcomponents.l$3,
     setDefaultIconCollection: webcomponents.e,
     setFetchDefaultLanguage: webcomponents.L,
     setLanguage: webcomponents.s,
     setNoConflict: webcomponents.f$3,
-    setTheme: webcomponents.u$2,
+    setTheme: webcomponents.u$1,
     slideDown: b$2,
     slideUp: u,
     slot: d,

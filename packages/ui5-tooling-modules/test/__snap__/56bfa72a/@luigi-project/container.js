@@ -12,7 +12,7 @@ sap.ui.define([
     "_ui5metadata":
 {
   "name": "@luigi-project/container",
-  "version": "1.5.0",
+  "version": "1.6.0-dev.20250430700",
   "dependencies": [
     "sap.ui.core"
   ],

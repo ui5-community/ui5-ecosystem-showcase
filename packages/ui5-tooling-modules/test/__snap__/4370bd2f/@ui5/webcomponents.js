@@ -16,7 +16,7 @@ sap.ui.define([
     "_ui5metadata":
 {
   "name": "@ui5/webcomponents",
-  "version": "2.7.0",
+  "version": "2.8.0",
   "dependencies": [
     "sap.ui.core"
   ],
@@ -48,6 +48,7 @@ sap.ui.define([
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IconDesign",
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IconMode",
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.InputType",
+    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.InteractiveAreaSize",
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.LinkAccessibleRole",
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.LinkDesign",
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListAccessibleRole",
@@ -178,11 +179,14 @@ sap.ui.define([
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableCell",
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableGrowing",
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableHeaderCell",
+    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableHeaderCellActionAI",
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableHeaderRow",
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableRow",
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableRowAction",
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableRowActionNavigation",
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableSelection",
+    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableSelectionMulti",
+    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableSelectionSingle",
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableVirtualizer",
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Tag",
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Text",
@@ -582,7 +586,7 @@ The last item contains only plain text and is not a link.
     /**
  * The badge is displayed at the top-end corner of the button.
 
-**Note:** It&#x27;s highly recommended to use the OverlayText design mode only in cozy density.
+**Note:** According to design guidance, the OverlayText design mode is best used in cozy density to avoid potential visual issues in compact.
  * @public
  */
     "OverlayText": "OverlayText",
@@ -1120,6 +1124,26 @@ This mode also supports focus and press handling to enhance interactivity.
     "Search": "Search",
   };
   registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.InputType", pkg["InputType"]);
+  /**
+ * Defines the area size around the component that the user can select.
+ * @enum {string}
+ * @public
+ * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.InteractiveAreaSize
+ * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents InteractiveAreaSize
+ */
+  pkg["InteractiveAreaSize"] = {
+    /**
+ * The default target area size (the area taken by the component itself without any extra invisible touch area).
+ * @public
+ */
+    "Normal": "Normal",
+    /**
+ * Enlarged target area size (up to 24px in height) provides users with an enhanced dedicated space to interact with the component.
+ * @public
+ */
+    "Large": "Large",
+  };
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.InteractiveAreaSize", pkg["InteractiveAreaSize"]);
   /**
  * Link accessible roles.
  * @enum {string}

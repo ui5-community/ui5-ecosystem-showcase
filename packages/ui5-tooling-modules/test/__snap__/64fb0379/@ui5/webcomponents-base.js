@@ -17,7 +17,7 @@ sap.ui.define([
     "_ui5metadata":
 {
   "name": "@ui5/webcomponents-base",
-  "version": "2.7.0",
+  "version": "2.8.0",
   "dependencies": [
     "sap.ui.core"
   ],
@@ -27,6 +27,7 @@ sap.ui.define([
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.ItemNavigationBehavior",
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.MovePlacement",
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.NavigationMode",
+    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.SortOrder",
     "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.ValueState"
   ],
   "interfaces": [],
@@ -188,6 +189,31 @@ sap.ui.define([
     "Paging": "Paging",
   };
   registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.NavigationMode", pkg["NavigationMode"]);
+  /**
+ * Defines the sort order.
+ * @enum {string}
+ * @public
+ * @alias ui5.ecosystem.demo.app.thirdparty."@ui5"."webcomponents-base".SortOrder
+ * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents-base SortOrder
+ */
+  pkg["SortOrder"] = {
+    /**
+ * Sorting is not applied.
+ * @public
+ */
+    "None": "None",
+    /**
+ * Sorting is applied in ascending order.
+ * @public
+ */
+    "Ascending": "Ascending",
+    /**
+ * Sorting is applied in descending order.
+ * @public
+ */
+    "Descending": "Descending",
+  };
+  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents-base.SortOrder", pkg["SortOrder"]);
   /**
  * Different types of ValueStates.
  * @enum {string}

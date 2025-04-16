@@ -36,11 +36,11 @@ sap.ui.define([
 /**
  * 
  */
-    "activeFeatureToggleList": {"type":"any[]","mapping":"property"},
+    "activeFeatureToggleList": {"type":"string[]","mapping":"property"},
 /**
  * 
  */
-    "allowRules": {"type":"any[]","mapping":"property"},
+    "allowRules": {"type":"string[]","mapping":"property"},
 /**
  * 
  */
@@ -96,7 +96,7 @@ sap.ui.define([
 /**
  * 
  */
-    "sandboxRules": {"type":"any[]","mapping":"property"},
+    "sandboxRules": {"type":"string[]","mapping":"property"},
 /**
  * 
  */
@@ -171,13 +171,6 @@ sap.ui.define([
  * Event fired when the micro frontend requests to show an alert.
  */
 "showAlertRequest": {
-    "parameters": {
-    }
-},
-/**
- * Event fired when the micro frontend requests to close an alert.
- */
-"closeAlertRequest": {
     "parameters": {
     }
 },
@@ -259,13 +252,6 @@ sap.ui.define([
     }
 },
 /**
- * Event fired when the micro frontend requests to navigate back.
- */
-"navigateBackRequest": {
-    "parameters": {
-    }
-},
-/**
  * Event fired when the micro frontend requests the current app route.
  */
 "getCurrentRouteRequest": {
@@ -287,6 +273,13 @@ sap.ui.define([
     }
 },
 /**
+ * Event fired when the micro frontend requests to update the modal settings.
+ */
+"updateModalSettingsRequest": {
+    "parameters": {
+    }
+},
+/**
  * Event fired when the micro frontend requests to check the validity of a path.
  */
 "checkPathExistsRequest": {
@@ -304,13 +297,6 @@ sap.ui.define([
  * Event fired when the micro frontend requests to set the view group data.
  */
 "setViewgroupDataRequest": {
-    "parameters": {
-    }
-},
-/**
- * Event fired when the micro frontend requests to set the document title.
- */
-"setDocumentTitleRequest": {
     "parameters": {
     }
 },
@@ -343,13 +329,6 @@ sap.ui.define([
     }
 },
 /**
- * Event fired when the micro frontend requests to check if the path exists.
- */
-"pathExistsRequest": {
-    "parameters": {
-    }
-},
-/**
  * Event fired when the micro frontend requests to navigate back.
  */
 "goBackRequest": {
@@ -360,6 +339,13 @@ sap.ui.define([
  * Event fired when the micro frontend requests to check if there are any preserved views.
  */
 "hasBackRequest": {
+    "parameters": {
+    }
+},
+/**
+ * Event fired when the micro frontend requests to display the backdrop.
+ */
+"addBackdropRequest": {
     "parameters": {
     }
 },
@@ -397,6 +383,27 @@ sap.ui.define([
  * @function
  */
       "closeAlert",
+/**
+ * 
+ * @public
+ * @name ui5.ecosystem.demo.tsapp.thirdparty."@luigi-project".container.LuigiContainer#notifyAlertClosed
+ * @function
+ */
+      "notifyAlertClosed",
+/**
+ * 
+ * @public
+ * @name ui5.ecosystem.demo.tsapp.thirdparty."@luigi-project".container.LuigiContainer#notifyConfirmationModalClosed
+ * @function
+ */
+      "notifyConfirmationModalClosed",
+/**
+ * 
+ * @public
+ * @name ui5.ecosystem.demo.tsapp.thirdparty."@luigi-project".container.LuigiContainer#updateViewUrl
+ * @function
+ */
+      "updateViewUrl",
 /**
  * 
  * @public

@@ -177,246 +177,228 @@ sap.ui.define((function () { 'use strict';
 		};
 	}
 
-	var isSubsetOf = {};
-
-	var TypeDescriptor = {};
-
-	var hasRequiredTypeDescriptor;
-
-	function requireTypeDescriptor () {
-		if (hasRequiredTypeDescriptor) return TypeDescriptor;
-		hasRequiredTypeDescriptor = 1;
-		Object.defineProperty(TypeDescriptor, "__esModule", { value: true });
-		TypeDescriptor.Type = undefined;
-		const valueTypes = new Set(['boolean', 'number', 'null', 'string', 'undefined']);
-		const referenceTypes = new Set(['array', 'function', 'object', 'symbol']);
-		const detectableTypes = new Set(['boolean', 'function', 'number', 'string', 'symbol']);
-		const typeConstructors = new Set([Boolean, Number, String]);
-		let TypeDescriptor$1 = class TypeDescriptor {
-		    constructor(value) {
-		        this.name = TypeDescriptor.of(value);
-		        this.isValueType = TypeDescriptor.isValueType(value);
-		        this.isReferenceType = TypeDescriptor.isReferenceType(value);
-		        this.isArray = TypeDescriptor.isArray(value);
-		        this.isBoolean = TypeDescriptor.isBoolean(value);
-		        this.isFunction = TypeDescriptor.isFunction(value);
-		        this.isNull = TypeDescriptor.isNull(value);
-		        this.isNumber = TypeDescriptor.isNumber(value);
-		        this.isObject = TypeDescriptor.isObject(value);
-		        this.isString = TypeDescriptor.isString(value);
-		        this.isSymbol = TypeDescriptor.isSymbol(value);
-		        this.isUndefined = TypeDescriptor.isUndefined(value);
-		    }
-		    static of(value) {
-		        if (value === null) {
-		            return 'null';
-		        }
-		        if (value === undefined) {
-		            return 'undefined';
-		        }
-		        const detectedType = typeof value;
-		        if (detectableTypes.has(detectedType)) {
-		            return detectedType;
-		        }
-		        if (detectedType === 'object') {
-		            if (Array.isArray(value)) {
-		                return 'array';
-		            }
-		            if (typeConstructors.has(value.constructor)) {
-		                return value.constructor.name.toLowerCase();
-		            }
-		            return detectedType;
-		        }
-		        throw new Error('Failed due to an unknown type.');
-		    }
-		    static from(value) {
-		        return new TypeDescriptor(value);
-		    }
-		    static isValueType(value) {
-		        return valueTypes.has(TypeDescriptor.of(value));
-		    }
-		    // eslint-disable-next-line @typescript-eslint/ban-types
-		    static isReferenceType(value) {
-		        return referenceTypes.has(TypeDescriptor.of(value));
-		    }
-		    static isArray(value) {
-		        return TypeDescriptor.of(value) === 'array';
-		    }
-		    static isBoolean(value) {
-		        return TypeDescriptor.of(value) === 'boolean';
-		    }
-		    // eslint-disable-next-line @typescript-eslint/ban-types
-		    static isFunction(value) {
-		        return TypeDescriptor.of(value) === 'function';
-		    }
-		    static isNull(value) {
-		        return TypeDescriptor.of(value) === 'null';
-		    }
-		    static isNumber(value) {
-		        return TypeDescriptor.of(value) === 'number';
-		    }
-		    // eslint-disable-next-line @typescript-eslint/ban-types
-		    static isObject(value) {
-		        return TypeDescriptor.of(value) === 'object';
-		    }
-		    static isString(value) {
-		        return TypeDescriptor.of(value) === 'string';
-		    }
-		    static isSymbol(value) {
-		        return TypeDescriptor.of(value) === 'symbol';
-		    }
-		    static isUndefined(value) {
-		        return TypeDescriptor.of(value) === 'undefined';
-		    }
-		};
-		TypeDescriptor.Type = TypeDescriptor$1;
-		return TypeDescriptor;
+	const valueTypes = new Set([
+	    'boolean',
+	    'number',
+	    'null',
+	    'string',
+	    'undefined',
+	]);
+	const referenceTypes = new Set(['array', 'function', 'object', 'symbol']);
+	const detectableTypes = new Set([
+	    'boolean',
+	    'function',
+	    'number',
+	    'string',
+	    'symbol',
+	]);
+	const typeConstructors = new Set([Boolean, Number, String]);
+	class TypeDescriptor {
+	    constructor(value) {
+	        this.name = TypeDescriptor.of(value);
+	        this.isValueType = TypeDescriptor.isValueType(value);
+	        this.isReferenceType = TypeDescriptor.isReferenceType(value);
+	        this.isArray = TypeDescriptor.isArray(value);
+	        this.isBoolean = TypeDescriptor.isBoolean(value);
+	        this.isFunction = TypeDescriptor.isFunction(value);
+	        this.isNull = TypeDescriptor.isNull(value);
+	        this.isNumber = TypeDescriptor.isNumber(value);
+	        this.isObject = TypeDescriptor.isObject(value);
+	        this.isString = TypeDescriptor.isString(value);
+	        this.isSymbol = TypeDescriptor.isSymbol(value);
+	        this.isUndefined = TypeDescriptor.isUndefined(value);
+	    }
+	    static of(value) {
+	        if (value === null) {
+	            return 'null';
+	        }
+	        if (value === undefined) {
+	            return 'undefined';
+	        }
+	        const detectedType = typeof value;
+	        if (detectableTypes.has(detectedType)) {
+	            return detectedType;
+	        }
+	        if (detectedType === 'object') {
+	            if (Array.isArray(value)) {
+	                return 'array';
+	            }
+	            if (typeConstructors.has(value.constructor)) {
+	                return value.constructor.name.toLowerCase();
+	            }
+	            return detectedType;
+	        }
+	        throw new Error('Failed due to an unknown type.');
+	    }
+	    static from(value) {
+	        return new TypeDescriptor(value);
+	    }
+	    static isValueType(value) {
+	        return valueTypes.has(TypeDescriptor.of(value));
+	    }
+	    static isReferenceType(value) {
+	        return referenceTypes.has(TypeDescriptor.of(value));
+	    }
+	    static isArray(value) {
+	        return TypeDescriptor.of(value) === 'array';
+	    }
+	    static isBoolean(value) {
+	        return TypeDescriptor.of(value) === 'boolean';
+	    }
+	    static isFunction(value) {
+	        return TypeDescriptor.of(value) === 'function';
+	    }
+	    static isNull(value) {
+	        return TypeDescriptor.of(value) === 'null';
+	    }
+	    static isNumber(value) {
+	        return TypeDescriptor.of(value) === 'number';
+	    }
+	    static isObject(value) {
+	        return TypeDescriptor.of(value) === 'object';
+	    }
+	    static isString(value) {
+	        return TypeDescriptor.of(value) === 'string';
+	    }
+	    static isSymbol(value) {
+	        return TypeDescriptor.of(value) === 'symbol';
+	    }
+	    static isUndefined(value) {
+	        return TypeDescriptor.of(value) === 'undefined';
+	    }
 	}
 
-	var hasRequiredIsSubsetOf;
-
-	function requireIsSubsetOf () {
-		if (hasRequiredIsSubsetOf) return isSubsetOf;
-		hasRequiredIsSubsetOf = 1;
-		Object.defineProperty(isSubsetOf, "__esModule", { value: true });
-		isSubsetOf.isSubsetOf = undefined;
-		const typedescriptor_1 = requireTypeDescriptor();
-		const allowedTypes = new Set(['array', 'object', 'function', 'null']);
-		const isSubsetOf$1 = function (subset, superset, visited = []) {
-		    const subsetType = typedescriptor_1.Type.of(subset);
-		    const supersetType = typedescriptor_1.Type.of(superset);
-		    if (!allowedTypes.has(subsetType)) {
-		        throw new Error(`Type '${subsetType}' is not supported.`);
-		    }
-		    if (!allowedTypes.has(supersetType)) {
-		        throw new Error(`Type '${supersetType}' is not supported.`);
-		    }
-		    if (typedescriptor_1.Type.isFunction(subset)) {
-		        if (!typedescriptor_1.Type.isFunction(superset)) {
-		            throw new Error(`Types '${subsetType}' and '${supersetType}' do not match.`);
-		        }
-		        return subset.toString() === superset.toString();
-		    }
-		    if (typedescriptor_1.Type.isArray(subset)) {
-		        if (!typedescriptor_1.Type.isArray(superset)) {
-		            throw new Error(`Types '${subsetType}' and '${supersetType}' do not match.`);
-		        }
-		        if (subset.length > superset.length) {
-		            return false;
-		        }
-		        for (const subsetItem of subset) {
-		            const subsetItemType = typedescriptor_1.Type.of(subsetItem);
-		            let isItemInSuperset;
-		            switch (subsetItemType) {
-		                case 'array':
-		                case 'object':
-		                case 'function': {
-		                    if (visited.includes(subsetItem)) {
-		                        continue;
-		                    }
-		                    visited.push(subsetItem);
-		                    isItemInSuperset = superset.some((supersetItem) => {
-		                        try {
-		                            return isSubsetOf$1(subsetItem, supersetItem, visited);
-		                        }
-		                        catch {
-		                            return false;
-		                        }
-		                    });
-		                    break;
-		                }
-		                default: {
-		                    isItemInSuperset = superset.includes(subsetItem);
-		                }
-		            }
-		            if (!isItemInSuperset) {
-		                return false;
-		            }
-		        }
-		        return true;
-		    }
-		    if (typedescriptor_1.Type.isObject(subset)) {
-		        if (!typedescriptor_1.Type.isObject(superset) || typedescriptor_1.Type.isArray(superset)) {
-		            throw new Error(`Types '${subsetType}' and '${supersetType}' do not match.`);
-		        }
-		        if (Object.keys(subset).length > Object.keys(superset).length) {
-		            return false;
-		        }
-		        for (const [subsetKey, subsetValue] of Object.entries(subset)) {
-		            const supersetValue = superset[subsetKey];
-		            const subsetValueType = typedescriptor_1.Type.of(subsetValue);
-		            switch (subsetValueType) {
-		                case 'array':
-		                case 'object':
-		                case 'function': {
-		                    if (visited.includes(subsetValue)) {
-		                        continue;
-		                    }
-		                    visited.push(subsetValue);
-		                    try {
-		                        const isInSuperset = isSubsetOf$1(subsetValue, supersetValue, visited);
-		                        if (!isInSuperset) {
-		                            return false;
-		                        }
-		                    }
-		                    catch {
-		                        return false;
-		                    }
-		                    break;
-		                }
-		                default: {
-		                    if (subsetValue !== supersetValue) {
-		                        return false;
-		                    }
-		                }
-		            }
-		        }
-		        return true;
-		    }
-		    if (typedescriptor_1.Type.isNull(subset)) {
-		        if (!typedescriptor_1.Type.isNull(superset)) {
-		            throw new Error(`Types '${subsetType}' and '${supersetType}' do not match.`);
-		        }
-		        return true;
-		    }
-		    throw new Error('Invalid operation.');
-		};
-		isSubsetOf.isSubsetOf = isSubsetOf$1;
-		isSubsetOf$1.structural = function (subset, superset, visited = []) {
-		    if (!typedescriptor_1.Type.isObject(subset)) {
-		        throw new Error(`Type '${typedescriptor_1.Type.of(subset)}' is not supported.`);
-		    }
-		    if (!typedescriptor_1.Type.isObject(superset)) {
-		        throw new Error(`Type '${typedescriptor_1.Type.of(superset)}' is not supported.`);
-		    }
-		    for (const [subsetKey, subsetValue] of Object.entries(subset)) {
-		        if (superset[subsetKey] === undefined) {
-		            return false;
-		        }
-		        const subsetValueType = typedescriptor_1.Type.of(subsetValue);
-		        const supersetValue = superset[subsetKey];
-		        if (subsetValueType === 'object') {
-		            if (visited.includes(subsetValue)) {
-		                continue;
-		            }
-		            visited.push(subsetValue);
-		            try {
-		                const isInSuperset = isSubsetOf$1.structural(subsetValue, supersetValue, visited);
-		                if (!isInSuperset) {
-		                    return false;
-		                }
-		            }
-		            catch {
-		                return false;
-		            }
-		        }
-		    }
-		    return true;
-		};
-		return isSubsetOf;
-	}
-
-	var isSubsetOfExports = requireIsSubsetOf();
+	const allowedTypes = new Set(['array', 'object', 'function', 'null']);
+	const isSubsetOf = function (subset, superset, visited = []) {
+	    const subsetType = TypeDescriptor.of(subset);
+	    const supersetType = TypeDescriptor.of(superset);
+	    if (!allowedTypes.has(subsetType)) {
+	        throw new Error(`Type '${subsetType}' is not supported.`);
+	    }
+	    if (!allowedTypes.has(supersetType)) {
+	        throw new Error(`Type '${supersetType}' is not supported.`);
+	    }
+	    if (TypeDescriptor.isFunction(subset)) {
+	        if (!TypeDescriptor.isFunction(superset)) {
+	            throw new Error(`Types '${subsetType}' and '${supersetType}' do not match.`);
+	        }
+	        return subset.toString() === superset.toString();
+	    }
+	    if (TypeDescriptor.isArray(subset)) {
+	        if (!TypeDescriptor.isArray(superset)) {
+	            throw new Error(`Types '${subsetType}' and '${supersetType}' do not match.`);
+	        }
+	        if (subset.length > superset.length) {
+	            return false;
+	        }
+	        for (const subsetItem of subset) {
+	            const subsetItemType = TypeDescriptor.of(subsetItem);
+	            let isItemInSuperset;
+	            switch (subsetItemType) {
+	                case 'array':
+	                case 'object':
+	                case 'function': {
+	                    if (visited.includes(subsetItem)) {
+	                        continue;
+	                    }
+	                    visited.push(subsetItem);
+	                    isItemInSuperset = superset.some((supersetItem) => {
+	                        try {
+	                            return isSubsetOf(subsetItem, supersetItem, visited);
+	                        }
+	                        catch {
+	                            return false;
+	                        }
+	                    });
+	                    break;
+	                }
+	                default: {
+	                    isItemInSuperset = superset.includes(subsetItem);
+	                }
+	            }
+	            if (!isItemInSuperset) {
+	                return false;
+	            }
+	        }
+	        return true;
+	    }
+	    if (TypeDescriptor.isObject(subset)) {
+	        if (!TypeDescriptor.isObject(superset) || TypeDescriptor.isArray(superset)) {
+	            throw new Error(`Types '${subsetType}' and '${supersetType}' do not match.`);
+	        }
+	        if (Object.keys(subset).length > Object.keys(superset).length) {
+	            return false;
+	        }
+	        for (const [subsetKey, subsetValue] of Object.entries(subset)) {
+	            const supersetValue = superset[subsetKey];
+	            const subsetValueType = TypeDescriptor.of(subsetValue);
+	            switch (subsetValueType) {
+	                case 'array':
+	                case 'object':
+	                case 'function': {
+	                    if (visited.includes(subsetValue)) {
+	                        continue;
+	                    }
+	                    visited.push(subsetValue);
+	                    try {
+	                        const isInSuperset = isSubsetOf(subsetValue, supersetValue, visited);
+	                        if (!isInSuperset) {
+	                            return false;
+	                        }
+	                    }
+	                    catch {
+	                        return false;
+	                    }
+	                    break;
+	                }
+	                default: {
+	                    if (subsetValue !== supersetValue) {
+	                        return false;
+	                    }
+	                }
+	            }
+	        }
+	        return true;
+	    }
+	    if (TypeDescriptor.isNull(subset)) {
+	        if (!TypeDescriptor.isNull(superset)) {
+	            throw new Error(`Types '${subsetType}' and '${supersetType}' do not match.`);
+	        }
+	        return true;
+	    }
+	    throw new Error('Invalid operation.');
+	};
+	isSubsetOf.structural = function (subset, superset, visited = []) {
+	    if (!TypeDescriptor.isObject(subset)) {
+	        throw new Error(`Type '${TypeDescriptor.of(subset)}' is not supported.`);
+	    }
+	    if (!TypeDescriptor.isObject(superset)) {
+	        throw new Error(`Type '${TypeDescriptor.of(superset)}' is not supported.`);
+	    }
+	    for (const [subsetKey, subsetValue] of Object.entries(subset)) {
+	        if (superset[subsetKey] === undefined) {
+	            return false;
+	        }
+	        const subsetValueType = TypeDescriptor.of(subsetValue);
+	        const supersetValue = superset[subsetKey];
+	        if (subsetValueType === 'object') {
+	            if (visited.includes(subsetValue)) {
+	                continue;
+	            }
+	            visited.push(subsetValue);
+	            try {
+	                const isInSuperset = isSubsetOf.structural(subsetValue, supersetValue, visited);
+	                if (!isInSuperset) {
+	                    return false;
+	                }
+	            }
+	            catch {
+	                return false;
+	            }
+	        }
+	    }
+	    return true;
+	};
 
 	var has = Object.prototype.hasOwnProperty;
 
@@ -569,7 +551,12 @@ sap.ui.define((function () { 'use strict';
 	        method: request.method,
 	    };
 	    try {
-	        derivedOptions.body = await request.clone().text();
+	        try {
+	            derivedOptions.body = await request.clone().formData();
+	        }
+	        catch {
+	            derivedOptions.body = await request.clone().text();
+	        }
 	    }
 	    catch { }
 	    if (request.headers) {
@@ -721,25 +708,48 @@ sap.ui.define((function () { 'use strict';
 	        return expectedKeys.every((key) => expressParams[key] === expectedParams[key]);
 	    };
 	};
+	const formDataToObject = (formData) => {
+	    const fields = [...formData];
+	    const result = {};
+	    fields.forEach(([key, value]) => {
+	        result[key] = result[key] || [];
+	        result[key].push(value);
+	    });
+	    return result;
+	};
 	const getBodyMatcher = (route) => {
-	    const { body: expectedBody } = route;
+	    let { body: expectedBody } = route;
+	    let expectedBodyType = 'json';
 	    if (!expectedBody) {
 	        return;
 	    }
+	    if (expectedBody instanceof FormData) {
+	        expectedBodyType = 'formData';
+	        expectedBody = formDataToObject(expectedBody);
+	    }
 	    return ({ options: { body, method = 'get' } }) => {
-	        if (['get', 'head', 'delete'].includes(method.toLowerCase())) {
+	        if (['get', 'head'].includes(method.toLowerCase())) {
 	            return false;
 	        }
 	        let sentBody;
 	        try {
 	            if (typeof body === 'string') {
 	                sentBody = JSON.parse(body);
+	                if (expectedBodyType !== 'json') {
+	                    return false;
+	                }
 	            }
 	        }
 	        catch { }
+	        if (body instanceof FormData) {
+	            if (expectedBodyType !== 'formData') {
+	                return false;
+	            }
+	            sentBody = formDataToObject(body);
+	        }
 	        return (sentBody &&
 	            (route.matchPartialBody
-	                ? isSubsetOfExports.isSubsetOf(expectedBody, sentBody)
+	                ? isSubsetOf(expectedBody, sentBody)
 	                : dequal(expectedBody, sentBody)));
 	    };
 	};
@@ -870,12 +880,18 @@ sap.ui.define((function () { 'use strict';
 	    511: 'Network Authentication Required',
 	};
 
+	var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
+	    if (kind === "m") throw new TypeError("Private method is not writable");
+	    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+	    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+	    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
+	};
 	var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
 	    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
 	    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
 	    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 	};
-	var _Route_instances, _a, _Route_validate, _Route_sanitize, _Route_generateMatcher, _Route_limit, _Route_delayResponse;
+	var _Route_instances, _a, _Route_responseSubscriptions, _Route_validate, _Route_sanitize, _Route_generateMatcher, _Route_limit, _Route_delayResponse;
 	function isBodyInit(body) {
 	    return (body instanceof Blob ||
 	        body instanceof ArrayBuffer ||
@@ -908,7 +924,12 @@ e.g. {"body": {"status: "registered"}}`);
 	class Route {
 	    constructor(config) {
 	        _Route_instances.add(this);
+	        _Route_responseSubscriptions.set(this, void 0);
+	        this.init(config);
+	    }
+	    init(config) {
 	        this.config = config;
+	        __classPrivateFieldSet(this, _Route_responseSubscriptions, [], "f");
 	        __classPrivateFieldGet(this, _Route_instances, "m", _Route_sanitize).call(this);
 	        __classPrivateFieldGet(this, _Route_instances, "m", _Route_validate).call(this);
 	        __classPrivateFieldGet(this, _Route_instances, "m", _Route_generateMatcher).call(this);
@@ -916,14 +937,25 @@ e.g. {"body": {"status: "registered"}}`);
 	        __classPrivateFieldGet(this, _Route_instances, "m", _Route_delayResponse).call(this);
 	    }
 	    reset() { }
+	    waitFor(awaitedRoutes) {
+	        const { response } = this.config;
+	        this.config.response = Promise.all(awaitedRoutes.map((awaitedRoute) => new Promise((res) => awaitedRoute.onRespond(() => {
+	            res(undefined);
+	        })))).then(() => response);
+	    }
+	    onRespond(func) {
+	        __classPrivateFieldGet(this, _Route_responseSubscriptions, "f").push(func);
+	    }
 	    constructResponse(responseInput) {
 	        const responseOptions = this.constructResponseOptions(responseInput);
 	        const body = this.constructResponseBody(responseInput, responseOptions);
-	        return {
+	        const responsePackage = {
 	            response: new this.config.Response(body, responseOptions),
 	            responseOptions,
 	            responseInput,
 	        };
+	        __classPrivateFieldGet(this, _Route_responseSubscriptions, "f").forEach((func) => func());
+	        return responsePackage;
 	    }
 	    constructResponseOptions(responseInput) {
 	        const options = responseInput.options || {};
@@ -976,7 +1008,7 @@ e.g. {"body": {"status: "registered"}}`);
 	        _a.registeredMatchers.push(matcher);
 	    }
 	}
-	_a = Route, _Route_instances = new WeakSet(), _Route_validate = function _Route_validate() {
+	_a = Route, _Route_responseSubscriptions = new WeakMap(), _Route_instances = new WeakSet(), _Route_validate = function _Route_validate() {
 	    if (['matched', 'unmatched'].includes(this.config.name)) {
 	        throw new Error(`fetch-mock: Routes cannot use the reserved name \`${this.config.name}\``);
 	    }
@@ -1109,10 +1141,20 @@ e.g. {"body": {"status: "registered"}}`);
 	                    const error = new DOMException('The operation was aborted.', 'AbortError');
 	                    const requestBody = request?.body || options?.body;
 	                    if (requestBody instanceof ReadableStream) {
-	                        requestBody.cancel(error);
+	                        if (requestBody.locked) {
+	                            requestBody.getReader().cancel(error);
+	                        }
+	                        else {
+	                            requestBody.cancel(error);
+	                        }
 	                    }
 	                    if (callLog?.response?.body) {
-	                        callLog.response.body.cancel(error);
+	                        if (callLog.response.body.locked) {
+	                            callLog.response.body.getReader().cancel(error);
+	                        }
+	                        else {
+	                            callLog.response.body.cancel(error);
+	                        }
 	                    }
 	                    reject(error);
 	                };
@@ -1149,7 +1191,7 @@ e.g. {"body": {"status: "registered"}}`);
 	        const responseInput = await resolveUntilResponseConfig(callLog);
 	        if (responseInput instanceof Response) {
 	            return {
-	                response: responseInput,
+	                response: responseInput.clone(),
 	                responseOptions: {},
 	                responseInput: {},
 	            };
@@ -1227,6 +1269,22 @@ e.g. {"body": {"status: "registered"}}`);
 	            this.routes.some(({ config: { name: existingName } }) => route.config.name === existingName)) {
 	            throw new Error('fetch-mock: Adding route with same name as existing route.');
 	        }
+	        if (route.config.waitFor) {
+	            const routeNamesToWaitFor = Array.isArray(route.config.waitFor)
+	                ? route.config.waitFor
+	                : [route.config.waitFor];
+	            const routesToAwait = [];
+	            routeNamesToWaitFor.forEach((routeName) => {
+	                const routeToAwait = this.routes.find(({ config: { name: existingName } }) => routeName === existingName);
+	                if (routeToAwait) {
+	                    routesToAwait.push(routeToAwait);
+	                }
+	                else {
+	                    throw new Error(`Cannot wait for route \`${routeName}\`: route of that name does not exist`);
+	                }
+	            });
+	            route.waitFor(routesToAwait);
+	        }
 	        this.routes.push(route);
 	    }
 	    setFallback(response) {
@@ -1254,6 +1312,28 @@ e.g. {"body": {"status: "registered"}}`);
 	        if (includeFallback) {
 	            delete this.fallbackRoute;
 	        }
+	    }
+	    modifyRoute(routeName, options) {
+	        const route = this.routes.find(({ config: { name } }) => name === routeName);
+	        if (!route) {
+	            throw new Error(`Cannot call modifyRoute() on route \`${routeName}\`: route of that name not found`);
+	        }
+	        if (route.config.sticky) {
+	            throw new Error(`Cannot call modifyRoute() on route \`${routeName}\`: route is sticky and cannot be modified`);
+	        }
+	        if ('name' in options) {
+	            throw new Error(`Cannot rename the route \`${routeName}\` as \`${options.name}\`: renaming routes is not supported`);
+	        }
+	        if ('sticky' in options) {
+	            throw new Error(`Altering the stickiness of route \`${routeName}\` is not supported`);
+	        }
+	        const newConfig = { ...route.config, ...options };
+	        Object.entries(options).forEach(([key, value]) => {
+	            if (value === null) {
+	                delete newConfig[key];
+	            }
+	        });
+	        route.init(newConfig);
 	    }
 	}
 
@@ -1435,6 +1515,14 @@ e.g. {"body": {"status: "registered"}}`);
 	    }
 	    removeRoutes(options) {
 	        this.router.removeRoutes(options);
+	        return this;
+	    }
+	    removeRoute(routeName) {
+	        this.router.removeRoutes({ names: [routeName] });
+	        return this;
+	    }
+	    modifyRoute(routeName, options) {
+	        this.router.modifyRoute(routeName, options);
 	        return this;
 	    }
 	    clearHistory() {

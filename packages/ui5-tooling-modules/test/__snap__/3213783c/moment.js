@@ -83,7 +83,7 @@ sap.ui.define((function () { 'use strict';
 			    }
 
 			    function isUndefined(input) {
-			        return input === undefined;
+			        return input === void 0;
 			    }
 
 			    function isNumber(input) {
