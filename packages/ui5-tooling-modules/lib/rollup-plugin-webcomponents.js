@@ -2,6 +2,7 @@ const { join, dirname, extname, posix } = require("path");
 const { readFileSync, existsSync } = require("fs");
 const { createHash } = require("crypto");
 
+const JSDocSerializer = require("./utils/JSDocSerializer");
 const { lt, gte } = require("semver");
 const { compile } = require("handlebars");
 
@@ -9,7 +10,7 @@ const WebComponentRegistry = require("./utils/WebComponentRegistry");
 
 module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framework, options } = {}) {
 	// derive the configuration from the provided options
-	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets } = Object.assign(
+	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, moduleBasePath, removeScopePrefix } = Object.assign(
 		{
 			skip: false,
 			scoping: true,
@@ -63,20 +64,6 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 	// =========================================================================
 	// Helpers to determine the Web Component classes and their metadata
 	// =========================================================================
-
-	// checks wehether the given class is based on UI5Element
-	const isUI5Element = (clazz) => {
-		let superclass = clazz.superclass,
-			isClazzUI5Element = false;
-		while (superclass) {
-			if (superclass?.namespace === "@ui5/webcomponents-base" && superclass?.name === "UI5Element") {
-				isClazzUI5Element = true;
-				break;
-			}
-			superclass = superclass.superclass;
-		}
-		return isClazzUI5Element;
-	};
 
 	// helper function to extract the npm package name from a module name
 	const getNpmPackageName = (source) => {
@@ -140,6 +127,9 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 					registryEntry = WebComponentRegistry.register({
 						customElementsMetadata,
 						namespace: npmPackage,
+						moduleBasePath,
+						removeScopePrefix,
+						scopeSuffix: ui5WebCScopeSuffix,
 						npmPackagePath,
 						version: packageJson.version,
 					});
@@ -205,9 +195,9 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			name: namespace,
 			version,
 			dependencies: ["sap.ui.core"],
-			types: Object.keys(package.enums).map((enumName) => `${namespace}.${enumName}`),
-			interfaces: Object.keys(package.interfaces).map((interfaceName) => `${namespace}.${interfaceName}`),
-			controls: Object.keys(package.customElements).map((elementName) => `${namespace}.${elementName}`),
+			types: Object.keys(package.enums).map((enumName) => package.enums[enumName]._ui5QualifiedName),
+			interfaces: Object.keys(package.interfaces).map((interfaceName) => package.interfaces[interfaceName]._ui5QualifiedName),
+			controls: Object.keys(package.customElements).map((elementName) => package.customElements[elementName]._ui5QualifiedName),
 			elements: [
 				/* do we have any? */
 			],
@@ -224,6 +214,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			isBaseLib,
 			metadata,
 			namespace,
+			interfaces: package.interfaces,
 			hasEnums: Object.keys(package.enums).length > 0,
 			enums: package.enums,
 			dependencies: package.dependencies?.map((dep) => `${rootPath}${dep}`),
@@ -250,20 +241,16 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			log.verbose(`Emitting Web Component wrapper: ${resolvedSource}`);
 
 			// determine whether the clazz is based on the UI5Element superclass
-			const isClazzUI5Element = isUI5Element(clazz);
+			const isClazzUI5Element = WebComponentRegistry.isUI5ElementSubclass(clazz);
 			if (ui5WebCScopeSuffix && !isClazzUI5Element) {
 				log.warn(`The Web Component "${source}" doesn't support scoping as it is not extending UI5Element!`);
 			}
 			// Extend the superclass with the WebComponent class and export it
 			const ui5Metadata = clazz._ui5metadata;
-			const ui5Class = `${ui5Metadata.namespace}.${clazz.name}`;
+			const ui5ClassName = clazz._ui5QualifiedName;
 			const namespace = ui5Metadata.namespace;
-			const metadataObject = Object.assign({}, ui5Metadata, {
-				tag: ui5Metadata.tag && (isClazzUI5Element && ui5WebCScopeSuffix ? `${ui5Metadata.tag}-${ui5WebCScopeSuffix}` : ui5Metadata.tag), // only add the suffix for UI5 Web Components (scoping support)
-				library: `${ui5Metadata.namespace}.library`, // if not defined, the library is derived from the namespace
-				designtime: `${ui5Metadata.namespace}/designtime/${clazz.name}.designtime`, // add a default designtime
-			});
-			const metadata = JSON.stringify(metadataObject, undefined, 2);
+
+			const metadata = JSDocSerializer.serializeMetadata(clazz);
 			const webcClass = chunkName && posix.relative(dirname(resolvedSource), chunkName);
 
 			// UI5 specific features
@@ -289,10 +276,14 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				}
 			}
 
+			// JSDoc Serialization for the class header
+			const jsDocClassHeader = clazz._jsDoc?.classHeader;
+
 			// generate the WebComponentControl code
 			const rootPath = `${posix.relative(dirname(resolvedSource), "") || "."}/`;
 			const code = webcTmplFnUI5Control({
-				ui5Class,
+				ui5ClassName: ui5ClassName,
+				jsDocClassHeader,
 				namespace: `${rootPath}${namespace}`,
 				metadata,
 				webcClass,
@@ -425,7 +416,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				let nonUI5TagsToRegister;
 				if (ui5WebCScopeSuffix) {
 					nonUI5TagsToRegister = Object.values(customElements)
-						.filter((element) => isUI5Element(element))
+						.filter((element) => WebComponentRegistry.isUI5ElementSubclass(element))
 						.map((element) => element.tagName)
 						.filter((tag) => (tag ? !tag.startsWith("ui5-") : false));
 					if (nonUI5TagsToRegister.length === 0) {

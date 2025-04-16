@@ -34,23 +34,30 @@ sap.ui.define([
 	}
 
   {{#each enums}}
-  pkg["{{@key}}"] = {
-  {{#each this}}
-    "{{this}}": "{{this}}",
+  {{{this._jsDoc}}}
+  pkg["{{this.name}}"] = {
+  {{#each this.values}}
+    {{this._jsDoc}}
+    "{{this.name}}": "{{this.name}}",
   {{/each}}
   };
-  registerEnum("{{../namespace}}.{{@key}}", pkg["{{@key}}"]);
+  registerEnum("{{this._ui5QualifiedName}}", pkg["{{this.name}}"]);
   {{/each}}
 
-	{{#if isBaseLib}}
-	// ====================
-	// MONKEY PATCHES BEGIN
-	// ====================
+  // Interfaces
+  {{#each interfaces}}
+  {{{this._jsDoc}}}
+  {{/each}}
+
+  {{#if isBaseLib}}
+  // ====================
+  // MONKEY PATCHES BEGIN
+  // ====================
 {{{monkeyPatches}}}
-	// ====================
-	// MONKEY PATCHES END
-	// ====================
-	{{/if}}
+  // ====================
+  // MONKEY PATCHES END
+  // ====================
+  {{/if}}
 
 	return pkg;
 });

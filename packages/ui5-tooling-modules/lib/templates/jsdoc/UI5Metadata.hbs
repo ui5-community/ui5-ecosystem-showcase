@@ -1,0 +1,52 @@
+{
+  "tag": "{{metadata.tag}}",
+
+  "namespace": "{{metadata.qualifiedNamespace}}",
+
+  "designtime": "{{designtimeNamespace}}/designtime/{{className}}.designtime",
+
+  "interfaces": {{{json metadata.interfaces}}},
+
+  "defaultAggregation": "{{metadata.defaultAggregation}}",
+
+  "properties": {
+  {{#each metadata.properties}}
+{{{lookup (lookup @root.jsDoc "properties") @key}}}
+    "{{@key}}": {{{json this}}},
+  {{/each}}
+  },
+
+  "aggregations": {
+  {{#each metadata.aggregations}}
+{{{lookup (lookup @root.jsDoc "aggregations") @key}}}
+    "{{@key}}": {{{json this}}},
+  {{/each}}
+  },
+
+  "associations": {
+  {{#each metadata.associations}}
+{{{lookup (lookup @root.jsDoc "associations") @key}}}
+    "{{@key}}": {{{json this}}},
+  {{/each}}
+  },
+
+  "events": {
+    {{#each jsDoc.events}}
+{{{this.serializedJsDoc}}}
+    {{/each}}
+  },
+
+  "getters": [
+    {{#each metadata.getters}}
+{{{lookup (lookup (lookup @root.jsDoc "getters") this) "serializedJsDoc"}}}
+      "{{this}}",
+    {{/each}}
+  ],
+
+  "methods": [
+    {{#each metadata.methods}}
+{{{lookup (lookup (lookup @root.jsDoc "methods") this) "serializedJsDoc"}}}
+      "{{this}}",
+    {{/each}}
+  ]
+}

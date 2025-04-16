@@ -41,8 +41,26 @@ function writeFixtures(webcRegistryEntry) {
 	});
 
 	// interfaces
-	const interfacesJson = JSON.stringify([...webcRegistryEntry.interfaces]);
+	const interfacesJson = JSON.stringify([...Object.keys(webcRegistryEntry.interfaces)]);
 	writeFileSync(path.join(fixtureBase, `interfaces.json`), interfacesJson, { encoding: "utf8" });
+}
+
+function loadWebComponentPackage(webcBaseNpmPackage, dist, appDir) {
+	const webcBasePath = require.resolve(`${webcBaseNpmPackage}${dist}/custom-elements-internal.json`, {
+		paths: [appDir],
+	});
+	if (generateFixtures) {
+		ensurePathExists(path.resolve(fixtureDir, webcBaseNpmPackage));
+		copyFileSync(webcBasePath, path.resolve(fixtureDir, webcBaseNpmPackage, "custom-elements-internal.json"));
+	}
+	const webcBaseJson = JSON.parse(readFileSync(webcBasePath, { encoding: "utf-8" }));
+
+	WebComponentRegistry.register({
+		customElementsMetadata: webcBaseJson,
+		namespace: webcBaseNpmPackage,
+		npmPackagePath: webcBasePath,
+		version: "0.0.0",
+	});
 }
 
 // *****************************************************************************
@@ -75,91 +93,28 @@ test.serial("Verify ui5-metadata generation from 'custom-elements-internal.json'
 		});
 
 		// compare interfaces
-		const interfacesJson = JSON.stringify([...webcRegistryEntry.interfaces]);
+		const interfacesJson = JSON.stringify([...Object.keys(webcRegistryEntry.interfaces)]);
 		const interfacesFixtureForComparisonJSON = readFileSync(path.join(fixtureBase, `interfaces.json`), { encoding: "utf-8" });
 		t.is(interfacesFixtureForComparisonJSON, interfacesJson, `Interfaces JSON is equal to fixture`);
 	};
 
-	const webcBaseNpmPackage = "@ui5/webcomponents-base";
-	const webcBasePath = require.resolve(`${webcBaseNpmPackage}${dist}/custom-elements-internal.json`, {
-		paths: [appDir],
-	});
-	if (generateFixtures) {
-		ensurePathExists(path.resolve(fixtureDir, webcBaseNpmPackage));
-		copyFileSync(webcBasePath, path.resolve(fixtureDir, webcBaseNpmPackage, "custom-elements-internal.json"));
-	}
-	const webcBaseJson = JSON.parse(readFileSync(webcBasePath, { encoding: "utf-8" }));
-
-	WebComponentRegistry.register({
-		customElementsMetadata: webcBaseJson,
-		namespace: webcBaseNpmPackage,
-		npmPackagePath: webcBasePath,
-		version: "0.0.0",
-	});
-
-	const webcNpmPackage = "@ui5/webcomponents";
-	const webcPath = require.resolve(`${webcNpmPackage}${dist}/custom-elements-internal.json`, {
-		paths: [appDir],
-	});
-	if (generateFixtures) {
-		ensurePathExists(path.resolve(fixtureDir, webcNpmPackage));
-		copyFileSync(webcBasePath, path.resolve(fixtureDir, webcNpmPackage, "custom-elements-internal.json"));
-	}
-	const webcJson = JSON.parse(readFileSync(webcPath, { encoding: "utf-8" }));
-
-	WebComponentRegistry.register({
-		customElementsMetadata: webcJson,
-		namespace: webcNpmPackage,
-		npmPackagePath: webcPath,
-		version: "0.0.0",
-	});
-
-	const webcFioriNpmPackage = "@ui5/webcomponents-fiori";
-	const webcFioriPath = require.resolve(`${webcFioriNpmPackage}${dist}/custom-elements-internal.json`, {
-		paths: [appDir],
-	});
-	if (generateFixtures) {
-		ensurePathExists(path.resolve(fixtureDir, webcFioriNpmPackage));
-		copyFileSync(webcBasePath, path.resolve(fixtureDir, webcFioriNpmPackage, "custom-elements-internal.json"));
-	}
-	const webcFioriJson = JSON.parse(readFileSync(webcFioriPath, { encoding: "utf-8" }));
-
-	WebComponentRegistry.register({
-		customElementsMetadata: webcFioriJson,
-		namespace: webcFioriNpmPackage,
-		npmPackagePath: webcFioriPath,
-		version: "0.0.0",
-	});
-
-	const webcAiNpmPackage = "@ui5/webcomponents-ai";
-	const webcAiPath = require.resolve(`${webcAiNpmPackage}${dist}/custom-elements-internal.json`, {
-		paths: [appDir],
-	});
-	if (generateFixtures) {
-		ensurePathExists(path.resolve(fixtureDir, webcAiNpmPackage));
-		copyFileSync(webcBasePath, path.resolve(fixtureDir, webcAiNpmPackage, "custom-elements-internal.json"));
-	}
-	const webcAiJson = JSON.parse(readFileSync(webcAiPath, { encoding: "utf-8" }));
-
-	WebComponentRegistry.register({
-		customElementsMetadata: webcAiJson,
-		namespace: webcAiNpmPackage,
-		npmPackagePath: webcAiPath,
-		version: "0.0.0",
-	});
+	loadWebComponentPackage("@ui5/webcomponents-base", dist, appDir);
+	loadWebComponentPackage("@ui5/webcomponents", dist, appDir);
+	loadWebComponentPackage("@ui5/webcomponents-fiori", dist, appDir);
+	loadWebComponentPackage("@ui5/webcomponents-ai", dist, appDir);
 
 	// write fixture files
 	if (generateFixtures) {
 		console.log("Generating WebComponentRegistry test fixtures...");
-		writeFixtures(WebComponentRegistry.getPackage(webcBaseNpmPackage));
-		writeFixtures(WebComponentRegistry.getPackage(webcNpmPackage));
-		writeFixtures(WebComponentRegistry.getPackage(webcFioriNpmPackage));
-		writeFixtures(WebComponentRegistry.getPackage(webcAiNpmPackage));
+		writeFixtures(WebComponentRegistry.getPackage("@ui5/webcomponents-base"));
+		writeFixtures(WebComponentRegistry.getPackage("@ui5/webcomponents"));
+		writeFixtures(WebComponentRegistry.getPackage("@ui5/webcomponents-fiori"));
+		writeFixtures(WebComponentRegistry.getPackage("@ui5/webcomponents-ai"));
 	}
 
 	// compare with fixture files
-	compareFixtures(WebComponentRegistry.getPackage(webcBaseNpmPackage));
-	compareFixtures(WebComponentRegistry.getPackage(webcNpmPackage));
-	compareFixtures(WebComponentRegistry.getPackage(webcFioriNpmPackage));
-	compareFixtures(WebComponentRegistry.getPackage(webcAiNpmPackage));
+	compareFixtures(WebComponentRegistry.getPackage("@ui5/webcomponents-base"));
+	compareFixtures(WebComponentRegistry.getPackage("@ui5/webcomponents"));
+	compareFixtures(WebComponentRegistry.getPackage("@ui5/webcomponents-fiori"));
+	compareFixtures(WebComponentRegistry.getPackage("@ui5/webcomponents-ai"));
 });

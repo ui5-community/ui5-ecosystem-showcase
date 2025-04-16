@@ -1,9 +1,31 @@
+const JSDocSerializer = require("./JSDocSerializer");
+
 /**
  * Camelize the dashes.
  * Used to transform event names.
+ * @param {string} str the string to camelize
+ * @returns {string} the camelized string
  */
 const camelize = (str) => {
 	return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+};
+
+/**
+ * Converts slashes in a string to dots.
+ * @param {string} s the slahed string
+ * @returns {string} the dotted string
+ */
+function slash2dot(s) {
+	return s?.replace(/\//g, ".");
+}
+
+/**
+ * Calculates the name for the UI5 level getter function based on the web components native function name.
+ * @param {string} functionName the name of the web components native function
+ * @returns the generated UI5 getter function name
+ */
+const calculateGetterName = (functionName) => {
+	return "get" + functionName.substr(0, 1).toUpperCase() + functionName.substr(1);
 };
 
 // the class name of the base class of all control wrappers
@@ -19,20 +41,42 @@ let _classAliases = {};
 class RegistryEntry {
 	#customElementsMetadata = {};
 
-	constructor({ customElementsMetadata, namespace, npmPackagePath, version }) {
+	constructor({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, moduleBasePath, removeScopePrefix, version }) {
 		this.#customElementsMetadata = customElementsMetadata;
 		this.namespace = namespace;
+		this.scopeSuffix = scopeSuffix;
 		this.npmPackagePath = npmPackagePath;
+		this.moduleBasePath = moduleBasePath;
+		this.qualifiedNamespace = `${slash2dot(this.moduleBasePath)}.${slash2dot(removeScopePrefix ? this.namespace.replace(/^@/, "") : this.namespace)}`;
+		// TODO: The following conversion of "-" to "_" is a workaround for testing the UI5 JSDoc build.
+		//       Only needed until we solve the escaping issue of segments like "@ui5" or "webcomponents-fiori".
+		// this.qualifiedNamespace = this.qualifiedNamespace.replace(/-/g, "_");
 		this.version = version;
 
 		this.customElements = {};
 		this.classes = {};
 		this.enums = {};
-		this.interfaces = new Set();
+		this.interfaces = {};
 
 		this.#processMetadata();
 
-		console.log(`Metadata processed for package ${namespace}.`);
+		JSDocSerializer.prepare(this);
+
+		console.log(`Metadata processed for package ${namespace}. Module base path: ${moduleBasePath}.`);
+	}
+
+	#deriveUi5ClassNames(classDef) {
+		// Calculate fully qualified class name based on the module name from the custom elements manifest
+		// e.g. dist/Avatar.js -> dist.Avatar
+		let convertedClassName = classDef.module.replace(/\//g, ".");
+		convertedClassName = convertedClassName.replace(/\.js$/, "");
+		classDef._derivedUi5ClassName = convertedClassName;
+
+		classDef._ui5QualifiedName = `${this.qualifiedNamespace}.${classDef._derivedUi5ClassName}`;
+
+		// TODO: Ideally not needed in the future once we have a solution for escaping in the UI5 JDSDoc build
+		//       Also remember to remove the "@ui5-module-override" directives in the HBS templates!
+		classDef._ui5QualifiedNameSlashes = classDef._ui5QualifiedName.replace(/\./g, "/");
 	}
 
 	#processMetadata() {
@@ -45,7 +89,12 @@ class RegistryEntry {
 		// [2] Connect superclasses
 		Object.keys(this.classes).forEach((className) => {
 			const classDef = this.classes[className];
+
+			this.#deriveUi5ClassNames(classDef);
+
 			this.#connectSuperclass(classDef);
+
+			this.#calculateScopedTagName(classDef);
 
 			// [3] create UI5 metadata for each classed based on the parsed custom elements metadata
 			//     Note: The order is important! We need to connect the superclass and create its metadata first.
@@ -55,6 +104,9 @@ class RegistryEntry {
 
 		// [4] prepare enum objects
 		this.#prepareEnums();
+
+		// [5] prepare interface definitions
+		this.#prepareInterfaces();
 	}
 
 	#parseDeclaration(decl) {
@@ -66,7 +118,7 @@ class RegistryEntry {
 				this.enums[decl.name] = decl;
 				break;
 			case "interface":
-				this.interfaces.add(decl.name);
+				this.interfaces[decl.name] = decl;
 				break;
 			default:
 				console.error("unknown declaration kind:", decl.kind);
@@ -98,6 +150,7 @@ class RegistryEntry {
 			const [npmPackage, ...nameParts] = superclassName.split(".");
 			classDef.superclass = {
 				name: nameParts.join("."),
+				_ui5QualifiedName: nameParts.join("."), // TODO: what is this?
 				package: npmPackage,
 				file: `dist/${nameParts.join("/")}.js`,
 			};
@@ -123,7 +176,16 @@ class RegistryEntry {
 	}
 
 	prefixns(str) {
-		return `${this.namespace}.${str}`;
+		return `${this.qualifiedNamespace}.${str}`;
+	}
+
+	#calculateScopedTagName(classDef) {
+		// only scope UI5Element subclasses
+		if (this.scopeSuffix && WebComponentRegistry.isUI5ElementSubclass(classDef)) {
+			if (classDef.tagName) {
+				classDef.scopedTagName = `${classDef.tagName}-${this.scopeSuffix}`;
+			}
+		}
 	}
 
 	// --- UI5 Metadata transformer below ---
@@ -131,8 +193,12 @@ class RegistryEntry {
 	#normalizeType(type) {
 		if (type) {
 			const lowerCaseName = type.toLowerCase();
-			if (type.toLowerCase() === "number") {
+			if (lowerCaseName === "number") {
 				return "float";
+			}
+			// HTMLElements are a valid type for event parameters
+			if (lowerCaseName === "htmlelement") {
+				return "HTMLElement";
 			}
 			return lowerCaseName;
 		}
@@ -140,8 +206,10 @@ class RegistryEntry {
 	}
 
 	#checkForInterfaceOrClassType(type) {
-		if (this.interfaces.has(type) || this.classes[type]) {
+		if (this.interfaces[type]) {
 			return this.prefixns(type);
+		} else if (this.classes[type]) {
+			return this.classes[type]._ui5QualifiedName;
 		}
 	}
 
@@ -267,6 +335,8 @@ class RegistryEntry {
 					formatter: "_getAriaLabelledByForRendering",
 				},
 			};
+			// Since we change the naming from "accessibleNameRef" to "ariaLabelledBy", we can't pass the propDef directly to the JSDocSerializer!
+			JSDocSerializer.writeDoc(classDef, "associations", { name: "ariaLabelledBy", description: propDef.description });
 			return true;
 		} else if (propDef.name === "disabled") {
 			// "disabled" maps to "enabled" in UI5
@@ -281,6 +351,9 @@ class RegistryEntry {
 					formatter: "_mapEnabled",
 				},
 			};
+			// Since we flip the naming from "disabled" to "enabled", we can't pass the propDef directly to the JSDocSerializer!
+			JSDocSerializer.writeDoc(classDef, "properties", { name: "enabled", description: propDef.description });
+
 			return true;
 		} else if (propDef.name === "textDirection") {
 			// text direction needs to be mapped to the native "dir"
@@ -293,6 +366,7 @@ class RegistryEntry {
 					formatter: "_mapTextDirection",
 				},
 			};
+			JSDocSerializer.writeDoc(classDef, "properties", propDef);
 			return true;
 		}
 
@@ -325,9 +399,16 @@ class RegistryEntry {
 			classDef._ui5implementsFormContent ??= propDef._ui5formProperty;
 
 			if (propDef.readonly) {
-				// calculated readonly fields -> WebC base class will generate getters
+				// calculated readonly fields -> UI5's WebComponentsMetadata class will generate getters
 				// e.g. AvatarGroup#getColorScheme
 				ui5metadata.getters.push(propDef.name);
+
+				// jsdoc must contain the generated name at UI5 runtime
+				JSDocSerializer.writeDoc(classDef, "getters", {
+					name: propDef.name,
+					getterName: calculateGetterName(propDef.name),
+					description: propDef.description,
+				});
 			} else if (ui5TypeInfo.isInterfaceOrClassType) {
 				console.warn(`[interface or class type given for property] ${classDef.name} - property ${propDef.name}`);
 			} else if (ui5TypeInfo.isAssociation) {
@@ -338,6 +419,7 @@ class RegistryEntry {
 						to: propDef.name, // the name of the webc's attribute
 					},
 				};
+				JSDocSerializer.writeDoc(classDef, "associations", propDef);
 			} else {
 				let defaultValue = propDef.default;
 				if (defaultValue) {
@@ -354,11 +436,20 @@ class RegistryEntry {
 					mapping: "property",
 					defaultValue: defaultValue,
 				};
+				JSDocSerializer.writeDoc(classDef, "properties", propDef);
 			}
 		} else if (propDef.kind === "method") {
 			// Methods are proxied through the core.WebComponent base class
 			// e.g. DatePicker#isValid or Toolbar#isOverflowOpen
 			ui5metadata.methods.push(propDef.name);
+
+			// method have parameters (unlike getters)
+			const jsDocParams = this.#parseMethodParameters(propDef);
+			JSDocSerializer.writeDoc(classDef, "methods", {
+				name: propDef.name,
+				description: propDef.description,
+				parameters: jsDocParams,
+			});
 		}
 	}
 
@@ -408,16 +499,66 @@ class RegistryEntry {
 			multiple: true,
 			slot: slotName,
 		};
+		// note: in case we changed the name of the aggregation (e.g. default), we can't pass the slotDef directly!
+		JSDocSerializer.writeDoc(classDef, "aggregations", { name: aggregationName, description: slotDef.description });
 	}
 
-	#processEvents(ui5metadata, eventDef) {
-		ui5metadata.events[camelize(eventDef.name)] = {};
+	/**
+	 * Parses the given event definition object and extracts the event parameters.
+	 * The event parameters are also tracking their respective JSDoc description texts.
+	 * @param {object} eventDef the event definition object from the custom elements metadata
+	 * @returns the parsed event parameters
+	 */
+	#parseEventParameters(eventDef) {
+		const parameters = eventDef._ui5parameters;
+		const parsedParams = {};
+		const jsDocParams = {};
+		parameters?.forEach((param) => {
+			const type = this.#extractUi5Type(param.type);
+			parsedParams[param.name] = {
+				type: type.ui5Type,
+			};
+			jsDocParams[param.name] = {
+				description: param.description,
+			};
+		});
+		return { parsedParams, jsDocParams };
+	}
+
+	#parseMethodParameters(methodDef) {
+		const parameters = methodDef.parameters;
+		const jsDocParams = {};
+		parameters?.forEach((param) => {
+			const type = this.#extractUi5Type(param.type);
+			jsDocParams[param.name] = {
+				name: param.name,
+				type: type.ui5Type,
+				description: param.description,
+			};
+		});
+		return jsDocParams;
+	}
+
+	#processEvents(classDef, ui5metadata, eventDef) {
+		// Same as with other entities we track the UI5 Metadata and the JSDoc separately
+		const { parsedParams, jsDocParams } = this.#parseEventParameters(eventDef);
+		const camelizedName = camelize(eventDef.name);
+
+		ui5metadata.events[camelizedName] = {
+			parameters: parsedParams,
+		};
+
+		JSDocSerializer.writeDoc(classDef, "events", {
+			name: camelizedName,
+			description: eventDef.description,
+			parameters: jsDocParams,
+		});
 	}
 
 	#processUI5Interfaces(classDef, ui5metadata) {
 		if (Array.isArray(classDef._ui5implements)) {
 			classDef._ui5implements.forEach((interfaceDef) => {
-				if (this.interfaces.has(interfaceDef.name)) {
+				if (this.interfaces[interfaceDef.name]) {
 					ui5metadata.interfaces.push(this.prefixns(interfaceDef.name));
 				}
 			});
@@ -462,6 +603,7 @@ class RegistryEntry {
 				type: "string",
 				mapping: "textContent",
 			};
+			JSDocSerializer.writeDoc(classDef, "properties", { name: "text", description: "The text-content of the Web Component." });
 		}
 
 		// cssProperties: [ "width", "height", "display" ]
@@ -470,6 +612,7 @@ class RegistryEntry {
 				type: "sap.ui.core.CSSSize",
 				mapping: "style",
 			};
+			JSDocSerializer.writeDoc(classDef, "properties", { name: "width", description: "The 'width' of the Web Component in <code>sap.ui.core.CSSSize</code>." });
 		}
 
 		if (!this.#ui5PropertyExistsInParentChain(classDef, "height")) {
@@ -477,6 +620,7 @@ class RegistryEntry {
 				type: "sap.ui.core.CSSSize",
 				mapping: "style",
 			};
+			JSDocSerializer.writeDoc(classDef, "properties", { name: "height", description: "The 'height' of the Web Component in <code>sap.ui.core.CSSSize</code>." });
 		}
 	}
 
@@ -486,13 +630,19 @@ class RegistryEntry {
 	 *
 	 * Most things patched in this function should eventually be available generically in the custom elements metadta.
 	 *
+	 * @param {object} classDef the class definition object
 	 * @param {object} ui5metadata the UI5 metadata object
 	 */
 	#patchUI5Specifics(classDef, ui5metadata) {
-		const { tag } = ui5metadata;
+		// The tag of UI5 web components might be scoped with a suffix depending on the project configuration
+		// we need to make tag.includes(...) checks instead of strict comparisons!
+		let { tag } = ui5metadata;
+		tag ??= ""; // ensure we have a string to work with, as some classes don't have a tag e.g. abstract base classes
+
+		// TODO: This whole method needs to be adapted to correctly write JSDoc
 
 		// The label has a couple of specifics that are not fully reflected in the custom elements.
-		if (tag === "ui5-label") {
+		if (tag.includes("ui5-label")) {
 			// the ui5-label has as default slot, but no aggregations on the retrofit layer...
 			ui5metadata.aggregations = [];
 			// the "for" attribute is called "labelFor" in the retrofit...
@@ -510,7 +660,7 @@ class RegistryEntry {
 			ui5metadata.interfaces.push("sap.ui.core.Label");
 			// Additionally, all such controls must apply the "sap/ui/core/LabelEnablement" (see "../templates/WrapperControl.hbs")
 			classDef._ui5specifics.needsLabelEnablement = true;
-		} else if (tag === "ui5-multi-input") {
+		} else if (tag.includes("ui5-multi-input")) {
 			// TODO: Multi Input needs to implement the functions defined in "sap.ui.core.ISemanticFormContent"...
 			ui5metadata.interfaces.push("sap.ui.core.ISemanticFormContent");
 		} else if (tag === "ui5-shellbar") {
@@ -552,7 +702,7 @@ class RegistryEntry {
 				// this is an interesting inconsistency that does not occur in the UI5 web components
 				// we report it here for custom web component development
 				console.warn(
-					`The class '${this.namespace}/${classDef.name}' defines a slot called 'valueStateMessage', but does not provide a corresponding 'valueState' property! A UI5 control expects both to be present for correct 'valueState' handling.`,
+					`The class '${classDef._ui5QualifiedName}' defines a slot called 'valueStateMessage', but does not provide a corresponding 'valueState' property! A UI5 control expects both to be present for correct 'valueState' handling.`,
 				);
 			}
 		}
@@ -561,7 +711,8 @@ class RegistryEntry {
 	#createUI5Metadata(classDef) {
 		const ui5metadata = (classDef._ui5metadata = {
 			namespace: this.namespace,
-			tag: classDef.tagName,
+			qualifiedNamespace: this.qualifiedNamespace,
+			tag: classDef.scopedTagName || classDef.tagName,
 			interfaces: [],
 			properties: {},
 			aggregations: {},
@@ -571,6 +722,10 @@ class RegistryEntry {
 			getters: [],
 			methods: [],
 		});
+
+		// we track the JSDoc extracted from the custom elements manifest separately,
+		// as they are not part of the runtime metadata
+		JSDocSerializer.initClass(classDef);
 
 		// we track a couple of UI5 specifics like interfaces and mixins separately
 		classDef._ui5specifics = {};
@@ -584,7 +739,7 @@ class RegistryEntry {
 		});
 
 		classDef.events?.forEach((eventDef) => {
-			this.#processEvents(ui5metadata, eventDef);
+			this.#processEvents(classDef, ui5metadata, eventDef);
 		});
 
 		this.#processUI5Interfaces(classDef, ui5metadata);
@@ -595,7 +750,8 @@ class RegistryEntry {
 	}
 
 	/**
-	 * Prepares the UI5 enum objects for the "package.hbs" template.
+	 * Prepares the UI5 enum objects and enriches them with appropriate JSDoc.
+	 * Used in the respective HBS template.
 	 */
 	#prepareEnums() {
 		Object.keys(this.enums).forEach((enumName) => {
@@ -604,19 +760,42 @@ class RegistryEntry {
 			const enumMembers = this.enums[enumName].members;
 			enumMembers.forEach((member) => {
 				// Key<>Value must be identical!
-				enumValues.push(member.name);
+				enumValues.push({ name: member.name, description: member.description || "" });
 			});
 
-			this.enums[enumName] = enumValues;
+			// prepare enum info object for HBS template later
+			this.enums[enumName] = {
+				name: enumName,
+				_ui5QualifiedName: this.prefixns(enumName),
+				// TODO: Ideally not needed in the future once we have a solution for escaping in the UI5 JDSDoc build
+				//       Also remember to remove the "@ui5-module-override" directives in the HBS templates!
+				_ui5QualifiedNameSlashes: this.qualifiedNamespace.replace(/\./g, "/"),
+				description: this.enums[enumName].description || "",
+				values: enumValues,
+			};
+		});
+	}
+
+	/**
+	 * Prepares the UI5 interface definitions and enriches them with appropriate JSDoc.
+	 * Used in the respective HBS template.
+	 */
+	#prepareInterfaces() {
+		Object.keys(this.interfaces).forEach((interfaceName) => {
+			const interfaceDef = this.interfaces[interfaceName];
+			interfaceDef._ui5QualifiedName = this.prefixns(interfaceName);
+			// TODO: Ideally not needed in the future once we have a solution for escaping in the UI5 JDSDoc build
+			//       Also remember to remove the "@ui5-module-override" directives in the HBS templates!
+			interfaceDef._ui5QualifiedNameSlashes = this.qualifiedNamespace.replace(/\./g, "/");
 		});
 	}
 }
 
 const WebComponentRegistry = {
-	register({ customElementsMetadata, namespace, npmPackagePath, version }) {
+	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, moduleBasePath, removeScopePrefix }) {
 		let entry = _registry[namespace];
 		if (!entry) {
-			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, npmPackagePath, version });
+			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, moduleBasePath, removeScopePrefix, version });
 
 			// track all classes also via their module name,
 			// so we can access them faster during resource resolution later on
@@ -653,6 +832,26 @@ const WebComponentRegistry = {
 	clear() {
 		_registry = {};
 		_classAliases = {};
+	},
+
+	/**
+	 * Helper function to check whether the given class inherits from UI5Element, the base class for all
+	 * UI5 web components.
+	 *
+	 * @param {object} classDef a class definition from a WebComponentRegistry entry
+	 * @returns {boolean} whether the class inherits from UI5Element
+	 */
+	isUI5ElementSubclass(classDef) {
+		let superclass = classDef.superclass,
+			isUI5ElementSubclass = false;
+		while (superclass) {
+			if (superclass?.namespace === "@ui5/webcomponents-base" && superclass?.name === "UI5Element") {
+				isUI5ElementSubclass = true;
+				break;
+			}
+			superclass = superclass.superclass;
+		}
+		return isUI5ElementSubclass;
 	},
 };
 
