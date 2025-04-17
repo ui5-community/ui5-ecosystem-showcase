@@ -894,13 +894,17 @@ module.exports = function (log, projectInfo) {
 					// the conditions and mappings to resolve the module path
 					const communityConditions = ["browser", "production" /*, "development"*/]; // could be injected from outside
 					const mainModuleConditions = ["esnext", "module", "main"];
-					const resolveConditions = [...communityConditions, ...mainModuleConditions, "import", "require", "default"]; // require is just the fallback!
+					const resolveConditions = [...communityConditions, ...mainModuleConditions, "import", "default", "require"]; // require is just the fallback!
+					// for the browser field, we need to resolve the conditions in a different order (axios showed this)
+					// the require field should be used before the default field to ensure the correct resolution
+					// as e.g. axios provides the browser package in the require field
+					const resolveConditionsBrowser = [...communityConditions, ...mainModuleConditions, "import", "require", "default"]; // default is just the fallback!
 
 					// helper to resolve the target of a mapping:
 					//  - if the target is a string it is returned (and if needed the wildcard is replaced)
 					//  - if the target is an array the first resolved target is returned
 					//  - if the target is an object the first resolved target of the conditions is returned
-					const resolveTarget = (target, wildcardMatch) => {
+					const resolveTarget = (target, wildcardMatch, conditionsToResolve = resolveConditions) => {
 						if (typeof target === "string") {
 							if (!wildcardMatch) {
 								return target;
@@ -919,9 +923,9 @@ module.exports = function (log, projectInfo) {
 							}
 						} else if (target && typeof target === "object") {
 							// resolve the target of the conditions
-							for (const condition of resolveConditions) {
+							for (const condition of conditionsToResolve) {
 								if (condition in target) {
-									let resolved = resolveTarget(target[condition], wildcardMatch);
+									let resolved = resolveTarget(target[condition], wildcardMatch, condition === "browser" ? resolveConditionsBrowser : resolveConditions);
 									if (resolved) {
 										return resolved;
 									}
@@ -983,32 +987,37 @@ module.exports = function (log, projectInfo) {
 					let mainExport;
 					if (subPath === ".") {
 						// if the module is the main module of the package
-						if (typeof browser === "string") {
-							// if a browser field is a string value in the package.json
-							// the main module is defined in the browser field
-							// (an object value means it is a mapping used below!)
-							mainExport = browser;
-						} else if (typeof exports === "string" || Array.isArray(exports) || isConditions(exports)) {
+						//   => first we resolve the exports property
+						//   => then the default exports fields
+						// detected with the issue #1196 in which it shows that
+						// sinon wrongly configured the browser field which
+						// doesn't match the exports > browser field and therefore
+						// the generated module doesn't properly export itself
+						if (typeof exports === "string" || Array.isArray(exports) || isConditions(exports)) {
 							// if exports is a string, an array or an object with conditions
 							// the main module is defined by the exports field
 							mainExport = exports;
 						} else if (isMappings(exports)) {
 							// if exports is an object with mappings it is defined in the "." exports field
 							mainExport = exports["."];
+						} else if (typeof browser === "string") {
+							// if a browser field is a string value in the package.json
+							// the main module is defined in the browser field
+							// (an object value means it is a mapping used below!)
+							mainExport = browser;
 						} else {
 							// lookup the entry modules in the package.json root (esnext, module, main, ...)
 							mainExport = pkgJson;
 						}
 						const resolved = resolveTarget(mainExport);
 						modulePath = resolved ? path.join(rootPath, resolved) : undefined;
-					} else if (isMappings(browser)) {
-						// if the module is a sub module of the package and the package has a browser field
-						// which contains
-						const resolved = resolveExports(browser, subPath);
-						modulePath = resolved ? path.join(rootPath, resolved) : undefined;
 					} else if (isMappings(exports)) {
 						// if the module is a sub module of the package
 						const resolved = resolveExports(exports, subPath);
+						modulePath = resolved ? path.join(rootPath, resolved) : undefined;
+					} else if (isMappings(browser)) {
+						// if the module is a sub module of the package and the package has a browser field
+						const resolved = resolveExports(browser, subPath);
 						modulePath = resolved ? path.join(rootPath, resolved) : undefined;
 					}
 
@@ -1124,6 +1133,17 @@ module.exports = function (log, projectInfo) {
 					nodePolyfills(),
 					nodePolyfillsOverride.inject(inject),
 					transformTopLevelThis({ log, walk }),
+					/*
+					{
+						name: 'moduleParsedHook',
+						moduleParsed({id, meta}) {
+							const moduleInfo = this.getModuleInfo(id);
+							if (moduleInfo?.isEntry) {
+								console.log(`File ${id} is CommonJS: ${meta?.commonjs?.isCommonJS}`);
+							}
+						}
+					},
+					*/
 					...(afterPlugins || []),
 				],
 				onwarn: function ({ loc, frame, code, message }) {

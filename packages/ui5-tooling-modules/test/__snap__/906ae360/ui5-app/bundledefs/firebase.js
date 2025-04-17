@@ -1206,245 +1206,164 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
   }
 
-  var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-  var index_cjs = {};
-
-  var hasRequiredIndex_cjs;
-
-  function requireIndex_cjs () {
-  	if (hasRequiredIndex_cjs) return index_cjs;
-  	hasRequiredIndex_cjs = 1;
-  	(function (exports) {
-
-  		Object.defineProperty(exports, '__esModule', { value: true });
-
-  		/**
-  		 * @license
-  		 * Copyright 2017 Google LLC
-  		 *
-  		 * Licensed under the Apache License, Version 2.0 (the "License");
-  		 * you may not use this file except in compliance with the License.
-  		 * You may obtain a copy of the License at
-  		 *
-  		 *   http://www.apache.org/licenses/LICENSE-2.0
-  		 *
-  		 * Unless required by applicable law or agreed to in writing, software
-  		 * distributed under the License is distributed on an "AS IS" BASIS,
-  		 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  		 * See the License for the specific language governing permissions and
-  		 * limitations under the License.
-  		 */
-  		/**
-  		 * A container for all of the Logger instances
-  		 */
-  		const instances = [];
-  		/**
-  		 * The JS SDK supports 5 log levels and also allows a user the ability to
-  		 * silence the logs altogether.
-  		 *
-  		 * The order is a follows:
-  		 * DEBUG < VERBOSE < INFO < WARN < ERROR
-  		 *
-  		 * All of the log types above the current log level will be captured (i.e. if
-  		 * you set the log level to `INFO`, errors will still be logged, but `DEBUG` and
-  		 * `VERBOSE` logs will not)
-  		 */
-  		exports.LogLevel = void 0;
-  		(function (LogLevel) {
-  		    LogLevel[LogLevel["DEBUG"] = 0] = "DEBUG";
-  		    LogLevel[LogLevel["VERBOSE"] = 1] = "VERBOSE";
-  		    LogLevel[LogLevel["INFO"] = 2] = "INFO";
-  		    LogLevel[LogLevel["WARN"] = 3] = "WARN";
-  		    LogLevel[LogLevel["ERROR"] = 4] = "ERROR";
-  		    LogLevel[LogLevel["SILENT"] = 5] = "SILENT";
-  		})(exports.LogLevel || (exports.LogLevel = {}));
-  		const levelStringToEnum = {
-  		    'debug': exports.LogLevel.DEBUG,
-  		    'verbose': exports.LogLevel.VERBOSE,
-  		    'info': exports.LogLevel.INFO,
-  		    'warn': exports.LogLevel.WARN,
-  		    'error': exports.LogLevel.ERROR,
-  		    'silent': exports.LogLevel.SILENT
-  		};
-  		/**
-  		 * The default log level
-  		 */
-  		const defaultLogLevel = exports.LogLevel.INFO;
-  		/**
-  		 * By default, `console.debug` is not displayed in the developer console (in
-  		 * chrome). To avoid forcing users to have to opt-in to these logs twice
-  		 * (i.e. once for firebase, and once in the console), we are sending `DEBUG`
-  		 * logs to the `console.log` function.
-  		 */
-  		const ConsoleMethod = {
-  		    [exports.LogLevel.DEBUG]: 'log',
-  		    [exports.LogLevel.VERBOSE]: 'log',
-  		    [exports.LogLevel.INFO]: 'info',
-  		    [exports.LogLevel.WARN]: 'warn',
-  		    [exports.LogLevel.ERROR]: 'error'
-  		};
-  		/**
-  		 * The default log handler will forward DEBUG, VERBOSE, INFO, WARN, and ERROR
-  		 * messages on to their corresponding console counterparts (if the log method
-  		 * is supported by the current log level)
-  		 */
-  		const defaultLogHandler = (instance, logType, ...args) => {
-  		    if (logType < instance.logLevel) {
-  		        return;
-  		    }
-  		    const now = new Date().toISOString();
-  		    const method = ConsoleMethod[logType];
-  		    if (method) {
-  		        console[method](`[${now}]  ${instance.name}:`, ...args);
-  		    }
-  		    else {
-  		        throw new Error(`Attempted to log a message with an invalid logType (value: ${logType})`);
-  		    }
-  		};
-  		class Logger {
-  		    /**
-  		     * Gives you an instance of a Logger to capture messages according to
-  		     * Firebase's logging scheme.
-  		     *
-  		     * @param name The name that the logs will be associated with
-  		     */
-  		    constructor(name) {
-  		        this.name = name;
-  		        /**
-  		         * The log level of the given Logger instance.
-  		         */
-  		        this._logLevel = defaultLogLevel;
-  		        /**
-  		         * The main (internal) log handler for the Logger instance.
-  		         * Can be set to a new function in internal package code but not by user.
-  		         */
-  		        this._logHandler = defaultLogHandler;
-  		        /**
-  		         * The optional, additional, user-defined log handler for the Logger instance.
-  		         */
-  		        this._userLogHandler = null;
-  		        /**
-  		         * Capture the current instance for later use
-  		         */
-  		        instances.push(this);
-  		    }
-  		    get logLevel() {
-  		        return this._logLevel;
-  		    }
-  		    set logLevel(val) {
-  		        if (!(val in exports.LogLevel)) {
-  		            throw new TypeError(`Invalid value "${val}" assigned to \`logLevel\``);
-  		        }
-  		        this._logLevel = val;
-  		    }
-  		    // Workaround for setter/getter having to be the same type.
-  		    setLogLevel(val) {
-  		        this._logLevel = typeof val === 'string' ? levelStringToEnum[val] : val;
-  		    }
-  		    get logHandler() {
-  		        return this._logHandler;
-  		    }
-  		    set logHandler(val) {
-  		        if (typeof val !== 'function') {
-  		            throw new TypeError('Value assigned to `logHandler` must be a function');
-  		        }
-  		        this._logHandler = val;
-  		    }
-  		    get userLogHandler() {
-  		        return this._userLogHandler;
-  		    }
-  		    set userLogHandler(val) {
-  		        this._userLogHandler = val;
-  		    }
-  		    /**
-  		     * The functions below are all based on the `console` interface
-  		     */
-  		    debug(...args) {
-  		        this._userLogHandler && this._userLogHandler(this, exports.LogLevel.DEBUG, ...args);
-  		        this._logHandler(this, exports.LogLevel.DEBUG, ...args);
-  		    }
-  		    log(...args) {
-  		        this._userLogHandler &&
-  		            this._userLogHandler(this, exports.LogLevel.VERBOSE, ...args);
-  		        this._logHandler(this, exports.LogLevel.VERBOSE, ...args);
-  		    }
-  		    info(...args) {
-  		        this._userLogHandler && this._userLogHandler(this, exports.LogLevel.INFO, ...args);
-  		        this._logHandler(this, exports.LogLevel.INFO, ...args);
-  		    }
-  		    warn(...args) {
-  		        this._userLogHandler && this._userLogHandler(this, exports.LogLevel.WARN, ...args);
-  		        this._logHandler(this, exports.LogLevel.WARN, ...args);
-  		    }
-  		    error(...args) {
-  		        this._userLogHandler && this._userLogHandler(this, exports.LogLevel.ERROR, ...args);
-  		        this._logHandler(this, exports.LogLevel.ERROR, ...args);
-  		    }
-  		}
-  		function setLogLevel(level) {
-  		    instances.forEach(inst => {
-  		        inst.setLogLevel(level);
-  		    });
-  		}
-  		function setUserLogHandler(logCallback, options) {
-  		    for (const instance of instances) {
-  		        let customLogLevel = null;
-  		        if (options && options.level) {
-  		            customLogLevel = levelStringToEnum[options.level];
-  		        }
-  		        if (logCallback === null) {
-  		            instance.userLogHandler = null;
-  		        }
-  		        else {
-  		            instance.userLogHandler = (instance, level, ...args) => {
-  		                const message = args
-  		                    .map(arg => {
-  		                    if (arg == null) {
-  		                        return null;
-  		                    }
-  		                    else if (typeof arg === 'string') {
-  		                        return arg;
-  		                    }
-  		                    else if (typeof arg === 'number' || typeof arg === 'boolean') {
-  		                        return arg.toString();
-  		                    }
-  		                    else if (arg instanceof Error) {
-  		                        return arg.message;
-  		                    }
-  		                    else {
-  		                        try {
-  		                            return JSON.stringify(arg);
-  		                        }
-  		                        catch (ignored) {
-  		                            return null;
-  		                        }
-  		                    }
-  		                })
-  		                    .filter(arg => arg)
-  		                    .join(' ');
-  		                if (level >= (customLogLevel !== null && customLogLevel !== void 0 ? customLogLevel : instance.logLevel)) {
-  		                    logCallback({
-  		                        level: exports.LogLevel[level].toLowerCase(),
-  		                        message,
-  		                        args,
-  		                        type: instance.name
-  		                    });
-  		                }
-  		            };
-  		        }
-  		    }
-  		}
-
-  		exports.Logger = Logger;
-  		exports.setLogLevel = setLogLevel;
-  		exports.setUserLogHandler = setUserLogHandler;
-  		
-  	} (index_cjs));
-  	return index_cjs;
+  /**
+   * @license
+   * Copyright 2017 Google LLC
+   *
+   * Licensed under the Apache License, Version 2.0 (the "License");
+   * you may not use this file except in compliance with the License.
+   * You may obtain a copy of the License at
+   *
+   *   http://www.apache.org/licenses/LICENSE-2.0
+   *
+   * Unless required by applicable law or agreed to in writing, software
+   * distributed under the License is distributed on an "AS IS" BASIS,
+   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   * See the License for the specific language governing permissions and
+   * limitations under the License.
+   */
+  /**
+   * A container for all of the Logger instances
+   */
+  /**
+   * The JS SDK supports 5 log levels and also allows a user the ability to
+   * silence the logs altogether.
+   *
+   * The order is a follows:
+   * DEBUG < VERBOSE < INFO < WARN < ERROR
+   *
+   * All of the log types above the current log level will be captured (i.e. if
+   * you set the log level to `INFO`, errors will still be logged, but `DEBUG` and
+   * `VERBOSE` logs will not)
+   */
+  var LogLevel;
+  (function (LogLevel) {
+      LogLevel[LogLevel["DEBUG"] = 0] = "DEBUG";
+      LogLevel[LogLevel["VERBOSE"] = 1] = "VERBOSE";
+      LogLevel[LogLevel["INFO"] = 2] = "INFO";
+      LogLevel[LogLevel["WARN"] = 3] = "WARN";
+      LogLevel[LogLevel["ERROR"] = 4] = "ERROR";
+      LogLevel[LogLevel["SILENT"] = 5] = "SILENT";
+  })(LogLevel || (LogLevel = {}));
+  const levelStringToEnum = {
+      'debug': LogLevel.DEBUG,
+      'verbose': LogLevel.VERBOSE,
+      'info': LogLevel.INFO,
+      'warn': LogLevel.WARN,
+      'error': LogLevel.ERROR,
+      'silent': LogLevel.SILENT
+  };
+  /**
+   * The default log level
+   */
+  const defaultLogLevel = LogLevel.INFO;
+  /**
+   * By default, `console.debug` is not displayed in the developer console (in
+   * chrome). To avoid forcing users to have to opt-in to these logs twice
+   * (i.e. once for firebase, and once in the console), we are sending `DEBUG`
+   * logs to the `console.log` function.
+   */
+  const ConsoleMethod = {
+      [LogLevel.DEBUG]: 'log',
+      [LogLevel.VERBOSE]: 'log',
+      [LogLevel.INFO]: 'info',
+      [LogLevel.WARN]: 'warn',
+      [LogLevel.ERROR]: 'error'
+  };
+  /**
+   * The default log handler will forward DEBUG, VERBOSE, INFO, WARN, and ERROR
+   * messages on to their corresponding console counterparts (if the log method
+   * is supported by the current log level)
+   */
+  const defaultLogHandler = (instance, logType, ...args) => {
+      if (logType < instance.logLevel) {
+          return;
+      }
+      const now = new Date().toISOString();
+      const method = ConsoleMethod[logType];
+      if (method) {
+          console[method](`[${now}]  ${instance.name}:`, ...args);
+      }
+      else {
+          throw new Error(`Attempted to log a message with an invalid logType (value: ${logType})`);
+      }
+  };
+  class Logger {
+      /**
+       * Gives you an instance of a Logger to capture messages according to
+       * Firebase's logging scheme.
+       *
+       * @param name The name that the logs will be associated with
+       */
+      constructor(name) {
+          this.name = name;
+          /**
+           * The log level of the given Logger instance.
+           */
+          this._logLevel = defaultLogLevel;
+          /**
+           * The main (internal) log handler for the Logger instance.
+           * Can be set to a new function in internal package code but not by user.
+           */
+          this._logHandler = defaultLogHandler;
+          /**
+           * The optional, additional, user-defined log handler for the Logger instance.
+           */
+          this._userLogHandler = null;
+      }
+      get logLevel() {
+          return this._logLevel;
+      }
+      set logLevel(val) {
+          if (!(val in LogLevel)) {
+              throw new TypeError(`Invalid value "${val}" assigned to \`logLevel\``);
+          }
+          this._logLevel = val;
+      }
+      // Workaround for setter/getter having to be the same type.
+      setLogLevel(val) {
+          this._logLevel = typeof val === 'string' ? levelStringToEnum[val] : val;
+      }
+      get logHandler() {
+          return this._logHandler;
+      }
+      set logHandler(val) {
+          if (typeof val !== 'function') {
+              throw new TypeError('Value assigned to `logHandler` must be a function');
+          }
+          this._logHandler = val;
+      }
+      get userLogHandler() {
+          return this._userLogHandler;
+      }
+      set userLogHandler(val) {
+          this._userLogHandler = val;
+      }
+      /**
+       * The functions below are all based on the `console` interface
+       */
+      debug(...args) {
+          this._userLogHandler && this._userLogHandler(this, LogLevel.DEBUG, ...args);
+          this._logHandler(this, LogLevel.DEBUG, ...args);
+      }
+      log(...args) {
+          this._userLogHandler &&
+              this._userLogHandler(this, LogLevel.VERBOSE, ...args);
+          this._logHandler(this, LogLevel.VERBOSE, ...args);
+      }
+      info(...args) {
+          this._userLogHandler && this._userLogHandler(this, LogLevel.INFO, ...args);
+          this._logHandler(this, LogLevel.INFO, ...args);
+      }
+      warn(...args) {
+          this._userLogHandler && this._userLogHandler(this, LogLevel.WARN, ...args);
+          this._logHandler(this, LogLevel.WARN, ...args);
+      }
+      error(...args) {
+          this._userLogHandler && this._userLogHandler(this, LogLevel.ERROR, ...args);
+          this._logHandler(this, LogLevel.ERROR, ...args);
+      }
   }
-
-  var index_cjsExports = requireIndex_cjs();
 
   const instanceOfAny = (object, constructors) => constructors.some((c) => object instanceof c);
 
@@ -1779,7 +1698,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */
-  const logger = new index_cjsExports.Logger('@firebase/app');
+  const logger = new Logger('@firebase/app');
 
   const name$p = "@firebase/app-compat";
 
@@ -2647,49 +2566,41 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */
   registerVersion(name, version, 'app');
 
-  var bloom_blob_es2018 = {};
+  var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global$1 !== 'undefined' ? global$1 : typeof self !== 'undefined' ? self : {};
 
   /** @license
   Copyright The Closure Library Authors.
   SPDX-License-Identifier: Apache-2.0
   */
 
-  var hasRequiredBloom_blob_es2018;
+  var Integer;
+  (function() {var h;/** @license
 
-  function requireBloom_blob_es2018 () {
-  	if (hasRequiredBloom_blob_es2018) return bloom_blob_es2018;
-  	hasRequiredBloom_blob_es2018 = 1;
-  	(function() {var h;/** @license
-
-  	 Copyright The Closure Library Authors.
-  	 SPDX-License-Identifier: Apache-2.0
-  	*/
-  	function k(f,a){function c(){}c.prototype=a.prototype;f.D=a.prototype;f.prototype=new c;f.prototype.constructor=f;f.C=function(d,e,g){for(var b=Array(arguments.length-2),r=2;r<arguments.length;r++)b[r-2]=arguments[r];return a.prototype[e].apply(d,b)};}function l(){this.blockSize=-1;}function m(){this.blockSize=-1;this.blockSize=64;this.g=Array(4);this.B=Array(this.blockSize);this.o=this.h=0;this.s();}k(m,l);m.prototype.s=function(){this.g[0]=1732584193;this.g[1]=4023233417;this.g[2]=2562383102;this.g[3]=271733878;this.o=this.h=0;};
-  	function n(f,a,c){c||(c=0);var d=Array(16);if("string"===typeof a)for(var e=0;16>e;++e)d[e]=a.charCodeAt(c++)|a.charCodeAt(c++)<<8|a.charCodeAt(c++)<<16|a.charCodeAt(c++)<<24;else for(e=0;16>e;++e)d[e]=a[c++]|a[c++]<<8|a[c++]<<16|a[c++]<<24;a=f.g[0];c=f.g[1];e=f.g[2];var g=f.g[3];var b=a+(g^c&(e^g))+d[0]+3614090360&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[1]+3905402710&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+d[2]+606105819&4294967295;e=g+(b<<17&4294967295|b>>>15);
-  	b=c+(a^e&(g^a))+d[3]+3250441966&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+d[4]+4118548399&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[5]+1200080426&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+d[6]+2821735955&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+d[7]+4249261313&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+d[8]+1770035416&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[9]+2336552879&4294967295;g=a+(b<<12&4294967295|
-  	b>>>20);b=e+(c^g&(a^c))+d[10]+4294925233&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+d[11]+2304563134&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+d[12]+1804603682&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[13]+4254626195&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+d[14]+2792965006&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+d[15]+1236535329&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(e^g&(c^e))+d[1]+4129170786&4294967295;a=c+(b<<
-  	5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[6]+3225465664&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[11]+643717713&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[0]+3921069994&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+d[5]+3593408605&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[10]+38016083&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[15]+3634488961&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[4]+3889429448&4294967295;c=
-  	e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+d[9]+568446438&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[14]+3275163606&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[3]+4107603335&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[8]+1163531501&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+d[13]+2850285829&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[2]+4243563512&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[7]+1735328473&4294967295;
-  	e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[12]+2368359562&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(c^e^g)+d[5]+4294588738&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[8]+2272392833&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+d[11]+1839030562&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[14]+4259657740&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+d[1]+2763975236&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[4]+1272893353&4294967295;g=a+(b<<11&4294967295|
-  	b>>>21);b=e+(g^a^c)+d[7]+4139469664&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[10]+3200236656&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+d[13]+681279174&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[0]+3936430074&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+d[3]+3572445317&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[6]+76029189&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+d[9]+3654602809&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[12]+
-  	3873151461&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+d[15]+530742520&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[2]+3299628645&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(e^(c|~g))+d[0]+4096336452&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[7]+1126891415&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[14]+2878612391&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[5]+4237533241&4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[12]+1700485571&
-  	4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[3]+2399980690&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[10]+4293915773&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[1]+2240044497&4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[8]+1873313359&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[15]+4264355552&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[6]+2734768916&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[13]+1309151649&
-  	4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[4]+4149444226&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[11]+3174756917&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[2]+718787259&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[9]+3951481745&4294967295;f.g[0]=f.g[0]+a&4294967295;f.g[1]=f.g[1]+(e+(b<<21&4294967295|b>>>11))&4294967295;f.g[2]=f.g[2]+e&4294967295;f.g[3]=f.g[3]+g&4294967295;}
-  	m.prototype.u=function(f,a){ void 0===a&&(a=f.length);for(var c=a-this.blockSize,d=this.B,e=this.h,g=0;g<a;){if(0==e)for(;g<=c;)n(this,f,g),g+=this.blockSize;if("string"===typeof f)for(;g<a;){if(d[e++]=f.charCodeAt(g++),e==this.blockSize){n(this,d);e=0;break}}else for(;g<a;)if(d[e++]=f[g++],e==this.blockSize){n(this,d);e=0;break}}this.h=e;this.o+=a;};
-  	m.prototype.v=function(){var f=Array((56>this.h?this.blockSize:2*this.blockSize)-this.h);f[0]=128;for(var a=1;a<f.length-8;++a)f[a]=0;var c=8*this.o;for(a=f.length-8;a<f.length;++a)f[a]=c&255,c/=256;this.u(f);f=Array(16);for(a=c=0;4>a;++a)for(var d=0;32>d;d+=8)f[c++]=this.g[a]>>>d&255;return f};function p(f,a){var c=q;return Object.prototype.hasOwnProperty.call(c,f)?c[f]:c[f]=a(f)}function t(f,a){this.h=a;for(var c=[],d=true,e=f.length-1;0<=e;e--){var g=f[e]|0;d&&g==a||(c[e]=g,d=false);}this.g=c;}var q={};function u(f){return  -128<=f&&128>f?p(f,function(a){return new t([a|0],0>a?-1:0)}):new t([f|0],0>f?-1:0)}function v(f){if(isNaN(f)||!isFinite(f))return w;if(0>f)return x(v(-f));for(var a=[],c=1,d=0;f>=c;d++)a[d]=f/c|0,c*=4294967296;return new t(a,0)}
-  	function y(f,a){if(0==f.length)throw Error("number format error: empty string");a=a||10;if(2>a||36<a)throw Error("radix out of range: "+a);if("-"==f.charAt(0))return x(y(f.substring(1),a));if(0<=f.indexOf("-"))throw Error('number format error: interior "-" character');for(var c=v(Math.pow(a,8)),d=w,e=0;e<f.length;e+=8){var g=Math.min(8,f.length-e),b=parseInt(f.substring(e,e+g),a);8>g?(g=v(Math.pow(a,g)),d=d.j(g).add(v(b))):(d=d.j(c),d=d.add(v(b)));}return d}var w=u(0),z=u(1),A=u(16777216);h=t.prototype;
-  	h.m=function(){if(B(this))return -x(this).m();for(var f=0,a=1,c=0;c<this.g.length;c++){var d=this.i(c);f+=(0<=d?d:4294967296+d)*a;a*=4294967296;}return f};h.toString=function(f){f=f||10;if(2>f||36<f)throw Error("radix out of range: "+f);if(C(this))return "0";if(B(this))return "-"+x(this).toString(f);for(var a=v(Math.pow(f,6)),c=this,d="";;){var e=D(c,a).g;c=F(c,e.j(a));var g=((0<c.g.length?c.g[0]:c.h)>>>0).toString(f);c=e;if(C(c))return g+d;for(;6>g.length;)g="0"+g;d=g+d;}};
-  	h.i=function(f){return 0>f?0:f<this.g.length?this.g[f]:this.h};function C(f){if(0!=f.h)return  false;for(var a=0;a<f.g.length;a++)if(0!=f.g[a])return  false;return  true}function B(f){return  -1==f.h}h.l=function(f){f=F(this,f);return B(f)?-1:C(f)?0:1};function x(f){for(var a=f.g.length,c=[],d=0;d<a;d++)c[d]=~f.g[d];return (new t(c,~f.h)).add(z)}h.abs=function(){return B(this)?x(this):this};
-  	h.add=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0,e=0;e<=a;e++){var g=d+(this.i(e)&65535)+(f.i(e)&65535),b=(g>>>16)+(this.i(e)>>>16)+(f.i(e)>>>16);d=b>>>16;g&=65535;b&=65535;c[e]=b<<16|g;}return new t(c,c[c.length-1]&-2147483648?-1:0)};function F(f,a){return f.add(x(a))}
-  	h.j=function(f){if(C(this)||C(f))return w;if(B(this))return B(f)?x(this).j(x(f)):x(x(this).j(f));if(B(f))return x(this.j(x(f)));if(0>this.l(A)&&0>f.l(A))return v(this.m()*f.m());for(var a=this.g.length+f.g.length,c=[],d=0;d<2*a;d++)c[d]=0;for(d=0;d<this.g.length;d++)for(var e=0;e<f.g.length;e++){var g=this.i(d)>>>16,b=this.i(d)&65535,r=f.i(e)>>>16,E=f.i(e)&65535;c[2*d+2*e]+=b*E;G(c,2*d+2*e);c[2*d+2*e+1]+=g*E;G(c,2*d+2*e+1);c[2*d+2*e+1]+=b*r;G(c,2*d+2*e+1);c[2*d+2*e+2]+=g*r;G(c,2*d+2*e+2);}for(d=0;d<
-  	a;d++)c[d]=c[2*d+1]<<16|c[2*d];for(d=a;d<2*a;d++)c[d]=0;return new t(c,0)};function G(f,a){for(;(f[a]&65535)!=f[a];)f[a+1]+=f[a]>>>16,f[a]&=65535,a++;}function H(f,a){this.g=f;this.h=a;}
-  	function D(f,a){if(C(a))throw Error("division by zero");if(C(f))return new H(w,w);if(B(f))return a=D(x(f),a),new H(x(a.g),x(a.h));if(B(a))return a=D(f,x(a)),new H(x(a.g),a.h);if(30<f.g.length){if(B(f)||B(a))throw Error("slowDivide_ only works with positive integers.");for(var c=z,d=a;0>=d.l(f);)c=I(c),d=I(d);var e=J(c,1),g=J(d,1);d=J(d,2);for(c=J(c,2);!C(d);){var b=g.add(d);0>=b.l(f)&&(e=e.add(c),g=b);d=J(d,1);c=J(c,1);}a=F(f,e.j(a));return new H(e,a)}for(e=w;0<=f.l(a);){c=Math.max(1,Math.floor(f.m()/
-  	a.m()));d=Math.ceil(Math.log(c)/Math.LN2);d=48>=d?1:Math.pow(2,d-48);g=v(c);for(b=g.j(a);B(b)||0<b.l(f);)c-=d,g=v(c),b=g.j(a);C(g)&&(g=z);e=e.add(g);f=F(f,b);}return new H(e,f)}h.A=function(f){return D(this,f).h};h.and=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0;d<a;d++)c[d]=this.i(d)&f.i(d);return new t(c,this.h&f.h)};h.or=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0;d<a;d++)c[d]=this.i(d)|f.i(d);return new t(c,this.h|f.h)};
-  	h.xor=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0;d<a;d++)c[d]=this.i(d)^f.i(d);return new t(c,this.h^f.h)};function I(f){for(var a=f.g.length+1,c=[],d=0;d<a;d++)c[d]=f.i(d)<<1|f.i(d-1)>>>31;return new t(c,f.h)}function J(f,a){var c=a>>5;a%=32;for(var d=f.g.length-c,e=[],g=0;g<d;g++)e[g]=0<a?f.i(g+c)>>>a|f.i(g+c+1)<<32-a:f.i(g+c);return new t(e,f.h)}m.prototype.digest=m.prototype.v;m.prototype.reset=m.prototype.s;m.prototype.update=m.prototype.u;bloom_blob_es2018.Md5=m;t.prototype.add=t.prototype.add;t.prototype.multiply=t.prototype.j;t.prototype.modulo=t.prototype.A;t.prototype.compare=t.prototype.l;t.prototype.toNumber=t.prototype.m;t.prototype.toString=t.prototype.toString;t.prototype.getBits=t.prototype.i;t.fromNumber=v;t.fromString=y;bloom_blob_es2018.Integer=t;}).apply( typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : typeof self !== 'undefined' ? self  : typeof window !== 'undefined' ? window  : {});
-  	return bloom_blob_es2018;
-  }
-
-  var bloom_blob_es2018Exports = requireBloom_blob_es2018();
+   Copyright The Closure Library Authors.
+   SPDX-License-Identifier: Apache-2.0
+  */
+  function k(f,a){function c(){}c.prototype=a.prototype;f.D=a.prototype;f.prototype=new c;f.prototype.constructor=f;f.C=function(d,e,g){for(var b=Array(arguments.length-2),r=2;r<arguments.length;r++)b[r-2]=arguments[r];return a.prototype[e].apply(d,b)};}function l(){this.blockSize=-1;}function m(){this.blockSize=-1;this.blockSize=64;this.g=Array(4);this.B=Array(this.blockSize);this.o=this.h=0;this.s();}k(m,l);m.prototype.s=function(){this.g[0]=1732584193;this.g[1]=4023233417;this.g[2]=2562383102;this.g[3]=271733878;this.o=this.h=0;};
+  function n(f,a,c){c||(c=0);var d=Array(16);if("string"===typeof a)for(var e=0;16>e;++e)d[e]=a.charCodeAt(c++)|a.charCodeAt(c++)<<8|a.charCodeAt(c++)<<16|a.charCodeAt(c++)<<24;else for(e=0;16>e;++e)d[e]=a[c++]|a[c++]<<8|a[c++]<<16|a[c++]<<24;a=f.g[0];c=f.g[1];e=f.g[2];var g=f.g[3];var b=a+(g^c&(e^g))+d[0]+3614090360&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[1]+3905402710&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+d[2]+606105819&4294967295;e=g+(b<<17&4294967295|b>>>15);
+  b=c+(a^e&(g^a))+d[3]+3250441966&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+d[4]+4118548399&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[5]+1200080426&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+d[6]+2821735955&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+d[7]+4249261313&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+d[8]+1770035416&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[9]+2336552879&4294967295;g=a+(b<<12&4294967295|
+  b>>>20);b=e+(c^g&(a^c))+d[10]+4294925233&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+d[11]+2304563134&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+d[12]+1804603682&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[13]+4254626195&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+d[14]+2792965006&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+d[15]+1236535329&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(e^g&(c^e))+d[1]+4129170786&4294967295;a=c+(b<<
+  5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[6]+3225465664&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[11]+643717713&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[0]+3921069994&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+d[5]+3593408605&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[10]+38016083&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[15]+3634488961&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[4]+3889429448&4294967295;c=
+  e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+d[9]+568446438&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[14]+3275163606&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[3]+4107603335&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[8]+1163531501&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+d[13]+2850285829&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[2]+4243563512&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[7]+1735328473&4294967295;
+  e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[12]+2368359562&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(c^e^g)+d[5]+4294588738&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[8]+2272392833&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+d[11]+1839030562&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[14]+4259657740&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+d[1]+2763975236&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[4]+1272893353&4294967295;g=a+(b<<11&4294967295|
+  b>>>21);b=e+(g^a^c)+d[7]+4139469664&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[10]+3200236656&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+d[13]+681279174&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[0]+3936430074&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+d[3]+3572445317&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[6]+76029189&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+d[9]+3654602809&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[12]+
+  3873151461&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+d[15]+530742520&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[2]+3299628645&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(e^(c|~g))+d[0]+4096336452&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[7]+1126891415&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[14]+2878612391&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[5]+4237533241&4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[12]+1700485571&
+  4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[3]+2399980690&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[10]+4293915773&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[1]+2240044497&4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[8]+1873313359&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[15]+4264355552&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[6]+2734768916&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[13]+1309151649&
+  4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[4]+4149444226&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[11]+3174756917&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[2]+718787259&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[9]+3951481745&4294967295;f.g[0]=f.g[0]+a&4294967295;f.g[1]=f.g[1]+(e+(b<<21&4294967295|b>>>11))&4294967295;f.g[2]=f.g[2]+e&4294967295;f.g[3]=f.g[3]+g&4294967295;}
+  m.prototype.u=function(f,a){ void 0===a&&(a=f.length);for(var c=a-this.blockSize,d=this.B,e=this.h,g=0;g<a;){if(0==e)for(;g<=c;)n(this,f,g),g+=this.blockSize;if("string"===typeof f)for(;g<a;){if(d[e++]=f.charCodeAt(g++),e==this.blockSize){n(this,d);e=0;break}}else for(;g<a;)if(d[e++]=f[g++],e==this.blockSize){n(this,d);e=0;break}}this.h=e;this.o+=a;};
+  m.prototype.v=function(){var f=Array((56>this.h?this.blockSize:2*this.blockSize)-this.h);f[0]=128;for(var a=1;a<f.length-8;++a)f[a]=0;var c=8*this.o;for(a=f.length-8;a<f.length;++a)f[a]=c&255,c/=256;this.u(f);f=Array(16);for(a=c=0;4>a;++a)for(var d=0;32>d;d+=8)f[c++]=this.g[a]>>>d&255;return f};function p(f,a){var c=q;return Object.prototype.hasOwnProperty.call(c,f)?c[f]:c[f]=a(f)}function t(f,a){this.h=a;for(var c=[],d=true,e=f.length-1;0<=e;e--){var g=f[e]|0;d&&g==a||(c[e]=g,d=false);}this.g=c;}var q={};function u(f){return -128<=f&&128>f?p(f,function(a){return new t([a|0],0>a?-1:0)}):new t([f|0],0>f?-1:0)}function v(f){if(isNaN(f)||!isFinite(f))return w;if(0>f)return x(v(-f));for(var a=[],c=1,d=0;f>=c;d++)a[d]=f/c|0,c*=4294967296;return new t(a,0)}
+  function y(f,a){if(0==f.length)throw Error("number format error: empty string");a=a||10;if(2>a||36<a)throw Error("radix out of range: "+a);if("-"==f.charAt(0))return x(y(f.substring(1),a));if(0<=f.indexOf("-"))throw Error('number format error: interior "-" character');for(var c=v(Math.pow(a,8)),d=w,e=0;e<f.length;e+=8){var g=Math.min(8,f.length-e),b=parseInt(f.substring(e,e+g),a);8>g?(g=v(Math.pow(a,g)),d=d.j(g).add(v(b))):(d=d.j(c),d=d.add(v(b)));}return d}var w=u(0),z=u(1),A=u(16777216);h=t.prototype;
+  h.m=function(){if(B(this))return -x(this).m();for(var f=0,a=1,c=0;c<this.g.length;c++){var d=this.i(c);f+=(0<=d?d:4294967296+d)*a;a*=4294967296;}return f};h.toString=function(f){f=f||10;if(2>f||36<f)throw Error("radix out of range: "+f);if(C(this))return "0";if(B(this))return "-"+x(this).toString(f);for(var a=v(Math.pow(f,6)),c=this,d="";;){var e=D(c,a).g;c=F(c,e.j(a));var g=((0<c.g.length?c.g[0]:c.h)>>>0).toString(f);c=e;if(C(c))return g+d;for(;6>g.length;)g="0"+g;d=g+d;}};
+  h.i=function(f){return 0>f?0:f<this.g.length?this.g[f]:this.h};function C(f){if(0!=f.h)return false;for(var a=0;a<f.g.length;a++)if(0!=f.g[a])return false;return true}function B(f){return -1==f.h}h.l=function(f){f=F(this,f);return B(f)?-1:C(f)?0:1};function x(f){for(var a=f.g.length,c=[],d=0;d<a;d++)c[d]=~f.g[d];return (new t(c,~f.h)).add(z)}h.abs=function(){return B(this)?x(this):this};
+  h.add=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0,e=0;e<=a;e++){var g=d+(this.i(e)&65535)+(f.i(e)&65535),b=(g>>>16)+(this.i(e)>>>16)+(f.i(e)>>>16);d=b>>>16;g&=65535;b&=65535;c[e]=b<<16|g;}return new t(c,c[c.length-1]&-2147483648?-1:0)};function F(f,a){return f.add(x(a))}
+  h.j=function(f){if(C(this)||C(f))return w;if(B(this))return B(f)?x(this).j(x(f)):x(x(this).j(f));if(B(f))return x(this.j(x(f)));if(0>this.l(A)&&0>f.l(A))return v(this.m()*f.m());for(var a=this.g.length+f.g.length,c=[],d=0;d<2*a;d++)c[d]=0;for(d=0;d<this.g.length;d++)for(var e=0;e<f.g.length;e++){var g=this.i(d)>>>16,b=this.i(d)&65535,r=f.i(e)>>>16,E=f.i(e)&65535;c[2*d+2*e]+=b*E;G(c,2*d+2*e);c[2*d+2*e+1]+=g*E;G(c,2*d+2*e+1);c[2*d+2*e+1]+=b*r;G(c,2*d+2*e+1);c[2*d+2*e+2]+=g*r;G(c,2*d+2*e+2);}for(d=0;d<
+  a;d++)c[d]=c[2*d+1]<<16|c[2*d];for(d=a;d<2*a;d++)c[d]=0;return new t(c,0)};function G(f,a){for(;(f[a]&65535)!=f[a];)f[a+1]+=f[a]>>>16,f[a]&=65535,a++;}function H(f,a){this.g=f;this.h=a;}
+  function D(f,a){if(C(a))throw Error("division by zero");if(C(f))return new H(w,w);if(B(f))return a=D(x(f),a),new H(x(a.g),x(a.h));if(B(a))return a=D(f,x(a)),new H(x(a.g),a.h);if(30<f.g.length){if(B(f)||B(a))throw Error("slowDivide_ only works with positive integers.");for(var c=z,d=a;0>=d.l(f);)c=I(c),d=I(d);var e=J(c,1),g=J(d,1);d=J(d,2);for(c=J(c,2);!C(d);){var b=g.add(d);0>=b.l(f)&&(e=e.add(c),g=b);d=J(d,1);c=J(c,1);}a=F(f,e.j(a));return new H(e,a)}for(e=w;0<=f.l(a);){c=Math.max(1,Math.floor(f.m()/
+  a.m()));d=Math.ceil(Math.log(c)/Math.LN2);d=48>=d?1:Math.pow(2,d-48);g=v(c);for(b=g.j(a);B(b)||0<b.l(f);)c-=d,g=v(c),b=g.j(a);C(g)&&(g=z);e=e.add(g);f=F(f,b);}return new H(e,f)}h.A=function(f){return D(this,f).h};h.and=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0;d<a;d++)c[d]=this.i(d)&f.i(d);return new t(c,this.h&f.h)};h.or=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0;d<a;d++)c[d]=this.i(d)|f.i(d);return new t(c,this.h|f.h)};
+  h.xor=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0;d<a;d++)c[d]=this.i(d)^f.i(d);return new t(c,this.h^f.h)};function I(f){for(var a=f.g.length+1,c=[],d=0;d<a;d++)c[d]=f.i(d)<<1|f.i(d-1)>>>31;return new t(c,f.h)}function J(f,a){var c=a>>5;a%=32;for(var d=f.g.length-c,e=[],g=0;g<d;g++)e[g]=0<a?f.i(g+c)>>>a|f.i(g+c+1)<<32-a:f.i(g+c);return new t(e,f.h)}m.prototype.digest=m.prototype.v;m.prototype.reset=m.prototype.s;m.prototype.update=m.prototype.u;t.prototype.add=t.prototype.add;t.prototype.multiply=t.prototype.j;t.prototype.modulo=t.prototype.A;t.prototype.compare=t.prototype.l;t.prototype.toNumber=t.prototype.m;t.prototype.toString=t.prototype.toString;t.prototype.getBits=t.prototype.i;t.fromNumber=v;t.fromString=y;Integer = t;}).apply( typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : typeof self !== 'undefined' ? self  : typeof window !== 'undefined' ? window  : {});
 
   const E = "4.7.9";
 
@@ -2770,17 +2681,17 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */
-  const A = new index_cjsExports.Logger("@firebase/firestore");
+  const A = new Logger("@firebase/firestore");
 
   function __PRIVATE_logDebug(t, ...e) {
-      if (A.logLevel <= index_cjsExports.LogLevel.DEBUG) {
+      if (A.logLevel <= LogLevel.DEBUG) {
           const r = e.map(__PRIVATE_argToString);
           A.debug(`Firestore (${m}): ${t}`, ...r);
       }
   }
 
   function __PRIVATE_logError(t, ...e) {
-      if (A.logLevel <= index_cjsExports.LogLevel.ERROR) {
+      if (A.logLevel <= LogLevel.ERROR) {
           const r = e.map(__PRIVATE_argToString);
           A.error(`Firestore (${m}): ${t}`, ...r);
       }
@@ -2789,7 +2700,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   /**
    * @internal
    */ function __PRIVATE_logWarn(t, ...e) {
-      if (A.logLevel <= index_cjsExports.LogLevel.WARN) {
+      if (A.logLevel <= LogLevel.WARN) {
           const r = e.map(__PRIVATE_argToString);
           A.warn(`Firestore (${m}): ${t}`, ...r);
       }
@@ -3221,7 +3132,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           return t.startsWith("__id") && t.endsWith("__");
       }
       static extractNumericId(t) {
-          return bloom_blob_es2018Exports.Integer.fromString(t.substring(4, t.length - 2));
+          return Integer.fromString(t.substring(4, t.length - 2));
       }
   }
 
