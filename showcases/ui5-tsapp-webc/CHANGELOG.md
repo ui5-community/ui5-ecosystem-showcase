@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.20](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.11.19...ui5-tsapp-webc@0.11.20) (2025-04-17)
+
+**Note:** Version bump only for package ui5-tsapp-webc
+
+
+
+
+
 ## [0.11.19](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.11.18...ui5-tsapp-webc@0.11.19) (2025-04-14)
 
 **Note:** Version bump only for package ui5-tsapp-webc

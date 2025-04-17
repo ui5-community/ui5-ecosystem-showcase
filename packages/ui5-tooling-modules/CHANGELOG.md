@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.25.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.17...ui5-tooling-modules@3.25.0) (2025-04-17)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** fixed precendence of module resolution via package.json ([#1204](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1204)) ([1ea7557](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1ea7557b47654b7278331d77e1194ca48c9b996b)), closes [#1196](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1196)
+
+
+### Features
+
+* **ui5-tooling-modules:** first version of serializer for JSDoc in control wrappers ([#1171](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1171)) ([fc6a038](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/fc6a038f499dede63d09c593c0ece3f90ae4d8bd))
+
+
+
+
+
 ## [3.24.17](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.16...ui5-tooling-modules@3.24.17) (2025-04-14)
 
 
