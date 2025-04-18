@@ -147,7 +147,7 @@ The available plugin configuration options are:
   &nbsp;
 
 - *pluginOptions.webcomponents.skipJSDoc*: `boolean` *experimental flag*
-  Flag to disable the generation of the JSDoc for the UI5 control wrappers. (defaults to `false`)
+  Flag to enable/disable the generation of the JSDoc for the UI5 control wrappers. (defaults to `true` until the feature is fully implemented, in future `false`)
   &nbsp;
 
 The following configuration options are just relevant for the `task`:

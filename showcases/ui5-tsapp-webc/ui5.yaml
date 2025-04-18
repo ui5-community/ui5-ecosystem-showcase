@@ -41,7 +41,7 @@ server:
         pluginOptions:
           webcomponents:
             force: true
-            skipJSDoc: true
+            skipJSDoc: false # enable the JSDoc generation
     - name: ui5-middleware-livereload
       afterMiddleware: compression
       configuration:
