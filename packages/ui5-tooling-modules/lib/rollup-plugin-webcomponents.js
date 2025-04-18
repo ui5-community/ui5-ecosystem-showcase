@@ -17,7 +17,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			enrichBusyIndicator: false,
 			force: false,
 			includeAssets: false, // experimental (due to race condition!)
-			skipJSDoc: false,
+			skipJSDoc: true,
 		},
 		options,
 	);
