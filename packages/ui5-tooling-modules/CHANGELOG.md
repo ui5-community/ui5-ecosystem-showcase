@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.25.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.25.0...ui5-tooling-modules@3.25.1) (2025-04-18)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** adds option to skip JSDoc generation ([#1206](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1206)) ([3469249](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/34692496c031167a2823a6852f04d1e46949fd53))
+* **ui5-tooling-modules:** skip JSDoc generation by default until feature works ([#1207](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1207)) ([13b8b39](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/13b8b39fc6e423d2a0ac7c35999c49d8df2fe5a1))
+
+
+
+
+
 # [3.25.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.24.17...ui5-tooling-modules@3.25.0) (2025-04-17)
 
 
