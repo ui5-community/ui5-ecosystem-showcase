@@ -299,6 +299,15 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 		return changed;
 	}
 
+	// add special configuration options for the webcomponents rollup plugin
+	// to provide additional information to the WebComponents(Registry)
+	// how the namespaces should be handled
+	// (TODO: tbd - we maybe prefer to do a post processing for this?)
+	const pluginOptions = (config.pluginOptions ??= {});
+	pluginOptions.webcomponents ??= {};
+	pluginOptions.webcomponents.moduleBasePath = `${path.posix.join(projectInfo.namespace, thirdpartyNamespace)}`;
+	pluginOptions.webcomponents.removeScopePrefix = removeScopePrefix;
+
 	// bundle the resources (determine bundled resources and the set of modules to build)
 	const { resourceFactory } = taskUtil;
 

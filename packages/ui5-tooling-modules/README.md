@@ -146,6 +146,10 @@ The available plugin configuration options are:
   Flag to include all assets into the thirdparty folder: such as all themes and languages. Although they will be lazily loaded the generation process will slow down and you will have many additional files. All dynamic imports will reside inside the `_dynamics` folder within the thirdparty folder. (defaults to `false`)
   &nbsp;
 
+- *pluginOptions.webcomponents.skipJSDoc*: `boolean` *experimental flag*
+  Flag to disable the generation of the JSDoc for the UI5 control wrappers. (defaults to `false`)
+  &nbsp;
+
 The following configuration options are just relevant for the `task`:
 
 - *prependPathMappings*: `boolean`  

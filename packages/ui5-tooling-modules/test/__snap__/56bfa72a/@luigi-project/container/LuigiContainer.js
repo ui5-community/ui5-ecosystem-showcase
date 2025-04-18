@@ -16,17 +16,17 @@ sap.ui.define([
  * @extends 
  * @constructor
  * @public
- * @alias ui5.ecosystem.demo.tsapp.thirdparty."@luigi-project".container.LuigiContainer
- * @ui5-module-override ui5/ecosystem/demo/tsapp/thirdparty/@luigi-project/container/LuigiContainer
+ * @alias "@luigi-project".container.LuigiContainer
+ * @ui5-module-override @luigi-project/container/LuigiContainer
  */
-  const WrapperClass = WebComponentBaseClass.extend("ui5.ecosystem.demo.tsapp.thirdparty.@luigi-project.container.LuigiContainer", {
+  const WrapperClass = WebComponentBaseClass.extend("@luigi-project.container.LuigiContainer", {
     metadata:
 {
   "tag": "luigi-container",
 
-  "namespace": "ui5.ecosystem.demo.tsapp.thirdparty.@luigi-project.container",
+  "namespace": "@luigi-project.container",
 
-  "designtime": "ui5/ecosystem/demo/tsapp/thirdparty/@luigi-project/container/designtime/LuigiContainer.designtime",
+  "designtime": "@luigi-project/container/designtime/LuigiContainer.designtime",
 
   "interfaces": [],
 
@@ -365,49 +365,49 @@ sap.ui.define([
 /**
  * 
  * @public
- * @name ui5.ecosystem.demo.tsapp.thirdparty."@luigi-project".container.LuigiContainer#updateContext
+ * @name "@luigi-project".container.LuigiContainer#updateContext
  * @function
  */
       "updateContext",
 /**
  * 
  * @public
- * @name ui5.ecosystem.demo.tsapp.thirdparty."@luigi-project".container.LuigiContainer#sendCustomMessage
+ * @name "@luigi-project".container.LuigiContainer#sendCustomMessage
  * @function
  */
       "sendCustomMessage",
 /**
  * 
  * @public
- * @name ui5.ecosystem.demo.tsapp.thirdparty."@luigi-project".container.LuigiContainer#closeAlert
+ * @name "@luigi-project".container.LuigiContainer#closeAlert
  * @function
  */
       "closeAlert",
 /**
  * 
  * @public
- * @name ui5.ecosystem.demo.tsapp.thirdparty."@luigi-project".container.LuigiContainer#notifyAlertClosed
+ * @name "@luigi-project".container.LuigiContainer#notifyAlertClosed
  * @function
  */
       "notifyAlertClosed",
 /**
  * 
  * @public
- * @name ui5.ecosystem.demo.tsapp.thirdparty."@luigi-project".container.LuigiContainer#notifyConfirmationModalClosed
+ * @name "@luigi-project".container.LuigiContainer#notifyConfirmationModalClosed
  * @function
  */
       "notifyConfirmationModalClosed",
 /**
  * 
  * @public
- * @name ui5.ecosystem.demo.tsapp.thirdparty."@luigi-project".container.LuigiContainer#updateViewUrl
+ * @name "@luigi-project".container.LuigiContainer#updateViewUrl
  * @function
  */
       "updateViewUrl",
 /**
  * 
  * @public
- * @name ui5.ecosystem.demo.tsapp.thirdparty."@luigi-project".container.LuigiContainer#init
+ * @name "@luigi-project".container.LuigiContainer#init
  * @function
  */
       "init",
