@@ -39,19 +39,19 @@ the mouse cursor. A disabled `ui5-button` appears inactive and cannot be pressed
  * @extends sap.ui.core.webc.WebComponent
  * @constructor
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.dist.Button
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents/dist/Button
+ * @alias ui5.ecosystem.demo.app.thirdparty.ui5.webcomponents.dist.Button
+ * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/ui5/webcomponents/dist/Button
  */
-  const WrapperClass = WebComponentBaseClass.extend("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Button", {
+  const WrapperClass = WebComponentBaseClass.extend("ui5.ecosystem.demo.app.thirdparty.ui5.webcomponents.dist.Button", {
     metadata:
 {
   "tag": "ui5-button",
 
-  "namespace": "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents",
+  "namespace": "ui5.ecosystem.demo.app.thirdparty.ui5.webcomponents",
 
-  "designtime": "ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents/designtime/Button.designtime",
+  "designtime": "ui5/ecosystem/demo/app/thirdparty/ui5/webcomponents/designtime/Button.designtime",
 
-  "interfaces": ["ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IButton"],
+  "interfaces": ["ui5.ecosystem.demo.app.thirdparty.ui5.webcomponents.IButton"],
 
   "defaultAggregation": "",
 
@@ -59,7 +59,7 @@ the mouse cursor. A disabled `ui5-button` appears inactive and cannot be pressed
 /**
  * Defines the component design.
  */
-    "design": {"type":"ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ButtonDesign","mapping":"property","defaultValue":"Default"},
+    "design": {"type":"ui5.ecosystem.demo.app.thirdparty.ui5.webcomponents.ButtonDesign","mapping":"property","defaultValue":"Default"},
 /**
  * Defines whether the component is disabled.
 A disabled component can't be pressed or
@@ -126,13 +126,13 @@ Accepts a lowercase string value.
 
 **Note:** This property is only applicable within the context of an HTML Form element.
  */
-    "type": {"type":"ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ButtonType","mapping":"property","defaultValue":"Button"},
+    "type": {"type":"ui5.ecosystem.demo.app.thirdparty.ui5.webcomponents.ButtonType","mapping":"property","defaultValue":"Button"},
 /**
  * Describes the accessibility role of the button.
 
 **Note:** Use <code>ButtonAccessibleRole.Link</code> role only with a press handler, which performs a navigation. In all other scenarios the default button semantics are recommended.
  */
-    "accessibleRole": {"type":"ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ButtonAccessibleRole","mapping":"property","defaultValue":"Button"},
+    "accessibleRole": {"type":"ui5.ecosystem.demo.app.thirdparty.ui5.webcomponents.ButtonAccessibleRole","mapping":"property","defaultValue":"Button"},
 /**
  * The text-content of the Web Component.
  */

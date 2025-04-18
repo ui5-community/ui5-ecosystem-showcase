@@ -1,1 +1,1 @@
-{"namespace":"@ui5/webcomponents","qualifiedNamespace":"undefined.@ui5.webcomponents","tag":"ui5-menu-separator","interfaces":["undefined.@ui5.webcomponents.IMenuItem"],"properties":{},"aggregations":{},"associations":{},"events":{},"getters":[],"methods":[]}
+{"namespace":"@ui5/webcomponents","qualifiedNamespace":"@ui5.webcomponents","tag":"ui5-menu-separator","interfaces":["@ui5.webcomponents.IMenuItem"],"properties":{},"aggregations":{},"associations":{},"events":{},"getters":[],"methods":[]}

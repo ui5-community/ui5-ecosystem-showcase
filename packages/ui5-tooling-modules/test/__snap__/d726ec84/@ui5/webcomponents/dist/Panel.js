@@ -61,17 +61,17 @@ In order to use this functionality, you need to import the following module:
  * @extends sap.ui.core.webc.WebComponent
  * @constructor
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.dist.Panel
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents/dist/Panel
+ * @alias "@ui5".webcomponents.dist.Panel
+ * @ui5-module-override @ui5/webcomponents/dist/Panel
  */
-  const WrapperClass = WebComponentBaseClass.extend("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Panel", {
+  const WrapperClass = WebComponentBaseClass.extend("@ui5.webcomponents.dist.Panel", {
     metadata:
 {
   "tag": "ui5-panel-mYsCoPeSuFfIx",
 
-  "namespace": "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents",
+  "namespace": "@ui5.webcomponents",
 
-  "designtime": "ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents/designtime/Panel.designtime",
+  "designtime": "@ui5/webcomponents/designtime/Panel.designtime",
 
   "interfaces": [],
 
@@ -103,12 +103,12 @@ expandable/collapsible by user interaction.
 Depending on the usage, you can change the role from the default `Form`
 to `Region` or `Complementary`.
  */
-    "accessibleRole": {"type":"ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PanelAccessibleRole","mapping":"property","defaultValue":"Form"},
+    "accessibleRole": {"type":"@ui5.webcomponents.PanelAccessibleRole","mapping":"property","defaultValue":"Form"},
 /**
  * Defines the "aria-level" of component heading,
 set by the `headerText`.
  */
-    "headerLevel": {"type":"ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TitleLevel","mapping":"property","defaultValue":"H2"},
+    "headerLevel": {"type":"@ui5.webcomponents.TitleLevel","mapping":"property","defaultValue":"H2"},
 /**
  * Defines the accessible ARIA name of the component.
  */

@@ -19,8 +19,8 @@ sap.ui.define([
   "types": [],
   "interfaces": [],
   "controls": [
-    "ui5.ecosystem.demo.tsapp.thirdparty.@luigi-project.container.LuigiContainer",
-    "ui5.ecosystem.demo.tsapp.thirdparty.@luigi-project.container.LuigiCompoundContainer"
+    "@luigi-project.container.LuigiContainer",
+    "@luigi-project.container.LuigiCompoundContainer"
   ],
   "elements": [],
   "rootPath": "ui5/ecosystem/demo/tsapp/resources/"

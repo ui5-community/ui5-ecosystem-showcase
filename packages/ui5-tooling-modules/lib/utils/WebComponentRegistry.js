@@ -47,7 +47,7 @@ class RegistryEntry {
 		this.scopeSuffix = scopeSuffix;
 		this.npmPackagePath = npmPackagePath;
 		this.moduleBasePath = moduleBasePath;
-		this.qualifiedNamespace = `${slash2dot(this.moduleBasePath)}.${slash2dot(removeScopePrefix ? this.namespace.replace(/^@/, "") : this.namespace)}`;
+		this.qualifiedNamespace = `${moduleBasePath ? slash2dot(this.moduleBasePath) + "." : ""}${slash2dot(removeScopePrefix ? this.namespace.replace(/^@/, "") : this.namespace)}`;
 		// TODO: The following conversion of "-" to "_" is a workaround for testing the UI5 JSDoc build.
 		//       Only needed until we solve the escaping issue of segments like "@ui5" or "webcomponents-fiori".
 		// this.qualifiedNamespace = this.qualifiedNamespace.replace(/-/g, "_");

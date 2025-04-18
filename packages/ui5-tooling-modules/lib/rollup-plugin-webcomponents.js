@@ -10,13 +10,14 @@ const WebComponentRegistry = require("./utils/WebComponentRegistry");
 
 module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framework, options } = {}) {
 	// derive the configuration from the provided options
-	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, moduleBasePath, removeScopePrefix } = Object.assign(
+	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, moduleBasePath, removeScopePrefix, skipJSDoc } = Object.assign(
 		{
 			skip: false,
 			scoping: true,
 			enrichBusyIndicator: false,
 			force: false,
 			includeAssets: false, // experimental (due to race condition!)
+			skipJSDoc: false,
 		},
 		options,
 	);
@@ -250,7 +251,18 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			const ui5ClassName = clazz._ui5QualifiedName;
 			const namespace = ui5Metadata.namespace;
 
-			const metadata = JSDocSerializer.serializeMetadata(clazz);
+			let metadata;
+			if (skipJSDoc) {
+				const metadataObject = Object.assign({}, ui5Metadata, {
+					tag: ui5Metadata.tag,
+					library: `${ui5Metadata.namespace}.library`, // if not defined, the library is derived from the namespace
+					designtime: `${ui5Metadata.namespace}/designtime/${clazz.name}.designtime`, // add a default designtime
+				});
+				metadata = JSON.stringify(metadataObject, undefined, 2);
+			} else {
+				metadata = JSDocSerializer.serializeMetadata(clazz);
+			}
+
 			const webcClass = chunkName && posix.relative(dirname(resolvedSource), chunkName);
 
 			// UI5 specific features
@@ -277,7 +289,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			}
 
 			// JSDoc Serialization for the class header
-			const jsDocClassHeader = clazz._jsDoc?.classHeader;
+			const jsDocClassHeader = skipJSDoc ? undefined : clazz._jsDoc?.classHeader;
 
 			// generate the WebComponentControl code
 			const rootPath = `${posix.relative(dirname(resolvedSource), "") || "."}/`;

@@ -21,191 +21,191 @@ sap.ui.define([
     "sap.ui.core"
   ],
   "types": [
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.AvatarColorScheme",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.AvatarGroupType",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.AvatarShape",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.AvatarSize",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BackgroundDesign",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BarDesign",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BorderDesign",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BreadcrumbsDesign",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BreadcrumbsSeparator",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BusyIndicatorSize",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BusyIndicatorTextPlacement",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ButtonAccessibleRole",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ButtonBadgeDesign",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ButtonDesign",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ButtonType",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CalendarLegendItemType",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CalendarSelectionMode",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CalendarWeekNumbering",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CarouselArrowsPlacement",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CarouselPageIndicatorType",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ComboBoxFilter",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ExpandableTextOverflowMode",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.FormItemSpacing",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.Highlight",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IconDesign",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IconMode",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.InputType",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.InteractiveAreaSize",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.LinkAccessibleRole",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.LinkDesign",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListAccessibleRole",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListGrowingMode",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListItemAccessibleRole",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListItemType",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListSelectionMode",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListSeparator",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.MessageStripDesign",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.NotificationListGrowingMode",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.OverflowMode",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PanelAccessibleRole",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PopoverHorizontalAlign",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PopoverPlacement",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PopoverVerticalAlign",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PopupAccessibleRole",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.Priority",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.RatingIndicatorSize",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.SegmentedButtonSelectionMode",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.SemanticColor",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.SwitchDesign",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TabLayout",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TableCellHorizontalAlign",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TableGrowingMode",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TableOverflowMode",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TableSelectionMode",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TagDesign",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TagSize",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TextEmptyIndicatorMode",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TitleLevel",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ToastPlacement",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ToolbarAlign",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ToolbarDesign",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ToolbarItemOverflowBehavior",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.WrappingType"
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.AvatarColorScheme",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.AvatarGroupType",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.AvatarShape",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.AvatarSize",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.BackgroundDesign",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.BarDesign",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.BorderDesign",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.BreadcrumbsDesign",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.BreadcrumbsSeparator",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.BusyIndicatorSize",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.BusyIndicatorTextPlacement",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ButtonAccessibleRole",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ButtonBadgeDesign",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ButtonDesign",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ButtonType",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.CalendarLegendItemType",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.CalendarSelectionMode",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.CalendarWeekNumbering",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.CarouselArrowsPlacement",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.CarouselPageIndicatorType",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ComboBoxFilter",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ExpandableTextOverflowMode",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.FormItemSpacing",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.Highlight",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.IconDesign",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.IconMode",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.InputType",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.InteractiveAreaSize",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.LinkAccessibleRole",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.LinkDesign",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ListAccessibleRole",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ListGrowingMode",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ListItemAccessibleRole",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ListItemType",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ListSelectionMode",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ListSeparator",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.MessageStripDesign",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.NotificationListGrowingMode",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.OverflowMode",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.PanelAccessibleRole",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.PopoverHorizontalAlign",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.PopoverPlacement",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.PopoverVerticalAlign",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.PopupAccessibleRole",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.Priority",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.RatingIndicatorSize",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.SegmentedButtonSelectionMode",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.SemanticColor",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.SwitchDesign",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.TabLayout",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.TableCellHorizontalAlign",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.TableGrowingMode",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.TableOverflowMode",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.TableSelectionMode",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.TagDesign",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.TagSize",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.TextEmptyIndicatorMode",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.TitleLevel",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ToastPlacement",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ToolbarAlign",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ToolbarDesign",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ToolbarItemOverflowBehavior",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.WrappingType"
   ],
   "interfaces": [
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IAvatarGroupItem",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IButton",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ICalendarSelectedDates",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IColorPaletteItem",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IComboBoxItem",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IFormItem",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IIcon",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IInputSuggestionItem",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IMenuItem",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IMultiComboBoxItem",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ISegmentedButtonItem",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IOption",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ITab",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ITableFeature",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ITableGrowing"
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.IAvatarGroupItem",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.IButton",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ICalendarSelectedDates",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.IColorPaletteItem",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.IComboBoxItem",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.IFormItem",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.IIcon",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.IInputSuggestionItem",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.IMenuItem",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.IMultiComboBoxItem",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ISegmentedButtonItem",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.IOption",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ITab",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ITableFeature",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.ITableGrowing"
   ],
   "controls": [
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Avatar",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.AvatarGroup",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Bar",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Breadcrumbs",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.BreadcrumbsItem",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.BusyIndicator",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Button",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ButtonBadge",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Calendar",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.CalendarDate",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.CalendarDateRange",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.CalendarLegend",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.CalendarLegendItem",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Card",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.CardHeader",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Carousel",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.CheckBox",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ColorPalette",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ColorPaletteItem",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ColorPalettePopover",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ColorPicker",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ComboBox",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ComboBoxItem",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ComboBoxItemGroup",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.DatePicker",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.DateRangePicker",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.DateTimePicker",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Dialog",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ExpandableText",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.FileUploader",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Form",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.FormGroup",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.FormItem",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Icon",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Input",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Label",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Link",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.List",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ListItemCustom",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ListItemGroup",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ListItemStandard",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Menu",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.MenuItem",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.MenuSeparator",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.MessageStrip",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.MultiComboBox",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.MultiComboBoxItem",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.MultiComboBoxItemGroup",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.MultiInput",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Option",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.OptionCustom",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Panel",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Popover",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ProgressIndicator",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.RadioButton",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.RangeSlider",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.RatingIndicator",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ResponsivePopover",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.SegmentedButton",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.SegmentedButtonItem",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Select",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Slider",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.SpecialCalendarDate",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.SplitButton",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.StepInput",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.SuggestionItem",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.SuggestionItemCustom",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.SuggestionItemGroup",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Switch",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Tab",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TabContainer",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TabSeparator",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Table",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableCell",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableGrowing",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableHeaderCell",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableHeaderCellActionAI",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableHeaderRow",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableRow",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableRowAction",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableRowActionNavigation",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableSelection",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableSelectionMulti",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableSelectionSingle",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TableVirtualizer",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Tag",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Text",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TextArea",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TimePicker",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Title",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Toast",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ToggleButton",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Token",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Tokenizer",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Toolbar",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ToolbarButton",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ToolbarSelect",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ToolbarSelectOption",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ToolbarSeparator",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.ToolbarSpacer",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.Tree",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TreeItem",
-    "ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.dist.TreeItemCustom"
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Avatar",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.AvatarGroup",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Bar",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Breadcrumbs",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.BreadcrumbsItem",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.BusyIndicator",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Button",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ButtonBadge",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Calendar",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.CalendarDate",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.CalendarDateRange",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.CalendarLegend",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.CalendarLegendItem",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Card",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.CardHeader",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Carousel",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.CheckBox",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ColorPalette",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ColorPaletteItem",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ColorPalettePopover",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ColorPicker",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ComboBox",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ComboBoxItem",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ComboBoxItemGroup",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.DatePicker",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.DateRangePicker",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.DateTimePicker",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Dialog",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ExpandableText",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.FileUploader",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Form",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.FormGroup",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.FormItem",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Icon",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Input",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Label",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Link",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.List",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ListItemCustom",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ListItemGroup",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ListItemStandard",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Menu",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.MenuItem",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.MenuSeparator",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.MessageStrip",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.MultiComboBox",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.MultiComboBoxItem",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.MultiComboBoxItemGroup",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.MultiInput",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Option",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.OptionCustom",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Panel",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Popover",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ProgressIndicator",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.RadioButton",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.RangeSlider",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.RatingIndicator",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ResponsivePopover",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.SegmentedButton",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.SegmentedButtonItem",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Select",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Slider",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.SpecialCalendarDate",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.SplitButton",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.StepInput",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.SuggestionItem",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.SuggestionItemCustom",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.SuggestionItemGroup",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Switch",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Tab",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.TabContainer",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.TabSeparator",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Table",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.TableCell",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.TableGrowing",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.TableHeaderCell",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.TableHeaderCellActionAI",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.TableHeaderRow",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.TableRow",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.TableRowAction",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.TableRowActionNavigation",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.TableSelection",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.TableSelectionMulti",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.TableSelectionSingle",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.TableVirtualizer",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Tag",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Text",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.TextArea",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.TimePicker",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Title",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Toast",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ToggleButton",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Token",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Tokenizer",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Toolbar",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ToolbarButton",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ToolbarSelect",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ToolbarSelectOption",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ToolbarSeparator",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.ToolbarSpacer",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.Tree",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.TreeItem",
+    "ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.TreeItemCustom"
   ],
   "elements": [],
   "rootPath": "ui5/ecosystem/demo/app/resources/"
@@ -228,8 +228,8 @@ sap.ui.define([
  * Different types of AvatarColorScheme.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.AvatarColorScheme
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents AvatarColorScheme
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.AvatarColorScheme
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents AvatarColorScheme
  */
   pkg["AvatarColorScheme"] = {
     /**
@@ -288,13 +288,13 @@ sap.ui.define([
  */
     "Placeholder": "Placeholder",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.AvatarColorScheme", pkg["AvatarColorScheme"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.AvatarColorScheme", pkg["AvatarColorScheme"]);
   /**
  * Different types of AvatarGroupType.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.AvatarGroupType
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents AvatarGroupType
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.AvatarGroupType
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents AvatarGroupType
  */
   pkg["AvatarGroupType"] = {
     /**
@@ -308,13 +308,13 @@ sap.ui.define([
  */
     "Individual": "Individual",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.AvatarGroupType", pkg["AvatarGroupType"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.AvatarGroupType", pkg["AvatarGroupType"]);
   /**
  * Different types of AvatarShape.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.AvatarShape
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents AvatarShape
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.AvatarShape
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents AvatarShape
  */
   pkg["AvatarShape"] = {
     /**
@@ -328,13 +328,13 @@ sap.ui.define([
  */
     "Square": "Square",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.AvatarShape", pkg["AvatarShape"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.AvatarShape", pkg["AvatarShape"]);
   /**
  * Different types of AvatarSize.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.AvatarSize
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents AvatarSize
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.AvatarSize
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents AvatarSize
  */
   pkg["AvatarSize"] = {
     /**
@@ -368,13 +368,13 @@ font size - 3rem
  */
     "XL": "XL",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.AvatarSize", pkg["AvatarSize"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.AvatarSize", pkg["AvatarSize"]);
   /**
  * Defines background designs.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.BackgroundDesign
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents BackgroundDesign
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.BackgroundDesign
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents BackgroundDesign
  */
   pkg["BackgroundDesign"] = {
     /**
@@ -393,13 +393,13 @@ font size - 3rem
  */
     "Translucent": "Translucent",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BackgroundDesign", pkg["BackgroundDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.BackgroundDesign", pkg["BackgroundDesign"]);
   /**
  * Different types of Bar design
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.BarDesign
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents BarDesign
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.BarDesign
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents BarDesign
  */
   pkg["BarDesign"] = {
     /**
@@ -423,13 +423,13 @@ font size - 3rem
  */
     "FloatingFooter": "FloatingFooter",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BarDesign", pkg["BarDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.BarDesign", pkg["BarDesign"]);
   /**
  * Defines border designs.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.BorderDesign
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents BorderDesign
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.BorderDesign
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents BorderDesign
  */
   pkg["BorderDesign"] = {
     /**
@@ -443,13 +443,13 @@ font size - 3rem
  */
     "None": "None",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BorderDesign", pkg["BorderDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.BorderDesign", pkg["BorderDesign"]);
   /**
  * Different  Breadcrumbs designs.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.BreadcrumbsDesign
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents BreadcrumbsDesign
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.BreadcrumbsDesign
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents BreadcrumbsDesign
  */
   pkg["BreadcrumbsDesign"] = {
     /**
@@ -464,13 +464,13 @@ The last item contains only plain text and is not a link.
  */
     "NoCurrentPage": "NoCurrentPage",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BreadcrumbsDesign", pkg["BreadcrumbsDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.BreadcrumbsDesign", pkg["BreadcrumbsDesign"]);
   /**
  * Different Breadcrumbs separators.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.BreadcrumbsSeparator
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents BreadcrumbsSeparator
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.BreadcrumbsSeparator
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents BreadcrumbsSeparator
  */
   pkg["BreadcrumbsSeparator"] = {
     /**
@@ -504,13 +504,13 @@ The last item contains only plain text and is not a link.
  */
     "GreaterThan": "GreaterThan",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BreadcrumbsSeparator", pkg["BreadcrumbsSeparator"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.BreadcrumbsSeparator", pkg["BreadcrumbsSeparator"]);
   /**
  * Different BusyIndicator sizes.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.BusyIndicatorSize
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents BusyIndicatorSize
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.BusyIndicatorSize
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents BusyIndicatorSize
  */
   pkg["BusyIndicatorSize"] = {
     /**
@@ -529,13 +529,13 @@ The last item contains only plain text and is not a link.
  */
     "L": "L",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BusyIndicatorSize", pkg["BusyIndicatorSize"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.BusyIndicatorSize", pkg["BusyIndicatorSize"]);
   /**
  * Different BusyIndicator text placements.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.BusyIndicatorTextPlacement
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents BusyIndicatorTextPlacement
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.BusyIndicatorTextPlacement
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents BusyIndicatorTextPlacement
  */
   pkg["BusyIndicatorTextPlacement"] = {
     /**
@@ -549,13 +549,13 @@ The last item contains only plain text and is not a link.
  */
     "Bottom": "Bottom",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.BusyIndicatorTextPlacement", pkg["BusyIndicatorTextPlacement"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.BusyIndicatorTextPlacement", pkg["BusyIndicatorTextPlacement"]);
   /**
  * Button accessible roles.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ButtonAccessibleRole
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ButtonAccessibleRole
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.ButtonAccessibleRole
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ButtonAccessibleRole
  */
   pkg["ButtonAccessibleRole"] = {
     /**
@@ -569,13 +569,13 @@ The last item contains only plain text and is not a link.
  */
     "Link": "Link",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ButtonAccessibleRole", pkg["ButtonAccessibleRole"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.ButtonAccessibleRole", pkg["ButtonAccessibleRole"]);
   /**
  * Determines where the badge will be placed and how it will be styled.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ButtonBadgeDesign
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ButtonBadgeDesign
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.ButtonBadgeDesign
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ButtonBadgeDesign
  */
   pkg["ButtonBadgeDesign"] = {
     /**
@@ -596,13 +596,13 @@ The last item contains only plain text and is not a link.
  */
     "AttentionDot": "AttentionDot",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ButtonBadgeDesign", pkg["ButtonBadgeDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.ButtonBadgeDesign", pkg["ButtonBadgeDesign"]);
   /**
  * Different Button designs.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ButtonDesign
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ButtonDesign
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.ButtonDesign
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ButtonDesign
  */
   pkg["ButtonDesign"] = {
     /**
@@ -636,13 +636,13 @@ The last item contains only plain text and is not a link.
  */
     "Attention": "Attention",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ButtonDesign", pkg["ButtonDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.ButtonDesign", pkg["ButtonDesign"]);
   /**
  * Determines if the button has special form-related functionality.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ButtonType
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ButtonType
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.ButtonType
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ButtonType
  */
   pkg["ButtonType"] = {
     /**
@@ -661,13 +661,13 @@ The last item contains only plain text and is not a link.
  */
     "Reset": "Reset",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ButtonType", pkg["ButtonType"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.ButtonType", pkg["ButtonType"]);
   /**
  * Enum for calendar legend items' types.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.CalendarLegendItemType
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents CalendarLegendItemType
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.CalendarLegendItemType
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents CalendarLegendItemType
  */
   pkg["CalendarLegendItemType"] = {
     /**
@@ -786,13 +786,13 @@ The last item contains only plain text and is not a link.
  */
     "Type20": "Type20",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CalendarLegendItemType", pkg["CalendarLegendItemType"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.CalendarLegendItemType", pkg["CalendarLegendItemType"]);
   /**
  * Different Calendar selection mode.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.CalendarSelectionMode
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents CalendarSelectionMode
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.CalendarSelectionMode
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents CalendarSelectionMode
  */
   pkg["CalendarSelectionMode"] = {
     /**
@@ -811,7 +811,7 @@ The last item contains only plain text and is not a link.
  */
     "Range": "Range",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CalendarSelectionMode", pkg["CalendarSelectionMode"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.CalendarSelectionMode", pkg["CalendarSelectionMode"]);
   /**
  * The <code>CalendarWeekNumbering</code> enum defines how to calculate calendar weeks. Each
 value defines:
@@ -819,8 +819,8 @@ value defines:
 - The first week of the year.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.CalendarWeekNumbering
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents CalendarWeekNumbering
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.CalendarWeekNumbering
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents CalendarWeekNumbering
  */
   pkg["CalendarWeekNumbering"] = {
     /**
@@ -852,13 +852,13 @@ Sunday is first day of the week, the week containing January 1st is first week o
  */
     "WesternTraditional": "WesternTraditional",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CalendarWeekNumbering", pkg["CalendarWeekNumbering"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.CalendarWeekNumbering", pkg["CalendarWeekNumbering"]);
   /**
  * Different Carousel arrows placement.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.CarouselArrowsPlacement
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents CarouselArrowsPlacement
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.CarouselArrowsPlacement
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents CarouselArrowsPlacement
  */
   pkg["CarouselArrowsPlacement"] = {
     /**
@@ -872,13 +872,13 @@ Sunday is first day of the week, the week containing January 1st is first week o
  */
     "Navigation": "Navigation",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CarouselArrowsPlacement", pkg["CarouselArrowsPlacement"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.CarouselArrowsPlacement", pkg["CarouselArrowsPlacement"]);
   /**
  * Different Carousel page indicator types.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.CarouselPageIndicatorType
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents CarouselPageIndicatorType
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.CarouselPageIndicatorType
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents CarouselPageIndicatorType
  */
   pkg["CarouselPageIndicatorType"] = {
     /**
@@ -893,13 +893,13 @@ If there are more pages, the page indicator will switch to displaying the curren
  */
     "Numeric": "Numeric",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.CarouselPageIndicatorType", pkg["CarouselPageIndicatorType"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.CarouselPageIndicatorType", pkg["CarouselPageIndicatorType"]);
   /**
  * Different filtering types of the ComboBox.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ComboBoxFilter
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ComboBoxFilter
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.ComboBoxFilter
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ComboBoxFilter
  */
   pkg["ComboBoxFilter"] = {
     /**
@@ -923,13 +923,13 @@ If there are more pages, the page indicator will switch to displaying the curren
  */
     "None": "None",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ComboBoxFilter", pkg["ComboBoxFilter"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.ComboBoxFilter", pkg["ComboBoxFilter"]);
   /**
  * Overflow Mode.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ExpandableTextOverflowMode
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ExpandableTextOverflowMode
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.ExpandableTextOverflowMode
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ExpandableTextOverflowMode
  */
   pkg["ExpandableTextOverflowMode"] = {
     /**
@@ -943,13 +943,13 @@ If there are more pages, the page indicator will switch to displaying the curren
  */
     "Popover": "Popover",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ExpandableTextOverflowMode", pkg["ExpandableTextOverflowMode"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.ExpandableTextOverflowMode", pkg["ExpandableTextOverflowMode"]);
   /**
  * Different Button designs.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.FormItemSpacing
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents FormItemSpacing
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.FormItemSpacing
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents FormItemSpacing
  */
   pkg["FormItemSpacing"] = {
     /**
@@ -963,13 +963,13 @@ If there are more pages, the page indicator will switch to displaying the curren
  */
     "Large": "Large",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.FormItemSpacing", pkg["FormItemSpacing"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.FormItemSpacing", pkg["FormItemSpacing"]);
   /**
  * Different types of Highlight .
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.Highlight
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents Highlight
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.Highlight
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents Highlight
  */
   pkg["Highlight"] = {
     /**
@@ -998,13 +998,13 @@ If there are more pages, the page indicator will switch to displaying the curren
  */
     "Information": "Information",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.Highlight", pkg["Highlight"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.Highlight", pkg["Highlight"]);
   /**
  * Different Icon semantic designs.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.IconDesign
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents IconDesign
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.IconDesign
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents IconDesign
  */
   pkg["IconDesign"] = {
     /**
@@ -1048,13 +1048,13 @@ If there are more pages, the page indicator will switch to displaying the curren
  */
     "Positive": "Positive",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IconDesign", pkg["IconDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.IconDesign", pkg["IconDesign"]);
   /**
  * Different Icon modes.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.IconMode
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents IconMode
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.IconMode
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents IconMode
  */
   pkg["IconMode"] = {
     /**
@@ -1078,13 +1078,13 @@ This mode also supports focus and press handling to enhance interactivity.
  */
     "Interactive": "Interactive",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.IconMode", pkg["IconMode"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.IconMode", pkg["IconMode"]);
   /**
  * Different input types.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.InputType
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents InputType
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.InputType
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents InputType
  */
   pkg["InputType"] = {
     /**
@@ -1123,13 +1123,13 @@ This mode also supports focus and press handling to enhance interactivity.
  */
     "Search": "Search",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.InputType", pkg["InputType"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.InputType", pkg["InputType"]);
   /**
  * Defines the area size around the component that the user can select.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.InteractiveAreaSize
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents InteractiveAreaSize
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.InteractiveAreaSize
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents InteractiveAreaSize
  */
   pkg["InteractiveAreaSize"] = {
     /**
@@ -1143,13 +1143,13 @@ This mode also supports focus and press handling to enhance interactivity.
  */
     "Large": "Large",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.InteractiveAreaSize", pkg["InteractiveAreaSize"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.InteractiveAreaSize", pkg["InteractiveAreaSize"]);
   /**
  * Link accessible roles.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.LinkAccessibleRole
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents LinkAccessibleRole
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.LinkAccessibleRole
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents LinkAccessibleRole
  */
   pkg["LinkAccessibleRole"] = {
     /**
@@ -1163,13 +1163,13 @@ This mode also supports focus and press handling to enhance interactivity.
  */
     "Button": "Button",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.LinkAccessibleRole", pkg["LinkAccessibleRole"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.LinkAccessibleRole", pkg["LinkAccessibleRole"]);
   /**
  * Different link designs.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.LinkDesign
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents LinkDesign
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.LinkDesign
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents LinkDesign
  */
   pkg["LinkDesign"] = {
     /**
@@ -1188,13 +1188,13 @@ This mode also supports focus and press handling to enhance interactivity.
  */
     "Emphasized": "Emphasized",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.LinkDesign", pkg["LinkDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.LinkDesign", pkg["LinkDesign"]);
   /**
  * List accessible roles.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ListAccessibleRole
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ListAccessibleRole
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.ListAccessibleRole
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ListAccessibleRole
  */
   pkg["ListAccessibleRole"] = {
     /**
@@ -1218,13 +1218,13 @@ This mode also supports focus and press handling to enhance interactivity.
  */
     "ListBox": "ListBox",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListAccessibleRole", pkg["ListAccessibleRole"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.ListAccessibleRole", pkg["ListAccessibleRole"]);
   /**
  * Different list growing modes.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ListGrowingMode
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ListGrowingMode
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.ListGrowingMode
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ListGrowingMode
  */
   pkg["ListGrowingMode"] = {
     /**
@@ -1244,13 +1244,13 @@ at the bottom.
  */
     "None": "None",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListGrowingMode", pkg["ListGrowingMode"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.ListGrowingMode", pkg["ListGrowingMode"]);
   /**
  * ListItem accessible roles.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ListItemAccessibleRole
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ListItemAccessibleRole
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.ListItemAccessibleRole
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ListItemAccessibleRole
  */
   pkg["ListItemAccessibleRole"] = {
     /**
@@ -1279,13 +1279,13 @@ at the bottom.
  */
     "None": "None",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListItemAccessibleRole", pkg["ListItemAccessibleRole"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.ListItemAccessibleRole", pkg["ListItemAccessibleRole"]);
   /**
  * Different list item types.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ListItemType
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ListItemType
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.ListItemType
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ListItemType
  */
   pkg["ListItemType"] = {
     /**
@@ -1309,13 +1309,13 @@ at the bottom.
  */
     "Navigation": "Navigation",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListItemType", pkg["ListItemType"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.ListItemType", pkg["ListItemType"]);
   /**
  * Different list selection modes.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ListSelectionMode
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ListSelectionMode
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.ListSelectionMode
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ListSelectionMode
  */
   pkg["ListSelectionMode"] = {
     /**
@@ -1356,13 +1356,13 @@ at the bottom.
  */
     "Delete": "Delete",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListSelectionMode", pkg["ListSelectionMode"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.ListSelectionMode", pkg["ListSelectionMode"]);
   /**
  * Different types of list items separators.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ListSeparator
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ListSeparator
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.ListSeparator
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ListSeparator
  */
   pkg["ListSeparator"] = {
     /**
@@ -1382,13 +1382,13 @@ Note: This enumeration depends on the theme.
  */
     "None": "None",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ListSeparator", pkg["ListSeparator"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.ListSeparator", pkg["ListSeparator"]);
   /**
  * MessageStrip designs.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.MessageStripDesign
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents MessageStripDesign
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.MessageStripDesign
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents MessageStripDesign
  */
   pkg["MessageStripDesign"] = {
     /**
@@ -1422,13 +1422,13 @@ Note: This enumeration depends on the theme.
  */
     "ColorSet2": "ColorSet2",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.MessageStripDesign", pkg["MessageStripDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.MessageStripDesign", pkg["MessageStripDesign"]);
   /**
  * Different notification list growing modes.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.NotificationListGrowingMode
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents NotificationListGrowingMode
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.NotificationListGrowingMode
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents NotificationListGrowingMode
  */
   pkg["NotificationListGrowingMode"] = {
     /**
@@ -1443,13 +1443,13 @@ at the bottom.
  */
     "None": "None",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.NotificationListGrowingMode", pkg["NotificationListGrowingMode"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.NotificationListGrowingMode", pkg["NotificationListGrowingMode"]);
   /**
  * Tabs overflow mode in TabContainer.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.OverflowMode
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents OverflowMode
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.OverflowMode
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents OverflowMode
  */
   pkg["OverflowMode"] = {
     /**
@@ -1463,13 +1463,13 @@ at the bottom.
  */
     "StartAndEnd": "StartAndEnd",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.OverflowMode", pkg["OverflowMode"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.OverflowMode", pkg["OverflowMode"]);
   /**
  * Panel accessible roles.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.PanelAccessibleRole
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents PanelAccessibleRole
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.PanelAccessibleRole
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents PanelAccessibleRole
  */
   pkg["PanelAccessibleRole"] = {
     /**
@@ -1491,13 +1491,13 @@ A section of a page, that is important enough to be included in a page summary o
  */
     "Region": "Region",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PanelAccessibleRole", pkg["PanelAccessibleRole"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.PanelAccessibleRole", pkg["PanelAccessibleRole"]);
   /**
  * Popover horizontal align types.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.PopoverHorizontalAlign
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents PopoverHorizontalAlign
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.PopoverHorizontalAlign
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents PopoverHorizontalAlign
  */
   pkg["PopoverHorizontalAlign"] = {
     /**
@@ -1521,13 +1521,13 @@ A section of a page, that is important enough to be included in a page summary o
  */
     "Stretch": "Stretch",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PopoverHorizontalAlign", pkg["PopoverHorizontalAlign"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.PopoverHorizontalAlign", pkg["PopoverHorizontalAlign"]);
   /**
  * Popover placements.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.PopoverPlacement
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents PopoverPlacement
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.PopoverPlacement
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents PopoverPlacement
  */
   pkg["PopoverPlacement"] = {
     /**
@@ -1551,13 +1551,13 @@ A section of a page, that is important enough to be included in a page summary o
  */
     "Bottom": "Bottom",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PopoverPlacement", pkg["PopoverPlacement"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.PopoverPlacement", pkg["PopoverPlacement"]);
   /**
  * Popover vertical align types.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.PopoverVerticalAlign
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents PopoverVerticalAlign
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.PopoverVerticalAlign
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents PopoverVerticalAlign
  */
   pkg["PopoverVerticalAlign"] = {
     /**
@@ -1581,13 +1581,13 @@ A section of a page, that is important enough to be included in a page summary o
  */
     "Stretch": "Stretch",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PopoverVerticalAlign", pkg["PopoverVerticalAlign"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.PopoverVerticalAlign", pkg["PopoverVerticalAlign"]);
   /**
  * Popup accessible roles.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.PopupAccessibleRole
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents PopupAccessibleRole
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.PopupAccessibleRole
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents PopupAccessibleRole
  */
   pkg["PopupAccessibleRole"] = {
     /**
@@ -1606,13 +1606,13 @@ A section of a page, that is important enough to be included in a page summary o
  */
     "AlertDialog": "AlertDialog",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.PopupAccessibleRole", pkg["PopupAccessibleRole"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.PopupAccessibleRole", pkg["PopupAccessibleRole"]);
   /**
  * Different types of Priority.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.Priority
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents Priority
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.Priority
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents Priority
  */
   pkg["Priority"] = {
     /**
@@ -1636,14 +1636,14 @@ A section of a page, that is important enough to be included in a page summary o
  */
     "None": "None",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.Priority", pkg["Priority"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.Priority", pkg["Priority"]);
   /**
  * Types of icon sizes used in the RatingIndicator.
 Provides predefined size categories to ensure consistent scaling and spacing of icons.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.RatingIndicatorSize
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents RatingIndicatorSize
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.RatingIndicatorSize
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents RatingIndicatorSize
  */
   pkg["RatingIndicatorSize"] = {
     /**
@@ -1663,13 +1663,13 @@ Offers a balanced appearance for most scenarios.
  */
     "L": "L",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.RatingIndicatorSize", pkg["RatingIndicatorSize"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.RatingIndicatorSize", pkg["RatingIndicatorSize"]);
   /**
  * Different SegmentedButton selection modes.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.SegmentedButtonSelectionMode
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents SegmentedButtonSelectionMode
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.SegmentedButtonSelectionMode
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents SegmentedButtonSelectionMode
  */
   pkg["SegmentedButtonSelectionMode"] = {
     /**
@@ -1683,13 +1683,13 @@ Offers a balanced appearance for most scenarios.
  */
     "Multiple": "Multiple",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.SegmentedButtonSelectionMode", pkg["SegmentedButtonSelectionMode"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.SegmentedButtonSelectionMode", pkg["SegmentedButtonSelectionMode"]);
   /**
  * Different types of SemanticColor.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.SemanticColor
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents SemanticColor
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.SemanticColor
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents SemanticColor
  */
   pkg["SemanticColor"] = {
     /**
@@ -1718,13 +1718,13 @@ Offers a balanced appearance for most scenarios.
  */
     "Neutral": "Neutral",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.SemanticColor", pkg["SemanticColor"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.SemanticColor", pkg["SemanticColor"]);
   /**
  * Different types of Switch designs.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.SwitchDesign
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents SwitchDesign
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.SwitchDesign
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents SwitchDesign
  */
   pkg["SwitchDesign"] = {
     /**
@@ -1738,13 +1738,13 @@ Offers a balanced appearance for most scenarios.
  */
     "Graphical": "Graphical",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.SwitchDesign", pkg["SwitchDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.SwitchDesign", pkg["SwitchDesign"]);
   /**
  * Tab layout of TabContainer.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.TabLayout
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents TabLayout
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.TabLayout
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents TabLayout
  */
   pkg["TabLayout"] = {
     /**
@@ -1758,13 +1758,13 @@ Offers a balanced appearance for most scenarios.
  */
     "Standard": "Standard",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TabLayout", pkg["TabLayout"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.TabLayout", pkg["TabLayout"]);
   /**
  * Alignment of the &lt;ui5-table-cell&gt; component.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.TableCellHorizontalAlign
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents TableCellHorizontalAlign
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.TableCellHorizontalAlign
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents TableCellHorizontalAlign
  */
   pkg["TableCellHorizontalAlign"] = {
     /**
@@ -1793,13 +1793,13 @@ Offers a balanced appearance for most scenarios.
  */
     "Center": "Center",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TableCellHorizontalAlign", pkg["TableCellHorizontalAlign"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.TableCellHorizontalAlign", pkg["TableCellHorizontalAlign"]);
   /**
  * Growing mode of the &lt;ui5-table&gt; component.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.TableGrowingMode
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents TableGrowingMode
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.TableGrowingMode
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents TableGrowingMode
  */
   pkg["TableGrowingMode"] = {
     /**
@@ -1815,13 +1815,13 @@ Offers a balanced appearance for most scenarios.
  */
     "Scroll": "Scroll",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TableGrowingMode", pkg["TableGrowingMode"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.TableGrowingMode", pkg["TableGrowingMode"]);
   /**
  * Column mode of the &lt;ui5-table&gt; component.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.TableOverflowMode
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents TableOverflowMode
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.TableOverflowMode
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents TableOverflowMode
  */
   pkg["TableOverflowMode"] = {
     /**
@@ -1835,13 +1835,13 @@ Offers a balanced appearance for most scenarios.
  */
     "Popin": "Popin",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TableOverflowMode", pkg["TableOverflowMode"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.TableOverflowMode", pkg["TableOverflowMode"]);
   /**
  * Selection modes of the &lt;ui5-table&gt; component.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.TableSelectionMode
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents TableSelectionMode
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.TableSelectionMode
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents TableSelectionMode
  */
   pkg["TableSelectionMode"] = {
     /**
@@ -1860,13 +1860,13 @@ Offers a balanced appearance for most scenarios.
  */
     "Multiple": "Multiple",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TableSelectionMode", pkg["TableSelectionMode"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.TableSelectionMode", pkg["TableSelectionMode"]);
   /**
  * Defines tag design types.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.TagDesign
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents TagDesign
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.TagDesign
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents TagDesign
  */
   pkg["TagDesign"] = {
     /**
@@ -1905,13 +1905,13 @@ Offers a balanced appearance for most scenarios.
  */
     "Critical": "Critical",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TagDesign", pkg["TagDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.TagDesign", pkg["TagDesign"]);
   /**
  * Predefined sizes for the tag.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.TagSize
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents TagSize
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.TagSize
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents TagSize
  */
   pkg["TagSize"] = {
     /**
@@ -1925,13 +1925,13 @@ Offers a balanced appearance for most scenarios.
  */
     "L": "L",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TagSize", pkg["TagSize"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.TagSize", pkg["TagSize"]);
   /**
  * Empty Indicator Mode.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.TextEmptyIndicatorMode
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents TextEmptyIndicatorMode
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.TextEmptyIndicatorMode
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents TextEmptyIndicatorMode
  */
   pkg["TextEmptyIndicatorMode"] = {
     /**
@@ -1945,13 +1945,13 @@ Offers a balanced appearance for most scenarios.
  */
     "On": "On",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TextEmptyIndicatorMode", pkg["TextEmptyIndicatorMode"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.TextEmptyIndicatorMode", pkg["TextEmptyIndicatorMode"]);
   /**
  * Different types of Title level.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.TitleLevel
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents TitleLevel
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.TitleLevel
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents TitleLevel
  */
   pkg["TitleLevel"] = {
     /**
@@ -1985,13 +1985,13 @@ Offers a balanced appearance for most scenarios.
  */
     "H6": "H6",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.TitleLevel", pkg["TitleLevel"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.TitleLevel", pkg["TitleLevel"]);
   /**
  * Toast placement.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ToastPlacement
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ToastPlacement
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.ToastPlacement
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ToastPlacement
  */
   pkg["ToastPlacement"] = {
     /**
@@ -2041,13 +2041,13 @@ Default placement (no selection)
  */
     "BottomEnd": "BottomEnd",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ToastPlacement", pkg["ToastPlacement"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.ToastPlacement", pkg["ToastPlacement"]);
   /**
  * Defines which direction the items of ui5-toolbar will be aligned.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ToolbarAlign
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ToolbarAlign
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.ToolbarAlign
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ToolbarAlign
  */
   pkg["ToolbarAlign"] = {
     /**
@@ -2061,13 +2061,13 @@ Default placement (no selection)
  */
     "End": "End",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ToolbarAlign", pkg["ToolbarAlign"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.ToolbarAlign", pkg["ToolbarAlign"]);
   /**
  * Defines the available toolbar designs.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ToolbarDesign
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ToolbarDesign
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.ToolbarDesign
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ToolbarDesign
  */
   pkg["ToolbarDesign"] = {
     /**
@@ -2081,13 +2081,13 @@ Default placement (no selection)
  */
     "Transparent": "Transparent",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ToolbarDesign", pkg["ToolbarDesign"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.ToolbarDesign", pkg["ToolbarDesign"]);
   /**
  * Defines the priority of the toolbar item to go inside overflow popover.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ToolbarItemOverflowBehavior
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ToolbarItemOverflowBehavior
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.ToolbarItemOverflowBehavior
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ToolbarItemOverflowBehavior
  */
   pkg["ToolbarItemOverflowBehavior"] = {
     /**
@@ -2106,13 +2106,13 @@ Default placement (no selection)
  */
     "AlwaysOverflow": "AlwaysOverflow",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.ToolbarItemOverflowBehavior", pkg["ToolbarItemOverflowBehavior"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.ToolbarItemOverflowBehavior", pkg["ToolbarItemOverflowBehavior"]);
   /**
  * Different types of wrapping.
  * @enum {string}
  * @public
- * @alias ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.WrappingType
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents WrappingType
+ * @alias ui5.ecosystem.demo.app.any."@ui5".webcomponents.WrappingType
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents WrappingType
  */
   pkg["WrappingType"] = {
     /**
@@ -2126,20 +2126,20 @@ Default placement (no selection)
  */
     "Normal": "Normal",
   };
-  registerEnum("ui5.ecosystem.demo.app.thirdparty.@ui5.webcomponents.WrappingType", pkg["WrappingType"]);
+  registerEnum("ui5.ecosystem.demo.app.any.@ui5.webcomponents.WrappingType", pkg["WrappingType"]);
 
   // Interfaces
   /**
  * Interface for components that represent an avatar and may be slotted in numerous higher-order components such as `ui5-avatar-group`
- * @name ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.IAvatarGroupItem
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents IAvatarGroupItem
+ * @name ui5.ecosystem.demo.app.any."@ui5".webcomponents.IAvatarGroupItem
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents IAvatarGroupItem
  * @interface
  * @public
  */
   /**
  * Interface for components that may be used as a button inside numerous higher-order components
- * @name ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.IButton
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents IButton
+ * @name ui5.ecosystem.demo.app.any."@ui5".webcomponents.IButton
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents IButton
  * @interface
  * @public
  */
@@ -2147,43 +2147,43 @@ Default placement (no selection)
  * Interface for components that may be slotted inside a `ui5-calendar`.
 
 **Note:** Use with `ui5-date` or `ui5-date-range` as calendar date selection types.
- * @name ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ICalendarSelectedDates
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ICalendarSelectedDates
+ * @name ui5.ecosystem.demo.app.any."@ui5".webcomponents.ICalendarSelectedDates
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ICalendarSelectedDates
  * @interface
  * @public
  */
   /**
  * Interface for components that may be used inside a `ui5-color-palette` or `ui5-color-palette-popover`
- * @name ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.IColorPaletteItem
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents IColorPaletteItem
+ * @name ui5.ecosystem.demo.app.any."@ui5".webcomponents.IColorPaletteItem
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents IColorPaletteItem
  * @interface
  * @public
  */
   /**
  * Interface for components that may be slotted inside a `ui5-combobox`
- * @name ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.IComboBoxItem
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents IComboBoxItem
+ * @name ui5.ecosystem.demo.app.any."@ui5".webcomponents.IComboBoxItem
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents IComboBoxItem
  * @interface
  * @public
  */
   /**
  * Interface for components that can be slotted inside `ui5-form` as items.
- * @name ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.IFormItem
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents IFormItem
+ * @name ui5.ecosystem.demo.app.any."@ui5".webcomponents.IFormItem
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents IFormItem
  * @interface
  * @public
  */
   /**
  * Interface for components that represent an icon, usable in numerous higher-order components
- * @name ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.IIcon
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents IIcon
+ * @name ui5.ecosystem.demo.app.any."@ui5".webcomponents.IIcon
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents IIcon
  * @interface
  * @public
  */
   /**
  * Interface for components that represent a suggestion item, usable in `ui5-input`
- * @name ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.IInputSuggestionItem
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents IInputSuggestionItem
+ * @name ui5.ecosystem.demo.app.any."@ui5".webcomponents.IInputSuggestionItem
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents IInputSuggestionItem
  * @interface
  * @public
  */
@@ -2191,29 +2191,29 @@ Default placement (no selection)
  * Interface for components that may be slotted inside a `ui5-menu`.
 
 **Note:** Use with `ui5-menu-item` or `ui5-menu-separator`. Implementing the interface does not guarantee that any other classes can work with the `ui5-menu`.
- * @name ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.IMenuItem
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents IMenuItem
+ * @name ui5.ecosystem.demo.app.any."@ui5".webcomponents.IMenuItem
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents IMenuItem
  * @interface
  * @public
  */
   /**
  * Interface for components that may be slotted inside a `ui5-multi-combobox` as items
- * @name ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.IMultiComboBoxItem
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents IMultiComboBoxItem
+ * @name ui5.ecosystem.demo.app.any."@ui5".webcomponents.IMultiComboBoxItem
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents IMultiComboBoxItem
  * @interface
  * @public
  */
   /**
  * Interface for components that may be slotted inside `ui5-segmented-button` as items
- * @name ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ISegmentedButtonItem
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ISegmentedButtonItem
+ * @name ui5.ecosystem.demo.app.any."@ui5".webcomponents.ISegmentedButtonItem
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ISegmentedButtonItem
  * @interface
  * @public
  */
   /**
  * Interface for components that may be slotted inside `ui5-select` as options
- * @name ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.IOption
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents IOption
+ * @name ui5.ecosystem.demo.app.any."@ui5".webcomponents.IOption
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents IOption
  * @interface
  * @public
  */
@@ -2221,23 +2221,23 @@ Default placement (no selection)
  * Interface for components that may be slotted inside `ui5-tabcontainer` as items
 
 **Note:** Use directly `ui5-tab` or `ui5-tab-seprator`. Implementing the interface does not guarantee that the class can work as a tab.
- * @name ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ITab
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ITab
+ * @name ui5.ecosystem.demo.app.any."@ui5".webcomponents.ITab
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ITab
  * @interface
  * @public
  */
   /**
  * Interface for components that can be slotted inside the `features` slot of the `ui5-table`.
- * @name ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ITableFeature
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ITableFeature
+ * @name ui5.ecosystem.demo.app.any."@ui5".webcomponents.ITableFeature
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ITableFeature
  * @interface
  * @public
  */
   /**
  * Interface for components that can be slotted inside the `features` slot of the `ui5-table`
 and provide growing/data loading functionality.
- * @name ui5.ecosystem.demo.app.thirdparty."@ui5".webcomponents.ITableGrowing
- * @ui5-module-override ui5/ecosystem/demo/app/thirdparty/@ui5/webcomponents ITableGrowing
+ * @name ui5.ecosystem.demo.app.any."@ui5".webcomponents.ITableGrowing
+ * @ui5-module-override ui5/ecosystem/demo/app/any/@ui5/webcomponents ITableGrowing
  * @interface
  * @public
  */

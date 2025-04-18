@@ -1225,7 +1225,7 @@ module.exports = function (log, projectInfo) {
 		 */
 		getBundleInfo: async function getBundleInfo(
 			moduleNames,
-			{ pluginOptions, skipCache, persistentCache, dynamicEntriesPath, skipTransform, keepDynamicImports, generatedCode, sourcemap, minify, inject, addToNamespace, useRelativeModulePaths, removeScopePrefix } = {},
+			{ pluginOptions, skipCache, persistentCache, dynamicEntriesPath, skipTransform, keepDynamicImports, generatedCode, sourcemap, minify, inject, addToNamespace, useRelativeModulePaths } = {},
 			{ cwd = process.cwd(), depPaths = [], isMiddleware } = {},
 		) {
 			let bundling = false;
@@ -1323,15 +1323,9 @@ module.exports = function (log, projectInfo) {
 								}),
 							);
 						}
+
+						// create the bundle for the given modules
 						const nameOfModules = modules.map((module) => module.name);
-
-						options.pluginOptions ??= {};
-						// special options for WebComponents(Registry)
-						options.pluginOptions.webcomponents ??= {};
-						// TODO: Not hard-code "thirdparty", evaluate addToNamespace
-						options.pluginOptions.webcomponents.moduleBasePath = `${path.posix.join(projectInfo.namespace, "thirdparty")}`;
-						options.pluginOptions.webcomponents.removeScopePrefix = removeScopePrefix;
-
 						//const millis = Date.now();
 						const output = await that.createBundle(nameOfModules, options);
 						//console.log(`createBundle overall duration: ${Date.now() - millis}ms`);
