@@ -55,12 +55,15 @@ function dot2slash(s) {
  * @returns the escaped name
  */
 function escapeName(name) {
+	return name;
+	/*
 	return name
 		.split(".")
 		.map((part) => {
 			return part.includes("-") || part.includes("@") ? `"${part}"` : part;
 		})
 		.join(".");
+	*/
 }
 
 /**

@@ -1,0 +1,24 @@
+{
+  "name": "ui5-tsmodule",
+  "version": "0.5.1",
+  "description": "UI5 TypeScript module",
+  "private": true,
+  "author": "Peter Muessig",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ui5-community/ui5-ecosystem-showcase.git",
+    "directory": "showcases/ui5-tsmodule"
+  },
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@types/openui5": "1.133.0",
+    "eslint": "^9.22.0",
+    "globals": "^16.0.0",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.26.1"
+  }
+}

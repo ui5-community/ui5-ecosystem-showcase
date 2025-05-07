@@ -615,7 +615,7 @@ module.exports = function (log) {
 			// specVersion 3.0 provides source metadata and only if the
 			// current work directory is the rootpath of the project resource
 			// it is a root resource which should be considered to be resolved
-			if (path.relative(cwd, resource.getProject().getRootPath()) === "") {
+			if (resource.getProject() && path.relative(cwd, resource.getProject().getRootPath()) === "") {
 				// npm dependencies don't have sourceMetadata applied to resource!
 				resourcePath = resource.getSourceMetadata()?.fsPath || resourcePath;
 			}

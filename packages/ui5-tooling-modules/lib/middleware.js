@@ -61,6 +61,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 			watchDebounce: 100,
 			entryPoints: [],
 			useRelativeModulePaths: false,
+			addToNamespace: true,
 		},
 		options.configuration,
 	);
@@ -291,6 +292,8 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	};
 
 	// return the middleware
+	const projectNamespace = projectInfo.type === "application" ? "/" : `/resources/${projectInfo.namespace}/`;
+	const addToNamespace = typeof config.addToNamespace === "string" ? config.addToNamespace : "thirdparty";
 	return async (req, res, next) => {
 		// determine the request path
 		const pathname = req.url?.match("^[^?]*")[0];
@@ -298,8 +301,10 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 		// perf
 		const time = Date.now();
 
-		// check for resources requests
-		const match = /^\/resources\/(.*)$/.exec(pathname);
+		// check for resources requests (either in the thirdparty namespace or in the resources namespace)
+		const matchNS = new RegExp(`^${projectNamespace}${addToNamespace}/(.*)$`).exec(pathname);
+		const matchRes = /^\/resources\/(.*)$/.exec(pathname);
+		const match = matchNS || matchRes;
 		if (match) {
 			// determine the module name (for JS resources we strip the extension)
 			let moduleName = match[1];
@@ -345,13 +350,19 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 					let { contentType } = middlewareUtil.getMimeInfo(pathname);
 					res.setHeader("Content-Type", contentType);
 
-					// respond the content
-					// /!\ non-modules and resources with a path are served as stream (encoding!)
-					if (resource.type === "module" || (!resource.path && resource.code)) {
-						res.end(resource.code);
-					} else if (resource.path) {
-						const stream = createReadStream(resource.path);
-						stream.pipe(res);
+					if (matchRes && !matchNS) {
+						// "Stellvertreter" module for the resource to load the correct module
+						// which is only needed for the middleware and not for the build
+						res.end(`sap.ui.define(["${projectInfo.namespace}/${addToNamespace}/${moduleName}"], function(module) { return module; });`);
+					} else {
+						// respond the content
+						// /!\ non-modules and resources with a path are served as stream (encoding!)
+						if (resource.type === "module" || (!resource.path && resource.code)) {
+							res.end(resource.code);
+						} else if (resource.path) {
+							const stream = createReadStream(resource.path);
+							stream.pipe(res);
+						}
 					}
 
 					log.verbose(`Processing resource ${moduleName} took ${Date.now() - time} millis`);

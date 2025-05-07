@@ -8,7 +8,7 @@ const { compile } = require("handlebars");
 
 const WebComponentRegistry = require("./utils/WebComponentRegistry");
 
-module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framework, options } = {}) {
+module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framework, options, $metadata = {} } = {}) {
 	// derive the configuration from the provided options
 	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, moduleBasePath, removeScopePrefix, skipJSDoc } = Object.assign(
 		{
@@ -229,6 +229,15 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			fileName: `${source}.js`,
 			code,
 		});
+
+		// store the metadata
+		$metadata.packages = $metadata.packages || {};
+		$metadata.packages[source] = {
+			name: package.namespace,
+			qualifiedName: package.qualifiedNamespace,
+		};
+
+		// mark the source as emitted
 		emittedPackages.push(source);
 	};
 
@@ -250,13 +259,14 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			const ui5Metadata = clazz._ui5metadata;
 			const ui5ClassName = clazz._ui5QualifiedName;
 			const namespace = ui5Metadata.namespace;
+			//const qualifiedNamespace = ui5Metadata.qualifiedNamespace;
 
 			let metadata;
 			if (skipJSDoc) {
 				const metadataObject = Object.assign({}, ui5Metadata, {
 					tag: ui5Metadata.tag,
-					library: `${ui5Metadata.namespace}.library`, // if not defined, the library is derived from the namespace
-					designtime: `${ui5Metadata.namespace}/designtime/${clazz.name}.designtime`, // add a default designtime
+					//library: `${qualifiedNamespace}.library`, // if not defined, the library is derived from the namespace
+					designtime: `${namespace}/designtime/${clazz.name}.designtime`, // add a default designtime
 				});
 				metadata = JSON.stringify(metadataObject, undefined, 2);
 			} else {
@@ -312,6 +322,13 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				fileName: `${resolvedSource}.js`,
 				code,
 			});
+
+			// store the metadata
+			$metadata.controls = $metadata.controls || {};
+			$metadata.controls[source] = {
+				name: clazz._ui5QualifiedNameSlashes,
+				qualifiedName: clazz._ui5QualifiedName,
+			};
 
 			// mark the source as emitted
 			emittedWrappers.push(resolvedSource);
