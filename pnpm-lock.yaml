@@ -90,9 +90,6 @@ importers:
       '@sap/approuter':
         specifier: '>=19.0.4'
         version: 19.0.4(encoding@0.1.13)(undici@6.19.8)
-      '@sap/cds':
-        specifier: '*'
-        version: 8.1.1(express@4.21.2)
       '@sap/xsenv':
         specifier: 5.5.0
         version: 5.5.0

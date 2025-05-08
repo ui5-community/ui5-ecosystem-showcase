@@ -2,15 +2,13 @@ const approuter = require("@sap/approuter");
 const express = require("express");
 const xsenv = require("@sap/xsenv");
 
-const LOG = require("@sap/cds").log("dev-approuter") || console;
-
 const findUI5Modules = require("cds-plugin-ui5/lib/findUI5Modules");
 const createPatchedRouter = require("cds-plugin-ui5/lib/createPatchedRouter");
 const applyUI5Middleware = require("cds-plugin-ui5/lib/applyUI5Middleware");
 const findCDSModules = require("ui5-middleware-cap/lib/findCDSModules");
 const applyCDSMiddleware = require("ui5-middleware-cap/lib/applyCDSMiddleware");
 
-const { parseConfig, applyDependencyConfig, addDestination, configureCDSRoute, configureUI5Route } = require("./helpers");
+const { LOG, parseConfig, applyDependencyConfig, addDestination, configureCDSRoute, configureUI5Route } = require("./helpers");
 
 // marker that the dev-approuter is running
 process.env["dev-approuter"] = true;
@@ -164,8 +162,8 @@ class DevApprouter {
 		// this endpoint helps to debug auth(n,z) issues
 		// DANGER, WILL SMITH: you must not use this in production envs!
 		_approuter.beforeRequestHandler.use("/my-jwt", (req, res) => {
-			res.end(req.session?.user?.token?.accessToken || "none")
-		})
+			res.end(req.session?.user?.token?.accessToken || "none");
+		});
 		_approuter.start({
 			port: arPort,
 			xsappConfig: applyDependencyConfig(config),

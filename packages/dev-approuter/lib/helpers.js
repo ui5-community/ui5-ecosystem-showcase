@@ -1,7 +1,16 @@
 const path = require("path");
 const fs = require("fs");
 
-const LOG = require("@sap/cds").log("dev-approuter") || console;
+/**
+ * Custom logger for the dev-approuter.
+ * Prefixes all logs with "[dev-approuter] - ", similar to what the CDS logger does.
+ * The reason not to use the CDS logger directly is to avoid loading the cds.env too early, before the cds.root is properly detected.
+ */
+const LOG = {
+	info: (...args) => {
+		console.log("[dev-approuter] -", ...args);
+	},
+};
 
 /**
  * Parses the approuter configuration from an `xs-dev.json` file.
@@ -133,6 +142,7 @@ const configureUI5Route = (moduleId, sourcePath, route) => {
 };
 
 module.exports = {
+	LOG,
 	parseConfig,
 	applyDependencyConfig,
 	addDestination,
