@@ -1,4 +1,4 @@
-sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index.esm2017'], (function (exports, index_esm2017) { 'use strict';
+sap.ui.define(['exports', '../../index.esm2017'], (function (exports, index_esm2017) { 'use strict';
 
     var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof index_esm2017.global !== 'undefined' ? index_esm2017.global : typeof self !== 'undefined' ? self : {};
 

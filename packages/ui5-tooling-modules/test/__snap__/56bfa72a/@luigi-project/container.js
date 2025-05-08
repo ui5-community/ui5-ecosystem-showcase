@@ -2,9 +2,9 @@
  * ${copyright}
  */
 sap.ui.define([
-	"ui5/ecosystem/demo/tsapp/resources/container",
+  "../container",
 ], function(
-	WebCPackage,
+  WebCPackage,
 ) {
   "use strict";
 
@@ -23,25 +23,25 @@ sap.ui.define([
     "@luigi-project.container.LuigiCompoundContainer"
   ],
   "elements": [],
-  "rootPath": "ui5/ecosystem/demo/tsapp/resources/"
+  "rootPath": "../"
 }
   };
 
-	if (WebCPackage) {
-		Object.keys(WebCPackage).forEach((key) => {
-			if (key !== "default") {
-				pkg[key] = WebCPackage[key];
-			} else {
-				if (typeof WebCPackage[key] === "object") {
-					Object.assign(pkg, WebCPackage[key]);
-				}
-			}
-		});
-	}
+  if (WebCPackage) {
+    Object.keys(WebCPackage).forEach((key) => {
+      if (key !== "default") {
+        pkg[key] = WebCPackage[key];
+      } else {
+        if (typeof WebCPackage[key] === "object") {
+          Object.assign(pkg, WebCPackage[key]);
+        }
+      }
+    });
+  }
 
 
   // Interfaces
 
 
-	return pkg;
+  return pkg;
 });

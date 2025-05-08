@@ -9,6 +9,7 @@ import capitalize from "ui5/ecosystem/demo/tslib/util/capitalize";
 import camelizeSomething from "../utils/camelizeSomething";
 import WebComponent from "sap/ui/core/webc/WebComponent";
 import LuigiEvents, { LuigiContainer } from "@luigi-project/container";
+import _capitalize from "ui5-tsmodule/capitalize";
 
 function limitString(string = "", limit = 40) {
 	return string.substring(0, limit);
@@ -75,8 +76,9 @@ export default class Main extends Controller {
 
 	public sayHello(): void {
 		// using regular imports
-		const text: string = capitalize("ui5");
-		MessageBox.show(`Hello World, ${text}!`);
+		const text1: string = capitalize("ui5");
+		const text2: string = _capitalize("type-script");
+		MessageBox.show(`Hello World, ${text1}, ${text2}!`);
 	}
 
 	public async sayHelloAsync(): Promise<void> {

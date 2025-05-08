@@ -3,8 +3,8 @@
  */
 sap.ui.define([
   "sap/ui/core/webc/WebComponent",
-  "ui5/ecosystem/demo/tsapp/resources/@luigi-project/container",
-  "ui5/ecosystem/demo/tsapp/resources/LuigiContainer",
+  "../../@luigi-project/container",
+  "../../LuigiContainer",
 ], function(
   WebComponentBaseClass,
 ) {
@@ -228,7 +228,6 @@ sap.ui.define([
     "updateViewUrl",
     "init"
   ],
-  "library": "@luigi-project/container.library",
   "designtime": "@luigi-project/container/designtime/LuigiContainer.designtime"
 }
   });

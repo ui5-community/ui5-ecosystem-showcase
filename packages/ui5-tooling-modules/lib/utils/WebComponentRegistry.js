@@ -41,13 +41,14 @@ let _classAliases = {};
 class RegistryEntry {
 	#customElementsMetadata = {};
 
-	constructor({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, moduleBasePath, removeScopePrefix, version }) {
+	constructor({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version }) {
 		this.#customElementsMetadata = customElementsMetadata;
 		this.namespace = namespace;
 		this.scopeSuffix = scopeSuffix;
 		this.npmPackagePath = npmPackagePath;
-		this.moduleBasePath = moduleBasePath;
-		this.qualifiedNamespace = `${moduleBasePath ? slash2dot(this.moduleBasePath) + "." : ""}${slash2dot(removeScopePrefix ? this.namespace.replace(/^@/, "") : this.namespace)}`;
+		this.qualifiedNamespace = slash2dot(this.namespace);
+		//this.moduleBasePath = moduleBasePath;
+		//this.qualifiedNamespace = `${moduleBasePath ? slash2dot(this.moduleBasePath) + "." : ""}${slash2dot(removeScopePrefix ? this.namespace.replace(/^@/, "") : this.namespace)}`;
 		// TODO: The following conversion of "-" to "_" is a workaround for testing the UI5 JSDoc build.
 		//       Only needed until we solve the escaping issue of segments like "@ui5" or "webcomponents-fiori".
 		// this.qualifiedNamespace = this.qualifiedNamespace.replace(/-/g, "_");
@@ -62,7 +63,7 @@ class RegistryEntry {
 
 		JSDocSerializer.prepare(this);
 
-		console.log(`Metadata processed for package ${namespace}. Module base path: ${moduleBasePath}.`);
+		console.log(`Metadata processed for package ${namespace}.`); // Module base path: ${moduleBasePath}.`);
 	}
 
 	#deriveUi5ClassNames(classDef) {
@@ -792,10 +793,10 @@ class RegistryEntry {
 }
 
 const WebComponentRegistry = {
-	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, moduleBasePath, removeScopePrefix }) {
+	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version }) {
 		let entry = _registry[namespace];
 		if (!entry) {
-			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, moduleBasePath, removeScopePrefix, version });
+			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version });
 
 			// track all classes also via their module name,
 			// so we can access them faster during resource resolution later on

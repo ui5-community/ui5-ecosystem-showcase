@@ -3,8 +3,8 @@
  */
 sap.ui.define([
   "sap/ui/core/webc/WebComponent",
-  "ui5/ecosystem/demo/app/resources/@ui5/webcomponents",
-  "ui5/ecosystem/demo/app/resources/Panel",
+  "../../../@ui5/webcomponents",
+  "../../../Panel",
 ], function(
   WebComponentBaseClass,
 ) {
@@ -90,7 +90,6 @@ sap.ui.define([
   "getters": [],
   "methods": [],
   "defaultAggregation": "content",
-  "library": "@ui5/webcomponents.library",
   "designtime": "@ui5/webcomponents/designtime/Panel.designtime"
 }
   });

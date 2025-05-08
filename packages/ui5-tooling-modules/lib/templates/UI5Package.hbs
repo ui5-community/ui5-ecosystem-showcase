@@ -2,12 +2,12 @@
  * ${copyright}
  */
 sap.ui.define([
-	"{{webcPackage}}",{{#if isBaseLib}}
+  "{{webcPackage}}",{{#if isBaseLib}}
   "sap/ui/core/webc/WebComponent",{{/if}}{{#if hasEnums}}
   "sap/ui/base/DataType",{{/if}}{{#each dependencies}}
   "{{this}}",{{/each}}
 ], function(
-	WebCPackage,{{#if isBaseLib}}
+  WebCPackage,{{#if isBaseLib}}
   WebComponent,{{/if}}{{#if hasEnums}}
   DataType,{{/if}}
 ) {
@@ -21,17 +21,17 @@ sap.ui.define([
 {{{metadata}}}
   };
 
-	if (WebCPackage) {
-		Object.keys(WebCPackage).forEach((key) => {
-			if (key !== "default") {
-				pkg[key] = WebCPackage[key];
-			} else {
-				if (typeof WebCPackage[key] === "object") {
-					Object.assign(pkg, WebCPackage[key]);
-				}
-			}
-		});
-	}
+  if (WebCPackage) {
+    Object.keys(WebCPackage).forEach((key) => {
+      if (key !== "default") {
+        pkg[key] = WebCPackage[key];
+      } else {
+        if (typeof WebCPackage[key] === "object") {
+          Object.assign(pkg, WebCPackage[key]);
+        }
+      }
+    });
+  }
 
   {{#each enums}}
   {{{this._jsDoc}}}
@@ -59,5 +59,5 @@ sap.ui.define([
   // ====================
   {{/if}}
 
-	return pkg;
+  return pkg;
 });

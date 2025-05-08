@@ -14,7 +14,7 @@
       "unit/*": ["./webapp/test/unit/*"],
       "integration/*": ["./webapp/test/integration/*"]
     },
-    "types": ["@types/openui5", "@types/qunit", "ui5-tslib"]
+    "types": ["@types/openui5", "@types/qunit", "ui5-tslib", "ui5-tsmodule"]
   },
   "include": ["./webapp/**/*.ts"]
 }

@@ -13,7 +13,8 @@
     "start": "ui5 serve  --port 8080 -o index.html --config ui5-dist.yaml",
     "start-cdn": "ui5 serve  --port 8080 -o index-cdn.html --config ui5-dist.yaml",
     "ts-typecheck": "tsc --noEmit",
-    "lint": "eslint webapp"
+    "lint": "eslint webapp",
+    "jsdoc": "ui5 build jsdoc"
   },
   "repository": {
     "type": "git",

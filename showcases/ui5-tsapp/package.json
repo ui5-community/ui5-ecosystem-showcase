@@ -33,6 +33,7 @@
     "luxon": "^3.5.0",
     "moment": "^2.30.1",
     "ui5-tslib": "workspace:^",
+    "ui5-tsmodule": "workspace:^",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {

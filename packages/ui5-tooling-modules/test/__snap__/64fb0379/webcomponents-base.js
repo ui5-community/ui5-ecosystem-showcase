@@ -1,4 +1,4 @@
-sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents', 'ui5/ecosystem/demo/app/resources/Keys'], (function (webcomponents, Keys) { 'use strict';
+sap.ui.define(['./webcomponents', './Keys'], (function (webcomponents, Keys) { 'use strict';
 
   const t$2=new WeakMap;let a$2 = class a{static get tasks(){return t$2}static enqueue(s,e){t$2.has(s)||t$2.set(s,[]),t$2.get(s).push(e);}static run(s,e){return t$2.has(s)||t$2.set(s,[]),e().then(()=>{const T=t$2.get(s);if(T.length>0)return a.run(s,T.shift());t$2.delete(s);})}static push(s,e){t$2.get(s)?a.enqueue(s,e):a.run(s,e);}};
 
