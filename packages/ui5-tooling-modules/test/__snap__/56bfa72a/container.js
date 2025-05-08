@@ -1,4 +1,4 @@
-sap.ui.define(['ui5/ecosystem/demo/tsapp/resources/LuigiContainer2'], (function (LuigiContainer) { 'use strict';
+sap.ui.define(['./LuigiContainer2'], (function (LuigiContainer) { 'use strict';
 
 
 

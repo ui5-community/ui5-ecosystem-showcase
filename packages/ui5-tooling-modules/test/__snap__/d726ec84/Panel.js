@@ -1,4 +1,4 @@
-sap.ui.define(['ui5/ecosystem/demo/app/resources/webcomponents'], (function (webcomponentsBase) { 'use strict';
+sap.ui.define(['./webcomponents'], (function (webcomponentsBase) { 'use strict';
 
     const l$2=(s,e={})=>t=>{Object.prototype.hasOwnProperty.call(t,"metadata")||(t.metadata={});const n=t.metadata;n.events||(n.events={});const a=n.events;a[s]||(e.bubbles=!!e.bubbles,e.cancelable=!!e.cancelable,a[s]=e);};
 

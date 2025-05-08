@@ -1,4 +1,4 @@
-sap.ui.define(['exports', 'ui5/ecosystem/demo/app/resources/index2'], (function (exports, index) { 'use strict';
+sap.ui.define(['exports', '../index2'], (function (exports, index) { 'use strict';
 
 
 

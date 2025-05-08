@@ -7,11 +7,15 @@ const WebComponentRegistry = require("../lib/utils/WebComponentRegistry");
 // clean up test fixtures
 const cwd = process.cwd();
 const fixtureDir = path.resolve(cwd, `test/__fixtures__`);
-const generateFixtures = process.argv.slice(2)?.[0] == "--generateFixtures";
+const generateFixtures = process.argv.slice(2).indexOf("--generateFixtures") !== -1;
 if (generateFixtures) {
 	rmSync(fixtureDir, { recursive: true, force: true });
 }
 
+/**
+ * Ensures that the given path exists. If it does not exist, it creates the directory.
+ * @param {string} path the path to check
+ */
 function ensurePathExists(path) {
 	// create fixture folder per package
 	if (!existsSync(path)) {
@@ -45,6 +49,12 @@ function writeFixtures(webcRegistryEntry) {
 	writeFileSync(path.join(fixtureBase, `interfaces.json`), interfacesJson, { encoding: "utf8" });
 }
 
+/**
+ * Loads the WebComponent package and registers it in the WebComponentRegistry.
+ * @param {string} webcBaseNpmPackage the name of the WebComponent package
+ * @param {string} dist the distribution path
+ * @param {string} appDir the application directory
+ */
 function loadWebComponentPackage(webcBaseNpmPackage, dist, appDir) {
 	const webcBasePath = require.resolve(`${webcBaseNpmPackage}${dist}/custom-elements-internal.json`, {
 		paths: [appDir],
