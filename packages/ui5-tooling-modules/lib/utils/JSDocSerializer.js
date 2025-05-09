@@ -173,6 +173,7 @@ function _prepareGettersAndMethods(classDef) {
 			// function names on the instance use the "#" syntax
 			// the alias of the class is already escaped!
 			alias: `${jsDoc.alias}#${getterDef.getterName}`,
+			aliasSlashed: `${classDef._ui5QualifiedNameSlashes}#${getterDef.getterName}`,
 		});
 	});
 
@@ -186,6 +187,7 @@ function _prepareGettersAndMethods(classDef) {
 			// methods are taken as-is, unlike getters (s.a.)
 			// the alias of the class is already escaped!
 			alias: `${jsDoc.alias}#${name}`,
+			aliasSlashed: `${classDef._ui5QualifiedNameSlashes}#${name}`,
 		});
 	});
 }
@@ -233,9 +235,10 @@ const JSDocSerializer = {
 			interfaceDef._jsDoc = Templates.interface({
 				description: interfaceDef.description,
 				alias: escapeName(interfaceDef._ui5QualifiedName),
+				aliasSlashed: escapeName(interfaceDef._ui5QualifiedNameSlashes),
 				name: interfaceName,
 				// TODO: workaround for missing name escaping in the UI5 JSDoc build
-				package: interfaceDef._ui5QualifiedNameSlashes,
+				package: registryEntry.namespace,
 			});
 		});
 
@@ -245,9 +248,10 @@ const JSDocSerializer = {
 			enumDef._jsDoc = Templates.enumHeader({
 				description: enumDef.description,
 				alias: escapeName(enumDef._ui5QualifiedName),
+				aliasSlashed: escapeName(enumDef._ui5QualifiedNameSlashes),
 				name: enumName,
 				// TODO: workaround for missing name escaping in the UI5 JSDoc build
-				package: enumDef._ui5QualifiedNameSlashes,
+				package: registryEntry.namespace,
 			});
 			enumDef.values.forEach((value) => {
 				value._jsDoc = Templates.enumValue({ description: value.description });

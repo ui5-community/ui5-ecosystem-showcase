@@ -770,7 +770,7 @@ class RegistryEntry {
 				_ui5QualifiedName: this.prefixns(enumName),
 				// TODO: Ideally not needed in the future once we have a solution for escaping in the UI5 JDSDoc build
 				//       Also remember to remove the "@ui5-module-override" directives in the HBS templates!
-				_ui5QualifiedNameSlashes: this.qualifiedNamespace.replace(/\./g, "/"),
+				_ui5QualifiedNameSlashes: `${this.namespace}.${enumName}`,
 				description: this.enums[enumName].description || "",
 				values: enumValues,
 			};
@@ -787,7 +787,7 @@ class RegistryEntry {
 			interfaceDef._ui5QualifiedName = this.prefixns(interfaceName);
 			// TODO: Ideally not needed in the future once we have a solution for escaping in the UI5 JDSDoc build
 			//       Also remember to remove the "@ui5-module-override" directives in the HBS templates!
-			interfaceDef._ui5QualifiedNameSlashes = this.qualifiedNamespace.replace(/\./g, "/");
+			interfaceDef._ui5QualifiedNameSlashes = `${this.namespace}.${interfaceName}`;
 		});
 	}
 }
