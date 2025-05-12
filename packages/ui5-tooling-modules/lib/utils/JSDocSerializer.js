@@ -77,7 +77,7 @@ function _serializeClassHeader(classDef) {
 		// we reached the very top of the inheritance chain
 		superclassName = "sap.ui.core.webc.WebComponent";
 	} else if (superclassName) {
-		superclassName = classDef.superclass._ui5QualifiedName;
+		superclassName = `module:${classDef.superclass._ui5QualifiedNameWithSlashes}`;
 	} else {
 		// TODO: what do we do with the classes that don't have a superclass?
 		console.warn(`No superclass found for class ${classDef._ui5QualifiedName}`);
@@ -88,19 +88,18 @@ function _serializeClassHeader(classDef) {
 	//       Should we escape those characters to avoid JSDoc parsing errors?
 	//       Most texts don't make any sense though, they reference the web components by their tag
 	//       and not by their class names.
-	const description = `${classDef.description}`;
+	const description = classDef.description;
 
 	// @extends
-	const extendsTag = escapeName(superclassName ? `${superclassName}` : "");
+	const extendsTag = superclassName ? superclassName : "";
 
 	// @alias (we use this later also as the origin for methods and getters, e.g. my.project.thirdparty.webc.dist.Class#myMethod)
-	classDef._jsDoc.alias = escapeName(`${classDef._ui5QualifiedName}`);
+	classDef._jsDoc.alias = classDef._ui5QualifiedName;
 
 	// and finally we template the class header preamble
 	classDef._jsDoc.classHeader = Templates.classHeader({
 		description,
 		extendsTag,
-		alias: classDef._jsDoc.alias,
 		aliasSlashed: classDef._ui5QualifiedNameSlashes,
 	});
 }
