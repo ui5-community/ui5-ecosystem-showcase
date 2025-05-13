@@ -271,6 +271,7 @@ class RegistryEntry {
 				return {
 					origType: parsedType,
 					ui5Type: this.prefixns(parsedType),
+					moduleType: this.prefixnsAsModule(parsedType, true),
 					multiple,
 				};
 			}
@@ -454,7 +455,11 @@ class RegistryEntry {
 					mapping: "property",
 					defaultValue: defaultValue,
 				};
-				JSDocSerializer.writeDoc(classDef, "properties", propDef);
+				JSDocSerializer.writeDoc(classDef, "properties", {
+					name: propDef.name,
+					description: propDef.description,
+					moduleType: ui5TypeInfo?.moduleType,
+				});
 			}
 		} else if (propDef.kind === "method") {
 			// Methods are proxied through the core.WebComponent base class
