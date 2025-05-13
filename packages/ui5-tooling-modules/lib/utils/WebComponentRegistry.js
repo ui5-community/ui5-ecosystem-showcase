@@ -87,7 +87,7 @@ class RegistryEntry {
 			module.exports?.forEach(this.#parseExports.bind(this));
 		});
 
-		// [2] Connect superclasses
+		// [2] Prepare classes
 		Object.keys(this.classes).forEach((className) => {
 			const classDef = this.classes[className];
 
@@ -96,10 +96,13 @@ class RegistryEntry {
 			this.#connectSuperclass(classDef);
 
 			this.#calculateScopedTagName(classDef);
+		});
 
-			// [3] create UI5 metadata for each classed based on the parsed custom elements metadata
-			//     Note: The order is important! We need to connect the superclass and create its metadata first.
-			//           We need a fully constructed parent chain later for ensuring UI5 defaults (refer to #ensureDefaults)
+		// [3] create UI5 metadata for each classed based on the parsed custom elements metadata
+		//     Note: The order is important! We connected the superclasses first and only then create its metadata.
+		//           We need a fully constructed parent chain later for ensuring UI5 defaults (refer to #ensureDefaults)
+		Object.keys(this.classes).forEach((className) => {
+			const classDef = this.classes[className];
 			this.#createUI5Metadata(classDef);
 		});
 
@@ -180,6 +183,13 @@ class RegistryEntry {
 		return `${this.qualifiedNamespace}.${str}`;
 	}
 
+	prefixnsAsModule(str, isNamedExport) {
+		// a named export is referenced with a dot, e.g. "module:@ui5/webcomponents.IAvatarGroupItem"
+		// a default module export is referenced with a slash, e.g. "module:@ui5/webcomponents/dist/Avatar"
+		const delimiter = isNamedExport ? "." : "/";
+		return `module:${this.namespace}${delimiter}${str}`;
+	}
+
 	#calculateScopedTagName(classDef) {
 		// only scope UI5Element subclasses
 		if (this.scopeSuffix && WebComponentRegistry.isUI5ElementSubclass(classDef)) {
@@ -208,9 +218,15 @@ class RegistryEntry {
 
 	#checkForInterfaceOrClassType(type) {
 		if (this.interfaces[type]) {
-			return this.prefixns(type);
+			return {
+				resolvedUi5Name: this.prefixns(type),
+				resolvedModuleName: this.prefixnsAsModule(type, true),
+			};
 		} else if (this.classes[type]) {
-			return this.classes[type]._ui5QualifiedName;
+			return {
+				resolvedUi5Name: this.classes[type]._ui5QualifiedName,
+				resolvedModuleName: this.prefixnsAsModule(this.classes[type]._ui5QualifiedName),
+			};
 		}
 	}
 
@@ -266,7 +282,8 @@ class RegistryEntry {
 				return {
 					isInterfaceOrClassType: true,
 					origType: parsedType,
-					ui5Type: interfaceOrClassType,
+					ui5Type: interfaceOrClassType.resolvedUi5Name,
+					moduleType: interfaceOrClassType.resolvedModuleName,
 					multiple,
 				};
 			}
@@ -472,8 +489,9 @@ class RegistryEntry {
 			return;
 		}
 
+		let typeInfo;
 		if (slotDef._ui5type?.text !== "Array<HTMLElement>") {
-			const typeInfo = this.#extractUi5Type(slotDef._ui5type);
+			typeInfo = this.#extractUi5Type(slotDef._ui5type);
 			if (typeInfo.isInterfaceOrClassType) {
 				//console.log(`[interface/class type]: '${typeInfo.ui5Type}', multiple: ${typeInfo.multiple}`);
 				aggregationType = typeInfo.ui5Type;
@@ -501,7 +519,11 @@ class RegistryEntry {
 			slot: slotName,
 		};
 		// note: in case we changed the name of the aggregation (e.g. default), we can't pass the slotDef directly!
-		JSDocSerializer.writeDoc(classDef, "aggregations", { name: aggregationName, description: slotDef.description });
+		JSDocSerializer.writeDoc(classDef, "aggregations", {
+			name: aggregationName,
+			description: slotDef.description,
+			moduleType: typeInfo?.moduleType,
+		});
 	}
 
 	/**

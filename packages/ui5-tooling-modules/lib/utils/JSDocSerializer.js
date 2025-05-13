@@ -117,6 +117,8 @@ function _prepareEntity(classDef, entityType) {
 		// write the JSDoc comment back to the entity
 		jsDoc[entityType][entityName] = Templates.basicComment({
 			description: obj.description,
+			// some entities (e.g. aggregations and associations) might have a module type
+			moduleType: obj.moduleType,
 		});
 	});
 }
