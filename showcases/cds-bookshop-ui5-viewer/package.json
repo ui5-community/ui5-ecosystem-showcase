@@ -1,6 +1,6 @@
 {
   "name": "cds-bookshop-ui5-viewer",
-  "version": "0.4.28",
+  "version": "0.4.29",
   "description": "UI5 bookshop viewer referenced in cds-bookshop",
   "private": true,
   "author": "Nicolai Schoenteich, Peter Muessig",
