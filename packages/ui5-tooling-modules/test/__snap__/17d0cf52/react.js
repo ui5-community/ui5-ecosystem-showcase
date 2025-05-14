@@ -1,4 +1,4 @@
-sap.ui.define(['ui5/ecosystem/demo/app/resources/index2'], (function (index$1) { 'use strict';
+sap.ui.define(['./index2'], (function (index$1) { 'use strict';
 
 	function _mergeNamespaces(n, m) {
 		m.forEach(function (e) {

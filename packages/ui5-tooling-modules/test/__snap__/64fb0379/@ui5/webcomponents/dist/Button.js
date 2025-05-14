@@ -4,8 +4,8 @@
 sap.ui.define([
   "sap/ui/core/webc/WebComponent",
   "sap/ui/core/EnabledPropagator",
-  "ui5/ecosystem/demo/app/resources/@ui5/webcomponents",
-  "ui5/ecosystem/demo/app/resources/Button",
+  "../../../@ui5/webcomponents",
+  "../../../Button",
 ], function(
   WebComponentBaseClass,
   EnabledPropagator,
@@ -13,18 +13,18 @@ sap.ui.define([
   "use strict";
 
 
-  const WrapperClass = WebComponentBaseClass.extend("ui5.ecosystem.demo.app.thirdparty.ui5.webcomponents.dist.Button", {
+  const WrapperClass = WebComponentBaseClass.extend("@ui5.webcomponents.dist.Button", {
     metadata:
 {
   "namespace": "@ui5/webcomponents",
-  "qualifiedNamespace": "ui5.ecosystem.demo.app.thirdparty.ui5.webcomponents",
+  "qualifiedNamespace": "@ui5.webcomponents",
   "tag": "ui5-button",
   "interfaces": [
-    "ui5.ecosystem.demo.app.thirdparty.ui5.webcomponents.IButton"
+    "@ui5.webcomponents.IButton"
   ],
   "properties": {
     "design": {
-      "type": "ui5.ecosystem.demo.app.thirdparty.ui5.webcomponents.ButtonDesign",
+      "type": "@ui5.webcomponents.ButtonDesign",
       "mapping": "property",
       "defaultValue": "Default"
     },
@@ -68,12 +68,12 @@ sap.ui.define([
       "mapping": "property"
     },
     "type": {
-      "type": "ui5.ecosystem.demo.app.thirdparty.ui5.webcomponents.ButtonType",
+      "type": "@ui5.webcomponents.ButtonType",
       "mapping": "property",
       "defaultValue": "Button"
     },
     "accessibleRole": {
-      "type": "ui5.ecosystem.demo.app.thirdparty.ui5.webcomponents.ButtonAccessibleRole",
+      "type": "@ui5.webcomponents.ButtonAccessibleRole",
       "mapping": "property",
       "defaultValue": "Button"
     },
@@ -115,7 +115,6 @@ sap.ui.define([
   },
   "getters": [],
   "methods": [],
-  "library": "@ui5/webcomponents.library",
   "designtime": "@ui5/webcomponents/designtime/Button.designtime"
 }
   });

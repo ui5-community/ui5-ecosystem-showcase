@@ -1026,6 +1026,9 @@ importers:
       ui5-tslib:
         specifier: workspace:^
         version: link:../ui5-tslib
+      ui5-tsmodule:
+        specifier: workspace:^
+        version: link:../ui5-tsmodule
       xlsx:
         specifier: https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
         version: https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
@@ -1165,10 +1168,20 @@ importers:
         version: link:../../packages/ui5-tooling-transpile
 
   showcases/ui5-tslib:
+    dependencies:
+      '@ui5/webcomponents':
+        specifier: ^2.8.0
+        version: 2.8.0
+      showdown:
+        specifier: ^2.1.0
+        version: 2.1.0
     devDependencies:
       '@types/openui5':
         specifier: 1.133.0
         version: 1.133.0
+      '@types/showdown':
+        specifier: ^2.0.6
+        version: 2.0.6
       '@ui5/cli':
         specifier: ^4.0.13
         version: 4.0.13
@@ -1217,6 +1230,24 @@ importers:
       ui5-tooling-transpile:
         specifier: workspace:^
         version: link:../../packages/ui5-tooling-transpile
+
+  showcases/ui5-tsmodule:
+    devDependencies:
+      '@types/openui5':
+        specifier: 1.133.0
+        version: 1.133.0
+      eslint:
+        specifier: ^9.22.0
+        version: 9.22.0(jiti@2.4.2)
+      globals:
+        specifier: ^16.0.0
+        version: 16.0.0
+      typescript:
+        specifier: ^5.8.2
+        version: 5.8.2
+      typescript-eslint:
+        specifier: ^8.26.1
+        version: 8.26.1(eslint@9.22.0(jiti@2.4.2))(typescript@5.8.2)
 
 packages:
 
@@ -3154,6 +3185,9 @@ packages:
 
   '@types/serve-static@1.15.7':
     resolution: {integrity: sha512-W8Ym+h8nhuRwaKPaDw34QUkwsGi6Rc4yYqvKFo5rm2FUEhCFbzVWrxXUxuKK8TASjWsysJY0nsmNCGhCOIsrOw==}
+
+  '@types/showdown@2.0.6':
+    resolution: {integrity: sha512-pTvD/0CIeqe4x23+YJWlX2gArHa8G0J0Oh6GKaVXV7TAeickpkkZiNOgFcFcmLQ5lB/K0qBJL1FtRYltBfbGCQ==}
 
   '@types/sizzle@2.3.8':
     resolution: {integrity: sha512-0vWLNK2D5MT9dg0iOo8GlKguPAU02QjmZitPEsXRuJXU/OGIOt9vT9Fc26wtYuavLxtO45v9PGleoL9Z0k1LHg==}
@@ -8734,6 +8768,10 @@ packages:
   shell-quote@1.8.1:
     resolution: {integrity: sha512-6j1W9l1iAs/4xYBI1SYOVZyFcCis9b4KCLQ8fgAGG07QvzaRLVVRQvAy85yNmmZSjYjg4MWh4gNvlPujU/5LpA==}
 
+  showdown@2.1.0:
+    resolution: {integrity: sha512-/6NVYu4U819R2pUIk79n67SYgJHWCce0a5xTP979WbNp0FL9MN1I1QK662IDU1b6JzKTvmhgI7T7JYIxBi3kMQ==}
+    hasBin: true
+
   side-channel@1.0.6:
     resolution: {integrity: sha512-fDW/EZ6Q9RiO8eFG8Hj+7u/oW+XrPTIChwCOM2+th2A6OblDtYYIpve9m+KvI9Z4C9qSEXlaGR6bTEYHReuglA==}
     engines: {node: '>= 0.4'}
@@ -12618,6 +12656,8 @@ snapshots:
       '@types/node': 22.5.0
       '@types/send': 0.17.4
 
+  '@types/showdown@2.0.6': {}
+
   '@types/sizzle@2.3.8': {}
 
   '@types/stack-utils@2.0.3': {}
@@ -12866,7 +12906,7 @@ snapshots:
 
   '@ui5/logger@3.0.0':
     dependencies:
-      chalk: 5.3.0
+      chalk: 5.4.1
       cli-progress: 3.12.0
       figures: 5.0.0
 
@@ -12884,7 +12924,7 @@ snapshots:
       '@ui5/logger': 3.0.0
       ajv: 6.12.6
       ajv-errors: 1.0.1(ajv@6.12.6)
-      chalk: 5.3.0
+      chalk: 5.4.1
       escape-string-regexp: 5.0.0
       globby: 13.2.2
       graceful-fs: 4.2.11
@@ -13300,7 +13340,7 @@ snapshots:
 
   '@wdio/logger@8.38.0':
     dependencies:
-      chalk: 5.3.0
+      chalk: 5.4.1
       loglevel: 1.9.1
       loglevel-plugin-prefix: 0.8.4
       strip-ansi: 7.1.0
@@ -16765,7 +16805,7 @@ snapshots:
     dependencies:
       '@ljharb/through': 2.3.13
       ansi-escapes: 4.3.2
-      chalk: 5.3.0
+      chalk: 5.4.1
       cli-cursor: 3.1.0
       cli-width: 4.1.0
       external-editor: 3.1.0
@@ -19799,6 +19839,10 @@ snapshots:
 
   shell-quote@1.8.1: {}
 
+  showdown@2.1.0:
+    dependencies:
+      commander: 9.5.0
+
   side-channel@1.0.6:
     dependencies:
       call-bind: 1.0.7
@@ -20668,7 +20712,7 @@ snapshots:
   update-notifier@6.0.2:
     dependencies:
       boxen: 7.1.1
-      chalk: 5.3.0
+      chalk: 5.4.1
       configstore: 6.0.0
       has-yarn: 3.0.0
       import-lazy: 4.0.0

@@ -117,15 +117,33 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	}
 
 	// utility to rewrite dependency
-	const removeScopePrefix = config?.removeScopePrefix || config?.removeScopePreceder;
+	const sanitizeNpmPackageName = config?.sanitizeNpmPackageName;
+	const removeScopePrefix = sanitizeNpmPackageName || config?.removeScopePrefix || config?.removeScopePreceder;
+	const replaceDashes = sanitizeNpmPackageName;
+
+	// determine the NPM package name from a given source
+	const getNpmPackageName = (source) => {
+		const npmPackageScopeRegEx = /^((?:(@[^/]+)\/)?([^/]+))(?:\/(.*))?$/;
+		return npmPackageScopeRegEx.exec(source)?.[1];
+	};
+
 	// eslint-disable-next-line jsdoc/require-jsdoc
-	function rewriteDep(dep, bundledResources, useDottedNamespace) {
+	function rewriteDep(dep, bundleInfo, useDottedNamespace) {
 		// remove the relative path and the project namespace
 		const aDep = dep.replaceAll(`${options.projectNamespace}/resources/`, "").replaceAll(/\.?\.\//g, "");
-		if (config.addToNamespace && (bundledResources.indexOf(aDep) !== -1 || uniqueResources.has(aDep) || uniqueNS.has(aDep) || isAssetIncluded(aDep))) {
+		const resource = config.addToNamespace && bundleInfo.getBundledResources().find(({ name }) => aDep === name);
+		if (config.addToNamespace && (resource || uniqueResources.has(aDep) || uniqueNS.has(aDep) || isAssetIncluded(aDep))) {
 			let d = aDep;
-			if (removeScopePrefix && d.startsWith("@")) {
-				d = d.substring(1);
+			let npmPackage = getNpmPackageName(d);
+			if (d.length > npmPackage.length || npmPackage.startsWith("@")) {
+				const dPath = d.substring(npmPackage.length);
+				if (removeScopePrefix && npmPackage.startsWith("@")) {
+					npmPackage = npmPackage.substring(1);
+				}
+				if (replaceDashes && npmPackage.includes("-")) {
+					npmPackage = npmPackage.replace(/-/g, "_");
+				}
+				d = `${npmPackage}${dPath}`;
 			}
 			d = `${options.projectNamespace}/${thirdpartyNamespace}/${d}`;
 			return useDottedNamespace ? d.replace(/\//g, ".") : d;
@@ -136,11 +154,12 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 
 	// utility to rewrite JS dependencies
 	// eslint-disable-next-line jsdoc/require-jsdoc
-	function rewriteJSDeps(content, bundledResources, resourcePath) {
+	function rewriteJSDeps(content, bundleInfo, resourcePath) {
 		let changed = false;
 		try {
 			const program = parse(content, { comment: true, loc: true, range: true, tokens: true });
 			const tokens = {};
+			const isATokens = {};
 			let importsSapUiRequire = false;
 			walk(program, {
 				// eslint-disable-next-line no-unused-vars
@@ -154,8 +173,8 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 						node?.callee?.object?.object?.object?.name == "sap"
 					) {
 						const elDep = node.arguments[0];
-						if (elDep?.type === "Literal" /* && (bundledResources.includes(elDep.value) || isAssetIncluded(elDep.value)) */) {
-							tokens[elDep.value] = rewriteDep(elDep.value, bundledResources);
+						if (elDep?.type === "Literal") {
+							tokens[elDep.value] = rewriteDep(elDep.value, bundleInfo);
 							elDep.value = tokens[elDep.value];
 							changed = true;
 						}
@@ -169,8 +188,8 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 						(node?.type === "CallExpression" && node?.callee?.name == "__ui5_require_async")
 					) {
 						const elDep = node.arguments[0];
-						if (elDep?.type === "Literal" /* && bundledResources.includes(elDep.value) */) {
-							tokens[elDep.value] = rewriteDep(elDep.value, bundledResources);
+						if (elDep?.type === "Literal") {
+							tokens[elDep.value] = rewriteDep(elDep.value, bundleInfo);
 							elDep.value = tokens[elDep.value];
 							changed = true;
 						}
@@ -184,11 +203,11 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 						const depsArray = node.arguments.filter((arg) => arg.type === "ArrayExpression");
 						if (depsArray.length > 0) {
 							depsArray[0].elements.forEach((elDep) => {
-								if (elDep?.type === "Literal" /* && bundledResources.includes(elDep.value) */) {
+								if (elDep?.type === "Literal") {
 									if (elDep.value === "require") {
 										importsSapUiRequire = true;
 									} else {
-										tokens[elDep.value] = rewriteDep(elDep.value, bundledResources);
+										tokens[elDep.value] = rewriteDep(elDep.value, bundleInfo);
 										elDep.value = tokens[elDep.value];
 										changed = true;
 									}
@@ -204,13 +223,27 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 						const depsArray = node.arguments.filter((arg) => arg.type === "ArrayExpression");
 						if (depsArray.length > 0) {
 							depsArray[0].elements.forEach((elDep) => {
-								if (elDep?.type === "Literal" /* && bundledResources.includes(elDep.value) */) {
-									tokens[elDep.value] = rewriteDep(elDep.value, bundledResources);
+								if (elDep?.type === "Literal") {
+									tokens[elDep.value] = rewriteDep(elDep.value, bundleInfo);
 									elDep.value = tokens[elDep.value];
 									changed = true;
 								}
 							});
 						}
+					} else if (
+						/* isA */
+						node?.type === "CallExpression" &&
+						node?.callee?.type === "MemberExpression" &&
+						node?.callee?.property?.type === "Identifier" &&
+						/isA/.test(node?.callee?.property?.name) &&
+						node?.arguments?.length === 1 &&
+						node?.arguments?.[0].type === "Literal"
+					) {
+						const argument = node?.arguments[0];
+						isATokens[argument.value] = rewriteDep(argument.value.replace(/\./g, "/"), bundleInfo, true);
+						argument.value = isATokens[argument.value];
+						argument.raw = `"${isATokens[argument.value]}"`;
+						changed = true;
 					}
 				},
 			});
@@ -221,6 +254,9 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				changed = content;
 				Object.keys(tokens).forEach((token) => {
 					changed = changed.replace(new RegExp(`((?:require|requireSync|define|toUrl)(?:\\s*)(?:\\([^)]*["']))${token}(["'][^)]*\\))`, "g"), `$1${tokens[token]}$2`);
+				});
+				Object.keys(isATokens).forEach((token) => {
+					changed = changed.replace(new RegExp(`((?:isA)(?:\\s*)(?:\\([^)]*["']))${token}(["'][^)]*\\))`, "g"), `$1${isATokens[token]}$2`);
 				});
 			} else {
 				changed = content;
@@ -234,7 +270,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 
 	// utility to rewrite XML dependencies
 	// eslint-disable-next-line jsdoc/require-jsdoc
-	function rewriteXMLDeps(node, bundledResources, ns = {}) {
+	function rewriteXMLDeps(node, bundleInfo, ns = {}) {
 		let changed = false;
 		if (node) {
 			// parse the namespace
@@ -255,11 +291,11 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 						// namespace (default namespace => "")
 						const namespace = node[key].replace(/\./g, "/");
 						if (
-							bundledResources.some((res) => {
-								return res.startsWith(namespace);
+							bundleInfo.getBundledResources().some(({ name }) => {
+								return name.startsWith(namespace);
 							})
 						) {
-							node[key] = rewriteDep(node[key], bundledResources, true);
+							node[key] = rewriteDep(node[key], bundleInfo, true);
 							changed = true;
 						}
 						return;
@@ -269,7 +305,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 						try {
 							const requires = parseJS(node[key]);
 							for (const [key, value] of Object.entries(requires)) {
-								requires[key] = rewriteDep(value, bundledResources);
+								requires[key] = rewriteDep(value, bundleInfo);
 							}
 							node[key] = JSON.stringify(requires, null, 2).replace(/"/g, "'");
 							// eslint-disable-next-line no-unused-vars
@@ -290,7 +326,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 							// skip #text nodes
 							let module = nodeParts[2];
 							if (module !== "#text") {
-								changed = rewriteXMLDeps(child, bundledResources, localNs) || changed;
+								changed = rewriteXMLDeps(child, bundleInfo, localNs) || changed;
 							}
 						}
 					});
@@ -299,26 +335,16 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 		return changed;
 	}
 
-	// add special configuration options for the webcomponents rollup plugin
-	// to provide additional information to the WebComponents(Registry)
-	// how the namespaces should be handled
-	// (TODO: tbd - we maybe prefer to do a post processing for this?)
-	const pluginOptions = (config.pluginOptions ??= {});
-	pluginOptions.webcomponents ??= {};
-	pluginOptions.webcomponents.moduleBasePath = `${path.posix.join(projectInfo.namespace, thirdpartyNamespace)}`;
-	pluginOptions.webcomponents.removeScopePrefix = removeScopePrefix;
-
 	// bundle the resources (determine bundled resources and the set of modules to build)
 	const { resourceFactory } = taskUtil;
 
 	// every unique dependency will be bundled (entry points will be kept, rest is chunked)
 	const bundleTime = Date.now();
-	const bundleInfo = await getBundleInfo(Array.from(uniqueModules), config, { cwd, depPaths });
+	const bundleInfo = await getBundleInfo(Array.from(uniqueModules), config, { cwd, depPaths, rewriteDep });
 	if (bundleInfo.error) {
 		log.error(bundleInfo.error);
 		process.exit(1);
 	}
-	const bundledResources = bundleInfo.getBundledResources().map((entry) => entry.name);
 	const ignoreResources = [];
 	await Promise.all(
 		bundleInfo.getEntries().map(async (entry) => {
@@ -326,13 +352,13 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 			let newResource;
 			if (entry.type === "resource") {
 				newResource = resourceFactory.createResource({
-					path: `/resources/${rewriteDep(entry.name, bundledResources)}`,
+					path: `/resources/${rewriteDep(entry.name, bundleInfo)}`,
 					string: entry.code,
 				});
 			} else {
 				newResource = resourceFactory.createResource({
-					path: `/resources/${rewriteDep(entry.name, bundledResources)}.js`,
-					string: entry.code, //rewriteJSDeps(entry.code, bundledResources, entry.name),
+					path: `/resources/${rewriteDep(entry.name, bundleInfo)}.js`,
+					string: entry.code,
 				});
 			}
 			await workspace.write(newResource);
@@ -347,7 +373,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	const copyTime = Date.now();
 	await Promise.all(
 		Array.from(uniqueResources).map(async (resourceName) => {
-			const resourcePath = `/resources/${rewriteDep(resourceName, bundledResources)}`;
+			const resourcePath = `/resources/${rewriteDep(resourceName, bundleInfo)}`;
 			if (!(await workspace.byPath(resourcePath))) {
 				log.verbose(`Trying to process resource: ${resourceName}`);
 				if (existsResource(resourceName, { cwd, depPaths, onlyFiles: true })) {
@@ -412,7 +438,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				if (resourcePath.endsWith(".js") && !ignoreResources.includes(resourcePath)) {
 					if (!shouldSkipTransform(resourcePath)) {
 						const content = await res.getString();
-						const newContent = rewriteJSDeps(content, bundledResources, resourcePath);
+						const newContent = rewriteJSDeps(content, bundleInfo, resourcePath);
 						if (newContent /* false in case of rewrite issues! */ && newContent != content) {
 							config.debug && log.info(`Rewriting JS resource: ${resourcePath}`);
 							if (/\/\/# sourceMappingURL=.*$/.test(newContent)) {
@@ -437,7 +463,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				} else if (resourcePath.endsWith(".view.xml") || resourcePath.endsWith(".fragment.xml")) {
 					const content = await res.getString();
 					const xmldom = parser.parse(content);
-					if (rewriteXMLDeps(xmldom, bundledResources)) {
+					if (rewriteXMLDeps(xmldom, bundleInfo)) {
 						config.debug && log.info(`Rewriting XML resource: ${resourcePath}`);
 						const newContent = builder.build(xmldom);
 						res.setString(newContent);
@@ -454,8 +480,8 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 		const resComponent = await workspace.byPath(`/resources/${options.projectNamespace}/Component.js`);
 		if (resComponent) {
 			let pathMappings = "";
-			Array.from(bundledResources).map(async (resource) => {
-				pathMappings += `"${resource}": sap.ui.require.toUrl("${options.projectNamespace}/resources/${resource}"),`;
+			bundleInfo.getBundledResources().map(async ({ name }) => {
+				pathMappings += `"${name}": sap.ui.require.toUrl("${options.projectNamespace}/resources/${name}"),`;
 			});
 			let content = await resComponent.getString();
 			content = `sap.ui.loader.config({ paths: { ${pathMappings} }});

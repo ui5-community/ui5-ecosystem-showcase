@@ -7,7 +7,7 @@ import VBox from "sap/m/VBox";
 import Popup from "sap/ui/core/Popup";
 import Event from "sap/ui/base/Event";
 
-import Button from "@ui5/webcomponents/dist/Button";
+import Button from "@ui5/webcomponents/Button";
 import DatePicker from "@ui5/webcomponents/dist/DatePicker";
 import Input from "@ui5/webcomponents/dist/Input";
 import { AvatarSize } from "@ui5/webcomponents";
@@ -46,14 +46,19 @@ export default class Main extends Controller {
 		if (button instanceof Control) {
 			(this.getView()?.byId("contentArea") as VBox).addItem(button);
 		}
+		console.log(`Button is a @ui5.webcomponents.dist.Button: ${button.isA("@ui5.webcomponents.dist.Button")}`);
+		console.log(`Button is not a @ui5.webcomponents.Button: ${button.isA("@ui5.webcomponents.Button")}`);
 		const datePicker = new DatePicker({ placeholder: "📅" });
 		if (datePicker instanceof Control) {
 			(this.getView()?.byId("contentArea") as VBox).addItem(datePicker);
 		}
+		console.log(`DatePicker is a @ui5.webcomponents.dist.DatePicker: ${datePicker.isA("@ui5.webcomponents.dist.DatePicker")}`);
 		const input = new Input({ value: "🚀🚀🚀" });
 		if (input instanceof Control) {
 			(this.getView()?.byId("contentArea") as VBox).addItem(input);
 		}
+		console.log(`Input is a @ui5.webcomponents.dist.Input: ${input.isA("@ui5.webcomponents.dist.Input")}`);
+		console.log(`Input is not a @ui5.webcomponents.Input: ${input.isA("@ui5.webcomponents.Input")}`);
 	}
 
 	public onNavToDynamicPage(): void {

@@ -4,8 +4,8 @@
 sap.ui.define([
   "sap/ui/core/webc/WebComponent",
   "sap/ui/core/EnabledPropagator",
-  "ui5/ecosystem/demo/app/resources/@ui5/webcomponents",
-  "ui5/ecosystem/demo/app/resources/CheckBox",
+  "../../../@ui5/webcomponents",
+  "../../../CheckBox",
 ], function(
   WebComponentBaseClass,
   EnabledPropagator,
@@ -13,11 +13,11 @@ sap.ui.define([
   "use strict";
 
 
-  const WrapperClass = WebComponentBaseClass.extend("ui5.ecosystem.demo.app.any.@ui5.webcomponents.dist.CheckBox", {
+  const WrapperClass = WebComponentBaseClass.extend("@ui5.webcomponents.dist.CheckBox", {
     metadata:
 {
   "namespace": "@ui5/webcomponents",
-  "qualifiedNamespace": "ui5.ecosystem.demo.app.any.@ui5.webcomponents",
+  "qualifiedNamespace": "@ui5.webcomponents",
   "tag": "ui5-checkbox",
   "interfaces": [
     "sap.ui.core.IFormContent"
@@ -66,12 +66,12 @@ sap.ui.define([
       "mapping": "property"
     },
     "valueState": {
-      "type": "ui5.ecosystem.demo.app.any.@ui5.webcomponents-base.ValueState",
+      "type": "@ui5.webcomponents-base.ValueState",
       "mapping": "property",
       "defaultValue": "None"
     },
     "wrappingType": {
-      "type": "ui5.ecosystem.demo.app.any.@ui5.webcomponents.WrappingType",
+      "type": "@ui5.webcomponents.WrappingType",
       "mapping": "property",
       "defaultValue": "Normal"
     },
@@ -107,7 +107,6 @@ sap.ui.define([
   },
   "getters": [],
   "methods": [],
-  "library": "@ui5/webcomponents.library",
   "designtime": "@ui5/webcomponents/designtime/CheckBox.designtime"
 }
   });

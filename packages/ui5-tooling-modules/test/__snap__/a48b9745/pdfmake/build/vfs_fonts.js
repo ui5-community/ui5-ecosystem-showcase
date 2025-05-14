@@ -1,4 +1,4 @@
-sap.ui.define(['ui5/ecosystem/demo/app/resources/_commonjsHelpers'], (function (_commonjsHelpers) { 'use strict';
+sap.ui.define(['../../_commonjsHelpers'], (function (_commonjsHelpers) { 'use strict';
 
   function _mergeNamespaces(n, m) {
     m.forEach(function (e) {
