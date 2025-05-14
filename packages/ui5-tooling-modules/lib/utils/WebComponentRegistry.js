@@ -216,7 +216,7 @@ class RegistryEntry {
 		return "string";
 	}
 
-	#checkForInterfaceOrClassType(type) {
+	#findInterfaceOrClassType(type) {
 		if (this.interfaces[type]) {
 			return {
 				resolvedUi5Name: this.prefixns(type),
@@ -225,7 +225,7 @@ class RegistryEntry {
 		} else if (this.classes[type]) {
 			return {
 				resolvedUi5Name: this.classes[type]._ui5QualifiedName,
-				resolvedModuleName: this.prefixnsAsModule(this.classes[type]._ui5QualifiedName),
+				resolvedModuleName: `module:${this.classes[type]._ui5QualifiedNameSlashes}`,
 			};
 		}
 	}
@@ -277,7 +277,7 @@ class RegistryEntry {
 			}
 
 			// case 3: interface or class type
-			const interfaceOrClassType = this.#checkForInterfaceOrClassType(parsedType);
+			const interfaceOrClassType = this.#findInterfaceOrClassType(parsedType);
 
 			if (interfaceOrClassType) {
 				return {
