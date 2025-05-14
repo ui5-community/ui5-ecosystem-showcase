@@ -77,7 +77,7 @@ function _serializeClassHeader(classDef) {
 		// we reached the very top of the inheritance chain
 		superclassName = "sap.ui.core.webc.WebComponent";
 	} else if (superclassName) {
-		superclassName = classDef.superclass._ui5QualifiedName;
+		superclassName = `module:${classDef.superclass._ui5QualifiedNameSlashes}`;
 	} else {
 		// TODO: what do we do with the classes that don't have a superclass?
 		console.warn(`No superclass found for class ${classDef._ui5QualifiedName}`);
@@ -88,19 +88,18 @@ function _serializeClassHeader(classDef) {
 	//       Should we escape those characters to avoid JSDoc parsing errors?
 	//       Most texts don't make any sense though, they reference the web components by their tag
 	//       and not by their class names.
-	const description = `${classDef.description}`;
+	const description = classDef.description;
 
 	// @extends
-	const extendsTag = escapeName(superclassName ? `${superclassName}` : "");
+	const extendsTag = superclassName ? superclassName : "";
 
 	// @alias (we use this later also as the origin for methods and getters, e.g. my.project.thirdparty.webc.dist.Class#myMethod)
-	classDef._jsDoc.alias = escapeName(`${classDef._ui5QualifiedName}`);
+	classDef._jsDoc.alias = classDef._ui5QualifiedName;
 
 	// and finally we template the class header preamble
 	classDef._jsDoc.classHeader = Templates.classHeader({
 		description,
 		extendsTag,
-		alias: classDef._jsDoc.alias,
 		aliasSlashed: classDef._ui5QualifiedNameSlashes,
 	});
 }
@@ -118,6 +117,8 @@ function _prepareEntity(classDef, entityType) {
 		// write the JSDoc comment back to the entity
 		jsDoc[entityType][entityName] = Templates.basicComment({
 			description: obj.description,
+			// some entities (e.g. aggregations and associations) might have a module type
+			moduleType: obj.moduleType,
 		});
 	});
 }
@@ -173,6 +174,7 @@ function _prepareGettersAndMethods(classDef) {
 			// function names on the instance use the "#" syntax
 			// the alias of the class is already escaped!
 			alias: `${jsDoc.alias}#${getterDef.getterName}`,
+			aliasSlashed: `${classDef._ui5QualifiedNameSlashes}#${getterDef.getterName}`,
 		});
 	});
 
@@ -186,6 +188,7 @@ function _prepareGettersAndMethods(classDef) {
 			// methods are taken as-is, unlike getters (s.a.)
 			// the alias of the class is already escaped!
 			alias: `${jsDoc.alias}#${name}`,
+			aliasSlashed: `${classDef._ui5QualifiedNameSlashes}#${name}`,
 		});
 	});
 }
@@ -233,9 +236,10 @@ const JSDocSerializer = {
 			interfaceDef._jsDoc = Templates.interface({
 				description: interfaceDef.description,
 				alias: escapeName(interfaceDef._ui5QualifiedName),
+				aliasSlashed: escapeName(interfaceDef._ui5QualifiedNameSlashes),
 				name: interfaceName,
 				// TODO: workaround for missing name escaping in the UI5 JSDoc build
-				package: interfaceDef._ui5QualifiedNameSlashes,
+				package: registryEntry.namespace,
 			});
 		});
 
@@ -245,9 +249,10 @@ const JSDocSerializer = {
 			enumDef._jsDoc = Templates.enumHeader({
 				description: enumDef.description,
 				alias: escapeName(enumDef._ui5QualifiedName),
+				aliasSlashed: escapeName(enumDef._ui5QualifiedNameSlashes),
 				name: enumName,
 				// TODO: workaround for missing name escaping in the UI5 JSDoc build
-				package: enumDef._ui5QualifiedNameSlashes,
+				package: registryEntry.namespace,
 			});
 			enumDef.values.forEach((value) => {
 				value._jsDoc = Templates.enumValue({ description: value.description });

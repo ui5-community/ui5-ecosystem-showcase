@@ -228,9 +228,10 @@ sap.ui.define([
  * Different types of AvatarColorScheme.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.AvatarColorScheme
+ * @alias module:@ui5/webcomponents.AvatarColorScheme
  * @ui5-module-override @ui5/webcomponents AvatarColorScheme
  */
+
   pkg["AvatarColorScheme"] = {
     /**
  * 
@@ -293,9 +294,10 @@ sap.ui.define([
  * Different types of AvatarGroupType.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.AvatarGroupType
+ * @alias module:@ui5/webcomponents.AvatarGroupType
  * @ui5-module-override @ui5/webcomponents AvatarGroupType
  */
+
   pkg["AvatarGroupType"] = {
     /**
  * The avatars are displayed as partially overlapped on top of each other and the entire group has one click or tap area.
@@ -313,9 +315,10 @@ sap.ui.define([
  * Different types of AvatarShape.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.AvatarShape
+ * @alias module:@ui5/webcomponents.AvatarShape
  * @ui5-module-override @ui5/webcomponents AvatarShape
  */
+
   pkg["AvatarShape"] = {
     /**
  * Circular shape.
@@ -333,9 +336,10 @@ sap.ui.define([
  * Different types of AvatarSize.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.AvatarSize
+ * @alias module:@ui5/webcomponents.AvatarSize
  * @ui5-module-override @ui5/webcomponents AvatarSize
  */
+
   pkg["AvatarSize"] = {
     /**
  * component size - 2rem
@@ -373,9 +377,10 @@ font size - 3rem
  * Defines background designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.BackgroundDesign
+ * @alias module:@ui5/webcomponents.BackgroundDesign
  * @ui5-module-override @ui5/webcomponents BackgroundDesign
  */
+
   pkg["BackgroundDesign"] = {
     /**
  * A solid background color dependent on the theme.
@@ -398,9 +403,10 @@ font size - 3rem
  * Different types of Bar design
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.BarDesign
+ * @alias module:@ui5/webcomponents.BarDesign
  * @ui5-module-override @ui5/webcomponents BarDesign
  */
+
   pkg["BarDesign"] = {
     /**
  * Default type
@@ -428,9 +434,10 @@ font size - 3rem
  * Defines border designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.BorderDesign
+ * @alias module:@ui5/webcomponents.BorderDesign
  * @ui5-module-override @ui5/webcomponents BorderDesign
  */
+
   pkg["BorderDesign"] = {
     /**
  * A solid border color dependent on the theme.
@@ -448,9 +455,10 @@ font size - 3rem
  * Different  Breadcrumbs designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.BreadcrumbsDesign
+ * @alias module:@ui5/webcomponents.BreadcrumbsDesign
  * @ui5-module-override @ui5/webcomponents BreadcrumbsDesign
  */
+
   pkg["BreadcrumbsDesign"] = {
     /**
  * Shows the current page as the last item in the trail.
@@ -469,9 +477,10 @@ The last item contains only plain text and is not a link.
  * Different Breadcrumbs separators.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.BreadcrumbsSeparator
+ * @alias module:@ui5/webcomponents.BreadcrumbsSeparator
  * @ui5-module-override @ui5/webcomponents BreadcrumbsSeparator
  */
+
   pkg["BreadcrumbsSeparator"] = {
     /**
  * The separator appears as &quot;/&quot;.
@@ -509,9 +518,10 @@ The last item contains only plain text and is not a link.
  * Different BusyIndicator sizes.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.BusyIndicatorSize
+ * @alias module:@ui5/webcomponents.BusyIndicatorSize
  * @ui5-module-override @ui5/webcomponents BusyIndicatorSize
  */
+
   pkg["BusyIndicatorSize"] = {
     /**
  * small size
@@ -534,9 +544,10 @@ The last item contains only plain text and is not a link.
  * Different BusyIndicator text placements.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.BusyIndicatorTextPlacement
+ * @alias module:@ui5/webcomponents.BusyIndicatorTextPlacement
  * @ui5-module-override @ui5/webcomponents BusyIndicatorTextPlacement
  */
+
   pkg["BusyIndicatorTextPlacement"] = {
     /**
  * The text will be displayed on top of the busy indicator.
@@ -554,9 +565,10 @@ The last item contains only plain text and is not a link.
  * Button accessible roles.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ButtonAccessibleRole
+ * @alias module:@ui5/webcomponents.ButtonAccessibleRole
  * @ui5-module-override @ui5/webcomponents ButtonAccessibleRole
  */
+
   pkg["ButtonAccessibleRole"] = {
     /**
  * Represents Default (button) ARIA role.
@@ -574,9 +586,10 @@ The last item contains only plain text and is not a link.
  * Determines where the badge will be placed and how it will be styled.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ButtonBadgeDesign
+ * @alias module:@ui5/webcomponents.ButtonBadgeDesign
  * @ui5-module-override @ui5/webcomponents ButtonBadgeDesign
  */
+
   pkg["ButtonBadgeDesign"] = {
     /**
  * The badge is displayed after the text, inside the button.
@@ -601,9 +614,10 @@ The last item contains only plain text and is not a link.
  * Different Button designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ButtonDesign
+ * @alias module:@ui5/webcomponents.ButtonDesign
  * @ui5-module-override @ui5/webcomponents ButtonDesign
  */
+
   pkg["ButtonDesign"] = {
     /**
  * default type (no special styling)
@@ -641,9 +655,10 @@ The last item contains only plain text and is not a link.
  * Determines if the button has special form-related functionality.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ButtonType
+ * @alias module:@ui5/webcomponents.ButtonType
  * @ui5-module-override @ui5/webcomponents ButtonType
  */
+
   pkg["ButtonType"] = {
     /**
  * The button does not do anything special when inside a form
@@ -666,9 +681,10 @@ The last item contains only plain text and is not a link.
  * Enum for calendar legend items' types.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.CalendarLegendItemType
+ * @alias module:@ui5/webcomponents.CalendarLegendItemType
  * @ui5-module-override @ui5/webcomponents CalendarLegendItemType
  */
+
   pkg["CalendarLegendItemType"] = {
     /**
  * Set when no type is set.
@@ -791,9 +807,10 @@ The last item contains only plain text and is not a link.
  * Different Calendar selection mode.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.CalendarSelectionMode
+ * @alias module:@ui5/webcomponents.CalendarSelectionMode
  * @ui5-module-override @ui5/webcomponents CalendarSelectionMode
  */
+
   pkg["CalendarSelectionMode"] = {
     /**
  * Only one date can be selected at a time
@@ -819,9 +836,10 @@ value defines:
 - The first week of the year.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.CalendarWeekNumbering
+ * @alias module:@ui5/webcomponents.CalendarWeekNumbering
  * @ui5-module-override @ui5/webcomponents CalendarWeekNumbering
  */
+
   pkg["CalendarWeekNumbering"] = {
     /**
  * The default calendar week numbering:
@@ -857,9 +875,10 @@ Sunday is first day of the week, the week containing January 1st is first week o
  * Different Carousel arrows placement.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.CarouselArrowsPlacement
+ * @alias module:@ui5/webcomponents.CarouselArrowsPlacement
  * @ui5-module-override @ui5/webcomponents CarouselArrowsPlacement
  */
+
   pkg["CarouselArrowsPlacement"] = {
     /**
  * Carousel arrows are placed on the sides of the current Carousel page.
@@ -877,9 +896,10 @@ Sunday is first day of the week, the week containing January 1st is first week o
  * Different Carousel page indicator types.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.CarouselPageIndicatorType
+ * @alias module:@ui5/webcomponents.CarouselPageIndicatorType
  * @ui5-module-override @ui5/webcomponents CarouselPageIndicatorType
  */
+
   pkg["CarouselPageIndicatorType"] = {
     /**
  * The page indicator will be visualized as dots if there are fewer than 9 pages.
@@ -898,9 +918,10 @@ If there are more pages, the page indicator will switch to displaying the curren
  * Different filtering types of the ComboBox.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ComboBoxFilter
+ * @alias module:@ui5/webcomponents.ComboBoxFilter
  * @ui5-module-override @ui5/webcomponents ComboBoxFilter
  */
+
   pkg["ComboBoxFilter"] = {
     /**
  * Defines filtering by first symbol of each word of item&#x27;s text.
@@ -928,9 +949,10 @@ If there are more pages, the page indicator will switch to displaying the curren
  * Overflow Mode.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ExpandableTextOverflowMode
+ * @alias module:@ui5/webcomponents.ExpandableTextOverflowMode
  * @ui5-module-override @ui5/webcomponents ExpandableTextOverflowMode
  */
+
   pkg["ExpandableTextOverflowMode"] = {
     /**
  * Overflowing text is appended in-place.
@@ -948,9 +970,10 @@ If there are more pages, the page indicator will switch to displaying the curren
  * Different Button designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.FormItemSpacing
+ * @alias module:@ui5/webcomponents.FormItemSpacing
  * @ui5-module-override @ui5/webcomponents FormItemSpacing
  */
+
   pkg["FormItemSpacing"] = {
     /**
  * Normal spacing (smaller vertical space between form items).
@@ -968,9 +991,10 @@ If there are more pages, the page indicator will switch to displaying the curren
  * Different types of Highlight .
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.Highlight
+ * @alias module:@ui5/webcomponents.Highlight
  * @ui5-module-override @ui5/webcomponents Highlight
  */
+
   pkg["Highlight"] = {
     /**
  * 
@@ -1003,9 +1027,10 @@ If there are more pages, the page indicator will switch to displaying the curren
  * Different Icon semantic designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.IconDesign
+ * @alias module:@ui5/webcomponents.IconDesign
  * @ui5-module-override @ui5/webcomponents IconDesign
  */
+
   pkg["IconDesign"] = {
     /**
  * Contrast design
@@ -1053,9 +1078,10 @@ If there are more pages, the page indicator will switch to displaying the curren
  * Different Icon modes.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.IconMode
+ * @alias module:@ui5/webcomponents.IconMode
  * @ui5-module-override @ui5/webcomponents IconMode
  */
+
   pkg["IconMode"] = {
     /**
  * Image mode (by default).
@@ -1083,9 +1109,10 @@ This mode also supports focus and press handling to enhance interactivity.
  * Different input types.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.InputType
+ * @alias module:@ui5/webcomponents.InputType
  * @ui5-module-override @ui5/webcomponents InputType
  */
+
   pkg["InputType"] = {
     /**
  * Defines a one-line text input field:
@@ -1128,9 +1155,10 @@ This mode also supports focus and press handling to enhance interactivity.
  * Defines the area size around the component that the user can select.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.InteractiveAreaSize
+ * @alias module:@ui5/webcomponents.InteractiveAreaSize
  * @ui5-module-override @ui5/webcomponents InteractiveAreaSize
  */
+
   pkg["InteractiveAreaSize"] = {
     /**
  * The default target area size (the area taken by the component itself without any extra invisible touch area).
@@ -1148,9 +1176,10 @@ This mode also supports focus and press handling to enhance interactivity.
  * Link accessible roles.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.LinkAccessibleRole
+ * @alias module:@ui5/webcomponents.LinkAccessibleRole
  * @ui5-module-override @ui5/webcomponents LinkAccessibleRole
  */
+
   pkg["LinkAccessibleRole"] = {
     /**
  * Represents Default (link) ARIA role.
@@ -1168,9 +1197,10 @@ This mode also supports focus and press handling to enhance interactivity.
  * Different link designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.LinkDesign
+ * @alias module:@ui5/webcomponents.LinkDesign
  * @ui5-module-override @ui5/webcomponents LinkDesign
  */
+
   pkg["LinkDesign"] = {
     /**
  * default type (no special styling)
@@ -1193,9 +1223,10 @@ This mode also supports focus and press handling to enhance interactivity.
  * List accessible roles.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ListAccessibleRole
+ * @alias module:@ui5/webcomponents.ListAccessibleRole
  * @ui5-module-override @ui5/webcomponents ListAccessibleRole
  */
+
   pkg["ListAccessibleRole"] = {
     /**
  * Represents the ARIA role &quot;list&quot;. (by default)
@@ -1223,9 +1254,10 @@ This mode also supports focus and press handling to enhance interactivity.
  * Different list growing modes.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ListGrowingMode
+ * @alias module:@ui5/webcomponents.ListGrowingMode
  * @ui5-module-override @ui5/webcomponents ListGrowingMode
  */
+
   pkg["ListGrowingMode"] = {
     /**
  * Component&#x27;s &quot;load-more&quot; is fired upon pressing a &quot;More&quot; button.
@@ -1249,9 +1281,10 @@ at the bottom.
  * ListItem accessible roles.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ListItemAccessibleRole
+ * @alias module:@ui5/webcomponents.ListItemAccessibleRole
  * @ui5-module-override @ui5/webcomponents ListItemAccessibleRole
  */
+
   pkg["ListItemAccessibleRole"] = {
     /**
  * Represents the ARIA role &quot;listitem&quot;. (by default)
@@ -1284,9 +1317,10 @@ at the bottom.
  * Different list item types.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ListItemType
+ * @alias module:@ui5/webcomponents.ListItemType
  * @ui5-module-override @ui5/webcomponents ListItemType
  */
+
   pkg["ListItemType"] = {
     /**
  * Indicates the list item does not have any active feedback when item is pressed.
@@ -1314,9 +1348,10 @@ at the bottom.
  * Different list selection modes.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ListSelectionMode
+ * @alias module:@ui5/webcomponents.ListSelectionMode
  * @ui5-module-override @ui5/webcomponents ListSelectionMode
  */
+
   pkg["ListSelectionMode"] = {
     /**
  * Default mode (no selection).
@@ -1361,9 +1396,10 @@ at the bottom.
  * Different types of list items separators.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ListSeparator
+ * @alias module:@ui5/webcomponents.ListSeparator
  * @ui5-module-override @ui5/webcomponents ListSeparator
  */
+
   pkg["ListSeparator"] = {
     /**
  * Separators between the items including the last and the first one.
@@ -1387,9 +1423,10 @@ Note: This enumeration depends on the theme.
  * MessageStrip designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.MessageStripDesign
+ * @alias module:@ui5/webcomponents.MessageStripDesign
  * @ui5-module-override @ui5/webcomponents MessageStripDesign
  */
+
   pkg["MessageStripDesign"] = {
     /**
  * Message should be just an information
@@ -1427,9 +1464,10 @@ Note: This enumeration depends on the theme.
  * Different notification list growing modes.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.NotificationListGrowingMode
+ * @alias module:@ui5/webcomponents.NotificationListGrowingMode
  * @ui5-module-override @ui5/webcomponents NotificationListGrowingMode
  */
+
   pkg["NotificationListGrowingMode"] = {
     /**
  * Component&#x27;s &quot;load-more&quot; is fired upon pressing a &quot;More&quot; button.
@@ -1448,9 +1486,10 @@ at the bottom.
  * Tabs overflow mode in TabContainer.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.OverflowMode
+ * @alias module:@ui5/webcomponents.OverflowMode
  * @ui5-module-override @ui5/webcomponents OverflowMode
  */
+
   pkg["OverflowMode"] = {
     /**
  * End type is used if there should be only one overflow with hidden the tabs at the end of the tab container.
@@ -1468,9 +1507,10 @@ at the bottom.
  * Panel accessible roles.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.PanelAccessibleRole
+ * @alias module:@ui5/webcomponents.PanelAccessibleRole
  * @ui5-module-override @ui5/webcomponents PanelAccessibleRole
  */
+
   pkg["PanelAccessibleRole"] = {
     /**
  * Represents the ARIA role &quot;complementary&quot;.
@@ -1496,9 +1536,10 @@ A section of a page, that is important enough to be included in a page summary o
  * Popover horizontal align types.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.PopoverHorizontalAlign
+ * @alias module:@ui5/webcomponents.PopoverHorizontalAlign
  * @ui5-module-override @ui5/webcomponents PopoverHorizontalAlign
  */
+
   pkg["PopoverHorizontalAlign"] = {
     /**
  * Popover is centered.
@@ -1526,9 +1567,10 @@ A section of a page, that is important enough to be included in a page summary o
  * Popover placements.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.PopoverPlacement
+ * @alias module:@ui5/webcomponents.PopoverPlacement
  * @ui5-module-override @ui5/webcomponents PopoverPlacement
  */
+
   pkg["PopoverPlacement"] = {
     /**
  * Popover will be placed at the start of the reference element.
@@ -1556,9 +1598,10 @@ A section of a page, that is important enough to be included in a page summary o
  * Popover vertical align types.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.PopoverVerticalAlign
+ * @alias module:@ui5/webcomponents.PopoverVerticalAlign
  * @ui5-module-override @ui5/webcomponents PopoverVerticalAlign
  */
+
   pkg["PopoverVerticalAlign"] = {
     /**
  * 
@@ -1586,9 +1629,10 @@ A section of a page, that is important enough to be included in a page summary o
  * Popup accessible roles.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.PopupAccessibleRole
+ * @alias module:@ui5/webcomponents.PopupAccessibleRole
  * @ui5-module-override @ui5/webcomponents PopupAccessibleRole
  */
+
   pkg["PopupAccessibleRole"] = {
     /**
  * Represents no ARIA role.
@@ -1611,9 +1655,10 @@ A section of a page, that is important enough to be included in a page summary o
  * Different types of Priority.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.Priority
+ * @alias module:@ui5/webcomponents.Priority
  * @ui5-module-override @ui5/webcomponents Priority
  */
+
   pkg["Priority"] = {
     /**
  * High priority.
@@ -1642,9 +1687,10 @@ A section of a page, that is important enough to be included in a page summary o
 Provides predefined size categories to ensure consistent scaling and spacing of icons.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.RatingIndicatorSize
+ * @alias module:@ui5/webcomponents.RatingIndicatorSize
  * @ui5-module-override @ui5/webcomponents RatingIndicatorSize
  */
+
   pkg["RatingIndicatorSize"] = {
     /**
  * Small size for compact layouts.
@@ -1668,9 +1714,10 @@ Offers a balanced appearance for most scenarios.
  * Different SegmentedButton selection modes.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.SegmentedButtonSelectionMode
+ * @alias module:@ui5/webcomponents.SegmentedButtonSelectionMode
  * @ui5-module-override @ui5/webcomponents SegmentedButtonSelectionMode
  */
+
   pkg["SegmentedButtonSelectionMode"] = {
     /**
  * There is always one selected. Selecting one deselects the previous one.
@@ -1688,9 +1735,10 @@ Offers a balanced appearance for most scenarios.
  * Different types of SemanticColor.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.SemanticColor
+ * @alias module:@ui5/webcomponents.SemanticColor
  * @ui5-module-override @ui5/webcomponents SemanticColor
  */
+
   pkg["SemanticColor"] = {
     /**
  * Default color (brand color)
@@ -1723,9 +1771,10 @@ Offers a balanced appearance for most scenarios.
  * Different types of Switch designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.SwitchDesign
+ * @alias module:@ui5/webcomponents.SwitchDesign
  * @ui5-module-override @ui5/webcomponents SwitchDesign
  */
+
   pkg["SwitchDesign"] = {
     /**
  * Defines the Switch as Textual
@@ -1743,9 +1792,10 @@ Offers a balanced appearance for most scenarios.
  * Tab layout of TabContainer.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.TabLayout
+ * @alias module:@ui5/webcomponents.TabLayout
  * @ui5-module-override @ui5/webcomponents TabLayout
  */
+
   pkg["TabLayout"] = {
     /**
  * Inline type, the tab &quot;main text&quot; and &quot;additionalText&quot; are displayed horizotally.
@@ -1763,9 +1813,10 @@ Offers a balanced appearance for most scenarios.
  * Alignment of the &lt;ui5-table-cell&gt; component.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.TableCellHorizontalAlign
+ * @alias module:@ui5/webcomponents.TableCellHorizontalAlign
  * @ui5-module-override @ui5/webcomponents TableCellHorizontalAlign
  */
+
   pkg["TableCellHorizontalAlign"] = {
     /**
  * 
@@ -1798,9 +1849,10 @@ Offers a balanced appearance for most scenarios.
  * Growing mode of the &lt;ui5-table&gt; component.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.TableGrowingMode
+ * @alias module:@ui5/webcomponents.TableGrowingMode
  * @ui5-module-override @ui5/webcomponents TableGrowingMode
  */
+
   pkg["TableGrowingMode"] = {
     /**
  * Renders a growing button, which can be pressed to load more data.
@@ -1820,9 +1872,10 @@ Offers a balanced appearance for most scenarios.
  * Column mode of the &lt;ui5-table&gt; component.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.TableOverflowMode
+ * @alias module:@ui5/webcomponents.TableOverflowMode
  * @ui5-module-override @ui5/webcomponents TableOverflowMode
  */
+
   pkg["TableOverflowMode"] = {
     /**
  * Shows a scrollbar, when the table cannot fit all columns.
@@ -1840,9 +1893,10 @@ Offers a balanced appearance for most scenarios.
  * Selection modes of the &lt;ui5-table&gt; component.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.TableSelectionMode
+ * @alias module:@ui5/webcomponents.TableSelectionMode
  * @ui5-module-override @ui5/webcomponents TableSelectionMode
  */
+
   pkg["TableSelectionMode"] = {
     /**
  * Default mode (no selection).
@@ -1865,9 +1919,10 @@ Offers a balanced appearance for most scenarios.
  * Defines tag design types.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.TagDesign
+ * @alias module:@ui5/webcomponents.TagDesign
  * @ui5-module-override @ui5/webcomponents TagDesign
  */
+
   pkg["TagDesign"] = {
     /**
  * Set1 of generic indication colors that are intended for industry-specific use cases
@@ -1910,9 +1965,10 @@ Offers a balanced appearance for most scenarios.
  * Predefined sizes for the tag.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.TagSize
+ * @alias module:@ui5/webcomponents.TagSize
  * @ui5-module-override @ui5/webcomponents TagSize
  */
+
   pkg["TagSize"] = {
     /**
  * Small size of the tag
@@ -1930,9 +1986,10 @@ Offers a balanced appearance for most scenarios.
  * Empty Indicator Mode.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.TextEmptyIndicatorMode
+ * @alias module:@ui5/webcomponents.TextEmptyIndicatorMode
  * @ui5-module-override @ui5/webcomponents TextEmptyIndicatorMode
  */
+
   pkg["TextEmptyIndicatorMode"] = {
     /**
  * Empty indicator is never rendered.
@@ -1950,9 +2007,10 @@ Offers a balanced appearance for most scenarios.
  * Different types of Title level.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.TitleLevel
+ * @alias module:@ui5/webcomponents.TitleLevel
  * @ui5-module-override @ui5/webcomponents TitleLevel
  */
+
   pkg["TitleLevel"] = {
     /**
  * Renders &#x60;h1&#x60; tag.
@@ -1990,9 +2048,10 @@ Offers a balanced appearance for most scenarios.
  * Toast placement.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ToastPlacement
+ * @alias module:@ui5/webcomponents.ToastPlacement
  * @ui5-module-override @ui5/webcomponents ToastPlacement
  */
+
   pkg["ToastPlacement"] = {
     /**
  * Toast is placed at the &#x60;TopStart&#x60; position of its container.
@@ -2046,9 +2105,10 @@ Default placement (no selection)
  * Defines which direction the items of ui5-toolbar will be aligned.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ToolbarAlign
+ * @alias module:@ui5/webcomponents.ToolbarAlign
  * @ui5-module-override @ui5/webcomponents ToolbarAlign
  */
+
   pkg["ToolbarAlign"] = {
     /**
  * Toolbar items are situated at the &#x60;start&#x60; of the Toolbar
@@ -2066,9 +2126,10 @@ Default placement (no selection)
  * Defines the available toolbar designs.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ToolbarDesign
+ * @alias module:@ui5/webcomponents.ToolbarDesign
  * @ui5-module-override @ui5/webcomponents ToolbarDesign
  */
+
   pkg["ToolbarDesign"] = {
     /**
  * The toolbar and its content will be displayed with solid background.
@@ -2086,9 +2147,10 @@ Default placement (no selection)
  * Defines the priority of the toolbar item to go inside overflow popover.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.ToolbarItemOverflowBehavior
+ * @alias module:@ui5/webcomponents.ToolbarItemOverflowBehavior
  * @ui5-module-override @ui5/webcomponents ToolbarItemOverflowBehavior
  */
+
   pkg["ToolbarItemOverflowBehavior"] = {
     /**
  * The item is presented inside the toolbar and goes in the popover, when there is not enough space.
@@ -2111,9 +2173,10 @@ Default placement (no selection)
  * Different types of wrapping.
  * @enum {string}
  * @public
- * @alias @ui5.webcomponents.WrappingType
+ * @alias module:@ui5/webcomponents.WrappingType
  * @ui5-module-override @ui5/webcomponents WrappingType
  */
+
   pkg["WrappingType"] = {
     /**
  * The text will be truncated with an ellipsis.
@@ -2131,116 +2194,131 @@ Default placement (no selection)
   // Interfaces
   /**
  * Interface for components that represent an avatar and may be slotted in numerous higher-order components such as `ui5-avatar-group`
- * @name @ui5.webcomponents.IAvatarGroupItem
+ * @name module:@ui5/webcomponents.IAvatarGroupItem
  * @ui5-module-override @ui5/webcomponents IAvatarGroupItem
  * @interface
  * @public
  */
+
   /**
  * Interface for components that may be used as a button inside numerous higher-order components
- * @name @ui5.webcomponents.IButton
+ * @name module:@ui5/webcomponents.IButton
  * @ui5-module-override @ui5/webcomponents IButton
  * @interface
  * @public
  */
+
   /**
  * Interface for components that may be slotted inside a `ui5-calendar`.
 
 **Note:** Use with `ui5-date` or `ui5-date-range` as calendar date selection types.
- * @name @ui5.webcomponents.ICalendarSelectedDates
+ * @name module:@ui5/webcomponents.ICalendarSelectedDates
  * @ui5-module-override @ui5/webcomponents ICalendarSelectedDates
  * @interface
  * @public
  */
+
   /**
  * Interface for components that may be used inside a `ui5-color-palette` or `ui5-color-palette-popover`
- * @name @ui5.webcomponents.IColorPaletteItem
+ * @name module:@ui5/webcomponents.IColorPaletteItem
  * @ui5-module-override @ui5/webcomponents IColorPaletteItem
  * @interface
  * @public
  */
+
   /**
  * Interface for components that may be slotted inside a `ui5-combobox`
- * @name @ui5.webcomponents.IComboBoxItem
+ * @name module:@ui5/webcomponents.IComboBoxItem
  * @ui5-module-override @ui5/webcomponents IComboBoxItem
  * @interface
  * @public
  */
+
   /**
  * Interface for components that can be slotted inside `ui5-form` as items.
- * @name @ui5.webcomponents.IFormItem
+ * @name module:@ui5/webcomponents.IFormItem
  * @ui5-module-override @ui5/webcomponents IFormItem
  * @interface
  * @public
  */
+
   /**
  * Interface for components that represent an icon, usable in numerous higher-order components
- * @name @ui5.webcomponents.IIcon
+ * @name module:@ui5/webcomponents.IIcon
  * @ui5-module-override @ui5/webcomponents IIcon
  * @interface
  * @public
  */
+
   /**
  * Interface for components that represent a suggestion item, usable in `ui5-input`
- * @name @ui5.webcomponents.IInputSuggestionItem
+ * @name module:@ui5/webcomponents.IInputSuggestionItem
  * @ui5-module-override @ui5/webcomponents IInputSuggestionItem
  * @interface
  * @public
  */
+
   /**
  * Interface for components that may be slotted inside a `ui5-menu`.
 
 **Note:** Use with `ui5-menu-item` or `ui5-menu-separator`. Implementing the interface does not guarantee that any other classes can work with the `ui5-menu`.
- * @name @ui5.webcomponents.IMenuItem
+ * @name module:@ui5/webcomponents.IMenuItem
  * @ui5-module-override @ui5/webcomponents IMenuItem
  * @interface
  * @public
  */
+
   /**
  * Interface for components that may be slotted inside a `ui5-multi-combobox` as items
- * @name @ui5.webcomponents.IMultiComboBoxItem
+ * @name module:@ui5/webcomponents.IMultiComboBoxItem
  * @ui5-module-override @ui5/webcomponents IMultiComboBoxItem
  * @interface
  * @public
  */
+
   /**
  * Interface for components that may be slotted inside `ui5-segmented-button` as items
- * @name @ui5.webcomponents.ISegmentedButtonItem
+ * @name module:@ui5/webcomponents.ISegmentedButtonItem
  * @ui5-module-override @ui5/webcomponents ISegmentedButtonItem
  * @interface
  * @public
  */
+
   /**
  * Interface for components that may be slotted inside `ui5-select` as options
- * @name @ui5.webcomponents.IOption
+ * @name module:@ui5/webcomponents.IOption
  * @ui5-module-override @ui5/webcomponents IOption
  * @interface
  * @public
  */
+
   /**
  * Interface for components that may be slotted inside `ui5-tabcontainer` as items
 
 **Note:** Use directly `ui5-tab` or `ui5-tab-seprator`. Implementing the interface does not guarantee that the class can work as a tab.
- * @name @ui5.webcomponents.ITab
+ * @name module:@ui5/webcomponents.ITab
  * @ui5-module-override @ui5/webcomponents ITab
  * @interface
  * @public
  */
+
   /**
  * Interface for components that can be slotted inside the `features` slot of the `ui5-table`.
- * @name @ui5.webcomponents.ITableFeature
+ * @name module:@ui5/webcomponents.ITableFeature
  * @ui5-module-override @ui5/webcomponents ITableFeature
  * @interface
  * @public
  */
+
   /**
  * Interface for components that can be slotted inside the `features` slot of the `ui5-table`
 and provide growing/data loading functionality.
- * @name @ui5.webcomponents.ITableGrowing
+ * @name module:@ui5/webcomponents.ITableGrowing
  * @ui5-module-override @ui5/webcomponents ITableGrowing
  * @interface
  * @public
  */
+
 
 
   return pkg;
