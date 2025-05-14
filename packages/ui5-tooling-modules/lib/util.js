@@ -1485,7 +1485,7 @@ module.exports = function (log, projectInfo) {
 								// for Web Components we need to prefix the module name with the module base path
 								// TODO: entry modules need to be shifted into the gen folder
 								let modifiedCode = module.code;
-								if (module.isWebComponent) {
+								if (module.generated) {
 									Object.values(output.$metadata.packages || {})
 										.sort((a, b) => b.name.localeCompare(a.name))
 										.forEach((package) => {

@@ -1,6 +1,7 @@
 const path = require("path");
 const { createReadStream, readFileSync, existsSync } = require("fs");
 const chokidar = require("chokidar");
+const sanitize = require("sanitize-filename");
 
 /**
  * Determines the source paths of the given resource collection recursivly.
@@ -66,6 +67,17 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 		options.configuration,
 	);
 	let { debug, skipTransform, watch, watchDebounce } = config;
+
+	// derive the custom thirdparty namespace
+	let thirdpartyNamespace = "thirdparty";
+	if (typeof config.addToNamespace === "string") {
+		thirdpartyNamespace = config.addToNamespace
+			.split(/[\\/]/)
+			.map(sanitize)
+			.filter((s) => !/^\.*$/.test(s))
+			.join("/");
+		config.addToNamespace = true;
+	}
 
 	// determine the current working directory and the package.json path
 	let cwd = project.getRootPath() || process.cwd();
@@ -293,7 +305,6 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 
 	// return the middleware
 	const projectNamespace = projectInfo.type === "application" ? "/" : `/resources/${projectInfo.namespace}/`;
-	const addToNamespace = typeof config.addToNamespace === "string" ? config.addToNamespace : "thirdparty";
 	return async (req, res, next) => {
 		// determine the request path
 		const pathname = req.url?.match("^[^?]*")[0];
@@ -302,8 +313,8 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 		const time = Date.now();
 
 		// check for resources requests (either in the thirdparty namespace or in the resources namespace)
-		const matchNS = new RegExp(`^${projectNamespace}${addToNamespace}/(.*)$`).exec(pathname);
 		const matchRes = /^\/resources\/(.*)$/.exec(pathname);
+		const matchNS = config.addToNamespace ? new RegExp(`^${projectNamespace}${thirdpartyNamespace}/(.*)$`).exec(pathname) : matchRes;
 		const match = matchNS || matchRes;
 		if (match) {
 			// determine the module name (for JS resources we strip the extension)
@@ -353,7 +364,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 					if (matchRes && !matchNS) {
 						// "Stellvertreter" module for the resource to load the correct module
 						// which is only needed for the middleware and not for the build
-						res.end(`sap.ui.define(["${projectInfo.namespace}/${addToNamespace}/${moduleName}"], function(module) { return module; });`);
+						res.end(`sap.ui.define(["${projectInfo.namespace}/${thirdpartyNamespace}/${moduleName}"], function(module) { return module; });`);
 					} else {
 						// respond the content
 						// /!\ non-modules and resources with a path are served as stream (encoding!)

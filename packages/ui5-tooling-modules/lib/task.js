@@ -117,8 +117,9 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	}
 
 	// utility to rewrite dependency
-	const removeScopePrefix = config?.removeScopePrefix || config?.removeScopePreceder;
-	const replaceDashes = config?.replaceDashes;
+	const sanitizeNpmPackageName = config?.sanitizeNpmPackageName;
+	const removeScopePrefix = sanitizeNpmPackageName || config?.removeScopePrefix || config?.removeScopePreceder;
+	const replaceDashes = sanitizeNpmPackageName;
 
 	// determine the NPM package name from a given source
 	const getNpmPackageName = (source) => {
@@ -158,6 +159,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 		try {
 			const program = parse(content, { comment: true, loc: true, range: true, tokens: true });
 			const tokens = {};
+			const isATokens = {};
 			let importsSapUiRequire = false;
 			walk(program, {
 				// eslint-disable-next-line no-unused-vars
@@ -228,6 +230,20 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 								}
 							});
 						}
+					} else if (
+						/* isA */
+						node?.type === "CallExpression" &&
+						node?.callee?.type === "MemberExpression" &&
+						node?.callee?.property?.type === "Identifier" &&
+						/isA/.test(node?.callee?.property?.name) &&
+						node?.arguments?.length === 1 &&
+						node?.arguments?.[0].type === "Literal"
+					) {
+						const argument = node?.arguments[0];
+						isATokens[argument.value] = rewriteDep(argument.value.replace(/\./g, "/"), bundleInfo, true);
+						argument.value = isATokens[argument.value];
+						argument.raw = `"${isATokens[argument.value]}"`;
+						changed = true;
 					}
 				},
 			});
@@ -238,6 +254,9 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				changed = content;
 				Object.keys(tokens).forEach((token) => {
 					changed = changed.replace(new RegExp(`((?:require|requireSync|define|toUrl)(?:\\s*)(?:\\([^)]*["']))${token}(["'][^)]*\\))`, "g"), `$1${tokens[token]}$2`);
+				});
+				Object.keys(isATokens).forEach((token) => {
+					changed = changed.replace(new RegExp(`((?:isA)(?:\\s*)(?:\\([^)]*["']))${token}(["'][^)]*\\))`, "g"), `$1${isATokens[token]}$2`);
 				});
 			} else {
 				changed = content;

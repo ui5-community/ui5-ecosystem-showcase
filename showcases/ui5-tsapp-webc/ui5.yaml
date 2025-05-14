@@ -28,8 +28,7 @@ builder:
         debug: true
         sourcemap: true
         #addToNamespace: false
-        removeScopePrefix: true
-        replaceDashes: true
+        sanitizeNpmPackageName: true
         pluginOptions:
           webcomponents:
             skipJSDoc: false # enable the JSDoc generation
@@ -44,6 +43,7 @@ server:
       configuration:
         debug: true
         sourcemap: "true"
+        #addToNamespace: false
         persistentCache: false # disable persistent cache for development
         pluginOptions:
           webcomponents:

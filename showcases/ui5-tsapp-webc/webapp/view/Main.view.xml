@@ -8,7 +8,7 @@
   xmlns:ca="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
   xmlns:webc="@ui5/webcomponents/dist"
   xmlns:fiori="@ui5/webcomponents-fiori/dist"
-  xmlns:ai="@ui5/webcomponents-ai/dist"
+  xmlns:ai="@ui5/webcomponents/dist"
   core:require="{
     Formatter: 'ui5/ecosystem/demo/webctsapp/model/Formatter',
     iconUI5: '@ui5/webcomponents-icons/dist/sap-ui5',

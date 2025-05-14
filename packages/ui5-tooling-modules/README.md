@@ -165,6 +165,10 @@ The following configuration options are just relevant for the `task`:
   Removes the scope prefix `@` from the namespace/path of the 3rd party module when adding it to the namespace with the *addToNamespace* option.
   &nbsp;
 
+- *sanitizeNpmPackageName*: `boolean`
+  Sanitizes the NPM package name from the namespace/path of the 3rd party module when adding it to the namespace with the *addToNamespace* option. This option overrides and enables the `removeScopePrefix` option to remove the leading `@` and all `-` characters are converted to `_`. This is necessary to support the JSDoc generation for Web Components properly.
+  &nbsp;
+
 - *providedDependencies*: `String[]`
   An array of NPM package names which will be available in the development server via the middleware but will be ignored for the build process via the task. Provided dependencies are considered as being provided by the application runtime rather than it must be shipped with the current project. Provided dependencies will ignore any of the configurations above.
   &nbsp;

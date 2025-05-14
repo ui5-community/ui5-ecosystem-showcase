@@ -23,8 +23,7 @@ builder:
       afterTask: ui5-tooling-transpile-task
       configuration:
         debug: true
-        removeScopePrefix: true
-        replaceDashes: true
+        sanitizeNpmPackageName: true
         pluginOptions:
           webcomponents:
             skipJSDoc: false # enable the JSDoc generation
