@@ -1338,7 +1338,7 @@ module.exports = function (log, projectInfo) {
 						//const millis = Date.now();
 						const output = await that.createBundle(nameOfModules, options);
 						const isWebComponent = (moduleName) => {
-							return !!(output.$metadata?.packages?.[moduleName] || output.$metadata?.controls?.[moduleName]);
+							return !!(output.$metadata?.packages?.[moduleName] || output.$metadata?.controls?.[moduleName] || output.$metadata?.substitutes?.[moduleName]);
 						};
 						//console.log(`createBundle overall duration: ${Date.now() - millis}ms`);
 						//console.log(`resolveModule overall duration: ${perfmetrics.resolveModulesTime}ms`);
@@ -1367,6 +1367,7 @@ module.exports = function (log, projectInfo) {
 										resolvedModule.dynamicImports = module.dynamicImports;
 										resolvedModule.generated = !module.facadeModuleId;
 										resolvedModule.isWebComponent = isWebComponent(moduleName);
+										resolvedModule.isEntryPoint = true;
 										// store the shifted entry (for moveing the source maps)
 										shiftedEntries[module.fileName] = path.posix.dirname(resolvedModule.name);
 									}

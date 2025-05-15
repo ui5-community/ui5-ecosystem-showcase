@@ -138,6 +138,10 @@ The available plugin configuration options are:
   Flag to disable the [Custom Elements Scoping](https://sap.github.io/ui5-webcomponents/docs/advanced/scoping/) of UI5 Web Components. This allows to load multiple versions of UI5 Web Components into a single application without conflicts. This feature is enabled by default and can be disabled if needed. (defaults to `true`)
   &nbsp;
 
+- *pluginOptions.webcomponents.namespace*: `boolean|string`
+  Defines the relative namespace for the Web Components modules (defaults to `"gen"`). If disabled, using the boolean value `false`, the Web Components modules are put into the namespace specified by `addToNamespace`. This is also relevant due to the JSDoc generation to allow a proper exclusion of the nested 3rd party namespace which could cause issues during the JSDoc build. The Web Components modules in the `gen` namespace are safe to be processed by the JSDoc generator to enable the generation of the API docu for the Web Components modules.
+  &nbsp;
+
 - *pluginOptions.webcomponents.enrichBusyIndicator*: `boolean` *experimental flag*
   Flag to include the BusyIndicator support from into the generated Web Components package module. (defaults to `false`)
   &nbsp;
