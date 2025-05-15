@@ -325,7 +325,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 
 			// store the metadata
 			$metadata.controls = $metadata.controls || {};
-			$metadata.controls[source] = {
+			$metadata.controls[resolvedSource] = {
 				name: clazz._ui5QualifiedNameSlashes,
 				qualifiedName: clazz._ui5QualifiedName,
 			};
