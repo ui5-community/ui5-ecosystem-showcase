@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.27.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.0...ui5-tooling-modules@3.27.1) (2025-05-15)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** properly move webc modules in gen folder ([#1214](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1214)) ([b84301f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b84301f65858d7e7a2db5e225c57ad210d266307))
+
+
+
+
+
 # [3.27.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.26.0...ui5-tooling-modules@3.27.0) (2025-05-15)
 
 
