@@ -92,6 +92,22 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 		config.addToNamespace = true;
 	}
 
+	// ensure pluginOptions.webcomponents is an object and set default values
+	config.pluginOptions = config.pluginOptions || {};
+	config.pluginOptions.webcomponents = config.pluginOptions.webcomponents || {};
+
+	// derive the custom web components namespace
+	let webComponentsNamespace = "gen";
+	if (typeof config.pluginOptions.webcomponents.namespace === "string") {
+		webComponentsNamespace = config.pluginOptions.webcomponents.namespace
+			.split(/[\\/]/)
+			.map(sanitize)
+			.filter((s) => !/^\.*$/.test(s))
+			.join("/");
+	} else if (config.pluginOptions.webcomponents.namespace === false) {
+		webComponentsNamespace = thirdpartyNamespace;
+	}
+
 	// scan the content of the project for unique dependencies, resources and more
 	const scanTime = Date.now();
 	const { uniqueModules, uniqueResources, uniqueNS } = await scan(workspace, config, { cwd, depPaths });
@@ -117,8 +133,8 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	}
 
 	// utility to rewrite dependency
-	const sanitizeNpmPackageName = config?.sanitizeNpmPackageName;
-	const removeScopePrefix = sanitizeNpmPackageName || config?.removeScopePrefix || config?.removeScopePreceder;
+	const sanitizeNpmPackageName = config.sanitizeNpmPackageName;
+	const removeScopePrefix = sanitizeNpmPackageName || config.removeScopePrefix || config.removeScopePreceder;
 	const replaceDashes = sanitizeNpmPackageName;
 
 	// determine the NPM package name from a given source
@@ -134,6 +150,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 		const resource = config.addToNamespace && bundleInfo.getBundledResources().find(({ name }) => aDep === name);
 		if (config.addToNamespace && (resource || uniqueResources.has(aDep) || uniqueNS.has(aDep) || isAssetIncluded(aDep))) {
 			let d = aDep;
+			// sanitize the dependency name to avoid issues with "@" or "-"
 			let npmPackage = getNpmPackageName(d);
 			if (d.length > npmPackage.length || npmPackage.startsWith("@")) {
 				const dPath = d.substring(npmPackage.length);
@@ -145,7 +162,17 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				}
 				d = `${npmPackage}${dPath}`;
 			}
-			d = `${options.projectNamespace}/${thirdpartyNamespace}/${d}`;
+			// for unique namespaces we need to check whether this namespace is related to Web Components modules
+			// e.g. in XMLView the namespace @ui5/webcomponents/dist is used but the NPM package is @ui5/webcomponents
+			// and this would not be available as resource and thus we don't know that this is Web Components related
+			let isWebComponent = resource?.isWebComponent;
+			if (!resource && uniqueNS.has(aDep)) {
+				isWebComponent = !!bundleInfo.getBundledResources().find(({ name }) => aDep.startsWith(name + "/"));
+			}
+			// Web Component related resources are put into a separate namespace (e.g. "gen")
+			//d = `${options.projectNamespace}/${!resource || resource.type === "script" || resource.isWebComponent || resource.isEntryPoint ? "gen" : thirdpartyNamespace}/${d}`;
+			d = `${options.projectNamespace}/${isWebComponent ? webComponentsNamespace : thirdpartyNamespace}/${d}`;
+			//d = `${options.projectNamespace}/${thirdpartyNamespace}/${d}`;
 			return useDottedNamespace ? d.replace(/\//g, ".") : d;
 		} else {
 			return dep;
@@ -394,7 +421,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	config.debug && log.info(`Copying resources took ${Date.now() - copyTime} millis`);
 
 	// process all XML and JS files in workspace and rewrite the module names
-	if (config?.addToNamespace) {
+	if (config.addToNamespace) {
 		const rewriteTime = Date.now();
 		const parser = new XMLParser({
 			attributeNamePrefix: "@_",
@@ -476,7 +503,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	}
 
 	// create path mappings for bundled resources in Component.js
-	if (!config?.addToNamespace && config?.prependPathMappings) {
+	if (!config.addToNamespace && config.prependPathMappings) {
 		const resComponent = await workspace.byPath(`/resources/${options.projectNamespace}/Component.js`);
 		if (resComponent) {
 			let pathMappings = "";

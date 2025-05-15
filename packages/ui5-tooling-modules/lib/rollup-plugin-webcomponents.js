@@ -344,6 +344,12 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				fileName: `${source}.js`,
 				code: `/*!\n * \${copyright}\n */\nsap.ui.define(["${rootPath}${resolvedSource}"], function(mod) { return mod; });`,
 			});
+			// store the metadata
+			$metadata.substitutes = $metadata.substitutes || {};
+			$metadata.substitutes[source] = {
+				name: clazz._ui5QualifiedNameSlashes,
+				qualifiedName: clazz._ui5QualifiedName,
+			};
 			// mark the substitute as emitted
 			emittedWrappers.push(source);
 			// log a warning that a substitute is used

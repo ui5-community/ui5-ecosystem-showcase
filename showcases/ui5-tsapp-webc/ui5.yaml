@@ -31,6 +31,7 @@ builder:
         sanitizeNpmPackageName: true
         pluginOptions:
           webcomponents:
+            namespace: false
             skipJSDoc: false # enable the JSDoc generation
 server:
   customMiddleware:
