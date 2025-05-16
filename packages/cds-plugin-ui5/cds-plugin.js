@@ -12,6 +12,7 @@
 // Details can be found in the following issue:
 //   - https://github.com/ui5-community/ui5-ecosystem-showcase/issues/901
 //
+
 // To disable JEST we rely on env variables (see https://jestjs.io/docs/environment-variables)
 let skip = false;
 if (process.env.NODE_ENV === "test" && process.env.JEST_WORKER_ID && process.env.CDS_PLUGIN_UI5_ACTIVE !== "true") {
@@ -70,7 +71,7 @@ if (!skip) {
 		// to disable the ui5-middleware-cap if used in apps
 		process.env["cds-plugin-ui5"] = true;
 
-		const { dirname, join, resolve } = require("path");
+		const { dirname, join, resolve, parse } = require("path");
 		const { readFileSync, existsSync, realpathSync } = require("fs");
 		const { execSync } = require("child_process");
 
@@ -102,28 +103,29 @@ if (!skip) {
 		// find out the CDS-DK version to control the behavior of the plugin
 		const getCDSDKVersion = function getCDSDKVersion() {
 			let cdsDkPath = process.argv[1];
-			try {
-				cdsDkPath = realpathSync(cdsDkPath);
-				// eslint-disable-next-line no-unused-vars
-			} catch (err) {
-				// ignore
-			}
-			const cdsDkDir = dirname(cdsDkPath);
-			const packageJsonPath = findPackageJson(cdsDkDir);
-			if (packageJsonPath) {
-				const packageJson = JSON.parse(readFileSync(packageJsonPath, { encoding: "utf-8" }));
-				return packageJson.version;
-			} else {
-				const moduleName = "@sap/cds-dk";
-				let resolvedPath = resolveModule(`${moduleName}/package.json`);
-				if (!resolvedPath) {
-					const globalModulesPath = execSync("npm root -g").toString().trim();
-					resolvedPath = resolveModule(`${moduleName}/package.json`, [globalModulesPath]);
+			if (parse(cdsDkPath).name === "cds") {
+				try {
+					cdsDkPath = realpathSync(cdsDkPath);
+					// eslint-disable-next-line no-unused-vars
+				} catch (err) {
+					// ignore
 				}
-				if (resolvedPath) {
-					const packageJson = JSON.parse(readFileSync(resolvedPath, { encoding: "utf-8" }));
+				const cdsDkDir = dirname(cdsDkPath);
+				const packageJsonPath = findPackageJson(cdsDkDir);
+				if (packageJsonPath) {
+					const packageJson = JSON.parse(readFileSync(packageJsonPath, { encoding: "utf-8" }));
 					return packageJson.version;
 				}
+			}
+			const moduleName = "@sap/cds-dk";
+			let resolvedPath = resolveModule(`${moduleName}/package.json`);
+			if (!resolvedPath) {
+				const globalModulesPath = execSync("npm root -g").toString().trim();
+				resolvedPath = resolveModule(`${moduleName}/package.json`, [globalModulesPath]);
+			}
+			if (resolvedPath) {
+				const packageJson = JSON.parse(readFileSync(resolvedPath, { encoding: "utf-8" }));
+				return packageJson.version;
 			}
 			return undefined;
 		};
@@ -387,7 +389,7 @@ if (!skip) {
 			if (!satisfies(cdsdkVersion, ">=7.5.0")) {
 				// TODO: add error message to inform the user that the cds build task is not available
 				//       and that the @sap/cds-dk version is too old to support the cds build task
-				LOG.warn("The cds build task requires @sap/cds-dk version >= 7.5.0! Skipping execution as your @sap/cds-dk version is too old...");
+				LOG.warn(`The cds build task requires @sap/cds-dk version >= 7.5.0! Skipping execution as your @sap/cds-dk version ${cdsdkVersion} is too old...`);
 			}
 		}
 	}
