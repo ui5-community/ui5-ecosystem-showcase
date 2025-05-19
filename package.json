@@ -31,6 +31,7 @@
     "dev-simple:ts": "pnpm --filter ui5-tsapp-simple dev",
     "dev-webc:ts": "pnpm --filter ui5-tsapp-webc dev",
     "dev-cds": "pnpm --filter cds-bookshop watch",
+    "dev-cds:lazy": "pnpm --filter cds-bookshop watch:lazy",
     "dev-bookshop": "pnpm --filter ui5-bookshop-viewer dev",
     "dev-approuter": "pnpm --filter approuter dev",
     "start": "pnpm --filter ui5-app start",

@@ -4,21 +4,14 @@ const rewriteHTML = require("./rewriteHTML");
 /**
  * Creates a patched router removing the mount path
  * from urls and disabling the encoding
- * @param {string} mountPath mount path of module
- * @param {(router: Router) => Promise<void>} [lazyMiddlewareLoader] (optional) function to load the missing middlewares
  * @returns {Router} patched router
  */
-module.exports = function createPatchedRouter(mountPath, lazyMiddlewareLoader) {
+module.exports = function createPatchedRouter() {
 	// create the router and get rid of the mount path
 	const router = new Router();
-	let middlewaresLoaded = lazyMiddlewareLoader === undefined;
 	router.use(async function (req, res, next) {
 		// store the original request information
 		const { url, originalUrl, baseUrl } = req;
-		if (!middlewaresLoaded) {
-			await lazyMiddlewareLoader(router);
-			middlewaresLoaded = true;
-		}
 		req["ui5-patched-router"] = req["ui5-patched-router"] || {
 			url,
 			originalUrl,

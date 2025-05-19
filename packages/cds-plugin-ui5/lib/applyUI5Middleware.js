@@ -36,6 +36,7 @@ module.exports = async function applyUI5Middleware(router, options) {
 
 	options.cwd = options.cwd || process.cwd();
 	options.basePath = options.basePath || process.cwd();
+	options.lazy = options.lazy || false;
 
 	const log = options.log || console;
 
@@ -66,6 +67,7 @@ module.exports = async function applyUI5Middleware(router, options) {
 		return undefined;
 	};
 
+	// determine the project graph from the given options
 	const graph = await graphFromPackageDependencies({
 		cwd: options.basePath,
 		rootConfigPath: determineConfigPath(configPath, configFile),
@@ -75,8 +77,10 @@ module.exports = async function applyUI5Middleware(router, options) {
 		cacheMode: options.cacheMode,
 	});
 
+	// detect the root project
 	const rootProject = graph.getRoot();
 
+	// find the relevant readers for the dependencies
 	const readers = [];
 	await graph.traverseBreadthFirst(async function ({ project: dep }) {
 		if (dep.getName() === rootProject.getName()) {
@@ -86,11 +90,13 @@ module.exports = async function applyUI5Middleware(router, options) {
 		readers.push(dep.getReader({ style: "runtime" }));
 	});
 
+	// create a reader collection for the dependencies
 	const dependencies = createReaderCollection({
 		name: `Dependency reader collection for project ${rootProject.getName()}`,
 		readers,
 	});
 
+	// create a reader for the root project
 	const rootReader = rootProject.getReader({ style: "runtime" });
 
 	// TODO change to ReaderCollection once duplicates are sorted out
@@ -104,45 +110,68 @@ module.exports = async function applyUI5Middleware(router, options) {
 		all: combo,
 	};
 
-	// TODO: rework ui5-server API and make public
-	const { default: MiddlewareManager } = await import("@ui5/server/internal/MiddlewareManager");
-	const middlewareManager = new MiddlewareManager({
-		graph,
-		rootProject,
-		resources,
-		options: {
-			//sendSAPTargetCSP,
-			//serveCSPReports,
-			//simpleIndex: true
-		},
-	});
-	await middlewareManager.applyMiddleware(router);
-
-	// REVISIT: everything that follows has no effect if lazy loading is active.
-	//          just live with it???
-
 	// for Fiori elements based applications we need to invalidate the view cache
+	// so we need to append the query parameter to the HTML files (sap-ui-xx-viewCache=false)
 	const isFioriElementsBased = rootProject.getFrameworkDependencies().find((lib) => lib.name.startsWith("sap.fe"));
 
 	// collect app pages from workspace (glob testing: https://globster.xyz/ and https://codepen.io/mrmlnc/pen/OXQjMe)
 	//   -> but exclude the HTML fragments from the list of app pages!
 	const pages = (await rootReader.byGlob("**/!(*.fragment).{html,htm}")).map((resource) => `${resource.getPath()}${isFioriElementsBased ? "?sap-ui-xx-viewCache=false" : ""}`);
 
-	// collect app pages from middlewares implementing the getAppPages
-	middlewareManager.middlewareExecutionOrder?.map((name) => {
-		const { middleware } = middlewareManager.middleware?.[name] || {};
-		if (typeof middleware?.getAppPages === "function") {
-			const customAppPages = middleware.getAppPages();
-			if (Array.isArray(customAppPages)) {
-				pages.push(...customAppPages);
-			} else {
-				if (customAppPages) {
-					log.warn(`The middleware ${name} returns an unexpected value for "getAppPages". The value must be either undefined or string[]! Ignoring app pages from middleware!`);
-				}
-			}
-		}
-	});
+	// method to create the middleware manager and to apply the middlewares
+	// to the express router provided as a parameter to this function
+	const apply = (function (router, mwOptions, pages) {
+		return async () => {
+			// TODO: rework ui5-server API and make public
+			const { default: MiddlewareManager } = await import("@ui5/server/internal/MiddlewareManager");
+			const middlewareManager = new MiddlewareManager(mwOptions);
+			await middlewareManager.applyMiddleware(router);
 
+			// collect app pages from middlewares implementing the getAppPages
+			middlewareManager.middlewareExecutionOrder?.map((name) => {
+				const { middleware } = middlewareManager.middleware?.[name] || {};
+				if (typeof middleware?.getAppPages === "function") {
+					const customAppPages = middleware.getAppPages();
+					if (Array.isArray(customAppPages)) {
+						pages.push(...customAppPages);
+					} else {
+						if (customAppPages) {
+							log.warn(`The middleware ${name} returns an unexpected value for "getAppPages". The value must be either undefined or string[]! Ignoring app pages from middleware!`);
+						}
+					}
+				}
+			});
+		};
+	})(
+		router,
+		{
+			graph,
+			rootProject,
+			resources,
+			options: {
+				//sendSAPTargetCSP,
+				//serveCSPReports,
+				//simpleIndex: true
+			},
+		},
+		pages,
+	);
+
+	// install a callback in the router to apply the middlewares
+	if (options.lazy) {
+		let isApplied = false;
+		router.use(async (req, res, next) => {
+			if (!isApplied) {
+				await apply();
+				isApplied = true;
+			}
+			next();
+		});
+	} else {
+		await apply();
+	}
+
+	// return the UI5 application information
 	return {
 		pages,
 	};

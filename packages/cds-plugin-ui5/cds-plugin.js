@@ -174,8 +174,6 @@ if (!skip) {
 				// log the version of the cds-plugin-ui5
 				logVersion();
 
-				const isLazyLoadingEnabled = process.env["CDS_PLUGIN_UI5_LAZY_LOADING"] === "true";
-
 				// register the UI5 modules via their own router/middlewares
 				for await (const ui5Module of ui5Modules) {
 					const { moduleId, mountPath, modulePath } = ui5Module;
@@ -183,32 +181,29 @@ if (!skip) {
 					// mounting the Router for the UI5 application to the CDS server
 					LOG.info(`Mounting ${mountPath} to UI5 app ${modulePath} (id=${moduleId})${config[moduleId] ? ` using config=${JSON.stringify(config[moduleId])}` : ""}`);
 
-					const loadMiddlewares = async (router) => {
-						return applyUI5Middleware(router, {
-							cwd,
-							basePath: modulePath,
-							...(config[moduleId] || {}),
-							LOG,
-						});
-					};
-
 					// create a patched router
-					const router = createPatchedRouter(mountPath, isLazyLoadingEnabled ? loadMiddlewares : undefined);
+					const router = createPatchedRouter();
+
+					// is lazy loading enabled?
+					const isLazyLoadingEnabled = process.env["CDS_PLUGIN_UI5_LAZY_LOADING"] === "true";
+
+					// determine the application info and apply the UI5 middlewares (maybe lazy)
+					const appInfo = await applyUI5Middleware(router, {
+						cwd,
+						basePath: modulePath,
+						...(config[moduleId] || {}),
+						LOG,
+						lazy: isLazyLoadingEnabled,
+					});
 
 					// register the router to the specified mount path
 					app.use(mountPath, router);
 
-					if (!isLazyLoadingEnabled) {
-						const appInfo = await loadMiddlewares(router);
-						// append the HTML pages to the links
-						appInfo.pages.forEach((page) => {
-							const prefix = mountPath !== "/" ? mountPath : "";
-							links.push(`${prefix}${page}`);
-						});
-					} else {
-						// TODO: detect all available html pages via glob
-						links.push(`${mountPath}/index.html`);
-					}
+					// append the HTML pages to the links
+					appInfo.pages.forEach((page) => {
+						const prefix = mountPath !== "/" ? mountPath : "";
+						links.push(`${prefix}${page}`);
+					});
 				}
 
 				// identify whether the welcome page should be rewritten
