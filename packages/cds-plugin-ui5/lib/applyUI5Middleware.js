@@ -31,8 +31,7 @@ const fs = require("fs");
  * @returns {Promise<UI5AppInfo>} UI5 application information object
  */
 module.exports = async function applyUI5Middleware(router, options) {
-	const { graphFromPackageDependencies } = await import("@ui5/project/graph");
-	const { createReaderCollection } = await import("@ui5/fs/resourceFactory");
+	const millis = Date.now();
 
 	options.cwd = options.cwd || process.cwd();
 	options.basePath = options.basePath || process.cwd();
@@ -44,6 +43,12 @@ module.exports = async function applyUI5Middleware(router, options) {
 	const configFile = options.configFile || "ui5.yaml";
 	const workspaceConfigPath = options.workspaceConfigPath || options.basePath;
 	const workspaceConfigFile = options.workspaceConfigFile || "ui5-workspace.yaml";
+
+	const logPerformance = options.logPerformance || false;
+
+	const millisImport = logPerformance && Date.now();
+	const { graphFromPackageDependencies } = await import("@ui5/project/graph");
+	logPerformance && log.info(`[PERF] Import took ${Date.now() - millisImport}ms`);
 
 	const determineConfigPath = function (configPath, configFile) {
 		// ensure that the config path is absolute
@@ -68,6 +73,7 @@ module.exports = async function applyUI5Middleware(router, options) {
 	};
 
 	// determine the project graph from the given options
+	const millisGraph = logPerformance && Date.now();
 	const graph = await graphFromPackageDependencies({
 		cwd: options.basePath,
 		rootConfigPath: determineConfigPath(configPath, configFile),
@@ -76,39 +82,15 @@ module.exports = async function applyUI5Middleware(router, options) {
 		versionOverride: options.versionOverride,
 		cacheMode: options.cacheMode,
 	});
+	logPerformance && log.info(`[PERF] Graph took ${Date.now() - millisGraph}ms`);
 
+	const millisRoot = logPerformance && Date.now();
 	// detect the root project
 	const rootProject = graph.getRoot();
 
-	// find the relevant readers for the dependencies
-	const readers = [];
-	await graph.traverseBreadthFirst(async function ({ project: dep }) {
-		if (dep.getName() === rootProject.getName()) {
-			// Ignore root project
-			return;
-		}
-		readers.push(dep.getReader({ style: "runtime" }));
-	});
-
-	// create a reader collection for the dependencies
-	const dependencies = createReaderCollection({
-		name: `Dependency reader collection for project ${rootProject.getName()}`,
-		readers,
-	});
-
 	// create a reader for the root project
 	const rootReader = rootProject.getReader({ style: "runtime" });
-
-	// TODO change to ReaderCollection once duplicates are sorted out
-	const combo = createReaderCollection({
-		name: "server - prioritize workspace over dependencies",
-		readers: [rootReader, dependencies],
-	});
-	const resources = {
-		rootProject: rootReader,
-		dependencies: dependencies,
-		all: combo,
-	};
+	logPerformance && log.info(`[PERF] Root project took ${Date.now() - millisRoot}ms`);
 
 	// for Fiori elements based applications we need to invalidate the view cache
 	// so we need to append the query parameter to the HTML files (sap-ui-xx-viewCache=false)
@@ -116,35 +98,45 @@ module.exports = async function applyUI5Middleware(router, options) {
 
 	// collect app pages from workspace (glob testing: https://globster.xyz/ and https://codepen.io/mrmlnc/pen/OXQjMe)
 	//   -> but exclude the HTML fragments from the list of app pages!
+	const millisPages = logPerformance && Date.now();
 	const pages = (await rootReader.byGlob("**/!(*.fragment).{html,htm}")).map((resource) => `${resource.getPath()}${isFioriElementsBased ? "?sap-ui-xx-viewCache=false" : ""}`);
+	logPerformance && log.info(`[PERF] Pages took ${Date.now() - millisPages}ms`);
 
 	// method to create the middleware manager and to apply the middlewares
 	// to the express router provided as a parameter to this function
-	const apply = (function (router, mwOptions, pages) {
-		return async () => {
-			// TODO: rework ui5-server API and make public
-			const { default: MiddlewareManager } = await import("@ui5/server/internal/MiddlewareManager");
-			const middlewareManager = new MiddlewareManager(mwOptions);
-			await middlewareManager.applyMiddleware(router);
+	const apply = async () => {
+		// find the relevant readers for the dependencies
+		const readers = [];
+		await graph.traverseBreadthFirst(async function ({ project: dep }) {
+			if (dep.getName() === rootProject.getName()) {
+				// Ignore root project
+				return;
+			}
+			readers.push(dep.getReader({ style: "runtime" }));
+		});
 
-			// collect app pages from middlewares implementing the getAppPages
-			middlewareManager.middlewareExecutionOrder?.map((name) => {
-				const { middleware } = middlewareManager.middleware?.[name] || {};
-				if (typeof middleware?.getAppPages === "function") {
-					const customAppPages = middleware.getAppPages();
-					if (Array.isArray(customAppPages)) {
-						pages.push(...customAppPages);
-					} else {
-						if (customAppPages) {
-							log.warn(`The middleware ${name} returns an unexpected value for "getAppPages". The value must be either undefined or string[]! Ignoring app pages from middleware!`);
-						}
-					}
-				}
-			});
+		const { createReaderCollection } = await import("@ui5/fs/resourceFactory");
+
+		// create a reader collection for the dependencies
+		const dependencies = createReaderCollection({
+			name: `Dependency reader collection for project ${rootProject.getName()}`,
+			readers,
+		});
+
+		// TODO change to ReaderCollection once duplicates are sorted out
+		const combo = createReaderCollection({
+			name: "server - prioritize workspace over dependencies",
+			readers: [rootReader, dependencies],
+		});
+		const resources = {
+			rootProject: rootReader,
+			dependencies: dependencies,
+			all: combo,
 		};
-	})(
-		router,
-		{
+
+		// TODO: rework ui5-server API and make public
+		const { default: MiddlewareManager } = await import("@ui5/server/internal/MiddlewareManager");
+		const middlewareManager = new MiddlewareManager({
 			graph,
 			rootProject,
 			resources,
@@ -153,9 +145,29 @@ module.exports = async function applyUI5Middleware(router, options) {
 				//serveCSPReports,
 				//simpleIndex: true
 			},
-		},
-		pages,
-	);
+		});
+		await middlewareManager.applyMiddleware(router);
+
+		// collect app pages from middlewares implementing the getAppPages
+		// which will only work if the middleware is executed synchronously
+		middlewareManager.middlewareExecutionOrder?.map((name) => {
+			const { middleware } = middlewareManager.middleware?.[name] || {};
+			if (typeof middleware?.getAppPages === "function") {
+				if (!options.lazy) {
+					const customAppPages = middleware.getAppPages();
+					if (Array.isArray(customAppPages)) {
+						pages.push(...customAppPages);
+					} else {
+						if (customAppPages) {
+							log.warn(`The middleware ${name} returns an unexpected value for "getAppPages". The value must be either undefined or string[]! Ignoring app pages from middleware!`);
+						}
+					}
+				} else {
+					log.warn(`The middleware ${name} returns a function for "getAppPages" but the lazy option is enabled. The function will not be executed!`);
+				}
+			}
+		});
+	};
 
 	// install a callback in the router to apply the middlewares
 	if (options.lazy) {
@@ -170,6 +182,8 @@ module.exports = async function applyUI5Middleware(router, options) {
 	} else {
 		await apply();
 	}
+
+	logPerformance && log.info(`[PERF] applyUI5Middleware took ${Date.now() - millis}ms`);
 
 	// return the UI5 application information
 	return {

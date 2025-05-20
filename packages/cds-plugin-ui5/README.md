@@ -164,6 +164,8 @@ module.exports = async ({ log, resources, options }) => {
 
 The returned app pages will be added to the welcome page within the respective mount path.
 
+> :warning: The app pages cannot be retrieved and injected when using the lazy loading option.
+
 ## Hints
 
 This section includes hints for the usage of the `cds-plugin-ui5` with other tools.
