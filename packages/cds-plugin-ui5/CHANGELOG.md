@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.13.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.12.1...cds-plugin-ui5@0.13.0) (2025-05-20)
+
+
+### Features
+
+* **cds-plugin-ui5:** add lazy module loading ([#1216](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1216)) ([58c88cf](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/58c88cfede10db2ac4aa59f8447edb02e12aa883))
+
+
+
+
+
 ## [0.12.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.12.0...cds-plugin-ui5@0.12.1) (2025-05-18)
 
 

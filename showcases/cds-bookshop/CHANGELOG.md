@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-bookshop@0.4.32...cds-bookshop@0.5.0) (2025-05-20)
+
+
+### Features
+
+* **cds-plugin-ui5:** add lazy module loading ([#1216](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1216)) ([58c88cf](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/58c88cfede10db2ac4aa59f8447edb02e12aa883))
+
+
+
+
+
 ## [0.4.32](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-bookshop@0.4.31...cds-bookshop@0.4.32) (2025-05-18)
 
 **Note:** Version bump only for package cds-bookshop
