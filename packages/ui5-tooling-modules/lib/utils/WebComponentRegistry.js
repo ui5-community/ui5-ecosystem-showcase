@@ -584,10 +584,15 @@ class RegistryEntry {
 	}
 
 	#processUI5Interfaces(classDef, ui5metadata) {
+		let jsdocInterfaces;
 		if (Array.isArray(classDef._ui5implements)) {
+			jsdocInterfaces ??= [];
 			classDef._ui5implements.forEach((interfaceDef) => {
 				if (this.interfaces[interfaceDef.name]) {
 					ui5metadata.interfaces.push(this.prefixns(interfaceDef.name));
+					jsdocInterfaces.push(`module:${this.namespace}.${interfaceDef.name}`);
+				} else {
+					jsdocInterfaces.push(this.prefixns(interfaceDef.name));
 				}
 			});
 		}
@@ -595,7 +600,10 @@ class RegistryEntry {
 		// classes with properties marked as "_ui5formProperty" need to implement IFormContent
 		if (classDef._ui5implementsFormContent) {
 			ui5metadata.interfaces.push("sap.ui.core.IFormContent");
+			jsdocInterfaces ??= [];
+			jsdocInterfaces.push("sap.ui.core.IFormContent");
 		}
+		classDef._ui5QualifiedInterfaceNamesSlashes = jsdocInterfaces;
 	}
 
 	/**
