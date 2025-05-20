@@ -75,6 +75,15 @@ The configuration can also be injected with the environment variable `CDS_PLUGIN
 CDS_PLUGIN_UI5_MODULES="{ \"ui5-bookshop\": { \"mountPath\": \"/the-bookshop\" } }" cds-serve
 ```
 
+#### Lazy Loading
+
+The plugin supports lazy loading of UI5 applications which means that the UI5 middlewares will not be applied by default. The first time a UI5 application will be accessed in the CDS server triggers the load and apply of the UI5 middlewares. This feature is not active by default and needs to be activated with the environment variable `CDS_PLUGIN_UI5_LAZY_LOADING`.
+
+```sh
+# enable lazy loading for UI5 applications
+CDS_PLUGIN_UI5_LAZY_LOADING=true cds watch
+```
+
 #### Logger
 
 The `cds-plugin-ui5` uses the logger from CDS. By default, it adds coloring to the logs from CDS. This can be disabled in general by using the environment variable `NO_COLOR` for the logger overall or specifically for the `cds-plugin-ui5` by setting the environment variable `CDS_PLUGIN_UI5_NO_CUSTOM_LOGGER`.
@@ -154,6 +163,8 @@ module.exports = async ({ log, resources, options }) => {
 ```
 
 The returned app pages will be added to the welcome page within the respective mount path.
+
+> :warning: The app pages cannot be retrieved and injected when using the lazy loading option.
 
 ## Hints
 

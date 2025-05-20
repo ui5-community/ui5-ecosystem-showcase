@@ -6,10 +6,10 @@ const rewriteHTML = require("./rewriteHTML");
  * from urls and disabling the encoding
  * @returns {Router} patched router
  */
-module.exports = async function createPatchedRouter() {
+module.exports = function createPatchedRouter() {
 	// create the router and get rid of the mount path
 	const router = new Router();
-	router.use(function (req, res, next) {
+	router.use(async function (req, res, next) {
 		// store the original request information
 		const { url, originalUrl, baseUrl } = req;
 		req["ui5-patched-router"] = req["ui5-patched-router"] || {
@@ -64,7 +64,7 @@ module.exports = async function createPatchedRouter() {
 						});
 						h1?.insertAdjacentHTML("afterbegin", `<a href="/">🏡</a> / `);
 					}
-				}
+				},
 			);
 		}
 		// next one!

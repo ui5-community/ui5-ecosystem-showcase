@@ -35,6 +35,7 @@
     "build": "cds build",
     "lint": "eslint .",
     "watch": "cds watch",
+    "watch:lazy": "CDS_PLUGIN_UI5_LAZY_LOADING=true cds w",
     "start": "cds-serve",
     "start:dist": "CDS_PLUGIN_UI5_MODULES=\"{ \"ui5-bookshop\": { \"configFile\": \"ui5-dist.yaml\" } }\" cds-serve"
   },

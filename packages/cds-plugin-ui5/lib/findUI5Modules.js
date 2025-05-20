@@ -32,7 +32,7 @@ module.exports = async function findUI5Modules({ cwd, cds, skipLocalApps, skipDe
 	try {
 		modulesConfig = JSON.parse(process.env.CDS_PLUGIN_UI5_MODULES);
 		log.info(`Using modules configuration from env`);
-	} catch (err) {
+	} catch {
 		modulesConfig = pkgJson.cds?.["cds-plugin-ui5"]?.modules;
 	}
 	if (modulesConfig) {
@@ -101,10 +101,10 @@ module.exports = async function findUI5Modules({ cwd, cds, skipLocalApps, skipDe
 						paths: [cwd],
 					});
 					return true;
-				} catch (e) {
+				} catch {
 					return false;
 				}
-			})
+			}),
 		);
 	}
 

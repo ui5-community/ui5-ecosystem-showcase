@@ -171,6 +171,9 @@ if (!skip) {
 
 				const links = [];
 
+				// is lazy loading enabled?
+				const isLazyLoadingEnabled = process.env["CDS_PLUGIN_UI5_LAZY_LOADING"] === "true";
+
 				// log the version of the cds-plugin-ui5
 				logVersion();
 
@@ -182,32 +185,33 @@ if (!skip) {
 					LOG.info(`Mounting ${mountPath} to UI5 app ${modulePath} (id=${moduleId})${config[moduleId] ? ` using config=${JSON.stringify(config[moduleId])}` : ""}`);
 
 					// create a patched router
-					const router = await createPatchedRouter();
+					const router = createPatchedRouter();
 
-					// apply the UI5 middlewares to the router and
-					// retrieve the available HTML pages
-					const appInfo = await applyUI5Middleware(router, {
+					// determine the application info and apply the UI5 middlewares (maybe lazy)
+					applyUI5Middleware(router, {
 						cwd,
 						basePath: modulePath,
 						...(config[moduleId] || {}),
 						LOG,
+						lazy: isLazyLoadingEnabled,
+						//logPerformance: true,
+					}).then(({ pages }) => {
+						// append the HTML pages to the links
+						pages.forEach((page) => {
+							const prefix = mountPath !== "/" ? mountPath : "";
+							links.push(`${prefix}${page}`);
+						});
 					});
 
 					// register the router to the specified mount path
 					app.use(mountPath, router);
-
-					// append the HTML pages to the links
-					appInfo.pages.forEach((page) => {
-						const prefix = mountPath !== "/" ? mountPath : "";
-						links.push(`${prefix}${page}`);
-					});
 				}
 
 				// identify whether the welcome page should be rewritten
 				let rewrite = links.length > 0;
 
 				// rewrite the welcome page
-				if (rewrite) {
+				if (rewrite || isLazyLoadingEnabled) {
 					// register the custom middleware (similar like in @sap/cds/server.js)
 					app.get("/", function appendLinksToIndex(req, res, next) {
 						req._cds_plugin_ui5 = true; // marker for patched router to ignore
