@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.13.1...ui5-tsapp-webc@0.13.2) (2025-05-21)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** do not convert dots to slashes for isA rewrite ([#1219](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1219)) ([aabdc99](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/aabdc99d5f539be5ac5da309f8fabcb0a571ebad)), closes [#1218](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1218)
+
+
+
+
+
 ## [0.13.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.13.0...ui5-tsapp-webc@0.13.1) (2025-05-15)
 
 **Note:** Version bump only for package ui5-tsapp-webc
