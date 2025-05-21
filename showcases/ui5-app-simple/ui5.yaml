@@ -34,6 +34,7 @@ server:
       afterMiddleware: compression
       configuration:
         debug: true
+        saveLibsLocal: true
     - name: ui5-tooling-transpile-middleware
       afterMiddleware: compression
       configuration:
