@@ -46,6 +46,7 @@ export default class Main extends Controller {
 		if (button instanceof Control) {
 			(this.getView()?.byId("contentArea") as VBox).addItem(button);
 		}
+		console.log(`Button is a sap.ui.core.WebComponent: ${button.isA("sap.ui.core.WebComponent")}`);
 		console.log(`Button is a @ui5.webcomponents.dist.Button: ${button.isA("@ui5.webcomponents.dist.Button")}`);
 		console.log(`Button is not a @ui5.webcomponents.Button: ${button.isA("@ui5.webcomponents.Button")}`);
 		const datePicker = new DatePicker({ placeholder: "📅" });

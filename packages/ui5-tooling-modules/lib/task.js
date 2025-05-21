@@ -175,7 +175,7 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 			//d = `${options.projectNamespace}/${thirdpartyNamespace}/${d}`;
 			return useDottedNamespace ? d.replace(/\//g, ".") : d;
 		} else {
-			return dep;
+			return useDottedNamespace ? dep.replace(/\//g, ".") : dep;
 		}
 	}
 
