@@ -9,6 +9,26 @@ const fresh = require("fresh");
 const { Agent: HttpsAgent } = require("https");
 
 /**
+ * Loads the yaml file framework libraries configuration
+ *
+ * @param {object} resources Resource collections
+ * @param {module:@ui5/fs.AbstractReader} resources.rootProject Reader or Collection to read resources of
+ *                                        the project the server is started in
+ * @returns {Array<{ name: string }>} Array of libraries defined in the framework section
+ */
+async function getLibrariesDefinedInResources(resources) {
+	const projetcReader = resources.rootProject._readers.find((reader) => {
+		return !!reader._reader?._project?._config?.framework?.libraries;
+	});
+
+	if (projetcReader) {
+		return projetcReader._reader._project._config.framework.libraries;
+	}
+
+	return [];
+}
+
+/**
  * Loads the yaml file from the given path and returns the libraries defined in the framework section.
  *
  * @param {string} pathToUI5Config Absolute path to the ui5-x.yaml file
@@ -37,16 +57,18 @@ async function getLibrariesDefinedInYaml(pathToUI5Config) {
  * @param {string} [parameters.options.configuration.configPath] Custom path to a local ui5.yaml file that shall be used to identify the framework libraries if saveLibsLocal is set to true
  * @param {object} parameters.middlewareUtil Specification version dependent interface to a
  *                                        [MiddlewareUtil]{@link module:@ui5/server.middleware.MiddlewareUtil} instance
+ * @param {object} parameters.resources Resource collections
+ * @param {module:@ui5/fs.AbstractReader} parameters.resources.rootProject Reader or Collection to read resources of
+ *                                        the project the server is started in
  * @returns {Function} Middleware function to use
  */
-module.exports = async ({ log, options, middlewareUtil }) => {
+module.exports = async ({ log, options, middlewareUtil, resources }) => {
 	// provide a set of default runtime options
 	const effectiveOptions = {
 		debug: false,
 		strictSSL: true,
 		saveLibsLocal: false, // New parameter to save libraries locally
 		cachePath: undefined,
-		config: "ui5.yaml", // New parameter to specify the local UI5 config file, only works in combination with saveLibsLocal true
 	};
 	// config-time options from ui5.yaml for cfdestination take precedence
 	if (options.configuration) {
@@ -139,34 +161,36 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 
 		// check if the framework was build with the setting saveLibsLocal and if the depdencies changed which would require a rebuild
 		let localLibsRequiredRebuild = false;
-		const pathTolocalUI5Config = path.join(process.cwd(), effectiveOptions.configPath);
 
-		const shouldUseLocalUI5Config = effectiveOptions.saveLibsLocal && effectiveOptions.configPath;
-
-		if (shouldUseLocalUI5Config && effectiveOptions.debug) {
-			log.info(`[DEBUG] Checking ${pathTolocalUI5Config} for local UI5 config ...`);
-		}
-
-		const localUI5ConfigExists = shouldUseLocalUI5Config && existsSync(pathTolocalUI5Config);
+		const shouldUseLocalUI5Config = !!effectiveOptions.saveLibsLocal;
 
 		if (shouldUseLocalUI5Config && effectiveOptions.debug) {
-			log.info(`[DEBUG] ${localUI5ConfigExists ? "Found" : "Did not find"} UI5 config at ${pathTolocalUI5Config}`);
+			log.info(`[DEBUG] Checking for local UI5 depdendencies ...`);
 		}
 
-		if (localUI5ConfigExists) {
-			const localUI5Depdendencies = await getLibrariesDefinedInYaml(pathTolocalUI5Config);
+		const localUI5Depdendencies = await getLibrariesDefinedInResources(resources);
+
+		if (shouldUseLocalUI5Config && effectiveOptions.debug) {
+			log.info(`[DEBUG] Found ${localUI5Depdendencies.length} local UI5 depdendencies ...`);
+		}
+
+		if (shouldUseLocalUI5Config && localUI5Depdendencies.length > 0) {
 			const frameworkUI5Dependencies = await getLibrariesDefinedInYaml(frameworkUI5Yaml);
 
 			// if the two yaml files do not have the same dependencies listed, a rebuild is required
 			localLibsRequiredRebuild = localUI5Depdendencies.map((lib) => lib.name).join(",") !== frameworkUI5Dependencies.map((lib) => lib.name).join(",");
 		}
 
-		if (shouldUseLocalUI5Config && !existsSync(pathTolocalUI5Config)) {
-			log.warn(`\n\n\n[WARN] The local UI5 config file ${pathTolocalUI5Config} does not exist! The framework will be build with all UI5 libraries! \n\n`);
+		if (shouldUseLocalUI5Config && localUI5Depdendencies.length === 0) {
+			log.warn(`\n\n\n[WARN] Could not find localUI5Dependencies. The framework will be build with all UI5 libraries! \n\n`);
 		}
 
-		if (localLibsRequiredRebuild && effectiveOptions.debug) {
-			log.info(`[DEBUG] UI5 libraries of ${pathTolocalUI5Config} and ${frameworkUI5Yaml} do not match! Rebuilding framework libraries ...`);
+		if (effectiveOptions.debug) {
+			if (localLibsRequiredRebuild) {
+				log.info(`[DEBUG] UI5 libraries of config and ${frameworkUI5Yaml} do not match! Rebuilding framework libraries ...`);
+			} else {
+				log.info(`[DEBUG] UI5 libraries of config and ${frameworkUI5Yaml} match! No rebuild required ...`);
+			}
 		}
 
 		if (!existsFramework || localLibsRequiredRebuild) {
@@ -192,8 +216,8 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 
 			let libraries = [];
 
-			if (localUI5ConfigExists) {
-				libraries = (await getLibrariesDefinedInYaml(pathTolocalUI5Config)).map((library) => {
+			if (shouldUseLocalUI5Config && localUI5Depdendencies.length > 0) {
+				libraries = localUI5Depdendencies.map((library) => {
 					return { name: library.name };
 				});
 			} else {

@@ -28,8 +28,6 @@ npm install ui5-middleware-serveframework --save-dev
   Ignore strict SSL checks. Default value `true`.
 - `saveLibsLocal`: `boolean`, default: `false`
   When enabled, libraries are saved in the project directory (.ui5-middleware-serveframework) instead of the user home directory. While this isolates the libraries per project, it requires additional disk space and compilation time compared to sharing compiled libraries across projects.
-- `configPath`: `string`, default: `ui5.yaml`
-  Can only be used together with `saveLibsLocal` being set to `true` in order specify which libraries should be set up. Instead saving all libraries to the project directly, it will check for the libraries defined in the specified config. This can save time in the install step.
 - `cachePath`: `string`
   Custom path to store cached framework files. By default, files are stored in the user home directory (~/.ui5/ui5-middleware-serveframework) or project directory depending on saveLibsLocal setting.
 
