@@ -466,7 +466,8 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 					if (!shouldSkipTransform(resourcePath)) {
 						const content = await res.getString();
 						const newContent = rewriteJSDeps(content, bundleInfo, resourcePath);
-						if (newContent /* false in case of rewrite issues! */ && newContent != content) {
+						// newContent=false in case of rewrite issues, must be string to update content!
+						if (typeof newContent === "string" && newContent != content) {
 							config.debug && log.info(`Rewriting JS resource: ${resourcePath}`);
 							if (/\/\/# sourceMappingURL=.*$/.test(newContent)) {
 								// in case of a sourcemap is already available, we need to create a new resource
