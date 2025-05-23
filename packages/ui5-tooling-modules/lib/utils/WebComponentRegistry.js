@@ -573,6 +573,8 @@ class RegistryEntry {
 		const camelizedName = camelize(eventDef.name);
 
 		ui5metadata.events[camelizedName] = {
+			allowPreventDefault: eventDef._ui5allowPreventDefault,
+			enableEventBubbling: eventDef._ui5Bubbles,
 			parameters: parsedParams,
 		};
 

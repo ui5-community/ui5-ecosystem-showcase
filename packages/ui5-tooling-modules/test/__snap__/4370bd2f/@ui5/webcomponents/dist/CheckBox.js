@@ -102,6 +102,8 @@ sap.ui.define([
   },
   "events": {
     "change": {
+      "allowPreventDefault": true,
+      "enableEventBubbling": true,
       "parameters": {}
     }
   },

@@ -66,7 +66,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 		},
 		options.configuration,
 	);
-	let { debug, skipTransform, watch, watchDebounce } = config;
+	let { debug, skipTransform, watch, watchDebounce, useRelativeModulePaths } = config;
 
 	// derive the custom thirdparty namespace
 	let thirdpartyNamespace = "thirdparty";
@@ -361,7 +361,9 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 					let { contentType } = middlewareUtil.getMimeInfo(pathname);
 					res.setHeader("Content-Type", contentType);
 
-					if (matchRes && !matchNS) {
+					// "Stellvertreter" are only needed if the config option
+					// useRelativeModulePaths is set to false
+					if (!useRelativeModulePaths && matchRes && !matchNS) {
 						// "Stellvertreter" module for the resource to load the correct module
 						// which is only needed for the middleware and not for the build
 						res.end(`sap.ui.define(["${projectInfo.namespace}/${thirdpartyNamespace}/${moduleName}"], function(module) { return module; });`);

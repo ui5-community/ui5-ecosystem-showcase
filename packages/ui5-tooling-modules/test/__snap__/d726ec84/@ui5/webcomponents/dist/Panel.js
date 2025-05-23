@@ -84,6 +84,8 @@ sap.ui.define([
   "associations": {},
   "events": {
     "toggle": {
+      "allowPreventDefault": false,
+      "enableEventBubbling": true,
       "parameters": {}
     }
   },
