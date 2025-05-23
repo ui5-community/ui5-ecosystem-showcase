@@ -17,12 +17,12 @@ const { Agent: HttpsAgent } = require("https");
  * @returns {Array<{ name: string }>} Array of libraries defined in the framework section
  */
 async function getLibrariesDefinedInResources(resources) {
-	const projetcReader = resources.rootProject._readers.find((reader) => {
+	const projectReader = resources.rootProject._readers.find((reader) => {
 		return !!reader._reader?._project?._config?.framework?.libraries;
 	});
 
-	if (projetcReader) {
-		return projetcReader._reader._project._config.framework.libraries;
+	if (projectReader) {
+		return projectReader._reader._project._config.framework.libraries;
 	}
 
 	return [];
