@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.27.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.2...ui5-tooling-modules@3.27.3) (2025-05-23)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** add [@implements](https://github.com/implements) tag to wrapper JSDoc ([#1217](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1217)) ([4039961](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/40399610d443c9560078fd6d9ee6f6830140826d))
+* **ui5-tooling-modules:** forward webc event metadata to wrappers ([#1222](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1222)) ([68a8a95](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/68a8a95bddc2ce07435cc5160661541005d6bcd9))
+
+
+
+
+
 ## [3.27.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.1...ui5-tooling-modules@3.27.2) (2025-05-21)
 
 
