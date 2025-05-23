@@ -90,6 +90,9 @@ function _serializeClassHeader(classDef) {
 	//       and not by their class names.
 	const description = classDef.description;
 
+	// @implements
+	const interfacesSlashed = classDef._ui5QualifiedInterfaceNamesSlashes ? classDef._ui5QualifiedInterfaceNamesSlashes.join(", ") : "";
+
 	// @extends
 	const extendsTag = superclassName ? superclassName : "";
 
@@ -99,6 +102,7 @@ function _serializeClassHeader(classDef) {
 	// and finally we template the class header preamble
 	classDef._jsDoc.classHeader = Templates.classHeader({
 		description,
+		interfacesSlashed,
 		extendsTag,
 		aliasSlashed: classDef._ui5QualifiedNameSlashes,
 	});
