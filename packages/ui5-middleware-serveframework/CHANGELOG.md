@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.6.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.5.0...ui5-middleware-serveframework@3.6.0) (2025-05-25)
+
+
+### Features
+
+* **ui5-middleware-serveframework:** respect defined libraries in local config ([#1221](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1221)) ([09cfc5f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/09cfc5f9a18f4081695011b88ee5ccb3c0f1f477))
+
+
+
+
+
 # [3.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.4.0...ui5-middleware-serveframework@3.5.0) (2025-02-06)
 
 
