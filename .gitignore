@@ -86,3 +86,6 @@ ui5-workspace.yaml
 
 # local markdown files
 TODO.md
+
+# UI5 preload resources
+.ui5-middleware-serveframework
