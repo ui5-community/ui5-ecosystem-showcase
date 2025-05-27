@@ -1,0 +1,9 @@
+declare module "{{{moduleName}}}" {
+{{#each enums}}
+export enum {{@key}} {
+{{#each this.values}}
+{{{this.name}}}: "{{{this.name}}}"
+{{/each}}
+}
+{{/each}}
+}

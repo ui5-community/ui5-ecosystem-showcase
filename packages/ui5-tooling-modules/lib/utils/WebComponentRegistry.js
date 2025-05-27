@@ -1,4 +1,5 @@
 const JSDocSerializer = require("./JSDocSerializer");
+const DTSSerializer = require("./DTSSerializer");
 
 /**
  * Camelize the dashes.
@@ -62,6 +63,8 @@ class RegistryEntry {
 		this.#processMetadata();
 
 		JSDocSerializer.prepare(this);
+
+		DTSSerializer.prepare(this);
 
 		console.log(`Metadata processed for package ${namespace}.`); // Module base path: ${moduleBasePath}.`);
 	}
