@@ -1,0 +1,22 @@
+// Helper to forward the CustomData to the root dom ref in the shadow dom.
+
+if (!WebComponent.__CustomData__isPatched) {
+	const fnOriginalOnAfterRendering = WebComponent.prototype.onAfterRendering;
+	WebComponent.prototype.onAfterRendering = function() {
+		const aCustomData = this.getCustomData();
+		if (aCustomData?.length > 0) {
+			setTimeout(() => {
+				const oDomRef = this.getDomRef()?.getDomRef();
+				oDomRef && aCustomData.forEach(function(oCustomData) {
+					if (oCustomData.getWriteToDom()) {
+						const sKey = oCustomData.getKey();
+						const sValue = oCustomData.getValue();
+						oDomRef.setAttribute(`data-${sKey}`, sValue);
+					}
+				});
+			}, 0);
+		}
+		return fnOriginalOnAfterRendering.apply(this, arguments);
+	};
+	WebComponent.__CustomData__isPatched = true;
+}
