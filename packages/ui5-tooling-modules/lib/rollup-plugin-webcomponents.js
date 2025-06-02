@@ -61,6 +61,9 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 		webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/RegisterAllEvents.hbs")());
 		webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/MapValueState.hbs")());
 	}
+	if (lt(framework?.version || "0.0.0", "1.138.0")) {
+		webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/CustomData.hbs")());
+	}
 
 	// =========================================================================
 	// Helpers to determine the Web Component classes and their metadata

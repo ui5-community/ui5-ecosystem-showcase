@@ -37,8 +37,14 @@
     -->
 
     <fiori:ShellBar id="shellbar" primaryTitle="{formatter: 'Formatter.formatValue', path: 'i18n>appTitle'}" profileClick=".onProfileClick">
+      <fiori:customData>
+        <core:CustomData key="help-id" value="shellbar" writeToDom="true" />
+      </fiori:customData>
       <fiori:profile>
         <webc:Avatar id="profileAvatar">
+          <webc:customData>
+            <core:CustomData key="help-id" value="profile" writeToDom="true" />
+          </webc:customData>
           <!-- <webc:Icon name="sap-ui5" /> -->
           <c:HTMLElement tag="img" ca:src="https://sap.github.io/ui5-webcomponents/img/logos/LogoWater.svg" />
         </webc:Avatar>
@@ -53,6 +59,11 @@
           ca:src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTk0IDYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnIGZpbGw9IiNmZmYiPjxwYXRoIGQ9Im0uMiAzMC41Yy4xLS44LjItMS43LjQtMi41LjctMy4yIDIuMi02LjEgNC40LTguNC43LS43IDEuNC0xLjQgMi4yLTIgMy0yLjMgNi4yLTQuMyA5LjMtNi40IDEuMi0uOCAyLjQtMS43IDMuNi0yLjYtLjMgMS41LTEuMSAyLjgtMi4zIDMuOS0xLjYgMS42LTMuNCAzLjItNSA0LjgtMi41IDIuMy00LjEgNS4yLTQuNyA4LjctMS4xIDUuOSAyLjEgMTIuMSA2LjYgMTQuMiAyLjYgMS4yIDUuMyAxLjMgNy44LS4zIDEuOC0xLjIgMi42LTMuNCAyLjItNS4yLS43LTIuNS0zLjktMy44LTYuMi0yLjQtLjIuMS0uNC4zLS42LjQtLjgtMS4zLS41LTMuMS43LTQuNSAxLjMtMS41IDIuOS0yLjYgNC43LTMuNSAyLjItMS4xIDQuNC0yLjEgNi4zLTMuNyAxLjUtMS4yIDIuNy0yLjYgMy4yLTQuNi45IDIuMS42IDQuMSAwIDYuMiAyLTEgMy42LTIuMiA0LjgtNC4xLjQgMi41LjIgNC44LS43IDcuMiAxLjItLjYgMi4xLTEuMSAzLjEtMS42LjMgMS40LS41IDMtMi43IDUuNSAxLjIgMS4xIDIuNSAxLjMgNCAuOCAyLjctLjkgNS0zLjkgNS4yLTYuOC4zLTMuNi0xLjEtNi42LTMuMy05LjMtMi41LTMuMS01LjctNS41LTktNy42LTIuMS0xLjMtNC4xLTIuNi01LjYtNC42LS40LS41LS42LTEuMS0xLTEuNyA1LjIgMi41IDEwLjMgNC45IDE1LjIgNy41IDQuMSAyLjMgNy43IDUuNiAxMC4xIDEwIDEuNyAzIDIuNyA2LjMgMyA5LjcuOCA3LjItLjcgMTMuOS01IDE5LjktNC43IDYuMy0xMC44IDEwLjItMTguNSAxMS41LTEuMi4yLTIuNC4zLTMuNi41LS43IDAtMS4zIDAtMiAwLS4xIDAtLjMtLjEtLjQtLjEtMS43LS4yLTMuNC0uMy01LS43LTEwLjQtMi43LTE3LjQtOS4yLTIwLjYtMTkuNC0uNi0xLjgtLjgtMy43LS44LTUuNS4xLTEuMy4xLTIuMy4yLTMuM3ptMjEuMi0yLjF2LjJjLjYuMiAxLjIuNCAxLjguNS4zIDAgLjYtLjIuOC0uNC4xLS4xLjEtLjYtLjEtLjhzLS42LS4zLS44LS4zYy0uNS4zLTEuMS42LTEuNy44eiIvPjxwYXRoIGQ9Im0xOTMuOCAzOS41Yy0uMS42LS4yIDEuMS0uNCAxLjcgMCAuMS0uMS4yLS4xLjQtLjQgMS0uOSAxLjktMS43IDIuNy0xLjEgMS4yLTIuNiAxLjktNC4xIDIuMy00LjEgMS04IC40LTExLjUtMi4xLS4zLS4yLS42LS40LS45LS43LjktMS4yIDEuOC0yLjMgMi42LTMuNSAxIC42IDEuOSAxLjIgMi44IDEuNiAxLjQuNyAyLjkuOSA0LjQuNyAyLjUtLjMgMy45LTIuNSAzLjQtNS4yLS42LTMuMS0zLjgtNC40LTYuOC0yLjYtLjQuMi0uOC41LTEuMS45LS41LjctMSAuNy0xLjcuNC0uOC0uMy0xLjYtLjUtMi40LS44LjMtNC4zLjYtOC43IDEtMTNoMTQuOGMtLjEgMS4zLS4yIDIuNi0uMyA0LTMuNSAwLTYuOSAwLTEwLjMgMC0uMiAxLjctLjMgMy40LS41IDUuMiAyLjEtMS41IDQuMy0xLjYgNi42LTEuMiAyLjEuMyA0IDEuNSA1IDMuMyAxLjQgMS45IDEuNiAzLjkgMS4yIDUuOXoiLz48cGF0aCBkPSJtMTU2LjUgMjIuM2g1LjN2LjggMTQuNWMwIDEuMS0uMiAyLjMtLjUgMy40LTEgMy41LTMuNSA1LjMtNi45IDUuOC0yIC4zLTMuOS4zLTUuOS0uMy0zLjYtMS02LTMuNy02LjItNy41cy0uMS03LjYtLjEtMTEuNGMwLTEuOCAwLTMuNSAwLTUuNGg1LjR2LjkgMTMuM2MwIC45LjEgMS45LjMgMi43LjUgMi4zIDEuOSAzLjMgNC4zIDMuM3MzLjctMS4yIDQuMS0zLjRjLjEtLjYuMi0xLjIuMi0xLjggMC00LjcgMC05LjQgMC0xNC4xIDAtLjIgMC0uNCAwLS44eiIvPjxwYXRoIGQ9Im04Mi4zIDM0LjNjMCAzLjEtLjYgNS45LTIuMiA4LjQtMy44IDUuOC0xMiA1LjktMTYgLjEtMy4xLTQuNi0zLjEtMTIuMy4xLTE2LjggMi4yLTMuMSA1LjMtNC41IDkuMS00LjEgMy42LjQgNi4xIDIuNSA3LjcgNS43LjkgMi4xIDEuMyA0LjQgMS4zIDYuN3ptLTE4LjIuMWMuMS45LjEgMS45LjMgMi44LjQgMi4yIDEuMSA0LjIgMi43IDUuNyAzLjYgMy41IDkuNSAyLjIgMTEuNi0yLjYgMS43LTMuOSAxLjctOCAwLTExLjktMS4yLTIuNy0zLjMtNC40LTYuNC00LjUtMy4yLS4xLTUuNCAxLjQtNi44IDQuMS0xLjEgMi4xLTEuNCA0LjItMS40IDYuNHoiLz48cGF0aCBkPSJtMTY2LjcgMjIuM2g1LjN2MjQuMmMtMS44IDAtMy41IDAtNS4zIDAgMC04IDAtMTYuMSAwLTI0LjJ6Ii8+PHBhdGggZD0ibTg2LjUgMjkuM2gyLjN2Mi4zYy41LS40IDEtLjggMS40LTEuMSAzLTIuNiA5LjEtMi4yIDEwLjkgMy40LjkgMi43LjkgNS41IDAgOC4zLTEuNyA1LjItNy41IDUuOS0xMC43IDMuNS0uNS0uNC0xLS43LTEuNi0xLjJ2NC40czAgMi45IDAgNC40Yy0uOCAwLTEuNSAwLTIuMyAwIDAtOC4xIDAtMTYgMC0yNHptMi4zIDguNmMwIC43LjEgMS41IDAgMi4yLS40IDEuOS43IDMgMi4yIDMuOS4yLjEuNC4zLjcuNCAyLjYgMS4zIDUuNi41IDYuOC0xLjggMS40LTIuOSAxLjQtNiAuMS04LjktLjgtMS44LTIuMy0yLjYtNC4zLTIuNy0yLjIgMC0zLjcgMS4zLTUuMSAyLjctLjEuMS0uMi41LS4yLjctLjIgMS4xLS4yIDIuMy0uMiAzLjV6Ii8+PHBhdGggZD0ibTExOS41IDM4LjRjLTQuMSAwLTguMiAwLTEyLjIgMC0uNSAyLjEgMS4xIDUuMiAzLjEgNi4xIDIuNiAxLjIgNS4zLjMgNy42LTIuNi41LjMuOS43IDEuNCAxLjEtMS4zIDItMyAzLjUtNS41IDMuOS01LjcuOC04LjctMy4yLTkuMS03LjgtLjItMi40LjEtNC43IDEuNS02LjggMi40LTMuNyA3LjUtNC41IDEwLjYtMS43IDEuOCAxLjcgMi40IDMuOCAyLjYgNi4yLjEuNSAwIDEgMCAxLjZ6bS0xMi4yLTEuOWg5LjljLjEtMy0xLjgtNS40LTQuNC01LjYtMy0uMS01LjMgMi4xLTUuNSA1LjZ6Ii8+PHBhdGggZD0ibTEyNiAzMS44Yy43LS41IDEuMy0xIDEuOS0xLjQgMS45LTEuMyA0LTEuOCA2LjItMS40czMuNSAxLjkgMy42IDQuMWMuMSAxLjIgMCAyLjQgMCAzLjV2OC45LjljLS44IDAtMS41IDAtMi4zIDAgMC0uMyAwLS42IDAtLjkgMC0zLjYgMC03LjIgMC0xMC44IDAtMy4yLTEuNi00LjMtNC43LTMuNy0xLjguMy0zLjIgMS41LTQuNSAyLjctLjEuMi0uMS42LS4xLjl2MTEgLjljLS44IDAtMS41IDAtMi4zIDAgMC01LjcgMC0xMS40IDAtMTcuMmgyLjNjLS4xLjgtLjEgMS42LS4xIDIuNXoiLz48L2c+PC9zdmc+"
         />
       </fiori:logo>
+      <fiori:ShellBarItem text="Item 1" icon="sap-ui5">
+        <fiori:customData>
+          <core:CustomData key="help-id" value="item1" writeToDom="true" />
+        </fiori:customData>
+      </fiori:ShellBarItem>
     </fiori:ShellBar>
 
     <fiori:UserMenu
@@ -93,7 +104,11 @@
       </webc:Panel>
       <webc:Panel headerText="Buttons" class="panelSpacing">
         <VBox alignItems="Center" justifyContent="Center" height="100%">
-          <Button text="sap.m.Button" press="onBoo" class="buttonSpacing" />
+          <Button text="sap.m.Button" press="onBoo" class="buttonSpacing">
+            <customData>
+              <core:CustomData key="mydata" value="Hello" writeToDom="true" />
+            </customData>
+          </Button>
           <webc:Button text="webc Button" click="onBoo" class="buttonSpacing" />
         </VBox>
       </webc:Panel>
