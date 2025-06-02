@@ -32,7 +32,6 @@ const fs = require("fs");
  */
 module.exports = async function applyUI5Middleware(router, options) {
 	const millis = Date.now();
-
 	options.cwd = options.cwd || process.cwd();
 	options.basePath = options.basePath || process.cwd();
 	options.lazy = options.lazy || false;
@@ -46,65 +45,69 @@ module.exports = async function applyUI5Middleware(router, options) {
 
 	const logPerformance = options.logPerformance || false;
 
-	const millisImport = logPerformance && Date.now();
-	const { graphFromPackageDependencies } = await import("@ui5/project/graph");
-	logPerformance && log.info(`[PERF] Import took ${Date.now() - millisImport}ms`);
+	const loadAppInfo = async () => {
+		const millisImport = logPerformance && Date.now();
+		const { graphFromPackageDependencies } = await import("@ui5/project/graph");
+		logPerformance && log.info(`[PERF] Import took ${Date.now() - millisImport}ms`);
 
-	const determineConfigPath = function (configPath, configFile) {
-		// ensure that the config path is absolute
-		if (!path.isAbsolute(configPath)) {
-			configPath = path.resolve(options.basePath, configPath);
-		}
-		// if the config path is a file, then we assume that this is the
-		// configuration which should be used for the UI5 server middlewares
-		if (fs.existsSync(configPath) && fs.statSync(configPath).isFile()) {
-			return configPath;
-		}
-		// if the configuration file is starting with ./ or ../ then we
-		// resolve the configuration relative to the current working dir
-		// otherwise we are resolving it relative to the config path
-		// which is typically the directory of the UI5 application
-		configPath = path.resolve(/^\.\.?\//.test(configFile) ? options.cwd : configPath, configFile);
-		if (fs.existsSync(configPath) && fs.statSync(configPath).isFile()) {
-			return configPath;
-		}
-		// nothing matched => no config
-		return undefined;
+		const determineConfigPath = function (configPath, configFile) {
+			// ensure that the config path is absolute
+			if (!path.isAbsolute(configPath)) {
+				configPath = path.resolve(options.basePath, configPath);
+			}
+			// if the config path is a file, then we assume that this is the
+			// configuration which should be used for the UI5 server middlewares
+			if (fs.existsSync(configPath) && fs.statSync(configPath).isFile()) {
+				return configPath;
+			}
+			// if the configuration file is starting with ./ or ../ then we
+			// resolve the configuration relative to the current working dir
+			// otherwise we are resolving it relative to the config path
+			// which is typically the directory of the UI5 application
+			configPath = path.resolve(/^\.\.?\//.test(configFile) ? options.cwd : configPath, configFile);
+			if (fs.existsSync(configPath) && fs.statSync(configPath).isFile()) {
+				return configPath;
+			}
+			// nothing matched => no config
+			return undefined;
+		};
+
+		// determine the project graph from the given options
+		const millisGraph = logPerformance && Date.now();
+		const graph = await graphFromPackageDependencies({
+			cwd: options.basePath,
+			rootConfigPath: determineConfigPath(configPath, configFile),
+			workspaceName: process.env["ui5-workspace"] || options.workspaceName || "default",
+			workspaceConfigPath: determineConfigPath(workspaceConfigPath, workspaceConfigFile),
+			versionOverride: options.versionOverride,
+			cacheMode: options.cacheMode,
+		});
+		logPerformance && log.info(`[PERF] Graph took ${Date.now() - millisGraph}ms`);
+
+		const millisRoot = logPerformance && Date.now();
+		// detect the root project
+		const rootProject = graph.getRoot();
+
+		// create a reader for the root project
+		const rootReader = rootProject.getReader({ style: "runtime" });
+		logPerformance && log.info(`[PERF] Root project took ${Date.now() - millisRoot}ms`);
+
+		// for Fiori elements based applications we need to invalidate the view cache
+		// so we need to append the query parameter to the HTML files (sap-ui-xx-viewCache=false)
+		const isFioriElementsBased = rootProject.getFrameworkDependencies().find((lib) => lib.name.startsWith("sap.fe"));
+
+		// collect app pages from workspace (glob testing: https://globster.xyz/ and https://codepen.io/mrmlnc/pen/OXQjMe)
+		//   -> but exclude the HTML fragments from the list of app pages!
+		const millisPages = logPerformance && Date.now();
+		const pages = (await rootReader.byGlob("**/!(*.fragment).{html,htm}")).map((resource) => `${resource.getPath()}${isFioriElementsBased ? "?sap-ui-xx-viewCache=false" : ""}`);
+		logPerformance && log.info(`[PERF] Pages took ${Date.now() - millisPages}ms`);
+
+		return { rootProject, rootReader, graph, pages };
 	};
-
-	// determine the project graph from the given options
-	const millisGraph = logPerformance && Date.now();
-	const graph = await graphFromPackageDependencies({
-		cwd: options.basePath,
-		rootConfigPath: determineConfigPath(configPath, configFile),
-		workspaceName: process.env["ui5-workspace"] || options.workspaceName || "default",
-		workspaceConfigPath: determineConfigPath(workspaceConfigPath, workspaceConfigFile),
-		versionOverride: options.versionOverride,
-		cacheMode: options.cacheMode,
-	});
-	logPerformance && log.info(`[PERF] Graph took ${Date.now() - millisGraph}ms`);
-
-	const millisRoot = logPerformance && Date.now();
-	// detect the root project
-	const rootProject = graph.getRoot();
-
-	// create a reader for the root project
-	const rootReader = rootProject.getReader({ style: "runtime" });
-	logPerformance && log.info(`[PERF] Root project took ${Date.now() - millisRoot}ms`);
-
-	// for Fiori elements based applications we need to invalidate the view cache
-	// so we need to append the query parameter to the HTML files (sap-ui-xx-viewCache=false)
-	const isFioriElementsBased = rootProject.getFrameworkDependencies().find((lib) => lib.name.startsWith("sap.fe"));
-
-	// collect app pages from workspace (glob testing: https://globster.xyz/ and https://codepen.io/mrmlnc/pen/OXQjMe)
-	//   -> but exclude the HTML fragments from the list of app pages!
-	const millisPages = logPerformance && Date.now();
-	const pages = (await rootReader.byGlob("**/!(*.fragment).{html,htm}")).map((resource) => `${resource.getPath()}${isFioriElementsBased ? "?sap-ui-xx-viewCache=false" : ""}`);
-	logPerformance && log.info(`[PERF] Pages took ${Date.now() - millisPages}ms`);
 
 	// method to create the middleware manager and to apply the middlewares
 	// to the express router provided as a parameter to this function
-	const apply = async () => {
+	const apply = async ({ rootProject, rootReader, graph, pages }) => {
 		// find the relevant readers for the dependencies
 		const readers = [];
 		await graph.traverseBreadthFirst(async function ({ project: dep }) {
@@ -148,25 +151,27 @@ module.exports = async function applyUI5Middleware(router, options) {
 		});
 		await middlewareManager.applyMiddleware(router);
 
-		// collect app pages from middlewares implementing the getAppPages
-		// which will only work if the middleware is executed synchronously
-		middlewareManager.middlewareExecutionOrder?.map((name) => {
-			const { middleware } = middlewareManager.middleware?.[name] || {};
-			if (typeof middleware?.getAppPages === "function") {
-				if (!options.lazy) {
-					const customAppPages = middleware.getAppPages();
-					if (Array.isArray(customAppPages)) {
-						pages.push(...customAppPages);
-					} else {
-						if (customAppPages) {
-							log.warn(`The middleware ${name} returns an unexpected value for "getAppPages". The value must be either undefined or string[]! Ignoring app pages from middleware!`);
+		if (pages) {
+			// collect app pages from middlewares implementing the getAppPages
+			// which will only work if the middleware is executed synchronously
+			middlewareManager.middlewareExecutionOrder?.map((name) => {
+				const { middleware } = middlewareManager.middleware?.[name] || {};
+				if (typeof middleware?.getAppPages === "function") {
+					if (!options.lazy) {
+						const customAppPages = middleware.getAppPages();
+						if (Array.isArray(customAppPages)) {
+							pages.push(...customAppPages);
+						} else {
+							if (customAppPages) {
+								log.warn(`The middleware ${name} returns an unexpected value for "getAppPages". The value must be either undefined or string[]! Ignoring app pages from middleware!`);
+							}
 						}
+					} else {
+						log.warn(`The middleware ${name} returns a function for "getAppPages" but the lazy option is enabled. The function will not be executed!`);
 					}
-				} else {
-					log.warn(`The middleware ${name} returns a function for "getAppPages" but the lazy option is enabled. The function will not be executed!`);
 				}
-			}
-		});
+			});
+		}
 	};
 
 	// install a callback in the router to apply the middlewares
@@ -174,19 +179,22 @@ module.exports = async function applyUI5Middleware(router, options) {
 		let isApplied = false;
 		router.use(async (req, res, next) => {
 			if (!isApplied) {
-				await apply();
+				const { graph, rootProject, rootReader } = await loadAppInfo();
+				await apply({ graph, rootProject, rootReader });
 				isApplied = true;
 			}
 			next();
 		});
+		const { glob } = await import("glob");
+		return {
+			pages: (await glob("**/!(*.fragment).{html,htm}", { cwd: configPath })).map((p) => (p.startsWith("webapp") ? p.substring(7) : p)),
+		};
 	} else {
-		await apply();
+		const { graph, rootProject, rootReader, pages } = await loadAppInfo();
+		await apply({ graph, rootProject, rootReader, pages });
+		logPerformance && log.info(`[PERF] applyUI5Middleware took ${Date.now() - millis}ms`);
+
+		// return the UI5 application information
+		return { pages };
 	}
-
-	logPerformance && log.info(`[PERF] applyUI5Middleware took ${Date.now() - millis}ms`);
-
-	// return the UI5 application information
-	return {
-		pages,
-	};
 };

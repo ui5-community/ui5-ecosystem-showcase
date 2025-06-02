@@ -188,19 +188,19 @@ if (!skip) {
 					const router = createPatchedRouter();
 
 					// determine the application info and apply the UI5 middlewares (maybe lazy)
-					applyUI5Middleware(router, {
+					const { pages } = applyUI5Middleware(router, {
 						cwd,
 						basePath: modulePath,
 						...(config[moduleId] || {}),
 						LOG,
 						lazy: isLazyLoadingEnabled,
 						//logPerformance: true,
-					}).then(({ pages }) => {
-						// append the HTML pages to the links
-						pages.forEach((page) => {
-							const prefix = mountPath !== "/" ? mountPath : "";
-							links.push(`${prefix}${page}`);
-						});
+					});
+
+					// append the HTML pages to the links
+					pages.forEach((page) => {
+						const prefix = mountPath !== "/" ? mountPath : "";
+						links.push(`${prefix}${page}`);
 					});
 
 					// register the router to the specified mount path
