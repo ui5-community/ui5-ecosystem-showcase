@@ -1,6 +1,8 @@
 const path = require("path");
 const fs = require("fs");
 
+const PAGE_GLOB_PATTERN = "**/!(*.fragment).{html,htm}";
+
 /**
  * @typedef UI5AppInfo
  * @type {object}
@@ -32,6 +34,7 @@ const fs = require("fs");
  */
 module.exports = async function applyUI5Middleware(router, options) {
 	const millis = Date.now();
+
 	options.cwd = options.cwd || process.cwd();
 	options.basePath = options.basePath || process.cwd();
 	options.lazy = options.lazy || false;
@@ -99,7 +102,7 @@ module.exports = async function applyUI5Middleware(router, options) {
 		// collect app pages from workspace (glob testing: https://globster.xyz/ and https://codepen.io/mrmlnc/pen/OXQjMe)
 		//   -> but exclude the HTML fragments from the list of app pages!
 		const millisPages = logPerformance && Date.now();
-		const pages = (await rootReader.byGlob("**/!(*.fragment).{html,htm}")).map((resource) => `${resource.getPath()}${isFioriElementsBased ? "?sap-ui-xx-viewCache=false" : ""}`);
+		const pages = (await rootReader.byGlob(PAGE_GLOB_PATTERN)).map((resource) => `${resource.getPath()}${isFioriElementsBased ? "?sap-ui-xx-viewCache=false" : ""}`);
 		logPerformance && log.info(`[PERF] Pages took ${Date.now() - millisPages}ms`);
 
 		return { rootProject, rootReader, graph, pages };
@@ -151,6 +154,7 @@ module.exports = async function applyUI5Middleware(router, options) {
 		});
 		await middlewareManager.applyMiddleware(router);
 
+		// custom pages are not collectible in lazy loading mode
 		if (pages) {
 			// collect app pages from middlewares implementing the getAppPages
 			// which will only work if the middleware is executed synchronously
@@ -185,9 +189,10 @@ module.exports = async function applyUI5Middleware(router, options) {
 			}
 			next();
 		});
+		// collect pages via glob pattern
 		const { glob } = await import("glob");
 		return {
-			pages: (await glob("**/!(*.fragment).{html,htm}", { cwd: configPath })).map((p) => (p.startsWith("webapp") ? p.substring(7) : p)),
+			pages: (await glob(PAGE_GLOB_PATTERN, { cwd: path.join(configPath, "webapp") })).map((p) => (!p.startsWith("/") ? `/${p}` : p)),
 		};
 	} else {
 		const { graph, rootProject, rootReader, pages } = await loadAppInfo();
