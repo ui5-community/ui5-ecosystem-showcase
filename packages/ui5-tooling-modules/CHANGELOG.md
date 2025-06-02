@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.27.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.3...ui5-tooling-modules@3.27.4) (2025-06-02)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** webc to forward custom data to root shadow domref ([#1225](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1225)) ([1dfd20b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1dfd20b2dde4f1ff6f882ae7d8458907b4ad37b0))
+
+
+
+
+
 ## [3.27.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.2...ui5-tooling-modules@3.27.3) (2025-05-23)
 
 

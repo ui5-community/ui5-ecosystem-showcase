@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.13.3...ui5-tsapp-webc@0.13.4) (2025-06-02)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** webc to forward custom data to root shadow domref ([#1225](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1225)) ([1dfd20b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1dfd20b2dde4f1ff6f882ae7d8458907b4ad37b0))
+
+
+
+
+
 ## [0.13.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.13.2...ui5-tsapp-webc@0.13.3) (2025-05-23)
 
 **Note:** Version bump only for package ui5-tsapp-webc
