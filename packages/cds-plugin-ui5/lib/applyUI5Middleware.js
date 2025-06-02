@@ -98,7 +98,7 @@ module.exports = async function applyUI5Middleware(router, options) {
 		return { rootProject, rootReader, graph };
 	};
 
-	const loadPages = async (rootProject, rootReader) => {
+	const loadPages = async ({ rootProject, rootReader }) => {
 		// for Fiori elements based applications we need to invalidate the view cache
 		// so we need to append the query parameter to the HTML files (sap-ui-xx-viewCache=false)
 		const isFioriElementsBased = rootProject.getFrameworkDependencies().find((lib) => lib.name.startsWith("sap.fe"));
