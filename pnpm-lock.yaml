@@ -68,6 +68,9 @@ importers:
       '@ui5/server':
         specifier: ^4
         version: 4.0.4
+      glob:
+        specifier: ^11.0.2
+        version: 11.0.2
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.0
@@ -5907,6 +5910,11 @@ packages:
 
   glob@11.0.0:
     resolution: {integrity: sha512-9UiX/Bl6J2yaBbxKoEBRm4Cipxgok8kQYcOPEhScPwebu2I0HoQOuYdIO6S3hLuWoZgpDpwQZMzTFxgpkyT76g==}
+    engines: {node: 20 || >=22}
+    hasBin: true
+
+  glob@11.0.2:
+    resolution: {integrity: sha512-YT7U7Vye+t5fZ/QMkBFrTJ7ZQxInIUjwyAjVj84CYXqgBdv30MFUPGnBR6sQaVq6Is15wYJUsnzTuWaGRBhBAQ==}
     engines: {node: 20 || >=22}
     hasBin: true
 
@@ -16631,6 +16639,15 @@ snapshots:
       path-scurry: 1.11.1
 
   glob@11.0.0:
+    dependencies:
+      foreground-child: 3.3.0
+      jackspeak: 4.0.1
+      minimatch: 10.0.1
+      minipass: 7.1.2
+      package-json-from-dist: 1.0.0
+      path-scurry: 2.0.0
+
+  glob@11.0.2:
     dependencies:
       foreground-child: 3.3.0
       jackspeak: 4.0.1
