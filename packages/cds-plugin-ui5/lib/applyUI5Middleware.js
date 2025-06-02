@@ -95,6 +95,10 @@ module.exports = async function applyUI5Middleware(router, options) {
 		const rootReader = rootProject.getReader({ style: "runtime" });
 		logPerformance && log.info(`[PERF] Root project took ${Date.now() - millisRoot}ms`);
 
+		return { rootProject, rootReader, graph };
+	};
+
+	const loadPages = async (rootProject, rootReader) => {
 		// for Fiori elements based applications we need to invalidate the view cache
 		// so we need to append the query parameter to the HTML files (sap-ui-xx-viewCache=false)
 		const isFioriElementsBased = rootProject.getFrameworkDependencies().find((lib) => lib.name.startsWith("sap.fe"));
@@ -104,8 +108,7 @@ module.exports = async function applyUI5Middleware(router, options) {
 		const millisPages = logPerformance && Date.now();
 		const pages = (await rootReader.byGlob(PAGE_GLOB_PATTERN)).map((resource) => `${resource.getPath()}${isFioriElementsBased ? "?sap-ui-xx-viewCache=false" : ""}`);
 		logPerformance && log.info(`[PERF] Pages took ${Date.now() - millisPages}ms`);
-
-		return { rootProject, rootReader, graph, pages };
+		return pages;
 	};
 
 	// method to create the middleware manager and to apply the middlewares
@@ -195,7 +198,8 @@ module.exports = async function applyUI5Middleware(router, options) {
 			pages: (await glob(PAGE_GLOB_PATTERN, { cwd: path.join(configPath, "webapp") })).map((p) => (!p.startsWith("/") ? `/${p}` : p)),
 		};
 	} else {
-		const { graph, rootProject, rootReader, pages } = await loadAppInfo();
+		const { graph, rootProject, rootReader } = await loadAppInfo();
+		const pages = await loadPages({ rootProject, rootReader });
 		await apply({ graph, rootProject, rootReader, pages });
 		logPerformance && log.info(`[PERF] applyUI5Middleware took ${Date.now() - millis}ms`);
 
