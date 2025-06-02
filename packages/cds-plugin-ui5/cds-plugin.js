@@ -188,7 +188,7 @@ if (!skip) {
 					const router = createPatchedRouter();
 
 					// determine the application info and apply the UI5 middlewares (maybe lazy)
-					const { pages } = applyUI5Middleware(router, {
+					const { pages } = await applyUI5Middleware(router, {
 						cwd,
 						basePath: modulePath,
 						...(config[moduleId] || {}),
