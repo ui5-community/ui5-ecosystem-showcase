@@ -118,11 +118,13 @@ If you are using the Microsoft OData services for testing purposes, like [Northw
 
 Another known issue is the the validation of the `csrf-token` fails for the `$batch` requests (e.g. in Chrome). To workaround this issue, also running the dev server in `https` can solve the issue.
 
-The UI5 tooling supports running the dev server in `https` by running the following command line option:
+UI5 Tooling supports running the dev server in `https` by running the following command line option:
 
 ```sh
 ui5 serve --h2
 ```
+
+**Note:** With Node v24, usage of HTTP/2 is no longer supported in UI5 Tooling. Please check https://github.com/SAP/ui5-tooling/issues/327 for updates.
 
 More details can be found in the documentation of the UI5 tooling for the [`ui5 serve` command](https://sap.github.io/ui5-tooling/stable/pages/CLI/#ui5-serve).
 
