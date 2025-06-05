@@ -1,0 +1,20 @@
+declare module "{{registryEntry.namespace}}" {
+// Declaration of enums
+{{#each registryEntry.enums}}
+{{{generateApiDocumentation this.description}}}
+export enum {{@key}} {
+{{#each this.values}}
+{{{generateApiDocumentation this.description}}}
+{{{this.name}}} = "{{{this.name}}}",
+{{/each}}
+}
+{{/each}}
+
+//Declaration of interface
+{{#each registryEntry.interfaces}}
+{{{generateApiDocumentation this.description}}}
+export interface {{@key}} {
+__implements_{{{escapeInterfaceName this._ui5QualifiedName}}}: boolean;
+}
+{{/each}}
+}

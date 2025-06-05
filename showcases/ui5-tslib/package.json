@@ -26,7 +26,7 @@
     "directory": "showcases/ui5-tslib"
   },
   "devDependencies": {
-    "@types/openui5": "1.133.0",
+    "@types/openui5": "1.135.0",
     "@types/showdown": "^2.0.6",
     "@ui5/cli": "^4.0.13",
     "@ui5/ts-interface-generator": "^0.10.0",
