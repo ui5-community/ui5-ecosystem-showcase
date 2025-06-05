@@ -1,14 +1,26 @@
 const { join } = require("path");
-const { readFileSync } = require("fs");
+const { writeFileSync, readFileSync } = require("fs");
 
 const handlebars = require("handlebars");
+
+handlebars.registerHelper("escapeInterfaceName", function (ui5QualifiedName) {
+	return ui5QualifiedName.replace(/[.@-]/g, "_");
+});
+
+handlebars.registerHelper("generateApiDocumentation", function (description) {
+	return description
+		? Templates.apiDocumentation({
+				description,
+			})
+		: "";
+});
 
 /**
  * All needed HBS templates for serializing JSDoc comments.
  */
 const Templates = {
-	// enumHeader: loadAndCompileTemplate("../templates/jsdoc/EnumHeader.hbs"),
-	enums: loadAndCompileTemplate("../templates/dts/Enums.hbs"),
+	apiDocumentation: loadAndCompileTemplate("../templates/dts/ApiDocumentation.hbs"),
+	module: loadAndCompileTemplate("../templates/dts/Module.hbs"),
 };
 
 /**
@@ -21,11 +33,12 @@ function loadAndCompileTemplate(templatePath) {
 
 const DTSSerializer = {
 	prepare: function (registryEntry) {
-		console.log(
-			Templates.enums({
-				moduleName: registryEntry.namespace,
-				enums: registryEntry.enums,
+		writeFileSync(
+			join(__dirname, "generated_types", `${registryEntry.qualifiedNamespace}.d.ts`),
+			Templates.module({
+				registryEntry,
 			}),
+			{ encoding: "utf-8" },
 		);
 	},
 };
