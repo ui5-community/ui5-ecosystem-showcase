@@ -358,12 +358,12 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 					log.verbose(`Processing resource ${moduleName}...`);
 
 					// determine content-type
-					let { contentType } = middlewareUtil.getMimeInfo(pathname);
+					let { contentType, type } = middlewareUtil.getMimeInfo(pathname);
 					res.setHeader("Content-Type", contentType);
 
 					// "Stellvertreter" are only needed if the config option
 					// useRelativeModulePaths is set to false
-					if (!useRelativeModulePaths && matchRes && !matchNS) {
+					if (!useRelativeModulePaths && matchRes && !matchNS && type === "application/javascript") {
 						// "Stellvertreter" module for the resource to load the correct module
 						// which is only needed for the middleware and not for the build
 						res.end(`sap.ui.define(["${projectInfo.namespace}/${thirdpartyNamespace}/${moduleName}"], function(module) { return module; });`);
