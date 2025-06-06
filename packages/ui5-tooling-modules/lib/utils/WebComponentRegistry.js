@@ -1,5 +1,6 @@
 const JSDocSerializer = require("./JSDocSerializer");
 const DTSSerializer = require("./DTSSerializer");
+const WebComponentRegistryHelper = require("./WebComponentRegistryHelper");
 
 /**
  * Camelize the dashes.
@@ -195,7 +196,7 @@ class RegistryEntry {
 
 	#calculateScopedTagName(classDef) {
 		// only scope UI5Element subclasses
-		if (this.scopeSuffix && WebComponentRegistry.isUI5ElementSubclass(classDef)) {
+		if (this.scopeSuffix && WebComponentRegistryHelper.isUI5ElementSubclass(classDef)) {
 			if (classDef.tagName) {
 				classDef.scopedTagName = `${classDef.tagName}-${this.scopeSuffix}`;
 			}
@@ -788,6 +789,7 @@ class RegistryEntry {
 		this.#ensureDefaults(classDef, ui5metadata);
 
 		this.#patchUI5Specifics(classDef, ui5metadata);
+		DTSSerializer.initClass(classDef);
 	}
 
 	/**
@@ -873,26 +875,6 @@ const WebComponentRegistry = {
 	clear() {
 		_registry = {};
 		_classAliases = {};
-	},
-
-	/**
-	 * Helper function to check whether the given class inherits from UI5Element, the base class for all
-	 * UI5 web components.
-	 *
-	 * @param {object} classDef a class definition from a WebComponentRegistry entry
-	 * @returns {boolean} whether the class inherits from UI5Element
-	 */
-	isUI5ElementSubclass(classDef) {
-		let superclass = classDef.superclass,
-			isUI5ElementSubclass = false;
-		while (superclass) {
-			if (superclass?.namespace === "@ui5/webcomponents-base" && superclass?.name === "UI5Element") {
-				isUI5ElementSubclass = true;
-				break;
-			}
-			superclass = superclass.superclass;
-		}
-		return isUI5ElementSubclass;
 	},
 };
 
