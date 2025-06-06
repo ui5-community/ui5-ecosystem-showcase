@@ -18,7 +18,7 @@ const yaml = require("js-yaml");
  * @param {string} options.skipLocalApps skip local apps
  * @param {string} options.skipDeps skip dependencies
  * @param {string} options.log the logger (defaults to console)
- * @returns {Array<UI5Module>} array of UI5 module
+ * @returns {Promise<Array<UI5Module>>} array of UI5 module
  */
 module.exports = async function findUI5Modules({ cwd, cds, skipLocalApps, skipDeps, log = console }) {
 	// extract the modules configuration from the package.json
