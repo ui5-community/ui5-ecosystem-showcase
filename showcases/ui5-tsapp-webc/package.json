@@ -27,7 +27,7 @@
     "@ui5/webcomponents-fiori": "^2.8.0"
   },
   "devDependencies": {
-    "@types/openui5": "1.133.0",
+    "@types/openui5": "1.135.0",
     "@ui5/cli": "^4.0.13",
     "@ui5/ts-interface-generator": "^0.10.0",
     "eslint": "^9.22.0",
