@@ -1,0 +1,16 @@
+{{#each classes}}
+	declare module "{{{this._ui5QualifiedNameSlashes}}}" {
+		{{#each this._dts.imports}}
+			{{{generateImports @key this}}}
+		{{/each}}
+		export default class {{{this.name}}} extends {{{this._dts.extends}}}
+		{{#if this._dts.implements}}
+			implements {{join this._dts.implements}}
+		{{/if}}
+		{
+			{{#each this._dts.implementsMarker}}
+				{{{escapeInterfaceName this.package this.name}}}
+			{{/each}}
+		}
+	}
+{{/each}}
