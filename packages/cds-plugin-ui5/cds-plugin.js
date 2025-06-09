@@ -188,7 +188,7 @@ if (!skip) {
 					const router = createPatchedRouter();
 
 					// determine the application info and apply the UI5 middlewares (maybe lazy)
-					applyUI5Middleware(router, {
+					const promiseApply = applyUI5Middleware(router, {
 						cwd,
 						basePath: modulePath,
 						...(config[moduleId] || {}),
@@ -202,6 +202,11 @@ if (!skip) {
 							links.push(`${prefix}${page}`);
 						});
 					});
+
+					// if lazy loading is not enabled, we wait for the middlewares to be applied
+					if (!isLazyLoadingEnabled) {
+						await promiseApply; // wait for the middlewares to be applied
+					}
 
 					// register the router to the specified mount path
 					app.use(mountPath, router);
