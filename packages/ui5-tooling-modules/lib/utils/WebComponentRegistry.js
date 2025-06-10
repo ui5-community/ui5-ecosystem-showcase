@@ -169,7 +169,7 @@ class RegistryEntry {
 			// determine superclass cross-package
 			const refPackage = WebComponentRegistry.getPackage(classDef.superclass.package);
 			if (!refPackage) {
-				console.log(`No refPackage found for ${classDef.superclass.package}`);
+				console.log(`‼️ No refPackage found for ${classDef.superclass.package}`);
 			}
 			let superclassRef = (refPackage || this).classes[superclassName];
 			if (!superclassRef) {
@@ -841,6 +841,7 @@ const WebComponentRegistry = {
 	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version }) {
 		let entry = _registry[namespace];
 		if (!entry) {
+			console.log(`‼️ WebComponentRegistry.register called for ${namespace}`);
 			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version });
 
 			// track all classes also via their module name,
@@ -849,6 +850,7 @@ const WebComponentRegistry = {
 				const classDef = entry.classes[className];
 				this.addClassAlias(`${namespace}/${classDef.module}`, classDef);
 			});
+			console.log(`‼️ WebComponentRegistry.register finished for ${namespace}`);
 		}
 		return entry;
 	},
