@@ -65,7 +65,7 @@ class RegistryEntry {
 
 		JSDocSerializer.prepare(this);
 
-		DTSSerializer.prepare(this);
+		// DTSSerializer.prepare(this);
 
 		console.log(`Metadata processed for package ${namespace}.`); // Module base path: ${moduleBasePath}.`);
 	}
@@ -843,6 +843,7 @@ const WebComponentRegistry = {
 		if (!entry) {
 			console.log(`‼️ WebComponentRegistry.register called for ${namespace}`);
 			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version });
+			console.log(`‼️ RegistryEntry created for ${namespace}`);
 
 			// track all classes also via their module name,
 			// so we can access them faster during resource resolution later on
