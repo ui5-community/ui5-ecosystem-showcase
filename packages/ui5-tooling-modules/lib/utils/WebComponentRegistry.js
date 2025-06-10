@@ -168,6 +168,9 @@ class RegistryEntry {
 			const superclassName = classDef.superclass.name;
 			// determine superclass cross-package
 			const refPackage = WebComponentRegistry.getPackage(classDef.superclass.package);
+			if (!refPackage) {
+				console.log(`No refPackage found for ${classDef.superclass.package}`);
+			}
 			let superclassRef = (refPackage || this).classes[superclassName];
 			if (!superclassRef) {
 				console.error(
