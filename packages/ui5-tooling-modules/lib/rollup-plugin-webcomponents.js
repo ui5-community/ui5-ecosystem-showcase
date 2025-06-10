@@ -129,6 +129,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				if (metadataPath) {
 					const customElementsMetadata = JSON.parse(readFileSync(metadataPath, { encoding: "utf-8" }));
 
+					console.log(`WebComponentRegistry.register called for ${npmPackage}`);
 					// first time registering a new Web Component package
 					registryEntry = WebComponentRegistry.register({
 						customElementsMetadata,
@@ -139,6 +140,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 						npmPackagePath,
 						version: packageJson.version,
 					});
+					console.log(`WebComponentRegistry.register finished for ${npmPackage}`);
 
 					// assign the dependencies
 					registryEntry.dependencies = libraryDependencies;
