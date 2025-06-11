@@ -192,7 +192,7 @@ if (!skip) {
 						cwd,
 						basePath: modulePath,
 						...(config[moduleId] || {}),
-						LOG,
+						log: LOG,
 						lazy: isLazyLoadingEnabled,
 						//logPerformance: true,
 					});
