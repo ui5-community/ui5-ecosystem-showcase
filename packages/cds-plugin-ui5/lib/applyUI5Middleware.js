@@ -183,7 +183,7 @@ module.exports = async function applyUI5Middleware(router, options) {
 		}
 	};
 
-	const getCustomWebappPath = (ui5ConfigPath) => {
+	const determineWebappPath = (ui5ConfigPath) => {
 		/** @type {{resources: {configuration: {paths: {webapp: string}}}}[]} */
 		let ui5Configs;
 		try {
@@ -215,10 +215,10 @@ module.exports = async function applyUI5Middleware(router, options) {
 			}
 			next();
 		});
-		const appWebappFolder = getCustomWebappPath(determineConfigPath(configPath, configFile));
+		const webappPath = determineWebappPath(determineConfigPath(configPath, configFile));
 		// collect pages via glob pattern
 		return {
-			pages: (await glob(PAGE_GLOB_PATTERN, { cwd: path.join(configPath, appWebappFolder) })).map((p) => (!p.startsWith("/") ? `/${p}` : p)),
+			pages: (await glob(PAGE_GLOB_PATTERN, { cwd: path.join(configPath, webappPath) })).map((p) => (!p.startsWith("/") ? `/${p}` : p)),
 		};
 	} else {
 		const { graph, rootProject, rootReader } = await loadAppInfo();
