@@ -5,16 +5,24 @@ if (!WebComponent.__CustomData__isPatched) {
 	WebComponent.prototype.onAfterRendering = function() {
 		const aCustomData = this.getCustomData();
 		if (aCustomData?.length > 0) {
-			setTimeout(() => {
-				const oDomRef = this.getDomRef()?.getDomRef();
-				oDomRef && aCustomData.forEach(function(oCustomData) {
-					if (oCustomData.getWriteToDom()) {
-						const sKey = oCustomData.getKey();
-						const sValue = oCustomData.getValue();
-						oDomRef.setAttribute(`data-${sKey}`, sValue);
-					}
-				});
-			}, 0);
+			setTimeout(function() {
+				const oDomRef = this.getDomRef();
+				// either use the getFocusDomRef method or the getDomRef method to get the shadow DOM reference
+				const oShadowDomRef = oDomRef && (
+					typeof oDomRef.getFocusDomRef === "function" && oDomRef.getFocusDomRef() ||
+					typeof oDomRef.getDomRef === "function" && oDomRef.getDomRef() ||
+					oDomRef.shadowRoot && oDomRef.shadowRoot.firstElementChild // for all non UI5Elements
+				);
+				if (oShadowDomRef) {
+					aCustomData.forEach(function(oCustomData) {
+						if (oCustomData.getWriteToDom()) {
+							const sKey = oCustomData.getKey();
+							const sValue = oCustomData.getValue();
+							oShadowDomRef.setAttribute(`data-${sKey}`, sValue);
+						}
+					});
+				}
+			}.bind(this), 0);
 		}
 		return fnOriginalOnAfterRendering.apply(this, arguments);
 	};
