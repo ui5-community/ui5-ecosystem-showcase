@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.27.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.5...ui5-tooling-modules@3.27.6) (2025-06-11)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** align custom data logic with core impl ([#1230](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1230)) ([7458f28](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7458f28e06b0e0ea9ebe79dfda7a23560a05c97b))
+
+
+
+
+
 ## [3.27.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.4...ui5-tooling-modules@3.27.5) (2025-06-06)
 
 
