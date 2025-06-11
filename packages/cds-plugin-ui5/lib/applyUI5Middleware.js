@@ -1,5 +1,7 @@
 const path = require("path");
 const fs = require("fs");
+const { glob } = require("glob");
+const yaml = require("js-yaml");
 
 const PAGE_GLOB_PATTERN = "**/!(*.fragment).{html,htm}";
 
@@ -48,32 +50,32 @@ module.exports = async function applyUI5Middleware(router, options) {
 
 	const logPerformance = options.logPerformance || false;
 
+	const determineConfigPath = function (configPath, configFile) {
+		// ensure that the config path is absolute
+		if (!path.isAbsolute(configPath)) {
+			configPath = path.resolve(options.basePath, configPath);
+		}
+		// if the config path is a file, then we assume that this is the
+		// configuration which should be used for the UI5 server middlewares
+		if (fs.existsSync(configPath) && fs.statSync(configPath).isFile()) {
+			return configPath;
+		}
+		// if the configuration file is starting with ./ or ../ then we
+		// resolve the configuration relative to the current working dir
+		// otherwise we are resolving it relative to the config path
+		// which is typically the directory of the UI5 application
+		configPath = path.resolve(/^\.\.?\//.test(configFile) ? options.cwd : configPath, configFile);
+		if (fs.existsSync(configPath) && fs.statSync(configPath).isFile()) {
+			return configPath;
+		}
+		// nothing matched => no config
+		return undefined;
+	};
+
 	const loadAppInfo = async () => {
 		const millisImport = logPerformance && Date.now();
 		const { graphFromPackageDependencies } = await import("@ui5/project/graph");
 		logPerformance && log.info(`[PERF] Import took ${Date.now() - millisImport}ms`);
-
-		const determineConfigPath = function (configPath, configFile) {
-			// ensure that the config path is absolute
-			if (!path.isAbsolute(configPath)) {
-				configPath = path.resolve(options.basePath, configPath);
-			}
-			// if the config path is a file, then we assume that this is the
-			// configuration which should be used for the UI5 server middlewares
-			if (fs.existsSync(configPath) && fs.statSync(configPath).isFile()) {
-				return configPath;
-			}
-			// if the configuration file is starting with ./ or ../ then we
-			// resolve the configuration relative to the current working dir
-			// otherwise we are resolving it relative to the config path
-			// which is typically the directory of the UI5 application
-			configPath = path.resolve(/^\.\.?\//.test(configFile) ? options.cwd : configPath, configFile);
-			if (fs.existsSync(configPath) && fs.statSync(configPath).isFile()) {
-				return configPath;
-			}
-			// nothing matched => no config
-			return undefined;
-		};
 
 		// determine the project graph from the given options
 		const millisGraph = logPerformance && Date.now();
@@ -181,6 +183,27 @@ module.exports = async function applyUI5Middleware(router, options) {
 		}
 	};
 
+	const getCustomWebappPath = (ui5ConfigPath) => {
+		/** @type {{resources: {configuration: {paths: {webapp: string}}}}[]} */
+		let ui5Configs;
+		try {
+			// read the ui5.yaml file to extract the configuration
+			const content = fs.readFileSync(ui5ConfigPath, "utf-8");
+			ui5Configs = yaml.loadAll(content);
+		} catch (err) {
+			if (err.name === "YAMLException") {
+				log.error(`Failed to read ${ui5ConfigPath}!`);
+			}
+			throw err;
+		}
+
+		const webappPath = ui5Configs?.[0]?.resources?.configuration?.paths?.webapp;
+		if (webappPath) {
+			log.debug(`Determined custom "webapp" path "${webappPath}"`);
+		}
+		return webappPath ?? "webapp";
+	};
+
 	// install a callback in the router to apply the middlewares
 	if (options.lazy) {
 		let isApplied = false;
@@ -192,10 +215,10 @@ module.exports = async function applyUI5Middleware(router, options) {
 			}
 			next();
 		});
+		const appWebappFolder = getCustomWebappPath(determineConfigPath(configPath, configFile));
 		// collect pages via glob pattern
-		const { glob } = await import("glob");
 		return {
-			pages: (await glob(PAGE_GLOB_PATTERN, { cwd: path.join(configPath, "webapp") })).map((p) => (!p.startsWith("/") ? `/${p}` : p)),
+			pages: (await glob(PAGE_GLOB_PATTERN, { cwd: path.join(configPath, appWebappFolder) })).map((p) => (!p.startsWith("/") ? `/${p}` : p)),
 		};
 	} else {
 		const { graph, rootProject, rootReader } = await loadAppInfo();
