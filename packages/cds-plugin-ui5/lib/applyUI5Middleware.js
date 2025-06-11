@@ -50,7 +50,7 @@ module.exports = async function applyUI5Middleware(router, options) {
 
 	const logPerformance = options.logPerformance || false;
 
-	const determineConfigPath = function (configPath, configFile) {
+	const determineConfigPath = (configPath, configFile) => {
 		// ensure that the config path is absolute
 		if (!path.isAbsolute(configPath)) {
 			configPath = path.resolve(options.basePath, configPath);
@@ -160,30 +160,36 @@ module.exports = async function applyUI5Middleware(router, options) {
 		await middlewareManager.applyMiddleware(router);
 
 		// custom pages are not collectible in lazy loading mode
-		if (pages) {
-			// collect app pages from middlewares implementing the getAppPages
-			// which will only work if the middleware is executed synchronously
-			middlewareManager.middlewareExecutionOrder?.map((name) => {
-				const { middleware } = middlewareManager.middleware?.[name] || {};
-				if (typeof middleware?.getAppPages === "function") {
-					if (!options.lazy) {
-						const customAppPages = middleware.getAppPages();
-						if (Array.isArray(customAppPages)) {
-							pages.push(...customAppPages);
-						} else {
-							if (customAppPages) {
-								log.warn(`The middleware ${name} returns an unexpected value for "getAppPages". The value must be either undefined or string[]! Ignoring app pages from middleware!`);
-							}
-						}
-					} else {
-						log.warn(`The middleware ${name} returns a function for "getAppPages" but the lazy option is enabled. The function will not be executed!`);
-					}
-				}
-			});
+		if (!pages) {
+			return;
 		}
+		// collect app pages from middlewares implementing the getAppPages
+		// which will only work if the middleware is executed synchronously
+		middlewareManager.middlewareExecutionOrder?.map((name) => {
+			const { middleware } = middlewareManager.middleware?.[name] || {};
+			if (typeof middleware?.getAppPages === "function") {
+				if (!options.lazy) {
+					const customAppPages = middleware.getAppPages();
+					if (Array.isArray(customAppPages)) {
+						pages.push(...customAppPages);
+					} else {
+						if (customAppPages) {
+							log.warn(`The middleware ${name} returns an unexpected value for "getAppPages". The value must be either undefined or string[]! Ignoring app pages from middleware!`);
+						}
+					}
+				} else {
+					log.warn(`The middleware ${name} returns a function for "getAppPages" but the lazy option is enabled. The function will not be executed!`);
+				}
+			}
+		});
 	};
 
 	const determineWebappPath = (ui5ConfigPath) => {
+		if (ui5ConfigPath) {
+			log.warn("Path to config file could not be determined. Using default webapp path to lookup HTML pages");
+			return "webapp";
+		}
+
 		/** @type {{resources: {configuration: {paths: {webapp: string}}}}[]} */
 		let ui5Configs;
 		try {
