@@ -1,3 +1,6 @@
 test/__dist__/*
 !test/__dist__/.keepMe
 !test/__snap__/**/dist
+
+# Generated d.ts sources for testing
+lib/utils/generated_types
