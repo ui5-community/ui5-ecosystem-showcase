@@ -1,3 +1,4 @@
+const prettier = require("prettier");
 const { join } = require("path");
 const { writeFileSync, readFileSync } = require("fs");
 
@@ -26,7 +27,7 @@ handlebars.registerHelper("generateImports", function (module, info) {
 		imports += key;
 		imports += ", ";
 	}
-	imports = imports.replace(/,\s$/, `} from "${module}";`);
+	imports = imports.replace(/,\s$/, ` } from "${module}";`);
 	return imports;
 });
 
@@ -53,33 +54,56 @@ function loadAndCompileTemplate(templatePath) {
 
 const DTSSerializer = {
 	prepare: function (registryEntry) {
-		writeFileSync(
-			join(__dirname, "generated_types", `${registryEntry.qualifiedNamespace}.d.ts`),
-			Templates.module({
-				registryEntry,
-			}),
-			{ encoding: "utf-8" },
-		);
-		writeFileSync(
-			join(__dirname, "generated_types", `${registryEntry.qualifiedNamespace}Classes.d.ts`),
-			Templates.class({
-				classes: registryEntry.classes,
-			}),
-			{ encoding: "utf-8" },
-		);
+		prettier
+			.format(
+				Templates.module({
+					registryEntry,
+				}),
+				{ semi: false, parser: "typescript" },
+			)
+			.then((prettifiedTypes) => {
+				writeFileSync(join(__dirname, "generated_types", `${registryEntry.qualifiedNamespace}.d.ts`), prettifiedTypes, { encoding: "utf-8" });
+			});
+		prettier
+			.format(
+				Templates.class({
+					classes: registryEntry.classes,
+					BINDING_STRING_PLACEHOLDER: "`{${string}}`",
+				}),
+				{ semi: false, parser: "typescript" },
+			)
+			.then((prettifiedTypes) => {
+				writeFileSync(join(__dirname, "generated_types", `${registryEntry.qualifiedNamespace}Classes.d.ts`), prettifiedTypes, { encoding: "utf-8" });
+			});
 	},
 	initClass(classDef) {
-		function generateSuperclassInfo(settings) {
-			classDef._dts.imports[settings.module] ??= {};
-			// TODO think about generating a fixed import name
-			classDef._dts.imports[settings.module][settings.class] = { default: true };
-			classDef._dts.imports[settings.module][`$${settings.class}Settings`] = {};
-			classDef._dts.extends = settings.class;
-		}
-
 		classDef._dts = {
 			imports: {},
 			settings: {},
+			properties: {},
+			aggregations: {},
+			writeImports(importSource, namedImport, importOptions) {
+				this.imports[importSource] ??= {};
+				this.imports[importSource][namedImport] = Object.assign({}, importOptions);
+			},
+			writeProperties(propertyInfo) {
+				// Add default import for properties
+				this.writeImports("sap/ui/base/ManagedObject", "PropertyBindingInfo");
+
+				if (propertyInfo.import) {
+					this.writeImports(propertyInfo.import.package, propertyInfo.import.name);
+				}
+				this.properties[propertyInfo.name] = Object.assign({}, propertyInfo);
+			},
+			writeAggregations(aggregationInfo) {
+				// Add default import for properties
+				this.writeImports("sap/ui/base/ManagedObject", "AggregationBindingInfo");
+
+				if (aggregationInfo.import) {
+					this.writeImports(aggregationInfo.import.package, aggregationInfo.import.name);
+				}
+				this.aggregations[aggregationInfo.name] = Object.assign({}, aggregationInfo);
+			},
 		};
 
 		if (classDef.superclass) {
@@ -99,14 +123,29 @@ const DTSSerializer = {
 			if (classDef._dts.implementsMarker) {
 				classDef._dts.implements = classDef._dts.implementsMarker.map((interfaceDef) => interfaceDef.name);
 				for (const interfaceDef of classDef._dts.implementsMarker) {
-					classDef._dts.imports[interfaceDef.package] ??= {};
-					classDef._dts.imports[interfaceDef.package][interfaceDef.name] = {};
+					classDef._dts.writeImports(interfaceDef.package, interfaceDef.name);
 				}
 			}
-			generateSuperclassInfo(superclassSettings);
+			// generateSuperclassInfo(superclassSettings);
+			classDef._dts.writeImports(superclassSettings.module, superclassSettings.class, { default: true });
+			classDef._dts.writeImports(superclassSettings.module, `$${superclassSettings.class}Settings`);
+			classDef._dts.extends = superclassSettings.class;
 		}
 	},
 
+	// classDef._dts["imports"]['sap/ui/core/webc/WebComponent']["WebComponent"] = {default: true}
+	// classDef._dts["imports"]['@ui5/webcomponents-fiori']["SideContentPosition"] = {}
+	// classDef._dts["properties"]["sideContentPosition"] = { typeImportRef: "SideContentPosition" }
+
+	// classDef._dts["imports"]['sap/ui/core/library']["CSSSize"] = {}
+	// classDef._dts["properties"]["width"] = { typeImportRef: "CSSSize" }
+	// classDef._dts["properties"]["height"] = { typeImportRef: "CSSSize" }
+
+	// classDef._dts["imports"]['sap/ui/core/library']["CSSSize"] = { importAs: "sap_ui_core_CSSSize" }
+	// classDef._dts["properties"]["width"] = { typeImportRef: "sap_ui_core_CSSSize" }
+
+	// classDef._dts["imports"]['sap/ui/core/library']["CSSSize"] = {}
+	// classDef._dts["properties"]["width"] = { typeImportRef: "sap_ui_core_library_CSSSize" }
 	writeDts(classDef, entityType, entityDef) {
 		// we clone the objects here to prevent accidental side effects
 		classDef._dts[entityType][entityDef.name] = Object.assign({}, entityDef);

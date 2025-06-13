@@ -119,7 +119,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				// load the dependent Web Component packages
 				const libraryDependencies = [];
 				[...Object.keys(packageJson.dependencies || {}), ...Object.keys(packageJson.optionalDependencies || {})].forEach((dep) => {
-					console.log(`‼️ Load of npm package ${dep} as dependency of ${npmPackage}`);
+					// console.log(`‼️ Load of npm package ${dep} as dependency of ${npmPackage}`);
 					const package = loadNpmPackage(dep, emitFile);
 					if (package) {
 						libraryDependencies.push(package.namespace);
@@ -130,7 +130,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				if (metadataPath) {
 					const customElementsMetadata = JSON.parse(readFileSync(metadataPath, { encoding: "utf-8" }));
 
-					console.log(`‼️ WebComponentRegistry.register will be called for ${npmPackage}`);
+					// console.log(`‼️ WebComponentRegistry.register will be called for ${npmPackage}`);
 					// first time registering a new Web Component package
 					registryEntry = WebComponentRegistry.register({
 						customElementsMetadata,
@@ -141,7 +141,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 						npmPackagePath,
 						version: packageJson.version,
 					});
-					console.log(`‼️ WebComponentRegistry.register call for ${npmPackage} finished in rollup`);
+					// console.log(`‼️ WebComponentRegistry.register call for ${npmPackage} finished in rollup`);
 
 					// assign the dependencies
 					registryEntry.dependencies = libraryDependencies;
@@ -168,7 +168,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 		if (npmPackage !== "@ui5/webcomponents-base" && (clazz = WebComponentRegistry.getClassDefinition(source))) {
 			return clazz;
 		}
-		console.log(`‼️ Initial load of npm package ${npmPackage}`);
+		// console.log(`‼️ Initial load of npm package ${npmPackage}`);
 		const registryEntry = loadNpmPackage(npmPackage, emitFile);
 		if (registryEntry) {
 			const metadata = registryEntry;
