@@ -213,9 +213,9 @@ class RegistryEntry {
 				return "float";
 			}
 			// HTMLElements are a valid type for event parameters
-			if (lowerCaseName === "htmlelement") {
-				return "HTMLElement";
-			}
+			// if (lowerCaseName === "htmlelement") {
+			// 	return "HTMLElement";
+			// }
 			return lowerCaseName;
 		}
 		return "string";
@@ -282,48 +282,57 @@ class RegistryEntry {
 		const types = parsedType.split("|").map((s) => s.trim());
 
 		// case 1: "htmlelement | string" is an association, e.g. the @ui5-webcomponents/Popover#opener
-		if (types.includes("HTMLElement") && types.includes("string")) {
+		if (types.length === 2 && types.includes("HTMLElement") && types.includes("string")) {
 			detectedType = {
 				isAssociation: true,
 				ui5Type: "sap.ui.core.Control",
 			};
-		}
-
-		// UI5 only accepts one type for a property/aggregation, in this case we just use the first one as the primary type.
-		parsedType = types[0];
-
-		// [Complex types]:
-		// we have a reference to other things -> enums, interfaces, classes
-		if (typeInfo?.references?.length > 0) {
-			// Since the UI5 runtime only allows for 1 single type per property/aggregation, we take the first reference
-			parsedType = typeInfo.references[0].name || parsedType;
-
-			// case 2a: complex type is enum, interface or class
-			let complexType = this.#parseComplexType(parsedType, this);
-			if (!complexType) {
-				// case 2b: check for cross package type reference
-				const refPackage = WebComponentRegistry.getPackage(typeInfo.references[0].package);
-				if (refPackage) {
-					// TODO
-					complexType = this.#parseComplexType(parsedType, refPackage);
-				}
-			}
-
-			if (complexType) {
-				detectedType = complexType;
-			}
-
-			// case 3: Couldn't determine type => fallback to any
-			detectedType = {
-				isUnclear: true,
-				ui5Type: "any",
-			};
 		} else {
-			// case 4: primitive types
-			detectedType = {
-				ui5Type: this.#normalizeType(parsedType),
-			};
+			// UI5 only accepts one type for a property/aggregation, in this case we just use the first one as the primary type.
+			parsedType = types[0];
+
+			// [Complex types]:
+			// we have a reference to other things -> enums, interfaces, classes
+			if (typeInfo?.references?.length > 0) {
+				// Since the UI5 runtime only allows for 1 single type per property/aggregation, we take the first reference
+				parsedType = typeInfo.references[0].name || parsedType;
+
+				// case 2a: complex type is enum, interface or class
+				let complexType = this.#parseComplexType(parsedType, this);
+				if (!complexType && this.namespace !== typeInfo.references[0].package) {
+					// case 2b: check for cross package type reference
+					const refPackage = WebComponentRegistry.getPackage(typeInfo.references[0].package);
+					if (refPackage) {
+						complexType = this.#parseComplexType(parsedType, refPackage);
+					} else {
+						console.log(`Reference package '${typeInfo.references[0].package}' for complex type '${parsedType}' not found`);
+					}
+				}
+
+				if (complexType) {
+					detectedType = complexType;
+				}
+
+				// case 3: Couldn't determine type => fallback to any
+				detectedType = {
+					isUnclear: true,
+					ui5Type: "any",
+				};
+			} else if (parsedType === "HTMLElement") {
+				detectedType = {
+					packageName: "sap/ui/core/Control",
+					moduleType: "module:sap/ui/core/Control",
+					ui5Type: "sap.ui.core.Control",
+					isClass: true,
+				};
+			} else {
+				// case 4: primitive types
+				detectedType = {
+					ui5Type: this.#normalizeType(parsedType),
+				};
+			}
 		}
+
 		return Object.assign(complexTypeTemplate, detectedType);
 	}
 
@@ -486,8 +495,8 @@ class RegistryEntry {
 
 				classDef._dts.writeProperties({
 					name: propDef.name,
-					type: `${ui5TypeInfo.origType}${ui5TypeInfo.multiple ? "[]" : ""}`,
-					import: propDef.type.references?.[0],
+					// type: `${ui5TypeInfo.origType}${ui5TypeInfo.multiple ? "[]" : ""}`,
+					// import: propDef.type.references?.[0],
 					needsBindingString: !(ui5TypeInfo.origType === "string" && !ui5TypeInfo.multiple),
 				});
 			}
@@ -509,9 +518,7 @@ class RegistryEntry {
 	#processSlots(classDef, ui5metadata, slotDef) {
 		let aggregationName = slotDef.name;
 		let slotName = slotDef.name;
-
-		// should be the most relevant default type
-		let aggregationType = "sap.ui.core.Control";
+		let aggregationType;
 
 		// web component allows text node content
 		// TODO: How to figure this out "natively" without "_ui5propertyName"?
@@ -524,16 +531,10 @@ class RegistryEntry {
 			return;
 		}
 
-		let typeInfo = {
-			origType: "Control",
-			packageName: "sap/ui/core/Control",
-		};
-		if (slotDef._ui5type?.text !== "Array<HTMLElement>") {
-			typeInfo = this.#extractUi5Type(slotDef._ui5type);
-			if (typeInfo.isInterface || typeInfo.isClass) {
-				//console.log(`[interface/class type]: '${typeInfo.ui5Type}', multiple: ${typeInfo.multiple}`);
-				aggregationType = typeInfo.ui5Type;
-			}
+		const typeInfo = this.#extractUi5Type(slotDef._ui5type);
+		if (typeInfo.isInterface || typeInfo.isClass) {
+			//console.log(`[interface/class type]: '${typeInfo.ui5Type}', multiple: ${typeInfo.multiple}`);
+			aggregationType = typeInfo.ui5Type;
 		}
 
 		// The "default" slot will most likely be transformed into the "content" in UI5
@@ -564,7 +565,7 @@ class RegistryEntry {
 		});
 		// classDef._dts.writeAggregations({
 		// 	name: aggregationName,
-		// 	type: `${typeInfo.origType}[]`,
+		// 	type: typeInfo.origType,
 		// 	import: {
 		// 		package: typeInfo.isClass ? `${typeInfo.packageName}/${typeInfo.origType}` : typeInfo.packageName,
 		// 		name: typeInfo.origType
