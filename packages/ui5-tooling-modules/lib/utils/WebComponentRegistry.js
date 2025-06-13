@@ -282,7 +282,7 @@ class RegistryEntry {
 		const types = parsedType.split("|").map((s) => s.trim());
 
 		// case 1: "htmlelement | string" is an association, e.g. the @ui5-webcomponents/Popover#opener
-		if (types.length === 2 && types.includes("HTMLElement") && types.includes("string")) {
+		if (types.includes("HTMLElement") && types.includes("string")) {
 			detectedType = {
 				isAssociation: true,
 				ui5Type: "sap.ui.core.Control",
@@ -311,13 +311,13 @@ class RegistryEntry {
 
 				if (complexType) {
 					detectedType = complexType;
+				} else {
+					// case 3: Couldn't determine type => fallback to any
+					detectedType = {
+						isUnclear: true,
+						ui5Type: "any",
+					};
 				}
-
-				// case 3: Couldn't determine type => fallback to any
-				detectedType = {
-					isUnclear: true,
-					ui5Type: "any",
-				};
 			} else if (parsedType === "HTMLElement") {
 				detectedType = {
 					packageName: "sap/ui/core/Control",
