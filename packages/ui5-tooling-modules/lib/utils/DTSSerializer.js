@@ -62,7 +62,9 @@ const DTSSerializer = {
 				{ semi: false, parser: "typescript" },
 			)
 			.then((prettifiedTypes) => {
-				writeFileSync(join(__dirname, "generated_types", `${registryEntry.qualifiedNamespace}.d.ts`), prettifiedTypes, { encoding: "utf-8" });
+				if (prettifiedTypes) {
+					writeFileSync(join(__dirname, "generated_types", `${registryEntry.qualifiedNamespace}.d.ts`), prettifiedTypes, { encoding: "utf-8" });
+				}
 			});
 		prettier
 			.format(
@@ -73,7 +75,9 @@ const DTSSerializer = {
 				{ semi: false, parser: "typescript" },
 			)
 			.then((prettifiedTypes) => {
-				writeFileSync(join(__dirname, "generated_types", `${registryEntry.qualifiedNamespace}Classes.d.ts`), prettifiedTypes, { encoding: "utf-8" });
+				if (prettifiedTypes) {
+					writeFileSync(join(__dirname, "generated_types", `${registryEntry.qualifiedNamespace}Classes.d.ts`), prettifiedTypes, { encoding: "utf-8" });
+				}
 			});
 	},
 	initClass(classDef) {
@@ -87,21 +91,32 @@ const DTSSerializer = {
 				this.imports[importSource][namedImport] = Object.assign({}, importOptions);
 			},
 			writeProperties(propertyInfo) {
+				propertyInfo.needsBindingString = true;
 				// Add default import for properties
 				this.writeImports("sap/ui/base/ManagedObject", "PropertyBindingInfo");
 
-				if (propertyInfo.import) {
-					this.writeImports(propertyInfo.import.package, propertyInfo.import.name);
-				}
+				propertyInfo.types.forEach((type) => {
+					if (type.ui5Type === "string") {
+						propertyInfo.needsBindingString = false;
+					}
+					if (type.packageName) {
+						this.writeImports(type.packageName, type.name);
+					}
+				});
+				// if (propertyInfo.import) {
+				// 	this.writeImports(propertyInfo.import.package, propertyInfo.import.name);
+				// }
 				this.properties[propertyInfo.name] = Object.assign({}, propertyInfo);
 			},
 			writeAggregations(aggregationInfo) {
 				// Add default import for properties
 				this.writeImports("sap/ui/base/ManagedObject", "AggregationBindingInfo");
 
-				if (aggregationInfo.import) {
-					this.writeImports(aggregationInfo.import.package, aggregationInfo.import.name);
-				}
+				aggregationInfo.types.forEach((type) => {
+					if (type.packageName) {
+						this.writeImports(type.packageName, type.name);
+					}
+				});
 				this.aggregations[aggregationInfo.name] = Object.assign({}, aggregationInfo);
 			},
 		};

@@ -11,7 +11,10 @@ declare module "{{{this._ui5QualifiedNameSlashes}}}" {
 
 		export interface ${{{this.name}}}Settings extends ${{{this._dts.extends}}}Settings {
 			{{#each this._dts.properties}}
-				{{{@key}}}?: {{{this.type}}} | PropertyBindingInfo {{#if this.needsBindingString}}| {{{@root.BINDING_STRING_PLACEHOLDER}}}{{/if}};
+				{{{@key}}}?: {{#each this.types}}{{{name}}}{{#if multiple}}[]{{/if}} | {{/each}} PropertyBindingInfo {{#if this.needsBindingString}}| {{{@root.BINDING_STRING_PLACEHOLDER}}}{{/if}};
+			{{/each}}
+			{{#each this._dts.aggregations}}
+				{{{@key}}}?: {{#each this.types}}{{#if multiple}}{{{name}}}[] | {{/if}}{{{name}}} | {{/each}} AggregationBindingInfo | {{{@root.BINDING_STRING_PLACEHOLDER}}};
 			{{/each}}
 		}
 
