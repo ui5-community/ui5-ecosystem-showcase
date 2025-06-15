@@ -8,7 +8,7 @@
   xmlns:ca="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
   xmlns:webc="@ui5/webcomponents/dist"
   xmlns:fiori="@ui5/webcomponents-fiori/dist"
-  xmlns:ai="@ui5/webcomponents/dist"
+  xmlns:ai="@ui5/webcomponents-ai/dist"
   core:require="{
     Formatter: 'ui5/ecosystem/demo/webctsapp/model/Formatter',
     iconUI5: '@ui5/webcomponents-icons/dist/sap-ui5',
@@ -28,13 +28,11 @@
     </headerContent> -->
     <!-- playground-fold-end -->
 
-    <!--
-		<ai:Button id="myAiButton" state="generate">
-			<ai:ButtonState name="generate" text="Generate" icon="ai"></ai:ButtonState>
-			<ai:ButtonState name="generating" text="Stop Generating" icon="stop"></ai:ButtonState>
-			<ai:ButtonState name="revise" text="Revise" icon="ai" endIcon="navigation-down-arrow"></ai:ButtonState>
-		</ai:Button>
-    -->
+    <ai:Button id="myAiButton" state="generate">
+      <ai:ButtonState name="generate" text="Generate" icon="ai" />
+      <ai:ButtonState name="generating" text="Stop Generating" icon="stop" />
+      <ai:ButtonState name="revise" text="Revise" icon="ai" endIcon="navigation-down-arrow" />
+    </ai:Button>
 
     <fiori:ShellBar id="shellbar" primaryTitle="{formatter: 'Formatter.formatValue', path: 'i18n>appTitle'}" profileClick=".onProfileClick">
       <fiori:customData>

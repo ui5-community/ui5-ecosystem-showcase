@@ -3,6 +3,7 @@ const { readFileSync, existsSync } = require("fs");
 const { createHash } = require("crypto");
 
 const JSDocSerializer = require("./utils/JSDocSerializer");
+const WebComponentRegistryHelper = require("./utils/WebComponentRegistryHelper");
 const { lt, gte } = require("semver");
 const { compile } = require("handlebars");
 
@@ -117,6 +118,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				// load the dependent Web Component packages
 				const libraryDependencies = [];
 				[...Object.keys(packageJson.dependencies || {}), ...Object.keys(packageJson.optionalDependencies || {})].forEach((dep) => {
+					// console.log(`‼️ Load of npm package ${dep} as dependency of ${npmPackage}`);
 					const package = loadNpmPackage(dep, emitFile);
 					if (package) {
 						libraryDependencies.push(package.namespace);
@@ -127,6 +129,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				if (metadataPath) {
 					const customElementsMetadata = JSON.parse(readFileSync(metadataPath, { encoding: "utf-8" }));
 
+					// console.log(`‼️ WebComponentRegistry.register will be called for ${npmPackage}`);
 					// first time registering a new Web Component package
 					registryEntry = WebComponentRegistry.register({
 						customElementsMetadata,
@@ -137,6 +140,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 						npmPackagePath,
 						version: packageJson.version,
 					});
+					// console.log(`‼️ WebComponentRegistry.register call for ${npmPackage} finished in rollup`);
 
 					// assign the dependencies
 					registryEntry.dependencies = libraryDependencies;
@@ -163,7 +167,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 		if (npmPackage !== "@ui5/webcomponents-base" && (clazz = WebComponentRegistry.getClassDefinition(source))) {
 			return clazz;
 		}
-
+		// console.log(`‼️ Initial load of npm package ${npmPackage}`);
 		const registryEntry = loadNpmPackage(npmPackage, emitFile);
 		if (registryEntry) {
 			const metadata = registryEntry;
@@ -254,7 +258,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			log.verbose(`Emitting Web Component wrapper: ${resolvedSource}`);
 
 			// determine whether the clazz is based on the UI5Element superclass
-			const isClazzUI5Element = WebComponentRegistry.isUI5ElementSubclass(clazz);
+			const isClazzUI5Element = WebComponentRegistryHelper.isUI5ElementSubclass(clazz);
 			if (ui5WebCScopeSuffix && !isClazzUI5Element) {
 				log.warn(`The Web Component "${source}" doesn't support scoping as it is not extending UI5Element!`);
 			}
@@ -286,7 +290,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			// Determine the superclass UI5 module name and import it
 			let webcBaseClass = "sap/ui/core/webc/WebComponent";
 			const ui5Superclass = clazz.superclass;
-			if (ui5Superclass?._ui5metadata && !(ui5Superclass.namespace === "@ui5/webcomponents-base" && ui5Superclass.name === "UI5Element")) {
+			if (ui5Superclass?._ui5metadata && !WebComponentRegistryHelper.isUI5Element(ui5Superclass)) {
 				const { module } = clazz.superclass;
 				const { namespace } = clazz.superclass._ui5metadata;
 				webcBaseClass = `${namespace}/${module.slice(0, -3)}`;
@@ -454,7 +458,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				let nonUI5TagsToRegister;
 				if (ui5WebCScopeSuffix) {
 					nonUI5TagsToRegister = Object.values(customElements)
-						.filter((element) => WebComponentRegistry.isUI5ElementSubclass(element))
+						.filter((element) => WebComponentRegistryHelper.isUI5ElementSubclass(element))
 						.map((element) => element.tagName)
 						.filter((tag) => (tag ? !tag.startsWith("ui5-") : false));
 					if (nonUI5TagsToRegister.length === 0) {
