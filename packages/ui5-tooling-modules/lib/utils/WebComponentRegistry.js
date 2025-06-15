@@ -224,6 +224,7 @@ class RegistryEntry {
 	#parseComplexType(type, packageRef) {
 		if (packageRef.interfaces[type]) {
 			return {
+				name: type,
 				ui5Type: packageRef.prefixns(type),
 				moduleType: packageRef.prefixnsAsModule(type),
 				packageName: packageRef.namespace,
@@ -231,6 +232,7 @@ class RegistryEntry {
 			};
 		} else if (packageRef.classes[type]) {
 			return {
+				name: type,
 				ui5Type: packageRef.classes[type]._ui5QualifiedName,
 				moduleType: `module:${packageRef.classes[type]._ui5QualifiedNameSlashes}`,
 				packageName: packageRef.namespace,
@@ -238,6 +240,7 @@ class RegistryEntry {
 			};
 		} else if (packageRef.enums[type]) {
 			return {
+				name: type,
 				ui5Type: packageRef.prefixns(type),
 				moduleType: packageRef.prefixnsAsModule(type),
 				packageName: packageRef.namespace,
@@ -263,8 +266,9 @@ class RegistryEntry {
 		 * - Array<typeA> | Array<typeB>
 		 * - Array<typeA | typeB>
 		 * - Array<typeA | ...typeN> | ...typeN
-		 **/
+		 */
 		let detectedType;
+		const allTypes = [];
 
 		// Assumption, that there is either a multiple/array type or a 'single' type
 		// In case there could be a combination of 'Array<typeA> | ...typeN' this needs to be adjusted!
@@ -284,56 +288,68 @@ class RegistryEntry {
 		// case 1: "htmlelement | string" is an association, e.g. the @ui5-webcomponents/Popover#opener
 		if (types.includes("HTMLElement") && types.includes("string")) {
 			detectedType = {
+				name: "Control",
 				isAssociation: true,
 				ui5Type: "sap.ui.core.Control",
 			};
+			allTypes.push(Object.assign(complexTypeTemplate, detectedType));
 		} else {
 			// UI5 only accepts one type for a property/aggregation, in this case we just use the first one as the primary type.
-			parsedType = types[0];
+			// parsedType = types[0];
 
-			// [Complex types]:
-			// we have a reference to other things -> enums, interfaces, classes
-			if (typeInfo?.references?.length > 0) {
-				// Since the UI5 runtime only allows for 1 single type per property/aggregation, we take the first reference
-				parsedType = typeInfo.references[0].name || parsedType;
-
-				// case 2a: complex type is enum, interface or class
-				let complexType = this.#parseComplexType(parsedType, this);
-				if (!complexType && this.namespace !== typeInfo.references[0].package) {
-					// case 2b: check for cross package type reference
-					const refPackage = WebComponentRegistry.getPackage(typeInfo.references[0].package);
-					if (refPackage) {
-						complexType = this.#parseComplexType(parsedType, refPackage);
-					} else {
-						console.log(`Reference package '${typeInfo.references[0].package}' for complex type '${parsedType}' not found`);
-					}
+			types.forEach((type) => {
+				if (type === "undefined") {
+					return;
 				}
+				// [Complex types]:
+				// we have a reference to other things -> enums, interfaces, classes
+				if (typeInfo?.references?.length > 0 || this.classes[type] || this.enums[type] || this.interfaces[type]) {
+					// Since the UI5 runtime only allows for 1 single type per property/aggregation, we take the first reference
+					type = typeInfo?.references?.[0]?.name || type;
 
-				if (complexType) {
-					detectedType = complexType;
-				} else {
-					// case 3: Couldn't determine type => fallback to any
+					// case 2a: complex type is enum, interface or class
+					let complexType = this.#parseComplexType(type, this);
+					if (!complexType && this.namespace !== typeInfo.references[0].package) {
+						// case 2b: check for cross package type reference
+						const refPackage = WebComponentRegistry.getPackage(typeInfo.references[0].package);
+						if (refPackage) {
+							complexType = this.#parseComplexType(type, refPackage);
+						} else {
+							console.log(`Reference package '${typeInfo.references[0].package}' for complex type '${type}' not found`);
+						}
+					}
+
+					if (complexType) {
+						detectedType = complexType;
+					} else {
+						// case 3: Couldn't determine type => fallback to any
+						detectedType = {
+							name: type,
+							isUnclear: true,
+							ui5Type: "any",
+						};
+					}
+				} else if (type === "HTMLElement") {
 					detectedType = {
-						isUnclear: true,
-						ui5Type: "any",
+						name: "Control",
+						packageName: "sap/ui/core/Control",
+						moduleType: "module:sap/ui/core/Control",
+						ui5Type: "sap.ui.core.Control",
+						isClass: true,
+					};
+				} else {
+					// case 4: primitive types
+					detectedType = {
+						name: type,
+						ui5Type: this.#normalizeType(type),
 					};
 				}
-			} else if (parsedType === "HTMLElement") {
-				detectedType = {
-					packageName: "sap/ui/core/Control",
-					moduleType: "module:sap/ui/core/Control",
-					ui5Type: "sap.ui.core.Control",
-					isClass: true,
-				};
-			} else {
-				// case 4: primitive types
-				detectedType = {
-					ui5Type: this.#normalizeType(parsedType),
-				};
-			}
+				allTypes.push(Object.assign({}, complexTypeTemplate, detectedType));
+			});
 		}
 
-		return Object.assign(complexTypeTemplate, detectedType);
+		// return Object.assign(complexTypeTemplate, detectedType);
+		return allTypes;
 	}
 
 	#castDefaultValue(defaultValue, ui5TypeInfo) {
@@ -427,9 +443,10 @@ class RegistryEntry {
 	#processMembers(classDef, ui5metadata, propDef) {
 		// field -> property or association
 		if (propDef.kind === "field") {
-			let ui5TypeInfo = this.#extractUi5Type(propDef.type);
+			let ui5TypesInfo = this.#extractUi5Type(propDef.type);
+			let ui5TypeInfo = ui5TypesInfo[0];
 
-			// ACC attributes have webc internal typing and will be defaulted to "object" ob UI5 side.
+			// ACC attributes have webc internal typing and will be defaulted to "object" on UI5 side.
 			if (propDef.name === "accessibilityAttributes") {
 				ui5TypeInfo.ui5Type = "object";
 				ui5TypeInfo.isUnclear = false;
@@ -497,7 +514,8 @@ class RegistryEntry {
 					name: propDef.name,
 					// type: `${ui5TypeInfo.origType}${ui5TypeInfo.multiple ? "[]" : ""}`,
 					// import: propDef.type.references?.[0],
-					needsBindingString: !(ui5TypeInfo.origType === "string" && !ui5TypeInfo.multiple),
+					types: ui5TypesInfo,
+					// needsBindingString: !(ui5TypeInfo.origType === "string" && !ui5TypeInfo.multiple),
 				});
 			}
 		} else if (propDef.kind === "method") {
@@ -531,7 +549,8 @@ class RegistryEntry {
 			return;
 		}
 
-		const typeInfo = this.#extractUi5Type(slotDef._ui5type);
+		const typesInfo = this.#extractUi5Type(slotDef._ui5type);
+		const typeInfo = typesInfo[0];
 		if (typeInfo.isInterface || typeInfo.isClass) {
 			//console.log(`[interface/class type]: '${typeInfo.ui5Type}', multiple: ${typeInfo.multiple}`);
 			aggregationType = typeInfo.ui5Type;
@@ -563,14 +582,10 @@ class RegistryEntry {
 			description: slotDef.description,
 			moduleType: typeInfo?.moduleType,
 		});
-		// classDef._dts.writeAggregations({
-		// 	name: aggregationName,
-		// 	type: typeInfo.origType,
-		// 	import: {
-		// 		package: typeInfo.isClass ? `${typeInfo.packageName}/${typeInfo.origType}` : typeInfo.packageName,
-		// 		name: typeInfo.origType
-		// 	}
-		// });
+		classDef._dts.writeAggregations({
+			name: aggregationName,
+			types: typesInfo,
+		});
 	}
 
 	/**
@@ -584,7 +599,8 @@ class RegistryEntry {
 		const parsedParams = {};
 		const jsDocParams = {};
 		parameters?.forEach((param) => {
-			const type = this.#extractUi5Type(param.type);
+			const types = this.#extractUi5Type(param.type);
+			const type = types[0];
 			parsedParams[param.name] = {
 				type: type.ui5Type,
 			};
@@ -599,7 +615,8 @@ class RegistryEntry {
 		const parameters = methodDef.parameters;
 		const jsDocParams = {};
 		parameters?.forEach((param) => {
-			const type = this.#extractUi5Type(param.type);
+			const types = this.#extractUi5Type(param.type);
+			const type = types[0];
 			jsDocParams[param.name] = {
 				name: param.name,
 				type: type.ui5Type,
