@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-copyright@3.2.1...ui5-task-copyright@3.3.0) (2025-06-16)
+
+
+### Features
+
+* **ui5-task-copyright:** inject copyright via env variable ([#1232](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1232)) ([ce0e130](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ce0e13055f866dcd220166b51585c6c597dd3d84))
+
+
+
+
+
 ## [3.2.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-task-copyright@3.2.0...ui5-task-copyright@3.2.1) (2025-03-19)
 
 **Note:** Version bump only for package ui5-task-copyright
