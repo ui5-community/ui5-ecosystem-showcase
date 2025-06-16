@@ -37,7 +37,7 @@ function startsWithCopyright(file, copyrightString) {
 	return false;
 }
 
-test.only("Inline copyright", async (t) => {
+test("Inline copyright", async (t) => {
 	const ui5 = { yaml: path.resolve("./test/__assets__/ui5.inline.yaml") };
 	spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
 		stdio: "inherit", // > don't include stdout in test output,
@@ -183,4 +183,52 @@ test("No copyright", async (t) => {
 	t.false(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "controller/Main-dbg.controller.js"), copyright));
 	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "view/App.view.xml"), copyright));
 	t.false(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "view/Main.view.xml"), copyright));
+});
+
+test("Copyright from env", async (t) => {
+	const ui5 = { yaml: path.resolve("./test/__assets__/ui5.file-env.yaml") };
+	const copyright = `Copyright ${new Date().getFullYear()} UI5 Community\nAll rights reserved.`;
+	spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
+		stdio: "inherit", // > don't include stdout in test output,
+		shell: true,
+		cwd: path.resolve(__dirname, "../../../showcases/ui5-tsapp"),
+		env: Object.assign({}, process.env, {
+			ui5_task_copyright__copyright: copyright,
+		}),
+	});
+
+	// check files to include copyright
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "Component.js"), copyright));
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "Component-dbg.js"), copyright));
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "controller/App.controller.js"), copyright));
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "controller/App-dbg.controller.js"), copyright));
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "controller/Main.controller.js"), copyright));
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "controller/Main-dbg.controller.js"), copyright));
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "view/App.view.xml"), copyright));
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "view/Main.view.xml"), copyright));
+});
+
+test("Copyright from env + custom current year", async (t) => {
+	const ui5 = { yaml: path.resolve("./test/__assets__/ui5.file-env.yaml") };
+	const currentYear = "2021";
+	const copyright = `Copyright ${currentYear} UI5 Community\nAll rights reserved.`;
+	spawnSync(`ui5 build --config ${ui5.yaml} --dest ${t.context.tmpDir}/dist`, {
+		stdio: "inherit", // > don't include stdout in test output,
+		shell: true,
+		cwd: path.resolve(__dirname, "../../../showcases/ui5-tsapp"),
+		env: Object.assign({}, process.env, {
+			ui5_task_copyright__copyright: copyright,
+			ui5_task_copyright__current_year: currentYear,
+		}),
+	});
+
+	// check files to include copyright
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "Component.js"), copyright));
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "Component-dbg.js"), copyright));
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "controller/App.controller.js"), copyright));
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "controller/App-dbg.controller.js"), copyright));
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "controller/Main.controller.js"), copyright));
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "controller/Main-dbg.controller.js"), copyright));
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "view/App.view.xml"), copyright));
+	t.true(startsWithCopyright(path.resolve(t.context.tmpDir, "dist", "view/Main.view.xml"), copyright));
 });

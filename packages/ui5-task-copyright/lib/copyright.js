@@ -13,7 +13,7 @@ const { XMLParser } = require("fast-xml-parser");
  */
 module.exports = async ({ log, workspace, options }) => {
 	// disable task if no copyright is configured
-	if (!options?.configuration?.copyright && !process.env.ui5_task_copyright__file) {
+	if (!options?.configuration?.copyright && !process.env.ui5_task_copyright__file && !process.env.ui5_task_copyright__copyright) {
 		return Promise.resolve();
 	}
 
@@ -24,7 +24,7 @@ module.exports = async ({ log, workspace, options }) => {
 			currentYearPlaceholder: "currentYear",
 			currentYear: new Date().getFullYear(),
 		},
-		options.configuration
+		options.configuration,
 	);
 
 	// the environment variable UI5_TASK_COPYRIGHT_PLACEHOLDER_* can be used to override the placeholders
@@ -59,9 +59,9 @@ module.exports = async ({ log, workspace, options }) => {
 	// determine the actual copyright or default it
 	let { copyright, excludePatterns } = Object.assign(
 		{
-			copyright: `\${${copyrightPlaceholder}}`,
+			copyright: process.env.ui5_task_copyright__copyright || `\${${copyrightPlaceholder}}`,
 		},
-		options.configuration
+		options.configuration,
 	);
 
 	// the environment variable ui5_task_copyright__file can be used to specify a file path for the copyright
@@ -127,7 +127,7 @@ module.exports = async ({ log, workspace, options }) => {
 
 				// write the resource
 				await workspace.write(resource);
-			})
+			}),
 		);
 	}
 
@@ -176,7 +176,7 @@ module.exports = async ({ log, workspace, options }) => {
 
 				// write the resource
 				await workspace.write(resource);
-			})
+			}),
 		);
 	}
 };
