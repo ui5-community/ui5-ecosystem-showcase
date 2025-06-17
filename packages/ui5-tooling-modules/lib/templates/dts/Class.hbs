@@ -1,22 +1,107 @@
 {{#each classes}}
 {{#if this.superclass}}
 declare module "{{{this._ui5QualifiedNameSlashes}}}" {
-	// Default imports
+
+	/**
+	 * Default imports
+	 */
 	import { default as WebComponentMetadata } from "sap/ui/core/webc/WebComponentMetadata";
 
-	// Dynamic imports
 	{{#each this._dts.imports}}
+		{{#if @first}}
+
+		/**
+		 * Dynamic imports
+		 */
+		{{/if}}
 		{{{generateImports @key this}}}
+
 	{{/each}}
 
 		export interface ${{{this.name}}}Settings extends ${{{this._dts.extends}}}Settings {
 			{{#each this._dts.properties}}
-				{{{@key}}}?: {{#each this.types}}{{{name}}}{{#if multiple}}[]{{/if}} | {{/each}} PropertyBindingInfo {{#if this.needsBindingString}}| {{{@root.BINDING_STRING_PLACEHOLDER}}}{{/if}};
+				{{#if @first}}
+
+				/**
+				 * Properties
+				 */
+
+				{{/if}}
+				{{#if this.description}}
+
+				/**
+				 * {{{this.description}}}
+				 */
+				{{/if}}
+				{{{@key}}}?: {{{generatePropertySettings this.types}}}
 			{{/each}}
 			{{#each this._dts.aggregations}}
-				{{{@key}}}?: {{#each this.types}}{{#if multiple}}{{{name}}}[] | {{/if}}{{{name}}} | {{/each}} AggregationBindingInfo | {{{@root.BINDING_STRING_PLACEHOLDER}}};
+				{{#if @first}}
+
+				/**
+				 * Aggregations
+				 */
+
+				{{/if}}
+				{{#if this.description}}
+
+				/**
+				 * {{{this.description}}}
+				 */
+				{{/if}}
+				{{{@key}}}?: {{{generateAggregationSettings this.types}}}
+			{{/each}}
+			{{#each this._dts.associations}}
+				{{#if @first}}
+
+				/**
+				 * Associations
+				 */
+
+				{{/if}}
+				{{#if this.description}}
+
+				/**
+				 * {{{this.description}}}
+				 */
+				{{/if}}
+				{{{@key}}}?: {{{generateAssociationSettings this.types}}}
+			{{/each}}
+			{{#each this._dts.events}}
+				{{#if @first}}
+
+				/**
+				 * Events
+				 */
+
+				{{/if}}
+				{{#if this.description}}
+
+				/**
+				 * {{{this.description}}}
+				 */
+				{{/if}}
+				{{{@key}}}?: (oEvent: {{{generateEventSettings ../name @key}}}) => void
 			{{/each}}
 		}
+		{{#each this._dts.events}}
+			export interface {{{generateEventSettings ../name @key}}}Parameters {
+				{{#each this.parameters}}
+					{{#if this.dtsParamDescription}}
+
+					/**
+					 * {{{this.dtsParamDescription}}}
+					 */
+					{{/if}}
+					{{{@key}}}?: {{{serializeTypeList this.types}}}
+				{{/each}}
+			}
+
+			export type {{{generateEventSettings ../name @key}}} = Event<
+				{{{generateEventSettings ../name @key}}}Parameters,
+				{{{../name}}}
+			>;
+		{{/each}}
 
 		export default class {{{this.name}}} extends {{{this._dts.extends}}}
 	{{#if this._dts.implements}}

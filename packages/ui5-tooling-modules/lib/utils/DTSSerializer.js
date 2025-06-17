@@ -35,6 +35,49 @@ handlebars.registerHelper("join", function (array) {
 	return array.join(", ");
 });
 
+handlebars.registerHelper("generateEventSettings", function (className, eventName) {
+	return `${className}$${eventName.replace(/^([a-z])/, (g) => g.toUpperCase())}Event`;
+});
+
+handlebars.registerHelper("generateAggregationSettings", function (types) {
+	let result = "";
+	for (const type of types) {
+		result += `${type.multiple ? `Array<${type.types.map((t) => t.dtsType).join(" | ")}> | ${type.types.map((t) => t.dtsType).join(" | ")}` : type.dtsType} | `;
+	}
+	result += "AggregationBindingInfo | `{${string}}`";
+	return result;
+});
+
+handlebars.registerHelper("generatePropertySettings", function (types) {
+	let result = "";
+	for (const type of types) {
+		result += `${type.multiple ? `Array<${type.types.map((t) => t.dtsType).join(" | ")}>` : type.dtsType} |`;
+	}
+	result += `PropertyBindingInfo${this.needsBindingString ? " | `{${string}}`" : ""}`;
+	return result;
+});
+
+handlebars.registerHelper("generateAssociationSettings", function (types) {
+	let result = "";
+	let multiple = false;
+	for (const type of types) {
+		multiple = multiple || type.multiple;
+		result += `${type.multiple ? `Array<${type.types.map((t) => t.dtsType).join(" | ")}> | ${type.types.map((t) => t.dtsType).join(" | ")}` : type.dtsType} |`;
+	}
+	if (!result.includes("string")) {
+		result += `${multiple ? " Array<string> | " : ""}string;`;
+	}
+	return result.replace(/\s\|$/, ";");
+});
+
+handlebars.registerHelper("serializeTypeList", function (types) {
+	let result = "";
+	for (const type of types) {
+		result += `${type.multiple ? `Array<${type.types.map((t) => t.dtsType).join(" | ")}>` : type.dtsType} |`;
+	}
+	return result.replace(/\s\|$/, ";");
+});
+
 /**
  * All needed HBS templates for serializing JSDoc comments.
  */
@@ -54,31 +97,19 @@ function loadAndCompileTemplate(templatePath) {
 
 const DTSSerializer = {
 	prepare: function (registryEntry) {
-		prettier
-			.format(
-				Templates.module({
-					registryEntry,
-				}),
-				{ semi: false, parser: "typescript" },
-			)
-			.then((prettifiedTypes) => {
-				if (prettifiedTypes) {
-					writeFileSync(join(__dirname, "generated_types", `${registryEntry.qualifiedNamespace}.d.ts`), prettifiedTypes, { encoding: "utf-8" });
-				}
+		const typeFile =
+			Templates.module({
+				registryEntry,
+			}) +
+			Templates.class({
+				classes: registryEntry.classes,
+				BINDING_STRING_PLACEHOLDER: "`{${string}}`",
 			});
-		prettier
-			.format(
-				Templates.class({
-					classes: registryEntry.classes,
-					BINDING_STRING_PLACEHOLDER: "`{${string}}`",
-				}),
-				{ semi: false, parser: "typescript" },
-			)
-			.then((prettifiedTypes) => {
-				if (prettifiedTypes) {
-					writeFileSync(join(__dirname, "generated_types", `${registryEntry.qualifiedNamespace}Classes.d.ts`), prettifiedTypes, { encoding: "utf-8" });
-				}
-			});
+		prettier.format(typeFile, { semi: false, parser: "typescript" }).then((prettifiedTypes) => {
+			if (prettifiedTypes) {
+				writeFileSync(join(__dirname, "generated_types", `${registryEntry.qualifiedNamespace}.d.ts`), prettifiedTypes, { encoding: "utf-8" });
+			}
+		});
 	},
 	initClass(classDef) {
 		classDef._dts = {
@@ -86,6 +117,8 @@ const DTSSerializer = {
 			settings: {},
 			properties: {},
 			aggregations: {},
+			associations: {},
+			events: {},
 			writeImports(importSource, namedImport, importOptions) {
 				this.imports[importSource] ??= {};
 				this.imports[importSource][namedImport] = Object.assign({}, importOptions);
@@ -96,28 +129,68 @@ const DTSSerializer = {
 				this.writeImports("sap/ui/base/ManagedObject", "PropertyBindingInfo");
 
 				propertyInfo.types.forEach((type) => {
-					if (type.ui5Type === "string") {
+					if (type.dtsType === "string") {
 						propertyInfo.needsBindingString = false;
 					}
 					if (type.packageName) {
-						this.writeImports(type.packageName, type.name);
+						this.writeImports(type.packageName, type.dtsType);
 					}
 				});
-				// if (propertyInfo.import) {
-				// 	this.writeImports(propertyInfo.import.package, propertyInfo.import.name);
-				// }
 				this.properties[propertyInfo.name] = Object.assign({}, propertyInfo);
 			},
 			writeAggregations(aggregationInfo) {
-				// Add default import for properties
+				const addImportsFromTypes = (type) => {
+					if (type.packageName) {
+						this.writeImports(type.packageName, type.dtsType, { default: type.isClass });
+					}
+				};
+				// Add default import for aggregations
 				this.writeImports("sap/ui/base/ManagedObject", "AggregationBindingInfo");
 
 				aggregationInfo.types.forEach((type) => {
-					if (type.packageName) {
-						this.writeImports(type.packageName, type.name);
+					if (type.multiple) {
+						type.types.forEach(addImportsFromTypes);
+					} else {
+						addImportsFromTypes(type);
 					}
 				});
 				this.aggregations[aggregationInfo.name] = Object.assign({}, aggregationInfo);
+			},
+			writeAssociations(associationInfo) {
+				const addImportsFromTypes = (type) => {
+					if (type.packageName) {
+						this.writeImports(type.packageName, type.dtsType);
+					}
+				};
+				associationInfo.types.forEach((type) => {
+					if (type.multiple) {
+						type.types.forEach(addImportsFromTypes);
+					} else {
+						addImportsFromTypes(type);
+					}
+				});
+				this.associations[associationInfo.name] = Object.assign({}, associationInfo);
+			},
+			writeEvents(eventInfo) {
+				const addImportsFromTypes = (type) => {
+					if (type.packageName) {
+						this.writeImports(type.packageName, type.dtsType, { default: type.isClass });
+					}
+				};
+				// Add default import for events
+				this.writeImports("sap/ui/base/Event", "Event");
+
+				for (const paramName in eventInfo.parameters) {
+					const param = eventInfo.parameters[paramName];
+					param.types.forEach((type) => {
+						if (type.multiple) {
+							type.types.forEach(addImportsFromTypes);
+						} else {
+							addImportsFromTypes(type);
+						}
+					});
+				}
+				this.events[eventInfo.name] = Object.assign({}, eventInfo);
 			},
 		};
 
