@@ -29,11 +29,9 @@ declare module "{{{this._ui5QualifiedNameSlashes}}}" {
 				{{/if}}
 				{{#if this.description}}
 
-				/**
-				 * {{{this.description}}}
-				 */
+				{{{generateApiDocumentation this.description}}}
 				{{/if}}
-				{{{@key}}}?: {{{generatePropertySettings this.types}}}
+				{{{@key}}}?: {{{generatePropertySettingsWithBindingInfo this.types}}}
 			{{/each}}
 			{{#each this._dts.aggregations}}
 				{{#if @first}}
@@ -45,9 +43,7 @@ declare module "{{{this._ui5QualifiedNameSlashes}}}" {
 				{{/if}}
 				{{#if this.description}}
 
-				/**
-				 * {{{this.description}}}
-				 */
+				{{{generateApiDocumentation this.description}}}
 				{{/if}}
 				{{{@key}}}?: {{{generateAggregationSettings this.types}}}
 			{{/each}}
@@ -61,9 +57,7 @@ declare module "{{{this._ui5QualifiedNameSlashes}}}" {
 				{{/if}}
 				{{#if this.description}}
 
-				/**
-				 * {{{this.description}}}
-				 */
+				{{{generateApiDocumentation this.description}}}
 				{{/if}}
 				{{{@key}}}?: {{{generateAssociationSettings this.types}}}
 			{{/each}}
@@ -77,9 +71,7 @@ declare module "{{{this._ui5QualifiedNameSlashes}}}" {
 				{{/if}}
 				{{#if this.description}}
 
-				/**
-				 * {{{this.description}}}
-				 */
+				{{{generateApiDocumentation this.description}}}
 				{{/if}}
 				{{{@key}}}?: (oEvent: {{{generateEventSettings ../name @key}}}) => void
 			{{/each}}
@@ -89,9 +81,7 @@ declare module "{{{this._ui5QualifiedNameSlashes}}}" {
 				{{#each this.parameters}}
 					{{#if this.dtsParamDescription}}
 
-					/**
-					 * {{{this.dtsParamDescription}}}
-					 */
+					 {{{generateApiDocumentation this.dtsParamDescription}}}
 					{{/if}}
 					{{{@key}}}?: {{{serializeTypeList this.types}}}
 				{{/each}}
@@ -163,6 +153,13 @@ declare module "{{{this._ui5QualifiedNameSlashes}}}" {
 			 * @returns Metadata object describing this class
 			 */
 			static getMetadata(): WebComponentMetadata;
+
+			{{#each this._dts.methods}}
+				{{#if this.description}}{{{this.description}}}{{/if}}
+				{{@key}}({{#each this.params}}
+				{{@key}}: {{{generatePropertySettings this}}},
+				{{/each}}): {{#if this.returnValueTypes}}{{{generatePropertySettings this.returnValueTypes}}}{{else}}void{{/if}};
+			{{/each}}
 		}
 }
 {{/if}}

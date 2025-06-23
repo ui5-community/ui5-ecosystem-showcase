@@ -5,9 +5,15 @@ const { writeFileSync, readFileSync } = require("fs");
 const handlebars = require("handlebars");
 const WebComponentRegistryHelper = require("./WebComponentRegistryHelper");
 
+const capitalize = (value) => value.replace(/^([a-z])/, (g) => g.toUpperCase());
+
 handlebars.registerHelper("escapeInterfaceName", function (namespace, interfaceName) {
 	const ui5QualifiedName = `${namespace}.${interfaceName}`;
 	return `__implements_${ui5QualifiedName.replace(/[/.@-]/g, "_")}: boolean;`;
+});
+
+handlebars.registerHelper("generateLinkRef", function (getterName, property) {
+	return `{@link #${getterName} ${property}}`;
 });
 
 handlebars.registerHelper("generateApiDocumentation", function (description) {
@@ -36,7 +42,7 @@ handlebars.registerHelper("join", function (array) {
 });
 
 handlebars.registerHelper("generateEventSettings", function (className, eventName) {
-	return `${className}$${eventName.replace(/^([a-z])/, (g) => g.toUpperCase())}Event`;
+	return `${className}$${capitalize(eventName)}Event`;
 });
 
 handlebars.registerHelper("generateAggregationSettings", function (types) {
@@ -47,15 +53,20 @@ handlebars.registerHelper("generateAggregationSettings", function (types) {
 	result += "AggregationBindingInfo | `{${string}}`";
 	return result;
 });
-
-handlebars.registerHelper("generatePropertySettings", function (types) {
+const generatePropertySettings = function (types) {
 	let result = "";
 	for (const type of types) {
 		result += `${type.multiple ? `Array<${type.types.map((t) => t.dtsType).join(" | ")}>` : type.dtsType} |`;
 	}
-	result += `PropertyBindingInfo${this.needsBindingString ? " | `{${string}}`" : ""}`;
+	return result.replace(/\s\|$/, "");
+};
+const generatePropertySettingsWithBindingInfo = function (types) {
+	let result = generatePropertySettings(types);
+	result += ` | PropertyBindingInfo${this.needsBindingString ? " | `{${string}}`" : ""}`;
 	return result;
-});
+};
+handlebars.registerHelper("generatePropertySettings", generatePropertySettings);
+handlebars.registerHelper("generatePropertySettingsWithBindingInfo", generatePropertySettingsWithBindingInfo);
 
 handlebars.registerHelper("generateAssociationSettings", function (types) {
 	let result = "";
@@ -83,6 +94,13 @@ handlebars.registerHelper("serializeTypeList", function (types) {
  */
 const Templates = {
 	apiDocumentation: loadAndCompileTemplate("../templates/dts/ApiDocumentation.hbs"),
+	getPropertyDocumentation: loadAndCompileTemplate("../templates/dts/GetPropertyDocumentation.hbs"),
+	setPropertyDocumentation: loadAndCompileTemplate("../templates/dts/SetPropertyDocumentation.hbs"),
+	getAggregationDocumentation: loadAndCompileTemplate("../templates/dts/GetAggregationDocumentation.hbs"),
+	setAggregationDocumentation: loadAndCompileTemplate("../templates/dts/SetAggregationDocumentation.hbs"),
+	addAggregationDocumentation: loadAndCompileTemplate("../templates/dts/AddAggregationDocumentation.hbs"),
+	bindAggregationDocumentation: loadAndCompileTemplate("../templates/dts/BindAggregationDocumentation.hbs"),
+	unbindAggregationDocumentation: loadAndCompileTemplate("../templates/dts/UnbindAggregationDocumentation.hbs"),
 	module: loadAndCompileTemplate("../templates/dts/Module.hbs"),
 	class: loadAndCompileTemplate("../templates/dts/Class.hbs"),
 };
@@ -119,6 +137,7 @@ const DTSSerializer = {
 			aggregations: {},
 			associations: {},
 			events: {},
+			methods: {},
 			writeImports(importSource, namedImport, importOptions) {
 				this.imports[importSource] ??= {};
 				this.imports[importSource][namedImport] = Object.assign({}, importOptions);
@@ -128,6 +147,12 @@ const DTSSerializer = {
 				// Add default import for properties
 				this.writeImports("sap/ui/base/ManagedObject", "PropertyBindingInfo");
 
+				// TODO hacky quick fix
+				if (propertyInfo.name === "for") {
+					propertyInfo.name = "labelFor";
+				}
+
+				// Detect dependencies and add imports
 				propertyInfo.types.forEach((type) => {
 					if (type.dtsType === "string") {
 						propertyInfo.needsBindingString = false;
@@ -136,9 +161,67 @@ const DTSSerializer = {
 						this.writeImports(type.packageName, type.dtsType);
 					}
 				});
+
+				// Add property information
 				this.properties[propertyInfo.name] = Object.assign({}, propertyInfo);
+
+				const capitalizedPropertyName = capitalize(propertyInfo.name);
+
+				// Generate methods
+				this.methods[`get${capitalizedPropertyName}`] = {
+					params: {},
+					description: Templates.getPropertyDocumentation({
+						getterName: `get${capitalizedPropertyName}`,
+						property: propertyInfo.name,
+						description: propertyInfo.description,
+						defaultValue: propertyInfo.defaultValue,
+					}),
+					returnValueTypes: propertyInfo.types,
+				};
+				const setter = {
+					params: {},
+					description: Templates.setPropertyDocumentation({
+						getterName: `get${capitalizedPropertyName}`,
+						property: propertyInfo.name,
+						description: propertyInfo.description,
+						defaultValue: propertyInfo.defaultValue,
+					}),
+					returnValueTypes: [{ dtsType: "this" }],
+				};
+				// TODO do we always need to add `null` as possible type for value reset?
+				setter.params[propertyInfo.name] = propertyInfo.types;
+				this.methods[`set${capitalizedPropertyName}`] = setter;
+
+				// TODO Clarify bind methods
+				// this.methods[`bind${capitalizedPropertyName}`] = {
+				// 	params: {
+				// 		bindingInfo: [{dtsType: "PropertyBindingInfo"}]
+				// 	},
+				// 	returnValueTypes: [{dtsType: "this"}]
+				// };
+				// this.methods[`unbind${capitalizedPropertyName}`] = {
+				// 	params: {},
+				// 	returnValueTypes: [{dtsType: "this"}]
+				// };
 			},
 			writeAggregations(aggregationInfo) {
+				const rPlural = /(children|ies|ves|oes|ses|ches|shes|xes|s)$/i;
+				const mSingular = { children: -3, ies: "y", ves: "f", oes: -2, ses: -2, ches: -2, shes: -2, xes: -2, s: -1 };
+
+				const getMethodTemplate = function (returnValue) {
+					const defaultReturnValue = [{ dtsType: "this" }];
+					return {
+						params: {},
+						returnValueTypes: returnValue || defaultReturnValue,
+					};
+				};
+
+				const guessSingularName = function (sName) {
+					return sName.replace(rPlural, function ($, sPlural) {
+						const vRepl = mSingular[sPlural.toLowerCase()];
+						return typeof vRepl === "string" ? vRepl : sPlural.slice(0, vRepl);
+					});
+				};
 				const addImportsFromTypes = (type) => {
 					if (type.packageName) {
 						this.writeImports(type.packageName, type.dtsType, { default: type.isClass });
@@ -155,6 +238,78 @@ const DTSSerializer = {
 					}
 				});
 				this.aggregations[aggregationInfo.name] = Object.assign({}, aggregationInfo);
+				const multiple = !!aggregationInfo.types[0].multiple;
+				const capitalizedAggregationName = capitalize(aggregationInfo.name);
+
+				// Generate methods
+				this.methods[`get${capitalizedAggregationName}`] = {
+					params: {},
+					description: Templates.getAggregationDocumentation({
+						getterName: `get${capitalizedAggregationName}`,
+						aggregation: aggregationInfo.name,
+						description: aggregationInfo.description,
+					}),
+					returnValueTypes: aggregationInfo.types,
+				};
+
+				this.methods[`bind${capitalizedAggregationName}`] = {
+					params: {
+						bindingInfo: [{ dtsType: "AggregationBindingInfo" }],
+					},
+					description: Templates.bindAggregationDocumentation({
+						getterName: `get${capitalizedAggregationName}`,
+						aggregation: aggregationInfo.name,
+					}),
+					returnValueTypes: [{ dtsType: "this" }],
+				};
+				this.methods[`unbind${capitalizedAggregationName}`] = {
+					params: {},
+					description: Templates.unbindAggregationDocumentation({
+						getterName: `get${capitalizedAggregationName}`,
+						aggregation: aggregationInfo.name,
+					}),
+					returnValueTypes: [{ dtsType: "this" }],
+				};
+				this.methods[`destroy${capitalizedAggregationName}`] = {
+					params: {},
+					returnValueTypes: [{ dtsType: "this" }],
+				};
+
+				if (multiple) {
+					const singularName = guessSingularName(aggregationInfo.name);
+
+					const addMutator = getMethodTemplate();
+					addMutator.params[singularName] = aggregationInfo.types[0].types;
+					(addMutator.description = Templates.setAggregationDocumentation({
+						getterName: `get${capitalizedAggregationName}`,
+						aggregation: aggregationInfo.name,
+					})),
+						(this.methods[`add${capitalize(singularName)}`] = addMutator);
+
+					const insertMutator = getMethodTemplate();
+					insertMutator.params[singularName] = aggregationInfo.types[0].types;
+					insertMutator.params["index"] = [{ dtsType: "int" }];
+					this.methods[`insert${capitalize(singularName)}`] = insertMutator;
+
+					const removeMutator = getMethodTemplate([...aggregationInfo.types[0].types, { dtsType: "null" }]);
+					removeMutator.params[singularName] = [...aggregationInfo.types[0].types, { dtsType: "int" }, { dtsType: "ID" }];
+					this.methods[`remove${capitalize(singularName)}`] = removeMutator;
+
+					this.methods[`removeAll${capitalizedAggregationName}`] = getMethodTemplate(aggregationInfo.types);
+
+					const indexOfMutator = getMethodTemplate([{ dtsType: "int" }]);
+					indexOfMutator.params[singularName] = [...aggregationInfo.types[0].types];
+					this.methods[`indexOf${capitalize(singularName)}`] = indexOfMutator;
+				} else {
+					// TBC Does this case even exist in the webc world?
+					const setter = getMethodTemplate();
+					setter.params[aggregationInfo.name] = aggregationInfo.types;
+					(setter.description = Templates.setAggregationDocumentation({
+						getterName: `get${capitalizedAggregationName}`,
+						aggregation: aggregationInfo.name,
+					})),
+						(this.methods[`set${capitalizedAggregationName}`] = setter);
+				}
 			},
 			writeAssociations(associationInfo) {
 				const addImportsFromTypes = (type) => {
@@ -191,6 +346,9 @@ const DTSSerializer = {
 					});
 				}
 				this.events[eventInfo.name] = Object.assign({}, eventInfo);
+			},
+			writeMethods(/**methodInfo*/) {
+				// TODO implement
 			},
 		};
 

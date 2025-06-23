@@ -2,7 +2,9 @@ const JSDocSerializer = require("./JSDocSerializer");
 const DTSSerializer = require("./DTSSerializer");
 const WebComponentRegistryHelper = require("./WebComponentRegistryHelper");
 
+// List of all supported primitive types including "integer"
 const primitiveTypes = ["object", "boolean", "number", "integer", "bigint", "string", "null"];
+// Known native browser elemts used as types in web components
 const nativeBrowserElements = ["DataTransfer", "Date", "Event", "File", "FileList"];
 /**
  * Camelize the dashes.
@@ -286,7 +288,7 @@ class RegistryEntry {
 					}
 				);
 			} else if (type === "HTMLElement" || type === "Node") {
-				// case 3: HTMLElement => sap/ui/core/Control
+				// case 3: HTMLElement || Node => sap/ui/core/Control
 				return {
 					dtsType: "Control",
 					packageName: "sap/ui/core/Control",
@@ -301,14 +303,14 @@ class RegistryEntry {
 					ui5Type: this.#normalizeType(type),
 				};
 			} else if (nativeBrowserElements.includes(type)) {
-				// case 4: primitive types
+				// case 5: native browser elements
 				return {
 					dtsType: type,
 					ui5Type: "object",
 				};
 			} else {
 				typeDef.isUnclear = true;
-				// case 5: Unclear
+				// case 6: Unclear
 				return {
 					isUnclear: true,
 					dtsType: "any",
@@ -426,6 +428,7 @@ class RegistryEntry {
 						dtsType: "boolean",
 					},
 				],
+				defaultValue: "true",
 			});
 
 			return true;
@@ -456,7 +459,7 @@ class RegistryEntry {
 			// DEBUG
 			if (typeDef.isUnclear) {
 				console.warn(
-					`[unclear type 🤔] ${classDef.name} - property '${propDef.name}' has unclear type '${typeDef.origType}' -> defaulting to 'any', multiple: ${typeDef.ui5TypeInfo.multiple}`,
+					`[unclear type 🤔] ${classDef.name} - ${isAssociation ? "association" : "property"} '${propDef.name}' has unclear type '${typeDef.origType}' -> defaulting to 'any', multiple: ${typeDef.ui5TypeInfo.multiple}`,
 				);
 			}
 
@@ -517,6 +520,7 @@ class RegistryEntry {
 					name: propDef.name,
 					description: propDef.description.replace(/\n/g, "\n * "),
 					types: typeDef.types,
+					defaultValue: defaultValue,
 				});
 			}
 		} else if (propDef.kind === "method") {
@@ -525,11 +529,16 @@ class RegistryEntry {
 			ui5metadata.methods.push(propDef.name);
 
 			// method have parameters (unlike getters)
-			const jsDocParams = this.#parseMethodParameters(classDef, propDef);
+			const { parsedParams, jsDocParams } = this.#parseMethodParameters(classDef, propDef);
 			JSDocSerializer.writeDoc(classDef, "methods", {
 				name: propDef.name,
 				description: propDef.description,
 				parameters: jsDocParams,
+			});
+			classDef._dts.writeMethods({
+				name: propDef.name,
+				description: propDef.description.replace(/\n/g, "\n * "),
+				parameters: parsedParams,
 			});
 		}
 	}
@@ -625,6 +634,7 @@ class RegistryEntry {
 	#parseMethodParameters(classDef, methodDef) {
 		const parameters = methodDef.parameters;
 		const jsDocParams = {};
+		const parsedParams = {};
 		parameters?.forEach((param) => {
 			const typeDef = this.#extractUi5Type(param.type);
 			// DEBUG
@@ -638,8 +648,13 @@ class RegistryEntry {
 				type: typeDef.ui5TypeInfo.ui5Type,
 				description: param.description,
 			};
+			parsedParams[param.name] = {
+				name: param.name,
+				typeDef,
+				description: param.description.replace(/\n/g, "\n * "),
+			};
 		});
-		return jsDocParams;
+		return { parsedParams, jsDocParams };
 	}
 
 	#processEvents(classDef, ui5metadata, eventDef) {
