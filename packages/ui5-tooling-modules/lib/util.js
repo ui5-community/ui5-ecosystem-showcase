@@ -495,18 +495,18 @@ module.exports = function (log, projectInfo) {
 			// only keep the TS resources for which no parallel JS resource exist
 			// as we assume that the transpiling creates the parallel JS resource
 			millis = Date.now();
-			allSources = allSources.filter((source) => {
-				const sourcePath = source.getPath();
-				const ext = path.extname(sourcePath);
-				if (ext !== ".js") {
-					const foundJSSource = allSources.findIndex((source) => source.getPath() === `${path.basename(source.getPath())}.js`) !== -1;
-					if (foundJSSource) {
+			const allJsSources = new Set(allSources.filter((source) => path.extname(source.getPath()) === ".js").map((source) => source.getPath().replace(/\.js$/, "")));
+			if (allJsSources.size > 0) {
+				allSources = allSources.filter((source) => {
+					const sourcePath = source.getPath();
+					const ext = path.extname(sourcePath);
+					if (ext !== ".js" && allJsSources.has(sourcePath.replace(new RegExp(`\\${ext}$`), ""))) {
 						log.info(`Removing source ${sourcePath} (as a parallel JS resource was found)`);
 						return false;
 					}
-				}
-				return true;
-			});
+					return true;
+				});
+			}
 			log.verbose(`JS filter took ${Date.now() - millis}ms`);
 
 			// find all XML resources to determine their dependencies
@@ -1335,14 +1335,14 @@ module.exports = function (log, projectInfo) {
 
 						// create the bundle for the given modules
 						const nameOfModules = modules.map((module) => module.name);
-						//const millis = Date.now();
+						//const millis = Date.now(); // PERF
 						const output = await that.createBundle(nameOfModules, options);
 						const isWebComponent = (moduleName) => {
 							return !!(output.$metadata?.packages?.[moduleName] || output.$metadata?.controls?.[moduleName] || output.$metadata?.substitutes?.[moduleName]);
 						};
-						//console.log(`createBundle overall duration: ${Date.now() - millis}ms`);
-						//console.log(`resolveModule overall duration: ${perfmetrics.resolveModulesTime}ms`);
-						//console.table(Object.entries(perfmetrics.resolveModules).filter(([key, value]) => value > 10).sort(([keyA, valueA], [keyB, valueB]) => valueB - valueA).map(([key, value]) => `${value}ms for ${key}`));
+						//console.log(`createBundle overall duration: ${Date.now() - millis}ms`); // PERF
+						//console.log(`resolveModule overall duration: ${perfmetrics.resolveModulesTime}ms`); // PERF
+						//console.table(Object.entries(perfmetrics.resolveModules).filter(([key, value]) => value > 10).sort(([keyA, valueA], [keyB, valueB]) => valueB - valueA).map(([key, value]) => `${value}ms for ${key}`)); // PERF
 
 						// parse the rollup build result
 						const shiftedEntries = {};
