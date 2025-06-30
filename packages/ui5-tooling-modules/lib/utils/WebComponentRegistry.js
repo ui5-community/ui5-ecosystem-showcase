@@ -105,6 +105,8 @@ class RegistryEntry {
 		Object.keys(this.classes).forEach((className) => {
 			const classDef = this.classes[className];
 
+			classDef._ui5implements ??= [];
+
 			this.#deriveUi5ClassNames(classDef);
 
 			this.#connectSuperclass(classDef);
@@ -264,15 +266,36 @@ class RegistryEntry {
 				// Since the UI5 runtime only allows for 1 single type per property/aggregation, we take the first reference
 				type = typeInfo?.references?.[0]?.name || type;
 
-				// case 1a: complex type is enum, interface or class
+				if (type === "ValueState" && typeInfo.references?.[0].package === "@ui5/webcomponents-base") {
+					// case 1a: native webc ValueState ==> core ValueState
+					return {
+						dtsType: "ValueState",
+						packageName: "sap/ui/core/library",
+						moduleType: "module:sap/ui/core/ValueState",
+						ui5Type: "sap.ui.core.ValueState",
+						isEnum: true,
+					};
+				}
+				// case 1b: complex type is enum, interface or class
 				let complexType = this.#parseComplexType(type, this);
 				if (!complexType && this.namespace !== typeInfo.references[0].package) {
-					// case 1b: check for cross package type reference
+					// case 1c: check for cross package type reference
 					const refPackage = WebComponentRegistry.getPackage(typeInfo.references[0].package);
 					if (refPackage) {
 						complexType = this.#parseComplexType(type, refPackage);
 					} else {
 						console.log(`Reference package '${typeInfo.references[0].package}' for complex type '${type}' not found`);
+					}
+				} else if (!complexType && typeInfo.references[0]) {
+					// case 1d: not able to find the type but there is a reference ==> try to import original webc type from the importing module itself
+					const refClass = this.classes[typeInfo.references[0].module.match(/\/(.*).js$/)?.[1]];
+					if (refClass) {
+						return {
+							dtsType: type,
+							ui5Type: "object",
+							packageName: refClass._ui5QualifiedNameSlashes,
+							globalImport: true,
+						};
 					}
 				}
 
@@ -386,7 +409,7 @@ class RegistryEntry {
 			};
 			// Since we change the naming from "accessibleNameRef" to "ariaLabelledBy", we can't pass the propDef directly to the JSDocSerializer!
 			JSDocSerializer.writeDoc(classDef, "associations", { name: "ariaLabelledBy", description: propDef.description });
-			classDef._dts.writeAssociations({
+			DTSSerializer.writeDts(classDef, "associations", {
 				name: "ariaLabelledBy",
 				description: propDef.description.replace(/\n/g, "\n * "),
 				types: [
@@ -399,6 +422,7 @@ class RegistryEntry {
 								packageName: "sap/ui/core/Control",
 								moduleType: "module:sap/ui/core/Control",
 								ui5Type: "sap.ui.core.Control",
+								isClass: true,
 							},
 						],
 					},
@@ -420,7 +444,7 @@ class RegistryEntry {
 			};
 			// Since we flip the naming from "disabled" to "enabled", we can't pass the propDef directly to the JSDocSerializer!
 			JSDocSerializer.writeDoc(classDef, "properties", { name: "enabled", description: propDef.description });
-			classDef._dts.writeProperties({
+			DTSSerializer.writeDts(classDef, "properties", {
 				name: "enabled",
 				description: propDef.description.replace(/\n/g, "\n * "),
 				types: [
@@ -442,13 +466,6 @@ class RegistryEntry {
 		if (propDef.kind === "field") {
 			const typeDef = this.#extractUi5Type(propDef.type);
 			const isAssociation = typeDef.origType === "HTMLElement | string | undefined";
-
-			// ACC attributes have webc internal typing and will be defaulted to "object" on UI5 side.
-			if (propDef.name === "accessibilityAttributes") {
-				// TODO Type needs to be imported from original webc types
-				typeDef.types[0].dtsType = typeDef.types[0].ui5Type = typeDef.ui5TypeInfo.dtsType = typeDef.ui5TypeInfo.ui5Type = "object";
-				typeDef.isUnclear = typeDef.types[0].isUnclear = typeDef.ui5TypeInfo.isUnclear = false;
-			}
 
 			// Some properties might need a special UI5 mapping, e.g. "accesibleNameRef"
 			const hasSpecialMapping = this.#checkForSpecialMapping(classDef, propDef, ui5metadata);
@@ -477,6 +494,13 @@ class RegistryEntry {
 					getterName: calculateGetterName(propDef.name),
 					description: propDef.description,
 				});
+
+				DTSSerializer.writeDts(classDef, "properties", {
+					name: propDef.name,
+					description: propDef.description.replace(/\n/g, "\n * "),
+					types: typeDef.types,
+					readonly: true,
+				});
 			} else if (isAssociation) {
 				ui5metadata.associations[propDef.name] = {
 					type: typeDef.ui5TypeInfo.ui5Type,
@@ -486,7 +510,7 @@ class RegistryEntry {
 					},
 				};
 				JSDocSerializer.writeDoc(classDef, "associations", propDef);
-				classDef._dts.writeAssociations({
+				DTSSerializer.writeDts(classDef, "associations", {
 					name: propDef.name,
 					description: propDef.description.replace(/\n/g, "\n * "),
 					types: typeDef.types,
@@ -504,10 +528,19 @@ class RegistryEntry {
 
 					defaultValue = this.#castDefaultValue(defaultValue, typeDef.ui5TypeInfo);
 				}
+				let mapping = "property";
+				if (typeDef.ui5TypeInfo.ui5Type === "sap.ui.core.ValueState") {
+					// the UI5 valueState needs the Core's enum typing and some special mapping to
+					// convert the "sap.ui.core.ValueState" to the web component's variant.
+					mapping = {
+						formatter: "_mapValueState",
+						parser: "_parseValueState",
+					};
+				}
 
 				ui5metadata.properties[propDef.name] = {
 					type: `${typeDef.ui5TypeInfo.ui5Type}${typeDef.ui5TypeInfo.multiple ? "[]" : ""}`,
-					mapping: "property",
+					mapping,
 					defaultValue: defaultValue,
 				};
 				JSDocSerializer.writeDoc(classDef, "properties", {
@@ -516,7 +549,7 @@ class RegistryEntry {
 					moduleType: typeDef.ui5TypeInfo?.moduleType,
 				});
 
-				classDef._dts.writeProperties({
+				DTSSerializer.writeDts(classDef, "properties", {
 					name: propDef.name,
 					description: propDef.description.replace(/\n/g, "\n * "),
 					types: typeDef.types,
@@ -535,10 +568,10 @@ class RegistryEntry {
 				description: propDef.description,
 				parameters: jsDocParams,
 			});
-			classDef._dts.writeMethods({
+			DTSSerializer.writeDts(classDef, "methods", {
 				name: propDef.name,
 				description: propDef.description.replace(/\n/g, "\n * "),
-				parameters: parsedParams,
+				params: parsedParams,
 			});
 		}
 	}
@@ -596,7 +629,7 @@ class RegistryEntry {
 			description: slotDef.description,
 			moduleType: typeDef.ui5TypeInfo?.moduleType,
 		});
-		classDef._dts.writeAggregations({
+		DTSSerializer.writeDts(classDef, "aggregations", {
 			name: aggregationName,
 			description: slotDef.description.replace(/\n/g, "\n * "),
 			types: typeDef.types,
@@ -648,11 +681,12 @@ class RegistryEntry {
 				type: typeDef.ui5TypeInfo.ui5Type,
 				description: param.description,
 			};
-			parsedParams[param.name] = {
-				name: param.name,
-				typeDef,
-				description: param.description.replace(/\n/g, "\n * "),
-			};
+			// parsedParams[param.name] = {
+			// 	name: param.name,
+			// 	typeDef,
+			// 	description: param.description.replace(/\n/g, "\n * "),
+			// };
+			parsedParams[param.name] = typeDef.types;
 		});
 		return { parsedParams, jsDocParams };
 	}
@@ -673,7 +707,7 @@ class RegistryEntry {
 			description: eventDef.description,
 			parameters: jsDocParams,
 		});
-		classDef._dts.writeEvents({
+		DTSSerializer.writeDts(classDef, "events", {
 			name: camelizedName,
 			description: eventDef.description.replace(/\n/g, "\n * "),
 			parameters: parsedParams,
@@ -697,6 +731,10 @@ class RegistryEntry {
 		// classes with properties marked as "_ui5formProperty" need to implement IFormContent
 		if (classDef._ui5implementsFormContent) {
 			ui5metadata.interfaces.push("sap.ui.core.IFormContent");
+			classDef._ui5implements.push({
+				name: "IFormContent",
+				package: "sap/ui/core/library",
+			});
 			jsdocInterfaces ??= [];
 			jsdocInterfaces.push("sap.ui.core.IFormContent");
 		}
@@ -739,7 +777,7 @@ class RegistryEntry {
 			const description = "The text-content of the Web Component.";
 			JSDocSerializer.writeDoc(classDef, "properties", { name: "text", description });
 
-			classDef._dts.writeProperties({
+			DTSSerializer.writeDts(classDef, "properties", {
 				name: "text",
 				description,
 				types: [{ dtsType: "string" }],
@@ -755,7 +793,7 @@ class RegistryEntry {
 			const description = "The 'width' of the Web Component in <code>sap.ui.core.CSSSize</code>.";
 			JSDocSerializer.writeDoc(classDef, "properties", { name: "width", description });
 
-			classDef._dts.writeProperties({
+			DTSSerializer.writeDts(classDef, "properties", {
 				name: "width",
 				description,
 				types: [
@@ -775,7 +813,7 @@ class RegistryEntry {
 			};
 			const description = "The 'height' of the Web Component in <code>sap.ui.core.CSSSize</code>.";
 			JSDocSerializer.writeDoc(classDef, "properties", { name: "height", description });
-			classDef._dts.writeProperties({
+			DTSSerializer.writeDts(classDef, "properties", {
 				name: "height",
 				description,
 				types: [
@@ -824,14 +862,54 @@ class RegistryEntry {
 
 			// Any "Label" control needs a special UI5-only interface
 			ui5metadata.interfaces.push("sap.ui.core.Label");
+
+			classDef._ui5implements.push({
+				name: "Label",
+				package: "sap/ui/core/library",
+			});
 			// Additionally, all such controls must apply the "sap/ui/core/LabelEnablement" (see "../templates/WrapperControl.hbs")
 			classDef._ui5specifics.needsLabelEnablement = true;
+
+			DTSSerializer.updateDts(
+				classDef,
+				{
+					name: "for",
+					entity: "properties",
+				},
+				{
+					name: "labelFor",
+					entity: "associations",
+					types: [
+						{
+							dtsType: "Control",
+							packageName: "sap/ui/core/Control",
+							moduleType: "module:sap/ui/core/Control",
+							ui5Type: "sap.ui.core.Control",
+							isClass: true,
+						},
+					],
+				},
+			);
 		} else if (tag.includes("ui5-multi-input")) {
 			// TODO: Multi Input needs to implement the functions defined in "sap.ui.core.ISemanticFormContent"...
 			ui5metadata.interfaces.push("sap.ui.core.ISemanticFormContent");
-		} else if (tag === "ui5-shellbar") {
+
+			classDef._ui5implements.push({
+				name: "ISemanticFormContent",
+				package: "sap/ui/core/library",
+			});
+		} else if (tag.includes("ui5-shellbar")) {
 			ui5metadata.interfaces.push("sap.m.IBar");
+			classDef._ui5implements.push({
+				name: "IBar",
+				package: "sap/m/library",
+			});
+
 			ui5metadata.interfaces.push("sap.tnt.IToolHeader");
+			classDef._ui5implements.push({
+				name: "IToolHeader",
+				package: "sap/tnt/library",
+			});
 		}
 
 		// If a "valueStateMessage" slot is present, we need a special property mapping
@@ -852,18 +930,26 @@ class RegistryEntry {
 					},
 				};
 
-				// the UI5 valueState needs the Core's enum typing and some special mapping to
-				// convert the "sap.ui.core.ValueState" to the web component's variant.
-				Object.assign(ui5metadata.properties["valueState"], {
-					type: "sap.ui.core.ValueState",
-					mapping: {
-						formatter: "_mapValueState",
-						parser: "_parseValueState",
-					},
-				});
-
 				// mixin support for handling of backend messages
 				classDef._ui5specifics.needsMessageMixin = true;
+
+				DTSSerializer.updateDts(
+					classDef,
+					{
+						name: "valueStateMessage",
+						entity: "aggregations",
+					},
+					{
+						name: "valueStateText",
+						entity: "properties",
+						types: [
+							{
+								dtsType: "string",
+								ui5Type: "string",
+							},
+						],
+					},
+				);
 			} else {
 				// this is an interesting inconsistency that does not occur in the UI5 web components
 				// we report it here for custom web component development
@@ -914,6 +1000,8 @@ class RegistryEntry {
 		this.#ensureDefaults(classDef, ui5metadata);
 
 		this.#patchUI5Specifics(classDef, ui5metadata);
+
+		DTSSerializer.writeClassBody(classDef);
 	}
 
 	/**

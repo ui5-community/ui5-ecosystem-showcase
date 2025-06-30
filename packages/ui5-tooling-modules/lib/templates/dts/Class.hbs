@@ -1,13 +1,21 @@
-{{#each classes}}
-{{#if this.superclass}}
-declare module "{{{this._ui5QualifiedNameSlashes}}}" {
+{{#each clazz._dts.globalImports}}
+{{#if @first}}
+
+/**
+ * Original webc imports
+ */
+{{/if}}
+{{{generateImports @key this}}}
+
+{{/each}}
+declare module "{{{clazz._ui5QualifiedNameSlashes}}}" {
 
 	/**
 	 * Default imports
 	 */
 	import { default as WebComponentMetadata } from "sap/ui/core/webc/WebComponentMetadata";
 
-	{{#each this._dts.imports}}
+	{{#each clazz._dts.imports}}
 		{{#if @first}}
 
 		/**
@@ -18,8 +26,8 @@ declare module "{{{this._ui5QualifiedNameSlashes}}}" {
 
 	{{/each}}
 
-		export interface ${{{this.name}}}Settings extends ${{{this._dts.extends}}}Settings {
-			{{#each this._dts.properties}}
+		export interface ${{{this.name}}}Settings extends ${{{clazz._dts.extends}}}Settings {
+			{{#each clazz._dts.properties}}
 				{{#if @first}}
 
 				/**
@@ -33,7 +41,7 @@ declare module "{{{this._ui5QualifiedNameSlashes}}}" {
 				{{/if}}
 				{{{@key}}}?: {{{generatePropertySettingsWithBindingInfo this.types}}}
 			{{/each}}
-			{{#each this._dts.aggregations}}
+			{{#each clazz._dts.aggregations}}
 				{{#if @first}}
 
 				/**
@@ -47,7 +55,7 @@ declare module "{{{this._ui5QualifiedNameSlashes}}}" {
 				{{/if}}
 				{{{@key}}}?: {{{generateAggregationSettings this.types}}}
 			{{/each}}
-			{{#each this._dts.associations}}
+			{{#each clazz._dts.associations}}
 				{{#if @first}}
 
 				/**
@@ -61,7 +69,7 @@ declare module "{{{this._ui5QualifiedNameSlashes}}}" {
 				{{/if}}
 				{{{@key}}}?: {{{generateAssociationSettings this.types}}}
 			{{/each}}
-			{{#each this._dts.events}}
+			{{#each clazz._dts.events}}
 				{{#if @first}}
 
 				/**
@@ -73,11 +81,11 @@ declare module "{{{this._ui5QualifiedNameSlashes}}}" {
 
 				{{{generateApiDocumentation this.description}}}
 				{{/if}}
-				{{{@key}}}?: (oEvent: {{{generateEventSettings ../name @key}}}) => void
+				{{{@key}}}?: (oEvent: {{{generateEventSettings @root.clazz.name @key}}}) => void
 			{{/each}}
 		}
-		{{#each this._dts.events}}
-			export interface {{{generateEventSettings ../name @key}}}Parameters {
+		{{#each clazz._dts.events}}
+			export interface {{{generateEventSettings @root.clazz.name @key}}}Parameters {
 				{{#each this.parameters}}
 					{{#if this.dtsParamDescription}}
 
@@ -87,18 +95,18 @@ declare module "{{{this._ui5QualifiedNameSlashes}}}" {
 				{{/each}}
 			}
 
-			export type {{{generateEventSettings ../name @key}}} = Event<
-				{{{generateEventSettings ../name @key}}}Parameters,
+			export type {{{generateEventSettings @root.clazz.name @key}}} = Event<
+				{{{generateEventSettings @root.clazz.name @key}}}Parameters,
 				{{{../name}}}
 			>;
 		{{/each}}
 
-		export default class {{{this.name}}} extends {{{this._dts.extends}}}
-	{{#if this._dts.implements}}
-		implements {{join this._dts.implements}}
+		export default class {{{this.name}}} extends {{{clazz._dts.extends}}}
+	{{#if clazz._dts.implements}}
+		implements {{join clazz._dts.implements}}
 	{{/if}}
 		{
-			{{#each this._dts.implementsMarker}}
+			{{#each clazz._dts.implementsMarker}}
 				{{{escapeInterfaceName this.package this.name}}}
 			{{/each}}
 
@@ -106,7 +114,7 @@ declare module "{{{this._ui5QualifiedNameSlashes}}}" {
 				/**
 				* Initial settings for the new control
 				*/
-				mSettings?: ${{{this.name}}}Settings
+				mSettings?: ${{{clazz.name}}}Settings
 			);
 
 			constructor(
@@ -117,12 +125,12 @@ declare module "{{{this._ui5QualifiedNameSlashes}}}" {
 				/**
 				* Initial settings for the new control
 				*/
-				mSettings?: ${{{this.name}}}Settings
+				mSettings?: ${{{clazz.name}}}Settings
 			);
 
 
 			/**
-			 * Creates a new subclass of class "{{{this._ui5QualifiedNameSlashes}}}" with name `sClassName` and enriches it with the information
+			 * Creates a new subclass of class "{{{clazz._ui5QualifiedNameSlashes}}}" with name `sClassName` and enriches it with the information
 			 * contained in `oClassInfo`.
 			 *
 			 * `oClassInfo` might contain the same kind of information as described in {@link sap.ui.core.Control.extend}.
@@ -138,7 +146,7 @@ declare module "{{{this._ui5QualifiedNameSlashes}}}" {
 				/**
 				 * Object literal with information about the class
 				 */
-				oClassInfo?: sap.ClassInfo<T, {{{this.name}}}>,
+				oClassInfo?: sap.ClassInfo<T, {{{clazz.name}}}>,
 				/**
 				 * Constructor function for the metadata object; if not given, it defaults to the metadata implementation
 				 * used by this class
@@ -147,14 +155,14 @@ declare module "{{{this._ui5QualifiedNameSlashes}}}" {
 			): Function;
 
 			/**
-			 * Returns a metadata object for class "{{{this._ui5QualifiedNameSlashes}}}".
+			 * Returns a metadata object for class "{{{clazz._ui5QualifiedNameSlashes}}}".
 			 *
 			 *
 			 * @returns Metadata object describing this class
 			 */
 			static getMetadata(): WebComponentMetadata;
 
-			{{#each this._dts.methods}}
+			{{#each clazz._dts.methods}}
 				{{#if this.description}}{{{this.description}}}{{/if}}
 				{{@key}}({{#each this.params}}
 				{{@key}}: {{{generatePropertySettings this}}},
@@ -162,5 +170,3 @@ declare module "{{{this._ui5QualifiedNameSlashes}}}" {
 			{{/each}}
 		}
 }
-{{/if}}
-{{/each}}
