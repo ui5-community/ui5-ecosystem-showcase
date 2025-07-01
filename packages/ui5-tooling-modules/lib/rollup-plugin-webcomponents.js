@@ -9,7 +9,7 @@ const { compile } = require("handlebars");
 
 const WebComponentRegistry = require("./utils/WebComponentRegistry");
 
-module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framework, options, $metadata = {} } = {}) {
+module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framework, srcPath, options, $metadata = {} } = {}) {
 	// derive the configuration from the provided options
 	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, moduleBasePath, removeScopePrefix, skipJSDoc } = Object.assign(
 		{
@@ -139,6 +139,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 						removeScopePrefix,
 						scopeSuffix: ui5WebCScopeSuffix,
 						npmPackagePath,
+						srcPath,
 						version: packageJson.version,
 					});
 					// console.log(`‼️ WebComponentRegistry.register call for ${npmPackage} finished in rollup`);

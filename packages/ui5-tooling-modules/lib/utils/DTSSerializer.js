@@ -1,6 +1,6 @@
 const prettier = require("prettier");
 const { join } = require("path");
-const { /**writeFileSync,*/ readFileSync } = require("fs");
+const { writeFileSync, readFileSync, existsSync, mkdirSync } = require("fs");
 
 const handlebars = require("handlebars");
 const WebComponentRegistryHelper = require("./WebComponentRegistryHelper");
@@ -135,6 +135,13 @@ function loadAndCompileTemplate(templatePath) {
 
 const DTSSerializer = {
 	prepare: function (registryEntry) {
+		const srcPath = registryEntry.srcPath || __dirname;
+
+		if (!existsSync(join(srcPath, "_types"))) {
+			// Directory does not exist, create it
+			mkdirSync(join(srcPath, "_types"), { recursive: true });
+		}
+
 		prettier
 			.format(
 				Templates.module({
@@ -144,7 +151,7 @@ const DTSSerializer = {
 			)
 			.then((prettifiedTypes) => {
 				if (prettifiedTypes) {
-					// writeFileSync(join(__dirname, ".types", `${registryEntry.qualifiedNamespace}.gen.d.ts`), prettifiedTypes, { encoding: "utf-8" });
+					writeFileSync(join(srcPath, "_types", `${registryEntry.qualifiedNamespace}.gen.d.ts`), prettifiedTypes, { encoding: "utf-8" });
 				}
 			});
 		for (const clazz in registryEntry.classes) {
@@ -159,7 +166,7 @@ const DTSSerializer = {
 					)
 					.then((prettifiedTypes) => {
 						if (prettifiedTypes) {
-							// writeFileSync(join(__dirname, ".types", `${registryEntry.qualifiedNamespace}.dist.${clazz}.gen.d.ts`), prettifiedTypes, { encoding: "utf-8" });
+							writeFileSync(join(srcPath, "_types", `${registryEntry.qualifiedNamespace}.dist.${clazz}.gen.d.ts`), prettifiedTypes, { encoding: "utf-8" });
 						}
 					});
 			}
@@ -464,7 +471,7 @@ const DTSSerializer = {
 		function writeEvents(eventName) {
 			const eventInfo = classDef._dts.events[eventName];
 			// Add default import for events
-			writeImports("sap/ui/base/Event", "Event");
+			writeImports("sap/ui/base/Event", "Event", { default: true });
 
 			for (const paramName in eventInfo.parameters) {
 				const param = eventInfo.parameters[paramName];

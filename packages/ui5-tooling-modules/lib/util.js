@@ -1123,6 +1123,8 @@ module.exports = function (log, projectInfo) {
 						pkgJson: projectInfo.pkgJson, // the current project package.json
 						getPackageJson, // use the cached package.json if possible
 						framework: projectInfo?.framework,
+						// TODO: how to do this cleanly? srcPath is needed for writing DTS files
+						srcPath: projectInfo?.srcPath,
 						options: pluginOptions?.["webcomponents"],
 						$metadata,
 					}),

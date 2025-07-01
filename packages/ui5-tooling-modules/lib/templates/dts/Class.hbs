@@ -97,7 +97,7 @@ declare module "{{{clazz._ui5QualifiedNameSlashes}}}" {
 
 			export type {{{generateEventSettings @root.clazz.name @key}}} = Event<
 				{{{generateEventSettings @root.clazz.name @key}}}Parameters,
-				{{{../name}}}
+				{{{@root.clazz.name}}}
 			>;
 		{{/each}}
 

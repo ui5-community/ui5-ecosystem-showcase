@@ -97,6 +97,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 		namespace: project.getNamespace(),
 		type: project.getType(),
 		rootPath: project.getRootPath(),
+		srcPath: project.getSourcePath(),
 		framework: {
 			name: project.getFrameworkName(),
 			version: project.getFrameworkVersion(),
