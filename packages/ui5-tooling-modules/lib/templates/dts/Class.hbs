@@ -1,4 +1,4 @@
-{{#each clazz._dts.globalImports}}
+{{!-- {{#each clazz._dts.globalImports}}
 {{#if @first}}
 
 /**
@@ -7,7 +7,7 @@
 {{/if}}
 {{{generateImports @key this}}}
 
-{{/each}}
+{{/each}} --}}
 declare module "{{{clazz._ui5QualifiedNameSlashes}}}" {
 
 	/**
@@ -26,7 +26,7 @@ declare module "{{{clazz._ui5QualifiedNameSlashes}}}" {
 
 	{{/each}}
 
-		export interface ${{{this.name}}}Settings extends ${{{clazz._dts.extends}}}Settings {
+		export interface ${{{clazz.name}}}Settings extends ${{{clazz._dts.extends}}}Settings {
 			{{#each clazz._dts.properties}}
 				{{#if @first}}
 
@@ -101,7 +101,7 @@ declare module "{{{clazz._ui5QualifiedNameSlashes}}}" {
 			>;
 		{{/each}}
 
-		export default class {{{this.name}}} extends {{{clazz._dts.extends}}}
+		export default class {{{clazz.name}}} extends {{{clazz._dts.extends}}}
 	{{#if clazz._dts.implements}}
 		implements {{join clazz._dts.implements}}
 	{{/if}}

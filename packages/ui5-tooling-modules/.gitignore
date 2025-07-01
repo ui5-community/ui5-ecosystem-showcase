@@ -3,4 +3,4 @@ test/__dist__/*
 !test/__snap__/**/dist
 
 # Generated d.ts sources for testing
-lib/utils/generated_types
+lib/utils/.types

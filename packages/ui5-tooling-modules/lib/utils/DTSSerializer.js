@@ -1,6 +1,6 @@
 const prettier = require("prettier");
 const { join } = require("path");
-const { writeFileSync, readFileSync } = require("fs");
+const { /**writeFileSync,*/ readFileSync } = require("fs");
 
 const handlebars = require("handlebars");
 const WebComponentRegistryHelper = require("./WebComponentRegistryHelper");
@@ -144,7 +144,7 @@ const DTSSerializer = {
 			)
 			.then((prettifiedTypes) => {
 				if (prettifiedTypes) {
-					writeFileSync(join(__dirname, "generated_types", `${registryEntry.qualifiedNamespace}.d.ts`), prettifiedTypes, { encoding: "utf-8" });
+					// writeFileSync(join(__dirname, ".types", `${registryEntry.qualifiedNamespace}.gen.d.ts`), prettifiedTypes, { encoding: "utf-8" });
 				}
 			});
 		for (const clazz in registryEntry.classes) {
@@ -159,7 +159,7 @@ const DTSSerializer = {
 					)
 					.then((prettifiedTypes) => {
 						if (prettifiedTypes) {
-							writeFileSync(join(__dirname, "generated_types", `${registryEntry.qualifiedNamespace}.dist.${clazz}.d.ts`), prettifiedTypes, { encoding: "utf-8" });
+							// writeFileSync(join(__dirname, ".types", `${registryEntry.qualifiedNamespace}.dist.${clazz}.gen.d.ts`), prettifiedTypes, { encoding: "utf-8" });
 						}
 					});
 			}

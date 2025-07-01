@@ -291,8 +291,9 @@ class RegistryEntry {
 					const refClass = this.classes[typeInfo.references[0].module.match(/\/(.*).js$/)?.[1]];
 					if (refClass) {
 						return {
-							dtsType: type,
-							ui5Type: "object",
+							dtsType: "any",
+							// dtsType: type,
+							ui5Type: "any",
 							packageName: refClass._ui5QualifiedNameSlashes,
 							globalImport: true,
 						};
