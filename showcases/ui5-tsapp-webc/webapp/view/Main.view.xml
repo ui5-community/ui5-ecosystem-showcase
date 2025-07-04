@@ -216,9 +216,9 @@
             additionalTextState="Information"
             accessibleName="Tree item with accessibleName"
           >
-            <webc:TreeItem movable="true" expanded="true" text="Tree 1.1" additionalText="Re-stock" additionalTextState="Negative" indeterminate="true" selected="true">
-              <webc:TreeItem movable="true" text="Tree 1.1.1" additionalText="Required" additionalTextState="Critical" selected="true" />
-              <webc:TreeItem movable="true" text="Tree 1.1.2" additionalText="Available" additionalTextState="Positive" />
+            <webc:TreeItem movable="true" expanded="true" text="Tree 1.1" additionalText="Re-stock" additionalTextState="Warning" indeterminate="true" selected="true">
+              <webc:TreeItem movable="true" text="Tree 1.1.1" additionalText="Required" additionalTextState="Error" selected="true" />
+              <webc:TreeItem movable="true" text="Tree 1.1.2" additionalText="Available" additionalTextState="Success" />
             </webc:TreeItem>
           </webc:TreeItem>
 
