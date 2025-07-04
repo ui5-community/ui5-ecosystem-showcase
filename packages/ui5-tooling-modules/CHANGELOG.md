@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.27.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.6...ui5-tooling-modules@3.27.7) (2025-07-04)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** ensure customdata support for newer ui5 releases + scan perfopt ([#1234](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1234)) ([c5c2cac](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c5c2cac941120248590f299679928b77897bafd1))
+
+
+
+
+
 ## [3.27.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.5...ui5-tooling-modules@3.27.6) (2025-06-11)
 
 
