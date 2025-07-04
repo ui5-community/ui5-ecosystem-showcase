@@ -1045,7 +1045,7 @@ class RegistryEntry {
 }
 
 const WebComponentRegistry = {
-	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, skipDtsGeneration }) {
+	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, skipDtsGeneration = true }) {
 		// Skips the *.d.ts file generation for TypeScript support, configured via ui5.yaml:
 		//   - server/customMiddleware/ui5-tooling-modules-middleware/configuration/pluginOptions/webcomponents/skipDtsGeneration
 		// and
