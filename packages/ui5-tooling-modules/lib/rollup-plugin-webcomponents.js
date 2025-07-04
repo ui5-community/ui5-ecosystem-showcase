@@ -11,9 +11,9 @@ const prettier = require("@prettier/sync");
 
 const WebComponentRegistry = require("./utils/WebComponentRegistry");
 
-module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framework, srcPath, options, $metadata = {} } = {}) {
+module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framework, options, $metadata = {} } = {}) {
 	// derive the configuration from the provided options
-	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, moduleBasePath, removeScopePrefix, skipJSDoc } = Object.assign(
+	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, moduleBasePath, removeScopePrefix, skipJSDoc, skipDtsGeneration } = Object.assign(
 		{
 			skip: false,
 			scoping: true,
@@ -21,6 +21,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			force: false,
 			includeAssets: false, // experimental (due to race condition!)
 			skipJSDoc: true,
+			skipDtsGeneration: true,
 		},
 		options,
 	);
@@ -121,7 +122,6 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				// load the dependent Web Component packages
 				const libraryDependencies = [];
 				[...Object.keys(packageJson.dependencies || {}), ...Object.keys(packageJson.optionalDependencies || {})].forEach((dep) => {
-					// console.log(`‼️ Load of npm package ${dep} as dependency of ${npmPackage}`);
 					const package = loadNpmPackage(dep, emitFile);
 					if (package) {
 						libraryDependencies.push(package.namespace);
@@ -132,7 +132,6 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				if (metadataPath) {
 					const customElementsMetadata = JSON.parse(readFileSync(metadataPath, { encoding: "utf-8" }));
 
-					// console.log(`‼️ WebComponentRegistry.register will be called for ${npmPackage}`);
 					// first time registering a new Web Component package
 					registryEntry = WebComponentRegistry.register({
 						customElementsMetadata,
@@ -141,10 +140,9 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 						removeScopePrefix,
 						scopeSuffix: ui5WebCScopeSuffix,
 						npmPackagePath,
-						srcPath,
+						skipDtsGeneration,
 						version: packageJson.version,
 					});
-					// console.log(`‼️ WebComponentRegistry.register call for ${npmPackage} finished in rollup`);
 
 					// assign the dependencies
 					registryEntry.dependencies = libraryDependencies;
@@ -171,7 +169,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 		if (npmPackage !== "@ui5/webcomponents-base" && (clazz = WebComponentRegistry.getClassDefinition(source))) {
 			return clazz;
 		}
-		// console.log(`‼️ Initial load of npm package ${npmPackage}`);
+
 		const registryEntry = loadNpmPackage(npmPackage, emitFile);
 		if (registryEntry) {
 			const metadata = registryEntry;

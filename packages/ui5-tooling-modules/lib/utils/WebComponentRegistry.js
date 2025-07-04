@@ -176,9 +176,7 @@ class RegistryEntry {
 			const superclassName = classDef.superclass.name;
 			// determine superclass cross-package
 			const refPackage = WebComponentRegistry.getPackage(classDef.superclass.package);
-			if (!refPackage) {
-				// console.log(`‼️ No refPackage found for ${classDef.superclass.package}`);
-			}
+
 			let superclassRef = (refPackage || this).classes[superclassName];
 			if (!superclassRef) {
 				console.error(
@@ -1047,12 +1045,18 @@ class RegistryEntry {
 }
 
 const WebComponentRegistry = {
-	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version }) {
+	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, skipDtsGeneration }) {
+		// Skips the *.d.ts file generation for TypeScript support, configured via ui5.yaml:
+		//   - server/customMiddleware/ui5-tooling-modules-middleware/configuration/pluginOptions/webcomponents/skipDtsGeneration
+		// and
+		//   - builder/customTasks/ui5-tooling-modules-task/configuration/pluginOptions/webcomponents/skipDtsGeneration
+		if (skipDtsGeneration) {
+			DTSSerializer.deactivate();
+		}
+
 		let entry = _registry[namespace];
 		if (!entry) {
-			// console.log(`‼️ WebComponentRegistry.register called for ${namespace}`);
 			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version });
-			// console.log(`‼️ RegistryEntry created for ${namespace}`);
 
 			// track all classes also via their module name,
 			// so we can access them faster during resource resolution later on
@@ -1060,7 +1064,6 @@ const WebComponentRegistry = {
 				const classDef = entry.classes[className];
 				this.addClassAlias(`${namespace}/${classDef.module}`, classDef);
 			});
-			// console.log(`‼️ WebComponentRegistry.register finished for ${namespace}`);
 		}
 		return entry;
 	},

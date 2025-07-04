@@ -127,6 +127,20 @@ function loadAndCompileTemplate(templatePath) {
 }
 
 const DTSSerializer = {
+	/**
+	 * Deactivates the *.d.ts file generation via ui5.yaml configuration
+	 */
+	deactivate() {
+		for (const s in this) {
+			this[s] = () => {};
+		}
+	},
+
+	/**
+	 * Serializes a full set of *.d.ts files for each class/enum/interface in this registry entry.
+	 * Location: ".ui5-tooling-modules/types"
+	 * @param {WebComponentRegistry.Entry} registryEntry the registry entry which will receive a set of serialized *.d.ts files.
+	 */
 	prepare: function (registryEntry) {
 		const cachePath = join(process.cwd(), ".ui5-tooling-modules");
 
@@ -165,6 +179,12 @@ const DTSSerializer = {
 			}
 		}
 	},
+
+	/**
+	 * Initializes the internal objects holding the DTS information for the given class.
+	 * Will be filled on the go when the custom elements metadata is analyzed.
+	 * @param {WebComponentRegistry.ClassDef} classDef the class def to be initialized
+	 */
 	initClass(classDef) {
 		classDef._dts = {
 			globalImports: {},
@@ -177,6 +197,11 @@ const DTSSerializer = {
 			methods: {},
 		};
 	},
+
+	/**
+	 * Writes the main class body DTS information, e.g. properties, aggregations, ...
+	 * @param {WebComponentRegistry.ClassDef} classDef the class def for which the main class body should be written
+	 */
 	writeClassBody(classDef) {
 		const getMethodTemplate = function ({ params = {}, description = "", returnValueTypes = [{ dtsType: "this" }] } = {}) {
 			return {
@@ -565,24 +590,17 @@ const DTSSerializer = {
 		}
 	},
 
-	// classDef._dts["imports"]['sap/ui/core/webc/WebComponent']["WebComponent"] = {default: true}
-	// classDef._dts["imports"]['@ui5/webcomponents-fiori']["SideContentPosition"] = {}
-	// classDef._dts["properties"]["sideContentPosition"] = { typeImportRef: "SideContentPosition" }
-
-	// classDef._dts["imports"]['sap/ui/core/library']["CSSSize"] = {}
-	// classDef._dts["properties"]["width"] = { typeImportRef: "CSSSize" }
-	// classDef._dts["properties"]["height"] = { typeImportRef: "CSSSize" }
-
-	// classDef._dts["imports"]['sap/ui/core/library']["CSSSize"] = { importAs: "sap_ui_core_CSSSize" }
-	// classDef._dts["properties"]["width"] = { typeImportRef: "sap_ui_core_CSSSize" }
-
-	// classDef._dts["imports"]['sap/ui/core/library']["CSSSize"] = {}
-	// classDef._dts["properties"]["width"] = { typeImportRef: "sap_ui_core_library_CSSSize" }
-
+	/**
+	 * Generically collects DTS information for the given class and entity, e.g. classDef = Button, entityType = "properties", entityDef = {...}
+	 * @param {WebComponentRegistry.ClassDef} classDef
+	 * @param {string} entityType the type of entity that should be written, e.g. "properties", "aggregations", ...
+	 * @param {object} entityDef the entity definition, e.g. property or aggregation info
+	 */
 	writeDts(classDef, entityType, entityDef) {
 		// we clone the objects here to prevent accidental side effects
 		classDef._dts[entityType][entityDef.name] = Object.assign({}, entityDef);
 	},
+
 	/**
 	 * Updates the Data Type Structure (DTS) information for given entities within the class definition.
 	 * This method can be used to move an association to aggregations or to change the type of an event,
