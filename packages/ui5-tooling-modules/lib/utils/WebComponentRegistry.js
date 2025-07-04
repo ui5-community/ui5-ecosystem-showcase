@@ -119,6 +119,7 @@ class RegistryEntry {
 		//           We need a fully constructed parent chain later for ensuring UI5 defaults (refer to #ensureDefaults)
 		Object.keys(this.classes).forEach((className) => {
 			const classDef = this.classes[className];
+			this.#initClass(classDef);
 			if (classDef.superclass) {
 				this.#createUI5Metadata(classDef);
 			}
@@ -958,8 +959,14 @@ class RegistryEntry {
 		}
 	}
 
-	#createUI5Metadata(classDef) {
-		const ui5metadata = (classDef._ui5metadata = {
+	/**
+	 * Initializes basic properties on a class definition.
+	 * The properties are expected during the WebComponentRegistry's metadata analysis.
+	 *
+	 * @param {object} classDef the class definition
+	 */
+	#initClass(classDef) {
+		classDef._ui5metadata = {
 			namespace: this.namespace,
 			qualifiedNamespace: this.qualifiedNamespace,
 			tag: classDef.scopedTagName || classDef.tagName,
@@ -968,18 +975,20 @@ class RegistryEntry {
 			aggregations: {},
 			associations: {},
 			events: {},
-			// https://github.com/SAP/openui5/blob/master/src/sap.ui.core/src/sap/ui/core/webc/WebComponent.js#L570C25-L601
 			getters: [],
 			methods: [],
-		});
+		};
+		// we track a couple of UI5 specifics like interfaces and mixins separately
+		classDef._ui5specifics = {};
+	}
+
+	#createUI5Metadata(classDef) {
+		const ui5metadata = classDef._ui5metadata;
 
 		// we track the JSDoc extracted from the custom elements manifest separately,
 		// as they are not part of the runtime metadata
 		JSDocSerializer.initClass(classDef);
 		DTSSerializer.initClass(classDef);
-
-		// we track a couple of UI5 specifics like interfaces and mixins separately
-		classDef._ui5specifics = {};
 
 		classDef.members?.forEach((propDef) => {
 			this.#processMembers(classDef, ui5metadata, propDef);
