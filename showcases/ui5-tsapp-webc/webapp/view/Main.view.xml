@@ -8,7 +8,7 @@
   xmlns:ca="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
   xmlns:webc="@ui5/webcomponents/dist"
   xmlns:fiori="@ui5/webcomponents-fiori/dist"
-  xmlns:ai="@ui5/webcomponents/dist"
+  xmlns:ai="@ui5/webcomponents-ai/dist"
   core:require="{
     Formatter: 'ui5/ecosystem/demo/webctsapp/model/Formatter',
     iconUI5: '@ui5/webcomponents-icons/dist/sap-ui5',
@@ -28,13 +28,11 @@
     </headerContent> -->
     <!-- playground-fold-end -->
 
-    <!--
-		<ai:Button id="myAiButton" state="generate">
-			<ai:ButtonState name="generate" text="Generate" icon="ai"></ai:ButtonState>
-			<ai:ButtonState name="generating" text="Stop Generating" icon="stop"></ai:ButtonState>
-			<ai:ButtonState name="revise" text="Revise" icon="ai" endIcon="navigation-down-arrow"></ai:ButtonState>
-		</ai:Button>
-    -->
+    <ai:Button id="myAiButton" state="generate">
+      <ai:ButtonState name="generate" text="Generate" icon="ai" />
+      <ai:ButtonState name="generating" text="Stop Generating" icon="stop" />
+      <ai:ButtonState name="revise" text="Revise" icon="ai" endIcon="navigation-down-arrow" />
+    </ai:Button>
 
     <fiori:ShellBar id="shellbar" primaryTitle="{formatter: 'Formatter.formatValue', path: 'i18n>appTitle'}" profileClick=".onProfileClick">
       <fiori:customData>
@@ -218,9 +216,9 @@
             additionalTextState="Information"
             accessibleName="Tree item with accessibleName"
           >
-            <webc:TreeItem movable="true" expanded="true" text="Tree 1.1" additionalText="Re-stock" additionalTextState="Negative" indeterminate="true" selected="true">
-              <webc:TreeItem movable="true" text="Tree 1.1.1" additionalText="Required" additionalTextState="Critical" selected="true" />
-              <webc:TreeItem movable="true" text="Tree 1.1.2" additionalText="Available" additionalTextState="Positive" />
+            <webc:TreeItem movable="true" expanded="true" text="Tree 1.1" additionalText="Re-stock" additionalTextState="Warning" indeterminate="true" selected="true">
+              <webc:TreeItem movable="true" text="Tree 1.1.1" additionalText="Required" additionalTextState="Error" selected="true" />
+              <webc:TreeItem movable="true" text="Tree 1.1.2" additionalText="Available" additionalTextState="Success" />
             </webc:TreeItem>
           </webc:TreeItem>
 

@@ -3,14 +3,17 @@ const { readFileSync, existsSync } = require("fs");
 const { createHash } = require("crypto");
 
 const JSDocSerializer = require("./utils/JSDocSerializer");
+const WebComponentRegistryHelper = require("./utils/WebComponentRegistryHelper");
 const { lt, gte } = require("semver");
 const { compile } = require("handlebars");
+
+const prettier = require("@prettier/sync");
 
 const WebComponentRegistry = require("./utils/WebComponentRegistry");
 
 module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framework, options, $metadata = {} } = {}) {
 	// derive the configuration from the provided options
-	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, moduleBasePath, removeScopePrefix, skipJSDoc } = Object.assign(
+	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, moduleBasePath, removeScopePrefix, skipJSDoc, skipDtsGeneration } = Object.assign(
 		{
 			skip: false,
 			scoping: true,
@@ -18,6 +21,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			force: false,
 			includeAssets: false, // experimental (due to race condition!)
 			skipJSDoc: true,
+			skipDtsGeneration: true,
 		},
 		options,
 	);
@@ -136,6 +140,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 						removeScopePrefix,
 						scopeSuffix: ui5WebCScopeSuffix,
 						npmPackagePath,
+						skipDtsGeneration,
 						version: packageJson.version,
 					});
 
@@ -231,7 +236,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			type: "prebuilt-chunk",
 			id: source,
 			fileName: `${source}.js`,
-			code,
+			code: prettier.format(code, { semi: false, parser: "babel" }),
 		});
 
 		// store the metadata
@@ -255,7 +260,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			log.verbose(`Emitting Web Component wrapper: ${resolvedSource}`);
 
 			// determine whether the clazz is based on the UI5Element superclass
-			const isClazzUI5Element = WebComponentRegistry.isUI5ElementSubclass(clazz);
+			const isClazzUI5Element = WebComponentRegistryHelper.isUI5ElementSubclass(clazz);
 			if (ui5WebCScopeSuffix && !isClazzUI5Element) {
 				log.warn(`The Web Component "${source}" doesn't support scoping as it is not extending UI5Element!`);
 			}
@@ -287,7 +292,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			// Determine the superclass UI5 module name and import it
 			let webcBaseClass = "sap/ui/core/webc/WebComponent";
 			const ui5Superclass = clazz.superclass;
-			if (ui5Superclass?._ui5metadata && !(ui5Superclass.namespace === "@ui5/webcomponents-base" && ui5Superclass.name === "UI5Element")) {
+			if (ui5Superclass?._ui5metadata && !WebComponentRegistryHelper.isUI5Element(ui5Superclass)) {
 				const { module } = clazz.superclass;
 				const { namespace } = clazz.superclass._ui5metadata;
 				webcBaseClass = `${namespace}/${module.slice(0, -3)}`;
@@ -324,7 +329,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				type: "prebuilt-chunk",
 				id: resolvedSource,
 				fileName: `${resolvedSource}.js`,
-				code,
+				code: prettier.format(code, { semi: false, parser: "babel" }),
 			});
 
 			// store the metadata
@@ -455,7 +460,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				let nonUI5TagsToRegister;
 				if (ui5WebCScopeSuffix) {
 					nonUI5TagsToRegister = Object.values(customElements)
-						.filter((element) => WebComponentRegistry.isUI5ElementSubclass(element))
+						.filter((element) => WebComponentRegistryHelper.isUI5ElementSubclass(element))
 						.map((element) => element.tagName)
 						.filter((tag) => (tag ? !tag.startsWith("ui5-") : false));
 					if (nonUI5TagsToRegister.length === 0) {

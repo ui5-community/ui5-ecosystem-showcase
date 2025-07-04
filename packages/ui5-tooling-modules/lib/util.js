@@ -500,7 +500,10 @@ module.exports = function (log, projectInfo) {
 				allSources = allSources.filter((source) => {
 					const sourcePath = source.getPath();
 					const ext = path.extname(sourcePath);
-					if (ext !== ".js" && allJsSources.has(sourcePath.replace(new RegExp(`\\${ext}$`), ""))) {
+					// exclude generated TS types for control wrappers
+					if (sourcePath.endsWith(".d.ts")) {
+						return false;
+					} else if (ext !== ".js" && allJsSources.has(sourcePath.replace(new RegExp(`\\${ext}$`), ""))) {
 						log.info(`Removing source ${sourcePath} (as a parallel JS resource was found)`);
 						return false;
 					}

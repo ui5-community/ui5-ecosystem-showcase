@@ -17,6 +17,10 @@ handlebars.registerHelper("escapeType", function (str) {
 	return `{${str}}`;
 });
 
+handlebars.registerHelper("formatNewLine", function (str) {
+	return `${str.replace(/\n/g, "\n * ")}`;
+});
+
 /**
  * All needed HBS templates for serializing JSDoc comments.
  */
@@ -78,9 +82,6 @@ function _serializeClassHeader(classDef) {
 		superclassName = "sap.ui.core.webc.WebComponent";
 	} else if (superclassName) {
 		superclassName = `module:${classDef.superclass._ui5QualifiedNameSlashes}`;
-	} else {
-		// TODO: what do we do with the classes that don't have a superclass?
-		console.warn(`No superclass found for class ${classDef._ui5QualifiedName}`);
 	}
 
 	// TODO: The descriptions can contain non JSDoc compliant characters, e.g. `*` or `@`
@@ -226,11 +227,16 @@ const JSDocSerializer = {
 		// Classes (used in WrapperControl.hbs)
 		Object.keys(registryEntry.classes).forEach((className) => {
 			const classDef = registryEntry.classes[className];
-			// we track the serialized JSDoc independently from the class' ui5-metadata
-			_serializeClassHeader(classDef);
+			if (classDef.superclass) {
+				// we track the serialized JSDoc independently from the class' ui5-metadata
+				_serializeClassHeader(classDef);
 
-			// the serialized metadata as a single string, can be inlined in the control wrappers later
-			_prepareUI5Metadata(classDef);
+				// the serialized metadata as a single string, can be inlined in the control wrappers later
+				_prepareUI5Metadata(classDef);
+			} else {
+				// TODO: what do we do with the classes that don't have a superclass?
+				console.warn(`No superclass found for class ${classDef._ui5QualifiedName}`);
+			}
 		});
 
 		// Package (used in Package.hbs)

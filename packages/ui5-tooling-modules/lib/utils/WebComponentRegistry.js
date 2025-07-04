@@ -1,5 +1,11 @@
 const JSDocSerializer = require("./JSDocSerializer");
+const DTSSerializer = require("./DTSSerializer");
+const WebComponentRegistryHelper = require("./WebComponentRegistryHelper");
 
+// List of all supported primitive types including "integer"
+const primitiveTypes = ["object", "boolean", "number", "integer", "bigint", "string", "null"];
+// Known native browser elemts used as types in web components
+const nativeBrowserElements = ["DataTransfer", "Date", "Event", "File", "FileList"];
 /**
  * Camelize the dashes.
  * Used to transform event names.
@@ -25,7 +31,7 @@ function slash2dot(s) {
  * @returns the generated UI5 getter function name
  */
 const calculateGetterName = (functionName) => {
-	return "get" + functionName.substr(0, 1).toUpperCase() + functionName.substr(1);
+	return "get" + functionName.substring(0, 1).toUpperCase() + functionName.substring(1);
 };
 
 // the class name of the base class of all control wrappers
@@ -63,6 +69,8 @@ class RegistryEntry {
 
 		JSDocSerializer.prepare(this);
 
+		DTSSerializer.prepare(this);
+
 		console.log(`Metadata processed for package ${namespace}.`); // Module base path: ${moduleBasePath}.`);
 	}
 
@@ -87,9 +95,17 @@ class RegistryEntry {
 			module.exports?.forEach(this.#parseExports.bind(this));
 		});
 
-		// [2] Prepare classes
+		// [2] prepare enum objects
+		this.#prepareEnums();
+
+		// [3] prepare interface definitions
+		this.#prepareInterfaces();
+
+		// [4] Prepare classes
 		Object.keys(this.classes).forEach((className) => {
 			const classDef = this.classes[className];
+
+			classDef._ui5implements ??= [];
 
 			this.#deriveUi5ClassNames(classDef);
 
@@ -98,19 +114,16 @@ class RegistryEntry {
 			this.#calculateScopedTagName(classDef);
 		});
 
-		// [3] create UI5 metadata for each classed based on the parsed custom elements metadata
+		// [5] create UI5 metadata for each classed based on the parsed custom elements metadata
 		//     Note: The order is important! We connected the superclasses first and only then create its metadata.
 		//           We need a fully constructed parent chain later for ensuring UI5 defaults (refer to #ensureDefaults)
 		Object.keys(this.classes).forEach((className) => {
 			const classDef = this.classes[className];
-			this.#createUI5Metadata(classDef);
+			this.#initClass(classDef);
+			if (classDef.superclass) {
+				this.#createUI5Metadata(classDef);
+			}
 		});
-
-		// [4] prepare enum objects
-		this.#prepareEnums();
-
-		// [5] prepare interface definitions
-		this.#prepareInterfaces();
 	}
 
 	#parseDeclaration(decl) {
@@ -164,6 +177,7 @@ class RegistryEntry {
 			const superclassName = classDef.superclass.name;
 			// determine superclass cross-package
 			const refPackage = WebComponentRegistry.getPackage(classDef.superclass.package);
+
 			let superclassRef = (refPackage || this).classes[superclassName];
 			if (!superclassRef) {
 				console.error(
@@ -183,16 +197,14 @@ class RegistryEntry {
 		return `${this.qualifiedNamespace}.${str}`;
 	}
 
-	prefixnsAsModule(str, isNamedExport) {
+	prefixnsAsModule(str) {
 		// a named export is referenced with a dot, e.g. "module:@ui5/webcomponents.IAvatarGroupItem"
-		// a default module export is referenced with a slash, e.g. "module:@ui5/webcomponents/dist/Avatar"
-		const delimiter = isNamedExport ? "." : "/";
-		return `module:${this.namespace}${delimiter}${str}`;
+		return `module:${this.namespace}.${str}`;
 	}
 
 	#calculateScopedTagName(classDef) {
 		// only scope UI5Element subclasses
-		if (this.scopeSuffix && WebComponentRegistry.isUI5ElementSubclass(classDef)) {
+		if (this.scopeSuffix && WebComponentRegistryHelper.isUI5ElementSubclass(classDef)) {
 			if (classDef.tagName) {
 				classDef.scopedTagName = `${classDef.tagName}-${this.scopeSuffix}`;
 			}
@@ -206,116 +218,162 @@ class RegistryEntry {
 			const lowerCaseName = type.toLowerCase();
 			if (lowerCaseName === "number") {
 				return "float";
-			}
-			// HTMLElements are a valid type for event parameters
-			if (lowerCaseName === "htmlelement") {
-				return "HTMLElement";
+			} else if (lowerCaseName === "integer") {
+				return "int";
 			}
 			return lowerCaseName;
 		}
 		return "string";
 	}
 
-	#findInterfaceOrClassType(type) {
-		if (this.interfaces[type]) {
+	#parseComplexType(type, packageRef) {
+		const base = {
+			dtsType: type,
+			ui5Type: packageRef.prefixns(type),
+			moduleType: packageRef.prefixnsAsModule(type),
+			packageName: packageRef.namespace,
+		};
+		if (packageRef.interfaces[type]) {
 			return {
-				resolvedUi5Name: this.prefixns(type),
-				resolvedModuleName: this.prefixnsAsModule(type, true),
+				...base,
+				isInterface: true,
 			};
-		} else if (this.classes[type]) {
+		} else if (packageRef.enums[type]) {
 			return {
-				resolvedUi5Name: this.classes[type]._ui5QualifiedName,
-				resolvedModuleName: `module:${this.classes[type]._ui5QualifiedNameSlashes}`,
+				...base,
+				isEnum: true,
+			};
+		} else if (packageRef.classes[type]) {
+			const classDef = packageRef.classes[type];
+			return {
+				...base,
+				ui5Type: classDef._ui5QualifiedName,
+				moduleType: `module:${classDef._ui5QualifiedNameSlashes}`,
+				packageName: classDef._ui5QualifiedNameSlashes,
+				isClass: true,
 			};
 		}
 	}
-
 	#extractUi5Type(typeInfo) {
-		// [Simple type]:
-		// some types are given as a union type, e.g. "string | undefined"
-		// TODO: are there combinations of arrays and other types/undefined? e.g. "Array<number> | undefined"
-		//       Does that make sense? Probably should be an empty array instead of undefined?
-		let parsedType = typeInfo?.text;
-		if (parsedType?.indexOf("|") > 0) {
-			const types = parsedType.split("|").map((s) => s.trim());
+		const deriveType = (type) => {
+			if (type === "undefined") {
+				return;
+			}
+			// [Complex types]:
+			// we have a reference to other things -> enums, interfaces, classes
+			if (typeInfo?.references?.length > 0 || this.classes[type] || this.enums[type] || this.interfaces[type]) {
+				// Since the UI5 runtime only allows for 1 single type per property/aggregation, we take the first reference
+				type = typeInfo?.references?.[0]?.name || type;
 
-			// case 1: "htmlelement | string" is an association, e.g. the @ui5-webcomponents/Popover#opener
-			if (types.includes("HTMLElement") && types.includes("string")) {
+				if (type === "ValueState" && typeInfo.references?.[0].package === "@ui5/webcomponents-base") {
+					// case 1a: native webc ValueState ==> core ValueState
+					return {
+						dtsType: "ValueState",
+						packageName: "sap/ui/core/library",
+						moduleType: "module:sap/ui/core/ValueState",
+						ui5Type: "sap.ui.core.ValueState",
+						isEnum: true,
+					};
+				}
+				// case 1b: complex type is enum, interface or class
+				let complexType = this.#parseComplexType(type, this);
+				if (!complexType && this.namespace !== typeInfo.references[0].package) {
+					// case 1c: check for cross package type reference
+					const refPackage = WebComponentRegistry.getPackage(typeInfo.references[0].package);
+					if (refPackage) {
+						complexType = this.#parseComplexType(type, refPackage);
+					} else {
+						console.log(`Reference package '${typeInfo.references[0].package}' for complex type '${type}' not found`);
+					}
+				} else if (!complexType && typeInfo.references[0]) {
+					// case 1d: not able to find the type but there is a reference ==> try to import original webc type from the importing module itself
+					const refClass = this.classes[typeInfo.references[0].module.match(/\/(.*).js$/)?.[1]];
+					if (refClass) {
+						return {
+							dtsType: type,
+							ui5Type: "any",
+							packageName: refClass._ui5QualifiedNameSlashes,
+							globalImport: true,
+						};
+					}
+				}
+
+				if (!complexType) {
+					typeDef.isUnclear = true;
+				}
+				return (
+					complexType || {
+						// case 2: Couldn't determine type => fallback to any
+						isUnclear: true,
+						dtsType: "any",
+						ui5Type: "any",
+					}
+				);
+			} else if (type === "HTMLElement" || type === "Node") {
+				// case 3: HTMLElement || Node => sap/ui/core/Control
 				return {
-					isAssociation: true,
-					origType: "HTMLElement",
+					dtsType: "Control",
+					packageName: "sap/ui/core/Control",
+					moduleType: "module:sap/ui/core/Control",
 					ui5Type: "sap.ui.core.Control",
+					isClass: true,
+				};
+			} else if (primitiveTypes.includes(type.toLowerCase())) {
+				// case 4: primitive types
+				return {
+					dtsType: this.#normalizeType(type),
+					ui5Type: this.#normalizeType(type),
+				};
+			} else if (nativeBrowserElements.includes(type)) {
+				// case 5: native browser elements
+				return {
+					dtsType: type,
+					ui5Type: "object",
+				};
+			} else {
+				typeDef.isUnclear = true;
+				// case 6: Unclear
+				return {
+					isUnclear: true,
+					dtsType: "any",
+					ui5Type: "any",
 				};
 			}
+		};
+		const typeDef = {
+			origType: typeInfo?.text,
+			types: [],
+		};
 
-			// UI5 only accepts one type for a property/aggregation, in this case we just use the first one as the primary type.
-			parsedType = types[0];
+		const types = typeInfo?.text?.match(/(?:Array<[^>]*>|[^|])+/g);
+
+		for (let name of types) {
+			name = name.trim();
+			const arrayTypeMatch = name.match(/Array<(.*)>/i);
+			const multiple = !!arrayTypeMatch;
+
+			if (multiple) {
+				typeDef.types.push({
+					origType: arrayTypeMatch[1],
+					multiple,
+					types: arrayTypeMatch[1]
+						.split("|")
+						.map((s) => deriveType(s.trim()))
+						.filter((t) => !!t),
+				});
+			} else {
+				typeDef.types.push(deriveType(name));
+			}
+
+			// unpack UI5 type
+			// as UI5 can onbly handle one type (unlike TS)
+			typeDef.ui5TypeInfo ??= Object.assign({ multiple }, typeDef.types[0]);
+			if (typeDef.ui5TypeInfo.types?.length >= 1) {
+				Object.assign(typeDef.ui5TypeInfo, typeDef.ui5TypeInfo.types[0]);
+			}
 		}
-
-		// check if we have an array type
-		const arrayTypeMatch = parsedType?.match(/Array<(.*)>/i);
-		const multiple = !!arrayTypeMatch;
-
-		// [Complex types]:
-		// we have a reference to other things -> enums, interfaces, classes
-		if (typeInfo?.references?.length > 0) {
-			// Since the UI5 runtime only allows for 1 single type per property/aggregation, we take the first reference
-			parsedType = typeInfo.references[0].name;
-
-			// TODO: Investigate if this fallback can be omitted, I suspect it is not needed.
-			//       The string based type "arrayTypeMatch[1]" might contain TypeScript generics, which are not known (and irrelevant) to UI5 -> e.g. P13nPopup
-			parsedType ??= arrayTypeMatch?.[1] || parsedType;
-
-			// case 2: enum type -> easy
-			if (this.enums[parsedType]) {
-				return {
-					origType: parsedType,
-					ui5Type: this.prefixns(parsedType),
-					moduleType: this.prefixnsAsModule(parsedType, true),
-					multiple,
-				};
-			}
-
-			// case 3: interface or class type
-			const interfaceOrClassType = this.#findInterfaceOrClassType(parsedType);
-
-			if (interfaceOrClassType) {
-				return {
-					isInterfaceOrClassType: true,
-					origType: parsedType,
-					ui5Type: interfaceOrClassType.resolvedUi5Name,
-					moduleType: interfaceOrClassType.resolvedModuleName,
-					multiple,
-				};
-			}
-
-			// case 4: check for cross package type reference
-			const refPackage = WebComponentRegistry.getPackage(typeInfo.references[0]?.package);
-			if (refPackage?.enums?.[parsedType]) {
-				return {
-					origType: parsedType,
-					ui5Type: refPackage.prefixns(parsedType),
-					multiple,
-				};
-			}
-
-			return {
-				isUnclear: true,
-				origType: parsedType,
-				ui5Type: "any",
-				multiple,
-			};
-		} else {
-			// determine the primitive type from the array type
-			parsedType = arrayTypeMatch?.[1] || parsedType;
-
-			// case 5: primitive types
-			return {
-				origType: parsedType,
-				ui5Type: this.#normalizeType(parsedType),
-				multiple,
-			};
-		}
+		typeDef.types = typeDef.types.filter((t) => !!t);
+		return typeDef;
 	}
 
 	#castDefaultValue(defaultValue, ui5TypeInfo) {
@@ -356,6 +414,25 @@ class RegistryEntry {
 			};
 			// Since we change the naming from "accessibleNameRef" to "ariaLabelledBy", we can't pass the propDef directly to the JSDocSerializer!
 			JSDocSerializer.writeDoc(classDef, "associations", { name: "ariaLabelledBy", description: propDef.description });
+			DTSSerializer.writeDts(classDef, "associations", {
+				name: "ariaLabelledBy",
+				description: propDef.description.replace(/\n/g, "\n * "),
+				types: [
+					{
+						origType: "Array<HTMLElement>",
+						multiple: true,
+						types: [
+							{
+								dtsType: "Control",
+								packageName: "sap/ui/core/Control",
+								moduleType: "module:sap/ui/core/Control",
+								ui5Type: "sap.ui.core.Control",
+								isClass: true,
+							},
+						],
+					},
+				],
+			});
 			return true;
 		} else if (propDef.name === "disabled") {
 			// "disabled" maps to "enabled" in UI5
@@ -372,20 +449,17 @@ class RegistryEntry {
 			};
 			// Since we flip the naming from "disabled" to "enabled", we can't pass the propDef directly to the JSDocSerializer!
 			JSDocSerializer.writeDoc(classDef, "properties", { name: "enabled", description: propDef.description });
+			DTSSerializer.writeDts(classDef, "properties", {
+				name: "enabled",
+				description: propDef.description.replace(/\n/g, "\n * "),
+				types: [
+					{
+						dtsType: "boolean",
+					},
+				],
+				defaultValue: "true",
+			});
 
-			return true;
-		} else if (propDef.name === "textDirection") {
-			// text direction needs to be mapped to the native "dir"
-			ui5metadata.properties["textDirection"] = {
-				type: "sap.ui.core.TextDirection",
-				defaultValue: "TextDirection.Inherit",
-				mapping: {
-					type: "property",
-					to: "dir",
-					formatter: "_mapTextDirection",
-				},
-			};
-			JSDocSerializer.writeDoc(classDef, "properties", propDef);
 			return true;
 		}
 
@@ -395,13 +469,8 @@ class RegistryEntry {
 	#processMembers(classDef, ui5metadata, propDef) {
 		// field -> property or association
 		if (propDef.kind === "field") {
-			let ui5TypeInfo = this.#extractUi5Type(propDef.type);
-
-			// ACC attributes have webc internal typing and will be defaulted to "object" ob UI5 side.
-			if (propDef.name === "accessibilityAttributes") {
-				ui5TypeInfo.ui5Type = "object";
-				ui5TypeInfo.isUnclear = false;
-			}
+			const typeDef = this.#extractUi5Type(propDef.type);
+			const isAssociation = typeDef.origType === "HTMLElement | string | undefined";
 
 			// Some properties might need a special UI5 mapping, e.g. "accesibleNameRef"
 			const hasSpecialMapping = this.#checkForSpecialMapping(classDef, propDef, ui5metadata);
@@ -410,8 +479,10 @@ class RegistryEntry {
 			}
 
 			// DEBUG
-			if (ui5TypeInfo.isUnclear) {
-				console.warn(`[unclear type 🤔] ${classDef.name} - property '${propDef.name}' has unclear type '${ui5TypeInfo.origType}' -> defaulting to 'any', multiple: ${ui5TypeInfo.multiple}`);
+			if (typeDef.isUnclear) {
+				console.warn(
+					`[unclear type 🤔] ${classDef.name} - ${isAssociation ? "association" : "property"} '${propDef.name}' has unclear type '${typeDef.origType}' -> defaulting to 'any', multiple: ${typeDef.ui5TypeInfo.multiple}`,
+				);
 			}
 
 			// If any property of a class is a form relevant property, the UI5 control class must implement the "sap.ui.core.IFormContent" interface
@@ -428,18 +499,31 @@ class RegistryEntry {
 					getterName: calculateGetterName(propDef.name),
 					description: propDef.description,
 				});
-			} else if (ui5TypeInfo.isInterfaceOrClassType) {
-				console.warn(`[interface or class type given for property] ${classDef.name} - property ${propDef.name}`);
-			} else if (ui5TypeInfo.isAssociation) {
+
+				DTSSerializer.writeDts(classDef, "properties", {
+					name: propDef.name,
+					description: propDef.description.replace(/\n/g, "\n * "),
+					types: typeDef.types,
+					readonly: true,
+				});
+			} else if (isAssociation) {
 				ui5metadata.associations[propDef.name] = {
-					type: ui5TypeInfo.ui5Type,
+					type: typeDef.ui5TypeInfo.ui5Type,
 					mapping: {
 						type: "property", // assoc. are always property mappings
 						to: propDef.name, // the name of the webc's attribute
 					},
 				};
 				JSDocSerializer.writeDoc(classDef, "associations", propDef);
+				DTSSerializer.writeDts(classDef, "associations", {
+					name: propDef.name,
+					description: propDef.description.replace(/\n/g, "\n * "),
+					types: typeDef.types,
+				});
 			} else {
+				if (typeDef.ui5TypeInfo.isClass || typeDef.ui5TypeInfo.isInterface) {
+					console.warn(`[interface or class type given for property] ${classDef.name} - property ${propDef.name}`);
+				}
 				let defaultValue = propDef.default;
 				if (defaultValue) {
 					// TODO: Why are the default value strings escaped?
@@ -447,18 +531,34 @@ class RegistryEntry {
 						defaultValue = defaultValue.replace(/"/g, "");
 					}
 
-					defaultValue = this.#castDefaultValue(defaultValue, ui5TypeInfo);
+					defaultValue = this.#castDefaultValue(defaultValue, typeDef.ui5TypeInfo);
+				}
+				let mapping = "property";
+				if (typeDef.ui5TypeInfo.ui5Type === "sap.ui.core.ValueState") {
+					// the UI5 valueState needs the Core's enum typing and some special mapping to
+					// convert the "sap.ui.core.ValueState" to the web component's variant.
+					mapping = {
+						formatter: "_mapValueState",
+						parser: "_parseValueState",
+					};
 				}
 
 				ui5metadata.properties[propDef.name] = {
-					type: `${ui5TypeInfo.ui5Type}${ui5TypeInfo.multiple ? "[]" : ""}`,
-					mapping: "property",
+					type: `${typeDef.ui5TypeInfo.ui5Type}${typeDef.ui5TypeInfo.multiple ? "[]" : ""}`,
+					mapping,
 					defaultValue: defaultValue,
 				};
 				JSDocSerializer.writeDoc(classDef, "properties", {
 					name: propDef.name,
 					description: propDef.description,
-					moduleType: ui5TypeInfo?.moduleType,
+					moduleType: typeDef.ui5TypeInfo?.moduleType,
+				});
+
+				DTSSerializer.writeDts(classDef, "properties", {
+					name: propDef.name,
+					description: propDef.description.replace(/\n/g, "\n * "),
+					types: typeDef.types,
+					defaultValue: defaultValue,
 				});
 			}
 		} else if (propDef.kind === "method") {
@@ -467,11 +567,16 @@ class RegistryEntry {
 			ui5metadata.methods.push(propDef.name);
 
 			// method have parameters (unlike getters)
-			const jsDocParams = this.#parseMethodParameters(propDef);
+			const { parsedParams, jsDocParams } = this.#parseMethodParameters(classDef, propDef);
 			JSDocSerializer.writeDoc(classDef, "methods", {
 				name: propDef.name,
 				description: propDef.description,
 				parameters: jsDocParams,
+			});
+			DTSSerializer.writeDts(classDef, "methods", {
+				name: propDef.name,
+				description: propDef.description.replace(/\n/g, "\n * "),
+				params: parsedParams,
 			});
 		}
 	}
@@ -479,9 +584,7 @@ class RegistryEntry {
 	#processSlots(classDef, ui5metadata, slotDef) {
 		let aggregationName = slotDef.name;
 		let slotName = slotDef.name;
-
-		// should be the most relevant default type
-		let aggregationType = "sap.ui.core.Control";
+		let aggregationType;
 
 		// web component allows text node content
 		// TODO: How to figure this out "natively" without "_ui5propertyName"?
@@ -494,13 +597,15 @@ class RegistryEntry {
 			return;
 		}
 
-		let typeInfo;
-		if (slotDef._ui5type?.text !== "Array<HTMLElement>") {
-			typeInfo = this.#extractUi5Type(slotDef._ui5type);
-			if (typeInfo.isInterfaceOrClassType) {
-				//console.log(`[interface/class type]: '${typeInfo.ui5Type}', multiple: ${typeInfo.multiple}`);
-				aggregationType = typeInfo.ui5Type;
-			}
+		const typeDef = this.#extractUi5Type(slotDef._ui5type);
+		if (typeDef.ui5TypeInfo.isInterface || typeDef.ui5TypeInfo.isClass) {
+			//console.log(`[interface/class type]: '${typeInfo.ui5Type}', multiple: ${typeInfo.multiple}`);
+			aggregationType = typeDef.ui5TypeInfo.ui5Type;
+		}
+
+		// DEBUG
+		if (typeDef.isUnclear) {
+			console.warn(`[unclear type 🤔] ${classDef.name} - aggregation '${slotDef.name}' has unclear type '${typeDef.origType}' -> defaulting to 'any', multiple: ${typeDef.ui5TypeInfo.multiple}`);
 		}
 
 		// The "default" slot will most likely be transformed into the "content" in UI5
@@ -527,7 +632,12 @@ class RegistryEntry {
 		JSDocSerializer.writeDoc(classDef, "aggregations", {
 			name: aggregationName,
 			description: slotDef.description,
-			moduleType: typeInfo?.moduleType,
+			moduleType: typeDef.ui5TypeInfo?.moduleType,
+		});
+		DTSSerializer.writeDts(classDef, "aggregations", {
+			name: aggregationName,
+			description: slotDef.description.replace(/\n/g, "\n * "),
+			types: typeDef.types,
 		});
 	}
 
@@ -537,14 +647,20 @@ class RegistryEntry {
 	 * @param {object} eventDef the event definition object from the custom elements metadata
 	 * @returns the parsed event parameters
 	 */
-	#parseEventParameters(eventDef) {
+	#parseEventParameters(classDef, eventDef) {
 		const parameters = eventDef._ui5parameters;
 		const parsedParams = {};
 		const jsDocParams = {};
 		parameters?.forEach((param) => {
-			const type = this.#extractUi5Type(param.type);
+			const typeDef = this.#extractUi5Type(param.type);
+			// DEBUG
+			if (typeDef.isUnclear) {
+				console.warn(`[unclear type 🤔] ${classDef.name} - event '${eventDef.name}' has unclear type '${typeDef.origType}' -> defaulting to 'any', multiple: ${typeDef.ui5TypeInfo.multiple}`);
+			}
 			parsedParams[param.name] = {
-				type: type.ui5Type,
+				type: typeDef.ui5TypeInfo.ui5Type,
+				types: typeDef.types,
+				dtsParamDescription: param.description.replace(/\n/g, "\n * "),
 			};
 			jsDocParams[param.name] = {
 				description: param.description,
@@ -553,23 +669,36 @@ class RegistryEntry {
 		return { parsedParams, jsDocParams };
 	}
 
-	#parseMethodParameters(methodDef) {
+	#parseMethodParameters(classDef, methodDef) {
 		const parameters = methodDef.parameters;
 		const jsDocParams = {};
+		const parsedParams = {};
 		parameters?.forEach((param) => {
-			const type = this.#extractUi5Type(param.type);
+			const typeDef = this.#extractUi5Type(param.type);
+			// DEBUG
+			if (typeDef.isUnclear) {
+				console.warn(
+					`[unclear type 🤔] ${classDef.name} - method '${methodDef.name}' has unclear type '${typeDef.origType}' -> defaulting to 'any', multiple: ${typeDef.ui5TypeInfo.multiple}`,
+				);
+			}
 			jsDocParams[param.name] = {
 				name: param.name,
-				type: type.ui5Type,
+				type: typeDef.ui5TypeInfo.ui5Type,
 				description: param.description,
 			};
+			// parsedParams[param.name] = {
+			// 	name: param.name,
+			// 	typeDef,
+			// 	description: param.description.replace(/\n/g, "\n * "),
+			// };
+			parsedParams[param.name] = typeDef.types;
 		});
-		return jsDocParams;
+		return { parsedParams, jsDocParams };
 	}
 
 	#processEvents(classDef, ui5metadata, eventDef) {
 		// Same as with other entities we track the UI5 Metadata and the JSDoc separately
-		const { parsedParams, jsDocParams } = this.#parseEventParameters(eventDef);
+		const { parsedParams, jsDocParams } = this.#parseEventParameters(classDef, eventDef);
 		const camelizedName = camelize(eventDef.name);
 
 		ui5metadata.events[camelizedName] = {
@@ -582,6 +711,11 @@ class RegistryEntry {
 			name: camelizedName,
 			description: eventDef.description,
 			parameters: jsDocParams,
+		});
+		DTSSerializer.writeDts(classDef, "events", {
+			name: camelizedName,
+			description: eventDef.description.replace(/\n/g, "\n * "),
+			parameters: parsedParams,
 		});
 	}
 
@@ -602,6 +736,10 @@ class RegistryEntry {
 		// classes with properties marked as "_ui5formProperty" need to implement IFormContent
 		if (classDef._ui5implementsFormContent) {
 			ui5metadata.interfaces.push("sap.ui.core.IFormContent");
+			classDef._ui5implements.push({
+				name: "IFormContent",
+				package: "sap/ui/core/library",
+			});
 			jsdocInterfaces ??= [];
 			jsdocInterfaces.push("sap.ui.core.IFormContent");
 		}
@@ -641,7 +779,14 @@ class RegistryEntry {
 				type: "string",
 				mapping: "textContent",
 			};
-			JSDocSerializer.writeDoc(classDef, "properties", { name: "text", description: "The text-content of the Web Component." });
+			const description = "The text-content of the Web Component.";
+			JSDocSerializer.writeDoc(classDef, "properties", { name: "text", description });
+
+			DTSSerializer.writeDts(classDef, "properties", {
+				name: "text",
+				description,
+				types: [{ dtsType: "string" }],
+			});
 		}
 
 		// cssProperties: [ "width", "height", "display" ]
@@ -650,7 +795,20 @@ class RegistryEntry {
 				type: "sap.ui.core.CSSSize",
 				mapping: "style",
 			};
-			JSDocSerializer.writeDoc(classDef, "properties", { name: "width", description: "The 'width' of the Web Component in <code>sap.ui.core.CSSSize</code>." });
+			const description = "The 'width' of the Web Component in <code>sap.ui.core.CSSSize</code>.";
+			JSDocSerializer.writeDoc(classDef, "properties", { name: "width", description });
+
+			DTSSerializer.writeDts(classDef, "properties", {
+				name: "width",
+				description,
+				types: [
+					{
+						ui5Type: "sap.ui.core.CSSSize",
+						packageName: "sap/ui/core/library",
+						dtsType: "CSSSize",
+					},
+				],
+			});
 		}
 
 		if (!this.#ui5PropertyExistsInParentChain(classDef, "height")) {
@@ -658,7 +816,19 @@ class RegistryEntry {
 				type: "sap.ui.core.CSSSize",
 				mapping: "style",
 			};
-			JSDocSerializer.writeDoc(classDef, "properties", { name: "height", description: "The 'height' of the Web Component in <code>sap.ui.core.CSSSize</code>." });
+			const description = "The 'height' of the Web Component in <code>sap.ui.core.CSSSize</code>.";
+			JSDocSerializer.writeDoc(classDef, "properties", { name: "height", description });
+			DTSSerializer.writeDts(classDef, "properties", {
+				name: "height",
+				description,
+				types: [
+					{
+						ui5Type: "sap.ui.core.CSSSize",
+						packageName: "sap/ui/core/library",
+						dtsType: "CSSSize",
+					},
+				],
+			});
 		}
 	}
 
@@ -671,6 +841,7 @@ class RegistryEntry {
 	 * @param {object} classDef the class definition object
 	 * @param {object} ui5metadata the UI5 metadata object
 	 */
+	// TODO make DTS ready
 	#patchUI5Specifics(classDef, ui5metadata) {
 		// The tag of UI5 web components might be scoped with a suffix depending on the project configuration
 		// we need to make tag.includes(...) checks instead of strict comparisons!
@@ -696,14 +867,54 @@ class RegistryEntry {
 
 			// Any "Label" control needs a special UI5-only interface
 			ui5metadata.interfaces.push("sap.ui.core.Label");
+
+			classDef._ui5implements.push({
+				name: "Label",
+				package: "sap/ui/core/library",
+			});
 			// Additionally, all such controls must apply the "sap/ui/core/LabelEnablement" (see "../templates/WrapperControl.hbs")
 			classDef._ui5specifics.needsLabelEnablement = true;
+
+			DTSSerializer.updateDts(
+				classDef,
+				{
+					name: "for",
+					entity: "properties",
+				},
+				{
+					name: "labelFor",
+					entity: "associations",
+					types: [
+						{
+							dtsType: "Control",
+							packageName: "sap/ui/core/Control",
+							moduleType: "module:sap/ui/core/Control",
+							ui5Type: "sap.ui.core.Control",
+							isClass: true,
+						},
+					],
+				},
+			);
 		} else if (tag.includes("ui5-multi-input")) {
 			// TODO: Multi Input needs to implement the functions defined in "sap.ui.core.ISemanticFormContent"...
 			ui5metadata.interfaces.push("sap.ui.core.ISemanticFormContent");
-		} else if (tag === "ui5-shellbar") {
+
+			classDef._ui5implements.push({
+				name: "ISemanticFormContent",
+				package: "sap/ui/core/library",
+			});
+		} else if (tag.includes("ui5-shellbar")) {
 			ui5metadata.interfaces.push("sap.m.IBar");
+			classDef._ui5implements.push({
+				name: "IBar",
+				package: "sap/m/library",
+			});
+
 			ui5metadata.interfaces.push("sap.tnt.IToolHeader");
+			classDef._ui5implements.push({
+				name: "IToolHeader",
+				package: "sap/tnt/library",
+			});
 		}
 
 		// If a "valueStateMessage" slot is present, we need a special property mapping
@@ -724,18 +935,26 @@ class RegistryEntry {
 					},
 				};
 
-				// the UI5 valueState needs the Core's enum typing and some special mapping to
-				// convert the "sap.ui.core.ValueState" to the web component's variant.
-				Object.assign(ui5metadata.properties["valueState"], {
-					type: "sap.ui.core.ValueState",
-					mapping: {
-						formatter: "_mapValueState",
-						parser: "_parseValueState",
-					},
-				});
-
 				// mixin support for handling of backend messages
 				classDef._ui5specifics.needsMessageMixin = true;
+
+				DTSSerializer.updateDts(
+					classDef,
+					{
+						name: "valueStateMessage",
+						entity: "aggregations",
+					},
+					{
+						name: "valueStateText",
+						entity: "properties",
+						types: [
+							{
+								dtsType: "string",
+								ui5Type: "string",
+							},
+						],
+					},
+				);
 			} else {
 				// this is an interesting inconsistency that does not occur in the UI5 web components
 				// we report it here for custom web component development
@@ -746,8 +965,14 @@ class RegistryEntry {
 		}
 	}
 
-	#createUI5Metadata(classDef) {
-		const ui5metadata = (classDef._ui5metadata = {
+	/**
+	 * Initializes basic properties on a class definition.
+	 * The properties are expected during the WebComponentRegistry's metadata analysis.
+	 *
+	 * @param {object} classDef the class definition
+	 */
+	#initClass(classDef) {
+		classDef._ui5metadata = {
 			namespace: this.namespace,
 			qualifiedNamespace: this.qualifiedNamespace,
 			tag: classDef.scopedTagName || classDef.tagName,
@@ -756,17 +981,20 @@ class RegistryEntry {
 			aggregations: {},
 			associations: {},
 			events: {},
-			// https://github.com/SAP/openui5/blob/master/src/sap.ui.core/src/sap/ui/core/webc/WebComponent.js#L570C25-L601
 			getters: [],
 			methods: [],
-		});
+		};
+		// we track a couple of UI5 specifics like interfaces and mixins separately
+		classDef._ui5specifics = {};
+	}
+
+	#createUI5Metadata(classDef) {
+		const ui5metadata = classDef._ui5metadata;
 
 		// we track the JSDoc extracted from the custom elements manifest separately,
 		// as they are not part of the runtime metadata
 		JSDocSerializer.initClass(classDef);
-
-		// we track a couple of UI5 specifics like interfaces and mixins separately
-		classDef._ui5specifics = {};
+		DTSSerializer.initClass(classDef);
 
 		classDef.members?.forEach((propDef) => {
 			this.#processMembers(classDef, ui5metadata, propDef);
@@ -785,6 +1013,8 @@ class RegistryEntry {
 		this.#ensureDefaults(classDef, ui5metadata);
 
 		this.#patchUI5Specifics(classDef, ui5metadata);
+
+		DTSSerializer.writeClassBody(classDef);
 	}
 
 	/**
@@ -830,7 +1060,15 @@ class RegistryEntry {
 }
 
 const WebComponentRegistry = {
-	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version }) {
+	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, skipDtsGeneration = true }) {
+		// Skips the *.d.ts file generation for TypeScript support, configured via ui5.yaml:
+		//   - server/customMiddleware/ui5-tooling-modules-middleware/configuration/pluginOptions/webcomponents/skipDtsGeneration
+		// and
+		//   - builder/customTasks/ui5-tooling-modules-task/configuration/pluginOptions/webcomponents/skipDtsGeneration
+		if (skipDtsGeneration) {
+			DTSSerializer.deactivate();
+		}
+
 		let entry = _registry[namespace];
 		if (!entry) {
 			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version });
@@ -870,26 +1108,6 @@ const WebComponentRegistry = {
 	clear() {
 		_registry = {};
 		_classAliases = {};
-	},
-
-	/**
-	 * Helper function to check whether the given class inherits from UI5Element, the base class for all
-	 * UI5 web components.
-	 *
-	 * @param {object} classDef a class definition from a WebComponentRegistry entry
-	 * @returns {boolean} whether the class inherits from UI5Element
-	 */
-	isUI5ElementSubclass(classDef) {
-		let superclass = classDef.superclass,
-			isUI5ElementSubclass = false;
-		while (superclass) {
-			if (superclass?.namespace === "@ui5/webcomponents-base" && superclass?.name === "UI5Element") {
-				isUI5ElementSubclass = true;
-				break;
-			}
-			superclass = superclass.superclass;
-		}
-		return isUI5ElementSubclass;
 	},
 };
 

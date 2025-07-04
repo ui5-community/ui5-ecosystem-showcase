@@ -39,7 +39,7 @@ npm install ui5-tooling-modules --save-dev
 
 The following configuration options are relevant for the `task` and the `middleware`:
 
-- *debug*: `boolean|string`  
+- *debug*: `boolean|string`
   Enables debug logging (defaults to `false`), by setting value to `"verbose"` the extension will log even more detailed
   &nbsp;
 
@@ -87,13 +87,13 @@ The following configuration options are relevant for the `task` and the `middlew
         - es6-promise
         - Promise
       # import { Promise as P } from 'es6-promise'
-      P: 
+      P:
         - es6-promise
         - Promise
       # import $ from 'jquery'
       $: jquery
       # import * as fs from 'fs'
-      fs: 
+      fs:
         - 'fs'
         - '*'
   ```
@@ -154,9 +154,13 @@ The available plugin configuration options are:
   Flag to enable/disable the generation of the JSDoc for the UI5 control wrappers. (defaults to `true` until the feature is fully implemented, in future `false`)
   &nbsp;
 
+- *pluginOptions.webcomponents.skipDtsGeneration*: `boolean` *experimental flag*
+  Flag to enable/disable the generation of the *.d.ts files for the UI5 control wrappers, enabling basic TypeScript support. (defaults to `true` until the feature is fully implemented, in future `false`)
+  &nbsp;
+
 The following configuration options are just relevant for the `task`:
 
-- *prependPathMappings*: `boolean`  
+- *prependPathMappings*: `boolean`
   Prepends the path mappings for the UI5 loader to the `Component.js` which allows to run the Component using 3rd party modules in e.g. Fiori launchpad environments (defaults to `false`)
   &nbsp;
 
