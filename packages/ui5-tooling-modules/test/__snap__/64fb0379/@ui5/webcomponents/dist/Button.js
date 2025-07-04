@@ -89,6 +89,7 @@ sap.ui.define(
           },
           aggregations: {
             badge: {
+              type: "@ui5.webcomponents.dist.ButtonBadge",
               multiple: true,
               slot: "badge",
             },

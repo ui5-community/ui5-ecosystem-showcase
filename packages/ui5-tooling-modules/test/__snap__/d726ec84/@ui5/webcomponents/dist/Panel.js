@@ -72,9 +72,11 @@ sap.ui.define(
           },
           aggregations: {
             content: {
+              type: "sap.ui.core.Control",
               multiple: true,
             },
             header: {
+              type: "sap.ui.core.Control",
               multiple: true,
               slot: "header",
             },

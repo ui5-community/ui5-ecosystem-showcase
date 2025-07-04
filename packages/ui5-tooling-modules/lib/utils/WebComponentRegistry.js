@@ -364,7 +364,13 @@ class RegistryEntry {
 			} else {
 				typeDef.types.push(deriveType(name));
 			}
+
+			// unpack UI5 type
+			// as UI5 can onbly handle one type (unlike TS)
 			typeDef.ui5TypeInfo ??= Object.assign({ multiple }, typeDef.types[0]);
+			if (typeDef.ui5TypeInfo.types?.length >= 1) {
+				Object.assign(typeDef.ui5TypeInfo, typeDef.ui5TypeInfo.types[0]);
+			}
 		}
 		typeDef.types = typeDef.types.filter((t) => !!t);
 		return typeDef;

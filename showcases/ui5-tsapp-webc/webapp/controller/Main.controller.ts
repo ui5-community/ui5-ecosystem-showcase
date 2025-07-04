@@ -7,13 +7,19 @@ import VBox from "sap/m/VBox";
 import Popup from "sap/ui/core/Popup";
 import Event from "sap/ui/base/Event";
 
-import Button from "@ui5/webcomponents/Button";
+import Button from "@ui5/webcomponents/dist/Button";
 import DatePicker from "@ui5/webcomponents/dist/DatePicker";
 import Input from "@ui5/webcomponents/dist/Input";
 import { AvatarSize } from "@ui5/webcomponents";
 import Token from "@ui5/webcomponents/dist/Token";
 
 import UserMenu from "@ui5/webcomponents-fiori/dist/UserMenu";
+import UIComponent from "sap/ui/core/UIComponent";
+import Popover from "@ui5/webcomponents/dist/Popover";
+
+import { Select$LiveChangeEvent } from "@ui5/webcomponents/dist/Select";
+import Option from "@ui5/webcomponents/dist/Option";
+import MultiInput, { IToken, MultiInput$TokenDeleteEvent } from "@ui5/webcomponents/dist/MultiInput";
 
 console.log(AvatarSize);
 
@@ -59,19 +65,19 @@ export default class Main extends Controller {
 			(this.getView()?.byId("contentArea") as VBox).addItem(input);
 		}
 		console.log(`Input is a @ui5.webcomponents.dist.Input: ${input.isA("@ui5.webcomponents.dist.Input")}`);
-		console.log(`Input is not a @ui5.webcomponents.Input: ${input.isA("@ui5.webcomponents.Input")}`);
+		console.log(`Input is a @ui5.webcomponents.Input: ${input.isA("@ui5.webcomponents.Input")}`);
 	}
 
 	public onNavToDynamicPage(): void {
-		this.getOwnerComponent().getRouter().navTo("DynamicPage");
+		(this.getOwnerComponent() as UIComponent).getRouter().navTo("DynamicPage");
 	}
 
 	public onNavToForm(): void {
-		this.getOwnerComponent().getRouter().navTo("FormPage");
+		(this.getOwnerComponent() as UIComponent).getRouter().navTo("FormPage");
 	}
 
 	public onNavToValueState(): void {
-		this.getOwnerComponent().getRouter().navTo("ValueState");
+		(this.getOwnerComponent() as UIComponent).getRouter().navTo("ValueState");
 	}
 
 	public onProfileClick(evt: Event): void {
@@ -83,28 +89,28 @@ export default class Main extends Controller {
 		MessageToast.show(`👻`);
 	}
 
-	public onLiveChange(e: Event): void {
-		MessageToast.show(`🛠️ liveChange: ${e.getParameter("selectedOption").getText()}`, { at: Popup.Dock.CenterCenter });
+	public onLiveChange(e: Select$LiveChangeEvent): void {
+		MessageToast.show(`🛠️ liveChange: ${(e.getParameter("selectedOption") as Option).getText()}`, { at: Popup.Dock.CenterCenter });
 	}
 
 	/**
 	 * Deletes a token from the MultiInput's "token" aggregation.
 	 */
-	public deleteToken(e: Event): void {
+	public deleteToken(e: MultiInput$TokenDeleteEvent): void {
 		const deletedTokens: Token[] = e.getParameter("tokens");
 		deletedTokens.forEach((t: Token) => {
-			const multiInput = t.getParent();
+			const multiInput = t.getParent() as MultiInput;
 			multiInput.removeToken(t);
 		});
 	}
 
 	// wire popover opener buttons
 	public onPopoverOpener1Click(e: Event): void {
-		const poppy1 = this.byId("popover1");
+		const poppy1 = this.byId("popover1") as Popover;
 		poppy1?.setOpen(!poppy1?.getOpen());
 	}
 	public onPopoverOpener2Click(e: Event): void {
-		const poppy2 = this.byId("popover2");
+		const poppy2 = this.byId("popover2") as Popover;
 		poppy2?.setOpen(!poppy2?.getOpen());
 	}
 
