@@ -500,7 +500,10 @@ module.exports = function (log, projectInfo) {
 				allSources = allSources.filter((source) => {
 					const sourcePath = source.getPath();
 					const ext = path.extname(sourcePath);
-					if (ext !== ".js" && allJsSources.has(sourcePath.replace(new RegExp(`\\${ext}$`), ""))) {
+					// exclude generated TS types for control wrappers
+					if (sourcePath.endsWith(".d.ts")) {
+						return false;
+					} else if (ext !== ".js" && allJsSources.has(sourcePath.replace(new RegExp(`\\${ext}$`), ""))) {
 						log.info(`Removing source ${sourcePath} (as a parallel JS resource was found)`);
 						return false;
 					}
@@ -1123,8 +1126,6 @@ module.exports = function (log, projectInfo) {
 						pkgJson: projectInfo.pkgJson, // the current project package.json
 						getPackageJson, // use the cached package.json if possible
 						framework: projectInfo?.framework,
-						// TODO: how to do this cleanly? srcPath is needed for writing DTS files
-						srcPath: projectInfo?.srcPath,
 						options: pluginOptions?.["webcomponents"],
 						$metadata,
 					}),

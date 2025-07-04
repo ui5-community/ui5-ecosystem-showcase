@@ -128,11 +128,11 @@ function loadAndCompileTemplate(templatePath) {
 
 const DTSSerializer = {
 	prepare: function (registryEntry) {
-		const srcPath = registryEntry.srcPath || __dirname;
+		const cachePath = join(process.cwd(), ".ui5-tooling-modules");
 
-		if (!existsSync(join(srcPath, "_types"))) {
+		if (!existsSync(join(cachePath, "types"))) {
 			// Directory does not exist, create it
-			mkdirSync(join(srcPath, "_types"), { recursive: true });
+			mkdirSync(join(cachePath, "types"), { recursive: true });
 		}
 
 		prettier
@@ -144,7 +144,7 @@ const DTSSerializer = {
 			)
 			.then((prettifiedTypes) => {
 				if (prettifiedTypes) {
-					writeFileSync(join(srcPath, "_types", `${registryEntry.qualifiedNamespace}.gen.d.ts`), prettifiedTypes, { encoding: "utf-8" });
+					writeFileSync(join(cachePath, "types", `${registryEntry.qualifiedNamespace}.gen.d.ts`), prettifiedTypes, { encoding: "utf-8" });
 				}
 			});
 		for (const clazz in registryEntry.classes) {
@@ -159,7 +159,7 @@ const DTSSerializer = {
 					)
 					.then((prettifiedTypes) => {
 						if (prettifiedTypes) {
-							writeFileSync(join(srcPath, "_types", `${registryEntry.qualifiedNamespace}.dist.${clazz}.gen.d.ts`), prettifiedTypes, { encoding: "utf-8" });
+							writeFileSync(join(cachePath, "types", `${registryEntry.qualifiedNamespace}.dist.${clazz}.gen.d.ts`), prettifiedTypes, { encoding: "utf-8" });
 						}
 					});
 			}

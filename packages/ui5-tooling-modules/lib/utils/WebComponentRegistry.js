@@ -47,12 +47,11 @@ let _classAliases = {};
 class RegistryEntry {
 	#customElementsMetadata = {};
 
-	constructor({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, srcPath, version }) {
+	constructor({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version }) {
 		this.#customElementsMetadata = customElementsMetadata;
 		this.namespace = namespace;
 		this.scopeSuffix = scopeSuffix;
 		this.npmPackagePath = npmPackagePath;
-		this.srcPath = srcPath;
 		this.qualifiedNamespace = slash2dot(this.namespace);
 		//this.moduleBasePath = moduleBasePath;
 		//this.qualifiedNamespace = `${moduleBasePath ? slash2dot(this.moduleBasePath) + "." : ""}${slash2dot(removeScopePrefix ? this.namespace.replace(/^@/, "") : this.namespace)}`;
@@ -1048,11 +1047,11 @@ class RegistryEntry {
 }
 
 const WebComponentRegistry = {
-	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, srcPath, version }) {
+	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version }) {
 		let entry = _registry[namespace];
 		if (!entry) {
 			// console.log(`‼️ WebComponentRegistry.register called for ${namespace}`);
-			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, srcPath, version });
+			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version });
 			// console.log(`‼️ RegistryEntry created for ${namespace}`);
 
 			// track all classes also via their module name,
