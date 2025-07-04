@@ -20,9 +20,6 @@ importers:
       '@prettier/plugin-xml':
         specifier: ^3.4.1
         version: 3.4.1(prettier@3.5.3)
-      '@prettier/sync':
-        specifier: ^0.6.1
-        version: 0.6.1(prettier@3.5.3)
       cz-conventional-changelog:
         specifier: ^3.3.0
         version: 3.3.0(@types/node@22.14.1)(typescript@5.8.2)
@@ -478,6 +475,9 @@ importers:
       '@javascript-obfuscator/escodegen':
         specifier: ^2.3.0
         version: 2.3.0
+      '@prettier/sync':
+        specifier: ^0.6.1
+        version: 0.6.1(prettier@3.5.3)
       '@rollup/plugin-commonjs':
         specifier: ^28.0.3
         version: 28.0.3(rollup@4.36.0)
