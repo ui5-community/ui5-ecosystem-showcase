@@ -20,6 +20,9 @@ importers:
       '@prettier/plugin-xml':
         specifier: ^3.4.1
         version: 3.4.1(prettier@3.5.3)
+      '@prettier/sync':
+        specifier: ^0.6.1
+        version: 0.6.1(prettier@3.5.3)
       cz-conventional-changelog:
         specifier: ^3.3.0
         version: 3.3.0(@types/node@22.14.1)(typescript@5.8.2)
@@ -2681,6 +2684,11 @@ packages:
     resolution: {integrity: sha512-Uf/6/+9ez6z/IvZErgobZ2G9n1ybxF5BhCd7eMcKqfoWuOzzNUxBipNo3QAP8kRC1VD18TIo84no7LhqtyDcTg==}
     peerDependencies:
       prettier: ^3.0.0
+
+  '@prettier/sync@0.6.1':
+    resolution: {integrity: sha512-yF9G8vK/LYUTF3Cijd7VC9La3b20F20/J/fgoR4H0B8JGOWnZVZX6+I6+vODPosjmMcpdlUV+gUqJQZp3kLOcw==}
+    peerDependencies:
+      prettier: '*'
 
   '@promptbook/utils@0.67.0-4':
     resolution: {integrity: sha512-IXEdGpA+UCLCRXQdmVKp8D7pFehx0nXT66x+OouXTcyi+UVnEQe4QEdVx3yKIY4TYaiEJl+uB+wllXTnerd4vg==}
@@ -7050,6 +7058,9 @@ packages:
   make-fetch-happen@9.1.0:
     resolution: {integrity: sha512-+zopwDy7DNknmwPQplem5lAZX/eCOzSvSNNcSKm5eVwTkOBzoktEfXsa9L23J/GIRhxRsaxzkPEhrJEpE2F4Gg==}
     engines: {node: '>= 10'}
+
+  make-synchronized@0.8.0:
+    resolution: {integrity: sha512-DZu4lwc0ffoFz581BSQa/BJl+1ZqIkoRQ+VejMlH0VrP4E86StAODnZujZ4sepumQj8rcP7wUnUBGM8Gu+zKUA==}
 
   map-obj@1.0.1:
     resolution: {integrity: sha512-7N/q3lyZ+LVCp7PzuxrJr4KMbBE2hW7BT7YNia330OFxIf4d3r5zVpicP2650l7CPN6RM9zOJRl3NGpqSiw3Eg==}
@@ -12069,6 +12080,11 @@ snapshots:
   '@prettier/plugin-xml@3.4.1(prettier@3.5.3)':
     dependencies:
       '@xml-tools/parser': 1.0.11
+      prettier: 3.5.3
+
+  '@prettier/sync@0.6.1(prettier@3.5.3)':
+    dependencies:
+      make-synchronized: 0.8.0
       prettier: 3.5.3
 
   '@promptbook/utils@0.67.0-4':
@@ -17911,6 +17927,8 @@ snapshots:
       - bluebird
       - supports-color
     optional: true
+
+  make-synchronized@0.8.0: {}
 
   map-obj@1.0.1: {}
 

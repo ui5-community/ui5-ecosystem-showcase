@@ -41,7 +41,7 @@ handlebars.registerHelper("generateApiDocumentation", function (description) {
 });
 
 handlebars.registerHelper("generateImports", function (module, info) {
-	let imports = "import { ";
+	let imports = "import type { ";
 	for (const key in info) {
 		if (info[key].default) {
 			imports += "default as ";
@@ -114,13 +114,6 @@ handlebars.registerHelper("serializeTypeList", function (types) {
  */
 const Templates = {
 	apiDocumentation: loadAndCompileTemplate("../templates/dts/ApiDocumentation.hbs"),
-	getPropertyDocumentation: loadAndCompileTemplate("../templates/dts/GetPropertyDocumentation.hbs"),
-	setPropertyDocumentation: loadAndCompileTemplate("../templates/dts/SetPropertyDocumentation.hbs"),
-	getAggregationDocumentation: loadAndCompileTemplate("../templates/dts/GetAggregationDocumentation.hbs"),
-	setAggregationDocumentation: loadAndCompileTemplate("../templates/dts/SetAggregationDocumentation.hbs"),
-	addAggregationDocumentation: loadAndCompileTemplate("../templates/dts/AddAggregationDocumentation.hbs"),
-	bindAggregationDocumentation: loadAndCompileTemplate("../templates/dts/BindAggregationDocumentation.hbs"),
-	unbindAggregationDocumentation: loadAndCompileTemplate("../templates/dts/UnbindAggregationDocumentation.hbs"),
 	module: loadAndCompileTemplate("../templates/dts/Module.hbs"),
 	class: loadAndCompileTemplate("../templates/dts/Class.hbs"),
 };
@@ -193,7 +186,7 @@ const DTSSerializer = {
 			};
 		};
 		const addImportsFromTypes = (type) => {
-			if (type.packageName) {
+			if (type.packageName && type.dtsType !== classDef.name) {
 				writeImports(type.packageName, type.dtsType, { default: type.isClass, global: type.globalImport });
 			}
 		};
@@ -245,14 +238,12 @@ const DTSSerializer = {
 			});
 
 			const capitalizedPropertyName = capitalize(propertyInfo.name);
+			const linkRef = generateLinkRef(capitalizedPropertyName, propertyInfo.name);
 
 			// Generate methods
 			classDef._dts.methods[`get${capitalizedPropertyName}`] = getMethodTemplate({
-				description: Templates.getPropertyDocumentation({
-					getterName: `get${capitalizedPropertyName}`,
-					property: propertyInfo.name,
-					description: propertyInfo.description,
-					defaultValue: propertyInfo.defaultValue,
+				description: Templates.apiDocumentation({
+					description: `Gets current value of property ${linkRef}.\n *\n * ${propertyInfo.description}\n *${propertyInfo.defaultValue ? `\n * Default value is \`${propertyInfo.defaultValue}\`.` : ""}\n *\n *\n * @returns Value of property \`${propertyInfo.name}\``,
 				}),
 				returnValueTypes: propertyInfo.types,
 			});
@@ -266,11 +257,8 @@ const DTSSerializer = {
 					params: {
 						[propertyInfo.name]: [...propertyInfo.types, { dtsType: "null" }],
 					},
-					description: Templates.setPropertyDocumentation({
-						getterName: `get${capitalizedPropertyName}`,
-						property: propertyInfo.name,
-						description: propertyInfo.description,
-						defaultValue: propertyInfo.defaultValue,
+					description: Templates.apiDocumentation({
+						description: `Sets a new value for property ${linkRef}.\n *\n *${propertyInfo.description}\n *\n * ${propertyInfo.description}\n *${propertyInfo.defaultValue ? `\n * When called with a value of \`null\` or \`undefined\`, the default value of the property will be restored.\n *\n * Default value is \`${propertyInfo.defaultValue}\`.` : ""}\n *\n *\n * @returns Reference to \`this\` in order to allow method chaining`,
 					}),
 				});
 			}
@@ -307,10 +295,8 @@ const DTSSerializer = {
 
 			// Generate methods
 			classDef._dts.methods[`get${capitalizedAggregationName}`] = getMethodTemplate({
-				description: Templates.getAggregationDocumentation({
-					getterName: `get${capitalizedAggregationName}`,
-					aggregation: aggregationInfo.name,
-					description: aggregationInfo.description,
+				description: Templates.apiDocumentation({
+					description: `Gets content of aggregation ${linkRef}.\n *\n * ${aggregationInfo.description}`,
 				}),
 				returnValueTypes: aggregationInfo.types,
 			});
@@ -327,9 +313,8 @@ const DTSSerializer = {
 					params: {
 						[singularName]: aggregationInfo.types[0].types,
 					},
-					description: Templates.setAggregationDocumentation({
-						getterName: `get${capitalizedAggregationName}`,
-						aggregation: aggregationInfo.name,
+					description: Templates.apiDocumentation({
+						description: `Adds some page to the aggregation ${linkRef}.\n *\n *\n * @returns Reference to \`this\` in order to allow method chaining`,
 					}),
 				});
 
@@ -377,9 +362,8 @@ const DTSSerializer = {
 					params: {
 						[aggregationInfo.name]: aggregationInfo.types,
 					},
-					description: Templates.setAggregationDocumentation({
-						getterName: `get${capitalizedAggregationName}`,
-						aggregation: aggregationInfo.name,
+					description: Templates.apiDocumentation({
+						description: `Sets the aggregated ${linkRef}.\n *\n *\n * @returns Reference to \`this\` in order to allow method chaining`,
 					}),
 				});
 			}
@@ -523,6 +507,7 @@ const DTSSerializer = {
 						addImportsFromTypes(type);
 					}
 				});
+				// TODO add param description
 				// param.types.forEach((type) => {
 				// 	if (type.multiple) {
 				// 		type.types.forEach(addImportsFromTypes);

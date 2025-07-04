@@ -7,6 +7,8 @@ const WebComponentRegistryHelper = require("./utils/WebComponentRegistryHelper")
 const { lt, gte } = require("semver");
 const { compile } = require("handlebars");
 
+const prettier = require("@prettier/sync");
+
 const WebComponentRegistry = require("./utils/WebComponentRegistry");
 
 module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framework, srcPath, options, $metadata = {} } = {}) {
@@ -236,7 +238,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			type: "prebuilt-chunk",
 			id: source,
 			fileName: `${source}.js`,
-			code,
+			code: prettier.format(code, { semi: false, parser: "babel" }),
 		});
 
 		// store the metadata
@@ -329,7 +331,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				type: "prebuilt-chunk",
 				id: resolvedSource,
 				fileName: `${resolvedSource}.js`,
-				code,
+				code: prettier.format(code, { semi: false, parser: "babel" }),
 			});
 
 			// store the metadata

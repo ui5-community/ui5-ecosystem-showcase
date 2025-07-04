@@ -17,6 +17,10 @@ handlebars.registerHelper("escapeType", function (str) {
 	return `{${str}}`;
 });
 
+handlebars.registerHelper("formatNewLine", function (str) {
+	return `${str.replace(/\n/g, "\n * ")}`;
+});
+
 /**
  * All needed HBS templates for serializing JSDoc comments.
  */

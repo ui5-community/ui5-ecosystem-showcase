@@ -1,6 +1,11 @@
 declare module "{{registryEntry.namespace}}" {
-	// Declaration of enums
+
 	{{#each registryEntry.enums}}
+	{{#if @first}}
+	/**
+	 * Declaration of enums
+	 */
+	{{/if}}
 		{{{generateApiDocumentation this.description}}}
 		export enum {{@key}} {
 			{{#each this.values}}
@@ -10,8 +15,12 @@ declare module "{{registryEntry.namespace}}" {
 		}
 	{{/each}}
 
-	//Declaration of interface
 	{{#each registryEntry.interfaces}}
+	{{#if @first}}
+	/**
+	 * Declaration of interfaces
+	 */
+	{{/if}}
 		{{{generateApiDocumentation this.description}}}
 		export interface {{@key}} {
 			{{{escapeInterfaceName @root.registryEntry.namespace this.name}}}
