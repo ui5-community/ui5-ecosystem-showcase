@@ -120,9 +120,10 @@ class RegistryEntry {
 		Object.keys(this.classes).forEach((className) => {
 			const classDef = this.classes[className];
 			this.#initClass(classDef);
-			if (classDef.superclass) {
-				this.#createUI5Metadata(classDef);
-			}
+			// TODO: We should not create metadata for classes without a superclass.
+			//if (classDef.superclass) {
+			this.#createUI5Metadata(classDef);
+			//}
 		});
 	}
 
@@ -345,7 +346,7 @@ class RegistryEntry {
 			types: [],
 		};
 
-		const types = typeInfo?.text?.match(/(?:Array<[^>]*>|[^|])+/g);
+		const types = typeInfo?.text?.match(/(?:Array<[^>]*>|[^|])+/g) || [];
 
 		for (let name of types) {
 			name = name.trim();
@@ -556,7 +557,7 @@ class RegistryEntry {
 
 				DTSSerializer.writeDts(classDef, "properties", {
 					name: propDef.name,
-					description: propDef.description.replace(/\n/g, "\n * "),
+					description: propDef.description?.replace(/\n/g, "\n * "),
 					types: typeDef.types,
 					defaultValue: defaultValue,
 				});
@@ -575,7 +576,7 @@ class RegistryEntry {
 			});
 			DTSSerializer.writeDts(classDef, "methods", {
 				name: propDef.name,
-				description: propDef.description.replace(/\n/g, "\n * "),
+				description: propDef.description?.replace(/\n/g, "\n * "),
 				params: parsedParams,
 			});
 		}
@@ -636,7 +637,7 @@ class RegistryEntry {
 		});
 		DTSSerializer.writeDts(classDef, "aggregations", {
 			name: aggregationName,
-			description: slotDef.description.replace(/\n/g, "\n * "),
+			description: slotDef.description?.replace(/\n/g, "\n * "),
 			types: typeDef.types,
 		});
 	}
@@ -660,7 +661,7 @@ class RegistryEntry {
 			parsedParams[param.name] = {
 				type: typeDef.ui5TypeInfo.ui5Type,
 				types: typeDef.types,
-				dtsParamDescription: param.description.replace(/\n/g, "\n * "),
+				dtsParamDescription: param.description?.replace(/\n/g, "\n * "),
 			};
 			jsDocParams[param.name] = {
 				description: param.description,
@@ -683,13 +684,13 @@ class RegistryEntry {
 			}
 			jsDocParams[param.name] = {
 				name: param.name,
-				type: typeDef.ui5TypeInfo.ui5Type,
+				type: typeDef.ui5TypeInfo?.ui5Type || "any", // TODO: is this correct?
 				description: param.description,
 			};
 			// parsedParams[param.name] = {
 			// 	name: param.name,
 			// 	typeDef,
-			// 	description: param.description.replace(/\n/g, "\n * "),
+			// 	description: param.description?.replace(/\n/g, "\n * "),
 			// };
 			parsedParams[param.name] = typeDef.types;
 		});
@@ -714,7 +715,7 @@ class RegistryEntry {
 		});
 		DTSSerializer.writeDts(classDef, "events", {
 			name: camelizedName,
-			description: eventDef.description.replace(/\n/g, "\n * "),
+			description: eventDef.description?.replace(/\n/g, "\n * "),
 			parameters: parsedParams,
 		});
 	}

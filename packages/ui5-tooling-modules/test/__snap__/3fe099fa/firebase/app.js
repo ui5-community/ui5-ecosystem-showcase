@@ -1,7 +1,7 @@
 sap.ui.define(['exports', '../index.esm2017'], (function (exports, index_esm2017) { 'use strict';
 
 	var name = "firebase";
-	var version = "11.4.0";
+	var version = "11.10.0";
 
 	/**
 	 * @license

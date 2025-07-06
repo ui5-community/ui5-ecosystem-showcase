@@ -10,7 +10,7 @@ sap.ui.define(
     const pkg = {
       _ui5metadata: {
         name: "@ui5/webcomponents",
-        version: "2.8.0",
+        version: "2.12.0",
         dependencies: ["sap.ui.core"],
         types: [
           "@ui5.webcomponents.AvatarColorScheme",
@@ -18,6 +18,7 @@ sap.ui.define(
           "@ui5.webcomponents.AvatarShape",
           "@ui5.webcomponents.AvatarSize",
           "@ui5.webcomponents.BackgroundDesign",
+          "@ui5.webcomponents.BarAccessibleRole",
           "@ui5.webcomponents.BarDesign",
           "@ui5.webcomponents.BorderDesign",
           "@ui5.webcomponents.BreadcrumbsDesign",
@@ -49,6 +50,7 @@ sap.ui.define(
           "@ui5.webcomponents.ListItemType",
           "@ui5.webcomponents.ListSelectionMode",
           "@ui5.webcomponents.ListSeparator",
+          "@ui5.webcomponents.MenuItemGroupCheckMode",
           "@ui5.webcomponents.MessageStripDesign",
           "@ui5.webcomponents.NotificationListGrowingMode",
           "@ui5.webcomponents.OverflowMode",
@@ -66,7 +68,9 @@ sap.ui.define(
           "@ui5.webcomponents.TableCellHorizontalAlign",
           "@ui5.webcomponents.TableGrowingMode",
           "@ui5.webcomponents.TableOverflowMode",
+          "@ui5.webcomponents.TableSelectionBehavior",
           "@ui5.webcomponents.TableSelectionMode",
+          "@ui5.webcomponents.TableSelectionMultiHeaderSelector",
           "@ui5.webcomponents.TagDesign",
           "@ui5.webcomponents.TagSize",
           "@ui5.webcomponents.TextEmptyIndicatorMode",
@@ -83,6 +87,7 @@ sap.ui.define(
           "@ui5.webcomponents.ICalendarSelectedDates",
           "@ui5.webcomponents.IColorPaletteItem",
           "@ui5.webcomponents.IComboBoxItem",
+          "@ui5.webcomponents.IDynamicDateRangeOption",
           "@ui5.webcomponents.IFormItem",
           "@ui5.webcomponents.IIcon",
           "@ui5.webcomponents.IInputSuggestionItem",
@@ -123,6 +128,7 @@ sap.ui.define(
           "@ui5.webcomponents.dist.DateRangePicker",
           "@ui5.webcomponents.dist.DateTimePicker",
           "@ui5.webcomponents.dist.Dialog",
+          "@ui5.webcomponents.dist.DynamicDateRange",
           "@ui5.webcomponents.dist.ExpandableText",
           "@ui5.webcomponents.dist.FileUploader",
           "@ui5.webcomponents.dist.Form",
@@ -138,6 +144,7 @@ sap.ui.define(
           "@ui5.webcomponents.dist.ListItemStandard",
           "@ui5.webcomponents.dist.Menu",
           "@ui5.webcomponents.dist.MenuItem",
+          "@ui5.webcomponents.dist.MenuItemGroup",
           "@ui5.webcomponents.dist.MenuSeparator",
           "@ui5.webcomponents.dist.MessageStrip",
           "@ui5.webcomponents.dist.MultiComboBox",
@@ -225,6 +232,11 @@ sap.ui.define(
      */
 
     pkg["AvatarColorScheme"] = {
+      /**
+       *
+       * @public
+       */
+      Auto: "Auto",
       /**
        *
        * @public
@@ -394,6 +406,30 @@ sap.ui.define(
       Translucent: "Translucent",
     }
     registerEnum("@ui5.webcomponents.BackgroundDesign", pkg["BackgroundDesign"])
+    /**
+     * ListItem accessible roles.
+     * @enum {string}
+     * @public
+     * @alias module:@ui5/webcomponents.BarAccessibleRole
+     * @ui5-module-override @ui5/webcomponents BarAccessibleRole
+     */
+
+    pkg["BarAccessibleRole"] = {
+      /**
+       * Represents the ARIA role &quot;toolbar&quot;.
+       * @public
+       */
+      Toolbar: "Toolbar",
+      /**
+       * Represents the ARIA role &quot;none&quot;.
+       * @public
+       */
+      None: "None",
+    }
+    registerEnum(
+      "@ui5.webcomponents.BarAccessibleRole",
+      pkg["BarAccessibleRole"],
+    )
     /**
      * Different types of Bar design
      * @enum {string}
@@ -1466,6 +1502,35 @@ sap.ui.define(
     }
     registerEnum("@ui5.webcomponents.ListSeparator", pkg["ListSeparator"])
     /**
+     * Menu item group check modes.
+     * @enum {string}
+     * @public
+     * @alias module:@ui5/webcomponents.MenuItemGroupCheckMode
+     * @ui5-module-override @ui5/webcomponents MenuItemGroupCheckMode
+     */
+
+    pkg["MenuItemGroupCheckMode"] = {
+      /**
+       * default type (items in a group cannot be checked)
+       * @public
+       */
+      None: "None",
+      /**
+       * Single item check mode (only one item in a group can be checked at a time)
+       * @public
+       */
+      Single: "Single",
+      /**
+       * Multiple items check mode (multiple items in a group can be checked at a time)
+       * @public
+       */
+      Multiple: "Multiple",
+    }
+    registerEnum(
+      "@ui5.webcomponents.MenuItemGroupCheckMode",
+      pkg["MenuItemGroupCheckMode"],
+    )
+    /**
      * MessageStrip designs.
      * @enum {string}
      * @public
@@ -1942,7 +2007,7 @@ sap.ui.define(
     }
     registerEnum("@ui5.webcomponents.TableGrowingMode", pkg["TableGrowingMode"])
     /**
-     * Column mode of the &lt;ui5-table&gt; component.
+     * Overflow mode of the &lt;ui5-table&gt; component.
      * @enum {string}
      * @public
      * @alias module:@ui5/webcomponents.TableOverflowMode
@@ -1964,6 +2029,32 @@ sap.ui.define(
     registerEnum(
       "@ui5.webcomponents.TableOverflowMode",
       pkg["TableOverflowMode"],
+    )
+    /**
+     * Selection behavior of the `ui5-table` selection components.
+     * @enum {string}
+     * @public
+     * @alias module:@ui5/webcomponents.TableSelectionBehavior
+     * @ui5-module-override @ui5/webcomponents TableSelectionBehavior
+     */
+
+    pkg["TableSelectionBehavior"] = {
+      /**
+       * Rows can only be selected by using the row selector column.
+       * @public
+       */
+      RowSelector: "RowSelector",
+      /**
+       * Rows can only be selected by clicking directly on the row, as the row selector column is hidden.
+       *
+       * **Note:** In this mode, the &#x60;row-click&#x60; event of the &#x60;ui5-table&#x60; component is not fired.
+       * @public
+       */
+      RowOnly: "RowOnly",
+    }
+    registerEnum(
+      "@ui5.webcomponents.TableSelectionBehavior",
+      pkg["TableSelectionBehavior"],
     )
     /**
      * Selection modes of the &lt;ui5-table&gt; component.
@@ -1993,6 +2084,30 @@ sap.ui.define(
     registerEnum(
       "@ui5.webcomponents.TableSelectionMode",
       pkg["TableSelectionMode"],
+    )
+    /**
+     * Selectors of the table header row in multi-selection scenarios.
+     * @enum {string}
+     * @public
+     * @alias module:@ui5/webcomponents.TableSelectionMultiHeaderSelector
+     * @ui5-module-override @ui5/webcomponents TableSelectionMultiHeaderSelector
+     */
+
+    pkg["TableSelectionMultiHeaderSelector"] = {
+      /**
+       * Renders a checkbox in the table header row that toggles the selection of all rows.
+       * @public
+       */
+      SelectAll: "SelectAll",
+      /**
+       * Renders an icon in the table header row that removes the selection of all rows.
+       * @public
+       */
+      ClearAll: "ClearAll",
+    }
+    registerEnum(
+      "@ui5.webcomponents.TableSelectionMultiHeaderSelector",
+      pkg["TableSelectionMultiHeaderSelector"],
     )
     /**
      * Defines tag design types.
@@ -2315,6 +2430,32 @@ sap.ui.define(
      * Interface for components that may be slotted inside a `ui5-combobox`
      * @name module:@ui5/webcomponents.IComboBoxItem
      * @ui5-module-override @ui5/webcomponents IComboBoxItem
+     * @interface
+     * @public
+     */
+
+    /**
+     * Represents a dynamic date range option used by the `ui5-dynamic-date-range` component.
+     *
+     * Represents a dynamic date range option used for handling dynamic date ranges.
+     * This interface defines the structure and behavior required for implementing
+     * dynamic date range options, including formatting, parsing, validation, and
+     * conversion of date range values.
+     *
+     *  * Properties:
+     * - `icon`: The icon associated with the dynamic date range option, typically used for UI representation.
+     * - `operator`: A unique operator identifying the dynamic date range option.
+     * - `text`: The display text for the dynamic date range option.
+     * - `template` (optional): A JSX template for rendering the dynamic date range option.
+     *
+     * Methods:
+     * - `format(value: DynamicDateRangeValue): string`: Formats the given dynamic date range value into a string representation.
+     * - `parse(value: string): DynamicDateRangeValue | undefined`: Parses a string into a dynamic date range value.
+     * - `toDates(value: DynamicDateRangeValue): Date[]`: Converts a dynamic date range value into an array of `Date` objects.
+     * - `handleSelectionChange?(event: CustomEvent): DynamicDateRangeValue | undefined`: (Optional) Handles selection changes in the UI of the dynamic date range option.
+     * - `isValidString(value: string): boolean`: Validates whether a given string is a valid representation of the dynamic date range value.
+     * @name module:@ui5/webcomponents.IDynamicDateRangeOption
+     * @ui5-module-override @ui5/webcomponents IDynamicDateRangeOption
      * @interface
      * @public
      */

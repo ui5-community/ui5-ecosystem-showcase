@@ -26,28 +26,28 @@
     "directory": "showcases/ui5-tslib"
   },
   "devDependencies": {
-    "@types/openui5": "1.135.0",
+    "@types/openui5": "1.136.0",
     "@types/showdown": "^2.0.6",
-    "@ui5/cli": "^4.0.13",
-    "@ui5/ts-interface-generator": "^0.10.0",
-    "eslint": "^9.22.0",
-    "globals": "^16.0.0",
+    "@ui5/cli": "^4.0.19",
+    "@ui5/ts-interface-generator": "^0.10.2",
+    "eslint": "^9.30.1",
+    "globals": "^16.3.0",
     "karma": "^6.4.4",
     "karma-chrome-launcher": "^3.2.0",
     "karma-coverage": "^2.2.1",
     "karma-ui5": "^4.1.0",
     "karma-ui5-transpile": "workspace:^",
     "npm-run-all": "^4.1.5",
-    "prettier": "^3.5.3",
+    "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
-    "typescript": "^5.8.2",
-    "typescript-eslint": "^8.26.1",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.35.1",
     "ui5-middleware-livereload": "workspace:^",
     "ui5-tooling-modules": "workspace:^",
     "ui5-tooling-transpile": "workspace:^"
   },
   "dependencies": {
-    "@ui5/webcomponents": "^2.8.0",
+    "@ui5/webcomponents": "^2.12.0",
     "showdown": "^2.1.0"
   }
 }

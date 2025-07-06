@@ -1673,6 +1673,21 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/util/getParentElement.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "getParentElement",
+            "module": "dist/util/getParentElement.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/util/getSingletonElementInstance.js",
       "declarations": [],
       "exports": [
@@ -2714,6 +2729,21 @@
           "declaration": {
             "name": "I18nBundle",
             "module": "dist/i18nBundle.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UI5Element",
+            "module": "dist/index.js"
           }
         }
       ]

@@ -4,6 +4,7 @@
     "@sap/cds",
     "chart.js",
     "@octokit/core",
+    "nock",
     "node-fetch",
     "minimatch",
     "@wdio/cli",

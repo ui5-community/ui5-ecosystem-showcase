@@ -19,9 +19,9 @@
     "lint": "eslint webapp"
   },
   "devDependencies": {
-    "@ui5/cli": "^4.0.13",
-    "eslint": "^9.22.0",
-    "globals": "^16.0.0",
+    "@ui5/cli": "^4.0.19",
+    "eslint": "^9.30.1",
+    "globals": "^16.3.0",
     "rimraf": "^6.0.1",
     "ui5-middleware-index": "workspace:^",
     "ui5-middleware-livereload": "workspace:^",

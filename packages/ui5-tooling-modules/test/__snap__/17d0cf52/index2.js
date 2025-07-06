@@ -95,7 +95,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		assign(pureComponentPrototype, Component.prototype);
 		pureComponentPrototype.isPureReactComponent = true;
 		var isArrayImpl = Array.isArray,
-		  ReactSharedInternals = { H: null, A: null, T: null, S: null },
+		  ReactSharedInternals = { H: null, A: null, T: null, S: null, V: null },
 		  hasOwnProperty = Object.prototype.hasOwnProperty;
 		function ReactElement(type, key, self, source, owner, props) {
 		  self = props.ref;
@@ -379,8 +379,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		react_production.Suspense = REACT_SUSPENSE_TYPE;
 		react_production.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE =
 		  ReactSharedInternals;
-		react_production.act = function () {
-		  throw Error("act(...) is not supported in production builds of React.");
+		react_production.__COMPILER_RUNTIME = {
+		  __proto__: null,
+		  c: function (size) {
+		    return ReactSharedInternals.H.useMemoCache(size);
+		  }
 		};
 		react_production.cache = function (fn) {
 		  return function () {
@@ -513,8 +516,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		react_production.useDeferredValue = function (value, initialValue) {
 		  return ReactSharedInternals.H.useDeferredValue(value, initialValue);
 		};
-		react_production.useEffect = function (create, deps) {
-		  return ReactSharedInternals.H.useEffect(create, deps);
+		react_production.useEffect = function (create, createDeps, update) {
+		  var dispatcher = ReactSharedInternals.H;
+		  if ("function" === typeof update)
+		    throw Error(
+		      "useEffect CRUD overload is not enabled in this build of React."
+		    );
+		  return dispatcher.useEffect(create, createDeps);
 		};
 		react_production.useId = function () {
 		  return ReactSharedInternals.H.useId();
@@ -557,7 +565,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		react_production.useTransition = function () {
 		  return ReactSharedInternals.H.useTransition();
 		};
-		react_production.version = "19.0.0";
+		react_production.version = "19.1.0";
 		return react_production;
 	}
 
