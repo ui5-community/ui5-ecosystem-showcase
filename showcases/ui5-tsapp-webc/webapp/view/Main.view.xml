@@ -28,12 +28,6 @@
     </headerContent> -->
     <!-- playground-fold-end -->
 
-    <ai:Button id="myAiButton" state="generate">
-      <ai:ButtonState name="generate" text="Generate" icon="ai" />
-      <ai:ButtonState name="generating" text="Stop Generating" icon="stop" />
-      <ai:ButtonState name="revise" text="Revise" icon="ai" endIcon="navigation-down-arrow" />
-    </ai:Button>
-
     <fiori:ShellBar id="shellbar" primaryTitle="{formatter: 'Formatter.formatValue', path: 'i18n>appTitle'}" profileClick=".onProfileClick">
       <fiori:customData>
         <core:CustomData key="help-id" value="shellbar" writeToDom="true" />
@@ -108,6 +102,11 @@
             </customData>
           </Button>
           <webc:Button text="webc Button" click="onBoo" class="buttonSpacing" />
+          <ai:Button id="myAiButton" state="generate">
+            <ai:ButtonState name="generate" text="Generate" icon="ai" />
+            <ai:ButtonState name="generating" text="Stop Generating" icon="stop" />
+            <ai:ButtonState name="revise" text="Revise" icon="ai" endIcon="navigation-down-arrow" />
+          </ai:Button>
         </VBox>
       </webc:Panel>
 

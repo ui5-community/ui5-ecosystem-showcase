@@ -2165,6 +2165,7 @@ sap.ui.define((function () { 'use strict';
 
 		const {toString} = Object.prototype;
 		const {getPrototypeOf} = Object;
+		const {iterator, toStringTag} = Symbol;
 
 		const kindOf = (cache => thing => {
 		    const str = toString.call(thing);
@@ -2291,7 +2292,7 @@ sap.ui.define((function () { 'use strict';
 		  }
 
 		  const prototype = getPrototypeOf(val);
-		  return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in val) && !(Symbol.iterator in val);
+		  return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(toStringTag in val) && !(iterator in val);
 		};
 
 		/**
@@ -2642,13 +2643,13 @@ sap.ui.define((function () { 'use strict';
 		 * @returns {void}
 		 */
 		const forEachEntry = (obj, fn) => {
-		  const generator = obj && obj[Symbol.iterator];
+		  const generator = obj && obj[iterator];
 
-		  const iterator = generator.call(obj);
+		  const _iterator = generator.call(obj);
 
 		  let result;
 
-		  while ((result = iterator.next()) && !result.done) {
+		  while ((result = _iterator.next()) && !result.done) {
 		    const pair = result.value;
 		    fn.call(obj, pair[0], pair[1]);
 		  }
@@ -2769,7 +2770,7 @@ sap.ui.define((function () { 'use strict';
 		 * @returns {boolean}
 		 */
 		function isSpecCompliantForm(thing) {
-		  return !!(thing && isFunction(thing.append) && thing[Symbol.toStringTag] === 'FormData' && thing[Symbol.iterator]);
+		  return !!(thing && isFunction(thing.append) && thing[toStringTag] === 'FormData' && thing[iterator]);
 		}
 
 		const toJSONObject = (obj) => {
@@ -2838,6 +2839,10 @@ sap.ui.define((function () { 'use strict';
 
 		// *********************
 
+
+		const isIterable = (thing) => thing != null && isFunction(thing[iterator]);
+
+
 		var utils$1 = {
 		  isArray,
 		  isArrayBuffer,
@@ -2893,7 +2898,8 @@ sap.ui.define((function () { 'use strict';
 		  isAsyncFn,
 		  isThenable,
 		  setImmediate: _setImmediate,
-		  asap
+		  asap,
+		  isIterable
 		};
 
 		/**
@@ -3110,6 +3116,10 @@ sap.ui.define((function () { 'use strict';
 
 		    if (utils$1.isDate(value)) {
 		      return value.toISOString();
+		    }
+
+		    if (utils$1.isBoolean(value)) {
+		      return value.toString();
 		    }
 
 		    if (!useBlob && utils$1.isBlob(value)) {
@@ -3878,10 +3888,18 @@ sap.ui.define((function () { 'use strict';
 		      setHeaders(header, valueOrRewrite);
 		    } else if(utils$1.isString(header) && (header = header.trim()) && !isValidHeaderName(header)) {
 		      setHeaders(parseHeaders(header), valueOrRewrite);
-		    } else if (utils$1.isHeaders(header)) {
-		      for (const [key, value] of header.entries()) {
-		        setHeader(value, key, rewrite);
+		    } else if (utils$1.isObject(header) && utils$1.isIterable(header)) {
+		      let obj = {}, dest, key;
+		      for (const entry of header) {
+		        if (!utils$1.isArray(entry)) {
+		          throw TypeError('Object iterator must return a key-value pair');
+		        }
+
+		        obj[key = entry[0]] = (dest = obj[key]) ?
+		          (utils$1.isArray(dest) ? [...dest, entry[1]] : [dest, entry[1]]) : entry[1];
 		      }
+
+		      setHeaders(obj, valueOrRewrite);
 		    } else {
 		      header != null && setHeader(valueOrRewrite, header, rewrite);
 		    }
@@ -4021,6 +4039,10 @@ sap.ui.define((function () { 'use strict';
 
 		  toString() {
 		    return Object.entries(this.toJSON()).map(([header, value]) => header + ': ' + value).join('\n');
+		  }
+
+		  getSetCookie() {
+		    return this.get("set-cookie") || [];
 		  }
 
 		  get [Symbol.toStringTag]() {
@@ -4382,7 +4404,7 @@ sap.ui.define((function () { 'use strict';
 		 */
 		function buildFullPath(baseURL, requestedURL, allowAbsoluteUrls) {
 		  let isRelativeUrl = !isAbsoluteURL(requestedURL);
-		  if (baseURL && isRelativeUrl || allowAbsoluteUrls == false) {
+		  if (baseURL && (isRelativeUrl || allowAbsoluteUrls == false)) {
 		    return combineURLs(baseURL, requestedURL);
 		  }
 		  return requestedURL;
@@ -5016,7 +5038,7 @@ sap.ui.define((function () { 'use strict';
 		      credentials: isCredentialsSupported ? withCredentials : undefined
 		    });
 
-		    let response = await fetch(request);
+		    let response = await fetch(request, fetchOptions);
 
 		    const isStreamResponse = supportsResponseStream && (responseType === 'stream' || responseType === 'response');
 
@@ -5062,7 +5084,7 @@ sap.ui.define((function () { 'use strict';
 		  } catch (err) {
 		    unsubscribe && unsubscribe();
 
-		    if (err && err.name === 'TypeError' && /fetch/i.test(err.message)) {
+		    if (err && err.name === 'TypeError' && /Load failed|fetch/i.test(err.message)) {
 		      throw Object.assign(
 		        new AxiosError('Network Error', AxiosError.ERR_NETWORK, config, request),
 		        {
@@ -5222,7 +5244,7 @@ sap.ui.define((function () { 'use strict';
 		  });
 		}
 
-		const VERSION = "1.8.3";
+		const VERSION = "1.10.0";
 
 		const validators$1 = {};
 
@@ -5330,7 +5352,7 @@ sap.ui.define((function () { 'use strict';
 		 */
 		class Axios {
 		  constructor(instanceConfig) {
-		    this.defaults = instanceConfig;
+		    this.defaults = instanceConfig || {};
 		    this.interceptors = {
 		      request: new InterceptorManager$1(),
 		      response: new InterceptorManager$1()

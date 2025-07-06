@@ -14,7 +14,7 @@
     "lint": "eslint lib"
   },
   "dependencies": {
-    "express": "^4.21.2",
+    "express": "^4",
     "js-yaml": "^4.1.0",
     "node-html-parser": "^7.0.1",
     "ui5-utils-express": "workspace:^"

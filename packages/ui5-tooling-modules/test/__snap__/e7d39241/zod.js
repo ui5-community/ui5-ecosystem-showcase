@@ -2,7 +2,7 @@ sap.ui.define((function () { 'use strict';
 
     var util;
     (function (util) {
-        util.assertEqual = (val) => val;
+        util.assertEqual = (_) => { };
         function assertIs(_arg) { }
         util.assertIs = assertIs;
         function assertNever(_x) {
@@ -49,11 +49,9 @@ sap.ui.define((function () { 'use strict';
         };
         util.isInteger = typeof Number.isInteger === "function"
             ? (val) => Number.isInteger(val) // eslint-disable-line ban/ban
-            : (val) => typeof val === "number" && isFinite(val) && Math.floor(val) === val;
+            : (val) => typeof val === "number" && Number.isFinite(val) && Math.floor(val) === val;
         function joinValues(array, separator = " | ") {
-            return array
-                .map((val) => (typeof val === "string" ? `'${val}'` : val))
-                .join(separator);
+            return array.map((val) => (typeof val === "string" ? `'${val}'` : val)).join(separator);
         }
         util.joinValues = joinValues;
         util.jsonStringifyReplacer = (_, value) => {
@@ -102,7 +100,7 @@ sap.ui.define((function () { 'use strict';
             case "string":
                 return ZodParsedType.string;
             case "number":
-                return isNaN(data) ? ZodParsedType.nan : ZodParsedType.number;
+                return Number.isNaN(data) ? ZodParsedType.nan : ZodParsedType.number;
             case "boolean":
                 return ZodParsedType.boolean;
             case "function":
@@ -118,10 +116,7 @@ sap.ui.define((function () { 'use strict';
                 if (data === null) {
                     return ZodParsedType.null;
                 }
-                if (data.then &&
-                    typeof data.then === "function" &&
-                    data.catch &&
-                    typeof data.catch === "function") {
+                if (data.then && typeof data.then === "function" && data.catch && typeof data.catch === "function") {
                     return ZodParsedType.promise;
                 }
                 if (typeof Map !== "undefined" && data instanceof Map) {
@@ -253,8 +248,9 @@ sap.ui.define((function () { 'use strict';
             const formErrors = [];
             for (const sub of this.issues) {
                 if (sub.path.length > 0) {
-                    fieldErrors[sub.path[0]] = fieldErrors[sub.path[0]] || [];
-                    fieldErrors[sub.path[0]].push(mapper(sub));
+                    const firstEl = sub.path[0];
+                    fieldErrors[firstEl] = fieldErrors[firstEl] || [];
+                    fieldErrors[firstEl].push(mapper(sub));
                 }
                 else {
                     formErrors.push(mapper(sub));
@@ -337,17 +333,11 @@ sap.ui.define((function () { 'use strict';
                 else if (issue.type === "string")
                     message = `String must contain ${issue.exact ? "exactly" : issue.inclusive ? `at least` : `over`} ${issue.minimum} character(s)`;
                 else if (issue.type === "number")
-                    message = `Number must be ${issue.exact
-                    ? `exactly equal to `
-                    : issue.inclusive
-                        ? `greater than or equal to `
-                        : `greater than `}${issue.minimum}`;
+                    message = `Number must be ${issue.exact ? `exactly equal to ` : issue.inclusive ? `greater than or equal to ` : `greater than `}${issue.minimum}`;
+                else if (issue.type === "bigint")
+                    message = `Number must be ${issue.exact ? `exactly equal to ` : issue.inclusive ? `greater than or equal to ` : `greater than `}${issue.minimum}`;
                 else if (issue.type === "date")
-                    message = `Date must be ${issue.exact
-                    ? `exactly equal to `
-                    : issue.inclusive
-                        ? `greater than or equal to `
-                        : `greater than `}${new Date(Number(issue.minimum))}`;
+                    message = `Date must be ${issue.exact ? `exactly equal to ` : issue.inclusive ? `greater than or equal to ` : `greater than `}${new Date(Number(issue.minimum))}`;
                 else
                     message = "Invalid input";
                 break;
@@ -357,23 +347,11 @@ sap.ui.define((function () { 'use strict';
                 else if (issue.type === "string")
                     message = `String must contain ${issue.exact ? `exactly` : issue.inclusive ? `at most` : `under`} ${issue.maximum} character(s)`;
                 else if (issue.type === "number")
-                    message = `Number must be ${issue.exact
-                    ? `exactly`
-                    : issue.inclusive
-                        ? `less than or equal to`
-                        : `less than`} ${issue.maximum}`;
+                    message = `Number must be ${issue.exact ? `exactly` : issue.inclusive ? `less than or equal to` : `less than`} ${issue.maximum}`;
                 else if (issue.type === "bigint")
-                    message = `BigInt must be ${issue.exact
-                    ? `exactly`
-                    : issue.inclusive
-                        ? `less than or equal to`
-                        : `less than`} ${issue.maximum}`;
+                    message = `BigInt must be ${issue.exact ? `exactly` : issue.inclusive ? `less than or equal to` : `less than`} ${issue.maximum}`;
                 else if (issue.type === "date")
-                    message = `Date must be ${issue.exact
-                    ? `exactly`
-                    : issue.inclusive
-                        ? `smaller than or equal to`
-                        : `smaller than`} ${new Date(Number(issue.maximum))}`;
+                    message = `Date must be ${issue.exact ? `exactly` : issue.inclusive ? `smaller than or equal to` : `smaller than`} ${new Date(Number(issue.maximum))}`;
                 else
                     message = "Invalid input";
                 break;
@@ -495,8 +473,7 @@ sap.ui.define((function () { 'use strict';
                     status.dirty();
                 if (value.status === "dirty")
                     status.dirty();
-                if (key.value !== "__proto__" &&
-                    (typeof value.value !== "undefined" || pair.alwaysSet)) {
+                if (key.value !== "__proto__" && (typeof value.value !== "undefined" || pair.alwaysSet)) {
                     finalObject[key.value] = value.value;
                 }
             }
@@ -513,43 +490,13 @@ sap.ui.define((function () { 'use strict';
     const isValid = (x) => x.status === "valid";
     const isAsync = (x) => typeof Promise !== "undefined" && x instanceof Promise;
 
-    /******************************************************************************
-    Copyright (c) Microsoft Corporation.
-
-    Permission to use, copy, modify, and/or distribute this software for any
-    purpose with or without fee is hereby granted.
-
-    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-    PERFORMANCE OF THIS SOFTWARE.
-    ***************************************************************************** */
-
-    function __classPrivateFieldGet(receiver, state, kind, f) {
-        if (typeof state === "function" ? receiver !== state || true : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-        return state.get(receiver);
-    }
-
-    function __classPrivateFieldSet(receiver, state, value, kind, f) {
-        if (typeof state === "function" ? receiver !== state || true : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-        return (state.set(receiver, value)), value;
-    }
-
-    typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
-        var e = new Error(message);
-        return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
-    };
-
     var errorUtil;
     (function (errorUtil) {
         errorUtil.errToObj = (message) => typeof message === "string" ? { message } : message || {};
-        errorUtil.toString = (message) => typeof message === "string" ? message : message === null || message === void 0 ? void 0 : message.message;
+        // biome-ignore lint:
+        errorUtil.toString = (message) => typeof message === "string" ? message : message?.message;
     })(errorUtil || (errorUtil = {}));
 
-    var _ZodEnum_cache, _ZodNativeEnum_cache;
     class ParseInputLazyPath {
         constructor(parent, value, path, key) {
             this._cachedPath = [];
@@ -560,7 +507,7 @@ sap.ui.define((function () { 'use strict';
         }
         get path() {
             if (!this._cachedPath.length) {
-                if (this._key instanceof Array) {
+                if (Array.isArray(this._key)) {
                     this._cachedPath.push(...this._path, ...this._key);
                 }
                 else {
@@ -600,17 +547,16 @@ sap.ui.define((function () { 'use strict';
         if (errorMap)
             return { errorMap: errorMap, description };
         const customMap = (iss, ctx) => {
-            var _a, _b;
             const { message } = params;
             if (iss.code === "invalid_enum_value") {
-                return { message: message !== null && message !== void 0 ? message : ctx.defaultError };
+                return { message: message ?? ctx.defaultError };
             }
             if (typeof ctx.data === "undefined") {
-                return { message: (_a = message !== null && message !== void 0 ? message : required_error) !== null && _a !== void 0 ? _a : ctx.defaultError };
+                return { message: message ?? required_error ?? ctx.defaultError };
             }
             if (iss.code !== "invalid_type")
                 return { message: ctx.defaultError };
-            return { message: (_b = message !== null && message !== void 0 ? message : invalid_type_error) !== null && _b !== void 0 ? _b : ctx.defaultError };
+            return { message: message ?? invalid_type_error ?? ctx.defaultError };
         };
         return { errorMap: customMap, description };
     }
@@ -662,14 +608,13 @@ sap.ui.define((function () { 'use strict';
             throw result.error;
         }
         safeParse(data, params) {
-            var _a;
             const ctx = {
                 common: {
                     issues: [],
-                    async: (_a = params === null || params === void 0 ? void 0 : params.async) !== null && _a !== void 0 ? _a : false,
-                    contextualErrorMap: params === null || params === void 0 ? void 0 : params.errorMap,
+                    async: params?.async ?? false,
+                    contextualErrorMap: params?.errorMap,
                 },
-                path: (params === null || params === void 0 ? void 0 : params.path) || [],
+                path: params?.path || [],
                 schemaErrorMap: this._def.errorMap,
                 parent: null,
                 data,
@@ -679,7 +624,6 @@ sap.ui.define((function () { 'use strict';
             return handleResult(ctx, result);
         }
         "~validate"(data) {
-            var _a, _b;
             const ctx = {
                 common: {
                     issues: [],
@@ -703,7 +647,7 @@ sap.ui.define((function () { 'use strict';
                         };
                 }
                 catch (err) {
-                    if ((_b = (_a = err === null || err === void 0 ? void 0 : err.message) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === null || _b === void 0 ? void 0 : _b.includes("encountered")) {
+                    if (err?.message?.toLowerCase()?.includes("encountered")) {
                         this["~standard"].async = true;
                     }
                     ctx.common = {
@@ -730,19 +674,17 @@ sap.ui.define((function () { 'use strict';
             const ctx = {
                 common: {
                     issues: [],
-                    contextualErrorMap: params === null || params === void 0 ? void 0 : params.errorMap,
+                    contextualErrorMap: params?.errorMap,
                     async: true,
                 },
-                path: (params === null || params === void 0 ? void 0 : params.path) || [],
+                path: params?.path || [],
                 schemaErrorMap: this._def.errorMap,
                 parent: null,
                 data,
                 parsedType: getParsedType(data),
             };
             const maybeAsyncResult = this._parse({ data, path: ctx.path, parent: ctx });
-            const result = await (isAsync(maybeAsyncResult)
-                ? maybeAsyncResult
-                : Promise.resolve(maybeAsyncResult));
+            const result = await (isAsync(maybeAsyncResult) ? maybeAsyncResult : Promise.resolve(maybeAsyncResult));
             return handleResult(ctx, result);
         }
         refine(check, message) {
@@ -786,9 +728,7 @@ sap.ui.define((function () { 'use strict';
         refinement(check, refinementData) {
             return this._refinement((val, ctx) => {
                 if (!check(val)) {
-                    ctx.addIssue(typeof refinementData === "function"
-                        ? refinementData(val, ctx)
-                        : refinementData);
+                    ctx.addIssue(typeof refinementData === "function" ? refinementData(val, ctx) : refinementData);
                     return false;
                 }
                 else {
@@ -960,15 +900,15 @@ sap.ui.define((function () { 'use strict';
     const dateRegexSource = `((\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-((0[13578]|1[02])-(0[1-9]|[12]\\d|3[01])|(0[469]|11)-(0[1-9]|[12]\\d|30)|(02)-(0[1-9]|1\\d|2[0-8])))`;
     const dateRegex = new RegExp(`^${dateRegexSource}$`);
     function timeRegexSource(args) {
-        // let regex = `\\d{2}:\\d{2}:\\d{2}`;
-        let regex = `([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d`;
+        let secondsRegexSource = `[0-5]\\d`;
         if (args.precision) {
-            regex = `${regex}\\.\\d{${args.precision}}`;
+            secondsRegexSource = `${secondsRegexSource}\\.\\d{${args.precision}}`;
         }
         else if (args.precision == null) {
-            regex = `${regex}(\\.\\d+)?`;
+            secondsRegexSource = `${secondsRegexSource}(\\.\\d+)?`;
         }
-        return regex;
+        const secondsQuantifier = args.precision ? "+" : "?"; // require seconds if precision is nonzero
+        return `([01]\\d|2[0-3]):[0-5]\\d(:${secondsRegexSource})${secondsQuantifier}`;
     }
     function timeRegex(args) {
         return new RegExp(`^${timeRegexSource(args)}$`);
@@ -997,6 +937,8 @@ sap.ui.define((function () { 'use strict';
             return false;
         try {
             const [header] = jwt.split(".");
+            if (!header)
+                return false;
             // Convert base64url to base64
             const base64 = header
                 .replace(/-/g, "+")
@@ -1005,13 +947,15 @@ sap.ui.define((function () { 'use strict';
             const decoded = JSON.parse(atob(base64));
             if (typeof decoded !== "object" || decoded === null)
                 return false;
-            if (!decoded.typ || !decoded.alg)
+            if ("typ" in decoded && decoded?.typ !== "JWT")
+                return false;
+            if (!decoded.alg)
                 return false;
             if (alg && decoded.alg !== alg)
                 return false;
             return true;
         }
-        catch (_a) {
+        catch {
             return false;
         }
     }
@@ -1182,7 +1126,7 @@ sap.ui.define((function () { 'use strict';
                     try {
                         new URL(input.data);
                     }
-                    catch (_a) {
+                    catch {
                         ctx = this._getOrReturnCtx(input, ctx);
                         addIssueToContext(ctx, {
                             validation: "url",
@@ -1412,7 +1356,6 @@ sap.ui.define((function () { 'use strict';
             return this._addCheck({ kind: "cidr", ...errorUtil.errToObj(options) });
         }
         datetime(options) {
-            var _a, _b;
             if (typeof options === "string") {
                 return this._addCheck({
                     kind: "datetime",
@@ -1424,10 +1367,10 @@ sap.ui.define((function () { 'use strict';
             }
             return this._addCheck({
                 kind: "datetime",
-                precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
-                offset: (_a = options === null || options === void 0 ? void 0 : options.offset) !== null && _a !== void 0 ? _a : false,
-                local: (_b = options === null || options === void 0 ? void 0 : options.local) !== null && _b !== void 0 ? _b : false,
-                ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message),
+                precision: typeof options?.precision === "undefined" ? null : options?.precision,
+                offset: options?.offset ?? false,
+                local: options?.local ?? false,
+                ...errorUtil.errToObj(options?.message),
             });
         }
         date(message) {
@@ -1443,8 +1386,8 @@ sap.ui.define((function () { 'use strict';
             }
             return this._addCheck({
                 kind: "time",
-                precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
-                ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message),
+                precision: typeof options?.precision === "undefined" ? null : options?.precision,
+                ...errorUtil.errToObj(options?.message),
             });
         }
         duration(message) {
@@ -1461,8 +1404,8 @@ sap.ui.define((function () { 'use strict';
             return this._addCheck({
                 kind: "includes",
                 value: value,
-                position: options === null || options === void 0 ? void 0 : options.position,
-                ...errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message),
+                position: options?.position,
+                ...errorUtil.errToObj(options?.message),
             });
         }
         startsWith(value, message) {
@@ -1595,11 +1538,10 @@ sap.ui.define((function () { 'use strict';
         }
     }
     ZodString.create = (params) => {
-        var _a;
         return new ZodString({
             checks: [],
             typeName: ZodFirstPartyTypeKind.ZodString,
-            coerce: (_a = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a !== void 0 ? _a : false,
+            coerce: params?.coerce ?? false,
             ...processCreateParams(params),
         });
     };
@@ -1608,9 +1550,9 @@ sap.ui.define((function () { 'use strict';
         const valDecCount = (val.toString().split(".")[1] || "").length;
         const stepDecCount = (step.toString().split(".")[1] || "").length;
         const decCount = valDecCount > stepDecCount ? valDecCount : stepDecCount;
-        const valInt = parseInt(val.toFixed(decCount).replace(".", ""));
-        const stepInt = parseInt(step.toFixed(decCount).replace(".", ""));
-        return (valInt % stepInt) / Math.pow(10, decCount);
+        const valInt = Number.parseInt(val.toFixed(decCount).replace(".", ""));
+        const stepInt = Number.parseInt(step.toFixed(decCount).replace(".", ""));
+        return (valInt % stepInt) / 10 ** decCount;
     }
     class ZodNumber extends ZodType {
         constructor() {
@@ -1649,9 +1591,7 @@ sap.ui.define((function () { 'use strict';
                     }
                 }
                 else if (check.kind === "min") {
-                    const tooSmall = check.inclusive
-                        ? input.data < check.value
-                        : input.data <= check.value;
+                    const tooSmall = check.inclusive ? input.data < check.value : input.data <= check.value;
                     if (tooSmall) {
                         ctx = this._getOrReturnCtx(input, ctx);
                         addIssueToContext(ctx, {
@@ -1666,9 +1606,7 @@ sap.ui.define((function () { 'use strict';
                     }
                 }
                 else if (check.kind === "max") {
-                    const tooBig = check.inclusive
-                        ? input.data > check.value
-                        : input.data >= check.value;
+                    const tooBig = check.inclusive ? input.data > check.value : input.data >= check.value;
                     if (tooBig) {
                         ctx = this._getOrReturnCtx(input, ctx);
                         addIssueToContext(ctx, {
@@ -1826,15 +1764,13 @@ sap.ui.define((function () { 'use strict';
             return max;
         }
         get isInt() {
-            return !!this._def.checks.find((ch) => ch.kind === "int" ||
-                (ch.kind === "multipleOf" && util.isInteger(ch.value)));
+            return !!this._def.checks.find((ch) => ch.kind === "int" || (ch.kind === "multipleOf" && util.isInteger(ch.value)));
         }
         get isFinite() {
-            let max = null, min = null;
+            let max = null;
+            let min = null;
             for (const ch of this._def.checks) {
-                if (ch.kind === "finite" ||
-                    ch.kind === "int" ||
-                    ch.kind === "multipleOf") {
+                if (ch.kind === "finite" || ch.kind === "int" || ch.kind === "multipleOf") {
                     return true;
                 }
                 else if (ch.kind === "min") {
@@ -1853,7 +1789,7 @@ sap.ui.define((function () { 'use strict';
         return new ZodNumber({
             checks: [],
             typeName: ZodFirstPartyTypeKind.ZodNumber,
-            coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+            coerce: params?.coerce || false,
             ...processCreateParams(params),
         });
     };
@@ -1868,7 +1804,7 @@ sap.ui.define((function () { 'use strict';
                 try {
                     input.data = BigInt(input.data);
                 }
-                catch (_a) {
+                catch {
                     return this._getInvalidInput(input);
                 }
             }
@@ -1880,9 +1816,7 @@ sap.ui.define((function () { 'use strict';
             const status = new ParseStatus();
             for (const check of this._def.checks) {
                 if (check.kind === "min") {
-                    const tooSmall = check.inclusive
-                        ? input.data < check.value
-                        : input.data <= check.value;
+                    const tooSmall = check.inclusive ? input.data < check.value : input.data <= check.value;
                     if (tooSmall) {
                         ctx = this._getOrReturnCtx(input, ctx);
                         addIssueToContext(ctx, {
@@ -1896,9 +1830,7 @@ sap.ui.define((function () { 'use strict';
                     }
                 }
                 else if (check.kind === "max") {
-                    const tooBig = check.inclusive
-                        ? input.data > check.value
-                        : input.data >= check.value;
+                    const tooBig = check.inclusive ? input.data > check.value : input.data >= check.value;
                     if (tooBig) {
                         ctx = this._getOrReturnCtx(input, ctx);
                         addIssueToContext(ctx, {
@@ -2030,11 +1962,10 @@ sap.ui.define((function () { 'use strict';
         }
     }
     ZodBigInt.create = (params) => {
-        var _a;
         return new ZodBigInt({
             checks: [],
             typeName: ZodFirstPartyTypeKind.ZodBigInt,
-            coerce: (_a = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a !== void 0 ? _a : false,
+            coerce: params?.coerce ?? false,
             ...processCreateParams(params),
         });
     };
@@ -2059,7 +1990,7 @@ sap.ui.define((function () { 'use strict';
     ZodBoolean.create = (params) => {
         return new ZodBoolean({
             typeName: ZodFirstPartyTypeKind.ZodBoolean,
-            coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+            coerce: params?.coerce || false,
             ...processCreateParams(params),
         });
     };
@@ -2078,7 +2009,7 @@ sap.ui.define((function () { 'use strict';
                 });
                 return INVALID;
             }
-            if (isNaN(input.data.getTime())) {
+            if (Number.isNaN(input.data.getTime())) {
                 const ctx = this._getOrReturnCtx(input);
                 addIssueToContext(ctx, {
                     code: ZodIssueCode.invalid_date,
@@ -2169,7 +2100,7 @@ sap.ui.define((function () { 'use strict';
     ZodDate.create = (params) => {
         return new ZodDate({
             checks: [],
-            coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+            coerce: params?.coerce || false,
             typeName: ZodFirstPartyTypeKind.ZodDate,
             ...processCreateParams(params),
         });
@@ -2491,7 +2422,8 @@ sap.ui.define((function () { 'use strict';
                 return this._cached;
             const shape = this._def.shape();
             const keys = util.objectKeys(shape);
-            return (this._cached = { shape, keys });
+            this._cached = { shape, keys };
+            return this._cached;
         }
         _parse(input) {
             const parsedType = this._getType(input);
@@ -2507,8 +2439,7 @@ sap.ui.define((function () { 'use strict';
             const { status, ctx } = this._processInputParams(input);
             const { shape, keys: shapeKeys } = this._getCached();
             const extraKeys = [];
-            if (!(this._def.catchall instanceof ZodNever &&
-                this._def.unknownKeys === "strip")) {
+            if (!(this._def.catchall instanceof ZodNever && this._def.unknownKeys === "strip")) {
                 for (const key in ctx.data) {
                     if (!shapeKeys.includes(key)) {
                         extraKeys.push(key);
@@ -2596,11 +2527,10 @@ sap.ui.define((function () { 'use strict';
                 ...(message !== undefined
                     ? {
                         errorMap: (issue, ctx) => {
-                            var _a, _b, _c, _d;
-                            const defaultError = (_c = (_b = (_a = this._def).errorMap) === null || _b === void 0 ? void 0 : _b.call(_a, issue, ctx).message) !== null && _c !== void 0 ? _c : ctx.defaultError;
+                            const defaultError = this._def.errorMap?.(issue, ctx).message ?? ctx.defaultError;
                             if (issue.code === "unrecognized_keys")
                                 return {
-                                    message: (_d = errorUtil.errToObj(message).message) !== null && _d !== void 0 ? _d : defaultError,
+                                    message: errorUtil.errToObj(message).message ?? defaultError,
                                 };
                             return {
                                 message: defaultError,
@@ -2732,11 +2662,11 @@ sap.ui.define((function () { 'use strict';
         }
         pick(mask) {
             const shape = {};
-            util.objectKeys(mask).forEach((key) => {
+            for (const key of util.objectKeys(mask)) {
                 if (mask[key] && this.shape[key]) {
                     shape[key] = this.shape[key];
                 }
-            });
+            }
             return new ZodObject({
                 ...this._def,
                 shape: () => shape,
@@ -2744,11 +2674,11 @@ sap.ui.define((function () { 'use strict';
         }
         omit(mask) {
             const shape = {};
-            util.objectKeys(this.shape).forEach((key) => {
+            for (const key of util.objectKeys(this.shape)) {
                 if (!mask[key]) {
                     shape[key] = this.shape[key];
                 }
-            });
+            }
             return new ZodObject({
                 ...this._def,
                 shape: () => shape,
@@ -2762,7 +2692,7 @@ sap.ui.define((function () { 'use strict';
         }
         partial(mask) {
             const newShape = {};
-            util.objectKeys(this.shape).forEach((key) => {
+            for (const key of util.objectKeys(this.shape)) {
                 const fieldSchema = this.shape[key];
                 if (mask && !mask[key]) {
                     newShape[key] = fieldSchema;
@@ -2770,7 +2700,7 @@ sap.ui.define((function () { 'use strict';
                 else {
                     newShape[key] = fieldSchema.optional();
                 }
-            });
+            }
             return new ZodObject({
                 ...this._def,
                 shape: () => newShape,
@@ -2778,7 +2708,7 @@ sap.ui.define((function () { 'use strict';
         }
         required(mask) {
             const newShape = {};
-            util.objectKeys(this.shape).forEach((key) => {
+            for (const key of util.objectKeys(this.shape)) {
                 if (mask && !mask[key]) {
                     newShape[key] = this.shape[key];
                 }
@@ -2790,7 +2720,7 @@ sap.ui.define((function () { 'use strict';
                     }
                     newShape[key] = newField;
                 }
-            });
+            }
             return new ZodObject({
                 ...this._def,
                 shape: () => newShape,
@@ -3062,9 +2992,7 @@ sap.ui.define((function () { 'use strict';
         }
         else if (aType === ZodParsedType.object && bType === ZodParsedType.object) {
             const bKeys = util.objectKeys(b);
-            const sharedKeys = util
-                .objectKeys(a)
-                .filter((key) => bKeys.indexOf(key) !== -1);
+            const sharedKeys = util.objectKeys(a).filter((key) => bKeys.indexOf(key) !== -1);
             const newObj = { ...a, ...b };
             for (const key of sharedKeys) {
                 const sharedValue = mergeValues(a[key], b[key]);
@@ -3091,9 +3019,7 @@ sap.ui.define((function () { 'use strict';
             }
             return { valid: true, data: newArray };
         }
-        else if (aType === ZodParsedType.date &&
-            bType === ZodParsedType.date &&
-            +a === +b) {
+        else if (aType === ZodParsedType.date && bType === ZodParsedType.date && +a === +b) {
             return { valid: true, data: a };
         }
         else {
@@ -3154,6 +3080,7 @@ sap.ui.define((function () { 'use strict';
             ...processCreateParams(params),
         });
     };
+    // type ZodTupleItems = [ZodTypeAny, ...ZodTypeAny[]];
     class ZodTuple extends ZodType {
         _parse(input) {
             const { status, ctx } = this._processInputParams(input);
@@ -3450,12 +3377,7 @@ sap.ui.define((function () { 'use strict';
                 return makeIssue({
                     data: args,
                     path: ctx.path,
-                    errorMaps: [
-                        ctx.common.contextualErrorMap,
-                        ctx.schemaErrorMap,
-                        getErrorMap(),
-                        errorMap,
-                    ].filter((x) => !!x),
+                    errorMaps: [ctx.common.contextualErrorMap, ctx.schemaErrorMap, getErrorMap(), errorMap].filter((x) => !!x),
                     issueData: {
                         code: ZodIssueCode.invalid_arguments,
                         argumentsError: error,
@@ -3466,12 +3388,7 @@ sap.ui.define((function () { 'use strict';
                 return makeIssue({
                     data: returns,
                     path: ctx.path,
-                    errorMaps: [
-                        ctx.common.contextualErrorMap,
-                        ctx.schemaErrorMap,
-                        getErrorMap(),
-                        errorMap,
-                    ].filter((x) => !!x),
+                    errorMaps: [ctx.common.contextualErrorMap, ctx.schemaErrorMap, getErrorMap(), errorMap].filter((x) => !!x),
                     issueData: {
                         code: ZodIssueCode.invalid_return_type,
                         returnTypeError: error,
@@ -3487,9 +3404,7 @@ sap.ui.define((function () { 'use strict';
                 const me = this;
                 return OK(async function (...args) {
                     const error = new ZodError([]);
-                    const parsedArgs = await me._def.args
-                        .parseAsync(args, params)
-                        .catch((e) => {
+                    const parsedArgs = await me._def.args.parseAsync(args, params).catch((e) => {
                         error.addIssue(makeArgsIssue(args, e));
                         throw error;
                     });
@@ -3550,9 +3465,7 @@ sap.ui.define((function () { 'use strict';
         }
         static create(args, returns, params) {
             return new ZodFunction({
-                args: (args
-                    ? args
-                    : ZodTuple.create([]).rest(ZodUnknown.create())),
+                args: (args ? args : ZodTuple.create([]).rest(ZodUnknown.create())),
                 returns: returns || ZodUnknown.create(),
                 typeName: ZodFirstPartyTypeKind.ZodFunction,
                 ...processCreateParams(params),
@@ -3608,10 +3521,6 @@ sap.ui.define((function () { 'use strict';
         });
     }
     class ZodEnum extends ZodType {
-        constructor() {
-            super(...arguments);
-            _ZodEnum_cache.set(this, void 0);
-        }
         _parse(input) {
             if (typeof input.data !== "string") {
                 const ctx = this._getOrReturnCtx(input);
@@ -3623,10 +3532,10 @@ sap.ui.define((function () { 'use strict';
                 });
                 return INVALID;
             }
-            if (!__classPrivateFieldGet(this, _ZodEnum_cache)) {
-                __classPrivateFieldSet(this, _ZodEnum_cache, new Set(this._def.values));
+            if (!this._cache) {
+                this._cache = new Set(this._def.values);
             }
-            if (!__classPrivateFieldGet(this, _ZodEnum_cache).has(input.data)) {
+            if (!this._cache.has(input.data)) {
                 const ctx = this._getOrReturnCtx(input);
                 const expectedValues = this._def.values;
                 addIssueToContext(ctx, {
@@ -3675,18 +3584,12 @@ sap.ui.define((function () { 'use strict';
             });
         }
     }
-    _ZodEnum_cache = new WeakMap();
     ZodEnum.create = createZodEnum;
     class ZodNativeEnum extends ZodType {
-        constructor() {
-            super(...arguments);
-            _ZodNativeEnum_cache.set(this, void 0);
-        }
         _parse(input) {
             const nativeEnumValues = util.getValidEnumValues(this._def.values);
             const ctx = this._getOrReturnCtx(input);
-            if (ctx.parsedType !== ZodParsedType.string &&
-                ctx.parsedType !== ZodParsedType.number) {
+            if (ctx.parsedType !== ZodParsedType.string && ctx.parsedType !== ZodParsedType.number) {
                 const expectedValues = util.objectValues(nativeEnumValues);
                 addIssueToContext(ctx, {
                     expected: util.joinValues(expectedValues),
@@ -3695,10 +3598,10 @@ sap.ui.define((function () { 'use strict';
                 });
                 return INVALID;
             }
-            if (!__classPrivateFieldGet(this, _ZodNativeEnum_cache)) {
-                __classPrivateFieldSet(this, _ZodNativeEnum_cache, new Set(util.getValidEnumValues(this._def.values)));
+            if (!this._cache) {
+                this._cache = new Set(util.getValidEnumValues(this._def.values));
             }
-            if (!__classPrivateFieldGet(this, _ZodNativeEnum_cache).has(input.data)) {
+            if (!this._cache.has(input.data)) {
                 const expectedValues = util.objectValues(nativeEnumValues);
                 addIssueToContext(ctx, {
                     received: ctx.data,
@@ -3713,7 +3616,6 @@ sap.ui.define((function () { 'use strict';
             return this._def.values;
         }
     }
-    _ZodNativeEnum_cache = new WeakMap();
     ZodNativeEnum.create = (values, params) => {
         return new ZodNativeEnum({
             values: values,
@@ -3727,8 +3629,7 @@ sap.ui.define((function () { 'use strict';
         }
         _parse(input) {
             const { ctx } = this._processInputParams(input);
-            if (ctx.parsedType !== ZodParsedType.promise &&
-                ctx.common.async === false) {
+            if (ctx.parsedType !== ZodParsedType.promise && ctx.common.async === false) {
                 addIssueToContext(ctx, {
                     code: ZodIssueCode.invalid_type,
                     expected: ZodParsedType.promise,
@@ -3736,9 +3637,7 @@ sap.ui.define((function () { 'use strict';
                 });
                 return INVALID;
             }
-            const promisified = ctx.parsedType === ZodParsedType.promise
-                ? ctx.data
-                : Promise.resolve(ctx.data);
+            const promisified = ctx.parsedType === ZodParsedType.promise ? ctx.data : Promise.resolve(ctx.data);
             return OK(promisified.then((data) => {
                 return this._def.type.parseAsync(data, {
                     path: ctx.path,
@@ -3844,9 +3743,7 @@ sap.ui.define((function () { 'use strict';
                     return { status: status.value, value: inner.value };
                 }
                 else {
-                    return this._def.schema
-                        ._parseAsync({ data: ctx.data, path: ctx.path, parent: ctx })
-                        .then((inner) => {
+                    return this._def.schema._parseAsync({ data: ctx.data, path: ctx.path, parent: ctx }).then((inner) => {
                         if (inner.status === "aborted")
                             return INVALID;
                         if (inner.status === "dirty")
@@ -3865,7 +3762,7 @@ sap.ui.define((function () { 'use strict';
                         parent: ctx,
                     });
                     if (!isValid(base))
-                        return base;
+                        return INVALID;
                     const result = effect.transform(base.value, checkCtx);
                     if (result instanceof Promise) {
                         throw new Error(`Asynchronous transform encountered during synchronous parse operation. Use .parseAsync instead.`);
@@ -3873,12 +3770,13 @@ sap.ui.define((function () { 'use strict';
                     return { status: status.value, value: result };
                 }
                 else {
-                    return this._def.schema
-                        ._parseAsync({ data: ctx.data, path: ctx.path, parent: ctx })
-                        .then((base) => {
+                    return this._def.schema._parseAsync({ data: ctx.data, path: ctx.path, parent: ctx }).then((base) => {
                         if (!isValid(base))
-                            return base;
-                        return Promise.resolve(effect.transform(base.value, checkCtx)).then((result) => ({ status: status.value, value: result }));
+                            return INVALID;
+                        return Promise.resolve(effect.transform(base.value, checkCtx)).then((result) => ({
+                            status: status.value,
+                            value: result,
+                        }));
                     });
                 }
             }
@@ -3960,9 +3858,7 @@ sap.ui.define((function () { 'use strict';
         return new ZodDefault({
             innerType: type,
             typeName: ZodFirstPartyTypeKind.ZodDefault,
-            defaultValue: typeof params.default === "function"
-                ? params.default
-                : () => params.default,
+            defaultValue: typeof params.default === "function" ? params.default : () => params.default,
             ...processCreateParams(params),
         });
     };
@@ -4128,9 +4024,7 @@ sap.ui.define((function () { 'use strict';
                 }
                 return data;
             };
-            return isAsync(result)
-                ? result.then((data) => freeze(data))
-                : freeze(result);
+            return isAsync(result) ? result.then((data) => freeze(data)) : freeze(result);
         }
         unwrap() {
             return this._def.innerType;
@@ -4151,11 +4045,7 @@ sap.ui.define((function () { 'use strict';
     ////////////////////////////////////////
     ////////////////////////////////////////
     function cleanParams(params, data) {
-        const p = typeof params === "function"
-            ? params(data)
-            : typeof params === "string"
-                ? { message: params }
-                : params;
+        const p = typeof params === "function" ? params(data) : typeof params === "string" ? { message: params } : params;
         const p2 = typeof p === "string" ? { message: p } : p;
         return p2;
     }
@@ -4173,21 +4063,19 @@ sap.ui.define((function () { 'use strict';
     fatal) {
         if (check)
             return ZodAny.create().superRefine((data, ctx) => {
-                var _a, _b;
                 const r = check(data);
                 if (r instanceof Promise) {
                     return r.then((r) => {
-                        var _a, _b;
                         if (!r) {
                             const params = cleanParams(_params, data);
-                            const _fatal = (_b = (_a = params.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
+                            const _fatal = params.fatal ?? fatal ?? true;
                             ctx.addIssue({ code: "custom", ...params, fatal: _fatal });
                         }
                     });
                 }
                 if (!r) {
                     const params = cleanParams(_params, data);
-                    const _fatal = (_b = (_a = params.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
+                    const _fatal = params.fatal ?? fatal ?? true;
                     ctx.addIssue({ code: "custom", ...params, fatal: _fatal });
                 }
                 return;
@@ -4292,91 +4180,92 @@ sap.ui.define((function () { 'use strict';
 
     var z = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        defaultErrorMap: errorMap,
-        setErrorMap: setErrorMap,
-        getErrorMap: getErrorMap,
-        makeIssue: makeIssue,
-        EMPTY_PATH: EMPTY_PATH,
-        addIssueToContext: addIssueToContext,
-        ParseStatus: ParseStatus,
-        INVALID: INVALID,
+        BRAND: BRAND,
         DIRTY: DIRTY,
+        EMPTY_PATH: EMPTY_PATH,
+        INVALID: INVALID,
+        NEVER: NEVER,
         OK: OK,
-        isAborted: isAborted,
-        isDirty: isDirty,
-        isValid: isValid,
-        isAsync: isAsync,
-        get util () { return util; },
-        get objectUtil () { return objectUtil; },
-        ZodParsedType: ZodParsedType,
-        getParsedType: getParsedType,
-        ZodType: ZodType,
-        datetimeRegex: datetimeRegex,
-        ZodString: ZodString,
-        ZodNumber: ZodNumber,
+        ParseStatus: ParseStatus,
+        Schema: ZodType,
+        ZodAny: ZodAny,
+        ZodArray: ZodArray,
         ZodBigInt: ZodBigInt,
         ZodBoolean: ZodBoolean,
+        ZodBranded: ZodBranded,
+        ZodCatch: ZodCatch,
         ZodDate: ZodDate,
-        ZodSymbol: ZodSymbol,
-        ZodUndefined: ZodUndefined,
-        ZodNull: ZodNull,
-        ZodAny: ZodAny,
-        ZodUnknown: ZodUnknown,
-        ZodNever: ZodNever,
-        ZodVoid: ZodVoid,
-        ZodArray: ZodArray,
-        ZodObject: ZodObject,
-        ZodUnion: ZodUnion,
+        ZodDefault: ZodDefault,
         ZodDiscriminatedUnion: ZodDiscriminatedUnion,
-        ZodIntersection: ZodIntersection,
-        ZodTuple: ZodTuple,
-        ZodRecord: ZodRecord,
-        ZodMap: ZodMap,
-        ZodSet: ZodSet,
+        ZodEffects: ZodEffects,
+        ZodEnum: ZodEnum,
+        ZodError: ZodError,
+        get ZodFirstPartyTypeKind () { return ZodFirstPartyTypeKind; },
         ZodFunction: ZodFunction,
+        ZodIntersection: ZodIntersection,
+        ZodIssueCode: ZodIssueCode,
         ZodLazy: ZodLazy,
         ZodLiteral: ZodLiteral,
-        ZodEnum: ZodEnum,
-        ZodNativeEnum: ZodNativeEnum,
-        ZodPromise: ZodPromise,
-        ZodEffects: ZodEffects,
-        ZodTransformer: ZodEffects,
-        ZodOptional: ZodOptional,
-        ZodNullable: ZodNullable,
-        ZodDefault: ZodDefault,
-        ZodCatch: ZodCatch,
+        ZodMap: ZodMap,
         ZodNaN: ZodNaN,
-        BRAND: BRAND,
-        ZodBranded: ZodBranded,
+        ZodNativeEnum: ZodNativeEnum,
+        ZodNever: ZodNever,
+        ZodNull: ZodNull,
+        ZodNullable: ZodNullable,
+        ZodNumber: ZodNumber,
+        ZodObject: ZodObject,
+        ZodOptional: ZodOptional,
+        ZodParsedType: ZodParsedType,
         ZodPipeline: ZodPipeline,
+        ZodPromise: ZodPromise,
         ZodReadonly: ZodReadonly,
-        custom: custom,
-        Schema: ZodType,
+        ZodRecord: ZodRecord,
         ZodSchema: ZodType,
-        late: late,
-        get ZodFirstPartyTypeKind () { return ZodFirstPartyTypeKind; },
-        coerce: coerce,
+        ZodSet: ZodSet,
+        ZodString: ZodString,
+        ZodSymbol: ZodSymbol,
+        ZodTransformer: ZodEffects,
+        ZodTuple: ZodTuple,
+        ZodType: ZodType,
+        ZodUndefined: ZodUndefined,
+        ZodUnion: ZodUnion,
+        ZodUnknown: ZodUnknown,
+        ZodVoid: ZodVoid,
+        addIssueToContext: addIssueToContext,
         any: anyType,
         array: arrayType,
         bigint: bigIntType,
         boolean: booleanType,
+        coerce: coerce,
+        custom: custom,
         date: dateType,
+        datetimeRegex: datetimeRegex,
+        defaultErrorMap: errorMap,
         discriminatedUnion: discriminatedUnionType,
         effect: effectsType,
-        'enum': enumType,
-        'function': functionType,
-        'instanceof': instanceOfType,
+        enum: enumType,
+        function: functionType,
+        getErrorMap: getErrorMap,
+        getParsedType: getParsedType,
+        instanceof: instanceOfType,
         intersection: intersectionType,
+        isAborted: isAborted,
+        isAsync: isAsync,
+        isDirty: isDirty,
+        isValid: isValid,
+        late: late,
         lazy: lazyType,
         literal: literalType,
+        makeIssue: makeIssue,
         map: mapType,
         nan: nanType,
         nativeEnum: nativeEnumType,
         never: neverType,
-        'null': nullType,
+        null: nullType,
         nullable: nullableType,
         number: numberType,
         object: objectType,
+        get objectUtil () { return objectUtil; },
         oboolean: oboolean,
         onumber: onumber,
         optional: optionalType,
@@ -4384,21 +4273,20 @@ sap.ui.define((function () { 'use strict';
         pipeline: pipelineType,
         preprocess: preprocessType,
         promise: promiseType,
+        quotelessJson: quotelessJson,
         record: recordType,
         set: setType,
+        setErrorMap: setErrorMap,
         strictObject: strictObjectType,
         string: stringType,
         symbol: symbolType,
         transformer: effectsType,
         tuple: tupleType,
-        'undefined': undefinedType,
+        undefined: undefinedType,
         union: unionType,
         unknown: unknownType,
-        'void': voidType,
-        NEVER: NEVER,
-        ZodIssueCode: ZodIssueCode,
-        quotelessJson: quotelessJson,
-        ZodError: ZodError
+        get util () { return util; },
+        void: voidType
     });
 
     var namedExports = /*#__PURE__*/Object.freeze({

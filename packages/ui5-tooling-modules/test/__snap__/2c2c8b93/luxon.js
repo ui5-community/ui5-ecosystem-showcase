@@ -394,12 +394,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
   }
 
-  let dtfCache = {};
-  function makeDTF(zone) {
-    if (!dtfCache[zone]) {
-      dtfCache[zone] = new Intl.DateTimeFormat("en-US", {
+  const dtfCache = new Map();
+  function makeDTF(zoneName) {
+    let dtf = dtfCache.get(zoneName);
+    if (dtf === undefined) {
+      dtf = new Intl.DateTimeFormat("en-US", {
         hour12: false,
-        timeZone: zone,
+        timeZone: zoneName,
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
@@ -408,8 +409,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         second: "2-digit",
         era: "short",
       });
+      dtfCache.set(zoneName, dtf);
     }
-    return dtfCache[zone];
+    return dtf;
   }
 
   const typeToPos = {
@@ -445,7 +447,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     return filled;
   }
 
-  let ianaZoneCache = {};
+  const ianaZoneCache = new Map();
   /**
    * A zone identified by an IANA identifier, like America/New_York
    * @implements {Zone}
@@ -456,10 +458,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
      * @return {IANAZone}
      */
     static create(name) {
-      if (!ianaZoneCache[name]) {
-        ianaZoneCache[name] = new IANAZone(name);
+      let zone = ianaZoneCache.get(name);
+      if (zone === undefined) {
+        ianaZoneCache.set(name, (zone = new IANAZone(name)));
       }
-      return ianaZoneCache[name];
+      return zone;
     }
 
     /**
@@ -467,8 +470,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
      * @return {void}
      */
     static resetCache() {
-      ianaZoneCache = {};
-      dtfCache = {};
+      ianaZoneCache.clear();
+      dtfCache.clear();
     }
 
     /**
@@ -571,6 +574,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
      * @return {number}
      */
     offset(ts) {
+      if (!this.valid) return NaN;
       const date = new Date(ts);
 
       if (isNaN(date)) return NaN;
@@ -636,36 +640,36 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     return dtf;
   }
 
-  let intlDTCache = {};
+  const intlDTCache = new Map();
   function getCachedDTF(locString, opts = {}) {
     const key = JSON.stringify([locString, opts]);
-    let dtf = intlDTCache[key];
-    if (!dtf) {
+    let dtf = intlDTCache.get(key);
+    if (dtf === undefined) {
       dtf = new Intl.DateTimeFormat(locString, opts);
-      intlDTCache[key] = dtf;
+      intlDTCache.set(key, dtf);
     }
     return dtf;
   }
 
-  let intlNumCache = {};
+  const intlNumCache = new Map();
   function getCachedINF(locString, opts = {}) {
     const key = JSON.stringify([locString, opts]);
-    let inf = intlNumCache[key];
-    if (!inf) {
+    let inf = intlNumCache.get(key);
+    if (inf === undefined) {
       inf = new Intl.NumberFormat(locString, opts);
-      intlNumCache[key] = inf;
+      intlNumCache.set(key, inf);
     }
     return inf;
   }
 
-  let intlRelCache = {};
+  const intlRelCache = new Map();
   function getCachedRTF(locString, opts = {}) {
     const { base, ...cacheKeyOpts } = opts; // exclude `base` from the options
     const key = JSON.stringify([locString, cacheKeyOpts]);
-    let inf = intlRelCache[key];
-    if (!inf) {
+    let inf = intlRelCache.get(key);
+    if (inf === undefined) {
       inf = new Intl.RelativeTimeFormat(locString, opts);
-      intlRelCache[key] = inf;
+      intlRelCache.set(key, inf);
     }
     return inf;
   }
@@ -680,14 +684,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
   }
 
-  let weekInfoCache = {};
+  const intlResolvedOptionsCache = new Map();
+  function getCachedIntResolvedOptions(locString) {
+    let opts = intlResolvedOptionsCache.get(locString);
+    if (opts === undefined) {
+      opts = new Intl.DateTimeFormat(locString).resolvedOptions();
+      intlResolvedOptionsCache.set(locString, opts);
+    }
+    return opts;
+  }
+
+  const weekInfoCache = new Map();
   function getCachedWeekInfo(locString) {
-    let data = weekInfoCache[locString];
+    let data = weekInfoCache.get(locString);
     if (!data) {
       const locale = new Intl.Locale(locString);
       // browsers currently implement this as a property, but spec says it should be a getter function
       data = "getWeekInfo" in locale ? locale.getWeekInfo() : locale.weekInfo;
-      weekInfoCache[locString] = data;
+      // minimalDays was removed from WeekInfo: https://github.com/tc39/proposal-intl-locale-info/issues/86
+      if (!("minimalDays" in data)) {
+        data = { ...fallbackWeekSettings, ...data };
+      }
+      weekInfoCache.set(locString, data);
     }
     return data;
   }
@@ -786,7 +804,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         loc.numberingSystem === "latn" ||
         !loc.locale ||
         loc.locale.startsWith("en") ||
-        new Intl.DateTimeFormat(loc.intl).resolvedOptions().numberingSystem === "latn"
+        getCachedIntResolvedOptions(loc.locale).numberingSystem === "latn"
       );
     }
   }
@@ -945,7 +963,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   /**
    * @private
    */
-
   class Locale {
     static fromOpts(opts) {
       return Locale.create(
@@ -969,9 +986,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
     static resetCache() {
       sysLocaleCache = null;
-      intlDTCache = {};
-      intlNumCache = {};
-      intlRelCache = {};
+      intlDTCache.clear();
+      intlNumCache.clear();
+      intlRelCache.clear();
+      intlResolvedOptionsCache.clear();
+      weekInfoCache.clear();
     }
 
     static fromObject({ locale, numberingSystem, outputCalendar, weekSettings } = {}) {
@@ -1125,7 +1144,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       return (
         this.locale === "en" ||
         this.locale.toLowerCase() === "en-us" ||
-        new Intl.DateTimeFormat(this.intl).resolvedOptions().locale.startsWith("en-us")
+        getCachedIntResolvedOptions(this.intl).locale.startsWith("en-us")
       );
     }
 
@@ -1464,22 +1483,26 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   // cache of {numberingSystem: {append: regex}}
-  let digitRegexCache = {};
+  const digitRegexCache = new Map();
   function resetDigitRegexCache() {
-    digitRegexCache = {};
+    digitRegexCache.clear();
   }
 
   function digitRegex({ numberingSystem }, append = "") {
     const ns = numberingSystem || "latn";
 
-    if (!digitRegexCache[ns]) {
-      digitRegexCache[ns] = {};
+    let appendCache = digitRegexCache.get(ns);
+    if (appendCache === undefined) {
+      appendCache = new Map();
+      digitRegexCache.set(ns, appendCache);
     }
-    if (!digitRegexCache[ns][append]) {
-      digitRegexCache[ns][append] = new RegExp(`${numberingSystems[ns]}${append}`);
+    let regex = appendCache.get(append);
+    if (regex === undefined) {
+      regex = new RegExp(`${numberingSystems[ns]}${append}`);
+      appendCache.set(append, regex);
     }
 
-    return digitRegexCache[ns][append];
+    return regex;
   }
 
   let now = () => Date.now(),
@@ -4232,6 +4255,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
 
     /**
+     * Returns the last DateTime included in the interval (since end is not part of the interval)
+     * @type {DateTime}
+     */
+    get lastDateTime() {
+      return this.isValid ? (this.e ? this.e.minus(1) : null) : null;
+    }
+
+    /**
      * Returns whether this Interval's end is at least its start, meaning that the Interval isn't 'backwards'.
      * @type {boolean}
      */
@@ -4495,8 +4526,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
 
     /**
-     * Merge an array of Intervals into a equivalent minimal set of Intervals.
+     * Merge an array of Intervals into an equivalent minimal set of Intervals.
      * Combines overlapping and adjacent Intervals.
+     * The resulting array will contain the Intervals in ascending order, that is, starting with the earliest Interval
+     * and ending with the latest.
+     *
      * @param {Array} intervals
      * @return {Array}
      */
@@ -5819,15 +5853,27 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   // This is safe for quickDT (used by local() and utc()) because we don't fill in
   // higher-order units from tsNow (as we do in fromObject, this requires that
   // offset is calculated from tsNow).
+  /**
+   * @param {Zone} zone
+   * @return {number}
+   */
   function guessOffsetForZone(zone) {
-    if (!zoneOffsetGuessCache[zone]) {
-      if (zoneOffsetTs === undefined) {
-        zoneOffsetTs = Settings.now();
-      }
-
-      zoneOffsetGuessCache[zone] = zone.offset(zoneOffsetTs);
+    if (zoneOffsetTs === undefined) {
+      zoneOffsetTs = Settings.now();
     }
-    return zoneOffsetGuessCache[zone];
+
+    // Do not cache anything but IANA zones, because it is not safe to do so.
+    // Guessing an offset which is not present in the zone can cause wrong results from fixOffset
+    if (zone.type !== "iana") {
+      return zone.offset(zoneOffsetTs);
+    }
+    const zoneName = zone.name;
+    let offsetGuess = zoneOffsetGuessCache.get(zoneName);
+    if (offsetGuess === undefined) {
+      offsetGuess = zone.offset(zoneOffsetTs);
+      zoneOffsetGuessCache.set(zoneName, offsetGuess);
+    }
+    return offsetGuess;
   }
 
   // this is a dumbed down version of fromObject() that runs about 60% faster
@@ -5917,7 +5963,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * This optimizes quickDT via guessOffsetForZone to avoid repeated calls of
    * zone.offset().
    */
-  let zoneOffsetGuessCache = {};
+  const zoneOffsetGuessCache = new Map();
 
   /**
    * A DateTime is an immutable data structure representing a specific date and time and accompanying methods. It contains class and instance methods for creating, parsing, interrogating, transforming, and formatting them.
@@ -6121,7 +6167,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
         throw new InvalidArgumentError(
           `fromMillis requires a numerical input, but received a ${typeof milliseconds} with value ${milliseconds}`
         );
-      } else if (milliseconds < -864e13 || milliseconds > MAX_DATE) {
+      } else if (milliseconds < -MAX_DATE || milliseconds > MAX_DATE) {
         // this isn't perfect because we can still end up out of range because of additional shifting, but it's a start
         return DateTime.invalid("Timestamp out of range");
       } else {
@@ -6482,7 +6528,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
     static resetCache() {
       zoneOffsetTs = undefined;
-      zoneOffsetGuessCache = {};
+      zoneOffsetGuessCache.clear();
     }
 
     // INFO
@@ -7251,7 +7297,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
      * @example DateTime.now().toISO() //=> '2017-04-22T20:47:05.335-04:00'
      * @example DateTime.now().toISO({ includeOffset: false }) //=> '2017-04-22T20:47:05.335'
      * @example DateTime.now().toISO({ format: 'basic' }) //=> '20170422T204705.335-0400'
-     * @return {string}
+     * @return {string|null}
      */
     toISO({
       format = "extended",
@@ -7278,7 +7324,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
      * @param {string} [opts.format='extended'] - choose between the basic and extended format
      * @example DateTime.utc(1982, 5, 25).toISODate() //=> '1982-05-25'
      * @example DateTime.utc(1982, 5, 25).toISODate({ format: 'basic' }) //=> '19820525'
-     * @return {string}
+     * @return {string|null}
      */
     toISODate({ format = "extended" } = {}) {
       if (!this.isValid) {
@@ -7363,7 +7409,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     /**
      * Returns a string representation of this DateTime appropriate for use in SQL Date
      * @example DateTime.utc(2014, 7, 13).toSQLDate() //=> '2014-07-13'
-     * @return {string}
+     * @return {string|null}
      */
     toSQLDate() {
       if (!this.isValid) {
@@ -7458,7 +7504,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
 
     /**
-     * Returns the epoch seconds of this DateTime.
+     * Returns the epoch seconds (including milliseconds in the fractional part) of this DateTime.
      * @return {number}
      */
     toSeconds() {
@@ -7565,7 +7611,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     /**
      * Return an Interval spanning between this DateTime and another DateTime
      * @param {DateTime} otherDateTime - the other end point of the Interval
-     * @return {Interval}
+     * @return {Interval|DateTime}
      */
     until(otherDateTime) {
       return this.isValid ? Interval.fromDateTimes(this, otherDateTime) : this;
@@ -7983,7 +8029,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
   }
 
-  const VERSION = "3.5.0";
+  const VERSION = "3.6.1";
 
   const __esModule = true ;
 

@@ -79,6 +79,11 @@ sap.ui.define(
               type: "string",
               mapping: "property",
             },
+            value: {
+              type: "string",
+              mapping: "property",
+              defaultValue: "on",
+            },
             width: {
               type: "sap.ui.core.CSSSize",
               mapping: "style",

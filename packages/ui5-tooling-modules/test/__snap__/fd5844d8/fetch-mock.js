@@ -892,6 +892,11 @@ sap.ui.define((function () { 'use strict';
 	    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 	};
 	var _Route_instances, _a, _Route_responseSubscriptions, _Route_validate, _Route_sanitize, _Route_generateMatcher, _Route_limit, _Route_delayResponse;
+	class RouteConfigWrapper {
+	    constructor(config) {
+	        Object.assign(this, config);
+	    }
+	}
 	function isBodyInit(body) {
 	    return (body instanceof Blob ||
 	        body instanceof ArrayBuffer ||
@@ -1244,6 +1249,9 @@ e.g. {"body": {"status: "registered"}}`);
 	    }
 	    addRoute(matcher, response, nameOrOptions) {
 	        const config = {};
+	        if (matcher instanceof RouteConfigWrapper) {
+	            Object.assign(config, matcher);
+	        }
 	        if (isUrlMatcher(matcher)) {
 	            config.url = matcher;
 	        }
@@ -1565,6 +1573,7 @@ e.g. {"body": {"status: "registered"}}`);
 	var namedExports = /*#__PURE__*/Object.freeze({
 		__proto__: null,
 		FetchMock: FetchMock,
+		RouteConfigWrapper: RouteConfigWrapper,
 		default: fetchMock,
 		defaultFetchMockConfig: defaultFetchMockConfig
 	});

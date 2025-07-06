@@ -107,9 +107,65 @@ sap.ui.define(
           },
           events: {
             click: {
-              allowPreventDefault: false,
+              allowPreventDefault: true,
               enableEventBubbling: true,
-              parameters: {},
+              parameters: {
+                originalEvent: {
+                  type: "object",
+                  types: [
+                    {
+                      dtsType: "Event",
+                      ui5Type: "object",
+                    },
+                  ],
+                  dtsParamDescription:
+                    "Returns original event that comes from user's **click** interaction",
+                },
+                altKey: {
+                  type: "boolean",
+                  types: [
+                    {
+                      dtsType: "boolean",
+                      ui5Type: "boolean",
+                    },
+                  ],
+                  dtsParamDescription:
+                    'Returns whether the "ALT" key was pressed when the event was triggered.',
+                },
+                ctrlKey: {
+                  type: "boolean",
+                  types: [
+                    {
+                      dtsType: "boolean",
+                      ui5Type: "boolean",
+                    },
+                  ],
+                  dtsParamDescription:
+                    'Returns whether the "CTRL" key was pressed when the event was triggered.',
+                },
+                metaKey: {
+                  type: "boolean",
+                  types: [
+                    {
+                      dtsType: "boolean",
+                      ui5Type: "boolean",
+                    },
+                  ],
+                  dtsParamDescription:
+                    'Returns whether the "META" key was pressed when the event was triggered.',
+                },
+                shiftKey: {
+                  type: "boolean",
+                  types: [
+                    {
+                      dtsType: "boolean",
+                      ui5Type: "boolean",
+                    },
+                  ],
+                  dtsParamDescription:
+                    'Returns whether the "SHIFT" key was pressed when the event was triggered.',
+                },
+              },
             },
           },
           getters: [],

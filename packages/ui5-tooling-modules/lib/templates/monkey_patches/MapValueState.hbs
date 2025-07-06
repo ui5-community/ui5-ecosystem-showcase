@@ -1,8 +1,8 @@
-// Fixed with https://github.com/SAP/openui5/commit/111c4bcd1660f90714ed567fa8cb57fbc448591f in UI5 1.133.0
+// Fixed with https://github.com/SAP/openui5/commit/111c4bcd1660f90714ed567fa8cb57fbc448591f in UI5 1.136.1
 
 if (!WebComponent.___mapValueState__isPatched) {
 	WebComponent.prototype._mapValueState ??= function(sValueState) {
-		console.warn("ValueState mapping is not implemented for Web Components yet. Please use UI5 version 1.133.0 or higher.");
+		console.warn("ValueState mapping is not implemented for Web Components yet. Please use UI5 version 1.136.1 or higher.");
 		return sValueState;
 	};
 	WebComponent.___mapValueState__isPatched = true;

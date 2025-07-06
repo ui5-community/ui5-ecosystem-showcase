@@ -14,7 +14,7 @@ sap.ui.define(
     const pkg = {
       _ui5metadata: {
         name: "@ui5/webcomponents-base",
-        version: "2.8.0",
+        version: "2.12.0",
         dependencies: ["sap.ui.core"],
         types: [
           "@ui5.webcomponents-base.AnimationMode",

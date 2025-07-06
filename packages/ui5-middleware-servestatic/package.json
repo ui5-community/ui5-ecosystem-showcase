@@ -14,7 +14,7 @@
     "lint": "eslint lib"
   },
   "dependencies": {
-    "dotenv": "^16.4.7",
-    "serve-static": "^1.16.2"
+    "dotenv": "^17.0.1",
+    "serve-static": "^2.2.0"
   }
 }

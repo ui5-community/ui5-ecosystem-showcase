@@ -7,7 +7,7 @@ sap.ui.define(["../container"], function (WebCPackage) {
   const pkg = {
     _ui5metadata: {
       name: "@luigi-project/container",
-      version: "1.6.0-dev.20250430700",
+      version: "1.7.0",
       dependencies: ["sap.ui.core"],
       types: [],
       interfaces: [],
