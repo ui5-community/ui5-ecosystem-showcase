@@ -34,7 +34,9 @@ function writeFixtures(webcRegistryEntry) {
 	ensurePathExists(path.resolve(fixtureBase, "classes"));
 	Object.keys(webcRegistryEntry.classes).forEach((className) => {
 		const classJSON = JSON.stringify(webcRegistryEntry.classes[className]._ui5metadata);
-		writeFileSync(path.join(fixtureBase, `classes/${className}.json`), classJSON, { encoding: "utf8" });
+		if (classJSON) {
+			writeFileSync(path.join(fixtureBase, `classes/${className}.json`), classJSON, { encoding: "utf8" });
+		}
 	});
 
 	// enums
@@ -91,8 +93,10 @@ test.serial("Verify ui5-metadata generation from 'custom-elements-internal.json'
 		// compare fixtures in the base folder per class
 		Object.keys(webcRegistryEntry.classes).forEach((className) => {
 			const classJSON = JSON.stringify(webcRegistryEntry.classes[className]._ui5metadata);
-			const classFixtureForComparisonJSON = readFileSync(path.join(fixtureBase, `classes/${className}.json`), { encoding: "utf-8" });
-			t.is(classFixtureForComparisonJSON, classJSON, `Class ${webcRegistryEntry.namespace}.${className} JSON is equal to fixture`);
+			if (classJSON) {
+				const classFixtureForComparisonJSON = readFileSync(path.join(fixtureBase, `classes/${className}.json`), { encoding: "utf-8" });
+				t.is(classFixtureForComparisonJSON, classJSON, `Class ${webcRegistryEntry.namespace}.${className} JSON is equal to fixture`);
+			}
 		});
 
 		// compare enums

@@ -41,7 +41,8 @@
     "rollup": "^4.36.0",
     "rollup-plugin-polyfill-node": "^0.13.0",
     "sanitize-filename": "^1.6.3",
-    "semver": "^7.7.1"
+    "semver": "^7.7.1",
+    "@prettier/sync": "^0.6.1"
   },
   "devDependencies": {
     "@ui5/project": "*",

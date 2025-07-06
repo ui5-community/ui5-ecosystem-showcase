@@ -4,7 +4,7 @@ metadata:
 type: application
 framework:
   name: OpenUI5
-  version: "1.133.0"
+  version: "1.135.0"
   libraries:
     - name: sap.m
     - name: sap.ui.core
@@ -33,6 +33,7 @@ builder:
           webcomponents:
             #namespace: false
             skipJSDoc: false # enable the JSDoc generation
+            skipDtsGeneration: false
 server:
   customMiddleware:
     - name: ui5-tooling-transpile-middleware
@@ -50,6 +51,7 @@ server:
           webcomponents:
             force: true
             skipJSDoc: false # enable the JSDoc generation
+            skipDtsGeneration: false
     - name: ui5-middleware-livereload
       afterMiddleware: compression
       configuration:

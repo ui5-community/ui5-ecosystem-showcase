@@ -12,5 +12,5 @@
       "ui5/ecosystem/demo/tsapp/*": ["./webapp/*"]
     }
   },
-  "include": ["./webapp/**/*"]
+  "include": ["./webapp/**/*", "./.ui5-tooling-modules/types/**/*"]
 }
