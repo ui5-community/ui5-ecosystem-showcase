@@ -21,6 +21,12 @@ The task finally transpiles the relevant source files during the UI5 Tooling bui
 npm install ui5-tooling-transpile --save-dev
 ```
 
+If you want the `ui5-tooling-transpile` to add it's configuration to the `ui5.yaml`, just add the command line argument `-rte` or `--register-tooling-extension`:
+
+```bash
+npm install ui5-tooling-transpile --save-dev -rte
+```
+
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
 - debug: `boolean`  

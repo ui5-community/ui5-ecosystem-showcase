@@ -11,6 +11,7 @@
     "directory": "packages/ui5-tooling-modules"
   },
   "scripts": {
+    "postinstall": "node ./lib/postinstall.js",
     "lint": "eslint lib",
     "test": "ava --no-worker-threads",
     "test:snapshots": "ava --no-worker-threads -- --generateSnapshots --generateFixtures"
@@ -33,10 +34,12 @@
     "@rollup/pluginutils": "^5.2.0",
     "@typescript-eslint/typescript-estree": "^8.35.1",
     "chokidar": "^4.0.3",
+    "comment-json": "^4.2.5",
     "estree-walker": "^3.0.3",
     "fast-xml-parser": "^5.2.5",
     "handlebars": "^4.7.8",
     "ignore-walk": "^7.0.0",
+    "js-yaml": "^4.1.0",
     "minimatch": "^7.4.6",
     "rollup": "^4.44.2",
     "rollup-plugin-polyfill-node": "^0.13.0",
