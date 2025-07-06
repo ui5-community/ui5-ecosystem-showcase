@@ -35,6 +35,12 @@ Once the UI5 application is finally built, the Chart.js dependency will be copie
 npm install ui5-tooling-modules --save-dev
 ```
 
+If you want the `ui5-tooling-modules` to add it's configuration to the `ui5.yaml`, just add the command line argument `-rte` or `--register-tooling-extension`:
+
+```bash
+npm install ui5-tooling-modules --save-dev -rte
+```
+
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
 The following configuration options are relevant for the `task` and the `middleware`:
