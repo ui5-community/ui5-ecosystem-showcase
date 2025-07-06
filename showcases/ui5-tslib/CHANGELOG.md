@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tslib@0.9.8...ui5-tslib@0.10.0) (2025-07-06)
+
+
+### Bug Fixes
+
+* update project dependencies ([#1235](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1235)) ([456fb61](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/456fb6143125e3334acafb129e219499b2a1c882))
+
+
+### Features
+
+* **ui5-tooling-modules:** Add typescript support for control wrappers ([#1223](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1223)) ([08c5260](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/08c5260adb80b0a4ff5badb8a7f79356e55c1fc4))
+
+
+
+
+
 ## [0.9.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tslib@0.9.7...ui5-tslib@0.9.8) (2025-07-04)
 
 **Note:** Version bump only for package ui5-tslib

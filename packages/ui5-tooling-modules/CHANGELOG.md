@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.28.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.7...ui5-tooling-modules@3.28.0) (2025-07-06)
+
+
+### Bug Fixes
+
+* update project dependencies ([#1235](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1235)) ([456fb61](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/456fb6143125e3334acafb129e219499b2a1c882))
+
+
+### Features
+
+* make tooling extension self-registering ([#1236](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1236)) ([8a14c92](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8a14c922d142ff35659405e9acc532ef8b9a4b38))
+* **ui5-tooling-modules:** Add typescript support for control wrappers ([#1223](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1223)) ([08c5260](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/08c5260adb80b0a4ff5badb8a7f79356e55c1fc4))
+
+
+
+
+
 ## [3.27.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.6...ui5-tooling-modules@3.27.7) (2025-07-04)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "ui5-tsmodule",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "UI5 TypeScript module",
   "private": true,
   "author": "Peter Muessig",

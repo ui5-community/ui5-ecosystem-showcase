@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.8.0...ui5-tooling-transpile@3.9.0) (2025-07-06)
+
+
+### Bug Fixes
+
+* update project dependencies ([#1235](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1235)) ([456fb61](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/456fb6143125e3334acafb129e219499b2a1c882))
+
+
+### Features
+
+* make tooling extension self-registering ([#1236](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1236)) ([8a14c92](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8a14c922d142ff35659405e9acc532ef8b9a4b38))
+
+
+
+
+
 # [3.8.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-transpile@3.7.5...ui5-tooling-transpile@3.8.0) (2025-05-14)
 
 
