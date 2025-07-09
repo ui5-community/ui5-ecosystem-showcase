@@ -35,11 +35,22 @@ Once the UI5 application is finally built, the Chart.js dependency will be copie
 npm install ui5-tooling-modules --save-dev
 ```
 
-If you want the `ui5-tooling-modules` to add it's configuration to the `ui5.yaml`, just add the command line argument `-rte` or `--register-tooling-extension`:
+If you want the `ui5-tooling-modules` to add it's configuration to the UI5 YAML files, just add the command line argument `-rte` or `--register-tooling-extension`:
 
 ```bash
+# Register in default file (ui5.yaml if it exists)
 npm install ui5-tooling-modules --save-dev -rte
+
+# Register in specific YAML files
+npm install ui5-tooling-modules --save-dev -rte ui5.yaml,ui5-workspace.yaml
+
+# Register in custom YAML files
+npm install ui5-tooling-modules --save-dev -rte my-ui5.yaml,custom-workspace.yaml
 ```
+
+When using `-rte` without specifying files, the extension will automatically register itself in `ui5.yaml` if it exists in the project directory. 
+
+When specifying file names (comma-separated), the extension will only register in those specific files.
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
