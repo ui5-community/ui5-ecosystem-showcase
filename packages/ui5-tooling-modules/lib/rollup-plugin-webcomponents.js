@@ -301,6 +301,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 						{
 							source: webcBaseClass,
 							clazz: clazz.superclass,
+							chunkName,
 						},
 						emitFile,
 					);
