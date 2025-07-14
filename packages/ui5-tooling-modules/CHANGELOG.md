@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.28.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.28.0...ui5-tooling-modules@3.28.1) (2025-07-14)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** ensure require webc classes for base classes ([#1239](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1239)) ([dbc51a1](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/dbc51a126115827bb99bdebf6a69b984f7d6b698))
+
+
+
+
+
 # [3.28.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.27.7...ui5-tooling-modules@3.28.0) (2025-07-06)
 
 
