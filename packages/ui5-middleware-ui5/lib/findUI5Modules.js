@@ -27,8 +27,8 @@ module.exports = async function findUI5Modules({ cwd, config, log }) {
 		deps = [];
 	deps.push(...Object.keys(pkgJson.dependencies || {}));
 	deps.push(...Object.keys(pkgJson.devDependencies || {}));
+	deps.push(...Object.keys(pkgJson.optionalDependencies || {}));
 	//deps.push(...Object.keys(pkgJson.peerDependencies || {}));
-	//deps.push(...Object.keys(pkgJson.optionalDependencies || {}));
 	appDirs.push(
 		...deps.filter((dep) => {
 			try {
