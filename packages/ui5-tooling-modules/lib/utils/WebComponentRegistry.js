@@ -37,6 +37,7 @@ const calculateGetterName = (functionName) => {
 // the class name of the base class of all control wrappers
 // corresponds to the "sap.ui.core.webc.WebComponent" class at runtime.
 const UI5_ELEMENT_CLASS_NAME = "UI5Element";
+const WEBC_ASSOCIATION_TYPE = "HTMLElement | string | undefined";
 
 let _registry = {};
 
@@ -256,6 +257,17 @@ class RegistryEntry {
 		}
 	}
 	#extractUi5Type(typeInfo) {
+		const typeDef = {
+			origType: typeInfo?.text,
+			types: [],
+		};
+
+		// we did not receive a type string from the metadata, e.g. for method params
+		// no further type checks needed
+		if (!typeInfo?.text) {
+			return typeDef;
+		}
+
 		const deriveType = (type) => {
 			if (type === "undefined") {
 				return;
@@ -341,12 +353,11 @@ class RegistryEntry {
 				};
 			}
 		};
-		const typeDef = {
-			origType: typeInfo?.text,
-			types: [],
-		};
 
-		const types = typeInfo?.text?.match(/(?:Array<[^>]*>|[^|])+/g) || [];
+		// An original type can look like this: "Array<Foo|Bar>|string|undefined"
+		// we determine if we have a toplevel union type
+		// result will look like this: types = ["Array<Foo|Bar>", "string", "undefined"]
+		const types = typeInfo.text.match(/(?:Array<[^>]*>|[^|])+/g) || [];
 
 		for (let name of types) {
 			name = name.trim();
@@ -354,6 +365,7 @@ class RegistryEntry {
 			const multiple = !!arrayTypeMatch;
 
 			if (multiple) {
+				// is array type (Array<Foo>), but not necessarily a union type in the array (Array<Foo|Bar>)
 				typeDef.types.push({
 					origType: arrayTypeMatch[1],
 					multiple,
@@ -363,17 +375,50 @@ class RegistryEntry {
 						.filter((t) => !!t),
 				});
 			} else {
+				// can be a union type, e.g. "Foo | Bar | ..."!
 				typeDef.types.push(deriveType(name));
 			}
+		}
 
-			// unpack UI5 type
-			// as UI5 can onbly handle one type (unlike TS)
-			typeDef.ui5TypeInfo ??= Object.assign({ multiple }, typeDef.types[0]);
-			if (typeDef.ui5TypeInfo.types?.length >= 1) {
-				Object.assign(typeDef.ui5TypeInfo, typeDef.ui5TypeInfo.types[0]);
+		// removes <undefined>
+		typeDef.types = typeDef.types.filter((t) => !!t);
+
+		// global multiple flag sits on typeDef
+		const multiple = typeDef.types[0].multiple || false;
+
+		// Special handling for Associations types
+		if (typeDef.origType === WEBC_ASSOCIATION_TYPE) {
+			typeDef.ui5TypeInfo = {
+				ui5Type: typeDef.types[0].ui5Type,
+				moduleType: typeDef.types[0].moduleType,
+				isComplexType: true,
+			};
+			return typeDef;
+		}
+
+		if (typeDef.types.length > 1 || typeDef.types[0].types?.length > 1) {
+			const refType = typeDef.types[0].types?.[0] || typeDef.types[0];
+			if (refType.isClass || refType.isInterface) {
+				typeDef.ui5TypeInfo = {
+					multiple,
+					ui5Type: "sap.ui.core.webc.WebComponent",
+					moduleType: "module:sap/ui/core/webc/WebComponent",
+					isComplexType: true,
+				};
+				return typeDef;
 			}
 		}
-		typeDef.types = typeDef.types.filter((t) => !!t);
+
+		// unpack UI5 type
+		// as UI5 can only handle one type (unlike TS)
+		const refType = typeDef.types[0].types?.[0] || typeDef.types[0];
+		typeDef.ui5TypeInfo = {
+			multiple,
+			ui5Type: refType.ui5Type,
+			moduleType: refType.moduleType,
+			isComplexType: refType.isClass || refType.isInterface,
+		};
+
 		return typeDef;
 	}
 
@@ -471,7 +516,7 @@ class RegistryEntry {
 		// field -> property or association
 		if (propDef.kind === "field") {
 			const typeDef = this.#extractUi5Type(propDef.type);
-			const isAssociation = typeDef.origType === "HTMLElement | string | undefined";
+			const isAssociation = typeDef.origType === WEBC_ASSOCIATION_TYPE;
 
 			// Some properties might need a special UI5 mapping, e.g. "accesibleNameRef"
 			const hasSpecialMapping = this.#checkForSpecialMapping(classDef, propDef, ui5metadata);
@@ -522,7 +567,7 @@ class RegistryEntry {
 					types: typeDef.types,
 				});
 			} else {
-				if (typeDef.ui5TypeInfo.isClass || typeDef.ui5TypeInfo.isInterface) {
+				if (typeDef.ui5TypeInfo.isComplexType) {
 					console.warn(`[interface or class type given for property] ${classDef.name} - property ${propDef.name}`);
 				}
 				let defaultValue = propDef.default;
@@ -563,7 +608,7 @@ class RegistryEntry {
 				});
 			}
 		} else if (propDef.kind === "method") {
-			// Methods are proxied through the core.WebComponent base class
+			// Methods are proxied through the core.webc.WebComponent base class
 			// e.g. DatePicker#isValid or Toolbar#isOverflowOpen
 			ui5metadata.methods.push(propDef.name);
 
@@ -599,7 +644,7 @@ class RegistryEntry {
 		}
 
 		const typeDef = this.#extractUi5Type(slotDef._ui5type);
-		if (typeDef.ui5TypeInfo.isInterface || typeDef.ui5TypeInfo.isClass) {
+		if (typeDef.ui5TypeInfo.isComplexType) {
 			//console.log(`[interface/class type]: '${typeInfo.ui5Type}', multiple: ${typeInfo.multiple}`);
 			aggregationType = typeDef.ui5TypeInfo.ui5Type;
 		}
