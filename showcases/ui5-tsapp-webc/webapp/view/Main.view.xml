@@ -19,7 +19,8 @@
     iconMessageError: '@ui5/webcomponents-icons/dist/message-error',
     iconArrow: '@ui5/webcomponents-icons/dist/slim-arrow-right',
     iconPaste: '@ui5/webcomponents-icons/dist/paste',
-    iconCopy: '@ui5/webcomponents-icons/dist/copy'
+    iconCopy: '@ui5/webcomponents-icons/dist/copy',
+    customerAndSupplier: '@ui5/webcomponents-icons/customer-and-supplier'
   }"
 >
   <Page id="page" showHeader="false">
