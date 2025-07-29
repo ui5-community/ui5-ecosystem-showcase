@@ -343,6 +343,7 @@ module.exports = function (log) {
 				includes,
 				excludes,
 				filePattern,
+				aliasPatterns: config.aliasPatterns,
 				omitTSFromBuildResult: config.omitTSFromBuildResult,
 				omitSourceMaps: config.omitSourceMaps,
 				generateTsInterfaces,
