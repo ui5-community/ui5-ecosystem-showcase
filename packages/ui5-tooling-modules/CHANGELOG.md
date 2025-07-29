@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.29.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.28.1...ui5-tooling-modules@3.29.0) (2025-07-29)
+
+
+### Features
+
+* use mutliple yamls with rte option ([#1238](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1238)) ([1a40cf3](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/1a40cf3c17707d25db9a3cba4da8b7b063305388))
+
+
+
+
+
 ## [3.28.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.28.0...ui5-tooling-modules@3.28.1) (2025-07-14)
 
 
