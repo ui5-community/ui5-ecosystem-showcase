@@ -732,7 +732,10 @@ class RegistryEntry {
 				type: typeDef.ui5TypeInfo?.ui5Type || "any", // TODO: is this correct?
 				description: param.description || "",
 			};
-			parsedParams[param.name] = typeDef.types;
+			parsedParams[param.name] = {
+				types: typeDef.types,
+				description: param.description,
+			};
 		});
 		return { parsedParams, jsDocParams };
 	}
