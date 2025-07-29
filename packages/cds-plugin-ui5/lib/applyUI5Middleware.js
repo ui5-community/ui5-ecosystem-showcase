@@ -1,5 +1,9 @@
 const path = require("path");
 const fs = require("fs");
+const { glob } = require("glob");
+const yaml = require("js-yaml");
+
+const PAGE_GLOB_PATTERN = "**/!(*.fragment).{html,htm}";
 
 /**
  * @typedef UI5AppInfo
@@ -46,11 +50,7 @@ module.exports = async function applyUI5Middleware(router, options) {
 
 	const logPerformance = options.logPerformance || false;
 
-	const millisImport = logPerformance && Date.now();
-	const { graphFromPackageDependencies } = await import("@ui5/project/graph");
-	logPerformance && log.info(`[PERF] Import took ${Date.now() - millisImport}ms`);
-
-	const determineConfigPath = function (configPath, configFile) {
+	const determineConfigPath = (configPath, configFile) => {
 		// ensure that the config path is absolute
 		if (!path.isAbsolute(configPath)) {
 			configPath = path.resolve(options.basePath, configPath);
@@ -72,39 +72,50 @@ module.exports = async function applyUI5Middleware(router, options) {
 		return undefined;
 	};
 
-	// determine the project graph from the given options
-	const millisGraph = logPerformance && Date.now();
-	const graph = await graphFromPackageDependencies({
-		cwd: options.basePath,
-		rootConfigPath: determineConfigPath(configPath, configFile),
-		workspaceName: process.env["ui5-workspace"] || options.workspaceName || "default",
-		workspaceConfigPath: determineConfigPath(workspaceConfigPath, workspaceConfigFile),
-		versionOverride: options.versionOverride,
-		cacheMode: options.cacheMode,
-	});
-	logPerformance && log.info(`[PERF] Graph took ${Date.now() - millisGraph}ms`);
+	const loadAppInfo = async () => {
+		const millisImport = logPerformance && Date.now();
+		const { graphFromPackageDependencies } = await import("@ui5/project/graph");
+		logPerformance && log.info(`[PERF] Import took ${Date.now() - millisImport}ms`);
 
-	const millisRoot = logPerformance && Date.now();
-	// detect the root project
-	const rootProject = graph.getRoot();
+		// determine the project graph from the given options
+		const millisGraph = logPerformance && Date.now();
+		const graph = await graphFromPackageDependencies({
+			cwd: options.basePath,
+			rootConfigPath: determineConfigPath(configPath, configFile),
+			workspaceName: process.env["ui5-workspace"] || options.workspaceName || "default",
+			workspaceConfigPath: determineConfigPath(workspaceConfigPath, workspaceConfigFile),
+			versionOverride: options.versionOverride,
+			cacheMode: options.cacheMode,
+		});
+		logPerformance && log.info(`[PERF] Graph took ${Date.now() - millisGraph}ms`);
 
-	// create a reader for the root project
-	const rootReader = rootProject.getReader({ style: "runtime" });
-	logPerformance && log.info(`[PERF] Root project took ${Date.now() - millisRoot}ms`);
+		const millisRoot = logPerformance && Date.now();
+		// detect the root project
+		const rootProject = graph.getRoot();
 
-	// for Fiori elements based applications we need to invalidate the view cache
-	// so we need to append the query parameter to the HTML files (sap-ui-xx-viewCache=false)
-	const isFioriElementsBased = rootProject.getFrameworkDependencies().find((lib) => lib.name.startsWith("sap.fe"));
+		// create a reader for the root project
+		const rootReader = rootProject.getReader({ style: "runtime" });
+		logPerformance && log.info(`[PERF] Root project took ${Date.now() - millisRoot}ms`);
 
-	// collect app pages from workspace (glob testing: https://globster.xyz/ and https://codepen.io/mrmlnc/pen/OXQjMe)
-	//   -> but exclude the HTML fragments from the list of app pages!
-	const millisPages = logPerformance && Date.now();
-	const pages = (await rootReader.byGlob("**/!(*.fragment).{html,htm}")).map((resource) => `${resource.getPath()}${isFioriElementsBased ? "?sap-ui-xx-viewCache=false" : ""}`);
-	logPerformance && log.info(`[PERF] Pages took ${Date.now() - millisPages}ms`);
+		return { rootProject, rootReader, graph };
+	};
+
+	const loadPages = async ({ rootProject, rootReader }) => {
+		// for Fiori elements based applications we need to invalidate the view cache
+		// so we need to append the query parameter to the HTML files (sap-ui-xx-viewCache=false)
+		const isFioriElementsBased = rootProject.getFrameworkDependencies().find((lib) => lib.name.startsWith("sap.fe"));
+
+		// collect app pages from workspace (glob testing: https://globster.xyz/ and https://codepen.io/mrmlnc/pen/OXQjMe)
+		//   -> but exclude the HTML fragments from the list of app pages!
+		const millisPages = logPerformance && Date.now();
+		const pages = (await rootReader.byGlob(PAGE_GLOB_PATTERN)).map((resource) => `${resource.getPath()}${isFioriElementsBased ? "?sap-ui-xx-viewCache=false" : ""}`);
+		logPerformance && log.info(`[PERF] Pages took ${Date.now() - millisPages}ms`);
+		return pages;
+	};
 
 	// method to create the middleware manager and to apply the middlewares
 	// to the express router provided as a parameter to this function
-	const apply = async () => {
+	const apply = async ({ rootProject, rootReader, graph, pages }) => {
 		// find the relevant readers for the dependencies
 		const readers = [];
 		await graph.traverseBreadthFirst(async function ({ project: dep }) {
@@ -148,6 +159,10 @@ module.exports = async function applyUI5Middleware(router, options) {
 		});
 		await middlewareManager.applyMiddleware(router);
 
+		// custom pages are not collectible in lazy loading mode
+		if (!pages) {
+			return;
+		}
 		// collect app pages from middlewares implementing the getAppPages
 		// which will only work if the middleware is executed synchronously
 		middlewareManager.middlewareExecutionOrder?.map((name) => {
@@ -169,24 +184,55 @@ module.exports = async function applyUI5Middleware(router, options) {
 		});
 	};
 
+	const determineWebappPath = (ui5ConfigPath) => {
+		if (ui5ConfigPath) {
+			log.warn("Path to config file could not be determined. Using default webapp path to lookup HTML pages");
+			return "webapp";
+		}
+
+		/** @type {{resources: {configuration: {paths: {webapp: string}}}}[]} */
+		let ui5Configs;
+		try {
+			// read the ui5.yaml file to extract the configuration
+			const content = fs.readFileSync(ui5ConfigPath, "utf-8");
+			ui5Configs = yaml.loadAll(content);
+		} catch (err) {
+			if (err.name === "YAMLException") {
+				log.error(`Failed to read ${ui5ConfigPath}!`);
+			}
+			throw err;
+		}
+
+		const webappPath = ui5Configs?.[0]?.resources?.configuration?.paths?.webapp;
+		if (webappPath) {
+			log.debug(`Determined custom "webapp" path "${webappPath}"`);
+		}
+		return webappPath ?? "webapp";
+	};
+
 	// install a callback in the router to apply the middlewares
 	if (options.lazy) {
 		let isApplied = false;
 		router.use(async (req, res, next) => {
 			if (!isApplied) {
-				await apply();
+				const { graph, rootProject, rootReader } = await loadAppInfo();
+				await apply({ graph, rootProject, rootReader });
 				isApplied = true;
 			}
 			next();
 		});
+		const webappPath = determineWebappPath(determineConfigPath(configPath, configFile));
+		// collect pages via glob pattern
+		return {
+			pages: (await glob(PAGE_GLOB_PATTERN, { cwd: path.join(configPath, webappPath) })).map((p) => (!p.startsWith("/") ? `/${p}` : p)),
+		};
 	} else {
-		await apply();
+		const { graph, rootProject, rootReader } = await loadAppInfo();
+		const pages = await loadPages({ rootProject, rootReader });
+		await apply({ graph, rootProject, rootReader, pages });
+		logPerformance && log.info(`[PERF] applyUI5Middleware took ${Date.now() - millis}ms`);
+
+		// return the UI5 application information
+		return { pages };
 	}
-
-	logPerformance && log.info(`[PERF] applyUI5Middleware took ${Date.now() - millis}ms`);
-
-	// return the UI5 application information
-	return {
-		pages,
-	};
 };
