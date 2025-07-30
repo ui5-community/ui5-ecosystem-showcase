@@ -7,7 +7,10 @@ if (!WebComponent.__setProperty__isPatched) {
 	const fnOriginalSetProperty = WebComponent.prototype.setProperty;
 	WebComponent.prototype.setProperty = function(sPropName, v, bSupressInvalidate) {
 		if ((sPropName === "width" || sPropName === "height") && !isNaN(v)) {
-			v += "px";
+			const sType = this.getMetadata().getProperty(sPropName).getType().getName();
+			if (sType === "sap.ui.core.CSSSize") {
+				v += "px";
+			}
 		}
 		return fnOriginalSetProperty.apply(this, [sPropName, v, bSupressInvalidate]);
 	};

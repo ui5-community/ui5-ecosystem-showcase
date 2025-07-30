@@ -89,7 +89,7 @@
     <content>
       <webc:Panel headerText="Test Pages" class="panelSpacing">
         <VBox alignItems="Center" justifyContent="Center" height="100%">
-          <webc:Button text="DynamicPage" click=".onNavToDynamicPage" design="Attention" endIcon="slim-arrow-right" class="buttonSpacing" />
+          <webc:Button text="DynamicPage" click=".onNavToDynamicPage" design="Attention" endIcon="slim-arrow-right" class="buttonSpacing" width="300" />
           <webc:Button text="Form with Aria support" click=".onNavToForm" design="Attention" endIcon="slim-arrow-right" class="buttonSpacing" />
           <webc:Button text="Value/Data State" click=".onNavToValueState" design="Attention" endIcon="slim-arrow-right" class="buttonSpacing" />
         </VBox>
