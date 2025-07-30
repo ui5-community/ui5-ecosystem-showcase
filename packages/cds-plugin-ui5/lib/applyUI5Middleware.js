@@ -185,7 +185,7 @@ module.exports = async function applyUI5Middleware(router, options) {
 	};
 
 	const determineWebappPath = (ui5ConfigPath) => {
-		if (ui5ConfigPath) {
+		if (!ui5ConfigPath) {
 			log.warn("Path to config file could not be determined. Using default webapp path to lookup HTML pages");
 			return "webapp";
 		}
