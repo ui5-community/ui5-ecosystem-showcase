@@ -135,7 +135,7 @@
       <webc:Panel headerText="More complex controls" class="panelSpacing">
         <VBox alignItems="Center" justifyContent="Center" height="100%">
           <webc:DateRangePicker />
-          <webc:DatePicker />
+          <webc:DatePicker onOpen="alert('DatePicker opened!')" />
           <webc:List>
             <webc:ListItemStandard text="Item 1" />
             <webc:ListItemStandard text="Item 2" />
