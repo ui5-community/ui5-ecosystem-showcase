@@ -1,0 +1,60 @@
+// Fixed with https://github.com/SAP/openui5/commit/%TBD% in UI5 1.140.0
+
+if (!WebComponent.__MappingSupportForEvents__isPatched) {
+	var WebComponentMetadataPrototype = Object.getPrototypeOf(WebComponent.getMetadata());
+	var OriginalEvent = WebComponentMetadataPrototype.metaFactoryEvent;
+	var WebComponentEvent = function(oClass, name, info) {
+		OriginalEvent.apply(this, arguments);
+		if (info.mapping) {
+			this._sMapTo = typeof info.mapping !== "object" ? info.mapping : info.mapping.to;
+		}
+	};
+	WebComponentEvent.prototype = Object.create(OriginalEvent.prototype);
+	WebComponentEvent.prototype.constructor = WebComponentEvent;
+	WebComponentMetadataPrototype.metaFactoryEvent = WebComponentEvent;
+
+	WebComponent.prototype.__handleCustomEvent = function(sCustomEventName, oEvent) {
+		var camelize = sap.ui.require("sap/base/strings/camelize");
+		var sEventName = camelize(sCustomEventName);
+
+		// Prepare the event data object
+		var oEventData = this.__formatEventData(oEvent.detail);
+
+		// Finally fire the semantic event on the control instance
+		var oEventObj = this.getMetadata().getEvent(sEventName);
+		var bPrevented = !oEventObj.fire(this, oEventData);
+		if (bPrevented) {
+			oEvent.preventDefault();
+		}
+	};
+
+	WebComponent.prototype.__attachCustomEventsListeners = function() {
+		var hyphenate = sap.ui.require("sap/base/strings/hyphenate");
+		var oEvents = this.getMetadata().getAllEvents();
+		for (var sEventName in oEvents) {
+			var sCustomEventName = hyphenate(oEvents[sEventName]._sMapTo || sEventName);
+			this.__customEventListeners = this.__customEventListeners || {};
+			var oCustomEventListener = this.__customEventListeners[sEventName] = this.__handleCustomEvent.bind(this, sEventName);
+			this.getDomRef().addEventListener(sCustomEventName, oCustomEventListener);
+		}
+	};
+
+	WebComponent.prototype.__detachCustomEventsListeners = function() {
+		var oDomRef = this.getDomRef();
+		if (!oDomRef) {
+			return;
+		}
+
+		var hyphenate = sap.ui.require("sap/base/strings/hyphenate");
+		var oEvents = this.getMetadata().getAllEvents();
+		for (var sEventName in oEvents) {
+			if (oEvents.hasOwnProperty(sEventName)) {
+				var sCustomEventName = hyphenate(oEvents[sEventName]._sMapTo || sEventName);
+				this.__customEventListeners = this.__customEventListeners || {};
+				var oCustomEventListener = this.__customEventListeners[sEventName] = this.__handleCustomEvent.bind(this, sEventName);
+				oDomRef.removeEventListener(sCustomEventName, oCustomEventListener);
+			}
+		}
+	};
+	WebComponent.__MappingSupportForEvents__isPatched = true;
+}
