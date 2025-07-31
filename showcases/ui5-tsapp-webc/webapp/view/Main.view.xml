@@ -19,7 +19,8 @@
     iconMessageError: '@ui5/webcomponents-icons/dist/message-error',
     iconArrow: '@ui5/webcomponents-icons/dist/slim-arrow-right',
     iconPaste: '@ui5/webcomponents-icons/dist/paste',
-    iconCopy: '@ui5/webcomponents-icons/dist/copy'
+    iconCopy: '@ui5/webcomponents-icons/dist/copy',
+    customerAndSupplier: '@ui5/webcomponents-icons/customer-and-supplier'
   }"
 >
   <Page id="page" showHeader="false">
@@ -87,6 +88,36 @@
     </fiori:UserMenu>
 
     <content>
+      <webc:Panel headerText="Fiori Search Field" class="panelSpacing">
+        <VBox alignItems="Center" justifyContent="Center" height="100%">
+          <fiori:Search>
+            <!-- scopes aggregation -->
+            <fiori:scopes>
+              <fiori:SearchScope text="All" />
+              <fiori:SearchScope text="Apps" selected="true" />
+              <fiori:SearchScope text="Products" />
+            </fiori:scopes>
+
+            <fiori:SearchItemGroup headerText="Suppliers (4)">
+              <fiori:SearchItem text="Danish Fishing Trading Company (100000043)" icon="customer-and-supplier" description="Byline" />
+              <fiori:SearchItem text="Daily Update Ltd. (290210057)" icon="customer-and-supplier" description="Byline" />
+              <fiori:SearchItem text="Damian United (120001884)" icon="customer-and-supplier" description="Byline" />
+              <fiori:SearchItem text="Troda Tech (100230044)" icon="customer-and-supplier" description="Byline" />
+            </fiori:SearchItemGroup>
+
+            <fiori:SearchItemGroup headerText="People (4)">
+              <fiori:SearchItem text="John Doe" description="Byline">
+                <fiori:image>
+                  <webc:Avatar size="XS">
+                    <Image src="https://sap.github.io/ui5-webcomponents/images/avatars/man_avatar_3.png" alt="John Miller" />
+                  </webc:Avatar>
+                </fiori:image>
+              </fiori:SearchItem>
+            </fiori:SearchItemGroup>
+          </fiori:Search>
+        </VBox>
+      </webc:Panel>
+
       <webc:Panel headerText="Test Pages" class="panelSpacing">
         <VBox alignItems="Center" justifyContent="Center" height="100%">
           <webc:Button text="DynamicPage" click=".onNavToDynamicPage" design="Attention" endIcon="slim-arrow-right" class="buttonSpacing" width="300" />
@@ -94,6 +125,7 @@
           <webc:Button text="Value/Data State" click=".onNavToValueState" design="Attention" endIcon="slim-arrow-right" class="buttonSpacing" />
         </VBox>
       </webc:Panel>
+
       <webc:Panel headerText="Buttons" class="panelSpacing">
         <VBox alignItems="Center" justifyContent="Center" height="100%">
           <Button text="sap.m.Button" press="onBoo" class="buttonSpacing">
