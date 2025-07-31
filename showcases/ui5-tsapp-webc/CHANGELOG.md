@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.14.2...ui5-tsapp-webc@0.14.3) (2025-07-31)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** only convert CSSSizes to px values for numbers ([#1246](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1246)) ([2942a1f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2942a1f8afac8a0af86da08d592f9d31f4a76937))
+
+
+
+
+
 ## [0.14.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.14.1...ui5-tsapp-webc@0.14.2) (2025-07-29)
 
 **Note:** Version bump only for package ui5-tsapp-webc

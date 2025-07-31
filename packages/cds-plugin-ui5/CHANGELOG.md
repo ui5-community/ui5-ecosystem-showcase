@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.13.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.13.3...cds-plugin-ui5@0.13.4) (2025-07-31)
+
+
+### Bug Fixes
+
+* **cds-plugin-ui5:** fixes minor condition error for custom webapp path determination ([#1245](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1245)) ([c3b7355](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/c3b735588bd51a4632e4e94893b3205ca0f6aff4))
+
+
+
+
+
 ## [0.13.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.13.2...cds-plugin-ui5@0.13.3) (2025-07-29)
 
 

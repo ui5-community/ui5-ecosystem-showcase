@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.29.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.29.0...ui5-tooling-modules@3.29.1) (2025-07-31)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** only convert CSSSizes to px values for numbers ([#1246](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1246)) ([2942a1f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2942a1f8afac8a0af86da08d592f9d31f4a76937))
+
+
+
+
+
 # [3.29.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.28.1...ui5-tooling-modules@3.29.0) (2025-07-29)
 
 
