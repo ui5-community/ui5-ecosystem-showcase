@@ -27,6 +27,14 @@ const WebComponentRegistryHelper = {
 	isUI5Element(ui5Superclass) {
 		return ui5Superclass.namespace === this.UI5_ELEMENT_NAMESPACE && ui5Superclass.name === this.UI5_ELEMENT_CLASS_NAME;
 	},
+
+	isUi5CoreHTMLElement(ui5Superclass) {
+		return ui5Superclass?.namespace === "sap.ui.core.html" && ui5Superclass?.name === "HTMLElement";
+	},
+
+	isHTMLElementBase(ui5Superclass) {
+		return ui5Superclass?.namespace === "sap.ui.core.html" && ui5Superclass.name !== "HTMLElementBase";
+	},
 };
 
 module.exports = WebComponentRegistryHelper;
