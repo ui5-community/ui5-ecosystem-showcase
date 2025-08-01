@@ -282,7 +282,8 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				metadata = JSDocSerializer.serializeMetadata(clazz);
 			}
 
-			const webcClass = chunkName && posix.relative(dirname(resolvedSource), chunkName);
+			let webcClass = chunkName && posix.relative(dirname(resolvedSource), chunkName);
+			let rootPath = `${posix.relative(dirname(resolvedSource), "") || "."}/`;
 
 			// UI5 specific features
 			const needsLabelEnablement = clazz._ui5specifics.needsLabelEnablement;
@@ -292,7 +293,12 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			// Determine the superclass UI5 module name and import it
 			let webcBaseClass = "sap/ui/core/webc/WebComponent";
 			const ui5Superclass = clazz.superclass;
-			if (ui5Superclass?._ui5metadata && !WebComponentRegistryHelper.isUI5Element(ui5Superclass)) {
+
+			if (WebComponentRegistryHelper.isUi5CoreHTMLElement(ui5Superclass)) {
+				webcBaseClass = "sap/ui/core/html/HTMLElement";
+				rootPath = "";
+				webcClass = undefined;
+			} else if (ui5Superclass?._ui5metadata && !WebComponentRegistryHelper.isUI5Element(ui5Superclass)) {
 				const { module } = clazz.superclass;
 				const { namespace } = clazz.superclass._ui5metadata;
 				webcBaseClass = `${namespace}/${module.slice(0, -3)}`;
@@ -308,11 +314,14 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				}
 			}
 
+			if (WebComponentRegistryHelper.isHTMLElementBase(ui5Superclass)) {
+				webcClass = undefined;
+			}
+
 			// JSDoc Serialization for the class header
 			const jsDocClassHeader = skipJSDoc ? undefined : clazz._jsDoc?.classHeader;
 
 			// generate the WebComponentControl code
-			const rootPath = `${posix.relative(dirname(resolvedSource), "") || "."}/`;
 			const code = webcTmplFnUI5Control({
 				ui5ClassName: ui5ClassName,
 				jsDocClassHeader,
