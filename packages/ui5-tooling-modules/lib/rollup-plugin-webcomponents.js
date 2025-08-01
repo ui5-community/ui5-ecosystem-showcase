@@ -233,7 +233,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 		const isBaseLib = namespace === WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE;
 
 		// generate the library code
-		const webcPackage = chunkName && posix.relative(dirname(source), chunkName);
+		const webcPackage = namespace !== "@ui5/html" ? chunkName && posix.relative(dirname(source), chunkName) : undefined;
 		const code = webcTmplFnUI5Package({
 			isBaseLib,
 			metadata,
@@ -284,7 +284,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 			log.verbose(`Emitting Web Component wrapper: ${resolvedSource}`);
 
 			// determine whether the clazz is based on the UI5Element superclass
-			const isClazzUI5Element = WebComponentRegistryHelper.isUI5ElementSubclass(clazz);
+			const isClazzUI5Element = WebComponentRegistryHelper.isSubclassOf(clazz, "@ui5/webcomponents-base", "UI5Element");
 			if (ui5WebCScopeSuffix && !isClazzUI5Element) {
 				log.warn(`The Web Component "${source}" doesn't support scoping as it is not extending UI5Element!`);
 			}
@@ -320,7 +320,6 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 			if (WebComponentRegistryHelper.isUi5CoreHTMLElement(ui5Superclass)) {
 				webcBaseClass = "sap/ui/core/html/HTMLElement";
 				rootPath = "";
-				webcClass = undefined;
 			} else if (ui5Superclass?._ui5metadata && !WebComponentRegistryHelper.isUI5Element(ui5Superclass)) {
 				const { module } = clazz.superclass;
 				const { namespace } = clazz.superclass._ui5metadata;
@@ -337,7 +336,8 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 				}
 			}
 
-			if (WebComponentRegistryHelper.isHTMLElementBase(ui5Superclass)) {
+			// no class import required if class inherits from sap.ui.core.html.HTMLElement class
+			if (WebComponentRegistryHelper.isSubclassOf(clazz, "sap.ui.core.html", "HTMLElement")) {
 				webcClass = undefined;
 			}
 
@@ -521,7 +521,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 				let nonUI5TagsToRegister;
 				if (ui5WebCScopeSuffix) {
 					nonUI5TagsToRegister = Object.values(customElements)
-						.filter((element) => WebComponentRegistryHelper.isUI5ElementSubclass(element))
+						.filter((element) => WebComponentRegistryHelper.isSubclassOf(element, "@ui5/webcomponents-base", "UI5Element"))
 						.map((element) => element.tagName)
 						.filter((tag) => (tag ? !tag.startsWith("ui5-") : false));
 					if (nonUI5TagsToRegister.length === 0) {
