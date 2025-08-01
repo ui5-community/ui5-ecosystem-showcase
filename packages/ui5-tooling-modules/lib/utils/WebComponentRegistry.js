@@ -182,12 +182,21 @@ class RegistryEntry {
 
 			let superclassRef = (refPackage || this).classes[superclassName];
 			if (!superclassRef) {
-				console.error(
-					`The class '${this.namespace}/${classDef.name}' has an unknown superclass '${classDef.superclass.package}/${superclassName}' using default '@ui5/webcomponents-base/UI5Element'!`,
-				);
-				const refPackage = WebComponentRegistry.getPackage("@ui5/webcomponents-base");
-				let superclassRef = (refPackage || this).classes[UI5_ELEMENT_CLASS_NAME];
-				classDef.superclass = superclassRef;
+				if (classDef.namespace === "@ui5/html") {
+					classDef.superclass = {
+						name: "HTMLElement",
+						package: "sap.ui.core",
+						namespace: "sap.ui.core.html",
+						module: "sap/ui/core/html/HTMLElement.js",
+					};
+				} else {
+					console.error(
+						`The class '${this.namespace}/${classDef.name}' has an unknown superclass '${classDef.superclass.package}/${superclassName}' using default '@ui5/webcomponents-base/UI5Element'!`,
+					);
+					const refPackage = WebComponentRegistry.getPackage("@ui5/webcomponents-base");
+					let superclassRef = (refPackage || this).classes[UI5_ELEMENT_CLASS_NAME];
+					classDef.superclass = superclassRef;
+				}
 			} else {
 				this.#connectSuperclass(superclassRef);
 				classDef.superclass = superclassRef;
@@ -1176,6 +1185,9 @@ const WebComponentRegistry = {
 			skipDtsGeneration,
 			skipJSDoc,
 		});
+
+		// TODO: no scoping for html tags, otherwise invalid
+		scopeSuffix = namespace === "@ui5/html" ? undefined : scopeSuffix;
 
 		let entry = _registry[namespace];
 		if (!entry) {
