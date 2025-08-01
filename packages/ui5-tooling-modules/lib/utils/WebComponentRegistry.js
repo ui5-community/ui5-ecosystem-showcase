@@ -214,7 +214,7 @@ class RegistryEntry {
 
 	#calculateScopedTagName(classDef) {
 		// only scope UI5Element subclasses
-		if (this.scopeSuffix && WebComponentRegistryHelper.isUI5ElementSubclass(classDef)) {
+		if (this.scopeSuffix && WebComponentRegistryHelper.isSubclassOf(classDef, "@ui5/webcomponents-base", "UI5Element")) {
 			if (classDef.tagName) {
 				classDef.scopedTagName = `${classDef.tagName}-${this.scopeSuffix}`;
 			}
