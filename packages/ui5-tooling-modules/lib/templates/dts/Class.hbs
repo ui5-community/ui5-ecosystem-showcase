@@ -93,7 +93,7 @@ declare module "{{{clazz._ui5QualifiedNameSlashes}}}" {
 
 					 {{{generateApiDocumentation this.dtsParamDescription}}}
 					{{/if}}
-					{{{@key}}}?: {{{serializeTypeList this.types}}}
+					{{{@key}}}?: {{{processTypes this.types}}}
 				{{/each}}
 			}
 
@@ -170,8 +170,8 @@ declare module "{{{clazz._ui5QualifiedNameSlashes}}}" {
 				{{/if}}
 				{{{this.methodName}}}({{#each this.params}}
 				{{{generateApiDocumentation this.description}}}
-				{{@key}}: {{{generatePropertySettings this.types}}},
-				{{/each}}): {{#if this.returnValueTypes}}{{{generatePropertySettings this.returnValueTypes}}}{{else}}void{{/if}};
+				{{@key}}Value{{#if this.optional}}?{{/if}}: {{{processTypes this.types}}},
+				{{/each}}): {{#if this.returnValueTypes}}{{{processTypes this.returnValueTypes}}}{{else}}void{{/if}};
 			{{/each}}
 		}
 }

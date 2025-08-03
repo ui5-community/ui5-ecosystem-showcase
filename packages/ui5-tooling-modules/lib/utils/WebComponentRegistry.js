@@ -269,9 +269,6 @@ class RegistryEntry {
 		}
 
 		const deriveType = (type) => {
-			if (type === "undefined") {
-				return;
-			}
 			// [Complex types]:
 			// we have a reference to other things -> enums, interfaces, classes
 			if (typeInfo?.references?.length > 0 || this.classes[type] || this.enums[type] || this.interfaces[type]) {
@@ -363,25 +360,18 @@ class RegistryEntry {
 			name = name.trim();
 			const arrayTypeMatch = name.match(/Array<(.*)>/i);
 			const multiple = !!arrayTypeMatch;
+			const origType = arrayTypeMatch?.[1] || name;
 
-			if (multiple) {
-				// is array type (Array<Foo>), but not necessarily a union type in the array (Array<Foo|Bar>)
+			if (origType !== "undefined") {
+				// multiple === true ==> is array type (Array<Foo>), but not necessarily a union type in the array (Array<Foo|Bar>)
+				// multiple === false ==> can be a union type, e.g. "Foo | Bar | ..."!
 				typeDef.types.push({
-					origType: arrayTypeMatch[1],
+					origType,
 					multiple,
-					types: arrayTypeMatch[1]
-						.split("|")
-						.map((s) => deriveType(s.trim()))
-						.filter((t) => !!t),
+					dedicatedTypes: origType.split("|").map((s) => deriveType(s.trim())),
 				});
-			} else {
-				// can be a union type, e.g. "Foo | Bar | ..."!
-				typeDef.types.push(deriveType(name));
 			}
 		}
-
-		// removes <undefined>
-		typeDef.types = typeDef.types.filter((t) => !!t);
 
 		// global multiple flag sits on typeDef
 		const multiple = typeDef.types[0].multiple || false;
@@ -396,8 +386,10 @@ class RegistryEntry {
 			return typeDef;
 		}
 
-		if (typeDef.types.length > 1 || typeDef.types[0].types?.length > 1) {
-			const refType = typeDef.types[0].types?.[0] || typeDef.types[0];
+		const hasNoUnionType = (obj) => obj.dedicatedTypes.length <= 1;
+		// Either single or multiple union type (e.g Array<type1 | type2> or type1 | type2)
+		if (!typeDef.types.every(hasNoUnionType)) {
+			const refType = typeDef.types[0].dedicatedTypes[0];
 			if (refType.isClass || refType.isInterface) {
 				typeDef.ui5TypeInfo = {
 					multiple,
@@ -411,7 +403,7 @@ class RegistryEntry {
 
 		// unpack UI5 type
 		// as UI5 can only handle one type (unlike TS)
-		const refType = typeDef.types[0].types?.[0] || typeDef.types[0];
+		const refType = typeDef.types[0].dedicatedTypes[0];
 		typeDef.ui5TypeInfo = {
 			multiple,
 			ui5Type: refType.ui5Type,
@@ -462,12 +454,12 @@ class RegistryEntry {
 			JSDocSerializer.writeDoc(classDef, "associations", { name: "ariaLabelledBy", description: propDef.description || "" });
 			DTSSerializer.writeDts(classDef, "associations", {
 				name: "ariaLabelledBy",
-				description: propDef.description.replace(/\n/g, "\n * "),
+				description: propDef.description,
 				types: [
 					{
 						origType: "Array<HTMLElement>",
 						multiple: true,
-						types: [
+						dedicatedTypes: [
 							{
 								dtsType: "Control",
 								packageName: "sap/ui/core/Control",
@@ -497,10 +489,14 @@ class RegistryEntry {
 			JSDocSerializer.writeDoc(classDef, "properties", { name: "enabled", description: propDef.description || "" });
 			DTSSerializer.writeDts(classDef, "properties", {
 				name: "enabled",
-				description: propDef.description?.replace(/\n/g, "\n * "),
+				description: propDef.description,
 				types: [
 					{
-						dtsType: "boolean",
+						dedicatedTypes: [
+							{
+								dtsType: "boolean",
+							},
+						],
 					},
 				],
 				defaultValue: "true",
@@ -548,7 +544,7 @@ class RegistryEntry {
 
 				DTSSerializer.writeDts(classDef, "properties", {
 					name: propDef.name,
-					description: propDef.description?.replace(/\n/g, "\n * "),
+					description: propDef.description,
 					types: typeDef.types,
 					readonly: true,
 				});
@@ -563,7 +559,7 @@ class RegistryEntry {
 				JSDocSerializer.writeDoc(classDef, "associations", propDef);
 				DTSSerializer.writeDts(classDef, "associations", {
 					name: propDef.name,
-					description: propDef.description?.replace(/\n/g, "\n * "),
+					description: propDef.description,
 					types: typeDef.types,
 				});
 			} else {
@@ -602,7 +598,7 @@ class RegistryEntry {
 
 				DTSSerializer.writeDts(classDef, "properties", {
 					name: propDef.name,
-					description: propDef.description?.replace(/\n/g, "\n * "),
+					description: propDef.description,
 					types: typeDef.types,
 					defaultValue: defaultValue,
 				});
@@ -621,7 +617,7 @@ class RegistryEntry {
 			});
 			DTSSerializer.writeDts(classDef, "methods", {
 				name: propDef.name,
-				description: propDef.description?.replace(/\n/g, "\n * "),
+				description: propDef.description,
 				params: parsedParams,
 			});
 		}
@@ -649,6 +645,17 @@ class RegistryEntry {
 			aggregationType = typeDef.ui5TypeInfo.ui5Type;
 		}
 
+		const leadingDtsType = typeDef.types[0].dedicatedTypes[0];
+		if (typeDef.ui5TypeInfo.ui5Type === "any" && leadingDtsType.dtsType !== "any") {
+			console.log(
+				`[unclear type 🤔] Detected DTS type '${leadingDtsType.dtsType}' for slot '${slotName}' in webcomponent '${classDef.name}' but did not detect a proper UI5 type. Missing interface? Fallback DTS type to 'any'.`,
+			);
+			typeDef.types[0].dedicatedTypes[0] = {
+				dtsType: "any",
+				ui5Type: "any",
+				isUnclear: true,
+			};
+		}
 		// DEBUG
 		if (typeDef.isUnclear) {
 			console.warn(`[unclear type 🤔] ${classDef.name} - aggregation '${slotDef.name}' has unclear type '${typeDef.origType}' -> defaulting to 'any', multiple: ${typeDef.ui5TypeInfo.multiple}`);
@@ -682,7 +689,7 @@ class RegistryEntry {
 		});
 		DTSSerializer.writeDts(classDef, "aggregations", {
 			name: aggregationName,
-			description: slotDef.description?.replace(/\n/g, "\n * "),
+			description: slotDef.description,
 			types: typeDef.types,
 		});
 	}
@@ -706,7 +713,7 @@ class RegistryEntry {
 			parsedParams[param.name] = {
 				type: typeDef.ui5TypeInfo.ui5Type,
 				types: typeDef.types,
-				dtsParamDescription: param.description?.replace(/\n/g, "\n * "),
+				dtsParamDescription: param.description,
 			};
 			jsDocParams[param.name] = {
 				description: param.description || "",
@@ -761,14 +768,15 @@ class RegistryEntry {
 			parameters: jsDocParams,
 		});
 		DTSSerializer.writeDts(classDef, "events", {
-			name: eventName,
-			description: eventDef.description?.replace(/\n/g, "\n * "),
+			name: camelizedName,
+			description: eventDef.description,
 			parameters: parsedParams,
 		});
 	}
 
 	#processUI5Interfaces(classDef, ui5metadata) {
 		let jsdocInterfaces;
+		const unknowInterfaces = new Set();
 		if (Array.isArray(classDef._ui5implements)) {
 			jsdocInterfaces ??= [];
 			classDef._ui5implements.forEach((interfaceDef) => {
@@ -777,6 +785,8 @@ class RegistryEntry {
 					jsdocInterfaces.push(`module:${this.namespace}.${interfaceDef.name}`);
 				} else {
 					jsdocInterfaces.push(this.prefixns(interfaceDef.name));
+					unknowInterfaces.add(interfaceDef.name);
+					console.warn(`[unknown interface 🤔] interface ${interfaceDef.name} is not part of the metadata`);
 				}
 			});
 		}
@@ -792,6 +802,7 @@ class RegistryEntry {
 			jsdocInterfaces.push("sap.ui.core.IFormContent");
 		}
 		classDef._ui5QualifiedInterfaceNamesSlashes = jsdocInterfaces;
+		classDef._unkownInterfaces = unknowInterfaces;
 	}
 
 	/**
@@ -833,7 +844,11 @@ class RegistryEntry {
 			DTSSerializer.writeDts(classDef, "properties", {
 				name: "text",
 				description,
-				types: [{ dtsType: "string" }],
+				types: [
+					{
+						dedicatedTypes: [{ dtsType: "string" }],
+					},
+				],
 			});
 		}
 
@@ -851,9 +866,13 @@ class RegistryEntry {
 				description,
 				types: [
 					{
-						ui5Type: "sap.ui.core.CSSSize",
-						packageName: "sap/ui/core/library",
-						dtsType: "CSSSize",
+						dedicatedTypes: [
+							{
+								ui5Type: "sap.ui.core.CSSSize",
+								packageName: "sap/ui/core/library",
+								dtsType: "CSSSize",
+							},
+						],
 					},
 				],
 			});
@@ -871,9 +890,13 @@ class RegistryEntry {
 				description,
 				types: [
 					{
-						ui5Type: "sap.ui.core.CSSSize",
-						packageName: "sap/ui/core/library",
-						dtsType: "CSSSize",
+						dedicatedTypes: [
+							{
+								ui5Type: "sap.ui.core.CSSSize",
+								packageName: "sap/ui/core/library",
+								dtsType: "CSSSize",
+							},
+						],
 					},
 				],
 			});
@@ -934,11 +957,15 @@ class RegistryEntry {
 					entity: "associations",
 					types: [
 						{
-							dtsType: "Control",
-							packageName: "sap/ui/core/Control",
-							moduleType: "module:sap/ui/core/Control",
-							ui5Type: "sap.ui.core.Control",
-							isClass: true,
+							dedicatedTypes: [
+								{
+									dtsType: "Control",
+									packageName: "sap/ui/core/Control",
+									moduleType: "module:sap/ui/core/Control",
+									ui5Type: "sap.ui.core.Control",
+									isClass: true,
+								},
+							],
 						},
 					],
 				},
@@ -997,8 +1024,12 @@ class RegistryEntry {
 						entity: "properties",
 						types: [
 							{
-								dtsType: "string",
-								ui5Type: "string",
+								dedicatedTypes: [
+									{
+										dtsType: "string",
+										ui5Type: "string",
+									},
+								],
 							},
 						],
 					},

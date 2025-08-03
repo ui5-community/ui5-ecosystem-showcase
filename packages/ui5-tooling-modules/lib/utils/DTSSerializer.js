@@ -50,7 +50,7 @@ function structureTemplate(strings, ...keys) {
 			const value = Number.isInteger(key) ? values[key] : dict[key];
 			if (value) {
 				value.split(/\n/).forEach((valueLine) => {
-					result.push(`${newLine} `, valueLine.replace(/^\s\*\s/, "")); // TODO replace shouldn't be necessary in case preprocessing is removed
+					result.push(`${newLine} `, valueLine);
 				});
 				result.push(strings[i + 1]);
 				result.push(newLine);
@@ -115,9 +115,9 @@ const shouldUseAn = function (word) {
  * @returns {string} Formatted documentation string
  */
 const generateStandardDocumentation = function (options) {
-	const { entityType, entityName, action, description = "", defaultValueDesc = "", className = "", typeInfo } = options;
+	const { entityType, entityName, action, description = "", defaultValueDesc, className = "", typeInfo } = options;
 
-	const linkRef = generateLinkRef(entityName);
+	const linkRef = `{@link #${actions.Get}${capitalize(entityName)} ${entityName}}`;
 	let text;
 	let defaultValue;
 	let returnValue = "@returns Reference to `this` in order to allow method chaining";
@@ -138,7 +138,7 @@ const generateStandardDocumentation = function (options) {
 				returnValue = `@returns Reference the IDs of the associated controls`;
 			}
 			returnValue = `@returns The content of the ${entityType}`;
-			defaultValue = defaultValueDesc ? `Default value is \`${defaultValueDesc}\`.` : "";
+			defaultValue = defaultValueDesc !== undefined ? `Default value is \`${defaultValueDesc}\`.` : "";
 			break;
 		case actions.Set:
 			if (entityType === "property") {
@@ -148,9 +148,10 @@ const generateStandardDocumentation = function (options) {
 			} else if (entityType === "association") {
 				text = `Sets the associated ${linkRef}.`;
 			}
-			defaultValue = defaultValueDesc
-				? `When called with a value of \`null\` or \`undefined\`, the default value of the property will be restored.\n\nDefault value is \`${defaultValueDesc}\`.`
-				: "";
+			defaultValue =
+				defaultValueDesc !== undefined
+					? `When called with a value of \`null\` or \`undefined\`, the default value of the property will be restored.\n\nDefault value is \`${defaultValueDesc}\`.`
+					: "";
 			break;
 		case actions.Add:
 			text = `Adds some ${entityName} to the ${entityType} ${linkRef}.`;
@@ -170,7 +171,7 @@ const generateStandardDocumentation = function (options) {
 			text = `Destroys the ${entityName} in the ${entityType} ${linkRef}.`;
 			break;
 		case actions.IndexOf:
-			text = `Checks for the provided '${typeInfo.types[0].dtsType}' in the ${entityType} ${linkRef} and returns its index if found or -1 otherwise.`;
+			text = `Checks for the provided '${typeInfo.dedicatedTypes[0].dtsType}' in the ${entityType} ${linkRef} and returns its index if found or -1 otherwise.`;
 			returnValue = `@returns The index of the provided control in the ${entityType} if found, or -1 otherwise`;
 			break;
 		case actions.Attach:
@@ -194,16 +195,6 @@ handlebars.registerHelper("escapeInterfaceName", function (namespace, interfaceN
 	const ui5QualifiedName = `${namespace}.${interfaceName}`;
 	return `__implements_${ui5QualifiedName.replace(/[/.@-]/g, "_")}: boolean;`;
 });
-
-/**
- * Generates a JSDoc link reference to a property or method.
- *
- * @param {string} entityName - Name of the entity to link to
- * @returns {string} Formatted JSDoc link reference
- */
-const generateLinkRef = function (entityName) {
-	return `{@link #${actions.Get}${capitalize(entityName)} ${entityName}}`;
-};
 
 handlebars.registerHelper("generateApiDocumentation", function (description) {
 	return baseTemplate({ description });
@@ -241,63 +232,84 @@ const generateEventSettings = function (className, eventName) {
 };
 handlebars.registerHelper("generateEventSettings", generateEventSettings);
 
-handlebars.registerHelper("generateAggregationSettings", function (types) {
-	let result = "";
-	for (const type of types) {
-		result += `${type.multiple ? `Array<${type.types.map((t) => t.dtsType).join(" | ")}> | ${type.types.map((t) => t.dtsType).join(" | ")}` : type.dtsType} | `;
-	}
-	result += "AggregationBindingInfo | `{${string}}`";
-	return result;
-});
 /**
  * Generates TypeScript type definitions for property settings.
  *
  * @param {Array<Object>} types - Array of type definitions
+ * @param {boolean} addSingleAndMulti - Flag whether to add also single
+ *                                      type definition in case type is multi
+ * @param {Array<Object>} specialTypes - Array of additional fix type definitions
+ *
  * @returns {string} TypeScript type definition string
  */
-const generatePropertySettings = function (types) {
-	let result = "";
+const processTypes = function (types, addSingleAndMulti = false) {
+	const typeStrings = new Set();
+	const processDedicatedTypes = function (dedicatedTypes) {
+		const typeStrings = new Set();
+		for (const dedicatedType of dedicatedTypes) {
+			typeStrings.add(dedicatedType.dtsType);
+			if (dedicatedType.isEnum) {
+				typeStrings.add(`keyof typeof ${dedicatedType.dtsType}`);
+			}
+		}
+		return [...typeStrings].join(" | ");
+	};
+
 	for (const type of types) {
-		result += `${type.multiple ? `Array<${type.types.map((t) => t.dtsType).join(" | ")}>` : type.dtsType} |`;
-		if (type.isEnum) {
-			result += ` keyof typeof ${type.dtsType} |`;
+		const typeString = processDedicatedTypes(type.dedicatedTypes);
+		typeStrings.add(type.multiple ? `Array<${typeString}>` : typeString);
+		if (type.multiple && addSingleAndMulti) {
+			typeStrings.add(typeString);
 		}
 	}
-	return result.replace(/\s\|$/, "");
+	return [...typeStrings].join(" | ");
 };
-/**
- * Generates TypeScript type definitions for property settings with binding information.
- *
- * @param {Array<Object>} types - Array of type definitions
- * @returns {string} TypeScript type definition string including binding information
- */
-const generatePropertySettingsWithBindingInfo = function (types) {
-	let result = generatePropertySettings(types);
-	result += ` | PropertyBindingInfo${this.needsBindingString ? " | `{${string}}`" : ""}`;
-	return result;
-};
-handlebars.registerHelper("generatePropertySettings", generatePropertySettings);
-handlebars.registerHelper("generatePropertySettingsWithBindingInfo", generatePropertySettingsWithBindingInfo);
 
-handlebars.registerHelper("generateAssociationSettings", function (types) {
-	let result = "";
-	let multiple = false;
-	for (const type of types) {
-		multiple = multiple || type.multiple;
-		result += `${type.multiple ? `Array<${type.types.map((t) => t.dtsType).join(" | ")}> | ${type.types.map((t) => t.dtsType).join(" | ")}` : type.dtsType} |`;
-	}
-	if (!result.includes("string")) {
-		result += `${multiple ? " Array<string> | " : ""}string;`;
-	}
-	return result.replace(/\s\|$/, ";");
+handlebars.registerHelper("processTypes", processTypes);
+handlebars.registerHelper("generateAggregationSettings", function (types) {
+	return processTypes(
+		[
+			...types,
+			{
+				dedicatedTypes: [
+					{
+						dtsType: "AggregationBindingInfo",
+					},
+					{
+						dtsType: "`{${string}}`",
+					},
+				],
+			},
+		],
+		true,
+	);
 });
-
-handlebars.registerHelper("serializeTypeList", function (types) {
-	let result = "";
-	for (const type of types) {
-		result += `${type.multiple ? `Array<${type.types.map((t) => t.dtsType).join(" | ")}>` : type.dtsType} |`;
-	}
-	return result.replace(/\s\|$/, ";");
+handlebars.registerHelper("generatePropertySettingsWithBindingInfo", function (types) {
+	return processTypes([
+		...types,
+		{
+			dedicatedTypes: [
+				{
+					dtsType: "PropertyBindingInfo",
+				},
+				{
+					dtsType: "`{${string}}`",
+				},
+			],
+		},
+	]);
+});
+handlebars.registerHelper("generateAssociationSettings", function (types) {
+	return processTypes(
+		[
+			...types,
+			{
+				multiple: types.some((t) => t.multiple),
+				dedicatedTypes: [{ dtsType: "string" }],
+			},
+		],
+		true,
+	);
 });
 
 /**
@@ -407,12 +419,13 @@ const DTSSerializer = {
 		 * Creates a template for method documentation.
 		 *
 		 * @param {object} options - Method template options
+		 * @param {object} [options.methodName] - Name of the method
 		 * @param {object} [options.params] - Method parameters
 		 * @param {string} [options.description] - Method description
 		 * @param {Array<object>} [options.returnValueTypes] - Return value types
 		 * @returns {object} Method template object
 		 */
-		const getMethodTemplate = function ({ methodName = "", params = {}, description = "", returnValueTypes = [{ dtsType: "this" }] } = {}) {
+		const getMethodTemplate = function ({ methodName = "", params = {}, description = "", returnValueTypes = [{ dedicatedTypes: [{ dtsType: "this" }] }] } = {}) {
 			return {
 				methodName,
 				params,
@@ -452,7 +465,7 @@ const DTSSerializer = {
 		const processTypesAndAddImports = (types) => {
 			types.forEach((type) => {
 				if (type.multiple) {
-					type.types.forEach(addImportsFromTypes);
+					type.dedicatedTypes.forEach(addImportsFromTypes);
 				} else {
 					addImportsFromTypes(type);
 				}
@@ -497,7 +510,7 @@ const DTSSerializer = {
 			createMethod({
 				params: {
 					[singularName]: {
-						types: entityType === "association" ? [...info.types[0].types, { dtsType: "ID" }] : info.types[0].types,
+						types: entityType === "association" ? [...info.types, { dedicatedTypes: [{ dtsType: "ID" }] }] : info.types,
 					},
 				},
 				docOptions: {
@@ -512,10 +525,18 @@ const DTSSerializer = {
 				createMethod({
 					params: {
 						[singularName]: {
-							types: info.types[0].types,
+							types: info.types,
 						},
 						["index"]: {
-							types: [{ dtsType: "int" }],
+							types: [
+								{
+									dedicatedTypes: [
+										{
+											dtsType: "int",
+										},
+									],
+								},
+							],
 						},
 					},
 					docOptions: {
@@ -530,7 +551,23 @@ const DTSSerializer = {
 			createMethod({
 				params: {
 					[singularName]: {
-						types: [...info.types[0].types, { dtsType: "int" }, { dtsType: "ID" }],
+						types: [
+							...info.types,
+							{
+								dedicatedTypes: [
+									{
+										dtsType: "int",
+									},
+								],
+							},
+							{
+								dedicatedTypes: [
+									{
+										dtsType: "ID",
+									},
+								],
+							},
+						],
 					},
 				},
 				docOptions: {
@@ -538,7 +575,26 @@ const DTSSerializer = {
 					entityName: info.name,
 					action: actions.Remove,
 				},
-				returnValueTypes: entityType === "association" ? [{ dtsType: "ID" }, { dtsType: "null" }] : [...info.types[0].types, { dtsType: "null" }],
+				returnValueTypes: [
+					...(entityType === "association"
+						? [
+								{
+									dedicatedTypes: [
+										{
+											dtsType: "ID",
+										},
+									],
+								},
+							]
+						: [...info.types]),
+					{
+						dedicatedTypes: [
+							{
+								dtsType: "null",
+							},
+						],
+					},
+				],
 			});
 
 			// RemoveAll method
@@ -557,7 +613,7 @@ const DTSSerializer = {
 				createMethod({
 					params: {
 						[singularName]: {
-							types: [...info.types[0].types],
+							types: [...info.types],
 						},
 					},
 					docOptions: {
@@ -566,7 +622,15 @@ const DTSSerializer = {
 						action: actions.IndexOf,
 						typeInfo: info.types[0],
 					},
-					returnValueTypes: [{ dtsType: "int" }],
+					returnValueTypes: [
+						{
+							dedicatedTypes: [
+								{
+									dtsType: "int",
+								},
+							],
+						},
+					],
 				});
 			}
 		};
@@ -612,7 +676,17 @@ const DTSSerializer = {
 				createMethod({
 					params: {
 						[propertyInfo.name]: {
-							types: [...propertyInfo.types, { dtsType: "null" }],
+							types: [
+								...propertyInfo.types,
+								{
+									dedicatedTypes: [
+										{
+											dtsType: "null",
+										},
+									],
+								},
+							],
+							optional: propertyInfo.defaultValue !== undefined,
 						},
 					},
 					docOptions: {
@@ -686,7 +760,16 @@ const DTSSerializer = {
 			processTypesAndAddImports(associationInfo.types);
 
 			const multiple = !!associationInfo.types[0].multiple;
-			const returnValueTypes = multiple ? [{ multiple, types: [{ dtsType: "ID" }] }] : [{ dtsType: "ID" }];
+			const returnValueTypes = [
+				{
+					multiple,
+					dedicatedTypes: [
+						{
+							dtsType: "ID",
+						},
+					],
+				},
+			];
 
 			// Generate getter method
 			createMethod({
@@ -738,12 +821,29 @@ const DTSSerializer = {
 			// Create common parameters for event methods
 			const detachParams = {
 				["fnFunction"]: {
-					types: [{ dtsType: `(p1: ${generateEventSettings(classDef.name, eventInfo.name)}) => void` }],
+					types: [
+						{
+							dedicatedTypes: [
+								{
+									dtsType: `(p1: ${generateEventSettings(classDef.name, eventInfo.name)}) => void`,
+								},
+							],
+						},
+					],
 					description: "The function to be called when the event occurs",
 				},
-				["oListener?"]: {
-					types: [{ dtsType: "object" }],
+				["oListener"]: {
+					types: [
+						{
+							dedicatedTypes: [
+								{
+									dtsType: "object",
+								},
+							],
+						},
+					],
 					description: `Context object to call the event handler with. Defaults to this ${classDef.name} itself`,
+					optional: true,
 				},
 			};
 
@@ -777,7 +877,15 @@ const DTSSerializer = {
 				params: Object.assign(
 					{
 						["oData"]: {
-							types: [{ dtsType: "object" }],
+							types: [
+								{
+									dedicatedTypes: [
+										{
+											dtsType: "object",
+										},
+									],
+								},
+							],
 							description: "An application-specific payload object that will be passed to the event handler along with the event object when firing the event",
 						},
 					},
@@ -832,7 +940,7 @@ const DTSSerializer = {
 			}
 
 			// Handle implements
-			classDef._dts.implementsMarker = classDef._ui5implements;
+			classDef._dts.implementsMarker = classDef._ui5implements.filter((interface) => !classDef._unkownInterfaces.has(interface.name));
 			if (classDef._dts.implementsMarker.length) {
 				classDef._dts.implements = classDef._dts.implementsMarker.map((interfaceDef) => interfaceDef.name);
 				for (const interfaceDef of classDef._dts.implementsMarker) {
