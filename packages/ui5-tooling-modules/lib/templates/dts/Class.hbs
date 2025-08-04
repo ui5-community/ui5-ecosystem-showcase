@@ -11,11 +11,6 @@
 
 {{/each}}
 
-/**
- * Default imports
- */
-import type { default as WebComponentMetadata } from "sap/ui/core/webc/WebComponentMetadata";
-
 {{#each clazz._dts.imports}}
 	{{#if @first}}
 
@@ -162,7 +157,12 @@ declare module "{{{clazz._ui5QualifiedNameSlashes}}}" {
 			 *
 			 * @returns Metadata object describing this class
 			 */
+<<<<<<< HEAD
 			static getMetadata(): WebComponentMetadata;
+=======
+			static getMetadata(): {{{clazz._dts.metadataClass}}};
+
+>>>>>>> 601145da (feat(ui5-tooling-modules): improve d.ts generation for web components)
 			{{#each clazz._dts.methods}}
 
 				{{#if this.description}}

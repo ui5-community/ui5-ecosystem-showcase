@@ -8,6 +8,8 @@ const WebComponentRegistryHelper = {
 	 * Helper function to check whether the given class inherits from the provided class name.
 	 *
 	 * @param {object} classDef a class definition from a WebComponentRegistry entry
+	 * @param {string} namespace the class namespace
+	 * @param {string} className the class name
 	 * @returns {boolean} whether the class inherits from the provided class name
 	 */
 	isSubclassOf(classDef, namespace, className) {
