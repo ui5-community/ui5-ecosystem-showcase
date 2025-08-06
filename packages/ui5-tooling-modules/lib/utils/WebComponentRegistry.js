@@ -1072,10 +1072,26 @@ function checkSerializerPluginActivation(settings = {}) {
 }
 
 const WebComponentRegistry = {
-	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, skipDtsGeneration = true, skipJsDocGeneration = true }) {
+	/**
+	 * Registers a web component package with the given metadata.
+	 * The metadata is expected to be in the custom elements metadata format.
+	 * The metadata is used to generate the UI5 metadata and JSDoc comments.
+	 * Optionally, the metadata is also used to generate *.d.ts files and JSDoc comments.
+	 *
+	 * @param {object} options the options object
+	 * @param {object} options.customElementsMetadata the custom elements metadata object
+	 * @param {string} options.namespace the namespace of the web component package
+	 * @param {string} options.scopeSuffix the scope suffix for the web component package
+	 * @param {string} options.npmPackagePath the npm package path of the web component package
+	 * @param {string} options.version the version of the web component package
+	 * @param {boolean} [options.skipDtsGeneration] whether to skip the *.d.ts generation (passed via the pluginOptions in ui5.yaml)
+	 * @param {boolean} [options.skipJSDoc] whether to skip the JSDoc generation (passed via the pluginOptions in ui5.yaml)
+	 * @returns the final WebComponentRegistryEntry for the given namespace
+	 */
+	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, skipDtsGeneration = true, skipJSDoc = true }) {
 		checkSerializerPluginActivation({
 			skipDtsGeneration,
-			skipJsDocGeneration,
+			skipJSDoc,
 		});
 
 		let entry = _registry[namespace];
