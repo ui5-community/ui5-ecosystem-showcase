@@ -414,7 +414,7 @@ class RegistryEntry {
 				},
 			};
 			// Since we change the naming from "accessibleNameRef" to "ariaLabelledBy", we can't pass the propDef directly to the JSDocSerializer!
-			JSDocSerializer.writeDoc(classDef, "associations", { name: "ariaLabelledBy", description: propDef.description });
+			JSDocSerializer.writeDoc(classDef, "associations", { name: "ariaLabelledBy", description: propDef.description || "" });
 			DTSSerializer.writeDts(classDef, "associations", {
 				name: "ariaLabelledBy",
 				description: propDef.description.replace(/\n/g, "\n * "),
@@ -449,10 +449,10 @@ class RegistryEntry {
 				},
 			};
 			// Since we flip the naming from "disabled" to "enabled", we can't pass the propDef directly to the JSDocSerializer!
-			JSDocSerializer.writeDoc(classDef, "properties", { name: "enabled", description: propDef.description });
+			JSDocSerializer.writeDoc(classDef, "properties", { name: "enabled", description: propDef.description || "" });
 			DTSSerializer.writeDts(classDef, "properties", {
 				name: "enabled",
-				description: propDef.description.replace(/\n/g, "\n * "),
+				description: propDef.description?.replace(/\n/g, "\n * "),
 				types: [
 					{
 						dtsType: "boolean",
@@ -498,12 +498,12 @@ class RegistryEntry {
 				JSDocSerializer.writeDoc(classDef, "getters", {
 					name: propDef.name,
 					getterName: calculateGetterName(propDef.name),
-					description: propDef.description,
+					description: propDef.description || "",
 				});
 
 				DTSSerializer.writeDts(classDef, "properties", {
 					name: propDef.name,
-					description: propDef.description.replace(/\n/g, "\n * "),
+					description: propDef.description?.replace(/\n/g, "\n * "),
 					types: typeDef.types,
 					readonly: true,
 				});
@@ -518,7 +518,7 @@ class RegistryEntry {
 				JSDocSerializer.writeDoc(classDef, "associations", propDef);
 				DTSSerializer.writeDts(classDef, "associations", {
 					name: propDef.name,
-					description: propDef.description.replace(/\n/g, "\n * "),
+					description: propDef.description?.replace(/\n/g, "\n * "),
 					types: typeDef.types,
 				});
 			} else {
@@ -551,7 +551,7 @@ class RegistryEntry {
 				};
 				JSDocSerializer.writeDoc(classDef, "properties", {
 					name: propDef.name,
-					description: propDef.description,
+					description: propDef.description || "",
 					moduleType: typeDef.ui5TypeInfo?.moduleType,
 				});
 
@@ -571,7 +571,7 @@ class RegistryEntry {
 			const { parsedParams, jsDocParams } = this.#parseMethodParameters(classDef, propDef);
 			JSDocSerializer.writeDoc(classDef, "methods", {
 				name: propDef.name,
-				description: propDef.description,
+				description: propDef.description || "",
 				parameters: jsDocParams,
 			});
 			DTSSerializer.writeDts(classDef, "methods", {
@@ -632,7 +632,7 @@ class RegistryEntry {
 		// note: in case we changed the name of the aggregation (e.g. default), we can't pass the slotDef directly!
 		JSDocSerializer.writeDoc(classDef, "aggregations", {
 			name: aggregationName,
-			description: slotDef.description,
+			description: slotDef.description || "",
 			moduleType: typeDef.ui5TypeInfo?.moduleType,
 		});
 		DTSSerializer.writeDts(classDef, "aggregations", {
@@ -664,7 +664,7 @@ class RegistryEntry {
 				dtsParamDescription: param.description?.replace(/\n/g, "\n * "),
 			};
 			jsDocParams[param.name] = {
-				description: param.description,
+				description: param.description || "",
 			};
 		});
 		return { parsedParams, jsDocParams };
@@ -685,13 +685,8 @@ class RegistryEntry {
 			jsDocParams[param.name] = {
 				name: param.name,
 				type: typeDef.ui5TypeInfo?.ui5Type || "any", // TODO: is this correct?
-				description: param.description,
+				description: param.description || "",
 			};
-			// parsedParams[param.name] = {
-			// 	name: param.name,
-			// 	typeDef,
-			// 	description: param.description?.replace(/\n/g, "\n * "),
-			// };
 			parsedParams[param.name] = typeDef.types;
 		});
 		return { parsedParams, jsDocParams };
@@ -710,7 +705,7 @@ class RegistryEntry {
 
 		JSDocSerializer.writeDoc(classDef, "events", {
 			name: camelizedName,
-			description: eventDef.description,
+			description: eventDef.description || "",
 			parameters: jsDocParams,
 		});
 		DTSSerializer.writeDts(classDef, "events", {
@@ -1060,15 +1055,28 @@ class RegistryEntry {
 	}
 }
 
+/**
+ * Checks whether we should skips the *.d.ts file and/or JSDoc comment generation.
+ * Configured via the respective pluginOptions in the ui5.yaml:
+ *    - pluginOptions/webcomponents/skipDtsGeneration
+ *    - pluginOptions/webcomponents/skipJsDocGeneration
+ * @param {object} settings the settings object
+ */
+function checkSerializerPluginActivation(settings = {}) {
+	if (settings.skipDtsGeneration) {
+		DTSSerializer.deactivate();
+	}
+	if (settings.skipJsDocGeneration) {
+		JSDocSerializer.deactivate();
+	}
+}
+
 const WebComponentRegistry = {
-	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, skipDtsGeneration = true }) {
-		// Skips the *.d.ts file generation for TypeScript support, configured via ui5.yaml:
-		//   - server/customMiddleware/ui5-tooling-modules-middleware/configuration/pluginOptions/webcomponents/skipDtsGeneration
-		// and
-		//   - builder/customTasks/ui5-tooling-modules-task/configuration/pluginOptions/webcomponents/skipDtsGeneration
-		if (skipDtsGeneration) {
-			DTSSerializer.deactivate();
-		}
+	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, skipDtsGeneration = true, skipJsDocGeneration = true }) {
+		checkSerializerPluginActivation({
+			skipDtsGeneration,
+			skipJsDocGeneration,
+		});
 
 		let entry = _registry[namespace];
 		if (!entry) {
