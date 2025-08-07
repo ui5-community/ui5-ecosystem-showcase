@@ -701,20 +701,24 @@ class RegistryEntry {
 		// Same as with other entities we track the UI5 Metadata and the JSDoc separately
 		const { parsedParams, jsDocParams } = this.#parseEventParameters(classDef, eventDef);
 		const camelizedName = camelize(eventDef.name);
+		const existsAsProperty = ui5metadata.properties[camelizedName];
+		const eventName = existsAsProperty ? camelize(`on-${eventDef.name}`) : camelizedName;
 
-		ui5metadata.events[camelizedName] = {
+		ui5metadata.events[eventName] = {
 			allowPreventDefault: eventDef._ui5allowPreventDefault,
 			enableEventBubbling: eventDef._ui5Bubbles,
 			parameters: parsedParams,
+			// create a mapping for the event name in case of a property with the same name exists
+			mapping: existsAsProperty ? camelizedName : undefined,
 		};
 
 		JSDocSerializer.writeDoc(classDef, "events", {
-			name: camelizedName,
+			name: eventName,
 			description: eventDef.description,
 			parameters: jsDocParams,
 		});
 		DTSSerializer.writeDts(classDef, "events", {
-			name: camelizedName,
+			name: eventName,
 			description: eventDef.description?.replace(/\n/g, "\n * "),
 			parameters: parsedParams,
 		});
