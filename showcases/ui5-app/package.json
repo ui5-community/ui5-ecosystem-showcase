@@ -47,7 +47,7 @@
     "@supabase/supabase-js": "^2.50.3",
     "@ui5/webcomponents": "^2.12.0",
     "@ui5/webcomponents-icons": "^2.12.0",
-    "axios": "^1.10.0",
+    "axios": "^1.11.0",
     "cmis": "^1.0.3",
     "fetch-mock": "^12.5.3",
     "firebase": "^11.10.0",
