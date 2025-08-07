@@ -293,7 +293,7 @@ sap.ui.define(
       WebComponent.__setProperty__isPatched = true
     }
 
-    // Fixed with https://github.com/SAP/openui5/commit/%TBD% in UI5 1.140.0
+    // Fixed with https://github.com/UI5/openui5/commit/090a19eb317785fc047b9b3d2c59016cacc3e8fa in UI5 1.140.0
 
     if (!WebComponent.__MappingSupportForEvents__isPatched) {
       var WebComponentMetadataPrototype = Object.getPrototypeOf(

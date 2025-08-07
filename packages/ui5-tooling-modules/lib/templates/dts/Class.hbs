@@ -93,7 +93,7 @@ declare module "{{{clazz._ui5QualifiedNameSlashes}}}" {
 
 					 {{{generateApiDocumentation this.dtsParamDescription}}}
 					{{/if}}
-					{{{@key}}}?: {{{serializeTypeList this.types}}}
+					{{{@key}}}?: {{{processTypes this.types}}}
 				{{/each}}
 			}
 
@@ -163,12 +163,15 @@ declare module "{{{clazz._ui5QualifiedNameSlashes}}}" {
 			 * @returns Metadata object describing this class
 			 */
 			static getMetadata(): WebComponentMetadata;
-
 			{{#each clazz._dts.methods}}
-				{{#if this.description}}{{{this.description}}}{{/if}}
-				{{@key}}({{#each this.params}}
-				{{@key}}: {{{generatePropertySettings this}}},
-				{{/each}}): {{#if this.returnValueTypes}}{{{generatePropertySettings this.returnValueTypes}}}{{else}}void{{/if}};
+
+				{{#if this.description}}
+				{{{this.description}}}
+				{{/if}}
+				{{{this.methodName}}}({{#each this.params}}
+				{{{generateApiDocumentation this.description}}}
+				{{@key}}Value{{#if this.optional}}?{{/if}}: {{{processTypes this.types}}},
+				{{/each}}): {{#if this.returnValueTypes}}{{{processTypes this.returnValueTypes}}}{{else}}void{{/if}};
 			{{/each}}
 		}
 }

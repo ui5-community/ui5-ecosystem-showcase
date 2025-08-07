@@ -114,8 +114,14 @@ sap.ui.define(
                   type: "object",
                   types: [
                     {
-                      dtsType: "Event",
-                      ui5Type: "object",
+                      origType: "Event",
+                      multiple: false,
+                      dedicatedTypes: [
+                        {
+                          dtsType: "Event",
+                          ui5Type: "object",
+                        },
+                      ],
                     },
                   ],
                   dtsParamDescription:
@@ -125,8 +131,14 @@ sap.ui.define(
                   type: "boolean",
                   types: [
                     {
-                      dtsType: "boolean",
-                      ui5Type: "boolean",
+                      origType: "boolean",
+                      multiple: false,
+                      dedicatedTypes: [
+                        {
+                          dtsType: "boolean",
+                          ui5Type: "boolean",
+                        },
+                      ],
                     },
                   ],
                   dtsParamDescription:
@@ -136,8 +148,14 @@ sap.ui.define(
                   type: "boolean",
                   types: [
                     {
-                      dtsType: "boolean",
-                      ui5Type: "boolean",
+                      origType: "boolean",
+                      multiple: false,
+                      dedicatedTypes: [
+                        {
+                          dtsType: "boolean",
+                          ui5Type: "boolean",
+                        },
+                      ],
                     },
                   ],
                   dtsParamDescription:
@@ -147,8 +165,14 @@ sap.ui.define(
                   type: "boolean",
                   types: [
                     {
-                      dtsType: "boolean",
-                      ui5Type: "boolean",
+                      origType: "boolean",
+                      multiple: false,
+                      dedicatedTypes: [
+                        {
+                          dtsType: "boolean",
+                          ui5Type: "boolean",
+                        },
+                      ],
                     },
                   ],
                   dtsParamDescription:
@@ -158,8 +182,14 @@ sap.ui.define(
                   type: "boolean",
                   types: [
                     {
-                      dtsType: "boolean",
-                      ui5Type: "boolean",
+                      origType: "boolean",
+                      multiple: false,
+                      dedicatedTypes: [
+                        {
+                          dtsType: "boolean",
+                          ui5Type: "boolean",
+                        },
+                      ],
                     },
                   ],
                   dtsParamDescription:
