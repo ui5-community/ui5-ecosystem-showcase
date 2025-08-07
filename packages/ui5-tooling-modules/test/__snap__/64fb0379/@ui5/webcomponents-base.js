@@ -276,7 +276,13 @@ sap.ui.define(
         bSupressInvalidate,
       ) {
         if ((sPropName === "width" || sPropName === "height") && !isNaN(v)) {
-          v += "px"
+          const sType = this.getMetadata()
+            .getProperty(sPropName)
+            .getType()
+            .getName()
+          if (sType === "sap.ui.core.CSSSize") {
+            v += "px"
+          }
         }
         return fnOriginalSetProperty.apply(this, [
           sPropName,
@@ -285,6 +291,106 @@ sap.ui.define(
         ])
       }
       WebComponent.__setProperty__isPatched = true
+    }
+
+    // Fixed with https://github.com/SAP/openui5/commit/%TBD% in UI5 1.140.0
+
+    if (!WebComponent.__MappingSupportForEvents__isPatched) {
+      var WebComponentMetadataPrototype = Object.getPrototypeOf(
+        WebComponent.getMetadata(),
+      )
+      var OriginalEvent = WebComponentMetadataPrototype.metaFactoryEvent
+      var WebComponentEvent = function (oClass, name, info) {
+        OriginalEvent.apply(this, arguments)
+        if (info.mapping) {
+          this._sMapTo =
+            typeof info.mapping !== "object" ? info.mapping : info.mapping.to
+        }
+        this._isCustomEvent = true // WebComponent events are always custom events
+      }
+      WebComponentEvent.prototype = Object.create(OriginalEvent.prototype)
+      WebComponentEvent.prototype.constructor = WebComponentEvent
+      WebComponentMetadataPrototype.metaFactoryEvent = WebComponentEvent
+
+      WebComponentMetadataPrototype.getEventsForCustomEvent = function (
+        sCustomEventName,
+      ) {
+        var mFiltered = {}
+        var mEvents = this.getAllEvents()
+        for (var sEventName in mEvents) {
+          var oEventObj = mEvents[sEventName]
+          if (oEventObj._isCustomEvent) {
+            if (
+              sEventName === sCustomEventName ||
+              oEventObj._sMapTo === sCustomEventName
+            ) {
+              mFiltered[sEventName] = oEventObj
+            }
+          }
+        }
+
+        return mFiltered
+      }
+
+      WebComponent.prototype.__attachCustomEventsListeners = function () {
+        var hyphenate = sap.ui.require("sap/base/strings/hyphenate")
+        var oDomRef = this.getDomRef()
+        var oEvents = this.getMetadata().getAllEvents()
+        for (var sEventName in oEvents) {
+          if (oEvents[sEventName]._isCustomEvent) {
+            var sCustomEventName = hyphenate(
+              oEvents[sEventName]._sMapTo || sEventName,
+            )
+            this.__handleCustomEventBound =
+              this.__handleCustomEventBound ||
+              this.__handleCustomEvent.bind(this)
+            oDomRef.addEventListener(
+              sCustomEventName,
+              this.__handleCustomEventBound,
+            )
+          }
+        }
+      }
+
+      WebComponent.prototype.__detachCustomEventsListeners = function () {
+        var oDomRef = this.getDomRef()
+        if (!oDomRef) {
+          return
+        }
+        var hyphenate = sap.ui.require("sap/base/strings/hyphenate")
+        var oEvents = this.getMetadata().getAllEvents()
+        for (var sEventName in oEvents) {
+          if (oEvents[sEventName]._isCustomEvent) {
+            var sCustomEventName = hyphenate(
+              oEvents[sEventName]._sMapTo || sEventName,
+            )
+            oDomRef.removeEventListener(
+              sCustomEventName,
+              this.__handleCustomEventBound,
+            )
+          }
+        }
+      }
+
+      WebComponent.prototype.__handleCustomEvent = function (oEvent) {
+        // Prepare the event data object
+        var camelize = sap.ui.require("sap/base/strings/camelize")
+        var sEventName = camelize(oEvent.type)
+        var oEventData = this.__formatEventData(oEvent.detail)
+
+        // Notify all custom events that are registered for this event name
+        var mCustomEvents =
+          this.getMetadata().getEventsForCustomEvent(sEventName)
+        for (var sName in mCustomEvents) {
+          var oEventObj = mCustomEvents[sName]
+          var bPrevented = !oEventObj.fire(this, oEventData)
+          if (bPrevented) {
+            oEvent.preventDefault()
+          }
+        }
+      }
+
+      WebComponent.__MappingSupportForEvents__isPatched = true
     }
 
     // Helper to forward the CustomData to the root dom ref in the shadow dom.

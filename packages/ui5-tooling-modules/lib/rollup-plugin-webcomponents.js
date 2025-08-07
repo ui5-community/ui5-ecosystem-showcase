@@ -65,6 +65,9 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 		webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/RegisterAllEvents.hbs")());
 		webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/MapValueState.hbs")());
 	}
+	if (lt(framework?.version || "0.0.0", "1.140.0")) {
+		webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/MappingEvents.hbs")());
+	}
 	// no monkey patch for CustomData in 1.138.0 and later as it is supported natively
 	//if (lt(framework?.version || "0.0.0", "1.138.0")) {
 	webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/CustomData.hbs")());

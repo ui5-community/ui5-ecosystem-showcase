@@ -669,7 +669,13 @@ const webcContextModules = {
 		extend: function (name, def) {
 			return { name, def };
 		},
+		getMetadata: function () {
+			const p = Object.getPrototypeOf(webcContextModules["sap/ui/core/webc/WebComponentMetadata"]);
+			p.metaFactoryEvent = p.metaFactoryEvent || function () {};
+			return webcContextModules["sap/ui/core/webc/WebComponentMetadata"];
+		},
 	},
+	"sap/ui/core/webc/WebComponentMetadata": function () {},
 	"sap/ui/core/webc/WebComponentRenderer": function () {},
 	"sap/ui/core/EnabledPropagator": function () {},
 	"sap/base/strings/hyphenate": function (s) {
