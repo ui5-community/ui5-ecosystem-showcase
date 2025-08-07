@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.30.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.29.1...ui5-tooling-modules@3.30.0) (2025-08-07)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** aggregation typing is fixed when union type is defined for custom elements ([#1243](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1243)) ([f5ba033](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f5ba03383ffde6a5bf2a3df65260e2507208161a))
+* **ui5-tooling-modules:** fully exclude JSDocSerializer if skip-config is set ([#1249](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1249)) ([806fe27](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/806fe27280aaef041631f5f70eea7ff14c2e9a6b))
+
+
+### Features
+
+* **ui5-tooling-modules:** support event mapping ([#1247](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1247)) ([225acbb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/225acbb87b52c55b3e9ac6b802544d642975910c))
+
+
+
+
+
 ## [3.29.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.29.0...ui5-tooling-modules@3.29.1) (2025-07-31)
 
 

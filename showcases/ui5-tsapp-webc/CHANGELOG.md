@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.15.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.14.3...ui5-tsapp-webc@0.15.0) (2025-08-07)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** aggregation typing is fixed when union type is defined for custom elements ([#1243](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1243)) ([f5ba033](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f5ba03383ffde6a5bf2a3df65260e2507208161a))
+
+
+### Features
+
+* **ui5-tooling-modules:** support event mapping ([#1247](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1247)) ([225acbb](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/225acbb87b52c55b3e9ac6b802544d642975910c))
+
+
+
+
+
 ## [0.14.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.14.2...ui5-tsapp-webc@0.14.3) (2025-07-31)
 
 
