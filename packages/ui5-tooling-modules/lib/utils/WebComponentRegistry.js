@@ -1116,7 +1116,11 @@ class RegistryEntry {
 			const enumMembers = this.enums[enumName].members;
 			enumMembers.forEach((member) => {
 				// Key<>Value must be identical!
-				enumValues.push({ name: member.name, description: member.description || "" });
+				enumValues.push({
+					name: member.name,
+					value: member.value || member.name,
+					description: member.description || "",
+				});
 			});
 
 			// prepare enum info object for HBS template later
