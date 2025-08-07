@@ -89,7 +89,7 @@ function _serializeClassHeader(classDef) {
 	//       Should we escape those characters to avoid JSDoc parsing errors?
 	//       Most texts don't make any sense though, they reference the web components by their tag
 	//       and not by their class names.
-	const description = classDef.description;
+	const description = classDef.description || "";
 
 	// @implements
 	const interfacesSlashed = classDef._ui5QualifiedInterfaceNamesSlashes ? classDef._ui5QualifiedInterfaceNamesSlashes.join(", ") : "";
@@ -219,6 +219,15 @@ function _prepareUI5Metadata(classDef) {
 }
 
 const JSDocSerializer = {
+	/**
+	 * Deactivates the generation of JSDoc comments.
+	 */
+	deactivate() {
+		for (const s in this) {
+			this[s] = () => {};
+		}
+	},
+
 	/**
 	 * Prepares the JSDoc for the given WebComponentRegistryEntry.
 	 * @param {WebComponentRegistryEntry} registryEntry the registry entry for a web component package

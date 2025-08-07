@@ -144,6 +144,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 						scopeSuffix: ui5WebCScopeSuffix,
 						npmPackagePath,
 						skipDtsGeneration,
+						skipJSDoc,
 						version: packageJson.version,
 					});
 
