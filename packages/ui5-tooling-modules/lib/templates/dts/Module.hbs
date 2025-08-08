@@ -10,7 +10,7 @@ declare module "{{registryEntry.namespace}}" {
 		export enum {{@key}} {
 			{{#each this.values}}
 				{{{generateApiDocumentation this.description}}}
-				{{{this.name}}} = "{{{this.name}}}",
+				{{{this.name}}} = "{{{this.value}}}",
 			{{/each}}
 		}
 	{{/each}}

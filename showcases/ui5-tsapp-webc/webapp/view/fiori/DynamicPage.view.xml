@@ -2,6 +2,7 @@
   controllerName="ui5.ecosystem.demo.webctsapp.controller.DynamicPage"
   displayBlock="true"
   xmlns:m="sap.m"
+  xmlns="@ui5/html/dist"
   xmlns:core="sap.ui.core"
   xmlns:mvc="sap.ui.core.mvc"
   xmlns:webc="@ui5/webcomponents/dist"
@@ -88,7 +89,7 @@
       </fiori:DynamicPageHeader>
     </fiori:headerArea>
 
-    <webc:List items="{dpModel>/items}" headerText="Products" selectionMode="None">
+    <!-- <webc:List items="{dpModel>/items}" headerText="Products" selectionMode="None">
       <webc:ListItemStandard icon="slim-arrow-right" iconEnd="true" description="{dpModel>productID}" additionalText="{dpModel>price}" text="{dpModel>productName}">
         <webc:image>
           <webc:Avatar size="S" shape="Square" colorScheme="Accent10">
@@ -96,19 +97,19 @@
           </webc:Avatar>
         </webc:image>
       </webc:ListItemStandard>
-    </webc:List>
+    </webc:List> -->
 
     <!-- pure HTML sample, not supported as of now... but would be nice to have in the future -->
-    <!-- <h:div children="{dpModel>/items}">
-        <h:div>
-            <h:span>
-                <webc:Avatar size="S" shape="Square" colorScheme="Accent10">
-                    <m:Image src="{dpModel>imageSrc}" />
-                </webc:Avatar>
-            </h:span>
-            <h:span>{dpModel&gt;productID}<h:span/>
-        </h:div>
-    </h:div> -->
+    <Ul children="{dpModel>/items}">
+      <Li>
+        <Span>
+          <webc:Avatar size="S" shape="Square" colorScheme="Accent10">
+            <Img src="{dpModel>imageSrc}" />
+          </webc:Avatar>
+        </Span>
+        <Span text="{dpModel>productID}" />
+      </Li>
+    </Ul>
 
     <fiori:footerArea>
       <webc:Bar design="FloatingFooter">
