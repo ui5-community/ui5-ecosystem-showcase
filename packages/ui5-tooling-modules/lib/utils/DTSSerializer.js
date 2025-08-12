@@ -1,8 +1,13 @@
 const prettier = require("prettier");
 const { join } = require("path");
-const { writeFileSync, readFileSync, existsSync, mkdirSync } = require("fs");
+const { writeFileSync, existsSync, mkdirSync } = require("fs");
 
 const handlebars = require("handlebars");
+const HandlebarsHelper = require("./HandlebarsHelper");
+
+const SimpleLogger = require("./SimpleLogger");
+const logger = SimpleLogger.create("🧑‍💻 DTS");
+
 const WebComponentRegistryHelper = require("./WebComponentRegistryHelper");
 
 const rPlural = /(children|ies|ves|oes|ses|ches|shes|xes|s)$/i;
@@ -188,7 +193,7 @@ const generateStandardDocumentation = function (options) {
 };
 
 /**
- * Handlebar Helpers
+ * Handlebar Helpers specific to the DTSSerializer.
  */
 
 handlebars.registerHelper("escapeInterfaceName", function (namespace, interfaceName) {
@@ -214,10 +219,6 @@ handlebars.registerHelper("generateImports", function (module, info) {
 	}
 	imports = imports.replace(/,\s$/, ` } from "${module}";`);
 	return imports;
-});
-
-handlebars.registerHelper("join", function (array) {
-	return array.join(", ");
 });
 
 /**
@@ -316,20 +317,9 @@ handlebars.registerHelper("generateAssociationSettings", function (types) {
  * All needed HBS templates for serializing JSDoc comments.
  */
 const Templates = {
-	module: loadAndCompileTemplate("../templates/dts/Module.hbs"),
-	class: loadAndCompileTemplate("../templates/dts/Class.hbs"),
+	module: HandlebarsHelper.loadAndCompile("../templates/dts/Module.hbs"),
+	class: HandlebarsHelper.loadAndCompile("../templates/dts/Class.hbs"),
 };
-
-/**
- * Helper function to load and compile a handlebars template.
- *
- * @param {string} templatePath - Path to the template file relative to the current directory
- * @returns {Function} Compiled handlebars template function
- */
-function loadAndCompileTemplate(templatePath) {
-	const templateFile = readFileSync(join(__dirname, templatePath), { encoding: "utf-8" });
-	return handlebars.compile(templateFile);
-}
 
 /**
  * The DTSSerializer is responsible for generating TypeScript declaration files (.d.ts)
@@ -741,7 +731,7 @@ const DTSSerializer = {
 				// Create methods for multiple items
 				createMultipleItemMethods(aggregationInfo, "aggregation", aggregationInfo.types);
 			} else {
-				console.error(`Aggregation '${aggregationInfo.name}' of web component '${classDef.name}' accepts only a single control. This should not be the case and should be checked.`);
+				logger.error(`Aggregation '${aggregationInfo.name}' of web component '${classDef.name}' accepts only a single control. This should not be the case and should be checked.`);
 			}
 		}
 
