@@ -369,8 +369,13 @@ const perfmetrics = {
  */
 function getPackageJson(pkgJsonFile) {
 	if (!packageJsonCache[pkgJsonFile]) {
-		const pkgJson = JSON.parse(readFileSync(pkgJsonFile, { encoding: "utf8" }));
-		packageJsonCache[pkgJsonFile] = pkgJson;
+		try {
+			const pkgJson = JSON.parse(readFileSync(pkgJsonFile, { encoding: "utf8" }));
+			packageJsonCache[pkgJsonFile] = pkgJson;
+		} catch (err) {
+			console.error(`Failed to read package.json file ${pkgJsonFile}!`, err);
+			throw err;
+		}
 	}
 	return packageJsonCache[pkgJsonFile];
 }
@@ -554,6 +559,15 @@ module.exports = function (log, projectInfo) {
 			}
 
 			// eslint-disable-next-line jsdoc/require-jsdoc
+			function moduleNameEqualsNpmPackageName(module, modulePath) {
+				// in some cases the module name is the same as the NPM package name and if the NPM package name has the
+				// suffix .js then this file extension is stripped from the module name and the module resolution doesn't
+				// work anymore - so we check if the module name is the same as the NPM package name (e.g. easytimer.js)
+				const reNpmPackageName = new RegExp(`.*${path.sep}node_modules${path.sep}([^${path.sep}]+)${path.sep}`);
+				return reNpmPackageName.exec(modulePath)?.[1] === module;
+			}
+
+			// eslint-disable-next-line jsdoc/require-jsdoc
 			function addUniqueModule(module, modulePath) {
 				if (!uniqueModules.has(module)) {
 					const moduleName = module.split("/").pop();
@@ -561,7 +575,7 @@ module.exports = function (log, projectInfo) {
 					// identify modules which already provide their file extension in the module name
 					// => this avoids the duplication of the modules specified with and without file
 					//    extension in the uniqueModules set (e.g. "myns/module" and "myns/module.js")
-					if (moduleName === moduleFileName && module.endsWith(".js")) {
+					if (moduleName === moduleFileName && module.endsWith(".js") && !moduleNameEqualsNpmPackageName(module, modulePath)) {
 						//console.log(`Module name and file name are equal: ${module} => ${modulePath}`);
 						module = module.slice(0, -3); // remove the file extension
 					}
