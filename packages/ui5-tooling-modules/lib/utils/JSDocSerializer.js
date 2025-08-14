@@ -219,6 +219,7 @@ const JSDocSerializer = {
 			enumDef._jsDoc = baseTemplate({
 				description: enumDef.description,
 				entityType: "@enum {string}",
+				visibility: "@public",
 				alias: `@alias module:${enumDef._ui5QualifiedNameSlashes}`,
 				override: `@ui5-module-override ${registryEntry.namespace} ${enumName}`,
 			});
