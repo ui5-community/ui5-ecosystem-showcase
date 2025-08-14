@@ -3,7 +3,7 @@ const { join } = require("path");
 const { writeFileSync, existsSync, mkdirSync } = require("fs");
 
 const handlebars = require("handlebars");
-const HandlebarsHelper = require("./HandlebarsHelper");
+const { baseTemplate, loadAndCompile } = require("./HandlebarsHelper");
 
 const SimpleLogger = require("./SimpleLogger");
 const logger = SimpleLogger.create("🧑‍💻 DTS");
@@ -39,38 +39,6 @@ const guessSingularName = function (sName) {
 };
 
 const capitalize = (value) => value.replace(/^([a-z])/, (g) => g.toUpperCase());
-
-/**
- * Creates a template function that structures strings with placeholders.
- * @param {string[]} strings - Template string parts
- * @param {...string} keys - Keys for the placeholders
- * @returns {Function} Template function that accepts values for the placeholders
- */
-function structureTemplate(strings, ...keys) {
-	return (...values) => {
-		const newLine = "\n *";
-		const dict = values[values.length - 1] || {};
-		const result = [`/**`];
-		keys.forEach((key, i) => {
-			const value = Number.isInteger(key) ? values[key] : dict[key];
-			if (value) {
-				value.split(/\n/).forEach((valueLine) => {
-					result.push(`${newLine} `, valueLine);
-				});
-				result.push(strings[i + 1]);
-				result.push(newLine);
-			}
-		});
-		result.push("/");
-		return result.length > 2 ? result.join("") : "";
-	};
-}
-
-/**
- * Base template for generating standardized documentation blocks.
- * @type {Function}
- */
-const baseTemplate = structureTemplate`${"text"}${"description"}${"defaultValue"}${"returnValue"}`;
 
 /**
  * Determines if a word should use "an" instead of "a" as its indefinite article.
@@ -201,10 +169,6 @@ handlebars.registerHelper("escapeInterfaceName", function (namespace, interfaceN
 	return `__implements_${ui5QualifiedName.replace(/[/.@-]/g, "_")}: boolean;`;
 });
 
-handlebars.registerHelper("generateApiDocumentation", function (description) {
-	return baseTemplate({ description });
-});
-
 handlebars.registerHelper("generateImports", function (module, info) {
 	let imports = "import type { ";
 	for (const key in info) {
@@ -317,8 +281,8 @@ handlebars.registerHelper("generateAssociationSettings", function (types) {
  * All needed HBS templates for serializing JSDoc comments.
  */
 const Templates = {
-	module: HandlebarsHelper.loadAndCompile("../templates/dts/Module.hbs"),
-	class: HandlebarsHelper.loadAndCompile("../templates/dts/Class.hbs"),
+	module: loadAndCompile("../templates/dts/Module.hbs"),
+	class: loadAndCompile("../templates/dts/Class.hbs"),
 };
 
 /**

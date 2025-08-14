@@ -1,19 +1,19 @@
 const SimpleLogger = require("./SimpleLogger");
 const logger = SimpleLogger.create("📚 JSDoc");
-const HandlebarsHelper = require("./HandlebarsHelper");
+const { loadAndCompile } = require("./HandlebarsHelper");
 
 /**
  * All needed HBS templates for serializing JSDoc comments.
  */
 const Templates = {
-	classHeader: HandlebarsHelper.loadAndCompile("../templates/jsdoc/ClassHeader.hbs"),
-	basicComment: HandlebarsHelper.loadAndCompile("../templates/jsdoc/BasicComment.hbs"),
-	ui5metadata: HandlebarsHelper.loadAndCompile("../templates/jsdoc/UI5Metadata.hbs"),
-	event: HandlebarsHelper.loadAndCompile("../templates/jsdoc/Event.hbs"),
-	methodsAndGetters: HandlebarsHelper.loadAndCompile("../templates/jsdoc/MethodsAndGetter.hbs"),
-	enumHeader: HandlebarsHelper.loadAndCompile("../templates/jsdoc/EnumHeader.hbs"),
-	enumValue: HandlebarsHelper.loadAndCompile("../templates/jsdoc/EnumValue.hbs"),
-	interface: HandlebarsHelper.loadAndCompile("../templates/jsdoc/Interface.hbs"),
+	classHeader: loadAndCompile("../templates/jsdoc/ClassHeader.hbs"),
+	basicComment: loadAndCompile("../templates/jsdoc/BasicComment.hbs"),
+	ui5metadata: loadAndCompile("../templates/jsdoc/UI5Metadata.hbs"),
+	event: loadAndCompile("../templates/jsdoc/Event.hbs"),
+	methodsAndGetters: loadAndCompile("../templates/jsdoc/MethodsAndGetter.hbs"),
+	enumHeader: loadAndCompile("../templates/jsdoc/EnumHeader.hbs"),
+	enumValue: loadAndCompile("../templates/jsdoc/EnumValue.hbs"),
+	interface: loadAndCompile("../templates/jsdoc/Interface.hbs"),
 };
 
 /**
