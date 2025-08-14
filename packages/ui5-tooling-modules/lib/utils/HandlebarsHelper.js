@@ -61,10 +61,17 @@ function structureTemplate(strings, ...keys) {
 }
 
 /**
- * Base template for generating standardized documentation blocks.
+ * Base template for generating standardized documentation blocks:
+ *   - text = The main text of the documentation
+ *   - description = A detailed description of the entity
+ *   - defaultValue = The default value of the entity, if applicable
+ *   - alias = the alias of the entity, can be "alias" or "name" tag in "module:..." syntax
+ *   - override = The UI5 override tag for the entity, if applicable
+ *   - visibility = The visibility of the entity (public, private, etc.)
+ *   - returnValue = The return value of the entity, if applicable
  * @type {Function}
  */
-const baseTemplate = structureTemplate`${"text"}${"description"}${"defaultValue"}${"returnValue"}`;
+const baseTemplate = structureTemplate`${"text"}${"description"}${"entityType"}${"defaultValue"}${"alias"}${"override"}${"visibility"}${"returnValue"}`;
 
 /**
  * Register the helper that generates geneic JSDoc comment blocks.
@@ -79,6 +86,7 @@ handlebars.registerHelper("generateApiDocumentation", function (description) {
 /**
  * This modules contains a bunch of Handlebars helpers, which can be shared across
  * different templates.
+ * The handlebars helpers are automatically registered when this module is imported.
  */
 const HandlebarsHelper = {
 	/**
@@ -98,6 +106,11 @@ const HandlebarsHelper = {
 	 * The JSDocSerializer uses this template to generate description comments.
 	 */
 	baseTemplate,
+
+	/**
+	 * A template function that structures strings with placeholders.
+	 */
+	structureTemplate,
 };
 
 module.exports = HandlebarsHelper;

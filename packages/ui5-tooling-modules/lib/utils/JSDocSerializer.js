@@ -1,19 +1,15 @@
 const SimpleLogger = require("./SimpleLogger");
 const logger = SimpleLogger.create("📚 JSDoc");
-const { loadAndCompile } = require("./HandlebarsHelper");
+const { loadAndCompile, baseTemplate } = require("./HandlebarsHelper");
 
 /**
  * All needed HBS templates for serializing JSDoc comments.
  */
 const Templates = {
 	classHeader: loadAndCompile("../templates/jsdoc/ClassHeader.hbs"),
-	basicComment: loadAndCompile("../templates/jsdoc/BasicComment.hbs"),
 	ui5metadata: loadAndCompile("../templates/jsdoc/UI5Metadata.hbs"),
 	event: loadAndCompile("../templates/jsdoc/Event.hbs"),
 	methodsAndGetters: loadAndCompile("../templates/jsdoc/MethodsAndGetter.hbs"),
-	enumHeader: loadAndCompile("../templates/jsdoc/EnumHeader.hbs"),
-	enumValue: loadAndCompile("../templates/jsdoc/EnumValue.hbs"),
-	interface: loadAndCompile("../templates/jsdoc/Interface.hbs"),
 };
 
 /**
@@ -75,10 +71,10 @@ function _prepareEntity(classDef, entityType) {
 	Object.keys(jsDoc[entityType]).forEach((entityName) => {
 		const obj = jsDoc[entityType][entityName];
 		// write the JSDoc comment back to the entity
-		jsDoc[entityType][entityName] = Templates.basicComment({
+		jsDoc[entityType][entityName] = baseTemplate({
 			description: obj.description,
 			// some entities (e.g. aggregations and associations) might have a module type
-			moduleType: obj.moduleType,
+			alias: obj.moduleType ? `@type ${obj.moduleType}` : "",
 		});
 	});
 }
@@ -103,7 +99,7 @@ function _prepareEvents(classDef) {
 		// template parameters if any
 		Object.keys(parametersJsDoc).forEach((paramName) => {
 			const param = parametersJsDoc[paramName];
-			parametersJsDoc[paramName] = Templates.basicComment({
+			parametersJsDoc[paramName] = baseTemplate({
 				description: param.description,
 			});
 		});
@@ -207,29 +203,27 @@ const JSDocSerializer = {
 		//   [1] interfaces
 		Object.keys(registryEntry.interfaces).forEach((interfaceName) => {
 			const interfaceDef = registryEntry.interfaces[interfaceName];
-			interfaceDef._jsDoc = Templates.interface({
+			interfaceDef._jsDoc = baseTemplate({
 				description: interfaceDef.description,
-				alias: interfaceDef._ui5QualifiedName,
-				aliasSlashed: interfaceDef._ui5QualifiedNameSlashes,
-				name: interfaceName,
-				// TODO: workaround for missing name escaping in the UI5 JSDoc build
-				package: registryEntry.namespace,
+				alias: `@name module:${interfaceDef._ui5QualifiedNameSlashes}`,
+				entityType: "@interface",
+				override: `@ui5-module-override ${registryEntry.namespace} ${interfaceName}`,
+				visibility: "@public",
 			});
 		});
 
 		//   [2] enums
 		Object.keys(registryEntry.enums).forEach((enumName) => {
 			const enumDef = registryEntry.enums[enumName];
-			enumDef._jsDoc = Templates.enumHeader({
+			// enum header comment
+			enumDef._jsDoc = baseTemplate({
 				description: enumDef.description,
-				alias: enumDef._ui5QualifiedName,
-				aliasSlashed: enumDef._ui5QualifiedNameSlashes,
-				name: enumName,
-				// TODO: workaround for missing name escaping in the UI5 JSDoc build
-				package: registryEntry.namespace,
+				entityType: "@enum {string}",
+				alias: `@alias module:${enumDef._ui5QualifiedNameSlashes}`,
+				override: `@ui5-module-override ${registryEntry.namespace} ${enumName}`,
 			});
 			enumDef.values.forEach((value) => {
-				value._jsDoc = Templates.enumValue({ description: value.description });
+				value._jsDoc = baseTemplate({ description: value.description, visibility: "@public" });
 			});
 		});
 	},
