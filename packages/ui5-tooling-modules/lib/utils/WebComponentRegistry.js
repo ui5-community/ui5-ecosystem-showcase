@@ -1,3 +1,4 @@
+const SimpleLogger = require("./SimpleLogger");
 const JSDocSerializer = require("./JSDocSerializer");
 const DTSSerializer = require("./DTSSerializer");
 const WebComponentRegistryHelper = require("./WebComponentRegistryHelper");
@@ -6,6 +7,9 @@ const WebComponentRegistryHelper = require("./WebComponentRegistryHelper");
 const primitiveTypes = ["object", "boolean", "number", "integer", "bigint", "string", "null"];
 // Known native browser elemts used as types in web components
 const nativeBrowserElements = ["DataTransfer", "Date", "Event", "File", "FileList"];
+
+const logger = SimpleLogger.create("🧬 WCR");
+
 /**
  * Camelize the dashes.
  * Used to transform event names.
@@ -72,7 +76,7 @@ class RegistryEntry {
 
 		DTSSerializer.prepare(this);
 
-		console.log(`Metadata processed for package ${namespace}.`); // Module base path: ${moduleBasePath}.`);
+		logger.log(`Metadata processed for package ${namespace}.`); // Module base path: ${moduleBasePath}.`);
 	}
 
 	#deriveUi5ClassNames(classDef) {
@@ -140,7 +144,7 @@ class RegistryEntry {
 				this.interfaces[decl.name] = decl;
 				break;
 			default:
-				console.error("unknown declaration kind:", decl.kind);
+				logger.error("unknown declaration kind:", decl.kind);
 		}
 	}
 
@@ -173,7 +177,7 @@ class RegistryEntry {
 				package: npmPackage,
 				file: `dist/${nameParts.join("/")}.js`,
 			};
-			console.warn(`The class '${this.namespace}/${classDef.name}' detected superclass '${classDef.superclass.package}/${classDef.superclass.name}' from string '${superclassName}'!`);
+			logger.warn(`The class '${this.namespace}/${classDef.name}' detected superclass '${classDef.superclass.package}/${classDef.superclass.name}' from string '${superclassName}'!`);
 		}
 		if (classDef.superclass) {
 			const superclassName = classDef.superclass.name;
@@ -182,7 +186,7 @@ class RegistryEntry {
 
 			let superclassRef = (refPackage || this).classes[superclassName];
 			if (!superclassRef) {
-				console.error(
+				logger.error(
 					`The class '${this.namespace}/${classDef.name}' has an unknown superclass '${classDef.superclass.package}/${superclassName}' using default '@ui5/webcomponents-base/UI5Element'!`,
 				);
 				const refPackage = WebComponentRegistry.getPackage("@ui5/webcomponents-base");
@@ -247,6 +251,7 @@ class RegistryEntry {
 			};
 		} else if (packageRef.classes[type]) {
 			const classDef = packageRef.classes[type];
+			// TODO: In case we have a reference to @ui5/webcomponent-base/UI5Element -> We need to point to sap.ui.core.webc.WebComponent
 			return {
 				...base,
 				ui5Type: classDef._ui5QualifiedName,
@@ -275,16 +280,30 @@ class RegistryEntry {
 				// Since the UI5 runtime only allows for 1 single type per property/aggregation, we take the first reference
 				type = typeInfo?.references?.[0]?.name || type;
 
-				if (type === "ValueState" && typeInfo.references?.[0].package === "@ui5/webcomponents-base") {
+				if (typeInfo.references?.[0].package === "@ui5/webcomponents-base") {
+					// case 0: we just have a reference to the UI5Element base class in the @ui5/webcomponent-base package
+					//         This means that the Web Component can only nest other Web Component subclasses in that slot.
+					if (type === "UI5Element") {
+						return {
+							dtsType: "WebComponent",
+							packageName: "sap/ui/core",
+							moduleType: "module:sap/ui/core/webc/WebComponent",
+							ui5Type: "sap.ui.core.webc.WebComponent",
+							isClass: true,
+						};
+					}
 					// case 1a: native webc ValueState ==> core ValueState
-					return {
-						dtsType: "ValueState",
-						packageName: "sap/ui/core/library",
-						moduleType: "module:sap/ui/core/ValueState",
-						ui5Type: "sap.ui.core.ValueState",
-						isEnum: true,
-					};
+					if (type === "ValueState") {
+						return {
+							dtsType: "ValueState",
+							packageName: "sap/ui/core/library",
+							moduleType: "module:sap/ui/core/ValueState",
+							ui5Type: "sap.ui.core.ValueState",
+							isEnum: true,
+						};
+					}
 				}
+
 				// case 1b: complex type is enum, interface or class
 				let complexType = this.#parseComplexType(type, this);
 				if (!complexType && this.namespace !== typeInfo.references[0].package) {
@@ -293,7 +312,7 @@ class RegistryEntry {
 					if (refPackage) {
 						complexType = this.#parseComplexType(type, refPackage);
 					} else {
-						console.log(`Reference package '${typeInfo.references[0].package}' for complex type '${type}' not found`);
+						logger.log(`Reference package '${typeInfo.references[0].package}' for complex type '${type}' not found`);
 					}
 				} else if (!complexType && typeInfo.references[0]) {
 					// case 1d: not able to find the type but there is a reference ==> try to import original webc type from the importing module itself
@@ -522,8 +541,8 @@ class RegistryEntry {
 
 			// DEBUG
 			if (typeDef.isUnclear) {
-				console.warn(
-					`[unclear type 🤔] ${classDef.name} - ${isAssociation ? "association" : "property"} '${propDef.name}' has unclear type '${typeDef.origType}' -> defaulting to 'any', multiple: ${typeDef.ui5TypeInfo.multiple}`,
+				logger.warn(
+					`🤔 unclear type - ${classDef.name} - ${isAssociation ? "association" : "property"} '${propDef.name}' has unclear type '${typeDef.origType}' -> defaulting to 'any', multiple: ${typeDef.ui5TypeInfo.multiple}`,
 				);
 			}
 
@@ -564,7 +583,7 @@ class RegistryEntry {
 				});
 			} else {
 				if (typeDef.ui5TypeInfo.isComplexType) {
-					console.warn(`[interface or class type given for property] ${classDef.name} - property ${propDef.name}`);
+					logger.warn(`[interface or class type given for property] ${classDef.name} - property ${propDef.name}`);
 				}
 				let defaultValue = propDef.default;
 				if (defaultValue) {
@@ -634,21 +653,21 @@ class RegistryEntry {
 		//       Or: What if the XMLTP learns to parse text nodes correctly for WebComponent subclasses
 		//           -> we could move the text-node content into the "text" property of the UI5 wrapper.
 		if (slotDef._ui5propertyName === "text") {
-			console.log(`[text-node slot]: ${classDef.name} - slot '${slotName}' allows text content`);
+			logger.log(`${classDef.name} - slot '${slotName}' allows text content (text-node slot)`);
 			// nothing to do for now, we enforced a ui5 property named "text" later
 			return;
 		}
 
 		const typeDef = this.#extractUi5Type(slotDef._ui5type);
 		if (typeDef.ui5TypeInfo.isComplexType) {
-			//console.log(`[interface/class type]: '${typeInfo.ui5Type}', multiple: ${typeInfo.multiple}`);
+			//logger.log(`[interface/class type]: '${typeInfo.ui5Type}', multiple: ${typeInfo.multiple}`);
 			aggregationType = typeDef.ui5TypeInfo.ui5Type;
 		}
 
 		const leadingDtsType = typeDef.types[0].dedicatedTypes[0];
 		if (typeDef.ui5TypeInfo.ui5Type === "any" && leadingDtsType.dtsType !== "any") {
-			console.log(
-				`[unclear type 🤔] Detected DTS type '${leadingDtsType.dtsType}' for slot '${slotName}' in webcomponent '${classDef.name}' but did not detect a proper UI5 type. Missing interface? Fallback DTS type to 'any'.`,
+			logger.log(
+				`🤔 unclear type - Detected DTS type '${leadingDtsType.dtsType}' for slot '${slotName}' in webcomponent '${classDef.name}' but did not detect a proper UI5 type. Missing interface? Fallback DTS type to 'any'.`,
 			);
 			typeDef.types[0].dedicatedTypes[0] = {
 				dtsType: "any",
@@ -658,7 +677,7 @@ class RegistryEntry {
 		}
 		// DEBUG
 		if (typeDef.isUnclear) {
-			console.warn(`[unclear type 🤔] ${classDef.name} - aggregation '${slotDef.name}' has unclear type '${typeDef.origType}' -> defaulting to 'any', multiple: ${typeDef.ui5TypeInfo.multiple}`);
+			logger.warn(`🤔 unclear type - ${classDef.name} - aggregation '${slotDef.name}' has unclear type '${typeDef.origType}' -> defaulting to 'any', multiple: ${typeDef.ui5TypeInfo.multiple}`);
 		}
 
 		// The "default" slot will most likely be transformed into the "content" in UI5
@@ -708,7 +727,7 @@ class RegistryEntry {
 			const typeDef = this.#extractUi5Type(param.type);
 			// DEBUG
 			if (typeDef.isUnclear) {
-				console.warn(`[unclear type 🤔] ${classDef.name} - event '${eventDef.name}' has unclear type '${typeDef.origType}' -> defaulting to 'any', multiple: ${typeDef.ui5TypeInfo.multiple}`);
+				logger.warn(`🤔 unclear type - ${classDef.name} - event '${eventDef.name}' has unclear type '${typeDef.origType}' -> defaulting to 'any', multiple: ${typeDef.ui5TypeInfo.multiple}`);
 			}
 			parsedParams[param.name] = {
 				type: typeDef.ui5TypeInfo.ui5Type,
@@ -730,9 +749,7 @@ class RegistryEntry {
 			const typeDef = this.#extractUi5Type(param.type);
 			// DEBUG
 			if (typeDef.isUnclear) {
-				console.warn(
-					`[unclear type 🤔] ${classDef.name} - method '${methodDef.name}' has unclear type '${typeDef.origType}' -> defaulting to 'any', multiple: ${typeDef.ui5TypeInfo.multiple}`,
-				);
+				logger.warn(`🤔 unclear type - ${classDef.name} - method '${methodDef.name}' has unclear type '${typeDef.origType}' -> defaulting to 'any', multiple: ${typeDef.ui5TypeInfo.multiple}`);
 			}
 			jsDocParams[param.name] = {
 				name: param.name,
@@ -786,7 +803,7 @@ class RegistryEntry {
 				} else {
 					jsdocInterfaces.push(this.prefixns(interfaceDef.name));
 					unknowInterfaces.add(interfaceDef.name);
-					console.warn(`[unknown interface 🤔] interface ${interfaceDef.name} is not part of the metadata`);
+					logger.warn(`🤔 unknown interface - interface ${interfaceDef.name} is not part of the metadata`);
 				}
 			});
 		}
@@ -1037,7 +1054,7 @@ class RegistryEntry {
 			} else {
 				// this is an interesting inconsistency that does not occur in the UI5 web components
 				// we report it here for custom web component development
-				console.warn(
+				logger.warn(
 					`The class '${classDef._ui5QualifiedName}' defines a slot called 'valueStateMessage', but does not provide a corresponding 'valueState' property! A UI5 control expects both to be present for correct 'valueState' handling.`,
 				);
 			}
