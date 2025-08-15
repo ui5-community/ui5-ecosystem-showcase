@@ -401,28 +401,18 @@ const DTSSerializer = {
 		}
 
 		/**
-		 * Adds import statements for types that are from external packages.
-		 *
-		 * @param {object} type - Type definition object
-		 */
-		const addImportsFromTypes = (type) => {
-			if (type.packageName && type.dtsType !== classDef.name) {
-				writeImports(type.packageName, type.dtsType, { default: type.isClass, global: type.globalImport });
-			}
-		};
-
-		/**
 		 * Processes types and adds necessary imports
 		 *
 		 * @param {Array<object>} types - Array of type objects
 		 */
 		const processTypesAndAddImports = (types) => {
 			types.forEach((type) => {
-				if (type.multiple) {
-					type.dedicatedTypes.forEach(addImportsFromTypes);
-				} else {
-					addImportsFromTypes(type);
-				}
+				type.dedicatedTypes.forEach((type) => {
+					// Adds import statements for types that are from external packages.
+					if (type.packageName && type.dtsType !== classDef.name) {
+						writeImports(type.packageName, type.dtsType, { default: type.isClass, global: type.globalImport });
+					}
+				});
 			});
 		};
 
@@ -598,13 +588,12 @@ const DTSSerializer = {
 			const propertyInfo = classDef._dts.properties[propertyName];
 			propertyInfo.needsBindingString = !propertyInfo.readonly;
 
-			// Detect dependencies and add imports
+			processTypesAndAddImports(propertyInfo.types);
+
+			// properties of type "string" don't need the binding string syntax `{${string}}`
 			propertyInfo.types.forEach((type) => {
 				if (type.dtsType === "string") {
 					propertyInfo.needsBindingString = false;
-				}
-				if (type.packageName) {
-					addImportsFromTypes(type);
 				}
 			});
 
