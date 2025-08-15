@@ -251,6 +251,7 @@ class RegistryEntry {
 			};
 		} else if (packageRef.classes[type]) {
 			const classDef = packageRef.classes[type];
+			// TODO: In case we have a reference to @ui5/webcomponent-base/UI5Element -> We need to point to sap.ui.core.webc.WebComponent
 			return {
 				...base,
 				ui5Type: classDef._ui5QualifiedName,
@@ -279,16 +280,30 @@ class RegistryEntry {
 				// Since the UI5 runtime only allows for 1 single type per property/aggregation, we take the first reference
 				type = typeInfo?.references?.[0]?.name || type;
 
-				if (type === "ValueState" && typeInfo.references?.[0].package === "@ui5/webcomponents-base") {
+				if (typeInfo.references?.[0].package === "@ui5/webcomponents-base") {
+					// case 0: we just have a reference to the UI5Element base class in the @ui5/webcomponent-base package
+					//         This means that the Web Component can only nest other Web Component subclasses in that slot.
+					if (type === "UI5Element") {
+						return {
+							dtsType: "WebComponent",
+							packageName: "sap/ui/core",
+							moduleType: "module:sap/ui/core/webc/WebComponent",
+							ui5Type: "sap.ui.core.webc.WebComponent",
+							isClass: true,
+						};
+					}
 					// case 1a: native webc ValueState ==> core ValueState
-					return {
-						dtsType: "ValueState",
-						packageName: "sap/ui/core/library",
-						moduleType: "module:sap/ui/core/ValueState",
-						ui5Type: "sap.ui.core.ValueState",
-						isEnum: true,
-					};
+					if (type === "ValueState") {
+						return {
+							dtsType: "ValueState",
+							packageName: "sap/ui/core/library",
+							moduleType: "module:sap/ui/core/ValueState",
+							ui5Type: "sap.ui.core.ValueState",
+							isEnum: true,
+						};
+					}
 				}
+
 				// case 1b: complex type is enum, interface or class
 				let complexType = this.#parseComplexType(type, this);
 				if (!complexType && this.namespace !== typeInfo.references[0].package) {
