@@ -1,8 +1,13 @@
 const prettier = require("prettier");
 const { join } = require("path");
-const { writeFileSync, readFileSync, existsSync, mkdirSync } = require("fs");
+const { writeFileSync, existsSync, mkdirSync } = require("fs");
 
 const handlebars = require("handlebars");
+const { baseTemplate, loadAndCompile } = require("./HandlebarsHelper");
+
+const SimpleLogger = require("./SimpleLogger");
+const logger = SimpleLogger.create("🧑‍💻 DTS");
+
 const WebComponentRegistryHelper = require("./WebComponentRegistryHelper");
 
 const rPlural = /(children|ies|ves|oes|ses|ches|shes|xes|s)$/i;
@@ -34,38 +39,6 @@ const guessSingularName = function (sName) {
 };
 
 const capitalize = (value) => value.replace(/^([a-z])/, (g) => g.toUpperCase());
-
-/**
- * Creates a template function that structures strings with placeholders.
- * @param {string[]} strings - Template string parts
- * @param {...string} keys - Keys for the placeholders
- * @returns {Function} Template function that accepts values for the placeholders
- */
-function structureTemplate(strings, ...keys) {
-	return (...values) => {
-		const newLine = "\n *";
-		const dict = values[values.length - 1] || {};
-		const result = [`/**`];
-		keys.forEach((key, i) => {
-			const value = Number.isInteger(key) ? values[key] : dict[key];
-			if (value) {
-				value.split(/\n/).forEach((valueLine) => {
-					result.push(`${newLine} `, valueLine);
-				});
-				result.push(strings[i + 1]);
-				result.push(newLine);
-			}
-		});
-		result.push("/");
-		return result.length > 2 ? result.join("") : "";
-	};
-}
-
-/**
- * Base template for generating standardized documentation blocks.
- * @type {Function}
- */
-const baseTemplate = structureTemplate`${"text"}${"description"}${"defaultValue"}${"returnValue"}`;
 
 /**
  * Determines if a word should use "an" instead of "a" as its indefinite article.
@@ -188,16 +161,12 @@ const generateStandardDocumentation = function (options) {
 };
 
 /**
- * Handlebar Helpers
+ * Handlebar Helpers specific to the DTSSerializer.
  */
 
 handlebars.registerHelper("escapeInterfaceName", function (namespace, interfaceName) {
 	const ui5QualifiedName = `${namespace}.${interfaceName}`;
 	return `__implements_${ui5QualifiedName.replace(/[/.@-]/g, "_")}: boolean;`;
-});
-
-handlebars.registerHelper("generateApiDocumentation", function (description) {
-	return baseTemplate({ description });
 });
 
 handlebars.registerHelper("generateImports", function (module, info) {
@@ -214,10 +183,6 @@ handlebars.registerHelper("generateImports", function (module, info) {
 	}
 	imports = imports.replace(/,\s$/, ` } from "${module}";`);
 	return imports;
-});
-
-handlebars.registerHelper("join", function (array) {
-	return array.join(", ");
 });
 
 /**
@@ -316,20 +281,9 @@ handlebars.registerHelper("generateAssociationSettings", function (types) {
  * All needed HBS templates for serializing JSDoc comments.
  */
 const Templates = {
-	module: loadAndCompileTemplate("../templates/dts/Module.hbs"),
-	class: loadAndCompileTemplate("../templates/dts/Class.hbs"),
+	module: loadAndCompile("../templates/dts/Module.hbs"),
+	class: loadAndCompile("../templates/dts/Class.hbs"),
 };
-
-/**
- * Helper function to load and compile a handlebars template.
- *
- * @param {string} templatePath - Path to the template file relative to the current directory
- * @returns {Function} Compiled handlebars template function
- */
-function loadAndCompileTemplate(templatePath) {
-	const templateFile = readFileSync(join(__dirname, templatePath), { encoding: "utf-8" });
-	return handlebars.compile(templateFile);
-}
 
 /**
  * The DTSSerializer is responsible for generating TypeScript declaration files (.d.ts)
@@ -447,28 +401,18 @@ const DTSSerializer = {
 		}
 
 		/**
-		 * Adds import statements for types that are from external packages.
-		 *
-		 * @param {object} type - Type definition object
-		 */
-		const addImportsFromTypes = (type) => {
-			if (type.packageName && type.dtsType !== classDef.name) {
-				writeImports(type.packageName, type.dtsType, { default: type.isClass, global: type.globalImport });
-			}
-		};
-
-		/**
 		 * Processes types and adds necessary imports
 		 *
 		 * @param {Array<object>} types - Array of type objects
 		 */
 		const processTypesAndAddImports = (types) => {
 			types.forEach((type) => {
-				if (type.multiple) {
-					type.dedicatedTypes.forEach(addImportsFromTypes);
-				} else {
-					addImportsFromTypes(type);
-				}
+				type.dedicatedTypes.forEach((type) => {
+					// Adds import statements for types that are from external packages.
+					if (type.packageName && type.dtsType !== classDef.name) {
+						writeImports(type.packageName, type.dtsType, { default: type.isClass, global: type.globalImport });
+					}
+				});
 			});
 		};
 
@@ -644,13 +588,12 @@ const DTSSerializer = {
 			const propertyInfo = classDef._dts.properties[propertyName];
 			propertyInfo.needsBindingString = !propertyInfo.readonly;
 
-			// Detect dependencies and add imports
+			processTypesAndAddImports(propertyInfo.types);
+
+			// properties of type "string" don't need the binding string syntax `{${string}}`
 			propertyInfo.types.forEach((type) => {
 				if (type.dtsType === "string") {
 					propertyInfo.needsBindingString = false;
-				}
-				if (type.packageName) {
-					addImportsFromTypes(type);
 				}
 			});
 
@@ -741,7 +684,7 @@ const DTSSerializer = {
 				// Create methods for multiple items
 				createMultipleItemMethods(aggregationInfo, "aggregation", aggregationInfo.types);
 			} else {
-				console.error(`Aggregation '${aggregationInfo.name}' of web component '${classDef.name}' accepts only a single control. This should not be the case and should be checked.`);
+				logger.error(`Aggregation '${aggregationInfo.name}' of web component '${classDef.name}' accepts only a single control. This should not be the case and should be checked.`);
 			}
 		}
 

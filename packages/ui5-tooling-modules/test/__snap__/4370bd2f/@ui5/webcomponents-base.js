@@ -46,30 +46,29 @@ sap.ui.define(
 
     /**
      * Different types of AnimationMode.
+     *
      * @enum {string}
-     * @public
+     *
      * @alias module:@ui5/webcomponents-base.AnimationMode
+     *
      * @ui5-module-override @ui5/webcomponents-base AnimationMode
+     *
+     * @public
      */
-
     pkg["AnimationMode"] = {
       /**
-       *
        * @public
        */
       Full: "Full",
       /**
-       *
        * @public
        */
       Basic: "Basic",
       /**
-       *
        * @public
        */
       Minimal: "Minimal",
       /**
-       *
        * @public
        */
       None: "None",
@@ -77,35 +76,33 @@ sap.ui.define(
     registerEnum("@ui5.webcomponents-base.AnimationMode", pkg["AnimationMode"])
     /**
      * Different calendar types.
+     *
      * @enum {string}
-     * @public
+     *
      * @alias module:@ui5/webcomponents-base.CalendarType
+     *
      * @ui5-module-override @ui5/webcomponents-base CalendarType
+     *
+     * @public
      */
-
     pkg["CalendarType"] = {
       /**
-       *
        * @public
        */
       Gregorian: "Gregorian",
       /**
-       *
        * @public
        */
       Islamic: "Islamic",
       /**
-       *
        * @public
        */
       Japanese: "Japanese",
       /**
-       *
        * @public
        */
       Buddhist: "Buddhist",
       /**
-       *
        * @public
        */
       Persian: "Persian",
@@ -113,20 +110,25 @@ sap.ui.define(
     registerEnum("@ui5.webcomponents-base.CalendarType", pkg["CalendarType"])
     /**
      * Different behavior for ItemNavigation.
+     *
      * @enum {string}
-     * @public
+     *
      * @alias module:@ui5/webcomponents-base.ItemNavigationBehavior
+     *
      * @ui5-module-override @ui5/webcomponents-base ItemNavigationBehavior
+     *
+     * @public
      */
-
     pkg["ItemNavigationBehavior"] = {
       /**
        * Static behavior: navigations stops at the first or last item.
+       *
        * @public
        */
       Static: "Static",
       /**
        * Cycling behavior: navigating past the last item continues with the first and vice versa.
+       *
        * @public
        */
       Cyclic: "Cyclic",
@@ -137,25 +139,25 @@ sap.ui.define(
     )
     /**
      * Placements of a moved element relative to a target element.
+     *
      * @enum {string}
-     * @public
+     *
      * @alias module:@ui5/webcomponents-base.MovePlacement
+     *
      * @ui5-module-override @ui5/webcomponents-base MovePlacement
+     *
+     * @public
      */
-
     pkg["MovePlacement"] = {
       /**
-       *
        * @public
        */
       On: "On",
       /**
-       *
        * @public
        */
       Before: "Before",
       /**
-       *
        * @public
        */
       After: "After",
@@ -163,30 +165,29 @@ sap.ui.define(
     registerEnum("@ui5.webcomponents-base.MovePlacement", pkg["MovePlacement"])
     /**
      * Different navigation modes for ItemNavigation.
+     *
      * @enum {string}
-     * @public
+     *
      * @alias module:@ui5/webcomponents-base.NavigationMode
+     *
      * @ui5-module-override @ui5/webcomponents-base NavigationMode
+     *
+     * @public
      */
-
     pkg["NavigationMode"] = {
       /**
-       *
        * @public
        */
       Auto: "Auto",
       /**
-       *
        * @public
        */
       Vertical: "Vertical",
       /**
-       *
        * @public
        */
       Horizontal: "Horizontal",
       /**
-       *
        * @public
        */
       Paging: "Paging",
@@ -197,25 +198,31 @@ sap.ui.define(
     )
     /**
      * Defines the sort order.
+     *
      * @enum {string}
-     * @public
+     *
      * @alias module:@ui5/webcomponents-base.SortOrder
+     *
      * @ui5-module-override @ui5/webcomponents-base SortOrder
+     *
+     * @public
      */
-
     pkg["SortOrder"] = {
       /**
        * Sorting is not applied.
+       *
        * @public
        */
       None: "None",
       /**
        * Sorting is applied in ascending order.
+       *
        * @public
        */
       Ascending: "Ascending",
       /**
        * Sorting is applied in descending order.
+       *
        * @public
        */
       Descending: "Descending",
@@ -223,35 +230,33 @@ sap.ui.define(
     registerEnum("@ui5.webcomponents-base.SortOrder", pkg["SortOrder"])
     /**
      * Different types of ValueStates.
+     *
      * @enum {string}
-     * @public
+     *
      * @alias module:@ui5/webcomponents-base.ValueState
+     *
      * @ui5-module-override @ui5/webcomponents-base ValueState
+     *
+     * @public
      */
-
     pkg["ValueState"] = {
       /**
-       *
        * @public
        */
       None: "None",
       /**
-       *
        * @public
        */
       Positive: "Positive",
       /**
-       *
        * @public
        */
       Critical: "Critical",
       /**
-       *
        * @public
        */
       Negative: "Negative",
       /**
-       *
        * @public
        */
       Information: "Information",

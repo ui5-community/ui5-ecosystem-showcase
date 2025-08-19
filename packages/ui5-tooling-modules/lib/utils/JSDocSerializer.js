@@ -1,47 +1,16 @@
-const { join } = require("path");
-const { readFileSync } = require("fs");
-
-const handlebars = require("handlebars");
-
-/**
- * Helper function to stringify objects into valid JSON from within HBS templates.
- * @param {object} context the object to stringify
- * @param {number} space the depth of the JSON stringification
- * @returns {string} the JSON string
- */
-handlebars.registerHelper("json", function (context, space) {
-	return JSON.stringify(context, null, space);
-});
-
-handlebars.registerHelper("escapeType", function (str) {
-	return `{${str}}`;
-});
-
-handlebars.registerHelper("formatNewLine", function (str) {
-	return `${str.replace(/\n/g, "\n * ")}`;
-});
+const SimpleLogger = require("./SimpleLogger");
+const logger = SimpleLogger.create("📚 JSDoc");
+const { loadAndCompile, baseTemplate } = require("./HandlebarsHelper");
 
 /**
  * All needed HBS templates for serializing JSDoc comments.
  */
 const Templates = {
-	classHeader: loadAndCompileTemplate("../templates/jsdoc/ClassHeader.hbs"),
-	basicComment: loadAndCompileTemplate("../templates/jsdoc/BasicComment.hbs"),
-	ui5metadata: loadAndCompileTemplate("../templates/jsdoc/UI5Metadata.hbs"),
-	event: loadAndCompileTemplate("../templates/jsdoc/Event.hbs"),
-	methodsAndGetters: loadAndCompileTemplate("../templates/jsdoc/MethodsAndGetter.hbs"),
-	enumHeader: loadAndCompileTemplate("../templates/jsdoc/EnumHeader.hbs"),
-	enumValue: loadAndCompileTemplate("../templates/jsdoc/EnumValue.hbs"),
-	interface: loadAndCompileTemplate("../templates/jsdoc/Interface.hbs"),
+	classHeader: loadAndCompile("../templates/jsdoc/ClassHeader.hbs"),
+	ui5metadata: loadAndCompile("../templates/jsdoc/UI5Metadata.hbs"),
+	event: loadAndCompile("../templates/jsdoc/Event.hbs"),
+	methodsAndGetters: loadAndCompile("../templates/jsdoc/MethodsAndGetter.hbs"),
 };
-
-/**
- * helper function to load and compile a handlebars template
- */
-function loadAndCompileTemplate(templatePath) {
-	const templateFile = readFileSync(join(__dirname, templatePath), { encoding: "utf-8" });
-	return handlebars.compile(templateFile);
-}
 
 /**
  * Converts dots in a string to slashes.
@@ -50,24 +19,6 @@ function loadAndCompileTemplate(templatePath) {
  */
 function dot2slash(s) {
 	return s.replace(/\./g, "/");
-}
-
-/**
- * Escapes a name in JSDoc syntax. The escapings are done per segment,
- * e.g. my.lib."@ui5"."webcomponents-fiori".dist.Button
- * @param {string} name the name to escape in JSDoc syntax
- * @returns the escaped name
- */
-function escapeName(name) {
-	return name;
-	/*
-	return name
-		.split(".")
-		.map((part) => {
-			return part.includes("-") || part.includes("@") ? `"${part}"` : part;
-		})
-		.join(".");
-	*/
 }
 
 /**
@@ -120,10 +71,10 @@ function _prepareEntity(classDef, entityType) {
 	Object.keys(jsDoc[entityType]).forEach((entityName) => {
 		const obj = jsDoc[entityType][entityName];
 		// write the JSDoc comment back to the entity
-		jsDoc[entityType][entityName] = Templates.basicComment({
+		jsDoc[entityType][entityName] = baseTemplate({
 			description: obj.description,
 			// some entities (e.g. aggregations and associations) might have a module type
-			moduleType: obj.moduleType,
+			alias: obj.moduleType ? `@type ${obj.moduleType}` : "",
 		});
 	});
 }
@@ -148,7 +99,7 @@ function _prepareEvents(classDef) {
 		// template parameters if any
 		Object.keys(parametersJsDoc).forEach((paramName) => {
 			const param = parametersJsDoc[paramName];
-			parametersJsDoc[paramName] = Templates.basicComment({
+			parametersJsDoc[paramName] = baseTemplate({
 				description: param.description,
 			});
 		});
@@ -244,7 +195,7 @@ const JSDocSerializer = {
 				_prepareUI5Metadata(classDef);
 			} else {
 				// TODO: what do we do with the classes that don't have a superclass?
-				console.warn(`No superclass found for class ${classDef._ui5QualifiedName}`);
+				logger.warn(`No superclass found for class ${classDef._ui5QualifiedName}`);
 			}
 		});
 
@@ -252,29 +203,28 @@ const JSDocSerializer = {
 		//   [1] interfaces
 		Object.keys(registryEntry.interfaces).forEach((interfaceName) => {
 			const interfaceDef = registryEntry.interfaces[interfaceName];
-			interfaceDef._jsDoc = Templates.interface({
+			interfaceDef._jsDoc = baseTemplate({
 				description: interfaceDef.description,
-				alias: escapeName(interfaceDef._ui5QualifiedName),
-				aliasSlashed: escapeName(interfaceDef._ui5QualifiedNameSlashes),
-				name: interfaceName,
-				// TODO: workaround for missing name escaping in the UI5 JSDoc build
-				package: registryEntry.namespace,
+				alias: `@name module:${interfaceDef._ui5QualifiedNameSlashes}`,
+				entityType: "@interface",
+				override: `@ui5-module-override ${registryEntry.namespace} ${interfaceName}`,
+				visibility: "@public",
 			});
 		});
 
 		//   [2] enums
 		Object.keys(registryEntry.enums).forEach((enumName) => {
 			const enumDef = registryEntry.enums[enumName];
-			enumDef._jsDoc = Templates.enumHeader({
+			// enum header comment
+			enumDef._jsDoc = baseTemplate({
 				description: enumDef.description,
-				alias: escapeName(enumDef._ui5QualifiedName),
-				aliasSlashed: escapeName(enumDef._ui5QualifiedNameSlashes),
-				name: enumName,
-				// TODO: workaround for missing name escaping in the UI5 JSDoc build
-				package: registryEntry.namespace,
+				entityType: "@enum {string}",
+				visibility: "@public",
+				alias: `@alias module:${enumDef._ui5QualifiedNameSlashes}`,
+				override: `@ui5-module-override ${registryEntry.namespace} ${enumName}`,
 			});
 			enumDef.values.forEach((value) => {
-				value._jsDoc = Templates.enumValue({ description: value.description });
+				value._jsDoc = baseTemplate({ description: value.description, visibility: "@public" });
 			});
 		});
 	},
