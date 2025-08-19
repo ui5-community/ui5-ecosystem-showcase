@@ -1,5 +1,6 @@
 /* eslint-disable */
 import Controller from "sap/ui/core/mvc/Controller";
+import UIComponent from "sap/ui/core/UIComponent";
 
 function injectStyle() {
 	const sheet = new CSSStyleSheet();
@@ -29,6 +30,6 @@ export default class FormPage extends Controller {
 	}
 
 	public onNavBack(): void {
-		this.getOwnerComponent().getRouter().navTo("Main");
+		(this.getOwnerComponent() as UIComponent).getRouter().navTo("Main");
 	}
 }

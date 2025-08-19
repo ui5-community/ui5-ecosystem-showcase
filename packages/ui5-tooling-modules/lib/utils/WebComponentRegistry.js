@@ -539,6 +539,11 @@ class RegistryEntry {
 				return;
 			}
 
+			// Skip tooltip property since tooltip is already covered by sap/ui/core/Element
+			if (propDef.name === "tooltip") {
+				return;
+			}
+
 			// DEBUG
 			if (typeDef.isUnclear) {
 				logger.warn(
