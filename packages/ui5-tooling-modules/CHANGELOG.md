@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.30.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.1...ui5-tooling-modules@3.30.2) (2025-08-19)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** references to webc-base/UI5Element now point to core.WebComponent ([#1252](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1252)) ([5e67119](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/5e67119b6cd4923481de5716008efa026d16b3fd))
+
+
+
+
+
 ## [3.30.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.0...ui5-tooling-modules@3.30.1) (2025-08-14)
 
 
