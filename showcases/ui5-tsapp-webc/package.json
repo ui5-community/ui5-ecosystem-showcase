@@ -24,7 +24,8 @@
   "dependencies": {
     "@ui5/webcomponents": "^2.12.0",
     "@ui5/webcomponents-ai": "^2.12.0",
-    "@ui5/webcomponents-fiori": "^2.12.0"
+    "@ui5/webcomponents-fiori": "^2.12.0",
+    "@ui5/html": "file:../../../ui5-html"
   },
   "devDependencies": {
     "@types/openui5": "1.136.0",
