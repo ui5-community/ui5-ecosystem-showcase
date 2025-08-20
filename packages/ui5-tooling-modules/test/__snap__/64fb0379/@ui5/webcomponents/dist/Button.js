@@ -47,10 +47,6 @@ sap.ui.define(
               mapping: "property",
               defaultValue: false,
             },
-            tooltip: {
-              type: "string",
-              mapping: "property",
-            },
             accessibleName: {
               type: "string",
               mapping: "property",
