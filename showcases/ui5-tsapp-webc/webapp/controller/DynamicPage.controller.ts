@@ -106,6 +106,6 @@ export default class DynamicPage extends Controller {
 			listTitle: "Products",
 			items,
 		});
-		this.getView().setModel(model, "dpModel");
+		this.getView()?.setModel(model, "dpModel");
 	}
 }

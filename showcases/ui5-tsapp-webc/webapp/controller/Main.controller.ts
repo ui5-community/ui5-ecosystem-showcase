@@ -19,7 +19,7 @@ import Popover from "@ui5/webcomponents/dist/Popover";
 
 import { Select$LiveChangeEvent } from "@ui5/webcomponents/dist/Select";
 import Option from "@ui5/webcomponents/dist/Option";
-import MultiInput, { IToken, MultiInput$TokenDeleteEvent } from "@ui5/webcomponents/dist/MultiInput";
+import MultiInput, { MultiInput$TokenDeleteEvent } from "@ui5/webcomponents/dist/MultiInput";
 
 console.log(AvatarSize);
 

@@ -23,5 +23,11 @@ module.exports = {
 				xmlWhitespaceSensitivity: "ignore",
 			},
 		},
+		{
+			files: ["*.ts", "*.tsx"],
+			options: {
+				parser: "typescript",
+			},
+		},
 	],
 };
