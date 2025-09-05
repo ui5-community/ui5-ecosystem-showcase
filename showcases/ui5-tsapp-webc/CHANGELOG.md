@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.15.2...ui5-tsapp-webc@0.15.3) (2025-09-05)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** tooltip property handling ([#1256](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1256)) ([66d3e81](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/66d3e818f28be564d42b8bc390e42ec68804a627))
+
+
+
+
+
 ## [0.15.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.15.1...ui5-tsapp-webc@0.15.2) (2025-08-19)
 
 
