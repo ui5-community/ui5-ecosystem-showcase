@@ -78,9 +78,12 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 	// =========================================================================
 
 	// helper function to extract the npm package name from a module name
+	const npmPackageScopeRegEx = /^((?:(@[^/]+)\/)?([^/]+))(?:\/(.*))?$/;
 	const getNpmPackageName = (source) => {
-		const npmPackageScopeRegEx = /^((?:(@[^/]+)\/)?([^/]+))(?:\/(.*))?$/;
 		return npmPackageScopeRegEx.exec(source)?.[1];
+	};
+	const getNpmPackageScope = (source) => {
+		return npmPackageScopeRegEx.exec(source)?.[2];
 	};
 
 	// helper function to load a NPM package and its custom elements metadata
@@ -429,8 +432,15 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			// the package code is generated and included in the build
 			let package;
 			if ((package = WebComponentRegistry.getPackage(source))) {
+				const scope = getNpmPackageScope(source);
 				return {
-					id: source,
+					// non-scoped packages need to be suffixed to avoid name clashes
+					// with the corresponding Web Components package module:
+					// e.g. test-component =>
+					//   UI5 package module       = requires => WebC package module
+					//   resources/test-component = requires => resources/test-component
+					// therefore we suffix the UI5 package module!
+					id: source + (scope ? "" : "-package"),
 					meta: {
 						ui5: {
 							source,
