@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.30.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.4...ui5-tooling-modules@3.30.5) (2025-09-11)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** only use stellvertreter for bundled resources ([#1264](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1264)) ([4882c65](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/4882c657cede901a7b43bf889c395d1b27b3bb1a))
+
+
+
+
+
 ## [3.30.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.3...ui5-tooling-modules@3.30.4) (2025-09-06)
 
 
