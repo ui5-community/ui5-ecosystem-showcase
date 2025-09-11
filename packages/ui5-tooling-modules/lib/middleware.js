@@ -362,8 +362,8 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 					res.setHeader("Content-Type", contentType);
 
 					// "Stellvertreter" are only needed if the config option
-					// useRelativeModulePaths is set to false
-					if (!useRelativeModulePaths && matchRes && !matchNS && type === "application/javascript") {
+					// useRelativeModulePaths is set to false (and it must be a bundled resource)
+					if (bundledResource && !useRelativeModulePaths && matchRes && !matchNS && type === "application/javascript") {
 						// "Stellvertreter" module for the resource to load the correct module
 						// which is only needed for the middleware and not for the build
 						res.end(`sap.ui.define(["${projectInfo.namespace}/${thirdpartyNamespace}/${moduleName}"], function(module) { return module; });`);
