@@ -71,9 +71,11 @@ test.before(async (t) => {
 			"^/ws": "/",
 		},
 		selfHandleResponse: true,
-		onProxyRes: responseInterceptor(async (responseBuffer /*, proxyRes, req, res */) => {
-			return responseBuffer;
-		}),
+		on: {
+			proxyRes: responseInterceptor(async (responseBuffer /*, proxyRes, req, res */) => {
+				return responseBuffer;
+			}),
+		},
 	});
 	app.use("/ws", wsProxy);
 	const testserver = (t.context.wsProxyServer = app.listen(wsProxyServerPort));
@@ -215,7 +217,7 @@ test("HTTP basic test", async (t) => {
 			{
 				"content-type": "application/json",
 				etag: `W/"DummyETag"`,
-			}
+			},
 		);
 
 	const { request } = t.context;
@@ -244,7 +246,7 @@ test("HTTPS basic test", async (t) => {
 			{
 				"content-type": "application/json",
 				etag: `W/"DummyETag"`,
-			}
+			},
 		);
 
 	const { request } = t.context;
@@ -273,7 +275,7 @@ test("HTTP subpath test", async (t) => {
 			{
 				"content-type": "application/json",
 				etag: `W/"DummyETag"`,
-			}
+			},
 		);
 
 	const { request } = t.context;
@@ -313,7 +315,7 @@ test("HTTPS cookie test", async (t) => {
 					"<cookie-name>=<cookie-value>; Domain=<domain-value>; Secure; HttpOnly",
 				],
 				"content-type": "text/plain",
-			}
+			},
 		);
 
 	const { request } = t.context;
@@ -329,7 +331,7 @@ test("HTTPS cookie test", async (t) => {
 			return /(secure|domain|path|samesite)/gi.test(cookie);
 		}),
 		false,
-		"All cookies are unsecured!"
+		"All cookies are unsecured!",
 	);
 });
 
@@ -349,7 +351,7 @@ test("Configuration options", async (t) => {
 			{
 				"content-type": "application/json",
 				etag: `W/"DummyETag"`,
-			}
+			},
 		);
 
 	const { request } = t.context;
@@ -413,7 +415,7 @@ test("CRUD operations", async (t) => {
 		},
 		{
 			"content-type": "application/json",
-		}
+		},
 	);
 	const resGET = await request.get("/local/DataService");
 	if (resGET.error) {
@@ -431,7 +433,7 @@ test("CRUD operations", async (t) => {
 		},
 		{
 			"content-type": "application/json",
-		}
+		},
 	);
 	const resPOST = await request.post("/local/DataService");
 	if (resPOST.error) {
@@ -449,7 +451,7 @@ test("CRUD operations", async (t) => {
 		},
 		{
 			"content-type": "application/json",
-		}
+		},
 	);
 	const resPUT = await request.put("/local/DataService");
 	if (resPUT.error) {
