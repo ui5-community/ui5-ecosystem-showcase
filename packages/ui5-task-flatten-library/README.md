@@ -6,10 +6,10 @@ Task for [ui5-builder](https://github.com/SAP/ui5-builder), to prepare build res
 
 ## Prerequisites
 
-- Requires at least [`@ui5/cli@3.0.0`](https://sap.github.io/ui5-tooling/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://sap.github.io/ui5-tooling/pages/Configuration/#specification-version-30))
+- Requires at least [`@ui5/cli@3.0.0`](https://ui5.github.io/cli/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://ui5.github.io/cli/pages/Configuration/#specification-version-30))
 
-> :warning: **UI5 Tooling Compatibility**
-> All releases of this tooling extension using the major version `3` require UI5 Tooling V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 Tooling. But the usage of the latest UI5 Tooling is strongly recommended!
+> :warning: **UI5 CLI Compatibility**
+> All releases of this tooling extension using the major version `3` require UI5 CLI V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 CLI. But the usage of the latest UI5 CLI is strongly recommended!
 
 ## Install
 
@@ -52,7 +52,7 @@ builder:
 - All `test` files (`/test-resources/`) will be omitted from the build result
 - A warning is logged for `src` files that are not part of the project namespace
 
-## UI5 Tooling Output Style
+## UI5 CLI Output Style
 
 Starting from `@ui5/cli` version 3.8.0, the tooling introduces a new build option known as "Output Style." This feature allows developers to switch between various output styles when building their projects. Now you have the flexibility to omit both this project namespace and the “resources” directory. Imagine “/resources/sap/m/RangeSlider.js” transforming into “./RangeSlider.js.” This results in a flat build output.  
 The available output styles include:
@@ -61,7 +61,7 @@ The available output styles include:
 - `Flat`: Omits the project namespace and the "resources" directory.
 - `Namespace`: Respects the project namespace and the "resources" directory, maintaining the original structure.
 
-To learn more about this feature and to migrate your project to the native Output Style feature instead of using the custom task, refer to the [associated blog post](https://blogs.sap.com/?p=1898173?source=email-global-notification-bp-new-in-tag-followed) or the [CLI documentation page](https://sap.github.io/ui5-tooling/stable/pages/CLI/#ui5-build).
+To learn more about this feature and to migrate your project to the native Output Style feature instead of using the custom task, refer to the [associated blog post](https://blogs.sap.com/?p=1898173?source=email-global-notification-bp-new-in-tag-followed) or the [CLI documentation page](https://ui5.github.io/cli/stable/pages/CLI/#ui5-build).
 
 ## License
 

@@ -3,7 +3,7 @@
 > :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
 
 The `dev-approuter` is a dev time wrapper for the [SAP Application Router](https://www.npmjs.com/package/@sap/approuter) that can serve [UI5](https://ui5.sap.com/) and [SAP Cloud Application Programming Model (CAP)](https://cap.cloud.sap/docs/) apps that are added as (dev)dependencies to the approuter's `package.json`. A few key notes to begin with:
-- The `dev-approuter` utilizes the [SAP Application Router's extension API](https://help.sap.com/docs/btp/sap-business-technology-platform/extension-api-of-application-router) by adding UI5 servers as extensions - providing the full [UI5 Tooling](https://sap.github.io/ui5-tooling/v3/) experience.
+- The `dev-approuter` utilizes the [SAP Application Router's extension API](https://help.sap.com/docs/btp/sap-business-technology-platform/extension-api-of-application-router) by adding UI5 servers as extensions - providing the full [UI5 CLI](https://ui5.github.io/cli/v3/) experience.
 - A linked SAP CDS app is started on a different port - this is to mimic a deployed architecture. The corresponding destination is automatically created for you.
 - In order to safely separate development configuration from productive code, the `dev-approuter` introduces the concept of the `xs-dev.json` - think of it as an extension to the [`xs-app.json`](https://help.sap.com/docs/btp/sap-business-technology-platform/routing-configuration-file).
 - As the name suggests, the `dev-approuter` is for development only and not meant to be used in production.

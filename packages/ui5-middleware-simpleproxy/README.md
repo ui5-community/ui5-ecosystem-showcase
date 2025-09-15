@@ -4,10 +4,10 @@ Middleware for [ui5-server](https://github.com/SAP/ui5-server), enabling proxy s
 
 ## Prerequisites
 
-- Requires at least [`@ui5/cli@3.0.0`](https://sap.github.io/ui5-tooling/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://sap.github.io/ui5-tooling/pages/Configuration/#specification-version-30))
+- Requires at least [`@ui5/cli@3.0.0`](https://ui5.github.io/cli/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://ui5.github.io/cli/pages/Configuration/#specification-version-30))
 
-> :warning: **UI5 Tooling Compatibility**
-> All releases of this tooling extension using the major version `3` require UI5 Tooling V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 Tooling. But the usage of the latest UI5 Tooling is strongly recommended!
+> :warning: **UI5 CLI Compatibility**
+> All releases of this tooling extension using the major version `3` require UI5 CLI V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 CLI. But the usage of the latest UI5 CLI is strongly recommended!
 
 ## Install
 
@@ -118,15 +118,15 @@ If you are using the Microsoft OData services for testing purposes, like [Northw
 
 Another known issue is the the validation of the `csrf-token` fails for the `$batch` requests (e.g. in Chrome). To workaround this issue, also running the dev server in `https` can solve the issue.
 
-UI5 Tooling supports running the dev server in `https` by running the following command line option:
+UI5 CLI supports running the dev server in `https` by running the following command line option:
 
 ```sh
 ui5 serve --h2
 ```
 
-**Note:** With Node v24, usage of HTTP/2 is no longer supported in UI5 Tooling. Please check https://github.com/SAP/ui5-tooling/issues/327 for updates.
+**Note:** With Node v24, usage of HTTP/2 is no longer supported in UI5 CLI. Please check https://github.com/SAP/ui5-tooling/issues/327 for updates.
 
-More details can be found in the documentation of the UI5 tooling for the [`ui5 serve` command](https://sap.github.io/ui5-tooling/stable/pages/CLI/#ui5-serve).
+More details can be found in the documentation of the UI5 CLI for the [`ui5 serve` command](https://ui5.github.io/cli/stable/pages/CLI/#ui5-serve).
 
 ## License
 

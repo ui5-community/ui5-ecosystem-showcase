@@ -39,7 +39,7 @@
             <core:CustomData key="help-id" value="profile" writeToDom="true" />
           </webc:customData>
           <!-- <webc:Icon name="sap-ui5" /> -->
-          <c:HTMLElement tag="img" ca:src="https://sap.github.io/ui5-webcomponents/img/logos/LogoWater.svg" />
+          <c:HTMLElement tag="img" ca:src="https://ui5.github.io/webcomponents/img/logos/LogoWater.svg" />
         </webc:Avatar>
       </fiori:profile>
       <fiori:logo>
@@ -72,7 +72,7 @@
     >
       <fiori:accounts>
         <fiori:UserMenuAccount
-          avatarSrc="https://sap.github.io/ui5-webcomponents/img/logos/LogoWater.svg"
+          avatarSrc="https://ui5.github.io/webcomponents/img/logos/LogoWater.svg"
           titleText="Alaina Chevalier"
           subtitleText="aliana.chevalier@sap.com"
           description="Delivery Manager, SAP SE"
@@ -109,7 +109,7 @@
               <fiori:SearchItem text="John Doe" description="Byline">
                 <fiori:image>
                   <webc:Avatar size="XS">
-                    <Image src="https://sap.github.io/ui5-webcomponents/images/avatars/man_avatar_3.png" alt="John Miller" />
+                    <Image src="https://ui5.github.io/webcomponents/images/avatars/man_avatar_3.png" alt="John Miller" />
                   </webc:Avatar>
                 </fiori:image>
               </fiori:SearchItem>

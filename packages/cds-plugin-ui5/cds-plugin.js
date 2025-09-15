@@ -1,7 +1,7 @@
 // >> IMPORTANT <<
 //
 // JEST has issues with dynamic imports and will fail when they are used,
-// e.g. in the findUI5Modules the UI5 tooling is used which is implemented
+// e.g. in the findUI5Modules the UI5 CLI is used which is implemented
 // using ES modules. To avoid issues when running JEST tests, the plugin
 // will be disabled by default but it can be enforced with CDS_PLUGIN_UI5_ACTIVE=true
 // since JEST supports ES modules when using Node.js 21 and the experimental

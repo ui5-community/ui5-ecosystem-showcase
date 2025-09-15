@@ -1,4 +1,4 @@
-# UI5 Tooling Extension for Transpiling JS/TS
+# UI5 CLI Extension for Transpiling JS/TS
 
 > :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
 
@@ -6,14 +6,14 @@ The tooling extension provides a middleware and a task which transpiles JavaScri
 
 The middleware handles by default all requests to `.js`-files. For JavaScript transpilation the matching `.js`-file or for TypeScript the matching `.ts`-file will be transpiled on-the-fly via Babel. The transpiled JavaScript file will inline the `sourcemap`. Because of the `sourcemap`, setting breakpoints in the **original (ES6+ or TS) source** will cause the debugger to stop **when the corresponding transpiled source code is reached**.
 
-The task finally transpiles the relevant source files during the UI5 Tooling build process. In case of TypeScript is enabled, for libraries, the task also generates the `d.ts`-files. For applications, this option can be enabled on demand.
+The task finally transpiles the relevant source files during the UI5 CLI build process. In case of TypeScript is enabled, for libraries, the task also generates the `d.ts`-files. For applications, this option can be enabled on demand.
 
 ## Prerequisites
 
-- Requires at least [`@ui5/cli@3.0.0`](https://sap.github.io/ui5-tooling/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://sap.github.io/ui5-tooling/pages/Configuration/#specification-version-30))
+- Requires at least [`@ui5/cli@3.0.0`](https://ui5.github.io/cli/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://ui5.github.io/cli/pages/Configuration/#specification-version-30))
 
-> :warning: **UI5 Tooling Compatibility**
-> All releases of this tooling extension using the major version `3` require UI5 Tooling V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 Tooling. But the usage of the latest UI5 Tooling is strongly recommended!
+> :warning: **UI5 CLI Compatibility**
+> All releases of this tooling extension using the major version `3` require UI5 CLI V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 CLI. But the usage of the latest UI5 CLI is strongly recommended!
 
 ## Install
 

@@ -181,7 +181,7 @@ function resolvePresetOrPlugin(babelPresetOrPlugin, isPreset, fileToPresetOrPlug
 	// should be ignored and just returned (already resolved by babel)
 	// => in case of the preset/plugin cannot be resolved, we return just
 	//    use the given preset/plugin name and let babel do the resolve
-	//    which may lead to issues in pnpm or global ui5 tooling scenarios (rare cases!)
+	//    which may lead to issues in pnpm or global UI5 CLI scenarios (rare cases!)
 	// => in addition we add a hint to the fileTotPresetOrPlugin map so that later
 	//    the original name of the preset/plugin can be derived again
 	//    for the ConfigItem property: plugin|preset.file.request

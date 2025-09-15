@@ -37,7 +37,7 @@ const getPortForLivereload = async (options, defaultPort) => {
 /**
  * Determines the source paths of the given resource collection recursivly.
  *
- * <b>ATTENTION: this is a hack to be compatible with UI5 tooling 2.x and 3.x</b>
+ * <b>ATTENTION: this is a hack to be compatible with UI5 CLI 2.x and 3.x</b>
  *
  * @param {module:@ui5/fs.AbstractReader} collection Reader or Collection to read resources of the root project and its dependencies
  * @returns {string[]} source paths

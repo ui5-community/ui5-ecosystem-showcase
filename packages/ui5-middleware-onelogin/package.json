@@ -1,7 +1,7 @@
 {
   "name": "ui5-middleware-onelogin",
   "version": "3.7.2",
-  "description": "A universal login provider for UI5 tooling",
+  "description": "A universal login provider for UI5 CLI",
   "author": "Jakob Kjaer",
   "main": "lib/index.js",
   "license": "Apache-2.0",

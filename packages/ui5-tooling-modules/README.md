@@ -1,8 +1,8 @@
-# UI5 Tooling Extensions for NPM Package Consumption
+# UI5 CLI Extensions for NPM Package Consumption
 
 > :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
 
-The UI5 tooling extensions include a custom middleware and a custom task which allow to use NPM package names for AMD-like dependencies, e.g.:
+The UI5 CLI extensions include a custom middleware and a custom task which allow to use NPM package names for AMD-like dependencies, e.g.:
 
 ```bash
 # Install a dev dependency to Chart.js (https://www.chartjs.org/)
@@ -24,10 +24,10 @@ Once the UI5 application is finally built, the Chart.js dependency will be copie
 
 ## Prerequisites
 
-- Requires at least [`@ui5/cli@3.0.0`](https://sap.github.io/ui5-tooling/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://sap.github.io/ui5-tooling/pages/Configuration/#specification-version-30))
+- Requires at least [`@ui5/cli@3.0.0`](https://ui5.github.io/cli/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://ui5.github.io/cli/pages/Configuration/#specification-version-30))
 
-> :warning: **UI5 Tooling Compatibility**
-> All releases of this tooling extension using the major version `3` require UI5 Tooling V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 Tooling. But the usage of the latest UI5 Tooling is strongly recommended!
+> :warning: **UI5 CLI Compatibility**
+> All releases of this tooling extension using the major version `3` require UI5 CLI V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 CLI. But the usage of the latest UI5 CLI is strongly recommended!
 
 ## Install
 
@@ -152,7 +152,7 @@ The available plugin configuration options are:
   &nbsp;
 
 - *pluginOptions.webcomponents.scoping*: `boolean`
-  Flag to disable the [Custom Elements Scoping](https://sap.github.io/ui5-webcomponents/docs/advanced/scoping/) of UI5 Web Components. This allows to load multiple versions of UI5 Web Components into a single application without conflicts. This feature is enabled by default and can be disabled if needed. (defaults to `true`)
+  Flag to disable the [Custom Elements Scoping](https://ui5.github.io/webcomponents/docs/advanced/scoping/) of UI5 Web Components. This allows to load multiple versions of UI5 Web Components into a single application without conflicts. This feature is enabled by default and can be disabled if needed. (defaults to `true`)
   &nbsp;
 
 - *pluginOptions.webcomponents.namespace*: `boolean|string`

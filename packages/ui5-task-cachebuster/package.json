@@ -1,7 +1,7 @@
 {
   "name": "ui5-task-cachebuster",
   "version": "3.2.1",
-  "description": "Task for the UI5 tooling for simple cachebusting for standalone applications.",
+  "description": "Task for the UI5 CLI for simple cachebusting for standalone applications.",
   "author": "Hanna Olbert",
   "license": "Apache-2.0",
   "homepage": "https://github.com/ui5-community/ui5-ecosystem-showcase/tree/main/packages/ui5-task-cachebuster#readme",

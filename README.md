@@ -2,20 +2,20 @@
 
 [![OpenUI5 Community Slack (#tooling channel)](https://img.shields.io/badge/slack-join-44cc11.svg)](https://ui5-slack-invite.cfapps.eu10.hana.ondemand.com/)
 
-The repository is showcasing the ecosystem possibilites of the UI5 Tooling.
+The repository is showcasing the ecosystem possibilites of the UI5 CLI.
 
 > :wave: This is a **community project** and there is no official support! Feel free to use it, open issues, contribute, and help answering questions.
 
 ## Prerequisites
 
-- Latest releases of the provided tooling extensions require at least [`@ui5/cli@3.0.0`](https://sap.github.io/ui5-tooling/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://sap.github.io/ui5-tooling/pages/Configuration/#specification-version-30))
+- Latest releases of the provided tooling extensions require at least [`@ui5/cli@3.0.0`](https://ui5.github.io/cli/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://ui5.github.io/cli/pages/Configuration/#specification-version-30))
 
-> :warning: **UI5 Tooling Compatibility**
-> All tooling extensions using the major version `3` require UI5 Tooling V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 Tooling. But the usage of the latest UI5 Tooling is strongly recommended!
+> :warning: **UI5 CLI Compatibility**
+> All tooling extensions using the major version `3` require UI5 CLI V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 CLI. But the usage of the latest UI5 CLI is strongly recommended!
 
 ## Overview
 
-This repository showcases the endless possibilities of the UI5 Tooling. The UI5 Tooling extensibility (tasks and middleware) can be used to combine various OSS tools for UI5 application development. This increases the development experience and efficiency and also allows to use well-known tools.
+This repository showcases the endless possibilities of the UI5 CLI. The UI5 CLI extensibility (tasks and middleware) can be used to combine various OSS tools for UI5 application development. This increases the development experience and efficiency and also allows to use well-known tools.
 
 The content of the repository is structured in `packages` and `showcases`. The `packages` folder includes the tooling extensions implementations and the `showcases` includes the demo applications, libraries and modules.
 
@@ -25,10 +25,10 @@ The following list provides an overview of the available tooling extensions in t
 
 ```text
 packages
-├── cds-plugin-ui5                  // cds-plugin: embed UI5 tooling based projects via express middleware into CDS server
+├── cds-plugin-ui5                  // cds-plugin: embed UI5 CLI based projects via express middleware into CDS server
 ├── dev-approuter                   // dev time wrapper for the SAP Application Router that can serve UI5 and CDS modules added as dependencies
 ├── karma-ui5-transpile             // karma preprocessor: transpile sources using ui5-tooling-transpile
-├── ui5-middleware-cap              // middleware extension: use the CDS server middlewares inside the UI5 tooling
+├── ui5-middleware-cap              // middleware extension: use the CDS server middlewares inside the UI5 CLI
 ├── ui5-middleware-approuter        // middleware extension: use the approuter as proxy for SAP Cloud Foundry or SAP XS Advanced backend services
 ├── ui5-middleware-iasync           // middleware extension: sync UI interaction across browsers (alpha! careful!)
 ├── ui5-middleware-index            // middleware extension: serve an HTML file for / (root)
@@ -39,7 +39,7 @@ packages
 ├── ui5-middleware-simpleproxy      // middleware extension: simple express proxy
 ├── ui5-middleware-ui5              // middleware extension: enable UI5 application dependencies for UI5 dev server
 ├── ui5-middleware-webjars          // middleware extension: deliver content from JAR files
-├── ui5-middleware-websocket        // middleware extension: enable web sockets for the UI5 Tooling
+├── ui5-middleware-websocket        // middleware extension: enable web sockets for the UI5 CLI
 ├── ui5-task-cachebuster            // task extension: enables cachebusting for standalone applications
 ├── ui5-task-copyright              // task extension: append copyright for TypeScript, JavaScript or XML files
 ├── ui5-task-flatten-library        // task extension: prepares build result for deployment to SAP NetWeaver
@@ -64,12 +64,12 @@ showcases
 ├── cds-bookshop                    // CDS bookshop app to showcase cds-plugin-ui5
 ├── cds-bookshop-ui5-viewer         // UI5 bookshop viewer referenced in cds-bookshop
 ├── ui5-app                         // UI5 application
-├── ui5-app-simple                  // simple UI5 application using UI5 Tooling V3
+├── ui5-app-simple                  // simple UI5 application using UI5 CLI V3
 ├── ui5-bookshop-viewer             // Standalone UI5 bookshop viewer to demo ui5-middleware-cap
 ├── ui5-lib                         // UI5 library
 ├── ui5-module                      // UI5 module providing a custom control as NPM package
 ├── ui5-tsapp                       // TypeScript UI5 application
-├── ui5-tsapp-simple                // simple TypeScript UI5 application using UI5 Tooling V3
+├── ui5-tsapp-simple                // simple TypeScript UI5 application using UI5 CLI V3
 └── ui5-tslib                       // TypeScript UI5 library
 ```
 
@@ -195,7 +195,7 @@ Available middlewares in this project:
 
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
-| [ui5-middleware-cap](packages/ui5-middleware-cap/README.md) | use the CDS server middlewares inside the UI5 tooling | [![npm version](https://badge.fury.io/js/ui5-middleware-cap.svg)](https://badge.fury.io/js/ui5-middleware-cap) |
+| [ui5-middleware-cap](packages/ui5-middleware-cap/README.md) | use the CDS server middlewares inside the UI5 CLI | [![npm version](https://badge.fury.io/js/ui5-middleware-cap.svg)](https://badge.fury.io/js/ui5-middleware-cap) |
 | [ui5-middleware-approuter](packages/ui5-middleware-approuter/README.md) | use the approuter as proxy for SAP Cloud Foundry or SAP XS Advanced backend services | [![npm version](https://badge.fury.io/js/ui5-middleware-approuter.svg)](https://badge.fury.io/js/ui5-middleware-approuter) |
 | [ui5-middleware-iasync](packages/ui5-middleware-iasync/README.md) | sync UI interactions across connected browsers (alpha! careful!) | [![npm version](https://badge.fury.io/js/ui5-middleware-iasync.svg)](https://badge.fury.io/js/ui5-middleware-iasync) |
 | [ui5-middleware-index](packages/ui5-middleware-index/README.md) | serve an HTML file for / (root) | [![npm version](https://badge.fury.io/js/ui5-middleware-index.svg)](https://badge.fury.io/js/ui5-middleware-index) |
@@ -206,7 +206,7 @@ Available middlewares in this project:
 | [ui5-middleware-simpleproxy](packages/ui5-middleware-simpleproxy/README.md) | simple express proxy | [![npm version](https://badge.fury.io/js/ui5-middleware-simpleproxy.svg)](https://badge.fury.io/js/ui5-middleware-simpleproxy) |
 | [ui5-middleware-ui5](packages/ui5-middleware-ui5/README.md) | enable UI5 application dependencies | [![npm version](https://badge.fury.io/js/ui5-middleware-ui5.svg)](https://badge.fury.io/js/ui5-middleware-ui5) |
 | [ui5-middleware-webjars](packages/ui5-middleware-webjars/README.md) | deliver content from JAR files | [![npm version](https://badge.fury.io/js/ui5-middleware-webjars.svg)](https://badge.fury.io/js/ui5-middleware-webjars) |
-| [ui5-middleware-websocket](packages/ui5-middleware-websocket/README.md) | enable web sockets for UI5 tooling | [![npm version](https://badge.fury.io/js/ui5-middleware-websocket.svg)](https://badge.fury.io/js/ui5-middleware-websocket) |
+| [ui5-middleware-websocket](packages/ui5-middleware-websocket/README.md) | enable web sockets for UI5 CLI | [![npm version](https://badge.fury.io/js/ui5-middleware-websocket.svg)](https://badge.fury.io/js/ui5-middleware-websocket) |
 
 Available tooling extensions in this project:
 
@@ -221,7 +221,7 @@ Other NPM packages in this project:
 
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
-| [cds-plugin-ui5](packages/cds-plugin-ui5/README.md) | embed UI5 tooling based projects via express middleware into CDS server | [![npm version](https://badge.fury.io/js/cds-plugin-ui5.svg)](https://badge.fury.io/js/cds-plugin-ui5) |
+| [cds-plugin-ui5](packages/cds-plugin-ui5/README.md) | embed UI5 CLI based projects via express middleware into CDS server | [![npm version](https://badge.fury.io/js/cds-plugin-ui5.svg)](https://badge.fury.io/js/cds-plugin-ui5) |
 | [dev-approuter](packages/dev-approuter/README.md) | dev time wrapper for the SAP Application Router that can serve UI5 and CDS modules added as dependencies | [![npm version](https://badge.fury.io/js/dev-approuter.svg)](https://badge.fury.io/js/dev-approuter) |
 | [karma-ui5-transpile](packages/karma-ui5-transpile/README.md) | Karma preprocessor to transpile sources using `ui5-tooling-transpile` | [![npm version](https://badge.fury.io/js/karma-ui5-transpile.svg)](https://badge.fury.io/js/karma-ui5-transpile) |
 | [ui5-utils-express](packages/ui5-utils-express/README.md) | utilities for express | [![npm version](https://badge.fury.io/js/ui5-utils-express.svg)](https://badge.fury.io/js/ui5-utils-express) |
@@ -234,13 +234,13 @@ The UI5 Ecosystem Showcase provides several tooling extensions which can be used
 
 [cds-plugin-ui5](packages/cds-plugin-ui5/README.md)
 
-The `cds-plugin-ui5` is a CDS server `cds-plugin` which enables the integration of UI5 tooling based (UI5 freestyle or Fiori elements) projects into the CDS server via the UI5 tooling express middlewares. The UI5 or Fiori elements projects just need to be located in the `app` folder of the CDS server or be dependency of the CDS server.
+The `cds-plugin-ui5` is a CDS server `cds-plugin` which enables the integration of UI5 CLI based (UI5 freestyle or Fiori elements) projects into the CDS server via the UI5 CLI express middlewares. The UI5 or Fiori elements projects just need to be located in the `app` folder of the CDS server or be dependency of the CDS server.
 
 ### `ui5-middleware-cap`
 
 [ui5-middleware-cap](packages/ui5-middleware-cap/README.md)
 
-The `ui5-middleware-cap` is a UI5 tooling middleware which is used to improve the development experience for the [SAP Cloud Application Programming Model (CAP)](https://cap.cloud.sap/docs/about/) and enables the integration of a CDS server into the UI5 development server via the CDS server express middlewares. In addition to the middleware the CDS server project needs to be added as dependency so that the server is detected and attached properly. The pre-defined routes in the CDS server are reused.
+The `ui5-middleware-cap` is a UI5 CLI middleware which is used to improve the development experience for the [SAP Cloud Application Programming Model (CAP)](https://cap.cloud.sap/docs/about/) and enables the integration of a CDS server into the UI5 development server via the CDS server express middlewares. In addition to the middleware the CDS server project needs to be added as dependency so that the server is detected and attached properly. The pre-defined routes in the CDS server are reused.
 
 ### `ui5-middleware-approuter`
 

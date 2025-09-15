@@ -1,7 +1,7 @@
 {
   "name": "cds-plugin-ui5",
   "version": "0.13.4",
-  "description": "A CDS server plugin to inject the middlewares of all related UI5 tooling based projects.",
+  "description": "A CDS server plugin to inject the middlewares of all related UI5 CLI based projects.",
   "author": "Peter Muessig",
   "license": "Apache-2.0",
   "homepage": "https://github.com/ui5-community/ui5-ecosystem-showcase/tree/main/packages/cds-plugin-ui5#readme",
