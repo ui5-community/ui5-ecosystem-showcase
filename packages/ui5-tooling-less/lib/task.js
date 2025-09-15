@@ -100,7 +100,7 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
  * @returns {Promise<Set>}
  *      Promise resolving with a Set containing all dependencies
  *      that should be made available to the task.
- *      UI5 Tooling will ensure that those dependencies have been
+ *      UI5 CLI will ensure that those dependencies have been
  *      built before executing the task.
  */
 module.exports.determineRequiredDependencies = async function ({ availableDependencies }) {

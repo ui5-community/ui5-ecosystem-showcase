@@ -98,7 +98,7 @@ export default class DynamicPage extends Controller {
 				productID: `HT-${i}`,
 				productName: sampleDescriptions[(Math.random() * sampleDescriptions.length) | 0],
 				price: `${i.toFixed(2)} EUR`,
-				imageSrc: `https://sap.github.io/ui5-webcomponents/images/${images[i % images.length]}`,
+				imageSrc: `https://ui5.github.io/webcomponents/images/${images[i % images.length]}`,
 			});
 		}
 

@@ -2,7 +2,7 @@
 
 > :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
 
-The `cds-plugin-ui5` is a CDS server `cds-plugin` for the node runtime of the [SAP Cloud Application Programming Model (CAP)](https://cap.cloud.sap/docs/about/) which enables the integration of UI5 tooling based (UI5 freestyle or Fiori elements) projects into the CDS server via the UI5 tooling express middlewares. The UI5 or Fiori elements projects just need to be located in the `app` folder of the CDS server, or via the `cds.env.folders.app` variable, or be a dependency of the CDS server.
+The `cds-plugin-ui5` is a CDS server `cds-plugin` for the node runtime of the [SAP Cloud Application Programming Model (CAP)](https://cap.cloud.sap/docs/about/) which enables the integration of UI5 CLI based (UI5 freestyle or Fiori elements) projects into the CDS server via the UI5 CLI express middlewares. The UI5 or Fiori elements projects just need to be located in the `app` folder of the CDS server, or via the `cds.env.folders.app` variable, or be a dependency of the CDS server.
 
 > :construction: **Note**
 > This cds-plugin is still work in progress and not final yet!
@@ -136,7 +136,7 @@ CDS_PLUGIN_UI5_MODULES="{ \"ui5-bookshop\": { \"configFile\": \"ui5-dist.yaml\" 
 
 The configuration options from the UI5 server middlewares and the mount path can be mixed together as they both are in the same section of the `package.json`.
 
-## Info for UI5 Tooling Extension Developers
+## Info for UI5 CLI Extension Developers
 
 Custom middlewares may generate virtual app pages which should also be listed as web applications in the welcome page of the `@sap/cds` server. This is possible by assigning a static `getAppPages` function to the middleware function. The following snippet show-cases how this can be done:
 
@@ -172,7 +172,7 @@ This section includes hints for the usage of the `cds-plugin-ui5` with other too
 
 ### JEST
 
-The `cds-plugin-ui5` doesn't work with JEST out of the box as it internally is using dynamic imports to load helpers from the UI5 tooling. JEST fails with a `segmentation fault` error and therefore, the `cds-plugin-ui5` is disabled when running in context of JEST. It can be forcefully enabled by setting the environment variable `CDS_PLUGIN_UI5_ACTIVE=true`. But in this case you need to at least use Node.js 21 (https://github.com/nodejs/node/issues/35889) and you need to enable the experimental support for ES modules (https://jestjs.io/docs/ecmascript-modules). This enables the `cds-plugin-ui5` to run in context of JEST.
+The `cds-plugin-ui5` doesn't work with JEST out of the box as it internally is using dynamic imports to load helpers from the UI5 CLI. JEST fails with a `segmentation fault` error and therefore, the `cds-plugin-ui5` is disabled when running in context of JEST. It can be forcefully enabled by setting the environment variable `CDS_PLUGIN_UI5_ACTIVE=true`. But in this case you need to at least use Node.js 21 (https://github.com/nodejs/node/issues/35889) and you need to enable the experimental support for ES modules (https://jestjs.io/docs/ecmascript-modules). This enables the `cds-plugin-ui5` to run in context of JEST.
 
 ## Support
 

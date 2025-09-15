@@ -136,7 +136,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 
 	// determine the routes
 	const routes = []
-	// default: ignore routes that point to web apps as they are already hosted by the ui5 tooling,
+	// default: ignore routes that point to web apps as they are already hosted by the UI5 CLI,
 	// but allow overwriting this behavior via "allowLocalDir"
 	xsappConfig.routes = xsappConfig.routes.filter(
 		(route) =>
@@ -247,7 +247,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	})
 
 	// for testing purposes we centrally register the instances of the approuters
-	// until the UI5 tooling provides a better way to access the approuter instances
+	// until the UI5 CLI provides a better way to access the approuter instances
 	if (globalThis["ui5-middleware-approuter"]?.approuters) {
 		globalThis["ui5-middleware-approuter"].approuters.push(approuter)
 	}

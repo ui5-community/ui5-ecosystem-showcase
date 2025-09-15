@@ -74,8 +74,8 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 	}
 
 	// replace the version in all files handled by this task because this plugin handles additional file types
-	// which are not supported by the replaceVersion task of the UI5 Tooling (hardcoded some selected file types)
-	// (HINT: do this a bit loosely coupled for now to avoid tight dependencies to UI5 Tooling)
+	// which are not supported by the replaceVersion task of the UI5 CLI (hardcoded some selected file types)
+	// (HINT: do this a bit loosely coupled for now to avoid tight dependencies to UI5 CLI)
 	// Also check for @ui5/builder under @ui5/cli to avoid issues with the module resolution
 	try {
 		// dynamically require the replaceVersion task
@@ -90,7 +90,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 			)
 		).default;
 		// replace the versions for all supported file types
-		// using the central replaceVersion task of the UI5 Tooling
+		// using the central replaceVersion task of the UI5 CLI
 		await replaceVersion({
 			workspace,
 			options: {
@@ -171,8 +171,8 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 	// for the resources of the root project (not included dependencies)
 	if (config.transformTypeScript) {
 		// determine if the project is a library and enable the DTS generation by default
-		// TODO: UI5 Tooling 3.0 allows to access the project with the TaskUtil
-		//       https://sap.github.io/ui5-tooling/v3/api/@ui5_project_build_helpers_TaskUtil.html#~ProjectInterface
+		// TODO: UI5 CLI 3.0 allows to access the project with the TaskUtil
+		//       https://ui5.github.io/cli/v3/api/@ui5_project_build_helpers_TaskUtil.html#~ProjectInterface
 		//       from here we could derive the project type instead of guessing via file existence
 		const libraryResources = await workspace.byGlob(`/resources/${options.projectNamespace}/*library*`);
 		const isLibrary = libraryResources.length > 0;
@@ -270,8 +270,8 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 				// emit type definitions in-memory and read/write resources from the UI5 workspace
 				const typeDefs = {};
 				const host = ts.createCompilerHost(options);
-				(host.getCurrentDirectory = () => cwd),
-					(host.fileExists = (file) => !!sourcesMap[file] || fs.existsSync(file));
+				((host.getCurrentDirectory = () => cwd),
+					(host.fileExists = (file) => !!sourcesMap[file] || fs.existsSync(file)));
 				host.readFile = (file) => {
 					if (/\/package.json$/g.test(file)) {
 						if (!typeDefs[file]) {
@@ -419,7 +419,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
  * @returns {Promise<Set>}
  *      Promise resolving with a Set containing all dependencies
  *      that should be made available to the task.
- *      UI5 Tooling will ensure that those dependencies have been
+ *      UI5 CLI will ensure that those dependencies have been
  *      built before executing the task.
  */
 module.exports.determineRequiredDependencies = async function () {

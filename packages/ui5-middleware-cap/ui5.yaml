@@ -1,4 +1,4 @@
-# https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/
+# https://ui5.github.io/cli/pages/extensibility/CustomServerMiddleware/
 specVersion: "3.0"
 metadata:
   name: ui5-middleware-cap

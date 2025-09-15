@@ -15,7 +15,7 @@ const expressws = require("./expressws");
  * Function to inject a WebSocket middleware function into an Express middleware.
  *
  * @param {WSMiddlewareFunction} middleware the websocket middleware function to wrap
- * @returns {Function} Middleware function for the UI5 Tooling
+ * @returns {Function} Middleware function for the UI5 CLI
  */
 module.exports = function websocket(middleware) {
 	return hook(middleware.name || "generic-ui5-middleware-websocket", ({ app, server, options }) => {

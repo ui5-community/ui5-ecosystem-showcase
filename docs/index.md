@@ -1,16 +1,16 @@
-# UI5 Tooling - Ecosystem Showcase
+# UI5 CLI - Ecosystem Showcase
 
 [![OpenUI5 Community Slack (#tooling channel)](https://img.shields.io/badge/slack-join-44cc11.svg)](https://ui5-slack-invite.cfapps.eu10.hana.ondemand.com/)
 
-This repository is showcasing the [UI5 Tooling](https://sap.github.io/ui5-tooling/) extensibility capabilities. You can easily extend the UI5 Tooling with your own [tasks](https://sap.github.io/ui5-tooling/pages/extensibility/CustomTasks/) or [middlewares](https://sap.github.io/ui5-tooling/pages/extensibility/CustomServerMiddleware/).
+This repository is showcasing the [UI5 CLI](https://ui5.github.io/cli/) extensibility capabilities. You can easily extend the UI5 CLI with your own [tasks](https://ui5.github.io/cli/pages/extensibility/CustomTasks/) or [middlewares](https://ui5.github.io/cli/pages/extensibility/CustomServerMiddleware/).
 
-![UI5 Tooling Ecosystem](ui5eco.jpg "UI5 Tooling Ecosystem")
+![UI5 CLI Ecosystem](ui5eco.jpg "UI5 CLI Ecosystem")
 
 Everyone can develop and share his own tasks, middleware, and tooling extensions or consume them via [NPM](https://www.npmjs.com/). On NPM, all tasks are prefixed with `ui5-task-` and all middlewares with `ui5-middleware-`. In case you create NPM packages having both: custom tasks and middlewares, the prefix should be `ui5-tooling-`. This will help UI5 developers to easily find tasks and middlewares created and shared by the UI5 community.
 
-## Contribute to the UI5 Tooling Ecosystem
+## Contribute to the UI5 CLI Ecosystem
 
-You can contribute to the UI5 Tooling Ecosystem by providing your own task, middlewares, and/or tooling extensions. Therefore, you have the possibility to either contribute your extension to this repository or do it in your own repository. In both cases, please consider to contribute your extension to [Best Of UI5](https://bestofui5.org/) and *[Add Your Own Package](https://github.com/ui5-community/bestofui5-data/issues/new?assignees=marianfoo&labels=new%20package&template=new_package.md&title=Add%20new%20Package:)*.
+You can contribute to the UI5 CLI Ecosystem by providing your own task, middlewares, and/or tooling extensions. Therefore, you have the possibility to either contribute your extension to this repository or do it in your own repository. In both cases, please consider to contribute your extension to [Best Of UI5](https://bestofui5.org/) and *[Add Your Own Package](https://github.com/ui5-community/bestofui5-data/issues/new?assignees=marianfoo&labels=new%20package&template=new_package.md&title=Add%20new%20Package:)*.
 
 ### Contributing
 
@@ -28,12 +28,12 @@ The best place to find existing tooling extensions is [Best Of UI5](https://best
 
 ### Tasks
 
-At [Best Of UI5](https://bestofui5.org/) you can find the [available UI5 tooling tasks](https://bestofui5.org/#/packages?tokens=task:type). There might be more tasks in the public NPM registry. You can find all tasks which applied the suggested naming convention via [https://www.npmjs.com/search?q=ui5-task-](https://www.npmjs.com/search?q=ui5-task-).
+At [Best Of UI5](https://bestofui5.org/) you can find the [available UI5 CLI tasks](https://bestofui5.org/#/packages?tokens=task:type). There might be more tasks in the public NPM registry. You can find all tasks which applied the suggested naming convention via [https://www.npmjs.com/search?q=ui5-task-](https://www.npmjs.com/search?q=ui5-task-).
 
 ### Middlewares
 
-At [Best Of UI5](https://bestofui5.org/) you can find the [available UI5 tooling middlewares](https://bestofui5.org/#/packages?tokens=middleware:type). There might be more middlewares in the public NPM registry. You can find all middlewares which applied the suggested naming convention at [https://www.npmjs.com/search?q=ui5-middleware-](https://www.npmjs.com/search?q=ui5-middleware-).
+At [Best Of UI5](https://bestofui5.org/) you can find the [available UI5 CLI middlewares](https://bestofui5.org/#/packages?tokens=middleware:type). There might be more middlewares in the public NPM registry. You can find all middlewares which applied the suggested naming convention at [https://www.npmjs.com/search?q=ui5-middleware-](https://www.npmjs.com/search?q=ui5-middleware-).
 
 ### Tooling Extensions
 
-At [Best Of UI5](https://bestofui5.org/) you can find the [available UI5 tooling extensions](https://bestofui5.org/#/packages?tokens=tooling:type). There might be more tooling extensions in the public NPM registry. You can find all middlewares which applied the suggested naming convention at [https://www.npmjs.com/search?q=ui5-tooling-](https://www.npmjs.com/search?q=ui5-tooling-).
+At [Best Of UI5](https://bestofui5.org/) you can find the [available UI5 CLI extensions](https://bestofui5.org/#/packages?tokens=tooling:type). There might be more tooling extensions in the public NPM registry. You can find all middlewares which applied the suggested naming convention at [https://www.npmjs.com/search?q=ui5-tooling-](https://www.npmjs.com/search?q=ui5-tooling-).

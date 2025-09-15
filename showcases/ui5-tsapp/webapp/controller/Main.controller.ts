@@ -51,7 +51,7 @@ import("@stomp/stompjs")
 		console.log("[DYNAMIC IMPORT] Failed to load STOMP from application runtime environment!", ex);
 	});
 
-// dynamic import of a provided library (will fail without UI5 tooling server!)
+// dynamic import of a provided library (will fail without UI5 CLI server!)
 import("moment")
 	.then(({ version }) => {
 		console.log(`[DYNAMIC IMPORT] Moment.js loaded: ${version}`);
@@ -76,6 +76,7 @@ export default class Main extends Controller {
 
 	public sayHello(): void {
 		// using regular imports
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 		const text1: string = capitalize("ui5");
 		const text2: string = _capitalize("type-script");
 		MessageBox.show(`Hello World, ${text1}, ${text2}!`);

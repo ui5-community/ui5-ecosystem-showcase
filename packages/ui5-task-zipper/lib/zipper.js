@@ -4,7 +4,7 @@ const yazl = require("yazl");
 /**
  * Determines the project name from the given resource collection.
  *
- * <b>ATTENTION: this is a hack to be compatible with UI5 tooling 2.x and 3.x</b>
+ * <b>ATTENTION: this is a hack to be compatible with UI5 CLI 2.x and 3.x</b>
  *
  * @param {module:@ui5/fs.AbstractReader} collection Reader or Collection to read resources of the root project and its dependencies
  * @returns {string} project name
@@ -18,7 +18,7 @@ const determineProjectName = (collection) => {
 		}
 	}
 	// /* V2 */ reader?._project?.metadata?.name || /* V3 */ reader?._readers?.[0]?._project?._name
-	return projectName || collection._project?._name /* UI5 tooling 3.x */ || collection._project?.metadata?.name; /* UI5 tooling 2.x */
+	return projectName || collection._project?._name /* UI5 CLI 3.x */ || collection._project?.metadata?.name; /* UI5 CLI 2.x */
 };
 
 /**
@@ -180,7 +180,7 @@ module.exports = async function ({ log, workspace, dependencies, options, taskUt
  * @returns {Promise<Set>}
  *      Promise resolving with a Set containing all dependencies
  *      that should be made available to the task.
- *      UI5 Tooling will ensure that those dependencies have been
+ *      UI5 CLI will ensure that those dependencies have been
  *      built before executing the task.
  */
 module.exports.determineRequiredDependencies = async function ({ availableDependencies, options }) {

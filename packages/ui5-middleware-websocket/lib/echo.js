@@ -3,7 +3,7 @@ const websocket = require("./websocket");
 /**
  * WebSocket middleware to act as an echo server. This is just
  * a demo middleware to test/showcase a WebSocket middleware
- * function in the UI5 tooling.
+ * function in the UI5 CLI.
  *
  * @param {object} parameters Parameters
  * @param {@ui5/logger/Logger} parameters.log Logger instance

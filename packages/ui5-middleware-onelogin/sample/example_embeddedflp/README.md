@@ -35,7 +35,7 @@ Use of environment variables or values set in a `.env` file will be used.
 }
 ```
 
-> As the devDependencies are not recognized by the UI5 tooling, they need to be listed in the `ui5 > dependencies` array. In addition, once using the `ui5 > dependencies` array you need to list all UI5 tooling relevant dependencies.
+> As the devDependencies are not recognized by the UI5 CLI, they need to be listed in the `ui5 > dependencies` array. In addition, once using the `ui5 > dependencies` array you need to list all UI5 CLI relevant dependencies.
 
 2. configure it in `$yourapp/ui5.yaml`:
 

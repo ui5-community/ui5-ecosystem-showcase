@@ -10,7 +10,7 @@
       <fiori:avatar>
         <webc:Avatar id="myAvatar">
           <!-- Example for Nesting "sap.m" into "@ui5/webcomponents" into "@ui5/webcomponents-fiori" -->
-          <m:Image src="https://sap.github.io/ui5-webcomponents/images/avatars/woman_avatar_1.png" />
+          <m:Image src="https://ui5.github.io/webcomponents/images/avatars/woman_avatar_1.png" />
         </webc:Avatar>
       </fiori:avatar>
       <fiori:footnotes>

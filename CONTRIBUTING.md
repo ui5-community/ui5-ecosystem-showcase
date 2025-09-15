@@ -13,7 +13,7 @@ A sub-package **may** have an additional CONTRIBUTING.md file if needed.
 
 ### Branches
 
-The development branch is the `main` branch. It only supports tooling extensions for UI5 Tooling **V3**. The tooling extensions which also support the older versions of the UI5 Tooling can be found in the [**V2** branch](https://github.com/ui5-community/ui5-ecosystem-showcase/tree/v2).
+The development branch is the `main` branch. It only supports tooling extensions for UI5 CLI **V3**. The tooling extensions which also support the older versions of the UI5 CLI can be found in the [**V2** branch](https://github.com/ui5-community/ui5-ecosystem-showcase/tree/v2).
 
 ### Initial Setup
 

@@ -72,7 +72,7 @@ typings/
 # Ignore default target directory for the npm package 'ui5-codecompletion'
 .ui5
 
-# UI5 tooling dist folder
+# UI5 CLI dist folder
 dist
 
 # WebStorm/IntelliJ IDE

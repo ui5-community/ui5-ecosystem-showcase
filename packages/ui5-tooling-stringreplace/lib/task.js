@@ -56,7 +56,7 @@ module.exports = function ({ log, workspace, options }) {
 			return Promise.all(
 				processedResources.map((resource) => {
 					return workspace.write(resource);
-				})
+				}),
 			);
 		})
 		.catch((err) => {
@@ -70,7 +70,7 @@ module.exports = function ({ log, workspace, options }) {
  * @returns {Promise<Set>}
  *      Promise resolving with a Set containing all dependencies
  *      that should be made available to the task.
- *      UI5 Tooling will ensure that those dependencies have been
+ *      UI5 CLI will ensure that those dependencies have been
  *      built before executing the task.
  */
 module.exports.determineRequiredDependencies = async function () {
