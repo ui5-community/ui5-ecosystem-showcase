@@ -1,6 +1,6 @@
 {
   "name": "dev-approuter",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "description": "A dev time wrapper for the SAP Application Router that can serve UI5 and CDS modules added as dependencies.",
   "author": "Nico Schoenteich <nicolai.schoenteich@sap.com> (https://github.com/nicoschoenteich)",
   "license": "Apache-2.0",

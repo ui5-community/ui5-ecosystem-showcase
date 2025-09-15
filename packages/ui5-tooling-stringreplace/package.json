@@ -1,6 +1,6 @@
 {
   "name": "ui5-tooling-stringreplace",
-  "version": "3.4.1",
+  "version": "3.4.2",
   "description": "UI5 CLI extensions to string replace ",
   "author": "Dominik Feininger",
   "license": "Apache-2.0",

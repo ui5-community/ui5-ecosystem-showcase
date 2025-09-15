@@ -1,6 +1,6 @@
 {
   "name": "ui5-task-copyright",
-  "version": "3.3.1",
+  "version": "3.3.2",
   "description": "UI5 task for appending copyright headers for TypeScript, JavaScript and XML files",
   "author": "Peter Muessig",
   "license": "Apache-2.0",

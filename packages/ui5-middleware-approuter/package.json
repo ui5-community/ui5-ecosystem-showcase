@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-approuter",
-  "version": "3.6.2",
+  "version": "3.7.0",
   "description": "UI5 middleware using the @sap/approuter to connect against Cloud Foundry or XS Advanced destinations",
   "author": "Peter Muessig, Volker Buzek",
   "license": "Apache-2.0",

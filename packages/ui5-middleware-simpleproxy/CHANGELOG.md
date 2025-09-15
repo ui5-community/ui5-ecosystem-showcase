@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@3.4.3...ui5-middleware-simpleproxy@3.5.0) (2025-09-15)
+
+
+### Features
+
+* **ui5-middleware-approuter:** upgrade to http-proxy-middleware@3.0.5 ([#1267](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1267)) ([b99b195](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b99b1959c68fbd09c49e650789bec707f26204e3)), closes [#1263](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1263)
+
+
+
+
+
 ## [3.4.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@3.4.2...ui5-middleware-simpleproxy@3.4.3) (2025-07-06)
 
 

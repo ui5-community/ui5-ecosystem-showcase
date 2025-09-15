@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-iasync",
-  "version": "3.0.0-alpha.6",
+  "version": "3.0.0-alpha.7",
   "description": "UI5 CLI middleware to sync browser interactions",
   "author": "Volker Buzek, Peter Muessig",
   "license": "Apache-2.0",
