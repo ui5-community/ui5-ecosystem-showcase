@@ -121,8 +121,7 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 	const hasExcludePatterns = excludePatterns && Array.isArray(excludePatterns);
 	const filter = function (pathname, req) {
 		if (hasExcludePatterns) {
-			const targetPath = pathname.substring(req.baseUrl?.length || 0);
-			const exclude = excludePatterns.some((glob) => minimatch(targetPath, glob));
+			const exclude = excludePatterns.some((glob) => minimatch(pathname, glob));
 			if (exclude) {
 				const url = req.url;
 				debug && log.info(`[${baseUri}] Request ${url} is excluded`);
@@ -140,9 +139,10 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 
 	// run the proxy middleware based on the host configuration
 	const target = /^(.*)\/$/.exec(baseURL.toString())?.[1] || baseURL.toString(); // remove trailing slash!
-	const proxyMiddleware = createProxyMiddleware(filter, {
-		logLevel: effectiveOptions.debug ? "info" : "warn",
+	const proxyMiddleware = createProxyMiddleware({
+		logger: effectiveOptions.debug ? console : undefined,
 		target,
+		pathFilter: filter,
 		agent,
 		secure: strictSSL,
 		changeOrigin: true, // for vhosted sites
@@ -150,13 +150,7 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 		xfwd: true, // adds x-forward headers
 		auth: username != null && password != null ? `${username}:${password}` : undefined,
 		headers: httpHeaders,
-		pathRewrite: function (path, req) {
-			// we first determine the baseUrl to strip off the path
-			let baseUrl = req.baseUrl;
-			if (req["ui5-patched-router"]?.baseUrl) {
-				baseUrl = baseUrl.substring(req["ui5-patched-router"].baseUrl.length);
-			}
-			path = path.substring(baseUrl.length);
+		pathRewrite: function (path /*, req*/) {
 			// append the query parameters if available
 			if (query) {
 				const url = new URL(path, new URL("/", baseURL));
@@ -171,42 +165,45 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 			return path;
 		},
 		selfHandleResponse: true, // + responseInterceptor: necessary to omit ERR_CONTENT_DECODING_FAILED error when opening OData URls directly
-		onProxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
-			const url = req.url;
-			effectiveOptions.debug && log.info(`[${baseUri}] ${req.method} ${url} -> ${target}${url} [${proxyRes.statusCode}]`);
-			// remove the secure flag of the cookies
-			if (ssl) {
-				const setCookie = res.getHeader("set-cookie");
-				if (Array.isArray(setCookie)) {
-					res.setHeader(
-						"set-cookie",
-						proxyRes.headers["set-cookie"]
-							// remove flag 'Secure'
-							.map(function (cookieValue) {
-								return cookieValue.replace(/;\s*secure\s*(?:;|$)/gi, ";");
-							})
-							// remove attribute 'Domain'
-							.map(function (cookieValue) {
-								return cookieValue.replace(/;\s*domain=[^;]+\s*(?:;|$)/gi, ";");
-							})
-							// remove attribute 'Path'
-							.map(function (cookieValue) {
-								return cookieValue.replace(/;\s*path=[^;]+\s*(?:;|$)/gi, ";");
-							})
-							// remove attribute 'SameSite'
-							.map(function (cookieValue) {
-								return cookieValue.replace(/;\s*samesite=[^;]+\s*(?:;|$)/gi, ";");
-							}),
-					);
+		on: {
+			proxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
+				console.log("Proxy response status:", proxyRes.statusCode);
+				const url = req.url;
+				effectiveOptions.debug && log.info(`[${baseUri}] ${req.method} ${url} -> ${target}${url} [${proxyRes.statusCode}]`);
+				// remove the secure flag of the cookies
+				if (ssl) {
+					const setCookie = res.getHeader("set-cookie");
+					if (Array.isArray(setCookie)) {
+						res.setHeader(
+							"set-cookie",
+							proxyRes.headers["set-cookie"]
+								// remove flag 'Secure'
+								.map(function (cookieValue) {
+									return cookieValue.replace(/;\s*secure\s*(?:;|$)/gi, ";");
+								})
+								// remove attribute 'Domain'
+								.map(function (cookieValue) {
+									return cookieValue.replace(/;\s*domain=[^;]+\s*(?:;|$)/gi, ";");
+								})
+								// remove attribute 'Path'
+								.map(function (cookieValue) {
+									return cookieValue.replace(/;\s*path=[^;]+\s*(?:;|$)/gi, ";");
+								})
+								// remove attribute 'SameSite'
+								.map(function (cookieValue) {
+									return cookieValue.replace(/;\s*samesite=[^;]+\s*(?:;|$)/gi, ";");
+								}),
+						);
+					}
 				}
-			}
-			// remove etag
-			if (removeETag) {
-				debug && log.info(`[${baseUri}] Removing etag from ${url}`);
-				res.removeHeader("etag", undefined);
-			}
-			return responseBuffer;
-		}),
+				// remove etag
+				if (removeETag) {
+					debug && log.info(`[${baseUri}] Removing etag from ${url}`);
+					res.removeHeader("etag", undefined);
+				}
+				return responseBuffer;
+			}),
+		},
 	});
 
 	// manually install the upgrade function for the websocket
@@ -218,8 +215,7 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 					on("upgrade", (req, socket, head) => {
 						// only handle requests in the mountpath
 						if (mountpath === req.url) {
-							req.baseUrl = req.url;
-							req.url += "/";
+							req.url = "/";
 							// call the upgrade function of the proxy middleware to
 							// initialize the websocket and establish the connection
 							proxyMiddleware.upgrade.call(this, req, socket, head);

@@ -336,44 +336,47 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 	})
 
 	// the proxy middleware (based on https://www.npmjs.com/package/http-proxy-middleware)
-	const proxyMiddleware = createProxyMiddleware(filter, {
-		logLevel: effectiveOptions.debug ? "info" : "warn",
+	const proxyMiddleware = createProxyMiddleware({
+		logger: effectiveOptions.debug ? console : undefined,
 		target: baseUri,
+		pathFilter: filter,
 		changeOrigin: true, // for vhosted sites
 		selfHandleResponse: true, // res.end() will be called internally by responseInterceptor()
 		autoRewrite: true, // rewrites the location host/port on (301/302/307/308) redirects based on requested host/port
 		xfwd: true, // adds x-forward headers
-		onProxyReq: (proxyReq, req, res) => {
-			// sanitize the x-forwarded-proto header as it may include an invalid protocol: "https,http"
-			if (req.headers["x-forwarded-proto"]?.indexOf(",") !== -1) {
-				const proto = (req.headers["x-forwarded-proto"] || "https").split(",")[0]
-				req.header["x-forwarded-proto"] = proto
-				proxyReq.setHeader("x-forwarded-proto", proto)
-			}
-			// if the ui5-middleware-index is used and redirects the welcome file
-			// we need to send a redirect to trigger the auth-flow of the approuter
-			if (req["ui5-middleware-index"]?.url === "/") {
-				// mark the response as redirected
-				res["ui5-middleware-approuter"] = {
-					redirected: true
+		on: {
+			proxyReq: (proxyReq, req, res) => {
+				// sanitize the x-forwarded-proto header as it may include an invalid protocol: "https,http"
+				if (req.headers["x-forwarded-proto"]?.indexOf(",") !== -1) {
+					const proto = (req.headers["x-forwarded-proto"] || "https").split(",")[0]
+					req.header["x-forwarded-proto"] = proto
+					proxyReq.setHeader("x-forwarded-proto", proto)
 				}
-				// redirect the response to baseUrl + url
-				const baseUrl = req["ui5-patched-router"]?.baseUrl || "/"
-				return res.redirect(`${baseUrl !== "/" ? baseUrl : ""}${req.url}`)
-			} else if (req["ui5-patched-router"]?.originalUrl) {
-				proxyReq.setHeader("x-forwarded-path", req["ui5-patched-router"].originalUrl)
-			}
-		},
-		/*
-		onProxyReqWs: (proxyReq, req, socket, options, head) => {
-			console.log(`${req.url}`);
-		},
-		*/
-		onProxyRes: async (proxyRes, req, res) => {
-			// we only handle the response when the request hasn't been
-			// redirected already in the flow above
-			if (!res["ui5-middleware-approuter"]?.redirected) {
-				return intercept(proxyRes, req, res)
+				// if the ui5-middleware-index is used and redirects the welcome file
+				// we need to send a redirect to trigger the auth-flow of the approuter
+				if (req["ui5-middleware-index"]?.url === "/") {
+					// mark the response as redirected
+					res["ui5-middleware-approuter"] = {
+						redirected: true
+					}
+					// redirect the response to baseUrl + url
+					const baseUrl = req["ui5-patched-router"]?.baseUrl || "/"
+					return res.redirect(`${baseUrl !== "/" ? baseUrl : ""}${req.url}`)
+				} else if (req["ui5-patched-router"]?.originalUrl) {
+					proxyReq.setHeader("x-forwarded-path", req["ui5-patched-router"].originalUrl)
+				}
+			},
+			/*
+			proxyReqWs: (proxyReq, req, socket, options, head) => {
+				console.log(`${req.url}`);
+			},
+			*/
+			proxyRes: async (proxyRes, req, res) => {
+				// we only handle the response when the request hasn't been
+				// redirected already in the flow above
+				if (!res["ui5-middleware-approuter"]?.redirected) {
+					return intercept(proxyRes, req, res)
+				}
 			}
 		}
 	})
