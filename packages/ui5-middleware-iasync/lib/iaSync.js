@@ -32,7 +32,7 @@ module.exports = ({ log, options }) => {
 		{
 			logSnippet: false,
 			https: options?.configuration?.https || false,
-			// http2 here, e.g. from ui5-tooling
+			// http2 here, e.g. from UI5 CLI
 			httpModule: options?.configuration?.httpModule,
 			logLevel: options?.configuration?.debug ? "debug" : "info",
 			// per default, log connections

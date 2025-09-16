@@ -1,8 +1,8 @@
-# TypeScript-based UI5 application using custom tooling extensions
+# TypeScript-based UI5 application using custom UI5 CLI extensions
 
-This sample application shows the consumption of the custom tooling extensions.
+This sample application shows the consumption of the custom UI5 CLI extensions.
 
-Peek at both [`ui5.yaml`](ui5.yaml) and [`package.json`](package.json) in order to learn about the `ui5-tooling` configuration and its' `npm` package dependencies and configuration options.
+Peek at both [`ui5.yaml`](ui5.yaml) and [`package.json`](package.json) in order to learn about the UI5 CLI configuration and its' `npm` package dependencies and configuration options.
 
 ## License
 

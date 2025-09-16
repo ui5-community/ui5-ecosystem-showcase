@@ -8,20 +8,20 @@ The repository is showcasing the ecosystem possibilites of the UI5 CLI.
 
 ## Prerequisites
 
-- Latest releases of the provided tooling extensions require at least [`@ui5/cli@3.0.0`](https://ui5.github.io/cli/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://ui5.github.io/cli/pages/Configuration/#specification-version-30))
+- Latest releases of the provided UI5 CLI extensions require at least [`@ui5/cli@3.0.0`](https://ui5.github.io/cli/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://ui5.github.io/cli/pages/Configuration/#specification-version-30))
 
 > :warning: **UI5 CLI Compatibility**
-> All tooling extensions using the major version `3` require UI5 CLI V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 CLI. But the usage of the latest UI5 CLI is strongly recommended!
+> All UI5 CLI extensions using the major version `3` require UI5 CLI V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 CLI. But the usage of the latest UI5 CLI is strongly recommended!
 
 ## Overview
 
 This repository showcases the endless possibilities of the UI5 CLI. The UI5 CLI extensibility (tasks and middleware) can be used to combine various OSS tools for UI5 application development. This increases the development experience and efficiency and also allows to use well-known tools.
 
-The content of the repository is structured in `packages` and `showcases`. The `packages` folder includes the tooling extensions implementations and the `showcases` includes the demo applications, libraries and modules.
+The content of the repository is structured in `packages` and `showcases`. The `packages` folder includes the UI5 CLI extensions implementations and the `showcases` includes the demo applications, libraries and modules.
 
-### Packages (Tooling Extensions)
+### Packages (UI5 CLI extensions)
 
-The following list provides an overview of the available tooling extensions in this repository:
+The following list provides an overview of the available UI5 CLI extensions in this repository:
 
 ```text
 packages
@@ -47,10 +47,10 @@ packages
 ├── ui5-task-minify-xml             // task extension: minify xml resources
 ├── ui5-task-pwa-enabler            // task extension: enables ui5 app with pwa functionalities
 ├── ui5-task-zipper                 // task extension: bundle the entire webapp in a zip-archive
-├── ui5-tooling-less                // tooling extension: serving and building less files
-├── ui5-tooling-modules             // tooling extension: direct consumption of NPM packages in UI5 apps
-├── ui5-tooling-stringreplace       // tooling extension: replaces placeholder strings
-├── ui5-tooling-transpile           // tooling extension: transpile resources using Babel
+├── ui5-tooling-less                // UI5 CLI extension: serving and building less files
+├── ui5-tooling-modules             // UI5 CLI extension: direct consumption of NPM packages in UI5 apps
+├── ui5-tooling-stringreplace       // UI5 CLI extension: replaces placeholder strings
+├── ui5-tooling-transpile           // UI5 CLI extension: transpile resources using Babel
 └── ui5-utils-express               // utilities: helper stuff for express
 ```
 
@@ -170,7 +170,7 @@ The middlewares developed in this monorepo are also publicly available on NPM ri
 * https://www.npmjs.com/package/ui5-middleware-webjars
 * https://www.npmjs.com/package/ui5-middleware-websocket
 
-The tooling extensions (contains tasks and middlewares) developed in this monorepo are available on NPM right here:
+The UI5 CLI extensions (contains tasks and middlewares) developed in this monorepo are available on NPM right here:
 
 * https://www.npmjs.com/package/ui5-tooling-less
 * https://www.npmjs.com/package/ui5-tooling-modules
@@ -208,7 +208,7 @@ Available middlewares in this project:
 | [ui5-middleware-webjars](packages/ui5-middleware-webjars/README.md) | deliver content from JAR files | [![npm version](https://badge.fury.io/js/ui5-middleware-webjars.svg)](https://badge.fury.io/js/ui5-middleware-webjars) |
 | [ui5-middleware-websocket](packages/ui5-middleware-websocket/README.md) | enable web sockets for UI5 CLI | [![npm version](https://badge.fury.io/js/ui5-middleware-websocket.svg)](https://badge.fury.io/js/ui5-middleware-websocket) |
 
-Available tooling extensions in this project:
+Available UI5 CLI extensions in this project:
 
 | NPM package | Description | Badge |
 | ----------- | ----------- | ----- |
@@ -228,7 +228,7 @@ Other NPM packages in this project:
 
 ## Backend Connectivity
 
-The UI5 Ecosystem Showcase provides several tooling extensions which can be used to connect to different backends.
+The UI5 Ecosystem Showcase provides several UI5 CLI extensions which can be used to connect to different backends.
 
 ### `cds-plugin-ui5`
 
