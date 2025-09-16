@@ -294,7 +294,7 @@ module.exports = async function ({ log, workspace /*, dependencies*/, taskUtil, 
 						// able to use the "Go to Source Definition" feature of VSCode
 						// /!\ this solution is fragile as it assumes to be generated
 						//     into a direct folder (like dist) and not in deeper structures
-						//     -> to avoid the hack we need more FS infos from the tooling!
+						//     -> to avoid the hack we need more FS infos from UI5 CLI!
 						try {
 							const resourcePath = /^\//.test(sourceFile.fileName)
 								? sourceFile.fileName

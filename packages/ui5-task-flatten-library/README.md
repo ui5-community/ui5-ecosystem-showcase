@@ -9,7 +9,7 @@ Task for [ui5-builder](https://github.com/SAP/ui5-builder), to prepare build res
 - Requires at least [`@ui5/cli@3.0.0`](https://ui5.github.io/cli/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://ui5.github.io/cli/pages/Configuration/#specification-version-30))
 
 > :warning: **UI5 CLI Compatibility**
-> All releases of this tooling extension using the major version `3` require UI5 CLI V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 CLI. But the usage of the latest UI5 CLI is strongly recommended!
+> All releases of this UI5 CLI extension using the major version `3` require UI5 CLI V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 CLI. But the usage of the latest UI5 CLI is strongly recommended!
 
 ## Install
 
@@ -54,7 +54,7 @@ builder:
 
 ## UI5 CLI Output Style
 
-Starting from `@ui5/cli` version 3.8.0, the tooling introduces a new build option known as "Output Style." This feature allows developers to switch between various output styles when building their projects. Now you have the flexibility to omit both this project namespace and the “resources” directory. Imagine “/resources/sap/m/RangeSlider.js” transforming into “./RangeSlider.js.” This results in a flat build output.  
+Starting from `@ui5/cli` version 3.8.0, the UI5 CLI introduces a new build option known as "Output Style." This feature allows developers to switch between various output styles when building their projects. Now you have the flexibility to omit both this project namespace and the “resources” directory. Imagine “/resources/sap/m/RangeSlider.js” transforming into “./RangeSlider.js.” This results in a flat build output.  
 The available output styles include:
 
 - `Default`: The default directory structure for every project type. For applications, this is identical to "Flat", and for libraries, it is "Namespace". Other types have a more distinct default output style.

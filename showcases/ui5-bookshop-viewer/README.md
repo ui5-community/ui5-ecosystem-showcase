@@ -2,7 +2,7 @@
 
 This sample application shows the consumption of the CAP server `cds-bookshop` in the UI5 server.
 
-Peek at both [`ui5.yaml`](ui5.yaml) and [`package.json`](package.json) in order to learn about the `ui5-tooling` configuration and its' `npm` package dependencies and configuration options.
+Peek at both [`ui5.yaml`](ui5.yaml) and [`package.json`](package.json) in order to learn about the UI5 CLI configuration and its' `npm` package dependencies and configuration options.
 
 ## License
 

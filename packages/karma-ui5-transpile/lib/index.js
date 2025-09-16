@@ -4,8 +4,7 @@ const yaml = require("js-yaml");
 
 /**
  * This Karma preprocessor is used to transpile code respecting the
- * configuration of the ui5-tooling-transpile tooling extension for
- * the UI5 CLI.
+ * configuration of the ui5-tooling-transpile UI5 CLI extension.
  *
  * Kudos goes to: https://github.com/babel/karma-babel-preprocessor
  * which inspired the creation of this Karma preprocessor.

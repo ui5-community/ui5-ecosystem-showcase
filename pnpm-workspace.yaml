@@ -1,5 +1,5 @@
 packages:
-  # all packages (tooling extensions)
+  # all packages (UI5 CLI extensions)
   - "packages/*"
   # all showcases (demo apps, libs, modules, cds-ui5 apps, ...)
   - "showcases/*"

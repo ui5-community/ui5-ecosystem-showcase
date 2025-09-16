@@ -176,7 +176,7 @@ Please use the GitHub bug tracking system to post questions, bug reports or to c
 
 ## Contributing
 
-Any type of contribution (code contributions, pull requests, issues) to this set of tooling extensions will be equally appreciated.
+Any type of contribution (code contributions, pull requests, issues) to this set of UI5 CLI extensions will be equally appreciated.
 
 ## License
 

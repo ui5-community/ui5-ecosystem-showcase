@@ -27,7 +27,7 @@ Once the UI5 application is finally built, the Chart.js dependency will be copie
 - Requires at least [`@ui5/cli@3.0.0`](https://ui5.github.io/cli/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://ui5.github.io/cli/pages/Configuration/#specification-version-30))
 
 > :warning: **UI5 CLI Compatibility**
-> All releases of this tooling extension using the major version `3` require UI5 CLI V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 CLI. But the usage of the latest UI5 CLI is strongly recommended!
+> All releases of this UI5 CLI extension using the major version `3` require UI5 CLI V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 CLI. But the usage of the latest UI5 CLI is strongly recommended!
 
 ## Install
 
@@ -117,7 +117,7 @@ The following configuration options are relevant for the `task` and the `middlew
   &nbsp;
 
 - *legacyDependencyResolution*: `boolean`
-  Re-enables the legacy dependency resolution of the tooling extension which allows to use entry points from `devDependencies` of the project. By default, only the `dependencies` maintained in the projects' `package.json` and the transitive dependencies are considered for the entry points and all other entry points are ignored. (available since new minor version `3.7.0` which introduces a new dependency resolution for `dependencies` only)
+  Re-enables the legacy dependency resolution of the UI5 CLI extension which allows to use entry points from `devDependencies` of the project. By default, only the `dependencies` maintained in the projects' `package.json` and the transitive dependencies are considered for the entry points and all other entry points are ignored. (available since new minor version `3.7.0` which introduces a new dependency resolution for `dependencies` only)
   &nbsp;
 
 - *additionalDependencies*: `string[]`

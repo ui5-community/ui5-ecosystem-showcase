@@ -13,7 +13,7 @@ A sub-package **may** have an additional CONTRIBUTING.md file if needed.
 
 ### Branches
 
-The development branch is the `main` branch. It only supports tooling extensions for UI5 CLI **V3**. The tooling extensions which also support the older versions of the UI5 CLI can be found in the [**V2** branch](https://github.com/ui5-community/ui5-ecosystem-showcase/tree/v2).
+The development branch is the `main` branch. It only supports extensions for UI5 CLI **V3**. The UI5 CLI extensions which also support the older versions of the UI5 CLI can be found in the [**V2** branch](https://github.com/ui5-community/ui5-ecosystem-showcase/tree/v2).
 
 ### Initial Setup
 
@@ -41,7 +41,7 @@ This project is implemented using plain ECMAScript without any compilation / tra
 
 ### Testing
 
-There is no consistent testing tooling used for this repository. Some of the sub-packages are using [AVA][ava] (e.g. `ui5-middleware-approuter` or `ui5-task-zipper`). Creating tests for your tooling extensions is highly recommended and appreciated.
+There is no consistent testing tooling used for this repository. Some of the sub-packages are using [AVA][ava] (e.g. `ui5-middleware-approuter` or `ui5-task-zipper`). Creating tests for your UI5 CLI extensions is highly recommended and appreciated.
 
 The UI5 application is using [QUnit][qunit], [OPA5][opa5] and [WDIO5][wdio5] tests for validation.
 

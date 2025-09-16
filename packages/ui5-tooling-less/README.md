@@ -9,7 +9,7 @@ The project includes a task for [ui5-builder](https://github.com/SAP/ui5-builder
 - Requires at least [`@ui5/cli@3.0.0`](https://ui5.github.io/cli/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://ui5.github.io/cli/pages/Configuration/#specification-version-30))
 
 > :warning: **UI5 CLI Compatibility**
-> All releases of this tooling extension using the major version `3` require UI5 CLI V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 CLI. But the usage of the latest UI5 CLI is strongly recommended!
+> All releases of this UI5 CLI extension using the major version `3` require UI5 CLI V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 CLI. But the usage of the latest UI5 CLI is strongly recommended!
 
 ## Install
 
@@ -58,7 +58,7 @@ server:
 
 ## How it works
 
-The tooling extension can be used to compile less files in your app folder by using [less-openui5](https://github.com/SAP/less-openui5).
+The UI5 CLI extension can be used to compile less files in your app folder by using [less-openui5](https://github.com/SAP/less-openui5).
 
 It can also include less file from UI5 library dependencies (framework and custom ones), e.g.:
 

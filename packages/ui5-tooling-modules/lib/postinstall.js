@@ -9,7 +9,7 @@ const rteValue = process.env["npm_config_rte"] || process.env["npm_config_regist
 
 const shouldRegister = cwd && rteValue;
 
-// Function to register tooling extensions in a YAML file
+// Function to register UI5 CLI extensions in a YAML file
 function registerInYamlFile(yamlFilePath) {
 	if (!fs.existsSync(yamlFilePath)) {
 		return false;

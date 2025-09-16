@@ -12,7 +12,7 @@ The `ui5-middleware-cap` is a UI5 CLI middleware which is used to improve the de
 - Requires at least [`@ui5/cli@3.0.0`](https://ui5.github.io/cli/v3/pages/CLI/) (to support [`specVersion: "3.0"`](https://ui5.github.io/cli/pages/Configuration/#specification-version-30))
 
 > :warning: **UI5 CLI Compatibility**
-> All releases of this tooling extension using the major version `3` require UI5 CLI V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 CLI. But the usage of the latest UI5 CLI is strongly recommended!
+> All releases of this UI5 CLI extension using the major version `3` require UI5 CLI V3. Any previous releases below major version `3` (if available) also support older versions of the UI5 CLI. But the usage of the latest UI5 CLI is strongly recommended!
 
 ## Usage
 
@@ -53,7 +53,7 @@ Please use the GitHub bug tracking system to post questions, bug reports or to c
 
 ## Contributing
 
-Any type of contribution (code contributions, pull requests, issues) to this set of tooling extensions will be equally appreciated.
+Any type of contribution (code contributions, pull requests, issues) to this set of UI5 CLI extensions will be equally appreciated.
 
 ## License
 
