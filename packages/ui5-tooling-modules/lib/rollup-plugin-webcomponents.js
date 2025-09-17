@@ -252,6 +252,10 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			name: package.namespace,
 			qualifiedName: package.qualifiedNamespace,
 		};
+		$metadata.chunks = $metadata.chunks || {};
+		$metadata.chunks[chunkName] = {
+			package: source,
+		};
 
 		// mark the source as emitted
 		emittedPackages.push(source);

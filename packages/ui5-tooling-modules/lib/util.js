@@ -1504,12 +1504,21 @@ module.exports = function (log, projectInfo) {
 								// TODO: entry modules need to be shifted into the gen folder
 								let modifiedCode = module.code;
 								if (module.generated) {
-									Object.values(output.$metadata.packages || {})
+									[
+										...Object.values(output.$metadata.packages || {}),
+										...Object.keys(output.$metadata.chunks || {}).map((s) => {
+											return { name: s };
+										}),
+									]
 										.sort((a, b) => b.name.localeCompare(a.name))
 										.forEach((package) => {
-											modifiedCode = replaceParam(modifiedCode, package.qualifiedName, rewriteDep(package.name, bundleInfo, true));
+											if (package.qualifiedName) {
+												modifiedCode = replaceParam(modifiedCode, package.qualifiedName, rewriteDep(package.name, bundleInfo, true));
+											}
 											modifiedCode = replaceParam(modifiedCode, package.name, rewriteDep(package.name, bundleInfo));
-											modifiedCode = replaceJSDoc(modifiedCode, package.qualifiedName, rewriteDep(package.name, bundleInfo, true));
+											if (package.qualifiedName) {
+												modifiedCode = replaceJSDoc(modifiedCode, package.qualifiedName, rewriteDep(package.name, bundleInfo, true));
+											}
 											modifiedCode = replaceJSDoc(modifiedCode, package.name, rewriteDep(package.name, bundleInfo));
 										});
 									module.code = modifiedCode;
