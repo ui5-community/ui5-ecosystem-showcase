@@ -1441,7 +1441,7 @@ module.exports = function (log, projectInfo) {
 						// helper to replace params in the code
 						const replaceParam = function (code, search, replacement) {
 							const escapedSearchString = search.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escape special regex chars
-							const regex = new RegExp(`(["'])${escapedSearchString}(.*?)\\1`, "g");
+							const regex = new RegExp(`(?<!tag:\\s)(["'])${escapedSearchString}(.*?)\\1`, "g"); // do not match tag: "..."
 							return code.replace(regex, `$1${replacement}$2$1`);
 						};
 
