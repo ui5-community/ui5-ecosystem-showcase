@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.30.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.6...ui5-tooling-modules@3.30.7) (2025-09-17)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** proper handling of -package modules for non scoped webc pkgs ([#1269](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1269)) ([53e30ea](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/53e30ea36658a416836732ed56add46ddf3952ee))
+
+
+
+
+
 ## [3.30.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.5...ui5-tooling-modules@3.30.6) (2025-09-15)
 
 **Note:** Version bump only for package ui5-tooling-modules

@@ -1,6 +1,6 @@
 {
   "name": "ui5-tooling-less",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "description": "UI5 CLI extension for compiling less files",
   "author": "Sebastian Mahr, Marcel Schork, Peter Muessig",
   "license": "Apache-2.0",
