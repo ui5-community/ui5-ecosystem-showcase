@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.30.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.7...ui5-tooling-modules@3.30.8) (2025-09-17)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** do not rename the webc tag ([#1270](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1270)) ([3fb8d81](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3fb8d81d2d9ebdd8891d89bac29814505a030820))
+
+
+
+
+
 ## [3.30.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.6...ui5-tooling-modules@3.30.7) (2025-09-17)
 
 
