@@ -1,7 +1,7 @@
-sap.ui.define(['./LuigiContainer2'], (function (LuigiContainer) { 'use strict';
+sap.ui.define(['./container'], (function (container) { 'use strict';
 
 
 
-	return LuigiContainer.nt;
+	return container.nt;
 
 }));
