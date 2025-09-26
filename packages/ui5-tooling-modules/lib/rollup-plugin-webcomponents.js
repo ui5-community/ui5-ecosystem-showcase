@@ -173,7 +173,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 		const npmPackage = getNpmPackageName(source);
 
 		let clazz;
-		if (npmPackage !== "@ui5/webcomponents-base" && (clazz = WebComponentRegistry.getClassDefinition(source))) {
+		if (npmPackage !== WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE && (clazz = WebComponentRegistry.getClassDefinition(source))) {
 			return clazz;
 		}
 
@@ -187,7 +187,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				const moduleName = `${npmPackage}/${modulePath}`;
 				const clazz = WebComponentRegistry.getClassDefinition(moduleName);
 				// TODO: base classes must be ignored as UI5Element is flagged as custom element although it is a base class
-				if (clazz && clazz.customElement && npmPackage !== "@ui5/webcomponents-base") {
+				if (clazz && clazz.customElement && npmPackage !== WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE) {
 					return clazz;
 				}
 			}
@@ -223,7 +223,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 		const metadata = JSON.stringify(metadataObject, undefined, 2);
 
 		// is it the base library? (important for the monkey patches)
-		const isBaseLib = namespace === "@ui5/webcomponents-base";
+		const isBaseLib = namespace === WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE;
 
 		// generate the library code
 		const webcPackage = chunkName && posix.relative(dirname(source), chunkName);
@@ -497,7 +497,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 
 				// generate the web component package code
 				const code = webcTmplFnWebCPackage({
-					isBaseLib: namespace === "@ui5/webcomponents-base",
+					isBaseLib: namespace === WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE,
 					scopeSuffix: ui5WebCScopeSuffix,
 					enrichBusyIndicator,
 					nonUI5TagsToRegister,
