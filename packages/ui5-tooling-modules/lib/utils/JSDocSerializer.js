@@ -1,6 +1,7 @@
 const SimpleLogger = require("./SimpleLogger");
 const logger = SimpleLogger.create("📚 JSDoc");
 const { loadAndCompile, baseTemplate } = require("./HandlebarsHelper");
+const WebComponentRegistryHelper = require("./WebComponentRegistryHelper");
 
 /**
  * All needed HBS templates for serializing JSDoc comments.
@@ -27,12 +28,14 @@ function dot2slash(s) {
  */
 function _serializeClassHeader(classDef) {
 	// find superclass name, either another wrapper OR the core WebComponent base class
-	let superclassName = classDef.superclass?._ui5metadata && classDef.superclass?.name;
-	if (superclassName === "UI5Element") {
+	let superclassName = classDef.superclass.name;
+	if (superclassName === WebComponentRegistryHelper.UI5_ELEMENT_CLASS_NAME) {
 		// we reached the very top of the inheritance chain
 		superclassName = "sap.ui.core.webc.WebComponent";
 	} else if (superclassName) {
 		superclassName = `module:${classDef.superclass._ui5QualifiedNameSlashes}`;
+	} else {
+		logger.warn(`Superclass for class ${classDef._ui5QualifiedName} has no property 'name'`);
 	}
 
 	// TODO: The descriptions can contain non JSDoc compliant characters, e.g. `*` or `@`

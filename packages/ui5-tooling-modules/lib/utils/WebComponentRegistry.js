@@ -38,9 +38,6 @@ const calculateGetterName = (functionName) => {
 	return "get" + functionName.substring(0, 1).toUpperCase() + functionName.substring(1);
 };
 
-// the class name of the base class of all control wrappers
-// corresponds to the "sap.ui.core.webc.WebComponent" class at runtime.
-const UI5_ELEMENT_CLASS_NAME = "UI5Element";
 const WEBC_ASSOCIATION_TYPE = "HTMLElement | string | undefined";
 
 let _registry = {};
@@ -189,13 +186,18 @@ class RegistryEntry {
 				logger.error(
 					`The class '${this.namespace}/${classDef.name}' has an unknown superclass '${classDef.superclass.package}/${superclassName}' using default '@ui5/webcomponents-base/UI5Element'!`,
 				);
-				const refPackage = WebComponentRegistry.getPackage("@ui5/webcomponents-base");
-				let superclassRef = (refPackage || this).classes[UI5_ELEMENT_CLASS_NAME];
+				const refPackage = WebComponentRegistry.getPackage(WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE);
+				let superclassRef = (refPackage || this).classes[WebComponentRegistryHelper.UI5_ELEMENT_CLASS_NAME];
 				classDef.superclass = superclassRef;
 			} else {
 				this.#connectSuperclass(superclassRef);
 				classDef.superclass = superclassRef;
 			}
+		} else if (classDef.customElement && !WebComponentRegistryHelper.isUI5Element(classDef)) {
+			classDef.superclass = {
+				name: WebComponentRegistryHelper.UI5_ELEMENT_CLASS_NAME,
+				namespace: WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE,
+			};
 		}
 	}
 
@@ -280,10 +282,10 @@ class RegistryEntry {
 				// Since the UI5 runtime only allows for 1 single type per property/aggregation, we take the first reference
 				type = typeInfo?.references?.[0]?.name || type;
 
-				if (typeInfo.references?.[0].package === "@ui5/webcomponents-base") {
+				if (typeInfo.references?.[0].package === WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE) {
 					// case 0: we just have a reference to the UI5Element base class in the @ui5/webcomponent-base package
 					//         This means that the Web Component can only nest other Web Component subclasses in that slot.
-					if (type === "UI5Element") {
+					if (type === WebComponentRegistryHelper.UI5_ELEMENT_CLASS_NAME) {
 						return {
 							dtsType: "WebComponent",
 							packageName: "sap/ui/core",
@@ -835,7 +837,7 @@ class RegistryEntry {
 	#ui5PropertyExistsInParentChain(classDef, propName) {
 		// we need to stop the recursion on the very top level
 		// The runtime base class does NOT provide any inherited properties!
-		if (classDef.name === UI5_ELEMENT_CLASS_NAME) {
+		if (classDef.name === WebComponentRegistryHelper.UI5_ELEMENT_CLASS_NAME) {
 			return false;
 		}
 		// check self
