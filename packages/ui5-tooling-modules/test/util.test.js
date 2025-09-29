@@ -260,6 +260,8 @@ test.serial("Verify generation of jspdf", async (t) => {
 				navigator: {},
 				atob: function () {},
 				btoa: function () {},
+				TextEncoder: function () {},
+				TextDecoder: function () {},
 			},
 		},
 		{

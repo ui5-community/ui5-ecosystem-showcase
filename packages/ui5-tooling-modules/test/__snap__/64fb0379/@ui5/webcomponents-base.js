@@ -57,18 +57,26 @@ sap.ui.define(
      */
     pkg["AnimationMode"] = {
       /**
+       * Full
+       *
        * @public
        */
       Full: "Full",
       /**
+       * Basic
+       *
        * @public
        */
       Basic: "Basic",
       /**
+       * Minimal
+       *
        * @public
        */
       Minimal: "Minimal",
       /**
+       * None
+       *
        * @public
        */
       None: "None",
@@ -87,22 +95,32 @@ sap.ui.define(
      */
     pkg["CalendarType"] = {
       /**
+       * Gregorian
+       *
        * @public
        */
       Gregorian: "Gregorian",
       /**
+       * Islamic
+       *
        * @public
        */
       Islamic: "Islamic",
       /**
+       * Japanese
+       *
        * @public
        */
       Japanese: "Japanese",
       /**
+       * Buddhist
+       *
        * @public
        */
       Buddhist: "Buddhist",
       /**
+       * Persian
+       *
        * @public
        */
       Persian: "Persian",
@@ -150,14 +168,20 @@ sap.ui.define(
      */
     pkg["MovePlacement"] = {
       /**
+       * On
+       *
        * @public
        */
       On: "On",
       /**
+       * Before
+       *
        * @public
        */
       Before: "Before",
       /**
+       * After
+       *
        * @public
        */
       After: "After",
@@ -176,18 +200,26 @@ sap.ui.define(
      */
     pkg["NavigationMode"] = {
       /**
+       * Auto
+       *
        * @public
        */
       Auto: "Auto",
       /**
+       * Vertical
+       *
        * @public
        */
       Vertical: "Vertical",
       /**
+       * Horizontal
+       *
        * @public
        */
       Horizontal: "Horizontal",
       /**
+       * Paging
+       *
        * @public
        */
       Paging: "Paging",
@@ -241,22 +273,32 @@ sap.ui.define(
      */
     pkg["ValueState"] = {
       /**
+       * None
+       *
        * @public
        */
       None: "None",
       /**
+       * Positive
+       *
        * @public
        */
       Positive: "Positive",
       /**
+       * Critical
+       *
        * @public
        */
       Critical: "Critical",
       /**
+       * Negative
+       *
        * @public
        */
       Negative: "Negative",
       /**
+       * Information
+       *
        * @public
        */
       Information: "Information",
