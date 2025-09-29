@@ -281,6 +281,8 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				changed = content;
 				Object.keys(tokens).forEach((token) => {
 					changed = changed.replace(new RegExp(`((?:require|requireSync|define|toUrl)(?:\\s*)(?:\\([^)]*["']))${token}(["'][^)]*\\))`, "g"), `$1${tokens[token]}$2`);
+					// fix the JSDoc references as well
+					changed = changed.replace(new RegExp(`(\\*\\s@(.*?)\\s+(?:module\\:)?)${token.replace(/\//g, ".")}`, "g"), `$1${tokens[token].replace(/\//g, ".")}`);
 				});
 				Object.keys(isATokens).forEach((token) => {
 					changed = changed.replace(new RegExp(`((?:isA)(?:\\s*)(?:\\([^)]*["']))${token}(["'][^)]*\\))`, "g"), `$1${isATokens[token]}$2`);
