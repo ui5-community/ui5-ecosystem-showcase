@@ -227,7 +227,7 @@ const JSDocSerializer = {
 				override: `@ui5-module-override ${registryEntry.namespace} ${enumName}`,
 			});
 			enumDef.values.forEach((value) => {
-				value._jsDoc = baseTemplate({ description: value.description, visibility: "@public" });
+				value._jsDoc = baseTemplate({ description: value.description || value.name, visibility: "@public" });
 			});
 		});
 	},

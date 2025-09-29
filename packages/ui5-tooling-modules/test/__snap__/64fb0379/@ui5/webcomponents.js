@@ -236,50 +236,74 @@ sap.ui.define(
      */
     pkg["AvatarColorScheme"] = {
       /**
+       * Auto
+       *
        * @public
        */
       Auto: "Auto",
       /**
+       * Accent1
+       *
        * @public
        */
       Accent1: "Accent1",
       /**
+       * Accent2
+       *
        * @public
        */
       Accent2: "Accent2",
       /**
+       * Accent3
+       *
        * @public
        */
       Accent3: "Accent3",
       /**
+       * Accent4
+       *
        * @public
        */
       Accent4: "Accent4",
       /**
+       * Accent5
+       *
        * @public
        */
       Accent5: "Accent5",
       /**
+       * Accent6
+       *
        * @public
        */
       Accent6: "Accent6",
       /**
+       * Accent7
+       *
        * @public
        */
       Accent7: "Accent7",
       /**
+       * Accent8
+       *
        * @public
        */
       Accent8: "Accent8",
       /**
+       * Accent9
+       *
        * @public
        */
       Accent9: "Accent9",
       /**
+       * Accent10
+       *
        * @public
        */
       Accent10: "Accent10",
       /**
+       * Placeholder
+       *
        * @public
        */
       Placeholder: "Placeholder",
@@ -1216,22 +1240,32 @@ sap.ui.define(
      */
     pkg["Highlight"] = {
       /**
+       * None
+       *
        * @public
        */
       None: "None",
       /**
+       * Positive
+       *
        * @public
        */
       Positive: "Positive",
       /**
+       * Critical
+       *
        * @public
        */
       Critical: "Critical",
       /**
+       * Negative
+       *
        * @public
        */
       Negative: "Negative",
       /**
+       * Information
+       *
        * @public
        */
       Information: "Information",
@@ -2009,6 +2043,8 @@ sap.ui.define(
      */
     pkg["PopoverVerticalAlign"] = {
       /**
+       * Center
+       *
        * @public
        */
       Center: "Center",
@@ -2283,22 +2319,32 @@ sap.ui.define(
      */
     pkg["TableCellHorizontalAlign"] = {
       /**
+       * Left
+       *
        * @public
        */
       Left: "Left",
       /**
+       * Start
+       *
        * @public
        */
       Start: "Start",
       /**
+       * Right
+       *
        * @public
        */
       Right: "Right",
       /**
+       * End
+       *
        * @public
        */
       End: "End",
       /**
+       * Center
+       *
        * @public
        */
       Center: "Center",
