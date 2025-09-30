@@ -5,11 +5,11 @@ sap.ui.define(
   [
     "../webcomponents-base",
     "sap/ui/core/webc/WebComponent",
-    "sap/ui/base/DataType",
+    "sap/ui/base/DataType"
   ],
   function (WebCPackage, WebComponent, DataType) {
-    "use strict"
-    const { registerEnum } = DataType
+    "use strict";
+    const { registerEnum } = DataType;
 
     const pkg = {
       _ui5metadata: {
@@ -23,25 +23,25 @@ sap.ui.define(
           "@ui5.webcomponents-base.MovePlacement",
           "@ui5.webcomponents-base.NavigationMode",
           "@ui5.webcomponents-base.SortOrder",
-          "@ui5.webcomponents-base.ValueState",
+          "@ui5.webcomponents-base.ValueState"
         ],
         interfaces: [],
         controls: [],
         elements: [],
-        rootPath: "../",
-      },
-    }
+        rootPath: "../"
+      }
+    };
 
     if (WebCPackage) {
       Object.keys(WebCPackage).forEach((key) => {
         if (key !== "default") {
-          pkg[key] = WebCPackage[key]
+          pkg[key] = WebCPackage[key];
         } else {
           if (typeof WebCPackage[key] === "object") {
-            Object.assign(pkg, WebCPackage[key])
+            Object.assign(pkg, WebCPackage[key]);
           }
         }
-      })
+      });
     }
 
     /**
@@ -79,9 +79,9 @@ sap.ui.define(
        *
        * @public
        */
-      None: "None",
-    }
-    registerEnum("@ui5.webcomponents-base.AnimationMode", pkg["AnimationMode"])
+      None: "None"
+    };
+    registerEnum("@ui5.webcomponents-base.AnimationMode", pkg["AnimationMode"]);
     /**
      * Different calendar types.
      *
@@ -123,9 +123,9 @@ sap.ui.define(
        *
        * @public
        */
-      Persian: "Persian",
-    }
-    registerEnum("@ui5.webcomponents-base.CalendarType", pkg["CalendarType"])
+      Persian: "Persian"
+    };
+    registerEnum("@ui5.webcomponents-base.CalendarType", pkg["CalendarType"]);
     /**
      * Different behavior for ItemNavigation.
      *
@@ -149,12 +149,12 @@ sap.ui.define(
        *
        * @public
        */
-      Cyclic: "Cyclic",
-    }
+      Cyclic: "Cyclic"
+    };
     registerEnum(
       "@ui5.webcomponents-base.ItemNavigationBehavior",
-      pkg["ItemNavigationBehavior"],
-    )
+      pkg["ItemNavigationBehavior"]
+    );
     /**
      * Placements of a moved element relative to a target element.
      *
@@ -184,9 +184,9 @@ sap.ui.define(
        *
        * @public
        */
-      After: "After",
-    }
-    registerEnum("@ui5.webcomponents-base.MovePlacement", pkg["MovePlacement"])
+      After: "After"
+    };
+    registerEnum("@ui5.webcomponents-base.MovePlacement", pkg["MovePlacement"]);
     /**
      * Different navigation modes for ItemNavigation.
      *
@@ -222,12 +222,12 @@ sap.ui.define(
        *
        * @public
        */
-      Paging: "Paging",
-    }
+      Paging: "Paging"
+    };
     registerEnum(
       "@ui5.webcomponents-base.NavigationMode",
-      pkg["NavigationMode"],
-    )
+      pkg["NavigationMode"]
+    );
     /**
      * Defines the sort order.
      *
@@ -257,9 +257,9 @@ sap.ui.define(
        *
        * @public
        */
-      Descending: "Descending",
-    }
-    registerEnum("@ui5.webcomponents-base.SortOrder", pkg["SortOrder"])
+      Descending: "Descending"
+    };
+    registerEnum("@ui5.webcomponents-base.SortOrder", pkg["SortOrder"]);
     /**
      * Different types of ValueStates.
      *
@@ -301,9 +301,9 @@ sap.ui.define(
        *
        * @public
        */
-      Information: "Information",
-    }
-    registerEnum("@ui5.webcomponents-base.ValueState", pkg["ValueState"])
+      Information: "Information"
+    };
+    registerEnum("@ui5.webcomponents-base.ValueState", pkg["ValueState"]);
 
     // Interfaces
 
@@ -316,140 +316,141 @@ sap.ui.define(
     // The control property is defined as a "sap.ui.core.CSSSize".
 
     if (!WebComponent.__setProperty__isPatched) {
-      const fnOriginalSetProperty = WebComponent.prototype.setProperty
+      const fnOriginalSetProperty = WebComponent.prototype.setProperty;
       WebComponent.prototype.setProperty = function (
         sPropName,
         v,
-        bSupressInvalidate,
+        bSupressInvalidate
       ) {
         if ((sPropName === "width" || sPropName === "height") && !isNaN(v)) {
           const sType = this.getMetadata()
             .getProperty(sPropName)
             .getType()
-            .getName()
+            .getName();
           if (sType === "sap.ui.core.CSSSize") {
-            v += "px"
+            v += "px";
           }
         }
         return fnOriginalSetProperty.apply(this, [
           sPropName,
           v,
-          bSupressInvalidate,
-        ])
-      }
-      WebComponent.__setProperty__isPatched = true
+          bSupressInvalidate
+        ]);
+      };
+      WebComponent.__setProperty__isPatched = true;
     }
 
     // Fixed with https://github.com/UI5/openui5/commit/090a19eb317785fc047b9b3d2c59016cacc3e8fa in UI5 1.140.0
 
     if (!WebComponent.__MappingSupportForEvents__isPatched) {
       var WebComponentMetadataPrototype = Object.getPrototypeOf(
-        WebComponent.getMetadata(),
-      )
-      var OriginalEvent = WebComponentMetadataPrototype.metaFactoryEvent
+        WebComponent.getMetadata()
+      );
+      var OriginalEvent = WebComponentMetadataPrototype.metaFactoryEvent;
       var WebComponentEvent = function (oClass, name, info) {
-        OriginalEvent.apply(this, arguments)
+        OriginalEvent.apply(this, arguments);
         if (info.mapping) {
           this._sMapTo =
-            typeof info.mapping !== "object" ? info.mapping : info.mapping.to
+            typeof info.mapping !== "object" ? info.mapping : info.mapping.to;
         }
-        this._isCustomEvent = true // WebComponent events are always custom events
-      }
-      WebComponentEvent.prototype = Object.create(OriginalEvent.prototype)
-      WebComponentEvent.prototype.constructor = WebComponentEvent
-      WebComponentMetadataPrototype.metaFactoryEvent = WebComponentEvent
+        this._isCustomEvent = true; // WebComponent events are always custom events
+      };
+      WebComponentEvent.prototype = Object.create(OriginalEvent.prototype);
+      WebComponentEvent.prototype.constructor = WebComponentEvent;
+      WebComponentMetadataPrototype.metaFactoryEvent = WebComponentEvent;
 
       WebComponentMetadataPrototype.getEventsForCustomEvent = function (
-        sCustomEventName,
+        sCustomEventName
       ) {
-        var mFiltered = {}
-        var mEvents = this.getAllEvents()
+        var mFiltered = {};
+        var mEvents = this.getAllEvents();
         for (var sEventName in mEvents) {
-          var oEventObj = mEvents[sEventName]
+          var oEventObj = mEvents[sEventName];
           if (oEventObj._isCustomEvent) {
             if (
               sEventName === sCustomEventName ||
               oEventObj._sMapTo === sCustomEventName
             ) {
-              mFiltered[sEventName] = oEventObj
+              mFiltered[sEventName] = oEventObj;
             }
           }
         }
 
-        return mFiltered
-      }
+        return mFiltered;
+      };
 
       WebComponent.prototype.__attachCustomEventsListeners = function () {
-        var hyphenate = sap.ui.require("sap/base/strings/hyphenate")
-        var oDomRef = this.getDomRef()
-        var oEvents = this.getMetadata().getAllEvents()
+        var hyphenate = sap.ui.require("sap/base/strings/hyphenate");
+        var oDomRef = this.getDomRef();
+        var oEvents = this.getMetadata().getAllEvents();
         for (var sEventName in oEvents) {
           if (oEvents[sEventName]._isCustomEvent) {
             var sCustomEventName = hyphenate(
-              oEvents[sEventName]._sMapTo || sEventName,
-            )
+              oEvents[sEventName]._sMapTo || sEventName
+            );
             this.__handleCustomEventBound =
               this.__handleCustomEventBound ||
-              this.__handleCustomEvent.bind(this)
+              this.__handleCustomEvent.bind(this);
             oDomRef.addEventListener(
               sCustomEventName,
-              this.__handleCustomEventBound,
-            )
+              this.__handleCustomEventBound
+            );
           }
         }
-      }
+      };
 
       WebComponent.prototype.__detachCustomEventsListeners = function () {
-        var oDomRef = this.getDomRef()
+        var oDomRef = this.getDomRef();
         if (!oDomRef) {
-          return
+          return;
         }
-        var hyphenate = sap.ui.require("sap/base/strings/hyphenate")
-        var oEvents = this.getMetadata().getAllEvents()
+        var hyphenate = sap.ui.require("sap/base/strings/hyphenate");
+        var oEvents = this.getMetadata().getAllEvents();
         for (var sEventName in oEvents) {
           if (oEvents[sEventName]._isCustomEvent) {
             var sCustomEventName = hyphenate(
-              oEvents[sEventName]._sMapTo || sEventName,
-            )
+              oEvents[sEventName]._sMapTo || sEventName
+            );
             oDomRef.removeEventListener(
               sCustomEventName,
-              this.__handleCustomEventBound,
-            )
+              this.__handleCustomEventBound
+            );
           }
         }
-      }
+      };
 
       WebComponent.prototype.__handleCustomEvent = function (oEvent) {
         // Prepare the event data object
-        var camelize = sap.ui.require("sap/base/strings/camelize")
-        var sEventName = camelize(oEvent.type)
-        var oEventData = this.__formatEventData(oEvent.detail)
+        var camelize = sap.ui.require("sap/base/strings/camelize");
+        var sEventName = camelize(oEvent.type);
+        var oEventData = this.__formatEventData(oEvent.detail);
 
         // Notify all custom events that are registered for this event name
         var mCustomEvents =
-          this.getMetadata().getEventsForCustomEvent(sEventName)
+          this.getMetadata().getEventsForCustomEvent(sEventName);
         for (var sName in mCustomEvents) {
-          var oEventObj = mCustomEvents[sName]
-          var bPrevented = !oEventObj.fire(this, oEventData)
+          var oEventObj = mCustomEvents[sName];
+          var bPrevented = !oEventObj.fire(this, oEventData);
           if (bPrevented) {
-            oEvent.preventDefault()
+            oEvent.preventDefault();
           }
         }
-      }
+      };
 
-      WebComponent.__MappingSupportForEvents__isPatched = true
+      WebComponent.__MappingSupportForEvents__isPatched = true;
     }
 
     // Helper to forward the CustomData to the root dom ref in the shadow dom.
 
     if (!WebComponent.__CustomData__isPatched) {
-      const fnOriginalOnAfterRendering = WebComponent.prototype.onAfterRendering
+      const fnOriginalOnAfterRendering =
+        WebComponent.prototype.onAfterRendering;
       WebComponent.prototype.onAfterRendering = function () {
-        const aCustomData = this.getCustomData()
+        const aCustomData = this.getCustomData();
         if (aCustomData?.length > 0) {
           setTimeout(
             function () {
-              const oDomRef = this.getDomRef()
+              const oDomRef = this.getDomRef();
               // either use the getFocusDomRef method or the getDomRef method to get the shadow DOM reference
               const oShadowDomRef =
                 oDomRef &&
@@ -457,29 +458,29 @@ sap.ui.define(
                   oDomRef.getFocusDomRef()) ||
                   (typeof oDomRef.getDomRef === "function" &&
                     oDomRef.getDomRef()) ||
-                  (oDomRef.shadowRoot && oDomRef.shadowRoot.firstElementChild)) // for all non UI5Elements
+                  (oDomRef.shadowRoot && oDomRef.shadowRoot.firstElementChild)); // for all non UI5Elements
               if (oShadowDomRef) {
                 aCustomData.forEach(function (oCustomData) {
                   if (oCustomData.getWriteToDom()) {
-                    const sKey = oCustomData.getKey()
-                    const sValue = oCustomData.getValue()
-                    oShadowDomRef.setAttribute(`data-${sKey}`, sValue)
+                    const sKey = oCustomData.getKey();
+                    const sValue = oCustomData.getValue();
+                    oShadowDomRef.setAttribute(`data-${sKey}`, sValue);
                   }
-                })
+                });
               }
             }.bind(this),
-            0,
-          )
+            0
+          );
         }
-        return fnOriginalOnAfterRendering.apply(this, arguments)
-      }
-      WebComponent.__CustomData__isPatched = true
+        return fnOriginalOnAfterRendering.apply(this, arguments);
+      };
+      WebComponent.__CustomData__isPatched = true;
     }
 
     // ====================
     // MONKEY PATCHES END
     // ====================
 
-    return pkg
-  },
-)
+    return pkg;
+  }
+);

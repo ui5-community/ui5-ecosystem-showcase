@@ -2,7 +2,7 @@
  * ${copyright}
  */
 sap.ui.define(["../container"], function (WebCPackage) {
-  "use strict"
+  "use strict";
 
   const pkg = {
     _ui5metadata: {
@@ -13,26 +13,26 @@ sap.ui.define(["../container"], function (WebCPackage) {
       interfaces: [],
       controls: [
         "@luigi-project.container.LuigiContainer",
-        "@luigi-project.container.LuigiCompoundContainer",
+        "@luigi-project.container.LuigiCompoundContainer"
       ],
       elements: [],
-      rootPath: "../",
-    },
-  }
+      rootPath: "../"
+    }
+  };
 
   if (WebCPackage) {
     Object.keys(WebCPackage).forEach((key) => {
       if (key !== "default") {
-        pkg[key] = WebCPackage[key]
+        pkg[key] = WebCPackage[key];
       } else {
         if (typeof WebCPackage[key] === "object") {
-          Object.assign(pkg, WebCPackage[key])
+          Object.assign(pkg, WebCPackage[key]);
         }
       }
-    })
+    });
   }
 
   // Interfaces
 
-  return pkg
-})
+  return pkg;
+});

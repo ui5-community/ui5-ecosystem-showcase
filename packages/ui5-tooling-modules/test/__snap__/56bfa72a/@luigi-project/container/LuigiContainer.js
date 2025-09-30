@@ -5,10 +5,10 @@ sap.ui.define(
   [
     "sap/ui/core/webc/WebComponent",
     "../../@luigi-project/container",
-    "../../LuigiContainer",
+    "../../LuigiContainer"
   ],
   function (WebComponentBaseClass) {
-    "use strict"
+    "use strict";
 
     const WrapperClass = WebComponentBaseClass.extend(
       "@luigi-project.container.LuigiContainer",
@@ -21,202 +21,202 @@ sap.ui.define(
           properties: {
             activeFeatureToggleList: {
               type: "string[]",
-              mapping: "property",
+              mapping: "property"
             },
             allowRules: {
               type: "string[]",
-              mapping: "property",
+              mapping: "property"
             },
             anchor: {
               type: "string",
-              mapping: "property",
+              mapping: "property"
             },
             authData: {
               type: "object",
-              mapping: "property",
+              mapping: "property"
             },
             clientPermissions: {
               type: "object",
-              mapping: "property",
+              mapping: "property"
             },
             context: {
               type: "any",
-              mapping: "property",
+              mapping: "property"
             },
             deferInit: {
               type: "boolean",
-              mapping: "property",
+              mapping: "property"
             },
             dirtyStatus: {
               type: "boolean",
-              mapping: "property",
+              mapping: "property"
             },
             documentTitle: {
               type: "string",
-              mapping: "property",
+              mapping: "property"
             },
             hasBack: {
               type: "boolean",
-              mapping: "property",
+              mapping: "property"
             },
             label: {
               type: "string",
-              mapping: "property",
+              mapping: "property"
             },
             locale: {
               type: "string",
-              mapping: "property",
+              mapping: "property"
             },
             noShadow: {
               type: "boolean",
-              mapping: "property",
+              mapping: "property"
             },
             nodeParams: {
               type: "object",
-              mapping: "property",
+              mapping: "property"
             },
             pathParams: {
               type: "object",
-              mapping: "property",
+              mapping: "property"
             },
             sandboxRules: {
               type: "string[]",
-              mapping: "property",
+              mapping: "property"
             },
             searchParams: {
               type: "object",
-              mapping: "property",
+              mapping: "property"
             },
             skipCookieCheck: {
               type: "string",
-              mapping: "property",
+              mapping: "property"
             },
             skipInitCheck: {
               type: "boolean",
-              mapping: "property",
+              mapping: "property"
             },
             theme: {
               type: "string",
-              mapping: "property",
+              mapping: "property"
             },
             userSettings: {
               type: "object",
-              mapping: "property",
+              mapping: "property"
             },
             viewurl: {
               type: "string",
-              mapping: "property",
+              mapping: "property"
             },
             webcomponent: {
               type: "any",
-              mapping: "property",
+              mapping: "property"
             },
             text: {
               type: "string",
-              mapping: "textContent",
+              mapping: "textContent"
             },
             width: {
               type: "sap.ui.core.CSSSize",
-              mapping: "style",
+              mapping: "style"
             },
             height: {
               type: "sap.ui.core.CSSSize",
-              mapping: "style",
-            },
+              mapping: "style"
+            }
           },
           aggregations: {},
           associations: {},
           events: {
             customMessage: {
-              parameters: {},
+              parameters: {}
             },
             getContextRequest: {
-              parameters: {},
+              parameters: {}
             },
             navigationRequest: {
-              parameters: {},
+              parameters: {}
             },
             showAlertRequest: {
-              parameters: {},
+              parameters: {}
             },
             initialized: {
-              parameters: {},
+              parameters: {}
             },
             addSearchParamsRequest: {
-              parameters: {},
+              parameters: {}
             },
             addNodeParamsRequest: {
-              parameters: {},
+              parameters: {}
             },
             showConfirmationModalRequest: {
-              parameters: {},
+              parameters: {}
             },
             showLoadingIndicatorRequest: {
-              parameters: {},
+              parameters: {}
             },
             hideLoadingIndicatorRequest: {
-              parameters: {},
+              parameters: {}
             },
             setCurrentLocaleRequest: {
-              parameters: {},
+              parameters: {}
             },
             setStorageRequest: {
-              parameters: {},
+              parameters: {}
             },
             runtimeErrorHandlingRequest: {
-              parameters: {},
+              parameters: {}
             },
             setAnchorRequest: {
-              parameters: {},
+              parameters: {}
             },
             setThirdPartyCookiesRequest: {
-              parameters: {},
+              parameters: {}
             },
             getCurrentRouteRequest: {
-              parameters: {},
+              parameters: {}
             },
             reportNavigationCompletedRequest: {
-              parameters: {},
+              parameters: {}
             },
             updateModalPathDataRequest: {
-              parameters: {},
+              parameters: {}
             },
             updateModalSettingsRequest: {
-              parameters: {},
+              parameters: {}
             },
             checkPathExistsRequest: {
-              parameters: {},
+              parameters: {}
             },
             setDirtyStatusRequest: {
-              parameters: {},
+              parameters: {}
             },
             setViewgroupDataRequest: {
-              parameters: {},
+              parameters: {}
             },
             openUserSettingsRequest: {
-              parameters: {},
+              parameters: {}
             },
             closeUserSettingsRequest: {
-              parameters: {},
+              parameters: {}
             },
             collapseLeftnavRequest: {
-              parameters: {},
+              parameters: {}
             },
             updateTopNavigationRequest: {
-              parameters: {},
+              parameters: {}
             },
             goBackRequest: {
-              parameters: {},
+              parameters: {}
             },
             hasBackRequest: {
-              parameters: {},
+              parameters: {}
             },
             addBackdropRequest: {
-              parameters: {},
+              parameters: {}
             },
             removeBackdropRequest: {
-              parameters: {},
-            },
+              parameters: {}
+            }
           },
           getters: [],
           methods: [
@@ -226,14 +226,14 @@ sap.ui.define(
             "notifyAlertClosed",
             "notifyConfirmationModalClosed",
             "updateViewUrl",
-            "init",
+            "init"
           ],
           designtime:
-            "@luigi-project/container/designtime/LuigiContainer.designtime",
-        },
-      },
-    )
+            "@luigi-project/container/designtime/LuigiContainer.designtime"
+        }
+      }
+    );
 
-    return WrapperClass
-  },
-)
+    return WrapperClass;
+  }
+);

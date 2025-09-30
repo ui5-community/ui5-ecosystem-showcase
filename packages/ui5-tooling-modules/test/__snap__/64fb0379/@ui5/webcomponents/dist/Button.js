@@ -6,10 +6,10 @@ sap.ui.define(
     "sap/ui/core/webc/WebComponent",
     "sap/ui/core/EnabledPropagator",
     "../../../@ui5/webcomponents",
-    "../../../Button",
+    "../../../Button"
   ],
   function (WebComponentBaseClass, EnabledPropagator) {
-    "use strict"
+    "use strict";
 
     const WrapperClass = WebComponentBaseClass.extend(
       "@ui5.webcomponents.dist.Button",
@@ -23,7 +23,7 @@ sap.ui.define(
             design: {
               type: "@ui5.webcomponents.ButtonDesign",
               mapping: "property",
-              defaultValue: "Default",
+              defaultValue: "Default"
             },
             enabled: {
               type: "boolean",
@@ -31,64 +31,64 @@ sap.ui.define(
               mapping: {
                 type: "property",
                 to: "disabled",
-                formatter: "_mapEnabled",
-              },
+                formatter: "_mapEnabled"
+              }
             },
             icon: {
               type: "string",
-              mapping: "property",
+              mapping: "property"
             },
             endIcon: {
               type: "string",
-              mapping: "property",
+              mapping: "property"
             },
             submits: {
               type: "boolean",
               mapping: "property",
-              defaultValue: false,
+              defaultValue: false
             },
             accessibleName: {
               type: "string",
-              mapping: "property",
+              mapping: "property"
             },
             accessibilityAttributes: {
               type: "any",
               mapping: "property",
-              defaultValue: "{}",
+              defaultValue: "{}"
             },
             accessibleDescription: {
               type: "string",
-              mapping: "property",
+              mapping: "property"
             },
             type: {
               type: "@ui5.webcomponents.ButtonType",
               mapping: "property",
-              defaultValue: "Button",
+              defaultValue: "Button"
             },
             accessibleRole: {
               type: "@ui5.webcomponents.ButtonAccessibleRole",
               mapping: "property",
-              defaultValue: "Button",
+              defaultValue: "Button"
             },
             text: {
               type: "string",
-              mapping: "textContent",
+              mapping: "textContent"
             },
             width: {
               type: "sap.ui.core.CSSSize",
-              mapping: "style",
+              mapping: "style"
             },
             height: {
               type: "sap.ui.core.CSSSize",
-              mapping: "style",
-            },
+              mapping: "style"
+            }
           },
           aggregations: {
             badge: {
               type: "@ui5.webcomponents.dist.ButtonBadge",
               multiple: true,
-              slot: "badge",
-            },
+              slot: "badge"
+            }
           },
           associations: {
             ariaLabelledBy: {
@@ -97,9 +97,9 @@ sap.ui.define(
               mapping: {
                 type: "property",
                 to: "accessibleNameRef",
-                formatter: "_getAriaLabelledByForRendering",
-              },
-            },
+                formatter: "_getAriaLabelledByForRendering"
+              }
+            }
           },
           events: {
             click: {
@@ -115,13 +115,13 @@ sap.ui.define(
                       dedicatedTypes: [
                         {
                           dtsType: "Event",
-                          ui5Type: "object",
-                        },
-                      ],
-                    },
+                          ui5Type: "object"
+                        }
+                      ]
+                    }
                   ],
                   dtsParamDescription:
-                    "Returns original event that comes from user's **click** interaction",
+                    "Returns original event that comes from user's **click** interaction"
                 },
                 altKey: {
                   type: "boolean",
@@ -132,13 +132,13 @@ sap.ui.define(
                       dedicatedTypes: [
                         {
                           dtsType: "boolean",
-                          ui5Type: "boolean",
-                        },
-                      ],
-                    },
+                          ui5Type: "boolean"
+                        }
+                      ]
+                    }
                   ],
                   dtsParamDescription:
-                    'Returns whether the "ALT" key was pressed when the event was triggered.',
+                    'Returns whether the "ALT" key was pressed when the event was triggered.'
                 },
                 ctrlKey: {
                   type: "boolean",
@@ -149,13 +149,13 @@ sap.ui.define(
                       dedicatedTypes: [
                         {
                           dtsType: "boolean",
-                          ui5Type: "boolean",
-                        },
-                      ],
-                    },
+                          ui5Type: "boolean"
+                        }
+                      ]
+                    }
                   ],
                   dtsParamDescription:
-                    'Returns whether the "CTRL" key was pressed when the event was triggered.',
+                    'Returns whether the "CTRL" key was pressed when the event was triggered.'
                 },
                 metaKey: {
                   type: "boolean",
@@ -166,13 +166,13 @@ sap.ui.define(
                       dedicatedTypes: [
                         {
                           dtsType: "boolean",
-                          ui5Type: "boolean",
-                        },
-                      ],
-                    },
+                          ui5Type: "boolean"
+                        }
+                      ]
+                    }
                   ],
                   dtsParamDescription:
-                    'Returns whether the "META" key was pressed when the event was triggered.',
+                    'Returns whether the "META" key was pressed when the event was triggered.'
                 },
                 shiftKey: {
                   type: "boolean",
@@ -183,26 +183,26 @@ sap.ui.define(
                       dedicatedTypes: [
                         {
                           dtsType: "boolean",
-                          ui5Type: "boolean",
-                        },
-                      ],
-                    },
+                          ui5Type: "boolean"
+                        }
+                      ]
+                    }
                   ],
                   dtsParamDescription:
-                    'Returns whether the "SHIFT" key was pressed when the event was triggered.',
-                },
-              },
-            },
+                    'Returns whether the "SHIFT" key was pressed when the event was triggered.'
+                }
+              }
+            }
           },
           getters: [],
           methods: [],
-          designtime: "@ui5/webcomponents/designtime/Button.designtime",
-        },
-      },
-    )
+          designtime: "@ui5/webcomponents/designtime/Button.designtime"
+        }
+      }
+    );
 
-    EnabledPropagator.call(WrapperClass.prototype)
+    EnabledPropagator.call(WrapperClass.prototype);
 
-    return WrapperClass
-  },
-)
+    return WrapperClass;
+  }
+);
