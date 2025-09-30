@@ -243,7 +243,13 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			type: "prebuilt-chunk",
 			id: source,
 			fileName: `${source}.js`,
-			code: prettier.format(code, { semi: false, parser: "babel" }),
+			code: prettier.format(code, {
+				// TODO: read from prettier config if existing
+				//       otherwise use some defaults
+				semi: true,
+				trailingComma: "none",
+				parser: "babel",
+			}),
 		});
 
 		// store the metadata
@@ -341,7 +347,13 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 				type: "prebuilt-chunk",
 				id: resolvedSource,
 				fileName: `${resolvedSource}.js`,
-				code: prettier.format(code, { semi: false, parser: "babel" }),
+				code: prettier.format(code, {
+					// TODO: read from prettier config if existing
+					//       otherwise use some defaults
+					semi: true,
+					trailingComma: "none",
+					parser: "babel",
+				}),
 			});
 
 			// store the metadata

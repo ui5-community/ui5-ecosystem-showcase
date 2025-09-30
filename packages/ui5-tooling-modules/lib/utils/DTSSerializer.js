@@ -319,7 +319,13 @@ const DTSSerializer = {
 				Templates.module({
 					registryEntry,
 				}),
-				{ semi: false, parser: "typescript" },
+				{
+					// TODO: read from prettier config if existing
+					//       otherwise use some defaults
+					semi: true,
+					trailingComma: "none",
+					parser: "typescript",
+				},
 			)
 			.then((prettifiedTypes) => {
 				if (prettifiedTypes) {
@@ -334,7 +340,13 @@ const DTSSerializer = {
 							clazz: registryEntry.classes[clazz],
 							BINDING_STRING_PLACEHOLDER: "`{${string}}`",
 						}),
-						{ semi: false, parser: "typescript" },
+						{
+							// TODO: read from prettier config if existing
+							//       otherwise use some defaults
+							semi: true,
+							trailingComma: "none",
+							parser: "typescript",
+						},
 					)
 					.then((prettifiedTypes) => {
 						if (prettifiedTypes) {
