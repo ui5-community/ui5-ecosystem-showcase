@@ -551,6 +551,11 @@ test.serial("Verify generation of @luigi-project/container", async (t) => {
 		}),
 		{
 			keepDynamicImports: ["@luigi-project/container"],
+			pluginOptions: {
+				webcomponents: {
+					scoping: false,
+				},
+			},
 		},
 	);
 	const modPackage = await env.getModule("@luigi-project/container");

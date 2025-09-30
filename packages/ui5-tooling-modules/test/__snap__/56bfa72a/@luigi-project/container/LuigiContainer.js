@@ -16,7 +16,7 @@ sap.ui.define(
         metadata: {
           namespace: "@luigi-project/container",
           qualifiedNamespace: "@luigi-project.container",
-          tag: "luigi-container-1fd55bfa",
+          tag: "luigi-container",
           interfaces: [],
           properties: {
             activeFeatureToggleList: {
