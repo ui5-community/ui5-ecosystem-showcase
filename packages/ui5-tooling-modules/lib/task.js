@@ -27,6 +27,7 @@ const sanitize = require("sanitize-filename");
  * @param {boolean} [parameters.options.configuration.minify] minify the generated code
  * @param {boolean|string} [parameters.options.configuration.dynamicEntriesPath] the relative path for dynamic entries (defaults to "_dynamics")
  * @param {boolean|string} [parameters.options.configuration.sourcemap] configures the generation of sourcemaps (default: false, possible values: true|false, "inline", "hidden")
+ * @param {string[]} [parameters.options.configuration.entryPoints] list of entry points to be included in the bundle (not determined by scanning)
  * @returns {Promise<undefined>} Promise resolving with <code>undefined</code> once data has been written
  */
 module.exports = async function ({ log, workspace, taskUtil, options }) {
@@ -280,12 +281,12 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				// therefore we use regex to keep source formatting and sourcmap entry!
 				changed = content;
 				Object.keys(tokens).forEach((token) => {
-					changed = changed.replace(new RegExp(`((?:require|requireSync|define|toUrl)(?:\\s*)(?:\\([^)]*["']))${token}(["'][^)]*\\))`, "g"), `$1${tokens[token]}$2`);
+					changed = changed.replace(new RegExp(`((?:require|requireSync|define|toUrl)(?:\\s*)(?:\\([^)]*["']))${token}(["'][^)]*\\))`, "mg"), `$1${tokens[token]}$2`);
 					// fix the JSDoc references as well
-					changed = changed.replace(new RegExp(`(\\*\\s@(.*?)\\s+(?:module\\:)?)${token.replace(/\//g, ".")}`, "g"), `$1${tokens[token].replace(/\//g, ".")}`);
+					changed = changed.replace(new RegExp(`(^\\s*\\*\\s@(.*?)\\s+(?:module\\:)?)${token.replace(/\//g, ".")}`, "mg"), `$1${tokens[token].replace(/\//g, ".")}`);
 				});
 				Object.keys(isATokens).forEach((token) => {
-					changed = changed.replace(new RegExp(`((?:isA)(?:\\s*)(?:\\([^)]*["']))${token}(["'][^)]*\\))`, "g"), `$1${isATokens[token]}$2`);
+					changed = changed.replace(new RegExp(`((?:isA)(?:\\s*)(?:\\([^)]*["']))${token}(["'][^)]*\\))`, "mg"), `$1${isATokens[token]}$2`);
 				});
 			} else {
 				changed = content;
@@ -367,9 +368,19 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 	// bundle the resources (determine bundled resources and the set of modules to build)
 	const { resourceFactory } = taskUtil;
 
+	// push the entry points to the modules to ensure they are kept
+	const modules = Array.from(uniqueModules);
+	config.entryPoints
+		?.filter((entry) => {
+			return !uniqueModules.has(entry);
+		})
+		.forEach((entry) => {
+			modules.push(entry);
+		});
+
 	// every unique dependency will be bundled (entry points will be kept, rest is chunked)
 	const bundleTime = Date.now();
-	const bundleInfo = await getBundleInfo(Array.from(uniqueModules), config, { cwd, depPaths, rewriteDep });
+	const bundleInfo = await getBundleInfo(modules, config, { cwd, depPaths, rewriteDep });
 	if (bundleInfo.error) {
 		log.error(bundleInfo.error);
 		process.exit(1);

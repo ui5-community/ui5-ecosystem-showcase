@@ -124,6 +124,10 @@ The following configuration options are relevant for the `task` and the `middlew
   List of additional dependency names to include into the bundling. By default all dependencies and their transitive dependencies are considered. In some cases it is useful to also include devDependencies, e.g. when re-packaging a thirdparty package. If you want to exclude this dependency from being a transitive dependency then you can put it into the devDependencies and list it in this configuration option (but keep in mind that this may exclude the dependency from some check tools!)
   &nbsp;
 
+- *entryPoints*: `string[]` *experimental feature*
+  List of entry point modules to include into the bundling. By default the entry point modules are discovered from the sources (`*.ts`, `*.tsx`, `*.js`, `*.jsx`, `*.xml`)
+  &nbsp;
+
 - *minify*: `boolean` *experimental feature*
   Flag to indicate that the generated code should be minified (in case of excluding thirdparty resources from minification in general, this option can be used to minify just the generated code)
   &nbsp;
