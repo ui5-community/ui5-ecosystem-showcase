@@ -4,8 +4,8 @@
 sap.ui.define(
   ["../webcomponents", "sap/ui/base/DataType", "../@ui5/webcomponents-base"],
   function (WebCPackage, DataType) {
-    "use strict"
-    const { registerEnum } = DataType
+    "use strict";
+    const { registerEnum } = DataType;
 
     const pkg = {
       _ui5metadata: {
@@ -79,7 +79,7 @@ sap.ui.define(
           "@ui5.webcomponents.ToolbarAlign",
           "@ui5.webcomponents.ToolbarDesign",
           "@ui5.webcomponents.ToolbarItemOverflowBehavior",
-          "@ui5.webcomponents.WrappingType",
+          "@ui5.webcomponents.WrappingType"
         ],
         interfaces: [
           "@ui5.webcomponents.IAvatarGroupItem",
@@ -97,7 +97,7 @@ sap.ui.define(
           "@ui5.webcomponents.IOption",
           "@ui5.webcomponents.ITab",
           "@ui5.webcomponents.ITableFeature",
-          "@ui5.webcomponents.ITableGrowing",
+          "@ui5.webcomponents.ITableGrowing"
         ],
         controls: [
           "@ui5.webcomponents.dist.Avatar",
@@ -204,23 +204,23 @@ sap.ui.define(
           "@ui5.webcomponents.dist.ToolbarSpacer",
           "@ui5.webcomponents.dist.Tree",
           "@ui5.webcomponents.dist.TreeItem",
-          "@ui5.webcomponents.dist.TreeItemCustom",
+          "@ui5.webcomponents.dist.TreeItemCustom"
         ],
         elements: [],
-        rootPath: "../",
-      },
-    }
+        rootPath: "../"
+      }
+    };
 
     if (WebCPackage) {
       Object.keys(WebCPackage).forEach((key) => {
         if (key !== "default") {
-          pkg[key] = WebCPackage[key]
+          pkg[key] = WebCPackage[key];
         } else {
           if (typeof WebCPackage[key] === "object") {
-            Object.assign(pkg, WebCPackage[key])
+            Object.assign(pkg, WebCPackage[key]);
           }
         }
-      })
+      });
     }
 
     /**
@@ -306,12 +306,12 @@ sap.ui.define(
        *
        * @public
        */
-      Placeholder: "Placeholder",
-    }
+      Placeholder: "Placeholder"
+    };
     registerEnum(
       "@ui5.webcomponents.AvatarColorScheme",
-      pkg["AvatarColorScheme"],
-    )
+      pkg["AvatarColorScheme"]
+    );
     /**
      * Different types of AvatarGroupType.
      *
@@ -335,9 +335,9 @@ sap.ui.define(
        *
        * @public
        */
-      Individual: "Individual",
-    }
-    registerEnum("@ui5.webcomponents.AvatarGroupType", pkg["AvatarGroupType"])
+      Individual: "Individual"
+    };
+    registerEnum("@ui5.webcomponents.AvatarGroupType", pkg["AvatarGroupType"]);
     /**
      * Different types of AvatarShape.
      *
@@ -361,9 +361,9 @@ sap.ui.define(
        *
        * @public
        */
-      Square: "Square",
-    }
-    registerEnum("@ui5.webcomponents.AvatarShape", pkg["AvatarShape"])
+      Square: "Square"
+    };
+    registerEnum("@ui5.webcomponents.AvatarShape", pkg["AvatarShape"]);
     /**
      * Different types of AvatarSize.
      *
@@ -410,9 +410,9 @@ sap.ui.define(
        *
        * @public
        */
-      XL: "XL",
-    }
-    registerEnum("@ui5.webcomponents.AvatarSize", pkg["AvatarSize"])
+      XL: "XL"
+    };
+    registerEnum("@ui5.webcomponents.AvatarSize", pkg["AvatarSize"]);
     /**
      * Defines background designs.
      *
@@ -442,9 +442,12 @@ sap.ui.define(
        *
        * @public
        */
-      Translucent: "Translucent",
-    }
-    registerEnum("@ui5.webcomponents.BackgroundDesign", pkg["BackgroundDesign"])
+      Translucent: "Translucent"
+    };
+    registerEnum(
+      "@ui5.webcomponents.BackgroundDesign",
+      pkg["BackgroundDesign"]
+    );
     /**
      * ListItem accessible roles.
      *
@@ -468,12 +471,12 @@ sap.ui.define(
        *
        * @public
        */
-      None: "None",
-    }
+      None: "None"
+    };
     registerEnum(
       "@ui5.webcomponents.BarAccessibleRole",
-      pkg["BarAccessibleRole"],
-    )
+      pkg["BarAccessibleRole"]
+    );
     /**
      * Different types of Bar design
      *
@@ -509,9 +512,9 @@ sap.ui.define(
        *
        * @public
        */
-      FloatingFooter: "FloatingFooter",
-    }
-    registerEnum("@ui5.webcomponents.BarDesign", pkg["BarDesign"])
+      FloatingFooter: "FloatingFooter"
+    };
+    registerEnum("@ui5.webcomponents.BarDesign", pkg["BarDesign"]);
     /**
      * Defines border designs.
      *
@@ -535,9 +538,9 @@ sap.ui.define(
        *
        * @public
        */
-      None: "None",
-    }
-    registerEnum("@ui5.webcomponents.BorderDesign", pkg["BorderDesign"])
+      None: "None"
+    };
+    registerEnum("@ui5.webcomponents.BorderDesign", pkg["BorderDesign"]);
     /**
      * Different  Breadcrumbs designs.
      *
@@ -562,12 +565,12 @@ sap.ui.define(
        *
        * @public
        */
-      NoCurrentPage: "NoCurrentPage",
-    }
+      NoCurrentPage: "NoCurrentPage"
+    };
     registerEnum(
       "@ui5.webcomponents.BreadcrumbsDesign",
-      pkg["BreadcrumbsDesign"],
-    )
+      pkg["BreadcrumbsDesign"]
+    );
     /**
      * Different Breadcrumbs separators.
      *
@@ -615,12 +618,12 @@ sap.ui.define(
        *
        * @public
        */
-      GreaterThan: "GreaterThan",
-    }
+      GreaterThan: "GreaterThan"
+    };
     registerEnum(
       "@ui5.webcomponents.BreadcrumbsSeparator",
-      pkg["BreadcrumbsSeparator"],
-    )
+      pkg["BreadcrumbsSeparator"]
+    );
     /**
      * Different BusyIndicator sizes.
      *
@@ -650,12 +653,12 @@ sap.ui.define(
        *
        * @public
        */
-      L: "L",
-    }
+      L: "L"
+    };
     registerEnum(
       "@ui5.webcomponents.BusyIndicatorSize",
-      pkg["BusyIndicatorSize"],
-    )
+      pkg["BusyIndicatorSize"]
+    );
     /**
      * Different BusyIndicator text placements.
      *
@@ -679,12 +682,12 @@ sap.ui.define(
        *
        * @public
        */
-      Bottom: "Bottom",
-    }
+      Bottom: "Bottom"
+    };
     registerEnum(
       "@ui5.webcomponents.BusyIndicatorTextPlacement",
-      pkg["BusyIndicatorTextPlacement"],
-    )
+      pkg["BusyIndicatorTextPlacement"]
+    );
     /**
      * Button accessible roles.
      *
@@ -708,12 +711,12 @@ sap.ui.define(
        *
        * @public
        */
-      Link: "Link",
-    }
+      Link: "Link"
+    };
     registerEnum(
       "@ui5.webcomponents.ButtonAccessibleRole",
-      pkg["ButtonAccessibleRole"],
-    )
+      pkg["ButtonAccessibleRole"]
+    );
     /**
      * Determines where the badge will be placed and how it will be styled.
      *
@@ -745,12 +748,12 @@ sap.ui.define(
        *
        * @public
        */
-      AttentionDot: "AttentionDot",
-    }
+      AttentionDot: "AttentionDot"
+    };
     registerEnum(
       "@ui5.webcomponents.ButtonBadgeDesign",
-      pkg["ButtonBadgeDesign"],
-    )
+      pkg["ButtonBadgeDesign"]
+    );
     /**
      * Different Button designs.
      *
@@ -798,9 +801,9 @@ sap.ui.define(
        *
        * @public
        */
-      Attention: "Attention",
-    }
-    registerEnum("@ui5.webcomponents.ButtonDesign", pkg["ButtonDesign"])
+      Attention: "Attention"
+    };
+    registerEnum("@ui5.webcomponents.ButtonDesign", pkg["ButtonDesign"]);
     /**
      * Determines if the button has special form-related functionality.
      *
@@ -830,9 +833,9 @@ sap.ui.define(
        *
        * @public
        */
-      Reset: "Reset",
-    }
-    registerEnum("@ui5.webcomponents.ButtonType", pkg["ButtonType"])
+      Reset: "Reset"
+    };
+    registerEnum("@ui5.webcomponents.ButtonType", pkg["ButtonType"]);
     /**
      * Enum for calendar legend items' types.
      *
@@ -982,12 +985,12 @@ sap.ui.define(
        *
        * @public
        */
-      Type20: "Type20",
-    }
+      Type20: "Type20"
+    };
     registerEnum(
       "@ui5.webcomponents.CalendarLegendItemType",
-      pkg["CalendarLegendItemType"],
-    )
+      pkg["CalendarLegendItemType"]
+    );
     /**
      * Different Calendar selection mode.
      *
@@ -1017,12 +1020,12 @@ sap.ui.define(
        *
        * @public
        */
-      Range: "Range",
-    }
+      Range: "Range"
+    };
     registerEnum(
       "@ui5.webcomponents.CalendarSelectionMode",
-      pkg["CalendarSelectionMode"],
-    )
+      pkg["CalendarSelectionMode"]
+    );
     /**
      * The <code>CalendarWeekNumbering</code> enum defines how to calculate calendar weeks. Each
      * value defines:
@@ -1069,12 +1072,12 @@ sap.ui.define(
        *
        * @public
        */
-      WesternTraditional: "WesternTraditional",
-    }
+      WesternTraditional: "WesternTraditional"
+    };
     registerEnum(
       "@ui5.webcomponents.CalendarWeekNumbering",
-      pkg["CalendarWeekNumbering"],
-    )
+      pkg["CalendarWeekNumbering"]
+    );
     /**
      * Different Carousel arrows placement.
      *
@@ -1098,12 +1101,12 @@ sap.ui.define(
        *
        * @public
        */
-      Navigation: "Navigation",
-    }
+      Navigation: "Navigation"
+    };
     registerEnum(
       "@ui5.webcomponents.CarouselArrowsPlacement",
-      pkg["CarouselArrowsPlacement"],
-    )
+      pkg["CarouselArrowsPlacement"]
+    );
     /**
      * Different Carousel page indicator types.
      *
@@ -1128,12 +1131,12 @@ sap.ui.define(
        *
        * @public
        */
-      Numeric: "Numeric",
-    }
+      Numeric: "Numeric"
+    };
     registerEnum(
       "@ui5.webcomponents.CarouselPageIndicatorType",
-      pkg["CarouselPageIndicatorType"],
-    )
+      pkg["CarouselPageIndicatorType"]
+    );
     /**
      * Different filtering types of the ComboBox.
      *
@@ -1169,9 +1172,9 @@ sap.ui.define(
        *
        * @public
        */
-      None: "None",
-    }
-    registerEnum("@ui5.webcomponents.ComboBoxFilter", pkg["ComboBoxFilter"])
+      None: "None"
+    };
+    registerEnum("@ui5.webcomponents.ComboBoxFilter", pkg["ComboBoxFilter"]);
     /**
      * Overflow Mode.
      *
@@ -1195,12 +1198,12 @@ sap.ui.define(
        *
        * @public
        */
-      Popover: "Popover",
-    }
+      Popover: "Popover"
+    };
     registerEnum(
       "@ui5.webcomponents.ExpandableTextOverflowMode",
-      pkg["ExpandableTextOverflowMode"],
-    )
+      pkg["ExpandableTextOverflowMode"]
+    );
     /**
      * Different Button designs.
      *
@@ -1224,9 +1227,9 @@ sap.ui.define(
        *
        * @public
        */
-      Large: "Large",
-    }
-    registerEnum("@ui5.webcomponents.FormItemSpacing", pkg["FormItemSpacing"])
+      Large: "Large"
+    };
+    registerEnum("@ui5.webcomponents.FormItemSpacing", pkg["FormItemSpacing"]);
     /**
      * Different types of Highlight .
      *
@@ -1268,9 +1271,9 @@ sap.ui.define(
        *
        * @public
        */
-      Information: "Information",
-    }
-    registerEnum("@ui5.webcomponents.Highlight", pkg["Highlight"])
+      Information: "Information"
+    };
+    registerEnum("@ui5.webcomponents.Highlight", pkg["Highlight"]);
     /**
      * Different Icon semantic designs.
      *
@@ -1330,9 +1333,9 @@ sap.ui.define(
        *
        * @public
        */
-      Positive: "Positive",
-    }
-    registerEnum("@ui5.webcomponents.IconDesign", pkg["IconDesign"])
+      Positive: "Positive"
+    };
+    registerEnum("@ui5.webcomponents.IconDesign", pkg["IconDesign"]);
     /**
      * Different Icon modes.
      *
@@ -1367,9 +1370,9 @@ sap.ui.define(
        *
        * @public
        */
-      Interactive: "Interactive",
-    }
-    registerEnum("@ui5.webcomponents.IconMode", pkg["IconMode"])
+      Interactive: "Interactive"
+    };
+    registerEnum("@ui5.webcomponents.IconMode", pkg["IconMode"]);
     /**
      * Different input types.
      *
@@ -1423,9 +1426,9 @@ sap.ui.define(
        *
        * @public
        */
-      Search: "Search",
-    }
-    registerEnum("@ui5.webcomponents.InputType", pkg["InputType"])
+      Search: "Search"
+    };
+    registerEnum("@ui5.webcomponents.InputType", pkg["InputType"]);
     /**
      * Defines the area size around the component that the user can select.
      *
@@ -1449,12 +1452,12 @@ sap.ui.define(
        *
        * @public
        */
-      Large: "Large",
-    }
+      Large: "Large"
+    };
     registerEnum(
       "@ui5.webcomponents.InteractiveAreaSize",
-      pkg["InteractiveAreaSize"],
-    )
+      pkg["InteractiveAreaSize"]
+    );
     /**
      * Link accessible roles.
      *
@@ -1478,12 +1481,12 @@ sap.ui.define(
        *
        * @public
        */
-      Button: "Button",
-    }
+      Button: "Button"
+    };
     registerEnum(
       "@ui5.webcomponents.LinkAccessibleRole",
-      pkg["LinkAccessibleRole"],
-    )
+      pkg["LinkAccessibleRole"]
+    );
     /**
      * Different link designs.
      *
@@ -1513,9 +1516,9 @@ sap.ui.define(
        *
        * @public
        */
-      Emphasized: "Emphasized",
-    }
-    registerEnum("@ui5.webcomponents.LinkDesign", pkg["LinkDesign"])
+      Emphasized: "Emphasized"
+    };
+    registerEnum("@ui5.webcomponents.LinkDesign", pkg["LinkDesign"]);
     /**
      * List accessible roles.
      *
@@ -1551,12 +1554,12 @@ sap.ui.define(
        *
        * @public
        */
-      ListBox: "ListBox",
-    }
+      ListBox: "ListBox"
+    };
     registerEnum(
       "@ui5.webcomponents.ListAccessibleRole",
-      pkg["ListAccessibleRole"],
-    )
+      pkg["ListAccessibleRole"]
+    );
     /**
      * Different list growing modes.
      *
@@ -1587,9 +1590,9 @@ sap.ui.define(
        *
        * @public
        */
-      None: "None",
-    }
-    registerEnum("@ui5.webcomponents.ListGrowingMode", pkg["ListGrowingMode"])
+      None: "None"
+    };
+    registerEnum("@ui5.webcomponents.ListGrowingMode", pkg["ListGrowingMode"]);
     /**
      * ListItem accessible roles.
      *
@@ -1631,12 +1634,12 @@ sap.ui.define(
        *
        * @public
        */
-      None: "None",
-    }
+      None: "None"
+    };
     registerEnum(
       "@ui5.webcomponents.ListItemAccessibleRole",
-      pkg["ListItemAccessibleRole"],
-    )
+      pkg["ListItemAccessibleRole"]
+    );
     /**
      * Different list item types.
      *
@@ -1672,9 +1675,9 @@ sap.ui.define(
        *
        * @public
        */
-      Navigation: "Navigation",
-    }
-    registerEnum("@ui5.webcomponents.ListItemType", pkg["ListItemType"])
+      Navigation: "Navigation"
+    };
+    registerEnum("@ui5.webcomponents.ListItemType", pkg["ListItemType"]);
     /**
      * Different list selection modes.
      *
@@ -1730,12 +1733,12 @@ sap.ui.define(
        *
        * @public
        */
-      Delete: "Delete",
-    }
+      Delete: "Delete"
+    };
     registerEnum(
       "@ui5.webcomponents.ListSelectionMode",
-      pkg["ListSelectionMode"],
-    )
+      pkg["ListSelectionMode"]
+    );
     /**
      * Different types of list items separators.
      *
@@ -1766,9 +1769,9 @@ sap.ui.define(
        *
        * @public
        */
-      None: "None",
-    }
-    registerEnum("@ui5.webcomponents.ListSeparator", pkg["ListSeparator"])
+      None: "None"
+    };
+    registerEnum("@ui5.webcomponents.ListSeparator", pkg["ListSeparator"]);
     /**
      * Menu item group check modes.
      *
@@ -1798,12 +1801,12 @@ sap.ui.define(
        *
        * @public
        */
-      Multiple: "Multiple",
-    }
+      Multiple: "Multiple"
+    };
     registerEnum(
       "@ui5.webcomponents.MenuItemGroupCheckMode",
-      pkg["MenuItemGroupCheckMode"],
-    )
+      pkg["MenuItemGroupCheckMode"]
+    );
     /**
      * MessageStrip designs.
      *
@@ -1851,12 +1854,12 @@ sap.ui.define(
        *
        * @public
        */
-      ColorSet2: "ColorSet2",
-    }
+      ColorSet2: "ColorSet2"
+    };
     registerEnum(
       "@ui5.webcomponents.MessageStripDesign",
-      pkg["MessageStripDesign"],
-    )
+      pkg["MessageStripDesign"]
+    );
     /**
      * Different notification list growing modes.
      *
@@ -1881,12 +1884,12 @@ sap.ui.define(
        *
        * @public
        */
-      None: "None",
-    }
+      None: "None"
+    };
     registerEnum(
       "@ui5.webcomponents.NotificationListGrowingMode",
-      pkg["NotificationListGrowingMode"],
-    )
+      pkg["NotificationListGrowingMode"]
+    );
     /**
      * Tabs overflow mode in TabContainer.
      *
@@ -1910,9 +1913,9 @@ sap.ui.define(
        *
        * @public
        */
-      StartAndEnd: "StartAndEnd",
-    }
-    registerEnum("@ui5.webcomponents.OverflowMode", pkg["OverflowMode"])
+      StartAndEnd: "StartAndEnd"
+    };
+    registerEnum("@ui5.webcomponents.OverflowMode", pkg["OverflowMode"]);
     /**
      * Panel accessible roles.
      *
@@ -1945,12 +1948,12 @@ sap.ui.define(
        *
        * @public
        */
-      Region: "Region",
-    }
+      Region: "Region"
+    };
     registerEnum(
       "@ui5.webcomponents.PanelAccessibleRole",
-      pkg["PanelAccessibleRole"],
-    )
+      pkg["PanelAccessibleRole"]
+    );
     /**
      * Popover horizontal align types.
      *
@@ -1986,12 +1989,12 @@ sap.ui.define(
        *
        * @public
        */
-      Stretch: "Stretch",
-    }
+      Stretch: "Stretch"
+    };
     registerEnum(
       "@ui5.webcomponents.PopoverHorizontalAlign",
-      pkg["PopoverHorizontalAlign"],
-    )
+      pkg["PopoverHorizontalAlign"]
+    );
     /**
      * Popover placements.
      *
@@ -2027,9 +2030,12 @@ sap.ui.define(
        *
        * @public
        */
-      Bottom: "Bottom",
-    }
-    registerEnum("@ui5.webcomponents.PopoverPlacement", pkg["PopoverPlacement"])
+      Bottom: "Bottom"
+    };
+    registerEnum(
+      "@ui5.webcomponents.PopoverPlacement",
+      pkg["PopoverPlacement"]
+    );
     /**
      * Popover vertical align types.
      *
@@ -2065,12 +2071,12 @@ sap.ui.define(
        *
        * @public
        */
-      Stretch: "Stretch",
-    }
+      Stretch: "Stretch"
+    };
     registerEnum(
       "@ui5.webcomponents.PopoverVerticalAlign",
-      pkg["PopoverVerticalAlign"],
-    )
+      pkg["PopoverVerticalAlign"]
+    );
     /**
      * Popup accessible roles.
      *
@@ -2100,12 +2106,12 @@ sap.ui.define(
        *
        * @public
        */
-      AlertDialog: "AlertDialog",
-    }
+      AlertDialog: "AlertDialog"
+    };
     registerEnum(
       "@ui5.webcomponents.PopupAccessibleRole",
-      pkg["PopupAccessibleRole"],
-    )
+      pkg["PopupAccessibleRole"]
+    );
     /**
      * Different types of Priority.
      *
@@ -2141,9 +2147,9 @@ sap.ui.define(
        *
        * @public
        */
-      None: "None",
-    }
-    registerEnum("@ui5.webcomponents.Priority", pkg["Priority"])
+      None: "None"
+    };
+    registerEnum("@ui5.webcomponents.Priority", pkg["Priority"]);
     /**
      * Types of icon sizes used in the RatingIndicator.
      * Provides predefined size categories to ensure consistent scaling and spacing of icons.
@@ -2175,12 +2181,12 @@ sap.ui.define(
        *
        * @public
        */
-      L: "L",
-    }
+      L: "L"
+    };
     registerEnum(
       "@ui5.webcomponents.RatingIndicatorSize",
-      pkg["RatingIndicatorSize"],
-    )
+      pkg["RatingIndicatorSize"]
+    );
     /**
      * Different SegmentedButton selection modes.
      *
@@ -2204,12 +2210,12 @@ sap.ui.define(
        *
        * @public
        */
-      Multiple: "Multiple",
-    }
+      Multiple: "Multiple"
+    };
     registerEnum(
       "@ui5.webcomponents.SegmentedButtonSelectionMode",
-      pkg["SegmentedButtonSelectionMode"],
-    )
+      pkg["SegmentedButtonSelectionMode"]
+    );
     /**
      * Different types of SemanticColor.
      *
@@ -2251,9 +2257,9 @@ sap.ui.define(
        *
        * @public
        */
-      Neutral: "Neutral",
-    }
-    registerEnum("@ui5.webcomponents.SemanticColor", pkg["SemanticColor"])
+      Neutral: "Neutral"
+    };
+    registerEnum("@ui5.webcomponents.SemanticColor", pkg["SemanticColor"]);
     /**
      * Different types of Switch designs.
      *
@@ -2277,9 +2283,9 @@ sap.ui.define(
        *
        * @public
        */
-      Graphical: "Graphical",
-    }
-    registerEnum("@ui5.webcomponents.SwitchDesign", pkg["SwitchDesign"])
+      Graphical: "Graphical"
+    };
+    registerEnum("@ui5.webcomponents.SwitchDesign", pkg["SwitchDesign"]);
     /**
      * Tab layout of TabContainer.
      *
@@ -2303,9 +2309,9 @@ sap.ui.define(
        *
        * @public
        */
-      Standard: "Standard",
-    }
-    registerEnum("@ui5.webcomponents.TabLayout", pkg["TabLayout"])
+      Standard: "Standard"
+    };
+    registerEnum("@ui5.webcomponents.TabLayout", pkg["TabLayout"]);
     /**
      * Alignment of the &lt;ui5-table-cell&gt; component.
      *
@@ -2347,12 +2353,12 @@ sap.ui.define(
        *
        * @public
        */
-      Center: "Center",
-    }
+      Center: "Center"
+    };
     registerEnum(
       "@ui5.webcomponents.TableCellHorizontalAlign",
-      pkg["TableCellHorizontalAlign"],
-    )
+      pkg["TableCellHorizontalAlign"]
+    );
     /**
      * Growing mode of the &lt;ui5-table&gt; component.
      *
@@ -2378,9 +2384,12 @@ sap.ui.define(
        *
        * @public
        */
-      Scroll: "Scroll",
-    }
-    registerEnum("@ui5.webcomponents.TableGrowingMode", pkg["TableGrowingMode"])
+      Scroll: "Scroll"
+    };
+    registerEnum(
+      "@ui5.webcomponents.TableGrowingMode",
+      pkg["TableGrowingMode"]
+    );
     /**
      * Overflow mode of the &lt;ui5-table&gt; component.
      *
@@ -2404,12 +2413,12 @@ sap.ui.define(
        *
        * @public
        */
-      Popin: "Popin",
-    }
+      Popin: "Popin"
+    };
     registerEnum(
       "@ui5.webcomponents.TableOverflowMode",
-      pkg["TableOverflowMode"],
-    )
+      pkg["TableOverflowMode"]
+    );
     /**
      * Selection behavior of the `ui5-table` selection components.
      *
@@ -2435,12 +2444,12 @@ sap.ui.define(
        *
        * @public
        */
-      RowOnly: "RowOnly",
-    }
+      RowOnly: "RowOnly"
+    };
     registerEnum(
       "@ui5.webcomponents.TableSelectionBehavior",
-      pkg["TableSelectionBehavior"],
-    )
+      pkg["TableSelectionBehavior"]
+    );
     /**
      * Selection modes of the &lt;ui5-table&gt; component.
      *
@@ -2470,12 +2479,12 @@ sap.ui.define(
        *
        * @public
        */
-      Multiple: "Multiple",
-    }
+      Multiple: "Multiple"
+    };
     registerEnum(
       "@ui5.webcomponents.TableSelectionMode",
-      pkg["TableSelectionMode"],
-    )
+      pkg["TableSelectionMode"]
+    );
     /**
      * Selectors of the table header row in multi-selection scenarios.
      *
@@ -2499,12 +2508,12 @@ sap.ui.define(
        *
        * @public
        */
-      ClearAll: "ClearAll",
-    }
+      ClearAll: "ClearAll"
+    };
     registerEnum(
       "@ui5.webcomponents.TableSelectionMultiHeaderSelector",
-      pkg["TableSelectionMultiHeaderSelector"],
-    )
+      pkg["TableSelectionMultiHeaderSelector"]
+    );
     /**
      * Defines tag design types.
      *
@@ -2558,9 +2567,9 @@ sap.ui.define(
        *
        * @public
        */
-      Critical: "Critical",
-    }
-    registerEnum("@ui5.webcomponents.TagDesign", pkg["TagDesign"])
+      Critical: "Critical"
+    };
+    registerEnum("@ui5.webcomponents.TagDesign", pkg["TagDesign"]);
     /**
      * Predefined sizes for the tag.
      *
@@ -2584,9 +2593,9 @@ sap.ui.define(
        *
        * @public
        */
-      L: "L",
-    }
-    registerEnum("@ui5.webcomponents.TagSize", pkg["TagSize"])
+      L: "L"
+    };
+    registerEnum("@ui5.webcomponents.TagSize", pkg["TagSize"]);
     /**
      * Empty Indicator Mode.
      *
@@ -2610,12 +2619,12 @@ sap.ui.define(
        *
        * @public
        */
-      On: "On",
-    }
+      On: "On"
+    };
     registerEnum(
       "@ui5.webcomponents.TextEmptyIndicatorMode",
-      pkg["TextEmptyIndicatorMode"],
-    )
+      pkg["TextEmptyIndicatorMode"]
+    );
     /**
      * Different types of Title level.
      *
@@ -2663,9 +2672,9 @@ sap.ui.define(
        *
        * @public
        */
-      H6: "H6",
-    }
-    registerEnum("@ui5.webcomponents.TitleLevel", pkg["TitleLevel"])
+      H6: "H6"
+    };
+    registerEnum("@ui5.webcomponents.TitleLevel", pkg["TitleLevel"]);
     /**
      * Toast placement.
      *
@@ -2732,9 +2741,9 @@ sap.ui.define(
        *
        * @public
        */
-      BottomEnd: "BottomEnd",
-    }
-    registerEnum("@ui5.webcomponents.ToastPlacement", pkg["ToastPlacement"])
+      BottomEnd: "BottomEnd"
+    };
+    registerEnum("@ui5.webcomponents.ToastPlacement", pkg["ToastPlacement"]);
     /**
      * Defines which direction the items of ui5-toolbar will be aligned.
      *
@@ -2758,9 +2767,9 @@ sap.ui.define(
        *
        * @public
        */
-      End: "End",
-    }
-    registerEnum("@ui5.webcomponents.ToolbarAlign", pkg["ToolbarAlign"])
+      End: "End"
+    };
+    registerEnum("@ui5.webcomponents.ToolbarAlign", pkg["ToolbarAlign"]);
     /**
      * Defines the available toolbar designs.
      *
@@ -2784,9 +2793,9 @@ sap.ui.define(
        *
        * @public
        */
-      Transparent: "Transparent",
-    }
-    registerEnum("@ui5.webcomponents.ToolbarDesign", pkg["ToolbarDesign"])
+      Transparent: "Transparent"
+    };
+    registerEnum("@ui5.webcomponents.ToolbarDesign", pkg["ToolbarDesign"]);
     /**
      * Defines the priority of the toolbar item to go inside overflow popover.
      *
@@ -2816,12 +2825,12 @@ sap.ui.define(
        *
        * @public
        */
-      AlwaysOverflow: "AlwaysOverflow",
-    }
+      AlwaysOverflow: "AlwaysOverflow"
+    };
     registerEnum(
       "@ui5.webcomponents.ToolbarItemOverflowBehavior",
-      pkg["ToolbarItemOverflowBehavior"],
-    )
+      pkg["ToolbarItemOverflowBehavior"]
+    );
     /**
      * Different types of wrapping.
      *
@@ -2845,9 +2854,9 @@ sap.ui.define(
        *
        * @public
        */
-      Normal: "Normal",
-    }
-    registerEnum("@ui5.webcomponents.WrappingType", pkg["WrappingType"])
+      Normal: "Normal"
+    };
+    registerEnum("@ui5.webcomponents.WrappingType", pkg["WrappingType"]);
 
     // Interfaces
     /**
@@ -3052,6 +3061,6 @@ sap.ui.define(
      * @public
      */
 
-    return pkg
-  },
-)
+    return pkg;
+  }
+);

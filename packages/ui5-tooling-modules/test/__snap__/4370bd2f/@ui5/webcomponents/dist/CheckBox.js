@@ -6,10 +6,10 @@ sap.ui.define(
     "sap/ui/core/webc/WebComponent",
     "sap/ui/core/EnabledPropagator",
     "../../../@ui5/webcomponents",
-    "../../../CheckBox",
+    "../../../CheckBox"
   ],
   function (WebComponentBaseClass, EnabledPropagator) {
-    "use strict"
+    "use strict";
 
     const WrapperClass = WebComponentBaseClass.extend(
       "@ui5.webcomponents.dist.CheckBox",
@@ -22,7 +22,7 @@ sap.ui.define(
           properties: {
             accessibleName: {
               type: "string",
-              mapping: "property",
+              mapping: "property"
             },
             enabled: {
               type: "boolean",
@@ -30,68 +30,68 @@ sap.ui.define(
               mapping: {
                 type: "property",
                 to: "disabled",
-                formatter: "_mapEnabled",
-              },
+                formatter: "_mapEnabled"
+              }
             },
             readonly: {
               type: "boolean",
               mapping: "property",
-              defaultValue: false,
+              defaultValue: false
             },
             displayOnly: {
               type: "boolean",
               mapping: "property",
-              defaultValue: false,
+              defaultValue: false
             },
             required: {
               type: "boolean",
               mapping: "property",
-              defaultValue: false,
+              defaultValue: false
             },
             indeterminate: {
               type: "boolean",
               mapping: "property",
-              defaultValue: false,
+              defaultValue: false
             },
             checked: {
               type: "boolean",
               mapping: "property",
-              defaultValue: false,
+              defaultValue: false
             },
             text: {
               type: "string",
-              mapping: "property",
+              mapping: "property"
             },
             valueState: {
               type: "sap.ui.core.ValueState",
               mapping: {
                 formatter: "_mapValueState",
-                parser: "_parseValueState",
+                parser: "_parseValueState"
               },
-              defaultValue: "None",
+              defaultValue: "None"
             },
             wrappingType: {
               type: "@ui5.webcomponents.WrappingType",
               mapping: "property",
-              defaultValue: "Normal",
+              defaultValue: "Normal"
             },
             name: {
               type: "string",
-              mapping: "property",
+              mapping: "property"
             },
             value: {
               type: "string",
               mapping: "property",
-              defaultValue: "on",
+              defaultValue: "on"
             },
             width: {
               type: "sap.ui.core.CSSSize",
-              mapping: "style",
+              mapping: "style"
             },
             height: {
               type: "sap.ui.core.CSSSize",
-              mapping: "style",
-            },
+              mapping: "style"
+            }
           },
           aggregations: {},
           associations: {
@@ -101,26 +101,26 @@ sap.ui.define(
               mapping: {
                 type: "property",
                 to: "accessibleNameRef",
-                formatter: "_getAriaLabelledByForRendering",
-              },
-            },
+                formatter: "_getAriaLabelledByForRendering"
+              }
+            }
           },
           events: {
             change: {
               allowPreventDefault: true,
               enableEventBubbling: true,
-              parameters: {},
-            },
+              parameters: {}
+            }
           },
           getters: [],
           methods: [],
-          designtime: "@ui5/webcomponents/designtime/CheckBox.designtime",
-        },
-      },
-    )
+          designtime: "@ui5/webcomponents/designtime/CheckBox.designtime"
+        }
+      }
+    );
 
-    EnabledPropagator.call(WrapperClass.prototype)
+    EnabledPropagator.call(WrapperClass.prototype);
 
-    return WrapperClass
-  },
-)
+    return WrapperClass;
+  }
+);

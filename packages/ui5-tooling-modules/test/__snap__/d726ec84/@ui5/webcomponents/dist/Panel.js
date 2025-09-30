@@ -5,10 +5,10 @@ sap.ui.define(
   [
     "sap/ui/core/webc/WebComponent",
     "../../../@ui5/webcomponents",
-    "../../../Panel",
+    "../../../Panel"
   ],
   function (WebComponentBaseClass) {
-    "use strict"
+    "use strict";
 
     const WrapperClass = WebComponentBaseClass.extend(
       "@ui5.webcomponents.dist.Panel",
@@ -21,82 +21,82 @@ sap.ui.define(
           properties: {
             headerText: {
               type: "string",
-              mapping: "property",
+              mapping: "property"
             },
             fixed: {
               type: "boolean",
               mapping: "property",
-              defaultValue: false,
+              defaultValue: false
             },
             collapsed: {
               type: "boolean",
               mapping: "property",
-              defaultValue: false,
+              defaultValue: false
             },
             noAnimation: {
               type: "boolean",
               mapping: "property",
-              defaultValue: false,
+              defaultValue: false
             },
             accessibleRole: {
               type: "@ui5.webcomponents.PanelAccessibleRole",
               mapping: "property",
-              defaultValue: "Form",
+              defaultValue: "Form"
             },
             headerLevel: {
               type: "@ui5.webcomponents.TitleLevel",
               mapping: "property",
-              defaultValue: "H2",
+              defaultValue: "H2"
             },
             accessibleName: {
               type: "string",
-              mapping: "property",
+              mapping: "property"
             },
             stickyHeader: {
               type: "boolean",
               mapping: "property",
-              defaultValue: false,
+              defaultValue: false
             },
             text: {
               type: "string",
-              mapping: "textContent",
+              mapping: "textContent"
             },
             width: {
               type: "sap.ui.core.CSSSize",
-              mapping: "style",
+              mapping: "style"
             },
             height: {
               type: "sap.ui.core.CSSSize",
-              mapping: "style",
-            },
+              mapping: "style"
+            }
           },
           aggregations: {
             content: {
               type: "sap.ui.core.Control",
-              multiple: true,
+              multiple: true
             },
             header: {
               type: "sap.ui.core.Control",
               multiple: true,
-              slot: "header",
-            },
+              slot: "header"
+            }
           },
           associations: {},
           events: {
             toggle: {
               allowPreventDefault: false,
               enableEventBubbling: true,
-              parameters: {},
-            },
+              parameters: {}
+            }
           },
           getters: [],
           methods: [],
           defaultAggregation: "content",
-          designtime: "@ui5/webcomponents/designtime/Panel.designtime",
-        },
-      },
-    )
+          designtime: "@ui5/webcomponents/designtime/Panel.designtime"
+        }
+      }
+    );
 
-    return WrapperClass
-  },
-)
+    return WrapperClass;
+  }
+);
