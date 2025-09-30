@@ -281,12 +281,15 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				// therefore we use regex to keep source formatting and sourcmap entry!
 				changed = content;
 				Object.keys(tokens).forEach((token) => {
-					changed = changed.replace(new RegExp(`((?:require|requireSync|define|toUrl)(?:\\s*)(?:\\([^)]*["']))${token}(["'][^)]*\\))`, "mg"), `$1${tokens[token]}$2`);
+					const escapedToken = token.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escape special regex chars
+					changed = changed.replace(new RegExp(`((?:require|requireSync|define|toUrl)(?:\\s*)(?:\\([^)]*["']))${escapedToken}(["'][^)]*\\))`, "mg"), `$1${tokens[token]}$2`);
 					// fix the JSDoc references as well
-					changed = changed.replace(new RegExp(`(^\\s*\\*\\s@(.*?)\\s+(?:module\\:)?)${token.replace(/\//g, ".")}`, "mg"), `$1${tokens[token].replace(/\//g, ".")}`);
+					const escapedTokenForJSDoc = token.replace(/\//g, ".").replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escape special regex chars
+					changed = changed.replace(new RegExp(`(^\\s*\\*\\s@(.*?)\\s+(?:module\\:)?)${escapedTokenForJSDoc}`, "mg"), `$1${tokens[token].replace(/\//g, ".")}`);
 				});
 				Object.keys(isATokens).forEach((token) => {
-					changed = changed.replace(new RegExp(`((?:isA)(?:\\s*)(?:\\([^)]*["']))${token}(["'][^)]*\\))`, "mg"), `$1${isATokens[token]}$2`);
+					const escapedToken = token.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escape special regex chars
+					changed = changed.replace(new RegExp(`((?:isA)(?:\\s*)(?:\\([^)]*["']))${escapedToken}(["'][^)]*\\))`, "mg"), `$1${isATokens[token]}$2`);
 				});
 			} else {
 				changed = content;
