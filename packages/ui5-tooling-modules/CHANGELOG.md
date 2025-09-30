@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.31.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.9...ui5-tooling-modules@3.31.0) (2025-09-30)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** change defaults for prettier ([#1276](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1276)) ([b6457fa](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/b6457fa35007edab4af74dc002c58dd1a5fcf812))
+
+
+### Features
+
+* **ui5-tooling-modules:** support declarative entry point modules ([#1275](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1275)) ([f6f0d8b](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f6f0d8b796a9b43e020cdf675c499de55d4e57fd))
+
+
+
+
+
 ## [3.30.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.8...ui5-tooling-modules@3.30.9) (2025-09-30)
 
 
