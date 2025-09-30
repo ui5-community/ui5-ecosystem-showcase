@@ -28,6 +28,7 @@ builder:
         debug: true
         sourcemap: true
         #addToNamespace: false
+        removeScopePrefix: true
         sanitizeNpmPackageName: true
         pluginOptions:
           webcomponents:
