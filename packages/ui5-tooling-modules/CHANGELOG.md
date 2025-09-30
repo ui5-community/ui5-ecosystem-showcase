@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.30.9](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.8...ui5-tooling-modules@3.30.9) (2025-09-30)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** ensure default text for enum values in jsdoc ([#1273](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1273)) ([0fde298](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0fde298f4b542e0d74e6b1b3ed9526aa8f3890ee))
+* **ui5-tooling-modules:** improve handling for missing superclass ([#1272](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1272)) ([9da86b1](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/9da86b1e72758d3a7592f62eab625cc0b1dcb3f2))
+* **ui5-tooling-modules:** rewrite jsdoc ([#1274](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1274)) ([ddd0c90](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/ddd0c908272770b3ee2b143951a991319788e595))
+
+
+
+
+
 ## [3.30.8](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.30.7...ui5-tooling-modules@3.30.8) (2025-09-17)
 
 
