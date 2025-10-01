@@ -13,7 +13,7 @@ const WebComponentRegistry = require("./utils/WebComponentRegistry");
 
 module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framework, options, $metadata = {} } = {}) {
 	// derive the configuration from the provided options
-	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, moduleBasePath, removeScopePrefix, skipJSDoc, skipDtsGeneration } = Object.assign(
+	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, moduleBasePath, removeScopePrefix, skipJSDoc, skipDtsGeneration, visibilityJSDoc } = Object.assign(
 		{
 			skip: false,
 			scoping: true,
@@ -22,6 +22,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			includeAssets: false, // experimental (due to race condition!)
 			skipJSDoc: true,
 			skipDtsGeneration: true,
+			visibilityJSDoc: "private",
 		},
 		options,
 	);
@@ -148,6 +149,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 						npmPackagePath,
 						skipDtsGeneration,
 						skipJSDoc,
+						visibilityJSDoc,
 						version: packageJson.version,
 					});
 

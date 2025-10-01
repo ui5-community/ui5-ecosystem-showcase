@@ -25,8 +25,9 @@ function dot2slash(s) {
 /**
  * Renders the class header as a JSDoc comment.
  * @param {object} classDef the class definition from the custom elements manifest
+ * @param {string} visibilityJSDoc the visibility level for JSDoc annotations
  */
-function _serializeClassHeader(classDef) {
+function _serializeClassHeader(classDef, visibilityJSDoc) {
 	// find superclass name, either another wrapper OR the core WebComponent base class
 	let superclassName = classDef.superclass.name;
 	if (superclassName === WebComponentRegistryHelper.UI5_ELEMENT_CLASS_NAME) {
@@ -60,6 +61,7 @@ function _serializeClassHeader(classDef) {
 		interfacesSlashed,
 		extendsTag,
 		aliasSlashed: classDef._ui5QualifiedNameSlashes,
+		visibilityJSDoc,
 	});
 }
 
@@ -120,8 +122,9 @@ function _prepareEvents(classDef) {
 /**
  * Prepares the JSDoc comments for all getters and methods of the given class.
  * @param {object} classDef the class definition from the custom elements manifest
+ * @param {string} visibilityJSDoc the visibility level for JSDoc annotations
  */
-function _prepareGettersAndMethods(classDef) {
+function _prepareGettersAndMethods(classDef, visibilityJSDoc) {
 	const ui5metadata = classDef._ui5metadata;
 	const jsDoc = classDef._jsDoc;
 
@@ -134,6 +137,7 @@ function _prepareGettersAndMethods(classDef) {
 			// the alias of the class is already escaped!
 			alias: `${jsDoc.alias}#${getterDef.getterName}`,
 			aliasSlashed: `${classDef._ui5QualifiedNameSlashes}#${getterDef.getterName}`,
+			visibilityJSDoc,
 		});
 	});
 
@@ -148,6 +152,7 @@ function _prepareGettersAndMethods(classDef) {
 			// the alias of the class is already escaped!
 			alias: `${jsDoc.alias}#${name}`,
 			aliasSlashed: `${classDef._ui5QualifiedNameSlashes}#${name}`,
+			visibilityJSDoc,
 		});
 	});
 }
@@ -155,8 +160,9 @@ function _prepareGettersAndMethods(classDef) {
 /**
  * Serializes the UI5 metadata of a class including the JSDoc comments.
  * @param {object} classDef the class definition from the custom elements manifest
+ * @param {string} visibilityJSDoc the visibility level for JSDoc annotations
  */
-function _prepareUI5Metadata(classDef) {
+function _prepareUI5Metadata(classDef, visibilityJSDoc) {
 	// The following metadata values are filled by the rollup plugin atm.
 	// the tag specifically needs a scoping suffix
 
@@ -169,7 +175,7 @@ function _prepareUI5Metadata(classDef) {
 	_prepareEvents(classDef);
 
 	// serialize getters and setters JSDoc comments
-	_prepareGettersAndMethods(classDef);
+	_prepareGettersAndMethods(classDef, visibilityJSDoc);
 }
 
 const JSDocSerializer = {
@@ -192,10 +198,10 @@ const JSDocSerializer = {
 			const classDef = registryEntry.classes[className];
 			if (classDef.superclass) {
 				// we track the serialized JSDoc independently from the class' ui5-metadata
-				_serializeClassHeader(classDef);
+				_serializeClassHeader(classDef, registryEntry.visibilityJSDoc);
 
 				// the serialized metadata as a single string, can be inlined in the control wrappers later
-				_prepareUI5Metadata(classDef);
+				_prepareUI5Metadata(classDef, registryEntry.visibilityJSDoc);
 			} else {
 				// TODO: what do we do with the classes that don't have a superclass?
 				logger.warn(`No superclass found for class ${classDef._ui5QualifiedName}`);
@@ -211,7 +217,7 @@ const JSDocSerializer = {
 				alias: `@name module:${interfaceDef._ui5QualifiedNameSlashes}`,
 				entityType: "@interface",
 				override: `@ui5-module-override ${registryEntry.namespace} ${interfaceName}`,
-				visibility: "@public",
+				visibility: `@${registryEntry.visibilityJSDoc}`,
 			});
 		});
 
@@ -222,12 +228,12 @@ const JSDocSerializer = {
 			enumDef._jsDoc = baseTemplate({
 				description: enumDef.description,
 				entityType: "@enum {string}",
-				visibility: "@public",
+				visibility: `@${registryEntry.visibilityJSDoc}`,
 				alias: `@alias module:${enumDef._ui5QualifiedNameSlashes}`,
 				override: `@ui5-module-override ${registryEntry.namespace} ${enumName}`,
 			});
 			enumDef.values.forEach((value) => {
-				value._jsDoc = baseTemplate({ description: value.description || value.name, visibility: "@public" });
+				value._jsDoc = baseTemplate({ description: value.description || value.name, visibility: `@${registryEntry.visibilityJSDoc}` });
 			});
 		});
 	},
