@@ -49,7 +49,7 @@ let _classAliases = {};
 class RegistryEntry {
 	#customElementsMetadata = {};
 
-	constructor({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version }) {
+	constructor({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, visibilityJSDoc }) {
 		this.#customElementsMetadata = customElementsMetadata;
 		this.namespace = namespace;
 		this.scopeSuffix = scopeSuffix;
@@ -61,6 +61,7 @@ class RegistryEntry {
 		//       Only needed until we solve the escaping issue of segments like "@ui5" or "webcomponents-fiori".
 		// this.qualifiedNamespace = this.qualifiedNamespace.replace(/-/g, "_");
 		this.version = version;
+		this.visibilityJSDoc = visibilityJSDoc;
 
 		this.customElements = {};
 		this.classes = {};
@@ -1195,7 +1196,7 @@ const WebComponentRegistry = {
 	 * @param {boolean} [options.skipJSDoc] whether to skip the JSDoc generation (passed via the pluginOptions in ui5.yaml)
 	 * @returns the final WebComponentRegistryEntry for the given namespace
 	 */
-	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, skipDtsGeneration = true, skipJSDoc = true }) {
+	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, visibilityJSDoc = "private", skipDtsGeneration = true, skipJSDoc = true }) {
 		checkSerializerPluginActivation({
 			skipDtsGeneration,
 			skipJSDoc,
@@ -1203,7 +1204,7 @@ const WebComponentRegistry = {
 
 		let entry = _registry[namespace];
 		if (!entry) {
-			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version });
+			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, visibilityJSDoc });
 
 			// track all classes also via their module name,
 			// so we can access them faster during resource resolution later on
