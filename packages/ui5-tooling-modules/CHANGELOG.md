@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.32.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.31.1...ui5-tooling-modules@3.32.0) (2025-10-07)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** properly rewrite "module:" jsdoc tags ([#1280](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1280)) ([3cffce9](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/3cffce911a549d4c8b542ccae3d77459fc0f36f6))
+* **ui5-tooling-modules:** support for isA(string|string[]) rewrite ([#1279](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1279)) ([55fccf2](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/55fccf26b24beebe85eeb6651f16362def4d2fd1))
+
+
+### Features
+
+* **ui5-tooling-modules:** make JSDoc visibility configurable ([#1278](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1278)) ([7720c3f](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7720c3f1336dcefdc062c78f2f457abe5a5f916e))
+
+
+
+
+
 ## [3.31.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.31.0...ui5-tooling-modules@3.31.1) (2025-09-30)
 
 
