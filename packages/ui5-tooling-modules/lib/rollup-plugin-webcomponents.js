@@ -420,9 +420,8 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 
 			// we need to ignore the CLDR locale data json imports as they are
 			// provided by the UI5 framework and not needed in the bundle
-			if (removeCLDRData && CLDR_LocaleData_File && importer === CLDR_LocaleData_File && source.endsWith(".json")) {
-				log.verbose(`Ignoring CLDR locale data import: ${source}`);
-				return false; // ignore this resource
+			if (removeCLDRData && importer && posix.resolve(dirname(importer), source) === CLDR_LocaleData_File) {
+				return `${CLDR_LocaleData_File}#NOOP`; // ignore this resource
 			}
 
 			// entry modules need to be checked for being Web Components as they
@@ -487,6 +486,12 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 		async load(id) {
 			if (skip) {
 				return null;
+			}
+
+			// we need to ignore the CLDR locale data json imports as they are
+			// provided by the UI5 framework and not needed in the bundle
+			if (removeCLDRData && id === `${CLDR_LocaleData_File}#NOOP`) {
+				return ""; // ignore this resource
 			}
 
 			// check if the module should be covered by the plugin
