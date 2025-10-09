@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.13](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.15.12...ui5-tsapp-webc@0.15.13) (2025-10-09)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** ignore duplicated cldr data for web components ([#1281](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1281)) ([846a640](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/846a640463abab14c601a9499fa903443025498d))
+
+
+
+
+
 ## [0.15.12](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.15.11...ui5-tsapp-webc@0.15.12) (2025-10-07)
 
 **Note:** Version bump only for package ui5-tsapp-webc

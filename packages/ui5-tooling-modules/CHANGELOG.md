@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.32.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.32.0...ui5-tooling-modules@3.32.1) (2025-10-09)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** ignore duplicated cldr data for web components ([#1281](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1281)) ([846a640](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/846a640463abab14c601a9499fa903443025498d))
+* **ui5-tooling-modules:** support library prop in ui5 metadata ([#1282](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1282)) ([bb641a5](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/bb641a5d7bef02393f33b9bc775c90688a39d9c3))
+
+
+
+
+
 # [3.32.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.31.1...ui5-tooling-modules@3.32.0) (2025-10-07)
 
 
