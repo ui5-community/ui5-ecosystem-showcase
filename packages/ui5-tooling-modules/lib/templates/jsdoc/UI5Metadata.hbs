@@ -1,7 +1,9 @@
 {
   "tag": "{{metadata.tag}}",
 
-  "namespace": "{{metadata.qualifiedNamespace}}",
+  "namespace": "{{metadata.qualifiedNamespace}}",{{#if metadata.library}}
+
+  "library": "{{metadata.library}}",{{/if}}
 
   "designtime": "{{designtimeNamespace}}/designtime/{{className}}.designtime",
 

@@ -11,7 +11,7 @@ const prettier = require("@prettier/sync");
 
 const WebComponentRegistry = require("./utils/WebComponentRegistry");
 
-module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framework, options, $metadata = {} } = {}) {
+module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, options, $metadata = {} } = {}) {
 	// derive the configuration from the provided options
 	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, moduleBasePath, removeScopePrefix, skipJSDoc, skipDtsGeneration, visibilityJSDoc, removeCLDRData } = Object.assign(
 		{
@@ -27,6 +27,9 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 		},
 		options,
 	);
+
+	// derive information from the projectInfo
+	const { pkgJson, framework } = projectInfo;
 
 	// TODO: maybe we should derive the minimum version from the applications package.json
 	//       instead of the framework version (which might be a different version)
@@ -144,6 +147,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 					registryEntry = WebComponentRegistry.register({
 						customElementsMetadata,
 						namespace: npmPackage,
+						library: projectInfo.type === "library" ? projectInfo.name : undefined,
 						moduleBasePath,
 						removeScopePrefix,
 						scopeSuffix: ui5WebCScopeSuffix,
@@ -294,7 +298,6 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			if (skipJSDoc) {
 				const metadataObject = Object.assign({}, ui5Metadata, {
 					tag: ui5Metadata.tag,
-					//library: `${qualifiedNamespace}.library`, // if not defined, the library is derived from the namespace
 					designtime: `${namespace}/designtime/${clazz.name}.designtime`, // add a default designtime
 				});
 				metadata = JSON.stringify(metadataObject, undefined, 2);

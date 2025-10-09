@@ -1137,9 +1137,8 @@ module.exports = function (log, projectInfo) {
 						resolveModule: function (moduleName) {
 							return that.resolveModule(moduleName, { cwd, depPaths });
 						},
-						pkgJson: projectInfo.pkgJson, // the current project package.json
+						projectInfo,
 						getPackageJson, // use the cached package.json if possible
-						framework: projectInfo?.framework,
 						options: pluginOptions?.["webcomponents"],
 						$metadata,
 					}),

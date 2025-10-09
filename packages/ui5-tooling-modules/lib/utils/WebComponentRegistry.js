@@ -32,7 +32,7 @@ function slash2dot(s) {
 /**
  * Calculates the name for the UI5 level getter function based on the web components native function name.
  * @param {string} functionName the name of the web components native function
- * @returns the generated UI5 getter function name
+ * @returns {string} the generated UI5 getter function name
  */
 const calculateGetterName = (functionName) => {
 	return "get" + functionName.substring(0, 1).toUpperCase() + functionName.substring(1);
@@ -456,7 +456,7 @@ class RegistryEntry {
 	/**
 	 * Checks the given property definition object for a special UI5 mapping.
 	 * The specific formatter are implemented in "sap.ui.core.webc.WebComponent".
-	 *
+	 * @param {object} classDef the class definition object from the custom elements metadata
 	 * @param {object} propDef the property definition object from the custom elements metadata
 	 * @param {object} ui5metadata the UI5 metadata object
 	 * @returns {boolean} whether the property needs a special mapping
@@ -724,8 +724,9 @@ class RegistryEntry {
 	/**
 	 * Parses the given event definition object and extracts the event parameters.
 	 * The event parameters are also tracking their respective JSDoc description texts.
+	 * @param {object} classDef the class definition object from the custom elements metadata
 	 * @param {object} eventDef the event definition object from the custom elements metadata
-	 * @returns the parsed event parameters
+	 * @returns {object} the parsed event parameters
 	 */
 	#parseEventParameters(classDef, eventDef) {
 		const parameters = eventDef._ui5parameters;
@@ -832,8 +833,9 @@ class RegistryEntry {
 
 	/**
 	 * Validates if the given property name is defined somewhere in the parent chain
-	 * @param {string} className the starting class for which we will traverse the parent chain
+	 * @param {object} classDef the starting class for which we will traverse the parent chain
 	 * @param {string} propName the property to validate
+	 * @returns {boolean} whether the property exists in the parent chain
 	 */
 	#ui5PropertyExistsInParentChain(classDef, propName) {
 		// we need to stop the recursion on the very top level
@@ -1189,14 +1191,16 @@ const WebComponentRegistry = {
 	 * @param {object} options the options object
 	 * @param {object} options.customElementsMetadata the custom elements metadata object
 	 * @param {string} options.namespace the namespace of the web component package
+	 * @param {string} options.library the library of the web component package
 	 * @param {string} options.scopeSuffix the scope suffix for the web component package
 	 * @param {string} options.npmPackagePath the npm package path of the web component package
 	 * @param {string} options.version the version of the web component package
+	 * @param {string} [options.visibilityJSDoc] the visibility for the generated JSDoc comments (passed via the pluginOptions in ui5.yaml)
 	 * @param {boolean} [options.skipDtsGeneration] whether to skip the *.d.ts generation (passed via the pluginOptions in ui5.yaml)
 	 * @param {boolean} [options.skipJSDoc] whether to skip the JSDoc generation (passed via the pluginOptions in ui5.yaml)
 	 * @returns the final WebComponentRegistryEntry for the given namespace
 	 */
-	register({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, visibilityJSDoc = "private", skipDtsGeneration = true, skipJSDoc = true }) {
+	register({ customElementsMetadata, namespace, library, scopeSuffix, npmPackagePath, version, visibilityJSDoc = "private", skipDtsGeneration = true, skipJSDoc = true }) {
 		checkSerializerPluginActivation({
 			skipDtsGeneration,
 			skipJSDoc,
@@ -1210,7 +1214,13 @@ const WebComponentRegistry = {
 			// so we can access them faster during resource resolution later on
 			Object.keys(entry.classes).forEach((className) => {
 				const classDef = entry.classes[className];
-				this.addClassAlias(`${namespace}/${classDef.module}`, classDef);
+				if (classDef?._ui5metadata) {
+					// patch the library name into the class metadata
+					classDef._ui5metadata.library = library;
+				}
+				if (classDef?.module) {
+					this.addClassAlias(`${namespace}/${classDef.module}`, classDef);
+				}
 			});
 		}
 		return entry;
