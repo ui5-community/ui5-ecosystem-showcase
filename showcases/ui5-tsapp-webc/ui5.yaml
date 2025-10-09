@@ -17,6 +17,11 @@ builder:
     excludes:
       # exclude the dynamic imports from the bundle
       - "ui5/ecosystem/demo/webctsapp/thirdparty/_dynamics/**"
+  minification:
+    excludes:
+      # exclude the i18n and css resources from minification
+      - "ui5/ecosystem/demo/webctsapp/thirdparty/_dynamics/messagebundle*.js"
+      - "ui5/ecosystem/demo/webctsapp/thirdparty/_dynamics/parameters-bundle.css*.js"
   customTasks:
     - name: ui5-tooling-transpile-task
       afterTask: replaceVersion

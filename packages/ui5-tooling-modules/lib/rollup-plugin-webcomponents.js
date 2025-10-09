@@ -13,7 +13,7 @@ const WebComponentRegistry = require("./utils/WebComponentRegistry");
 
 module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framework, options, $metadata = {} } = {}) {
 	// derive the configuration from the provided options
-	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, moduleBasePath, removeScopePrefix, skipJSDoc, skipDtsGeneration, visibilityJSDoc } = Object.assign(
+	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, moduleBasePath, removeScopePrefix, skipJSDoc, skipDtsGeneration, visibilityJSDoc, removeCLDRData } = Object.assign(
 		{
 			skip: false,
 			scoping: true,
@@ -23,6 +23,7 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 			skipJSDoc: true,
 			skipDtsGeneration: true,
 			visibilityJSDoc: "private",
+			removeCLDRData: true,
 		},
 		options,
 	);
@@ -396,6 +397,9 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 	// Rollup Plugin
 	// =========================================================================
 
+	// determine file path of the importer module to detect the CLDR locale data json imports
+	const CLDR_LocaleData_File = resolveModule("@ui5/webcomponents-localization/dist/generated/json-imports/LocaleData.js");
+
 	return {
 		name: "webcomponents",
 		async buildStart() {
@@ -409,6 +413,13 @@ module.exports = function ({ log, resolveModule, pkgJson, getPackageJson, framew
 		async resolveId(source, importer, { /*attributes, custom,*/ isEntry }) {
 			if (skip) {
 				return null;
+			}
+
+			// we need to ignore the CLDR locale data json imports as they are
+			// provided by the UI5 framework and not needed in the bundle
+			if (removeCLDRData && CLDR_LocaleData_File && importer === CLDR_LocaleData_File && source.endsWith(".json")) {
+				log.verbose(`Ignoring CLDR locale data import: ${source}`);
+				return false; // ignore this resource
 			}
 
 			// entry modules need to be checked for being Web Components as they
