@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.32.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.32.2...ui5-tooling-modules@3.32.3) (2025-10-10)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** avoid width/height property for base classes ([#1284](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1284)) ([24df790](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/24df79015ca4105d640102da1ec7997a80be327e))
+
+
+
+
+
 ## [3.32.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.32.1...ui5-tooling-modules@3.32.2) (2025-10-09)
 
 
