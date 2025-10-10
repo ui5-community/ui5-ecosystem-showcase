@@ -880,7 +880,7 @@ class RegistryEntry {
 		}
 
 		// cssProperties: [ "width", "height", "display" ]
-		if (!this.#ui5PropertyExistsInParentChain(classDef, "width")) {
+		if (ui5metadata.tag && !this.#ui5PropertyExistsInParentChain(classDef, "width")) {
 			ui5metadata.properties["width"] = {
 				type: "sap.ui.core.CSSSize",
 				mapping: "style",
@@ -905,7 +905,7 @@ class RegistryEntry {
 			});
 		}
 
-		if (!this.#ui5PropertyExistsInParentChain(classDef, "height")) {
+		if (ui5metadata.tag && !this.#ui5PropertyExistsInParentChain(classDef, "height")) {
 			ui5metadata.properties["height"] = {
 				type: "sap.ui.core.CSSSize",
 				mapping: "style",
