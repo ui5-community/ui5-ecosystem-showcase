@@ -21,7 +21,7 @@ handlebars.registerHelper("escapeType", function (str) {
 });
 
 handlebars.registerHelper("formatNewLine", function (str) {
-	return `${str.replace(/\n/g, "\n * ")}`;
+	return `${str.replace(/\n/g, "\n * ")}${str.length > 0 ? "\n *" : ""}`;
 });
 
 handlebars.registerHelper("join", function (array) {
@@ -52,10 +52,9 @@ function structureTemplate(strings, ...keys) {
 					result.push(`${newLine} `, valueLine);
 				});
 				result.push(strings[i + 1]);
-				result.push(newLine);
 			}
 		});
-		result.push("/");
+		result.push(`${newLine}/`);
 		return result.length > 2 ? result.join("") : "";
 	};
 }
@@ -68,10 +67,11 @@ function structureTemplate(strings, ...keys) {
  *   - alias = the alias of the entity, can be "alias" or "name" tag in "module:..." syntax
  *   - override = The UI5 override tag for the entity, if applicable
  *   - visibility = The visibility of the entity (public, private, etc.)
+ *   - additionalTags = Array of additional tags to be included in the documentation
  *   - returnValue = The return value of the entity, if applicable
  * @type {Function}
  */
-const baseTemplate = structureTemplate`${"text"}${"description"}${"entityType"}${"defaultValue"}${"alias"}${"override"}${"visibility"}${"returnValue"}`;
+const baseTemplate = structureTemplate`${"text"}${"description"}${"entityType"}${"defaultValue"}${"alias"}${"override"}${"visibility"}${"additionalTags"}${"returnValue"}`;
 
 /**
  * Register the helper that generates geneic JSDoc comment blocks.

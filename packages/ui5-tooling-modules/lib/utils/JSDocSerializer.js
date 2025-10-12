@@ -25,9 +25,9 @@ function dot2slash(s) {
 /**
  * Renders the class header as a JSDoc comment.
  * @param {object} classDef the class definition from the custom elements manifest
- * @param {string} visibilityJSDoc the visibility level for JSDoc annotations
+ * @param {string} jsdocTags JSDoc tags
  */
-function _serializeClassHeader(classDef, visibilityJSDoc) {
+function _serializeClassHeader(classDef, jsdocTags) {
 	// find superclass name, either another wrapper OR the core WebComponent base class
 	let superclassName = classDef.superclass.name;
 	if (superclassName === WebComponentRegistryHelper.UI5_ELEMENT_CLASS_NAME) {
@@ -61,7 +61,7 @@ function _serializeClassHeader(classDef, visibilityJSDoc) {
 		interfacesSlashed,
 		extendsTag,
 		aliasSlashed: classDef._ui5QualifiedNameSlashes,
-		visibilityJSDoc,
+		jsdocTags,
 	});
 }
 
@@ -122,9 +122,9 @@ function _prepareEvents(classDef) {
 /**
  * Prepares the JSDoc comments for all getters and methods of the given class.
  * @param {object} classDef the class definition from the custom elements manifest
- * @param {string} visibilityJSDoc the visibility level for JSDoc annotations
+ * @param {string} jsdocTags JSDoc tags
  */
-function _prepareGettersAndMethods(classDef, visibilityJSDoc) {
+function _prepareGettersAndMethods(classDef, jsdocTags) {
 	const ui5metadata = classDef._ui5metadata;
 	const jsDoc = classDef._jsDoc;
 
@@ -137,7 +137,7 @@ function _prepareGettersAndMethods(classDef, visibilityJSDoc) {
 			// the alias of the class is already escaped!
 			alias: `${jsDoc.alias}#${getterDef.getterName}`,
 			aliasSlashed: `${classDef._ui5QualifiedNameSlashes}#${getterDef.getterName}`,
-			visibilityJSDoc,
+			jsdocTags,
 		});
 	});
 
@@ -152,7 +152,7 @@ function _prepareGettersAndMethods(classDef, visibilityJSDoc) {
 			// the alias of the class is already escaped!
 			alias: `${jsDoc.alias}#${name}`,
 			aliasSlashed: `${classDef._ui5QualifiedNameSlashes}#${name}`,
-			visibilityJSDoc,
+			jsdocTags,
 		});
 	});
 }
@@ -160,9 +160,9 @@ function _prepareGettersAndMethods(classDef, visibilityJSDoc) {
 /**
  * Serializes the UI5 metadata of a class including the JSDoc comments.
  * @param {object} classDef the class definition from the custom elements manifest
- * @param {string} visibilityJSDoc the visibility level for JSDoc annotations
+ * @param {string} jsdocTags JSDoc tags
  */
-function _prepareUI5Metadata(classDef, visibilityJSDoc) {
+function _prepareUI5Metadata(classDef, jsdocTags) {
 	// The following metadata values are filled by the rollup plugin atm.
 	// the tag specifically needs a scoping suffix
 
@@ -175,7 +175,7 @@ function _prepareUI5Metadata(classDef, visibilityJSDoc) {
 	_prepareEvents(classDef);
 
 	// serialize getters and setters JSDoc comments
-	_prepareGettersAndMethods(classDef, visibilityJSDoc);
+	_prepareGettersAndMethods(classDef, jsdocTags);
 }
 
 const JSDocSerializer = {
@@ -197,11 +197,12 @@ const JSDocSerializer = {
 		Object.keys(registryEntry.classes).forEach((className) => {
 			const classDef = registryEntry.classes[className];
 			if (classDef.superclass) {
+				const jsdocTags = [registryEntry.visibilityJSDoc, ...registryEntry.additionalJSDocTags];
 				// we track the serialized JSDoc independently from the class' ui5-metadata
-				_serializeClassHeader(classDef, registryEntry.visibilityJSDoc);
+				_serializeClassHeader(classDef, jsdocTags);
 
 				// the serialized metadata as a single string, can be inlined in the control wrappers later
-				_prepareUI5Metadata(classDef, registryEntry.visibilityJSDoc);
+				_prepareUI5Metadata(classDef, jsdocTags);
 			} else {
 				// TODO: what do we do with the classes that don't have a superclass?
 				logger.warn(`No superclass found for class ${classDef._ui5QualifiedName}`);
@@ -212,28 +213,37 @@ const JSDocSerializer = {
 		//   [1] interfaces
 		Object.keys(registryEntry.interfaces).forEach((interfaceName) => {
 			const interfaceDef = registryEntry.interfaces[interfaceName];
+			const description = interfaceDef.description || interfaceDef.name;
 			interfaceDef._jsDoc = baseTemplate({
-				description: interfaceDef.description,
+				description: `${description}${description ? "\n" : ""}`,
 				alias: `@name module:${interfaceDef._ui5QualifiedNameSlashes}`,
 				entityType: "@interface",
 				override: `@ui5-module-override ${registryEntry.namespace} ${interfaceName}`,
 				visibility: `@${registryEntry.visibilityJSDoc}`,
+				additionalTags: registryEntry.additionalJSDocTags.map((tag) => `@${tag}`).join("\n"),
 			});
 		});
 
 		//   [2] enums
 		Object.keys(registryEntry.enums).forEach((enumName) => {
 			const enumDef = registryEntry.enums[enumName];
+			const description = enumDef.description || enumDef.name;
 			// enum header comment
 			enumDef._jsDoc = baseTemplate({
-				description: enumDef.description,
+				description: `${description}${description ? "\n" : ""}`, // append newline if description is not empty
 				entityType: "@enum {string}",
 				visibility: `@${registryEntry.visibilityJSDoc}`,
+				additionalTags: registryEntry.additionalJSDocTags.map((tag) => `@${tag}`).join("\n"),
 				alias: `@alias module:${enumDef._ui5QualifiedNameSlashes}`,
 				override: `@ui5-module-override ${registryEntry.namespace} ${enumName}`,
 			});
 			enumDef.values.forEach((value) => {
-				value._jsDoc = baseTemplate({ description: value.description || value.name, visibility: `@${registryEntry.visibilityJSDoc}` });
+				const description = value.description || value.name;
+				value._jsDoc = baseTemplate({
+					description: `${description}${description ? "\n" : ""}`, // append newline if description is not empty
+					visibility: `@${registryEntry.visibilityJSDoc}`,
+					additionalTags: registryEntry.additionalJSDocTags.map((tag) => `@${tag}`).join("\n"),
+				});
 			});
 		});
 	},

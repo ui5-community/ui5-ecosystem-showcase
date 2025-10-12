@@ -48,11 +48,8 @@ sap.ui.define(
      * Different types of AnimationMode.
      *
      * @enum {string}
-     *
      * @alias module:@ui5/webcomponents-base.AnimationMode
-     *
      * @ui5-module-override @ui5/webcomponents-base AnimationMode
-     *
      * @private
      */
     pkg["AnimationMode"] = {
@@ -86,11 +83,8 @@ sap.ui.define(
      * Different calendar types.
      *
      * @enum {string}
-     *
      * @alias module:@ui5/webcomponents-base.CalendarType
-     *
      * @ui5-module-override @ui5/webcomponents-base CalendarType
-     *
      * @private
      */
     pkg["CalendarType"] = {
@@ -130,11 +124,8 @@ sap.ui.define(
      * Different behavior for ItemNavigation.
      *
      * @enum {string}
-     *
      * @alias module:@ui5/webcomponents-base.ItemNavigationBehavior
-     *
      * @ui5-module-override @ui5/webcomponents-base ItemNavigationBehavior
-     *
      * @private
      */
     pkg["ItemNavigationBehavior"] = {
@@ -159,11 +150,8 @@ sap.ui.define(
      * Placements of a moved element relative to a target element.
      *
      * @enum {string}
-     *
      * @alias module:@ui5/webcomponents-base.MovePlacement
-     *
      * @ui5-module-override @ui5/webcomponents-base MovePlacement
-     *
      * @private
      */
     pkg["MovePlacement"] = {
@@ -191,11 +179,8 @@ sap.ui.define(
      * Different navigation modes for ItemNavigation.
      *
      * @enum {string}
-     *
      * @alias module:@ui5/webcomponents-base.NavigationMode
-     *
      * @ui5-module-override @ui5/webcomponents-base NavigationMode
-     *
      * @private
      */
     pkg["NavigationMode"] = {
@@ -232,11 +217,8 @@ sap.ui.define(
      * Defines the sort order.
      *
      * @enum {string}
-     *
      * @alias module:@ui5/webcomponents-base.SortOrder
-     *
      * @ui5-module-override @ui5/webcomponents-base SortOrder
-     *
      * @private
      */
     pkg["SortOrder"] = {
@@ -264,11 +246,8 @@ sap.ui.define(
      * Different types of ValueStates.
      *
      * @enum {string}
-     *
      * @alias module:@ui5/webcomponents-base.ValueState
-     *
      * @ui5-module-override @ui5/webcomponents-base ValueState
-     *
      * @private
      */
     pkg["ValueState"] = {

@@ -1,9 +1,7 @@
 /**
- * {{{formatNewLine description}}}
-{{#each parameters}}
- * @param {{escapeType this.type}} {{this.name}} {{this.description}}
-{{/each}}
- * @{{{visibilityJSDoc}}}
+ * {{{formatNewLine description}}}{{#each parameters}}
+ * @param {{escapeType this.type}} {{this.name}} {{this.description}}{{/each}}{{#each jsdocTags}}
+ * @{{{this}}}{{/each}}
  * @name module:{{{aliasSlashed}}}
  * @function
  */
