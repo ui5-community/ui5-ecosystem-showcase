@@ -197,12 +197,11 @@ const JSDocSerializer = {
 		Object.keys(registryEntry.classes).forEach((className) => {
 			const classDef = registryEntry.classes[className];
 			if (classDef.superclass) {
-				const jsdocTags = [registryEntry.visibilityJSDoc, ...registryEntry.additionalJSDocTags];
 				// we track the serialized JSDoc independently from the class' ui5-metadata
-				_serializeClassHeader(classDef, jsdocTags);
+				_serializeClassHeader(classDef, registryEntry.JSDocTags);
 
 				// the serialized metadata as a single string, can be inlined in the control wrappers later
-				_prepareUI5Metadata(classDef, jsdocTags);
+				_prepareUI5Metadata(classDef, registryEntry.JSDocTags);
 			} else {
 				// TODO: what do we do with the classes that don't have a superclass?
 				logger.warn(`No superclass found for class ${classDef._ui5QualifiedName}`);
@@ -219,8 +218,7 @@ const JSDocSerializer = {
 				alias: `@name module:${interfaceDef._ui5QualifiedNameSlashes}`,
 				entityType: "@interface",
 				override: `@ui5-module-override ${registryEntry.namespace} ${interfaceName}`,
-				visibility: `@${registryEntry.visibilityJSDoc}`,
-				additionalTags: registryEntry.additionalJSDocTags.map((tag) => `@${tag}`).join("\n"),
+				additionalTags: registryEntry.JSDocTags.map((tag) => `@${tag}`).join("\n"),
 			});
 		});
 
@@ -232,8 +230,7 @@ const JSDocSerializer = {
 			enumDef._jsDoc = baseTemplate({
 				description: `${description}${description ? "\n" : ""}`, // append newline if description is not empty
 				entityType: "@enum {string}",
-				visibility: `@${registryEntry.visibilityJSDoc}`,
-				additionalTags: registryEntry.additionalJSDocTags.map((tag) => `@${tag}`).join("\n"),
+				additionalTags: registryEntry.JSDocTags.map((tag) => `@${tag}`).join("\n"),
 				alias: `@alias module:${enumDef._ui5QualifiedNameSlashes}`,
 				override: `@ui5-module-override ${registryEntry.namespace} ${enumName}`,
 			});
@@ -241,8 +238,7 @@ const JSDocSerializer = {
 				const description = value.description || value.name;
 				value._jsDoc = baseTemplate({
 					description: `${description}${description ? "\n" : ""}`, // append newline if description is not empty
-					visibility: `@${registryEntry.visibilityJSDoc}`,
-					additionalTags: registryEntry.additionalJSDocTags.map((tag) => `@${tag}`).join("\n"),
+					additionalTags: registryEntry.JSDocTags.map((tag) => `@${tag}`).join("\n"),
 				});
 			});
 		});
