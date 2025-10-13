@@ -49,7 +49,7 @@ let _classAliases = {};
 class RegistryEntry {
 	#customElementsMetadata = {};
 
-	constructor({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, JSDocTags }) {
+	constructor({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, customJSDocTags }) {
 		this.#customElementsMetadata = customElementsMetadata;
 		this.namespace = namespace;
 		this.scopeSuffix = scopeSuffix;
@@ -61,7 +61,7 @@ class RegistryEntry {
 		//       Only needed until we solve the escaping issue of segments like "@ui5" or "webcomponents-fiori".
 		// this.qualifiedNamespace = this.qualifiedNamespace.replace(/-/g, "_");
 		this.version = version;
-		this.JSDocTags = JSDocTags;
+		this.customJSDocTags = customJSDocTags;
 
 		this.customElements = {};
 		this.classes = {};
@@ -1195,12 +1195,12 @@ const WebComponentRegistry = {
 	 * @param {string} options.scopeSuffix the scope suffix for the web component package
 	 * @param {string} options.npmPackagePath the npm package path of the web component package
 	 * @param {string} options.version the version of the web component package
-	 * @param {string} [options.JSDocTags] list with additional JSDoc tags to add (passed via the pluginOptions in ui5.yaml)
+	 * @param {string} [options.customJSDocTags] list with additional JSDoc tags to add (passed via the pluginOptions in ui5.yaml)
 	 * @param {boolean} [options.skipDtsGeneration] whether to skip the *.d.ts generation (passed via the pluginOptions in ui5.yaml)
 	 * @param {boolean} [options.skipJSDoc] whether to skip the JSDoc generation (passed via the pluginOptions in ui5.yaml)
 	 * @returns the final WebComponentRegistryEntry for the given namespace
 	 */
-	register({ customElementsMetadata, namespace, library, scopeSuffix, npmPackagePath, version, JSDocTags = ["private"], skipDtsGeneration = true, skipJSDoc = true }) {
+	register({ customElementsMetadata, namespace, library, scopeSuffix, npmPackagePath, version, customJSDocTags = ["private"], skipDtsGeneration = true, skipJSDoc = true }) {
 		checkSerializerPluginActivation({
 			skipDtsGeneration,
 			skipJSDoc,
@@ -1208,7 +1208,7 @@ const WebComponentRegistry = {
 
 		let entry = _registry[namespace];
 		if (!entry) {
-			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, JSDocTags });
+			entry = _registry[namespace] = new RegistryEntry({ customElementsMetadata, namespace, scopeSuffix, npmPackagePath, version, customJSDocTags });
 
 			// track all classes also via their module name,
 			// so we can access them faster during resource resolution later on

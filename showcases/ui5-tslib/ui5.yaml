@@ -27,8 +27,7 @@ builder:
         pluginOptions:
           webcomponents:
             skipJSDoc: false # enable the JSDoc generation
-            visibilityJSDoc: "public"
-            additionalJSDocTags:
+            customJSDocTags:
               - ui5-restricted ui5.ecosystem.demo.tsapp
 server:
   customMiddleware:
