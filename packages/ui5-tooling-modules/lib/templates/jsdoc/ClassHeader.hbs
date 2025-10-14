@@ -2,9 +2,8 @@
  * @class
  * {{{formatNewLine description}}}{{#if interfacesSlashed}}
  * @implements {{{interfacesSlashed}}}{{/if}}
- * {{{implementsTag}}}
  * @extends {{{extendsTag}}}
- * @constructor
- * @{{{visibilityJSDoc}}}{{#if aliasSlashed}}
+ * @constructor{{#each jsdocTags}}
+ * @{{{this}}}{{/each}}{{#if aliasSlashed}}
  * @alias module:{{{aliasSlashed}}}{{/if}}
  */
