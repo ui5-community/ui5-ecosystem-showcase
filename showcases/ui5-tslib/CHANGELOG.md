@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tslib@0.10.19...ui5-tslib@0.11.0) (2025-10-14)
+
+
+### Features
+
+* **ui5-tooling-modules:** support additional tags for jsdoc ([#1285](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1285)) ([66d4538](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/66d4538c0c6eff9bc4d69830adaf94c47c9c4661))
+
+
+
+
+
 ## [0.10.19](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tslib@0.10.18...ui5-tslib@0.10.19) (2025-10-10)
 
 **Note:** Version bump only for package ui5-tslib
