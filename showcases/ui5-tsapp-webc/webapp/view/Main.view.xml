@@ -287,7 +287,8 @@
           <h:P text="This is a checkbox:" />
           <webc:CheckBox text="inside Div" />
           <h:P>
-            <h:A href="https://ui5.sap.com" data-sap-ui-test="12" enabled="true" text="link to demokit" />
+            <h:A href="https://ui5.sap.com" text="link to demokit" />
+            <!-- <h:Input disabled="false" /> -->
           </h:P>
         </h:Div>
       </h:Div>
