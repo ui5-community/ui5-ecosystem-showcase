@@ -9,6 +9,7 @@
   xmlns:webc="@ui5/webcomponents/dist"
   xmlns:fiori="@ui5/webcomponents-fiori/dist"
   xmlns:ai="@ui5/webcomponents-ai/dist"
+  xmlns:h="@ui5/html"
   core:require="{
     Formatter: 'ui5/ecosystem/demo/webctsapp/model/Formatter',
     iconUI5: '@ui5/webcomponents-icons/dist/sap-ui5',
@@ -272,29 +273,24 @@
       </webc:Panel>
 
       <!-- Not supported as of now, but would be nice to have -->
-      <!-- <h:div style="
+      <h:Div
+        style="
         background: #FAFAFA;
         border-bottom: 2px solid #777777;
         border-radius: 5px;
         box-shadow: 0px 5px 10px #999999;
         padding: 10px;
-        margin: 10px">
-        <h:div style="border-bottom: 1px solid #D0D0D0; padding: 2px;">
-          I'm a self made card :)
-        </h:div>
-        <h:div>
-          <h:p>This is a checkbox:</h:p>
-          <webc:CheckBox text="inside div" />
-          <h:p>
-            <h:a href="https://ui5.sap.com" data-sap-ui-test="12" enabled="true">link to demokit</h:a>
-          </h:p>
-          <h:p>
-            text content before the &lt;hr&gt;...
-            <h:hr />
-            ... and text content after the &lt;hr&gt;.
-          </h:p>
-        </h:div>
-      </h:div> -->
+        margin: 10px"
+      >
+        <h:Div style="border-bottom: 1px solid #D0D0D0; padding: 2px;" text="I'm a self made card :)" />
+        <h:Div>
+          <h:P text="This is a checkbox:" />
+          <webc:CheckBox text="inside Div" />
+          <h:P>
+            <h:A href="https://ui5.sap.com" data-sap-ui-test="12" enabled="true" text="link to demokit" />
+          </h:P>
+        </h:Div>
+      </h:Div>
     </content>
   </Page>
 </mvc:View>
