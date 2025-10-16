@@ -21,7 +21,8 @@ import { Select$LiveChangeEvent } from "@ui5/webcomponents/dist/Select";
 import Option from "@ui5/webcomponents/dist/Option";
 import MultiInput, { MultiInput$TokenDeleteEvent } from "@ui5/webcomponents/dist/MultiInput";
 
-console.log(AvatarSize);
+// HTML Elements
+import Progress from "@ui5/html/dist/Progress";
 
 function injectStyle() {
 	const sheet = new CSSStyleSheet();
@@ -45,27 +46,49 @@ function injectStyle() {
  * @namespace ui5.ecosystem.demo.webctsapp.controller
  */
 export default class Main extends Controller {
+	private animationId: number = 0;
+	private isAnimating: boolean = false;
+
 	public onInit(): void {
 		injectStyle();
 
 		const button = new Button({ text: "👻", click: this.onBoo });
-		if (button instanceof Control) {
-			(this.getView()?.byId("contentArea") as VBox).addItem(button);
-		}
+		(this.byId("contentArea") as VBox).addItem(button);
 		console.log(`Button is a sap.ui.core.WebComponent: ${button.isA("sap.ui.core.WebComponent")}`);
 		console.log(`Button is a @ui5.webcomponents.dist.Button: ${button.isA("@ui5.webcomponents.dist.Button")}`);
 		console.log(`Button is not a @ui5.webcomponents.Button: ${button.isA("@ui5.webcomponents.Button")}`);
+
 		const datePicker = new DatePicker({ placeholder: "📅" });
-		if (datePicker instanceof Control) {
-			(this.getView()?.byId("contentArea") as VBox).addItem(datePicker);
-		}
+		(this.byId("contentArea") as VBox).addItem(datePicker);
+
 		console.log(`DatePicker is a @ui5.webcomponents.dist.DatePicker: ${datePicker.isA("@ui5.webcomponents.dist.DatePicker")}`);
 		const input = new Input({ value: "🚀🚀🚀" });
-		if (input instanceof Control) {
-			(this.getView()?.byId("contentArea") as VBox).addItem(input);
-		}
+		(this.byId("contentArea") as VBox).addItem(input);
+
 		console.log(`Input is a @ui5.webcomponents.dist.Input: ${input.isA("@ui5.webcomponents.dist.Input")}`);
 		console.log(`Input is a @ui5.webcomponents.Input: ${input.isA("@ui5.webcomponents.Input")}`);
+	}
+
+	public onNativeClick(): void {
+		this.isAnimating = !this.isAnimating;
+
+		if (!this.isAnimating) {
+			cancelAnimationFrame(this.animationId);
+		}
+
+		this.animate();
+	}
+
+	public animate() {
+		if (!this.isAnimating) return;
+		const progressBar = this.byId("myProgressBar") as unknown as Progress;
+
+		let v = parseInt(progressBar.getValue(), 10) + 1;
+		v %= 100;
+		progressBar.setValue(`${v}`);
+
+		// Continue animation
+		this.animationId = requestAnimationFrame(this.animate.bind(this));
 	}
 
 	public onNavToDynamicPage(): void {

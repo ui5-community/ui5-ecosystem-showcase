@@ -272,7 +272,7 @@
         </webc:Tree>
       </webc:Panel>
 
-      <!-- Not supported as of now, but would be nice to have -->
+      <!-- HTML sample -->
       <h:Div
         style="
         background: #FAFAFA;
@@ -282,14 +282,15 @@
         padding: 10px;
         margin: 10px"
       >
-        <h:Div style="border-bottom: 1px solid #D0D0D0; padding: 2px;" text="I'm a self made card :)" />
-        <h:Div>
-          <h:P text="This is a checkbox:" />
-          <webc:CheckBox text="inside Div" />
-          <h:P>
-            <h:A href="https://ui5.sap.com" text="link to demokit" />
-            <!-- <h:Input disabled="false" /> -->
-          </h:P>
+        <h:Div style="border-bottom: 1px solid #D0D0D0; padding: 2px;" text="Pure HTML in a custom card" />
+        <h:Div style="display: flex; flex-direction: column; gap: 1rem; padding: 0.5rem;">
+          <h:P text="I'm a paragraph §" />
+          <h:A href="https://ui5.sap.com" text="link to UI5 demo kit" />
+          <h:Button text="Native Button with Event Handler in Controller" value="hello world" click=".onNativeClick" />
+          <h:Progress id="myProgressBar" max="100" value="70" />
+          <h:Input type="Text" placeholder="I'm a placeholder text..." />
+          <!-- public domain audio from wikimedia commons: https://commons.wikimedia.org/wiki/File:The_Entertainer_-_Scott_Joplin.ogg -->
+          <h:Audio id="myAudioPlayer" controls="true" src="https://upload.wikimedia.org/wikipedia/commons/1/1b/The_Entertainer_-_Scott_Joplin.ogg" />
         </h:Div>
       </h:Div>
     </content>
