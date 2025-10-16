@@ -9,6 +9,7 @@
   xmlns:webc="@ui5/webcomponents/dist"
   xmlns:fiori="@ui5/webcomponents-fiori/dist"
   xmlns:ai="@ui5/webcomponents-ai/dist"
+  xmlns:h="@ui5/html"
   core:require="{
     Formatter: 'ui5/ecosystem/demo/webctsapp/model/Formatter',
     iconUI5: '@ui5/webcomponents-icons/dist/sap-ui5',
@@ -271,30 +272,27 @@
         </webc:Tree>
       </webc:Panel>
 
-      <!-- Not supported as of now, but would be nice to have -->
-      <!-- <h:div style="
+      <!-- HTML sample -->
+      <h:Div
+        style="
         background: #FAFAFA;
         border-bottom: 2px solid #777777;
         border-radius: 5px;
         box-shadow: 0px 5px 10px #999999;
         padding: 10px;
-        margin: 10px">
-        <h:div style="border-bottom: 1px solid #D0D0D0; padding: 2px;">
-          I'm a self made card :)
-        </h:div>
-        <h:div>
-          <h:p>This is a checkbox:</h:p>
-          <webc:CheckBox text="inside div" />
-          <h:p>
-            <h:a href="https://ui5.sap.com" data-sap-ui-test="12" enabled="true">link to demokit</h:a>
-          </h:p>
-          <h:p>
-            text content before the &lt;hr&gt;...
-            <h:hr />
-            ... and text content after the &lt;hr&gt;.
-          </h:p>
-        </h:div>
-      </h:div> -->
+        margin: 10px"
+      >
+        <h:Div style="border-bottom: 1px solid #D0D0D0; padding: 2px;" text="Pure HTML in a custom card" />
+        <h:Div style="display: flex; flex-direction: column; gap: 1rem; padding: 0.5rem;">
+          <h:P text="I'm a paragraph §" />
+          <h:A href="https://ui5.sap.com" text="link to UI5 demo kit" />
+          <h:Button text="Native Button with Event Handler in Controller" value="hello world" click=".onNativeClick" />
+          <h:Progress id="myProgressBar" max="100" value="70" />
+          <h:Input type="Text" placeholder="I'm a placeholder text..." />
+          <!-- public domain audio from wikimedia commons: https://commons.wikimedia.org/wiki/File:The_Entertainer_-_Scott_Joplin.ogg -->
+          <h:Audio id="myAudioPlayer" controls="true" src="https://upload.wikimedia.org/wikipedia/commons/1/1b/The_Entertainer_-_Scott_Joplin.ogg" />
+        </h:Div>
+      </h:Div>
     </content>
   </Page>
 </mvc:View>

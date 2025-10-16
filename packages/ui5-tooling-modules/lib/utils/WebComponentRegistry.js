@@ -184,12 +184,21 @@ class RegistryEntry {
 
 			let superclassRef = (refPackage || this).classes[superclassName];
 			if (!superclassRef) {
-				logger.error(
-					`The class '${this.namespace}/${classDef.name}' has an unknown superclass '${classDef.superclass.package}/${superclassName}' using default '@ui5/webcomponents-base/UI5Element'!`,
-				);
-				const refPackage = WebComponentRegistry.getPackage(WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE);
-				let superclassRef = (refPackage || this).classes[WebComponentRegistryHelper.UI5_ELEMENT_CLASS_NAME];
-				classDef.superclass = superclassRef;
+				if (classDef.namespace === "@ui5/html") {
+					classDef.superclass = {
+						name: "HTMLElement",
+						package: "sap.ui.core",
+						namespace: "sap.ui.core.html",
+						module: "sap/ui/core/html/HTMLElement.js",
+					};
+				} else {
+					logger.error(
+						`The class '${this.namespace}/${classDef.name}' has an unknown superclass '${classDef.superclass.package}/${superclassName}' using default '@ui5/webcomponents-base/UI5Element'!`,
+					);
+					const refPackage = WebComponentRegistry.getPackage(WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE);
+					let superclassRef = (refPackage || this).classes[WebComponentRegistryHelper.UI5_ELEMENT_CLASS_NAME];
+					classDef.superclass = superclassRef;
+				}
 			} else {
 				this.#connectSuperclass(superclassRef);
 				classDef.superclass = superclassRef;
@@ -213,7 +222,7 @@ class RegistryEntry {
 
 	#calculateScopedTagName(classDef) {
 		// only scope UI5Element subclasses
-		if (this.scopeSuffix && WebComponentRegistryHelper.isUI5ElementSubclass(classDef)) {
+		if (this.scopeSuffix && WebComponentRegistryHelper.isSubclassOf(classDef, WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE, WebComponentRegistryHelper.UI5_ELEMENT_CLASS_NAME)) {
 			if (classDef.tagName) {
 				classDef.scopedTagName = `${classDef.tagName}-${this.scopeSuffix}`;
 			}
@@ -1134,7 +1143,11 @@ class RegistryEntry {
 			const enumMembers = this.enums[enumName].members;
 			enumMembers.forEach((member) => {
 				// Key<>Value must be identical!
-				enumValues.push({ name: member.name, description: member.description || "" });
+				enumValues.push({
+					name: member.name,
+					value: member.value || member.name,
+					description: member.description || "",
+				});
 			});
 
 			// prepare enum info object for HBS template later
@@ -1205,6 +1218,9 @@ const WebComponentRegistry = {
 			skipDtsGeneration,
 			skipJSDoc,
 		});
+
+		// TODO: no scoping for html tags, otherwise invalid
+		scopeSuffix = namespace === "@ui5/html" ? undefined : scopeSuffix;
 
 		let entry = _registry[namespace];
 		if (!entry) {

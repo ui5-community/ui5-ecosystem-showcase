@@ -2,12 +2,12 @@
  * ${copyright}
  */
 sap.ui.define([
-  "{{webcPackage}}",{{#if isBaseLib}}
+  {{#if webcPackage}}"{{webcPackage}}",{{/if}}{{#if isBaseLib}}
   "sap/ui/core/webc/WebComponent",{{/if}}{{#if hasEnums}}
   "sap/ui/base/DataType",{{/if}}{{#each dependencies}}
   "{{this}}",{{/each}}
 ], function(
-  WebCPackage,{{#if isBaseLib}}
+  {{#if webcPackage}}WebCPackage,{{/if}}{{#if isBaseLib}}
   WebComponent,{{/if}}{{#if hasEnums}}
   DataType,{{/if}}
 ) {
@@ -20,7 +20,7 @@ sap.ui.define([
     "_ui5metadata":
 {{{metadata}}}
   };
-
+  {{#if webcPackage}}
   if (WebCPackage) {
     Object.keys(WebCPackage).forEach((key) => {
       if (key !== "default") {
@@ -31,14 +31,14 @@ sap.ui.define([
         }
       }
     });
-  }
+  }{{/if}}
 
   {{#each enums}}
   {{{this._jsDoc}}}
   pkg["{{this.name}}"] = {
   {{#each this.values}}
     {{this._jsDoc}}
-    "{{this.name}}": "{{this.name}}",
+    "{{this.name}}": "{{{this.value}}}",
   {{/each}}
   };
   registerEnum("{{this._ui5QualifiedName}}", pkg["{{this.name}}"]);

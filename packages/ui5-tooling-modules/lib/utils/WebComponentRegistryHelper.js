@@ -5,27 +5,32 @@ const WebComponentRegistryHelper = {
 	UI5_ELEMENT_NAMESPACE: "@ui5/webcomponents-base",
 
 	/**
-	 * Helper function to check whether the given class inherits from UI5Element, the base class for all
-	 * UI5 web components.
+	 * Helper function to check whether the given class inherits from the provided class name.
 	 *
 	 * @param {object} classDef a class definition from a WebComponentRegistry entry
-	 * @returns {boolean} whether the class inherits from UI5Element
+	 * @param {string} namespace the class namespace
+	 * @param {string} className the class name
+	 * @returns {boolean} whether the class inherits from the provided class name
 	 */
-	isUI5ElementSubclass(classDef) {
+	isSubclassOf(classDef, namespace, className) {
 		let superclass = classDef.superclass,
-			isUI5ElementSubclass = false;
+			isSubclass = false;
 		while (superclass) {
-			if (superclass?.namespace === this.UI5_ELEMENT_NAMESPACE && superclass?.name === this.UI5_ELEMENT_CLASS_NAME) {
-				isUI5ElementSubclass = true;
+			if (superclass?.namespace === namespace && superclass?.name === className) {
+				isSubclass = true;
 				break;
 			}
 			superclass = superclass.superclass;
 		}
-		return isUI5ElementSubclass;
+		return isSubclass;
 	},
 
 	isUI5Element(ui5Superclass) {
 		return ui5Superclass.namespace === this.UI5_ELEMENT_NAMESPACE && ui5Superclass.name === this.UI5_ELEMENT_CLASS_NAME;
+	},
+
+	isUi5CoreHTMLElement(ui5Superclass) {
+		return ui5Superclass?.namespace === "sap.ui.core.html" && ui5Superclass?.name === "HTMLElement";
 	},
 };
 

@@ -887,6 +887,11 @@ const DTSSerializer = {
 					class: "WebComponent",
 					module: "sap/ui/core/webc/WebComponent",
 				};
+			} else if (WebComponentRegistryHelper.isUi5CoreHTMLElement(classDef.superclass)) {
+				superclassSettings = {
+					class: "HTMLElement",
+					module: "sap/ui/core/html/HTMLElement",
+				};
 			} else {
 				superclassSettings = {
 					class: classDef.superclass.name,
@@ -913,6 +918,15 @@ const DTSSerializer = {
 			// Add superclass imports
 			writeImports(superclassSettings.module, superclassSettings.class, { default: true });
 			writeImports(superclassSettings.module, `$${superclassSettings.class}Settings`);
+
+			if (WebComponentRegistryHelper.isSubclassOf(classDef, "sap.ui.core.html", "HTMLElement")) {
+				classDef._dts.metadataClass = "HTMLElementMetadata";
+				writeImports("sap/ui/core/html/HTMLElementMetadata", "HTMLElementMetadata", { default: true });
+			} else if (WebComponentRegistryHelper.isSubclassOf(classDef, "@ui5/webcomponents-base", "UI5Element")) {
+				classDef._dts.metadataClass = "WebComponentMetadata";
+				writeImports("sap/ui/core/webc/WebComponentMetadata", "WebComponentMetadata", { default: true });
+			}
+
 			classDef._dts.extends = superclassSettings.class;
 
 			// Process all entity types
