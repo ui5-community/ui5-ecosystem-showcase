@@ -17,8 +17,8 @@
   ],
   "dependencies": {
     "@cap-js/sqlite": "^2",
-    "@sap/cds": "^9",
-    "express": "^4",
+    "@sap/cds": "^9.4",
+    "express": "^5",
     "passport": "^0.7.0"
   },
   "devDependencies": {
