@@ -11,39 +11,30 @@ sap.ui.define(
     "use strict";
     const { registerEnum } = DataType;
 
-    const pkg = {
-      _ui5metadata: {
-        name: "@ui5/webcomponents-base",
-        version: "2.12.0",
-        dependencies: ["sap.ui.core"],
-        types: [
-          "@ui5.webcomponents-base.AnimationMode",
-          "@ui5.webcomponents-base.CalendarType",
-          "@ui5.webcomponents-base.ItemNavigationBehavior",
-          "@ui5.webcomponents-base.MovePlacement",
-          "@ui5.webcomponents-base.NavigationMode",
-          "@ui5.webcomponents-base.SortOrder",
-          "@ui5.webcomponents-base.ValueState"
-        ],
-        interfaces: [],
-        controls: [],
-        elements: [],
-        rootPath: "../"
-      }
+    // re-export package object
+    const pkg = Object.assign({}, WebCPackage);
+
+    // export the UI5 metadata along with the package
+    pkg["_ui5metadata"] = {
+      name: "@ui5/webcomponents-base",
+      version: "2.12.0",
+      dependencies: ["sap.ui.core"],
+      types: [
+        "@ui5.webcomponents-base.AnimationMode",
+        "@ui5.webcomponents-base.CalendarType",
+        "@ui5.webcomponents-base.ItemNavigationBehavior",
+        "@ui5.webcomponents-base.MovePlacement",
+        "@ui5.webcomponents-base.NavigationMode",
+        "@ui5.webcomponents-base.SortOrder",
+        "@ui5.webcomponents-base.ValueState"
+      ],
+      interfaces: [],
+      controls: [],
+      elements: [],
+      rootPath: "../"
     };
 
-    if (WebCPackage) {
-      Object.keys(WebCPackage).forEach((key) => {
-        if (key !== "default") {
-          pkg[key] = WebCPackage[key];
-        } else {
-          if (typeof WebCPackage[key] === "object") {
-            Object.assign(pkg, WebCPackage[key]);
-          }
-        }
-      });
-    }
-
+    // Enums
     /**
      * Different types of AnimationMode.
      *
@@ -459,6 +450,9 @@ sap.ui.define(
     // ====================
     // MONKEY PATCHES END
     // ====================
+
+    // marker to threat this as an ES module to support named exports
+    pkg.__esModule = true;
 
     return pkg;
   }

@@ -10,7 +10,8 @@ import Event from "sap/ui/base/Event";
 import Button from "@ui5/webcomponents/dist/Button";
 import DatePicker from "@ui5/webcomponents/dist/DatePicker";
 import Input from "@ui5/webcomponents/dist/Input";
-import { AvatarSize } from "@ui5/webcomponents";
+// @ts-ignore (needed for default import, which is normally not present in packages with only named exports)
+import { default as pkg, _ui5metadata, AvatarSize } from "@ui5/webcomponents";
 import Token from "@ui5/webcomponents/dist/Token";
 
 import UserMenu from "@ui5/webcomponents-fiori/dist/UserMenu";
@@ -21,6 +22,8 @@ import { Select$LiveChangeEvent } from "@ui5/webcomponents/dist/Select";
 import Option from "@ui5/webcomponents/dist/Option";
 import MultiInput, { MultiInput$TokenDeleteEvent } from "@ui5/webcomponents/dist/MultiInput";
 
+console.log(pkg);
+console.log(_ui5metadata);
 console.log(AvatarSize);
 
 function injectStyle() {
@@ -47,6 +50,14 @@ function injectStyle() {
 export default class Main extends Controller {
 	public onInit(): void {
 		injectStyle();
+
+		// test dynamic import of webcomponents package (the default export is needed for re-exporting purposes)
+		// @ts-ignore (needed for default import, which is normally not present in packages with only named exports)
+		import("@ui5/webcomponents").then(({ default: pkg, _ui5metadata, AvatarSize: AvatarSize1 }) => {
+			console.log(pkg);
+			console.log(_ui5metadata);
+			console.log(AvatarSize1);
+		});
 
 		const button = new Button({ text: "👻", click: this.onBoo });
 		if (button instanceof Control) {

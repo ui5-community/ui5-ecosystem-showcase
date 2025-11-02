@@ -16,23 +16,13 @@ sap.ui.define([
   const { registerEnum } = DataType;
   {{/if}}
 
-  const pkg = {
-    "_ui5metadata":
-{{{metadata}}}
-  };
+	// re-export package object
+  const pkg = Object.assign({}, WebCPackage);
 
-  if (WebCPackage) {
-    Object.keys(WebCPackage).forEach((key) => {
-      if (key !== "default") {
-        pkg[key] = WebCPackage[key];
-      } else {
-        if (typeof WebCPackage[key] === "object") {
-          Object.assign(pkg, WebCPackage[key]);
-        }
-      }
-    });
-  }
+	// export the UI5 metadata along with the package
+	pkg["_ui5metadata"] = {{{metadata}}};
 
+	// Enums
   {{#each enums}}
   {{{this._jsDoc}}}
   pkg["{{this.name}}"] = {
@@ -58,6 +48,9 @@ sap.ui.define([
   // MONKEY PATCHES END
   // ====================
   {{/if}}
+
+	// marker to threat this as an ES module to support named exports
+	pkg.__esModule = true;
 
   return pkg;
 });
