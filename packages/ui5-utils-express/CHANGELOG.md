@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-utils-express@1.4.0...ui5-utils-express@1.5.0) (2025-11-02)
+
+
+### Features
+
+* support express >= 4 ([#1287](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1287)) ([f37a1fa](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/f37a1fa9462622ae9aae9dbb6fa17a6662dd38c9))
+
+
+
+
+
 # [1.4.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-utils-express@1.3.1...ui5-utils-express@1.4.0) (2024-09-06)
 
 
