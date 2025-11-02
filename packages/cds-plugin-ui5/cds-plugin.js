@@ -273,7 +273,7 @@ if (!skip) {
 					// move our middleware before the CDS index serve middleware to
 					// allow that we can intercept the response and modify it to
 					// inject our application pages an remove the exitsing ones
-					const middlewareStack = app?._router?.stack;
+					const middlewareStack = (app?._router ?? app?.router)?.stack;
 					if (Array.isArray(middlewareStack)) {
 						const cmw = middlewareStack.pop();
 						const idxOfServeStatic = middlewareStack.findIndex((layer) => layer.name === "serveStatic");

@@ -109,7 +109,7 @@ module.exports = function hook(name, callback, middleware) {
 				if (event === "mount") {
 					// store the position into which new custom middlewares should
 					// be placed into when using the "use" function of the callback
-					const middlewareIndex = app?._router?.stack?.length;
+					const middlewareIndex = (app?._router ?? app?.router)?.stack?.length;
 					// intercept the listen call to get access to the server
 					const { listen } = app;
 					app.listen = function () {
@@ -133,7 +133,7 @@ module.exports = function hook(name, callback, middleware) {
 								// express app in the middleware stack to ensure proper
 								// order and execution in the middleware chain!
 								if (middlewareIndex != null && middlewareIndex !== -1) {
-									const middlewareStack = app?._router?.stack;
+									const middlewareStack = (app?._router ?? app?.router)?.stack;
 									const cmw = middlewareStack.pop();
 									middlewareStack.splice(middlewareIndex, 0, cmw);
 								}
