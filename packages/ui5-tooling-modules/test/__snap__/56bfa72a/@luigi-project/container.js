@@ -4,35 +4,30 @@
 sap.ui.define(["../container"], function (WebCPackage) {
   "use strict";
 
-  const pkg = {
-    _ui5metadata: {
-      name: "@luigi-project/container",
-      version: "1.7.0",
-      dependencies: ["sap.ui.core"],
-      types: [],
-      interfaces: [],
-      controls: [
-        "@luigi-project.container.LuigiContainer",
-        "@luigi-project.container.LuigiCompoundContainer"
-      ],
-      elements: [],
-      rootPath: "../"
-    }
+  // re-export package object
+  const pkg = Object.assign({}, WebCPackage);
+
+  // export the UI5 metadata along with the package
+  pkg["_ui5metadata"] = {
+    name: "@luigi-project/container",
+    version: "1.7.0",
+    dependencies: ["sap.ui.core"],
+    types: [],
+    interfaces: [],
+    controls: [
+      "@luigi-project.container.LuigiContainer",
+      "@luigi-project.container.LuigiCompoundContainer"
+    ],
+    elements: [],
+    rootPath: "../"
   };
 
-  if (WebCPackage) {
-    Object.keys(WebCPackage).forEach((key) => {
-      if (key !== "default") {
-        pkg[key] = WebCPackage[key];
-      } else {
-        if (typeof WebCPackage[key] === "object") {
-          Object.assign(pkg, WebCPackage[key]);
-        }
-      }
-    });
-  }
+  // Enums
 
   // Interfaces
+
+  // marker to threat this as an ES module to support named exports
+  pkg.__esModule = true;
 
   return pkg;
 });

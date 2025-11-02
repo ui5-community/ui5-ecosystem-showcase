@@ -1132,7 +1132,7 @@ class RegistryEntry {
 			const enumValues = [];
 
 			const enumMembers = this.enums[enumName].members;
-			enumMembers.forEach((member) => {
+			enumMembers?.forEach((member) => {
 				// Key<>Value must be identical!
 				enumValues.push({ name: member.name, description: member.description || "" });
 			});

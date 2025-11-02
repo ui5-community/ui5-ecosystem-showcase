@@ -15,6 +15,9 @@ customConfiguration:
   config-ui5-tooling-modules: &cfgModules
     debug: true
     minify: true
+    pluginOptions:
+      webcomponents:
+        scoping: false
     watch:
       - "../ui5-tsapp-webc/webapp"
 type: application
