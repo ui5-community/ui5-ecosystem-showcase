@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.17](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.15.16...ui5-tsapp-webc@0.15.17) (2025-11-02)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** proper named export of enums, correct re-export ([#1286](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1286)) ([2f22526](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2f225269a051bed0632edb0852c78555bf5ac862))
+
+
+
+
+
 ## [0.15.16](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.15.15...ui5-tsapp-webc@0.15.16) (2025-10-14)
 
 **Note:** Version bump only for package ui5-tsapp-webc

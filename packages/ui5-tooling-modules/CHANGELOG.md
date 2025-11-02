@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.33.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.33.0...ui5-tooling-modules@3.33.1) (2025-11-02)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** proper named export of enums, correct re-export ([#1286](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1286)) ([2f22526](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/2f225269a051bed0632edb0852c78555bf5ac862))
+
+
+
+
+
 # [3.33.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.32.3...ui5-tooling-modules@3.33.0) (2025-10-14)
 
 
