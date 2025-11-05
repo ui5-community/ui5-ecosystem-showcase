@@ -38,7 +38,9 @@ const calculateGetterName = (functionName) => {
 	return "get" + functionName.substring(0, 1).toUpperCase() + functionName.substring(1);
 };
 
+// TODO: we need to make a proper check for association types
 const WEBC_ASSOCIATION_TYPE = "HTMLElement | string | undefined";
+const WEBC_ASSOCIATION_TYPE_ALT = "HTMLElement | string | null | undefined";
 
 let _registry = {};
 
@@ -399,7 +401,7 @@ class RegistryEntry {
 		const multiple = typeDef.types[0].multiple || false;
 
 		// Special handling for Associations types
-		if (typeDef.origType === WEBC_ASSOCIATION_TYPE) {
+		if (typeDef.origType === WEBC_ASSOCIATION_TYPE || typeDef.origType === WEBC_ASSOCIATION_TYPE_ALT) {
 			typeDef.ui5TypeInfo = {
 				ui5Type: typeDef.types[0].ui5Type,
 				moduleType: typeDef.types[0].moduleType,
@@ -534,7 +536,7 @@ class RegistryEntry {
 		// field -> property or association
 		if (propDef.kind === "field") {
 			const typeDef = this.#extractUi5Type(propDef.type);
-			const isAssociation = typeDef.origType === WEBC_ASSOCIATION_TYPE;
+			const isAssociation = typeDef.origType === WEBC_ASSOCIATION_TYPE || typeDef.origType === WEBC_ASSOCIATION_TYPE_ALT;
 
 			// Some properties might need a special UI5 mapping, e.g. "accesibleNameRef"
 			const hasSpecialMapping = this.#checkForSpecialMapping(classDef, propDef, ui5metadata);
