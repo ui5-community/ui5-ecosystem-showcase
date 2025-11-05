@@ -292,7 +292,10 @@ module.exports = async function ({ log, workspace, taskUtil, options }) {
 				changed = content;
 				Object.keys(tokens).forEach((token) => {
 					const escapedToken = token.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escape special regex chars
-					changed = changed.replace(new RegExp(`((?:require|requireSync|define|toUrl)(?:\\s*)(?:\\([^)]*["']))${escapedToken}(["'][^)]*\\))`, "mg"), `$1${tokens[token]}$2`);
+					changed = changed.replace(
+						new RegExp(`((?:__ui5_require_async|require|requireSync|define|toUrl)(?:\\s*)(?:\\([^)]*["']))${escapedToken}(["'][^)]*\\))`, "mg"),
+						`$1${tokens[token]}$2`,
+					);
 					// fix the JSDoc references as well (either module:sap/my/Module or sap.my.Module syntax)
 					changed = changed.replace(new RegExp(`(^\\s*\\*\\s@(.*?)\\s+(?:module\\:)?)${escapedToken}`, "mg"), `$1${tokens[token]}`);
 					const escapedTokenWithDottedNamespace = token.replace(/\//g, ".").replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escape special regex chars

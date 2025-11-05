@@ -4,6 +4,1008 @@
   "modules": [
     {
       "kind": "javascript-module",
+      "path": "dist/AssetRegistry.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/Assets-fetch.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/Assets-node.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/Assets.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/Boot.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/CustomElementsRegistry.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/CustomElementsScope.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/CustomElementsScopeUtils.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/DOMObserver.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/Device.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/DragAndDrop.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/EventProvider.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "EventProvider",
+            "module": "dist/EventProvider.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/FeaturesRegistry.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/FontFace.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "insertFontFace",
+            "module": "dist/FontFace.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/IgnoreCustomElements.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/InitialConfiguration.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/Keys.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/Location.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/ManagedStyles.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/MediaRange.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "MediaRange",
+            "module": "dist/MediaRange.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/PropertiesFileFormat.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "parseProperties",
+            "module": "dist/PropertiesFileFormat.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/Render.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/RenderQueue.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "RenderQueue",
+            "module": "dist/RenderQueue.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/Runtimes.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/ScrollbarStyles.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "insertScrollbarStyles",
+            "module": "dist/ScrollbarStyles.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/SystemCSSVars.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "insertSystemCSSVars",
+            "module": "dist/SystemCSSVars.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/Theming.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/UI5Element.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Base class for all UI5 Web Components",
+          "name": "UI5Element",
+          "members": [
+            {
+              "kind": "method",
+              "name": "onBeforeRendering",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Called every time before the component renders.",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "onAfterRendering",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Called every time after the component renders.",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "onEnterDOM",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Called on connectedCallback - added to the DOM.",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "onExitDOM",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Called on disconnectedCallback - removed from the DOM.",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "attachInvalidate",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "callback",
+                  "type": {
+                    "text": "(param: InvalidationInfo) => void"
+                  },
+                  "_ui5privacy": "public"
+                }
+              ],
+              "description": "Attach a callback that will be executed whenever the component is invalidated",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "detachInvalidate",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "callback",
+                  "type": {
+                    "text": "(param: InvalidationInfo) => void"
+                  },
+                  "_ui5privacy": "public"
+                }
+              ],
+              "description": "Detach the callback that is executed whenever the component is invalidated",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "onInvalidation",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "changeInfo",
+                  "type": {
+                    "text": "ChangeInfo",
+                    "references": [
+                      {
+                        "name": "ChangeInfo",
+                        "package": "@ui5/webcomponents-base",
+                        "module": "dist/UI5Element.js"
+                      }
+                    ]
+                  },
+                  "description": "An object with information about the change that caused invalidation.\nThe object can have the following properties:\n- type: (property|slot) tells what caused the invalidation\n1) property: a property value was changed either directly or as a result of changing the corresponding attribute\n2) slot: a slotted node(nodes) changed in one of several ways (see \"reason\")\n\n- name: the name of the property or slot that caused the invalidation\n\n- reason: (children|textcontent|childchange|slotchange) relevant only for type=\"slot\" only and tells exactly what changed in the slot\n1) children: immediate children (HTML elements or text nodes) were added, removed or reordered in the slot\n2) textcontent: text nodes in the slot changed value (or nested text nodes were added or changed value). Can only trigger for slots of \"type: Node\"\n3) slotchange: a slot element, slotted inside that slot had its \"slotchange\" event listener called. This practically means that transitively slotted children changed.\nCan only trigger if the child of a slot is a slot element itself.\n4) childchange: indicates that a UI5Element child in that slot was invalidated and in turn invalidated the component.\nCan only trigger for slots with \"invalidateOnChildChange\" metadata descriptor\n\n- newValue: the new value of the property (for type=\"property\" only)\n\n- oldValue: the old value of the property (for type=\"property\" only)\n\n- child the child that was changed (for type=\"slot\" and reason=\"childchange\" only)",
+                  "_ui5privacy": "public"
+                }
+              ],
+              "description": "A callback that is executed each time an already rendered component is invalidated (scheduled for re-rendering)",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "getDomRef",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | undefined"
+                }
+              },
+              "description": "Returns the DOM Element inside the Shadow Root that corresponds to the opening tag in the UI5 Web Component's template\n*Note:* For logical (abstract) elements (items, options, etc...), returns the part of the parent's DOM that represents this option\nUse this method instead of \"this.shadowRoot\" to read the Shadow DOM, if ever necessary",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "getFocusDomRef",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | undefined"
+                }
+              },
+              "description": "Returns the DOM Element marked with \"data-sap-focus-ref\" inside the template.\nThis is the element that will receive the focus by default.",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "getFocusDomRefAsync",
+              "return": {
+                "type": {
+                  "text": "Promise<HTMLElement | undefined>"
+                }
+              },
+              "description": "Waits for dom ref and then returns the DOM Element marked with \"data-sap-focus-ref\" inside the template.\nThis is the element that will receive the focus by default.",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "focus",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "focusOptions",
+                  "optional": true,
+                  "type": {
+                    "text": "FocusOptions"
+                  },
+                  "description": "additional options for the focus",
+                  "_ui5privacy": "public"
+                }
+              ],
+              "description": "Set the focus to the element, returned by \"getFocusDomRef()\" (marked by \"data-sap-focus-ref\")",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "fireEvent",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                },
+                "description": "false, if the event was cancelled (preventDefault called), true otherwise"
+              },
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  },
+                  "description": "name of the event",
+                  "_ui5privacy": "public"
+                },
+                {
+                  "name": "data",
+                  "optional": true,
+                  "type": {
+                    "text": "T"
+                  },
+                  "description": "additional data for the event",
+                  "_ui5privacy": "public"
+                },
+                {
+                  "name": "cancelable",
+                  "default": "false",
+                  "description": "true, if the user can call preventDefault on the event object",
+                  "_ui5privacy": "public"
+                },
+                {
+                  "name": "bubbles",
+                  "default": "true",
+                  "description": "true, if the event bubbles",
+                  "_ui5privacy": "public"
+                }
+              ],
+              "privacy": "public",
+              "deprecated": "use fireDecoratorEvent instead"
+            },
+            {
+              "kind": "method",
+              "name": "fireDecoratorEvent",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                },
+                "description": "false, if the event was cancelled (preventDefault called), true otherwise"
+              },
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "N"
+                  },
+                  "description": "name of the event",
+                  "_ui5privacy": "public"
+                },
+                {
+                  "name": "data",
+                  "optional": true,
+                  "type": {
+                    "text": "this[\"eventDetails\"][N] | undefined"
+                  },
+                  "description": "additional data for the event",
+                  "_ui5privacy": "public"
+                }
+              ],
+              "description": "Fires a custom event, configured via the \"event\" decorator.",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "getSlottedNodes",
+              "return": {
+                "type": {
+                  "text": "Array<T>"
+                }
+              },
+              "description": "Returns the actual children, associated with a slot.\nUseful when there are transitive slots in nested component scenarios and you don't want to get a list of the slots, but rather of their content.",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "attachComponentStateFinalized",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "callback",
+                  "type": {
+                    "text": "() => void"
+                  },
+                  "_ui5privacy": "public"
+                }
+              ],
+              "description": "Attach a callback that will be executed whenever the component's state is finalized",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "detachComponentStateFinalized",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "callback",
+                  "type": {
+                    "text": "() => void"
+                  },
+                  "_ui5privacy": "public"
+                }
+              ],
+              "description": "Detach the callback that is executed whenever the component's state is finalized",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "effectiveDir",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Determines whether the component should be rendered in RTL mode or not.\nReturns: \"rtl\", \"ltr\" or undefined",
+              "privacy": "public",
+              "default": "undefined",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "isUI5Element",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Used to duck-type UI5 elements without using instanceof",
+              "privacy": "public",
+              "default": "true",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "getUniqueDependencies",
+              "static": true,
+              "return": {
+                "type": {
+                  "text": "Array<typeof UI5Element>"
+                }
+              },
+              "description": "Returns a list of the unique dependencies for this UI5 Web Component",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "define",
+              "static": true,
+              "return": {
+                "type": {
+                  "text": "typeof UI5Element"
+                }
+              },
+              "description": "Registers a UI5 Web Component in the browser window object",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "getMetadata",
+              "static": true,
+              "return": {
+                "type": {
+                  "text": "UI5ElementMetadata",
+                  "references": [
+                    {
+                      "name": "UI5ElementMetadata",
+                      "package": "@ui5/webcomponents-base",
+                      "module": "dist/UI5ElementMetadata.js"
+                    }
+                  ]
+                }
+              },
+              "description": "Returns an instance of UI5ElementMetadata.js representing this UI5 Web Component's full metadata (its and its parents')\nNote: not to be confused with the \"get metadata()\" method, which returns an object for this class's metadata only",
+              "privacy": "public"
+            }
+          ],
+          "attributes": [
+            {
+              "description": "Determines whether the component should be rendered in RTL mode or not.\nReturns: \"rtl\", \"ltr\" or undefined",
+              "name": "effective-dir",
+              "default": "undefined",
+              "fieldName": "effectiveDir",
+              "type": {
+                "text": "any"
+              }
+            },
+            {
+              "description": "Used to duck-type UI5 elements without using instanceof",
+              "name": "is-ui5-element",
+              "default": "true",
+              "fieldName": "isUI5Element",
+              "type": {
+                "text": "any"
+              }
+            }
+          ],
+          "customElement": true,
+          "_ui5privacy": "public"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UI5Element",
+            "module": "dist/UI5Element.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/UI5ElementMetadata.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "UI5ElementMetadata",
+          "members": [
+            {
+              "kind": "method",
+              "name": "validateSlotValue",
+              "static": true,
+              "return": {
+                "type": {
+                  "text": "Node"
+                }
+              },
+              "description": "Validates the slot's value and returns it if correct\nor throws an exception if not.\n**Note:** Only intended for use by UI5Element.js",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "getPureTag",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "description": "Returns the tag of the UI5 Element without the scope",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "getTag",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "description": "Returns the tag of the UI5 Element",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "hasAttribute",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "propName",
+                  "type": {
+                    "text": "string"
+                  },
+                  "_ui5privacy": "public"
+                }
+              ],
+              "description": "Determines whether a property should have an attribute counterpart",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "getPropertiesList",
+              "return": {
+                "type": {
+                  "text": "Array<string>"
+                }
+              },
+              "description": "Returns an array with the properties of the UI5 Element (in camelCase)",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "getAttributesList",
+              "return": {
+                "type": {
+                  "text": "Array<string>"
+                }
+              },
+              "description": "Returns an array with the attributes of the UI5 Element (in kebab-case)",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "hasSlots",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "description": "Determines whether this UI5 Element supports any slots",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "hasIndividualSlots",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "description": "Determines whether this UI5 Element supports any slots with \"individualSlots: true\"",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "slotsAreManaged",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "description": "Determines whether this UI5 Element needs to invalidate if children are added/removed/changed",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "supportsF6FastNavigation",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "description": "Determines whether this control supports F6 fast navigation",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "getProperties",
+              "return": {
+                "type": {
+                  "text": "Record<string, Property>",
+                  "references": [
+                    {
+                      "name": "Property",
+                      "package": "@ui5/webcomponents-base",
+                      "module": "dist/UI5ElementMetadata.js"
+                    }
+                  ]
+                }
+              },
+              "description": "Returns an object with key-value pairs of properties and their metadata definitions",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "getEvents",
+              "return": {
+                "type": {
+                  "text": "EventData",
+                  "references": [
+                    {
+                      "name": "EventData",
+                      "package": "@ui5/webcomponents-base",
+                      "module": "dist/UI5ElementMetadata.js"
+                    }
+                  ]
+                }
+              },
+              "description": "Returns an object with key-value pairs of events and their metadata definitions",
+              "privacy": "public"
+            },
+            {
+              "kind": "method",
+              "name": "getSlots",
+              "return": {
+                "type": {
+                  "text": "Record<string, Slot>",
+                  "references": [
+                    {
+                      "name": "Slot",
+                      "package": "@ui5/webcomponents-base",
+                      "module": "dist/UI5ElementMetadata.js"
+                    }
+                  ]
+                }
+              },
+              "description": "Returns an object with key-value pairs of slots and their metadata definitions",
+              "privacy": "public"
+            }
+          ],
+          "_ui5privacy": "public"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UI5ElementMetadata",
+            "module": "dist/UI5ElementMetadata.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/connectToComponent.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "connectToComponent",
+            "module": "dist/connectToComponent.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/decorators.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/getSharedResource.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "getSharedResource",
+            "module": "dist/getSharedResource.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/i18nBundle.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "I18nBundle",
+          "members": [
+            {
+              "kind": "method",
+              "name": "getText",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "textObj",
+                  "type": {
+                    "text": "I18nText | string",
+                    "references": [
+                      {
+                        "name": "I18nText",
+                        "package": "@ui5/webcomponents-base",
+                        "module": "dist/i18nBundle.js"
+                      }
+                    ]
+                  },
+                  "description": "key/defaultText pair or just the key",
+                  "_ui5privacy": "public"
+                },
+                {
+                  "name": "params",
+                  "type": {
+                    "text": "Array<number | string>"
+                  },
+                  "description": "Values for the placeholders",
+                  "_ui5privacy": "public"
+                }
+              ],
+              "description": "Returns a text in the currently loaded language",
+              "privacy": "public"
+            }
+          ],
+          "_ui5privacy": "public"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "I18nBundle",
+            "module": "dist/i18nBundle.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "UI5Element",
+            "module": "dist/index.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/jsx-dev-runtime.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/jsx-runtime.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/jsx-utils.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/ssr-dom-shim.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/ssr-dom.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/types.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/updateShadowRoot.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "updateShadowRoot",
+            "module": "dist/updateShadowRoot.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/validateThemeRoot.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "validateThemeRoot",
+            "module": "dist/validateThemeRoot.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/animations/AnimationQueue.js",
       "declarations": [],
       "exports": [
@@ -79,36 +1081,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "dist/asset-registries/Icons.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/asset-registries/Illustrations.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/asset-registries/LocaleData.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/asset-registries/Themes.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/asset-registries/i18n.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
       "path": "dist/config/AnimationMode.js",
       "declarations": [],
       "exports": []
@@ -176,6 +1148,36 @@
     {
       "kind": "javascript-module",
       "path": "dist/config/Tooltips.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/asset-registries/Icons.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/asset-registries/Illustrations.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/asset-registries/LocaleData.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/asset-registries/Themes.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/asset-registries/i18n.js",
       "declarations": [],
       "exports": []
     },
@@ -595,6 +1597,21 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/features/insertOpenUI5PopupStyles.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "insertOpenUI5PopupStyles",
+            "module": "dist/features/insertOpenUI5PopupStyles.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/features/patchPatcher.js",
       "declarations": [],
       "exports": [
@@ -612,16 +1629,7 @@
       "kind": "javascript-module",
       "path": "dist/features/patchPopup.js",
       "declarations": [],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "patchPopup",
-            "module": "dist/features/patchPopup.js"
-          }
-        }
-      ]
+      "exports": []
     },
     {
       "kind": "javascript-module",
@@ -1613,21 +2621,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "dist/util/getEffectiveScrollbarStyle.js",
-      "declarations": [],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "getEffectiveScrollbarStyle",
-            "module": "dist/util/getEffectiveScrollbarStyle.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "dist/util/getFastNavigationGroups.js",
       "declarations": [],
       "exports": [
@@ -1823,6 +2816,12 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/util/valueStateNavigation.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/util/whenDOMReady.js",
       "declarations": [],
       "exports": [
@@ -1847,969 +2846,6 @@
           "declaration": {
             "name": "willShowContent",
             "module": "dist/util/willShowContent.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/AssetRegistry.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/Boot.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/CustomElementsRegistry.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/CustomElementsScope.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/CustomElementsScopeUtils.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/DOMObserver.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/Device.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/EventProvider.js",
-      "declarations": [],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "EventProvider",
-            "module": "dist/EventProvider.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/FeaturesRegistry.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/FontFace.js",
-      "declarations": [],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "insertFontFace",
-            "module": "dist/FontFace.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/IgnoreCustomElements.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/InitialConfiguration.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/Keys.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/Location.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/ManagedStyles.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/MediaRange.js",
-      "declarations": [],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "MediaRange",
-            "module": "dist/MediaRange.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/PropertiesFileFormat.js",
-      "declarations": [],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "parseProperties",
-            "module": "dist/PropertiesFileFormat.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/Render.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/RenderQueue.js",
-      "declarations": [],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "RenderQueue",
-            "module": "dist/RenderQueue.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/Runtimes.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/SystemCSSVars.js",
-      "declarations": [],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "insertSystemCSSVars",
-            "module": "dist/SystemCSSVars.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/Theming.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/UI5Element.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "Base class for all UI5 Web Components",
-          "name": "UI5Element",
-          "members": [
-            {
-              "kind": "method",
-              "name": "onBeforeRendering",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Called every time before the component renders.",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "onAfterRendering",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Called every time after the component renders.",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "onEnterDOM",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Called on connectedCallback - added to the DOM.",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "onExitDOM",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "description": "Called on disconnectedCallback - removed from the DOM.",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "attachInvalidate",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "callback",
-                  "type": {
-                    "text": "(param: InvalidationInfo) => void"
-                  },
-                  "_ui5privacy": "public"
-                }
-              ],
-              "description": "Attach a callback that will be executed whenever the component is invalidated",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "detachInvalidate",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "callback",
-                  "type": {
-                    "text": "(param: InvalidationInfo) => void"
-                  },
-                  "_ui5privacy": "public"
-                }
-              ],
-              "description": "Detach the callback that is executed whenever the component is invalidated",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "onInvalidation",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "changeInfo",
-                  "type": {
-                    "text": "ChangeInfo",
-                    "references": [
-                      {
-                        "name": "ChangeInfo",
-                        "package": "@ui5/webcomponents-base",
-                        "module": "dist/UI5Element.js"
-                      }
-                    ]
-                  },
-                  "description": "An object with information about the change that caused invalidation.\nThe object can have the following properties:\n- type: (property|slot) tells what caused the invalidation\n1) property: a property value was changed either directly or as a result of changing the corresponding attribute\n2) slot: a slotted node(nodes) changed in one of several ways (see \"reason\")\n\n- name: the name of the property or slot that caused the invalidation\n\n- reason: (children|textcontent|childchange|slotchange) relevant only for type=\"slot\" only and tells exactly what changed in the slot\n1) children: immediate children (HTML elements or text nodes) were added, removed or reordered in the slot\n2) textcontent: text nodes in the slot changed value (or nested text nodes were added or changed value). Can only trigger for slots of \"type: Node\"\n3) slotchange: a slot element, slotted inside that slot had its \"slotchange\" event listener called. This practically means that transitively slotted children changed.\nCan only trigger if the child of a slot is a slot element itself.\n4) childchange: indicates that a UI5Element child in that slot was invalidated and in turn invalidated the component.\nCan only trigger for slots with \"invalidateOnChildChange\" metadata descriptor\n\n- newValue: the new value of the property (for type=\"property\" only)\n\n- oldValue: the old value of the property (for type=\"property\" only)\n\n- child the child that was changed (for type=\"slot\" and reason=\"childchange\" only)",
-                  "_ui5privacy": "public"
-                }
-              ],
-              "description": "A callback that is executed each time an already rendered component is invalidated (scheduled for re-rendering)",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "getDomRef",
-              "return": {
-                "type": {
-                  "text": "HTMLElement | undefined"
-                }
-              },
-              "description": "Returns the DOM Element inside the Shadow Root that corresponds to the opening tag in the UI5 Web Component's template\n*Note:* For logical (abstract) elements (items, options, etc...), returns the part of the parent's DOM that represents this option\nUse this method instead of \"this.shadowRoot\" to read the Shadow DOM, if ever necessary",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "getFocusDomRef",
-              "return": {
-                "type": {
-                  "text": "HTMLElement | undefined"
-                }
-              },
-              "description": "Returns the DOM Element marked with \"data-sap-focus-ref\" inside the template.\nThis is the element that will receive the focus by default.",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "getFocusDomRefAsync",
-              "return": {
-                "type": {
-                  "text": "Promise<HTMLElement | undefined>"
-                }
-              },
-              "description": "Waits for dom ref and then returns the DOM Element marked with \"data-sap-focus-ref\" inside the template.\nThis is the element that will receive the focus by default.",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "focus",
-              "return": {
-                "type": {
-                  "text": "Promise<void>"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "focusOptions",
-                  "optional": true,
-                  "type": {
-                    "text": "FocusOptions"
-                  },
-                  "description": "additional options for the focus",
-                  "_ui5privacy": "public"
-                }
-              ],
-              "description": "Set the focus to the element, returned by \"getFocusDomRef()\" (marked by \"data-sap-focus-ref\")",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "fireEvent",
-              "return": {
-                "type": {
-                  "text": "boolean"
-                },
-                "description": "false, if the event was cancelled (preventDefault called), true otherwise"
-              },
-              "parameters": [
-                {
-                  "name": "name",
-                  "type": {
-                    "text": "string"
-                  },
-                  "description": "name of the event",
-                  "_ui5privacy": "public"
-                },
-                {
-                  "name": "data",
-                  "optional": true,
-                  "type": {
-                    "text": "T"
-                  },
-                  "description": "additional data for the event",
-                  "_ui5privacy": "public"
-                },
-                {
-                  "name": "cancelable",
-                  "default": "false",
-                  "description": "true, if the user can call preventDefault on the event object",
-                  "_ui5privacy": "public"
-                },
-                {
-                  "name": "bubbles",
-                  "default": "true",
-                  "description": "true, if the event bubbles",
-                  "_ui5privacy": "public"
-                }
-              ],
-              "privacy": "public",
-              "deprecated": "use fireDecoratorEvent instead"
-            },
-            {
-              "kind": "method",
-              "name": "fireDecoratorEvent",
-              "return": {
-                "type": {
-                  "text": "boolean"
-                },
-                "description": "false, if the event was cancelled (preventDefault called), true otherwise"
-              },
-              "parameters": [
-                {
-                  "name": "name",
-                  "type": {
-                    "text": "N"
-                  },
-                  "description": "name of the event",
-                  "_ui5privacy": "public"
-                },
-                {
-                  "name": "data",
-                  "optional": true,
-                  "type": {
-                    "text": "this[\"eventDetails\"][N] | undefined"
-                  },
-                  "description": "additional data for the event",
-                  "_ui5privacy": "public"
-                }
-              ],
-              "description": "Fires a custom event, configured via the \"event\" decorator.",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "getSlottedNodes",
-              "return": {
-                "type": {
-                  "text": "Array<T>"
-                }
-              },
-              "description": "Returns the actual children, associated with a slot.\nUseful when there are transitive slots in nested component scenarios and you don't want to get a list of the slots, but rather of their content.",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "attachComponentStateFinalized",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "callback",
-                  "type": {
-                    "text": "() => void"
-                  },
-                  "_ui5privacy": "public"
-                }
-              ],
-              "description": "Attach a callback that will be executed whenever the component's state is finalized",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "detachComponentStateFinalized",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "callback",
-                  "type": {
-                    "text": "() => void"
-                  },
-                  "_ui5privacy": "public"
-                }
-              ],
-              "description": "Detach the callback that is executed whenever the component's state is finalized",
-              "privacy": "public"
-            },
-            {
-              "kind": "field",
-              "name": "effectiveDir",
-              "type": {
-                "text": "string | undefined"
-              },
-              "description": "Determines whether the component should be rendered in RTL mode or not.\nReturns: \"rtl\", \"ltr\" or undefined",
-              "privacy": "public",
-              "default": "undefined",
-              "readonly": true
-            },
-            {
-              "kind": "field",
-              "name": "isUI5Element",
-              "type": {
-                "text": "boolean"
-              },
-              "description": "Used to duck-type UI5 elements without using instanceof",
-              "privacy": "public",
-              "default": "true",
-              "readonly": true
-            },
-            {
-              "kind": "method",
-              "name": "getUniqueDependencies",
-              "static": true,
-              "return": {
-                "type": {
-                  "text": "Array<typeof UI5Element>"
-                }
-              },
-              "description": "Returns a list of the unique dependencies for this UI5 Web Component",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "define",
-              "static": true,
-              "return": {
-                "type": {
-                  "text": "typeof UI5Element"
-                }
-              },
-              "description": "Registers a UI5 Web Component in the browser window object",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "getMetadata",
-              "static": true,
-              "return": {
-                "type": {
-                  "text": "UI5ElementMetadata",
-                  "references": [
-                    {
-                      "name": "UI5ElementMetadata",
-                      "package": "@ui5/webcomponents-base",
-                      "module": "dist/UI5ElementMetadata.js"
-                    }
-                  ]
-                }
-              },
-              "description": "Returns an instance of UI5ElementMetadata.js representing this UI5 Web Component's full metadata (its and its parents')\nNote: not to be confused with the \"get metadata()\" method, which returns an object for this class's metadata only",
-              "privacy": "public"
-            }
-          ],
-          "attributes": [
-            {
-              "description": "Determines whether the component should be rendered in RTL mode or not.\nReturns: \"rtl\", \"ltr\" or undefined",
-              "name": "effective-dir",
-              "default": "undefined",
-              "fieldName": "effectiveDir",
-              "type": {
-                "text": "any"
-              }
-            },
-            {
-              "description": "Used to duck-type UI5 elements without using instanceof",
-              "name": "is-ui5-element",
-              "default": "true",
-              "fieldName": "isUI5Element",
-              "type": {
-                "text": "any"
-              }
-            }
-          ],
-          "customElement": true,
-          "_ui5privacy": "public"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "UI5Element",
-            "module": "dist/UI5Element.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/UI5ElementMetadata.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "UI5ElementMetadata",
-          "members": [
-            {
-              "kind": "method",
-              "name": "validateSlotValue",
-              "static": true,
-              "return": {
-                "type": {
-                  "text": "Node"
-                }
-              },
-              "description": "Validates the slot's value and returns it if correct\nor throws an exception if not.\n**Note:** Only intended for use by UI5Element.js",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "getPureTag",
-              "return": {
-                "type": {
-                  "text": "string"
-                }
-              },
-              "description": "Returns the tag of the UI5 Element without the scope",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "getTag",
-              "return": {
-                "type": {
-                  "text": "string"
-                }
-              },
-              "description": "Returns the tag of the UI5 Element",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "hasAttribute",
-              "return": {
-                "type": {
-                  "text": "boolean"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "propName",
-                  "type": {
-                    "text": "string"
-                  },
-                  "_ui5privacy": "public"
-                }
-              ],
-              "description": "Determines whether a property should have an attribute counterpart",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "getPropertiesList",
-              "return": {
-                "type": {
-                  "text": "Array<string>"
-                }
-              },
-              "description": "Returns an array with the properties of the UI5 Element (in camelCase)",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "getAttributesList",
-              "return": {
-                "type": {
-                  "text": "Array<string>"
-                }
-              },
-              "description": "Returns an array with the attributes of the UI5 Element (in kebab-case)",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "hasSlots",
-              "return": {
-                "type": {
-                  "text": "boolean"
-                }
-              },
-              "description": "Determines whether this UI5 Element supports any slots",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "hasIndividualSlots",
-              "return": {
-                "type": {
-                  "text": "boolean"
-                }
-              },
-              "description": "Determines whether this UI5 Element supports any slots with \"individualSlots: true\"",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "slotsAreManaged",
-              "return": {
-                "type": {
-                  "text": "boolean"
-                }
-              },
-              "description": "Determines whether this UI5 Element needs to invalidate if children are added/removed/changed",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "supportsF6FastNavigation",
-              "return": {
-                "type": {
-                  "text": "boolean"
-                }
-              },
-              "description": "Determines whether this control supports F6 fast navigation",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "getProperties",
-              "return": {
-                "type": {
-                  "text": "Record<string, Property>",
-                  "references": [
-                    {
-                      "name": "Property",
-                      "package": "@ui5/webcomponents-base",
-                      "module": "dist/UI5ElementMetadata.js"
-                    }
-                  ]
-                }
-              },
-              "description": "Returns an object with key-value pairs of properties and their metadata definitions",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "getEvents",
-              "return": {
-                "type": {
-                  "text": "EventData",
-                  "references": [
-                    {
-                      "name": "EventData",
-                      "package": "@ui5/webcomponents-base",
-                      "module": "dist/UI5ElementMetadata.js"
-                    }
-                  ]
-                }
-              },
-              "description": "Returns an object with key-value pairs of events and their metadata definitions",
-              "privacy": "public"
-            },
-            {
-              "kind": "method",
-              "name": "getSlots",
-              "return": {
-                "type": {
-                  "text": "Record<string, Slot>",
-                  "references": [
-                    {
-                      "name": "Slot",
-                      "package": "@ui5/webcomponents-base",
-                      "module": "dist/UI5ElementMetadata.js"
-                    }
-                  ]
-                }
-              },
-              "description": "Returns an object with key-value pairs of slots and their metadata definitions",
-              "privacy": "public"
-            }
-          ],
-          "_ui5privacy": "public"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "UI5ElementMetadata",
-            "module": "dist/UI5ElementMetadata.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/connectToComponent.js",
-      "declarations": [],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "connectToComponent",
-            "module": "dist/connectToComponent.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/decorators.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/getSharedResource.js",
-      "declarations": [],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "getSharedResource",
-            "module": "dist/getSharedResource.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/i18nBundle.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "I18nBundle",
-          "members": [
-            {
-              "kind": "method",
-              "name": "getText",
-              "return": {
-                "type": {
-                  "text": "string"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "textObj",
-                  "type": {
-                    "text": "I18nText | string",
-                    "references": [
-                      {
-                        "name": "I18nText",
-                        "package": "@ui5/webcomponents-base",
-                        "module": "dist/i18nBundle.js"
-                      }
-                    ]
-                  },
-                  "description": "key/defaultText pair or just the key",
-                  "_ui5privacy": "public"
-                },
-                {
-                  "name": "params",
-                  "type": {
-                    "text": "Array<number | string>"
-                  },
-                  "description": "Values for the placeholders",
-                  "_ui5privacy": "public"
-                }
-              ],
-              "description": "Returns a text in the currently loaded language",
-              "privacy": "public"
-            }
-          ],
-          "_ui5privacy": "public"
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "I18nBundle",
-            "module": "dist/i18nBundle.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/index.js",
-      "declarations": [],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "UI5Element",
-            "module": "dist/index.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/jsx-dev-runtime.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/jsx-runtime.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/jsx-utils.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/ssr-dom-shim.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/ssr-dom.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/types.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/updateShadowRoot.js",
-      "declarations": [],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "updateShadowRoot",
-            "module": "dist/updateShadowRoot.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "dist/validateThemeRoot.js",
-      "declarations": [],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "validateThemeRoot",
-            "module": "dist/validateThemeRoot.js"
           }
         }
       ]

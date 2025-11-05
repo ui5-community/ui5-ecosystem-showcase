@@ -13,7 +13,7 @@ sap.ui.define(
     // export the UI5 metadata along with the package
     pkg["_ui5metadata"] = {
       name: "@ui5/webcomponents",
-      version: "2.12.0",
+      version: "2.15.1",
       dependencies: ["sap.ui.core"],
       types: [
         "@ui5.webcomponents.AvatarColorScheme",
@@ -294,7 +294,13 @@ sap.ui.define(
        *
        * @private
        */
-      Placeholder: "Placeholder"
+      Placeholder: "Placeholder",
+      /**
+       * Transparent
+       *
+       * @private
+       */
+      Transparent: "Transparent"
     };
     registerEnum(
       "@ui5.webcomponents.AvatarColorScheme",
@@ -2708,7 +2714,7 @@ sap.ui.define(
      * Methods:
      * - `format(value: DynamicDateRangeValue): string`: Formats the given dynamic date range value into a string representation.
      * - `parse(value: string): DynamicDateRangeValue | undefined`: Parses a string into a dynamic date range value.
-     * - `toDates(value: DynamicDateRangeValue): Date[]`: Converts a dynamic date range value into an array of `Date` objects.
+     * - `toDates(value: DynamicDateRangeValue): Array<Date>`: Converts a dynamic date range value into an array of `Date` objects.
      * - `handleSelectionChange?(event: CustomEvent): DynamicDateRangeValue | undefined`: (Optional) Handles selection changes in the UI of the dynamic date range option.
      * - `isValidString(value: string): boolean`: Validates whether a given string is a valid representation of the dynamic date range value.
      *
