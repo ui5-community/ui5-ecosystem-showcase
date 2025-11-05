@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.33.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.33.3...ui5-tooling-modules@3.33.4) (2025-11-05)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** correct handling of association types ([#1290](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1290)) ([e54c089](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/e54c0893f4fe49ccefa6f5f6bee7b189ad08ab8a))
+
+
+
+
+
 ## [3.33.3](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.33.2...ui5-tooling-modules@3.33.3) (2025-11-05)
 
 
