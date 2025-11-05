@@ -1438,6 +1438,17 @@ module.exports = function (log, projectInfo) {
 						};
 
 						// helper to replace params in the code
+						const replaceModules = function (code, search, replacement) {
+							const escapedSearchString = search.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escape special regex chars
+							//const regex = new RegExp(`(?<!tag:\\s)(["'])${escapedSearchString}(.*?)\\1`, "g"); // do not match tag: "..."
+							code = code.replace(new RegExp(`((?:require|requireSync|define|toUrl|isA)(?:\\s*)(?:\\([^)]*["']))${escapedSearchString}(.*?)\\1`, "mg"), `$1${replacement}$2$1`);
+							code = code.replace(new RegExp(`((?:<)(?:\\w+)(?:.*)(?:\\([^)]*["']))${escapedSearchString}(.*?)\\1`, "mg"), `$1${replacement}$2$1`);
+							//code = code.replace(new RegExp(`((?:isA)(?:\\s*)(?:\\([^)]*["']))${escapedSearchString}(.*?)\\1`, "mg"), `$1${replacement}$2$1`);
+							//return code.replace(regex, `$1${replacement}$2$1`);
+							return code;
+						};
+
+						// helper to replace params in the code
 						const replaceParam = function (code, search, replacement) {
 							const escapedSearchString = search.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escape special regex chars
 							const regex = new RegExp(`(?<!tag:\\s)(["'])${escapedSearchString}(.*?)\\1`, "g"); // do not match tag: "..."
@@ -1491,7 +1502,7 @@ module.exports = function (log, projectInfo) {
 								// because the generated modules do not expose any imports or dynamic imports but we know that
 								// we also need to adopt their imports and dynamic imports
 								const relativePath = `${path.posix.relative(path.dirname(module.name), "") || "."}/`;
-								const modifiedCode = replaceParam(module.code, relativePath, moduleBasePath);
+								const modifiedCode = replaceModules(module.code, relativePath, moduleBasePath);
 								module.code = modifiedCode;
 							}
 
@@ -1512,9 +1523,9 @@ module.exports = function (log, projectInfo) {
 										.sort((a, b) => b.name.localeCompare(a.name))
 										.forEach((package) => {
 											if (package.qualifiedName) {
-												modifiedCode = replaceParam(modifiedCode, package.qualifiedName, rewriteDep(package.name, bundleInfo, true));
+												modifiedCode = replaceModules(modifiedCode, package.qualifiedName, rewriteDep(package.name, bundleInfo, true));
 											}
-											modifiedCode = replaceParam(modifiedCode, package.name, rewriteDep(package.name, bundleInfo));
+											modifiedCode = replaceModules(modifiedCode, package.name, rewriteDep(package.name, bundleInfo));
 											if (package.qualifiedName) {
 												modifiedCode = replaceJSDoc(modifiedCode, package.qualifiedName, rewriteDep(package.name, bundleInfo, true));
 											}

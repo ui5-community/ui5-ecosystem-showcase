@@ -70,6 +70,16 @@ sap.ui.define(
               mapping: "property",
               defaultValue: "Button"
             },
+            loading: {
+              type: "boolean",
+              mapping: "property",
+              defaultValue: false
+            },
+            loadingDelay: {
+              type: "float",
+              mapping: "property",
+              defaultValue: 1000
+            },
             text: {
               type: "string",
               mapping: "textContent"

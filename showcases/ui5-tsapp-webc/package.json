@@ -22,9 +22,9 @@
     "directory": "showcases/ui5-tsapp-webc"
   },
   "dependencies": {
-    "@ui5/webcomponents": "^2.12.0",
-    "@ui5/webcomponents-ai": "^2.12.0",
-    "@ui5/webcomponents-fiori": "^2.12.0"
+    "@ui5/webcomponents": "^2.15.1",
+    "@ui5/webcomponents-ai": "^2.15.1",
+    "@ui5/webcomponents-fiori": "^2.15.1"
   },
   "devDependencies": {
     "@types/openui5": "1.136.0",

@@ -580,6 +580,15 @@ sap.ui.define((function () { 'use strict';
 	        : new URL(url, 'http://dummy');
 	    return u.pathname;
 	}
+	function getHost(url) {
+	    if (absoluteUrlRX.test(url)) {
+	        return new URL(url).host;
+	    }
+	    else if ('location' in globalThis) {
+	        return globalThis.location.host;
+	    }
+	    return null;
+	}
 	function getQuery(url) {
 	    const u = absoluteUrlRX.test(url)
 	        ? new URL(url)
@@ -631,6 +640,9 @@ sap.ui.define((function () { 'use strict';
 	            const path = getPath(url);
 	            return path === targetString || path === dotlessTargetString;
 	        };
+	    },
+	    host: (targetString) => {
+	        return ({ url }) => targetString === getHost(url);
 	    },
 	};
 	const getHeaderMatcher = ({ headers: expectedHeaders }) => {
@@ -1141,13 +1153,14 @@ e.g. {"body": {"status: "registered"}}`);
 	        throwSpecExceptions(callLog);
 	        return new Promise(async (resolve, reject) => {
 	            const { url, options, request, pendingPromises } = callLog;
+	            let eventListenerAbortController;
 	            if (callLog.signal) {
 	                const abort = () => {
 	                    const error = new DOMException('The operation was aborted.', 'AbortError');
 	                    const requestBody = request?.body || options?.body;
 	                    if (requestBody instanceof ReadableStream) {
 	                        if (requestBody.locked) {
-	                            requestBody.getReader().cancel(error);
+	                            console.warn("fetch-mock: Locked request body can't be cancelled");
 	                        }
 	                        else {
 	                            requestBody.cancel(error);
@@ -1155,7 +1168,7 @@ e.g. {"body": {"status: "registered"}}`);
 	                    }
 	                    if (callLog?.response?.body) {
 	                        if (callLog.response.body.locked) {
-	                            callLog.response.body.getReader().cancel(error);
+	                            console.warn("fetch-mock: Locked response body can't be cancelled");
 	                        }
 	                        else {
 	                            callLog.response.body.cancel(error);
@@ -1166,7 +1179,11 @@ e.g. {"body": {"status: "registered"}}`);
 	                if (callLog.signal.aborted) {
 	                    abort();
 	                }
-	                callLog.signal.addEventListener('abort', abort);
+	                eventListenerAbortController = new AbortController();
+	                callLog.signal.addEventListener('abort', abort, {
+	                    once: true,
+	                    signal: eventListenerAbortController.signal,
+	                });
 	            }
 	            if (this.needsToReadBody(request)) {
 	                options.body = await options.body;
@@ -1185,6 +1202,9 @@ e.g. {"body": {"status: "registered"}}`);
 	                }
 	                catch (err) {
 	                    reject(err);
+	                }
+	                finally {
+	                    eventListenerAbortController?.abort();
 	                }
 	            }
 	            else {
@@ -1382,17 +1402,17 @@ e.g. {"body": {"status: "registered"}}`);
 	        }
 	        if (isMatchedOrUnmatched(filter)) {
 	            if ([true, 'matched'].includes(filter)) {
-	                calls = calls.filter(({ route }) => !route.config.isFallback);
+	                calls = calls.filter(({ route }) => !route?.config || !route.config.isFallback);
 	            }
 	            else if ([false, 'unmatched'].includes(filter)) {
-	                calls = calls.filter(({ route }) => Boolean(route.config.isFallback));
+	                calls = calls.filter(({ route }) => Boolean(route?.config && route.config.isFallback));
 	            }
 	            if (!options) {
 	                return calls;
 	            }
 	        }
 	        else if (isName(filter)) {
-	            calls = calls.filter(({ route: { config: { name }, }, }) => name === filter);
+	            calls = calls.filter(({ route }) => route?.config?.name === filter);
 	            if (!options) {
 	                return calls;
 	            }
