@@ -367,7 +367,7 @@ sap.ui.define(['../index2'], (function (index) { 'use strict';
   		      currentPriorityLevel = previousPriorityLevel;
   		    }
   		  };
-  		}; 
+  		};
   	} (scheduler_production));
   	return scheduler_production;
   }

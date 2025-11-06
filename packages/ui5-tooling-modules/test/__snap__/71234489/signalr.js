@@ -1573,7 +1573,7 @@ sap.ui.define((function () { 'use strict';
 		                    credentials: connection.withCredentials === true ? "include" : "same-origin"
 		                });
 		            }
-		            else { 
+		            else {
 		                // fetch is not available - fallback to $.ajax
 		                transportLogic.ajax(connection, {
 		                    url: url,

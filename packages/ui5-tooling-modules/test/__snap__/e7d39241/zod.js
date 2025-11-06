@@ -4049,7 +4049,7 @@ sap.ui.define((function () { 'use strict';
         const p2 = typeof p === "string" ? { message: p } : p;
         return p2;
     }
-    function custom(check, _params = {}, 
+    function custom(check, _params = {},
     /**
      * @deprecated
      *

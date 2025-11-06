@@ -621,7 +621,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       if (!sub) {
           throw new Error("mockUserToken must contain 'sub' or 'user_id' field!");
       }
-      const payload = Object.assign({ 
+      const payload = Object.assign({
           // Set all required fields to decent defaults
           iss: `https://securetoken.google.com/${project}`, aud: project, iat, exp: iat + 3600, auth_time: iat, sub, user_id: sub, firebase: {
               sign_in_provider: 'custom',
@@ -907,7 +907,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   class FirebaseError extends Error {
       constructor(
       /** The error code for this error. */
-      code, message, 
+      code, message,
       /** Custom data for this error. */
       customData) {
           super(message);

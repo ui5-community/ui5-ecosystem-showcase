@@ -3353,14 +3353,14 @@ sap.ui.define((function () { 'use strict';
 		  if (!params) {
 		    return url;
 		  }
-		  
+
 		  const _encode = options && options.encode || encode;
 
 		  if (utils$1.isFunction(options)) {
 		    options = {
 		      serialize: options
 		    };
-		  } 
+		  }
 
 		  const serializeFn = options && options.serialize;
 
@@ -4604,7 +4604,7 @@ sap.ui.define((function () { 'use strict';
 		        }
 		      });
 		    }
-		  }  
+		  }
 
 		  // Add xsrf header
 		  // This is only done if running in a standard browser environment.
@@ -4732,7 +4732,7 @@ sap.ui.define((function () { 'use strict';
 		       reject(err);
 		       request = null;
 		    };
-		    
+
 		    // Handle timeout
 		    request.ontimeout = function handleTimeout() {
 		      let timeoutErrorMessage = _config.timeout ? 'timeout of ' + _config.timeout + 'ms exceeded' : 'timeout exceeded';
@@ -5231,7 +5231,7 @@ sap.ui.define((function () { 'use strict';
 		 * - `http` for Node.js
 		 * - `xhr` for browsers
 		 * - `fetch` for fetch API-based requests
-		 * 
+		 *
 		 * @type {Object<string, Function|Object>}
 		 */
 		const knownAdapters = {
@@ -5256,7 +5256,7 @@ sap.ui.define((function () { 'use strict';
 
 		/**
 		 * Render a rejection reason string for unknown or unsupported adapters
-		 * 
+		 *
 		 * @param {string} reason
 		 * @returns {string}
 		 */
@@ -5264,7 +5264,7 @@ sap.ui.define((function () { 'use strict';
 
 		/**
 		 * Check if the adapter is resolved (function, null, or false)
-		 * 
+		 *
 		 * @param {Function|null|false} adapter
 		 * @returns {boolean}
 		 */
@@ -5274,7 +5274,7 @@ sap.ui.define((function () { 'use strict';
 		 * Get the first suitable adapter from the provided list.
 		 * Tries each adapter in order until a supported one is found.
 		 * Throws an AxiosError if no adapter is suitable.
-		 * 
+		 *
 		 * @param {Array<string|Function>|string|Function} adapters - Adapter(s) by name or function.
 		 * @param {Object} config - Axios request configuration
 		 * @throws {AxiosError} If no suitable adapter is available
@@ -6060,7 +6060,7 @@ sap.ui.define((function () { 'use strict';
 		axios.default = axios;
 
 		axios_1 = axios;
-		
+
 		return axios_1;
 	}
 

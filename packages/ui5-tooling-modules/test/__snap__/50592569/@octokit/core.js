@@ -614,7 +614,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   		exports.Headers = globalObject.Headers;
   		exports.Request = globalObject.Request;
-  		exports.Response = globalObject.Response; 
+  		exports.Response = globalObject.Response;
   	} (browser, browser.exports));
   	return browser.exports;
   }

@@ -712,7 +712,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	    }
   	}
   	PostgrestError$1.default = PostgrestError;
-  	
+
   	return PostgrestError$1;
   }
 
@@ -930,7 +930,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	    }
   	}
   	PostgrestBuilder$1.default = PostgrestBuilder;
-  	
+
   	return PostgrestBuilder$1;
   }
 
@@ -1161,7 +1161,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	    }
   	}
   	PostgrestTransformBuilder$1.default = PostgrestTransformBuilder;
-  	
+
   	return PostgrestTransformBuilder$1;
   }
 
@@ -1548,7 +1548,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	    }
   	}
   	PostgrestFilterBuilder$1.default = PostgrestFilterBuilder;
-  	
+
   	return PostgrestFilterBuilder$1;
   }
 
@@ -1805,7 +1805,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	    }
   	}
   	PostgrestQueryBuilder$1.default = PostgrestQueryBuilder;
-  	
+
   	return PostgrestQueryBuilder$1;
   }
 
@@ -1931,7 +1931,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	    }
   	}
   	PostgrestClient$1.default = PostgrestClient;
-  	
+
   	return PostgrestClient$1;
   }
 
@@ -1964,7 +1964,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	    PostgrestBuilder: PostgrestBuilder_1.default,
   	    PostgrestError: PostgrestError_1.default,
   	};
-  	
+
   	return cjs;
   }
 
@@ -10622,7 +10622,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           result.excludeCredentials = new Array(excludeCredentials.length);
           for (let i = 0; i < excludeCredentials.length; i++) {
               const cred = excludeCredentials[i];
-              result.excludeCredentials[i] = Object.assign(Object.assign({}, cred), { id: base64UrlToUint8Array(cred.id).buffer, type: cred.type || 'public-key', 
+              result.excludeCredentials[i] = Object.assign(Object.assign({}, cred), { id: base64UrlToUint8Array(cred.id).buffer, type: cred.type || 'public-key',
                   // Cast transports to handle future transport types like "cable"
                   transports: cred.transports });
           }
@@ -10664,7 +10664,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           result.allowCredentials = new Array(allowCredentials.length);
           for (let i = 0; i < allowCredentials.length; i++) {
               const cred = allowCredentials[i];
-              result.allowCredentials[i] = Object.assign(Object.assign({}, cred), { id: base64UrlToUint8Array(cred.id).buffer, type: cred.type || 'public-key', 
+              result.allowCredentials[i] = Object.assign(Object.assign({}, cred), { id: base64UrlToUint8Array(cred.id).buffer, type: cred.type || 'public-key',
                   // Cast transports to handle future transport types like "cable"
                   transports: cred.transports });
           }
@@ -11825,7 +11825,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               }
               const url = new URL((_a = options === null || options === void 0 ? void 0 : options.url) !== null && _a !== void 0 ? _a : window.location.href);
               if ('signIn' in resolvedWallet && resolvedWallet.signIn) {
-                  const output = await resolvedWallet.signIn(Object.assign(Object.assign(Object.assign({ issuedAt: new Date().toISOString() }, options === null || options === void 0 ? void 0 : options.signInWithSolana), { 
+                  const output = await resolvedWallet.signIn(Object.assign(Object.assign(Object.assign({ issuedAt: new Date().toISOString() }, options === null || options === void 0 ? void 0 : options.signInWithSolana), {
                       // non-overridable properties
                       version: '1', domain: url.host, uri: url.href }), (statement ? { statement } : null)));
                   let outputToProcess;
