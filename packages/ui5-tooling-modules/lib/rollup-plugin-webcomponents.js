@@ -13,20 +13,22 @@ const WebComponentRegistry = require("./utils/WebComponentRegistry");
 
 module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, options, $metadata = {} } = {}) {
 	// derive the configuration from the provided options
-	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, moduleBasePath, removeScopePrefix, skipJSDoc, skipDtsGeneration, customJSDocTags, removeCLDRData } = Object.assign(
-		{
-			skip: false,
-			scoping: true,
-			enrichBusyIndicator: false,
-			force: false,
-			includeAssets: false, // experimental (due to race condition!)
-			skipJSDoc: true,
-			skipDtsGeneration: true,
-			customJSDocTags: ["private"],
-			removeCLDRData: true,
-		},
-		options,
-	);
+	let { skip, scoping, scopeSuffix, enrichBusyIndicator, force, includeAssets, forceAllAssets, moduleBasePath, removeScopePrefix, skipJSDoc, skipDtsGeneration, customJSDocTags, removeCLDRData } =
+		Object.assign(
+			{
+				skip: false,
+				scoping: true,
+				enrichBusyIndicator: false,
+				force: false,
+				includeAssets: false, // experimental (due to race condition!)
+				forceAllAssets: false, // experimental (only a hack due to timing issues when requiring Web Components from one package first and from other later!)
+				skipJSDoc: true,
+				skipDtsGeneration: true,
+				customJSDocTags: ["private"],
+				removeCLDRData: true,
+			},
+			options,
+		);
 
 	// derive information from the projectInfo
 	const { pkgJson, framework } = projectInfo;
@@ -520,12 +522,26 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 					}
 				}
 
-				// if assets should be included we probe for the assets module
-				// which is always located in dist/Assets.js for UI5 Web Components
-				// and in case of resolving the module successfully we include it
-				let assetsModule = posix.join(namespace, "dist/Assets.js");
-				if (!(includeAssets && resolveModule(assetsModule))) {
-					assetsModule = undefined;
+				let assetsModule, allAssetsModules;
+				if (includeAssets) {
+					// helper function to determine the assets module for a given namespace
+					const determineAssetsModule = (namespace) => {
+						let assetsModule = posix.join(namespace, "dist/Assets.js");
+						if (resolveModule(assetsModule)) {
+							return assetsModule;
+						}
+					};
+
+					// if assets should be included we probe for the assets module
+					// which is always located in dist/Assets.js for UI5 Web Components
+					// and in case of resolving the module successfully we include it
+					if (!forceAllAssets) {
+						assetsModule = determineAssetsModule(namespace);
+					} else {
+						// determine all assets modules when forced via configuration
+						const packages = WebComponentRegistry.getPackages() || [];
+						allAssetsModules = packages.map(determineAssetsModule);
+					}
 				}
 
 				// generate the web component package code
@@ -535,6 +551,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 					enrichBusyIndicator,
 					nonUI5TagsToRegister,
 					assetsModule,
+					allAssetsModules,
 					webcPackageModule: resolveModule(namespace)?.replace(/\\/g, "/"),
 				});
 				return code;

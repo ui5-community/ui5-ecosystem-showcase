@@ -1233,6 +1233,10 @@ const WebComponentRegistry = {
 		return _registry[id];
 	},
 
+	getPackages() {
+		return Object.keys(_registry, {});
+	},
+
 	/**
 	 * Finds a class by its alias, e.g.
 	 *   - module name
