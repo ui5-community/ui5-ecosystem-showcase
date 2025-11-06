@@ -89,7 +89,7 @@ sap.ui.define((function () { 'use strict';
 
 			exports.Headers = globalObject.Headers;
 			exports.Request = globalObject.Request;
-			exports.Response = globalObject.Response; 
+			exports.Response = globalObject.Response;
 		} (browser$3, browser$3.exports));
 		return browser$3.exports;
 	}
@@ -3442,7 +3442,7 @@ sap.ui.define((function () { 'use strict';
 
 	      return this;
 	    };
-	    
+
 	// Alias for removeListener added in NodeJS 10.0
 	// https://nodejs.org/api/events.html#events_emitter_off_eventname_listener
 	EventEmitter.prototype.off = function(type, listener){
@@ -7093,7 +7093,7 @@ sap.ui.define((function () { 'use strict';
 
 	  // WHATWG API
 	  URL,
-	  URLSearchParams: URLSearchParams$1,  
+	  URLSearchParams: URLSearchParams$1,
 	};
 	function Url() {
 	  this.protocol = null;
@@ -20111,7 +20111,7 @@ sap.ui.define((function () { 'use strict';
 			  }
 
 			  return score0 > score1 ? type0 : type1
-			} 
+			}
 		} (mimeTypes));
 		return mimeTypes;
 	}
@@ -23242,7 +23242,7 @@ sap.ui.define((function () { 'use strict';
 			    }());
 			    cmis.CmisSession = CmisSession;
 			})(exports.cmis || (exports.cmis = {}));
-			
+
 		} (cmis));
 		return cmis;
 	}
@@ -23256,7 +23256,7 @@ sap.ui.define((function () { 'use strict';
 			var cmis = requireCmis$1().cmis;
 			for (var ex in cmis){
 			    exports[ex] = cmis[ex];
-			} 
+			}
 		} (cmis$1));
 		return cmis$1;
 	}

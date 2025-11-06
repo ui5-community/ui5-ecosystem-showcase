@@ -13550,7 +13550,7 @@ sap.ui.define((function () { 'use strict';
 
 			return Chart;
 
-			})); 
+			}));
 		} (chart$1));
 		return chart$1.exports;
 	}

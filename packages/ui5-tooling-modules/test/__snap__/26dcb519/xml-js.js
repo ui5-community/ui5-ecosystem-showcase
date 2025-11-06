@@ -2377,7 +2377,7 @@ sap.ui.define((function () { 'use strict';
 
 	      return this;
 	    };
-	    
+
 	// Alias for removeListener added in NodeJS 10.0
 	// https://nodejs.org/api/events.html#events_emitter_off_eventname_listener
 	EventEmitter.prototype.off = function(type, listener){
@@ -6834,7 +6834,7 @@ sap.ui.define((function () { 'use strict';
 			      }
 			    })();
 			  }
-			})(exports); 
+			})(exports);
 		} (sax));
 		return sax;
 	}

@@ -1470,7 +1470,7 @@ module.exports = function (log, projectInfo) {
 							return code.replace(regex, `$1${replacement}`);
 						};
 
-						// fix the imports for shifted modules
+						// fix the imports for shifted modules - sanitize the files to remove trailing whitespaces and correct line feeds
 						for (const module of bundleInfo.getEntries()) {
 							// for CDN cases we need to ensure that module paths are absolute so that in case
 							// of looking up the module path to the root, the resources are resolved relative
@@ -1543,6 +1543,9 @@ module.exports = function (log, projectInfo) {
 									//console.log(`Web Component module: ${module.name} [${module.type}]`);
 								}
 							}
+
+							// remove trailing whitespaces and correct line feeds (no windows line feeds!)
+							module.code = module.code.replace(/[ \t]+$/gm, "").replace(/\r\n/g, "\n");
 						}
 
 						// cache the output

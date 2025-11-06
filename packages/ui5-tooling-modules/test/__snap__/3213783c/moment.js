@@ -5710,7 +5710,7 @@ sap.ui.define((function () { 'use strict';
 
 			    return hooks;
 
-			}))); 
+			})));
 		} (moment$2));
 		return moment$2.exports;
 	}

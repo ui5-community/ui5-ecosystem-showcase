@@ -697,7 +697,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                 }
                 const serverFrameHandler = this._serverFrameHandlers[frame.command] || this.onUnhandledFrame;
                 serverFrameHandler(frame);
-            }, 
+            },
             // On Incoming Ping
             () => {
                 this.debug('<<< PONG');
