@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.33.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.33.5...ui5-tooling-modules@3.33.6) (2025-11-06)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** force include assets ([#1292](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1292)) ([7a18296](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7a18296c53dc6cdc4a3e481c878a0168d13b9ee4))
+
+
+
+
+
 ## [3.33.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.33.4...ui5-tooling-modules@3.33.5) (2025-11-06)
 
 
