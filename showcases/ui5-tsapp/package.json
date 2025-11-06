@@ -1,6 +1,6 @@
 {
   "name": "ui5-tsapp",
-  "version": "0.17.35",
+  "version": "0.17.36",
   "description": "Showcase of a TypeScript setup for developing UI5 applications",
   "private": true,
   "author": "Jorge Martins, Peter Muessig",

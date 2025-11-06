@@ -1,6 +1,6 @@
 {
   "name": "cds-bookshop",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "CAP bookshop app to showcase cds-plugin-ui5",
   "private": true,
   "author": "Nicolai Schoenteich, Peter Muessig",

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.33.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.33.4...ui5-tooling-modules@3.33.5) (2025-11-06)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** sanitize trailing whitespaces and windows line feeds ([#1291](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1291)) ([20c665a](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/20c665a7263d787e46946de341072c3092dc5168))
+
+
+
+
+
 ## [3.33.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.33.3...ui5-tooling-modules@3.33.4) (2025-11-05)
 
 
