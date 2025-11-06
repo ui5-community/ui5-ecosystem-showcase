@@ -40,6 +40,8 @@ builder:
             #namespace: false
             skipJSDoc: false # enable the JSDoc generation
             skipDtsGeneration: false
+            includeAssets: true
+            forceAllAssets: true
 server:
   customMiddleware:
     - name: ui5-tooling-transpile-middleware
@@ -58,6 +60,8 @@ server:
             force: true
             skipJSDoc: false # enable the JSDoc generation
             skipDtsGeneration: false
+            includeAssets: true
+            forceAllAssets: true
     - name: ui5-middleware-livereload
       afterMiddleware: compression
       configuration:

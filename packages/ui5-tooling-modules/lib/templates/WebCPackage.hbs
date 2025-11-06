@@ -16,6 +16,11 @@ import "@ui5/webcomponents-base";
 {{#if assetsModule}}
 import "{{assetsModule}}";
 {{/if}}
+{{#if allAssetsModules}}
+{{#each allAssetsModules}}
+import "{{this}}";
+{{/each}}
+{{/if}}
 
 {{#if nonUI5TagsToRegister}}
 import { getCustomElementsScopingRules, setCustomElementsScopingRules } from "@ui5/webcomponents-base/dist/CustomElementsScope.js";
