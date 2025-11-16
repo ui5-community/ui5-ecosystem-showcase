@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.15.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.14.0...cds-plugin-ui5@0.15.0) (2025-11-16)
+
+
+### Features
+
+* **cds-plugin-ui5:** remove the under construction hint ([#1294](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1294)) ([55818e4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/55818e4994f62e33f62e401b11d2818fc5b81013)), closes [#1293](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1293)
+
+
+
+
+
 # [0.14.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/cds-plugin-ui5@0.13.6...cds-plugin-ui5@0.14.0) (2025-11-02)
 
 
