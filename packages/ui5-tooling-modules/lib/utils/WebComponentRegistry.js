@@ -197,10 +197,9 @@ class RegistryEntry {
 				classDef.superclass = superclassRef;
 			}
 		} else if (classDef.customElement && !WebComponentRegistryHelper.isUI5Element(classDef)) {
-			classDef.superclass = {
-				name: WebComponentRegistryHelper.UI5_ELEMENT_CLASS_NAME,
-				namespace: WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE,
-			};
+			logger.warn(
+				`⚠️ The class '${this.namespace}/${classDef.name}' is a custom element not extending '${WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE}/${WebComponentRegistryHelper.UI5_ELEMENT_CLASS_NAME}!`,
+			);
 		}
 	}
 
@@ -949,6 +948,9 @@ class RegistryEntry {
 		tag ??= ""; // ensure we have a string to work with, as some classes don't have a tag e.g. abstract base classes
 
 		// TODO: This whole method needs to be adapted to correctly write JSDoc
+
+		// TODO: externalize special cases like Label, MultiInput, ShellBar etc. into e.g. .ui5webcrc config file
+		//       within the project wrapping the web components (e.g. the application or the library project)
 
 		// The label has a couple of specifics that are not fully reflected in the custom elements.
 		if (tag.includes("ui5-label")) {
