@@ -17,6 +17,10 @@ customConfiguration:
     minify: true
     watch:
       - "../ui5-tsapp-webc/webapp"
+    pluginOptions:
+      webcomponents:
+        skipJSDoc: false # enable the JSDoc generation
+        skipDtsGeneration: false
 type: application
 framework:
   name: OpenUI5

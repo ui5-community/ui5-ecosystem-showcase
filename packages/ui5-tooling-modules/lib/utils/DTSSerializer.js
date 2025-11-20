@@ -882,7 +882,7 @@ const DTSSerializer = {
 		if (classDef.superclass) {
 			// Set up superclass information
 			let superclassSettings;
-			if (WebComponentRegistryHelper.isUI5Element(classDef.superclass)) {
+			if (WebComponentRegistryHelper.isUI5Element(classDef.superclass) || WebComponentRegistryHelper.isWebComponent(classDef.superclass)) {
 				superclassSettings = {
 					class: "WebComponent",
 					module: "sap/ui/core/webc/WebComponent",

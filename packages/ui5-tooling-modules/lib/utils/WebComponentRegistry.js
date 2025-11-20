@@ -197,9 +197,15 @@ class RegistryEntry {
 				classDef.superclass = superclassRef;
 			}
 		} else if (classDef.customElement && !WebComponentRegistryHelper.isUI5Element(classDef)) {
+			/*
 			logger.warn(
 				`⚠️ The class '${this.namespace}/${classDef.name}' is a custom element not extending '${WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE}/${WebComponentRegistryHelper.UI5_ELEMENT_CLASS_NAME}!`,
 			);
+			*/
+			// non UI5Elements are extending the base class for Web Components
+			classDef.superclass = {
+				name: "sap.ui.core.webc.WebComponent",
+			};
 		}
 	}
 
