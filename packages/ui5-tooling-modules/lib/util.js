@@ -46,6 +46,20 @@ function isValidVersion(version) {
 }
 
 /**
+ * converts a wildcard pattern to a regular expression
+ * @param {string} pattern the pattern to convert
+ * @returns {RegExp} the regular expression
+ */
+function wildcardToRegex(pattern) {
+	// escape special characters
+	const escapedPattern = pattern.replace(/[.+^${}()|[\]\\]/g, "\\$&");
+	// replace the wildcard with a capture group
+	const regexPattern = escapedPattern.replace(/\*/g, "(.*)");
+	// return the regular expression
+	return new RegExp(`^${regexPattern}$`);
+}
+
+/**
  * helper to check the existence of a resource (case-sensitive)
  * @param {string} file file path
  * @returns {boolean} true if the file exists
@@ -216,49 +230,34 @@ function findDependency(dep, cwd = process.cwd(), depPaths = []) {
 }
 
 /**
- * find the dependencies of the current project and its transitive dependencies
- * (excluding devDependencies and providedDependencies)
- * @param {object} options options
- * @param {string} [options.cwd] current working directory
- * @param {string[]} [options.depPaths] list of dependency paths
- * @param {boolean} [options.linkedOnly] find only the linked dependencies
- * @param {string[]} [options.additionalDeps] list of additional dependencies (e.g. dev dependencies to include)
- * @param {string[]} [knownDeps] list of known dependencies
- * @returns {string[]} array of dependency root directories
+ * finds the package.json file for the given module path
+ * @param {string} modulePath the path of the module
+ * @returns {string} the path of the package.json file
  */
-function findDependencies({ cwd = process.cwd(), depPaths = [], linkedOnly, additionalDeps = [] } = {}, knownDeps = []) {
-	const pkgJson = getPackageJson(path.join(cwd, "package.json"));
-	let dependencies = [...Object.keys(pkgJson.dependencies || {}), ...Object.keys(pkgJson.optionalDependencies || {})];
-	if (additionalDeps?.length > 0) {
-		dependencies = dependencies.concat(additionalDeps);
-	}
-	if (linkedOnly) {
-		dependencies = dependencies.filter((dep) => {
-			const version = pkgJson.dependencies?.[dep] || pkgJson.optionalDependencies?.[dep];
-			return !isValidVersion(version);
-		});
-	}
-	const depRoots = [];
-	const findDeps = [];
-	for (const dep of dependencies) {
-		const npmPackage = npmPackageScopeRegEx.exec(dep)?.[1];
-		if (knownDeps.indexOf(npmPackage) !== -1) {
-			continue;
+function findPackageJson(modulePath) {
+	let pkgJsonFile;
+	// lookup the parent dirs recursive to find package.json
+	const nodeModules = `${path.sep}node_modules${path.sep}`;
+	if (modulePath.lastIndexOf(nodeModules) > -1) {
+		const localModuleRootPath = modulePath.substring(0, modulePath.lastIndexOf(nodeModules) + nodeModules.length);
+		const localModuleName = modulePath.substring(localModuleRootPath.length)?.replace(/\\/g, "/");
+		const [, npmPackage] = npmPackageScopeRegEx.exec(localModuleName) || [];
+		pkgJsonFile = path.join(localModuleRootPath, npmPackage, "package.json");
+		if (!existsSyncAndIsFile(pkgJsonFile)) {
+			pkgJsonFile = undefined;
 		}
-		knownDeps.push(npmPackage);
-		const depPath = findDependency(path.posix.join(npmPackage, "package.json"), cwd, depPaths);
-		let depRoot = depPath && path.dirname(depPath);
-		if (depRoot && depRoots.indexOf(depRoot) === -1) {
-			depRoots.push(depRoot);
-			// delay the dependency lookup to avoid finding transitive dependencies before local dependencies
-			findDeps.push({ cwd: depRoot, depPaths, linkedOnly, additionalDeps });
+	} else {
+		let dir = path.dirname(modulePath);
+		while (dir !== path.dirname(dir)) {
+			const pkgJson = path.join(dir, "package.json");
+			if (existsSyncAndIsFile(pkgJson)) {
+				pkgJsonFile = pkgJson;
+				break;
+			}
+			dir = path.dirname(dir);
 		}
 	}
-	// lookup the transitive dependencies
-	for (const dep of findDeps) {
-		depRoots.push(...findDependencies(dep, knownDeps));
-	}
-	return depRoots;
+	return pkgJsonFile;
 }
 
 /**
@@ -294,6 +293,7 @@ class BundleInfoCache {
 		}
 	}
 }
+
 /**
  * bundle info object containing all entries
  */
@@ -344,89 +344,90 @@ class BundleInfo {
 	}
 }
 
-// local cache of resolved module paths
-const modulesCache = {};
-
-// local cache of negative modules (avoid additional lookups)
-const modulesNegativeCache = [];
-
-// local cache for package.json files
-const packageJsonCache = {};
-
-// local cache for dependencies list
-const findDependenciesCache = {};
-
-// performance metrics
-const perfmetrics = {
-	resolveModulesTime: 0,
-	resolveModules: {},
-};
-
-/**
- * load and cache the package.json file	for the given path
- * @param {string} pkgJsonFile the path of the package.json file
- * @returns {object} the package.json content
- */
-function getPackageJson(pkgJsonFile) {
-	if (!packageJsonCache[pkgJsonFile]) {
-		try {
-			const pkgJson = JSON.parse(readFileSync(pkgJsonFile, { encoding: "utf8" }));
-			packageJsonCache[pkgJsonFile] = pkgJson;
-		} catch (err) {
-			console.error(`Failed to read package.json file ${pkgJsonFile}!`, err);
-			throw err;
-		}
-	}
-	return packageJsonCache[pkgJsonFile];
-}
-
-/**
- * finds the package.json file for the given module path
- * @param {string} modulePath the path of the module
- * @returns {string} the path of the package.json file
- */
-function findPackageJson(modulePath) {
-	let pkgJsonFile;
-	// lookup the parent dirs recursive to find package.json
-	const nodeModules = `${path.sep}node_modules${path.sep}`;
-	if (modulePath.lastIndexOf(nodeModules) > -1) {
-		const localModuleRootPath = modulePath.substring(0, modulePath.lastIndexOf(nodeModules) + nodeModules.length);
-		const localModuleName = modulePath.substring(localModuleRootPath.length)?.replace(/\\/g, "/");
-		const [, npmPackage] = npmPackageScopeRegEx.exec(localModuleName) || [];
-		pkgJsonFile = path.join(localModuleRootPath, npmPackage, "package.json");
-		if (!existsSyncAndIsFile(pkgJsonFile)) {
-			pkgJsonFile = undefined;
-		}
-	} else {
-		let dir = path.dirname(modulePath);
-		while (dir !== path.dirname(dir)) {
-			const pkgJson = path.join(dir, "package.json");
-			if (existsSyncAndIsFile(pkgJson)) {
-				pkgJsonFile = pkgJson;
-				break;
-			}
-			dir = path.dirname(dir);
-		}
-	}
-	return pkgJsonFile;
-}
-
-/**
- * converts a wildcard pattern to a regular expression
- * @param {string} pattern the pattern to convert
- * @returns {RegExp} the regular expression
- */
-function wildcardToRegex(pattern) {
-	// escape special characters
-	const escapedPattern = pattern.replace(/[.+^${}()|[\]\\]/g, "\\$&");
-	// replace the wildcard with a capture group
-	const regexPattern = escapedPattern.replace(/\*/g, "(.*)");
-	// return the regular expression
-	return new RegExp(`^${regexPattern}$`);
-}
-
 // the utiltiy module
 module.exports = function (log, projectInfo) {
+	// performande metrics
+	const perfmetrics = {
+		resolveModulesTime: 0,
+		resolveModules: {},
+	};
+
+	// local cache of resolved module paths
+	const modulesCache = {};
+
+	// local cache of negative modules (avoid additional lookups)
+	const modulesNegativeCache = [];
+
+	// local cache for package.json files
+	const packageJsonCache = {};
+
+	// local cache for dependencies list
+	const findDependenciesCache = {};
+
+	/**
+	 * load and cache the package.json file	for the given path
+	 * @param {string} pkgJsonFile the path of the package.json file
+	 * @returns {object} the package.json content
+	 */
+	function getPackageJson(pkgJsonFile) {
+		if (!packageJsonCache[pkgJsonFile]) {
+			try {
+				const pkgJson = JSON.parse(readFileSync(pkgJsonFile, { encoding: "utf8" }));
+				packageJsonCache[pkgJsonFile] = pkgJson;
+			} catch (err) {
+				console.error(`Failed to read package.json file ${pkgJsonFile}!`, err);
+				throw err;
+			}
+		}
+		return packageJsonCache[pkgJsonFile];
+	}
+
+	/**
+	 * find the dependencies of the current project and its transitive dependencies
+	 * (excluding devDependencies and providedDependencies)
+	 * @param {object} options options
+	 * @param {string} [options.cwd] current working directory
+	 * @param {string[]} [options.depPaths] list of dependency paths
+	 * @param {boolean} [options.linkedOnly] find only the linked dependencies
+	 * @param {string[]} [options.additionalDeps] list of additional dependencies (e.g. dev dependencies to include)
+	 * @param {string[]} [knownDeps] list of known dependencies
+	 * @returns {string[]} array of dependency root directories
+	 */
+	function findDependencies({ cwd = process.cwd(), depPaths = [], linkedOnly, additionalDeps = [] } = {}, knownDeps = []) {
+		const pkgJson = getPackageJson(path.join(cwd, "package.json"));
+		let dependencies = [...Object.keys(pkgJson.dependencies || {}), ...Object.keys(pkgJson.optionalDependencies || {})];
+		if (additionalDeps?.length > 0) {
+			dependencies = dependencies.concat(additionalDeps);
+		}
+		if (linkedOnly) {
+			dependencies = dependencies.filter((dep) => {
+				const version = pkgJson.dependencies?.[dep] || pkgJson.optionalDependencies?.[dep];
+				return !isValidVersion(version);
+			});
+		}
+		const depRoots = [];
+		const findDeps = [];
+		for (const dep of dependencies) {
+			const npmPackage = npmPackageScopeRegEx.exec(dep)?.[1];
+			if (knownDeps.indexOf(npmPackage) !== -1) {
+				continue;
+			}
+			knownDeps.push(npmPackage);
+			const depPath = findDependency(path.posix.join(npmPackage, "package.json"), cwd, depPaths);
+			let depRoot = depPath && path.dirname(depPath);
+			if (depRoot && depRoots.indexOf(depRoot) === -1) {
+				depRoots.push(depRoot);
+				// delay the dependency lookup to avoid finding transitive dependencies before local dependencies
+				findDeps.push({ cwd: depRoot, depPaths, linkedOnly, additionalDeps });
+			}
+		}
+		// lookup the transitive dependencies
+		for (const dep of findDeps) {
+			depRoots.push(...findDependencies(dep, knownDeps));
+		}
+		return depRoots;
+	}
+
 	/**
 	 * Checks whether the file behind the given path is a module to skip for transformation or not
 	 * @param {string} source the path of a JS module

@@ -12,10 +12,10 @@
   "defaultAggregation": "{{metadata.defaultAggregation}}",
 
   "properties": {
-  {{#each metadata.properties}}
+  {{#each metadata.properties}}{{#if (lookup (lookup @root.jsDoc "properties") @key)}}
 {{{lookup (lookup @root.jsDoc "properties") @key}}}
     "{{@key}}": {{{json this}}},
-  {{/each}}
+  {{/if}}{{/each}}
   },
 
   "aggregations": {

@@ -30,7 +30,7 @@ function dot2slash(s) {
 function _serializeClassHeader(classDef, jsdocTags) {
 	// find superclass name, either another wrapper OR the core WebComponent base class
 	let superclassName = classDef.superclass.name;
-	if (superclassName === WebComponentRegistryHelper.UI5_ELEMENT_CLASS_NAME) {
+	if (WebComponentRegistryHelper.isUI5Element(classDef.superclass) || WebComponentRegistryHelper.isWebComponent(classDef.superclass)) {
 		// we reached the very top of the inheritance chain
 		superclassName = "sap.ui.core.webc.WebComponent";
 	} else if (superclassName) {
