@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.33.7](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.33.6...ui5-tooling-modules@3.33.7) (2025-11-21)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** no scoping for non UI5Elements ([#1298](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1298)) ([81febf4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/81febf47c038042b713a362521872b8d5e261f22)), closes [#1297](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1297)
+
+
+
+
+
 ## [3.33.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.33.5...ui5-tooling-modules@3.33.6) (2025-11-06)
 
 

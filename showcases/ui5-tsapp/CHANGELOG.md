@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.17.38](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.17.37...ui5-tsapp@0.17.38) (2025-11-21)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** no scoping for non UI5Elements ([#1298](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1298)) ([81febf4](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/81febf47c038042b713a362521872b8d5e261f22)), closes [#1297](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1297)
+
+
+
+
+
 ## [0.17.37](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp@0.17.36...ui5-tsapp@0.17.37) (2025-11-06)
 
 **Note:** Version bump only for package ui5-tsapp
