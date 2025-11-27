@@ -106,7 +106,7 @@ test("no rewrite content", async (t) => {
 	const respMetadata = await app.get("/backendv2/Categories?$format=atom")
 	t.is(respMetadata.status, 200, "http 200 on categories")
 	t.true(
-		respMetadata.text.indexOf(`<feed xml:base="https://services.odata.org/V2/northwind/Northwind.svc/"`) !== -1,
+		respMetadata.text.indexOf(`<feed xml:base="https://services.odata.org/V2/Northwind/Northwind.svc/"`) !== -1,
 		"OData context not rewritten"
 	)
 
@@ -148,7 +148,7 @@ test("partial rewrite content", async (t) => {
 	const respMetadata = await app.get("/backendv2/Categories?$format=atom")
 	t.is(respMetadata.status, 200, "http 200 on categories")
 	t.true(
-		respMetadata.text.indexOf(`<feed xml:base="https://services.odata.org/V2/northwind/Northwind.svc/"`) !== -1,
+		respMetadata.text.indexOf(`<feed xml:base="https://services.odata.org/V2/Northwind/Northwind.svc/"`) !== -1,
 		"OData context not rewritten"
 	)
 
