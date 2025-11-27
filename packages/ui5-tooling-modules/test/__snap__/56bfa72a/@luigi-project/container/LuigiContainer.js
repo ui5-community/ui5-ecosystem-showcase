@@ -130,9 +130,6 @@ sap.ui.define(
             customMessage: {
               parameters: {}
             },
-            getContextRequest: {
-              parameters: {}
-            },
             navigationRequest: {
               parameters: {}
             },
@@ -193,22 +190,7 @@ sap.ui.define(
             setViewgroupDataRequest: {
               parameters: {}
             },
-            openUserSettingsRequest: {
-              parameters: {}
-            },
-            closeUserSettingsRequest: {
-              parameters: {}
-            },
-            collapseLeftnavRequest: {
-              parameters: {}
-            },
-            updateTopNavigationRequest: {
-              parameters: {}
-            },
             goBackRequest: {
-              parameters: {}
-            },
-            hasBackRequest: {
               parameters: {}
             },
             addBackdropRequest: {
