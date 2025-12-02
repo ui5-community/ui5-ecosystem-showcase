@@ -5139,7 +5139,7 @@ sap.ui.define((function () { 'use strict';
 	function requireSax () {
 		if (hasRequiredSax) return sax;
 		hasRequiredSax = 1;
-		(function (exports) {
+		(function (exports$1) {
 	(function (sax) {
 			  // wrapper for non-node envs
 			  sax.parser = function (strict, opt) {
@@ -6834,7 +6834,7 @@ sap.ui.define((function () { 'use strict';
 			      }
 			    })();
 			  }
-			})(exports);
+			})(exports$1);
 		} (sax));
 		return sax;
 	}

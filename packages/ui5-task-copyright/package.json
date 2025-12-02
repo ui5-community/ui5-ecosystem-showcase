@@ -28,11 +28,11 @@
   },
   "devDependencies": {
     "@ui5/cli": "^3",
-    "ava": "^6.4.0"
+    "ava": "^6.4.1"
   },
   "dependencies": {
-    "@typescript-eslint/typescript-estree": "^8.35.1",
-    "fast-xml-parser": "^5.2.5",
-    "js-yaml": "^4.1.0"
+    "@typescript-eslint/typescript-estree": "^8.48.1",
+    "fast-xml-parser": "^5.3.2",
+    "js-yaml": "^4.1.1"
   }
 }

@@ -1126,6 +1126,24 @@
             },
             {
               "kind": "field",
+              "name": "layoutsConfiguration",
+              "type": {
+                "text": "LayoutConfiguration",
+                "references": [
+                  {
+                    "name": "LayoutConfiguration",
+                    "package": "@ui5/webcomponents-fiori",
+                    "module": "dist/FlexibleColumnLayout.js"
+                  }
+                ]
+              },
+              "default": "{}",
+              "description": "Allows to customize the column proportions per screen size and layout.\nIf no custom proportion provided for a specific layout, the default will be used.\n\n**Notes:**\n\n- The proportions should be given in percentages. For example [\"30%\", \"40%\", \"30%\"], [\"70%\", \"30%\", 0], etc.\n- The proportions should add up to 100%.\n- Hidden columns are marked as \"0px\", e.g. [\"0px\", \"70%\", \"30%\"]. Specifying 0 or \"0%\" for hidden columns is also valid.\n- If the proportions do not match the layout (e.g. if provided proportions [\"70%\", \"30%\", \"0px\"] for \"OneColumn\" layout), then the default proportions will be used instead.\n- Whenever the user drags the columns separator to resize the columns, the `layoutsConfiguration` object will be updated with the user-specified proportions for the given layout (and the `layout-configuration-change` event will be fired).\n- No custom configuration available for the phone screen size, as the default of 100% column width is always used there.",
+              "privacy": "public",
+              "_ui5since": "2.16.0"
+            },
+            {
+              "kind": "field",
               "name": "columnLayout",
               "type": {
                 "text": "FlexibleColumnLayoutColumnLayout | undefined",
@@ -1270,6 +1288,65 @@
                   "description": "Indicates if the layout was changed by resizing the entire component"
                 }
               ]
+            },
+            {
+              "name": "layout-configuration-change",
+              "_ui5privacy": "public",
+              "type": {
+                "text": "CustomEvent<FlexibleColumnLayoutLayoutConfigurationChangeEventDetail>",
+                "references": [
+                  {
+                    "name": "FlexibleColumnLayoutLayoutConfigurationChangeEventDetail",
+                    "package": "@ui5/webcomponents-fiori",
+                    "module": "dist/FlexibleColumnLayout.js"
+                  }
+                ]
+              },
+              "description": "Fired when the `layoutsConfiguration` changes via user interaction by dragging the separators.",
+              "_ui5Cancelable": false,
+              "_ui5allowPreventDefault": false,
+              "_ui5Bubbles": true,
+              "_ui5since": "2.16.0",
+              "_ui5parameters": [
+                {
+                  "type": {
+                    "text": "FCLLayout",
+                    "references": [
+                      {
+                        "name": "FCLLayout",
+                        "package": "@ui5/webcomponents-fiori",
+                        "module": "dist/types/FCLLayout.js"
+                      }
+                    ]
+                  },
+                  "name": "layout",
+                  "_ui5privacy": "public",
+                  "description": "The current layout"
+                },
+                {
+                  "type": {
+                    "text": "MEDIA",
+                    "references": [
+                      {
+                        "name": "MEDIA",
+                        "package": "@ui5/webcomponents-fiori",
+                        "module": "dist/FlexibleColumnLayout.js"
+                      }
+                    ]
+                  },
+                  "name": "media",
+                  "_ui5privacy": "public",
+                  "description": "The current media type"
+                },
+                {
+                  "type": {
+                    "text": "array"
+                  },
+                  "name": "columnLayout",
+                  "_ui5privacy": "public",
+                  "description": "The effective column layout, f.e [\"67%\", \"33%\", \"0px\"]"
+                }
+              ]
             }
           ],
           "attributes": [
@@ -1298,6 +1375,15 @@
               "fieldName": "accessibilityAttributes",
               "type": {
                 "text": "FCLAccessibilityAttributes"
+              }
+            },
+            {
+              "description": "Allows to customize the column proportions per screen size and layout.\nIf no custom proportion provided for a specific layout, the default will be used.\n\n**Notes:**\n\n- The proportions should be given in percentages. For example [\"30%\", \"40%\", \"30%\"], [\"70%\", \"30%\", 0], etc.\n- The proportions should add up to 100%.\n- Hidden columns are marked as \"0px\", e.g. [\"0px\", \"70%\", \"30%\"]. Specifying 0 or \"0%\" for hidden columns is also valid.\n- If the proportions do not match the layout (e.g. if provided proportions [\"70%\", \"30%\", \"0px\"] for \"OneColumn\" layout), then the default proportions will be used instead.\n- Whenever the user drags the columns separator to resize the columns, the `layoutsConfiguration` object will be updated with the user-specified proportions for the given layout (and the `layout-configuration-change` event will be fired).\n- No custom configuration available for the phone screen size, as the default of 100% column width is always used there.",
+              "name": "layouts-configuration",
+              "default": "{}",
+              "fieldName": "layoutsConfiguration",
+              "type": {
+                "text": "LayoutConfiguration"
               }
             },
             {
@@ -1433,7 +1519,7 @@
           },
           "tagName": "ui5-group-item",
           "customElement": true,
-          "_ui5since": "2.13.0",
+          "_ui5since": "2.15.0",
           "_ui5privacy": "public",
           "_ui5abstract": true
         }
@@ -3741,6 +3827,15 @@
                 "text": "Array<HTMLElement>"
               },
               "_ui5privacy": "public"
+            },
+            {
+              "name": "actions",
+              "description": "Defines the actionable elements.\nThis slot allows placing additional interactive elements (such as buttons, icons, or tags)\nnext to the delete button, providing flexible customization for various user actions.\n\n**Note:** While the slot is flexible, for consistency with design guidelines,\nit's recommended to use `ui5-button` with `Transparent` design or `ui5-icon` elements.",
+              "_ui5since": "2.16.0",
+              "_ui5type": {
+                "text": "Array<HTMLElement>"
+              },
+              "_ui5privacy": "public"
             }
           ],
           "members": [
@@ -3973,6 +4068,36 @@
               "default": "false",
               "description": "Defines whether the show more item is selected.",
               "privacy": "public"
+            }
+          ],
+          "events": [
+            {
+              "name": "click",
+              "_ui5privacy": "public",
+              "type": {
+                "text": "CustomEvent<ShowMoreItemClickEventDetail>",
+                "references": [
+                  {
+                    "name": "ShowMoreItemClickEventDetail",
+                    "package": "@ui5/webcomponents-fiori",
+                    "module": "dist/SearchItemShowMore.js"
+                  }
+                ]
+              },
+              "description": "Fired when the component is activated, either with a mouse/tap\nor by pressing the Enter or Space keys.",
+              "_ui5Cancelable": true,
+              "_ui5allowPreventDefault": true,
+              "_ui5Bubbles": true,
+              "_ui5parameters": [
+                {
+                  "type": {
+                    "text": "boolean"
+                  },
+                  "name": "fromKeyboard",
+                  "_ui5privacy": "public",
+                  "description": "Indicates whether the event was fired\ndue to keyboard interaction (Enter or Space) rather than mouse/tap."
+                }
+              ]
             }
           ],
           "attributes": [
@@ -5811,7 +5936,7 @@
                 "text": "boolean"
               },
               "default": "false",
-              "description": "Defines whether the `ui5-side-navigation` is expanded or collapsed.",
+              "description": "Defines whether the `ui5-side-navigation` is expanded or collapsed.\n\n**Note:** The collapsed mode is not supported on phones.\nThe `ui5-side-navigation` component is intended to be used within a `ui5-navigation-layout`\ncomponent to ensure proper responsive behavior. If you choose not to use the\n`ui5-navigation-layout`, you will need to implement the appropriate responsive patterns yourself,\nparticularly for phones where the collapsed mode should not be used.",
               "privacy": "public"
             },
             {
@@ -5865,7 +5990,7 @@
           ],
           "attributes": [
             {
-              "description": "Defines whether the `ui5-side-navigation` is expanded or collapsed.",
+              "description": "Defines whether the `ui5-side-navigation` is expanded or collapsed.\n\n**Note:** The collapsed mode is not supported on phones.\nThe `ui5-side-navigation` component is intended to be used within a `ui5-navigation-layout`\ncomponent to ensure proper responsive behavior. If you choose not to use the\n`ui5-navigation-layout`, you will need to implement the appropriate responsive patterns yourself,\nparticularly for phones where the collapsed mode should not be used.",
               "name": "collapsed",
               "default": "false",
               "fieldName": "collapsed",
@@ -7973,6 +8098,24 @@
             },
             {
               "kind": "field",
+              "name": "noDataHeaderLevel",
+              "type": {
+                "text": "TitleLevel",
+                "references": [
+                  {
+                    "name": "TitleLevel",
+                    "package": "@ui5/webcomponents",
+                    "module": "dist/types/TitleLevel.js"
+                  }
+                ]
+              },
+              "default": "\"H2\"",
+              "description": "Defines the header level of the 'No data' text.",
+              "privacy": "public",
+              "_ui5since": "2.16.0"
+            },
+            {
+              "kind": "field",
               "name": "hideDragOverlay",
               "type": {
                 "text": "boolean"
@@ -8077,6 +8220,15 @@
               "fieldName": "noDataText",
               "type": {
                 "text": "string | undefined"
+              }
+            },
+            {
+              "description": "Defines the header level of the 'No data' text.",
+              "name": "no-data-header-level",
+              "default": "\"H2\"",
+              "fieldName": "noDataHeaderLevel",
+              "type": {
+                "text": "\"H1\" | \"H2\" | \"H3\" | \"H4\" | \"H5\" | \"H6\""
               }
             },
             {
@@ -8821,6 +8973,16 @@
             },
             {
               "kind": "field",
+              "name": "additionalInfo",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "Defines additional information for the user.",
+              "privacy": "public"
+            },
+            {
+              "kind": "field",
               "name": "selected",
               "type": {
                 "text": "boolean"
@@ -8883,6 +9045,15 @@
               "name": "description",
               "default": "\"\"",
               "fieldName": "description",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "description": "Defines additional information for the user.",
+              "name": "additional-info",
+              "default": "\"\"",
+              "fieldName": "additionalInfo",
               "type": {
                 "text": "string"
               }
@@ -9247,8 +9418,8 @@
           "slots": [
             {
               "name": "default",
-              "description": "Defines the tab views of the user settings item.\n\nThe tab views are displayed by default if there is no selected page view.",
-              "_ui5propertyName": "tabs",
+              "description": "Defines the page views of the user settings item.\n\nIf there are no tab views, the first page view will be shown unless there is selected one. If there is selected page\nview it will be shown no matter if there are tab views.\n\nThe page views are displayed by default if there is no selected tab view.",
+              "_ui5propertyName": "pages",
               "_ui5type": {
                 "text": "Array<UserSettingsView>",
                 "references": [
@@ -9262,8 +9433,8 @@
               "_ui5privacy": "public"
             },
             {
-              "name": "pages",
-              "description": "Defines the page views of the user settings item.\n\nIf there are no tab views, the first page view will be shown unless there is selected one. If there is selected page\nview it will be shown no matter if there are tab views.",
+              "name": "tabs",
+              "description": "Defines the tab views of the user settings item.",
               "_ui5type": {
                 "text": "Array<UserSettingsView>",
                 "references": [

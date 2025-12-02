@@ -3226,7 +3226,7 @@
       "declarations": [
         {
           "kind": "class",
-          "description": "### Overview\nThe Carousel allows the user to browse through a set of items.\nThe component is mostly used for showing a gallery of images, but can hold any other HTML element.\n\nThere are several ways to perform navigation:\n\n- on desktop - the user can navigate using the navigation arrows or with keyboard shortcuts.\n- on touch devices - the user can navigate using the navigation arrows (always visible) or can use swipe gestures.\n\n### Usage\n\n#### When to use:\n\n- The items you want to display are very different from each other.\n- You want to display the items one after the other.\n\n#### When not to use:\n\n- The items you want to display need to be visible at the same time.\n- The items you want to display are uniform and very similar.\n\n### Keyboard Handling\n\n#### Basic Navigation\nWhen the `ui5-carousel` is focused the user can navigate between the items\nwith the following keyboard shortcuts:\n\n- [Up] or [Down] - Navigates to previous and next item\n- [Left] or [Right] - Navigates to previous and next item\n\n### Fast Navigation\nThis component provides a build in fast navigation group which can be used via [F6] / [Shift] + [F6] / [Ctrl] + [Alt/Option] / [Down] or [Ctrl] + [Alt/Option] + [Up].\nIn order to use this functionality, you need to import the following module:\n\n`import \"@ui5/webcomponents-base/dist/features/F6Navigation.js\"`\n\n### ES6 Module Import\n\n`import \"@ui5/webcomponents/dist/Carousel.js\";`",
+          "description": "### Overview\nThe Carousel allows the user to browse through a set of items.\nThe component is mostly used for showing a gallery of images, but can hold any other HTML element.\n\nThere are several ways to perform navigation:\n\n- on desktop - the user can navigate using the navigation arrows or with keyboard shortcuts.\n- on touch devices - the user can navigate using the navigation arrows (always visible) or can use swipe gestures.\n\n### Usage\n\n#### When to use:\n\n- The items you want to display are very different from each other.\n- You want to display the items one after the other.\n\n#### When not to use:\n\n- The items you want to display need to be visible at the same time.\n- The items you want to display are uniform and very similar.\n\n### Hidden Items\n\nCarousel items can be conditionally hidden by adding the `hidden` attribute to any child element.\nHidden items are automatically excluded from carousel navigation and will not be displayed or counted in pagination.\nThis allows for dynamic showing or hiding of carousel items without affecting the overall carousel behavior.\n\n### Keyboard Handling\n\n#### Basic Navigation\nWhen the `ui5-carousel` is focused the user can navigate between the items\nwith the following keyboard shortcuts:\n\n- [Up] or [Down] - Navigates to previous and next item\n- [Left] or [Right] - Navigates to previous and next item\n\n### Fast Navigation\nThis component provides a build in fast navigation group which can be used via [F6] / [Shift] + [F6] / [Ctrl] + [Alt/Option] / [Down] or [Ctrl] + [Alt/Option] + [Up].\nIn order to use this functionality, you need to import the following module:\n\n`import \"@ui5/webcomponents-base/dist/features/F6Navigation.js\"`\n\n### ES6 Module Import\n\n`import \"@ui5/webcomponents/dist/Carousel.js\";`",
           "name": "Carousel",
           "cssParts": [
             {
@@ -3237,7 +3237,7 @@
           "slots": [
             {
               "name": "default",
-              "description": "Defines the content of the component.",
+              "description": "Defines the content of the component.\n\n**Note:** Items with the `hidden` attribute will be automatically excluded from carousel navigation and page calculations.\nThey will not be displayed or accessible via keyboard navigation. See [sample](./#carousel-with-hidden-items).",
               "_ui5propertyName": "content",
               "_ui5type": {
                 "text": "Array<HTMLElement>"
@@ -3402,11 +3402,6 @@
             {
               "kind": "method",
               "name": "navigateTo",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
               "parameters": [
                 {
                   "name": "itemIndex",
@@ -8953,7 +8948,7 @@
         },
         {
           "kind": "class",
-          "description": "### Overview\n\nThe `ui5-dynamic-date-range` component provides a flexible interface to define date ranges using a combination of absolute dates, relative intervals, and preset ranges (e.g., \"Today\", \"Yesterday\", etc.).\nIt allows users to select a date range from a predefined set of options or enter custom dates.\n\n### Usage\n\nThe component is typically used in scenarios where users need to filter data based on date ranges, such as in reports, dashboards, or data analysis tools.\nIt can be used with the predefined options or extended with custom options to suit specific requirements. You can create your own options by extending the `IDynamicDateRangeOption` interface.\nEvery option should be registered using the `DynamicDateRange.register` method.\n\nIf needed, you can also create a range of dates based on specific option using the `toDates` method.\n\n### Standard Options\n\nThe component comes with a set of standard options, including:\n- \"TODAY\" - Represents the current date. An example value is `{ operator: \"TODAY\"}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/Today.js\";`\n- \"YESTERDAY\" - Represents the previous date. An example value is `{ operator: \"YESTERDAY\"}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/Yesterday.js\";`\n- \"TOMORROW\" - Represents the next date. An example value is `{ operator: \"TOMORROW\"}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/Tomorrow.js\";`\n- \"DATE\" - Represents a single date. An example value is `{ operator: \"DATE\", values: [new Date()]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/SingleDate.js\";`\n- \"DATERANGE\" - Represents a range of dates. An example value is `{ operator: \"DATERANGE\", values: [new Date(), new Date()]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/DateRange.js\";`\n- \"LASTDAYS\" - Represents Last X Days from today. An example value is `{ operator: \"LASTDAYS\", values: [2]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/LastOptions.js\";`\n- \"LASTWEEKS\" - Represents Last X Weeks from today. An example value is `{ operator: \"LASTWEEKS\", values: [3]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/LastOptions.js\";`\n- \"LASTMONTHS\" - Represents Last X Months from today. An example value is `{ operator: \"LASTMONTHS\", values: [6]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/LastOptions.js\";`\n- \"LASTQUARTERS\" - Represents Last X Quarters from today. An example value is `{ operator: \"LASTQUARTERS\", values: [2]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/LastOptions.js\";`\n- \"LASTYEARS\" - Represents Last X Years from today. An example value is `{ operator: \"LASTYEARS\", values: [1]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/LastOptions.js\";`\n- \"NEXTDAYS\" - Represents Next X Days from today. An example value is `{ operator: \"NEXTDAYS\", values: [2]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/NextOptions.js\";`\n- \"NEXTWEEKS\" - Represents Next X Weeks from today. An example value is `{ operator: \"NEXTWEEKS\", values: [3]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/NextOptions.js\";`\n- \"NEXTMONTHS\" - Represents Next X Months from today. An example value is `{ operator: \"NEXTMONTHS\", values: [6]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/NextOptions.js\";`\n- \"NEXTQUARTERS\" - Represents Next X Quarters from today. An example value is `{ operator: \"NEXTQUARTERS\", values: [2]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/NextOptions.js\";`\n- \"NEXTYEARS\" - Represents Next X Years from today. An example value is `{ operator: \"NEXTYEARS\", values: [1]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/NextOptions.js\";`\n\n### ES6 Module Import\n\n`import \"@ui5/webcomponents/dist/DynamicDateRange.js\";`",
+          "description": "### Overview\n\nThe `ui5-dynamic-date-range` component provides a flexible interface to define date ranges using a combination of absolute dates, relative intervals, and preset ranges (e.g., \"Today\", \"Yesterday\", etc.).\nIt allows users to select a date range from a predefined set of options or enter custom dates.\n\n### Usage\n\nThe component is typically used in scenarios where users need to filter data based on date ranges, such as in reports, dashboards, or data analysis tools.\nIt can be used with the predefined options or extended with custom options to suit specific requirements. You can create your own options by extending the `IDynamicDateRangeOption` interface.\nEvery option should be registered using the `DynamicDateRange.register` method.\n\nIf needed, you can also create a range of dates based on specific option using the `toDates` method.\n\n### Standard Options\n\nThe component comes with a set of standard options, including:\n- \"TODAY\" - Represents the current date. An example value is `{ operator: \"TODAY\"}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/Today.js\";`\n- \"YESTERDAY\" - Represents the previous date. An example value is `{ operator: \"YESTERDAY\"}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/Yesterday.js\";`\n- \"TOMORROW\" - Represents the next date. An example value is `{ operator: \"TOMORROW\"}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/Tomorrow.js\";`\n- \"DATE\" - Represents a single date. An example value is `{ operator: \"DATE\", values: [new Date()]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/SingleDate.js\";`\n- \"DATERANGE\" - Represents a range of dates. An example value is `{ operator: \"DATERANGE\", values: [new Date(), new Date()]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/DateRange.js\";`\n- \"DATETIMERANGE\" - Represents a range of dates with times. An example value is `{ operator: \"DATETIMERANGE\", values: [new Date(), new Date()]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/DateTimeRange.js\";`\n- \"FROMDATETIME\" - Represents a range from date and time. An example value is `{ operator: \"FROMDATETIME\", values: [new Date()]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/FromDateTime.js\";`\n- \"TODATETIME\" - Represents a range to date and time. An example value is `{ operator: \"TODATETIME\", values: [new Date()]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/ToDateTime.js\";`\n- \"LASTDAYS\" - Represents Last X Days from today. An example value is `{ operator: \"LASTDAYS\", values: [2]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/LastOptions.js\";`\n- \"LASTWEEKS\" - Represents Last X Weeks from today. An example value is `{ operator: \"LASTWEEKS\", values: [3]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/LastOptions.js\";`\n- \"LASTMONTHS\" - Represents Last X Months from today. An example value is `{ operator: \"LASTMONTHS\", values: [6]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/LastOptions.js\";`\n- \"LASTQUARTERS\" - Represents Last X Quarters from today. An example value is `{ operator: \"LASTQUARTERS\", values: [2]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/LastOptions.js\";`\n- \"LASTYEARS\" - Represents Last X Years from today. An example value is `{ operator: \"LASTYEARS\", values: [1]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/LastOptions.js\";`\n- \"NEXTDAYS\" - Represents Next X Days from today. An example value is `{ operator: \"NEXTDAYS\", values: [2]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/NextOptions.js\";`\n- \"NEXTWEEKS\" - Represents Next X Weeks from today. An example value is `{ operator: \"NEXTWEEKS\", values: [3]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/NextOptions.js\";`\n- \"NEXTMONTHS\" - Represents Next X Months from today. An example value is `{ operator: \"NEXTMONTHS\", values: [6]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/NextOptions.js\";`\n- \"NEXTQUARTERS\" - Represents Next X Quarters from today. An example value is `{ operator: \"NEXTQUARTERS\", values: [2]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/NextOptions.js\";`\n- \"NEXTYEARS\" - Represents Next X Years from today. An example value is `{ operator: \"NEXTYEARS\", values: [1]}`. Import: `import \"@ui5/webcomponents/dist/dynamic-date-range-options/NextOptions.js\";`\n\n### ES6 Module Import\n\n`import \"@ui5/webcomponents/dist/DynamicDateRange.js\";`",
           "name": "DynamicDateRange",
           "members": [
             {
@@ -9713,6 +9708,35 @@
             },
             {
               "kind": "field",
+              "name": "accessibleNameRef",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Defines id (or many ids) of the element (or elements) that label the component.",
+              "default": "undefined",
+              "privacy": "public",
+              "_ui5since": "2.16.0"
+            },
+            {
+              "kind": "field",
+              "name": "accessibleMode",
+              "type": {
+                "text": "FormAccessibleMode",
+                "references": [
+                  {
+                    "name": "FormAccessibleMode",
+                    "package": "@ui5/webcomponents",
+                    "module": "dist/types/FormAccessibleMode.js"
+                  }
+                ]
+              },
+              "default": "\"Display\"",
+              "description": "Defines the accessibility mode of the component in \"edit\" and \"display\" use-cases.\n\nBased on the mode, the component renders different HTML elements and ARIA attributes,\nwhich are appropriate for the use-case.\n\n**Usage:**\n- Set this property to \"Display\", when the form consists of non-editable (e.g. texts) form items.\n- Set this property to \"Edit\", when the form consists of editable (e.g. input fields) form items.",
+              "privacy": "public",
+              "_ui5since": "2.16.0"
+            },
+            {
+              "kind": "field",
               "name": "layout",
               "type": {
                 "text": "string"
@@ -9784,7 +9808,7 @@
                 ]
               },
               "default": "\"Normal\"",
-              "description": "Defines the vertical spacing between form items.\n\n**Note:** If the Form is meant to be switched between \"non-edit\" and \"edit\" modes,\nwe recommend using \"Large\" item spacing in \"non-edit\" mode, and \"Normal\" - for \"edit\" mode,\nto avoid \"jumping\" effect, caused by the hight difference between texts in \"non-edit\" mode and the input fields in \"edit\" mode.",
+              "description": "Defines the vertical spacing between form items.\n\n**Note:** If the Form is meant to be switched between \"display\"(\"non-edit\") and \"edit\" modes,\nwe recommend using \"Large\" item spacing in \"display\"(\"non-edit\") mode, and \"Normal\" - for \"edit\" mode,\nto avoid \"jumping\" effect, caused by the hight difference between texts in \"display\"(\"non-edit\") mode and the input fields in \"edit\" mode.",
               "privacy": "public"
             }
           ],
@@ -9796,6 +9820,24 @@
               "fieldName": "accessibleName",
               "type": {
                 "text": "string | undefined"
+              }
+            },
+            {
+              "description": "Defines id (or many ids) of the element (or elements) that label the component.",
+              "name": "accessible-name-ref",
+              "default": "undefined",
+              "fieldName": "accessibleNameRef",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "description": "Defines the accessibility mode of the component in \"edit\" and \"display\" use-cases.\n\nBased on the mode, the component renders different HTML elements and ARIA attributes,\nwhich are appropriate for the use-case.\n\n**Usage:**\n- Set this property to \"Display\", when the form consists of non-editable (e.g. texts) form items.\n- Set this property to \"Edit\", when the form consists of editable (e.g. input fields) form items.",
+              "name": "accessible-mode",
+              "default": "\"Display\"",
+              "fieldName": "accessibleMode",
+              "type": {
+                "text": "\"Display\" | \"Edit\""
               }
             },
             {
@@ -9844,7 +9886,7 @@
               }
             },
             {
-              "description": "Defines the vertical spacing between form items.\n\n**Note:** If the Form is meant to be switched between \"non-edit\" and \"edit\" modes,\nwe recommend using \"Large\" item spacing in \"non-edit\" mode, and \"Normal\" - for \"edit\" mode,\nto avoid \"jumping\" effect, caused by the hight difference between texts in \"non-edit\" mode and the input fields in \"edit\" mode.",
+              "description": "Defines the vertical spacing between form items.\n\n**Note:** If the Form is meant to be switched between \"display\"(\"non-edit\") and \"edit\" modes,\nwe recommend using \"Large\" item spacing in \"display\"(\"non-edit\") mode, and \"Normal\" - for \"edit\" mode,\nto avoid \"jumping\" effect, caused by the hight difference between texts in \"display\"(\"non-edit\") mode and the input fields in \"edit\" mode.",
               "name": "item-spacing",
               "default": "\"Normal\"",
               "fieldName": "itemSpacing",
@@ -9947,6 +9989,28 @@
               "description": "Defines column span of the component,\ne.g how many columns the group should span to.",
               "default": "undefined",
               "privacy": "public"
+            },
+            {
+              "kind": "field",
+              "name": "accessibleName",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Defines the accessible ARIA name of the component.",
+              "default": "undefined",
+              "privacy": "public",
+              "_ui5since": "2.16.0"
+            },
+            {
+              "kind": "field",
+              "name": "accessibleNameRef",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Defines id (or many ids) of the element (or elements) that label the component.",
+              "default": "undefined",
+              "privacy": "public",
+              "_ui5since": "2.16.0"
             }
           ],
           "attributes": [
@@ -9975,6 +10039,24 @@
               "fieldName": "columnSpan",
               "type": {
                 "text": "number | undefined"
+              }
+            },
+            {
+              "description": "Defines the accessible ARIA name of the component.",
+              "name": "accessible-name",
+              "default": "undefined",
+              "fieldName": "accessibleName",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "description": "Defines id (or many ids) of the element (or elements) that label the component.",
+              "name": "accessible-name-ref",
+              "default": "undefined",
+              "fieldName": "accessibleNameRef",
+              "type": {
+                "text": "string | undefined"
               }
             }
           ],
@@ -11602,7 +11684,7 @@
                 ]
               },
               "default": "{}",
-              "description": "Defines additional accessibility attributes on different areas of the component.\n\nThe accessibilityAttributes object has the following field:\n\n - **growingButton**: `growingButton.name`.\n\n The accessibility attributes support the following values:\n\n- **name**: Defines the accessible ARIA name of the growing button.\nAccepts any string.\n\n **Note:** The `accessibilityAttributes` property is in an experimental state and is a subject to change.",
+              "description": "Defines additional accessibility attributes on different areas of the component.\n\nThe accessibilityAttributes object has the following field:\n\n - **growingButton**: `growingButton.name`, `growingButton.description`.\n\n The accessibility attributes support the following values:\n\n- **name**: Defines the accessible ARIA name of the growing button.\nAccepts any string.\n\n- **description**: Defines the accessible ARIA description of the growing button.\nAccepts any string.\n\n **Note:** The `accessibilityAttributes` property is in an experimental state and is a subject to change.",
               "privacy": "public",
               "_ui5since": "2.13.0"
             },
@@ -12029,7 +12111,7 @@
               }
             },
             {
-              "description": "Defines additional accessibility attributes on different areas of the component.\n\nThe accessibilityAttributes object has the following field:\n\n - **growingButton**: `growingButton.name`.\n\n The accessibility attributes support the following values:\n\n- **name**: Defines the accessible ARIA name of the growing button.\nAccepts any string.\n\n **Note:** The `accessibilityAttributes` property is in an experimental state and is a subject to change.",
+              "description": "Defines additional accessibility attributes on different areas of the component.\n\nThe accessibilityAttributes object has the following field:\n\n - **growingButton**: `growingButton.name`, `growingButton.description`.\n\n The accessibility attributes support the following values:\n\n- **name**: Defines the accessible ARIA name of the growing button.\nAccepts any string.\n\n- **description**: Defines the accessible ARIA description of the growing button.\nAccepts any string.\n\n **Note:** The `accessibilityAttributes` property is in an experimental state and is a subject to change.",
               "name": "accessibility-attributes",
               "default": "{}",
               "fieldName": "accessibilityAttributes",
@@ -13517,6 +13599,24 @@
             },
             {
               "kind": "field",
+              "name": "placement",
+              "type": {
+                "text": "PopoverPlacement",
+                "references": [
+                  {
+                    "name": "PopoverPlacement",
+                    "package": "@ui5/webcomponents",
+                    "module": "dist/types/PopoverPlacement.js"
+                  }
+                ]
+              },
+              "default": "\"Bottom\"",
+              "description": "Determines on which side the component is placed at.",
+              "privacy": "public",
+              "_ui5since": "2.16.0"
+            },
+            {
+              "kind": "field",
               "name": "horizontalAlign",
               "type": {
                 "text": "PopoverHorizontalAlign",
@@ -13706,12 +13806,21 @@
               }
             },
             {
+              "description": "Determines on which side the component is placed at.",
+              "name": "placement",
+              "default": "\"Bottom\"",
+              "fieldName": "placement",
+              "type": {
+                "text": "\"Top\" | \"Bottom\" | \"Start\" | \"End\""
+              }
+            },
+            {
               "description": "Determines the horizontal alignment of the menu relative to its opener control.",
               "name": "horizontal-align",
               "default": "\"Start\"",
               "fieldName": "horizontalAlign",
               "type": {
-                "text": "\"Center\" | \"Start\" | \"End\" | \"Stretch\""
+                "text": "\"Start\" | \"End\" | \"Center\" | \"Stretch\""
               }
             },
             {
@@ -17219,7 +17328,7 @@
               "default": "\"Center\"",
               "fieldName": "horizontalAlign",
               "type": {
-                "text": "\"Center\" | \"Start\" | \"End\" | \"Stretch\""
+                "text": "\"Start\" | \"End\" | \"Center\" | \"Stretch\""
               }
             },
             {
@@ -19312,7 +19421,7 @@
               "default": "\"Center\"",
               "fieldName": "horizontalAlign",
               "type": {
-                "text": "\"Center\" | \"Start\" | \"End\" | \"Stretch\""
+                "text": "\"Start\" | \"End\" | \"Center\" | \"Stretch\""
               },
               "inheritedFrom": {
                 "name": "Popover",
@@ -19699,6 +19808,17 @@
             },
             {
               "kind": "field",
+              "name": "itemsFitContent",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Determines whether the segmented button items should be sized to fit their content.\n\nIf set to `true`, each item will be sized to fit its content, with any extra space distributed after the last item.\nIf set to `false` (the default), all items will be equally sized to fill the available space.",
+              "privacy": "public",
+              "_ui5since": "2.16.0"
+            },
+            {
+              "kind": "field",
               "name": "selectedItems",
               "type": {
                 "text": "Array<ISegmentedButtonItem>",
@@ -19798,6 +19918,15 @@
               "fieldName": "selectionMode",
               "type": {
                 "text": "\"Single\" | \"Multiple\""
+              }
+            },
+            {
+              "description": "Determines whether the segmented button items should be sized to fit their content.\n\nIf set to `true`, each item will be sized to fit its content, with any extra space distributed after the last item.\nIf set to `false` (the default), all items will be equally sized to fill the available space.",
+              "name": "items-fit-content",
+              "default": "false",
+              "fieldName": "itemsFitContent",
+              "type": {
+                "text": "boolean"
               }
             },
             {
@@ -20233,6 +20362,24 @@
             },
             {
               "kind": "field",
+              "name": "textSeparator",
+              "type": {
+                "text": "SelectTextSeparator",
+                "references": [
+                  {
+                    "name": "SelectTextSeparator",
+                    "package": "@ui5/webcomponents",
+                    "module": "dist/types/SelectTextSeparator.js"
+                  }
+                ]
+              },
+              "default": "\"Dash\"",
+              "description": "Defines the separator type for the two columns layout when Select is in read-only mode.",
+              "privacy": "public",
+              "_ui5since": "2.16.0"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "description": "Defines the value of the component:\n\n- when get - returns the value of the component or the value/text content of the selected option.\n- when set - selects the option with matching `value` property or text content.\n\n**Note:** Use either the Select's value or the Options' selected property.\nMixed usage could result in unexpected behavior.\n\n**Note:** If the given value does not match any existing option,\nno option will be selected and the Select component will be displayed as empty.",
               "privacy": "public",
@@ -20447,6 +20594,15 @@
               "fieldName": "tooltip",
               "type": {
                 "text": "string | undefined"
+              }
+            },
+            {
+              "description": "Defines the separator type for the two columns layout when Select is in read-only mode.",
+              "name": "text-separator",
+              "default": "\"Dash\"",
+              "fieldName": "textSeparator",
+              "type": {
+                "text": "\"Bullet\" | \"Dash\" | \"VerticalLine\""
               }
             },
             {
@@ -23275,7 +23431,7 @@
         },
         {
           "kind": "class",
-          "description": "### Overview\n\nThe `ui5-table` component provides a set of sophisticated features for displaying and dealing with vast amounts of data in a responsive manner.\nTo render the `ui5-table`, you need to define the columns and rows. You can use the provided `ui5-table-header-row` and `ui5-table-row` components for this purpose.\n\n### Features\n\nThe `ui5-table` can be enhanced in its functionalities by applying different features.\nFeatures can be slotted into the `features` slot, to enable them in the component.\nFeatures need to be imported separately, as they are not enabled by default.\n\nThe following features are currently available:\n\n* [TableSelection](../TableSelection) - adds selection capabilities to the table\n* [TableGrowing](../TableGrowing) - provides growing capabilities to load more data\n\n### Keyboard Handling\n\nThis component provides a build in fast navigation group which can be used via [F6] / [Shift] + [F6] / [Ctrl] + [Alt/Option] / [Down] or [Ctrl] + [Alt/Option] + [Up].\nIn order to use this functionality, you need to import the following module:\n`import \"@ui5/webcomponents-base/dist/features/F6Navigation.js\"`\n\nFurthermore, you can interact with `ui5-table` via the following keys:\n\nIf the focus is on a row, the following keyboard shortcuts are available:\n* <kbd>Down</kbd> - Navigates down\n* <kbd>Up</kbd> - Navigates up\n* <kbd>Right</kbd> - Selects the first cell of the row\n* <kbd>Space</kbd> - Toggles the selection of the row\n* <kbd>Ctrl/Cmd + A</kbd> - In multi selection mode, toggles the selection of all rows\n* <kbd>Home</kbd> - Navigates to the first row, if the focus is on the first row, navigates to the header row\n* <kbd>End</kbd> - Navigates to the last row, if the focus is on the last row, navigates to the growing button\n* <kbd>Page Up</kbd> - Navigates one page up, if the focus is on the first row, navigates to the header row\n* <kbd>Page Down</kbd> - Navigates one page down, if the focus is on the last row, navigates to the growing button\n* <kbd>F2</kbd> - Focuses the first tabbable element in the row\n* <kbd>F7</kbd> - If focus position is remembered, moves focus to the corresponding focus position row, otherwise to the first tabbable element within the row\n* <kbd>[Shift]Tab</kbd> - Move focus to the element in the tab chain outside the table\n\n\nIf the focus is on a cell, the following keyboard shortcuts are available:\n* <kbd>Down</kbd> - Navigates down\n* <kbd>Up</kbd> - Navigates up\n* <kbd>Right</kbd> - Navigates right\n* <kbd>Left</kbd> - Navigates left, if the focus is on the first cell of the row, the focus is moved to the row.\n* <kbd>Home</kbd> - Navigates to the first cell of the current row, if the focus is on the first cell, navigates to the corresponding row\n* <kbd>End</kbd> - Navigates to the last cell of the current row, if the focus is on the last cell, navigates to the corresponding row\n* <kbd>Page Up</kbd> - Navigates one page up while keeping the focus in same column\n* <kbd>Page Down</kbd> - Navigates one page down while keeping the focus in same column\n* <kbd>F2</kbd> - Toggles the focus between the first tabbable cell content and the cell\n* <kbd>Enter</kbd> - Focuses the first tabbable cell content\n* <kbd>F7</kbd> - If the focus is on an interactive element inside a row, moves focus to the corresponding row and remembers the focus position of the element within the row\n* <kbd>[Shift]Tab</kbd> - Move focus to the element in the tab chain outside the table\n\n\nIf the focus is on an interactive cell content, the following keyboard shortcuts are available:\n* <kbd>Down</kbd> - Move the focus to the interactive element in the same column of the previous row, unless the focused element prevents the default\n* <kbd>Up</kbd> - Move the focus to the interactive element in the same column of the next row, unless the focused element prevents the default\n* <kbd>[Shift]Tab</kbd> - Move the focus to the element in the tab chain\n\n### ES6 Module Import\n\n`import \"@ui5/webcomponents/dist/Table.js\";`\\\n`import \"@ui5/webcomponents/dist/TableRow.js\";` (`ui5-table-row`)\\\n`import \"@ui5/webcomponents/dist/TableCell.js\";` (`ui5-table-cell`)\\\n`import \"@ui5/webcomponents/dist/TableHeaderRow.js\";` (`ui5-table-header-row`)\\\n`import \"@ui5/webcomponents/dist/TableHeaderCell.js\";` (`ui5-table-header-cell`)",
+          "description": "### Overview\n\nThe `ui5-table` component provides a set of sophisticated features for displaying and dealing with vast amounts of data in a responsive manner.\nTo render the `ui5-table`, you need to define the columns and rows. You can use the provided `ui5-table-header-row` and `ui5-table-row` components for this purpose.\n\n### Features\n\nThe `ui5-table` can be enhanced in its functionalities by applying different features.\nFeatures can be slotted into the `features` slot, to enable them in the component.\nFeatures need to be imported separately, as they are not enabled by default.\n\nThe following features are currently available:\n\n* [TableSelectionMulti](../TableSelectionMulti) - adds multi-selection capabilities to the table\n* [TableSelectionSingle](../TableSelectionSingle) - adds single-selection capabilities to the table\n* [TableGrowing](../TableGrowing) - provides growing capabilities to load more data\n* [TableVirtualizer](../TableVirtualizer) - adds virtualization capabilities to the table\n\n### Keyboard Handling\n\nThis component provides a build in fast navigation group which can be used via [F6] / [Shift] + [F6] / [Ctrl] + [Alt/Option] / [Down] or [Ctrl] + [Alt/Option] + [Up].\nIn order to use this functionality, you need to import the following module:\n`import \"@ui5/webcomponents-base/dist/features/F6Navigation.js\"`\n\nFurthermore, you can interact with `ui5-table` via the following keys:\n\nIf the focus is on a row, the following keyboard shortcuts are available:\n* <kbd>Down</kbd> - Navigates down\n* <kbd>Up</kbd> - Navigates up\n* <kbd>Right</kbd> - Selects the first cell of the row\n* <kbd>Space</kbd> - Toggles the selection of the row\n* <kbd>Ctrl/Cmd + A</kbd> - In multi selection mode, toggles the selection of all rows\n* <kbd>Home</kbd> - Navigates to the first row, if the focus is on the first row, navigates to the header row\n* <kbd>End</kbd> - Navigates to the last row, if the focus is on the last row, navigates to the growing button\n* <kbd>Page Up</kbd> - Navigates one page up, if the focus is on the first row, navigates to the header row\n* <kbd>Page Down</kbd> - Navigates one page down, if the focus is on the last row, navigates to the growing button\n* <kbd>F2</kbd> - Focuses the first tabbable element in the row\n* <kbd>F7</kbd> - If focus position is remembered, moves focus to the corresponding focus position row, otherwise to the first tabbable element within the row\n* <kbd>[Shift]Tab</kbd> - Move focus to the element in the tab chain outside the table\n\nIf the focus is on a cell, the following keyboard shortcuts are available:\n* <kbd>Down</kbd> - Navigates down\n* <kbd>Up</kbd> - Navigates up\n* <kbd>Right</kbd> - Navigates right\n* <kbd>Left</kbd> - Navigates left, if the focus is on the first cell of the row, the focus is moved to the row.\n* <kbd>Home</kbd> - Navigates to the first cell of the current row, if the focus is on the first cell, navigates to the corresponding row\n* <kbd>End</kbd> - Navigates to the last cell of the current row, if the focus is on the last cell, navigates to the corresponding row\n* <kbd>Page Up</kbd> - Navigates one page up while keeping the focus in same column\n* <kbd>Page Down</kbd> - Navigates one page down while keeping the focus in same column\n* <kbd>F2</kbd> - Toggles the focus between the first tabbable cell content and the cell\n* <kbd>Enter</kbd> - Focuses the first tabbable cell content\n* <kbd>F7</kbd> - If the focus is on an interactive element inside a row, moves focus to the corresponding row and remembers the focus position of the element within the row\n* <kbd>[Shift]Tab</kbd> - Move focus to the element in the tab chain outside the table\n\nIf the focus is on an interactive cell content, the following keyboard shortcuts are available:\n* <kbd>Down</kbd> - Move the focus to the interactive element in the same column of the previous row, unless the focused element prevents the default\n* <kbd>Up</kbd> - Move the focus to the interactive element in the same column of the next row, unless the focused element prevents the default\n* <kbd>[Shift]Tab</kbd> - Move the focus to the element in the tab chain\n\n### Accessibility\n\nThe `ui5-table` follows the [ARIA grid design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/grid/).\nThis pattern enables cell-based keyboard navigation and, as explained above, we also support row-based keyboard navigation.\nSince the grid design pattern does not inherently provide row-based keyboard behavior, if the focus is on a row, not only the row information but also the corresponding column headers for each cell must be announced.\nThis can only be achieved through a custom accessibility announcement.\nTo support this, UI5 Web Components expose its own accessibility metadata via the `accessibilityInfo` property.\nThe `ui5-table` uses this information to create the required custom announcements dynamically.\nIf you include custom web components inside table cells that are not part of the standard UI5 Web Components set, their accessibility information can be provided using the `data-ui5-table-acc-text` attribute.\n\n### ES6 Module Import\n\n`import \"@ui5/webcomponents/dist/Table.js\";` (`ui5-table`)\\\n`import \"@ui5/webcomponents/dist/TableRow.js\";` (`ui5-table-row`)\\\n`import \"@ui5/webcomponents/dist/TableCell.js\";` (`ui5-table-cell`)\\\n`import \"@ui5/webcomponents/dist/TableHeaderRow.js\";` (`ui5-table-header-row`)\\\n`import \"@ui5/webcomponents/dist/TableHeaderCell.js\";` (`ui5-table-header-cell`)",
           "name": "Table",
           "slots": [
             {
@@ -23411,6 +23567,17 @@
               "description": "Defines the maximum number of row actions that is displayed, which determines the width of the row action column.\n\n**Note:** It is recommended to use a maximum of 3 row actions, as exceeding this limit may take up too much space on smaller screens.",
               "privacy": "public",
               "_ui5since": "2.7.0"
+            },
+            {
+              "kind": "field",
+              "name": "alternateRowColors",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Determines whether the table rows are displayed with alternating background colors.",
+              "privacy": "public",
+              "_ui5since": "2.17"
             }
           ],
           "events": [
@@ -23652,6 +23819,15 @@
               "type": {
                 "text": "number"
               }
+            },
+            {
+              "description": "Determines whether the table rows are displayed with alternating background colors.",
+              "name": "alternate-row-colors",
+              "default": "false",
+              "fieldName": "alternateRowColors",
+              "type": {
+                "text": "boolean"
+              }
             }
           ],
           "superclass": {
@@ -23746,7 +23922,7 @@
               "default": "undefined",
               "fieldName": "horizontalAlign",
               "type": {
-                "text": "\"Center\" | \"Start\" | \"End\" | \"Left\" | \"Right\" | undefined"
+                "text": "\"Start\" | \"End\" | \"Center\" | \"Left\" | \"Right\" | undefined"
               },
               "inheritedFrom": {
                 "name": "TableCellBase",
@@ -23820,7 +23996,7 @@
               "default": "undefined",
               "fieldName": "horizontalAlign",
               "type": {
-                "text": "\"Center\" | \"Start\" | \"End\" | \"Left\" | \"Right\" | undefined"
+                "text": "\"Start\" | \"End\" | \"Center\" | \"Left\" | \"Right\" | undefined"
               }
             }
           ],
@@ -24203,7 +24379,7 @@
               "default": "undefined",
               "fieldName": "horizontalAlign",
               "type": {
-                "text": "\"Center\" | \"Start\" | \"End\" | \"Left\" | \"Right\" | undefined"
+                "text": "\"Start\" | \"End\" | \"Center\" | \"Left\" | \"Right\" | undefined"
               },
               "inheritedFrom": {
                 "name": "TableCellBase",
@@ -26253,6 +26429,28 @@
               "default": "undefined",
               "privacy": "public",
               "_ui5since": "1.0.0-rc.15"
+            },
+            {
+              "kind": "field",
+              "name": "accessibleDescription",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Defines the accessible description of the component.",
+              "default": "undefined",
+              "privacy": "public",
+              "_ui5since": "2.16.0"
+            },
+            {
+              "kind": "field",
+              "name": "accessibleDescriptionRef",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Receives id(or many ids) of the elements that describe the textarea.",
+              "default": "undefined",
+              "privacy": "public",
+              "_ui5since": "2.16.0"
             }
           ],
           "events": [
@@ -26447,6 +26645,24 @@
               "type": {
                 "text": "string | undefined"
               }
+            },
+            {
+              "description": "Defines the accessible description of the component.",
+              "name": "accessible-description",
+              "default": "undefined",
+              "fieldName": "accessibleDescription",
+              "type": {
+                "text": "string | undefined"
+              }
+            },
+            {
+              "description": "Receives id(or many ids) of the elements that describe the textarea.",
+              "name": "accessible-description-ref",
+              "default": "undefined",
+              "fieldName": "accessibleDescriptionRef",
+              "type": {
+                "text": "string | undefined"
+              }
             }
           ],
           "superclass": {
@@ -26463,6 +26679,22 @@
         {
           "kind": "js",
           "name": "default",
+          "declaration": {
+            "name": "TextArea",
+            "module": "dist/TextArea.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "BaseTextArea",
+          "declaration": {
+            "name": "TextArea",
+            "module": "dist/TextArea.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "ui5-textarea",
           "declaration": {
             "name": "TextArea",
             "module": "dist/TextArea.js"
@@ -31624,6 +31856,52 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/dynamic-date-range-options/DateTimeRange.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "DateTimeRange",
+          "_ui5since": "2.16.0",
+          "_ui5privacy": "public"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "DateTimeRange",
+            "module": "dist/dynamic-date-range-options/DateTimeRange.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/dynamic-date-range-options/FromDateTime.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "FromDateTime",
+          "_ui5since": "2.11.0",
+          "_ui5privacy": "public"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "FromDateTime",
+            "module": "dist/dynamic-date-range-options/FromDateTime.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/dynamic-date-range-options/LastNextUtils.js",
       "declarations": [],
       "exports": []
@@ -31693,6 +31971,29 @@
           "declaration": {
             "name": "SingleDate",
             "module": "dist/dynamic-date-range-options/SingleDate.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/dynamic-date-range-options/ToDateTime.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ToDateTime",
+          "_ui5since": "2.11.0",
+          "_ui5privacy": "public"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "ToDateTime",
+            "module": "dist/dynamic-date-range-options/ToDateTime.js"
           }
         }
       ]
@@ -33300,12 +33601,55 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/types/FormAccessibleMode.js",
+      "declarations": [
+        {
+          "kind": "enum",
+          "name": "FormAccessibleMode",
+          "description": "Accessibility modes of the Form.\n\nBased on the mode, the Form and its items will render different HTML elements and ARIA attributes,\nwhich are appropriate for the use-case.\n\n**Usage:**\n- \"Display\" mode should be used when the form consists of non-editable (e.g. texts) form items.\n- \"Edit\" mode should be used when the form consists of editable (e.g. input fields) form items.",
+          "_ui5privacy": "public",
+          "_ui5since": "2.16.0",
+          "members": [
+            {
+              "kind": "field",
+              "static": true,
+              "privacy": "public",
+              "description": "Display mode.",
+              "default": "Display",
+              "name": "Display",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "static": true,
+              "privacy": "public",
+              "description": "Edit mode.",
+              "default": "Edit",
+              "name": "Edit",
+              "readonly": true
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "FormAccessibleMode",
+            "module": "dist/types/FormAccessibleMode.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/types/FormItemSpacing.js",
       "declarations": [
         {
           "kind": "enum",
           "name": "FormItemSpacing",
-          "description": "Different Button designs.",
+          "description": "Different spacing of the form items.",
           "_ui5privacy": "public",
           "_ui5since": "2.0.0",
           "members": [
@@ -34819,6 +35163,58 @@
           "declaration": {
             "name": "SegmentedButtonSelectionMode",
             "module": "dist/types/SegmentedButtonSelectionMode.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/types/SelectTextSeparator.js",
+      "declarations": [
+        {
+          "kind": "enum",
+          "name": "SelectTextSeparator",
+          "description": "Defines the separator types for Select component two-column layout.",
+          "_ui5privacy": "public",
+          "_ui5since": "2.16.0",
+          "members": [
+            {
+              "kind": "field",
+              "static": true,
+              "privacy": "public",
+              "description": "Will show bullet(·) as separator on two columns layout when Select is in read-only mode.",
+              "default": "Bullet",
+              "name": "Bullet",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "static": true,
+              "privacy": "public",
+              "description": "Will show N-dash(–) as separator on two columns layout when Select is in read-only mode.",
+              "default": "Dash",
+              "name": "Dash",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "static": true,
+              "privacy": "public",
+              "description": "Will show vertical line(|) as separator on two columns layout when Select is in read-only mode.",
+              "default": "VerticalLine",
+              "name": "VerticalLine",
+              "readonly": true
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "SelectTextSeparator",
+            "module": "dist/types/SelectTextSeparator.js"
           }
         }
       ]

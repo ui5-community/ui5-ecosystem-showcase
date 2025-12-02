@@ -25,31 +25,31 @@
     "timeout": "20s"
   },
   "dependencies": {
-    "@javascript-obfuscator/escodegen": "^2.3.0",
+    "@javascript-obfuscator/escodegen": "^2.3.1",
     "@prettier/sync": "^0.6.1",
-    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-inject": "^5.0.5",
     "@rollup/plugin-json": "^6.1.0",
-    "@rollup/plugin-replace": "^6.0.2",
+    "@rollup/plugin-replace": "^6.0.3",
     "@rollup/plugin-terser": "^0.4.4",
-    "@rollup/pluginutils": "^5.2.0",
-    "@typescript-eslint/typescript-estree": "^8.35.1",
-    "chokidar": "^4.0.3",
-    "comment-json": "^4.2.5",
+    "@rollup/pluginutils": "^5.3.0",
+    "@typescript-eslint/typescript-estree": "^8.48.1",
+    "chokidar": "^5.0.0",
+    "comment-json": "^4.4.1",
     "estree-walker": "^3.0.3",
-    "fast-xml-parser": "^5.2.5",
+    "fast-xml-parser": "^5.3.2",
     "handlebars": "^4.7.8",
-    "ignore-walk": "^7.0.0",
-    "js-yaml": "^4.1.0",
+    "ignore-walk": "^8.0.0",
+    "js-yaml": "^4.1.1",
     "minimatch": "^7.4.6",
-    "rollup": "^4.44.2",
+    "rollup": "^4.53.3",
     "rollup-plugin-polyfill-node": "^0.13.0",
     "sanitize-filename": "^1.6.3",
-    "semver": "^7.7.2"
+    "semver": "^7.7.3"
   },
   "devDependencies": {
     "@ui5/project": "*",
-    "ava": "^6.4.0"
+    "ava": "^6.4.1"
   },
   "peerDependencies": {
     "@ui5/project": ">=3 <5"

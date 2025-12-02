@@ -34,7 +34,7 @@ sap.ui.define((function () { 'use strict';
 	function requireChart () {
 		if (hasRequiredChart) return chart$1.exports;
 		hasRequiredChart = 1;
-		(function (module, exports) {
+		(function (module, exports$1) {
 			(function (global, factory) {
 			module.exports = factory() ;
 			})(chart, (function () {

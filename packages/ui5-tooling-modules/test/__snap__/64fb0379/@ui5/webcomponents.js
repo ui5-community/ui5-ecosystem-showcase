@@ -13,7 +13,7 @@ sap.ui.define(
     // export the UI5 metadata along with the package
     pkg["_ui5metadata"] = {
       name: "@ui5/webcomponents",
-      version: "2.15.1",
+      version: "2.16.2",
       dependencies: ["sap.ui.core"],
       types: [
         "@ui5.webcomponents.AvatarColorScheme",
@@ -39,6 +39,7 @@ sap.ui.define(
         "@ui5.webcomponents.CarouselPageIndicatorType",
         "@ui5.webcomponents.ComboBoxFilter",
         "@ui5.webcomponents.ExpandableTextOverflowMode",
+        "@ui5.webcomponents.FormAccessibleMode",
         "@ui5.webcomponents.FormItemSpacing",
         "@ui5.webcomponents.Highlight",
         "@ui5.webcomponents.IconDesign",
@@ -65,6 +66,7 @@ sap.ui.define(
         "@ui5.webcomponents.Priority",
         "@ui5.webcomponents.RatingIndicatorSize",
         "@ui5.webcomponents.SegmentedButtonSelectionMode",
+        "@ui5.webcomponents.SelectTextSeparator",
         "@ui5.webcomponents.SemanticColor",
         "@ui5.webcomponents.SwitchDesign",
         "@ui5.webcomponents.TabLayout",
@@ -1133,7 +1135,40 @@ sap.ui.define(
       pkg["ExpandableTextOverflowMode"]
     );
     /**
-     * Different Button designs.
+     * Accessibility modes of the Form.
+     *
+     * Based on the mode, the Form and its items will render different HTML elements and ARIA attributes,
+     * which are appropriate for the use-case.
+     *
+     * **Usage:**
+     * - "Display" mode should be used when the form consists of non-editable (e.g. texts) form items.
+     * - "Edit" mode should be used when the form consists of editable (e.g. input fields) form items.
+     *
+     * @enum {string}
+     * @alias module:@ui5/webcomponents.FormAccessibleMode
+     * @ui5-module-override @ui5/webcomponents FormAccessibleMode
+     * @private
+     */
+    pkg["FormAccessibleMode"] = {
+      /**
+       * Display mode.
+       *
+       * @private
+       */
+      Display: "Display",
+      /**
+       * Edit mode.
+       *
+       * @private
+       */
+      Edit: "Edit"
+    };
+    registerEnum(
+      "@ui5.webcomponents.FormAccessibleMode",
+      pkg["FormAccessibleMode"]
+    );
+    /**
+     * Different spacing of the form items.
      *
      * @enum {string}
      * @alias module:@ui5/webcomponents.FormItemSpacing
@@ -2065,6 +2100,38 @@ sap.ui.define(
     registerEnum(
       "@ui5.webcomponents.SegmentedButtonSelectionMode",
       pkg["SegmentedButtonSelectionMode"]
+    );
+    /**
+     * Defines the separator types for Select component two-column layout.
+     *
+     * @enum {string}
+     * @alias module:@ui5/webcomponents.SelectTextSeparator
+     * @ui5-module-override @ui5/webcomponents SelectTextSeparator
+     * @private
+     */
+    pkg["SelectTextSeparator"] = {
+      /**
+       * Will show bullet(·) as separator on two columns layout when Select is in read-only mode.
+       *
+       * @private
+       */
+      Bullet: "Bullet",
+      /**
+       * Will show N-dash(–) as separator on two columns layout when Select is in read-only mode.
+       *
+       * @private
+       */
+      Dash: "Dash",
+      /**
+       * Will show vertical line(|) as separator on two columns layout when Select is in read-only mode.
+       *
+       * @private
+       */
+      VerticalLine: "VerticalLine"
+    };
+    registerEnum(
+      "@ui5.webcomponents.SelectTextSeparator",
+      pkg["SelectTextSeparator"]
     );
     /**
      * Different types of SemanticColor.

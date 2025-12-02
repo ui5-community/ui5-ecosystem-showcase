@@ -68,7 +68,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 	if (lt(framework?.version || "0.0.0", "1.128.0")) {
 		webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/RenderAttributeProperties.hbs")());
 	}
-	if (lt(framework?.version || "0.0.0", "1.136.1")) {
+	if (lt(framework?.version || "0.0.0", "1.143.0")) {
 		webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/RegisterAllEvents.hbs")());
 		webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/MapValueState.hbs")());
 	}

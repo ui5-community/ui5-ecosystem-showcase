@@ -3,6 +3,7 @@ const connectLivereload = require("connect-livereload");
 const livereload = require("livereload");
 const path = require("path");
 const fs = require("fs");
+const os = require("os");
 const portfinder = require("portfinder");
 
 /**
@@ -40,6 +41,7 @@ const getPortForLivereload = async (options, defaultPort) => {
  * <b>ATTENTION: this is a hack to be compatible with UI5 CLI 2.x and 3.x</b>
  *
  * @param {module:@ui5/fs.AbstractReader} collection Reader or Collection to read resources of the root project and its dependencies
+ * @param {boolean} skipFwkDeps Whether to skip framework dependencies
  * @returns {string[]} source paths
  */
 const determineSourcePaths = (collection, skipFwkDeps) => {
@@ -135,13 +137,11 @@ module.exports = async ({ log, resources, options, middlewareUtil }) => {
 		usePolling: usePolling,
 	};
 
-	const cli = require("yargs");
-	if (cli.argv.h2) {
-		const os = require("os");
-		const fs = require("fs");
-
-		sslKeyPath = cli.argv.key ? cli.argv.key : path.join(os.homedir(), ".ui5", "server", "server.key");
-		sslCertPath = cli.argv.cert ? cli.argv.cert : path.join(os.homedir(), ".ui5", "server", "server.crt");
+	if (process.argv.includes("--h2")) {
+		const indexKey = process.argv.indexOf("--key");
+		sslKeyPath = indexKey !== -1 ? process.argv[indexKey + 1] : path.join(os.homedir(), ".ui5", "server", "server.key");
+		const indexCert = process.argv.indexOf("--cert");
+		sslCertPath = indexCert !== -1 ? process.argv[indexCert + 1] : path.join(os.homedir(), ".ui5", "server", "server.crt");
 		debug ? log.info(`Livereload using SSL key ${sslKeyPath}`) : null;
 		debug ? log.info(`Livereload using SSL certificate ${sslCertPath}`) : null;
 
