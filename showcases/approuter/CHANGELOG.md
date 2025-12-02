@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/approuter@0.2.73...approuter@0.3.0) (2025-12-02)
+
+
+### Features
+
+* update depedency versions ([#1302](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1302)) ([0a22ebd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0a22ebdde9bcbce570eb7ccdda8539e106dc44e1))
+
+
+
+
+
 ## [0.2.73](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/approuter@0.2.72...approuter@0.2.73) (2025-11-27)
 
 **Note:** Version bump only for package approuter

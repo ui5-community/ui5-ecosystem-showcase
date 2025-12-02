@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-serveframework",
-  "version": "3.6.3",
+  "version": "3.7.0",
   "description": "UI5 middleware to serve a locally built framework",
   "author": "Peter Muessig",
   "license": "Apache-2.0",

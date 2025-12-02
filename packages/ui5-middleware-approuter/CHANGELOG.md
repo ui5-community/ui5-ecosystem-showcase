@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.7.2...ui5-middleware-approuter@3.8.0) (2025-12-02)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** include also non-documented properties in wrappers ([#1299](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1299)) ([bd63306](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/bd633061b3e03379cfed1b83a79a5bc317d65ddf))
+
+
+### Features
+
+* update depedency versions ([#1302](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1302)) ([0a22ebd](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0a22ebdde9bcbce570eb7ccdda8539e106dc44e1))
+
+
+
+
+
 ## [3.7.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.7.1...ui5-middleware-approuter@3.7.2) (2025-11-02)
 
 **Note:** Version bump only for package ui5-middleware-approuter
