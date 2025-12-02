@@ -25,9 +25,9 @@
     "@sap/eslint-plugin-cds": "^4",
     "cds-bookshop-ui5-viewer": "workspace:^",
     "cds-plugin-ui5": "workspace:^",
-    "eslint": "^9.30.1",
-    "globals": "^16.3.0",
-    "rimraf": "^6.0.1",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
+    "rimraf": "^6.1.2",
     "ui5-tsapp-simple": "workspace:^"
   },
   "scripts": {

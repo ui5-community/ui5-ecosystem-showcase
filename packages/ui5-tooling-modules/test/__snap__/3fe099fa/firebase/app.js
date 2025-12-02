@@ -1,7 +1,7 @@
-sap.ui.define(['exports', '../index.esm2017'], (function (exports, index_esm2017) { 'use strict';
+sap.ui.define(['exports', '../index.esm3'], (function (exports, index_esm) { 'use strict';
 
 	var name = "firebase";
-	var version = "11.10.0";
+	var version = "12.6.0";
 
 	/**
 	 * @license
@@ -19,32 +19,33 @@ sap.ui.define(['exports', '../index.esm2017'], (function (exports, index_esm2017
 	 * See the License for the specific language governing permissions and
 	 * limitations under the License.
 	 */
-	index_esm2017.registerVersion(name, version, 'app');
+	index_esm.registerVersion(name, version, 'app');
 
 	const __esModule = true ;
 
-	exports.FirebaseError = index_esm2017.FirebaseError;
-	exports.SDK_VERSION = index_esm2017.SDK_VERSION;
-	exports._DEFAULT_ENTRY_NAME = index_esm2017.DEFAULT_ENTRY_NAME;
-	exports._addComponent = index_esm2017._addComponent;
-	exports._addOrOverwriteComponent = index_esm2017._addOrOverwriteComponent;
-	exports._apps = index_esm2017._apps;
-	exports._clearComponents = index_esm2017._clearComponents;
-	exports._components = index_esm2017._components;
-	exports._getProvider = index_esm2017._getProvider;
-	exports._isFirebaseApp = index_esm2017._isFirebaseApp;
-	exports._isFirebaseServerApp = index_esm2017._isFirebaseServerApp;
-	exports._registerComponent = index_esm2017._registerComponent;
-	exports._removeServiceInstance = index_esm2017._removeServiceInstance;
-	exports._serverApps = index_esm2017._serverApps;
-	exports.deleteApp = index_esm2017.deleteApp;
-	exports.getApp = index_esm2017.getApp;
-	exports.getApps = index_esm2017.getApps;
-	exports.initializeApp = index_esm2017.initializeApp;
-	exports.initializeServerApp = index_esm2017.initializeServerApp;
-	exports.onLog = index_esm2017.onLog;
-	exports.registerVersion = index_esm2017.registerVersion;
-	exports.setLogLevel = index_esm2017.setLogLevel;
+	exports.FirebaseError = index_esm.FirebaseError;
+	exports.SDK_VERSION = index_esm.SDK_VERSION;
+	exports._DEFAULT_ENTRY_NAME = index_esm.DEFAULT_ENTRY_NAME;
+	exports._addComponent = index_esm._addComponent;
+	exports._addOrOverwriteComponent = index_esm._addOrOverwriteComponent;
+	exports._apps = index_esm._apps;
+	exports._clearComponents = index_esm._clearComponents;
+	exports._components = index_esm._components;
+	exports._getProvider = index_esm._getProvider;
+	exports._isFirebaseApp = index_esm._isFirebaseApp;
+	exports._isFirebaseServerApp = index_esm._isFirebaseServerApp;
+	exports._isFirebaseServerAppSettings = index_esm._isFirebaseServerAppSettings;
+	exports._registerComponent = index_esm._registerComponent;
+	exports._removeServiceInstance = index_esm._removeServiceInstance;
+	exports._serverApps = index_esm._serverApps;
+	exports.deleteApp = index_esm.deleteApp;
+	exports.getApp = index_esm.getApp;
+	exports.getApps = index_esm.getApps;
+	exports.initializeApp = index_esm.initializeApp;
+	exports.initializeServerApp = index_esm.initializeServerApp;
+	exports.onLog = index_esm.onLog;
+	exports.registerVersion = index_esm.registerVersion;
+	exports.setLogLevel = index_esm.setLogLevel;
 	exports.__esModule = __esModule;
 
 }));

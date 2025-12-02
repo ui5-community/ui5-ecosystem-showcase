@@ -32,7 +32,7 @@ sap.ui.define((function () { 'use strict';
 	function requireMoment () {
 		if (hasRequiredMoment) return moment$2.exports;
 		hasRequiredMoment = 1;
-		(function (module, exports) {
+		(function (module, exports$1) {
 	(function (global, factory) {
 			    module.exports = factory() ;
 			}(moment$1, (function () {

@@ -1,6 +1,5 @@
 const path = require("path");
 const { createReadStream, readFileSync, existsSync } = require("fs");
-const chokidar = require("chokidar");
 const sanitize = require("sanitize-filename");
 
 /**
@@ -160,6 +159,7 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 				}, watchDebounce);
 			}
 		};
+		const chokidar = (await import("chokidar")).default;
 		watcher = chokidar
 			.watch(pathsToWatch, {
 				ignored: (file, stats) => {

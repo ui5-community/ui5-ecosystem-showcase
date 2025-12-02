@@ -1,7 +1,5 @@
 sap.ui.define((function () { 'use strict';
 
-	var exports = exports || {};
-
 	function _mergeNamespaces(n, m) {
 		m.forEach(function (e) {
 			e && typeof e !== 'string' && !Array.isArray(e) && Object.keys(e).forEach(function (k) {
@@ -65,7 +63,7 @@ sap.ui.define((function () { 'use strict';
 	function requireBrowser$1 () {
 		if (hasRequiredBrowser$1) return browser$3.exports;
 		hasRequiredBrowser$1 = 1;
-		(function (module, exports) {
+		(function (module, exports$1) {
 
 			// ref: https://github.com/tc39/proposal-global
 			var getGlobal = function () {
@@ -80,16 +78,16 @@ sap.ui.define((function () { 'use strict';
 
 			var globalObject = getGlobal();
 
-			module.exports = exports = globalObject.fetch;
+			module.exports = exports$1 = globalObject.fetch;
 
 			// Needed for TypeScript and Webpack.
 			if (globalObject.fetch) {
-				exports.default = globalObject.fetch.bind(globalObject);
+				exports$1.default = globalObject.fetch.bind(globalObject);
 			}
 
-			exports.Headers = globalObject.Headers;
-			exports.Request = globalObject.Request;
-			exports.Response = globalObject.Response;
+			exports$1.Headers = globalObject.Headers;
+			exports$1.Request = globalObject.Request;
+			exports$1.Response = globalObject.Response;
 		} (browser$3, browser$3.exports));
 		return browser$3.exports;
 	}
@@ -19868,6 +19866,11 @@ sap.ui.define((function () { 'use strict';
 		  // prefer font/woff over application/font-woff
 		  font: 2,
 
+		  // prefer video/mp4 over audio/mp4 over application/mp4
+		  // See https://www.rfc-editor.org/rfc/rfc4337.html#section-2
+		  audio: 2,
+		  video: 3,
+
 		  default: 0
 		};
 
@@ -19908,7 +19911,7 @@ sap.ui.define((function () { 'use strict';
 	function requireMimeTypes () {
 		if (hasRequiredMimeTypes) return mimeTypes;
 		hasRequiredMimeTypes = 1;
-		(function (exports) {
+		(function (exports$1) {
 
 			/**
 			 * Module dependencies.
@@ -19932,23 +19935,23 @@ sap.ui.define((function () { 'use strict';
 			 * @public
 			 */
 
-			exports.charset = charset;
-			exports.charsets = { lookup: charset };
-			exports.contentType = contentType;
-			exports.extension = extension;
-			exports.extensions = Object.create(null);
-			exports.lookup = lookup;
-			exports.types = Object.create(null);
-			exports._extensionConflicts = [];
+			exports$1.charset = charset;
+			exports$1.charsets = { lookup: charset };
+			exports$1.contentType = contentType;
+			exports$1.extension = extension;
+			exports$1.extensions = Object.create(null);
+			exports$1.lookup = lookup;
+			exports$1.types = Object.create(null);
+			exports$1._extensionConflicts = [];
 
 			// Populate the extensions/types maps
-			populateMaps(exports.extensions, exports.types);
+			populateMaps(exports$1.extensions, exports$1.types);
 
 			/**
 			 * Get the default charset for a MIME type.
 			 *
 			 * @param {string} type
-			 * @return {boolean|string}
+			 * @return {false|string}
 			 */
 
 			function charset (type) {
@@ -19976,7 +19979,7 @@ sap.ui.define((function () { 'use strict';
 			 * Create a full Content-Type header given a MIME type or extension.
 			 *
 			 * @param {string} str
-			 * @return {boolean|string}
+			 * @return {false|string}
 			 */
 
 			function contentType (str) {
@@ -19985,7 +19988,7 @@ sap.ui.define((function () { 'use strict';
 			    return false
 			  }
 
-			  var mime = str.indexOf('/') === -1 ? exports.lookup(str) : str;
+			  var mime = str.indexOf('/') === -1 ? exports$1.lookup(str) : str;
 
 			  if (!mime) {
 			    return false
@@ -19993,7 +19996,7 @@ sap.ui.define((function () { 'use strict';
 
 			  // TODO: use content-type or other module
 			  if (mime.indexOf('charset') === -1) {
-			    var charset = exports.charset(mime);
+			    var charset = exports$1.charset(mime);
 			    if (charset) mime += '; charset=' + charset.toLowerCase();
 			  }
 
@@ -20004,7 +20007,7 @@ sap.ui.define((function () { 'use strict';
 			 * Get the default extension for a MIME type.
 			 *
 			 * @param {string} type
-			 * @return {boolean|string}
+			 * @return {false|string}
 			 */
 
 			function extension (type) {
@@ -20016,7 +20019,7 @@ sap.ui.define((function () { 'use strict';
 			  var match = EXTRACT_TYPE_REGEXP.exec(type);
 
 			  // get extensions
-			  var exts = match && exports.extensions[match[1].toLowerCase()];
+			  var exts = match && exports$1.extensions[match[1].toLowerCase()];
 
 			  if (!exts || !exts.length) {
 			    return false
@@ -20029,7 +20032,7 @@ sap.ui.define((function () { 'use strict';
 			 * Lookup the MIME type for a file path/extension.
 			 *
 			 * @param {string} path
-			 * @return {boolean|string}
+			 * @return {false|string}
 			 */
 
 			function lookup (path) {
@@ -20046,7 +20049,7 @@ sap.ui.define((function () { 'use strict';
 			    return false
 			  }
 
-			  return exports.types[extension] || false
+			  return exports$1.types[extension] || false
 			}
 
 			/**
@@ -20080,7 +20083,7 @@ sap.ui.define((function () { 'use strict';
 			        type
 			      );
 			      if (legacyType !== types[extension]) {
-			        exports._extensionConflicts.push([extension, legacyType, types[extension]]);
+			        exports$1._extensionConflicts.push([extension, legacyType, types[extension]]);
 			      }
 			    }
 			  });
@@ -20102,10 +20105,10 @@ sap.ui.define((function () { 'use strict';
 			  var score1 = type1 ? SOURCE_RANK.indexOf(db[type1].source) : 0;
 
 			  if (
-			    exports.types[extension] !== 'application/octet-stream' &&
+			    exports$1.types[extension] !== 'application/octet-stream' &&
 			    (score0 > score1 ||
 			      (score0 === score1 &&
-			        exports.types[extension]?.slice(0, 12) === 'application/'))
+			        exports$1.types[extension]?.slice(0, 12) === 'application/'))
 			  ) {
 			    return type0
 			  }
@@ -22142,7 +22145,7 @@ sap.ui.define((function () { 'use strict';
 		        request.removeListener('error', callback);
 		        request.removeListener('response', onResponse);
 
-		        return cb.call(this, error, responce); // eslint-disable-line no-invalid-this
+		        return cb.call(this, error, responce);
 		      };
 
 		      onResponse = callback.bind(this, null);
@@ -22166,7 +22169,7 @@ sap.ui.define((function () { 'use strict';
 		FormData.prototype.toString = function () {
 		  return '[object FormData]';
 		};
-		setToStringTag(FormData, 'FormData');
+		setToStringTag(FormData.prototype, 'FormData');
 
 		// Public API
 		form_data = FormData;
@@ -22502,7 +22505,7 @@ sap.ui.define((function () { 'use strict';
 	function requireCmis$1 () {
 		if (hasRequiredCmis$1) return cmis;
 		hasRequiredCmis$1 = 1;
-		(function (exports) {
+		(function (exports$1) {
 			var __extends = (cmis && cmis.__extends) || (function () {
 			    var extendStatics = Object.setPrototypeOf ||
 			        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -22513,7 +22516,7 @@ sap.ui.define((function () { 'use strict';
 			        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 			    };
 			})();
-			Object.defineProperty(exports, "__esModule", { value: true });
+			Object.defineProperty(exports$1, "__esModule", { value: true });
 			requireNodePolyfill();
 			var isomorphic_base64_1 = requireBrowser();
 			requireLib();
@@ -23241,7 +23244,7 @@ sap.ui.define((function () { 'use strict';
 			        return CmisSession;
 			    }());
 			    cmis.CmisSession = CmisSession;
-			})(exports.cmis || (exports.cmis = {}));
+			})(exports$1.cmis || (exports$1.cmis = {}));
 
 		} (cmis));
 		return cmis;
@@ -23252,10 +23255,10 @@ sap.ui.define((function () { 'use strict';
 	function requireCmis () {
 		if (hasRequiredCmis) return cmis$1;
 		hasRequiredCmis = 1;
-		(function (exports) {
+		(function (exports$1) {
 			var cmis = requireCmis$1().cmis;
 			for (var ex in cmis){
-			    exports[ex] = cmis[ex];
+			    exports$1[ex] = cmis[ex];
 			}
 		} (cmis$1));
 		return cmis$1;

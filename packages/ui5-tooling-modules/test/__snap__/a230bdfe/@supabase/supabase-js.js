@@ -476,6 +476,18 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       return (...args) => fetch(...args);
   };
 
+  /**
+   * Base error for Supabase Edge Function invocations.
+   *
+   * @example
+   * ```ts
+   * import { FunctionsError } from '@supabase/functions-js'
+   *
+   * throw new FunctionsError('Unexpected error invoking function', 'FunctionsError', {
+   *   requestId: 'abc123',
+   * })
+   * ```
+   */
   class FunctionsError extends Error {
       constructor(message, name = 'FunctionsError', context) {
           super(message);
@@ -483,16 +495,46 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           this.context = context;
       }
   }
+  /**
+   * Error thrown when the network request to an Edge Function fails.
+   *
+   * @example
+   * ```ts
+   * import { FunctionsFetchError } from '@supabase/functions-js'
+   *
+   * throw new FunctionsFetchError({ requestId: 'abc123' })
+   * ```
+   */
   class FunctionsFetchError extends FunctionsError {
       constructor(context) {
           super('Failed to send a request to the Edge Function', 'FunctionsFetchError', context);
       }
   }
+  /**
+   * Error thrown when the Supabase relay cannot reach the Edge Function.
+   *
+   * @example
+   * ```ts
+   * import { FunctionsRelayError } from '@supabase/functions-js'
+   *
+   * throw new FunctionsRelayError({ region: 'us-east-1' })
+   * ```
+   */
   class FunctionsRelayError extends FunctionsError {
       constructor(context) {
           super('Relay Error invoking the Edge Function', 'FunctionsRelayError', context);
       }
   }
+  /**
+   * Error thrown when the Edge Function returns a non-2xx status code.
+   *
+   * @example
+   * ```ts
+   * import { FunctionsHttpError } from '@supabase/functions-js'
+   *
+   * throw new FunctionsHttpError({ status: 500 })
+   * ```
+   */
   class FunctionsHttpError extends FunctionsError {
       constructor(context) {
           super('Edge Function returned a non-2xx status code', 'FunctionsHttpError', context);
@@ -518,7 +560,23 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       FunctionRegion["UsWest2"] = "us-west-2";
   })(exports.FunctionRegion || (exports.FunctionRegion = {}));
 
+  /**
+   * Client for invoking Supabase Edge Functions.
+   */
   class FunctionsClient {
+      /**
+       * Creates a new Functions client bound to an Edge Functions URL.
+       *
+       * @example
+       * ```ts
+       * import { FunctionsClient, FunctionRegion } from '@supabase/functions-js'
+       *
+       * const functions = new FunctionsClient('https://xyzcompany.supabase.co/functions/v1', {
+       *   headers: { apikey: 'public-anon-key' },
+       *   region: FunctionRegion.UsEast1,
+       * })
+       * ```
+       */
       constructor(url, { headers = {}, customFetch, region = exports.FunctionRegion.Any, } = {}) {
           this.url = url;
           this.headers = headers;
@@ -528,6 +586,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * Updates the authorization header
        * @param token - the new jwt token sent in the authorisation header
+       * @example
+       * ```ts
+       * functions.setAuth(session.access_token)
+       * ```
        */
       setAuth(token) {
           this.headers.Authorization = `Bearer ${token}`;
@@ -536,12 +598,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * Invokes a function
        * @param functionName - The name of the Function to invoke.
        * @param options - Options for invoking the Function.
+       * @example
+       * ```ts
+       * const { data, error } = await functions.invoke('hello-world', {
+       *   body: { name: 'Ada' },
+       * })
+       * ```
        */
       invoke(functionName_1) {
           return __awaiter(this, arguments, void 0, function* (functionName, options = {}) {
               var _a;
+              let timeoutId;
+              let timeoutController;
               try {
-                  const { headers, method, body: functionArgs, signal } = options;
+                  const { headers, method, body: functionArgs, signal, timeout } = options;
                   let _headers = {};
                   let { region } = options;
                   if (!region) {
@@ -583,6 +653,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                       // if the Content-Type was supplied, simply set the body
                       body = functionArgs;
                   }
+                  // Handle timeout by creating an AbortController
+                  let effectiveSignal = signal;
+                  if (timeout) {
+                      timeoutController = new AbortController();
+                      timeoutId = setTimeout(() => timeoutController.abort(), timeout);
+                      // If user provided their own signal, we need to respect both
+                      if (signal) {
+                          effectiveSignal = timeoutController.signal;
+                          // If the user's signal is aborted, abort our timeout controller too
+                          signal.addEventListener('abort', () => timeoutController.abort());
+                      }
+                      else {
+                          effectiveSignal = timeoutController.signal;
+                      }
+                  }
                   const response = yield this.fetch(url.toString(), {
                       method: method || 'POST',
                       // headers priority is (high to low):
@@ -591,11 +676,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                       // 3. default Content-Type header
                       headers: Object.assign(Object.assign(Object.assign({}, _headers), this.headers), headers),
                       body,
-                      signal,
+                      signal: effectiveSignal,
                   }).catch((fetchError) => {
-                      if (fetchError.name === 'AbortError') {
-                          throw fetchError;
-                      }
                       throw new FunctionsFetchError(fetchError);
                   });
                   const isRelayError = response.headers.get('x-relay-error');
@@ -627,9 +709,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                   return { data, error: null, response };
               }
               catch (error) {
-                  if (error instanceof Error && error.name === 'AbortError') {
-                      return { data: null, error: new FunctionsFetchError(error) };
-                  }
                   return {
                       data: null,
                       error,
@@ -637,6 +716,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                           ? error.context
                           : undefined,
                   };
+              }
+              finally {
+                  // Clear the timeout if it was set
+                  if (timeoutId) {
+                      clearTimeout(timeoutId);
+                  }
               }
           });
       }
@@ -703,6 +788,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	 * {@link https://postgrest.org/en/stable/api.html?highlight=options#errors-and-http-status-codes}
   	 */
   	class PostgrestError extends Error {
+  	    /**
+  	     * @example
+  	     * ```ts
+  	     * import PostgrestError from '@supabase/postgrest-js'
+  	     *
+  	     * throw new PostgrestError({
+  	     *   message: 'Row level security prevented the request',
+  	     *   details: 'RLS denied the insert',
+  	     *   hint: 'Check your policies',
+  	     *   code: 'PGRST301',
+  	     * })
+  	     * ```
+  	     */
   	    constructor(context) {
   	        super(context.message);
   	        this.name = 'PostgrestError';
@@ -725,6 +823,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	const tslib_1 = require$$0;
   	const PostgrestError_1 = tslib_1.__importDefault(requirePostgrestError());
   	class PostgrestBuilder {
+  	    /**
+  	     * Creates a builder configured for a specific PostgREST request.
+  	     *
+  	     * @example
+  	     * ```ts
+  	     * import PostgrestQueryBuilder from '@supabase/postgrest-js'
+  	     *
+  	     * const builder = new PostgrestQueryBuilder(
+  	     *   new URL('https://xyzcompany.supabase.co/rest/v1/users'),
+  	     *   { headers: new Headers({ apikey: 'public-anon-key' }) }
+  	     * )
+  	     * ```
+  	     */
   	    constructor(builder) {
   	        var _a, _b;
   	        this.shouldThrowOnError = false;
@@ -876,19 +987,41 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	        });
   	        if (!this.shouldThrowOnError) {
   	            res = res.catch((fetchError) => {
-  	                var _a, _b, _c;
-  	                return ({
+  	                var _a, _b, _c, _d, _e, _f;
+  	                // Build detailed error information including cause if available
+  	                // Note: We don't populate code/hint for client-side network errors since those
+  	                // fields are meant for upstream service errors (PostgREST/PostgreSQL)
+  	                let errorDetails = '';
+  	                // Add cause information if available (e.g., DNS errors, network failures)
+  	                const cause = fetchError === null || fetchError === void 0 ? void 0 : fetchError.cause;
+  	                if (cause) {
+  	                    const causeMessage = (_a = cause === null || cause === void 0 ? void 0 : cause.message) !== null && _a !== void 0 ? _a : '';
+  	                    const causeCode = (_b = cause === null || cause === void 0 ? void 0 : cause.code) !== null && _b !== void 0 ? _b : '';
+  	                    errorDetails = `${(_c = fetchError === null || fetchError === void 0 ? void 0 : fetchError.name) !== null && _c !== void 0 ? _c : 'FetchError'}: ${fetchError === null || fetchError === void 0 ? void 0 : fetchError.message}`;
+  	                    errorDetails += `\n\nCaused by: ${(_d = cause === null || cause === void 0 ? void 0 : cause.name) !== null && _d !== void 0 ? _d : 'Error'}: ${causeMessage}`;
+  	                    if (causeCode) {
+  	                        errorDetails += ` (${causeCode})`;
+  	                    }
+  	                    if (cause === null || cause === void 0 ? void 0 : cause.stack) {
+  	                        errorDetails += `\n${cause.stack}`;
+  	                    }
+  	                }
+  	                else {
+  	                    // No cause available, just include the error stack
+  	                    errorDetails = (_e = fetchError === null || fetchError === void 0 ? void 0 : fetchError.stack) !== null && _e !== void 0 ? _e : '';
+  	                }
+  	                return {
   	                    error: {
-  	                        message: `${(_a = fetchError === null || fetchError === void 0 ? void 0 : fetchError.name) !== null && _a !== void 0 ? _a : 'FetchError'}: ${fetchError === null || fetchError === void 0 ? void 0 : fetchError.message}`,
-  	                        details: `${(_b = fetchError === null || fetchError === void 0 ? void 0 : fetchError.stack) !== null && _b !== void 0 ? _b : ''}`,
+  	                        message: `${(_f = fetchError === null || fetchError === void 0 ? void 0 : fetchError.name) !== null && _f !== void 0 ? _f : 'FetchError'}: ${fetchError === null || fetchError === void 0 ? void 0 : fetchError.message}`,
+  	                        details: errorDetails,
   	                        hint: '',
-  	                        code: `${(_c = fetchError === null || fetchError === void 0 ? void 0 : fetchError.code) !== null && _c !== void 0 ? _c : ''}`,
+  	                        code: '',
   	                    },
   	                    data: null,
   	                    count: null,
   	                    status: 0,
   	                    statusText: '',
-  	                });
+  	                };
   	            });
   	        }
   	        return res.then(onfulfilled, onrejected);
@@ -1298,6 +1431,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	        return this;
   	    }
   	    /**
+  	     * Match only rows where `column` matches the PostgreSQL regex `pattern`
+  	     * case-sensitively (using the `~` operator).
+  	     *
+  	     * @param column - The column to filter on
+  	     * @param pattern - The PostgreSQL regular expression pattern to match with
+  	     */
+  	    regexMatch(column, pattern) {
+  	        this.url.searchParams.append(column, `match.${pattern}`);
+  	        return this;
+  	    }
+  	    /**
+  	     * Match only rows where `column` matches the PostgreSQL regex `pattern`
+  	     * case-insensitively (using the `~*` operator).
+  	     *
+  	     * @param column - The column to filter on
+  	     * @param pattern - The PostgreSQL regular expression pattern to match with
+  	     */
+  	    regexIMatch(column, pattern) {
+  	        this.url.searchParams.append(column, `imatch.${pattern}`);
+  	        return this;
+  	    }
+  	    /**
   	     * Match only rows where `column` IS `value`.
   	     *
   	     * For non-boolean columns, this is only relevant for checking if the value of
@@ -1311,6 +1466,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	     */
   	    is(column, value) {
   	        this.url.searchParams.append(column, `is.${value}`);
+  	        return this;
+  	    }
+  	    /**
+  	     * Match only rows where `column` IS DISTINCT FROM `value`.
+  	     *
+  	     * Unlike `.neq()`, this treats `NULL` as a comparable value. Two `NULL` values
+  	     * are considered equal (not distinct), and comparing `NULL` with any non-NULL
+  	     * value returns true (distinct).
+  	     *
+  	     * @param column - The column to filter on
+  	     * @param value - The value to filter with
+  	     */
+  	    isDistinct(column, value) {
+  	        this.url.searchParams.append(column, `isdistinct.${value}`);
   	        return this;
   	    }
   	    /**
@@ -1561,6 +1730,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	const tslib_1 = require$$0;
   	const PostgrestFilterBuilder_1 = tslib_1.__importDefault(requirePostgrestFilterBuilder());
   	class PostgrestQueryBuilder {
+  	    /**
+  	     * Creates a query builder scoped to a Postgres table or view.
+  	     *
+  	     * @example
+  	     * ```ts
+  	     * import PostgrestQueryBuilder from '@supabase/postgrest-js'
+  	     *
+  	     * const query = new PostgrestQueryBuilder(
+  	     *   new URL('https://xyzcompany.supabase.co/rest/v1/users'),
+  	     *   { headers: { apikey: 'public-anon-key' } }
+  	     * )
+  	     * ```
+  	     */
   	    constructor(url, { headers = {}, schema, fetch, }) {
   	        this.url = url;
   	        this.headers = new Headers(headers);
@@ -1669,43 +1851,90 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	        });
   	    }
   	    /**
-  	     * Perform an UPSERT on the table or view. Depending on the column(s) passed
-  	     * to `onConflict`, `.upsert()` allows you to perform the equivalent of
-  	     * `.insert()` if a row with the corresponding `onConflict` columns doesn't
-  	     * exist, or if it does exist, perform an alternative action depending on
-  	     * `ignoreDuplicates`.
-  	     *
-  	     * By default, upserted rows are not returned. To return it, chain the call
-  	     * with `.select()`.
-  	     *
-  	     * @param values - The values to upsert with. Pass an object to upsert a
-  	     * single row or an array to upsert multiple rows.
-  	     *
-  	     * @param options - Named parameters
-  	     *
-  	     * @param options.onConflict - Comma-separated UNIQUE column(s) to specify how
-  	     * duplicate rows are determined. Two rows are duplicates if all the
-  	     * `onConflict` columns are equal.
-  	     *
-  	     * @param options.ignoreDuplicates - If `true`, duplicate rows are ignored. If
-  	     * `false`, duplicate rows are merged with existing rows.
-  	     *
-  	     * @param options.count - Count algorithm to use to count upserted rows.
-  	     *
-  	     * `"exact"`: Exact but slow count algorithm. Performs a `COUNT(*)` under the
-  	     * hood.
-  	     *
-  	     * `"planned"`: Approximated but fast count algorithm. Uses the Postgres
-  	     * statistics under the hood.
-  	     *
-  	     * `"estimated"`: Uses exact count for low numbers and planned count for high
-  	     * numbers.
-  	     *
-  	     * @param options.defaultToNull - Make missing fields default to `null`.
-  	     * Otherwise, use the default value for the column. This only applies when
-  	     * inserting new rows, not when merging with existing rows under
-  	     * `ignoreDuplicates: false`. This also only applies when doing bulk upserts.
-  	     */
+  	   * Perform an UPSERT on the table or view. Depending on the column(s) passed
+  	   * to `onConflict`, `.upsert()` allows you to perform the equivalent of
+  	   * `.insert()` if a row with the corresponding `onConflict` columns doesn't
+  	   * exist, or if it does exist, perform an alternative action depending on
+  	   * `ignoreDuplicates`.
+  	   *
+  	   * By default, upserted rows are not returned. To return it, chain the call
+  	   * with `.select()`.
+  	   *
+  	   * @param values - The values to upsert with. Pass an object to upsert a
+  	   * single row or an array to upsert multiple rows.
+  	   *
+  	   * @param options - Named parameters
+  	   *
+  	   * @param options.onConflict - Comma-separated UNIQUE column(s) to specify how
+  	   * duplicate rows are determined. Two rows are duplicates if all the
+  	   * `onConflict` columns are equal.
+  	   *
+  	   * @param options.ignoreDuplicates - If `true`, duplicate rows are ignored. If
+  	   * `false`, duplicate rows are merged with existing rows.
+  	   *
+  	   * @param options.count - Count algorithm to use to count upserted rows.
+  	   *
+  	   * `"exact"`: Exact but slow count algorithm. Performs a `COUNT(*)` under the
+  	   * hood.
+  	   *
+  	   * `"planned"`: Approximated but fast count algorithm. Uses the Postgres
+  	   * statistics under the hood.
+  	   *
+  	   * `"estimated"`: Uses exact count for low numbers and planned count for high
+  	   * numbers.
+  	   *
+  	   * @param options.defaultToNull - Make missing fields default to `null`.
+  	   * Otherwise, use the default value for the column. This only applies when
+  	   * inserting new rows, not when merging with existing rows under
+  	   * `ignoreDuplicates: false`. This also only applies when doing bulk upserts.
+  	   *
+  	   * @example Upsert a single row using a unique key
+  	   * ```ts
+  	   * // Upserting a single row, overwriting based on the 'username' unique column
+  	   * const { data, error } = await supabase
+  	   *   .from('users')
+  	   *   .upsert({ username: 'supabot' }, { onConflict: 'username' })
+  	   *
+  	   * // Example response:
+  	   * // {
+  	   * //   data: [
+  	   * //     { id: 4, message: 'bar', username: 'supabot' }
+  	   * //   ],
+  	   * //   error: null
+  	   * // }
+  	   * ```
+  	   *
+  	   * @example Upsert with conflict resolution and exact row counting
+  	   * ```ts
+  	   * // Upserting and returning exact count
+  	   * const { data, error, count } = await supabase
+  	   *   .from('users')
+  	   *   .upsert(
+  	   *     {
+  	   *       id: 3,
+  	   *       message: 'foo',
+  	   *       username: 'supabot'
+  	   *     },
+  	   *     {
+  	   *       onConflict: 'username',
+  	   *       count: 'exact'
+  	   *     }
+  	   *   )
+  	   *
+  	   * // Example response:
+  	   * // {
+  	   * //   data: [
+  	   * //     {
+  	   * //       id: 42,
+  	   * //       handle: "saoirse",
+  	   * //       display_name: "Saoirse"
+  	   * //     }
+  	   * //   ],
+  	   * //   count: 1,
+  	   * //   error: null
+  	   * // }
+  	   * ```
+  	   */
   	    upsert(values, { onConflict, ignoreDuplicates = false, count, defaultToNull = true, } = {}) {
   	        var _a;
   	        const method = 'POST';
@@ -1838,6 +2067,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	     * @param options.headers - Custom headers
   	     * @param options.schema - Postgres schema to switch to
   	     * @param options.fetch - Custom fetch
+  	     * @example
+  	     * ```ts
+  	     * import PostgrestClient from '@supabase/postgrest-js'
+  	     *
+  	     * const postgrest = new PostgrestClient('https://xyzcompany.supabase.co/rest/v1', {
+  	     *   headers: { apikey: 'public-anon-key' },
+  	     *   schema: 'public',
+  	     * })
+  	     * ```
   	     */
   	    constructor(url, { headers = {}, schema, fetch, } = {}) {
   	        this.url = url;
@@ -1851,6 +2089,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	     * @param relation - The table or view name to query
   	     */
   	    from(relation) {
+  	        if (!relation || typeof relation !== 'string' || relation.trim() === '') {
+  	            throw new Error('Invalid relation name: relation must be a non-empty string.');
+  	        }
   	        const url = new URL(`${this.url}/${relation}`);
   	        return new PostgrestQueryBuilder_1.default(url, {
   	            headers: new Headers(this.headers),
@@ -1985,7 +2226,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     PostgrestError,
   } = index || index$1;
 
+  /**
+   * Utilities for creating WebSocket instances across runtimes.
+   */
   class WebSocketFactory {
+      /**
+       * Static-only utility – prevent instantiation.
+       */
+      constructor() { }
       static detectEnvironment() {
           var _a;
           if (typeof WebSocket !== 'undefined') {
@@ -2050,6 +2298,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               workaround: "Ensure you're running in a supported environment (browser, Node.js, Deno) or provide a custom WebSocket implementation.",
           };
       }
+      /**
+       * Returns the best available WebSocket constructor for the current runtime.
+       *
+       * @example
+       * ```ts
+       * const WS = WebSocketFactory.getWebSocketConstructor()
+       * const socket = new WS('wss://realtime.supabase.co/socket')
+       * ```
+       */
       static getWebSocketConstructor() {
           const env = this.detectEnvironment();
           if (env.constructor) {
@@ -2061,10 +2318,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           throw new Error(errorMessage);
       }
+      /**
+       * Creates a WebSocket using the detected constructor.
+       *
+       * @example
+       * ```ts
+       * const socket = WebSocketFactory.createWebSocket('wss://realtime.supabase.co/socket')
+       * ```
+       */
       static createWebSocket(url, protocols) {
           const WS = this.getWebSocketConstructor();
           return new WS(url, protocols);
       }
+      /**
+       * Detects whether the runtime can establish WebSocket connections.
+       *
+       * @example
+       * ```ts
+       * if (!WebSocketFactory.isWebSocketSupported()) {
+       *   console.warn('Falling back to long polling')
+       * }
+       * ```
+       */
       static isWebSocketSupported() {
           try {
               const env = this.detectEnvironment();
@@ -2082,10 +2357,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   // - Debugging and support (identifying which version is running)
   // - Telemetry and logging (version reporting in errors/analytics)
   // - Ensuring build artifacts match the published package version
-  const version$3 = '2.79.0';
+  const version$3 = '2.86.0';
 
   const DEFAULT_VERSION = `realtime-js/${version$3}`;
-  const VSN = '1.0.0';
+  const VSN_1_0_0 = '1.0.0';
+  const VSN_2_0_0 = '2.0.0';
+  const DEFAULT_VSN = VSN_1_0_0;
   const DEFAULT_TIMEOUT = 10000;
   const WS_CLOSE_NORMAL = 1000;
   const MAX_PUSH_BUFFER_SIZE = 100;
@@ -2125,36 +2402,155 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       CONNECTION_STATE["Closed"] = "closed";
   })(CONNECTION_STATE || (CONNECTION_STATE = {}));
 
-  // This file draws heavily from https://github.com/phoenixframework/phoenix/commit/cf098e9cf7a44ee6479d31d911a97d3c7430c6fe
-  // License: https://github.com/phoenixframework/phoenix/blob/master/LICENSE.md
   class Serializer {
-      constructor() {
+      constructor(allowedMetadataKeys) {
           this.HEADER_LENGTH = 1;
+          this.USER_BROADCAST_PUSH_META_LENGTH = 6;
+          this.KINDS = { userBroadcastPush: 3, userBroadcast: 4 };
+          this.BINARY_ENCODING = 0;
+          this.JSON_ENCODING = 1;
+          this.BROADCAST_EVENT = 'broadcast';
+          this.allowedMetadataKeys = [];
+          this.allowedMetadataKeys = allowedMetadataKeys !== null && allowedMetadataKeys !== void 0 ? allowedMetadataKeys : [];
+      }
+      encode(msg, callback) {
+          if (msg.event === this.BROADCAST_EVENT &&
+              !(msg.payload instanceof ArrayBuffer) &&
+              typeof msg.payload.event === 'string') {
+              return callback(this._binaryEncodeUserBroadcastPush(msg));
+          }
+          let payload = [msg.join_ref, msg.ref, msg.topic, msg.event, msg.payload];
+          return callback(JSON.stringify(payload));
+      }
+      _binaryEncodeUserBroadcastPush(message) {
+          var _a;
+          if (this._isArrayBuffer((_a = message.payload) === null || _a === void 0 ? void 0 : _a.payload)) {
+              return this._encodeBinaryUserBroadcastPush(message);
+          }
+          else {
+              return this._encodeJsonUserBroadcastPush(message);
+          }
+      }
+      _encodeBinaryUserBroadcastPush(message) {
+          var _a, _b;
+          const userPayload = (_b = (_a = message.payload) === null || _a === void 0 ? void 0 : _a.payload) !== null && _b !== void 0 ? _b : new ArrayBuffer(0);
+          return this._encodeUserBroadcastPush(message, this.BINARY_ENCODING, userPayload);
+      }
+      _encodeJsonUserBroadcastPush(message) {
+          var _a, _b;
+          const userPayload = (_b = (_a = message.payload) === null || _a === void 0 ? void 0 : _a.payload) !== null && _b !== void 0 ? _b : {};
+          const encoder = new TextEncoder();
+          const encodedUserPayload = encoder.encode(JSON.stringify(userPayload)).buffer;
+          return this._encodeUserBroadcastPush(message, this.JSON_ENCODING, encodedUserPayload);
+      }
+      _encodeUserBroadcastPush(message, encodingType, encodedPayload) {
+          var _a, _b;
+          const topic = message.topic;
+          const ref = (_a = message.ref) !== null && _a !== void 0 ? _a : '';
+          const joinRef = (_b = message.join_ref) !== null && _b !== void 0 ? _b : '';
+          const userEvent = message.payload.event;
+          // Filter metadata based on allowed keys
+          const rest = this.allowedMetadataKeys
+              ? this._pick(message.payload, this.allowedMetadataKeys)
+              : {};
+          const metadata = Object.keys(rest).length === 0 ? '' : JSON.stringify(rest);
+          // Validate lengths don't exceed uint8 max value (255)
+          if (joinRef.length > 255) {
+              throw new Error(`joinRef length ${joinRef.length} exceeds maximum of 255`);
+          }
+          if (ref.length > 255) {
+              throw new Error(`ref length ${ref.length} exceeds maximum of 255`);
+          }
+          if (topic.length > 255) {
+              throw new Error(`topic length ${topic.length} exceeds maximum of 255`);
+          }
+          if (userEvent.length > 255) {
+              throw new Error(`userEvent length ${userEvent.length} exceeds maximum of 255`);
+          }
+          if (metadata.length > 255) {
+              throw new Error(`metadata length ${metadata.length} exceeds maximum of 255`);
+          }
+          const metaLength = this.USER_BROADCAST_PUSH_META_LENGTH +
+              joinRef.length +
+              ref.length +
+              topic.length +
+              userEvent.length +
+              metadata.length;
+          const header = new ArrayBuffer(this.HEADER_LENGTH + metaLength);
+          let view = new DataView(header);
+          let offset = 0;
+          view.setUint8(offset++, this.KINDS.userBroadcastPush); // kind
+          view.setUint8(offset++, joinRef.length);
+          view.setUint8(offset++, ref.length);
+          view.setUint8(offset++, topic.length);
+          view.setUint8(offset++, userEvent.length);
+          view.setUint8(offset++, metadata.length);
+          view.setUint8(offset++, encodingType);
+          Array.from(joinRef, (char) => view.setUint8(offset++, char.charCodeAt(0)));
+          Array.from(ref, (char) => view.setUint8(offset++, char.charCodeAt(0)));
+          Array.from(topic, (char) => view.setUint8(offset++, char.charCodeAt(0)));
+          Array.from(userEvent, (char) => view.setUint8(offset++, char.charCodeAt(0)));
+          Array.from(metadata, (char) => view.setUint8(offset++, char.charCodeAt(0)));
+          var combined = new Uint8Array(header.byteLength + encodedPayload.byteLength);
+          combined.set(new Uint8Array(header), 0);
+          combined.set(new Uint8Array(encodedPayload), header.byteLength);
+          return combined.buffer;
       }
       decode(rawPayload, callback) {
-          if (rawPayload.constructor === ArrayBuffer) {
-              return callback(this._binaryDecode(rawPayload));
+          if (this._isArrayBuffer(rawPayload)) {
+              let result = this._binaryDecode(rawPayload);
+              return callback(result);
           }
           if (typeof rawPayload === 'string') {
-              return callback(JSON.parse(rawPayload));
+              const jsonPayload = JSON.parse(rawPayload);
+              const [join_ref, ref, topic, event, payload] = jsonPayload;
+              return callback({ join_ref, ref, topic, event, payload });
           }
           return callback({});
       }
       _binaryDecode(buffer) {
           const view = new DataView(buffer);
+          const kind = view.getUint8(0);
           const decoder = new TextDecoder();
-          return this._decodeBroadcast(buffer, view, decoder);
+          switch (kind) {
+              case this.KINDS.userBroadcast:
+                  return this._decodeUserBroadcast(buffer, view, decoder);
+          }
       }
-      _decodeBroadcast(buffer, view, decoder) {
+      _decodeUserBroadcast(buffer, view, decoder) {
           const topicSize = view.getUint8(1);
-          const eventSize = view.getUint8(2);
-          let offset = this.HEADER_LENGTH + 2;
+          const userEventSize = view.getUint8(2);
+          const metadataSize = view.getUint8(3);
+          const payloadEncoding = view.getUint8(4);
+          let offset = this.HEADER_LENGTH + 4;
           const topic = decoder.decode(buffer.slice(offset, offset + topicSize));
           offset = offset + topicSize;
-          const event = decoder.decode(buffer.slice(offset, offset + eventSize));
-          offset = offset + eventSize;
-          const data = JSON.parse(decoder.decode(buffer.slice(offset, buffer.byteLength)));
-          return { ref: null, topic: topic, event: event, payload: data };
+          const userEvent = decoder.decode(buffer.slice(offset, offset + userEventSize));
+          offset = offset + userEventSize;
+          const metadata = decoder.decode(buffer.slice(offset, offset + metadataSize));
+          offset = offset + metadataSize;
+          const payload = buffer.slice(offset, buffer.byteLength);
+          const parsedPayload = payloadEncoding === this.JSON_ENCODING ? JSON.parse(decoder.decode(payload)) : payload;
+          const data = {
+              type: this.BROADCAST_EVENT,
+              event: userEvent,
+              payload: parsedPayload,
+          };
+          // Metadata is optional and always JSON encoded
+          if (metadataSize > 0) {
+              data['meta'] = JSON.parse(metadata);
+          }
+          return { join_ref: null, ref: null, topic: topic, event: this.BROADCAST_EVENT, payload: data };
+      }
+      _isArrayBuffer(buffer) {
+          var _a;
+          return buffer instanceof ArrayBuffer || ((_a = buffer === null || buffer === void 0 ? void 0 : buffer.constructor) === null || _a === void 0 ? void 0 : _a.name) === 'ArrayBuffer';
+      }
+      _pick(obj, keys) {
+          if (!obj || typeof obj !== 'object') {
+              return {};
+          }
+          return Object.fromEntries(Object.entries(obj).filter(([key]) => keys.includes(key)));
       }
   }
 
@@ -2534,11 +2930,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   })(exports.REALTIME_PRESENCE_LISTEN_EVENTS || (exports.REALTIME_PRESENCE_LISTEN_EVENTS = {}));
   class RealtimePresence {
       /**
-       * Initializes the Presence.
+       * Creates a Presence helper that keeps the local presence state in sync with the server.
        *
-       * @param channel - The RealtimeChannel
-       * @param opts - The options,
-       *        for example `{events: {state: 'state', diff: 'diff'}}`
+       * @param channel - The realtime channel to bind to.
+       * @param opts - Optional custom event names, e.g. `{ events: { state: 'state', diff: 'diff' } }`.
+       *
+       * @example
+       * ```ts
+       * const presence = new RealtimePresence(channel)
+       *
+       * channel.on('presence', ({ event, key }) => {
+       *   console.log(`Presence ${event} on ${key}`)
+       * })
+       * ```
        */
       constructor(channel, opts) {
           this.channel = channel;
@@ -2775,6 +3179,22 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * and send and receive messages.
    */
   class RealtimeChannel {
+      /**
+       * Creates a channel that can broadcast messages, sync presence, and listen to Postgres changes.
+       *
+       * The topic determines which realtime stream you are subscribing to. Config options let you
+       * enable acknowledgement for broadcasts, presence tracking, or private channels.
+       *
+       * @example
+       * ```ts
+       * import RealtimeClient from '@supabase/realtime-js'
+       *
+       * const client = new RealtimeClient('https://xyzcompany.supabase.co/realtime/v1', {
+       *   params: { apikey: 'public-anon-key' },
+       * })
+       * const channel = new RealtimeChannel('realtime:public:messages', { config: {} }, client)
+       * ```
+       */
       constructor(
       /** Topic name can be any string. */
       topic, params = { config: {} }, socket) {
@@ -2915,9 +3335,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           return this;
       }
+      /**
+       * Returns the current presence state for this channel.
+       *
+       * The shape is a map keyed by presence key (for example a user id) where each entry contains the
+       * tracked metadata for that user.
+       */
       presenceState() {
           return this.presence.state;
       }
+      /**
+       * Sends the supplied payload to the presence tracker so other subscribers can see that this
+       * client is online. Use `untrack` to stop broadcasting presence for the same key.
+       */
       async track(payload, opts = {}) {
           return await this.send({
               type: 'presence',
@@ -2925,6 +3355,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               payload,
           }, opts.timeout || this.timeout);
       }
+      /**
+       * Removes the current presence state for this client.
+       */
       async untrack(opts = {}) {
           return await this.send({
               type: 'presence',
@@ -3051,6 +3484,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               });
           }
       }
+      /**
+       * Updates the payload that will be sent the next time the channel joins (reconnects).
+       * Useful for rotating access tokens or updating config without re-creating the channel.
+       */
       updateJoinPayload(payload) {
           this.joinPush.updatePayload(payload);
       }
@@ -3368,6 +3805,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @param options.reconnectAfterMs he optional function that returns the millsec reconnect interval. Defaults to stepped backoff off.
        * @param options.worker Use Web Worker to set a side flow. Defaults to false.
        * @param options.workerUrl The URL of the worker script. Defaults to https://realtime.supabase.com/worker.js that includes a heartbeat event call to keep the connection alive.
+       * @example
+       * ```ts
+       * import RealtimeClient from '@supabase/realtime-js'
+       *
+       * const client = new RealtimeClient('https://xyzcompany.supabase.co/realtime/v1', {
+       *   params: { apikey: 'public-anon-key' },
+       * })
+       * client.connect()
+       * ```
        */
       constructor(endPoint, options) {
           var _a;
@@ -3387,6 +3833,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           this.heartbeatCallback = noop;
           this.ref = 0;
           this.reconnectTimer = null;
+          this.vsn = DEFAULT_VSN;
           this.logger = noop;
           this.conn = null;
           this.sendBuffer = [];
@@ -3435,7 +3882,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               return;
           }
           this._setConnectionState('connecting');
-          this._setAuthSafely('connect');
+          // Trigger auth if needed and not already in progress
+          // This ensures auth is called for standalone RealtimeClient usage
+          // while avoiding race conditions with SupabaseClient's immediate setAuth call
+          if (this.accessToken && !this._authPromise) {
+              this._setAuthSafely('connect');
+          }
           // Establish WebSocket connection
           if (this.transport) {
               // Use custom transport if provided
@@ -3472,7 +3924,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @returns string The URL of the websocket.
        */
       endpointURL() {
-          return this._appendParams(this.endPoint, Object.assign({}, this.params, { vsn: VSN }));
+          return this._appendParams(this.endPoint, Object.assign({}, this.params, { vsn: this.vsn }));
       }
       /**
        * Disconnects the socket.
@@ -3494,12 +3946,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                   clearTimeout(fallbackTimer);
                   this._setConnectionState('disconnected');
               };
-              // Close the WebSocket connection
-              if (code) {
-                  this.conn.close(code, reason !== null && reason !== void 0 ? reason : '');
-              }
-              else {
-                  this.conn.close();
+              // Close the WebSocket connection if close method exists
+              if (typeof this.conn.close === 'function') {
+                  if (code) {
+                      this.conn.close(code, reason !== null && reason !== void 0 ? reason : '');
+                  }
+                  else {
+                      this.conn.close();
+                  }
               }
               this._teardownConnection();
           }
@@ -3574,6 +4028,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       isDisconnecting() {
           return this._connectionState === 'disconnecting';
       }
+      /**
+       * Creates (or reuses) a {@link RealtimeChannel} for the provided topic.
+       *
+       * Topics are automatically prefixed with `realtime:` to match the Realtime service.
+       * If a channel with the same topic already exists it will be returned instead of creating
+       * a duplicate connection.
+       */
       channel(topic, params = { config: {} }) {
           const realtimeTopic = `realtime:${topic}`;
           const exists = this.getChannels().find((c) => c.topic === realtimeTopic);
@@ -3676,6 +4137,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           this._setAuthSafely('heartbeat');
       }
+      /**
+       * Sets a callback that receives lifecycle events for internal heartbeat messages.
+       * Useful for instrumenting connection health (e.g. sent/ok/timeout/disconnected).
+       */
       onHeartbeat(callback) {
           this.heartbeatCallback = callback;
       }
@@ -3797,6 +4262,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        */
       _teardownConnection() {
           if (this.conn) {
+              if (this.conn.readyState === SOCKET_STATES.open ||
+                  this.conn.readyState === SOCKET_STATES.connecting) {
+                  try {
+                      this.conn.close();
+                  }
+                  catch (e) {
+                      this.log('error', 'Error closing connection', e);
+                  }
+              }
               this.conn.onopen = null;
               this.conn.onerror = null;
               this.conn.onmessage = null;
@@ -3810,7 +4284,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       _onConnOpen() {
           this._setConnectionState('connected');
           this.log('transport', `connected to ${this.endpointURL()}`);
-          this.flushSendBuffer();
+          // Wait for any pending auth operations before flushing send buffer
+          // This ensures channel join messages include the correct access token
+          const authPromise = this._authPromise ||
+              (this.accessToken && !this.accessTokenValue ? this.setAuth() : Promise.resolve());
+          authPromise
+              .then(() => {
+              this.flushSendBuffer();
+          })
+              .catch((e) => {
+              this.log('error', 'error waiting for auth on connect', e);
+              // Proceed anyway to avoid hanging connections
+              this.flushSendBuffer();
+          });
           this._clearTimer('reconnect');
           if (!this.worker) {
               this._startHeartbeat();
@@ -3996,7 +4482,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @internal
        */
       _initializeOptions(options) {
-          var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+          var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
           // Set defaults
           this.transport = (_a = options === null || options === void 0 ? void 0 : options.transport) !== null && _a !== void 0 ? _a : null;
           this.timeout = (_b = options === null || options === void 0 ? void 0 : options.timeout) !== null && _b !== void 0 ? _b : DEFAULT_TIMEOUT;
@@ -4005,6 +4491,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           this.worker = (_d = options === null || options === void 0 ? void 0 : options.worker) !== null && _d !== void 0 ? _d : false;
           this.accessToken = (_e = options === null || options === void 0 ? void 0 : options.accessToken) !== null && _e !== void 0 ? _e : null;
           this.heartbeatCallback = (_f = options === null || options === void 0 ? void 0 : options.heartbeatCallback) !== null && _f !== void 0 ? _f : noop;
+          this.vsn = (_g = options === null || options === void 0 ? void 0 : options.vsn) !== null && _g !== void 0 ? _g : DEFAULT_VSN;
           // Handle special cases
           if (options === null || options === void 0 ? void 0 : options.params)
               this.params = options.params;
@@ -4016,14 +4503,27 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           // Set up functions with defaults
           this.reconnectAfterMs =
-              (_g = options === null || options === void 0 ? void 0 : options.reconnectAfterMs) !== null && _g !== void 0 ? _g : ((tries) => {
+              (_h = options === null || options === void 0 ? void 0 : options.reconnectAfterMs) !== null && _h !== void 0 ? _h : ((tries) => {
                   return RECONNECT_INTERVALS[tries - 1] || DEFAULT_RECONNECT_FALLBACK;
               });
-          this.encode =
-              (_h = options === null || options === void 0 ? void 0 : options.encode) !== null && _h !== void 0 ? _h : ((payload, callback) => {
-                  return callback(JSON.stringify(payload));
-              });
-          this.decode = (_j = options === null || options === void 0 ? void 0 : options.decode) !== null && _j !== void 0 ? _j : this.serializer.decode.bind(this.serializer);
+          switch (this.vsn) {
+              case VSN_1_0_0:
+                  this.encode =
+                      (_j = options === null || options === void 0 ? void 0 : options.encode) !== null && _j !== void 0 ? _j : ((payload, callback) => {
+                          return callback(JSON.stringify(payload));
+                      });
+                  this.decode =
+                      (_k = options === null || options === void 0 ? void 0 : options.decode) !== null && _k !== void 0 ? _k : ((payload, callback) => {
+                          return callback(JSON.parse(payload));
+                      });
+                  break;
+              case VSN_2_0_0:
+                  this.encode = (_l = options === null || options === void 0 ? void 0 : options.encode) !== null && _l !== void 0 ? _l : this.serializer.encode.bind(this.serializer);
+                  this.decode = (_m = options === null || options === void 0 ? void 0 : options.decode) !== null && _m !== void 0 ? _m : this.serializer.decode.bind(this.serializer);
+                  break;
+              default:
+                  throw new Error(`Unsupported serializer version: ${this.vsn}`);
+          }
           // Handle worker setup
           if (this.worker) {
               if (typeof window !== 'undefined' && !window.Worker) {
@@ -6084,6 +6584,45 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           !(Symbol.toStringTag in value) &&
           !(Symbol.iterator in value));
   };
+  /**
+   * Validates if a given bucket name is valid according to Supabase Storage API rules
+   * Mirrors backend validation from: storage/src/storage/limits.ts:isValidBucketName()
+   *
+   * Rules:
+   * - Length: 1-100 characters
+   * - Allowed characters: alphanumeric (a-z, A-Z, 0-9), underscore (_), and safe special characters
+   * - Safe special characters: ! - . * ' ( ) space & $ @ = ; : + , ?
+   * - Forbidden: path separators (/, \), path traversal (..), leading/trailing whitespace
+   *
+   * AWS S3 Reference: https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
+   *
+   * @param bucketName - The bucket name to validate
+   * @returns true if valid, false otherwise
+   */
+  const isValidBucketName = (bucketName) => {
+      if (!bucketName || typeof bucketName !== 'string') {
+          return false;
+      }
+      // Check length constraints (1-100 characters)
+      if (bucketName.length === 0 || bucketName.length > 100) {
+          return false;
+      }
+      // Check for leading/trailing whitespace
+      if (bucketName.trim() !== bucketName) {
+          return false;
+      }
+      // Explicitly reject path separators (security)
+      // Note: Consecutive periods (..) are allowed by backend - the AWS restriction
+      // on relative paths applies to object keys, not bucket names
+      if (bucketName.includes('/') || bucketName.includes('\\')) {
+          return false;
+      }
+      // Validate against allowed character set
+      // Pattern matches backend regex: /^(\w|!|-|\.|\*|'|\(|\)| |&|\$|@|=|;|:|\+|,|\?)*$/
+      // This explicitly excludes path separators (/, \) and other problematic characters
+      const bucketNameRegex = /^[\w!.\*'() &$@=;:+,?-]+$/;
+      return bucketNameRegex.test(bucketName);
+  };
 
   const _getErrorMessage$2 = (err) => {
       var _a;
@@ -6272,6 +6811,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       /**
        * Enable throwing errors instead of returning them.
+       *
+       * @category File Buckets
        */
       throwOnError() {
           this.shouldThrowOnError = true;
@@ -6349,8 +6890,46 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * Uploads a file to an existing bucket.
        *
+       * @category File Buckets
        * @param path The file path, including the file name. Should be of the format `folder/subfolder/filename.png`. The bucket must already exist before attempting to upload.
        * @param fileBody The body of the file to be stored in the bucket.
+       * @param fileOptions Optional file upload options including cacheControl, contentType, upsert, and metadata.
+       * @returns Promise with response containing file path, id, and fullPath or error
+       *
+       * @example Upload file
+       * ```js
+       * const avatarFile = event.target.files[0]
+       * const { data, error } = await supabase
+       *   .storage
+       *   .from('avatars')
+       *   .upload('public/avatar1.png', avatarFile, {
+       *     cacheControl: '3600',
+       *     upsert: false
+       *   })
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": {
+       *     "path": "public/avatar1.png",
+       *     "fullPath": "avatars/public/avatar1.png"
+       *   },
+       *   "error": null
+       * }
+       * ```
+       *
+       * @example Upload file using `ArrayBuffer` from base64 file data
+       * ```js
+       * import { decode } from 'base64-arraybuffer'
+       *
+       * const { data, error } = await supabase
+       *   .storage
+       *   .from('avatars')
+       *   .upload('public/avatar1.png', decode('base64FileData'), {
+       *     contentType: 'image/png'
+       *   })
+       * ```
        */
       upload(path, fileBody, fileOptions) {
           return __awaiter(this, void 0, void 0, function* () {
@@ -6359,9 +6938,32 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       /**
        * Upload a file with a token generated from `createSignedUploadUrl`.
+       *
+       * @category File Buckets
        * @param path The file path, including the file name. Should be of the format `folder/subfolder/filename.png`. The bucket must already exist before attempting to upload.
        * @param token The token generated from `createSignedUploadUrl`
        * @param fileBody The body of the file to be stored in the bucket.
+       * @param fileOptions Optional file upload options including cacheControl and contentType.
+       * @returns Promise with response containing file path and fullPath or error
+       *
+       * @example Upload to a signed URL
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .from('avatars')
+       *   .uploadToSignedUrl('folder/cat.jpg', 'token-from-createSignedUploadUrl', file)
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": {
+       *     "path": "folder/cat.jpg",
+       *     "fullPath": "avatars/folder/cat.jpg"
+       *   },
+       *   "error": null
+       * }
+       * ```
        */
       uploadToSignedUrl(path, token, fileBody, fileOptions) {
           return __awaiter(this, void 0, void 0, function* () {
@@ -6408,8 +7010,31 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * Creates a signed upload URL.
        * Signed upload URLs can be used to upload files to the bucket without further authentication.
        * They are valid for 2 hours.
+       *
+       * @category File Buckets
        * @param path The file path, including the current file name. For example `folder/image.png`.
        * @param options.upsert If set to true, allows the file to be overwritten if it already exists.
+       * @returns Promise with response containing signed upload URL, token, and path or error
+       *
+       * @example Create Signed Upload URL
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .from('avatars')
+       *   .createSignedUploadUrl('folder/cat.jpg')
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": {
+       *     "signedUrl": "https://example.supabase.co/storage/v1/object/upload/sign/avatars/folder/cat.jpg?token=<TOKEN>",
+       *     "path": "folder/cat.jpg",
+       *     "token": "<TOKEN>"
+       *   },
+       *   "error": null
+       * }
+       * ```
        */
       createSignedUploadUrl(path, options) {
           return __awaiter(this, void 0, void 0, function* () {
@@ -6441,8 +7066,46 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * Replaces an existing file at the specified path with a new one.
        *
+       * @category File Buckets
        * @param path The relative file path. Should be of the format `folder/subfolder/filename.png`. The bucket must already exist before attempting to update.
        * @param fileBody The body of the file to be stored in the bucket.
+       * @param fileOptions Optional file upload options including cacheControl, contentType, upsert, and metadata.
+       * @returns Promise with response containing file path, id, and fullPath or error
+       *
+       * @example Update file
+       * ```js
+       * const avatarFile = event.target.files[0]
+       * const { data, error } = await supabase
+       *   .storage
+       *   .from('avatars')
+       *   .update('public/avatar1.png', avatarFile, {
+       *     cacheControl: '3600',
+       *     upsert: true
+       *   })
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": {
+       *     "path": "public/avatar1.png",
+       *     "fullPath": "avatars/public/avatar1.png"
+       *   },
+       *   "error": null
+       * }
+       * ```
+       *
+       * @example Update file using `ArrayBuffer` from base64 file data
+       * ```js
+       * import {decode} from 'base64-arraybuffer'
+       *
+       * const { data, error } = await supabase
+       *   .storage
+       *   .from('avatars')
+       *   .update('public/avatar1.png', decode('base64FileData'), {
+       *     contentType: 'image/png'
+       *   })
+       * ```
        */
       update(path, fileBody, fileOptions) {
           return __awaiter(this, void 0, void 0, function* () {
@@ -6452,9 +7115,29 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * Moves an existing file to a new path in the same bucket.
        *
+       * @category File Buckets
        * @param fromPath The original file path, including the current file name. For example `folder/image.png`.
        * @param toPath The new file path, including the new file name. For example `folder/image-new.png`.
        * @param options The destination options.
+       * @returns Promise with response containing success message or error
+       *
+       * @example Move file
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .from('avatars')
+       *   .move('public/avatar1.png', 'private/avatar2.png')
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": {
+       *     "message": "Successfully moved"
+       *   },
+       *   "error": null
+       * }
+       * ```
        */
       move(fromPath, toPath, options) {
           return __awaiter(this, void 0, void 0, function* () {
@@ -6481,9 +7164,29 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * Copies an existing file to a new path in the same bucket.
        *
+       * @category File Buckets
        * @param fromPath The original file path, including the current file name. For example `folder/image.png`.
        * @param toPath The new file path, including the new file name. For example `folder/image-copy.png`.
        * @param options The destination options.
+       * @returns Promise with response containing copied file path or error
+       *
+       * @example Copy file
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .from('avatars')
+       *   .copy('public/avatar1.png', 'private/avatar2.png')
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": {
+       *     "path": "avatars/private/avatar2.png"
+       *   },
+       *   "error": null
+       * }
+       * ```
        */
       copy(fromPath, toPath, options) {
           return __awaiter(this, void 0, void 0, function* () {
@@ -6510,10 +7213,53 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * Creates a signed URL. Use a signed URL to share a file for a fixed amount of time.
        *
+       * @category File Buckets
        * @param path The file path, including the current file name. For example `folder/image.png`.
        * @param expiresIn The number of seconds until the signed URL expires. For example, `60` for a URL which is valid for one minute.
        * @param options.download triggers the file as a download if set to true. Set this parameter as the name of the file if you want to trigger the download with a different filename.
        * @param options.transform Transform the asset before serving it to the client.
+       * @returns Promise with response containing signed URL or error
+       *
+       * @example Create Signed URL
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .from('avatars')
+       *   .createSignedUrl('folder/avatar1.png', 60)
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": {
+       *     "signedUrl": "https://example.supabase.co/storage/v1/object/sign/avatars/folder/avatar1.png?token=<TOKEN>"
+       *   },
+       *   "error": null
+       * }
+       * ```
+       *
+       * @example Create a signed URL for an asset with transformations
+       * ```js
+       * const { data } = await supabase
+       *   .storage
+       *   .from('avatars')
+       *   .createSignedUrl('folder/avatar1.png', 60, {
+       *     transform: {
+       *       width: 100,
+       *       height: 100,
+       *     }
+       *   })
+       * ```
+       *
+       * @example Create a signed URL which triggers the download of the asset
+       * ```js
+       * const { data } = await supabase
+       *   .storage
+       *   .from('avatars')
+       *   .createSignedUrl('folder/avatar1.png', 60, {
+       *     download: true,
+       *   })
+       * ```
        */
       createSignedUrl(path, expiresIn, options) {
           return __awaiter(this, void 0, void 0, function* () {
@@ -6541,9 +7287,40 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * Creates multiple signed URLs. Use a signed URL to share a file for a fixed amount of time.
        *
+       * @category File Buckets
        * @param paths The file paths to be downloaded, including the current file names. For example `['folder/image.png', 'folder2/image2.png']`.
        * @param expiresIn The number of seconds until the signed URLs expire. For example, `60` for URLs which are valid for one minute.
        * @param options.download triggers the file as a download if set to true. Set this parameter as the name of the file if you want to trigger the download with a different filename.
+       * @returns Promise with response containing array of objects with signedUrl, path, and error or error
+       *
+       * @example Create Signed URLs
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .from('avatars')
+       *   .createSignedUrls(['folder/avatar1.png', 'folder/avatar2.png'], 60)
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": [
+       *     {
+       *       "error": null,
+       *       "path": "folder/avatar1.png",
+       *       "signedURL": "/object/sign/avatars/folder/avatar1.png?token=<TOKEN>",
+       *       "signedUrl": "https://example.supabase.co/storage/v1/object/sign/avatars/folder/avatar1.png?token=<TOKEN>"
+       *     },
+       *     {
+       *       "error": null,
+       *       "path": "folder/avatar2.png",
+       *       "signedURL": "/object/sign/avatars/folder/avatar2.png?token=<TOKEN>",
+       *       "signedUrl": "https://example.supabase.co/storage/v1/object/sign/avatars/folder/avatar2.png?token=<TOKEN>"
+       *     }
+       *   ],
+       *   "error": null
+       * }
+       * ```
        */
       createSignedUrls(paths, expiresIn, options) {
           return __awaiter(this, void 0, void 0, function* () {
@@ -6573,8 +7350,40 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * Downloads a file from a private bucket. For public buckets, make a request to the URL returned from `getPublicUrl` instead.
        *
+       * @category File Buckets
        * @param path The full path and file name of the file to be downloaded. For example `folder/image.png`.
        * @param options.transform Transform the asset before serving it to the client.
+       * @returns BlobDownloadBuilder instance for downloading the file
+       *
+       * @example Download file
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .from('avatars')
+       *   .download('folder/avatar1.png')
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": <BLOB>,
+       *   "error": null
+       * }
+       * ```
+       *
+       * @example Download file with transformations
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .from('avatars')
+       *   .download('folder/avatar1.png', {
+       *     transform: {
+       *       width: 100,
+       *       height: 100,
+       *       quality: 80
+       *     }
+       *   })
+       * ```
        */
       download(path, options) {
           const wantsTransformation = typeof (options === null || options === void 0 ? void 0 : options.transform) !== 'undefined';
@@ -6590,7 +7399,18 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       /**
        * Retrieves the details of an existing file.
-       * @param path
+       *
+       * @category File Buckets
+       * @param path The file path, including the file name. For example `folder/image.png`.
+       * @returns Promise with response containing file metadata or error
+       *
+       * @example Get file info
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .from('avatars')
+       *   .info('folder/avatar1.png')
+       * ```
        */
       info(path) {
           return __awaiter(this, void 0, void 0, function* () {
@@ -6614,7 +7434,18 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       /**
        * Checks the existence of a file.
-       * @param path
+       *
+       * @category File Buckets
+       * @param path The file path, including the file name. For example `folder/image.png`.
+       * @returns Promise with response containing boolean indicating file existence or error
+       *
+       * @example Check file existence
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .from('avatars')
+       *   .exists('folder/avatar1.png')
+       * ```
        */
       exists(path) {
           return __awaiter(this, void 0, void 0, function* () {
@@ -6643,9 +7474,51 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * A simple convenience function to get the URL for an asset in a public bucket. If you do not want to use this function, you can construct the public URL by concatenating the bucket URL with the path to the asset.
        * This function does not verify if the bucket is public. If a public URL is created for a bucket which is not public, you will not be able to download the asset.
        *
+       * @category File Buckets
        * @param path The path and name of the file to generate the public URL for. For example `folder/image.png`.
        * @param options.download Triggers the file as a download if set to true. Set this parameter as the name of the file if you want to trigger the download with a different filename.
        * @param options.transform Transform the asset before serving it to the client.
+       * @returns Object with public URL
+       *
+       * @example Returns the URL for an asset in a public bucket
+       * ```js
+       * const { data } = supabase
+       *   .storage
+       *   .from('public-bucket')
+       *   .getPublicUrl('folder/avatar1.png')
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": {
+       *     "publicUrl": "https://example.supabase.co/storage/v1/object/public/public-bucket/folder/avatar1.png"
+       *   }
+       * }
+       * ```
+       *
+       * @example Returns the URL for an asset in a public bucket with transformations
+       * ```js
+       * const { data } = supabase
+       *   .storage
+       *   .from('public-bucket')
+       *   .getPublicUrl('folder/avatar1.png', {
+       *     transform: {
+       *       width: 100,
+       *       height: 100,
+       *     }
+       *   })
+       * ```
+       *
+       * @example Returns the URL which triggers the download of an asset in a public bucket
+       * ```js
+       * const { data } = supabase
+       *   .storage
+       *   .from('public-bucket')
+       *   .getPublicUrl('folder/avatar1.png', {
+       *     download: true,
+       *   })
+       * ```
        */
       getPublicUrl(path, options) {
           const _path = this._getFinalPath(path);
@@ -6673,7 +7546,25 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * Deletes files within the same bucket
        *
+       * @category File Buckets
        * @param paths An array of files to delete, including the path and file name. For example [`'folder/image.png'`].
+       * @returns Promise with response containing array of deleted file objects or error
+       *
+       * @example Delete file
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .from('avatars')
+       *   .remove(['folder/avatar1.png'])
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": [],
+       *   "error": null
+       * }
+       * ```
        */
       remove(paths) {
           return __awaiter(this, void 0, void 0, function* () {
@@ -6753,8 +7644,62 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       // }
       /**
        * Lists all the files and folders within a path of the bucket.
+       *
+       * @category File Buckets
        * @param path The folder path.
        * @param options Search options including limit (defaults to 100), offset, sortBy, and search
+       * @param parameters Optional fetch parameters including signal for cancellation
+       * @returns Promise with response containing array of files or error
+       *
+       * @example List files in a bucket
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .from('avatars')
+       *   .list('folder', {
+       *     limit: 100,
+       *     offset: 0,
+       *     sortBy: { column: 'name', order: 'asc' },
+       *   })
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": [
+       *     {
+       *       "name": "avatar1.png",
+       *       "id": "e668cf7f-821b-4a2f-9dce-7dfa5dd1cfd2",
+       *       "updated_at": "2024-05-22T23:06:05.580Z",
+       *       "created_at": "2024-05-22T23:04:34.443Z",
+       *       "last_accessed_at": "2024-05-22T23:04:34.443Z",
+       *       "metadata": {
+       *         "eTag": "\"c5e8c553235d9af30ef4f6e280790b92\"",
+       *         "size": 32175,
+       *         "mimetype": "image/png",
+       *         "cacheControl": "max-age=3600",
+       *         "lastModified": "2024-05-22T23:06:05.574Z",
+       *         "contentLength": 32175,
+       *         "httpStatusCode": 200
+       *       }
+       *     }
+       *   ],
+       *   "error": null
+       * }
+       * ```
+       *
+       * @example Search files in a bucket
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .from('avatars')
+       *   .list('folder', {
+       *     limit: 100,
+       *     offset: 0,
+       *     sortBy: { column: 'name', order: 'asc' },
+       *     search: 'jon'
+       *   })
+       * ```
        */
       list(path, options, parameters) {
           return __awaiter(this, void 0, void 0, function* () {
@@ -6776,6 +7721,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       /**
        * @experimental this method signature might change in the future
+       *
+       * @category File Buckets
        * @param options search options
        * @param parameters
        */
@@ -6839,7 +7786,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   // - Debugging and support (identifying which version is running)
   // - Telemetry and logging (version reporting in errors/analytics)
   // - Ensuring build artifacts match the published package version
-  const version$2 = '2.79.0';
+  const version$2 = '2.86.0';
 
   const DEFAULT_HEADERS$3 = {
       'X-Client-Info': `storage-js/${version$2}`,
@@ -6863,6 +7810,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       /**
        * Enable throwing errors instead of returning them.
+       *
+       * @category File Buckets
        */
       throwOnError() {
           this.shouldThrowOnError = true;
@@ -6870,6 +7819,35 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       /**
        * Retrieves the details of all Storage buckets within an existing project.
+       *
+       * @category File Buckets
+       * @param options Query parameters for listing buckets
+       * @param options.limit Maximum number of buckets to return
+       * @param options.offset Number of buckets to skip
+       * @param options.sortColumn Column to sort by ('id', 'name', 'created_at', 'updated_at')
+       * @param options.sortOrder Sort order ('asc' or 'desc')
+       * @param options.search Search term to filter bucket names
+       * @returns Promise with response containing array of buckets or error
+       *
+       * @example List buckets
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .listBuckets()
+       * ```
+       *
+       * @example List buckets with options
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .listBuckets({
+       *     limit: 10,
+       *     offset: 0,
+       *     sortColumn: 'created_at',
+       *     sortOrder: 'desc',
+       *     search: 'prod'
+       *   })
+       * ```
        */
       listBuckets(options) {
           return __awaiter(this, void 0, void 0, function* () {
@@ -6894,7 +7872,35 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * Retrieves the details of an existing Storage bucket.
        *
+       * @category File Buckets
        * @param id The unique identifier of the bucket you would like to retrieve.
+       * @returns Promise with response containing bucket details or error
+       *
+       * @example Get bucket
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .getBucket('avatars')
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": {
+       *     "id": "avatars",
+       *     "name": "avatars",
+       *     "owner": "",
+       *     "public": false,
+       *     "file_size_limit": 1024,
+       *     "allowed_mime_types": [
+       *       "image/png"
+       *     ],
+       *     "created_at": "2024-05-22T22:26:05.100Z",
+       *     "updated_at": "2024-05-22T22:26:05.100Z"
+       *   },
+       *   "error": null
+       * }
+       * ```
        */
       getBucket(id) {
           return __awaiter(this, void 0, void 0, function* () {
@@ -6916,6 +7922,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * Creates a new Storage bucket
        *
+       * @category File Buckets
        * @param id A unique identifier for the bucket you are creating.
        * @param options.public The visibility of the bucket. Public buckets don't require an authorization token to download objects, but still require a valid token for all other operations. By default, buckets are private.
        * @param options.fileSizeLimit specifies the max file size in bytes that can be uploaded to this bucket.
@@ -6924,9 +7931,30 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @param options.allowedMimeTypes specifies the allowed mime types that this bucket can accept during upload.
        * The default value is null, which allows files with all mime types to be uploaded.
        * Each mime type specified can be a wildcard, e.g. image/*, or a specific mime type, e.g. image/png.
-       * @returns newly created bucket id
        * @param options.type (private-beta) specifies the bucket type. see `BucketType` for more details.
        *   - default bucket type is `STANDARD`
+       * @returns Promise with response containing newly created bucket name or error
+       *
+       * @example Create bucket
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .createBucket('avatars', {
+       *     public: false,
+       *     allowedMimeTypes: ['image/png'],
+       *     fileSizeLimit: 1024
+       *   })
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": {
+       *     "name": "avatars"
+       *   },
+       *   "error": null
+       * }
+       * ```
        */
       createBucket(id_1) {
           return __awaiter(this, arguments, void 0, function* (id, options = {
@@ -6957,6 +7985,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * Updates a Storage bucket
        *
+       * @category File Buckets
        * @param id A unique identifier for the bucket you are updating.
        * @param options.public The visibility of the bucket. Public buckets don't require an authorization token to download objects, but still require a valid token for all other operations.
        * @param options.fileSizeLimit specifies the max file size in bytes that can be uploaded to this bucket.
@@ -6965,6 +7994,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @param options.allowedMimeTypes specifies the allowed mime types that this bucket can accept during upload.
        * The default value is null, which allows files with all mime types to be uploaded.
        * Each mime type specified can be a wildcard, e.g. image/*, or a specific mime type, e.g. image/png.
+       * @returns Promise with response containing success message or error
+       *
+       * @example Update bucket
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .updateBucket('avatars', {
+       *     public: false,
+       *     allowedMimeTypes: ['image/png'],
+       *     fileSizeLimit: 1024
+       *   })
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": {
+       *     "message": "Successfully updated"
+       *   },
+       *   "error": null
+       * }
+       * ```
        */
       updateBucket(id, options) {
           return __awaiter(this, void 0, void 0, function* () {
@@ -6992,7 +8043,26 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * Removes all objects inside a single bucket.
        *
+       * @category File Buckets
        * @param id The unique identifier of the bucket you would like to empty.
+       * @returns Promise with success message or error
+       *
+       * @example Empty bucket
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .emptyBucket('avatars')
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": {
+       *     "message": "Successfully emptied"
+       *   },
+       *   "error": null
+       * }
+       * ```
        */
       emptyBucket(id) {
           return __awaiter(this, void 0, void 0, function* () {
@@ -7015,7 +8085,26 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * Deletes an existing bucket. A bucket can't be deleted with existing objects inside it.
        * You must first `empty()` the bucket.
        *
+       * @category File Buckets
        * @param id The unique identifier of the bucket you would like to delete.
+       * @returns Promise with success message or error
+       *
+       * @example Delete bucket
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .deleteBucket('avatars')
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": {
+       *     "message": "Successfully deleted"
+       *   },
+       *   "error": null
+       * }
+       * ```
        */
       deleteBucket(id) {
           return __awaiter(this, void 0, void 0, function* () {
@@ -7057,16 +8146,570 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
   }
 
+  // src/errors/IcebergError.ts
+  var IcebergError = class extends Error {
+    constructor(message, opts) {
+      super(message);
+      this.name = "IcebergError";
+      this.status = opts.status;
+      this.icebergType = opts.icebergType;
+      this.icebergCode = opts.icebergCode;
+      this.details = opts.details;
+      this.isCommitStateUnknown = opts.icebergType === "CommitStateUnknownException" || [500, 502, 504].includes(opts.status) && opts.icebergType?.includes("CommitState") === true;
+    }
+    /**
+     * Returns true if the error is a 404 Not Found error.
+     */
+    isNotFound() {
+      return this.status === 404;
+    }
+    /**
+     * Returns true if the error is a 409 Conflict error.
+     */
+    isConflict() {
+      return this.status === 409;
+    }
+    /**
+     * Returns true if the error is a 419 Authentication Timeout error.
+     */
+    isAuthenticationTimeout() {
+      return this.status === 419;
+    }
+  };
+
+  // src/utils/url.ts
+  function buildUrl(baseUrl, path, query) {
+    const url = new URL(path, baseUrl);
+    if (query) {
+      for (const [key, value] of Object.entries(query)) {
+        if (value !== void 0) {
+          url.searchParams.set(key, value);
+        }
+      }
+    }
+    return url.toString();
+  }
+
+  // src/http/createFetchClient.ts
+  async function buildAuthHeaders(auth) {
+    if (!auth || auth.type === "none") {
+      return {};
+    }
+    if (auth.type === "bearer") {
+      return { Authorization: `Bearer ${auth.token}` };
+    }
+    if (auth.type === "header") {
+      return { [auth.name]: auth.value };
+    }
+    if (auth.type === "custom") {
+      return await auth.getHeaders();
+    }
+    return {};
+  }
+  function createFetchClient(options) {
+    const fetchFn = options.fetchImpl ?? globalThis.fetch;
+    return {
+      async request({
+        method,
+        path,
+        query,
+        body,
+        headers
+      }) {
+        const url = buildUrl(options.baseUrl, path, query);
+        const authHeaders = await buildAuthHeaders(options.auth);
+        const res = await fetchFn(url, {
+          method,
+          headers: {
+            ...body ? { "Content-Type": "application/json" } : {},
+            ...authHeaders,
+            ...headers
+          },
+          body: body ? JSON.stringify(body) : void 0
+        });
+        const text = await res.text();
+        const isJson = (res.headers.get("content-type") || "").includes("application/json");
+        const data = isJson && text ? JSON.parse(text) : text;
+        if (!res.ok) {
+          const errBody = isJson ? data : void 0;
+          const errorDetail = errBody?.error;
+          throw new IcebergError(
+            errorDetail?.message ?? `Request failed with status ${res.status}`,
+            {
+              status: res.status,
+              icebergType: errorDetail?.type,
+              icebergCode: errorDetail?.code,
+              details: errBody
+            }
+          );
+        }
+        return { status: res.status, headers: res.headers, data };
+      }
+    };
+  }
+
+  // src/catalog/namespaces.ts
+  function namespaceToPath(namespace) {
+    return namespace.join("");
+  }
+  var NamespaceOperations = class {
+    constructor(client, prefix = "") {
+      this.client = client;
+      this.prefix = prefix;
+    }
+    async listNamespaces(parent) {
+      const query = parent ? { parent: namespaceToPath(parent.namespace) } : void 0;
+      const response = await this.client.request({
+        method: "GET",
+        path: `${this.prefix}/namespaces`,
+        query
+      });
+      return response.data.namespaces.map((ns) => ({ namespace: ns }));
+    }
+    async createNamespace(id, metadata) {
+      const request = {
+        namespace: id.namespace,
+        properties: metadata?.properties
+      };
+      const response = await this.client.request({
+        method: "POST",
+        path: `${this.prefix}/namespaces`,
+        body: request
+      });
+      return response.data;
+    }
+    async dropNamespace(id) {
+      await this.client.request({
+        method: "DELETE",
+        path: `${this.prefix}/namespaces/${namespaceToPath(id.namespace)}`
+      });
+    }
+    async loadNamespaceMetadata(id) {
+      const response = await this.client.request({
+        method: "GET",
+        path: `${this.prefix}/namespaces/${namespaceToPath(id.namespace)}`
+      });
+      return {
+        properties: response.data.properties
+      };
+    }
+    async namespaceExists(id) {
+      try {
+        await this.client.request({
+          method: "HEAD",
+          path: `${this.prefix}/namespaces/${namespaceToPath(id.namespace)}`
+        });
+        return true;
+      } catch (error) {
+        if (error instanceof IcebergError && error.status === 404) {
+          return false;
+        }
+        throw error;
+      }
+    }
+    async createNamespaceIfNotExists(id, metadata) {
+      try {
+        return await this.createNamespace(id, metadata);
+      } catch (error) {
+        if (error instanceof IcebergError && error.status === 409) {
+          return;
+        }
+        throw error;
+      }
+    }
+  };
+
+  // src/catalog/tables.ts
+  function namespaceToPath2(namespace) {
+    return namespace.join("");
+  }
+  var TableOperations = class {
+    constructor(client, prefix = "", accessDelegation) {
+      this.client = client;
+      this.prefix = prefix;
+      this.accessDelegation = accessDelegation;
+    }
+    async listTables(namespace) {
+      const response = await this.client.request({
+        method: "GET",
+        path: `${this.prefix}/namespaces/${namespaceToPath2(namespace.namespace)}/tables`
+      });
+      return response.data.identifiers;
+    }
+    async createTable(namespace, request) {
+      const headers = {};
+      if (this.accessDelegation) {
+        headers["X-Iceberg-Access-Delegation"] = this.accessDelegation;
+      }
+      const response = await this.client.request({
+        method: "POST",
+        path: `${this.prefix}/namespaces/${namespaceToPath2(namespace.namespace)}/tables`,
+        body: request,
+        headers
+      });
+      return response.data.metadata;
+    }
+    async updateTable(id, request) {
+      const response = await this.client.request({
+        method: "POST",
+        path: `${this.prefix}/namespaces/${namespaceToPath2(id.namespace)}/tables/${id.name}`,
+        body: request
+      });
+      return {
+        "metadata-location": response.data["metadata-location"],
+        metadata: response.data.metadata
+      };
+    }
+    async dropTable(id, options) {
+      await this.client.request({
+        method: "DELETE",
+        path: `${this.prefix}/namespaces/${namespaceToPath2(id.namespace)}/tables/${id.name}`,
+        query: { purgeRequested: String(options?.purge ?? false) }
+      });
+    }
+    async loadTable(id) {
+      const headers = {};
+      if (this.accessDelegation) {
+        headers["X-Iceberg-Access-Delegation"] = this.accessDelegation;
+      }
+      const response = await this.client.request({
+        method: "GET",
+        path: `${this.prefix}/namespaces/${namespaceToPath2(id.namespace)}/tables/${id.name}`,
+        headers
+      });
+      return response.data.metadata;
+    }
+    async tableExists(id) {
+      const headers = {};
+      if (this.accessDelegation) {
+        headers["X-Iceberg-Access-Delegation"] = this.accessDelegation;
+      }
+      try {
+        await this.client.request({
+          method: "HEAD",
+          path: `${this.prefix}/namespaces/${namespaceToPath2(id.namespace)}/tables/${id.name}`,
+          headers
+        });
+        return true;
+      } catch (error) {
+        if (error instanceof IcebergError && error.status === 404) {
+          return false;
+        }
+        throw error;
+      }
+    }
+    async createTableIfNotExists(namespace, request) {
+      try {
+        return await this.createTable(namespace, request);
+      } catch (error) {
+        if (error instanceof IcebergError && error.status === 409) {
+          return await this.loadTable({ namespace: namespace.namespace, name: request.name });
+        }
+        throw error;
+      }
+    }
+  };
+
+  // src/catalog/IcebergRestCatalog.ts
+  var IcebergRestCatalog = class {
+    /**
+     * Creates a new Iceberg REST Catalog client.
+     *
+     * @param options - Configuration options for the catalog client
+     */
+    constructor(options) {
+      let prefix = "v1";
+      if (options.catalogName) {
+        prefix += `/${options.catalogName}`;
+      }
+      const baseUrl = options.baseUrl.endsWith("/") ? options.baseUrl : `${options.baseUrl}/`;
+      this.client = createFetchClient({
+        baseUrl,
+        auth: options.auth,
+        fetchImpl: options.fetch
+      });
+      this.accessDelegation = options.accessDelegation?.join(",");
+      this.namespaceOps = new NamespaceOperations(this.client, prefix);
+      this.tableOps = new TableOperations(this.client, prefix, this.accessDelegation);
+    }
+    /**
+     * Lists all namespaces in the catalog.
+     *
+     * @param parent - Optional parent namespace to list children under
+     * @returns Array of namespace identifiers
+     *
+     * @example
+     * ```typescript
+     * // List all top-level namespaces
+     * const namespaces = await catalog.listNamespaces();
+     *
+     * // List namespaces under a parent
+     * const children = await catalog.listNamespaces({ namespace: ['analytics'] });
+     * ```
+     */
+    async listNamespaces(parent) {
+      return this.namespaceOps.listNamespaces(parent);
+    }
+    /**
+     * Creates a new namespace in the catalog.
+     *
+     * @param id - Namespace identifier to create
+     * @param metadata - Optional metadata properties for the namespace
+     * @returns Response containing the created namespace and its properties
+     *
+     * @example
+     * ```typescript
+     * const response = await catalog.createNamespace(
+     *   { namespace: ['analytics'] },
+     *   { properties: { owner: 'data-team' } }
+     * );
+     * console.log(response.namespace); // ['analytics']
+     * console.log(response.properties); // { owner: 'data-team', ... }
+     * ```
+     */
+    async createNamespace(id, metadata) {
+      return this.namespaceOps.createNamespace(id, metadata);
+    }
+    /**
+     * Drops a namespace from the catalog.
+     *
+     * The namespace must be empty (contain no tables) before it can be dropped.
+     *
+     * @param id - Namespace identifier to drop
+     *
+     * @example
+     * ```typescript
+     * await catalog.dropNamespace({ namespace: ['analytics'] });
+     * ```
+     */
+    async dropNamespace(id) {
+      await this.namespaceOps.dropNamespace(id);
+    }
+    /**
+     * Loads metadata for a namespace.
+     *
+     * @param id - Namespace identifier to load
+     * @returns Namespace metadata including properties
+     *
+     * @example
+     * ```typescript
+     * const metadata = await catalog.loadNamespaceMetadata({ namespace: ['analytics'] });
+     * console.log(metadata.properties);
+     * ```
+     */
+    async loadNamespaceMetadata(id) {
+      return this.namespaceOps.loadNamespaceMetadata(id);
+    }
+    /**
+     * Lists all tables in a namespace.
+     *
+     * @param namespace - Namespace identifier to list tables from
+     * @returns Array of table identifiers
+     *
+     * @example
+     * ```typescript
+     * const tables = await catalog.listTables({ namespace: ['analytics'] });
+     * console.log(tables); // [{ namespace: ['analytics'], name: 'events' }, ...]
+     * ```
+     */
+    async listTables(namespace) {
+      return this.tableOps.listTables(namespace);
+    }
+    /**
+     * Creates a new table in the catalog.
+     *
+     * @param namespace - Namespace to create the table in
+     * @param request - Table creation request including name, schema, partition spec, etc.
+     * @returns Table metadata for the created table
+     *
+     * @example
+     * ```typescript
+     * const metadata = await catalog.createTable(
+     *   { namespace: ['analytics'] },
+     *   {
+     *     name: 'events',
+     *     schema: {
+     *       type: 'struct',
+     *       fields: [
+     *         { id: 1, name: 'id', type: 'long', required: true },
+     *         { id: 2, name: 'timestamp', type: 'timestamp', required: true }
+     *       ],
+     *       'schema-id': 0
+     *     },
+     *     'partition-spec': {
+     *       'spec-id': 0,
+     *       fields: [
+     *         { source_id: 2, field_id: 1000, name: 'ts_day', transform: 'day' }
+     *       ]
+     *     }
+     *   }
+     * );
+     * ```
+     */
+    async createTable(namespace, request) {
+      return this.tableOps.createTable(namespace, request);
+    }
+    /**
+     * Updates an existing table's metadata.
+     *
+     * Can update the schema, partition spec, or properties of a table.
+     *
+     * @param id - Table identifier to update
+     * @param request - Update request with fields to modify
+     * @returns Response containing the metadata location and updated table metadata
+     *
+     * @example
+     * ```typescript
+     * const response = await catalog.updateTable(
+     *   { namespace: ['analytics'], name: 'events' },
+     *   {
+     *     properties: { 'read.split.target-size': '134217728' }
+     *   }
+     * );
+     * console.log(response['metadata-location']); // s3://...
+     * console.log(response.metadata); // TableMetadata object
+     * ```
+     */
+    async updateTable(id, request) {
+      return this.tableOps.updateTable(id, request);
+    }
+    /**
+     * Drops a table from the catalog.
+     *
+     * @param id - Table identifier to drop
+     *
+     * @example
+     * ```typescript
+     * await catalog.dropTable({ namespace: ['analytics'], name: 'events' });
+     * ```
+     */
+    async dropTable(id, options) {
+      await this.tableOps.dropTable(id, options);
+    }
+    /**
+     * Loads metadata for a table.
+     *
+     * @param id - Table identifier to load
+     * @returns Table metadata including schema, partition spec, location, etc.
+     *
+     * @example
+     * ```typescript
+     * const metadata = await catalog.loadTable({ namespace: ['analytics'], name: 'events' });
+     * console.log(metadata.schema);
+     * console.log(metadata.location);
+     * ```
+     */
+    async loadTable(id) {
+      return this.tableOps.loadTable(id);
+    }
+    /**
+     * Checks if a namespace exists in the catalog.
+     *
+     * @param id - Namespace identifier to check
+     * @returns True if the namespace exists, false otherwise
+     *
+     * @example
+     * ```typescript
+     * const exists = await catalog.namespaceExists({ namespace: ['analytics'] });
+     * console.log(exists); // true or false
+     * ```
+     */
+    async namespaceExists(id) {
+      return this.namespaceOps.namespaceExists(id);
+    }
+    /**
+     * Checks if a table exists in the catalog.
+     *
+     * @param id - Table identifier to check
+     * @returns True if the table exists, false otherwise
+     *
+     * @example
+     * ```typescript
+     * const exists = await catalog.tableExists({ namespace: ['analytics'], name: 'events' });
+     * console.log(exists); // true or false
+     * ```
+     */
+    async tableExists(id) {
+      return this.tableOps.tableExists(id);
+    }
+    /**
+     * Creates a namespace if it does not exist.
+     *
+     * If the namespace already exists, returns void. If created, returns the response.
+     *
+     * @param id - Namespace identifier to create
+     * @param metadata - Optional metadata properties for the namespace
+     * @returns Response containing the created namespace and its properties, or void if it already exists
+     *
+     * @example
+     * ```typescript
+     * const response = await catalog.createNamespaceIfNotExists(
+     *   { namespace: ['analytics'] },
+     *   { properties: { owner: 'data-team' } }
+     * );
+     * if (response) {
+     *   console.log('Created:', response.namespace);
+     * } else {
+     *   console.log('Already exists');
+     * }
+     * ```
+     */
+    async createNamespaceIfNotExists(id, metadata) {
+      return this.namespaceOps.createNamespaceIfNotExists(id, metadata);
+    }
+    /**
+     * Creates a table if it does not exist.
+     *
+     * If the table already exists, returns its metadata instead.
+     *
+     * @param namespace - Namespace to create the table in
+     * @param request - Table creation request including name, schema, partition spec, etc.
+     * @returns Table metadata for the created or existing table
+     *
+     * @example
+     * ```typescript
+     * const metadata = await catalog.createTableIfNotExists(
+     *   { namespace: ['analytics'] },
+     *   {
+     *     name: 'events',
+     *     schema: {
+     *       type: 'struct',
+     *       fields: [
+     *         { id: 1, name: 'id', type: 'long', required: true },
+     *         { id: 2, name: 'timestamp', type: 'timestamp', required: true }
+     *       ],
+     *       'schema-id': 0
+     *     }
+     *   }
+     * );
+     * ```
+     */
+    async createTableIfNotExists(namespace, request) {
+      return this.tableOps.createTableIfNotExists(namespace, request);
+    }
+  };
+
   /**
-   * API class for managing Analytics Buckets using Iceberg tables
+   * Client class for managing Analytics Buckets using Iceberg tables
    * Provides methods for creating, listing, and deleting analytics buckets
    */
-  class StorageAnalyticsApi {
+  class StorageAnalyticsClient {
       /**
-       * Creates a new StorageAnalyticsApi instance
+       * @alpha
+       *
+       * Creates a new StorageAnalyticsClient instance
+       *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Analytics Buckets
        * @param url - The base URL for the storage API
        * @param headers - HTTP headers to include in requests
        * @param fetch - Optional custom fetch implementation
+       *
+       * @example
+       * ```typescript
+       * const client = new StorageAnalyticsClient(url, headers)
+       * ```
        */
       constructor(url, headers = {}, fetch) {
           this.shouldThrowOnError = false;
@@ -7075,9 +8718,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           this.fetch = resolveFetch$3(fetch);
       }
       /**
+       * @alpha
+       *
        * Enable throwing errors instead of returning them in the response
        * When enabled, failed operations will throw instead of returning { data: null, error }
        *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Analytics Buckets
        * @returns This instance for method chaining
        */
       throwOnError() {
@@ -7085,19 +8733,36 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           return this;
       }
       /**
+       * @alpha
+       *
        * Creates a new analytics bucket using Iceberg tables
        * Analytics buckets are optimized for analytical queries and data processing
        *
-       * @param name A unique name for the bucket you are creating
-       * @returns Promise with newly created bucket name or error
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
        *
-       * @example
-       * ```typescript
-       * const { data, error } = await storage.analytics.createBucket('analytics-data')
-       * if (error) {
-       *   console.error('Failed to create analytics bucket:', error.message)
-       * } else {
-       *   console.log('Created bucket:', data.name)
+       * @category Analytics Buckets
+       * @param name A unique name for the bucket you are creating
+       * @returns Promise with response containing newly created analytics bucket or error
+       *
+       * @example Create analytics bucket
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .analytics
+       *   .createBucket('analytics-data')
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": {
+       *     "name": "analytics-data",
+       *     "type": "ANALYTICS",
+       *     "format": "iceberg",
+       *     "created_at": "2024-05-22T22:26:05.100Z",
+       *     "updated_at": "2024-05-22T22:26:05.100Z"
+       *   },
+       *   "error": null
        * }
        * ```
        */
@@ -7119,29 +8784,48 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           });
       }
       /**
+       * @alpha
+       *
        * Retrieves the details of all Analytics Storage buckets within an existing project
        * Only returns buckets of type 'ANALYTICS'
        *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Analytics Buckets
        * @param options Query parameters for listing buckets
        * @param options.limit Maximum number of buckets to return
        * @param options.offset Number of buckets to skip
-       * @param options.sortColumn Column to sort by ('id', 'name', 'created_at', 'updated_at')
+       * @param options.sortColumn Column to sort by ('name', 'created_at', 'updated_at')
        * @param options.sortOrder Sort order ('asc' or 'desc')
        * @param options.search Search term to filter bucket names
-       * @returns Promise with list of analytics buckets or error
+       * @returns Promise with response containing array of analytics buckets or error
        *
-       * @example
-       * ```typescript
-       * const { data, error } = await storage.analytics.listBuckets({
-       *   limit: 10,
-       *   offset: 0,
-       *   sortColumn: 'created_at',
-       *   sortOrder: 'desc',
-       *   search: 'analytics'
-       * })
-       * if (data) {
-       *   console.log('Found analytics buckets:', data.length)
-       *   data.forEach(bucket => console.log(`- ${bucket.name}`))
+       * @example List analytics buckets
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .analytics
+       *   .listBuckets({
+       *     limit: 10,
+       *     offset: 0,
+       *     sortColumn: 'created_at',
+       *     sortOrder: 'desc'
+       *   })
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": [
+       *     {
+       *       "name": "analytics-data",
+       *       "type": "ANALYTICS",
+       *       "format": "iceberg",
+       *       "created_at": "2024-05-22T22:26:05.100Z",
+       *       "updated_at": "2024-05-22T22:26:05.100Z"
+       *     }
+       *   ],
+       *   "error": null
        * }
        * ```
        */
@@ -7177,27 +8861,40 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           });
       }
       /**
+       * @alpha
+       *
        * Deletes an existing analytics bucket
        * A bucket can't be deleted with existing objects inside it
        * You must first empty the bucket before deletion
        *
-       * @param bucketId The unique identifier of the bucket you would like to delete
-       * @returns Promise with success message or error
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
        *
-       * @example
-       * ```typescript
-       * const { data, error } = await analyticsApi.deleteBucket('old-analytics-bucket')
-       * if (error) {
-       *   console.error('Failed to delete bucket:', error.message)
-       * } else {
-       *   console.log('Bucket deleted successfully:', data.message)
+       * @category Analytics Buckets
+       * @param bucketName The unique identifier of the bucket you would like to delete
+       * @returns Promise with response containing success message or error
+       *
+       * @example Delete analytics bucket
+       * ```js
+       * const { data, error } = await supabase
+       *   .storage
+       *   .analytics
+       *   .deleteBucket('analytics-data')
+       * ```
+       *
+       * Response:
+       * ```json
+       * {
+       *   "data": {
+       *     "message": "Successfully deleted"
+       *   },
+       *   "error": null
        * }
        * ```
        */
-      deleteBucket(bucketId) {
+      deleteBucket(bucketName) {
           return __awaiter(this, void 0, void 0, function* () {
               try {
-                  const data = yield remove(this.fetch, `${this.url}/bucket/${bucketId}`, {}, { headers: this.headers });
+                  const data = yield remove(this.fetch, `${this.url}/bucket/${bucketName}`, {}, { headers: this.headers });
                   return { data, error: null };
               }
               catch (error) {
@@ -7209,6 +8906,161 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                   }
                   throw error;
               }
+          });
+      }
+      /**
+       * @alpha
+       *
+       * Get an Iceberg REST Catalog client configured for a specific analytics bucket
+       * Use this to perform advanced table and namespace operations within the bucket
+       * The returned client provides full access to the Apache Iceberg REST Catalog API
+       *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Analytics Buckets
+       * @param bucketName - The name of the analytics bucket (warehouse) to connect to
+       * @returns Configured IcebergRestCatalog instance for advanced Iceberg operations
+       *
+       * @example Get catalog and create table
+       * ```js
+       * // First, create an analytics bucket
+       * const { data: bucket, error: bucketError } = await supabase
+       *   .storage
+       *   .analytics
+       *   .createBucket('analytics-data')
+       *
+       * // Get the Iceberg catalog for that bucket
+       * const catalog = supabase.storage.analytics.from('analytics-data')
+       *
+       * // Create a namespace
+       * await catalog.createNamespace({ namespace: ['default'] })
+       *
+       * // Create a table with schema
+       * await catalog.createTable(
+       *   { namespace: ['default'] },
+       *   {
+       *     name: 'events',
+       *     schema: {
+       *       type: 'struct',
+       *       fields: [
+       *         { id: 1, name: 'id', type: 'long', required: true },
+       *         { id: 2, name: 'timestamp', type: 'timestamp', required: true },
+       *         { id: 3, name: 'user_id', type: 'string', required: false }
+       *       ],
+       *       'schema-id': 0,
+       *       'identifier-field-ids': [1]
+       *     },
+       *     'partition-spec': {
+       *       'spec-id': 0,
+       *       fields: []
+       *     },
+       *     'write-order': {
+       *       'order-id': 0,
+       *       fields: []
+       *     },
+       *     properties: {
+       *       'write.format.default': 'parquet'
+       *     }
+       *   }
+       * )
+       * ```
+       *
+       * @example List tables in namespace
+       * ```js
+       * const catalog = supabase.storage.analytics.from('analytics-data')
+       *
+       * // List all tables in the default namespace
+       * const tables = await catalog.listTables({ namespace: ['default'] })
+       * console.log(tables) // [{ namespace: ['default'], name: 'events' }]
+       * ```
+       *
+       * @example Working with namespaces
+       * ```js
+       * const catalog = supabase.storage.analytics.from('analytics-data')
+       *
+       * // List all namespaces
+       * const namespaces = await catalog.listNamespaces()
+       *
+       * // Create namespace with properties
+       * await catalog.createNamespace(
+       *   { namespace: ['production'] },
+       *   { properties: { owner: 'data-team', env: 'prod' } }
+       * )
+       * ```
+       *
+       * @example Cleanup operations
+       * ```js
+       * const catalog = supabase.storage.analytics.from('analytics-data')
+       *
+       * // Drop table with purge option (removes all data)
+       * await catalog.dropTable(
+       *   { namespace: ['default'], name: 'events' },
+       *   { purge: true }
+       * )
+       *
+       * // Drop namespace (must be empty)
+       * await catalog.dropNamespace({ namespace: ['default'] })
+       * ```
+       *
+       * @example Error handling with catalog operations
+       * ```js
+       * import { IcebergError } from 'iceberg-js'
+       *
+       * const catalog = supabase.storage.analytics.from('analytics-data')
+       *
+       * try {
+       *   await catalog.dropTable({ namespace: ['default'], name: 'events' }, { purge: true })
+       * } catch (error) {
+       *   // Handle 404 errors (resource not found)
+       *   const is404 =
+       *     (error instanceof IcebergError && error.status === 404) ||
+       *     error?.status === 404 ||
+       *     error?.details?.error?.code === 404
+       *
+       *   if (is404) {
+       *     console.log('Table does not exist')
+       *   } else {
+       *     throw error // Re-throw other errors
+       *   }
+       * }
+       * ```
+       *
+       * @remarks
+       * This method provides a bridge between Supabase's bucket management and the standard
+       * Apache Iceberg REST Catalog API. The bucket name maps to the Iceberg warehouse parameter.
+       * All authentication and configuration is handled automatically using your Supabase credentials.
+       *
+       * **Error Handling**: Operations may throw `IcebergError` from the iceberg-js library.
+       * Always handle 404 errors gracefully when checking for resource existence.
+       *
+       * **Cleanup Operations**: When using `dropTable`, the `purge: true` option permanently
+       * deletes all table data. Without it, the table is marked as deleted but data remains.
+       *
+       * **Library Dependency**: The returned catalog is an instance of `IcebergRestCatalog`
+       * from iceberg-js. For complete API documentation and advanced usage, refer to the
+       * [iceberg-js documentation](https://supabase.github.io/iceberg-js/).
+       *
+       * For advanced Iceberg operations beyond bucket management, you can also install and use
+       * the `iceberg-js` package directly with manual configuration.
+       */
+      from(bucketName) {
+          // Validate bucket name using same rules as Supabase Storage API backend
+          if (!isValidBucketName(bucketName)) {
+              throw new StorageError('Invalid bucket name: File, folder, and bucket names must follow AWS object key naming guidelines ' +
+                  'and should avoid the use of any other characters.');
+          }
+          // Construct the Iceberg REST Catalog URL
+          // The base URL is /storage/v1/iceberg
+          // Note: IcebergRestCatalog from iceberg-js automatically adds /v1/ prefix to API paths
+          // so we should NOT append /v1 here (it would cause double /v1/v1/ in the URL)
+          return new IcebergRestCatalog({
+              baseUrl: this.url,
+              catalogName: bucketName, // Maps to the warehouse parameter in Supabase's implementation
+              auth: {
+                  type: 'custom',
+                  getHeaders: () => __awaiter(this, void 0, void 0, function* () { return this.headers; }),
+              },
+              fetch: this.fetch,
           });
       }
   }
@@ -7438,65 +9290,24 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   /**
-   * API class for managing Vector Indexes within Vector Buckets
-   * Provides methods for creating, reading, listing, and deleting vector indexes
+   * @hidden
+   * Base implementation for vector index operations.
+   * Use {@link VectorBucketScope} via `supabase.storage.vectors.from('bucket')` instead.
    */
   class VectorIndexApi {
+      /** Creates a new VectorIndexApi instance */
       constructor(url, headers = {}, fetch) {
           this.shouldThrowOnError = false;
           this.url = url.replace(/\/$/, '');
           this.headers = Object.assign(Object.assign({}, DEFAULT_HEADERS$2), headers);
           this.fetch = resolveFetch$2(fetch);
       }
-      /**
-       * Enable throwing errors instead of returning them in the response
-       * When enabled, failed operations will throw instead of returning { data: null, error }
-       *
-       * @returns This instance for method chaining
-       * @example
-       * ```typescript
-       * const client = new VectorIndexApi(url, headers)
-       * client.throwOnError()
-       * const { data } = await client.createIndex(options) // throws on error
-       * ```
-       */
+      /** Enable throwing errors instead of returning them in the response */
       throwOnError() {
           this.shouldThrowOnError = true;
           return this;
       }
-      /**
-       * Creates a new vector index within a bucket
-       * Defines the schema for vectors including dimensionality, distance metric, and metadata config
-       *
-       * @param options - Index configuration
-       * @param options.vectorBucketName - Name of the parent vector bucket
-       * @param options.indexName - Unique name for the index within the bucket
-       * @param options.dataType - Data type for vector components (currently only 'float32')
-       * @param options.dimension - Dimensionality of vectors (e.g., 384, 768, 1536)
-       * @param options.distanceMetric - Similarity metric ('cosine', 'euclidean', 'dotproduct')
-       * @param options.metadataConfiguration - Optional config for non-filterable metadata keys
-       * @returns Promise with empty response on success or error
-       *
-       * @throws {StorageVectorsApiError} With code:
-       * - `S3VectorConflictException` if index already exists (HTTP 409)
-       * - `S3VectorMaxIndexesExceeded` if quota exceeded (HTTP 400)
-       * - `S3VectorNotFoundException` if bucket doesn't exist (HTTP 404)
-       * - `InternalError` for server errors (HTTP 500)
-       *
-       * @example
-       * ```typescript
-       * const { data, error } = await client.createIndex({
-       *   vectorBucketName: 'embeddings-prod',
-       *   indexName: 'documents-openai-small',
-       *   dataType: 'float32',
-       *   dimension: 1536,
-       *   distanceMetric: 'cosine',
-       *   metadataConfiguration: {
-       *     nonFilterableMetadataKeys: ['raw_text', 'internal_id']
-       *   }
-       * })
-       * ```
-       */
+      /** Creates a new vector index within a bucket */
       createIndex(options) {
           return __awaiter(this, void 0, void 0, function* () {
               try {
@@ -7516,27 +9327,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               }
           });
       }
-      /**
-       * Retrieves metadata for a specific vector index
-       * Returns index configuration including dimension, distance metric, and metadata settings
-       *
-       * @param vectorBucketName - Name of the parent vector bucket
-       * @param indexName - Name of the index to retrieve
-       * @returns Promise with index metadata or error
-       *
-       * @throws {StorageVectorsApiError} With code:
-       * - `S3VectorNotFoundException` if index or bucket doesn't exist (HTTP 404)
-       * - `InternalError` for server errors (HTTP 500)
-       *
-       * @example
-       * ```typescript
-       * const { data, error } = await client.getIndex('embeddings-prod', 'documents-openai-small')
-       * if (data) {
-       *   console.log('Index dimension:', data.index.dimension)
-       *   console.log('Distance metric:', data.index.distanceMetric)
-       * }
-       * ```
-       */
+      /** Retrieves metadata for a specific vector index */
       getIndex(vectorBucketName, indexName) {
           return __awaiter(this, void 0, void 0, function* () {
               try {
@@ -7554,40 +9345,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               }
           });
       }
-      /**
-       * Lists vector indexes within a bucket with optional filtering and pagination
-       * Supports prefix-based filtering and paginated results
-       *
-       * @param options - Listing options
-       * @param options.vectorBucketName - Name of the parent vector bucket
-       * @param options.prefix - Filter indexes by name prefix
-       * @param options.maxResults - Maximum results per page (default: 100)
-       * @param options.nextToken - Pagination token from previous response
-       * @returns Promise with list of indexes and pagination token
-       *
-       * @throws {StorageVectorsApiError} With code:
-       * - `S3VectorNotFoundException` if bucket doesn't exist (HTTP 404)
-       * - `InternalError` for server errors (HTTP 500)
-       *
-       * @example
-       * ```typescript
-       * // List all indexes in a bucket
-       * const { data, error } = await client.listIndexes({
-       *   vectorBucketName: 'embeddings-prod',
-       *   prefix: 'documents-'
-       * })
-       * if (data) {
-       *   console.log('Found indexes:', data.indexes.map(i => i.indexName))
-       *   // Fetch next page if available
-       *   if (data.nextToken) {
-       *     const next = await client.listIndexes({
-       *       vectorBucketName: 'embeddings-prod',
-       *       nextToken: data.nextToken
-       *     })
-       *   }
-       * }
-       * ```
-       */
+      /** Lists vector indexes within a bucket with optional filtering and pagination */
       listIndexes(options) {
           return __awaiter(this, void 0, void 0, function* () {
               try {
@@ -7607,27 +9365,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               }
           });
       }
-      /**
-       * Deletes a vector index and all its data
-       * This operation removes the index schema and all vectors stored in the index
-       *
-       * @param vectorBucketName - Name of the parent vector bucket
-       * @param indexName - Name of the index to delete
-       * @returns Promise with empty response on success or error
-       *
-       * @throws {StorageVectorsApiError} With code:
-       * - `S3VectorNotFoundException` if index or bucket doesn't exist (HTTP 404)
-       * - `InternalError` for server errors (HTTP 500)
-       *
-       * @example
-       * ```typescript
-       * // Delete an index and all its vectors
-       * const { error } = await client.deleteIndex('embeddings-prod', 'old-index')
-       * if (!error) {
-       *   console.log('Index deleted successfully')
-       * }
-       * ```
-       */
+      /** Deletes a vector index and all its data */
       deleteIndex(vectorBucketName, indexName) {
           return __awaiter(this, void 0, void 0, function* () {
               try {
@@ -7648,67 +9386,24 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   /**
-   * API class for managing Vector Data within Vector Indexes
-   * Provides methods for inserting, querying, listing, and deleting vector embeddings
+   * @hidden
+   * Base implementation for vector data operations.
+   * Use {@link VectorIndexScope} via `supabase.storage.vectors.from('bucket').index('idx')` instead.
    */
   class VectorDataApi {
+      /** Creates a new VectorDataApi instance */
       constructor(url, headers = {}, fetch) {
           this.shouldThrowOnError = false;
           this.url = url.replace(/\/$/, '');
           this.headers = Object.assign(Object.assign({}, DEFAULT_HEADERS$2), headers);
           this.fetch = resolveFetch$2(fetch);
       }
-      /**
-       * Enable throwing errors instead of returning them in the response
-       * When enabled, failed operations will throw instead of returning { data: null, error }
-       *
-       * @returns This instance for method chaining
-       * @example
-       * ```typescript
-       * const client = new VectorDataApi(url, headers)
-       * client.throwOnError()
-       * const { data } = await client.putVectors(options) // throws on error
-       * ```
-       */
+      /** Enable throwing errors instead of returning them in the response */
       throwOnError() {
           this.shouldThrowOnError = true;
           return this;
       }
-      /**
-       * Inserts or updates vectors in batch (upsert operation)
-       * Accepts 1-500 vectors per request. Larger batches should be split
-       *
-       * @param options - Vector insertion options
-       * @param options.vectorBucketName - Name of the parent vector bucket
-       * @param options.indexName - Name of the target index
-       * @param options.vectors - Array of vectors to insert/update (1-500 items)
-       * @returns Promise with empty response on success or error
-       *
-       * @throws {StorageVectorsApiError} With code:
-       * - `S3VectorConflictException` if duplicate key conflict occurs (HTTP 409)
-       * - `S3VectorNotFoundException` if bucket or index doesn't exist (HTTP 404)
-       * - `InternalError` for server errors (HTTP 500)
-       *
-       * @example
-       * ```typescript
-       * const { data, error } = await client.putVectors({
-       *   vectorBucketName: 'embeddings-prod',
-       *   indexName: 'documents-openai-small',
-       *   vectors: [
-       *     {
-       *       key: 'doc-1',
-       *       data: { float32: [0.1, 0.2, 0.3, ...] }, // 1536 dimensions
-       *       metadata: { title: 'Introduction', page: 1 }
-       *     },
-       *     {
-       *       key: 'doc-2',
-       *       data: { float32: [0.4, 0.5, 0.6, ...] },
-       *       metadata: { title: 'Conclusion', page: 42 }
-       *     }
-       *   ]
-       * })
-       * ```
-       */
+      /** Inserts or updates vectors in batch (1-500 per request) */
       putVectors(options) {
           return __awaiter(this, void 0, void 0, function* () {
               try {
@@ -7732,37 +9427,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               }
           });
       }
-      /**
-       * Retrieves vectors by their keys in batch
-       * Optionally includes vector data and/or metadata in response
-       * Additional permissions required when returning data or metadata
-       *
-       * @param options - Vector retrieval options
-       * @param options.vectorBucketName - Name of the parent vector bucket
-       * @param options.indexName - Name of the index
-       * @param options.keys - Array of vector keys to retrieve
-       * @param options.returnData - Whether to include vector embeddings (requires permission)
-       * @param options.returnMetadata - Whether to include metadata (requires permission)
-       * @returns Promise with array of vectors or error
-       *
-       * @throws {StorageVectorsApiError} With code:
-       * - `S3VectorNotFoundException` if bucket or index doesn't exist (HTTP 404)
-       * - `InternalError` for server errors (HTTP 500)
-       *
-       * @example
-       * ```typescript
-       * const { data, error } = await client.getVectors({
-       *   vectorBucketName: 'embeddings-prod',
-       *   indexName: 'documents-openai-small',
-       *   keys: ['doc-1', 'doc-2', 'doc-3'],
-       *   returnData: false,     // Don't return embeddings
-       *   returnMetadata: true   // Return metadata only
-       * })
-       * if (data) {
-       *   data.vectors.forEach(v => console.log(v.key, v.metadata))
-       * }
-       * ```
-       */
+      /** Retrieves vectors by their keys in batch */
       getVectors(options) {
           return __awaiter(this, void 0, void 0, function* () {
               try {
@@ -7782,57 +9447,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               }
           });
       }
-      /**
-       * Lists/scans vectors in an index with pagination
-       * Supports parallel scanning via segment configuration for high-throughput scenarios
-       * Additional permissions required when returning data or metadata
-       *
-       * @param options - Vector listing options
-       * @param options.vectorBucketName - Name of the parent vector bucket
-       * @param options.indexName - Name of the index
-       * @param options.maxResults - Maximum results per page (default: 500, max: 1000)
-       * @param options.nextToken - Pagination token from previous response
-       * @param options.returnData - Whether to include vector embeddings (requires permission)
-       * @param options.returnMetadata - Whether to include metadata (requires permission)
-       * @param options.segmentCount - Total parallel segments (1-16) for distributed scanning
-       * @param options.segmentIndex - Zero-based segment index (0 to segmentCount-1)
-       * @returns Promise with array of vectors, pagination token, or error
-       *
-       * @throws {StorageVectorsApiError} With code:
-       * - `S3VectorNotFoundException` if bucket or index doesn't exist (HTTP 404)
-       * - `InternalError` for server errors (HTTP 500)
-       *
-       * @example
-       * ```typescript
-       * // Simple pagination
-       * let nextToken: string | undefined
-       * do {
-       *   const { data, error } = await client.listVectors({
-       *     vectorBucketName: 'embeddings-prod',
-       *     indexName: 'documents-openai-small',
-       *     maxResults: 500,
-       *     nextToken,
-       *     returnMetadata: true
-       *   })
-       *   if (error) break
-       *   console.log('Batch:', data.vectors.length)
-       *   nextToken = data.nextToken
-       * } while (nextToken)
-       *
-       * // Parallel scanning (4 concurrent workers)
-       * const workers = [0, 1, 2, 3].map(async (segmentIndex) => {
-       *   const { data } = await client.listVectors({
-       *     vectorBucketName: 'embeddings-prod',
-       *     indexName: 'documents-openai-small',
-       *     segmentCount: 4,
-       *     segmentIndex,
-       *     returnMetadata: true
-       *   })
-       *   return data?.vectors || []
-       * })
-       * const results = await Promise.all(workers)
-       * ```
-       */
+      /** Lists vectors in an index with pagination */
       listVectors(options) {
           return __awaiter(this, void 0, void 0, function* () {
               try {
@@ -7863,48 +9478,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               }
           });
       }
-      /**
-       * Queries for similar vectors using approximate nearest neighbor (ANN) search
-       * Returns top-K most similar vectors based on the configured distance metric
-       * Supports optional metadata filtering (requires GetVectors permission)
-       *
-       * @param options - Query options
-       * @param options.vectorBucketName - Name of the parent vector bucket
-       * @param options.indexName - Name of the index
-       * @param options.queryVector - Query embedding to find similar vectors
-       * @param options.topK - Number of nearest neighbors to return (default: 10)
-       * @param options.filter - Optional JSON filter for metadata (requires GetVectors permission)
-       * @param options.returnDistance - Whether to include similarity distances
-       * @param options.returnMetadata - Whether to include metadata (requires GetVectors permission)
-       * @returns Promise with array of similar vectors ordered by distance
-       *
-       * @throws {StorageVectorsApiError} With code:
-       * - `S3VectorNotFoundException` if bucket or index doesn't exist (HTTP 404)
-       * - `InternalError` for server errors (HTTP 500)
-       *
-       * @example
-       * ```typescript
-       * // Semantic search with filtering
-       * const { data, error } = await client.queryVectors({
-       *   vectorBucketName: 'embeddings-prod',
-       *   indexName: 'documents-openai-small',
-       *   queryVector: { float32: [0.1, 0.2, 0.3, ...] }, // 1536 dimensions
-       *   topK: 5,
-       *   filter: {
-       *     category: 'technical',
-       *     published: true
-       *   },
-       *   returnDistance: true,
-       *   returnMetadata: true
-       * })
-       * if (data) {
-       *   data.matches.forEach(match => {
-       *     console.log(`${match.key}: distance=${match.distance}`)
-       *     console.log('Metadata:', match.metadata)
-       *   })
-       * }
-       * ```
-       */
+      /** Queries for similar vectors using approximate nearest neighbor search */
       queryVectors(options) {
           return __awaiter(this, void 0, void 0, function* () {
               try {
@@ -7924,32 +9498,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               }
           });
       }
-      /**
-       * Deletes vectors by their keys in batch
-       * Accepts 1-500 keys per request
-       *
-       * @param options - Vector deletion options
-       * @param options.vectorBucketName - Name of the parent vector bucket
-       * @param options.indexName - Name of the index
-       * @param options.keys - Array of vector keys to delete (1-500 items)
-       * @returns Promise with empty response on success or error
-       *
-       * @throws {StorageVectorsApiError} With code:
-       * - `S3VectorNotFoundException` if bucket or index doesn't exist (HTTP 404)
-       * - `InternalError` for server errors (HTTP 500)
-       *
-       * @example
-       * ```typescript
-       * const { error } = await client.deleteVectors({
-       *   vectorBucketName: 'embeddings-prod',
-       *   indexName: 'documents-openai-small',
-       *   keys: ['doc-1', 'doc-2', 'doc-3']
-       * })
-       * if (!error) {
-       *   console.log('Vectors deleted successfully')
-       * }
-       * ```
-       */
+      /** Deletes vectors by their keys in batch (1-500 per request) */
       deleteVectors(options) {
           return __awaiter(this, void 0, void 0, function* () {
               try {
@@ -7976,58 +9525,24 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   /**
-   * API class for managing Vector Buckets
-   * Provides methods for creating, reading, listing, and deleting vector buckets
+   * @hidden
+   * Base implementation for vector bucket operations.
+   * Use {@link StorageVectorsClient} via `supabase.storage.vectors` instead.
    */
   class VectorBucketApi {
-      /**
-       * Creates a new VectorBucketApi instance
-       * @param url - The base URL for the storage vectors API
-       * @param headers - HTTP headers to include in requests
-       * @param fetch - Optional custom fetch implementation
-       */
+      /** Creates a new VectorBucketApi instance */
       constructor(url, headers = {}, fetch) {
           this.shouldThrowOnError = false;
           this.url = url.replace(/\/$/, '');
           this.headers = Object.assign(Object.assign({}, DEFAULT_HEADERS$2), headers);
           this.fetch = resolveFetch$2(fetch);
       }
-      /**
-       * Enable throwing errors instead of returning them in the response
-       * When enabled, failed operations will throw instead of returning { data: null, error }
-       *
-       * @returns This instance for method chaining
-       * @example
-       * ```typescript
-       * const client = new VectorBucketApi(url, headers)
-       * client.throwOnError()
-       * const { data } = await client.createBucket('my-bucket') // throws on error
-       * ```
-       */
+      /** Enable throwing errors instead of returning them in the response */
       throwOnError() {
           this.shouldThrowOnError = true;
           return this;
       }
-      /**
-       * Creates a new vector bucket
-       * Vector buckets are containers for vector indexes and their data
-       *
-       * @param vectorBucketName - Unique name for the vector bucket
-       * @returns Promise with empty response on success or error
-       *
-       * @throws {StorageVectorsApiError} With code:
-       * - `S3VectorConflictException` if bucket already exists (HTTP 409)
-       * - `S3VectorMaxBucketsExceeded` if quota exceeded (HTTP 400)
-       * - `InternalError` for server errors (HTTP 500)
-       *
-       * @example
-       * ```typescript
-       * const { data, error } = await client.createBucket('embeddings-prod')
-       * if (error) {
-       *   console.error('Failed to create bucket:', error.message)
-       * }
-       * ```
-       */
+      /** Creates a new vector bucket */
       createBucket(vectorBucketName) {
           return __awaiter(this, void 0, void 0, function* () {
               try {
@@ -8045,25 +9560,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               }
           });
       }
-      /**
-       * Retrieves metadata for a specific vector bucket
-       * Returns bucket configuration including encryption settings and creation time
-       *
-       * @param vectorBucketName - Name of the vector bucket to retrieve
-       * @returns Promise with bucket metadata or error
-       *
-       * @throws {StorageVectorsApiError} With code:
-       * - `S3VectorNotFoundException` if bucket doesn't exist (HTTP 404)
-       * - `InternalError` for server errors (HTTP 500)
-       *
-       * @example
-       * ```typescript
-       * const { data, error } = await client.getBucket('embeddings-prod')
-       * if (data) {
-       *   console.log('Bucket created at:', new Date(data.vectorBucket.creationTime! * 1000))
-       * }
-       * ```
-       */
+      /** Retrieves metadata for a specific vector bucket */
       getBucket(vectorBucketName) {
           return __awaiter(this, void 0, void 0, function* () {
               try {
@@ -8081,32 +9578,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               }
           });
       }
-      /**
-       * Lists vector buckets with optional filtering and pagination
-       * Supports prefix-based filtering and paginated results
-       *
-       * @param options - Listing options
-       * @param options.prefix - Filter buckets by name prefix
-       * @param options.maxResults - Maximum results per page (default: 100)
-       * @param options.nextToken - Pagination token from previous response
-       * @returns Promise with list of buckets and pagination token
-       *
-       * @throws {StorageVectorsApiError} With code:
-       * - `InternalError` for server errors (HTTP 500)
-       *
-       * @example
-       * ```typescript
-       * // List all buckets with prefix 'prod-'
-       * const { data, error } = await client.listBuckets({ prefix: 'prod-' })
-       * if (data) {
-       *   console.log('Found buckets:', data.buckets.length)
-       *   // Fetch next page if available
-       *   if (data.nextToken) {
-       *     const next = await client.listBuckets({ nextToken: data.nextToken })
-       *   }
-       * }
-       * ```
-       */
+      /** Lists vector buckets with optional filtering and pagination */
       listBuckets() {
           return __awaiter(this, arguments, void 0, function* (options = {}) {
               try {
@@ -8126,27 +9598,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               }
           });
       }
-      /**
-       * Deletes a vector bucket
-       * Bucket must be empty before deletion (all indexes must be removed first)
-       *
-       * @param vectorBucketName - Name of the vector bucket to delete
-       * @returns Promise with empty response on success or error
-       *
-       * @throws {StorageVectorsApiError} With code:
-       * - `S3VectorBucketNotEmpty` if bucket contains indexes (HTTP 400)
-       * - `S3VectorNotFoundException` if bucket doesn't exist (HTTP 404)
-       * - `InternalError` for server errors (HTTP 500)
-       *
-       * @example
-       * ```typescript
-       * // Delete all indexes first, then delete bucket
-       * const { error } = await client.deleteBucket('old-bucket')
-       * if (error?.statusCode === 'S3VectorBucketNotEmpty') {
-       *   console.error('Must delete all indexes first')
-       * }
-       * ```
-       */
+      /** Deletes a vector bucket (must be empty first) */
       deleteBucket(vectorBucketName) {
           return __awaiter(this, void 0, void 0, function* () {
               try {
@@ -8167,37 +9619,24 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   /**
+   *
+   * @alpha
+   *
    * Main client for interacting with S3 Vectors API
    * Provides access to bucket, index, and vector data operations
    *
+   * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+   *
    * **Usage Patterns:**
    *
-   * 1. **Via StorageClient (recommended for most use cases):**
    * ```typescript
-   * import { StorageClient } from '@supabase/storage-js'
-   *
-   * const storageClient = new StorageClient(url, headers)
-   * const vectors = storageClient.vectors
-   *
-   * // Use vector operations
-   * await vectors.createBucket('embeddings-prod')
-   * const bucket = vectors.from('embeddings-prod')
-   * await bucket.createIndex({ ... })
-   * ```
-   *
-   * 2. **Standalone (for vector-only applications):**
-   * ```typescript
-   * import { StorageVectorsClient } from '@supabase/storage-js'
-   *
-   * const vectorsClient = new StorageVectorsClient('https://api.example.com', {
-   *   headers: { 'Authorization': 'Bearer token' }
-   * })
-   *
-   * // Access bucket operations
-   * await vectorsClient.createBucket('embeddings-prod')
+   * const { data, error } = await supabase
+   *  .storage
+   *  .vectors
+   *  .createBucket('embeddings-prod')
    *
    * // Access index operations via buckets
-   * const bucket = vectorsClient.from('embeddings-prod')
+   * const bucket = supabase.storage.vectors.from('embeddings-prod')
    * await bucket.createIndex({
    *   indexName: 'documents',
    *   dataType: 'float32',
@@ -8222,55 +9661,211 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * ```
    */
   class StorageVectorsClient extends VectorBucketApi {
+      /**
+       * @alpha
+       *
+       * Creates a StorageVectorsClient that can manage buckets, indexes, and vectors.
+       *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Vector Buckets
+       * @param url - Base URL of the Storage Vectors REST API.
+       * @param options.headers - Optional headers (for example `Authorization`) applied to every request.
+       * @param options.fetch - Optional custom `fetch` implementation for non-browser runtimes.
+       *
+       * @example
+       * ```typescript
+       * const client = new StorageVectorsClient(url, options)
+       * ```
+       */
       constructor(url, options = {}) {
           super(url, options.headers || {}, options.fetch);
       }
       /**
+       *
+       * @alpha
+       *
        * Access operations for a specific vector bucket
        * Returns a scoped client for index and vector operations within the bucket
        *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Vector Buckets
        * @param vectorBucketName - Name of the vector bucket
        * @returns Bucket-scoped client with index and vector operations
        *
        * @example
        * ```typescript
-       * const bucket = client.bucket('embeddings-prod')
-       *
-       * // Create an index in this bucket
-       * await bucket.createIndex({
-       *   indexName: 'documents-openai',
-       *   dataType: 'float32',
-       *   dimension: 1536,
-       *   distanceMetric: 'cosine'
-       * })
-       *
-       * // List indexes in this bucket
-       * const { data } = await bucket.listIndexes()
+       * const bucket = supabase.storage.vectors.from('embeddings-prod')
        * ```
        */
       from(vectorBucketName) {
           return new VectorBucketScope(this.url, this.headers, vectorBucketName, this.fetch);
       }
+      /**
+       *
+       * @alpha
+       *
+       * Creates a new vector bucket
+       * Vector buckets are containers for vector indexes and their data
+       *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Vector Buckets
+       * @param vectorBucketName - Unique name for the vector bucket
+       * @returns Promise with empty response on success or error
+       *
+       * @example
+       * ```typescript
+       * const { data, error } = await supabase
+       *   .storage
+       *   .vectors
+       *   .createBucket('embeddings-prod')
+       * ```
+       */
+      createBucket(vectorBucketName) {
+          const _super = Object.create(null, {
+              createBucket: { get: () => super.createBucket }
+          });
+          return __awaiter(this, void 0, void 0, function* () {
+              return _super.createBucket.call(this, vectorBucketName);
+          });
+      }
+      /**
+       *
+       * @alpha
+       *
+       * Retrieves metadata for a specific vector bucket
+       *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Vector Buckets
+       * @param vectorBucketName - Name of the vector bucket
+       * @returns Promise with bucket metadata or error
+       *
+       * @example
+       * ```typescript
+       * const { data, error } = await supabase
+       *   .storage
+       *   .vectors
+       *   .getBucket('embeddings-prod')
+       *
+       * console.log('Bucket created:', data?.vectorBucket.creationTime)
+       * ```
+       */
+      getBucket(vectorBucketName) {
+          const _super = Object.create(null, {
+              getBucket: { get: () => super.getBucket }
+          });
+          return __awaiter(this, void 0, void 0, function* () {
+              return _super.getBucket.call(this, vectorBucketName);
+          });
+      }
+      /**
+       *
+       * @alpha
+       *
+       * Lists all vector buckets with optional filtering and pagination
+       *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Vector Buckets
+       * @param options - Optional filters (prefix, maxResults, nextToken)
+       * @returns Promise with list of buckets or error
+       *
+       * @example
+       * ```typescript
+       * const { data, error } = await supabase
+       *   .storage
+       *   .vectors
+       *   .listBuckets({ prefix: 'embeddings-' })
+       *
+       * data?.vectorBuckets.forEach(bucket => {
+       *   console.log(bucket.vectorBucketName)
+       * })
+       * ```
+       */
+      listBuckets() {
+          const _super = Object.create(null, {
+              listBuckets: { get: () => super.listBuckets }
+          });
+          return __awaiter(this, arguments, void 0, function* (options = {}) {
+              return _super.listBuckets.call(this, options);
+          });
+      }
+      /**
+       *
+       * @alpha
+       *
+       * Deletes a vector bucket (bucket must be empty)
+       * All indexes must be deleted before deleting the bucket
+       *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Vector Buckets
+       * @param vectorBucketName - Name of the vector bucket to delete
+       * @returns Promise with empty response on success or error
+       *
+       * @example
+       * ```typescript
+       * const { data, error } = await supabase
+       *   .storage
+       *   .vectors
+       *   .deleteBucket('embeddings-old')
+       * ```
+       */
+      deleteBucket(vectorBucketName) {
+          const _super = Object.create(null, {
+              deleteBucket: { get: () => super.deleteBucket }
+          });
+          return __awaiter(this, void 0, void 0, function* () {
+              return _super.deleteBucket.call(this, vectorBucketName);
+          });
+      }
   }
   /**
+   *
+   * @alpha
+   *
    * Scoped client for operations within a specific vector bucket
    * Provides index management and access to vector operations
+   *
+   * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
    */
   class VectorBucketScope extends VectorIndexApi {
+      /**
+       * @alpha
+       *
+       * Creates a helper that automatically scopes all index operations to the provided bucket.
+       *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Vector Buckets
+       * @example
+       * ```typescript
+       * const bucket = supabase.storage.vectors.from('embeddings-prod')
+       * ```
+       */
       constructor(url, headers, vectorBucketName, fetch) {
           super(url, headers, fetch);
           this.vectorBucketName = vectorBucketName;
       }
       /**
+       *
+       * @alpha
+       *
        * Creates a new vector index in this bucket
        * Convenience method that automatically includes the bucket name
        *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Vector Buckets
        * @param options - Index configuration (vectorBucketName is automatically set)
        * @returns Promise with empty response on success or error
        *
        * @example
        * ```typescript
-       * const bucket = client.bucket('embeddings-prod')
+       * const bucket = supabase.storage.vectors.from('embeddings-prod')
        * await bucket.createIndex({
        *   indexName: 'documents-openai',
        *   dataType: 'float32',
@@ -8291,15 +9886,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           });
       }
       /**
+       *
+       * @alpha
+       *
        * Lists indexes in this bucket
        * Convenience method that automatically includes the bucket name
        *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Vector Buckets
        * @param options - Listing options (vectorBucketName is automatically set)
-       * @returns Promise with list of indexes or error
+       * @returns Promise with response containing indexes array and pagination token or error
        *
        * @example
        * ```typescript
-       * const bucket = client.bucket('embeddings-prod')
+       * const bucket = supabase.storage.vectors.from('embeddings-prod')
        * const { data } = await bucket.listIndexes({ prefix: 'documents-' })
        * ```
        */
@@ -8312,15 +9913,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           });
       }
       /**
+       *
+       * @alpha
+       *
        * Retrieves metadata for a specific index in this bucket
        * Convenience method that automatically includes the bucket name
        *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Vector Buckets
        * @param indexName - Name of the index to retrieve
        * @returns Promise with index metadata or error
        *
        * @example
        * ```typescript
-       * const bucket = client.bucket('embeddings-prod')
+       * const bucket = supabase.storage.vectors.from('embeddings-prod')
        * const { data } = await bucket.getIndex('documents-openai')
        * console.log('Dimension:', data?.index.dimension)
        * ```
@@ -8334,15 +9941,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           });
       }
       /**
+       *
+       * @alpha
+       *
        * Deletes an index from this bucket
        * Convenience method that automatically includes the bucket name
        *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Vector Buckets
        * @param indexName - Name of the index to delete
        * @returns Promise with empty response on success or error
        *
        * @example
        * ```typescript
-       * const bucket = client.bucket('embeddings-prod')
+       * const bucket = supabase.storage.vectors.from('embeddings-prod')
        * await bucket.deleteIndex('old-index')
        * ```
        */
@@ -8355,15 +9968,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           });
       }
       /**
+       *
+       * @alpha
+       *
        * Access operations for a specific index within this bucket
        * Returns a scoped client for vector data operations
        *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Vector Buckets
        * @param indexName - Name of the index
        * @returns Index-scoped client with vector data operations
        *
        * @example
        * ```typescript
-       * const index = client.bucket('embeddings-prod').index('documents-openai')
+       * const index = supabase.storage.vectors.from('embeddings-prod').index('documents-openai')
        *
        * // Insert vectors
        * await index.putVectors({
@@ -8384,25 +10003,50 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
   }
   /**
+   *
+   * @alpha
+   *
    * Scoped client for operations within a specific vector index
    * Provides vector data operations (put, get, list, query, delete)
+   *
+   * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
    */
   class VectorIndexScope extends VectorDataApi {
+      /**
+       *
+       * @alpha
+       *
+       * Creates a helper that automatically scopes all vector operations to the provided bucket/index names.
+       *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Vector Buckets
+       * @example
+       * ```typescript
+       * const index = supabase.storage.vectors.from('embeddings-prod').index('documents-openai')
+       * ```
+       */
       constructor(url, headers, vectorBucketName, indexName, fetch) {
           super(url, headers, fetch);
           this.vectorBucketName = vectorBucketName;
           this.indexName = indexName;
       }
       /**
+       *
+       * @alpha
+       *
        * Inserts or updates vectors in this index
        * Convenience method that automatically includes bucket and index names
        *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Vector Buckets
        * @param options - Vector insertion options (bucket and index names automatically set)
        * @returns Promise with empty response on success or error
        *
        * @example
        * ```typescript
-       * const index = client.bucket('embeddings-prod').index('documents-openai')
+       * const index = supabase.storage.vectors.from('embeddings-prod').index('documents-openai')
        * await index.putVectors({
        *   vectors: [
        *     {
@@ -8423,15 +10067,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           });
       }
       /**
+       *
+       * @alpha
+       *
        * Retrieves vectors by keys from this index
        * Convenience method that automatically includes bucket and index names
        *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Vector Buckets
        * @param options - Vector retrieval options (bucket and index names automatically set)
-       * @returns Promise with array of vectors or error
+       * @returns Promise with response containing vectors array or error
        *
        * @example
        * ```typescript
-       * const index = client.bucket('embeddings-prod').index('documents-openai')
+       * const index = supabase.storage.vectors.from('embeddings-prod').index('documents-openai')
        * const { data } = await index.getVectors({
        *   keys: ['doc-1', 'doc-2'],
        *   returnMetadata: true
@@ -8447,15 +10097,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           });
       }
       /**
+       *
+       * @alpha
+       *
        * Lists vectors in this index with pagination
        * Convenience method that automatically includes bucket and index names
        *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Vector Buckets
        * @param options - Listing options (bucket and index names automatically set)
-       * @returns Promise with array of vectors and pagination token
+       * @returns Promise with response containing vectors array and pagination token or error
        *
        * @example
        * ```typescript
-       * const index = client.bucket('embeddings-prod').index('documents-openai')
+       * const index = supabase.storage.vectors.from('embeddings-prod').index('documents-openai')
        * const { data } = await index.listVectors({
        *   maxResults: 500,
        *   returnMetadata: true
@@ -8471,15 +10127,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           });
       }
       /**
+       *
+       * @alpha
+       *
        * Queries for similar vectors in this index
        * Convenience method that automatically includes bucket and index names
        *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Vector Buckets
        * @param options - Query options (bucket and index names automatically set)
-       * @returns Promise with array of similar vectors ordered by distance
+       * @returns Promise with response containing matches array of similar vectors ordered by distance or error
        *
        * @example
        * ```typescript
-       * const index = client.bucket('embeddings-prod').index('documents-openai')
+       * const index = supabase.storage.vectors.from('embeddings-prod').index('documents-openai')
        * const { data } = await index.queryVectors({
        *   queryVector: { float32: [0.1, 0.2, ...] },
        *   topK: 5,
@@ -8498,15 +10160,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           });
       }
       /**
+       *
+       * @alpha
+       *
        * Deletes vectors by keys from this index
        * Convenience method that automatically includes bucket and index names
        *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Vector Buckets
        * @param options - Deletion options (bucket and index names automatically set)
        * @returns Promise with empty response on success or error
        *
        * @example
        * ```typescript
-       * const index = client.bucket('embeddings-prod').index('documents-openai')
+       * const index = supabase.storage.vectors.from('embeddings-prod').index('documents-openai')
        * await index.deleteVectors({
        *   keys: ['doc-1', 'doc-2', 'doc-3']
        * })
@@ -8523,20 +10191,46 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   class StorageClient extends StorageBucketApi {
+      /**
+       * Creates a client for Storage buckets, files, analytics, and vectors.
+       *
+       * @category File Buckets
+       * @example
+       * ```ts
+       * import { StorageClient } from '@supabase/storage-js'
+       *
+       * const storage = new StorageClient('https://xyzcompany.supabase.co/storage/v1', {
+       *   apikey: 'public-anon-key',
+       * })
+       * const avatars = storage.from('avatars')
+       * ```
+       */
       constructor(url, headers = {}, fetch, opts) {
           super(url, headers, fetch, opts);
       }
       /**
        * Perform file operation in a bucket.
        *
+       * @category File Buckets
        * @param id The bucket id to operate on.
+       *
+       * @example
+       * ```typescript
+       * const avatars = supabase.storage.from('avatars')
+       * ```
        */
       from(id) {
           return new StorageFileApi(this.url, this.headers, id, this.fetch);
       }
       /**
+       *
+       * @alpha
+       *
        * Access vector storage operations.
        *
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
+       *
+       * @category Vector Buckets
        * @returns A StorageVectorsClient instance configured with the current storage settings.
        */
       get vectors() {
@@ -8546,26 +10240,18 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           });
       }
       /**
+       *
+       * @alpha
+       *
        * Access analytics storage operations using Iceberg tables.
        *
-       * @returns A StorageAnalyticsApi instance configured with the current storage settings.
-       * @example
-       * ```typescript
-       * const client = createClient(url, key)
-       * const analytics = client.storage.analytics
+       * **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
        *
-       * // Create an analytics bucket
-       * await analytics.createBucket('my-analytics-bucket')
-       *
-       * // List all analytics buckets
-       * const { data: buckets } = await analytics.listBuckets()
-       *
-       * // Delete an analytics bucket
-       * await analytics.deleteBucket('old-analytics-bucket')
-       * ```
+       * @category Analytics Buckets
+       * @returns A StorageAnalyticsClient instance configured with the current storage settings.
        */
       get analytics() {
-          return new StorageAnalyticsApi(this.url + '/iceberg', this.headers, this.fetch);
+          return new StorageAnalyticsClient(this.url + '/iceberg', this.headers, this.fetch);
       }
   }
 
@@ -8575,7 +10261,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   // - Debugging and support (identifying which version is running)
   // - Telemetry and logging (version reporting in errors/analytics)
   // - Ensuring build artifacts match the published package version
-  const version$1 = '2.79.0';
+  const version$1 = '2.86.0';
 
   let JS_ENV = '';
   // @ts-ignore
@@ -8685,7 +10371,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   // - Debugging and support (identifying which version is running)
   // - Telemetry and logging (version reporting in errors/analytics)
   // - Ensuring build artifacts match the published package version
-  const version = '2.79.0';
+  const version = '2.86.0';
 
   /** Current session will be checked for refresh at this interval. */
   const AUTO_REFRESH_TICK_DURATION_MS = 30 * 1000;
@@ -8709,6 +10395,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   const BASE64URL_REGEX = /^([a-z0-9_-]{4})*($|[a-z0-9_-]{3}$|[a-z0-9_-]{2}$)$/i;
   const JWKS_TTL = 10 * 60 * 1000; // 10 minutes
 
+  /**
+   * Base error thrown by Supabase Auth helpers.
+   *
+   * @example
+   * ```ts
+   * import { AuthError } from '@supabase/auth-js'
+   *
+   * throw new AuthError('Unexpected auth error', 500, 'unexpected')
+   * ```
+   */
   class AuthError extends Error {
       constructor(message, status, code) {
           super(message);
@@ -8721,6 +10417,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   function isAuthError(error) {
       return typeof error === 'object' && error !== null && '__isAuthError' in error;
   }
+  /**
+   * Error returned directly from the GoTrue REST API.
+   *
+   * @example
+   * ```ts
+   * import { AuthApiError } from '@supabase/auth-js'
+   *
+   * throw new AuthApiError('Invalid credentials', 400, 'invalid_credentials')
+   * ```
+   */
   class AuthApiError extends AuthError {
       constructor(message, status, code) {
           super(message, status, code);
@@ -8732,6 +10438,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   function isAuthApiError(error) {
       return isAuthError(error) && error.name === 'AuthApiError';
   }
+  /**
+   * Wraps non-standard errors so callers can inspect the root cause.
+   *
+   * @example
+   * ```ts
+   * import { AuthUnknownError } from '@supabase/auth-js'
+   *
+   * try {
+   *   await someAuthCall()
+   * } catch (err) {
+   *   throw new AuthUnknownError('Auth failed', err)
+   * }
+   * ```
+   */
   class AuthUnknownError extends AuthError {
       constructor(message, originalError) {
           super(message);
@@ -8739,6 +10459,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           this.originalError = originalError;
       }
   }
+  /**
+   * Flexible error class used to create named auth errors at runtime.
+   *
+   * @example
+   * ```ts
+   * import { CustomAuthError } from '@supabase/auth-js'
+   *
+   * throw new CustomAuthError('My custom auth error', 'MyAuthError', 400, 'custom_code')
+   * ```
+   */
   class CustomAuthError extends AuthError {
       constructor(message, name, status, code) {
           super(message, status, code);
@@ -8746,6 +10476,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           this.status = status;
       }
   }
+  /**
+   * Error thrown when an operation requires a session but none is present.
+   *
+   * @example
+   * ```ts
+   * import { AuthSessionMissingError } from '@supabase/auth-js'
+   *
+   * throw new AuthSessionMissingError()
+   * ```
+   */
   class AuthSessionMissingError extends CustomAuthError {
       constructor() {
           super('Auth session missing!', 'AuthSessionMissingError', 400, undefined);
@@ -8754,16 +10494,49 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   function isAuthSessionMissingError(error) {
       return isAuthError(error) && error.name === 'AuthSessionMissingError';
   }
+  /**
+   * Error thrown when the token response is malformed.
+   *
+   * @example
+   * ```ts
+   * import { AuthInvalidTokenResponseError } from '@supabase/auth-js'
+   *
+   * throw new AuthInvalidTokenResponseError()
+   * ```
+   */
   class AuthInvalidTokenResponseError extends CustomAuthError {
       constructor() {
           super('Auth session or user missing', 'AuthInvalidTokenResponseError', 500, undefined);
       }
   }
+  /**
+   * Error thrown when email/password credentials are invalid.
+   *
+   * @example
+   * ```ts
+   * import { AuthInvalidCredentialsError } from '@supabase/auth-js'
+   *
+   * throw new AuthInvalidCredentialsError('Email or password is incorrect')
+   * ```
+   */
   class AuthInvalidCredentialsError extends CustomAuthError {
       constructor(message) {
           super(message, 'AuthInvalidCredentialsError', 400, undefined);
       }
   }
+  /**
+   * Error thrown when implicit grant redirects contain an error.
+   *
+   * @example
+   * ```ts
+   * import { AuthImplicitGrantRedirectError } from '@supabase/auth-js'
+   *
+   * throw new AuthImplicitGrantRedirectError('OAuth redirect failed', {
+   *   error: 'access_denied',
+   *   code: 'oauth_error',
+   * })
+   * ```
+   */
   class AuthImplicitGrantRedirectError extends CustomAuthError {
       constructor(message, details = null) {
           super(message, 'AuthImplicitGrantRedirectError', 500, undefined);
@@ -8782,6 +10555,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   function isAuthImplicitGrantRedirectError(error) {
       return isAuthError(error) && error.name === 'AuthImplicitGrantRedirectError';
   }
+  /**
+   * Error thrown during PKCE code exchanges.
+   *
+   * @example
+   * ```ts
+   * import { AuthPKCEGrantCodeExchangeError } from '@supabase/auth-js'
+   *
+   * throw new AuthPKCEGrantCodeExchangeError('PKCE exchange failed')
+   * ```
+   */
   class AuthPKCEGrantCodeExchangeError extends CustomAuthError {
       constructor(message, details = null) {
           super(message, 'AuthPKCEGrantCodeExchangeError', 500, undefined);
@@ -8797,6 +10580,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           };
       }
   }
+  /**
+   * Error thrown when a transient fetch issue occurs.
+   *
+   * @example
+   * ```ts
+   * import { AuthRetryableFetchError } from '@supabase/auth-js'
+   *
+   * throw new AuthRetryableFetchError('Service temporarily unavailable', 503)
+   * ```
+   */
   class AuthRetryableFetchError extends CustomAuthError {
       constructor(message, status) {
           super(message, 'AuthRetryableFetchError', status, undefined);
@@ -8810,6 +10603,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * weak. Inspect the reasons to identify what password strength rules are
    * inadequate.
    */
+  /**
+   * Error thrown when a supplied password is considered weak.
+   *
+   * @example
+   * ```ts
+   * import { AuthWeakPasswordError } from '@supabase/auth-js'
+   *
+   * throw new AuthWeakPasswordError('Password too short', 400, ['min_length'])
+   * ```
+   */
   class AuthWeakPasswordError extends CustomAuthError {
       constructor(message, status, reasons) {
           super(message, 'AuthWeakPasswordError', status, 'weak_password');
@@ -8819,6 +10622,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   function isAuthWeakPasswordError(error) {
       return isAuthError(error) && error.name === 'AuthWeakPasswordError';
   }
+  /**
+   * Error thrown when a JWT cannot be verified or parsed.
+   *
+   * @example
+   * ```ts
+   * import { AuthInvalidJwtError } from '@supabase/auth-js'
+   *
+   * throw new AuthInvalidJwtError('Token signature is invalid')
+   * ```
+   */
   class AuthInvalidJwtError extends CustomAuthError {
       constructor(message) {
           super(message, 'AuthInvalidJwtError', 400, 'invalid_jwt');
@@ -9067,11 +10880,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       const timeNow = Math.round(Date.now() / 1000);
       return timeNow + expiresIn;
   }
-  function uuid() {
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-          const r = (Math.random() * 16) | 0, v = c == 'x' ? r : (r & 0x3) | 0x8;
-          return v.toString(16);
-      });
+  /**
+   * Generates a unique identifier for internal callback subscriptions.
+   *
+   * This function uses JavaScript Symbols to create guaranteed-unique identifiers
+   * for auth state change callbacks. Symbols are ideal for this use case because:
+   * - They are guaranteed unique by the JavaScript runtime
+   * - They work in all environments (browser, SSR, Node.js)
+   * - They avoid issues with Next.js 16 deterministic rendering requirements
+   * - They are perfect for internal, non-serializable identifiers
+   *
+   * Note: This function is only used for internal subscription management,
+   * not for security-critical operations like session tokens.
+   */
+  function generateCallbackId() {
+      return Symbol('auth-callback');
   }
   const isBrowser = () => typeof window !== 'undefined' && typeof document !== 'undefined';
   const localStorageWriteTests = {
@@ -9585,6 +11408,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   const SIGN_OUT_SCOPES = ['global', 'local', 'others'];
 
   class GoTrueAdminApi {
+      /**
+       * Creates an admin API client that can be used to manage users and OAuth clients.
+       *
+       * @example
+       * ```ts
+       * import { GoTrueAdminApi } from '@supabase/auth-js'
+       *
+       * const admin = new GoTrueAdminApi({
+       *   url: 'https://xyzcompany.supabase.co/auth/v1',
+       *   headers: { Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}` },
+       * })
+       * ```
+       */
       constructor({ url = '', headers = {}, fetch, }) {
           this.url = url;
           this.headers = headers;
@@ -10038,6 +11874,17 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * An error thrown when a lock cannot be acquired after some amount of time.
    *
    * Use the {@link #isAcquireTimeout} property instead of checking with `instanceof`.
+   *
+   * @example
+   * ```ts
+   * import { LockAcquireTimeoutError } from '@supabase/auth-js'
+   *
+   * class CustomLockError extends LockAcquireTimeoutError {
+   *   constructor() {
+   *     super('Lock timed out')
+   *   }
+   * }
+   * ```
    */
   class LockAcquireTimeoutError extends Error {
       constructor(message) {
@@ -10045,8 +11892,28 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           this.isAcquireTimeout = true;
       }
   }
+  /**
+   * Error thrown when the browser Navigator Lock API fails to acquire a lock.
+   *
+   * @example
+   * ```ts
+   * import { NavigatorLockAcquireTimeoutError } from '@supabase/auth-js'
+   *
+   * throw new NavigatorLockAcquireTimeoutError('Lock timed out')
+   * ```
+   */
   class NavigatorLockAcquireTimeoutError extends LockAcquireTimeoutError {
   }
+  /**
+   * Error thrown when the process-level lock helper cannot acquire a lock.
+   *
+   * @example
+   * ```ts
+   * import { ProcessLockAcquireTimeoutError } from '@supabase/auth-js'
+   *
+   * throw new ProcessLockAcquireTimeoutError('Lock timed out')
+   * ```
+   */
   class ProcessLockAcquireTimeoutError extends LockAcquireTimeoutError {
   }
   /**
@@ -10073,6 +11940,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    *                       will time out after so many milliseconds. An error is
    *                       a timeout if it has `isAcquireTimeout` set to true.
    * @param fn The operation to run once the lock is acquired.
+   * @example
+   * ```ts
+   * await navigatorLock('sync-user', 1000, async () => {
+   *   await refreshSession()
+   * })
+   * ```
    */
   async function navigatorLock(name, acquireTimeout, fn) {
       if (internals.debug) {
@@ -10158,6 +12031,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    *                       will time out after so many milliseconds. An error is
    *                       a timeout if it has `isAcquireTimeout` set to true.
    * @param fn The operation to run once the lock is acquired.
+   * @example
+   * ```ts
+   * await processLock('migrate', 5000, async () => {
+   *   await runMigration()
+   * })
+   * ```
    */
   async function processLock(name, acquireTimeout, fn) {
       var _a;
@@ -10859,12 +12738,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           userVerification: 'preferred',
           residentKey: 'discouraged',
       },
-      attestation: 'none',
+      attestation: 'direct',
   };
   const DEFAULT_REQUEST_OPTIONS = {
       /** set to preferred because older yubikeys don't have PIN/Biometric */
       userVerification: 'preferred',
       hints: ['security-key'],
+      attestation: 'direct',
   };
   function deepMerge(...sources) {
       const isObject = (val) => val !== null && typeof val === 'object' && !Array.isArray(val);
@@ -11077,7 +12957,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @see {@link https://w3c.github.io/webauthn/#sctn-authentication W3C WebAuthn Spec - Authentication Ceremony}
        * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/PublicKeyCredentialRequestOptions MDN - PublicKeyCredentialRequestOptions}
        */
-      async _authenticate({ factorId, webauthn: { rpId = typeof window !== 'undefined' ? window.location.hostname : undefined, rpOrigins = typeof window !== 'undefined' ? [window.location.origin] : undefined, signal, }, }, overrides) {
+      async _authenticate({ factorId, webauthn: { rpId = typeof window !== 'undefined' ? window.location.hostname : undefined, rpOrigins = typeof window !== 'undefined' ? [window.location.origin] : undefined, signal, } = {}, }, overrides) {
           if (!rpId) {
               return {
                   data: null,
@@ -11138,7 +13018,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @see {@link https://w3c.github.io/webauthn/#sctn-registering-a-new-credential W3C WebAuthn Spec - Registration Ceremony}
        * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/PublicKeyCredentialCreationOptions MDN - PublicKeyCredentialCreationOptions}
        */
-      async _register({ friendlyName, rpId = typeof window !== 'undefined' ? window.location.hostname : undefined, rpOrigins = typeof window !== 'undefined' ? [window.location.origin] : undefined, signal, }, overrides) {
+      async _register({ friendlyName, webauthn: { rpId = typeof window !== 'undefined' ? window.location.hostname : undefined, rpOrigins = typeof window !== 'undefined' ? [window.location.origin] : undefined, signal, } = {}, }, overrides) {
           if (!rpId) {
               return {
                   data: null,
@@ -11248,9 +13128,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       /**
        * Create a new client for use in the browser.
+       *
+       * @example
+       * ```ts
+       * import { GoTrueClient } from '@supabase/auth-js'
+       *
+       * const auth = new GoTrueClient({
+       *   url: 'https://xyzcompany.supabase.co/auth/v1',
+       *   headers: { apikey: 'public-anon-key' },
+       *   storageKey: 'supabase-auth',
+       * })
+       * ```
        */
       constructor(options) {
-          var _a, _b;
+          var _a, _b, _c;
           /**
            * @experimental
            */
@@ -11277,18 +13168,22 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
            */
           this.broadcastChannel = null;
           this.logger = console.log;
-          this.instanceID = GoTrueClient.nextInstanceID;
-          GoTrueClient.nextInstanceID += 1;
-          if (this.instanceID > 0 && isBrowser()) {
-              console.warn('Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.');
-          }
           const settings = Object.assign(Object.assign({}, DEFAULT_OPTIONS), options);
+          this.storageKey = settings.storageKey;
+          this.instanceID = (_a = GoTrueClient.nextInstanceID[this.storageKey]) !== null && _a !== void 0 ? _a : 0;
+          GoTrueClient.nextInstanceID[this.storageKey] = this.instanceID + 1;
           this.logDebugMessages = !!settings.debug;
           if (typeof settings.debug === 'function') {
               this.logger = settings.debug;
           }
+          if (this.instanceID > 0 && isBrowser()) {
+              const message = `${this._logPrefix()} Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key.`;
+              console.warn(message);
+              if (this.logDebugMessages) {
+                  console.trace(message);
+              }
+          }
           this.persistSession = settings.persistSession;
-          this.storageKey = settings.storageKey;
           this.autoRefreshToken = settings.autoRefreshToken;
           this.admin = new GoTrueAdminApi({
               url: settings.url,
@@ -11306,7 +13201,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           if (settings.lock) {
               this.lock = settings.lock;
           }
-          else if (isBrowser() && ((_a = globalThis === null || globalThis === void 0 ? void 0 : globalThis.navigator) === null || _a === void 0 ? void 0 : _a.locks)) {
+          else if (isBrowser() && ((_b = globalThis === null || globalThis === void 0 ? void 0 : globalThis.navigator) === null || _b === void 0 ? void 0 : _b.locks)) {
               this.lock = navigatorLock;
           }
           else {
@@ -11330,6 +13225,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               getAuthorizationDetails: this._getAuthorizationDetails.bind(this),
               approveAuthorization: this._approveAuthorization.bind(this),
               denyAuthorization: this._denyAuthorization.bind(this),
+              listGrants: this._listOAuthGrants.bind(this),
+              revokeGrant: this._revokeOAuthGrant.bind(this),
           };
           if (this.persistSession) {
               if (settings.storage) {
@@ -11359,7 +13256,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               catch (e) {
                   console.error('Failed to create a new BroadcastChannel, multi-tab state changes will not be available', e);
               }
-              (_b = this.broadcastChannel) === null || _b === void 0 ? void 0 : _b.addEventListener('message', async (event) => {
+              (_c = this.broadcastChannel) === null || _c === void 0 ? void 0 : _c.addEventListener('message', async (event) => {
                   this._debug('received broadcast notification from other tab or client', event);
                   await this._notifyAllSubscribers(event.data.event, event.data.session, false); // broadcast = false so we don't get an endless loop of messages
               });
@@ -11383,9 +13280,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           return result;
       }
+      _logPrefix() {
+          return ('GoTrueClient@' +
+              `${this.storageKey}:${this.instanceID} (${version}) ${new Date().toISOString()}`);
+      }
       _debug(...args) {
           if (this.logDebugMessages) {
-              this.logger(`GoTrueClient@${this.instanceID} (${version}) ${new Date().toISOString()}`, ...args);
+              this.logger(this._logPrefix(), ...args);
           }
           return this;
       }
@@ -12129,7 +14030,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * organization's SSO Identity Provider UUID directly instead.
        */
       async signInWithSSO(params) {
-          var _a, _b, _c;
+          var _a, _b, _c, _d, _e;
           try {
               let codeChallenge = null;
               let codeChallengeMethod = null;
@@ -12144,6 +14045,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                   headers: this.headers,
                   xform: _ssoResponse,
               });
+              // Automatically redirect in browser unless skipBrowserRedirect is true
+              if (((_d = result.data) === null || _d === void 0 ? void 0 : _d.url) && isBrowser() && !((_e = params.options) === null || _e === void 0 ? void 0 : _e.skipBrowserRedirect)) {
+                  window.location.assign(result.data.url);
+              }
               return this._returnResult(result);
           }
           catch (error) {
@@ -12742,7 +14647,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           });
       }
       onAuthStateChange(callback) {
-          const id = uuid();
+          const id = generateCallbackId();
           const subscription = {
               id,
               callback,
@@ -13757,6 +15662,64 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               throw error;
           }
       }
+      /**
+       * Lists all OAuth grants that the authenticated user has authorized.
+       * Only relevant when the OAuth 2.1 server is enabled in Supabase Auth.
+       */
+      async _listOAuthGrants() {
+          try {
+              return await this._useSession(async (result) => {
+                  const { data: { session }, error: sessionError, } = result;
+                  if (sessionError) {
+                      return this._returnResult({ data: null, error: sessionError });
+                  }
+                  if (!session) {
+                      return this._returnResult({ data: null, error: new AuthSessionMissingError() });
+                  }
+                  return await _request(this.fetch, 'GET', `${this.url}/user/oauth/grants`, {
+                      headers: this.headers,
+                      jwt: session.access_token,
+                      xform: (data) => ({ data, error: null }),
+                  });
+              });
+          }
+          catch (error) {
+              if (isAuthError(error)) {
+                  return this._returnResult({ data: null, error });
+              }
+              throw error;
+          }
+      }
+      /**
+       * Revokes a user's OAuth grant for a specific client.
+       * Only relevant when the OAuth 2.1 server is enabled in Supabase Auth.
+       */
+      async _revokeOAuthGrant(options) {
+          try {
+              return await this._useSession(async (result) => {
+                  const { data: { session }, error: sessionError, } = result;
+                  if (sessionError) {
+                      return this._returnResult({ data: null, error: sessionError });
+                  }
+                  if (!session) {
+                      return this._returnResult({ data: null, error: new AuthSessionMissingError() });
+                  }
+                  await _request(this.fetch, 'DELETE', `${this.url}/user/oauth/grants`, {
+                      headers: this.headers,
+                      jwt: session.access_token,
+                      query: { client_id: options.clientId },
+                      noResolveJson: true,
+                  });
+                  return { data: {}, error: null };
+              });
+          }
+          catch (error) {
+              if (isAuthError(error)) {
+                  return this._returnResult({ data: null, error });
+              }
+              throw error;
+          }
+      }
       async fetchJwk(kid, jwks = { keys: [] }) {
           // try fetching from the supplied jwks
           let jwk = jwks.keys.find((key) => key.kid === kid);
@@ -13870,7 +15833,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
       }
   }
-  GoTrueClient.nextInstanceID = 0;
+  GoTrueClient.nextInstanceID = {};
 
   const AuthAdminApi = GoTrueAdminApi;
 
@@ -13900,6 +15863,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @param options.storage Options passed along to the storage-js constructor.
        * @param options.global.fetch A custom fetch implementation.
        * @param options.global.headers Any additional headers to send with each network request.
+       * @example
+       * ```ts
+       * import { createClient } from '@supabase/supabase-js'
+       *
+       * const supabase = createClient('https://xyzcompany.supabase.co', 'public-anon-key')
+       * const { data } = await supabase.from('profiles').select('*')
+       * ```
        */
       constructor(supabaseUrl, supabaseKey, options) {
           var _a, _b, _c;
@@ -13937,6 +15907,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           this.fetch = fetchWithAuth(supabaseKey, this._getAccessToken.bind(this), settings.global.fetch);
           this.realtime = this._initRealtimeClient(Object.assign({ headers: this.headers, accessToken: this._getAccessToken.bind(this) }, settings.realtime));
+          if (this.accessToken) {
+              // Start auth immediately to avoid race condition with channel subscriptions
+              this.accessToken()
+                  .then((token) => this.realtime.setAuth(token))
+                  .catch((e) => console.warn('Failed to set initial Realtime auth token:', e));
+          }
           this.rest = new PostgrestClient(new URL('rest/v1', baseUrl).href, {
               headers: this.headers,
               schema: settings.db.schema,
@@ -14095,6 +16071,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   /**
    * Creates a new Supabase Client.
+   *
+   * @example
+   * ```ts
+   * import { createClient } from '@supabase/supabase-js'
+   *
+   * const supabase = createClient('https://xyzcompany.supabase.co', 'public-anon-key')
+   * const { data, error } = await supabase.from('profiles').select('*')
+   * ```
    */
   const createClient = (supabaseUrl, supabaseKey, options) => {
       return new SupabaseClient(supabaseUrl, supabaseKey, options);

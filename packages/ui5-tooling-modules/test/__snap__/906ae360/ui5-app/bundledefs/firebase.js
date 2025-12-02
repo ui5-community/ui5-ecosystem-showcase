@@ -20,7 +20,24 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   var browser$1 = {
     env: env};
 
-  const getDefaultsFromPostinstall = () => (undefined);
+  /**
+   * @license
+   * Copyright 2025 Google LLC
+   *
+   * Licensed under the Apache License, Version 2.0 (the "License");
+   * you may not use this file except in compliance with the License.
+   * You may obtain a copy of the License at
+   *
+   *   http://www.apache.org/licenses/LICENSE-2.0
+   *
+   * Unless required by applicable law or agreed to in writing, software
+   * distributed under the License is distributed on an "AS IS" BASIS,
+   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   * See the License for the specific language governing permissions and
+   * limitations under the License.
+   */
+  // This value is retrieved and hardcoded by the NPM postinstall script
+  const getDefaultsFromPostinstall = () => undefined;
 
   /**
    * @license
@@ -456,7 +473,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * @returns a URL host formatted like `127.0.0.1:9999` or `[::1]:4000` if available
    * @public
    */
-  const getDefaultEmulatorHost = (productName) => { var _a, _b; return (_b = (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.emulatorHosts) === null || _b === void 0 ? void 0 : _b[productName]; };
+  const getDefaultEmulatorHost = (productName) => getDefaults()?.emulatorHosts?.[productName];
   /**
    * Returns emulator hostname and port stored in the __FIREBASE_DEFAULTS__ object
    * for the given product.
@@ -486,7 +503,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * Returns Firebase app config stored in the __FIREBASE_DEFAULTS__ object.
    * @public
    */
-  const getDefaultAppConfig = () => { var _a; return (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.config; };
+  const getDefaultAppConfig = () => getDefaults()?.config;
 
   /**
    * @license
@@ -574,7 +591,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               : url;
           return host.endsWith('.cloudworkstations.dev');
       }
-      catch (_a) {
+      catch {
           return false;
       }
   }
@@ -621,12 +638,22 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       if (!sub) {
           throw new Error("mockUserToken must contain 'sub' or 'user_id' field!");
       }
-      const payload = Object.assign({
+      const payload = {
           // Set all required fields to decent defaults
-          iss: `https://securetoken.google.com/${project}`, aud: project, iat, exp: iat + 3600, auth_time: iat, sub, user_id: sub, firebase: {
+          iss: `https://securetoken.google.com/${project}`,
+          aud: project,
+          iat,
+          exp: iat + 3600,
+          auth_time: iat,
+          sub,
+          user_id: sub,
+          firebase: {
               sign_in_provider: 'custom',
               identities: {}
-          } }, token);
+          },
+          // Override with user options
+          ...token
+      };
       // Unsecured JWTs use the empty string as a signature.
       const signature = '';
       return [
@@ -818,8 +845,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                   preExist = false;
               };
               request.onerror = () => {
-                  var _a;
-                  reject(((_a = request.error) === null || _a === void 0 ? void 0 : _a.message) || '');
+                  reject(request.error?.message || '');
               };
           }
           catch (error) {
@@ -1112,10 +1138,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           return this.instancesDeferred.get(normalizedIdentifier).promise;
       }
       getImmediate(options) {
-          var _a;
           // if multipleInstances is not supported, use the default name
-          const normalizedIdentifier = this.normalizeInstanceIdentifier(options === null || options === void 0 ? void 0 : options.identifier);
-          const optional = (_a = options === null || options === void 0 ? void 0 : options.optional) !== null && _a !== void 0 ? _a : false;
+          const normalizedIdentifier = this.normalizeInstanceIdentifier(options?.identifier);
+          const optional = options?.optional ?? false;
           if (this.isInitialized(normalizedIdentifier) ||
               this.shouldAutoInitialize()) {
               try {
@@ -1247,9 +1272,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @returns a function to unregister the callback
        */
       onInit(callback, identifier) {
-          var _a;
           const normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
-          const existingCallbacks = (_a = this.onInitCallbacks.get(normalizedIdentifier)) !== null && _a !== void 0 ? _a : new Set();
+          const existingCallbacks = this.onInitCallbacks.get(normalizedIdentifier) ??
+              new Set();
           existingCallbacks.add(callback);
           this.onInitCallbacks.set(normalizedIdentifier, existingCallbacks);
           const existingInstance = this.instances.get(normalizedIdentifier);
@@ -1273,7 +1298,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               try {
                   callback(instance, identifier);
               }
-              catch (_a) {
+              catch {
                   // ignore errors in the onInit callback
               }
           }
@@ -1302,7 +1327,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                   try {
                       this.component.onInstanceCreated(this.container, instanceIdentifier, instance);
                   }
-                  catch (_a) {
+                  catch {
                       // ignore errors in the onInstanceCreatedCallback
                   }
               }
@@ -1869,11 +1894,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */
   function isVersionServiceProvider(provider) {
       const component = provider.getComponent();
-      return (component === null || component === void 0 ? void 0 : component.type) === "VERSION" /* ComponentType.VERSION */;
+      return component?.type === "VERSION" /* ComponentType.VERSION */;
   }
 
   const name$q = "@firebase/app";
-  const version$1 = "0.13.2";
+  const version$1 = "0.14.6";
 
   /**
    * @license
@@ -1944,7 +1969,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   const name$1 = "@firebase/firestore-compat";
 
   const name$r = "firebase";
-  const version$2 = "11.10.0";
+  const version$2 = "12.6.0";
 
   /**
    * @license
@@ -2154,8 +2179,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   class FirebaseAppImpl {
       constructor(options, config, container) {
           this._isDeleted = false;
-          this._options = Object.assign({}, options);
-          this._config = Object.assign({}, config);
+          this._options = { ...options };
+          this._config = { ...config };
           this._name = config.name;
           this._automaticDataCollectionEnabled =
               config.automaticDataCollectionEnabled;
@@ -2230,7 +2255,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           const name = rawConfig;
           rawConfig = { name };
       }
-      const config = Object.assign({ name: DEFAULT_ENTRY_NAME, automaticDataCollectionEnabled: true }, rawConfig);
+      const config = {
+          name: DEFAULT_ENTRY_NAME,
+          automaticDataCollectionEnabled: true,
+          ...rawConfig
+      };
       const name = config.name;
       if (typeof name !== 'string' || !name) {
           throw ERROR_FACTORY.create("bad-app-name" /* AppError.BAD_APP_NAME */, {
@@ -2308,10 +2337,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * @public
    */
   function registerVersion(libraryKeyOrName, version, variant) {
-      var _a;
       // TODO: We can use this check to whitelist strings when/if we set up
       // a good whitelist system.
-      let library = (_a = PLATFORM_LOG_STRING[libraryKeyOrName]) !== null && _a !== void 0 ? _a : libraryKeyOrName;
+      let library = PLATFORM_LOG_STRING[libraryKeyOrName] ?? libraryKeyOrName;
       if (variant) {
           library += `-${variant}`;
       }
@@ -2402,7 +2430,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           else {
               const idbGetError = ERROR_FACTORY.create("idb-get" /* AppError.IDB_GET */, {
-                  originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
+                  originalErrorMessage: e?.message
               });
               logger.warn(idbGetError.message);
           }
@@ -2422,7 +2450,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           else {
               const idbGetError = ERROR_FACTORY.create("idb-set" /* AppError.IDB_WRITE */, {
-                  originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
+                  originalErrorMessage: e?.message
               });
               logger.warn(idbGetError.message);
           }
@@ -2478,7 +2506,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * already logged, subsequent calls to this function in the same day will be ignored.
        */
       async triggerHeartbeat() {
-          var _a, _b;
           try {
               const platformLogger = this.container
                   .getProvider('platform-logger')
@@ -2487,10 +2514,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               // service, not the browser user agent.
               const agent = platformLogger.getPlatformInfoString();
               const date = getUTCDateString();
-              if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null) {
+              if (this._heartbeatsCache?.heartbeats == null) {
                   this._heartbeatsCache = await this._heartbeatsCachePromise;
                   // If we failed to construct a heartbeats cache, then return immediately.
-                  if (((_b = this._heartbeatsCache) === null || _b === void 0 ? void 0 : _b.heartbeats) == null) {
+                  if (this._heartbeatsCache?.heartbeats == null) {
                       return;
                   }
               }
@@ -2524,13 +2551,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * returns an empty string.
        */
       async getHeartbeatsHeader() {
-          var _a;
           try {
               if (this._heartbeatsCache === null) {
                   await this._heartbeatsCachePromise;
               }
               // If it's still null or the array is empty, there is no data to send.
-              if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null ||
+              if (this._heartbeatsCache?.heartbeats == null ||
                   this._heartbeatsCache.heartbeats.length === 0) {
                   return '';
               }
@@ -2631,7 +2657,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           else {
               const idbHeartbeatObject = await readHeartbeatsFromIndexedDB(this.app);
-              if (idbHeartbeatObject === null || idbHeartbeatObject === void 0 ? void 0 : idbHeartbeatObject.heartbeats) {
+              if (idbHeartbeatObject?.heartbeats) {
                   return idbHeartbeatObject;
               }
               else {
@@ -2641,7 +2667,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       // overwrite the storage with the provided heartbeats
       async overwrite(heartbeatsObject) {
-          var _a;
           const canUseIndexedDB = await this._canUseIndexedDBPromise;
           if (!canUseIndexedDB) {
               return;
@@ -2649,14 +2674,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           else {
               const existingHeartbeatsObject = await this.read();
               return writeHeartbeatsToIndexedDB(this.app, {
-                  lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
+                  lastSentHeartbeatDate: heartbeatsObject.lastSentHeartbeatDate ??
+                      existingHeartbeatsObject.lastSentHeartbeatDate,
                   heartbeats: heartbeatsObject.heartbeats
               });
           }
       }
       // add heartbeats
       async add(heartbeatsObject) {
-          var _a;
           const canUseIndexedDB = await this._canUseIndexedDBPromise;
           if (!canUseIndexedDB) {
               return;
@@ -2664,7 +2689,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           else {
               const existingHeartbeatsObject = await this.read();
               return writeHeartbeatsToIndexedDB(this.app, {
-                  lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
+                  lastSentHeartbeatDate: heartbeatsObject.lastSentHeartbeatDate ??
+                      existingHeartbeatsObject.lastSentHeartbeatDate,
                   heartbeats: [
                       ...existingHeartbeatsObject.heartbeats,
                       ...heartbeatsObject.heartbeats
@@ -2724,8 +2750,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       _registerComponent(new Component('heartbeat', container => new HeartbeatServiceImpl(container), "PRIVATE" /* ComponentType.PRIVATE */));
       // Register `app` package.
       registerVersion(name$q, version$1, variant);
-      // BUILD_TARGET will be replaced by values like esm2017, cjs2017, etc during the compilation
-      registerVersion(name$q, version$1, 'esm2017');
+      // BUILD_TARGET will be replaced by values like esm, cjs, etc during the compilation
+      registerVersion(name$q, version$1, 'esm2020');
       // Register platform SDK identifier (no version).
       registerVersion('fire-js', '');
   }
@@ -2739,7 +2765,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   registerCoreComponents('');
 
   var name = "firebase";
-  var version = "11.10.0";
+  var version = "12.6.0";
 
   /**
    * @license
@@ -2772,30 +2798,31 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    Copyright The Closure Library Authors.
    SPDX-License-Identifier: Apache-2.0
   */
-  function k(f,a){function c(){}c.prototype=a.prototype;f.D=a.prototype;f.prototype=new c;f.prototype.constructor=f;f.C=function(d,e,g){for(var b=Array(arguments.length-2),r=2;r<arguments.length;r++)b[r-2]=arguments[r];return a.prototype[e].apply(d,b)};}function l(){this.blockSize=-1;}function m(){this.blockSize=-1;this.blockSize=64;this.g=Array(4);this.B=Array(this.blockSize);this.o=this.h=0;this.s();}k(m,l);m.prototype.s=function(){this.g[0]=1732584193;this.g[1]=4023233417;this.g[2]=2562383102;this.g[3]=271733878;this.o=this.h=0;};
-  function n(f,a,c){c||(c=0);var d=Array(16);if("string"===typeof a)for(var e=0;16>e;++e)d[e]=a.charCodeAt(c++)|a.charCodeAt(c++)<<8|a.charCodeAt(c++)<<16|a.charCodeAt(c++)<<24;else for(e=0;16>e;++e)d[e]=a[c++]|a[c++]<<8|a[c++]<<16|a[c++]<<24;a=f.g[0];c=f.g[1];e=f.g[2];var g=f.g[3];var b=a+(g^c&(e^g))+d[0]+3614090360&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[1]+3905402710&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+d[2]+606105819&4294967295;e=g+(b<<17&4294967295|b>>>15);
-  b=c+(a^e&(g^a))+d[3]+3250441966&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+d[4]+4118548399&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[5]+1200080426&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+d[6]+2821735955&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+d[7]+4249261313&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+d[8]+1770035416&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[9]+2336552879&4294967295;g=a+(b<<12&4294967295|
-  b>>>20);b=e+(c^g&(a^c))+d[10]+4294925233&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+d[11]+2304563134&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+d[12]+1804603682&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+d[13]+4254626195&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+d[14]+2792965006&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+d[15]+1236535329&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(e^g&(c^e))+d[1]+4129170786&4294967295;a=c+(b<<
-  5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[6]+3225465664&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[11]+643717713&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[0]+3921069994&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+d[5]+3593408605&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[10]+38016083&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[15]+3634488961&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[4]+3889429448&4294967295;c=
-  e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+d[9]+568446438&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[14]+3275163606&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[3]+4107603335&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[8]+1163531501&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+d[13]+2850285829&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+d[2]+4243563512&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+d[7]+1735328473&4294967295;
-  e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+d[12]+2368359562&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(c^e^g)+d[5]+4294588738&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[8]+2272392833&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+d[11]+1839030562&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[14]+4259657740&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+d[1]+2763975236&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[4]+1272893353&4294967295;g=a+(b<<11&4294967295|
-  b>>>21);b=e+(g^a^c)+d[7]+4139469664&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[10]+3200236656&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+d[13]+681279174&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[0]+3936430074&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+d[3]+3572445317&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[6]+76029189&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+d[9]+3654602809&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+d[12]+
-  3873151461&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+d[15]+530742520&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+d[2]+3299628645&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(e^(c|~g))+d[0]+4096336452&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[7]+1126891415&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[14]+2878612391&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[5]+4237533241&4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[12]+1700485571&
-  4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[3]+2399980690&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[10]+4293915773&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[1]+2240044497&4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[8]+1873313359&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[15]+4264355552&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[6]+2734768916&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[13]+1309151649&
-  4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+d[4]+4149444226&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+d[11]+3174756917&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+d[2]+718787259&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+d[9]+3951481745&4294967295;f.g[0]=f.g[0]+a&4294967295;f.g[1]=f.g[1]+(e+(b<<21&4294967295|b>>>11))&4294967295;f.g[2]=f.g[2]+e&4294967295;f.g[3]=f.g[3]+g&4294967295;}
-  m.prototype.u=function(f,a){ void 0===a&&(a=f.length);for(var c=a-this.blockSize,d=this.B,e=this.h,g=0;g<a;){if(0==e)for(;g<=c;)n(this,f,g),g+=this.blockSize;if("string"===typeof f)for(;g<a;){if(d[e++]=f.charCodeAt(g++),e==this.blockSize){n(this,d);e=0;break}}else for(;g<a;)if(d[e++]=f[g++],e==this.blockSize){n(this,d);e=0;break}}this.h=e;this.o+=a;};
-  m.prototype.v=function(){var f=Array((56>this.h?this.blockSize:2*this.blockSize)-this.h);f[0]=128;for(var a=1;a<f.length-8;++a)f[a]=0;var c=8*this.o;for(a=f.length-8;a<f.length;++a)f[a]=c&255,c/=256;this.u(f);f=Array(16);for(a=c=0;4>a;++a)for(var d=0;32>d;d+=8)f[c++]=this.g[a]>>>d&255;return f};function p(f,a){var c=q;return Object.prototype.hasOwnProperty.call(c,f)?c[f]:c[f]=a(f)}function t(f,a){this.h=a;for(var c=[],d=true,e=f.length-1;0<=e;e--){var g=f[e]|0;d&&g==a||(c[e]=g,d=false);}this.g=c;}var q={};function u(f){return -128<=f&&128>f?p(f,function(a){return new t([a|0],0>a?-1:0)}):new t([f|0],0>f?-1:0)}function v(f){if(isNaN(f)||!isFinite(f))return w;if(0>f)return x(v(-f));for(var a=[],c=1,d=0;f>=c;d++)a[d]=f/c|0,c*=4294967296;return new t(a,0)}
-  function y(f,a){if(0==f.length)throw Error("number format error: empty string");a=a||10;if(2>a||36<a)throw Error("radix out of range: "+a);if("-"==f.charAt(0))return x(y(f.substring(1),a));if(0<=f.indexOf("-"))throw Error('number format error: interior "-" character');for(var c=v(Math.pow(a,8)),d=w,e=0;e<f.length;e+=8){var g=Math.min(8,f.length-e),b=parseInt(f.substring(e,e+g),a);8>g?(g=v(Math.pow(a,g)),d=d.j(g).add(v(b))):(d=d.j(c),d=d.add(v(b)));}return d}var w=u(0),z=u(1),A=u(16777216);h=t.prototype;
-  h.m=function(){if(B(this))return -x(this).m();for(var f=0,a=1,c=0;c<this.g.length;c++){var d=this.i(c);f+=(0<=d?d:4294967296+d)*a;a*=4294967296;}return f};h.toString=function(f){f=f||10;if(2>f||36<f)throw Error("radix out of range: "+f);if(C(this))return "0";if(B(this))return "-"+x(this).toString(f);for(var a=v(Math.pow(f,6)),c=this,d="";;){var e=D(c,a).g;c=F(c,e.j(a));var g=((0<c.g.length?c.g[0]:c.h)>>>0).toString(f);c=e;if(C(c))return g+d;for(;6>g.length;)g="0"+g;d=g+d;}};
-  h.i=function(f){return 0>f?0:f<this.g.length?this.g[f]:this.h};function C(f){if(0!=f.h)return false;for(var a=0;a<f.g.length;a++)if(0!=f.g[a])return false;return true}function B(f){return -1==f.h}h.l=function(f){f=F(this,f);return B(f)?-1:C(f)?0:1};function x(f){for(var a=f.g.length,c=[],d=0;d<a;d++)c[d]=~f.g[d];return (new t(c,~f.h)).add(z)}h.abs=function(){return B(this)?x(this):this};
-  h.add=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0,e=0;e<=a;e++){var g=d+(this.i(e)&65535)+(f.i(e)&65535),b=(g>>>16)+(this.i(e)>>>16)+(f.i(e)>>>16);d=b>>>16;g&=65535;b&=65535;c[e]=b<<16|g;}return new t(c,c[c.length-1]&-2147483648?-1:0)};function F(f,a){return f.add(x(a))}
-  h.j=function(f){if(C(this)||C(f))return w;if(B(this))return B(f)?x(this).j(x(f)):x(x(this).j(f));if(B(f))return x(this.j(x(f)));if(0>this.l(A)&&0>f.l(A))return v(this.m()*f.m());for(var a=this.g.length+f.g.length,c=[],d=0;d<2*a;d++)c[d]=0;for(d=0;d<this.g.length;d++)for(var e=0;e<f.g.length;e++){var g=this.i(d)>>>16,b=this.i(d)&65535,r=f.i(e)>>>16,E=f.i(e)&65535;c[2*d+2*e]+=b*E;G(c,2*d+2*e);c[2*d+2*e+1]+=g*E;G(c,2*d+2*e+1);c[2*d+2*e+1]+=b*r;G(c,2*d+2*e+1);c[2*d+2*e+2]+=g*r;G(c,2*d+2*e+2);}for(d=0;d<
-  a;d++)c[d]=c[2*d+1]<<16|c[2*d];for(d=a;d<2*a;d++)c[d]=0;return new t(c,0)};function G(f,a){for(;(f[a]&65535)!=f[a];)f[a+1]+=f[a]>>>16,f[a]&=65535,a++;}function H(f,a){this.g=f;this.h=a;}
-  function D(f,a){if(C(a))throw Error("division by zero");if(C(f))return new H(w,w);if(B(f))return a=D(x(f),a),new H(x(a.g),x(a.h));if(B(a))return a=D(f,x(a)),new H(x(a.g),a.h);if(30<f.g.length){if(B(f)||B(a))throw Error("slowDivide_ only works with positive integers.");for(var c=z,d=a;0>=d.l(f);)c=I(c),d=I(d);var e=J(c,1),g=J(d,1);d=J(d,2);for(c=J(c,2);!C(d);){var b=g.add(d);0>=b.l(f)&&(e=e.add(c),g=b);d=J(d,1);c=J(c,1);}a=F(f,e.j(a));return new H(e,a)}for(e=w;0<=f.l(a);){c=Math.max(1,Math.floor(f.m()/
-  a.m()));d=Math.ceil(Math.log(c)/Math.LN2);d=48>=d?1:Math.pow(2,d-48);g=v(c);for(b=g.j(a);B(b)||0<b.l(f);)c-=d,g=v(c),b=g.j(a);C(g)&&(g=z);e=e.add(g);f=F(f,b);}return new H(e,f)}h.A=function(f){return D(this,f).h};h.and=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0;d<a;d++)c[d]=this.i(d)&f.i(d);return new t(c,this.h&f.h)};h.or=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0;d<a;d++)c[d]=this.i(d)|f.i(d);return new t(c,this.h|f.h)};
-  h.xor=function(f){for(var a=Math.max(this.g.length,f.g.length),c=[],d=0;d<a;d++)c[d]=this.i(d)^f.i(d);return new t(c,this.h^f.h)};function I(f){for(var a=f.g.length+1,c=[],d=0;d<a;d++)c[d]=f.i(d)<<1|f.i(d-1)>>>31;return new t(c,f.h)}function J(f,a){var c=a>>5;a%=32;for(var d=f.g.length-c,e=[],g=0;g<d;g++)e[g]=0<a?f.i(g+c)>>>a|f.i(g+c+1)<<32-a:f.i(g+c);return new t(e,f.h)}m.prototype.digest=m.prototype.v;m.prototype.reset=m.prototype.s;m.prototype.update=m.prototype.u;t.prototype.add=t.prototype.add;t.prototype.multiply=t.prototype.j;t.prototype.modulo=t.prototype.A;t.prototype.compare=t.prototype.l;t.prototype.toNumber=t.prototype.m;t.prototype.toString=t.prototype.toString;t.prototype.getBits=t.prototype.i;t.fromNumber=v;t.fromString=y;Integer = t;}).apply( typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : typeof self !== 'undefined' ? self  : typeof window !== 'undefined' ? window  : {});
+  function k(d,a){function c(){}c.prototype=a.prototype;d.F=a.prototype;d.prototype=new c;d.prototype.constructor=d;d.D=function(f,e,g){for(var b=Array(arguments.length-2),r=2;r<arguments.length;r++)b[r-2]=arguments[r];return a.prototype[e].apply(f,b)};}function l(){this.blockSize=-1;}function m(){this.blockSize=-1;this.blockSize=64;this.g=Array(4);this.C=Array(this.blockSize);this.o=this.h=0;this.u();}k(m,l);m.prototype.u=function(){this.g[0]=1732584193;this.g[1]=4023233417;this.g[2]=2562383102;this.g[3]=271733878;this.o=this.h=0;};
+  function n(d,a,c){c||(c=0);const f=Array(16);if(typeof a==="string")for(var e=0;e<16;++e)f[e]=a.charCodeAt(c++)|a.charCodeAt(c++)<<8|a.charCodeAt(c++)<<16|a.charCodeAt(c++)<<24;else for(e=0;e<16;++e)f[e]=a[c++]|a[c++]<<8|a[c++]<<16|a[c++]<<24;a=d.g[0];c=d.g[1];e=d.g[2];let g=d.g[3],b;b=a+(g^c&(e^g))+f[0]+3614090360&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+f[1]+3905402710&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+f[2]+606105819&4294967295;e=g+(b<<17&4294967295|b>>>15);
+  b=c+(a^e&(g^a))+f[3]+3250441966&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+f[4]+4118548399&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+f[5]+1200080426&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+f[6]+2821735955&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+f[7]+4249261313&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+f[8]+1770035416&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+f[9]+2336552879&4294967295;g=a+(b<<12&4294967295|
+  b>>>20);b=e+(c^g&(a^c))+f[10]+4294925233&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+f[11]+2304563134&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(g^c&(e^g))+f[12]+1804603682&4294967295;a=c+(b<<7&4294967295|b>>>25);b=g+(e^a&(c^e))+f[13]+4254626195&4294967295;g=a+(b<<12&4294967295|b>>>20);b=e+(c^g&(a^c))+f[14]+2792965006&4294967295;e=g+(b<<17&4294967295|b>>>15);b=c+(a^e&(g^a))+f[15]+1236535329&4294967295;c=e+(b<<22&4294967295|b>>>10);b=a+(e^g&(c^e))+f[1]+4129170786&4294967295;a=c+(b<<
+  5&4294967295|b>>>27);b=g+(c^e&(a^c))+f[6]+3225465664&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+f[11]+643717713&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+f[0]+3921069994&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+f[5]+3593408605&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+f[10]+38016083&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+f[15]+3634488961&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+f[4]+3889429448&4294967295;c=
+  e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+f[9]+568446438&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+f[14]+3275163606&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+f[3]+4107603335&4294967295;e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+f[8]+1163531501&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(e^g&(c^e))+f[13]+2850285829&4294967295;a=c+(b<<5&4294967295|b>>>27);b=g+(c^e&(a^c))+f[2]+4243563512&4294967295;g=a+(b<<9&4294967295|b>>>23);b=e+(a^c&(g^a))+f[7]+1735328473&4294967295;
+  e=g+(b<<14&4294967295|b>>>18);b=c+(g^a&(e^g))+f[12]+2368359562&4294967295;c=e+(b<<20&4294967295|b>>>12);b=a+(c^e^g)+f[5]+4294588738&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+f[8]+2272392833&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+f[11]+1839030562&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+f[14]+4259657740&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+f[1]+2763975236&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+f[4]+1272893353&4294967295;g=a+(b<<11&4294967295|
+  b>>>21);b=e+(g^a^c)+f[7]+4139469664&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+f[10]+3200236656&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+f[13]+681279174&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+f[0]+3936430074&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+f[3]+3572445317&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+f[6]+76029189&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(c^e^g)+f[9]+3654602809&4294967295;a=c+(b<<4&4294967295|b>>>28);b=g+(a^c^e)+f[12]+
+  3873151461&4294967295;g=a+(b<<11&4294967295|b>>>21);b=e+(g^a^c)+f[15]+530742520&4294967295;e=g+(b<<16&4294967295|b>>>16);b=c+(e^g^a)+f[2]+3299628645&4294967295;c=e+(b<<23&4294967295|b>>>9);b=a+(e^(c|~g))+f[0]+4096336452&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+f[7]+1126891415&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+f[14]+2878612391&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+f[5]+4237533241&4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+f[12]+1700485571&
+  4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+f[3]+2399980690&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+f[10]+4293915773&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+f[1]+2240044497&4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+f[8]+1873313359&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+f[15]+4264355552&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+f[6]+2734768916&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+f[13]+1309151649&
+  4294967295;c=e+(b<<21&4294967295|b>>>11);b=a+(e^(c|~g))+f[4]+4149444226&4294967295;a=c+(b<<6&4294967295|b>>>26);b=g+(c^(a|~e))+f[11]+3174756917&4294967295;g=a+(b<<10&4294967295|b>>>22);b=e+(a^(g|~c))+f[2]+718787259&4294967295;e=g+(b<<15&4294967295|b>>>17);b=c+(g^(e|~a))+f[9]+3951481745&4294967295;d.g[0]=d.g[0]+a&4294967295;d.g[1]=d.g[1]+(e+(b<<21&4294967295|b>>>11))&4294967295;d.g[2]=d.g[2]+e&4294967295;d.g[3]=d.g[3]+g&4294967295;}
+  m.prototype.v=function(d,a){a===void 0&&(a=d.length);const c=a-this.blockSize,f=this.C;let e=this.h,g=0;for(;g<a;){if(e==0)for(;g<=c;)n(this,d,g),g+=this.blockSize;if(typeof d==="string")for(;g<a;){if(f[e++]=d.charCodeAt(g++),e==this.blockSize){n(this,f);e=0;break}}else for(;g<a;)if(f[e++]=d[g++],e==this.blockSize){n(this,f);e=0;break}}this.h=e;this.o+=a;};
+  m.prototype.A=function(){var d=Array((this.h<56?this.blockSize:this.blockSize*2)-this.h);d[0]=128;for(var a=1;a<d.length-8;++a)d[a]=0;a=this.o*8;for(var c=d.length-8;c<d.length;++c)d[c]=a&255,a/=256;this.v(d);d=Array(16);a=0;for(c=0;c<4;++c)for(let f=0;f<32;f+=8)d[a++]=this.g[c]>>>f&255;return d};function p(d,a){var c=q;return Object.prototype.hasOwnProperty.call(c,d)?c[d]:c[d]=a(d)}function t(d,a){this.h=a;const c=[];let f=true;for(let e=d.length-1;e>=0;e--){const g=d[e]|0;f&&g==a||(c[e]=g,f=false);}this.g=c;}var q={};function u(d){return -128<=d&&d<128?p(d,function(a){return new t([a|0],a<0?-1:0)}):new t([d|0],d<0?-1:0)}function v(d){if(isNaN(d)||!isFinite(d))return w;if(d<0)return x(v(-d));const a=[];let c=1;for(let f=0;d>=c;f++)a[f]=d/c|0,c*=4294967296;return new t(a,0)}
+  function y(d,a){if(d.length==0)throw Error("number format error: empty string");a=a||10;if(a<2||36<a)throw Error("radix out of range: "+a);if(d.charAt(0)=="-")return x(y(d.substring(1),a));if(d.indexOf("-")>=0)throw Error('number format error: interior "-" character');const c=v(Math.pow(a,8));let f=w;for(let g=0;g<d.length;g+=8){var e=Math.min(8,d.length-g);const b=parseInt(d.substring(g,g+e),a);e<8?(e=v(Math.pow(a,e)),f=f.j(e).add(v(b))):(f=f.j(c),f=f.add(v(b)));}return f}var w=u(0),z=u(1),A=u(16777216);
+  h=t.prototype;h.m=function(){if(B(this))return -x(this).m();let d=0,a=1;for(let c=0;c<this.g.length;c++){const f=this.i(c);d+=(f>=0?f:4294967296+f)*a;a*=4294967296;}return d};
+  h.toString=function(d){d=d||10;if(d<2||36<d)throw Error("radix out of range: "+d);if(C(this))return "0";if(B(this))return "-"+x(this).toString(d);const a=v(Math.pow(d,6));var c=this;let f="";for(;;){const e=D(c,a).g;c=F(c,e.j(a));let g=((c.g.length>0?c.g[0]:c.h)>>>0).toString(d);c=e;if(C(c))return g+f;for(;g.length<6;)g="0"+g;f=g+f;}};h.i=function(d){return d<0?0:d<this.g.length?this.g[d]:this.h};function C(d){if(d.h!=0)return false;for(let a=0;a<d.g.length;a++)if(d.g[a]!=0)return false;return true}
+  function B(d){return d.h==-1}h.l=function(d){d=F(this,d);return B(d)?-1:C(d)?0:1};function x(d){const a=d.g.length,c=[];for(let f=0;f<a;f++)c[f]=~d.g[f];return (new t(c,~d.h)).add(z)}h.abs=function(){return B(this)?x(this):this};h.add=function(d){const a=Math.max(this.g.length,d.g.length),c=[];let f=0;for(let e=0;e<=a;e++){let g=f+(this.i(e)&65535)+(d.i(e)&65535),b=(g>>>16)+(this.i(e)>>>16)+(d.i(e)>>>16);f=b>>>16;g&=65535;b&=65535;c[e]=b<<16|g;}return new t(c,c[c.length-1]&-2147483648?-1:0)};
+  function F(d,a){return d.add(x(a))}
+  h.j=function(d){if(C(this)||C(d))return w;if(B(this))return B(d)?x(this).j(x(d)):x(x(this).j(d));if(B(d))return x(this.j(x(d)));if(this.l(A)<0&&d.l(A)<0)return v(this.m()*d.m());const a=this.g.length+d.g.length,c=[];for(var f=0;f<2*a;f++)c[f]=0;for(f=0;f<this.g.length;f++)for(let e=0;e<d.g.length;e++){const g=this.i(f)>>>16,b=this.i(f)&65535,r=d.i(e)>>>16,E=d.i(e)&65535;c[2*f+2*e]+=b*E;G(c,2*f+2*e);c[2*f+2*e+1]+=g*E;G(c,2*f+2*e+1);c[2*f+2*e+1]+=b*r;G(c,2*f+2*e+1);c[2*f+2*e+2]+=g*r;G(c,2*f+2*e+2);}for(d=
+  0;d<a;d++)c[d]=c[2*d+1]<<16|c[2*d];for(d=a;d<2*a;d++)c[d]=0;return new t(c,0)};function G(d,a){for(;(d[a]&65535)!=d[a];)d[a+1]+=d[a]>>>16,d[a]&=65535,a++;}function H(d,a){this.g=d;this.h=a;}
+  function D(d,a){if(C(a))throw Error("division by zero");if(C(d))return new H(w,w);if(B(d))return a=D(x(d),a),new H(x(a.g),x(a.h));if(B(a))return a=D(d,x(a)),new H(x(a.g),a.h);if(d.g.length>30){if(B(d)||B(a))throw Error("slowDivide_ only works with positive integers.");for(var c=z,f=a;f.l(d)<=0;)c=I(c),f=I(f);var e=J(c,1),g=J(f,1);f=J(f,2);for(c=J(c,2);!C(f);){var b=g.add(f);b.l(d)<=0&&(e=e.add(c),g=b);f=J(f,1);c=J(c,1);}a=F(d,e.j(a));return new H(e,a)}for(e=w;d.l(a)>=0;){c=Math.max(1,Math.floor(d.m()/
+  a.m()));f=Math.ceil(Math.log(c)/Math.LN2);f=f<=48?1:Math.pow(2,f-48);g=v(c);for(b=g.j(a);B(b)||b.l(d)>0;)c-=f,g=v(c),b=g.j(a);C(g)&&(g=z);e=e.add(g);d=F(d,b);}return new H(e,d)}h.B=function(d){return D(this,d).h};h.and=function(d){const a=Math.max(this.g.length,d.g.length),c=[];for(let f=0;f<a;f++)c[f]=this.i(f)&d.i(f);return new t(c,this.h&d.h)};h.or=function(d){const a=Math.max(this.g.length,d.g.length),c=[];for(let f=0;f<a;f++)c[f]=this.i(f)|d.i(f);return new t(c,this.h|d.h)};
+  h.xor=function(d){const a=Math.max(this.g.length,d.g.length),c=[];for(let f=0;f<a;f++)c[f]=this.i(f)^d.i(f);return new t(c,this.h^d.h)};function I(d){const a=d.g.length+1,c=[];for(let f=0;f<a;f++)c[f]=d.i(f)<<1|d.i(f-1)>>>31;return new t(c,d.h)}function J(d,a){const c=a>>5;a%=32;const f=d.g.length-c,e=[];for(let g=0;g<f;g++)e[g]=a>0?d.i(g+c)>>>a|d.i(g+c+1)<<32-a:d.i(g+c);return new t(e,d.h)}m.prototype.digest=m.prototype.A;m.prototype.reset=m.prototype.u;m.prototype.update=m.prototype.v;t.prototype.add=t.prototype.add;t.prototype.multiply=t.prototype.j;t.prototype.modulo=t.prototype.B;t.prototype.compare=t.prototype.l;t.prototype.toNumber=t.prototype.m;t.prototype.toString=t.prototype.toString;t.prototype.getBits=t.prototype.i;t.fromNumber=v;t.fromString=y;Integer = t;}).apply( typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : typeof self !== 'undefined' ? self  : typeof window !== 'undefined' ? window  : {});
 
-  const P = "4.8.0";
+  const P = "4.9.2";
 
   /**
    * @license
@@ -2856,7 +2883,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */
-  let A = "11.10.0";
+  let A = "12.3.0";
 
   /**
    * @license
@@ -2994,7 +3021,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    * See the License for the specific language governing permissions and
    * limitations under the License.
-   */ const V = "ok", I = "cancelled", p = "unknown", y = "invalid-argument", g = "deadline-exceeded", w = "not-found", F = "permission-denied", b = "unauthenticated", D = "resource-exhausted", S = "failed-precondition", C = "aborted", N = "out-of-range", O = "unimplemented", q = "internal", B = "unavailable";
+   */ const V = "ok", I = "cancelled", p = "unknown", y = "invalid-argument", g = "deadline-exceeded", w = "not-found", v = "permission-denied", D = "unauthenticated", b = "resource-exhausted", S = "failed-precondition", C = "aborted", N = "out-of-range", O = "unimplemented", q = "internal", B = "unavailable";
 
   /** An error returned by a Firestore operation. */ class FirestoreError extends FirebaseError {
       /** @hideconstructor */
@@ -3262,25 +3289,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   /**
    * @license
-   * Copyright 2023 Google LLC
-   *
-   * Licensed under the Apache License, Version 2.0 (the "License");
-   * you may not use this file except in compliance with the License.
-   * You may obtain a copy of the License at
-   *
-   *   http://www.apache.org/licenses/LICENSE-2.0
-   *
-   * Unless required by applicable law or agreed to in writing, software
-   * distributed under the License is distributed on an "AS IS" BASIS,
-   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   * See the License for the specific language governing permissions and
-   * limitations under the License.
-   */
-  /**
-   * An instance of the Platform's 'TextEncoder' implementation.
-   */
-  /**
-   * @license
    * Copyright 2017 Google LLC
    *
    * Licensed under the Apache License, Version 2.0 (the "License");
@@ -3300,8 +3308,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    *
    * @internal
    * Exported internally for testing purposes.
-   */
-  class __PRIVATE_AutoId {
+   */ class __PRIVATE_AutoId {
       static newId() {
           // Alphanumeric characters
           const t = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", e = 62 * Math.floor(256 / 62);
@@ -3323,34 +3330,50 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   /** Compare strings in UTF-8 encoded byte order */ function __PRIVATE_compareUtf8Strings(t, e) {
-      let r = 0;
-      for (;r < t.length && r < e.length; ) {
-          const n = t.codePointAt(r), i = e.codePointAt(r);
-          if (n !== i) {
-              if (n < 128 && i < 128)
-              // ASCII comparison
-              return __PRIVATE_primitiveComparator(n, i);
-              {
-                  // Lazy instantiate TextEncoder
-                  const s = new TextEncoder, o = __PRIVATE_compareByteArrays(s.encode(__PRIVATE_getUtf8SafeSubstring(t, r)), s.encode(__PRIVATE_getUtf8SafeSubstring(e, r)));
-                  // UTF-8 encode the character at index i for byte comparison.
-                                  return 0 !== o ? o : __PRIVATE_primitiveComparator(n, i);
-              }
-          }
-          // Increment by 2 for surrogate pairs, 1 otherwise
-                  r += n > 65535 ? 2 : 1;
+      // Find the first differing character (a.k.a. "UTF-16 code unit") in the two strings and,
+      // if found, use that character to determine the relative ordering of the two strings as a
+      // whole. Comparing UTF-16 strings in UTF-8 byte order can be done simply and efficiently by
+      // comparing the UTF-16 code units (chars). This serendipitously works because of the way UTF-8
+      // and UTF-16 happen to represent Unicode code points.
+      // After finding the first pair of differing characters, there are two cases:
+      // Case 1: Both characters are non-surrogates (code points less than or equal to 0xFFFF) or
+      // both are surrogates from a surrogate pair (that collectively represent code points greater
+      // than 0xFFFF). In this case their numeric order as UTF-16 code units is the same as the
+      // lexicographical order of their corresponding UTF-8 byte sequences. A direct comparison is
+      // sufficient.
+      // Case 2: One character is a surrogate and the other is not. In this case the surrogate-
+      // containing string is always ordered after the non-surrogate. This is because surrogates are
+      // used to represent code points greater than 0xFFFF which have 4-byte UTF-8 representations
+      // and are lexicographically greater than the 1, 2, or 3-byte representations of code points
+      // less than or equal to 0xFFFF.
+      // An example of why Case 2 is required is comparing the following two Unicode code points:
+      // |-----------------------|------------|---------------------|-----------------|
+      // | Name                  | Code Point | UTF-8 Encoding      | UTF-16 Encoding |
+      // |-----------------------|------------|---------------------|-----------------|
+      // | Replacement Character | U+FFFD     | 0xEF 0xBF 0xBD      | 0xFFFD          |
+      // | Grinning Face         | U+1F600    | 0xF0 0x9F 0x98 0x80 | 0xD83D 0xDE00   |
+      // |-----------------------|------------|---------------------|-----------------|
+      // A lexicographical comparison of the UTF-8 encodings of these code points would order
+      // "Replacement Character" _before_ "Grinning Face" because 0xEF is less than 0xF0. However, a
+      // direct comparison of the UTF-16 code units, as would be done in case 1, would erroneously
+      // produce the _opposite_ ordering, because 0xFFFD is _greater than_ 0xD83D. As it turns out,
+      // this relative ordering holds for all comparisons of UTF-16 code points requiring a surrogate
+      // pair with those that do not.
+      const r = Math.min(t.length, e.length);
+      for (let n = 0; n < r; n++) {
+          const r = t.charAt(n), i = e.charAt(n);
+          if (r !== i) return __PRIVATE_isSurrogate(r) === __PRIVATE_isSurrogate(i) ? __PRIVATE_primitiveComparator(r, i) : __PRIVATE_isSurrogate(r) ? 1 : -1;
       }
-      // Compare lengths if all characters are equal
+      // Use the lengths of the strings to determine the overall comparison result since either the
+      // strings were equal or one is a prefix of the other.
           return __PRIVATE_primitiveComparator(t.length, e.length);
   }
 
-  function __PRIVATE_getUtf8SafeSubstring(t, e) {
-      return t.codePointAt(e) > 65535 ? t.substring(e, e + 2) : t.substring(e, e + 1);
-  }
+  const k = 55296, L = 57343;
 
-  function __PRIVATE_compareByteArrays(t, e) {
-      for (let r = 0; r < t.length && r < e.length; ++r) if (t[r] !== e[r]) return __PRIVATE_primitiveComparator(t[r], e[r]);
-      return __PRIVATE_primitiveComparator(t.length, e.length);
+  function __PRIVATE_isSurrogate(t) {
+      const e = t.charCodeAt(0);
+      return e >= k && e <= L;
   }
 
   /** Helper to compare arrays using isEqual(). */ function __PRIVATE_arrayEquals(t, e, r) {
@@ -3372,7 +3395,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    * See the License for the specific language governing permissions and
    * limitations under the License.
-   */ const k = "__name__";
+   */ const M = "__name__";
 
   /**
    * Path represents an ordered sequence of string segments.
@@ -3506,7 +3529,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
   }
 
-  const L = /^[_a-zA-Z][_a-zA-Z0-9]*$/;
+  const x = /^[_a-zA-Z][_a-zA-Z0-9]*$/;
 
   /**
    * A dot-separated path for navigating sub-objects within a document.
@@ -3519,7 +3542,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * Returns true if the string could be used as a segment in a field path
        * without escaping.
        */    static isValidIdentifier(t) {
-          return L.test(t);
+          return x.test(t);
       }
       canonicalString() {
           return this.toArray().map((t => (t = t.replace(/\\/g, "\\\\").replace(/`/g, "\\`"),
@@ -3531,12 +3554,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * Returns true if this field references the key of a document.
        */    isKeyField() {
-          return 1 === this.length && this.get(0) === k;
+          return 1 === this.length && this.get(0) === M;
       }
       /**
        * The field designating the key of a document.
        */    static keyField() {
-          return new FieldPath$1([ k ]);
+          return new FieldPath$1([ M ]);
       }
       /**
        * Parses a field string from the given server-formatted string.
@@ -3770,7 +3793,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   /**
    * The value returned from the most recent invocation of
    * `generateUniqueDebugId()`, or null if it has never been invoked.
-   */ let x = null;
+   */ let U = null;
 
   /**
    * Generates and returns an initial value for `lastUniqueDebugId`.
@@ -3795,9 +3818,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * @return the 10-character generated ID (e.g. "0xa1b2c3d4").
    */
   function __PRIVATE_generateUniqueDebugId() {
-      return null === x ? x = function __PRIVATE_generateInitialUniqueDebugId() {
+      return null === U ? U = function __PRIVATE_generateInitialUniqueDebugId() {
           return 268435456 + Math.round(2147483648 * Math.random());
-      }() : x++, "0x" + x.toString(16);
+      }() : U++, "0x" + U.toString(16);
   }
 
   /** Returns whether the value represents -0. */ function __PRIVATE_isNegativeZero(t) {
@@ -3826,7 +3849,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */
-  const M = "RestConnection", U = {
+  const j = "RestConnection", z = {
       BatchGetDocuments: "batchGet",
       Commit: "commit",
       RunQuery: "runQuery",
@@ -3855,16 +3878,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       I(t, e, r, n, i) {
           const s = __PRIVATE_generateUniqueDebugId(), o = this.p(t, e.toUriEncodedString());
-          __PRIVATE_logDebug(M, `Sending RPC '${t}' ${s}:`, o, r);
+          __PRIVATE_logDebug(j, `Sending RPC '${t}' ${s}:`, o, r);
           const a = {
               "google-cloud-resource-prefix": this.R,
               "x-goog-request-params": this.V
           };
-          this.v(a, n, i);
+          this.F(a, n, i);
           const {host: u} = new URL(o), _ = isCloudWorkstation(u);
-          return this.F(t, o, a, r, _).then((e => (__PRIVATE_logDebug(M, `Received RPC '${t}' ${s}: `, e),
+          return this.v(t, o, a, r, _).then((e => (__PRIVATE_logDebug(j, `Received RPC '${t}' ${s}: `, e),
           e)), (e => {
-              throw __PRIVATE_logWarn(M, `RPC '${t}' ${s} failed with error: `, e, "url: ", o, "request:", r),
+              throw __PRIVATE_logWarn(j, `RPC '${t}' ${s} failed with error: `, e, "url: ", o, "request:", r),
               e;
           }));
       }
@@ -3876,7 +3899,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * Modifies the headers for a request, adding any authorization token if
        * present and any additional headers for the request.
-       */    v(t, e, r) {
+       */    F(t, e, r) {
           t["X-Goog-Api-Client"] =
           // SDK_VERSION is updated to different value at runtime depending on the entry point,
           // so we need to get its value when we need it in a function.
@@ -3891,7 +3914,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           e && e.headers.forEach(((e, r) => t[r] = e)), r && r.headers.forEach(((e, r) => t[r] = e));
       }
       p(t, e) {
-          const r = U[t];
+          const r = z[t];
           return `${this.A}/v1/${e}:${r}`;
       }
       /**
@@ -3928,7 +3951,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * Important! The names of these identifiers matter because the string forms
    * are used for reverse lookups from the webchannel stream. Do NOT change the
    * names of these identifiers or change this into a const enum.
-   */ var j, z;
+   */ var W, K;
 
   /**
    * Converts an HTTP Status Code to the equivalent error code.
@@ -3960,11 +3983,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           // return Code.OUT_OF_RANGE;
                 case 401:
           // Unauthorized
-          return b;
+          return D;
 
         case 403:
           // Forbidden
-          return F;
+          return v;
 
         case 404:
           // Not Found
@@ -3982,7 +4005,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
         case 429:
           // Too Many Requests
-          return D;
+          return b;
 
         case 499:
           // Client Closed Request
@@ -4031,40 +4054,39 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   /**
    * A Rest-based connection that relies on the native HTTP stack
    * (e.g. `fetch` or a polyfill).
-   */ (z = j || (j = {}))[z.OK = 0] = "OK", z[z.CANCELLED = 1] = "CANCELLED", z[z.UNKNOWN = 2] = "UNKNOWN",
-  z[z.INVALID_ARGUMENT = 3] = "INVALID_ARGUMENT", z[z.DEADLINE_EXCEEDED = 4] = "DEADLINE_EXCEEDED",
-  z[z.NOT_FOUND = 5] = "NOT_FOUND", z[z.ALREADY_EXISTS = 6] = "ALREADY_EXISTS", z[z.PERMISSION_DENIED = 7] = "PERMISSION_DENIED",
-  z[z.UNAUTHENTICATED = 16] = "UNAUTHENTICATED", z[z.RESOURCE_EXHAUSTED = 8] = "RESOURCE_EXHAUSTED",
-  z[z.FAILED_PRECONDITION = 9] = "FAILED_PRECONDITION", z[z.ABORTED = 10] = "ABORTED",
-  z[z.OUT_OF_RANGE = 11] = "OUT_OF_RANGE", z[z.UNIMPLEMENTED = 12] = "UNIMPLEMENTED",
-  z[z.INTERNAL = 13] = "INTERNAL", z[z.UNAVAILABLE = 14] = "UNAVAILABLE", z[z.DATA_LOSS = 15] = "DATA_LOSS";
+   */ (K = W || (W = {}))[K.OK = 0] = "OK", K[K.CANCELLED = 1] = "CANCELLED", K[K.UNKNOWN = 2] = "UNKNOWN",
+  K[K.INVALID_ARGUMENT = 3] = "INVALID_ARGUMENT", K[K.DEADLINE_EXCEEDED = 4] = "DEADLINE_EXCEEDED",
+  K[K.NOT_FOUND = 5] = "NOT_FOUND", K[K.ALREADY_EXISTS = 6] = "ALREADY_EXISTS", K[K.PERMISSION_DENIED = 7] = "PERMISSION_DENIED",
+  K[K.UNAUTHENTICATED = 16] = "UNAUTHENTICATED", K[K.RESOURCE_EXHAUSTED = 8] = "RESOURCE_EXHAUSTED",
+  K[K.FAILED_PRECONDITION = 9] = "FAILED_PRECONDITION", K[K.ABORTED = 10] = "ABORTED",
+  K[K.OUT_OF_RANGE = 11] = "OUT_OF_RANGE", K[K.UNIMPLEMENTED = 12] = "UNIMPLEMENTED",
+  K[K.INTERNAL = 13] = "INTERNAL", K[K.UNAVAILABLE = 14] = "UNAVAILABLE", K[K.DATA_LOSS = 15] = "DATA_LOSS";
 
   class __PRIVATE_FetchConnection extends __PRIVATE_RestConnection {
       S(t, e) {
           throw new Error("Not supported by FetchConnection");
       }
-      async F(t, e, r, n, i) {
-          var s;
-          const o = JSON.stringify(n);
-          let a;
+      async v(t, e, r, n, i) {
+          const s = JSON.stringify(n);
+          let o;
           try {
               const t = {
                   method: "POST",
                   headers: r,
-                  body: o
+                  body: s
               };
-              i && (t.credentials = "include"), a = await fetch(e, t);
+              i && (t.credentials = "include"), o = await fetch(e, t);
           } catch (t) {
               const e = t;
               throw new FirestoreError(__PRIVATE_mapCodeFromHttpStatus(e.status), "Request failed with error: " + e.statusText);
           }
-          if (!a.ok) {
-              let t = await a.json();
+          if (!o.ok) {
+              let t = await o.json();
               Array.isArray(t) && (t = t[0]);
-              const e = null === (s = null == t ? void 0 : t.error) || void 0 === s ? void 0 : s.message;
-              throw new FirestoreError(__PRIVATE_mapCodeFromHttpStatus(a.status), `Request failed with error: ${null != e ? e : a.statusText}`);
+              const e = t?.error?.message;
+              throw new FirestoreError(__PRIVATE_mapCodeFromHttpStatus(o.status), `Request failed with error: ${e ?? o.statusText}`);
           }
-          return a.json();
+          return o.json();
       }
   }
 
@@ -4250,7 +4272,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   ByteString.EMPTY_BYTE_STRING = new ByteString("");
 
-  const W = new RegExp(/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.(\d+))?Z$/);
+  const G = new RegExp(/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.(\d+))?Z$/);
 
   /**
    * Converts the possible Proto values for a timestamp value into a "seconds and
@@ -4264,7 +4286,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           // (millis), so we do some custom parsing here.
           // Parse the nanos right out of the string.
           let e = 0;
-          const r = W.exec(t);
+          const r = G.exec(t);
           if (__PRIVATE_hardAssert(!!r, 46558, {
               timestamp: t
           }), r[1]) {
@@ -4376,7 +4398,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * limitations under the License.
    */
   // The earliest date supported by Firestore timestamps (0001-01-01T00:00:00Z).
-  const K = -62135596800, G = 1e6;
+  const J = -62135596800, H = 1e6;
 
   // Number of nanoseconds in a millisecond.
   /**
@@ -4419,7 +4441,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @returns A new `Timestamp` representing the same point in time as the given
        *     number of milliseconds.
        */    static fromMillis(t) {
-          const e = Math.floor(t / 1e3), r = Math.floor((t - 1e3 * e) * G);
+          const e = Math.floor(t / 1e3), r = Math.floor((t - 1e3 * e) * H);
           return new Timestamp(e, r);
       }
       /**
@@ -4443,7 +4465,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       e) {
           if (this.seconds = t, this.nanoseconds = e, e < 0) throw new FirestoreError(y, "Timestamp nanoseconds out of range: " + e);
           if (e >= 1e9) throw new FirestoreError(y, "Timestamp nanoseconds out of range: " + e);
-          if (t < K) throw new FirestoreError(y, "Timestamp seconds out of range: " + t);
+          if (t < J) throw new FirestoreError(y, "Timestamp seconds out of range: " + t);
           // This will break in the year 10,000.
                   if (t >= 253402300800) throw new FirestoreError(y, "Timestamp seconds out of range: " + t);
       }
@@ -4464,7 +4486,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @returns The point in time corresponding to this timestamp, represented as
        *     the number of milliseconds since Unix epoch 1970-01-01T00:00:00Z.
        */    toMillis() {
-          return 1e3 * this.seconds + this.nanoseconds / G;
+          return 1e3 * this.seconds + this.nanoseconds / H;
       }
       _compareTo(t) {
           return this.seconds === t.seconds ? __PRIVATE_primitiveComparator(this.nanoseconds, t.nanoseconds) : __PRIVATE_primitiveComparator(this.seconds, t.seconds);
@@ -4505,7 +4527,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           // the expected ordering. The <seconds> translation is done to avoid having
           // a leading negative sign (i.e. a leading '-' character) in its string
           // representation, which would affect its lexicographical ordering.
-          const t = this.seconds - K;
+          const t = this.seconds - J;
           // Note: Up to 12 decimal digits are required to represent all valid
           // 'seconds' values.
                   return String(t).padStart(12, "0") + "." + String(this.nanoseconds).padStart(9, "0");
@@ -4519,8 +4541,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   };
 
   function __PRIVATE_isServerTimestamp(t) {
-      var e, r;
-      return "server_timestamp" === (null === (r = ((null === (e = null == t ? void 0 : t.mapValue) || void 0 === e ? void 0 : e.fields) || {}).__type__) || void 0 === r ? void 0 : r.stringValue);
+      const e = (t?.mapValue?.fields || {}).__type__?.stringValue;
+      return "server_timestamp" === e;
   }
 
   /**
@@ -4555,14 +4577,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    * See the License for the specific language governing permissions and
    * limitations under the License.
-   */ const J = "__type__", H = "__max__", Z = "__vector__", X = "value";
+   */ const Y = "__type__", Z = "__max__", tt = "__vector__", et = "value";
 
   /** Extracts the backend's type order for the provided value. */
   function __PRIVATE_typeOrder(t) {
       return "nullValue" in t ? 0 /* TypeOrder.NullValue */ : "booleanValue" in t ? 1 /* TypeOrder.BooleanValue */ : "integerValue" in t || "doubleValue" in t ? 2 /* TypeOrder.NumberValue */ : "timestampValue" in t ? 3 /* TypeOrder.TimestampValue */ : "stringValue" in t ? 5 /* TypeOrder.StringValue */ : "bytesValue" in t ? 6 /* TypeOrder.BlobValue */ : "referenceValue" in t ? 7 /* TypeOrder.RefValue */ : "geoPointValue" in t ? 8 /* TypeOrder.GeoPointValue */ : "arrayValue" in t ? 9 /* TypeOrder.ArrayValue */ : "mapValue" in t ? __PRIVATE_isServerTimestamp(t) ? 4 /* TypeOrder.ServerTimestampValue */ :
       /** Returns true if the Value represents the canonical {@link #MAX_VALUE} . */
       function __PRIVATE_isMaxValue(t) {
-          return (((t.mapValue || {}).fields || {}).__type__ || {}).stringValue === H;
+          return (((t.mapValue || {}).fields || {}).__type__ || {}).stringValue === Z;
       }
       /**
    * @license
@@ -4596,9 +4618,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */ (t) ? 9007199254740991 /* TypeOrder.MaxValue */ :
       /** Returns true if `value` is a VetorValue. */
       function __PRIVATE_isVectorValue(t) {
-          var e, r;
-          const n = null === (r = ((null === (e = null == t ? void 0 : t.mapValue) || void 0 === e ? void 0 : e.fields) || {})[J]) || void 0 === r ? void 0 : r.stringValue;
-          return n === Z;
+          const e = (t?.mapValue?.fields || {})[Y]?.stringValue;
+          return e === tt;
       }
       /** Creates a deep copy of `source`. */ (t) ? 10 /* TypeOrder.VectorValue */ : 11 /* TypeOrder.ObjectValue */ : fail(28295, {
           value: t
@@ -4681,10 +4702,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   function __PRIVATE_deepClone(t) {
       if (t.geoPointValue) return {
-          geoPointValue: Object.assign({}, t.geoPointValue)
+          geoPointValue: {
+              ...t.geoPointValue
+          }
       };
       if (t.timestampValue && "object" == typeof t.timestampValue) return {
-          timestampValue: Object.assign({}, t.timestampValue)
+          timestampValue: {
+              ...t.timestampValue
+          }
       };
       if (t.mapValue) {
           const e = {
@@ -4704,7 +4729,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           for (let r = 0; r < (t.arrayValue.values || []).length; ++r) e.arrayValue.values[r] = __PRIVATE_deepClone(t.arrayValue.values[r]);
           return e;
       }
-      return Object.assign({}, t);
+      return {
+          ...t
+      };
   }
 
   /**
@@ -5180,13 +5207,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       /** Invokes the provided RPC with auth and AppCheck tokens. */    I(t, e, r, n) {
           return this.rt(), Promise.all([ this.authCredentials.getToken(), this.appCheckCredentials.getToken() ]).then((([i, s]) => this.connection.I(t, __PRIVATE_toResourcePath(e, r), n, i, s))).catch((t => {
-              throw "FirebaseError" === t.name ? (t.code === b && (this.authCredentials.invalidateToken(),
+              throw "FirebaseError" === t.name ? (t.code === D && (this.authCredentials.invalidateToken(),
               this.appCheckCredentials.invalidateToken()), t) : new FirestoreError(p, t.toString());
           }));
       }
       /** Invokes the provided RPC with streamed results with auth and AppCheck tokens. */    D(t, e, r, n, i) {
           return this.rt(), Promise.all([ this.authCredentials.getToken(), this.appCheckCredentials.getToken() ]).then((([s, o]) => this.connection.D(t, __PRIVATE_toResourcePath(e, r), n, s, o, i))).catch((t => {
-              throw "FirebaseError" === t.name ? (t.code === b && (this.authCredentials.invalidateToken(),
+              throw "FirebaseError" === t.name ? (t.code === D && (this.authCredentials.invalidateToken(),
               this.appCheckCredentials.invalidateToken()), t) : new FirestoreError(p, t.toString());
           }));
       }
@@ -5227,7 +5254,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    * See the License for the specific language governing permissions and
    * limitations under the License.
-   */ const nt = "ComponentProvider", it = new Map;
+   */ const st = "ComponentProvider", ot = new Map;
 
   /**
    * An instance map that ensures only one Datastore exists per Firestore
@@ -5240,8 +5267,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */
   function __PRIVATE_getDatastore(t) {
       if (t._terminated) throw new FirestoreError(S, "The client has already been terminated.");
-      if (!it.has(t)) {
-          __PRIVATE_logDebug(nt, "Initializing Datastore");
+      if (!ot.has(t)) {
+          __PRIVATE_logDebug(st, "Initializing Datastore");
           const e = function __PRIVATE_newConnection(t) {
               return new __PRIVATE_FetchConnection(t);
           }(function __PRIVATE_makeDatabaseInfo(t, e, r, n) {
@@ -5265,9 +5292,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */ (t._databaseId, t.app.options.appId || "", t._persistenceKey, t._freezeSettings())), r = __PRIVATE_newSerializer(t._databaseId), n = function __PRIVATE_newDatastore(t, e, r, n) {
               return new __PRIVATE_DatastoreImpl(t, e, r, n);
           }(t._authCredentials, t._appCheckCredentials, e, r);
-          it.set(t, n);
+          ot.set(t, n);
       }
-      return it.get(t);
+      return ot.get(t);
   }
 
   /**
@@ -5290,7 +5317,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */
-  const st = 1048576, ot = "firestore.googleapis.com", at = true;
+  const at = 1048576, ut = "firestore.googleapis.com", _t = true;
 
   /**
    * @license
@@ -5316,15 +5343,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */
   class FirestoreSettingsImpl {
       constructor(t) {
-          var e, r;
           if (void 0 === t.host) {
               if (void 0 !== t.ssl) throw new FirestoreError(y, "Can't provide ssl option if host option is not set");
-              this.host = ot, this.ssl = at;
-          } else this.host = t.host, this.ssl = null !== (e = t.ssl) && void 0 !== e ? e : at;
+              this.host = ut, this.ssl = _t;
+          } else this.host = t.host, this.ssl = t.ssl ?? _t;
           if (this.isUsingEmulator = void 0 !== t.emulatorOptions, this.credentials = t.credentials,
           this.ignoreUndefinedProperties = !!t.ignoreUndefinedProperties, this.localCache = t.localCache,
           void 0 === t.cacheSizeBytes) this.cacheSizeBytes = 41943040; else {
-              if (-1 !== t.cacheSizeBytes && t.cacheSizeBytes < st) throw new FirestoreError(y, "cacheSizeBytes must be at least 1048576");
+              if (-1 !== t.cacheSizeBytes && t.cacheSizeBytes < at) throw new FirestoreError(y, "cacheSizeBytes must be at least 1048576");
               this.cacheSizeBytes = t.cacheSizeBytes;
           }
           !function __PRIVATE_validateIsNotUsedTogether(t, e, r, n) {
@@ -5335,7 +5361,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           // the TypeScript compiler has narrowed the type to boolean already.
           // noinspection PointlessBooleanExpressionJS
           this.experimentalAutoDetectLongPolling = !!t.experimentalAutoDetectLongPolling,
-          this.experimentalLongPollingOptions = __PRIVATE_cloneLongPollingOptions(null !== (r = t.experimentalLongPollingOptions) && void 0 !== r ? r : {}),
+          this.experimentalLongPollingOptions = __PRIVATE_cloneLongPollingOptions(t.experimentalLongPollingOptions ?? {}),
           function __PRIVATE_validateLongPollingOptions(t) {
               if (void 0 !== t.timeoutSeconds) {
                   if (isNaN(t.timeoutSeconds)) throw new FirestoreError(y, `invalid long polling timeout: ${t.timeoutSeconds} (must not be NaN)`);
@@ -5454,8 +5480,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * Only ever called once.
        */    _terminate() {
           return function __PRIVATE_removeComponents(t) {
-              const e = it.get(t);
-              e && (__PRIVATE_logDebug(nt, "Removing Datastore"), it.delete(t), e.terminate());
+              const e = ot.get(t);
+              e && (__PRIVATE_logDebug(st, "Removing Datastore"), ot.delete(t), e.terminate());
           }(this), Promise.resolve();
       }
   }
@@ -5484,28 +5510,29 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * @param options.mockUserToken - the mock auth token to use for unit testing
    * Security Rules.
    */ function connectFirestoreEmulator(t, e, r, n = {}) {
-      var i;
       t = __PRIVATE_cast(t, Firestore);
-      const s = isCloudWorkstation(e), o = t._getSettings(), a = Object.assign(Object.assign({}, o), {
+      const i = isCloudWorkstation(e), s = t._getSettings(), o = {
+          ...s,
           emulatorOptions: t._getEmulatorOptions()
-      }), u = `${e}:${r}`;
-      s && (pingServer(`https://${u}`), updateEmulatorBanner("Firestore", true)), o.host !== ot && o.host !== u && __PRIVATE_logWarn("Host has been set in both settings() and connectFirestoreEmulator(), emulator host will be used.");
-      const _ = Object.assign(Object.assign({}, o), {
-          host: u,
-          ssl: s,
+      }, a = `${e}:${r}`;
+      i && (pingServer(`https://${a}`), updateEmulatorBanner("Firestore", true)), s.host !== ut && s.host !== a && __PRIVATE_logWarn("Host has been set in both settings() and connectFirestoreEmulator(), emulator host will be used.");
+      const u = {
+          ...s,
+          host: a,
+          ssl: i,
           emulatorOptions: n
-      });
+      };
       // No-op if the new configuration matches the current configuration. This supports SSR
       // enviornments which might call `connectFirestoreEmulator` multiple times as a standard practice.
-          if (!deepEqual(_, a) && (t._setSettings(_), n.mockUserToken)) {
+          if (!deepEqual(u, o) && (t._setSettings(u), n.mockUserToken)) {
           let e, r;
           if ("string" == typeof n.mockUserToken) e = n.mockUserToken, r = User.MOCK_USER; else {
               // Let createMockUserToken validate first (catches common mistakes like
               // invalid field "uid" and missing field "sub" / "user_id".)
-              e = createMockUserToken(n.mockUserToken, null === (i = t._app) || void 0 === i ? void 0 : i.options.projectId);
-              const s = n.mockUserToken.sub || n.mockUserToken.user_id;
-              if (!s) throw new FirestoreError(y, "mockUserToken must contain 'sub' or 'user_id' field!");
-              r = new User(s);
+              e = createMockUserToken(n.mockUserToken, t._app?.options.projectId);
+              const i = n.mockUserToken.sub || n.mockUserToken.user_id;
+              if (!i) throw new FirestoreError(y, "mockUserToken must contain 'sub' or 'user_id' field!");
+              r = new User(i);
           }
           t._authCredentials = new __PRIVATE_EmulatorAuthCredentialsProvider(new __PRIVATE_OAuthToken(e, r));
       }
@@ -5985,7 +6012,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   /**
    * Matches any characters in a field path string that are reserved.
-   */ const _t = new RegExp("[~\\*/\\[\\]]");
+   */ const lt = new RegExp("[~\\*/\\[\\]]");
 
   /**
    * Wraps fromDotSeparatedString with an error message about the method that
@@ -5996,7 +6023,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * @param targetDoc - The document against which the field path will be
    * evaluated.
    */ function __PRIVATE_fieldPathFromDotSeparatedString(t, e, r) {
-      if (e.search(_t) >= 0) throw __PRIVATE_createError(`Invalid field path (${e}). Paths must not contain '~', '*', '/', '[', or ']'`, t);
+      if (e.search(lt) >= 0) throw __PRIVATE_createError(`Invalid field path (${e}). Paths must not contain '~', '*', '/', '[', or ']'`, t);
       try {
           return new FieldPath(...e.split("."))._internalPath;
       } catch (n) {
@@ -6184,9 +6211,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * @internal
        */    convertVectorValue(t) {
-          var e, r, n;
-          const i = null === (n = null === (r = null === (e = t.fields) || void 0 === e ? void 0 : e[X].arrayValue) || void 0 === r ? void 0 : r.values) || void 0 === n ? void 0 : n.map((t => __PRIVATE_normalizeNumber(t.doubleValue)));
-          return new VectorValue(i);
+          const e = t.fields?.[et].arrayValue?.values?.map((t => __PRIVATE_normalizeNumber(t.doubleValue)));
+          return new VectorValue(e);
       }
       convertGeoPoint(t) {
           return new GeoPoint(__PRIVATE_normalizeNumber(t.latitude), __PRIVATE_normalizeNumber(t.longitude));
@@ -6276,7 +6302,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           return r && i._setSettings(r), i;
       }), "PUBLIC").setMultipleInstances(true)),
       // RUNTIME_ENV and BUILD_TARGET are replaced by real values during the compilation
-      registerVersion("firestore-lite", P, ""), registerVersion("firestore-lite", P, "esm2017");
+      registerVersion("firestore-lite", P, ""), registerVersion("firestore-lite", P, "esm2020");
   }();
 
   const __esModule = true ;

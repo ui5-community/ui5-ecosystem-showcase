@@ -3541,8 +3541,8 @@ sap.ui.define((function () { 'use strict';
   })();
   /* [MS-CFB] v20171201 */
   var CFB = /*#__PURE__*/(function _CFB(){
-  var exports/*:CFBModule*/ = /*::(*/{}/*:: :any)*/;
-  exports.version = '1.2.2';
+  var exports$1/*:CFBModule*/ = /*::(*/{}/*:: :any)*/;
+  exports$1.version = '1.2.2';
   /* [MS-CFB] 2.6.4 */
   function namecmp(l/*:string*/, r/*:string*/)/*:number*/ {
   	var L = l.split("/"), R = r.split("/");
@@ -5243,12 +5243,12 @@ sap.ui.define((function () { 'use strict';
 
   function cfb_gc(cfb/*:CFBContainer*/)/*:void*/ { rebuild_cfb(cfb, true); }
 
-  exports.find = find;
-  exports.read = read;
-  exports.parse = parse;
-  exports.write = write;
-  exports.writeFile = write_file;
-  exports.utils = {
+  exports$1.find = find;
+  exports$1.read = read;
+  exports$1.parse = parse;
+  exports$1.write = write;
+  exports$1.writeFile = write_file;
+  exports$1.utils = {
   	cfb_new: cfb_new,
   	cfb_add: cfb_add,
   	cfb_del: cfb_del,
@@ -5264,7 +5264,7 @@ sap.ui.define((function () { 'use strict';
   	consts: consts
   };
 
-  return exports;
+  return exports$1;
   })();
 
   var _fs;

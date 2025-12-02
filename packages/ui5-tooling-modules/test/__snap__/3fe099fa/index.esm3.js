@@ -20,7 +20,24 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   var browser$1 = {
     env: env};
 
-  const getDefaultsFromPostinstall = () => (undefined);
+  /**
+   * @license
+   * Copyright 2025 Google LLC
+   *
+   * Licensed under the Apache License, Version 2.0 (the "License");
+   * you may not use this file except in compliance with the License.
+   * You may obtain a copy of the License at
+   *
+   *   http://www.apache.org/licenses/LICENSE-2.0
+   *
+   * Unless required by applicable law or agreed to in writing, software
+   * distributed under the License is distributed on an "AS IS" BASIS,
+   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   * See the License for the specific language governing permissions and
+   * limitations under the License.
+   */
+  // This value is retrieved and hardcoded by the NPM postinstall script
+  const getDefaultsFromPostinstall = () => undefined;
 
   /**
    * @license
@@ -456,7 +473,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * @returns a URL host formatted like `127.0.0.1:9999` or `[::1]:4000` if available
    * @public
    */
-  const getDefaultEmulatorHost = (productName) => { var _a, _b; return (_b = (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.emulatorHosts) === null || _b === void 0 ? void 0 : _b[productName]; };
+  const getDefaultEmulatorHost = (productName) => getDefaults()?.emulatorHosts?.[productName];
   /**
    * Returns emulator hostname and port stored in the __FIREBASE_DEFAULTS__ object
    * for the given product.
@@ -486,7 +503,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * Returns Firebase app config stored in the __FIREBASE_DEFAULTS__ object.
    * @public
    */
-  const getDefaultAppConfig = () => { var _a; return (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.config; };
+  const getDefaultAppConfig = () => getDefaults()?.config;
 
   /**
    * @license
@@ -574,7 +591,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               : url;
           return host.endsWith('.cloudworkstations.dev');
       }
-      catch (_a) {
+      catch {
           return false;
       }
   }
@@ -621,12 +638,22 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       if (!sub) {
           throw new Error("mockUserToken must contain 'sub' or 'user_id' field!");
       }
-      const payload = Object.assign({
+      const payload = {
           // Set all required fields to decent defaults
-          iss: `https://securetoken.google.com/${project}`, aud: project, iat, exp: iat + 3600, auth_time: iat, sub, user_id: sub, firebase: {
+          iss: `https://securetoken.google.com/${project}`,
+          aud: project,
+          iat,
+          exp: iat + 3600,
+          auth_time: iat,
+          sub,
+          user_id: sub,
+          firebase: {
               sign_in_provider: 'custom',
               identities: {}
-          } }, token);
+          },
+          // Override with user options
+          ...token
+      };
       // Unsecured JWTs use the empty string as a signature.
       const signature = '';
       return [
@@ -835,8 +862,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                   preExist = false;
               };
               request.onerror = () => {
-                  var _a;
-                  reject(((_a = request.error) === null || _a === void 0 ? void 0 : _a.message) || '');
+                  reject(request.error?.message || '');
               };
           }
           catch (error) {
@@ -1129,10 +1155,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           return this.instancesDeferred.get(normalizedIdentifier).promise;
       }
       getImmediate(options) {
-          var _a;
           // if multipleInstances is not supported, use the default name
-          const normalizedIdentifier = this.normalizeInstanceIdentifier(options === null || options === void 0 ? void 0 : options.identifier);
-          const optional = (_a = options === null || options === void 0 ? void 0 : options.optional) !== null && _a !== void 0 ? _a : false;
+          const normalizedIdentifier = this.normalizeInstanceIdentifier(options?.identifier);
+          const optional = options?.optional ?? false;
           if (this.isInitialized(normalizedIdentifier) ||
               this.shouldAutoInitialize()) {
               try {
@@ -1264,9 +1289,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @returns a function to unregister the callback
        */
       onInit(callback, identifier) {
-          var _a;
           const normalizedIdentifier = this.normalizeInstanceIdentifier(identifier);
-          const existingCallbacks = (_a = this.onInitCallbacks.get(normalizedIdentifier)) !== null && _a !== void 0 ? _a : new Set();
+          const existingCallbacks = this.onInitCallbacks.get(normalizedIdentifier) ??
+              new Set();
           existingCallbacks.add(callback);
           this.onInitCallbacks.set(normalizedIdentifier, existingCallbacks);
           const existingInstance = this.instances.get(normalizedIdentifier);
@@ -1290,7 +1315,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               try {
                   callback(instance, identifier);
               }
-              catch (_a) {
+              catch {
                   // ignore errors in the onInit callback
               }
           }
@@ -1319,7 +1344,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                   try {
                       this.component.onInstanceCreated(this.container, instanceIdentifier, instance);
                   }
-                  catch (_a) {
+                  catch {
                       // ignore errors in the onInstanceCreatedCallback
                   }
               }
@@ -1620,7 +1645,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                   })
                       .filter(arg => arg)
                       .join(' ');
-                  if (level >= (customLogLevel !== null && customLogLevel !== void 0 ? customLogLevel : instance.logLevel)) {
+                  if (level >= (customLogLevel ?? instance.logLevel)) {
                       logCallback({
                           level: exports.LogLevel[level].toLowerCase(),
                           message,
@@ -1944,11 +1969,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */
   function isVersionServiceProvider(provider) {
       const component = provider.getComponent();
-      return (component === null || component === void 0 ? void 0 : component.type) === "VERSION" /* ComponentType.VERSION */;
+      return component?.type === "VERSION" /* ComponentType.VERSION */;
   }
 
   const name$q = "@firebase/app";
-  const version$1 = "0.13.2";
+  const version$1 = "0.14.6";
 
   /**
    * @license
@@ -2019,7 +2044,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   const name$1 = "@firebase/firestore-compat";
 
   const name = "firebase";
-  const version = "11.10.0";
+  const version = "12.6.0";
 
   /**
    * @license
@@ -2179,7 +2204,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
   /**
    *
-   * @param obj - an object of type FirebaseApp or FirebaseOptions.
+   * @param obj - an object of type FirebaseApp, FirebaseOptions or FirebaseAppSettings.
    *
    * @returns true if the provide object is of type FirebaseApp.
    *
@@ -2187,6 +2212,23 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    */
   function _isFirebaseApp(obj) {
       return obj.options !== undefined;
+  }
+  /**
+   *
+   * @param obj - an object of type FirebaseApp, FirebaseOptions or FirebaseAppSettings.
+   *
+   * @returns true if the provided object is of type FirebaseServerAppImpl.
+   *
+   * @internal
+   */
+  function _isFirebaseServerAppSettings(obj) {
+      if (_isFirebaseApp(obj)) {
+          return false;
+      }
+      return ('authIdToken' in obj ||
+          'appCheckToken' in obj ||
+          'releaseOnDeref' in obj ||
+          'automaticDataCollectionEnabled' in obj);
   }
   /**
    *
@@ -2266,8 +2308,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   class FirebaseAppImpl {
       constructor(options, config, container) {
           this._isDeleted = false;
-          this._options = Object.assign({}, options);
-          this._config = Object.assign({}, config);
+          this._options = { ...options };
+          this._config = { ...config };
           this._name = config.name;
           this._automaticDataCollectionEnabled =
               config.automaticDataCollectionEnabled;
@@ -2371,7 +2413,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               super(appImpl.options, config, container);
           }
           // Now construct the data for the FirebaseServerAppImpl.
-          this._serverConfig = Object.assign({ automaticDataCollectionEnabled }, serverConfig);
+          this._serverConfig = {
+              automaticDataCollectionEnabled,
+              ...serverConfig
+          };
           // Ensure that the current time is within the `authIdtoken` window of validity.
           if (this._serverConfig.authIdToken) {
               validateTokenTTL(this._serverConfig.authIdToken, 'authIdToken');
@@ -2467,7 +2512,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           const name = rawConfig;
           rawConfig = { name };
       }
-      const config = Object.assign({ name: DEFAULT_ENTRY_NAME, automaticDataCollectionEnabled: true }, rawConfig);
+      const config = {
+          name: DEFAULT_ENTRY_NAME,
+          automaticDataCollectionEnabled: true,
+          ...rawConfig
+      };
       const name = config.name;
       if (typeof name !== 'string' || !name) {
           throw ERROR_FACTORY.create("bad-app-name" /* AppError.BAD_APP_NAME */, {
@@ -2497,23 +2546,36 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       _apps.set(name, newApp);
       return newApp;
   }
-  function initializeServerApp(_options, _serverAppConfig) {
+  function initializeServerApp(_options, _serverAppConfig = {}) {
       if (isBrowser() && !isWebWorker()) {
           // FirebaseServerApp isn't designed to be run in browsers.
           throw ERROR_FACTORY.create("invalid-server-app-environment" /* AppError.INVALID_SERVER_APP_ENVIRONMENT */);
       }
-      if (_serverAppConfig.automaticDataCollectionEnabled === undefined) {
-          _serverAppConfig.automaticDataCollectionEnabled = true;
+      let firebaseOptions;
+      let serverAppSettings = _serverAppConfig || {};
+      if (_options) {
+          if (_isFirebaseApp(_options)) {
+              firebaseOptions = _options.options;
+          }
+          else if (_isFirebaseServerAppSettings(_options)) {
+              serverAppSettings = _options;
+          }
+          else {
+              firebaseOptions = _options;
+          }
       }
-      let appOptions;
-      if (_isFirebaseApp(_options)) {
-          appOptions = _options.options;
+      if (serverAppSettings.automaticDataCollectionEnabled === undefined) {
+          serverAppSettings.automaticDataCollectionEnabled = true;
       }
-      else {
-          appOptions = _options;
+      firebaseOptions || (firebaseOptions = getDefaultAppConfig());
+      if (!firebaseOptions) {
+          throw ERROR_FACTORY.create("no-options" /* AppError.NO_OPTIONS */);
       }
       // Build an app name based on a hash of the configuration options.
-      const nameObj = Object.assign(Object.assign({}, _serverAppConfig), appOptions);
+      const nameObj = {
+          ...serverAppSettings,
+          ...firebaseOptions
+      };
       // However, Do not mangle the name based on releaseOnDeref, since it will vary between the
       // construction of FirebaseServerApp instances. For example, if the object is the request headers.
       if (nameObj.releaseOnDeref !== undefined) {
@@ -2522,7 +2584,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       const hashCode = (s) => {
           return [...s].reduce((hash, c) => (Math.imul(31, hash) + c.charCodeAt(0)) | 0, 0);
       };
-      if (_serverAppConfig.releaseOnDeref !== undefined) {
+      if (serverAppSettings.releaseOnDeref !== undefined) {
           if (typeof FinalizationRegistry === 'undefined') {
               throw ERROR_FACTORY.create("finalization-registry-not-supported" /* AppError.FINALIZATION_REGISTRY_NOT_SUPPORTED */, {});
           }
@@ -2530,14 +2592,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       const nameString = '' + hashCode(JSON.stringify(nameObj));
       const existingApp = _serverApps.get(nameString);
       if (existingApp) {
-          existingApp.incRefCount(_serverAppConfig.releaseOnDeref);
+          existingApp.incRefCount(serverAppSettings.releaseOnDeref);
           return existingApp;
       }
       const container = new ComponentContainer(nameString);
       for (const component of _components.values()) {
           container.addComponent(component);
       }
-      const newApp = new FirebaseServerAppImpl(appOptions, _serverAppConfig, nameString, container);
+      const newApp = new FirebaseServerAppImpl(firebaseOptions, serverAppSettings, nameString, container);
       _serverApps.set(nameString, newApp);
       return newApp;
   }
@@ -2634,10 +2696,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * @public
    */
   function registerVersion(libraryKeyOrName, version, variant) {
-      var _a;
       // TODO: We can use this check to whitelist strings when/if we set up
       // a good whitelist system.
-      let library = (_a = PLATFORM_LOG_STRING[libraryKeyOrName]) !== null && _a !== void 0 ? _a : libraryKeyOrName;
+      let library = PLATFORM_LOG_STRING[libraryKeyOrName] ?? libraryKeyOrName;
       if (variant) {
           library += `-${variant}`;
       }
@@ -2753,7 +2814,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           else {
               const idbGetError = ERROR_FACTORY.create("idb-get" /* AppError.IDB_GET */, {
-                  originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
+                  originalErrorMessage: e?.message
               });
               logger.warn(idbGetError.message);
           }
@@ -2773,7 +2834,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           else {
               const idbGetError = ERROR_FACTORY.create("idb-set" /* AppError.IDB_WRITE */, {
-                  originalErrorMessage: e === null || e === void 0 ? void 0 : e.message
+                  originalErrorMessage: e?.message
               });
               logger.warn(idbGetError.message);
           }
@@ -2829,7 +2890,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * already logged, subsequent calls to this function in the same day will be ignored.
        */
       async triggerHeartbeat() {
-          var _a, _b;
           try {
               const platformLogger = this.container
                   .getProvider('platform-logger')
@@ -2838,10 +2898,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               // service, not the browser user agent.
               const agent = platformLogger.getPlatformInfoString();
               const date = getUTCDateString();
-              if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null) {
+              if (this._heartbeatsCache?.heartbeats == null) {
                   this._heartbeatsCache = await this._heartbeatsCachePromise;
                   // If we failed to construct a heartbeats cache, then return immediately.
-                  if (((_b = this._heartbeatsCache) === null || _b === void 0 ? void 0 : _b.heartbeats) == null) {
+                  if (this._heartbeatsCache?.heartbeats == null) {
                       return;
                   }
               }
@@ -2875,13 +2935,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * returns an empty string.
        */
       async getHeartbeatsHeader() {
-          var _a;
           try {
               if (this._heartbeatsCache === null) {
                   await this._heartbeatsCachePromise;
               }
               // If it's still null or the array is empty, there is no data to send.
-              if (((_a = this._heartbeatsCache) === null || _a === void 0 ? void 0 : _a.heartbeats) == null ||
+              if (this._heartbeatsCache?.heartbeats == null ||
                   this._heartbeatsCache.heartbeats.length === 0) {
                   return '';
               }
@@ -2982,7 +3041,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
           else {
               const idbHeartbeatObject = await readHeartbeatsFromIndexedDB(this.app);
-              if (idbHeartbeatObject === null || idbHeartbeatObject === void 0 ? void 0 : idbHeartbeatObject.heartbeats) {
+              if (idbHeartbeatObject?.heartbeats) {
                   return idbHeartbeatObject;
               }
               else {
@@ -2992,7 +3051,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       }
       // overwrite the storage with the provided heartbeats
       async overwrite(heartbeatsObject) {
-          var _a;
           const canUseIndexedDB = await this._canUseIndexedDBPromise;
           if (!canUseIndexedDB) {
               return;
@@ -3000,14 +3058,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           else {
               const existingHeartbeatsObject = await this.read();
               return writeHeartbeatsToIndexedDB(this.app, {
-                  lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
+                  lastSentHeartbeatDate: heartbeatsObject.lastSentHeartbeatDate ??
+                      existingHeartbeatsObject.lastSentHeartbeatDate,
                   heartbeats: heartbeatsObject.heartbeats
               });
           }
       }
       // add heartbeats
       async add(heartbeatsObject) {
-          var _a;
           const canUseIndexedDB = await this._canUseIndexedDBPromise;
           if (!canUseIndexedDB) {
               return;
@@ -3015,7 +3073,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           else {
               const existingHeartbeatsObject = await this.read();
               return writeHeartbeatsToIndexedDB(this.app, {
-                  lastSentHeartbeatDate: (_a = heartbeatsObject.lastSentHeartbeatDate) !== null && _a !== void 0 ? _a : existingHeartbeatsObject.lastSentHeartbeatDate,
+                  lastSentHeartbeatDate: heartbeatsObject.lastSentHeartbeatDate ??
+                      existingHeartbeatsObject.lastSentHeartbeatDate,
                   heartbeats: [
                       ...existingHeartbeatsObject.heartbeats,
                       ...heartbeatsObject.heartbeats
@@ -3075,8 +3134,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       _registerComponent(new Component('heartbeat', container => new HeartbeatServiceImpl(container), "PRIVATE" /* ComponentType.PRIVATE */));
       // Register `app` package.
       registerVersion(name$q, version$1, variant);
-      // BUILD_TARGET will be replaced by values like esm2017, cjs2017, etc during the compilation
-      registerVersion(name$q, version$1, 'esm2017');
+      // BUILD_TARGET will be replaced by values like esm, cjs, etc during the compilation
+      registerVersion(name$q, version$1, 'esm2020');
       // Register platform SDK identifier (no version).
       registerVersion('fire-js', '');
   }
@@ -3102,6 +3161,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   exports._getProvider = _getProvider;
   exports._isFirebaseApp = _isFirebaseApp;
   exports._isFirebaseServerApp = _isFirebaseServerApp;
+  exports._isFirebaseServerAppSettings = _isFirebaseServerAppSettings;
   exports._registerComponent = _registerComponent;
   exports._removeServiceInstance = _removeServiceInstance;
   exports._serverApps = _serverApps;

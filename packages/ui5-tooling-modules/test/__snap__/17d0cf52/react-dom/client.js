@@ -38,7 +38,7 @@ sap.ui.define(['../index2'], (function (index) { 'use strict';
   function requireScheduler_production () {
   	if (hasRequiredScheduler_production) return scheduler_production;
   	hasRequiredScheduler_production = 1;
-  	(function (exports) {
+  	(function (exports$1) {
   		function push(heap, node) {
   		  var index = heap.length;
   		  heap.push(node);
@@ -87,16 +87,16 @@ sap.ui.define(['../index2'], (function (index) { 'use strict';
   		  var diff = a.sortIndex - b.sortIndex;
   		  return 0 !== diff ? diff : a.id - b.id;
   		}
-  		exports.unstable_now = void 0;
+  		exports$1.unstable_now = void 0;
   		if ("object" === typeof performance && "function" === typeof performance.now) {
   		  var localPerformance = performance;
-  		  exports.unstable_now = function () {
+  		  exports$1.unstable_now = function () {
   		    return localPerformance.now();
   		  };
   		} else {
   		  var localDate = Date,
   		    initialTime = localDate.now();
-  		  exports.unstable_now = function () {
+  		  exports$1.unstable_now = function () {
   		    return localDate.now() - initialTime;
   		  };
   		}
@@ -144,14 +144,14 @@ sap.ui.define(['../index2'], (function (index) { 'use strict';
   		function shouldYieldToHost() {
   		  return needsPaint
   		    ? true
-  		    : exports.unstable_now() - startTime < frameInterval
+  		    : exports$1.unstable_now() - startTime < frameInterval
   		      ? false
   		      : true;
   		}
   		function performWorkUntilDeadline() {
   		  needsPaint = false;
   		  if (isMessageLoopRunning) {
-  		    var currentTime = exports.unstable_now();
+  		    var currentTime = exports$1.unstable_now();
   		    startTime = currentTime;
   		    var hasMoreWork = true;
   		    try {
@@ -181,7 +181,7 @@ sap.ui.define(['../index2'], (function (index) { 'use strict';
   		                var continuationCallback = callback(
   		                  currentTask.expirationTime <= currentTime
   		                );
-  		                currentTime = exports.unstable_now();
+  		                currentTime = exports$1.unstable_now();
   		                if ("function" === typeof continuationCallback) {
   		                  currentTask.callback = continuationCallback;
   		                  advanceTimers(currentTime);
@@ -237,29 +237,29 @@ sap.ui.define(['../index2'], (function (index) { 'use strict';
   		  };
   		function requestHostTimeout(callback, ms) {
   		  taskTimeoutID = localSetTimeout(function () {
-  		    callback(exports.unstable_now());
+  		    callback(exports$1.unstable_now());
   		  }, ms);
   		}
-  		exports.unstable_IdlePriority = 5;
-  		exports.unstable_ImmediatePriority = 1;
-  		exports.unstable_LowPriority = 4;
-  		exports.unstable_NormalPriority = 3;
-  		exports.unstable_Profiling = null;
-  		exports.unstable_UserBlockingPriority = 2;
-  		exports.unstable_cancelCallback = function (task) {
+  		exports$1.unstable_IdlePriority = 5;
+  		exports$1.unstable_ImmediatePriority = 1;
+  		exports$1.unstable_LowPriority = 4;
+  		exports$1.unstable_NormalPriority = 3;
+  		exports$1.unstable_Profiling = null;
+  		exports$1.unstable_UserBlockingPriority = 2;
+  		exports$1.unstable_cancelCallback = function (task) {
   		  task.callback = null;
   		};
-  		exports.unstable_forceFrameRate = function (fps) {
+  		exports$1.unstable_forceFrameRate = function (fps) {
   		  0 > fps || 125 < fps
   		    ? console.error(
   		        "forceFrameRate takes a positive int between 0 and 125, forcing frame rates higher than 125 fps is not supported"
   		      )
   		    : (frameInterval = 0 < fps ? Math.floor(1e3 / fps) : 5);
   		};
-  		exports.unstable_getCurrentPriorityLevel = function () {
+  		exports$1.unstable_getCurrentPriorityLevel = function () {
   		  return currentPriorityLevel;
   		};
-  		exports.unstable_next = function (eventHandler) {
+  		exports$1.unstable_next = function (eventHandler) {
   		  switch (currentPriorityLevel) {
   		    case 1:
   		    case 2:
@@ -277,10 +277,10 @@ sap.ui.define(['../index2'], (function (index) { 'use strict';
   		    currentPriorityLevel = previousPriorityLevel;
   		  }
   		};
-  		exports.unstable_requestPaint = function () {
+  		exports$1.unstable_requestPaint = function () {
   		  needsPaint = true;
   		};
-  		exports.unstable_runWithPriority = function (priorityLevel, eventHandler) {
+  		exports$1.unstable_runWithPriority = function (priorityLevel, eventHandler) {
   		  switch (priorityLevel) {
   		    case 1:
   		    case 2:
@@ -299,12 +299,12 @@ sap.ui.define(['../index2'], (function (index) { 'use strict';
   		    currentPriorityLevel = previousPriorityLevel;
   		  }
   		};
-  		exports.unstable_scheduleCallback = function (
+  		exports$1.unstable_scheduleCallback = function (
   		  priorityLevel,
   		  callback,
   		  options
   		) {
-  		  var currentTime = exports.unstable_now();
+  		  var currentTime = exports$1.unstable_now();
   		  "object" === typeof options && null !== options
   		    ? ((options = options.delay),
   		      (options =
@@ -355,8 +355,8 @@ sap.ui.define(['../index2'], (function (index) { 'use strict';
   		          ((isMessageLoopRunning = true), schedulePerformWorkUntilDeadline())));
   		  return priorityLevel;
   		};
-  		exports.unstable_shouldYield = shouldYieldToHost;
-  		exports.unstable_wrapCallback = function (callback) {
+  		exports$1.unstable_shouldYield = shouldYieldToHost;
+  		exports$1.unstable_wrapCallback = function (callback) {
   		  var parentPriorityLevel = currentPriorityLevel;
   		  return function () {
   		    var previousPriorityLevel = currentPriorityLevel;
