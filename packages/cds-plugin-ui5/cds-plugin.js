@@ -297,7 +297,7 @@ if (!skip) {
 		// check if the register function for build tasks is available at the cds object
 		// and if the Plugin class is available to register the cds build task to cover
 		// the tracks of the cds-plugin-ui5 workspace configuration and dependencies
-		const { minVersion, satisfies } = require("semver");
+		const { minVersion, satisfies, coerce } = require("semver");
 		if (typeof cds.build?.register === "function" && typeof cds.build?.Plugin?.constructor === "function") {
 			const { readFile, writeFile } = require("fs").promises;
 			const { existsSync } = require("fs");
@@ -333,12 +333,14 @@ if (!skip) {
 					}
 					init() {}
 					clean() {
-						if (!satisfies(cdsdkVersion, ">=8")) {
+						// allowed ranges for CDSDK >= 8 are -1024..-1 and 512..1024
+						if (!satisfies(coerce(cdsdkVersion), ">=8")) {
 							this._priority = -1; // hack to ensure that the task is executed last!
 						}
 					}
 					get priority() {
-						if (!satisfies(cdsdkVersion, ">=8")) {
+						// allowed ranges for CDSDK >= 8 are -1024..-1 and 512..1024
+						if (!satisfies(coerce(cdsdkVersion), ">=8")) {
 							return this._priority || 1;
 						} else {
 							return -1;
@@ -390,7 +392,7 @@ if (!skip) {
 				},
 			);
 		} else {
-			if (!satisfies(cdsdkVersion, ">=7.5.0")) {
+			if (!satisfies(coerce(cdsdkVersion), ">=7.5.0")) {
 				// TODO: add error message to inform the user that the cds build task is not available
 				//       and that the @sap/cds-dk version is too old to support the cds build task
 				LOG.warn(`The cds build task requires @sap/cds-dk version >= 7.5.0! Skipping execution as your @sap/cds-dk version ${cdsdkVersion} is too old...`);
