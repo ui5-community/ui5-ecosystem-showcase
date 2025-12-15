@@ -2765,7 +2765,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   registerCoreComponents('');
 
   var name = "firebase";
-  var version = "12.6.0";
+  var version = "12.7.0";
 
   /**
    * @license
@@ -2822,7 +2822,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   a.m()));f=Math.ceil(Math.log(c)/Math.LN2);f=f<=48?1:Math.pow(2,f-48);g=v(c);for(b=g.j(a);B(b)||b.l(d)>0;)c-=f,g=v(c),b=g.j(a);C(g)&&(g=z);e=e.add(g);d=F(d,b);}return new H(e,d)}h.B=function(d){return D(this,d).h};h.and=function(d){const a=Math.max(this.g.length,d.g.length),c=[];for(let f=0;f<a;f++)c[f]=this.i(f)&d.i(f);return new t(c,this.h&d.h)};h.or=function(d){const a=Math.max(this.g.length,d.g.length),c=[];for(let f=0;f<a;f++)c[f]=this.i(f)|d.i(f);return new t(c,this.h|d.h)};
   h.xor=function(d){const a=Math.max(this.g.length,d.g.length),c=[];for(let f=0;f<a;f++)c[f]=this.i(f)^d.i(f);return new t(c,this.h^d.h)};function I(d){const a=d.g.length+1,c=[];for(let f=0;f<a;f++)c[f]=d.i(f)<<1|d.i(f-1)>>>31;return new t(c,d.h)}function J(d,a){const c=a>>5;a%=32;const f=d.g.length-c,e=[];for(let g=0;g<f;g++)e[g]=a>0?d.i(g+c)>>>a|d.i(g+c+1)<<32-a:d.i(g+c);return new t(e,d.h)}m.prototype.digest=m.prototype.A;m.prototype.reset=m.prototype.u;m.prototype.update=m.prototype.v;t.prototype.add=t.prototype.add;t.prototype.multiply=t.prototype.j;t.prototype.modulo=t.prototype.B;t.prototype.compare=t.prototype.l;t.prototype.toNumber=t.prototype.m;t.prototype.toString=t.prototype.toString;t.prototype.getBits=t.prototype.i;t.fromNumber=v;t.fromString=y;Integer = t;}).apply( typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : typeof self !== 'undefined' ? self  : typeof window !== 'undefined' ? window  : {});
 
-  const P = "4.9.2";
+  const P = "4.9.3";
 
   /**
    * @license
@@ -2883,7 +2883,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
    * See the License for the specific language governing permissions and
    * limitations under the License.
    */
-  let A = "12.3.0";
+  let A = "12.7.0";
 
   /**
    * @license
@@ -5677,7 +5677,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           /* converter= */ null, new DocumentKey(n));
       }
       {
-          if (!(t instanceof DocumentReference || t instanceof CollectionReference)) throw new FirestoreError(y, "Expected first argument to collection() to be a CollectionReference, a DocumentReference or FirebaseFirestore");
+          if (!(t instanceof DocumentReference || t instanceof CollectionReference)) throw new FirestoreError(y, "Expected first argument to doc() to be a CollectionReference, a DocumentReference or FirebaseFirestore");
           const n = t._path.child(ResourcePath.fromString(e, ...r));
           return __PRIVATE_validateDocumentPath(n), new DocumentReference(t.firestore, t instanceof CollectionReference ? t.converter : null, new DocumentKey(n));
       }
