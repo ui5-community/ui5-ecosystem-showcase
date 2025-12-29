@@ -167,7 +167,7 @@ module.exports = async function ({ log, options, middlewareUtil }) {
 		selfHandleResponse: true, // + responseInterceptor: necessary to omit ERR_CONTENT_DECODING_FAILED error when opening OData URls directly
 		on: {
 			proxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
-				console.log("Proxy response status:", proxyRes.statusCode);
+				effectiveOptions.debug && console.log("Proxy response status:", proxyRes.statusCode);
 				const url = req.url;
 				effectiveOptions.debug && log.info(`[${baseUri}] ${req.method} ${url} -> ${target}${url} [${proxyRes.statusCode}]`);
 				// remove the secure flag of the cookies
