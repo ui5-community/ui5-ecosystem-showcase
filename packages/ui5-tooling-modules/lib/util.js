@@ -1453,7 +1453,7 @@ module.exports = function (log, projectInfo) {
 							} else {
 								const escapedSearchString = search.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"); // Escape special regex chars
 								// covers the UI5 module loading functions
-								code = code.replace(new RegExp(`((?:require|requireSync|define|toUrl|isA)(?:\\s*)(?:\\([^)]*["']))${escapedSearchString}(.*?)\\1`, "mg"), `$1${replacement}$2$1`);
+								code = code.replace(new RegExp(`((?:require|requireSync|define|toUrl|isA)(?:\\s*)(?:\\([^)]*(["'])))${escapedSearchString}(.*?)\\2`, "mg"), `$1${replacement}$3$2`);
 								// covers all strings in the extend({ ... }) calls
 								const extendRe = /extend\s*\(([\s\S]*?)\)\s*;/g;
 								code = code.replace(extendRe, (full, body) => {
@@ -1511,7 +1511,7 @@ module.exports = function (log, projectInfo) {
 								// because the generated modules do not expose any imports or dynamic imports but we know that
 								// we also need to adopt their imports and dynamic imports
 								const relativePath = `${path.posix.relative(path.dirname(module.name), "") || "."}/`;
-								const modifiedCode = replaceModules(module.code, relativePath, moduleBasePath);
+								const modifiedCode = relativePath !== moduleBasePath ? replaceModules(module.code, relativePath, moduleBasePath) : module.code;
 								module.code = modifiedCode;
 							}
 
@@ -1523,6 +1523,9 @@ module.exports = function (log, projectInfo) {
 								// TODO: entry modules need to be shifted into the gen folder
 								let modifiedCode = module.code;
 								if (module.generated) {
+									// this is mainly for the UI5 control wrappers and package infos to replace the
+									// module names in JSDoc, extend calls and metadata definitions as the imports
+									// are usually relative and will be replaced at a later phase in the task
 									[
 										...Object.values(output.$metadata.packages || {}),
 										...Object.keys(output.$metadata.chunks || {}).map((s) => {
@@ -1541,7 +1544,6 @@ module.exports = function (log, projectInfo) {
 											modifiedCode = replaceJSDoc(modifiedCode, package.name, rewriteDep(package.name, bundleInfo));
 										});
 									module.code = modifiedCode;
-									//console.log(`Web Component module: ${module.name} [${module.type}]`);
 								}
 							}
 

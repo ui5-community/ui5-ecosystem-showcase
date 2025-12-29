@@ -38,7 +38,7 @@ sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict
 
   const u$a=()=>{const t=document.createElement("meta");return t.setAttribute("name","ui5-shared-resources"),t.setAttribute("content",""),t},l$c=()=>typeof document>"u"?null:o$e('meta[name="ui5-shared-resources"]',document.head,u$a),m$a=(t,o)=>{const r=t.split(".");let e=l$c();if(!e)return o;for(let n=0;n<r.length;n++){const s=r[n],c=n===r.length-1;Object.prototype.hasOwnProperty.call(e,s)||(e[s]=c?o:{}),e=e[s];}return e};
 
-  const e$c={version:"2.16.0",major:2,minor:16,patch:0,suffix:"",isNext:false,buildTime:1763722760};
+  const e$c={version:"2.17.0",major:2,minor:17,patch:0,suffix:"",isNext:false,buildTime:1765979913};
 
   let s$j,t$j={include:[/^ui5-/],exclude:[]};const o$d=new Map,c$b=()=>s$j,m$9=()=>t$j,i$d=e=>{if(!o$d.has(e)){const n=t$j.include.some(r=>e.match(r))&&!t$j.exclude.some(r=>e.match(r));o$d.set(e,n);}return o$d.get(e)},g$8=e=>{if(i$d(e))return c$b()};
 

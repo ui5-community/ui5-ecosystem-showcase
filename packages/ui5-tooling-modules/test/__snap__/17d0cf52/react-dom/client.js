@@ -601,7 +601,7 @@ sap.ui.define(['../index2'], (function (index) { 'use strict';
   	reactDom_production.useFormStatus = function () {
   	  return ReactSharedInternals.H.useHostTransitionStatus();
   	};
-  	reactDom_production.version = "19.2.0";
+  	reactDom_production.version = "19.2.3";
   	return reactDom_production;
   }
 
@@ -16541,14 +16541,14 @@ sap.ui.define(['../index2'], (function (index) { 'use strict';
   	};
   	var isomorphicReactPackageVersion$jscomp$inline_1840 = React.version;
   	if (
-  	  "19.2.0" !==
+  	  "19.2.3" !==
   	  isomorphicReactPackageVersion$jscomp$inline_1840
   	)
   	  throw Error(
   	    formatProdErrorMessage(
   	      527,
   	      isomorphicReactPackageVersion$jscomp$inline_1840,
-  	      "19.2.0"
+  	      "19.2.3"
   	    )
   	  );
   	ReactDOMSharedInternals.findDOMNode = function (componentOrElement) {
@@ -16570,10 +16570,10 @@ sap.ui.define(['../index2'], (function (index) { 'use strict';
   	};
   	var internals$jscomp$inline_2347 = {
   	  bundleType: 0,
-  	  version: "19.2.0",
+  	  version: "19.2.3",
   	  rendererPackageName: "react-dom",
   	  currentDispatcherRef: ReactSharedInternals,
-  	  reconcilerVersion: "19.2.0"
+  	  reconcilerVersion: "19.2.3"
   	};
   	if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
   	  var hook$jscomp$inline_2348 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
@@ -16671,7 +16671,7 @@ sap.ui.define(['../index2'], (function (index) { 'use strict';
   	  listenToAllSupportedEvents(container);
   	  return new ReactDOMHydrationRoot(initialChildren);
   	};
-  	reactDomClient_production.version = "19.2.0";
+  	reactDomClient_production.version = "19.2.3";
   	return reactDomClient_production;
   }
 

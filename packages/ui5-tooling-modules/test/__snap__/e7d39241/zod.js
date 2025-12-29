@@ -86,7 +86,7 @@ sap.ui.define((function () { 'use strict';
     }
     function assertIs(_arg) { }
     function assertNever(_x) {
-        throw new Error();
+        throw new Error("Unexpected value in exhaustive check");
     }
     function assert(_) { }
     function getEnumValues(entries) {
@@ -1821,8 +1821,8 @@ sap.ui.define((function () { 'use strict';
 
     const version = {
         major: 4,
-        minor: 1,
-        patch: 13,
+        minor: 2,
+        patch: 1,
     };
 
     const $ZodType = /*@__PURE__*/ $constructor("$ZodType", (inst, def) => {
@@ -1892,16 +1892,6 @@ sap.ui.define((function () { 'use strict';
                 }
                 return payload;
             };
-            // const handleChecksResult = (
-            //   checkResult: ParsePayload,
-            //   originalResult: ParsePayload,
-            //   ctx: ParseContextInternal
-            // ): util.MaybeAsync<ParsePayload> => {
-            //   // if the checks mutated the value && there are no issues, re-parse the result
-            //   if (checkResult.value !== originalResult.value && !checkResult.issues.length)
-            //     return inst._zod.parse(checkResult, ctx);
-            //   return originalResult;
-            // };
             const handleCanaryResult = (canary, payload, ctx) => {
                 // abort if the canary is aborted
                 if (aborted(canary)) {
@@ -2791,9 +2781,68 @@ sap.ui.define((function () { 'use strict';
             });
         };
     });
+    function handleExclusiveUnionResults(results, final, inst, ctx) {
+        const successes = results.filter((r) => r.issues.length === 0);
+        if (successes.length === 1) {
+            final.value = successes[0].value;
+            return final;
+        }
+        if (successes.length === 0) {
+            // No matches - same as regular union
+            final.issues.push({
+                code: "invalid_union",
+                input: final.value,
+                inst,
+                errors: results.map((result) => result.issues.map((iss) => finalizeIssue(iss, ctx, config()))),
+            });
+        }
+        else {
+            // Multiple matches - exclusive union failure
+            final.issues.push({
+                code: "invalid_union",
+                input: final.value,
+                inst,
+                errors: [],
+                inclusive: false,
+            });
+        }
+        return final;
+    }
+    const $ZodXor = /*@__PURE__*/ $constructor("$ZodXor", (inst, def) => {
+        $ZodUnion.init(inst, def);
+        def.inclusive = false;
+        const single = def.options.length === 1;
+        const first = def.options[0]._zod.run;
+        inst._zod.parse = (payload, ctx) => {
+            if (single) {
+                return first(payload, ctx);
+            }
+            let async = false;
+            const results = [];
+            for (const option of def.options) {
+                const result = option._zod.run({
+                    value: payload.value,
+                    issues: [],
+                }, ctx);
+                if (result instanceof Promise) {
+                    results.push(result);
+                    async = true;
+                }
+                else {
+                    results.push(result);
+                }
+            }
+            if (!async)
+                return handleExclusiveUnionResults(results, payload, inst, ctx);
+            return Promise.all(results).then((results) => {
+                return handleExclusiveUnionResults(results, payload, inst, ctx);
+            });
+        };
+    });
     const $ZodDiscriminatedUnion =
     /*@__PURE__*/
     $constructor("$ZodDiscriminatedUnion", (inst, def) => {
+        def.inclusive = false;
         $ZodUnion.init(inst, def);
         const _super = inst._zod.parse;
         defineLazy(inst._zod, "propValues", () => {
@@ -3075,15 +3124,21 @@ sap.ui.define((function () { 'use strict';
                         throw new Error("Async schemas not supported in object keys currently");
                     }
                     if (keyResult.issues.length) {
-                        payload.issues.push({
-                            code: "invalid_key",
-                            origin: "record",
-                            issues: keyResult.issues.map((iss) => finalizeIssue(iss, ctx, config())),
-                            input: key,
-                            path: [key],
-                            inst,
-                        });
-                        payload.value[keyResult.value] = keyResult.value;
+                        if (def.mode === "loose") {
+                            // Pass through unchanged
+                            payload.value[key] = input[key];
+                        }
+                        else {
+                            // Default "strict" behavior: error on invalid key
+                            payload.issues.push({
+                                code: "invalid_key",
+                                origin: "record",
+                                issues: keyResult.issues.map((iss) => finalizeIssue(iss, ctx, config())),
+                                input: key,
+                                path: [key],
+                                inst,
+                            });
+                        }
                         continue;
                     }
                     const result = def.valueType._zod.run({ value: input[key], issues: [] }, ctx);
@@ -10189,6 +10244,14 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    function _xor(Class, options, params) {
+        return new Class({
+            type: "union",
+            options,
+            inclusive: false,
+            ...normalizeParams(params),
+        });
+    }
     function _discriminatedUnion(Class, discriminator, options, params) {
         return new Class({
             type: "union",
@@ -10511,813 +10574,308 @@ sap.ui.define((function () { 'use strict';
         return inst;
     }
 
-    class JSONSchemaGenerator {
-        constructor(params) {
-            this.counter = 0;
-            this.metadataRegistry = params?.metadata ?? globalRegistry;
-            this.target = params?.target ?? "draft-2020-12";
-            this.unrepresentable = params?.unrepresentable ?? "throw";
-            this.override = params?.override ?? (() => { });
-            this.io = params?.io ?? "output";
-            this.seen = new Map();
+    // function initializeContext<T extends schemas.$ZodType>(inputs: JSONSchemaGeneratorParams<T>): ToJSONSchemaContext<T> {
+    //   return {
+    //     processor: inputs.processor,
+    //     metadataRegistry: inputs.metadata ?? globalRegistry,
+    //     target: inputs.target ?? "draft-2020-12",
+    //     unrepresentable: inputs.unrepresentable ?? "throw",
+    //   };
+    // }
+    function initializeContext(params) {
+        // Normalize target: convert old non-hyphenated versions to hyphenated versions
+        let target = params?.target ?? "draft-2020-12";
+        if (target === "draft-4")
+            target = "draft-04";
+        if (target === "draft-7")
+            target = "draft-07";
+        return {
+            processors: params.processors ?? {},
+            metadataRegistry: params?.metadata ?? globalRegistry,
+            target,
+            unrepresentable: params?.unrepresentable ?? "throw",
+            override: params?.override ?? (() => { }),
+            io: params?.io ?? "output",
+            counter: 0,
+            seen: new Map(),
+            cycles: params?.cycles ?? "ref",
+            reused: params?.reused ?? "inline",
+            external: params?.external ?? undefined,
+        };
+    }
+    function process(schema, ctx, _params = { path: [], schemaPath: [] }) {
+        var _a;
+        const def = schema._zod.def;
+        // check for schema in seens
+        const seen = ctx.seen.get(schema);
+        if (seen) {
+            seen.count++;
+            // check if cycle
+            const isCycle = _params.schemaPath.includes(schema);
+            if (isCycle) {
+                seen.cycle = _params.path;
+            }
+            return seen.schema;
         }
-        process(schema, _params = { path: [], schemaPath: [] }) {
-            var _a;
-            const def = schema._zod.def;
-            const formatMap = {
-                guid: "uuid",
-                url: "uri",
-                datetime: "date-time",
-                json_string: "json-string",
-                regex: "", // do not set
-            };
-            // check for schema in seens
-            const seen = this.seen.get(schema);
-            if (seen) {
-                seen.count++;
-                // check if cycle
-                const isCycle = _params.schemaPath.includes(schema);
-                if (isCycle) {
-                    seen.cycle = _params.path;
-                }
-                return seen.schema;
-            }
-            // initialize
-            const result = { schema: {}, count: 1, cycle: undefined, path: _params.path };
-            this.seen.set(schema, result);
-            // custom method overrides default behavior
-            const overrideSchema = schema._zod.toJSONSchema?.();
-            if (overrideSchema) {
-                result.schema = overrideSchema;
-            }
-            else {
-                const params = {
-                    ..._params,
-                    schemaPath: [..._params.schemaPath, schema],
-                    path: _params.path,
-                };
-                const parent = schema._zod.parent;
-                if (parent) {
-                    // schema was cloned from another schema
-                    result.ref = parent;
-                    this.process(parent, params);
-                    this.seen.get(parent).isParent = true;
-                }
-                else {
-                    const _json = result.schema;
-                    switch (def.type) {
-                        case "string": {
-                            const json = _json;
-                            json.type = "string";
-                            const { minimum, maximum, format, patterns, contentEncoding } = schema._zod
-                                .bag;
-                            if (typeof minimum === "number")
-                                json.minLength = minimum;
-                            if (typeof maximum === "number")
-                                json.maxLength = maximum;
-                            // custom pattern overrides format
-                            if (format) {
-                                json.format = formatMap[format] ?? format;
-                                if (json.format === "")
-                                    delete json.format; // empty format is not valid
-                            }
-                            if (contentEncoding)
-                                json.contentEncoding = contentEncoding;
-                            if (patterns && patterns.size > 0) {
-                                const regexes = [...patterns];
-                                if (regexes.length === 1)
-                                    json.pattern = regexes[0].source;
-                                else if (regexes.length > 1) {
-                                    result.schema.allOf = [
-                                        ...regexes.map((regex) => ({
-                                            ...(this.target === "draft-7" || this.target === "draft-4" || this.target === "openapi-3.0"
-                                                ? { type: "string" }
-                                                : {}),
-                                            pattern: regex.source,
-                                        })),
-                                    ];
-                                }
-                            }
-                            break;
-                        }
-                        case "number": {
-                            const json = _json;
-                            const { minimum, maximum, format, multipleOf, exclusiveMaximum, exclusiveMinimum } = schema._zod.bag;
-                            if (typeof format === "string" && format.includes("int"))
-                                json.type = "integer";
-                            else
-                                json.type = "number";
-                            if (typeof exclusiveMinimum === "number") {
-                                if (this.target === "draft-4" || this.target === "openapi-3.0") {
-                                    json.minimum = exclusiveMinimum;
-                                    json.exclusiveMinimum = true;
-                                }
-                                else {
-                                    json.exclusiveMinimum = exclusiveMinimum;
-                                }
-                            }
-                            if (typeof minimum === "number") {
-                                json.minimum = minimum;
-                                if (typeof exclusiveMinimum === "number" && this.target !== "draft-4") {
-                                    if (exclusiveMinimum >= minimum)
-                                        delete json.minimum;
-                                    else
-                                        delete json.exclusiveMinimum;
-                                }
-                            }
-                            if (typeof exclusiveMaximum === "number") {
-                                if (this.target === "draft-4" || this.target === "openapi-3.0") {
-                                    json.maximum = exclusiveMaximum;
-                                    json.exclusiveMaximum = true;
-                                }
-                                else {
-                                    json.exclusiveMaximum = exclusiveMaximum;
-                                }
-                            }
-                            if (typeof maximum === "number") {
-                                json.maximum = maximum;
-                                if (typeof exclusiveMaximum === "number" && this.target !== "draft-4") {
-                                    if (exclusiveMaximum <= maximum)
-                                        delete json.maximum;
-                                    else
-                                        delete json.exclusiveMaximum;
-                                }
-                            }
-                            if (typeof multipleOf === "number")
-                                json.multipleOf = multipleOf;
-                            break;
-                        }
-                        case "boolean": {
-                            const json = _json;
-                            json.type = "boolean";
-                            break;
-                        }
-                        case "bigint": {
-                            if (this.unrepresentable === "throw") {
-                                throw new Error("BigInt cannot be represented in JSON Schema");
-                            }
-                            break;
-                        }
-                        case "symbol": {
-                            if (this.unrepresentable === "throw") {
-                                throw new Error("Symbols cannot be represented in JSON Schema");
-                            }
-                            break;
-                        }
-                        case "null": {
-                            if (this.target === "openapi-3.0") {
-                                _json.type = "string";
-                                _json.nullable = true;
-                                _json.enum = [null];
-                            }
-                            else
-                                _json.type = "null";
-                            break;
-                        }
-                        case "any": {
-                            break;
-                        }
-                        case "unknown": {
-                            break;
-                        }
-                        case "undefined": {
-                            if (this.unrepresentable === "throw") {
-                                throw new Error("Undefined cannot be represented in JSON Schema");
-                            }
-                            break;
-                        }
-                        case "void": {
-                            if (this.unrepresentable === "throw") {
-                                throw new Error("Void cannot be represented in JSON Schema");
-                            }
-                            break;
-                        }
-                        case "never": {
-                            _json.not = {};
-                            break;
-                        }
-                        case "date": {
-                            if (this.unrepresentable === "throw") {
-                                throw new Error("Date cannot be represented in JSON Schema");
-                            }
-                            break;
-                        }
-                        case "array": {
-                            const json = _json;
-                            const { minimum, maximum } = schema._zod.bag;
-                            if (typeof minimum === "number")
-                                json.minItems = minimum;
-                            if (typeof maximum === "number")
-                                json.maxItems = maximum;
-                            json.type = "array";
-                            json.items = this.process(def.element, { ...params, path: [...params.path, "items"] });
-                            break;
-                        }
-                        case "object": {
-                            const json = _json;
-                            json.type = "object";
-                            json.properties = {};
-                            const shape = def.shape; // params.shapeCache.get(schema)!;
-                            for (const key in shape) {
-                                json.properties[key] = this.process(shape[key], {
-                                    ...params,
-                                    path: [...params.path, "properties", key],
-                                });
-                            }
-                            // required keys
-                            const allKeys = new Set(Object.keys(shape));
-                            // const optionalKeys = new Set(def.optional);
-                            const requiredKeys = new Set([...allKeys].filter((key) => {
-                                const v = def.shape[key]._zod;
-                                if (this.io === "input") {
-                                    return v.optin === undefined;
-                                }
-                                else {
-                                    return v.optout === undefined;
-                                }
-                            }));
-                            if (requiredKeys.size > 0) {
-                                json.required = Array.from(requiredKeys);
-                            }
-                            // catchall
-                            if (def.catchall?._zod.def.type === "never") {
-                                // strict
-                                json.additionalProperties = false;
-                            }
-                            else if (!def.catchall) {
-                                // regular
-                                if (this.io === "output")
-                                    json.additionalProperties = false;
-                            }
-                            else if (def.catchall) {
-                                json.additionalProperties = this.process(def.catchall, {
-                                    ...params,
-                                    path: [...params.path, "additionalProperties"],
-                                });
-                            }
-                            break;
-                        }
-                        case "union": {
-                            const json = _json;
-                            // Discriminated unions use oneOf (exactly one match) instead of anyOf (one or more matches)
-                            // because the discriminator field ensures mutual exclusivity between options in JSON Schema
-                            const isDiscriminated = def.discriminator !== undefined;
-                            const options = def.options.map((x, i) => this.process(x, {
-                                ...params,
-                                path: [...params.path, isDiscriminated ? "oneOf" : "anyOf", i],
-                            }));
-                            if (isDiscriminated) {
-                                json.oneOf = options;
-                            }
-                            else {
-                                json.anyOf = options;
-                            }
-                            break;
-                        }
-                        case "intersection": {
-                            const json = _json;
-                            const a = this.process(def.left, {
-                                ...params,
-                                path: [...params.path, "allOf", 0],
-                            });
-                            const b = this.process(def.right, {
-                                ...params,
-                                path: [...params.path, "allOf", 1],
-                            });
-                            const isSimpleIntersection = (val) => "allOf" in val && Object.keys(val).length === 1;
-                            const allOf = [
-                                ...(isSimpleIntersection(a) ? a.allOf : [a]),
-                                ...(isSimpleIntersection(b) ? b.allOf : [b]),
-                            ];
-                            json.allOf = allOf;
-                            break;
-                        }
-                        case "tuple": {
-                            const json = _json;
-                            json.type = "array";
-                            const prefixPath = this.target === "draft-2020-12" ? "prefixItems" : "items";
-                            const restPath = this.target === "draft-2020-12" ? "items" : this.target === "openapi-3.0" ? "items" : "additionalItems";
-                            const prefixItems = def.items.map((x, i) => this.process(x, {
-                                ...params,
-                                path: [...params.path, prefixPath, i],
-                            }));
-                            const rest = def.rest
-                                ? this.process(def.rest, {
-                                    ...params,
-                                    path: [...params.path, restPath, ...(this.target === "openapi-3.0" ? [def.items.length] : [])],
-                                })
-                                : null;
-                            if (this.target === "draft-2020-12") {
-                                json.prefixItems = prefixItems;
-                                if (rest) {
-                                    json.items = rest;
-                                }
-                            }
-                            else if (this.target === "openapi-3.0") {
-                                json.items = {
-                                    anyOf: prefixItems,
-                                };
-                                if (rest) {
-                                    json.items.anyOf.push(rest);
-                                }
-                                json.minItems = prefixItems.length;
-                                if (!rest) {
-                                    json.maxItems = prefixItems.length;
-                                }
-                            }
-                            else {
-                                json.items = prefixItems;
-                                if (rest) {
-                                    json.additionalItems = rest;
-                                }
-                            }
-                            // length
-                            const { minimum, maximum } = schema._zod.bag;
-                            if (typeof minimum === "number")
-                                json.minItems = minimum;
-                            if (typeof maximum === "number")
-                                json.maxItems = maximum;
-                            break;
-                        }
-                        case "record": {
-                            const json = _json;
-                            json.type = "object";
-                            if (this.target === "draft-7" || this.target === "draft-2020-12") {
-                                json.propertyNames = this.process(def.keyType, {
-                                    ...params,
-                                    path: [...params.path, "propertyNames"],
-                                });
-                            }
-                            json.additionalProperties = this.process(def.valueType, {
-                                ...params,
-                                path: [...params.path, "additionalProperties"],
-                            });
-                            break;
-                        }
-                        case "map": {
-                            if (this.unrepresentable === "throw") {
-                                throw new Error("Map cannot be represented in JSON Schema");
-                            }
-                            break;
-                        }
-                        case "set": {
-                            if (this.unrepresentable === "throw") {
-                                throw new Error("Set cannot be represented in JSON Schema");
-                            }
-                            break;
-                        }
-                        case "enum": {
-                            const json = _json;
-                            const values = getEnumValues(def.entries);
-                            // Number enums can have both string and number values
-                            if (values.every((v) => typeof v === "number"))
-                                json.type = "number";
-                            if (values.every((v) => typeof v === "string"))
-                                json.type = "string";
-                            json.enum = values;
-                            break;
-                        }
-                        case "literal": {
-                            const json = _json;
-                            const vals = [];
-                            for (const val of def.values) {
-                                if (val === undefined) {
-                                    if (this.unrepresentable === "throw") {
-                                        throw new Error("Literal `undefined` cannot be represented in JSON Schema");
-                                    }
-                                }
-                                else if (typeof val === "bigint") {
-                                    if (this.unrepresentable === "throw") {
-                                        throw new Error("BigInt literals cannot be represented in JSON Schema");
-                                    }
-                                    else {
-                                        vals.push(Number(val));
-                                    }
-                                }
-                                else {
-                                    vals.push(val);
-                                }
-                            }
-                            if (vals.length === 0) ;
-                            else if (vals.length === 1) {
-                                const val = vals[0];
-                                json.type = val === null ? "null" : typeof val;
-                                if (this.target === "draft-4" || this.target === "openapi-3.0") {
-                                    json.enum = [val];
-                                }
-                                else {
-                                    json.const = val;
-                                }
-                            }
-                            else {
-                                if (vals.every((v) => typeof v === "number"))
-                                    json.type = "number";
-                                if (vals.every((v) => typeof v === "string"))
-                                    json.type = "string";
-                                if (vals.every((v) => typeof v === "boolean"))
-                                    json.type = "string";
-                                if (vals.every((v) => v === null))
-                                    json.type = "null";
-                                json.enum = vals;
-                            }
-                            break;
-                        }
-                        case "file": {
-                            const json = _json;
-                            const file = {
-                                type: "string",
-                                format: "binary",
-                                contentEncoding: "binary",
-                            };
-                            const { minimum, maximum, mime } = schema._zod.bag;
-                            if (minimum !== undefined)
-                                file.minLength = minimum;
-                            if (maximum !== undefined)
-                                file.maxLength = maximum;
-                            if (mime) {
-                                if (mime.length === 1) {
-                                    file.contentMediaType = mime[0];
-                                    Object.assign(json, file);
-                                }
-                                else {
-                                    json.anyOf = mime.map((m) => {
-                                        const mFile = { ...file, contentMediaType: m };
-                                        return mFile;
-                                    });
-                                }
-                            }
-                            else {
-                                Object.assign(json, file);
-                            }
-                            // if (this.unrepresentable === "throw") {
-                            //   throw new Error("File cannot be represented in JSON Schema");
-                            // }
-                            break;
-                        }
-                        case "transform": {
-                            if (this.unrepresentable === "throw") {
-                                throw new Error("Transforms cannot be represented in JSON Schema");
-                            }
-                            break;
-                        }
-                        case "nullable": {
-                            const inner = this.process(def.innerType, params);
-                            if (this.target === "openapi-3.0") {
-                                result.ref = def.innerType;
-                                _json.nullable = true;
-                            }
-                            else {
-                                _json.anyOf = [inner, { type: "null" }];
-                            }
-                            break;
-                        }
-                        case "nonoptional": {
-                            this.process(def.innerType, params);
-                            result.ref = def.innerType;
-                            break;
-                        }
-                        case "success": {
-                            const json = _json;
-                            json.type = "boolean";
-                            break;
-                        }
-                        case "default": {
-                            this.process(def.innerType, params);
-                            result.ref = def.innerType;
-                            _json.default = JSON.parse(JSON.stringify(def.defaultValue));
-                            break;
-                        }
-                        case "prefault": {
-                            this.process(def.innerType, params);
-                            result.ref = def.innerType;
-                            if (this.io === "input")
-                                _json._prefault = JSON.parse(JSON.stringify(def.defaultValue));
-                            break;
-                        }
-                        case "catch": {
-                            // use conditionals
-                            this.process(def.innerType, params);
-                            result.ref = def.innerType;
-                            let catchValue;
-                            try {
-                                catchValue = def.catchValue(undefined);
-                            }
-                            catch {
-                                throw new Error("Dynamic catch values are not supported in JSON Schema");
-                            }
-                            _json.default = catchValue;
-                            break;
-                        }
-                        case "nan": {
-                            if (this.unrepresentable === "throw") {
-                                throw new Error("NaN cannot be represented in JSON Schema");
-                            }
-                            break;
-                        }
-                        case "template_literal": {
-                            const json = _json;
-                            const pattern = schema._zod.pattern;
-                            if (!pattern)
-                                throw new Error("Pattern not found in template literal");
-                            json.type = "string";
-                            json.pattern = pattern.source;
-                            break;
-                        }
-                        case "pipe": {
-                            const innerType = this.io === "input" ? (def.in._zod.def.type === "transform" ? def.out : def.in) : def.out;
-                            this.process(innerType, params);
-                            result.ref = innerType;
-                            break;
-                        }
-                        case "readonly": {
-                            this.process(def.innerType, params);
-                            result.ref = def.innerType;
-                            _json.readOnly = true;
-                            break;
-                        }
-                        // passthrough types
-                        case "promise": {
-                            this.process(def.innerType, params);
-                            result.ref = def.innerType;
-                            break;
-                        }
-                        case "optional": {
-                            this.process(def.innerType, params);
-                            result.ref = def.innerType;
-                            break;
-                        }
-                        case "lazy": {
-                            const innerType = schema._zod.innerType;
-                            this.process(innerType, params);
-                            result.ref = innerType;
-                            break;
-                        }
-                        case "custom": {
-                            if (this.unrepresentable === "throw") {
-                                throw new Error("Custom types cannot be represented in JSON Schema");
-                            }
-                            break;
-                        }
-                        case "function": {
-                            if (this.unrepresentable === "throw") {
-                                throw new Error("Function types cannot be represented in JSON Schema");
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-            // metadata
-            const meta = this.metadataRegistry.get(schema);
-            if (meta)
-                Object.assign(result.schema, meta);
-            if (this.io === "input" && isTransforming(schema)) {
-                // examples/defaults only apply to output type of pipe
-                delete result.schema.examples;
-                delete result.schema.default;
-            }
-            // set prefault as default
-            if (this.io === "input" && result.schema._prefault)
-                (_a = result.schema).default ?? (_a.default = result.schema._prefault);
-            delete result.schema._prefault;
-            // pulling fresh from this.seen in case it was overwritten
-            const _result = this.seen.get(schema);
-            return _result.schema;
+        // initialize
+        const result = { schema: {}, count: 1, cycle: undefined, path: _params.path };
+        ctx.seen.set(schema, result);
+        // custom method overrides default behavior
+        const overrideSchema = schema._zod.toJSONSchema?.();
+        if (overrideSchema) {
+            result.schema = overrideSchema;
         }
-        emit(schema, _params) {
+        else {
             const params = {
-                cycles: _params?.cycles ?? "ref",
-                reused: _params?.reused ?? "inline",
-                // unrepresentable: _params?.unrepresentable ?? "throw",
-                // uri: _params?.uri ?? ((id) => `${id}`),
-                external: _params?.external ?? undefined,
+                ..._params,
+                schemaPath: [..._params.schemaPath, schema],
+                path: _params.path,
             };
-            // iterate over seen map;
-            const root = this.seen.get(schema);
-            if (!root)
-                throw new Error("Unprocessed schema. This is a bug in Zod.");
-            // initialize result with root schema fields
-            // Object.assign(result, seen.cached);
-            // returns a ref to the schema
-            // defId will be empty if the ref points to an external schema (or #)
-            const makeURI = (entry) => {
-                // comparing the seen objects because sometimes
-                // multiple schemas map to the same seen object.
-                // e.g. lazy
-                // external is configured
-                const defsSegment = this.target === "draft-2020-12" ? "$defs" : "definitions";
-                if (params.external) {
-                    const externalId = params.external.registry.get(entry[0])?.id; // ?? "__shared";// `__schema${this.counter++}`;
-                    // check if schema is in the external registry
-                    const uriGenerator = params.external.uri ?? ((id) => id);
-                    if (externalId) {
-                        return { ref: uriGenerator(externalId) };
-                    }
-                    // otherwise, add to __shared
-                    const id = entry[1].defId ?? entry[1].schema.id ?? `schema${this.counter++}`;
-                    entry[1].defId = id; // set defId so it will be reused if needed
-                    return { defId: id, ref: `${uriGenerator("__shared")}#/${defsSegment}/${id}` };
-                }
-                if (entry[1] === root) {
-                    return { ref: "#" };
-                }
-                // self-contained schema
-                const uriPrefix = `#`;
-                const defUriPrefix = `${uriPrefix}/${defsSegment}/`;
-                const defId = entry[1].schema.id ?? `__schema${this.counter++}`;
-                return { defId, ref: defUriPrefix + defId };
-            };
-            // stored cached version in `def` property
-            // remove all properties, set $ref
-            const extractToDef = (entry) => {
-                // if the schema is already a reference, do not extract it
-                if (entry[1].schema.$ref) {
-                    return;
-                }
-                const seen = entry[1];
-                const { ref, defId } = makeURI(entry);
-                seen.def = { ...seen.schema };
-                // defId won't be set if the schema is a reference to an external schema
-                if (defId)
-                    seen.defId = defId;
-                // wipe away all properties except $ref
-                const schema = seen.schema;
-                for (const key in schema) {
-                    delete schema[key];
-                }
-                schema.$ref = ref;
-            };
-            // throw on cycles
-            // break cycles
-            if (params.cycles === "throw") {
-                for (const entry of this.seen.entries()) {
-                    const seen = entry[1];
-                    if (seen.cycle) {
-                        throw new Error("Cycle detected: " +
-                            `#/${seen.cycle?.join("/")}/<root>` +
-                            '\n\nSet the `cycles` parameter to `"ref"` to resolve cyclical schemas with defs.');
-                    }
-                }
+            const parent = schema._zod.parent;
+            if (parent) {
+                // schema was cloned from another schema
+                result.ref = parent;
+                process(parent, ctx, params);
+                ctx.seen.get(parent).isParent = true;
             }
-            // extract schemas into $defs
-            for (const entry of this.seen.entries()) {
+            else if (schema._zod.processJSONSchema) {
+                schema._zod.processJSONSchema(ctx, result.schema, params);
+            }
+            else {
+                const _json = result.schema;
+                const processor = ctx.processors[def.type];
+                if (!processor) {
+                    throw new Error(`[toJSONSchema]: Non-representable type encountered: ${def.type}`);
+                }
+                processor(schema, ctx, _json, params);
+            }
+        }
+        // metadata
+        const meta = ctx.metadataRegistry.get(schema);
+        if (meta)
+            Object.assign(result.schema, meta);
+        if (ctx.io === "input" && isTransforming(schema)) {
+            // examples/defaults only apply to output type of pipe
+            delete result.schema.examples;
+            delete result.schema.default;
+        }
+        // set prefault as default
+        if (ctx.io === "input" && result.schema._prefault)
+            (_a = result.schema).default ?? (_a.default = result.schema._prefault);
+        delete result.schema._prefault;
+        // pulling fresh from ctx.seen in case it was overwritten
+        const _result = ctx.seen.get(schema);
+        return _result.schema;
+    }
+    function extractDefs(ctx, schema
+    // params: EmitParams
+    ) {
+        // iterate over seen map;
+        const root = ctx.seen.get(schema);
+        if (!root)
+            throw new Error("Unprocessed schema. This is a bug in Zod.");
+        // returns a ref to the schema
+        // defId will be empty if the ref points to an external schema (or #)
+        const makeURI = (entry) => {
+            // comparing the seen objects because sometimes
+            // multiple schemas map to the same seen object.
+            // e.g. lazy
+            // external is configured
+            const defsSegment = ctx.target === "draft-2020-12" ? "$defs" : "definitions";
+            if (ctx.external) {
+                const externalId = ctx.external.registry.get(entry[0])?.id; // ?? "__shared";// `__schema${ctx.counter++}`;
+                // check if schema is in the external registry
+                const uriGenerator = ctx.external.uri ?? ((id) => id);
+                if (externalId) {
+                    return { ref: uriGenerator(externalId) };
+                }
+                // otherwise, add to __shared
+                const id = entry[1].defId ?? entry[1].schema.id ?? `schema${ctx.counter++}`;
+                entry[1].defId = id; // set defId so it will be reused if needed
+                return { defId: id, ref: `${uriGenerator("__shared")}#/${defsSegment}/${id}` };
+            }
+            if (entry[1] === root) {
+                return { ref: "#" };
+            }
+            // self-contained schema
+            const uriPrefix = `#`;
+            const defUriPrefix = `${uriPrefix}/${defsSegment}/`;
+            const defId = entry[1].schema.id ?? `__schema${ctx.counter++}`;
+            return { defId, ref: defUriPrefix + defId };
+        };
+        // stored cached version in `def` property
+        // remove all properties, set $ref
+        const extractToDef = (entry) => {
+            // if the schema is already a reference, do not extract it
+            if (entry[1].schema.$ref) {
+                return;
+            }
+            const seen = entry[1];
+            const { ref, defId } = makeURI(entry);
+            seen.def = { ...seen.schema };
+            // defId won't be set if the schema is a reference to an external schema
+            // or if the schema is the root schema
+            if (defId)
+                seen.defId = defId;
+            // wipe away all properties except $ref
+            const schema = seen.schema;
+            for (const key in schema) {
+                delete schema[key];
+            }
+            schema.$ref = ref;
+        };
+        // throw on cycles
+        // break cycles
+        if (ctx.cycles === "throw") {
+            for (const entry of ctx.seen.entries()) {
                 const seen = entry[1];
-                // convert root schema to # $ref
-                if (schema === entry[0]) {
-                    extractToDef(entry); // this has special handling for the root schema
-                    continue;
-                }
-                // extract schemas that are in the external registry
-                if (params.external) {
-                    const ext = params.external.registry.get(entry[0])?.id;
-                    if (schema !== entry[0] && ext) {
-                        extractToDef(entry);
-                        continue;
-                    }
-                }
-                // extract schemas with `id` meta
-                const id = this.metadataRegistry.get(entry[0])?.id;
-                if (id) {
-                    extractToDef(entry);
-                    continue;
-                }
-                // break cycles
                 if (seen.cycle) {
-                    // any
+                    throw new Error("Cycle detected: " +
+                        `#/${seen.cycle?.join("/")}/<root>` +
+                        '\n\nSet the `cycles` parameter to `"ref"` to resolve cyclical schemas with defs.');
+                }
+            }
+        }
+        // extract schemas into $defs
+        for (const entry of ctx.seen.entries()) {
+            const seen = entry[1];
+            // convert root schema to # $ref
+            if (schema === entry[0]) {
+                extractToDef(entry); // this has special handling for the root schema
+                continue;
+            }
+            // extract schemas that are in the external registry
+            if (ctx.external) {
+                const ext = ctx.external.registry.get(entry[0])?.id;
+                if (schema !== entry[0] && ext) {
                     extractToDef(entry);
                     continue;
                 }
-                // extract reused schemas
-                if (seen.count > 1) {
-                    if (params.reused === "ref") {
-                        extractToDef(entry);
-                        // biome-ignore lint:
-                        continue;
-                    }
+            }
+            // extract schemas with `id` meta
+            const id = ctx.metadataRegistry.get(entry[0])?.id;
+            if (id) {
+                extractToDef(entry);
+                continue;
+            }
+            // break cycles
+            if (seen.cycle) {
+                // any
+                extractToDef(entry);
+                continue;
+            }
+            // extract reused schemas
+            if (seen.count > 1) {
+                if (ctx.reused === "ref") {
+                    extractToDef(entry);
+                    // biome-ignore lint:
+                    continue;
                 }
-            }
-            // flatten _refs
-            const flattenRef = (zodSchema, params) => {
-                const seen = this.seen.get(zodSchema);
-                const schema = seen.def ?? seen.schema;
-                const _cached = { ...schema };
-                // already seen
-                if (seen.ref === null) {
-                    return;
-                }
-                // flatten ref if defined
-                const ref = seen.ref;
-                seen.ref = null; // prevent recursion
-                if (ref) {
-                    flattenRef(ref, params);
-                    // merge referenced schema into current
-                    const refSchema = this.seen.get(ref).schema;
-                    if (refSchema.$ref &&
-                        (params.target === "draft-7" || params.target === "draft-4" || params.target === "openapi-3.0")) {
-                        schema.allOf = schema.allOf ?? [];
-                        schema.allOf.push(refSchema);
-                    }
-                    else {
-                        Object.assign(schema, refSchema);
-                        Object.assign(schema, _cached); // prevent overwriting any fields in the original schema
-                    }
-                }
-                // execute overrides
-                if (!seen.isParent)
-                    this.override({
-                        zodSchema: zodSchema,
-                        jsonSchema: schema,
-                        path: seen.path ?? [],
-                    });
-            };
-            for (const entry of [...this.seen.entries()].reverse()) {
-                flattenRef(entry[0], { target: this.target });
-            }
-            const result = {};
-            if (this.target === "draft-2020-12") {
-                result.$schema = "https://json-schema.org/draft/2020-12/schema";
-            }
-            else if (this.target === "draft-7") {
-                result.$schema = "http://json-schema.org/draft-07/schema#";
-            }
-            else if (this.target === "draft-4") {
-                result.$schema = "http://json-schema.org/draft-04/schema#";
-            }
-            else if (this.target === "openapi-3.0") ;
-            else {
-                // @ts-ignore
-                console.warn(`Invalid target: ${this.target}`);
-            }
-            if (params.external?.uri) {
-                const id = params.external.registry.get(schema)?.id;
-                if (!id)
-                    throw new Error("Schema is missing an `id` property");
-                result.$id = params.external.uri(id);
-            }
-            Object.assign(result, root.def);
-            // build defs object
-            const defs = params.external?.defs ?? {};
-            for (const entry of this.seen.entries()) {
-                const seen = entry[1];
-                if (seen.def && seen.defId) {
-                    defs[seen.defId] = seen.def;
-                }
-            }
-            // set definitions in result
-            if (params.external) ;
-            else {
-                if (Object.keys(defs).length > 0) {
-                    if (this.target === "draft-2020-12") {
-                        result.$defs = defs;
-                    }
-                    else {
-                        result.definitions = defs;
-                    }
-                }
-            }
-            try {
-                // this "finalizes" this schema and ensures all cycles are removed
-                // each call to .emit() is functionally independent
-                // though the seen map is shared
-                return JSON.parse(JSON.stringify(result));
-            }
-            catch (_err) {
-                throw new Error("Error converting schema to JSON.");
             }
         }
     }
-    function toJSONSchema(input, _params) {
-        if (input instanceof $ZodRegistry) {
-            const gen = new JSONSchemaGenerator(_params);
-            const defs = {};
-            for (const entry of input._idmap.entries()) {
-                const [_, schema] = entry;
-                gen.process(schema);
+    function finalize(ctx, schema) {
+        //
+        // iterate over seen map;
+        const root = ctx.seen.get(schema);
+        if (!root)
+            throw new Error("Unprocessed schema. This is a bug in Zod.");
+        // flatten _refs
+        const flattenRef = (zodSchema) => {
+            const seen = ctx.seen.get(zodSchema);
+            const schema = seen.def ?? seen.schema;
+            const _cached = { ...schema };
+            // already seen
+            if (seen.ref === null) {
+                return;
             }
-            const schemas = {};
-            const external = {
-                registry: input,
-                uri: _params?.uri,
-                defs,
-            };
-            for (const entry of input._idmap.entries()) {
-                const [key, schema] = entry;
-                schemas[key] = gen.emit(schema, {
-                    ..._params,
-                    external,
+            // flatten ref if defined
+            const ref = seen.ref;
+            seen.ref = null; // prevent recursion
+            if (ref) {
+                flattenRef(ref);
+                // merge referenced schema into current
+                const refSchema = ctx.seen.get(ref).schema;
+                if (refSchema.$ref && (ctx.target === "draft-07" || ctx.target === "draft-04" || ctx.target === "openapi-3.0")) {
+                    schema.allOf = schema.allOf ?? [];
+                    schema.allOf.push(refSchema);
+                }
+                else {
+                    Object.assign(schema, refSchema);
+                    Object.assign(schema, _cached); // prevent overwriting any fields in the original schema
+                }
+            }
+            // execute overrides
+            if (!seen.isParent)
+                ctx.override({
+                    zodSchema: zodSchema,
+                    jsonSchema: schema,
+                    path: seen.path ?? [],
                 });
-            }
-            if (Object.keys(defs).length > 0) {
-                const defsSegment = gen.target === "draft-2020-12" ? "$defs" : "definitions";
-                schemas.__shared = {
-                    [defsSegment]: defs,
-                };
-            }
-            return { schemas };
+        };
+        for (const entry of [...ctx.seen.entries()].reverse()) {
+            flattenRef(entry[0]);
         }
-        const gen = new JSONSchemaGenerator(_params);
-        gen.process(input);
-        return gen.emit(input, _params);
+        const result = {};
+        if (ctx.target === "draft-2020-12") {
+            result.$schema = "https://json-schema.org/draft/2020-12/schema";
+        }
+        else if (ctx.target === "draft-07") {
+            result.$schema = "http://json-schema.org/draft-07/schema#";
+        }
+        else if (ctx.target === "draft-04") {
+            result.$schema = "http://json-schema.org/draft-04/schema#";
+        }
+        else if (ctx.target === "openapi-3.0") ;
+        else ;
+        if (ctx.external?.uri) {
+            const id = ctx.external.registry.get(schema)?.id;
+            if (!id)
+                throw new Error("Schema is missing an `id` property");
+            result.$id = ctx.external.uri(id);
+        }
+        Object.assign(result, root.def ?? root.schema);
+        // build defs object
+        const defs = ctx.external?.defs ?? {};
+        for (const entry of ctx.seen.entries()) {
+            const seen = entry[1];
+            if (seen.def && seen.defId) {
+                defs[seen.defId] = seen.def;
+            }
+        }
+        // set definitions in result
+        if (ctx.external) ;
+        else {
+            if (Object.keys(defs).length > 0) {
+                if (ctx.target === "draft-2020-12") {
+                    result.$defs = defs;
+                }
+                else {
+                    result.definitions = defs;
+                }
+            }
+        }
+        try {
+            // this "finalizes" this schema and ensures all cycles are removed
+            // each call to finalize() is functionally independent
+            // though the seen map is shared
+            const finalized = JSON.parse(JSON.stringify(result));
+            Object.defineProperty(finalized, "~standard", {
+                value: {
+                    ...schema["~standard"],
+                    jsonSchema: {
+                        input: createStandardJSONSchemaMethod(schema, "input"),
+                        output: createStandardJSONSchemaMethod(schema, "output"),
+                    },
+                },
+                enumerable: false,
+                writable: false,
+            });
+            return finalized;
+        }
+        catch (_err) {
+            throw new Error("Error converting schema to JSON.");
+        }
     }
     function isTransforming(_schema, _ctx) {
         const ctx = _ctx ?? { seen: new Set() };
@@ -11375,6 +10933,685 @@ sap.ui.define((function () { 'use strict';
             return false;
         }
         return false;
+    }
+    /**
+     * Creates a toJSONSchema method for a schema instance.
+     * This encapsulates the logic of initializing context, processing, extracting defs, and finalizing.
+     */
+    const createToJSONSchemaMethod = (schema, processors = {}) => (params) => {
+        const ctx = initializeContext({ ...params, processors });
+        process(schema, ctx);
+        extractDefs(ctx, schema);
+        return finalize(ctx, schema);
+    };
+    const createStandardJSONSchemaMethod = (schema, io) => (params) => {
+        const { libraryOptions, target } = params ?? {};
+        const ctx = initializeContext({ ...(libraryOptions ?? {}), target, io, processors: {} });
+        process(schema, ctx);
+        extractDefs(ctx, schema);
+        return finalize(ctx, schema);
+    };
+
+    const formatMap = {
+        guid: "uuid",
+        url: "uri",
+        datetime: "date-time",
+        json_string: "json-string",
+        regex: "", // do not set
+    };
+    // ==================== SIMPLE TYPE PROCESSORS ====================
+    const stringProcessor = (schema, ctx, _json, _params) => {
+        const json = _json;
+        json.type = "string";
+        const { minimum, maximum, format, patterns, contentEncoding } = schema._zod
+            .bag;
+        if (typeof minimum === "number")
+            json.minLength = minimum;
+        if (typeof maximum === "number")
+            json.maxLength = maximum;
+        // custom pattern overrides format
+        if (format) {
+            json.format = formatMap[format] ?? format;
+            if (json.format === "")
+                delete json.format; // empty format is not valid
+        }
+        if (contentEncoding)
+            json.contentEncoding = contentEncoding;
+        if (patterns && patterns.size > 0) {
+            const regexes = [...patterns];
+            if (regexes.length === 1)
+                json.pattern = regexes[0].source;
+            else if (regexes.length > 1) {
+                json.allOf = [
+                    ...regexes.map((regex) => ({
+                        ...(ctx.target === "draft-07" || ctx.target === "draft-04" || ctx.target === "openapi-3.0"
+                            ? { type: "string" }
+                            : {}),
+                        pattern: regex.source,
+                    })),
+                ];
+            }
+        }
+    };
+    const numberProcessor = (schema, ctx, _json, _params) => {
+        const json = _json;
+        const { minimum, maximum, format, multipleOf, exclusiveMaximum, exclusiveMinimum } = schema._zod.bag;
+        if (typeof format === "string" && format.includes("int"))
+            json.type = "integer";
+        else
+            json.type = "number";
+        if (typeof exclusiveMinimum === "number") {
+            if (ctx.target === "draft-04" || ctx.target === "openapi-3.0") {
+                json.minimum = exclusiveMinimum;
+                json.exclusiveMinimum = true;
+            }
+            else {
+                json.exclusiveMinimum = exclusiveMinimum;
+            }
+        }
+        if (typeof minimum === "number") {
+            json.minimum = minimum;
+            if (typeof exclusiveMinimum === "number" && ctx.target !== "draft-04") {
+                if (exclusiveMinimum >= minimum)
+                    delete json.minimum;
+                else
+                    delete json.exclusiveMinimum;
+            }
+        }
+        if (typeof exclusiveMaximum === "number") {
+            if (ctx.target === "draft-04" || ctx.target === "openapi-3.0") {
+                json.maximum = exclusiveMaximum;
+                json.exclusiveMaximum = true;
+            }
+            else {
+                json.exclusiveMaximum = exclusiveMaximum;
+            }
+        }
+        if (typeof maximum === "number") {
+            json.maximum = maximum;
+            if (typeof exclusiveMaximum === "number" && ctx.target !== "draft-04") {
+                if (exclusiveMaximum <= maximum)
+                    delete json.maximum;
+                else
+                    delete json.exclusiveMaximum;
+            }
+        }
+        if (typeof multipleOf === "number")
+            json.multipleOf = multipleOf;
+    };
+    const booleanProcessor = (_schema, _ctx, json, _params) => {
+        json.type = "boolean";
+    };
+    const bigintProcessor = (_schema, ctx, _json, _params) => {
+        if (ctx.unrepresentable === "throw") {
+            throw new Error("BigInt cannot be represented in JSON Schema");
+        }
+    };
+    const symbolProcessor = (_schema, ctx, _json, _params) => {
+        if (ctx.unrepresentable === "throw") {
+            throw new Error("Symbols cannot be represented in JSON Schema");
+        }
+    };
+    const nullProcessor = (_schema, ctx, json, _params) => {
+        if (ctx.target === "openapi-3.0") {
+            json.type = "string";
+            json.nullable = true;
+            json.enum = [null];
+        }
+        else {
+            json.type = "null";
+        }
+    };
+    const undefinedProcessor = (_schema, ctx, _json, _params) => {
+        if (ctx.unrepresentable === "throw") {
+            throw new Error("Undefined cannot be represented in JSON Schema");
+        }
+    };
+    const voidProcessor = (_schema, ctx, _json, _params) => {
+        if (ctx.unrepresentable === "throw") {
+            throw new Error("Void cannot be represented in JSON Schema");
+        }
+    };
+    const neverProcessor = (_schema, _ctx, json, _params) => {
+        json.not = {};
+    };
+    const anyProcessor = (_schema, _ctx, _json, _params) => {
+        // empty schema accepts anything
+    };
+    const unknownProcessor = (_schema, _ctx, _json, _params) => {
+        // empty schema accepts anything
+    };
+    const dateProcessor = (_schema, ctx, _json, _params) => {
+        if (ctx.unrepresentable === "throw") {
+            throw new Error("Date cannot be represented in JSON Schema");
+        }
+    };
+    const enumProcessor = (schema, _ctx, json, _params) => {
+        const def = schema._zod.def;
+        const values = getEnumValues(def.entries);
+        // Number enums can have both string and number values
+        if (values.every((v) => typeof v === "number"))
+            json.type = "number";
+        if (values.every((v) => typeof v === "string"))
+            json.type = "string";
+        json.enum = values;
+    };
+    const literalProcessor = (schema, ctx, json, _params) => {
+        const def = schema._zod.def;
+        const vals = [];
+        for (const val of def.values) {
+            if (val === undefined) {
+                if (ctx.unrepresentable === "throw") {
+                    throw new Error("Literal `undefined` cannot be represented in JSON Schema");
+                }
+            }
+            else if (typeof val === "bigint") {
+                if (ctx.unrepresentable === "throw") {
+                    throw new Error("BigInt literals cannot be represented in JSON Schema");
+                }
+                else {
+                    vals.push(Number(val));
+                }
+            }
+            else {
+                vals.push(val);
+            }
+        }
+        if (vals.length === 0) ;
+        else if (vals.length === 1) {
+            const val = vals[0];
+            json.type = val === null ? "null" : typeof val;
+            if (ctx.target === "draft-04" || ctx.target === "openapi-3.0") {
+                json.enum = [val];
+            }
+            else {
+                json.const = val;
+            }
+        }
+        else {
+            if (vals.every((v) => typeof v === "number"))
+                json.type = "number";
+            if (vals.every((v) => typeof v === "string"))
+                json.type = "string";
+            if (vals.every((v) => typeof v === "boolean"))
+                json.type = "boolean";
+            if (vals.every((v) => v === null))
+                json.type = "null";
+            json.enum = vals;
+        }
+    };
+    const nanProcessor = (_schema, ctx, _json, _params) => {
+        if (ctx.unrepresentable === "throw") {
+            throw new Error("NaN cannot be represented in JSON Schema");
+        }
+    };
+    const templateLiteralProcessor = (schema, _ctx, json, _params) => {
+        const _json = json;
+        const pattern = schema._zod.pattern;
+        if (!pattern)
+            throw new Error("Pattern not found in template literal");
+        _json.type = "string";
+        _json.pattern = pattern.source;
+    };
+    const fileProcessor = (schema, _ctx, json, _params) => {
+        const _json = json;
+        const file = {
+            type: "string",
+            format: "binary",
+            contentEncoding: "binary",
+        };
+        const { minimum, maximum, mime } = schema._zod.bag;
+        if (minimum !== undefined)
+            file.minLength = minimum;
+        if (maximum !== undefined)
+            file.maxLength = maximum;
+        if (mime) {
+            if (mime.length === 1) {
+                file.contentMediaType = mime[0];
+                Object.assign(_json, file);
+            }
+            else {
+                _json.anyOf = mime.map((m) => {
+                    const mFile = { ...file, contentMediaType: m };
+                    return mFile;
+                });
+            }
+        }
+        else {
+            Object.assign(_json, file);
+        }
+    };
+    const successProcessor = (_schema, _ctx, json, _params) => {
+        json.type = "boolean";
+    };
+    const customProcessor = (_schema, ctx, _json, _params) => {
+        if (ctx.unrepresentable === "throw") {
+            throw new Error("Custom types cannot be represented in JSON Schema");
+        }
+    };
+    const functionProcessor = (_schema, ctx, _json, _params) => {
+        if (ctx.unrepresentable === "throw") {
+            throw new Error("Function types cannot be represented in JSON Schema");
+        }
+    };
+    const transformProcessor = (_schema, ctx, _json, _params) => {
+        if (ctx.unrepresentable === "throw") {
+            throw new Error("Transforms cannot be represented in JSON Schema");
+        }
+    };
+    const mapProcessor = (_schema, ctx, _json, _params) => {
+        if (ctx.unrepresentable === "throw") {
+            throw new Error("Map cannot be represented in JSON Schema");
+        }
+    };
+    const setProcessor = (_schema, ctx, _json, _params) => {
+        if (ctx.unrepresentable === "throw") {
+            throw new Error("Set cannot be represented in JSON Schema");
+        }
+    };
+    // ==================== COMPOSITE TYPE PROCESSORS ====================
+    const arrayProcessor = (schema, ctx, _json, params) => {
+        const json = _json;
+        const def = schema._zod.def;
+        const { minimum, maximum } = schema._zod.bag;
+        if (typeof minimum === "number")
+            json.minItems = minimum;
+        if (typeof maximum === "number")
+            json.maxItems = maximum;
+        json.type = "array";
+        json.items = process(def.element, ctx, { ...params, path: [...params.path, "items"] });
+    };
+    const objectProcessor = (schema, ctx, _json, params) => {
+        const json = _json;
+        const def = schema._zod.def;
+        json.type = "object";
+        json.properties = {};
+        const shape = def.shape;
+        for (const key in shape) {
+            json.properties[key] = process(shape[key], ctx, {
+                ...params,
+                path: [...params.path, "properties", key],
+            });
+        }
+        // required keys
+        const allKeys = new Set(Object.keys(shape));
+        const requiredKeys = new Set([...allKeys].filter((key) => {
+            const v = def.shape[key]._zod;
+            if (ctx.io === "input") {
+                return v.optin === undefined;
+            }
+            else {
+                return v.optout === undefined;
+            }
+        }));
+        if (requiredKeys.size > 0) {
+            json.required = Array.from(requiredKeys);
+        }
+        // catchall
+        if (def.catchall?._zod.def.type === "never") {
+            // strict
+            json.additionalProperties = false;
+        }
+        else if (!def.catchall) {
+            // regular
+            if (ctx.io === "output")
+                json.additionalProperties = false;
+        }
+        else if (def.catchall) {
+            json.additionalProperties = process(def.catchall, ctx, {
+                ...params,
+                path: [...params.path, "additionalProperties"],
+            });
+        }
+    };
+    const unionProcessor = (schema, ctx, json, params) => {
+        const def = schema._zod.def;
+        // Exclusive unions (inclusive === false) use oneOf (exactly one match) instead of anyOf (one or more matches)
+        // This includes both z.xor() and discriminated unions
+        const isExclusive = def.inclusive === false;
+        const options = def.options.map((x, i) => process(x, ctx, {
+            ...params,
+            path: [...params.path, isExclusive ? "oneOf" : "anyOf", i],
+        }));
+        if (isExclusive) {
+            json.oneOf = options;
+        }
+        else {
+            json.anyOf = options;
+        }
+    };
+    const intersectionProcessor = (schema, ctx, json, params) => {
+        const def = schema._zod.def;
+        const a = process(def.left, ctx, {
+            ...params,
+            path: [...params.path, "allOf", 0],
+        });
+        const b = process(def.right, ctx, {
+            ...params,
+            path: [...params.path, "allOf", 1],
+        });
+        const isSimpleIntersection = (val) => "allOf" in val && Object.keys(val).length === 1;
+        const allOf = [
+            ...(isSimpleIntersection(a) ? a.allOf : [a]),
+            ...(isSimpleIntersection(b) ? b.allOf : [b]),
+        ];
+        json.allOf = allOf;
+    };
+    const tupleProcessor = (schema, ctx, _json, params) => {
+        const json = _json;
+        const def = schema._zod.def;
+        json.type = "array";
+        const prefixPath = ctx.target === "draft-2020-12" ? "prefixItems" : "items";
+        const restPath = ctx.target === "draft-2020-12" ? "items" : ctx.target === "openapi-3.0" ? "items" : "additionalItems";
+        const prefixItems = def.items.map((x, i) => process(x, ctx, {
+            ...params,
+            path: [...params.path, prefixPath, i],
+        }));
+        const rest = def.rest
+            ? process(def.rest, ctx, {
+                ...params,
+                path: [...params.path, restPath, ...(ctx.target === "openapi-3.0" ? [def.items.length] : [])],
+            })
+            : null;
+        if (ctx.target === "draft-2020-12") {
+            json.prefixItems = prefixItems;
+            if (rest) {
+                json.items = rest;
+            }
+        }
+        else if (ctx.target === "openapi-3.0") {
+            json.items = {
+                anyOf: prefixItems,
+            };
+            if (rest) {
+                json.items.anyOf.push(rest);
+            }
+            json.minItems = prefixItems.length;
+            if (!rest) {
+                json.maxItems = prefixItems.length;
+            }
+        }
+        else {
+            json.items = prefixItems;
+            if (rest) {
+                json.additionalItems = rest;
+            }
+        }
+        // length
+        const { minimum, maximum } = schema._zod.bag;
+        if (typeof minimum === "number")
+            json.minItems = minimum;
+        if (typeof maximum === "number")
+            json.maxItems = maximum;
+    };
+    const recordProcessor = (schema, ctx, _json, params) => {
+        const json = _json;
+        const def = schema._zod.def;
+        json.type = "object";
+        if (ctx.target === "draft-07" || ctx.target === "draft-2020-12") {
+            json.propertyNames = process(def.keyType, ctx, {
+                ...params,
+                path: [...params.path, "propertyNames"],
+            });
+        }
+        json.additionalProperties = process(def.valueType, ctx, {
+            ...params,
+            path: [...params.path, "additionalProperties"],
+        });
+    };
+    const nullableProcessor = (schema, ctx, json, params) => {
+        const def = schema._zod.def;
+        const inner = process(def.innerType, ctx, params);
+        const seen = ctx.seen.get(schema);
+        if (ctx.target === "openapi-3.0") {
+            seen.ref = def.innerType;
+            json.nullable = true;
+        }
+        else {
+            json.anyOf = [inner, { type: "null" }];
+        }
+    };
+    const nonoptionalProcessor = (schema, ctx, _json, params) => {
+        const def = schema._zod.def;
+        process(def.innerType, ctx, params);
+        const seen = ctx.seen.get(schema);
+        seen.ref = def.innerType;
+    };
+    const defaultProcessor = (schema, ctx, json, params) => {
+        const def = schema._zod.def;
+        process(def.innerType, ctx, params);
+        const seen = ctx.seen.get(schema);
+        seen.ref = def.innerType;
+        json.default = JSON.parse(JSON.stringify(def.defaultValue));
+    };
+    const prefaultProcessor = (schema, ctx, json, params) => {
+        const def = schema._zod.def;
+        process(def.innerType, ctx, params);
+        const seen = ctx.seen.get(schema);
+        seen.ref = def.innerType;
+        if (ctx.io === "input")
+            json._prefault = JSON.parse(JSON.stringify(def.defaultValue));
+    };
+    const catchProcessor = (schema, ctx, json, params) => {
+        const def = schema._zod.def;
+        process(def.innerType, ctx, params);
+        const seen = ctx.seen.get(schema);
+        seen.ref = def.innerType;
+        let catchValue;
+        try {
+            catchValue = def.catchValue(undefined);
+        }
+        catch {
+            throw new Error("Dynamic catch values are not supported in JSON Schema");
+        }
+        json.default = catchValue;
+    };
+    const pipeProcessor = (schema, ctx, _json, params) => {
+        const def = schema._zod.def;
+        const innerType = ctx.io === "input" ? (def.in._zod.def.type === "transform" ? def.out : def.in) : def.out;
+        process(innerType, ctx, params);
+        const seen = ctx.seen.get(schema);
+        seen.ref = innerType;
+    };
+    const readonlyProcessor = (schema, ctx, json, params) => {
+        const def = schema._zod.def;
+        process(def.innerType, ctx, params);
+        const seen = ctx.seen.get(schema);
+        seen.ref = def.innerType;
+        json.readOnly = true;
+    };
+    const promiseProcessor = (schema, ctx, _json, params) => {
+        const def = schema._zod.def;
+        process(def.innerType, ctx, params);
+        const seen = ctx.seen.get(schema);
+        seen.ref = def.innerType;
+    };
+    const optionalProcessor = (schema, ctx, _json, params) => {
+        const def = schema._zod.def;
+        process(def.innerType, ctx, params);
+        const seen = ctx.seen.get(schema);
+        seen.ref = def.innerType;
+    };
+    const lazyProcessor = (schema, ctx, _json, params) => {
+        const innerType = schema._zod.innerType;
+        process(innerType, ctx, params);
+        const seen = ctx.seen.get(schema);
+        seen.ref = innerType;
+    };
+    // ==================== ALL PROCESSORS ====================
+    const allProcessors = {
+        string: stringProcessor,
+        number: numberProcessor,
+        boolean: booleanProcessor,
+        bigint: bigintProcessor,
+        symbol: symbolProcessor,
+        null: nullProcessor,
+        undefined: undefinedProcessor,
+        void: voidProcessor,
+        never: neverProcessor,
+        any: anyProcessor,
+        unknown: unknownProcessor,
+        date: dateProcessor,
+        enum: enumProcessor,
+        literal: literalProcessor,
+        nan: nanProcessor,
+        template_literal: templateLiteralProcessor,
+        file: fileProcessor,
+        success: successProcessor,
+        custom: customProcessor,
+        function: functionProcessor,
+        transform: transformProcessor,
+        map: mapProcessor,
+        set: setProcessor,
+        array: arrayProcessor,
+        object: objectProcessor,
+        union: unionProcessor,
+        intersection: intersectionProcessor,
+        tuple: tupleProcessor,
+        record: recordProcessor,
+        nullable: nullableProcessor,
+        nonoptional: nonoptionalProcessor,
+        default: defaultProcessor,
+        prefault: prefaultProcessor,
+        catch: catchProcessor,
+        pipe: pipeProcessor,
+        readonly: readonlyProcessor,
+        promise: promiseProcessor,
+        optional: optionalProcessor,
+        lazy: lazyProcessor,
+    };
+    function toJSONSchema(input, params) {
+        if ("_idmap" in input) {
+            // Registry case
+            const registry = input;
+            const ctx = initializeContext({ ...params, processors: allProcessors });
+            const defs = {};
+            // First pass: process all schemas to build the seen map
+            for (const entry of registry._idmap.entries()) {
+                const [_, schema] = entry;
+                process(schema, ctx);
+            }
+            const schemas = {};
+            const external = {
+                registry,
+                uri: params?.uri,
+                defs,
+            };
+            // Update the context with external configuration
+            ctx.external = external;
+            // Second pass: emit each schema
+            for (const entry of registry._idmap.entries()) {
+                const [key, schema] = entry;
+                extractDefs(ctx, schema);
+                schemas[key] = finalize(ctx, schema);
+            }
+            if (Object.keys(defs).length > 0) {
+                const defsSegment = ctx.target === "draft-2020-12" ? "$defs" : "definitions";
+                schemas.__shared = {
+                    [defsSegment]: defs,
+                };
+            }
+            return { schemas };
+        }
+        // Single schema case
+        const ctx = initializeContext({ ...params, processors: allProcessors });
+        process(input, ctx);
+        extractDefs(ctx, input);
+        return finalize(ctx, input);
+    }
+
+    /**
+     * Legacy class-based interface for JSON Schema generation.
+     * This class wraps the new functional implementation to provide backward compatibility.
+     *
+     * @deprecated Use the `toJSONSchema` function instead for new code.
+     *
+     * @example
+     * ```typescript
+     * // Legacy usage (still supported)
+     * const gen = new JSONSchemaGenerator({ target: "draft-07" });
+     * gen.process(schema);
+     * const result = gen.emit(schema);
+     *
+     * // Preferred modern usage
+     * const result = toJSONSchema(schema, { target: "draft-07" });
+     * ```
+     */
+    class JSONSchemaGenerator {
+        /** @deprecated Access via ctx instead */
+        get metadataRegistry() {
+            return this.ctx.metadataRegistry;
+        }
+        /** @deprecated Access via ctx instead */
+        get target() {
+            return this.ctx.target;
+        }
+        /** @deprecated Access via ctx instead */
+        get unrepresentable() {
+            return this.ctx.unrepresentable;
+        }
+        /** @deprecated Access via ctx instead */
+        get override() {
+            return this.ctx.override;
+        }
+        /** @deprecated Access via ctx instead */
+        get io() {
+            return this.ctx.io;
+        }
+        /** @deprecated Access via ctx instead */
+        get counter() {
+            return this.ctx.counter;
+        }
+        set counter(value) {
+            this.ctx.counter = value;
+        }
+        /** @deprecated Access via ctx instead */
+        get seen() {
+            return this.ctx.seen;
+        }
+        constructor(params) {
+            // Normalize target for internal context
+            let normalizedTarget = params?.target ?? "draft-2020-12";
+            if (normalizedTarget === "draft-4")
+                normalizedTarget = "draft-04";
+            if (normalizedTarget === "draft-7")
+                normalizedTarget = "draft-07";
+            this.ctx = initializeContext({
+                processors: allProcessors,
+                target: normalizedTarget,
+                ...(params?.metadata && { metadata: params.metadata }),
+                ...(params?.unrepresentable && { unrepresentable: params.unrepresentable }),
+                ...(params?.override && { override: params.override }),
+                ...(params?.io && { io: params.io }),
+            });
+        }
+        /**
+         * Process a schema to prepare it for JSON Schema generation.
+         * This must be called before emit().
+         */
+        process(schema, _params = { path: [], schemaPath: [] }) {
+            return process(schema, this.ctx, _params);
+        }
+        /**
+         * Emit the final JSON Schema after processing.
+         * Must call process() first.
+         */
+        emit(schema, _params) {
+            // Apply emit params to the context
+            if (_params) {
+                if (_params.cycles)
+                    this.ctx.cycles = _params.cycles;
+                if (_params.reused)
+                    this.ctx.reused = _params.reused;
+                if (_params.external)
+                    this.ctx.external = _params.external;
+            }
+            extractDefs(this.ctx, schema);
+            const result = finalize(this.ctx, schema);
+            // Strip ~standard property to match old implementation's return type
+            const { "~standard": _, ...plainResult } = result;
+            return plainResult;
+        }
     }
 
     var jsonSchema = /*#__PURE__*/Object.freeze({
@@ -11481,6 +11718,7 @@ sap.ui.define((function () { 'use strict';
         $ZodUnknown: $ZodUnknown,
         $ZodVoid: $ZodVoid,
         $ZodXID: $ZodXID,
+        $ZodXor: $ZodXor,
         $brand: $brand,
         $constructor: $constructor,
         $input: $input,
@@ -11615,17 +11853,23 @@ sap.ui.define((function () { 'use strict';
         _uuidv7: _uuidv7,
         _void: _void$1,
         _xid: _xid,
+        _xor: _xor,
         clone: clone,
         config: config,
+        createStandardJSONSchemaMethod: createStandardJSONSchemaMethod,
+        createToJSONSchemaMethod: createToJSONSchemaMethod,
         decode: decode$1,
         decodeAsync: decodeAsync$1,
         describe: describe$1,
         encode: encode$1,
         encodeAsync: encodeAsync$1,
+        extractDefs: extractDefs,
+        finalize: finalize,
         flattenError: flattenError,
         formatError: formatError,
         globalConfig: globalConfig,
         globalRegistry: globalRegistry,
+        initializeContext: initializeContext,
         isValidBase64: isValidBase64,
         isValidBase64URL: isValidBase64URL,
         isValidJWT: isValidJWT,
@@ -11634,6 +11878,7 @@ sap.ui.define((function () { 'use strict';
         parse: parse$1,
         parseAsync: parseAsync$1,
         prettifyError: prettifyError,
+        process: process,
         regexes: regexes,
         registry: registry,
         safeDecode: safeDecode$1,
@@ -11647,6 +11892,39 @@ sap.ui.define((function () { 'use strict';
         treeifyError: treeifyError,
         util: util,
         version: version
+    });
+
+    var _checks = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        endsWith: _endsWith,
+        gt: _gt,
+        gte: _gte,
+        includes: _includes,
+        length: _length,
+        lowercase: _lowercase,
+        lt: _lt,
+        lte: _lte,
+        maxLength: _maxLength,
+        maxSize: _maxSize,
+        mime: _mime,
+        minLength: _minLength,
+        minSize: _minSize,
+        multipleOf: _multipleOf,
+        negative: _negative,
+        nonnegative: _nonnegative,
+        nonpositive: _nonpositive,
+        normalize: _normalize,
+        overwrite: _overwrite,
+        positive: _positive,
+        property: _property,
+        regex: _regex,
+        size: _size,
+        slugify: _slugify,
+        startsWith: _startsWith,
+        toLowerCase: _toLowerCase,
+        toUpperCase: _toUpperCase,
+        trim: _trim,
+        uppercase: _uppercase
     });
 
     const ZodISODateTime = /*@__PURE__*/ $constructor("ZodISODateTime", (inst, def) => {
@@ -11678,7 +11956,7 @@ sap.ui.define((function () { 'use strict';
         return _isoDuration(ZodISODuration, params);
     }
 
-    var iso = /*#__PURE__*/Object.freeze({
+    var _iso = /*#__PURE__*/Object.freeze({
         __proto__: null,
         ZodISODate: ZodISODate,
         ZodISODateTime: ZodISODateTime,
@@ -11752,6 +12030,13 @@ sap.ui.define((function () { 'use strict';
 
     const ZodType = /*@__PURE__*/ $constructor("ZodType", (inst, def) => {
         $ZodType.init(inst, def);
+        Object.assign(inst["~standard"], {
+            jsonSchema: {
+                input: createStandardJSONSchemaMethod(inst, "input"),
+                output: createStandardJSONSchemaMethod(inst, "output"),
+            },
+        });
+        inst.toJSONSchema = createToJSONSchemaMethod(inst, {});
         inst.def = def;
         inst.type = def.type;
         Object.defineProperty(inst, "_def", { value: def });
@@ -11833,6 +12118,7 @@ sap.ui.define((function () { 'use strict';
     const _ZodString = /*@__PURE__*/ $constructor("_ZodString", (inst, def) => {
         $ZodString.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => stringProcessor(inst, ctx, json);
         const bag = inst._zod.bag;
         inst.format = bag.format ?? null;
         inst.minLength = bag.minimum ?? null;
@@ -12095,6 +12381,7 @@ sap.ui.define((function () { 'use strict';
     const ZodNumber = /*@__PURE__*/ $constructor("ZodNumber", (inst, def) => {
         $ZodNumber.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => numberProcessor(inst, ctx, json);
         inst.gt = (value, params) => inst.check(_gt(value, params));
         inst.gte = (value, params) => inst.check(_gte(value, params));
         inst.min = (value, params) => inst.check(_gte(value, params));
@@ -12145,6 +12432,7 @@ sap.ui.define((function () { 'use strict';
     const ZodBoolean = /*@__PURE__*/ $constructor("ZodBoolean", (inst, def) => {
         $ZodBoolean.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => booleanProcessor(inst, ctx, json);
     });
     function boolean$1(params) {
         return _boolean(ZodBoolean, params);
@@ -12152,6 +12440,7 @@ sap.ui.define((function () { 'use strict';
     const ZodBigInt = /*@__PURE__*/ $constructor("ZodBigInt", (inst, def) => {
         $ZodBigInt.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => bigintProcessor(inst, ctx);
         inst.gte = (value, params) => inst.check(_gte(value, params));
         inst.min = (value, params) => inst.check(_gte(value, params));
         inst.gt = (value, params) => inst.check(_gt(value, params));
@@ -12188,6 +12477,7 @@ sap.ui.define((function () { 'use strict';
     const ZodSymbol = /*@__PURE__*/ $constructor("ZodSymbol", (inst, def) => {
         $ZodSymbol.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => symbolProcessor(inst, ctx);
     });
     function symbol(params) {
         return _symbol(ZodSymbol, params);
@@ -12195,6 +12485,7 @@ sap.ui.define((function () { 'use strict';
     const ZodUndefined = /*@__PURE__*/ $constructor("ZodUndefined", (inst, def) => {
         $ZodUndefined.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => undefinedProcessor(inst, ctx);
     });
     function _undefined(params) {
         return _undefined$1(ZodUndefined, params);
@@ -12202,6 +12493,7 @@ sap.ui.define((function () { 'use strict';
     const ZodNull = /*@__PURE__*/ $constructor("ZodNull", (inst, def) => {
         $ZodNull.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => nullProcessor(inst, ctx, json);
     });
     function _null(params) {
         return _null$1(ZodNull, params);
@@ -12209,6 +12501,7 @@ sap.ui.define((function () { 'use strict';
     const ZodAny = /*@__PURE__*/ $constructor("ZodAny", (inst, def) => {
         $ZodAny.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => anyProcessor();
     });
     function any() {
         return _any(ZodAny);
@@ -12216,6 +12509,7 @@ sap.ui.define((function () { 'use strict';
     const ZodUnknown = /*@__PURE__*/ $constructor("ZodUnknown", (inst, def) => {
         $ZodUnknown.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => unknownProcessor();
     });
     function unknown() {
         return _unknown(ZodUnknown);
@@ -12223,6 +12517,7 @@ sap.ui.define((function () { 'use strict';
     const ZodNever = /*@__PURE__*/ $constructor("ZodNever", (inst, def) => {
         $ZodNever.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => neverProcessor(inst, ctx, json);
     });
     function never(params) {
         return _never(ZodNever, params);
@@ -12230,6 +12525,7 @@ sap.ui.define((function () { 'use strict';
     const ZodVoid = /*@__PURE__*/ $constructor("ZodVoid", (inst, def) => {
         $ZodVoid.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => voidProcessor(inst, ctx);
     });
     function _void(params) {
         return _void$1(ZodVoid, params);
@@ -12237,6 +12533,7 @@ sap.ui.define((function () { 'use strict';
     const ZodDate = /*@__PURE__*/ $constructor("ZodDate", (inst, def) => {
         $ZodDate.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => dateProcessor(inst, ctx);
         inst.min = (value, params) => inst.check(_gte(value, params));
         inst.max = (value, params) => inst.check(_lte(value, params));
         const c = inst._zod.bag;
@@ -12249,6 +12546,7 @@ sap.ui.define((function () { 'use strict';
     const ZodArray = /*@__PURE__*/ $constructor("ZodArray", (inst, def) => {
         $ZodArray.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => arrayProcessor(inst, ctx, json, params);
         inst.element = def.element;
         inst.min = (minLength, params) => inst.check(_minLength(minLength, params));
         inst.nonempty = (params) => inst.check(_minLength(1, params));
@@ -12267,6 +12565,7 @@ sap.ui.define((function () { 'use strict';
     const ZodObject = /*@__PURE__*/ $constructor("ZodObject", (inst, def) => {
         $ZodObjectJIT.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => objectProcessor(inst, ctx, json, params);
         defineLazy(inst, "shape", () => {
             return def.shape;
         });
@@ -12317,12 +12616,30 @@ sap.ui.define((function () { 'use strict';
     const ZodUnion = /*@__PURE__*/ $constructor("ZodUnion", (inst, def) => {
         $ZodUnion.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => unionProcessor(inst, ctx, json, params);
         inst.options = def.options;
     });
     function union(options, params) {
         return new ZodUnion({
             type: "union",
             options: options,
+            ...normalizeParams(params),
+        });
+    }
+    const ZodXor = /*@__PURE__*/ $constructor("ZodXor", (inst, def) => {
+        ZodUnion.init(inst, def);
+        $ZodXor.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => unionProcessor(inst, ctx, json, params);
+        inst.options = def.options;
+    });
+    /** Creates an exclusive union (XOR) where exactly one option must match.
+     * Unlike regular unions that succeed when any option matches, xor fails if
+     * zero or more than one option matches the input. */
+    function xor(options, params) {
+        return new ZodXor({
+            type: "union",
+            options: options,
+            inclusive: false,
             ...normalizeParams(params),
         });
     }
@@ -12342,6 +12659,7 @@ sap.ui.define((function () { 'use strict';
     const ZodIntersection = /*@__PURE__*/ $constructor("ZodIntersection", (inst, def) => {
         $ZodIntersection.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => intersectionProcessor(inst, ctx, json, params);
     });
     function intersection(left, right) {
         return new ZodIntersection({
@@ -12353,6 +12671,7 @@ sap.ui.define((function () { 'use strict';
     const ZodTuple = /*@__PURE__*/ $constructor("ZodTuple", (inst, def) => {
         $ZodTuple.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => tupleProcessor(inst, ctx, json, params);
         inst.rest = (rest) => inst.clone({
             ...inst._zod.def,
             rest: rest,
@@ -12372,6 +12691,7 @@ sap.ui.define((function () { 'use strict';
     const ZodRecord = /*@__PURE__*/ $constructor("ZodRecord", (inst, def) => {
         $ZodRecord.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => recordProcessor(inst, ctx, json, params);
         inst.keyType = def.keyType;
         inst.valueType = def.valueType;
     });
@@ -12394,9 +12714,19 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    function looseRecord(keyType, valueType, params) {
+        return new ZodRecord({
+            type: "record",
+            keyType,
+            valueType: valueType,
+            mode: "loose",
+            ...normalizeParams(params),
+        });
+    }
     const ZodMap = /*@__PURE__*/ $constructor("ZodMap", (inst, def) => {
         $ZodMap.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => mapProcessor(inst, ctx);
         inst.keyType = def.keyType;
         inst.valueType = def.valueType;
     });
@@ -12411,6 +12741,7 @@ sap.ui.define((function () { 'use strict';
     const ZodSet = /*@__PURE__*/ $constructor("ZodSet", (inst, def) => {
         $ZodSet.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => setProcessor(inst, ctx);
         inst.min = (...args) => inst.check(_minSize(...args));
         inst.nonempty = (params) => inst.check(_minSize(1, params));
         inst.max = (...args) => inst.check(_maxSize(...args));
@@ -12426,6 +12757,7 @@ sap.ui.define((function () { 'use strict';
     const ZodEnum = /*@__PURE__*/ $constructor("ZodEnum", (inst, def) => {
         $ZodEnum.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => enumProcessor(inst, ctx, json);
         inst.enum = def.entries;
         inst.options = Object.values(def.entries);
         const keys = new Set(Object.keys(def.entries));
@@ -12487,6 +12819,7 @@ sap.ui.define((function () { 'use strict';
     const ZodLiteral = /*@__PURE__*/ $constructor("ZodLiteral", (inst, def) => {
         $ZodLiteral.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => literalProcessor(inst, ctx, json);
         inst.values = new Set(def.values);
         Object.defineProperty(inst, "value", {
             get() {
@@ -12507,6 +12840,7 @@ sap.ui.define((function () { 'use strict';
     const ZodFile = /*@__PURE__*/ $constructor("ZodFile", (inst, def) => {
         $ZodFile.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => fileProcessor(inst, ctx, json);
         inst.min = (size, params) => inst.check(_minSize(size, params));
         inst.max = (size, params) => inst.check(_maxSize(size, params));
         inst.mime = (types, params) => inst.check(_mime(Array.isArray(types) ? types : [types], params));
@@ -12517,6 +12851,7 @@ sap.ui.define((function () { 'use strict';
     const ZodTransform = /*@__PURE__*/ $constructor("ZodTransform", (inst, def) => {
         $ZodTransform.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => transformProcessor(inst, ctx);
         inst._zod.parse = (payload, _ctx) => {
             if (_ctx.direction === "backward") {
                 throw new $ZodEncodeError(inst.constructor.name);
@@ -12557,6 +12892,7 @@ sap.ui.define((function () { 'use strict';
     const ZodOptional = /*@__PURE__*/ $constructor("ZodOptional", (inst, def) => {
         $ZodOptional.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => optionalProcessor(inst, ctx, json, params);
         inst.unwrap = () => inst._zod.def.innerType;
     });
     function optional(innerType) {
@@ -12568,6 +12904,7 @@ sap.ui.define((function () { 'use strict';
     const ZodNullable = /*@__PURE__*/ $constructor("ZodNullable", (inst, def) => {
         $ZodNullable.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => nullableProcessor(inst, ctx, json, params);
         inst.unwrap = () => inst._zod.def.innerType;
     });
     function nullable(innerType) {
@@ -12583,6 +12920,7 @@ sap.ui.define((function () { 'use strict';
     const ZodDefault = /*@__PURE__*/ $constructor("ZodDefault", (inst, def) => {
         $ZodDefault.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => defaultProcessor(inst, ctx, json, params);
         inst.unwrap = () => inst._zod.def.innerType;
         inst.removeDefault = inst.unwrap;
     });
@@ -12598,6 +12936,7 @@ sap.ui.define((function () { 'use strict';
     const ZodPrefault = /*@__PURE__*/ $constructor("ZodPrefault", (inst, def) => {
         $ZodPrefault.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => prefaultProcessor(inst, ctx, json, params);
         inst.unwrap = () => inst._zod.def.innerType;
     });
     function prefault(innerType, defaultValue) {
@@ -12612,6 +12951,7 @@ sap.ui.define((function () { 'use strict';
     const ZodNonOptional = /*@__PURE__*/ $constructor("ZodNonOptional", (inst, def) => {
         $ZodNonOptional.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => nonoptionalProcessor(inst, ctx, json, params);
         inst.unwrap = () => inst._zod.def.innerType;
     });
     function nonoptional(innerType, params) {
@@ -12624,6 +12964,7 @@ sap.ui.define((function () { 'use strict';
     const ZodSuccess = /*@__PURE__*/ $constructor("ZodSuccess", (inst, def) => {
         $ZodSuccess.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => successProcessor(inst, ctx, json);
         inst.unwrap = () => inst._zod.def.innerType;
     });
     function success(innerType) {
@@ -12635,6 +12976,7 @@ sap.ui.define((function () { 'use strict';
     const ZodCatch = /*@__PURE__*/ $constructor("ZodCatch", (inst, def) => {
         $ZodCatch.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => catchProcessor(inst, ctx, json, params);
         inst.unwrap = () => inst._zod.def.innerType;
         inst.removeCatch = inst.unwrap;
     });
@@ -12648,6 +12990,7 @@ sap.ui.define((function () { 'use strict';
     const ZodNaN = /*@__PURE__*/ $constructor("ZodNaN", (inst, def) => {
         $ZodNaN.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => nanProcessor(inst, ctx);
     });
     function nan(params) {
         return _nan(ZodNaN, params);
@@ -12655,6 +12998,7 @@ sap.ui.define((function () { 'use strict';
     const ZodPipe = /*@__PURE__*/ $constructor("ZodPipe", (inst, def) => {
         $ZodPipe.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => pipeProcessor(inst, ctx, json, params);
         inst.in = def.in;
         inst.out = def.out;
     });
@@ -12682,6 +13026,7 @@ sap.ui.define((function () { 'use strict';
     const ZodReadonly = /*@__PURE__*/ $constructor("ZodReadonly", (inst, def) => {
         $ZodReadonly.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => readonlyProcessor(inst, ctx, json, params);
         inst.unwrap = () => inst._zod.def.innerType;
     });
     function readonly(innerType) {
@@ -12693,6 +13038,7 @@ sap.ui.define((function () { 'use strict';
     const ZodTemplateLiteral = /*@__PURE__*/ $constructor("ZodTemplateLiteral", (inst, def) => {
         $ZodTemplateLiteral.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => templateLiteralProcessor(inst, ctx, json);
     });
     function templateLiteral(parts, params) {
         return new ZodTemplateLiteral({
@@ -12704,6 +13050,7 @@ sap.ui.define((function () { 'use strict';
     const ZodLazy = /*@__PURE__*/ $constructor("ZodLazy", (inst, def) => {
         $ZodLazy.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => lazyProcessor(inst, ctx, json, params);
         inst.unwrap = () => inst._zod.def.getter();
     });
     function lazy(getter) {
@@ -12715,6 +13062,7 @@ sap.ui.define((function () { 'use strict';
     const ZodPromise = /*@__PURE__*/ $constructor("ZodPromise", (inst, def) => {
         $ZodPromise.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => promiseProcessor(inst, ctx, json, params);
         inst.unwrap = () => inst._zod.def.innerType;
     });
     function promise(innerType) {
@@ -12726,6 +13074,7 @@ sap.ui.define((function () { 'use strict';
     const ZodFunction = /*@__PURE__*/ $constructor("ZodFunction", (inst, def) => {
         $ZodFunction.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => functionProcessor(inst, ctx);
     });
     function _function(params) {
         return new ZodFunction({
@@ -12737,6 +13086,7 @@ sap.ui.define((function () { 'use strict';
     const ZodCustom = /*@__PURE__*/ $constructor("ZodCustom", (inst, def) => {
         $ZodCustom.init(inst, def);
         ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => customProcessor(inst, ctx);
     });
     // custom checks
     function check(fn) {
@@ -12791,6 +13141,172 @@ sap.ui.define((function () { 'use strict';
         return pipe(transform(fn), schema);
     }
 
+    var _schemas = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        ZodAny: ZodAny,
+        ZodArray: ZodArray,
+        ZodBase64: ZodBase64,
+        ZodBase64URL: ZodBase64URL,
+        ZodBigInt: ZodBigInt,
+        ZodBigIntFormat: ZodBigIntFormat,
+        ZodBoolean: ZodBoolean,
+        ZodCIDRv4: ZodCIDRv4,
+        ZodCIDRv6: ZodCIDRv6,
+        ZodCUID: ZodCUID,
+        ZodCUID2: ZodCUID2,
+        ZodCatch: ZodCatch,
+        ZodCodec: ZodCodec,
+        ZodCustom: ZodCustom,
+        ZodCustomStringFormat: ZodCustomStringFormat,
+        ZodDate: ZodDate,
+        ZodDefault: ZodDefault,
+        ZodDiscriminatedUnion: ZodDiscriminatedUnion,
+        ZodE164: ZodE164,
+        ZodEmail: ZodEmail,
+        ZodEmoji: ZodEmoji,
+        ZodEnum: ZodEnum,
+        ZodFile: ZodFile,
+        ZodFunction: ZodFunction,
+        ZodGUID: ZodGUID,
+        ZodIPv4: ZodIPv4,
+        ZodIPv6: ZodIPv6,
+        ZodIntersection: ZodIntersection,
+        ZodJWT: ZodJWT,
+        ZodKSUID: ZodKSUID,
+        ZodLazy: ZodLazy,
+        ZodLiteral: ZodLiteral,
+        ZodMAC: ZodMAC,
+        ZodMap: ZodMap,
+        ZodNaN: ZodNaN,
+        ZodNanoID: ZodNanoID,
+        ZodNever: ZodNever,
+        ZodNonOptional: ZodNonOptional,
+        ZodNull: ZodNull,
+        ZodNullable: ZodNullable,
+        ZodNumber: ZodNumber,
+        ZodNumberFormat: ZodNumberFormat,
+        ZodObject: ZodObject,
+        ZodOptional: ZodOptional,
+        ZodPipe: ZodPipe,
+        ZodPrefault: ZodPrefault,
+        ZodPromise: ZodPromise,
+        ZodReadonly: ZodReadonly,
+        ZodRecord: ZodRecord,
+        ZodSet: ZodSet,
+        ZodString: ZodString,
+        ZodStringFormat: ZodStringFormat,
+        ZodSuccess: ZodSuccess,
+        ZodSymbol: ZodSymbol,
+        ZodTemplateLiteral: ZodTemplateLiteral,
+        ZodTransform: ZodTransform,
+        ZodTuple: ZodTuple,
+        ZodType: ZodType,
+        ZodULID: ZodULID,
+        ZodURL: ZodURL,
+        ZodUUID: ZodUUID,
+        ZodUndefined: ZodUndefined,
+        ZodUnion: ZodUnion,
+        ZodUnknown: ZodUnknown,
+        ZodVoid: ZodVoid,
+        ZodXID: ZodXID,
+        ZodXor: ZodXor,
+        _ZodString: _ZodString,
+        _default: _default,
+        _function: _function,
+        any: any,
+        array: array,
+        base64: base64,
+        base64url: base64url,
+        bigint: bigint$1,
+        boolean: boolean$1,
+        catch: _catch,
+        check: check,
+        cidrv4: cidrv4,
+        cidrv6: cidrv6,
+        codec: codec,
+        cuid: cuid,
+        cuid2: cuid2,
+        custom: custom,
+        date: date$1,
+        describe: describe,
+        discriminatedUnion: discriminatedUnion,
+        e164: e164,
+        email: email,
+        emoji: emoji,
+        enum: _enum,
+        file: file,
+        float32: float32,
+        float64: float64,
+        function: _function,
+        guid: guid,
+        hash: hash,
+        hex: hex,
+        hostname: hostname,
+        httpUrl: httpUrl,
+        instanceof: _instanceof,
+        int: int,
+        int32: int32,
+        int64: int64,
+        intersection: intersection,
+        ipv4: ipv4,
+        ipv6: ipv6,
+        json: json,
+        jwt: jwt,
+        keyof: keyof,
+        ksuid: ksuid,
+        lazy: lazy,
+        literal: literal,
+        looseObject: looseObject,
+        looseRecord: looseRecord,
+        mac: mac,
+        map: map,
+        meta: meta,
+        nan: nan,
+        nanoid: nanoid,
+        nativeEnum: nativeEnum,
+        never: never,
+        nonoptional: nonoptional,
+        null: _null,
+        nullable: nullable,
+        nullish: nullish,
+        number: number$1,
+        object: object,
+        optional: optional,
+        partialRecord: partialRecord,
+        pipe: pipe,
+        prefault: prefault,
+        preprocess: preprocess,
+        promise: promise,
+        readonly: readonly,
+        record: record,
+        refine: refine,
+        set: set,
+        strictObject: strictObject,
+        string: string$1,
+        stringFormat: stringFormat,
+        stringbool: stringbool,
+        success: success,
+        superRefine: superRefine,
+        symbol: symbol,
+        templateLiteral: templateLiteral,
+        transform: transform,
+        tuple: tuple,
+        uint32: uint32,
+        uint64: uint64,
+        ulid: ulid,
+        undefined: _undefined,
+        union: union,
+        unknown: unknown,
+        url: url,
+        uuid: uuid,
+        uuidv4: uuidv4,
+        uuidv6: uuidv6,
+        uuidv7: uuidv7,
+        void: _void,
+        xid: xid,
+        xor: xor
+    });
+
     // Zod 3 compat layer
     /** @deprecated Use the raw string literal codes instead, e.g. "invalid_type". */
     const ZodIssueCode = {
@@ -12820,6 +13336,489 @@ sap.ui.define((function () { 'use strict';
     var ZodFirstPartyTypeKind;
     (function (ZodFirstPartyTypeKind) {
     })(ZodFirstPartyTypeKind || (ZodFirstPartyTypeKind = {}));
+
+    // Local z object to avoid circular dependency with ../index.js
+    const z$1 = {
+        ..._schemas,
+        ..._checks,
+        iso: _iso,
+    };
+    function detectVersion(schema, defaultTarget) {
+        const $schema = schema.$schema;
+        if ($schema === "https://json-schema.org/draft/2020-12/schema") {
+            return "draft-2020-12";
+        }
+        if ($schema === "http://json-schema.org/draft-07/schema#") {
+            return "draft-7";
+        }
+        if ($schema === "http://json-schema.org/draft-04/schema#") {
+            return "draft-4";
+        }
+        // Use defaultTarget if provided, otherwise default to draft-2020-12
+        return defaultTarget ?? "draft-2020-12";
+    }
+    function resolveRef(ref, ctx) {
+        if (!ref.startsWith("#")) {
+            throw new Error("External $ref is not supported, only local refs (#/...) are allowed");
+        }
+        const path = ref.slice(1).split("/").filter(Boolean);
+        // Handle root reference "#"
+        if (path.length === 0) {
+            return ctx.rootSchema;
+        }
+        const defsKey = ctx.version === "draft-2020-12" ? "$defs" : "definitions";
+        if (path[0] === defsKey) {
+            const key = path[1];
+            if (!key || !ctx.defs[key]) {
+                throw new Error(`Reference not found: ${ref}`);
+            }
+            return ctx.defs[key];
+        }
+        throw new Error(`Reference not found: ${ref}`);
+    }
+    function convertBaseSchema(schema, ctx) {
+        // Handle unsupported features
+        if (schema.not !== undefined) {
+            // Special case: { not: {} } represents never
+            if (typeof schema.not === "object" && Object.keys(schema.not).length === 0) {
+                return z$1.never();
+            }
+            throw new Error("not is not supported in Zod (except { not: {} } for never)");
+        }
+        if (schema.unevaluatedItems !== undefined) {
+            throw new Error("unevaluatedItems is not supported");
+        }
+        if (schema.unevaluatedProperties !== undefined) {
+            throw new Error("unevaluatedProperties is not supported");
+        }
+        if (schema.if !== undefined || schema.then !== undefined || schema.else !== undefined) {
+            throw new Error("Conditional schemas (if/then/else) are not supported");
+        }
+        if (schema.dependentSchemas !== undefined || schema.dependentRequired !== undefined) {
+            throw new Error("dependentSchemas and dependentRequired are not supported");
+        }
+        // Handle $ref
+        if (schema.$ref) {
+            const refPath = schema.$ref;
+            if (ctx.refs.has(refPath)) {
+                return ctx.refs.get(refPath);
+            }
+            if (ctx.processing.has(refPath)) {
+                // Circular reference - use lazy
+                return z$1.lazy(() => {
+                    if (!ctx.refs.has(refPath)) {
+                        throw new Error(`Circular reference not resolved: ${refPath}`);
+                    }
+                    return ctx.refs.get(refPath);
+                });
+            }
+            ctx.processing.add(refPath);
+            const resolved = resolveRef(refPath, ctx);
+            const zodSchema = convertSchema(resolved, ctx);
+            ctx.refs.set(refPath, zodSchema);
+            ctx.processing.delete(refPath);
+            return zodSchema;
+        }
+        // Handle enum
+        if (schema.enum !== undefined) {
+            const enumValues = schema.enum;
+            // Special case: OpenAPI 3.0 null representation { type: "string", nullable: true, enum: [null] }
+            if (ctx.version === "openapi-3.0" &&
+                schema.nullable === true &&
+                enumValues.length === 1 &&
+                enumValues[0] === null) {
+                return z$1.null();
+            }
+            if (enumValues.length === 0) {
+                return z$1.never();
+            }
+            if (enumValues.length === 1) {
+                return z$1.literal(enumValues[0]);
+            }
+            // Check if all values are strings
+            if (enumValues.every((v) => typeof v === "string")) {
+                return z$1.enum(enumValues);
+            }
+            // Mixed types - use union of literals
+            const literalSchemas = enumValues.map((v) => z$1.literal(v));
+            if (literalSchemas.length < 2) {
+                return literalSchemas[0];
+            }
+            return z$1.union([literalSchemas[0], literalSchemas[1], ...literalSchemas.slice(2)]);
+        }
+        // Handle const
+        if (schema.const !== undefined) {
+            return z$1.literal(schema.const);
+        }
+        // Handle type
+        const type = schema.type;
+        if (Array.isArray(type)) {
+            // Expand type array into anyOf union
+            const typeSchemas = type.map((t) => {
+                const typeSchema = { ...schema, type: t };
+                return convertBaseSchema(typeSchema, ctx);
+            });
+            if (typeSchemas.length === 0) {
+                return z$1.never();
+            }
+            if (typeSchemas.length === 1) {
+                return typeSchemas[0];
+            }
+            return z$1.union(typeSchemas);
+        }
+        if (!type) {
+            // No type specified - empty schema (any)
+            return z$1.any();
+        }
+        let zodSchema;
+        switch (type) {
+            case "string": {
+                let stringSchema = z$1.string();
+                // Apply format using .check() with Zod format functions
+                if (schema.format) {
+                    const format = schema.format;
+                    // Map common formats to Zod check functions
+                    if (format === "email") {
+                        stringSchema = stringSchema.check(z$1.email());
+                    }
+                    else if (format === "uri" || format === "uri-reference") {
+                        stringSchema = stringSchema.check(z$1.url());
+                    }
+                    else if (format === "uuid" || format === "guid") {
+                        stringSchema = stringSchema.check(z$1.uuid());
+                    }
+                    else if (format === "date-time") {
+                        stringSchema = stringSchema.check(z$1.iso.datetime());
+                    }
+                    else if (format === "date") {
+                        stringSchema = stringSchema.check(z$1.iso.date());
+                    }
+                    else if (format === "time") {
+                        stringSchema = stringSchema.check(z$1.iso.time());
+                    }
+                    else if (format === "duration") {
+                        stringSchema = stringSchema.check(z$1.iso.duration());
+                    }
+                    else if (format === "ipv4") {
+                        stringSchema = stringSchema.check(z$1.ipv4());
+                    }
+                    else if (format === "ipv6") {
+                        stringSchema = stringSchema.check(z$1.ipv6());
+                    }
+                    else if (format === "mac") {
+                        stringSchema = stringSchema.check(z$1.mac());
+                    }
+                    else if (format === "cidr") {
+                        stringSchema = stringSchema.check(z$1.cidrv4());
+                    }
+                    else if (format === "cidr-v6") {
+                        stringSchema = stringSchema.check(z$1.cidrv6());
+                    }
+                    else if (format === "base64") {
+                        stringSchema = stringSchema.check(z$1.base64());
+                    }
+                    else if (format === "base64url") {
+                        stringSchema = stringSchema.check(z$1.base64url());
+                    }
+                    else if (format === "e164") {
+                        stringSchema = stringSchema.check(z$1.e164());
+                    }
+                    else if (format === "jwt") {
+                        stringSchema = stringSchema.check(z$1.jwt());
+                    }
+                    else if (format === "emoji") {
+                        stringSchema = stringSchema.check(z$1.emoji());
+                    }
+                    else if (format === "nanoid") {
+                        stringSchema = stringSchema.check(z$1.nanoid());
+                    }
+                    else if (format === "cuid") {
+                        stringSchema = stringSchema.check(z$1.cuid());
+                    }
+                    else if (format === "cuid2") {
+                        stringSchema = stringSchema.check(z$1.cuid2());
+                    }
+                    else if (format === "ulid") {
+                        stringSchema = stringSchema.check(z$1.ulid());
+                    }
+                    else if (format === "xid") {
+                        stringSchema = stringSchema.check(z$1.xid());
+                    }
+                    else if (format === "ksuid") {
+                        stringSchema = stringSchema.check(z$1.ksuid());
+                    }
+                    // Note: json-string format is not currently supported by Zod
+                    // Custom formats are ignored - keep as plain string
+                }
+                // Apply constraints
+                if (typeof schema.minLength === "number") {
+                    stringSchema = stringSchema.min(schema.minLength);
+                }
+                if (typeof schema.maxLength === "number") {
+                    stringSchema = stringSchema.max(schema.maxLength);
+                }
+                if (schema.pattern) {
+                    // JSON Schema patterns are not implicitly anchored (match anywhere in string)
+                    stringSchema = stringSchema.regex(new RegExp(schema.pattern));
+                }
+                zodSchema = stringSchema;
+                break;
+            }
+            case "number":
+            case "integer": {
+                let numberSchema = type === "integer" ? z$1.number().int() : z$1.number();
+                // Apply constraints
+                if (typeof schema.minimum === "number") {
+                    numberSchema = numberSchema.min(schema.minimum);
+                }
+                if (typeof schema.maximum === "number") {
+                    numberSchema = numberSchema.max(schema.maximum);
+                }
+                if (typeof schema.exclusiveMinimum === "number") {
+                    numberSchema = numberSchema.gt(schema.exclusiveMinimum);
+                }
+                else if (schema.exclusiveMinimum === true && typeof schema.minimum === "number") {
+                    numberSchema = numberSchema.gt(schema.minimum);
+                }
+                if (typeof schema.exclusiveMaximum === "number") {
+                    numberSchema = numberSchema.lt(schema.exclusiveMaximum);
+                }
+                else if (schema.exclusiveMaximum === true && typeof schema.maximum === "number") {
+                    numberSchema = numberSchema.lt(schema.maximum);
+                }
+                if (typeof schema.multipleOf === "number") {
+                    numberSchema = numberSchema.multipleOf(schema.multipleOf);
+                }
+                zodSchema = numberSchema;
+                break;
+            }
+            case "boolean": {
+                zodSchema = z$1.boolean();
+                break;
+            }
+            case "null": {
+                zodSchema = z$1.null();
+                break;
+            }
+            case "object": {
+                const shape = {};
+                const properties = schema.properties || {};
+                const requiredSet = new Set(schema.required || []);
+                // Convert properties - mark optional ones
+                for (const [key, propSchema] of Object.entries(properties)) {
+                    const propZodSchema = convertSchema(propSchema, ctx);
+                    // If not in required array, make it optional
+                    shape[key] = requiredSet.has(key) ? propZodSchema : propZodSchema.optional();
+                }
+                // Handle propertyNames
+                if (schema.propertyNames) {
+                    const keySchema = convertSchema(schema.propertyNames, ctx);
+                    const valueSchema = schema.additionalProperties && typeof schema.additionalProperties === "object"
+                        ? convertSchema(schema.additionalProperties, ctx)
+                        : z$1.any();
+                    // Case A: No properties (pure record)
+                    if (Object.keys(shape).length === 0) {
+                        zodSchema = z$1.record(keySchema, valueSchema);
+                        break;
+                    }
+                    // Case B: With properties (intersection of object and looseRecord)
+                    const objectSchema = z$1.object(shape).passthrough();
+                    const recordSchema = z$1.looseRecord(keySchema, valueSchema);
+                    zodSchema = z$1.intersection(objectSchema, recordSchema);
+                    break;
+                }
+                // Handle patternProperties
+                if (schema.patternProperties) {
+                    // patternProperties: keys matching pattern must satisfy corresponding schema
+                    // Use loose records so non-matching keys pass through
+                    const patternProps = schema.patternProperties;
+                    const patternKeys = Object.keys(patternProps);
+                    const looseRecords = [];
+                    for (const pattern of patternKeys) {
+                        const patternValue = convertSchema(patternProps[pattern], ctx);
+                        const keySchema = z$1.string().regex(new RegExp(pattern));
+                        looseRecords.push(z$1.looseRecord(keySchema, patternValue));
+                    }
+                    // Build intersection: object schema + all pattern property records
+                    const schemasToIntersect = [];
+                    if (Object.keys(shape).length > 0) {
+                        // Use passthrough so patternProperties can validate additional keys
+                        schemasToIntersect.push(z$1.object(shape).passthrough());
+                    }
+                    schemasToIntersect.push(...looseRecords);
+                    if (schemasToIntersect.length === 0) {
+                        zodSchema = z$1.object({}).passthrough();
+                    }
+                    else if (schemasToIntersect.length === 1) {
+                        zodSchema = schemasToIntersect[0];
+                    }
+                    else {
+                        // Chain intersections: (A & B) & C & D ...
+                        let result = z$1.intersection(schemasToIntersect[0], schemasToIntersect[1]);
+                        for (let i = 2; i < schemasToIntersect.length; i++) {
+                            result = z$1.intersection(result, schemasToIntersect[i]);
+                        }
+                        zodSchema = result;
+                    }
+                    break;
+                }
+                // Handle additionalProperties
+                // In JSON Schema, additionalProperties defaults to true (allow any extra properties)
+                // In Zod, objects strip unknown keys by default, so we need to handle this explicitly
+                const objectSchema = z$1.object(shape);
+                if (schema.additionalProperties === false) {
+                    // Strict mode - no extra properties allowed
+                    zodSchema = objectSchema.strict();
+                }
+                else if (typeof schema.additionalProperties === "object") {
+                    // Extra properties must match the specified schema
+                    zodSchema = objectSchema.catchall(convertSchema(schema.additionalProperties, ctx));
+                }
+                else {
+                    // additionalProperties is true or undefined - allow any extra properties (passthrough)
+                    zodSchema = objectSchema.passthrough();
+                }
+                break;
+            }
+            case "array": {
+                // TODO: uniqueItems is not supported
+                // TODO: contains/minContains/maxContains are not supported
+                // Check if this is a tuple (prefixItems or items as array)
+                const prefixItems = schema.prefixItems;
+                const items = schema.items;
+                if (prefixItems && Array.isArray(prefixItems)) {
+                    // Tuple with prefixItems (draft-2020-12)
+                    const tupleItems = prefixItems.map((item) => convertSchema(item, ctx));
+                    const rest = items && typeof items === "object" && !Array.isArray(items)
+                        ? convertSchema(items, ctx)
+                        : undefined;
+                    if (rest) {
+                        zodSchema = z$1.tuple(tupleItems).rest(rest);
+                    }
+                    else {
+                        zodSchema = z$1.tuple(tupleItems);
+                    }
+                    // Apply minItems/maxItems constraints to tuples
+                    if (typeof schema.minItems === "number") {
+                        zodSchema = zodSchema.check(z$1.minLength(schema.minItems));
+                    }
+                    if (typeof schema.maxItems === "number") {
+                        zodSchema = zodSchema.check(z$1.maxLength(schema.maxItems));
+                    }
+                }
+                else if (Array.isArray(items)) {
+                    // Tuple with items array (draft-7)
+                    const tupleItems = items.map((item) => convertSchema(item, ctx));
+                    const rest = schema.additionalItems && typeof schema.additionalItems === "object"
+                        ? convertSchema(schema.additionalItems, ctx)
+                        : undefined; // additionalItems: false means no rest, handled by default tuple behavior
+                    if (rest) {
+                        zodSchema = z$1.tuple(tupleItems).rest(rest);
+                    }
+                    else {
+                        zodSchema = z$1.tuple(tupleItems);
+                    }
+                    // Apply minItems/maxItems constraints to tuples
+                    if (typeof schema.minItems === "number") {
+                        zodSchema = zodSchema.check(z$1.minLength(schema.minItems));
+                    }
+                    if (typeof schema.maxItems === "number") {
+                        zodSchema = zodSchema.check(z$1.maxLength(schema.maxItems));
+                    }
+                }
+                else if (items !== undefined) {
+                    // Regular array
+                    const element = convertSchema(items, ctx);
+                    let arraySchema = z$1.array(element);
+                    // Apply constraints
+                    if (typeof schema.minItems === "number") {
+                        arraySchema = arraySchema.min(schema.minItems);
+                    }
+                    if (typeof schema.maxItems === "number") {
+                        arraySchema = arraySchema.max(schema.maxItems);
+                    }
+                    zodSchema = arraySchema;
+                }
+                else {
+                    // No items specified - array of any
+                    zodSchema = z$1.array(z$1.any());
+                }
+                break;
+            }
+            default:
+                throw new Error(`Unsupported type: ${type}`);
+        }
+        // Apply metadata
+        if (schema.description) {
+            zodSchema = zodSchema.describe(schema.description);
+        }
+        if (schema.default !== undefined) {
+            zodSchema = zodSchema.default(schema.default);
+        }
+        return zodSchema;
+    }
+    function convertSchema(schema, ctx) {
+        if (typeof schema === "boolean") {
+            return schema ? z$1.any() : z$1.never();
+        }
+        // Convert base schema first (ignoring composition keywords)
+        let baseSchema = convertBaseSchema(schema, ctx);
+        const hasExplicitType = schema.type || schema.enum !== undefined || schema.const !== undefined;
+        // Process composition keywords LAST (they can appear together)
+        // Handle anyOf - wrap base schema with union
+        if (schema.anyOf && Array.isArray(schema.anyOf)) {
+            const options = schema.anyOf.map((s) => convertSchema(s, ctx));
+            const anyOfUnion = z$1.union(options);
+            baseSchema = hasExplicitType ? z$1.intersection(baseSchema, anyOfUnion) : anyOfUnion;
+        }
+        // Handle oneOf - exclusive union (exactly one must match)
+        if (schema.oneOf && Array.isArray(schema.oneOf)) {
+            const options = schema.oneOf.map((s) => convertSchema(s, ctx));
+            const oneOfUnion = z$1.xor(options);
+            baseSchema = hasExplicitType ? z$1.intersection(baseSchema, oneOfUnion) : oneOfUnion;
+        }
+        // Handle allOf - wrap base schema with intersection
+        if (schema.allOf && Array.isArray(schema.allOf)) {
+            if (schema.allOf.length === 0) {
+                baseSchema = hasExplicitType ? baseSchema : z$1.any();
+            }
+            else {
+                let result = hasExplicitType ? baseSchema : convertSchema(schema.allOf[0], ctx);
+                const startIdx = hasExplicitType ? 0 : 1;
+                for (let i = startIdx; i < schema.allOf.length; i++) {
+                    result = z$1.intersection(result, convertSchema(schema.allOf[i], ctx));
+                }
+                baseSchema = result;
+            }
+        }
+        // Handle nullable (OpenAPI 3.0)
+        if (schema.nullable === true && ctx.version === "openapi-3.0") {
+            baseSchema = z$1.nullable(baseSchema);
+        }
+        // Handle readOnly
+        if (schema.readOnly === true) {
+            baseSchema = z$1.readonly(baseSchema);
+        }
+        return baseSchema;
+    }
+    /**
+     * Converts a JSON Schema to a Zod schema. This function should be considered semi-experimental. It's behavior is liable to change. */
+    function fromJSONSchema(schema, params) {
+        // Handle boolean schemas
+        if (typeof schema === "boolean") {
+            return schema ? z$1.any() : z$1.never();
+        }
+        const version = detectVersion(schema, params?.defaultTarget);
+        const defs = (schema.$defs || schema.definitions || {});
+        const ctx = {
+            version,
+            defs,
+            refs: new Map(),
+            processing: new Set(),
+            rootSchema: schema,
+        };
+        return convertSchema(schema, ctx);
+    }
 
     function string(params) {
         return _coercedString(ZodString, params);
@@ -12929,6 +13928,7 @@ sap.ui.define((function () { 'use strict';
         ZodUnknown: ZodUnknown,
         ZodVoid: ZodVoid,
         ZodXID: ZodXID,
+        ZodXor: ZodXor,
         _ZodString: _ZodString,
         _default: _default,
         _function: _function,
@@ -12967,6 +13967,7 @@ sap.ui.define((function () { 'use strict';
         float32: float32,
         float64: float64,
         formatError: formatError,
+        fromJSONSchema: fromJSONSchema,
         function: _function,
         getErrorMap: getErrorMap,
         globalRegistry: globalRegistry,
@@ -12985,7 +13986,7 @@ sap.ui.define((function () { 'use strict';
         intersection: intersection,
         ipv4: ipv4,
         ipv6: ipv6,
-        iso: iso,
+        iso: _iso,
         json: json,
         jwt: jwt,
         keyof: keyof,
@@ -12995,241 +13996,7 @@ sap.ui.define((function () { 'use strict';
         literal: literal,
         locales: index$2,
         looseObject: looseObject,
-        lowercase: _lowercase,
-        lt: _lt,
-        lte: _lte,
-        mac: mac,
-        map: map,
-        maxLength: _maxLength,
-        maxSize: _maxSize,
-        meta: meta,
-        mime: _mime,
-        minLength: _minLength,
-        minSize: _minSize,
-        multipleOf: _multipleOf,
-        nan: nan,
-        nanoid: nanoid,
-        nativeEnum: nativeEnum,
-        negative: _negative,
-        never: never,
-        nonnegative: _nonnegative,
-        nonoptional: nonoptional,
-        nonpositive: _nonpositive,
-        normalize: _normalize,
-        null: _null,
-        nullable: nullable,
-        nullish: nullish,
-        number: number$1,
-        object: object,
-        optional: optional,
-        overwrite: _overwrite,
-        parse: parse,
-        parseAsync: parseAsync,
-        partialRecord: partialRecord,
-        pipe: pipe,
-        positive: _positive,
-        prefault: prefault,
-        preprocess: preprocess,
-        prettifyError: prettifyError,
-        promise: promise,
-        property: _property,
-        readonly: readonly,
-        record: record,
-        refine: refine,
-        regex: _regex,
-        regexes: regexes,
-        registry: registry,
-        safeDecode: safeDecode,
-        safeDecodeAsync: safeDecodeAsync,
-        safeEncode: safeEncode,
-        safeEncodeAsync: safeEncodeAsync,
-        safeParse: safeParse,
-        safeParseAsync: safeParseAsync,
-        set: set,
-        setErrorMap: setErrorMap,
-        size: _size,
-        slugify: _slugify,
-        startsWith: _startsWith,
-        strictObject: strictObject,
-        string: string$1,
-        stringFormat: stringFormat,
-        stringbool: stringbool,
-        success: success,
-        superRefine: superRefine,
-        symbol: symbol,
-        templateLiteral: templateLiteral,
-        toJSONSchema: toJSONSchema,
-        toLowerCase: _toLowerCase,
-        toUpperCase: _toUpperCase,
-        transform: transform,
-        treeifyError: treeifyError,
-        trim: _trim,
-        tuple: tuple,
-        uint32: uint32,
-        uint64: uint64,
-        ulid: ulid,
-        undefined: _undefined,
-        union: union,
-        unknown: unknown,
-        uppercase: _uppercase,
-        url: url,
-        util: util,
-        uuid: uuid,
-        uuidv4: uuidv4,
-        uuidv6: uuidv6,
-        uuidv7: uuidv7,
-        void: _void,
-        xid: xid
-    });
-
-    var namedExports = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        $brand: $brand,
-        $input: $input,
-        $output: $output,
-        NEVER: NEVER,
-        TimePrecision: TimePrecision,
-        ZodAny: ZodAny,
-        ZodArray: ZodArray,
-        ZodBase64: ZodBase64,
-        ZodBase64URL: ZodBase64URL,
-        ZodBigInt: ZodBigInt,
-        ZodBigIntFormat: ZodBigIntFormat,
-        ZodBoolean: ZodBoolean,
-        ZodCIDRv4: ZodCIDRv4,
-        ZodCIDRv6: ZodCIDRv6,
-        ZodCUID: ZodCUID,
-        ZodCUID2: ZodCUID2,
-        ZodCatch: ZodCatch,
-        ZodCodec: ZodCodec,
-        ZodCustom: ZodCustom,
-        ZodCustomStringFormat: ZodCustomStringFormat,
-        ZodDate: ZodDate,
-        ZodDefault: ZodDefault,
-        ZodDiscriminatedUnion: ZodDiscriminatedUnion,
-        ZodE164: ZodE164,
-        ZodEmail: ZodEmail,
-        ZodEmoji: ZodEmoji,
-        ZodEnum: ZodEnum,
-        ZodError: ZodError,
-        ZodFile: ZodFile,
-        get ZodFirstPartyTypeKind () { return ZodFirstPartyTypeKind; },
-        ZodFunction: ZodFunction,
-        ZodGUID: ZodGUID,
-        ZodIPv4: ZodIPv4,
-        ZodIPv6: ZodIPv6,
-        ZodISODate: ZodISODate,
-        ZodISODateTime: ZodISODateTime,
-        ZodISODuration: ZodISODuration,
-        ZodISOTime: ZodISOTime,
-        ZodIntersection: ZodIntersection,
-        ZodIssueCode: ZodIssueCode,
-        ZodJWT: ZodJWT,
-        ZodKSUID: ZodKSUID,
-        ZodLazy: ZodLazy,
-        ZodLiteral: ZodLiteral,
-        ZodMAC: ZodMAC,
-        ZodMap: ZodMap,
-        ZodNaN: ZodNaN,
-        ZodNanoID: ZodNanoID,
-        ZodNever: ZodNever,
-        ZodNonOptional: ZodNonOptional,
-        ZodNull: ZodNull,
-        ZodNullable: ZodNullable,
-        ZodNumber: ZodNumber,
-        ZodNumberFormat: ZodNumberFormat,
-        ZodObject: ZodObject,
-        ZodOptional: ZodOptional,
-        ZodPipe: ZodPipe,
-        ZodPrefault: ZodPrefault,
-        ZodPromise: ZodPromise,
-        ZodReadonly: ZodReadonly,
-        ZodRealError: ZodRealError,
-        ZodRecord: ZodRecord,
-        ZodSet: ZodSet,
-        ZodString: ZodString,
-        ZodStringFormat: ZodStringFormat,
-        ZodSuccess: ZodSuccess,
-        ZodSymbol: ZodSymbol,
-        ZodTemplateLiteral: ZodTemplateLiteral,
-        ZodTransform: ZodTransform,
-        ZodTuple: ZodTuple,
-        ZodType: ZodType,
-        ZodULID: ZodULID,
-        ZodURL: ZodURL,
-        ZodUUID: ZodUUID,
-        ZodUndefined: ZodUndefined,
-        ZodUnion: ZodUnion,
-        ZodUnknown: ZodUnknown,
-        ZodVoid: ZodVoid,
-        ZodXID: ZodXID,
-        _ZodString: _ZodString,
-        _default: _default,
-        _function: _function,
-        any: any,
-        array: array,
-        base64: base64,
-        base64url: base64url,
-        bigint: bigint$1,
-        boolean: boolean$1,
-        catch: _catch,
-        check: check,
-        cidrv4: cidrv4,
-        cidrv6: cidrv6,
-        clone: clone,
-        codec: codec,
-        coerce: coerce,
-        config: config,
-        core: index$1,
-        cuid: cuid,
-        cuid2: cuid2,
-        custom: custom,
-        date: date$1,
-        decode: decode,
-        decodeAsync: decodeAsync,
-        default: z,
-        describe: describe,
-        discriminatedUnion: discriminatedUnion,
-        e164: e164,
-        email: email,
-        emoji: emoji,
-        encode: encode,
-        encodeAsync: encodeAsync,
-        endsWith: _endsWith,
-        enum: _enum,
-        file: file,
-        flattenError: flattenError,
-        float32: float32,
-        float64: float64,
-        formatError: formatError,
-        function: _function,
-        getErrorMap: getErrorMap,
-        globalRegistry: globalRegistry,
-        gt: _gt,
-        gte: _gte,
-        guid: guid,
-        hash: hash,
-        hex: hex,
-        hostname: hostname,
-        httpUrl: httpUrl,
-        includes: _includes,
-        instanceof: _instanceof,
-        int: int,
-        int32: int32,
-        int64: int64,
-        intersection: intersection,
-        ipv4: ipv4,
-        ipv6: ipv6,
-        iso: iso,
-        json: json,
-        jwt: jwt,
-        keyof: keyof,
-        ksuid: ksuid,
-        lazy: lazy,
-        length: _length,
-        literal: literal,
-        locales: index$2,
-        looseObject: looseObject,
+        looseRecord: looseRecord,
         lowercase: _lowercase,
         lt: _lt,
         lte: _lte,
@@ -13315,6 +14082,246 @@ sap.ui.define((function () { 'use strict';
         uuidv7: uuidv7,
         void: _void,
         xid: xid,
+        xor: xor
+    });
+
+    var namedExports = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        $brand: $brand,
+        $input: $input,
+        $output: $output,
+        NEVER: NEVER,
+        TimePrecision: TimePrecision,
+        ZodAny: ZodAny,
+        ZodArray: ZodArray,
+        ZodBase64: ZodBase64,
+        ZodBase64URL: ZodBase64URL,
+        ZodBigInt: ZodBigInt,
+        ZodBigIntFormat: ZodBigIntFormat,
+        ZodBoolean: ZodBoolean,
+        ZodCIDRv4: ZodCIDRv4,
+        ZodCIDRv6: ZodCIDRv6,
+        ZodCUID: ZodCUID,
+        ZodCUID2: ZodCUID2,
+        ZodCatch: ZodCatch,
+        ZodCodec: ZodCodec,
+        ZodCustom: ZodCustom,
+        ZodCustomStringFormat: ZodCustomStringFormat,
+        ZodDate: ZodDate,
+        ZodDefault: ZodDefault,
+        ZodDiscriminatedUnion: ZodDiscriminatedUnion,
+        ZodE164: ZodE164,
+        ZodEmail: ZodEmail,
+        ZodEmoji: ZodEmoji,
+        ZodEnum: ZodEnum,
+        ZodError: ZodError,
+        ZodFile: ZodFile,
+        get ZodFirstPartyTypeKind () { return ZodFirstPartyTypeKind; },
+        ZodFunction: ZodFunction,
+        ZodGUID: ZodGUID,
+        ZodIPv4: ZodIPv4,
+        ZodIPv6: ZodIPv6,
+        ZodISODate: ZodISODate,
+        ZodISODateTime: ZodISODateTime,
+        ZodISODuration: ZodISODuration,
+        ZodISOTime: ZodISOTime,
+        ZodIntersection: ZodIntersection,
+        ZodIssueCode: ZodIssueCode,
+        ZodJWT: ZodJWT,
+        ZodKSUID: ZodKSUID,
+        ZodLazy: ZodLazy,
+        ZodLiteral: ZodLiteral,
+        ZodMAC: ZodMAC,
+        ZodMap: ZodMap,
+        ZodNaN: ZodNaN,
+        ZodNanoID: ZodNanoID,
+        ZodNever: ZodNever,
+        ZodNonOptional: ZodNonOptional,
+        ZodNull: ZodNull,
+        ZodNullable: ZodNullable,
+        ZodNumber: ZodNumber,
+        ZodNumberFormat: ZodNumberFormat,
+        ZodObject: ZodObject,
+        ZodOptional: ZodOptional,
+        ZodPipe: ZodPipe,
+        ZodPrefault: ZodPrefault,
+        ZodPromise: ZodPromise,
+        ZodReadonly: ZodReadonly,
+        ZodRealError: ZodRealError,
+        ZodRecord: ZodRecord,
+        ZodSet: ZodSet,
+        ZodString: ZodString,
+        ZodStringFormat: ZodStringFormat,
+        ZodSuccess: ZodSuccess,
+        ZodSymbol: ZodSymbol,
+        ZodTemplateLiteral: ZodTemplateLiteral,
+        ZodTransform: ZodTransform,
+        ZodTuple: ZodTuple,
+        ZodType: ZodType,
+        ZodULID: ZodULID,
+        ZodURL: ZodURL,
+        ZodUUID: ZodUUID,
+        ZodUndefined: ZodUndefined,
+        ZodUnion: ZodUnion,
+        ZodUnknown: ZodUnknown,
+        ZodVoid: ZodVoid,
+        ZodXID: ZodXID,
+        ZodXor: ZodXor,
+        _ZodString: _ZodString,
+        _default: _default,
+        _function: _function,
+        any: any,
+        array: array,
+        base64: base64,
+        base64url: base64url,
+        bigint: bigint$1,
+        boolean: boolean$1,
+        catch: _catch,
+        check: check,
+        cidrv4: cidrv4,
+        cidrv6: cidrv6,
+        clone: clone,
+        codec: codec,
+        coerce: coerce,
+        config: config,
+        core: index$1,
+        cuid: cuid,
+        cuid2: cuid2,
+        custom: custom,
+        date: date$1,
+        decode: decode,
+        decodeAsync: decodeAsync,
+        default: z,
+        describe: describe,
+        discriminatedUnion: discriminatedUnion,
+        e164: e164,
+        email: email,
+        emoji: emoji,
+        encode: encode,
+        encodeAsync: encodeAsync,
+        endsWith: _endsWith,
+        enum: _enum,
+        file: file,
+        flattenError: flattenError,
+        float32: float32,
+        float64: float64,
+        formatError: formatError,
+        fromJSONSchema: fromJSONSchema,
+        function: _function,
+        getErrorMap: getErrorMap,
+        globalRegistry: globalRegistry,
+        gt: _gt,
+        gte: _gte,
+        guid: guid,
+        hash: hash,
+        hex: hex,
+        hostname: hostname,
+        httpUrl: httpUrl,
+        includes: _includes,
+        instanceof: _instanceof,
+        int: int,
+        int32: int32,
+        int64: int64,
+        intersection: intersection,
+        ipv4: ipv4,
+        ipv6: ipv6,
+        iso: _iso,
+        json: json,
+        jwt: jwt,
+        keyof: keyof,
+        ksuid: ksuid,
+        lazy: lazy,
+        length: _length,
+        literal: literal,
+        locales: index$2,
+        looseObject: looseObject,
+        looseRecord: looseRecord,
+        lowercase: _lowercase,
+        lt: _lt,
+        lte: _lte,
+        mac: mac,
+        map: map,
+        maxLength: _maxLength,
+        maxSize: _maxSize,
+        meta: meta,
+        mime: _mime,
+        minLength: _minLength,
+        minSize: _minSize,
+        multipleOf: _multipleOf,
+        nan: nan,
+        nanoid: nanoid,
+        nativeEnum: nativeEnum,
+        negative: _negative,
+        never: never,
+        nonnegative: _nonnegative,
+        nonoptional: nonoptional,
+        nonpositive: _nonpositive,
+        normalize: _normalize,
+        null: _null,
+        nullable: nullable,
+        nullish: nullish,
+        number: number$1,
+        object: object,
+        optional: optional,
+        overwrite: _overwrite,
+        parse: parse,
+        parseAsync: parseAsync,
+        partialRecord: partialRecord,
+        pipe: pipe,
+        positive: _positive,
+        prefault: prefault,
+        preprocess: preprocess,
+        prettifyError: prettifyError,
+        promise: promise,
+        property: _property,
+        readonly: readonly,
+        record: record,
+        refine: refine,
+        regex: _regex,
+        regexes: regexes,
+        registry: registry,
+        safeDecode: safeDecode,
+        safeDecodeAsync: safeDecodeAsync,
+        safeEncode: safeEncode,
+        safeEncodeAsync: safeEncodeAsync,
+        safeParse: safeParse,
+        safeParseAsync: safeParseAsync,
+        set: set,
+        setErrorMap: setErrorMap,
+        size: _size,
+        slugify: _slugify,
+        startsWith: _startsWith,
+        strictObject: strictObject,
+        string: string$1,
+        stringFormat: stringFormat,
+        stringbool: stringbool,
+        success: success,
+        superRefine: superRefine,
+        symbol: symbol,
+        templateLiteral: templateLiteral,
+        toJSONSchema: toJSONSchema,
+        toLowerCase: _toLowerCase,
+        toUpperCase: _toUpperCase,
+        transform: transform,
+        treeifyError: treeifyError,
+        trim: _trim,
+        tuple: tuple,
+        uint32: uint32,
+        uint64: uint64,
+        ulid: ulid,
+        undefined: _undefined,
+        union: union,
+        unknown: unknown,
+        uppercase: _uppercase,
+        url: url,
+        util: util,
+        uuid: uuid,
+        uuidv4: uuidv4,
+        uuidv6: uuidv6,
+        uuidv7: uuidv7,
+        void: _void,
+        xid: xid,
+        xor: xor,
         z: z
     });
 

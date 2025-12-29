@@ -40,7 +40,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   const u$d=()=>{const t=document.createElement("meta");return t.setAttribute("name","ui5-shared-resources"),t.setAttribute("content",""),t},l$f=()=>typeof document>"u"?null:o$g('meta[name="ui5-shared-resources"]',document.head,u$d),m$b=(t,o)=>{const r=t.split(".");let e=l$f();if(!e)return o;for(let n=0;n<r.length;n++){const s=r[n],c=n===r.length-1;Object.prototype.hasOwnProperty.call(e,s)||(e[s]=c?o:{}),e=e[s];}return e};
 
-  const e$b={version:"2.16.0",major:2,minor:16,patch:0,suffix:"",isNext:false,buildTime:1763722760};
+  const e$b={version:"2.17.0",major:2,minor:17,patch:0,suffix:"",isNext:false,buildTime:1765979913};
 
   let s$n,t$i={include:[/^ui5-/],exclude:[]};const o$f=new Map,l$e=e=>{if(!e.match(/^[a-zA-Z0-9_-]+$/))throw new Error("Only alphanumeric characters and dashes allowed for the scoping suffix");R$3()&&console.warn("Setting the scoping suffix must be done before importing any components. For proper usage, read the scoping section: https://github.com/UI5/webcomponents/blob/main/docs/2-advanced/06-scoping.md."),s$n=e;},c$e=()=>s$n,p$5=e=>{if(!e||!e.include)throw new Error('"rules" must be an object with at least an "include" property');if(!Array.isArray(e.include)||e.include.some(n=>!(n instanceof RegExp)))throw new Error('"rules.include" must be an array of regular expressions');if(e.exclude&&(!Array.isArray(e.exclude)||e.exclude.some(n=>!(n instanceof RegExp))))throw new Error('"rules.exclude" must be an array of regular expressions');e.exclude=e.exclude||[],t$i=e,o$f.clear();},m$a=()=>t$i,i$f=e=>{if(!o$f.has(e)){const n=t$i.include.some(r=>e.match(r))&&!t$i.exclude.some(r=>e.match(r));o$f.set(e,n);}return o$f.get(e)},g$b=e=>{if(i$f(e))return c$e()};
 
