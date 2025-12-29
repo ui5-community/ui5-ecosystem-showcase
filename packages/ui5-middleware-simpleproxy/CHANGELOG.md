@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@3.6.0...ui5-middleware-simpleproxy@3.6.1) (2025-12-29)
+
+
+### Bug Fixes
+
+* **ui5-middleware-simpleproxy:** remove console log ([#1307](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1307)) ([7e005f6](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/7e005f6adb8005f0cb7e47676380d94f03135b5d)), closes [#1304](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1304)
+
+
+
+
+
 # [3.6.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-simpleproxy@3.5.2...ui5-middleware-simpleproxy@3.6.0) (2025-12-02)
 
 
