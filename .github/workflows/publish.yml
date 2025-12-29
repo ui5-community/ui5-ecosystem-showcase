@@ -1,0 +1,63 @@
+name: Release (automatic)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # Manual trigger
+
+env:
+  HUSKY_SKIP: true
+
+permissions:
+  contents: read
+  id-token: write # REQUIRED for OIDC flow
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    if: "contains(github.event.head_commit.message, 'chore(release): publish')"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Run pnpm install
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.2
+          run_install: |
+            - args: [--frozen-lockfile]
+
+      - name: Detect token usage (optional safety)
+        run: |
+          if npm whoami 2>/dev/null; then
+            echo "::warning::Token-based auth active (expected only for first publish)"
+          else
+            echo "OIDC auth active"
+          fi
+
+      - name: Configure NPM bootstrap token (non OIDC flow)
+        env:
+          NPM_BOOTSTRAP_TOKEN: ${{ secrets.NPM_BOOTSTRAP_TOKEN }}
+        if: ${{ env.NPM_BOOTSTRAP_TOKEN != '' }}
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_BOOTSTRAP_TOKEN}" >> ~/.npmrc
+
+      - name: Publish packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_BOOTSTRAP_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual trigger → running release:publish-manual"
+            npm run release:publish-manual
+          else
+            echo "Automatic trigger → running release:publish"
+            npm run release:publish
+          fi
