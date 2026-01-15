@@ -1,6 +1,6 @@
 # UI5 serve static middleware
 
-> :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
+> :wave: This is an **open‑source, community‑driven project**, developed and actively monitored by members of the UI5 community. You are welcome to use it, report issues, contribute enhancements, and support others in the community.
 
 Middleware for [ui5-server](https://github.com/SAP/ui5-server), enabling to serve static resources.
 

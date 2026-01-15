@@ -1,6 +1,8 @@
 # karma-ui5-transpile
 
-> :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
+> :warning: This project has been deprecated. We recommend you to pick a successor from the [available UI5 community projects](https://bestofui5.org/#/packages?tokens=testing:tag). For more information see [Deprecation of karma-ui5 plugin](https://community.sap.com/t5/technology-blogs-by-sap/deprecation-of-karma-ui5-plugin/ba-p/13954060).
+
+> :wave: This is an **open‑source, community‑driven project**, developed and actively monitored by members of the UI5 community. You are welcome to use it, report issues, contribute enhancements, and support others in the community.
 
 The `karma-ui5-transpile` preprocessor transpiles code of UI5 projects having a `ui5.yaml` using `ui5-tooling-transpile` UI5 CLI extension. This preprocesser is usable for [Karma](https://karma-runner.github.io/) testing to transpile your resources before testing (i.e. TypeScript compilation for later usage of the [`karma-coverage`](https://www.npmjs.com/package/karma-coverage) plugin).
 

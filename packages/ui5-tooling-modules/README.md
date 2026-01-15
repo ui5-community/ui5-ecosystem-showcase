@@ -1,6 +1,6 @@
 # UI5 CLI Extensions for NPM Package Consumption
 
-> :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
+> :wave: This is an **open‑source, community‑driven project**, developed and actively monitored by members of the UI5 community. You are welcome to use it, report issues, contribute enhancements, and support others in the community.
 
 The UI5 CLI extensions include a custom middleware and a custom task which allow to use NPM package names for AMD-like dependencies, e.g.:
 

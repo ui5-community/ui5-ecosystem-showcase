@@ -1,6 +1,6 @@
 ## This task is only relevant for standalone applications!
 
-> :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
+> :wave: This is an **open‑source, community‑driven project**, developed and actively monitored by members of the UI5 community. You are welcome to use it, report issues, contribute enhancements, and support others in the community.
 
 Task for [ui5-builder](https://github.com/SAP/ui5-builder), enabling cachebusting for standalone applications.
 

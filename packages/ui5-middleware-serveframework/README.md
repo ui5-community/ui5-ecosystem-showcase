@@ -1,6 +1,6 @@
 # UI5 middleware to serve a locally built UI5 framework version
 
-> :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
+> :wave: This is an **open‑source, community‑driven project**, developed and actively monitored by members of the UI5 community. You are welcome to use it, report issues, contribute enhancements, and support others in the community.
 
 Middleware for [ui5-server](https://github.com/SAP/ui5-server), delivering the UI5 framework from a locally built version. The first time a UI5 version is being used (derived from the framework configuration of the project), it will be built and locally stored in the `~/.ui5/ui5-middleware-serveframework` folder per version. For any follow-up usage of the version, it will be served from the local folder. Benefits are the usage of the preload files and pure static file access.
 
