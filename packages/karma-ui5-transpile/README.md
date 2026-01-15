@@ -1,4 +1,4 @@
-# karma-ui5-transpile
+# karma-ui5-transpile **[DEPRECATED]**
 
 > :warning: This project has been deprecated. We recommend you to pick a successor from the [available UI5 community projects](https://bestofui5.org/#/packages?tokens=testing:tag). For more information see [Deprecation of karma-ui5 plugin](https://community.sap.com/t5/technology-blogs-by-sap/deprecation-of-karma-ui5-plugin/ba-p/13954060).
 
