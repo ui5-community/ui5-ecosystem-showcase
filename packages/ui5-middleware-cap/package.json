@@ -1,6 +1,6 @@
 {
   "name": "ui5-middleware-cap",
-  "version": "3.3.3",
+  "version": "3.3.4",
   "description": "UI5 CLI middleware embedding the CDS server middlewares (CAP)",
   "author": "Peter Muessig",
   "license": "Apache-2.0",
