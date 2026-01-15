@@ -1,6 +1,6 @@
 # UI5 CLI Extension for Transpiling JS/TS
 
-> :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
+> :wave: This is an **open‑source, community‑driven project**, developed and actively monitored by members of the UI5 community. You are welcome to use it, report issues, contribute enhancements, and support others in the community.
 
 The UI5 CLI extension provides a middleware and a task which transpiles JavaScript or TypeScript code to ES5 by using Babel. A default Babel configuration will be provided by the UI5 CLI extension unless a inline Babel configuration in the `ui5.yaml` or any Babel configuration as described at [Babel config files](https://babeljs.io/docs/en/config-files) will be provided.
 

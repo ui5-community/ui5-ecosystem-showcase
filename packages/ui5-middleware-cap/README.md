@@ -1,11 +1,8 @@
 # ui5-middleware-cap
 
-> :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
+> :wave: This is an **open‑source, community‑driven project**, developed and actively monitored by members of the UI5 community. You are welcome to use it, report issues, contribute enhancements, and support others in the community.
 
 The `ui5-middleware-cap` is a UI5 CLI middleware which is used to improve the development experience for the node runtime of the [SAP Cloud Application Programming Model (CAP)](https://cap.cloud.sap/docs/about/) and enables the integration of a CDS server into the UI5 development server via the CDS server express middlewares. In addition to the middleware the CDS server project needs to be added as dependency so that the server is detected and attached properly. The pre-defined routes in the CDS server are reused.
-
-> :construction: **Note**
-> This middleware is still work in progress and not final yet!
 
 ## Prerequisites
 

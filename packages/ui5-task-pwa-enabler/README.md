@@ -1,6 +1,6 @@
 # UI5 task for turning a UI5 App into a PWA
 
-> :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
+> :wave: This is an **open‑source, community‑driven project**, developed and actively monitored by members of the UI5 community. You are welcome to use it, report issues, contribute enhancements, and support others in the community.
 
 Progressive Web Apps are web applications that have been designed to be capable, reliable, and installable. These three pillars transform them into an experience that feels like a platform-specific application. Interested? Find out more here: [What are Progressive Web Apps (PWAs)?](https://web.dev/progressive-web-apps/).
 

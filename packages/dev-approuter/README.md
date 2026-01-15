@@ -1,6 +1,6 @@
 # dev-approuter
 
-> :wave: This is a **community project** and there is no official support for this package! Feel free to use it, open issues, contribute, and help answering questions.
+> :wave: This is an **open‑source, community‑driven project**, developed and actively monitored by members of the UI5 community. You are welcome to use it, report issues, contribute enhancements, and support others in the community.
 
 The `dev-approuter` is a dev time wrapper for the [SAP Application Router](https://www.npmjs.com/package/@sap/approuter) that can serve [UI5](https://ui5.sap.com/) and [SAP Cloud Application Programming Model (CAP)](https://cap.cloud.sap/docs/) apps that are added as (dev)dependencies to the approuter's `package.json`. A few key notes to begin with:
 - The `dev-approuter` utilizes the [SAP Application Router's extension API](https://help.sap.com/docs/btp/sap-business-technology-platform/extension-api-of-application-router) by adding UI5 servers as extensions - providing the full [UI5 CLI](https://ui5.github.io/cli/v3/) experience.
