@@ -1,6 +1,6 @@
 # cds-plugin-ui5
 
-> :wave: This is an **open‑source, community‑driven project**, developed and actively monitored by members of the UI5 and CAP developerment teams and communities. Although it sits outside SAP’s standard support model, it is continuously improved through real‑world usage and contributions. You are welcome to use it, report issues, contribute enhancements, and support others in the community.
+> :wave: This is an **open‑source, community‑driven project**, developed and actively monitored by members of the UI5 and CAP development teams and communities. Although it sits outside SAP’s standard support model, it is continuously improved through real‑world usage and contributions. You are welcome to use it, report issues, contribute enhancements, and support others in the community.
 
 The `cds-plugin-ui5` is a CDS server `cds-plugin` for the node runtime of the [SAP Cloud Application Programming Model (CAP)](https://cap.cloud.sap/docs/about/) which enables the integration of UI5 CLI based (UI5 freestyle or Fiori elements) projects into the CDS server via the UI5 CLI express middlewares. The UI5 or Fiori elements projects just need to be located in the `app` folder of the CDS server, or via the `cds.env.folders.app` variable, or be a dependency of the CDS server.
 
