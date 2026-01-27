@@ -483,6 +483,28 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 					},
 				};
 			}
+
+			// finally check if the module is a Web Component module to ensure that
+			// the base package is included as dependency in the module code
+			// (only relevant for entry modules being no Web Components themselves,
+			// but e.g. other modules importing Web Components directly)
+			if (isEntry) {
+				const npmPackage = getNpmPackageName(source);
+				if (npmPackage !== "@ui5/webcomponents-base" && WebComponentRegistry.getPackage(npmPackage)) {
+					// resolve the module to the absolute path
+					const absModulePath = resolveModule(source);
+					return {
+						id: absModulePath,
+						meta: {
+							ui5: {
+								source,
+								type: "module",
+								absModulePath,
+							},
+						},
+					};
+				}
+			}
 		},
 
 		async load(id) {
@@ -555,7 +577,14 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 					webcPackageModule: resolveModule(namespace)?.replace(/\\/g, "/"),
 				});
 				return code;
+			} else if (ui5Meta?.type === "module") {
+				// prepend the import of the base package to ensure that scoping and other features are applied
+				// => before a Web Component is defined, the base package must be loaded!
+				const { absModulePath } = ui5Meta;
+				const code = readFileSync(absModulePath, "utf-8");
+				return `import "@ui5/webcomponents-base";\n${code}`;
 			}
+
 			return null;
 		},
 
@@ -570,7 +599,9 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 					const chunkName = chunk.fileName.slice(0, extname(chunk.fileName).length * -1);
 					const moduleInfo = this.getModuleInfo(chunk.facadeModuleId);
 					let type = moduleInfo?.meta?.ui5?.type;
-					if (type) {
+					// all types except "module" need to be handled here to build the
+					// Web Component wrappers and packages
+					if (type && type !== "module") {
 						if (type === "webcomponent") {
 							const { sources, clazz } = moduleInfo.meta.ui5;
 							/*
