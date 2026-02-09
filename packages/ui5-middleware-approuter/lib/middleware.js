@@ -130,8 +130,10 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 
 	// finally the destinations need to be an array,
 	// so that we can serialize it to the env
-	if (Array.isArray(destinations)) {
+	if (Array.isArray(destinations) && destinations.length > 0) {
 		process.env.destinations = JSON.stringify(destinations)
+	} else {
+		delete process.env.destinations
 	}
 
 	// determine the routes
