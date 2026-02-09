@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.8.1...ui5-middleware-approuter@3.8.2) (2026-02-09)
+
+
+### Bug Fixes
+
+* **ui5-middleware-approuter:** properly handle destinations ([#1313](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1313)) ([70aa960](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/70aa9600146e477c0a7293991f8244a3fa49c518))
+
+
+
+
+
 ## [3.8.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-approuter@3.8.0...ui5-middleware-approuter@3.8.1) (2026-01-15)
 
 **Note:** Version bump only for package ui5-middleware-approuter
