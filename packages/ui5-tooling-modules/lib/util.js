@@ -190,6 +190,11 @@ function findDependency(dep, cwd = process.cwd(), depPaths = []) {
 			// without the package.json, just with the npm package name (and lookup the package.json manually)
 			if (dep.endsWith("/package.json") && err.code === "MODULE_NOT_FOUND") {
 				modulePath = resolve(dep.substring(0, dep.length - "/package.json".length), { paths: [cwd, ...depPaths] });
+				// if the module path doesn't end with package.json, we try to find the package.json manually
+				// this is needed for workspaces, where the package.json file is not exported in the "exports" field of the package.json file
+				if (!modulePath.endsWith("package.json")) {
+					modulePath = findPackageJson(modulePath);
+				}
 			} else {
 				throw err;
 			}
