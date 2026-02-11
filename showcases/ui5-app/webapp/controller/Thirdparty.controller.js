@@ -25,6 +25,7 @@ sap.ui.define(
 		"@opentelemetry/sdk-trace-web",
 		"fetch-mock",
 		"easytimer.js",
+		"react-player",
 	],
 	(
 		Controller,
@@ -51,6 +52,7 @@ sap.ui.define(
 		otSDK,
 		fetchMock,
 		easytimerjs,
+		reactPlayer,
 	) => {
 		"use strict";
 
@@ -90,6 +92,7 @@ sap.ui.define(
 
 		console.log("[3rdParty] fetch-mock", fetchMock);
 		console.log("[3rdParty] easytimer.js", easytimerjs);
+		console.log("[3rdParty] react-player", reactPlayer);
 
 		return Controller.extend("ui5.ecosystem.demo.app.controller.Thirdparty", {
 			onInit() {
