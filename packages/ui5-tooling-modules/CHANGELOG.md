@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.34.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.34.4...ui5-tooling-modules@3.34.5) (2026-02-11)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** robust parsing and handling of webc metadata ([#1316](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1316)) ([8a5cd40](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/8a5cd402f23e03720404f7cc0d1f65fb5cd30cfc))
+
+
+
+
+
 ## [3.34.4](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.34.3...ui5-tooling-modules@3.34.4) (2026-02-10)
 
 
