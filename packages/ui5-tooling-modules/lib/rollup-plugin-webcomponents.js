@@ -146,22 +146,26 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 					const customElementsMetadata = JSON.parse(readFileSync(metadataPath, { encoding: "utf-8" }));
 
 					// first time registering a new Web Component package
-					registryEntry = WebComponentRegistry.register({
-						customElementsMetadata,
-						namespace: npmPackage,
-						library: projectInfo.type === "library" ? projectInfo.name : undefined,
-						moduleBasePath,
-						removeScopePrefix,
-						scopeSuffix: ui5WebCScopeSuffix,
-						npmPackagePath,
-						skipDtsGeneration,
-						skipJSDoc,
-						customJSDocTags,
-						version: packageJson.version,
-					});
+					try {
+						registryEntry = WebComponentRegistry.register({
+							customElementsMetadata,
+							namespace: npmPackage,
+							library: projectInfo.type === "library" ? projectInfo.name : undefined,
+							moduleBasePath,
+							removeScopePrefix,
+							scopeSuffix: ui5WebCScopeSuffix,
+							npmPackagePath,
+							skipDtsGeneration,
+							skipJSDoc,
+							customJSDocTags,
+							version: packageJson.version,
+						});
 
-					// assign the dependencies
-					registryEntry.dependencies = libraryDependencies;
+						// assign the dependencies
+						registryEntry.dependencies = libraryDependencies;
+					} catch (err) {
+						log.error(`Failed to load custom elements metadata of ${npmPackage} from ${metadataPath}`, err);
+					}
 				}
 			}
 		}

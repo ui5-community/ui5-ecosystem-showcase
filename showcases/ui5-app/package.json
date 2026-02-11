@@ -59,6 +59,7 @@
     "punycode": "^2.3.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-player": "^3.4.0",
     "signalr": "^2.4.3",
     "tui-image-editor": "^3.15.3",
     "ui5-lib": "workspace:^",

@@ -1,7 +1,7 @@
 const globals = require("globals");
 const js = require("@eslint/js");
 const jsdoc = require("eslint-plugin-jsdoc");
-const mocha = require("eslint-plugin-mocha");
+const mocha = require("eslint-plugin-mocha").default;
 const wdio = require("eslint-plugin-wdio");
 
 module.exports = [
@@ -34,11 +34,11 @@ module.exports = [
 			sourceType: "script",
 		},
 		plugins: {
-			...mocha.configs.flat.recommended.plugins,
+			...mocha.configs.recommended.plugins,
 			...wdio.configs["flat/recommended"].plugins,
 		},
 		rules: {
-			...mocha.configs.flat.recommended.rules,
+			...mocha.configs.recommended.rules,
 			...wdio.configs["flat/recommended"].rules,
 		},
 	},
