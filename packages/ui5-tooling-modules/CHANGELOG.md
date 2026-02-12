@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.34.6](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.34.5...ui5-tooling-modules@3.34.6) (2026-02-12)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** make prettier a direct dependency ([#1317](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1317)) ([0ab47e1](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0ab47e1112952b7150b6ee28a4c65a76d44a1180))
+
+
+
+
+
 ## [3.34.5](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.34.4...ui5-tooling-modules@3.34.5) (2026-02-11)
 
 
