@@ -127,6 +127,14 @@
         </VBox>
       </webc:Panel>
 
+      <webc:Panel headerText="RTE Classic" class="panelSpacing">
+        <rte:RichTextEditor />
+      </webc:Panel>
+
+      <webc:Panel headerText="RTE AI" class="panelSpacing">
+        <rteAi:RichTextEditor />
+      </webc:Panel>
+
       <webc:Panel headerText="Buttons" class="panelSpacing">
         <VBox alignItems="Center" justifyContent="Center" height="100%">
           <Button text="sap.m.Button" press="onBoo" class="buttonSpacing">

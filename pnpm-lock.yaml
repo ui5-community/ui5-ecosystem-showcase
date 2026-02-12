@@ -1141,6 +1141,9 @@ importers:
 
   showcases/ui5-tsapp-webc:
     dependencies:
+      '@sap-webcomponents/rich-text-editor':
+        specifier: file:../../../rich-text-editor
+        version: file:../rich-text-editor
       '@ui5/webcomponents':
         specifier: ^2.22.0
         version: 2.22.0(react@19.2.6)
