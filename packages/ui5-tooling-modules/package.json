@@ -42,6 +42,7 @@
     "ignore-walk": "^8.0.0",
     "js-yaml": "^4.1.1",
     "minimatch": "^7.4.6",
+    "prettier": "^3.8.1",
     "rollup": "^4.53.3",
     "rollup-plugin-polyfill-node": "^0.13.0",
     "sanitize-filename": "^1.6.3",
