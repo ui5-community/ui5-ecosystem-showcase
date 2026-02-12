@@ -24,7 +24,8 @@
   "dependencies": {
     "@ui5/webcomponents": "^2.16.2",
     "@ui5/webcomponents-ai": "^2.16.2",
-    "@ui5/webcomponents-fiori": "^2.16.2"
+    "@ui5/webcomponents-fiori": "^2.16.2",
+    "@sap-webcomponents/rich-text-editor": "file:../../../rich-text-editor"
   },
   "devDependencies": {
     "@types/openui5": "1.142.0",

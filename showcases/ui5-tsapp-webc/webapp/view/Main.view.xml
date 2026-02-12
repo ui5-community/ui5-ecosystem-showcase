@@ -9,6 +9,8 @@
   xmlns:webc="@ui5/webcomponents/dist"
   xmlns:fiori="@ui5/webcomponents-fiori/dist"
   xmlns:ai="@ui5/webcomponents-ai/dist"
+  xmlns:rte="@sap-webcomponents/rich-text-editor/dist"
+  xmlns:rteAi="@sap-webcomponents/rich-text-editor/dist/ai"
   core:require="{
     Formatter: 'ui5/ecosystem/demo/webctsapp/model/Formatter',
     iconUI5: '@ui5/webcomponents-icons/dist/sap-ui5',
@@ -124,6 +126,14 @@
           <webc:Button text="Form with Aria support" click=".onNavToForm" design="Attention" endIcon="slim-arrow-right" class="buttonSpacing" />
           <webc:Button text="Value/Data State" click=".onNavToValueState" design="Attention" endIcon="slim-arrow-right" class="buttonSpacing" />
         </VBox>
+      </webc:Panel>
+
+      <webc:Panel headerText="RTE Classic" class="panelSpacing">
+        <rte:RichTextEditor />
+      </webc:Panel>
+
+      <webc:Panel headerText="RTE AI" class="panelSpacing">
+        <rteAi:RichTextEditor />
       </webc:Panel>
 
       <webc:Panel headerText="Buttons" class="panelSpacing">
