@@ -38,8 +38,8 @@ builder:
         pluginOptions:
           webcomponents:
             #namespace: false
-            skipJSDoc: false # enable the JSDoc generation
-            skipDtsGeneration: false
+            skipJSDoc: true # enable the JSDoc generation
+            skipDtsGeneration: true
             includeAssets: true
             forceAllAssets: true
 server:
@@ -58,8 +58,8 @@ server:
         pluginOptions:
           webcomponents:
             force: true
-            skipJSDoc: false # enable the JSDoc generation
-            skipDtsGeneration: false
+            skipJSDoc: true # enable the JSDoc generation
+            skipDtsGeneration: true
             includeAssets: true
             forceAllAssets: true
     - name: ui5-middleware-livereload

@@ -3,6 +3,7 @@ const WebComponentRegistryHelper = {
 	// corresponds to the "sap.ui.core.webc.WebComponent" class at runtime.
 	UI5_ELEMENT_CLASS_NAME: "UI5Element",
 	UI5_ELEMENT_NAMESPACE: "@ui5/webcomponents-base",
+	UI5_ELEMENT_MODULE: "dist/UI5Element.js",
 
 	/**
 	 * Helper function to check whether the given class inherits from UI5Element, the base class for all
@@ -31,6 +32,30 @@ const WebComponentRegistryHelper = {
 	isWebComponent(ui5Superclass) {
 		return ui5Superclass.name === "sap.ui.core.webc.WebComponent";
 	},
+
+	/**
+	 * Derives the cache key needed for the registry to store each entity:
+	 *   - classes
+	 *   - enums
+	 *   - interfaces
+	 * @param {object} keyDef the key info
+	 * @param {object} keyDef.module the module which contains the entity
+	 * @param {object} keyDef.name the name of the entity, e.g. a class or enum name
+	 * @returns {string|undefined} a combined cache key or <code>undefined</code> in case we could not derive a cache key
+	 */
+	deriveCacheKey(keyDef) {
+		if (keyDef?.module) {
+			const delimiter = ">>";
+			return `${keyDef.module}${delimiter}${keyDef.name}`;
+		} else {
+			return undefined;
+		}
+	},
 };
+
+WebComponentRegistryHelper.UI5_ELEMENT_CACHE_KEY = WebComponentRegistryHelper.deriveCacheKey({
+	module: WebComponentRegistryHelper.UI5_ELEMENT_MODULE,
+	name: WebComponentRegistryHelper.UI5_ELEMENT_CLASS_NAME,
+});
 
 module.exports = WebComponentRegistryHelper;

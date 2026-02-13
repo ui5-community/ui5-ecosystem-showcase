@@ -1144,6 +1144,9 @@ importers:
 
   showcases/ui5-tsapp-webc:
     dependencies:
+      '@sap-webcomponents/rich-text-editor':
+        specifier: file:../../../rich-text-editor
+        version: file:../rich-text-editor
       '@ui5/webcomponents':
         specifier: ^2.16.2
         version: 2.17.1
@@ -3064,8 +3067,14 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@sap-internal/tinymce@file:../tinymce':
+    resolution: {directory: ../tinymce, type: directory}
+
   '@sap-theming/theming-base-content@11.29.3':
     resolution: {integrity: sha512-0LVCUYqoTQGcKmgPShbxQLBoF8469ZojUrYtVm1k3op/1pgLA/FMN//bvgGEm7HTBJBu3gW2Ad2f4ASqEzLolA==}
+
+  '@sap-webcomponents/rich-text-editor@file:../rich-text-editor':
+    resolution: {directory: ../rich-text-editor, type: directory}
 
   '@sap/approuter@20.8.6':
     resolution: {integrity: sha512-/MRXCIMxSFcOd4Pr0CovA1+JcxfdrT9n/eh73ngOFJ1bo6Bm7pbLG3LPyrASO4O2YlKrXscGkgQNybkl1EX80g==}
@@ -12939,7 +12948,18 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.54.0':
     optional: true
 
+  '@sap-internal/tinymce@file:../tinymce': {}
+
   '@sap-theming/theming-base-content@11.29.3': {}
+
+  '@sap-webcomponents/rich-text-editor@file:../rich-text-editor':
+    dependencies:
+      '@sap-internal/tinymce': file:../tinymce
+      '@ui5/webcomponents': 2.17.1
+      '@ui5/webcomponents-ai': 2.17.1
+      '@ui5/webcomponents-base': 2.17.1
+      '@ui5/webcomponents-icons': 2.17.1
+      '@ui5/webcomponents-theming': 2.17.1
 
   '@sap/approuter@20.8.6(encoding@0.1.13)(undici@6.22.0)':
     dependencies:
