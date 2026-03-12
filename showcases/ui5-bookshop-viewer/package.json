@@ -22,11 +22,11 @@
     "ui5-app-simple": "workspace:^"
   },
   "devDependencies": {
-    "@ui5/cli": "^4.0.37",
+    "@ui5/cli": "^4.0.48",
     "cds-bookshop": "workspace:^",
-    "eslint": "^9.39.1",
-    "globals": "^16.5.0",
-    "rimraf": "^6.1.2",
+    "eslint": "^10.0.3",
+    "globals": "^17.4.0",
+    "rimraf": "^6.1.3",
     "ui5-middleware-cap": "workspace:^",
     "ui5-middleware-livereload": "workspace:^",
     "ui5-middleware-ui5": "workspace:^",

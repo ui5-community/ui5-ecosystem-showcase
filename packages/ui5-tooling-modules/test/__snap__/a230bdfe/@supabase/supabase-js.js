@@ -1,25 +1,5 @@
 sap.ui.define(['exports'], (function (exports) { 'use strict';
 
-  var global$1 = (typeof global !== "undefined" ? global :
-    typeof self !== "undefined" ? self :
-    typeof window !== "undefined" ? window : {});
-
-  var version$4 = ''; // empty string to avoid regexp issues
-  var versions = {};
-
-  // from https://github.com/kumavis/browser-process-hrtime/blob/master/index.js
-  var performance = global$1.performance || {};
-  performance.now        ||
-    performance.mozNow     ||
-    performance.msNow      ||
-    performance.oNow       ||
-    performance.webkitNow  ||
-    function(){ return (new Date()).getTime() };
-
-  var browser$1 = {
-    version: version$4,
-    versions: versions};
-
   /******************************************************************************
   Copyright (c) Microsoft Corporation.
 
@@ -245,8 +225,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                       }
                   }
                   else {
-                      // if the Content-Type was supplied, simply set the body
-                      body = functionArgs;
+                      if (functionArgs &&
+                          typeof functionArgs !== 'string' &&
+                          !(typeof Blob !== 'undefined' && functionArgs instanceof Blob) &&
+                          !(functionArgs instanceof ArrayBuffer) &&
+                          !(typeof FormData !== 'undefined' && functionArgs instanceof FormData)) {
+                          body = JSON.stringify(functionArgs);
+                      }
+                      else {
+                          body = functionArgs;
+                      }
                   }
                   // Handle timeout by creating an AbortController
                   let effectiveSignal = signal;
@@ -368,7 +356,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	* ```
   	*/
   	constructor(builder) {
-  		var _builder$shouldThrowO, _builder$isMaybeSingl;
+  		var _builder$shouldThrowO, _builder$isMaybeSingl, _builder$urlLengthLim;
   		this.shouldThrowOnError = false;
   		this.method = builder.method;
   		this.url = builder.url;
@@ -378,6 +366,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   		this.shouldThrowOnError = (_builder$shouldThrowO = builder.shouldThrowOnError) !== null && _builder$shouldThrowO !== void 0 ? _builder$shouldThrowO : false;
   		this.signal = builder.signal;
   		this.isMaybeSingle = (_builder$isMaybeSingl = builder.isMaybeSingle) !== null && _builder$isMaybeSingl !== void 0 ? _builder$isMaybeSingl : false;
+  		this.urlLengthLimit = (_builder$urlLengthLim = builder.urlLengthLimit) !== null && _builder$urlLengthLim !== void 0 ? _builder$urlLengthLim : 8e3;
   		if (builder.fetch) this.fetch = builder.fetch;
   		else this.fetch = fetch;
   	}
@@ -476,6 +465,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   		if (!this.shouldThrowOnError) res = res.catch((fetchError) => {
   			var _fetchError$name2;
   			let errorDetails = "";
+  			let hint = "";
+  			let code = "";
   			const cause = fetchError === null || fetchError === void 0 ? void 0 : fetchError.cause;
   			if (cause) {
   				var _cause$message, _cause$code, _fetchError$name, _cause$name;
@@ -489,12 +480,22 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   				var _fetchError$stack;
   				errorDetails = (_fetchError$stack = fetchError === null || fetchError === void 0 ? void 0 : fetchError.stack) !== null && _fetchError$stack !== void 0 ? _fetchError$stack : "";
   			}
+  			const urlLength = this.url.toString().length;
+  			if ((fetchError === null || fetchError === void 0 ? void 0 : fetchError.name) === "AbortError" || (fetchError === null || fetchError === void 0 ? void 0 : fetchError.code) === "ABORT_ERR") {
+  				code = "";
+  				hint = "Request was aborted (timeout or manual cancellation)";
+  				if (urlLength > this.urlLengthLimit) hint += `. Note: Your request URL is ${urlLength} characters, which may exceed server limits. If selecting many fields, consider using views. If filtering with large arrays (e.g., .in('id', [many IDs])), consider using an RPC function to pass values server-side.`;
+  			} else if ((cause === null || cause === void 0 ? void 0 : cause.name) === "HeadersOverflowError" || (cause === null || cause === void 0 ? void 0 : cause.code) === "UND_ERR_HEADERS_OVERFLOW") {
+  				code = "";
+  				hint = "HTTP headers exceeded server limits (typically 16KB)";
+  				if (urlLength > this.urlLengthLimit) hint += `. Your request URL is ${urlLength} characters. If selecting many fields, consider using views. If filtering with large arrays (e.g., .in('id', [200+ IDs])), consider using an RPC function instead.`;
+  			}
   			return {
   				error: {
   					message: `${(_fetchError$name2 = fetchError === null || fetchError === void 0 ? void 0 : fetchError.name) !== null && _fetchError$name2 !== void 0 ? _fetchError$name2 : "FetchError"}: ${fetchError === null || fetchError === void 0 ? void 0 : fetchError.message}`,
   					details: errorDetails,
-  					hint: "",
-  					code: ""
+  					hint,
+  					code
   				},
   				data: null,
   				count: null,
@@ -1146,11 +1147,21 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	* )
   	* ```
   	*/
-  	constructor(url, { headers = {}, schema, fetch: fetch$1 }) {
+  	constructor(url, { headers = {}, schema, fetch: fetch$1, urlLengthLimit = 8e3 }) {
   		this.url = url;
   		this.headers = new Headers(headers);
   		this.schema = schema;
   		this.fetch = fetch$1;
+  		this.urlLengthLimit = urlLengthLimit;
+  	}
+  	/**
+  	* Clone URL and headers to prevent shared state between operations.
+  	*/
+  	cloneRequestState() {
+  		return {
+  			url: new URL(this.url.toString()),
+  			headers: new Headers(this.headers)
+  		};
   	}
   	/**
   	* Perform a SELECT query on the table or view.
@@ -1172,6 +1183,764 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*
   	* `"estimated"`: Uses exact count for low numbers and planned count for high
   	* numbers.
+  	*
+  	* @remarks
+  	* When using `count` with `.range()` or `.limit()`, the returned `count` is the total number of rows
+  	* that match your filters, not the number of rows in the current page. Use this to build pagination UI.
+
+  	* - By default, Supabase projects return a maximum of 1,000 rows. This setting can be changed in your project's [API settings](/dashboard/project/_/settings/api). It's recommended that you keep it low to limit the payload size of accidental or malicious requests. You can use `range()` queries to paginate through your data.
+  	* - `select()` can be combined with [Filters](/docs/reference/javascript/using-filters)
+  	* - `select()` can be combined with [Modifiers](/docs/reference/javascript/using-modifiers)
+  	* - `apikey` is a reserved keyword if you're using the [Supabase Platform](/docs/guides/platform) and [should be avoided as a column name](https://github.com/supabase/supabase/issues/5465). *
+  	* @category Database
+  	*
+  	* @example Getting your data
+  	* ```js
+  	* const { data, error } = await supabase
+  	*   .from('characters')
+  	*   .select()
+  	* ```
+  	*
+  	* @exampleSql Getting your data
+  	* ```sql
+  	* create table
+  	*   characters (id int8 primary key, name text);
+  	*
+  	* insert into
+  	*   characters (id, name)
+  	* values
+  	*   (1, 'Harry'),
+  	*   (2, 'Frodo'),
+  	*   (3, 'Katniss');
+  	* ```
+  	*
+  	* @exampleResponse Getting your data
+  	* ```json
+  	* {
+  	*   "data": [
+  	*     {
+  	*       "id": 1,
+  	*       "name": "Harry"
+  	*     },
+  	*     {
+  	*       "id": 2,
+  	*       "name": "Frodo"
+  	*     },
+  	*     {
+  	*       "id": 3,
+  	*       "name": "Katniss"
+  	*     }
+  	*   ],
+  	*   "status": 200,
+  	*   "statusText": "OK"
+  	* }
+  	* ```
+  	*
+  	* @example Selecting specific columns
+  	* ```js
+  	* const { data, error } = await supabase
+  	*   .from('characters')
+  	*   .select('name')
+  	* ```
+  	*
+  	* @exampleSql Selecting specific columns
+  	* ```sql
+  	* create table
+  	*   characters (id int8 primary key, name text);
+  	*
+  	* insert into
+  	*   characters (id, name)
+  	* values
+  	*   (1, 'Frodo'),
+  	*   (2, 'Harry'),
+  	*   (3, 'Katniss');
+  	* ```
+  	*
+  	* @exampleResponse Selecting specific columns
+  	* ```json
+  	* {
+  	*   "data": [
+  	*     {
+  	*       "name": "Frodo"
+  	*     },
+  	*     {
+  	*       "name": "Harry"
+  	*     },
+  	*     {
+  	*       "name": "Katniss"
+  	*     }
+  	*   ],
+  	*   "status": 200,
+  	*   "statusText": "OK"
+  	* }
+  	* ```
+  	*
+  	* @exampleDescription Query referenced tables
+  	* If your database has foreign key relationships, you can query related tables too.
+  	*
+  	* @example Query referenced tables
+  	* ```js
+  	* const { data, error } = await supabase
+  	*   .from('orchestral_sections')
+  	*   .select(`
+  	*     name,
+  	*     instruments (
+  	*       name
+  	*     )
+  	*   `)
+  	* ```
+  	*
+  	* @exampleSql Query referenced tables
+  	* ```sql
+  	* create table
+  	*   orchestral_sections (id int8 primary key, name text);
+  	* create table
+  	*   instruments (
+  	*     id int8 primary key,
+  	*     section_id int8 not null references orchestral_sections,
+  	*     name text
+  	*   );
+  	*
+  	* insert into
+  	*   orchestral_sections (id, name)
+  	* values
+  	*   (1, 'strings'),
+  	*   (2, 'woodwinds');
+  	* insert into
+  	*   instruments (id, section_id, name)
+  	* values
+  	*   (1, 2, 'flute'),
+  	*   (2, 1, 'violin');
+  	* ```
+  	*
+  	* @exampleResponse Query referenced tables
+  	* ```json
+  	* {
+  	*   "data": [
+  	*     {
+  	*       "name": "strings",
+  	*       "instruments": [
+  	*         {
+  	*           "name": "violin"
+  	*         }
+  	*       ]
+  	*     },
+  	*     {
+  	*       "name": "woodwinds",
+  	*       "instruments": [
+  	*         {
+  	*           "name": "flute"
+  	*         }
+  	*       ]
+  	*     }
+  	*   ],
+  	*   "status": 200,
+  	*   "statusText": "OK"
+  	* }
+  	* ```
+  	*
+  	* @exampleDescription Query referenced tables with spaces in their names
+  	* If your table name contains spaces, you must use double quotes in the `select` statement to reference the table.
+  	*
+  	* @example Query referenced tables with spaces in their names
+  	* ```js
+  	* const { data, error } = await supabase
+  	*   .from('orchestral sections')
+  	*   .select(`
+  	*     name,
+  	*     "musical instruments" (
+  	*       name
+  	*     )
+  	*   `)
+  	* ```
+  	*
+  	* @exampleSql Query referenced tables with spaces in their names
+  	* ```sql
+  	* create table
+  	*   "orchestral sections" (id int8 primary key, name text);
+  	* create table
+  	*   "musical instruments" (
+  	*     id int8 primary key,
+  	*     section_id int8 not null references "orchestral sections",
+  	*     name text
+  	*   );
+  	*
+  	* insert into
+  	*   "orchestral sections" (id, name)
+  	* values
+  	*   (1, 'strings'),
+  	*   (2, 'woodwinds');
+  	* insert into
+  	*   "musical instruments" (id, section_id, name)
+  	* values
+  	*   (1, 2, 'flute'),
+  	*   (2, 1, 'violin');
+  	* ```
+  	*
+  	* @exampleResponse Query referenced tables with spaces in their names
+  	* ```json
+  	* {
+  	*   "data": [
+  	*     {
+  	*       "name": "strings",
+  	*       "musical instruments": [
+  	*         {
+  	*           "name": "violin"
+  	*         }
+  	*       ]
+  	*     },
+  	*     {
+  	*       "name": "woodwinds",
+  	*       "musical instruments": [
+  	*         {
+  	*           "name": "flute"
+  	*         }
+  	*       ]
+  	*     }
+  	*   ],
+  	*   "status": 200,
+  	*   "statusText": "OK"
+  	* }
+  	* ```
+  	*
+  	* @exampleDescription Query referenced tables through a join table
+  	* If you're in a situation where your tables are **NOT** directly
+  	* related, but instead are joined by a _join table_, you can still use
+  	* the `select()` method to query the related data. The join table needs
+  	* to have the foreign keys as part of its composite primary key.
+  	*
+  	* @example Query referenced tables through a join table
+  	* ```ts
+  	* const { data, error } = await supabase
+  	*   .from('users')
+  	*   .select(`
+  	*     name,
+  	*     teams (
+  	*       name
+  	*     )
+  	*   `)
+  	*
+  	* ```
+  	*
+  	* @exampleSql Query referenced tables through a join table
+  	* ```sql
+  	* create table
+  	*   users (
+  	*     id int8 primary key,
+  	*     name text
+  	*   );
+  	* create table
+  	*   teams (
+  	*     id int8 primary key,
+  	*     name text
+  	*   );
+  	* -- join table
+  	* create table
+  	*   users_teams (
+  	*     user_id int8 not null references users,
+  	*     team_id int8 not null references teams,
+  	*     -- both foreign keys must be part of a composite primary key
+  	*     primary key (user_id, team_id)
+  	*   );
+  	*
+  	* insert into
+  	*   users (id, name)
+  	* values
+  	*   (1, 'Kiran'),
+  	*   (2, 'Evan');
+  	* insert into
+  	*   teams (id, name)
+  	* values
+  	*   (1, 'Green'),
+  	*   (2, 'Blue');
+  	* insert into
+  	*   users_teams (user_id, team_id)
+  	* values
+  	*   (1, 1),
+  	*   (1, 2),
+  	*   (2, 2);
+  	* ```
+  	*
+  	* @exampleResponse Query referenced tables through a join table
+  	* ```json
+  	*   {
+  	*     "data": [
+  	*       {
+  	*         "name": "Kiran",
+  	*         "teams": [
+  	*           {
+  	*             "name": "Green"
+  	*           },
+  	*           {
+  	*             "name": "Blue"
+  	*           }
+  	*         ]
+  	*       },
+  	*       {
+  	*         "name": "Evan",
+  	*         "teams": [
+  	*           {
+  	*             "name": "Blue"
+  	*           }
+  	*         ]
+  	*       }
+  	*     ],
+  	*     "status": 200,
+  	*     "statusText": "OK"
+  	*   }
+  	*
+  	* ```
+  	*
+  	* @exampleDescription Query the same referenced table multiple times
+  	* If you need to query the same referenced table twice, use the name of the
+  	* joined column to identify which join to use. You can also give each
+  	* column an alias.
+  	*
+  	* @example Query the same referenced table multiple times
+  	* ```ts
+  	* const { data, error } = await supabase
+  	*   .from('messages')
+  	*   .select(`
+  	*     content,
+  	*     from:sender_id(name),
+  	*     to:receiver_id(name)
+  	*   `)
+  	*
+  	* // To infer types, use the name of the table (in this case `users`) and
+  	* // the name of the foreign key constraint.
+  	* const { data, error } = await supabase
+  	*   .from('messages')
+  	*   .select(`
+  	*     content,
+  	*     from:users!messages_sender_id_fkey(name),
+  	*     to:users!messages_receiver_id_fkey(name)
+  	*   `)
+  	* ```
+  	*
+  	* @exampleSql Query the same referenced table multiple times
+  	* ```sql
+  	*  create table
+  	*  users (id int8 primary key, name text);
+  	*
+  	*  create table
+  	*    messages (
+  	*      sender_id int8 not null references users,
+  	*      receiver_id int8 not null references users,
+  	*      content text
+  	*    );
+  	*
+  	*  insert into
+  	*    users (id, name)
+  	*  values
+  	*    (1, 'Kiran'),
+  	*    (2, 'Evan');
+  	*
+  	*  insert into
+  	*    messages (sender_id, receiver_id, content)
+  	*  values
+  	*    (1, 2, '👋');
+  	*  ```
+  	* ```
+  	*
+  	* @exampleResponse Query the same referenced table multiple times
+  	* ```json
+  	* {
+  	*   "data": [
+  	*     {
+  	*       "content": "👋",
+  	*       "from": {
+  	*         "name": "Kiran"
+  	*       },
+  	*       "to": {
+  	*         "name": "Evan"
+  	*       }
+  	*     }
+  	*   ],
+  	*   "status": 200,
+  	*   "statusText": "OK"
+  	* }
+  	* ```
+  	*
+  	* @exampleDescription Query nested foreign tables through a join table
+  	* You can use the result of a joined table to gather data in
+  	* another foreign table. With multiple references to the same foreign
+  	* table you must specify the column on which to conduct the join.
+  	*
+  	* @example Query nested foreign tables through a join table
+  	* ```ts
+  	*   const { data, error } = await supabase
+  	*     .from('games')
+  	*     .select(`
+  	*       game_id:id,
+  	*       away_team:teams!games_away_team_fkey (
+  	*         users (
+  	*           id,
+  	*           name
+  	*         )
+  	*       )
+  	*     `)
+  	*
+  	* ```
+  	*
+  	* @exampleSql Query nested foreign tables through a join table
+  	* ```sql
+  	* ```sql
+  	* create table
+  	*   users (
+  	*     id int8 primary key,
+  	*     name text
+  	*   );
+  	* create table
+  	*   teams (
+  	*     id int8 primary key,
+  	*     name text
+  	*   );
+  	* -- join table
+  	* create table
+  	*   users_teams (
+  	*     user_id int8 not null references users,
+  	*     team_id int8 not null references teams,
+  	*
+  	*     primary key (user_id, team_id)
+  	*   );
+  	* create table
+  	*   games (
+  	*     id int8 primary key,
+  	*     home_team int8 not null references teams,
+  	*     away_team int8 not null references teams,
+  	*     name text
+  	*   );
+  	*
+  	* insert into users (id, name)
+  	* values
+  	*   (1, 'Kiran'),
+  	*   (2, 'Evan');
+  	* insert into
+  	*   teams (id, name)
+  	* values
+  	*   (1, 'Green'),
+  	*   (2, 'Blue');
+  	* insert into
+  	*   users_teams (user_id, team_id)
+  	* values
+  	*   (1, 1),
+  	*   (1, 2),
+  	*   (2, 2);
+  	* insert into
+  	*   games (id, home_team, away_team, name)
+  	* values
+  	*   (1, 1, 2, 'Green vs Blue'),
+  	*   (2, 2, 1, 'Blue vs Green');
+  	* ```
+  	*
+  	* @exampleResponse Query nested foreign tables through a join table
+  	* ```json
+  	*   {
+  	*     "data": [
+  	*       {
+  	*         "game_id": 1,
+  	*         "away_team": {
+  	*           "users": [
+  	*             {
+  	*               "id": 1,
+  	*               "name": "Kiran"
+  	*             },
+  	*             {
+  	*               "id": 2,
+  	*               "name": "Evan"
+  	*             }
+  	*           ]
+  	*         }
+  	*       },
+  	*       {
+  	*         "game_id": 2,
+  	*         "away_team": {
+  	*           "users": [
+  	*             {
+  	*               "id": 1,
+  	*               "name": "Kiran"
+  	*             }
+  	*           ]
+  	*         }
+  	*       }
+  	*     ],
+  	*     "status": 200,
+  	*     "statusText": "OK"
+  	*   }
+  	*
+  	* ```
+  	*
+  	* @exampleDescription Filtering through referenced tables
+  	* If the filter on a referenced table's column is not satisfied, the referenced
+  	* table returns `[]` or `null` but the parent table is not filtered out.
+  	* If you want to filter out the parent table rows, use the `!inner` hint
+  	*
+  	* @example Filtering through referenced tables
+  	* ```ts
+  	* const { data, error } = await supabase
+  	*   .from('instruments')
+  	*   .select('name, orchestral_sections(*)')
+  	*   .eq('orchestral_sections.name', 'percussion')
+  	* ```
+  	*
+  	* @exampleSql Filtering through referenced tables
+  	* ```sql
+  	* create table
+  	*   orchestral_sections (id int8 primary key, name text);
+  	* create table
+  	*   instruments (
+  	*     id int8 primary key,
+  	*     section_id int8 not null references orchestral_sections,
+  	*     name text
+  	*   );
+  	*
+  	* insert into
+  	*   orchestral_sections (id, name)
+  	* values
+  	*   (1, 'strings'),
+  	*   (2, 'woodwinds');
+  	* insert into
+  	*   instruments (id, section_id, name)
+  	* values
+  	*   (1, 2, 'flute'),
+  	*   (2, 1, 'violin');
+  	* ```
+  	*
+  	* @exampleResponse Filtering through referenced tables
+  	* ```json
+  	* {
+  	*   "data": [
+  	*     {
+  	*       "name": "flute",
+  	*       "orchestral_sections": null
+  	*     },
+  	*     {
+  	*       "name": "violin",
+  	*       "orchestral_sections": null
+  	*     }
+  	*   ],
+  	*   "status": 200,
+  	*   "statusText": "OK"
+  	* }
+  	* ```
+  	*
+  	* @exampleDescription Querying referenced table with count
+  	* You can get the number of rows in a related table by using the
+  	* **count** property.
+  	*
+  	* @example Querying referenced table with count
+  	* ```ts
+  	* const { data, error } = await supabase
+  	*   .from('orchestral_sections')
+  	*   .select(`*, instruments(count)`)
+  	* ```
+  	*
+  	* @exampleSql Querying referenced table with count
+  	* ```sql
+  	* create table orchestral_sections (
+  	*   "id" "uuid" primary key default "extensions"."uuid_generate_v4"() not null,
+  	*   "name" text
+  	* );
+  	*
+  	* create table characters (
+  	*   "id" "uuid" primary key default "extensions"."uuid_generate_v4"() not null,
+  	*   "name" text,
+  	*   "section_id" "uuid" references public.orchestral_sections on delete cascade
+  	* );
+  	*
+  	* with section as (
+  	*   insert into orchestral_sections (name)
+  	*   values ('strings') returning id
+  	* )
+  	* insert into instruments (name, section_id) values
+  	* ('violin', (select id from section)),
+  	* ('viola', (select id from section)),
+  	* ('cello', (select id from section)),
+  	* ('double bass', (select id from section));
+  	* ```
+  	*
+  	* @exampleResponse Querying referenced table with count
+  	* ```json
+  	* [
+  	*   {
+  	*     "id": "693694e7-d993-4360-a6d7-6294e325d9b6",
+  	*     "name": "strings",
+  	*     "instruments": [
+  	*       {
+  	*         "count": 4
+  	*       }
+  	*     ]
+  	*   }
+  	* ]
+  	* ```
+  	*
+  	* @exampleDescription Querying with count option
+  	* You can get the number of rows by using the
+  	* [count](/docs/reference/javascript/select#parameters) option.
+  	*
+  	* @example Querying with count option
+  	* ```ts
+  	* const { count, error } = await supabase
+  	*   .from('characters')
+  	*   .select('*', { count: 'exact', head: true })
+  	* ```
+  	*
+  	* @exampleSql Querying with count option
+  	* ```sql
+  	* create table
+  	*   characters (id int8 primary key, name text);
+  	*
+  	* insert into
+  	*   characters (id, name)
+  	* values
+  	*   (1, 'Luke'),
+  	*   (2, 'Leia'),
+  	*   (3, 'Han');
+  	* ```
+  	*
+  	* @exampleResponse Querying with count option
+  	* ```json
+  	* {
+  	*   "count": 3,
+  	*   "status": 200,
+  	*   "statusText": "OK"
+  	* }
+  	* ```
+  	*
+  	* @exampleDescription Querying JSON data
+  	* You can select and filter data inside of
+  	* [JSON](/docs/guides/database/json) columns. Postgres offers some
+  	* [operators](/docs/guides/database/json#query-the-jsonb-data) for
+  	* querying JSON data.
+  	*
+  	* @example Querying JSON data
+  	* ```ts
+  	* const { data, error } = await supabase
+  	*   .from('users')
+  	*   .select(`
+  	*     id, name,
+  	*     address->city
+  	*   `)
+  	* ```
+  	*
+  	* @exampleSql Querying JSON data
+  	* ```sql
+  	* create table
+  	*   users (
+  	*     id int8 primary key,
+  	*     name text,
+  	*     address jsonb
+  	*   );
+  	*
+  	* insert into
+  	*   users (id, name, address)
+  	* values
+  	*   (1, 'Frodo', '{"city":"Hobbiton"}');
+  	* ```
+  	*
+  	* @exampleResponse Querying JSON data
+  	* ```json
+  	* {
+  	*   "data": [
+  	*     {
+  	*       "id": 1,
+  	*       "name": "Frodo",
+  	*       "city": "Hobbiton"
+  	*     }
+  	*   ],
+  	*   "status": 200,
+  	*   "statusText": "OK"
+  	* }
+  	* ```
+  	*
+  	* @exampleDescription Querying referenced table with inner join
+  	* If you don't want to return the referenced table contents, you can leave the parenthesis empty.
+  	* Like `.select('name, orchestral_sections!inner()')`.
+  	*
+  	* @example Querying referenced table with inner join
+  	* ```ts
+  	* const { data, error } = await supabase
+  	*   .from('instruments')
+  	*   .select('name, orchestral_sections!inner(name)')
+  	*   .eq('orchestral_sections.name', 'woodwinds')
+  	*   .limit(1)
+  	* ```
+  	*
+  	* @exampleSql Querying referenced table with inner join
+  	* ```sql
+  	* create table orchestral_sections (
+  	*   "id" "uuid" primary key default "extensions"."uuid_generate_v4"() not null,
+  	*   "name" text
+  	* );
+  	*
+  	* create table instruments (
+  	*   "id" "uuid" primary key default "extensions"."uuid_generate_v4"() not null,
+  	*   "name" text,
+  	*   "section_id" "uuid" references public.orchestral_sections on delete cascade
+  	* );
+  	*
+  	* with section as (
+  	*   insert into orchestral_sections (name)
+  	*   values ('woodwinds') returning id
+  	* )
+  	* insert into instruments (name, section_id) values
+  	* ('flute', (select id from section)),
+  	* ('clarinet', (select id from section)),
+  	* ('bassoon', (select id from section)),
+  	* ('piccolo', (select id from section));
+  	* ```
+  	*
+  	* @exampleResponse Querying referenced table with inner join
+  	* ```json
+  	* {
+  	*   "data": [
+  	*     {
+  	*       "name": "flute",
+  	*       "orchestral_sections": {"name": "woodwinds"}
+  	*     }
+  	*   ],
+  	*   "status": 200,
+  	*   "statusText": "OK"
+  	* }
+  	* ```
+  	*
+  	* @exampleDescription Switching schemas per query
+  	* In addition to setting the schema during initialization, you can also switch schemas on a per-query basis.
+  	* Make sure you've set up your [database privileges and API settings](/docs/guides/api/using-custom-schemas).
+  	*
+  	* @example Switching schemas per query
+  	* ```ts
+  	* const { data, error } = await supabase
+  	*   .schema('myschema')
+  	*   .from('mytable')
+  	*   .select()
+  	* ```
+  	*
+  	* @exampleSql Switching schemas per query
+  	* ```sql
+  	* create schema myschema;
+  	*
+  	* create table myschema.mytable (
+  	*   id uuid primary key default gen_random_uuid(),
+  	*   data text
+  	* );
+  	*
+  	* insert into myschema.mytable (data) values ('mydata');
+  	* ```
+  	*
+  	* @exampleResponse Switching schemas per query
+  	* ```json
+  	* {
+  	*   "data": [
+  	*     {
+  	*       "id": "4162e008-27b0-4c0f-82dc-ccaeee9a624d",
+  	*       "data": "mydata"
+  	*     }
+  	*   ],
+  	*   "status": 200,
+  	*   "statusText": "OK"
+  	* }
+  	* ```
   	*/
   	select(columns, options) {
   		const { head = false, count } = options !== null && options !== void 0 ? options : {};
@@ -1182,14 +1951,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   			if (c === "\"") quoted = !quoted;
   			return c;
   		}).join("");
-  		this.url.searchParams.set("select", cleanedColumns);
-  		if (count) this.headers.append("Prefer", `count=${count}`);
+  		const { url, headers } = this.cloneRequestState();
+  		url.searchParams.set("select", cleanedColumns);
+  		if (count) headers.append("Prefer", `count=${count}`);
   		return new PostgrestFilterBuilder({
   			method,
-  			url: this.url,
-  			headers: this.headers,
+  			url,
+  			headers,
   			schema: this.schema,
-  			fetch: this.fetch
+  			fetch: this.fetch,
+  			urlLengthLimit: this.urlLengthLimit
   		});
   	}
   	/**
@@ -1217,26 +1988,113 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	* @param options.defaultToNull - Make missing fields default to `null`.
   	* Otherwise, use the default value for the column. Only applies for bulk
   	* inserts.
+  	*
+  	* @category Database
+  	*
+  	* @example Create a record
+  	* ```ts
+  	* const { error } = await supabase
+  	*   .from('countries')
+  	*   .insert({ id: 1, name: 'Mordor' })
+  	* ```
+  	*
+  	* @exampleSql Create a record
+  	* ```sql
+  	* create table
+  	*   countries (id int8 primary key, name text);
+  	* ```
+  	*
+  	* @exampleResponse Create a record
+  	* ```json
+  	* {
+  	*   "status": 201,
+  	*   "statusText": "Created"
+  	* }
+  	* ```
+  	*
+  	* @example Create a record and return it
+  	* ```ts
+  	* const { data, error } = await supabase
+  	*   .from('countries')
+  	*   .insert({ id: 1, name: 'Mordor' })
+  	*   .select()
+  	* ```
+  	*
+  	* @exampleSql Create a record and return it
+  	* ```sql
+  	* create table
+  	*   countries (id int8 primary key, name text);
+  	* ```
+  	*
+  	* @exampleResponse Create a record and return it
+  	* ```json
+  	* {
+  	*   "data": [
+  	*     {
+  	*       "id": 1,
+  	*       "name": "Mordor"
+  	*     }
+  	*   ],
+  	*   "status": 201,
+  	*   "statusText": "Created"
+  	* }
+  	* ```
+  	*
+  	* @exampleDescription Bulk create
+  	* A bulk create operation is handled in a single transaction.
+  	* If any of the inserts fail, none of the rows are inserted.
+  	*
+  	* @example Bulk create
+  	* ```ts
+  	* const { error } = await supabase
+  	*   .from('countries')
+  	*   .insert([
+  	*     { id: 1, name: 'Mordor' },
+  	*     { id: 1, name: 'The Shire' },
+  	*   ])
+  	* ```
+  	*
+  	* @exampleSql Bulk create
+  	* ```sql
+  	* create table
+  	*   countries (id int8 primary key, name text);
+  	* ```
+  	*
+  	* @exampleResponse Bulk create
+  	* ```json
+  	* {
+  	*   "error": {
+  	*     "code": "23505",
+  	*     "details": "Key (id)=(1) already exists.",
+  	*     "hint": null,
+  	*     "message": "duplicate key value violates unique constraint \"countries_pkey\""
+  	*   },
+  	*   "status": 409,
+  	*   "statusText": "Conflict"
+  	* }
+  	* ```
   	*/
   	insert(values, { count, defaultToNull = true } = {}) {
   		var _this$fetch;
   		const method = "POST";
-  		if (count) this.headers.append("Prefer", `count=${count}`);
-  		if (!defaultToNull) this.headers.append("Prefer", `missing=default`);
+  		const { url, headers } = this.cloneRequestState();
+  		if (count) headers.append("Prefer", `count=${count}`);
+  		if (!defaultToNull) headers.append("Prefer", `missing=default`);
   		if (Array.isArray(values)) {
   			const columns = values.reduce((acc, x) => acc.concat(Object.keys(x)), []);
   			if (columns.length > 0) {
   				const uniqueColumns = [...new Set(columns)].map((column) => `"${column}"`);
-  				this.url.searchParams.set("columns", uniqueColumns.join(","));
+  				url.searchParams.set("columns", uniqueColumns.join(","));
   			}
   		}
   		return new PostgrestFilterBuilder({
   			method,
-  			url: this.url,
-  			headers: this.headers,
+  			url,
+  			headers,
   			schema: this.schema,
   			body: values,
-  			fetch: (_this$fetch = this.fetch) !== null && _this$fetch !== void 0 ? _this$fetch : fetch
+  			fetch: (_this$fetch = this.fetch) !== null && _this$fetch !== void 0 ? _this$fetch : fetch,
+  			urlLengthLimit: this.urlLengthLimit
   		});
   	}
   	/**
@@ -1323,28 +2181,153 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	* //   error: null
   	* // }
   	* ```
+  	*
+  	* @category Database
+  	*
+  	* @remarks
+  	* - Primary keys must be included in `values` to use upsert.
+  	*
+  	* @example Upsert your data
+  	* ```ts
+  	* const { data, error } = await supabase
+  	*   .from('instruments')
+  	*   .upsert({ id: 1, name: 'piano' })
+  	*   .select()
+  	* ```
+  	*
+  	* @exampleSql Upsert your data
+  	* ```sql
+  	* create table
+  	*   instruments (id int8 primary key, name text);
+  	*
+  	* insert into
+  	*   instruments (id, name)
+  	* values
+  	*   (1, 'harpsichord');
+  	* ```
+  	*
+  	* @exampleResponse Upsert your data
+  	* ```json
+  	* {
+  	*   "data": [
+  	*     {
+  	*       "id": 1,
+  	*       "name": "piano"
+  	*     }
+  	*   ],
+  	*   "status": 201,
+  	*   "statusText": "Created"
+  	* }
+  	* ```
+  	*
+  	* @example Bulk Upsert your data
+  	* ```ts
+  	* const { data, error } = await supabase
+  	*   .from('instruments')
+  	*   .upsert([
+  	*     { id: 1, name: 'piano' },
+  	*     { id: 2, name: 'harp' },
+  	*   ])
+  	*   .select()
+  	* ```
+  	*
+  	* @exampleSql Bulk Upsert your data
+  	* ```sql
+  	* create table
+  	*   instruments (id int8 primary key, name text);
+  	*
+  	* insert into
+  	*   instruments (id, name)
+  	* values
+  	*   (1, 'harpsichord');
+  	* ```
+  	*
+  	* @exampleResponse Bulk Upsert your data
+  	* ```json
+  	* {
+  	*   "data": [
+  	*     {
+  	*       "id": 1,
+  	*       "name": "piano"
+  	*     },
+  	*     {
+  	*       "id": 2,
+  	*       "name": "harp"
+  	*     }
+  	*   ],
+  	*   "status": 201,
+  	*   "statusText": "Created"
+  	* }
+  	* ```
+  	*
+  	* @exampleDescription Upserting into tables with constraints
+  	* In the following query, `upsert()` implicitly uses the `id`
+  	* (primary key) column to determine conflicts. If there is no existing
+  	* row with the same `id`, `upsert()` inserts a new row, which
+  	* will fail in this case as there is already a row with `handle` `"saoirse"`.
+  	* Using the `onConflict` option, you can instruct `upsert()` to use
+  	* another column with a unique constraint to determine conflicts.
+  	*
+  	* @example Upserting into tables with constraints
+  	* ```ts
+  	* const { data, error } = await supabase
+  	*   .from('users')
+  	*   .upsert({ id: 42, handle: 'saoirse', display_name: 'Saoirse' })
+  	*   .select()
+  	* ```
+  	*
+  	* @exampleSql Upserting into tables with constraints
+  	* ```sql
+  	* create table
+  	*   users (
+  	*     id int8 generated by default as identity primary key,
+  	*     handle text not null unique,
+  	*     display_name text
+  	*   );
+  	*
+  	* insert into
+  	*   users (id, handle, display_name)
+  	* values
+  	*   (1, 'saoirse', null);
+  	* ```
+  	*
+  	* @exampleResponse Upserting into tables with constraints
+  	* ```json
+  	* {
+  	*   "error": {
+  	*     "code": "23505",
+  	*     "details": "Key (handle)=(saoirse) already exists.",
+  	*     "hint": null,
+  	*     "message": "duplicate key value violates unique constraint \"users_handle_key\""
+  	*   },
+  	*   "status": 409,
+  	*   "statusText": "Conflict"
+  	* }
+  	* ```
   	*/
   	upsert(values, { onConflict, ignoreDuplicates = false, count, defaultToNull = true } = {}) {
   		var _this$fetch2;
   		const method = "POST";
-  		this.headers.append("Prefer", `resolution=${ignoreDuplicates ? "ignore" : "merge"}-duplicates`);
-  		if (onConflict !== void 0) this.url.searchParams.set("on_conflict", onConflict);
-  		if (count) this.headers.append("Prefer", `count=${count}`);
-  		if (!defaultToNull) this.headers.append("Prefer", "missing=default");
+  		const { url, headers } = this.cloneRequestState();
+  		headers.append("Prefer", `resolution=${ignoreDuplicates ? "ignore" : "merge"}-duplicates`);
+  		if (onConflict !== void 0) url.searchParams.set("on_conflict", onConflict);
+  		if (count) headers.append("Prefer", `count=${count}`);
+  		if (!defaultToNull) headers.append("Prefer", "missing=default");
   		if (Array.isArray(values)) {
   			const columns = values.reduce((acc, x) => acc.concat(Object.keys(x)), []);
   			if (columns.length > 0) {
   				const uniqueColumns = [...new Set(columns)].map((column) => `"${column}"`);
-  				this.url.searchParams.set("columns", uniqueColumns.join(","));
+  				url.searchParams.set("columns", uniqueColumns.join(","));
   			}
   		}
   		return new PostgrestFilterBuilder({
   			method,
-  			url: this.url,
-  			headers: this.headers,
+  			url,
+  			headers,
   			schema: this.schema,
   			body: values,
-  			fetch: (_this$fetch2 = this.fetch) !== null && _this$fetch2 !== void 0 ? _this$fetch2 : fetch
+  			fetch: (_this$fetch2 = this.fetch) !== null && _this$fetch2 !== void 0 ? _this$fetch2 : fetch,
+  			urlLengthLimit: this.urlLengthLimit
   		});
   	}
   	/**
@@ -1367,18 +2350,138 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*
   	* `"estimated"`: Uses exact count for low numbers and planned count for high
   	* numbers.
+  	*
+  	* @category Database
+  	*
+  	* @remarks
+  	* - `update()` should always be combined with [Filters](/docs/reference/javascript/using-filters) to target the item(s) you wish to update.
+  	*
+  	* @example Updating your data
+  	* ```ts
+  	* const { error } = await supabase
+  	*   .from('instruments')
+  	*   .update({ name: 'piano' })
+  	*   .eq('id', 1)
+  	* ```
+  	*
+  	* @exampleSql Updating your data
+  	* ```sql
+  	* create table
+  	*   instruments (id int8 primary key, name text);
+  	*
+  	* insert into
+  	*   instruments (id, name)
+  	* values
+  	*   (1, 'harpsichord');
+  	* ```
+  	*
+  	* @exampleResponse Updating your data
+  	* ```json
+  	* {
+  	*   "status": 204,
+  	*   "statusText": "No Content"
+  	* }
+  	* ```
+  	*
+  	* @example Update a record and return it
+  	* ```ts
+  	* const { data, error } = await supabase
+  	*   .from('instruments')
+  	*   .update({ name: 'piano' })
+  	*   .eq('id', 1)
+  	*   .select()
+  	* ```
+  	*
+  	* @exampleSql Update a record and return it
+  	* ```sql
+  	* create table
+  	*   instruments (id int8 primary key, name text);
+  	*
+  	* insert into
+  	*   instruments (id, name)
+  	* values
+  	*   (1, 'harpsichord');
+  	* ```
+  	*
+  	* @exampleResponse Update a record and return it
+  	* ```json
+  	* {
+  	*   "data": [
+  	*     {
+  	*       "id": 1,
+  	*       "name": "piano"
+  	*     }
+  	*   ],
+  	*   "status": 200,
+  	*   "statusText": "OK"
+  	* }
+  	* ```
+  	*
+  	* @exampleDescription Updating JSON data
+  	* Postgres offers some
+  	* [operators](/docs/guides/database/json#query-the-jsonb-data) for
+  	* working with JSON data. Currently, it is only possible to update the entire JSON document.
+  	*
+  	* @example Updating JSON data
+  	* ```ts
+  	* const { data, error } = await supabase
+  	*   .from('users')
+  	*   .update({
+  	*     address: {
+  	*       street: 'Melrose Place',
+  	*       postcode: 90210
+  	*     }
+  	*   })
+  	*   .eq('address->postcode', 90210)
+  	*   .select()
+  	* ```
+  	*
+  	* @exampleSql Updating JSON data
+  	* ```sql
+  	* create table
+  	*   users (
+  	*     id int8 primary key,
+  	*     name text,
+  	*     address jsonb
+  	*   );
+  	*
+  	* insert into
+  	*   users (id, name, address)
+  	* values
+  	*   (1, 'Michael', '{ "postcode": 90210 }');
+  	* ```
+  	*
+  	* @exampleResponse Updating JSON data
+  	* ```json
+  	* {
+  	*   "data": [
+  	*     {
+  	*       "id": 1,
+  	*       "name": "Michael",
+  	*       "address": {
+  	*         "street": "Melrose Place",
+  	*         "postcode": 90210
+  	*       }
+  	*     }
+  	*   ],
+  	*   "status": 200,
+  	*   "statusText": "OK"
+  	* }
+  	* ```
   	*/
   	update(values, { count } = {}) {
   		var _this$fetch3;
   		const method = "PATCH";
-  		if (count) this.headers.append("Prefer", `count=${count}`);
+  		const { url, headers } = this.cloneRequestState();
+  		if (count) headers.append("Prefer", `count=${count}`);
   		return new PostgrestFilterBuilder({
   			method,
-  			url: this.url,
-  			headers: this.headers,
+  			url,
+  			headers,
   			schema: this.schema,
   			body: values,
-  			fetch: (_this$fetch3 = this.fetch) !== null && _this$fetch3 !== void 0 ? _this$fetch3 : fetch
+  			fetch: (_this$fetch3 = this.fetch) !== null && _this$fetch3 !== void 0 ? _this$fetch3 : fetch,
+  			urlLengthLimit: this.urlLengthLimit
   		});
   	}
   	/**
@@ -1403,16 +2506,84 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	delete({ count } = {}) {
   		var _this$fetch4;
   		const method = "DELETE";
-  		if (count) this.headers.append("Prefer", `count=${count}`);
+  		const { url, headers } = this.cloneRequestState();
+  		if (count) headers.append("Prefer", `count=${count}`);
   		return new PostgrestFilterBuilder({
   			method,
-  			url: this.url,
-  			headers: this.headers,
+  			url,
+  			headers,
   			schema: this.schema,
-  			fetch: (_this$fetch4 = this.fetch) !== null && _this$fetch4 !== void 0 ? _this$fetch4 : fetch
+  			fetch: (_this$fetch4 = this.fetch) !== null && _this$fetch4 !== void 0 ? _this$fetch4 : fetch,
+  			urlLengthLimit: this.urlLengthLimit
   		});
   	}
   };
+
+  //#endregion
+  //#region \0@oxc-project+runtime@0.101.0/helpers/typeof.js
+  function _typeof$2(o) {
+  	"@babel/helpers - typeof";
+  	return _typeof$2 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o$1) {
+  		return typeof o$1;
+  	} : function(o$1) {
+  		return o$1 && "function" == typeof Symbol && o$1.constructor === Symbol && o$1 !== Symbol.prototype ? "symbol" : typeof o$1;
+  	}, _typeof$2(o);
+  }
+
+  //#endregion
+  //#region \0@oxc-project+runtime@0.101.0/helpers/toPrimitive.js
+  function toPrimitive$2(t, r) {
+  	if ("object" != _typeof$2(t) || !t) return t;
+  	var e = t[Symbol.toPrimitive];
+  	if (void 0 !== e) {
+  		var i = e.call(t, r);
+  		if ("object" != _typeof$2(i)) return i;
+  		throw new TypeError("@@toPrimitive must return a primitive value.");
+  	}
+  	return ("string" === r ? String : Number)(t);
+  }
+
+  //#endregion
+  //#region \0@oxc-project+runtime@0.101.0/helpers/toPropertyKey.js
+  function toPropertyKey$2(t) {
+  	var i = toPrimitive$2(t, "string");
+  	return "symbol" == _typeof$2(i) ? i : i + "";
+  }
+
+  //#endregion
+  //#region \0@oxc-project+runtime@0.101.0/helpers/defineProperty.js
+  function _defineProperty$2(e, r, t) {
+  	return (r = toPropertyKey$2(r)) in e ? Object.defineProperty(e, r, {
+  		value: t,
+  		enumerable: true,
+  		configurable: true,
+  		writable: true
+  	}) : e[r] = t, e;
+  }
+
+  //#endregion
+  //#region \0@oxc-project+runtime@0.101.0/helpers/objectSpread2.js
+  function ownKeys$2(e, r) {
+  	var t = Object.keys(e);
+  	if (Object.getOwnPropertySymbols) {
+  		var o = Object.getOwnPropertySymbols(e);
+  		r && (o = o.filter(function(r$1) {
+  			return Object.getOwnPropertyDescriptor(e, r$1).enumerable;
+  		})), t.push.apply(t, o);
+  	}
+  	return t;
+  }
+  function _objectSpread2$2(e) {
+  	for (var r = 1; r < arguments.length; r++) {
+  		var t = null != arguments[r] ? arguments[r] : {};
+  		r % 2 ? ownKeys$2(Object(t), true).forEach(function(r$1) {
+  			_defineProperty$2(e, r$1, t[r$1]);
+  		}) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys$2(Object(t)).forEach(function(r$1) {
+  			Object.defineProperty(e, r$1, Object.getOwnPropertyDescriptor(t, r$1));
+  		});
+  	}
+  	return e;
+  }
 
   //#endregion
   //#region src/PostgrestClient.ts
@@ -1435,6 +2606,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	* @param options.headers - Custom headers
   	* @param options.schema - Postgres schema to switch to
   	* @param options.fetch - Custom fetch
+  	* @param options.timeout - Optional timeout in milliseconds for all requests. When set, requests will automatically abort after this duration to prevent indefinite hangs.
+  	* @param options.urlLengthLimit - Maximum URL length in characters before warnings/errors are triggered. Defaults to 8000.
   	* @example
   	* ```ts
   	* import PostgrestClient from '@supabase/postgrest-js'
@@ -1442,14 +2615,38 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	* const postgrest = new PostgrestClient('https://xyzcompany.supabase.co/rest/v1', {
   	*   headers: { apikey: 'public-anon-key' },
   	*   schema: 'public',
+  	*   timeout: 30000, // 30 second timeout
   	* })
   	* ```
   	*/
-  	constructor(url, { headers = {}, schema, fetch: fetch$1 } = {}) {
+  	constructor(url, { headers = {}, schema, fetch: fetch$1, timeout, urlLengthLimit = 8e3 } = {}) {
   		this.url = url;
   		this.headers = new Headers(headers);
   		this.schemaName = schema;
-  		this.fetch = fetch$1;
+  		this.urlLengthLimit = urlLengthLimit;
+  		const originalFetch = fetch$1 !== null && fetch$1 !== void 0 ? fetch$1 : globalThis.fetch;
+  		if (timeout !== void 0 && timeout > 0) this.fetch = (input, init) => {
+  			const controller = new AbortController();
+  			const timeoutId = setTimeout(() => controller.abort(), timeout);
+  			const existingSignal = init === null || init === void 0 ? void 0 : init.signal;
+  			if (existingSignal) {
+  				if (existingSignal.aborted) {
+  					clearTimeout(timeoutId);
+  					return originalFetch(input, init);
+  				}
+  				const abortHandler = () => {
+  					clearTimeout(timeoutId);
+  					controller.abort();
+  				};
+  				existingSignal.addEventListener("abort", abortHandler, { once: true });
+  				return originalFetch(input, _objectSpread2$2(_objectSpread2$2({}, init), {}, { signal: controller.signal })).finally(() => {
+  					clearTimeout(timeoutId);
+  					existingSignal.removeEventListener("abort", abortHandler);
+  				});
+  			}
+  			return originalFetch(input, _objectSpread2$2(_objectSpread2$2({}, init), {}, { signal: controller.signal })).finally(() => clearTimeout(timeoutId));
+  		};
+  		else this.fetch = originalFetch;
   	}
   	/**
   	* Perform a query on a table or a view.
@@ -1461,7 +2658,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   		return new PostgrestQueryBuilder(new URL(`${this.url}/${relation}`), {
   			headers: new Headers(this.headers),
   			schema: this.schemaName,
-  			fetch: this.fetch
+  			fetch: this.fetch,
+  			urlLengthLimit: this.urlLengthLimit
   		});
   	}
   	/**
@@ -1475,7 +2673,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   		return new PostgrestClient(this.url, {
   			headers: this.headers,
   			schema,
-  			fetch: this.fetch
+  			fetch: this.fetch,
+  			urlLengthLimit: this.urlLengthLimit
   		});
   	}
   	/**
@@ -1515,7 +2714,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   		let method;
   		const url = new URL(`${this.url}/rpc/${fn}`);
   		let body;
-  		if (head || get) {
+  		const _isObject = (v) => v !== null && typeof v === "object" && (!Array.isArray(v) || v.some(_isObject));
+  		const _hasObjectArg = head && Object.values(args).some(_isObject);
+  		if (_hasObjectArg) {
+  			method = "POST";
+  			body = args;
+  		} else if (head || get) {
   			method = head ? "HEAD" : "GET";
   			Object.entries(args).filter(([_, value]) => value !== void 0).map(([name, value]) => [name, Array.isArray(value) ? `{${value.join(",")}}` : `${value}`]).forEach(([name, value]) => {
   				url.searchParams.append(name, value);
@@ -1525,17 +2729,23 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   			body = args;
   		}
   		const headers = new Headers(this.headers);
-  		if (count) headers.set("Prefer", `count=${count}`);
+  		if (_hasObjectArg) headers.set("Prefer", count ? `count=${count},return=minimal` : "return=minimal");
+  		else if (count) headers.set("Prefer", `count=${count}`);
   		return new PostgrestFilterBuilder({
   			method,
   			url,
   			headers,
   			schema: this.schemaName,
   			body,
-  			fetch: (_this$fetch = this.fetch) !== null && _this$fetch !== void 0 ? _this$fetch : fetch
+  			fetch: (_this$fetch = this.fetch) !== null && _this$fetch !== void 0 ? _this$fetch : fetch,
+  			urlLengthLimit: this.urlLengthLimit
   		});
   	}
   };
+
+  var global$1 = (typeof global !== "undefined" ? global :
+    typeof self !== "undefined" ? self :
+    typeof window !== "undefined" ? window : {});
 
   /**
    * Utilities for creating WebSocket instances across runtimes.
@@ -1573,9 +2783,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                   workaround: 'Use serverless functions or a different deployment target for WebSocket functionality.',
               };
           }
-          if (typeof browser$1 !== 'undefined') {
-              // Use dynamic property access to avoid Next.js Edge Runtime static analysis warnings
-              const processVersions = browser$1['versions'];
+          // Use dynamic property access to avoid Next.js Edge Runtime static analysis warnings
+          const _process = globalThis['process'];
+          if (_process) {
+              const processVersions = _process['versions'];
               if (processVersions && processVersions['node']) {
                   // Remove 'v' prefix if present and parse the major version
                   const versionString = processVersions['node'];
@@ -1668,12 +2879,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   // - Debugging and support (identifying which version is running)
   // - Telemetry and logging (version reporting in errors/analytics)
   // - Ensuring build artifacts match the published package version
-  const version$3 = '2.89.0';
+  const version$3 = '2.99.1';
 
   const DEFAULT_VERSION = `realtime-js/${version$3}`;
   const VSN_1_0_0 = '1.0.0';
   const VSN_2_0_0 = '2.0.0';
-  const DEFAULT_VSN = VSN_1_0_0;
+  const DEFAULT_VSN = VSN_2_0_0;
   const DEFAULT_TIMEOUT = 10000;
   const WS_CLOSE_NORMAL = 1000;
   const MAX_PUSH_BUFFER_SIZE = 100;
@@ -3120,7 +4331,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @param options.params The optional params to pass when connecting.
        * @param options.headers Deprecated: headers cannot be set on websocket connections and this option will be removed in the future.
        * @param options.heartbeatIntervalMs The millisec interval to send a heartbeat message.
-       * @param options.heartbeatCallback The optional function to handle heartbeat status.
+       * @param options.heartbeatCallback The optional function to handle heartbeat status and latency.
        * @param options.logger The optional function for specialized logging, ie: logger: (kind, msg, data) => { console.log(`${kind}: ${msg}`, data) }
        * @param options.logLevel Sets the log level for Realtime
        * @param options.encode The function to encode outgoing messages. Defaults to JSON: (payload, callback) => callback(JSON.stringify(payload))
@@ -3128,6 +4339,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @param options.reconnectAfterMs he optional function that returns the millsec reconnect interval. Defaults to stepped backoff off.
        * @param options.worker Use Web Worker to set a side flow. Defaults to false.
        * @param options.workerUrl The URL of the worker script. Defaults to https://realtime.supabase.com/worker.js that includes a heartbeat event call to keep the connection alive.
+       * @param options.vsn The protocol version to use when connecting. Supported versions are "1.0.0" and "2.0.0". Defaults to "2.0.0".
        * @example
        * ```ts
        * import RealtimeClient from '@supabase/realtime-js'
@@ -3172,6 +4384,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           this._connectionState = 'disconnected';
           this._wasManualDisconnect = false;
           this._authPromise = null;
+          this._heartbeatSentAt = null;
           /**
            * Use either custom fetch, if provided, or default fetch to make HTTP requests
            *
@@ -3446,6 +4659,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           // Handle heartbeat timeout and force reconnection if needed
           if (this.pendingHeartbeatRef) {
               this.pendingHeartbeatRef = null;
+              this._heartbeatSentAt = null;
               this.log('transport', 'heartbeat timeout. Attempting to re-establish connection');
               try {
                   this.heartbeatCallback('timeout');
@@ -3465,6 +4679,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               return;
           }
           // Send heartbeat message to server
+          this._heartbeatSentAt = Date.now();
           this.pendingHeartbeatRef = this._makeRef();
           this.push({
               topic: 'phoenix',
@@ -3537,16 +4752,18 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       _onConnMessage(rawMessage) {
           this.decode(rawMessage.data, (msg) => {
               // Handle heartbeat responses
-              if (msg.topic === 'phoenix' && msg.event === 'phx_reply') {
+              if (msg.topic === 'phoenix' &&
+                  msg.event === 'phx_reply' &&
+                  msg.ref &&
+                  msg.ref === this.pendingHeartbeatRef) {
+                  const latency = this._heartbeatSentAt ? Date.now() - this._heartbeatSentAt : undefined;
                   try {
-                      this.heartbeatCallback(msg.payload.status === 'ok' ? 'ok' : 'error');
+                      this.heartbeatCallback(msg.payload.status === 'ok' ? 'ok' : 'error', latency);
                   }
                   catch (e) {
                       this.log('error', 'error in heartbeat callback', e);
                   }
-              }
-              // Handle pending heartbeat reference cleanup
-              if (msg.ref && msg.ref === this.pendingHeartbeatRef) {
+                  this._heartbeatSentAt = null;
                   this.pendingHeartbeatRef = null;
               }
               // Log incoming message
@@ -3637,6 +4854,34 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               (this.accessToken && !this.accessTokenValue ? this.setAuth() : Promise.resolve());
           authPromise
               .then(() => {
+              // When subscribe() is called before the accessToken callback has
+              // resolved (common on React Native / Expo where token storage is
+              // async), the phx_join payload captured at subscribe()-time will
+              // have no access_token.  By this point auth has settled and
+              // this.accessTokenValue holds the real JWT.
+              //
+              // The stale join messages sitting in sendBuffer captured the old
+              // (token-less) payload in a closure, so we cannot simply flush
+              // them.  Instead we:
+              //   1. Patch each channel's joinPush payload with the real token
+              //   2. Drop the stale buffered messages
+              //   3. Re-send the join for any channel still in "joining" state
+              //
+              // On browsers this is a harmless no-op: accessTokenValue was
+              // already set synchronously before subscribe() ran, so the join
+              // payload already had the correct token.
+              if (this.accessTokenValue) {
+                  this.channels.forEach((channel) => {
+                      channel.updateJoinPayload({ access_token: this.accessTokenValue });
+                  });
+                  this.sendBuffer = [];
+                  this.channels.forEach((channel) => {
+                      if (channel._isJoining()) {
+                          channel.joinPush.sent = false;
+                          channel.joinPush.send();
+                      }
+                  });
+              }
               this.flushSendBuffer();
           })
               .catch((e) => {
@@ -3714,6 +4959,12 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           this.log('transport', `${error}`);
           this._triggerChanError();
           this._triggerStateCallbacks('error', error);
+          try {
+              this.heartbeatCallback('error');
+          }
+          catch (e) {
+              this.log('error', 'error in heartbeat callback', e);
+          }
       }
       /** @internal */
       _triggerChanError() {
@@ -6433,21 +7684,37 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
   };
 
-  //#region src/lib/errors.ts
+  //#region src/lib/common/errors.ts
+  /**
+  * Base error class for all Storage errors
+  * Supports both 'storage' and 'vectors' namespaces
+  */
   var StorageError = class extends Error {
-  	constructor(message) {
+  	constructor(message, namespace = "storage", status, statusCode) {
   		super(message);
   		this.__isStorageError = true;
-  		this.name = "StorageError";
+  		this.namespace = namespace;
+  		this.name = namespace === "vectors" ? "StorageVectorsError" : "StorageError";
+  		this.status = status;
+  		this.statusCode = statusCode;
   	}
   };
+  /**
+  * Type guard to check if an error is a StorageError
+  * @param error - The error to check
+  * @returns True if the error is a StorageError
+  */
   function isStorageError(error) {
   	return typeof error === "object" && error !== null && "__isStorageError" in error;
   }
+  /**
+  * API error returned from Storage service
+  * Includes HTTP status code and service-specific error code
+  */
   var StorageApiError = class extends StorageError {
-  	constructor(message, status, statusCode) {
-  		super(message);
-  		this.name = "StorageApiError";
+  	constructor(message, status, statusCode, namespace = "storage") {
+  		super(message, namespace, status, statusCode);
+  		this.name = namespace === "vectors" ? "StorageVectorsApiError" : "StorageApiError";
   		this.status = status;
   		this.statusCode = statusCode;
   	}
@@ -6460,23 +7727,51 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   		};
   	}
   };
+  /**
+  * Unknown error that doesn't match expected error patterns
+  * Wraps the original error for debugging
+  */
   var StorageUnknownError = class extends StorageError {
-  	constructor(message, originalError) {
-  		super(message);
-  		this.name = "StorageUnknownError";
+  	constructor(message, originalError, namespace = "storage") {
+  		super(message, namespace);
+  		this.name = namespace === "vectors" ? "StorageVectorsUnknownError" : "StorageUnknownError";
   		this.originalError = originalError;
   	}
   };
 
   //#endregion
-  //#region src/lib/helpers.ts
-  const resolveFetch$1$1 = (customFetch) => {
+  //#region src/lib/common/helpers.ts
+  /**
+  * Resolves the fetch implementation to use
+  * Uses custom fetch if provided, otherwise uses native fetch
+  *
+  * @param customFetch - Optional custom fetch implementation
+  * @returns Resolved fetch function
+  */
+  const resolveFetch$2 = (customFetch) => {
   	if (customFetch) return (...args) => customFetch(...args);
   	return (...args) => fetch(...args);
   };
-  const resolveResponse$1 = () => {
-  	return Response;
+  /**
+  * Determine if input is a plain object
+  * An object is plain if it's created by either {}, new Object(), or Object.create(null)
+  *
+  * @param value - Value to check
+  * @returns True if value is a plain object
+  * @source https://github.com/sindresorhus/is-plain-obj
+  */
+  const isPlainObject = (value) => {
+  	if (typeof value !== "object" || value === null) return false;
+  	const prototype = Object.getPrototypeOf(value);
+  	return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in value) && !(Symbol.iterator in value);
   };
+  /**
+  * Recursively converts object keys from snake_case to camelCase
+  * Used for normalizing API responses
+  *
+  * @param item - Object to convert
+  * @returns Converted object with camelCase keys
+  */
   const recursiveToCamel = (item) => {
   	if (Array.isArray(item)) return item.map((el) => recursiveToCamel(el));
   	else if (typeof item === "function" || item !== Object(item)) return item;
@@ -6486,16 +7781,6 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   		result[newKey] = recursiveToCamel(value);
   	});
   	return result;
-  };
-  /**
-  * Determine if input is a plain object
-  * An object is plain if it's created by either {}, new Object(), or Object.create(null)
-  * source: https://github.com/sindresorhus/is-plain-obj
-  */
-  const isPlainObject$1 = (value) => {
-  	if (typeof value !== "object" || value === null) return false;
-  	const prototype = Object.getPrototypeOf(value);
-  	return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in value) && !(Symbol.iterator in value);
   };
   /**
   * Validates if a given bucket name is valid according to Supabase Storage API rules
@@ -6587,58 +7872,207 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   //#endregion
-  //#region src/lib/fetch.ts
+  //#region src/lib/common/fetch.ts
+  /**
+  * Extracts error message from various error response formats
+  * @param err - Error object from API
+  * @returns Human-readable error message
+  */
   const _getErrorMessage$1 = (err) => {
   	var _err$error;
   	return err.msg || err.message || err.error_description || (typeof err.error === "string" ? err.error : (_err$error = err.error) === null || _err$error === void 0 ? void 0 : _err$error.message) || JSON.stringify(err);
   };
-  const handleError$1 = async (error, reject, options) => {
-  	if (error instanceof await resolveResponse$1() && !(options === null || options === void 0 ? void 0 : options.noResolveJson)) error.json().then((err) => {
-  		const status = error.status || 500;
-  		const statusCode = (err === null || err === void 0 ? void 0 : err.statusCode) || status + "";
-  		reject(new StorageApiError(_getErrorMessage$1(err), status, statusCode));
-  	}).catch((err) => {
-  		reject(new StorageUnknownError(_getErrorMessage$1(err), err));
-  	});
-  	else reject(new StorageUnknownError(_getErrorMessage$1(error), error));
+  /**
+  * Handles fetch errors and converts them to Storage error types
+  * @param error - The error caught from fetch
+  * @param reject - Promise rejection function
+  * @param options - Fetch options that may affect error handling
+  * @param namespace - Error namespace ('storage' or 'vectors')
+  */
+  const handleError$1 = async (error, reject, options, namespace) => {
+  	if (error && typeof error === "object" && "status" in error && "ok" in error && typeof error.status === "number") {
+  		const responseError = error;
+  		const status = responseError.status || 500;
+  		if (typeof responseError.json === "function") responseError.json().then((err) => {
+  			const statusCode = (err === null || err === void 0 ? void 0 : err.statusCode) || (err === null || err === void 0 ? void 0 : err.code) || status + "";
+  			reject(new StorageApiError(_getErrorMessage$1(err), status, statusCode, namespace));
+  		}).catch(() => {
+  			if (namespace === "vectors") {
+  				const statusCode = status + "";
+  				reject(new StorageApiError(responseError.statusText || `HTTP ${status} error`, status, statusCode, namespace));
+  			} else {
+  				const statusCode = status + "";
+  				reject(new StorageApiError(responseError.statusText || `HTTP ${status} error`, status, statusCode, namespace));
+  			}
+  		});
+  		else {
+  			const statusCode = status + "";
+  			reject(new StorageApiError(responseError.statusText || `HTTP ${status} error`, status, statusCode, namespace));
+  		}
+  	} else reject(new StorageUnknownError(_getErrorMessage$1(error), error, namespace));
   };
+  /**
+  * Builds request parameters for fetch calls
+  * @param method - HTTP method
+  * @param options - Custom fetch options
+  * @param parameters - Additional fetch parameters like AbortSignal
+  * @param body - Request body (will be JSON stringified if plain object)
+  * @returns Complete fetch request parameters
+  */
   const _getRequestParams$1 = (method, options, parameters, body) => {
   	const params = {
   		method,
   		headers: (options === null || options === void 0 ? void 0 : options.headers) || {}
   	};
-  	if (method === "GET" || !body) return params;
-  	if (isPlainObject$1(body)) {
+  	if (method === "GET" || method === "HEAD" || !body) return _objectSpread2$1(_objectSpread2$1({}, params), parameters);
+  	if (isPlainObject(body)) {
   		params.headers = _objectSpread2$1({ "Content-Type": "application/json" }, options === null || options === void 0 ? void 0 : options.headers);
   		params.body = JSON.stringify(body);
   	} else params.body = body;
   	if (options === null || options === void 0 ? void 0 : options.duplex) params.duplex = options.duplex;
   	return _objectSpread2$1(_objectSpread2$1({}, params), parameters);
   };
-  async function _handleRequest$1(fetcher, method, url, options, parameters, body) {
+  /**
+  * Internal request handler that wraps fetch with error handling
+  * @param fetcher - Fetch function to use
+  * @param method - HTTP method
+  * @param url - Request URL
+  * @param options - Custom fetch options
+  * @param parameters - Additional fetch parameters
+  * @param body - Request body
+  * @param namespace - Error namespace ('storage' or 'vectors')
+  * @returns Promise with parsed response or error
+  */
+  async function _handleRequest$1(fetcher, method, url, options, parameters, body, namespace) {
   	return new Promise((resolve, reject) => {
   		fetcher(url, _getRequestParams$1(method, options, parameters, body)).then((result) => {
   			if (!result.ok) throw result;
   			if (options === null || options === void 0 ? void 0 : options.noResolveJson) return result;
+  			if (namespace === "vectors") {
+  				const contentType = result.headers.get("content-type");
+  				if (result.headers.get("content-length") === "0" || result.status === 204) return {};
+  				if (!contentType || !contentType.includes("application/json")) return {};
+  			}
   			return result.json();
-  		}).then((data) => resolve(data)).catch((error) => handleError$1(error, reject, options));
+  		}).then((data) => resolve(data)).catch((error) => handleError$1(error, reject, options, namespace));
   	});
   }
-  async function get(fetcher, url, options, parameters) {
-  	return _handleRequest$1(fetcher, "GET", url, options, parameters);
+  /**
+  * Creates a fetch API with the specified namespace
+  * @param namespace - Error namespace ('storage' or 'vectors')
+  * @returns Object with HTTP method functions
+  */
+  function createFetchApi(namespace = "storage") {
+  	return {
+  		get: async (fetcher, url, options, parameters) => {
+  			return _handleRequest$1(fetcher, "GET", url, options, parameters, void 0, namespace);
+  		},
+  		post: async (fetcher, url, body, options, parameters) => {
+  			return _handleRequest$1(fetcher, "POST", url, options, parameters, body, namespace);
+  		},
+  		put: async (fetcher, url, body, options, parameters) => {
+  			return _handleRequest$1(fetcher, "PUT", url, options, parameters, body, namespace);
+  		},
+  		head: async (fetcher, url, options, parameters) => {
+  			return _handleRequest$1(fetcher, "HEAD", url, _objectSpread2$1(_objectSpread2$1({}, options), {}, { noResolveJson: true }), parameters, void 0, namespace);
+  		},
+  		remove: async (fetcher, url, body, options, parameters) => {
+  			return _handleRequest$1(fetcher, "DELETE", url, options, parameters, body, namespace);
+  		}
+  	};
   }
-  async function post$1(fetcher, url, body, options, parameters) {
-  	return _handleRequest$1(fetcher, "POST", url, options, parameters, body);
-  }
-  async function put(fetcher, url, body, options, parameters) {
-  	return _handleRequest$1(fetcher, "PUT", url, options, parameters, body);
-  }
-  async function head(fetcher, url, options, parameters) {
-  	return _handleRequest$1(fetcher, "HEAD", url, _objectSpread2$1(_objectSpread2$1({}, options), {}, { noResolveJson: true }), parameters);
-  }
-  async function remove(fetcher, url, body, options, parameters) {
-  	return _handleRequest$1(fetcher, "DELETE", url, options, parameters, body);
-  }
+  const defaultApi = createFetchApi("storage");
+  const { get, post, put, head, remove } = defaultApi;
+  const vectorsApi = createFetchApi("vectors");
+
+  //#endregion
+  //#region src/lib/common/BaseApiClient.ts
+  /**
+  * @ignore
+  * Base API client class for all Storage API classes
+  * Provides common infrastructure for error handling and configuration
+  *
+  * @typeParam TError - The error type (StorageError or subclass)
+  */
+  var BaseApiClient = class {
+  	/**
+  	* Creates a new BaseApiClient instance
+  	* @param url - Base URL for API requests
+  	* @param headers - Default headers for API requests
+  	* @param fetch - Optional custom fetch implementation
+  	* @param namespace - Error namespace ('storage' or 'vectors')
+  	*/
+  	constructor(url, headers = {}, fetch$1, namespace = "storage") {
+  		this.shouldThrowOnError = false;
+  		this.url = url;
+  		this.headers = headers;
+  		this.fetch = resolveFetch$2(fetch$1);
+  		this.namespace = namespace;
+  	}
+  	/**
+  	* Enable throwing errors instead of returning them.
+  	* When enabled, errors are thrown instead of returned in { data, error } format.
+  	*
+  	* @returns this - For method chaining
+  	*/
+  	throwOnError() {
+  		this.shouldThrowOnError = true;
+  		return this;
+  	}
+  	/**
+  	* Set an HTTP header for the request.
+  	* Creates a shallow copy of headers to avoid mutating shared state.
+  	*
+  	* @param name - Header name
+  	* @param value - Header value
+  	* @returns this - For method chaining
+  	*/
+  	setHeader(name, value) {
+  		this.headers = _objectSpread2$1(_objectSpread2$1({}, this.headers), {}, { [name]: value });
+  		return this;
+  	}
+  	/**
+  	* Handles API operation with standardized error handling
+  	* Eliminates repetitive try-catch blocks across all API methods
+  	*
+  	* This wrapper:
+  	* 1. Executes the operation
+  	* 2. Returns { data, error: null } on success
+  	* 3. Returns { data: null, error } on failure (if shouldThrowOnError is false)
+  	* 4. Throws error on failure (if shouldThrowOnError is true)
+  	*
+  	* @typeParam T - The expected data type from the operation
+  	* @param operation - Async function that performs the API call
+  	* @returns Promise with { data, error } tuple
+  	*
+  	* @example
+  	* ```typescript
+  	* async listBuckets() {
+  	*   return this.handleOperation(async () => {
+  	*     return await get(this.fetch, `${this.url}/bucket`, {
+  	*       headers: this.headers,
+  	*     })
+  	*   })
+  	* }
+  	* ```
+  	*/
+  	async handleOperation(operation) {
+  		var _this = this;
+  		try {
+  			return {
+  				data: await operation(),
+  				error: null
+  			};
+  		} catch (error) {
+  			if (_this.shouldThrowOnError) throw error;
+  			if (isStorageError(error)) return {
+  				data: null,
+  				error
+  			};
+  			throw error;
+  		}
+  	}
+  };
 
   //#endregion
   //#region src/packages/StreamDownloadBuilder.ts
@@ -6728,22 +8162,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	contentType: "text/plain;charset=UTF-8",
   	upsert: false
   };
-  var StorageFileApi = class {
+  var StorageFileApi = class extends BaseApiClient {
   	constructor(url, headers = {}, bucketId, fetch$1) {
-  		this.shouldThrowOnError = false;
-  		this.url = url;
-  		this.headers = headers;
+  		super(url, headers, fetch$1, "storage");
   		this.bucketId = bucketId;
-  		this.fetch = resolveFetch$1$1(fetch$1);
-  	}
-  	/**
-  	* Enable throwing errors instead of returning them.
-  	*
-  	* @category File Buckets
-  	*/
-  	throwOnError() {
-  		this.shouldThrowOnError = true;
-  		return this;
   	}
   	/**
   	* Uploads a file to an existing bucket or replaces an existing file at the specified path with a new one.
@@ -6754,7 +8176,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*/
   	async uploadOrUpdate(method, path, fileBody, fileOptions) {
   		var _this = this;
-  		try {
+  		return _this.handleOperation(async () => {
   			let body;
   			const options = _objectSpread2$1(_objectSpread2$1({}, DEFAULT_FILE_OPTIONS), fileOptions);
   			let headers = _objectSpread2$1(_objectSpread2$1({}, _this.headers), method === "POST" && { "x-upsert": String(options.upsert) });
@@ -6778,23 +8200,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   			if (fileOptions === null || fileOptions === void 0 ? void 0 : fileOptions.headers) headers = _objectSpread2$1(_objectSpread2$1({}, headers), fileOptions.headers);
   			const cleanPath = _this._removeEmptyFolders(path);
   			const _path = _this._getFinalPath(cleanPath);
-  			const data = await (method == "PUT" ? put : post$1)(_this.fetch, `${_this.url}/object/${_path}`, body, _objectSpread2$1({ headers }, (options === null || options === void 0 ? void 0 : options.duplex) ? { duplex: options.duplex } : {}));
+  			const data = await (method == "PUT" ? put : post)(_this.fetch, `${_this.url}/object/${_path}`, body, _objectSpread2$1({ headers }, (options === null || options === void 0 ? void 0 : options.duplex) ? { duplex: options.duplex } : {}));
   			return {
-  				data: {
-  					path: cleanPath,
-  					id: data.Id,
-  					fullPath: data.Key
-  				},
-  				error: null
+  				path: cleanPath,
+  				id: data.Id,
+  				fullPath: data.Key
   			};
-  		} catch (error) {
-  			if (_this.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		});
   	}
   	/**
   	* Uploads a file to an existing bucket.
@@ -6880,7 +8292,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   		const _path = _this3._getFinalPath(cleanPath);
   		const url = new URL(_this3.url + `/object/upload/sign/${_path}`);
   		url.searchParams.set("token", token);
-  		try {
+  		return _this3.handleOperation(async () => {
   			let body;
   			const options = _objectSpread2$1({ upsert: DEFAULT_FILE_OPTIONS.upsert }, fileOptions);
   			const headers = _objectSpread2$1(_objectSpread2$1({}, _this3.headers), { "x-upsert": String(options.upsert) });
@@ -6897,20 +8309,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   				headers["content-type"] = options.contentType;
   			}
   			return {
-  				data: {
-  					path: cleanPath,
-  					fullPath: (await put(_this3.fetch, url.toString(), body, { headers })).Key
-  				},
-  				error: null
+  				path: cleanPath,
+  				fullPath: (await put(_this3.fetch, url.toString(), body, { headers })).Key
   			};
-  		} catch (error) {
-  			if (_this3.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		});
   	}
   	/**
   	* Creates a signed upload URL.
@@ -6944,30 +8346,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*/
   	async createSignedUploadUrl(path, options) {
   		var _this4 = this;
-  		try {
+  		return _this4.handleOperation(async () => {
   			let _path = _this4._getFinalPath(path);
   			const headers = _objectSpread2$1({}, _this4.headers);
   			if (options === null || options === void 0 ? void 0 : options.upsert) headers["x-upsert"] = "true";
-  			const data = await post$1(_this4.fetch, `${_this4.url}/object/upload/sign/${_path}`, {}, { headers });
+  			const data = await post(_this4.fetch, `${_this4.url}/object/upload/sign/${_path}`, {}, { headers });
   			const url = new URL(_this4.url + data.url);
   			const token = url.searchParams.get("token");
   			if (!token) throw new StorageError("No token returned by API");
   			return {
-  				data: {
-  					signedUrl: url.toString(),
-  					path,
-  					token
-  				},
-  				error: null
+  				signedUrl: url.toString(),
+  				path,
+  				token
   			};
-  		} catch (error) {
-  			if (_this4.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		});
   	}
   	/**
   	* Replaces an existing file at the specified path with a new one.
@@ -7045,24 +8437,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*/
   	async move(fromPath, toPath, options) {
   		var _this6 = this;
-  		try {
-  			return {
-  				data: await post$1(_this6.fetch, `${_this6.url}/object/move`, {
-  					bucketId: _this6.bucketId,
-  					sourceKey: fromPath,
-  					destinationKey: toPath,
-  					destinationBucket: options === null || options === void 0 ? void 0 : options.destinationBucket
-  				}, { headers: _this6.headers }),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this6.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this6.handleOperation(async () => {
+  			return await post(_this6.fetch, `${_this6.url}/object/move`, {
+  				bucketId: _this6.bucketId,
+  				sourceKey: fromPath,
+  				destinationKey: toPath,
+  				destinationBucket: options === null || options === void 0 ? void 0 : options.destinationBucket
+  			}, { headers: _this6.headers });
+  		});
   	}
   	/**
   	* Copies an existing file to a new path in the same bucket.
@@ -7093,24 +8475,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*/
   	async copy(fromPath, toPath, options) {
   		var _this7 = this;
-  		try {
-  			return {
-  				data: { path: (await post$1(_this7.fetch, `${_this7.url}/object/copy`, {
-  					bucketId: _this7.bucketId,
-  					sourceKey: fromPath,
-  					destinationKey: toPath,
-  					destinationBucket: options === null || options === void 0 ? void 0 : options.destinationBucket
-  				}, { headers: _this7.headers })).Key },
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this7.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this7.handleOperation(async () => {
+  			return { path: (await post(_this7.fetch, `${_this7.url}/object/copy`, {
+  				bucketId: _this7.bucketId,
+  				sourceKey: fromPath,
+  				destinationKey: toPath,
+  				destinationBucket: options === null || options === void 0 ? void 0 : options.destinationBucket
+  			}, { headers: _this7.headers })).Key };
+  		});
   	}
   	/**
   	* Creates a signed URL. Use a signed URL to share a file for a fixed amount of time.
@@ -7165,23 +8537,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*/
   	async createSignedUrl(path, expiresIn, options) {
   		var _this8 = this;
-  		try {
+  		return _this8.handleOperation(async () => {
   			let _path = _this8._getFinalPath(path);
-  			let data = await post$1(_this8.fetch, `${_this8.url}/object/sign/${_path}`, _objectSpread2$1({ expiresIn }, (options === null || options === void 0 ? void 0 : options.transform) ? { transform: options.transform } : {}), { headers: _this8.headers });
+  			let data = await post(_this8.fetch, `${_this8.url}/object/sign/${_path}`, _objectSpread2$1({ expiresIn }, (options === null || options === void 0 ? void 0 : options.transform) ? { transform: options.transform } : {}), { headers: _this8.headers });
   			const downloadQueryParam = (options === null || options === void 0 ? void 0 : options.download) ? `&download=${options.download === true ? "" : options.download}` : "";
-  			data = { signedUrl: encodeURI(`${_this8.url}${data.signedURL}${downloadQueryParam}`) };
-  			return {
-  				data,
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this8.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  			const returnedPath = (options === null || options === void 0 ? void 0 : options.transform) && data.signedURL.includes("/object/sign/") ? data.signedURL.replace("/object/sign/", "/render/image/sign/") : data.signedURL;
+  			return { signedUrl: encodeURI(`${_this8.url}${returnedPath}${downloadQueryParam}`) };
+  		});
   	}
   	/**
   	* Creates multiple signed URLs. Use a signed URL to share a file for a fixed amount of time.
@@ -7223,24 +8585,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*/
   	async createSignedUrls(paths, expiresIn, options) {
   		var _this9 = this;
-  		try {
-  			const data = await post$1(_this9.fetch, `${_this9.url}/object/sign/${_this9.bucketId}`, {
+  		return _this9.handleOperation(async () => {
+  			const data = await post(_this9.fetch, `${_this9.url}/object/sign/${_this9.bucketId}`, {
   				expiresIn,
   				paths
   			}, { headers: _this9.headers });
   			const downloadQueryParam = (options === null || options === void 0 ? void 0 : options.download) ? `&download=${options.download === true ? "" : options.download}` : "";
-  			return {
-  				data: data.map((datum) => _objectSpread2$1(_objectSpread2$1({}, datum), {}, { signedUrl: datum.signedURL ? encodeURI(`${_this9.url}${datum.signedURL}${downloadQueryParam}`) : null })),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this9.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  			return data.map((datum) => _objectSpread2$1(_objectSpread2$1({}, datum), {}, { signedUrl: datum.signedURL ? encodeURI(`${_this9.url}${datum.signedURL}${downloadQueryParam}`) : null }));
+  		});
   	}
   	/**
   	* Downloads a file from a private bucket. For public buckets, make a request to the URL returned from `getPublicUrl` instead.
@@ -7248,6 +8600,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	* @category File Buckets
   	* @param path The full path and file name of the file to be downloaded. For example `folder/image.png`.
   	* @param options.transform Transform the asset before serving it to the client.
+  	* @param parameters Additional fetch parameters like signal for cancellation. Supports standard fetch options including cache control.
   	* @returns BlobDownloadBuilder instance for downloading the file
   	*
   	* @example Download file
@@ -7279,8 +8632,27 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*     }
   	*   })
   	* ```
+  	*
+  	* @example Download with cache control (useful in Edge Functions)
+  	* ```js
+  	* const { data, error } = await supabase
+  	*   .storage
+  	*   .from('avatars')
+  	*   .download('folder/avatar1.png', {}, { cache: 'no-store' })
+  	* ```
+  	*
+  	* @example Download with abort signal
+  	* ```js
+  	* const controller = new AbortController()
+  	* setTimeout(() => controller.abort(), 5000)
+  	*
+  	* const { data, error } = await supabase
+  	*   .storage
+  	*   .from('avatars')
+  	*   .download('folder/avatar1.png', {}, { signal: controller.signal })
+  	* ```
   	*/
-  	download(path, options) {
+  	download(path, options, parameters) {
   		const renderPath = typeof (options === null || options === void 0 ? void 0 : options.transform) !== "undefined" ? "render/image/authenticated" : "object";
   		const transformationQuery = this.transformOptsToQueryString((options === null || options === void 0 ? void 0 : options.transform) || {});
   		const queryString = transformationQuery ? `?${transformationQuery}` : "";
@@ -7288,11 +8660,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   		const downloadFn = () => get(this.fetch, `${this.url}/${renderPath}/${_path}${queryString}`, {
   			headers: this.headers,
   			noResolveJson: true
-  		});
+  		}, parameters);
   		return new BlobDownloadBuilder(downloadFn, this.shouldThrowOnError);
   	}
   	/**
   	* Retrieves the details of an existing file.
+  	*
+  	* Returns detailed file metadata including size, content type, and timestamps.
+  	* Note: The API returns `last_modified` field, not `updated_at`.
   	*
   	* @category File Buckets
   	* @param path The file path, including the file name. For example `folder/image.png`.
@@ -7304,24 +8679,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*   .storage
   	*   .from('avatars')
   	*   .info('folder/avatar1.png')
+  	*
+  	* if (data) {
+  	*   console.log('Last modified:', data.lastModified)
+  	*   console.log('Size:', data.size)
+  	* }
   	* ```
   	*/
   	async info(path) {
   		var _this10 = this;
   		const _path = _this10._getFinalPath(path);
-  		try {
-  			return {
-  				data: recursiveToCamel(await get(_this10.fetch, `${_this10.url}/object/info/${_path}`, { headers: _this10.headers })),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this10.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this10.handleOperation(async () => {
+  			return recursiveToCamel(await get(_this10.fetch, `${_this10.url}/object/info/${_path}`, { headers: _this10.headers }));
+  		});
   	}
   	/**
   	* Checks the existence of a file.
@@ -7349,9 +8719,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   			};
   		} catch (error) {
   			if (_this11.shouldThrowOnError) throw error;
-  			if (isStorageError(error) && error instanceof StorageUnknownError) {
-  				const originalError = error.originalError;
-  				if ([400, 404].includes(originalError === null || originalError === void 0 ? void 0 : originalError.status)) return {
+  			if (isStorageError(error)) {
+  				var _error$originalError;
+  				const status = error instanceof StorageApiError ? error.status : error instanceof StorageUnknownError ? (_error$originalError = error.originalError) === null || _error$originalError === void 0 ? void 0 : _error$originalError.status : void 0;
+  				if (status !== void 0 && [400, 404].includes(status)) return {
   					data: false,
   					error
   				};
@@ -7424,6 +8795,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	/**
   	* Deletes files within the same bucket
   	*
+  	* Returns an array of FileObject entries for the deleted files. Note that deprecated
+  	* fields like `bucket_id` may or may not be present in the response - do not rely on them.
+  	*
   	* @category File Buckets
   	* @param paths An array of files to delete, including the path and file name. For example [`'folder/image.png'`].
   	* @returns Promise with response containing array of deleted file objects or error
@@ -7446,19 +8820,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*/
   	async remove(paths) {
   		var _this12 = this;
-  		try {
-  			return {
-  				data: await remove(_this12.fetch, `${_this12.url}/object/${_this12.bucketId}`, { prefixes: paths }, { headers: _this12.headers }),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this12.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this12.handleOperation(async () => {
+  			return await remove(_this12.fetch, `${_this12.url}/object/${_this12.bucketId}`, { prefixes: paths }, { headers: _this12.headers });
+  		});
   	}
   	/**
   	* Get file metadata
@@ -7472,11 +8836,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	/**
   	* Lists all the files and folders within a path of the bucket.
   	*
+  	* **Important:** For folder entries, fields like `id`, `updated_at`, `created_at`,
+  	* `last_accessed_at`, and `metadata` will be `null`. Only files have these fields populated.
+  	* Additionally, deprecated fields like `bucket_id`, `owner`, and `buckets` are NOT returned
+  	* by this method.
+  	*
   	* @category File Buckets
   	* @param path The folder path.
   	* @param options Search options including limit (defaults to 100), offset, sortBy, and search
   	* @param parameters Optional fetch parameters including signal for cancellation
-  	* @returns Promise with response containing array of files or error
+  	* @returns Promise with response containing array of files/folders or error
   	*
   	* @example List files in a bucket
   	* ```js
@@ -7488,9 +8857,20 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*     offset: 0,
   	*     sortBy: { column: 'name', order: 'asc' },
   	*   })
+  	*
+  	* // Handle files vs folders
+  	* data?.forEach(item => {
+  	*   if (item.id !== null) {
+  	*     // It's a file
+  	*     console.log('File:', item.name, 'Size:', item.metadata?.size)
+  	*   } else {
+  	*     // It's a folder
+  	*     console.log('Folder:', item.name)
+  	*   }
+  	* })
   	* ```
   	*
-  	* Response:
+  	* Response (file entry):
   	* ```json
   	* {
   	*   "data": [
@@ -7530,44 +8910,63 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*/
   	async list(path, options, parameters) {
   		var _this13 = this;
-  		try {
+  		return _this13.handleOperation(async () => {
   			const body = _objectSpread2$1(_objectSpread2$1(_objectSpread2$1({}, DEFAULT_SEARCH_OPTIONS), options), {}, { prefix: path || "" });
-  			return {
-  				data: await post$1(_this13.fetch, `${_this13.url}/object/list/${_this13.bucketId}`, body, { headers: _this13.headers }, parameters),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this13.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  			return await post(_this13.fetch, `${_this13.url}/object/list/${_this13.bucketId}`, body, { headers: _this13.headers }, parameters);
+  		});
   	}
   	/**
+  	* Lists all the files and folders within a bucket using the V2 API with pagination support.
+  	*
+  	* **Important:** Folder entries in the `folders` array only contain `name` and optionally `key` —
+  	* they have no `id`, timestamps, or `metadata` fields. Full file metadata is only available
+  	* on entries in the `objects` array.
+  	*
   	* @experimental this method signature might change in the future
   	*
   	* @category File Buckets
-  	* @param options search options
-  	* @param parameters
+  	* @param options Search options including prefix, cursor for pagination, limit, with_delimiter
+  	* @param parameters Optional fetch parameters including signal for cancellation
+  	* @returns Promise with response containing folders/objects arrays with pagination info or error
+  	*
+  	* @example List files with pagination
+  	* ```js
+  	* const { data, error } = await supabase
+  	*   .storage
+  	*   .from('avatars')
+  	*   .listV2({
+  	*     prefix: 'folder/',
+  	*     limit: 100,
+  	*   })
+  	*
+  	* // Handle pagination
+  	* if (data?.hasNext) {
+  	*   const nextPage = await supabase
+  	*     .storage
+  	*     .from('avatars')
+  	*     .listV2({
+  	*       prefix: 'folder/',
+  	*       cursor: data.nextCursor,
+  	*     })
+  	* }
+  	*
+  	* // Handle files vs folders
+  	* data?.objects.forEach(file => {
+  	*   if (file.id !== null) {
+  	*     console.log('File:', file.name, 'Size:', file.metadata?.size)
+  	*   }
+  	* })
+  	* data?.folders.forEach(folder => {
+  	*   console.log('Folder:', folder.name)
+  	* })
+  	* ```
   	*/
   	async listV2(options, parameters) {
   		var _this14 = this;
-  		try {
+  		return _this14.handleOperation(async () => {
   			const body = _objectSpread2$1({}, options);
-  			return {
-  				data: await post$1(_this14.fetch, `${_this14.url}/object/list-v2/${_this14.bucketId}`, body, { headers: _this14.headers }, parameters),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this14.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  			return await post(_this14.fetch, `${_this14.url}/object/list-v2/${_this14.bucketId}`, body, { headers: _this14.headers }, parameters);
+  		});
   	}
   	encodeMetadata(metadata) {
   		return JSON.stringify(metadata);
@@ -7595,33 +8994,23 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   //#endregion
   //#region src/lib/version.ts
-  const version$2 = "2.89.0";
+  const version$2 = "2.99.1";
 
   //#endregion
   //#region src/lib/constants.ts
-  const DEFAULT_HEADERS$1$1 = { "X-Client-Info": `storage-js/${version$2}` };
+  const DEFAULT_HEADERS$2 = { "X-Client-Info": `storage-js/${version$2}` };
 
   //#endregion
   //#region src/packages/StorageBucketApi.ts
-  var StorageBucketApi = class {
+  var StorageBucketApi = class extends BaseApiClient {
   	constructor(url, headers = {}, fetch$1, opts) {
-  		this.shouldThrowOnError = false;
   		const baseUrl = new URL(url);
   		if (opts === null || opts === void 0 ? void 0 : opts.useNewHostname) {
   			if (/supabase\.(co|in|red)$/.test(baseUrl.hostname) && !baseUrl.hostname.includes("storage.supabase.")) baseUrl.hostname = baseUrl.hostname.replace("supabase.", "storage.supabase.");
   		}
-  		this.url = baseUrl.href.replace(/\/$/, "");
-  		this.headers = _objectSpread2$1(_objectSpread2$1({}, DEFAULT_HEADERS$1$1), headers);
-  		this.fetch = resolveFetch$1$1(fetch$1);
-  	}
-  	/**
-  	* Enable throwing errors instead of returning them.
-  	*
-  	* @category File Buckets
-  	*/
-  	throwOnError() {
-  		this.shouldThrowOnError = true;
-  		return this;
+  		const finalUrl = baseUrl.href.replace(/\/$/, "");
+  		const finalHeaders = _objectSpread2$1(_objectSpread2$1({}, DEFAULT_HEADERS$2), headers);
+  		super(finalUrl, finalHeaders, fetch$1, "storage");
   	}
   	/**
   	* Retrieves the details of all Storage buckets within an existing project.
@@ -7657,20 +9046,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*/
   	async listBuckets(options) {
   		var _this = this;
-  		try {
+  		return _this.handleOperation(async () => {
   			const queryString = _this.listBucketOptionsToQueryString(options);
-  			return {
-  				data: await get(_this.fetch, `${_this.url}/bucket${queryString}`, { headers: _this.headers }),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  			return await get(_this.fetch, `${_this.url}/bucket${queryString}`, { headers: _this.headers });
+  		});
   	}
   	/**
   	* Retrieves the details of an existing Storage bucket.
@@ -7707,19 +9086,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*/
   	async getBucket(id) {
   		var _this2 = this;
-  		try {
-  			return {
-  				data: await get(_this2.fetch, `${_this2.url}/bucket/${id}`, { headers: _this2.headers }),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this2.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this2.handleOperation(async () => {
+  			return await get(_this2.fetch, `${_this2.url}/bucket/${id}`, { headers: _this2.headers });
+  		});
   	}
   	/**
   	* Creates a new Storage bucket
@@ -7760,26 +9129,16 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*/
   	async createBucket(id, options = { public: false }) {
   		var _this3 = this;
-  		try {
-  			return {
-  				data: await post$1(_this3.fetch, `${_this3.url}/bucket`, {
-  					id,
-  					name: id,
-  					type: options.type,
-  					public: options.public,
-  					file_size_limit: options.fileSizeLimit,
-  					allowed_mime_types: options.allowedMimeTypes
-  				}, { headers: _this3.headers }),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this3.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this3.handleOperation(async () => {
+  			return await post(_this3.fetch, `${_this3.url}/bucket`, {
+  				id,
+  				name: id,
+  				type: options.type,
+  				public: options.public,
+  				file_size_limit: options.fileSizeLimit,
+  				allowed_mime_types: options.allowedMimeTypes
+  			}, { headers: _this3.headers });
+  		});
   	}
   	/**
   	* Updates a Storage bucket
@@ -7818,25 +9177,15 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*/
   	async updateBucket(id, options) {
   		var _this4 = this;
-  		try {
-  			return {
-  				data: await put(_this4.fetch, `${_this4.url}/bucket/${id}`, {
-  					id,
-  					name: id,
-  					public: options.public,
-  					file_size_limit: options.fileSizeLimit,
-  					allowed_mime_types: options.allowedMimeTypes
-  				}, { headers: _this4.headers }),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this4.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this4.handleOperation(async () => {
+  			return await put(_this4.fetch, `${_this4.url}/bucket/${id}`, {
+  				id,
+  				name: id,
+  				public: options.public,
+  				file_size_limit: options.fileSizeLimit,
+  				allowed_mime_types: options.allowedMimeTypes
+  			}, { headers: _this4.headers });
+  		});
   	}
   	/**
   	* Removes all objects inside a single bucket.
@@ -7864,19 +9213,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*/
   	async emptyBucket(id) {
   		var _this5 = this;
-  		try {
-  			return {
-  				data: await post$1(_this5.fetch, `${_this5.url}/bucket/${id}/empty`, {}, { headers: _this5.headers }),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this5.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this5.handleOperation(async () => {
+  			return await post(_this5.fetch, `${_this5.url}/bucket/${id}/empty`, {}, { headers: _this5.headers });
+  		});
   	}
   	/**
   	* Deletes an existing bucket. A bucket can't be deleted with existing objects inside it.
@@ -7905,19 +9244,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*/
   	async deleteBucket(id) {
   		var _this6 = this;
-  		try {
-  			return {
-  				data: await remove(_this6.fetch, `${_this6.url}/bucket/${id}`, {}, { headers: _this6.headers }),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this6.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this6.handleOperation(async () => {
+  			return await remove(_this6.fetch, `${_this6.url}/bucket/${id}`, {}, { headers: _this6.headers });
+  		});
   	}
   	listBucketOptionsToQueryString(options) {
   		const params = {};
@@ -7938,7 +9267,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   * Client class for managing Analytics Buckets using Iceberg tables
   * Provides methods for creating, listing, and deleting analytics buckets
   */
-  var StorageAnalyticsClient = class {
+  var StorageAnalyticsClient = class extends BaseApiClient {
   	/**
   	* @alpha
   	*
@@ -7957,25 +9286,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	* ```
   	*/
   	constructor(url, headers = {}, fetch$1) {
-  		this.shouldThrowOnError = false;
-  		this.url = url.replace(/\/$/, "");
-  		this.headers = _objectSpread2$1(_objectSpread2$1({}, DEFAULT_HEADERS$1$1), headers);
-  		this.fetch = resolveFetch$1$1(fetch$1);
-  	}
-  	/**
-  	* @alpha
-  	*
-  	* Enable throwing errors instead of returning them in the response
-  	* When enabled, failed operations will throw instead of returning { data: null, error }
-  	*
-  	* **Public alpha:** This API is part of a public alpha release and may not be available to your account type.
-  	*
-  	* @category Analytics Buckets
-  	* @returns This instance for method chaining
-  	*/
-  	throwOnError() {
-  		this.shouldThrowOnError = true;
-  		return this;
+  		const finalUrl = url.replace(/\/$/, "");
+  		const finalHeaders = _objectSpread2$1(_objectSpread2$1({}, DEFAULT_HEADERS$2), headers);
+  		super(finalUrl, finalHeaders, fetch$1, "storage");
   	}
   	/**
   	* @alpha
@@ -8013,19 +9326,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*/
   	async createBucket(name) {
   		var _this = this;
-  		try {
-  			return {
-  				data: await post$1(_this.fetch, `${_this.url}/bucket`, { name }, { headers: _this.headers }),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this.handleOperation(async () => {
+  			return await post(_this.fetch, `${_this.url}/bucket`, { name }, { headers: _this.headers });
+  		});
   	}
   	/**
   	* @alpha
@@ -8075,7 +9378,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*/
   	async listBuckets(options) {
   		var _this2 = this;
-  		try {
+  		return _this2.handleOperation(async () => {
   			const queryParams = new URLSearchParams();
   			if ((options === null || options === void 0 ? void 0 : options.limit) !== void 0) queryParams.set("limit", options.limit.toString());
   			if ((options === null || options === void 0 ? void 0 : options.offset) !== void 0) queryParams.set("offset", options.offset.toString());
@@ -8084,18 +9387,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   			if (options === null || options === void 0 ? void 0 : options.search) queryParams.set("search", options.search);
   			const queryString = queryParams.toString();
   			const url = queryString ? `${_this2.url}/bucket?${queryString}` : `${_this2.url}/bucket`;
-  			return {
-  				data: await get(_this2.fetch, url, { headers: _this2.headers }),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this2.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  			return await get(_this2.fetch, url, { headers: _this2.headers });
+  		});
   	}
   	/**
   	* @alpha
@@ -8130,19 +9423,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	*/
   	async deleteBucket(bucketName) {
   		var _this3 = this;
-  		try {
-  			return {
-  				data: await remove(_this3.fetch, `${_this3.url}/bucket/${bucketName}`, {}, { headers: _this3.headers }),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this3.shouldThrowOnError) throw error;
-  			if (isStorageError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this3.handleOperation(async () => {
+  			return await remove(_this3.fetch, `${_this3.url}/bucket/${bucketName}`, {}, { headers: _this3.headers });
+  		});
   	}
   	/**
   	* @alpha
@@ -8302,479 +9585,160 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   };
 
   //#endregion
-  //#region src/lib/vectors/constants.ts
-  const DEFAULT_HEADERS$2 = {
-  	"X-Client-Info": `storage-js/${version$2}`,
-  	"Content-Type": "application/json"
-  };
-
-  //#endregion
-  //#region src/lib/vectors/errors.ts
-  /**
-  * Base error class for all Storage Vectors errors
-  */
-  var StorageVectorsError = class extends Error {
-  	constructor(message) {
-  		super(message);
-  		this.__isStorageVectorsError = true;
-  		this.name = "StorageVectorsError";
-  	}
-  };
-  /**
-  * Type guard to check if an error is a StorageVectorsError
-  * @param error - The error to check
-  * @returns True if the error is a StorageVectorsError
-  */
-  function isStorageVectorsError(error) {
-  	return typeof error === "object" && error !== null && "__isStorageVectorsError" in error;
-  }
-  /**
-  * API error returned from S3 Vectors service
-  * Includes HTTP status code and service-specific error code
-  */
-  var StorageVectorsApiError = class extends StorageVectorsError {
-  	constructor(message, status, statusCode) {
-  		super(message);
-  		this.name = "StorageVectorsApiError";
-  		this.status = status;
-  		this.statusCode = statusCode;
-  	}
-  	toJSON() {
-  		return {
-  			name: this.name,
-  			message: this.message,
-  			status: this.status,
-  			statusCode: this.statusCode
-  		};
-  	}
-  };
-  /**
-  * Unknown error that doesn't match expected error patterns
-  * Wraps the original error for debugging
-  */
-  var StorageVectorsUnknownError = class extends StorageVectorsError {
-  	constructor(message, originalError) {
-  		super(message);
-  		this.name = "StorageVectorsUnknownError";
-  		this.originalError = originalError;
-  	}
-  };
-
-  //#endregion
-  //#region src/lib/vectors/helpers.ts
-  /**
-  * Resolves the fetch implementation to use
-  * Uses custom fetch if provided, otherwise uses native fetch
-  *
-  * @param customFetch - Optional custom fetch implementation
-  * @returns Resolved fetch function
-  */
-  const resolveFetch$2 = (customFetch) => {
-  	if (customFetch) return (...args) => customFetch(...args);
-  	return (...args) => fetch(...args);
-  };
-  /**
-  * Determine if input is a plain object
-  * An object is plain if it's created by either {}, new Object(), or Object.create(null)
-  *
-  * @param value - Value to check
-  * @returns True if value is a plain object
-  * @source https://github.com/sindresorhus/is-plain-obj
-  */
-  const isPlainObject = (value) => {
-  	if (typeof value !== "object" || value === null) return false;
-  	const prototype = Object.getPrototypeOf(value);
-  	return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in value) && !(Symbol.iterator in value);
-  };
-
-  //#endregion
-  //#region src/lib/vectors/fetch.ts
-  /**
-  * Extracts error message from various error response formats
-  * @param err - Error object from API
-  * @returns Human-readable error message
-  */
-  const _getErrorMessage$2 = (err) => err.msg || err.message || err.error_description || err.error || JSON.stringify(err);
-  /**
-  * Handles fetch errors and converts them to StorageVectors error types
-  * @param error - The error caught from fetch
-  * @param reject - Promise rejection function
-  * @param options - Fetch options that may affect error handling
-  */
-  const handleError$2 = async (error, reject, options) => {
-  	if (error && typeof error === "object" && "status" in error && "ok" in error && typeof error.status === "number" && !(options === null || options === void 0 ? void 0 : options.noResolveJson)) {
-  		const status = error.status || 500;
-  		const responseError = error;
-  		if (typeof responseError.json === "function") responseError.json().then((err) => {
-  			const statusCode = (err === null || err === void 0 ? void 0 : err.statusCode) || (err === null || err === void 0 ? void 0 : err.code) || status + "";
-  			reject(new StorageVectorsApiError(_getErrorMessage$2(err), status, statusCode));
-  		}).catch(() => {
-  			const statusCode = status + "";
-  			reject(new StorageVectorsApiError(responseError.statusText || `HTTP ${status} error`, status, statusCode));
-  		});
-  		else {
-  			const statusCode = status + "";
-  			reject(new StorageVectorsApiError(responseError.statusText || `HTTP ${status} error`, status, statusCode));
-  		}
-  	} else reject(new StorageVectorsUnknownError(_getErrorMessage$2(error), error));
-  };
-  /**
-  * Builds request parameters for fetch calls
-  * @param method - HTTP method
-  * @param options - Custom fetch options
-  * @param parameters - Additional fetch parameters like AbortSignal
-  * @param body - Request body (will be JSON stringified if plain object)
-  * @returns Complete fetch request parameters
-  */
-  const _getRequestParams$2 = (method, options, parameters, body) => {
-  	const params = {
-  		method,
-  		headers: (options === null || options === void 0 ? void 0 : options.headers) || {}
-  	};
-  	if (!body) return params;
-  	if (isPlainObject(body)) {
-  		params.headers = _objectSpread2$1({ "Content-Type": "application/json" }, options === null || options === void 0 ? void 0 : options.headers);
-  		params.body = JSON.stringify(body);
-  	} else params.body = body;
-  	return _objectSpread2$1(_objectSpread2$1({}, params), parameters);
-  };
-  /**
-  * Internal request handler that wraps fetch with error handling
-  * @param fetcher - Fetch function to use
-  * @param method - HTTP method
-  * @param url - Request URL
-  * @param options - Custom fetch options
-  * @param parameters - Additional fetch parameters
-  * @param body - Request body
-  * @returns Promise with parsed response or error
-  */
-  async function _handleRequest$2(fetcher, method, url, options, parameters, body) {
-  	return new Promise((resolve, reject) => {
-  		fetcher(url, _getRequestParams$2(method, options, parameters, body)).then((result) => {
-  			if (!result.ok) throw result;
-  			if (options === null || options === void 0 ? void 0 : options.noResolveJson) return result;
-  			const contentType = result.headers.get("content-type");
-  			if (!contentType || !contentType.includes("application/json")) return {};
-  			return result.json();
-  		}).then((data) => resolve(data)).catch((error) => handleError$2(error, reject, options));
-  	});
-  }
-  /**
-  * Performs a POST request
-  * @param fetcher - Fetch function to use
-  * @param url - Request URL
-  * @param body - Request body to be JSON stringified
-  * @param options - Custom fetch options
-  * @param parameters - Additional fetch parameters
-  * @returns Promise with parsed response
-  */
-  async function post(fetcher, url, body, options, parameters) {
-  	return _handleRequest$2(fetcher, "POST", url, options, parameters, body);
-  }
-
-  //#endregion
-  //#region src/lib/vectors/VectorIndexApi.ts
+  //#region src/packages/VectorIndexApi.ts
   /**
   * @hidden
   * Base implementation for vector index operations.
   * Use {@link VectorBucketScope} via `supabase.storage.vectors.from('bucket')` instead.
   */
-  var VectorIndexApi = class {
+  var VectorIndexApi = class extends BaseApiClient {
   	/** Creates a new VectorIndexApi instance */
   	constructor(url, headers = {}, fetch$1) {
-  		this.shouldThrowOnError = false;
-  		this.url = url.replace(/\/$/, "");
-  		this.headers = _objectSpread2$1(_objectSpread2$1({}, DEFAULT_HEADERS$2), headers);
-  		this.fetch = resolveFetch$2(fetch$1);
-  	}
-  	/** Enable throwing errors instead of returning them in the response */
-  	throwOnError() {
-  		this.shouldThrowOnError = true;
-  		return this;
+  		const finalUrl = url.replace(/\/$/, "");
+  		const finalHeaders = _objectSpread2$1(_objectSpread2$1({}, DEFAULT_HEADERS$2), {}, { "Content-Type": "application/json" }, headers);
+  		super(finalUrl, finalHeaders, fetch$1, "vectors");
   	}
   	/** Creates a new vector index within a bucket */
   	async createIndex(options) {
   		var _this = this;
-  		try {
-  			return {
-  				data: await post(_this.fetch, `${_this.url}/CreateIndex`, options, { headers: _this.headers }) || {},
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this.shouldThrowOnError) throw error;
-  			if (isStorageVectorsError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this.handleOperation(async () => {
+  			return await vectorsApi.post(_this.fetch, `${_this.url}/CreateIndex`, options, { headers: _this.headers }) || {};
+  		});
   	}
   	/** Retrieves metadata for a specific vector index */
   	async getIndex(vectorBucketName, indexName) {
   		var _this2 = this;
-  		try {
-  			return {
-  				data: await post(_this2.fetch, `${_this2.url}/GetIndex`, {
-  					vectorBucketName,
-  					indexName
-  				}, { headers: _this2.headers }),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this2.shouldThrowOnError) throw error;
-  			if (isStorageVectorsError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this2.handleOperation(async () => {
+  			return await vectorsApi.post(_this2.fetch, `${_this2.url}/GetIndex`, {
+  				vectorBucketName,
+  				indexName
+  			}, { headers: _this2.headers });
+  		});
   	}
   	/** Lists vector indexes within a bucket with optional filtering and pagination */
   	async listIndexes(options) {
   		var _this3 = this;
-  		try {
-  			return {
-  				data: await post(_this3.fetch, `${_this3.url}/ListIndexes`, options, { headers: _this3.headers }),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this3.shouldThrowOnError) throw error;
-  			if (isStorageVectorsError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this3.handleOperation(async () => {
+  			return await vectorsApi.post(_this3.fetch, `${_this3.url}/ListIndexes`, options, { headers: _this3.headers });
+  		});
   	}
   	/** Deletes a vector index and all its data */
   	async deleteIndex(vectorBucketName, indexName) {
   		var _this4 = this;
-  		try {
-  			return {
-  				data: await post(_this4.fetch, `${_this4.url}/DeleteIndex`, {
-  					vectorBucketName,
-  					indexName
-  				}, { headers: _this4.headers }) || {},
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this4.shouldThrowOnError) throw error;
-  			if (isStorageVectorsError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this4.handleOperation(async () => {
+  			return await vectorsApi.post(_this4.fetch, `${_this4.url}/DeleteIndex`, {
+  				vectorBucketName,
+  				indexName
+  			}, { headers: _this4.headers }) || {};
+  		});
   	}
   };
 
   //#endregion
-  //#region src/lib/vectors/VectorDataApi.ts
+  //#region src/packages/VectorDataApi.ts
   /**
   * @hidden
   * Base implementation for vector data operations.
   * Use {@link VectorIndexScope} via `supabase.storage.vectors.from('bucket').index('idx')` instead.
   */
-  var VectorDataApi = class {
+  var VectorDataApi = class extends BaseApiClient {
   	/** Creates a new VectorDataApi instance */
   	constructor(url, headers = {}, fetch$1) {
-  		this.shouldThrowOnError = false;
-  		this.url = url.replace(/\/$/, "");
-  		this.headers = _objectSpread2$1(_objectSpread2$1({}, DEFAULT_HEADERS$2), headers);
-  		this.fetch = resolveFetch$2(fetch$1);
-  	}
-  	/** Enable throwing errors instead of returning them in the response */
-  	throwOnError() {
-  		this.shouldThrowOnError = true;
-  		return this;
+  		const finalUrl = url.replace(/\/$/, "");
+  		const finalHeaders = _objectSpread2$1(_objectSpread2$1({}, DEFAULT_HEADERS$2), {}, { "Content-Type": "application/json" }, headers);
+  		super(finalUrl, finalHeaders, fetch$1, "vectors");
   	}
   	/** Inserts or updates vectors in batch (1-500 per request) */
   	async putVectors(options) {
   		var _this = this;
-  		try {
-  			if (options.vectors.length < 1 || options.vectors.length > 500) throw new Error("Vector batch size must be between 1 and 500 items");
-  			return {
-  				data: await post(_this.fetch, `${_this.url}/PutVectors`, options, { headers: _this.headers }) || {},
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this.shouldThrowOnError) throw error;
-  			if (isStorageVectorsError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		if (options.vectors.length < 1 || options.vectors.length > 500) throw new Error("Vector batch size must be between 1 and 500 items");
+  		return _this.handleOperation(async () => {
+  			return await vectorsApi.post(_this.fetch, `${_this.url}/PutVectors`, options, { headers: _this.headers }) || {};
+  		});
   	}
   	/** Retrieves vectors by their keys in batch */
   	async getVectors(options) {
   		var _this2 = this;
-  		try {
-  			return {
-  				data: await post(_this2.fetch, `${_this2.url}/GetVectors`, options, { headers: _this2.headers }),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this2.shouldThrowOnError) throw error;
-  			if (isStorageVectorsError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this2.handleOperation(async () => {
+  			return await vectorsApi.post(_this2.fetch, `${_this2.url}/GetVectors`, options, { headers: _this2.headers });
+  		});
   	}
   	/** Lists vectors in an index with pagination */
   	async listVectors(options) {
   		var _this3 = this;
-  		try {
-  			if (options.segmentCount !== void 0) {
-  				if (options.segmentCount < 1 || options.segmentCount > 16) throw new Error("segmentCount must be between 1 and 16");
-  				if (options.segmentIndex !== void 0) {
-  					if (options.segmentIndex < 0 || options.segmentIndex >= options.segmentCount) throw new Error(`segmentIndex must be between 0 and ${options.segmentCount - 1}`);
-  				}
+  		if (options.segmentCount !== void 0) {
+  			if (options.segmentCount < 1 || options.segmentCount > 16) throw new Error("segmentCount must be between 1 and 16");
+  			if (options.segmentIndex !== void 0) {
+  				if (options.segmentIndex < 0 || options.segmentIndex >= options.segmentCount) throw new Error(`segmentIndex must be between 0 and ${options.segmentCount - 1}`);
   			}
-  			return {
-  				data: await post(_this3.fetch, `${_this3.url}/ListVectors`, options, { headers: _this3.headers }),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this3.shouldThrowOnError) throw error;
-  			if (isStorageVectorsError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
   		}
+  		return _this3.handleOperation(async () => {
+  			return await vectorsApi.post(_this3.fetch, `${_this3.url}/ListVectors`, options, { headers: _this3.headers });
+  		});
   	}
   	/** Queries for similar vectors using approximate nearest neighbor search */
   	async queryVectors(options) {
   		var _this4 = this;
-  		try {
-  			return {
-  				data: await post(_this4.fetch, `${_this4.url}/QueryVectors`, options, { headers: _this4.headers }),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this4.shouldThrowOnError) throw error;
-  			if (isStorageVectorsError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this4.handleOperation(async () => {
+  			return await vectorsApi.post(_this4.fetch, `${_this4.url}/QueryVectors`, options, { headers: _this4.headers });
+  		});
   	}
   	/** Deletes vectors by their keys in batch (1-500 per request) */
   	async deleteVectors(options) {
   		var _this5 = this;
-  		try {
-  			if (options.keys.length < 1 || options.keys.length > 500) throw new Error("Keys batch size must be between 1 and 500 items");
-  			return {
-  				data: await post(_this5.fetch, `${_this5.url}/DeleteVectors`, options, { headers: _this5.headers }) || {},
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this5.shouldThrowOnError) throw error;
-  			if (isStorageVectorsError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		if (options.keys.length < 1 || options.keys.length > 500) throw new Error("Keys batch size must be between 1 and 500 items");
+  		return _this5.handleOperation(async () => {
+  			return await vectorsApi.post(_this5.fetch, `${_this5.url}/DeleteVectors`, options, { headers: _this5.headers }) || {};
+  		});
   	}
   };
 
   //#endregion
-  //#region src/lib/vectors/VectorBucketApi.ts
+  //#region src/packages/VectorBucketApi.ts
   /**
   * @hidden
   * Base implementation for vector bucket operations.
   * Use {@link StorageVectorsClient} via `supabase.storage.vectors` instead.
   */
-  var VectorBucketApi = class {
+  var VectorBucketApi = class extends BaseApiClient {
   	/** Creates a new VectorBucketApi instance */
   	constructor(url, headers = {}, fetch$1) {
-  		this.shouldThrowOnError = false;
-  		this.url = url.replace(/\/$/, "");
-  		this.headers = _objectSpread2$1(_objectSpread2$1({}, DEFAULT_HEADERS$2), headers);
-  		this.fetch = resolveFetch$2(fetch$1);
-  	}
-  	/** Enable throwing errors instead of returning them in the response */
-  	throwOnError() {
-  		this.shouldThrowOnError = true;
-  		return this;
+  		const finalUrl = url.replace(/\/$/, "");
+  		const finalHeaders = _objectSpread2$1(_objectSpread2$1({}, DEFAULT_HEADERS$2), {}, { "Content-Type": "application/json" }, headers);
+  		super(finalUrl, finalHeaders, fetch$1, "vectors");
   	}
   	/** Creates a new vector bucket */
   	async createBucket(vectorBucketName) {
   		var _this = this;
-  		try {
-  			return {
-  				data: await post(_this.fetch, `${_this.url}/CreateVectorBucket`, { vectorBucketName }, { headers: _this.headers }) || {},
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this.shouldThrowOnError) throw error;
-  			if (isStorageVectorsError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this.handleOperation(async () => {
+  			return await vectorsApi.post(_this.fetch, `${_this.url}/CreateVectorBucket`, { vectorBucketName }, { headers: _this.headers }) || {};
+  		});
   	}
   	/** Retrieves metadata for a specific vector bucket */
   	async getBucket(vectorBucketName) {
   		var _this2 = this;
-  		try {
-  			return {
-  				data: await post(_this2.fetch, `${_this2.url}/GetVectorBucket`, { vectorBucketName }, { headers: _this2.headers }),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this2.shouldThrowOnError) throw error;
-  			if (isStorageVectorsError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this2.handleOperation(async () => {
+  			return await vectorsApi.post(_this2.fetch, `${_this2.url}/GetVectorBucket`, { vectorBucketName }, { headers: _this2.headers });
+  		});
   	}
   	/** Lists vector buckets with optional filtering and pagination */
   	async listBuckets(options = {}) {
   		var _this3 = this;
-  		try {
-  			return {
-  				data: await post(_this3.fetch, `${_this3.url}/ListVectorBuckets`, options, { headers: _this3.headers }),
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this3.shouldThrowOnError) throw error;
-  			if (isStorageVectorsError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this3.handleOperation(async () => {
+  			return await vectorsApi.post(_this3.fetch, `${_this3.url}/ListVectorBuckets`, options, { headers: _this3.headers });
+  		});
   	}
   	/** Deletes a vector bucket (must be empty first) */
   	async deleteBucket(vectorBucketName) {
   		var _this4 = this;
-  		try {
-  			return {
-  				data: await post(_this4.fetch, `${_this4.url}/DeleteVectorBucket`, { vectorBucketName }, { headers: _this4.headers }) || {},
-  				error: null
-  			};
-  		} catch (error) {
-  			if (_this4.shouldThrowOnError) throw error;
-  			if (isStorageVectorsError(error)) return {
-  				data: null,
-  				error
-  			};
-  			throw error;
-  		}
+  		return _this4.handleOperation(async () => {
+  			return await vectorsApi.post(_this4.fetch, `${_this4.url}/DeleteVectorBucket`, { vectorBucketName }, { headers: _this4.headers }) || {};
+  		});
   	}
   };
 
   //#endregion
-  //#region src/lib/vectors/StorageVectorsClient.ts
+  //#region src/packages/StorageVectorsClient.ts
   /**
   *
   * @alpha
@@ -9383,7 +10347,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   // - Debugging and support (identifying which version is running)
   // - Telemetry and logging (version reporting in errors/analytics)
   // - Ensuring build artifacts match the published package version
-  const version$1 = '2.89.0';
+  const version$1 = '2.99.1';
 
   /** Current session will be checked for refresh at this interval. */
   const AUTO_REFRESH_TICK_DURATION_MS = 30 * 1000;
@@ -10472,6 +11436,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               deleteClient: this._deleteOAuthClient.bind(this),
               regenerateClientSecret: this._regenerateOAuthClientSecret.bind(this),
           };
+          this.customProviders = {
+              listProviders: this._listCustomProviders.bind(this),
+              createProvider: this._createCustomProvider.bind(this),
+              getProvider: this._getCustomProvider.bind(this),
+              updateProvider: this._updateCustomProvider.bind(this),
+              deleteProvider: this._deleteCustomProvider.bind(this),
+          };
       }
       /**
        * Removes a logged-in session.
@@ -10638,11 +11609,36 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
       }
       /**
-       * Updates the user data.
+       * Updates the user data. Changes are applied directly without confirmation flows.
        *
+       * @param uid The user's unique identifier
        * @param attributes The data you want to update.
        *
        * This function should only be called on a server. Never expose your `service_role` key in the browser.
+       *
+       * @remarks
+       * **Important:** This is a server-side operation and does **not** trigger client-side
+       * `onAuthStateChange` listeners. The admin API has no connection to client state.
+       *
+       * To sync changes to the client after calling this method:
+       * 1. On the client, call `supabase.auth.refreshSession()` to fetch the updated user data
+       * 2. This will trigger the `TOKEN_REFRESHED` event and notify all listeners
+       *
+       * @example
+       * ```typescript
+       * // Server-side (Edge Function)
+       * const { data, error } = await supabase.auth.admin.updateUserById(
+       *   userId,
+       *   { user_metadata: { preferences: { theme: 'dark' } } }
+       * )
+       *
+       * // Client-side (to sync the changes)
+       * const { data, error } = await supabase.auth.refreshSession()
+       * // onAuthStateChange listeners will now be notified with updated user
+       * ```
+       *
+       * @see {@link GoTrueClient.refreshSession} for syncing admin changes to the client
+       * @see {@link GoTrueClient.updateUser} for client-side user updates (triggers listeners automatically)
        */
       async updateUserById(uid, attributes) {
           validateUUID(uid);
@@ -10873,6 +11869,129 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               throw error;
           }
       }
+      /**
+       * Lists all custom providers with optional type filter.
+       *
+       * This function should only be called on a server. Never expose your `service_role` key in the browser.
+       */
+      async _listCustomProviders(params) {
+          try {
+              const query = {};
+              if (params === null || params === void 0 ? void 0 : params.type) {
+                  query.type = params.type;
+              }
+              return await _request(this.fetch, 'GET', `${this.url}/admin/custom-providers`, {
+                  headers: this.headers,
+                  query,
+                  xform: (data) => {
+                      var _a;
+                      return { data: { providers: (_a = data === null || data === void 0 ? void 0 : data.providers) !== null && _a !== void 0 ? _a : [] }, error: null };
+                  },
+              });
+          }
+          catch (error) {
+              if (isAuthError(error)) {
+                  return { data: { providers: [] }, error };
+              }
+              throw error;
+          }
+      }
+      /**
+       * Creates a new custom OIDC/OAuth provider.
+       *
+       * For OIDC providers, the server fetches and validates the OpenID Connect discovery document
+       * from the issuer's well-known endpoint (or the provided `discovery_url`) at creation time.
+       * This may return a validation error (`error_code: "validation_failed"`) if the discovery
+       * document is unreachable, not valid JSON, missing required fields, or if the issuer
+       * in the document does not match the expected issuer.
+       *
+       * This function should only be called on a server. Never expose your `service_role` key in the browser.
+       */
+      async _createCustomProvider(params) {
+          try {
+              return await _request(this.fetch, 'POST', `${this.url}/admin/custom-providers`, {
+                  body: params,
+                  headers: this.headers,
+                  xform: (provider) => {
+                      return { data: provider, error: null };
+                  },
+              });
+          }
+          catch (error) {
+              if (isAuthError(error)) {
+                  return { data: null, error };
+              }
+              throw error;
+          }
+      }
+      /**
+       * Gets details of a specific custom provider by identifier.
+       *
+       * This function should only be called on a server. Never expose your `service_role` key in the browser.
+       */
+      async _getCustomProvider(identifier) {
+          try {
+              return await _request(this.fetch, 'GET', `${this.url}/admin/custom-providers/${identifier}`, {
+                  headers: this.headers,
+                  xform: (provider) => {
+                      return { data: provider, error: null };
+                  },
+              });
+          }
+          catch (error) {
+              if (isAuthError(error)) {
+                  return { data: null, error };
+              }
+              throw error;
+          }
+      }
+      /**
+       * Updates an existing custom provider.
+       *
+       * When `issuer` or `discovery_url` is changed on an OIDC provider, the server re-fetches and
+       * validates the discovery document before persisting. This may return a validation error
+       * (`error_code: "validation_failed"`) if the discovery document is unreachable, invalid, or
+       * the issuer does not match.
+       *
+       * This function should only be called on a server. Never expose your `service_role` key in the browser.
+       */
+      async _updateCustomProvider(identifier, params) {
+          try {
+              return await _request(this.fetch, 'PUT', `${this.url}/admin/custom-providers/${identifier}`, {
+                  body: params,
+                  headers: this.headers,
+                  xform: (provider) => {
+                      return { data: provider, error: null };
+                  },
+              });
+          }
+          catch (error) {
+              if (isAuthError(error)) {
+                  return { data: null, error };
+              }
+              throw error;
+          }
+      }
+      /**
+       * Deletes a custom provider.
+       *
+       * This function should only be called on a server. Never expose your `service_role` key in the browser.
+       */
+      async _deleteCustomProvider(identifier) {
+          try {
+              await _request(this.fetch, 'DELETE', `${this.url}/admin/custom-providers/${identifier}`, {
+                  headers: this.headers,
+                  noResolveJson: true,
+              });
+              return { data: null, error: null };
+          }
+          catch (error) {
+              if (isAuthError(error)) {
+                  return { data: null, error };
+              }
+              throw error;
+          }
+      }
   }
 
   /**
@@ -11003,54 +12122,104 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       // to lose context and emit confusing log messages or break certain features.
       // This wrapping is believed to help zone.js track the execution context
       // better.
-      return await Promise.resolve().then(() => globalThis.navigator.locks.request(name, acquireTimeout === 0
-          ? {
-              mode: 'exclusive',
-              ifAvailable: true,
-          }
-          : {
-              mode: 'exclusive',
-              signal: abortController.signal,
-          }, async (lock) => {
-          if (lock) {
-              if (internals.debug) {
-                  console.log('@supabase/gotrue-js: navigatorLock: acquired', name, lock.name);
+      await Promise.resolve();
+      try {
+          return await globalThis.navigator.locks.request(name, acquireTimeout === 0
+              ? {
+                  mode: 'exclusive',
+                  ifAvailable: true,
               }
-              try {
-                  return await fn();
-              }
-              finally {
+              : {
+                  mode: 'exclusive',
+                  signal: abortController.signal,
+              }, async (lock) => {
+              if (lock) {
                   if (internals.debug) {
-                      console.log('@supabase/gotrue-js: navigatorLock: released', name, lock.name);
+                      console.log('@supabase/gotrue-js: navigatorLock: acquired', name, lock.name);
                   }
-              }
-          }
-          else {
-              if (acquireTimeout === 0) {
-                  if (internals.debug) {
-                      console.log('@supabase/gotrue-js: navigatorLock: not immediately available', name);
+                  try {
+                      return await fn();
                   }
-                  throw new NavigatorLockAcquireTimeoutError(`Acquiring an exclusive Navigator LockManager lock "${name}" immediately failed`);
+                  finally {
+                      if (internals.debug) {
+                          console.log('@supabase/gotrue-js: navigatorLock: released', name, lock.name);
+                      }
+                  }
               }
               else {
-                  if (internals.debug) {
-                      try {
-                          const result = await globalThis.navigator.locks.query();
-                          console.log('@supabase/gotrue-js: Navigator LockManager state', JSON.stringify(result, null, '  '));
+                  if (acquireTimeout === 0) {
+                      if (internals.debug) {
+                          console.log('@supabase/gotrue-js: navigatorLock: not immediately available', name);
                       }
-                      catch (e) {
-                          console.warn('@supabase/gotrue-js: Error when querying Navigator LockManager state', e);
+                      throw new NavigatorLockAcquireTimeoutError(`Acquiring an exclusive Navigator LockManager lock "${name}" immediately failed`);
+                  }
+                  else {
+                      if (internals.debug) {
+                          try {
+                              const result = await globalThis.navigator.locks.query();
+                              console.log('@supabase/gotrue-js: Navigator LockManager state', JSON.stringify(result, null, '  '));
+                          }
+                          catch (e) {
+                              console.warn('@supabase/gotrue-js: Error when querying Navigator LockManager state', e);
+                          }
+                      }
+                      // Browser is not following the Navigator LockManager spec, it
+                      // returned a null lock when we didn't use ifAvailable. So we can
+                      // pretend the lock is acquired in the name of backward compatibility
+                      // and user experience and just run the function.
+                      console.warn('@supabase/gotrue-js: Navigator LockManager returned a null lock when using #request without ifAvailable set to true, it appears this browser is not following the LockManager spec https://developer.mozilla.org/en-US/docs/Web/API/LockManager/request');
+                      return await fn();
+                  }
+              }
+          });
+      }
+      catch (e) {
+          if ((e === null || e === void 0 ? void 0 : e.name) === 'AbortError' && acquireTimeout > 0) {
+              // The lock acquisition was aborted because the timeout fired while the
+              // request was still pending. This typically means another lock holder is
+              // not releasing the lock, possibly due to React Strict Mode's
+              // double-mount/unmount behavior or a component unmounting mid-operation,
+              // leaving an orphaned lock.
+              //
+              // Recovery: use { steal: true } to forcefully acquire the lock. Per the
+              // Web Locks API spec, this releases any currently held lock with the same
+              // name and grants the request immediately, preempting any queued requests.
+              // The previous holder's callback continues running to completion but no
+              // longer holds the lock for exclusion purposes.
+              //
+              // See: https://github.com/supabase/supabase/issues/42505
+              if (internals.debug) {
+                  console.log('@supabase/gotrue-js: navigatorLock: acquire timeout, recovering by stealing lock', name);
+              }
+              console.warn(`@supabase/gotrue-js: Lock "${name}" was not released within ${acquireTimeout}ms. ` +
+                  'This may indicate an orphaned lock from a component unmount (e.g., React Strict Mode). ' +
+                  'Forcefully acquiring the lock to recover.');
+              return await Promise.resolve().then(() => globalThis.navigator.locks.request(name, {
+                  mode: 'exclusive',
+                  steal: true,
+              }, async (lock) => {
+                  if (lock) {
+                      if (internals.debug) {
+                          console.log('@supabase/gotrue-js: navigatorLock: recovered (stolen)', name, lock.name);
+                      }
+                      try {
+                          return await fn();
+                      }
+                      finally {
+                          if (internals.debug) {
+                              console.log('@supabase/gotrue-js: navigatorLock: released (stolen)', name, lock.name);
+                          }
                       }
                   }
-                  // Browser is not following the Navigator LockManager spec, it
-                  // returned a null lock when we didn't use ifAvailable. So we can
-                  // pretend the lock is acquired in the name of backward compatibility
-                  // and user experience and just run the function.
-                  console.warn('@supabase/gotrue-js: Navigator LockManager returned a null lock when using #request without ifAvailable set to true, it appears this browser is not following the LockManager spec https://developer.mozilla.org/en-US/docs/Web/API/LockManager/request');
-                  return await fn();
-              }
+                  else {
+                      // This should not happen with steal: true, but handle gracefully.
+                      console.warn('@supabase/gotrue-js: Navigator LockManager returned null lock even with steal: true');
+                      return await fn();
+                  }
+              }));
           }
-      }));
+          throw e;
+      }
   }
   const PROCESS_LOCKS = {};
   /**
@@ -11076,39 +12245,73 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   async function processLock(name, acquireTimeout, fn) {
       var _a;
       const previousOperation = (_a = PROCESS_LOCKS[name]) !== null && _a !== void 0 ? _a : Promise.resolve();
-      const currentOperation = Promise.race([
-          previousOperation.catch(() => {
-              // ignore error of previous operation that we're waiting to finish
-              return null;
-          }),
-          acquireTimeout >= 0
-              ? new Promise((_, reject) => {
-                  setTimeout(() => {
-                      reject(new ProcessLockAcquireTimeoutError(`Acquiring process lock with name "${name}" timed out`));
-                  }, acquireTimeout);
-              })
-              : null,
-      ].filter((x) => x))
-          .catch((e) => {
-          if (e && e.isAcquireTimeout) {
-              throw e;
-          }
-          return null;
-      })
-          .then(async () => {
-          // previous operations finished and we didn't get a race on the acquire
-          // timeout, so the current operation can finally start
-          return await fn();
-      });
-      PROCESS_LOCKS[name] = currentOperation.catch(async (e) => {
-          if (e && e.isAcquireTimeout) {
-              // if the current operation timed out, it doesn't mean that the previous
-              // operation finished, so we need contnue waiting for it to finish
+      // Wrap previousOperation to handle errors without using .catch()
+      // This avoids Firefox content script security errors
+      const previousOperationHandled = (async () => {
+          try {
               await previousOperation;
               return null;
           }
-          throw e;
-      });
+          catch (e) {
+              // ignore error of previous operation that we're waiting to finish
+              return null;
+          }
+      })();
+      const currentOperation = (async () => {
+          let timeoutId = null;
+          try {
+              // Wait for either previous operation or timeout
+              const timeoutPromise = acquireTimeout >= 0
+                  ? new Promise((_, reject) => {
+                      timeoutId = setTimeout(() => {
+                          console.warn(`@supabase/gotrue-js: Lock "${name}" acquisition timed out after ${acquireTimeout}ms. ` +
+                              'This may be caused by another operation holding the lock. ' +
+                              'Consider increasing lockAcquireTimeout or checking for stuck operations.');
+                          reject(new ProcessLockAcquireTimeoutError(`Acquiring process lock with name "${name}" timed out`));
+                      }, acquireTimeout);
+                  })
+                  : null;
+              await Promise.race([previousOperationHandled, timeoutPromise].filter((x) => x));
+              // If we reach here, previousOperationHandled won the race
+              // Clear the timeout to prevent false warnings
+              if (timeoutId !== null) {
+                  clearTimeout(timeoutId);
+              }
+          }
+          catch (e) {
+              // Clear the timeout on error path as well
+              if (timeoutId !== null) {
+                  clearTimeout(timeoutId);
+              }
+              // Re-throw timeout errors, ignore others
+              if (e && e.isAcquireTimeout) {
+                  throw e;
+              }
+              // Fall through to run fn() - previous operation finished with error
+          }
+          // Previous operations finished and we didn't get a race on the acquire
+          // timeout, so the current operation can finally start
+          return await fn();
+      })();
+      PROCESS_LOCKS[name] = (async () => {
+          try {
+              return await currentOperation;
+          }
+          catch (e) {
+              if (e && e.isAcquireTimeout) {
+                  // if the current operation timed out, it doesn't mean that the previous
+                  // operation finished, so we need continue waiting for it to finish
+                  try {
+                      await previousOperation;
+                  }
+                  catch (prevError) {
+                      // Ignore previous operation errors
+                  }
+                  return null;
+              }
+              throw e;
+          }
+      })();
       // finally wait for the current operation to finish successfully, with an
       // error or with an acquire timeout error
       return await currentOperation;
@@ -11885,6 +13088,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @see {@link https://w3c.github.io/webauthn/#sctn-verifying-assertion W3C WebAuthn Spec - Verifying Assertion}
        */
       async _challenge({ factorId, webauthn, friendlyName, signal, }, overrides) {
+          var _a;
           try {
               // Get challenge from server using the client's MFA methods
               const { data: challengeResponse, error: challengeError } = await this.client.mfa.challenge({
@@ -11899,7 +13103,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               if (challengeResponse.webauthn.type === 'create') {
                   const { user } = challengeResponse.webauthn.credential_options.publicKey;
                   if (!user.name) {
-                      user.name = `${user.id}:${friendlyName}`;
+                      // Preserve original format: use friendlyName if provided, otherwise fetch fallback
+                      // This maintains backward compatibility with the ${user.id}:${name} format
+                      const nameToUse = friendlyName;
+                      if (!nameToUse) {
+                          // Only fetch user data if friendlyName is not provided (bug fix for null friendlyName)
+                          const currentUser = await this.client.getUser();
+                          const userData = currentUser.data.user;
+                          const fallbackName = ((_a = userData === null || userData === void 0 ? void 0 : userData.user_metadata) === null || _a === void 0 ? void 0 : _a.name) || (userData === null || userData === void 0 ? void 0 : userData.email) || (userData === null || userData === void 0 ? void 0 : userData.id) || 'User';
+                          user.name = `${user.id}:${fallbackName}`;
+                      }
+                      else {
+                          user.name = `${user.id}:${nameToUse}`;
+                      }
                   }
                   if (!user.displayName) {
                       user.displayName = user.name;
@@ -12130,6 +13346,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       debug: false,
       hasCustomAuthorizationHeader: false,
       throwOnError: false,
+      lockAcquireTimeout: 5000, // 5 seconds
+      skipAutoInitialize: false,
   };
   async function lockNoOp(name, acquireTimeout, fn) {
       return await fn();
@@ -12184,6 +13402,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           this.memoryStorage = null;
           this.stateChangeEmitters = new Map();
           this.autoRefreshTicker = null;
+          this.autoRefreshTickTimeout = null;
           this.visibilityChangedCallback = null;
           this.refreshingDeferred = null;
           /**
@@ -12233,6 +13452,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           this.flowType = settings.flowType;
           this.hasCustomAuthorizationHeader = settings.hasCustomAuthorizationHeader;
           this.throwOnError = settings.throwOnError;
+          this.lockAcquireTimeout = settings.lockAcquireTimeout;
           if (settings.lock) {
               this.lock = settings.lock;
           }
@@ -12293,10 +13513,22 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               }
               (_c = this.broadcastChannel) === null || _c === void 0 ? void 0 : _c.addEventListener('message', async (event) => {
                   this._debug('received broadcast notification from other tab or client', event);
-                  await this._notifyAllSubscribers(event.data.event, event.data.session, false); // broadcast = false so we don't get an endless loop of messages
+                  try {
+                      await this._notifyAllSubscribers(event.data.event, event.data.session, false); // broadcast = false so we don't get an endless loop of messages
+                  }
+                  catch (error) {
+                      this._debug('#broadcastChannel', 'error', error);
+                  }
               });
           }
-          this.initialize();
+          // Only auto-initialize if not explicitly disabled. Skipped in SSR contexts
+          // where initialization timing must be controlled. All public methods have
+          // lazy initialization, so the client remains fully functional.
+          if (!settings.skipAutoInitialize) {
+              this.initialize().catch((error) => {
+                  this._debug('#initialize()', 'error', error);
+              });
+          }
       }
       /**
        * Returns whether error throwing mode is enabled for this client.
@@ -12335,7 +13567,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               return await this.initializePromise;
           }
           this.initializePromise = (async () => {
-              return await this._acquireLock(-1, async () => {
+              return await this._acquireLock(this.lockAcquireTimeout, async () => {
                   return await this._initialize();
               });
           })();
@@ -12379,9 +13611,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                               return { error };
                           }
                       }
-                      // failed login attempt via url,
-                      // remove old session as in verifyOtp, signUp and signInWith*
-                      await this._removeSession();
+                      // Don't remove existing session on URL login failure.
+                      // A failed attempt (e.g. reused magic link) shouldn't invalidate a valid session.
                       return { error };
                   }
                   const { session, redirectType } = data;
@@ -12458,6 +13689,173 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        *
        * @returns A logged-in session if the server has "autoconfirm" ON
        * @returns A user if the server has "autoconfirm" OFF
+       *
+       * @category Auth
+       *
+       * @remarks
+       * - By default, the user needs to verify their email address before logging in. To turn this off, disable **Confirm email** in [your project](/dashboard/project/_/auth/providers).
+       * - **Confirm email** determines if users need to confirm their email address after signing up.
+       *   - If **Confirm email** is enabled, a `user` is returned but `session` is null.
+       *   - If **Confirm email** is disabled, both a `user` and a `session` are returned.
+       * - When the user confirms their email address, they are redirected to the [`SITE_URL`](/docs/guides/auth/redirect-urls#use-wildcards-in-redirect-urls) by default. You can modify your `SITE_URL` or add additional redirect URLs in [your project](/dashboard/project/_/auth/url-configuration).
+       * - If signUp() is called for an existing confirmed user:
+       *   - When both **Confirm email** and **Confirm phone** (even when phone provider is disabled) are enabled in [your project](/dashboard/project/_/auth/providers), an obfuscated/fake user object is returned.
+       *   - When either **Confirm email** or **Confirm phone** (even when phone provider is disabled) is disabled, the error message, `User already registered` is returned.
+       * - To fetch the currently logged-in user, refer to [`getUser()`](/docs/reference/javascript/auth-getuser).
+       *
+       * @example Sign up with an email and password
+       * ```js
+       * const { data, error } = await supabase.auth.signUp({
+       *   email: 'example@email.com',
+       *   password: 'example-password',
+       * })
+       * ```
+       *
+       * @exampleResponse Sign up with an email and password
+       * ```json
+       * // Some fields may be null if "confirm email" is enabled.
+       * {
+       *   "data": {
+       *     "user": {
+       *       "id": "11111111-1111-1111-1111-111111111111",
+       *       "aud": "authenticated",
+       *       "role": "authenticated",
+       *       "email": "example@email.com",
+       *       "email_confirmed_at": "2024-01-01T00:00:00Z",
+       *       "phone": "",
+       *       "last_sign_in_at": "2024-01-01T00:00:00Z",
+       *       "app_metadata": {
+       *         "provider": "email",
+       *         "providers": [
+       *           "email"
+       *         ]
+       *       },
+       *       "user_metadata": {},
+       *       "identities": [
+       *         {
+       *           "identity_id": "22222222-2222-2222-2222-222222222222",
+       *           "id": "11111111-1111-1111-1111-111111111111",
+       *           "user_id": "11111111-1111-1111-1111-111111111111",
+       *           "identity_data": {
+       *             "email": "example@email.com",
+       *             "email_verified": false,
+       *             "phone_verified": false,
+       *             "sub": "11111111-1111-1111-1111-111111111111"
+       *           },
+       *           "provider": "email",
+       *           "last_sign_in_at": "2024-01-01T00:00:00Z",
+       *           "created_at": "2024-01-01T00:00:00Z",
+       *           "updated_at": "2024-01-01T00:00:00Z",
+       *           "email": "example@email.com"
+       *         }
+       *       ],
+       *       "created_at": "2024-01-01T00:00:00Z",
+       *       "updated_at": "2024-01-01T00:00:00Z"
+       *     },
+       *     "session": {
+       *       "access_token": "<ACCESS_TOKEN>",
+       *       "token_type": "bearer",
+       *       "expires_in": 3600,
+       *       "expires_at": 1700000000,
+       *       "refresh_token": "<REFRESH_TOKEN>",
+       *       "user": {
+       *         "id": "11111111-1111-1111-1111-111111111111",
+       *         "aud": "authenticated",
+       *         "role": "authenticated",
+       *         "email": "example@email.com",
+       *         "email_confirmed_at": "2024-01-01T00:00:00Z",
+       *         "phone": "",
+       *         "last_sign_in_at": "2024-01-01T00:00:00Z",
+       *         "app_metadata": {
+       *           "provider": "email",
+       *           "providers": [
+       *             "email"
+       *           ]
+       *         },
+       *         "user_metadata": {},
+       *         "identities": [
+       *           {
+       *             "identity_id": "22222222-2222-2222-2222-222222222222",
+       *             "id": "11111111-1111-1111-1111-111111111111",
+       *             "user_id": "11111111-1111-1111-1111-111111111111",
+       *             "identity_data": {
+       *               "email": "example@email.com",
+       *               "email_verified": false,
+       *               "phone_verified": false,
+       *               "sub": "11111111-1111-1111-1111-111111111111"
+       *             },
+       *             "provider": "email",
+       *             "last_sign_in_at": "2024-01-01T00:00:00Z",
+       *             "created_at": "2024-01-01T00:00:00Z",
+       *             "updated_at": "2024-01-01T00:00:00Z",
+       *             "email": "example@email.com"
+       *           }
+       *         ],
+       *         "created_at": "2024-01-01T00:00:00Z",
+       *         "updated_at": "2024-01-01T00:00:00Z"
+       *       }
+       *     }
+       *   },
+       *   "error": null
+       * }
+       * ```
+       *
+       * @example Sign up with a phone number and password (SMS)
+       * ```js
+       * const { data, error } = await supabase.auth.signUp({
+       *   phone: '123456789',
+       *   password: 'example-password',
+       *   options: {
+       *     channel: 'sms'
+       *   }
+       * })
+       * ```
+       *
+       * @exampleDescription Sign up with a phone number and password (whatsapp)
+       * The user will be sent a WhatsApp message which contains a OTP. By default, a given user can only request a OTP once every 60 seconds. Note that a user will need to have a valid WhatsApp account that is linked to Twilio in order to use this feature.
+       *
+       * @example Sign up with a phone number and password (whatsapp)
+       * ```js
+       * const { data, error } = await supabase.auth.signUp({
+       *   phone: '123456789',
+       *   password: 'example-password',
+       *   options: {
+       *     channel: 'whatsapp'
+       *   }
+       * })
+       * ```
+       *
+       * @example Sign up with additional user metadata
+       * ```js
+       * const { data, error } = await supabase.auth.signUp(
+       *   {
+       *     email: 'example@email.com',
+       *     password: 'example-password',
+       *     options: {
+       *       data: {
+       *         first_name: 'John',
+       *         age: 27,
+       *       }
+       *     }
+       *   }
+       * )
+       * ```
+       *
+       * @exampleDescription Sign up with a redirect URL
+       * - See [redirect URLs and wildcards](/docs/guides/auth/redirect-urls#use-wildcards-in-redirect-urls) to add additional redirect URLs to your project.
+       *
+       * @example Sign up with a redirect URL
+       * ```js
+       * const { data, error } = await supabase.auth.signUp(
+       *   {
+       *     email: 'example@email.com',
+       *     password: 'example-password',
+       *     options: {
+       *       emailRedirectTo: 'https://example.com/welcome'
+       *     }
+       *   }
+       * )
+       * ```
        */
       async signUp(credentials) {
           var _a, _b, _c;
@@ -12603,7 +14001,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        */
       async exchangeCodeForSession(authCode) {
           await this.initializePromise;
-          return this._acquireLock(-1, async () => {
+          return this._acquireLock(this.lockAcquireTimeout, async () => {
               return this._exchangeCodeForSession(authCode);
           });
       }
@@ -13107,7 +14505,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        */
       async reauthenticate() {
           await this.initializePromise;
-          return await this._acquireLock(-1, async () => {
+          return await this._acquireLock(this.lockAcquireTimeout, async () => {
               return await this._reauthenticate();
           });
       }
@@ -13189,7 +14587,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        */
       async getSession() {
           await this.initializePromise;
-          const result = await this._acquireLock(-1, async () => {
+          const result = await this._acquireLock(this.lockAcquireTimeout, async () => {
               return this._useSession(async (result) => {
                   return result;
               });
@@ -13350,7 +14748,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               return await this._getUser(jwt);
           }
           await this.initializePromise;
-          const result = await this._acquireLock(-1, async () => {
+          const result = await this._acquireLock(this.lockAcquireTimeout, async () => {
               return await this._getUser();
           });
           if (result.data.user) {
@@ -13402,7 +14800,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        */
       async updateUser(attributes, options = {}) {
           await this.initializePromise;
-          return await this._acquireLock(-1, async () => {
+          return await this._acquireLock(this.lockAcquireTimeout, async () => {
               return await this._updateUser(attributes, options);
           });
       }
@@ -13454,7 +14852,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        */
       async setSession(currentSession) {
           await this.initializePromise;
-          return await this._acquireLock(-1, async () => {
+          return await this._acquireLock(this.lockAcquireTimeout, async () => {
               return await this._setSession(currentSession);
           });
       }
@@ -13485,7 +14883,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               else {
                   const { data, error } = await this._getUser(currentSession.access_token);
                   if (error) {
-                      throw error;
+                      return this._returnResult({ data: { user: null, session: null }, error });
                   }
                   session = {
                       access_token: currentSession.access_token,
@@ -13515,7 +14913,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        */
       async refreshSession(currentSession) {
           await this.initializePromise;
-          return await this._acquireLock(-1, async () => {
+          return await this._acquireLock(this.lockAcquireTimeout, async () => {
               return await this._refreshSession(currentSession);
           });
       }
@@ -13670,7 +15068,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        */
       async signOut(options = { scope: 'global' }) {
           await this.initializePromise;
-          return await this._acquireLock(-1, async () => {
+          return await this._acquireLock(this.lockAcquireTimeout, async () => {
               return await this._signOut(options);
           });
       }
@@ -13678,7 +15076,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           return await this._useSession(async (result) => {
               var _a;
               const { data, error: sessionError } = result;
-              if (sessionError) {
+              if (sessionError && !isAuthSessionMissingError(sessionError)) {
                   return this._returnResult({ error: sessionError });
               }
               const accessToken = (_a = data.session) === null || _a === void 0 ? void 0 : _a.access_token;
@@ -13687,8 +15085,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                   if (error) {
                       // ignore 404s since user might not exist anymore
                       // ignore 401s since an invalid or expired JWT should sign out the current session
-                      if (!(isAuthApiError(error) &&
-                          (error.status === 404 || error.status === 401 || error.status === 403))) {
+                      if (!((isAuthApiError(error) &&
+                          (error.status === 404 || error.status === 401 || error.status === 403)) ||
+                          isAuthSessionMissingError(error))) {
                           return this._returnResult({ error });
                       }
                   }
@@ -13714,7 +15113,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           this.stateChangeEmitters.set(id, subscription);
           (async () => {
               await this.initializePromise;
-              await this._acquireLock(-1, async () => {
+              await this._acquireLock(this.lockAcquireTimeout, async () => {
                   this._emitInitialSession(id);
               });
           })();
@@ -14219,10 +15618,19 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           // run the tick immediately, but in the next pass of the event loop so that
           // #_initialize can be allowed to complete without recursively waiting on
           // itself
-          setTimeout(async () => {
+          const timeout = setTimeout(async () => {
               await this.initializePromise;
               await this._autoRefreshTokenTick();
           }, 0);
+          this.autoRefreshTickTimeout = timeout;
+          if (timeout && typeof timeout === 'object' && typeof timeout.unref === 'function') {
+              timeout.unref();
+              // @ts-expect-error TS has no context of Deno
+          }
+          else if (typeof Deno !== 'undefined' && typeof Deno.unrefTimer === 'function') {
+              // @ts-expect-error TS has no context of Deno
+              Deno.unrefTimer(timeout);
+          }
       }
       /**
        * This is the private implementation of {@link #stopAutoRefresh}. Use this
@@ -14234,6 +15642,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           this.autoRefreshTicker = null;
           if (ticker) {
               clearInterval(ticker);
+          }
+          const timeout = this.autoRefreshTickTimeout;
+          this.autoRefreshTickTimeout = null;
+          if (timeout) {
+              clearTimeout(timeout);
           }
       }
       /**
@@ -14331,7 +15744,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               return false;
           }
           try {
-              this.visibilityChangedCallback = async () => await this._onVisibilityChanged(false);
+              this.visibilityChangedCallback = async () => {
+                  try {
+                      await this._onVisibilityChanged(false);
+                  }
+                  catch (error) {
+                      this._debug('#visibilityChangedCallback', 'error', error);
+                  }
+              };
               window === null || window === void 0 ? void 0 : window.addEventListener('visibilitychange', this.visibilityChangedCallback);
               // now immediately call the visbility changed callback to setup with the
               // current visbility state
@@ -14359,7 +15779,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
                   // should be recovered immediately... but to do that we need to acquire
                   // the lock first asynchronously
                   await this.initializePromise;
-                  await this._acquireLock(-1, async () => {
+                  await this._acquireLock(this.lockAcquireTimeout, async () => {
                       if (document.visibilityState !== 'visible') {
                           this._debug(methodName, 'acquired the lock to recover the session, but the browser visibilityState is no longer visible, aborting');
                           // visibility has changed while waiting for the lock, abort
@@ -14463,7 +15883,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           }
       }
       async _verify(params) {
-          return this._acquireLock(-1, async () => {
+          return this._acquireLock(this.lockAcquireTimeout, async () => {
               try {
                   return await this._useSession(async (result) => {
                       var _a;
@@ -14500,7 +15920,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
           });
       }
       async _challenge(params) {
-          return this._acquireLock(-1, async () => {
+          return this._acquireLock(this.lockAcquireTimeout, async () => {
               try {
                   return await this._useSession(async (result) => {
                       var _a;
@@ -14591,8 +16011,34 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
       /**
        * {@see GoTrueMFAApi#getAuthenticatorAssuranceLevel}
        */
-      async _getAuthenticatorAssuranceLevel() {
-          var _a, _b;
+      async _getAuthenticatorAssuranceLevel(jwt) {
+          var _a, _b, _c, _d;
+          if (jwt) {
+              try {
+                  const { payload } = decodeJWT(jwt);
+                  let currentLevel = null;
+                  if (payload.aal) {
+                      currentLevel = payload.aal;
+                  }
+                  let nextLevel = currentLevel;
+                  const { data: { user }, error: userError, } = await this.getUser(jwt);
+                  if (userError) {
+                      return this._returnResult({ data: null, error: userError });
+                  }
+                  const verifiedFactors = (_b = (_a = user === null || user === void 0 ? void 0 : user.factors) === null || _a === void 0 ? void 0 : _a.filter((factor) => factor.status === 'verified')) !== null && _b !== void 0 ? _b : [];
+                  if (verifiedFactors.length > 0) {
+                      nextLevel = 'aal2';
+                  }
+                  const currentAuthenticationMethods = payload.amr || [];
+                  return { data: { currentLevel, nextLevel, currentAuthenticationMethods }, error: null };
+              }
+              catch (error) {
+                  if (isAuthError(error)) {
+                      return this._returnResult({ data: null, error });
+                  }
+                  throw error;
+              }
+          }
           const { data: { session }, error: sessionError, } = await this.getSession();
           if (sessionError) {
               return this._returnResult({ data: null, error: sessionError });
@@ -14609,7 +16055,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               currentLevel = payload.aal;
           }
           let nextLevel = currentLevel;
-          const verifiedFactors = (_b = (_a = session.user.factors) === null || _a === void 0 ? void 0 : _a.filter((factor) => factor.status === 'verified')) !== null && _b !== void 0 ? _b : [];
+          const verifiedFactors = (_d = (_c = session.user.factors) === null || _c === void 0 ? void 0 : _c.filter((factor) => factor.status === 'verified')) !== null && _d !== void 0 ? _d : [];
           if (verifiedFactors.length > 0) {
               nextLevel = 'aal2';
           }
@@ -14621,7 +16067,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * Only relevant when the OAuth 2.1 server is enabled in Supabase Auth.
        *
        * Returns authorization details including client info, scopes, and user information.
-       * If the API returns a redirect_uri, it means consent was already given - the caller
+       * If the response includes only a redirect_url field, it means consent was already given - the caller
        * should handle the redirect manually if needed.
        */
       async _getAuthorizationDetails(authorizationId) {
@@ -14898,7 +16344,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   const AuthClient = GoTrueClient;
 
   //#region src/lib/version.ts
-  const version = "2.89.0";
+  const version = "2.99.1";
 
   //#endregion
   //#region src/lib/constants.ts
@@ -15063,6 +16509,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   var SupabaseClient = class {
   	/**
   	* Create a new client for use in the browser.
+  	*
+  	* @category Initializing
+  	*
   	* @param supabaseUrl The unique Supabase URL which is supplied when you create a new project in your project dashboard.
   	* @param supabaseKey The unique Supabase Key which is supplied when you create a new project in your project dashboard.
   	* @param options.db.schema You can switch in between schemas. The schema needs to be on the list of exposed schemas inside Supabase.
@@ -15073,11 +16522,175 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	* @param options.storage Options passed along to the storage-js constructor.
   	* @param options.global.fetch A custom fetch implementation.
   	* @param options.global.headers Any additional headers to send with each network request.
-  	* @example
+  	*
+  	* @example Creating a client
+  	* ```js
+  	* import { createClient } from '@supabase/supabase-js'
+  	*
+  	* // Create a single supabase client for interacting with your database
+  	* const supabase = createClient('https://xyzcompany.supabase.co', 'publishable-or-anon-key')
+  	* ```
+  	*
+  	* @example With a custom domain
+  	* ```js
+  	* import { createClient } from '@supabase/supabase-js'
+  	*
+  	* // Use a custom domain as the supabase URL
+  	* const supabase = createClient('https://my-custom-domain.com', 'publishable-or-anon-key')
+  	* ```
+  	*
+  	* @example With additional parameters
+  	* ```js
+  	* import { createClient } from '@supabase/supabase-js'
+  	*
+  	* const options = {
+  	*   db: {
+  	*     schema: 'public',
+  	*   },
+  	*   auth: {
+  	*     autoRefreshToken: true,
+  	*     persistSession: true,
+  	*     detectSessionInUrl: true
+  	*   },
+  	*   global: {
+  	*     headers: { 'x-my-custom-header': 'my-app-name' },
+  	*   },
+  	* }
+  	* const supabase = createClient("https://xyzcompany.supabase.co", "publishable-or-anon-key", options)
+  	* ```
+  	*
+  	* @exampleDescription With custom schemas
+  	* By default the API server points to the `public` schema. You can enable other database schemas within the Dashboard.
+  	* Go to [Settings > API > Exposed schemas](/dashboard/project/_/settings/api) and add the schema which you want to expose to the API.
+  	*
+  	* Note: each client connection can only access a single schema, so the code above can access the `other_schema` schema but cannot access the `public` schema.
+  	*
+  	* @example With custom schemas
+  	* ```js
+  	* import { createClient } from '@supabase/supabase-js'
+  	*
+  	* const supabase = createClient('https://xyzcompany.supabase.co', 'publishable-or-anon-key', {
+  	*   // Provide a custom schema. Defaults to "public".
+  	*   db: { schema: 'other_schema' }
+  	* })
+  	* ```
+  	*
+  	* @exampleDescription Custom fetch implementation
+  	* `supabase-js` uses the [`cross-fetch`](https://www.npmjs.com/package/cross-fetch) library to make HTTP requests,
+  	* but an alternative `fetch` implementation can be provided as an option.
+  	* This is most useful in environments where `cross-fetch` is not compatible (for instance Cloudflare Workers).
+  	*
+  	* @example Custom fetch implementation
+  	* ```js
+  	* import { createClient } from '@supabase/supabase-js'
+  	*
+  	* const supabase = createClient('https://xyzcompany.supabase.co', 'publishable-or-anon-key', {
+  	*   global: { fetch: fetch.bind(globalThis) }
+  	* })
+  	* ```
+  	*
+  	* @exampleDescription React Native options with AsyncStorage
+  	* For React Native we recommend using `AsyncStorage` as the storage implementation for Supabase Auth.
+  	*
+  	* @example React Native options with AsyncStorage
+  	* ```js
+  	* import 'react-native-url-polyfill/auto'
+  	* import { createClient } from '@supabase/supabase-js'
+  	* import AsyncStorage from "@react-native-async-storage/async-storage";
+  	*
+  	* const supabase = createClient("https://xyzcompany.supabase.co", "publishable-or-anon-key", {
+  	*   auth: {
+  	*     storage: AsyncStorage,
+  	*     autoRefreshToken: true,
+  	*     persistSession: true,
+  	*     detectSessionInUrl: false,
+  	*   },
+  	* });
+  	* ```
+  	*
+  	* @exampleDescription React Native options with Expo SecureStore
+  	* If you wish to encrypt the user's session information, you can use `aes-js` and store the encryption key in Expo SecureStore.
+  	* The `aes-js` library, a reputable JavaScript-only implementation of the AES encryption algorithm in CTR mode.
+  	* A new 256-bit encryption key is generated using the `react-native-get-random-values` library.
+  	* This key is stored inside Expo's SecureStore, while the value is encrypted and placed inside AsyncStorage.
+  	*
+  	* Please make sure that:
+  	* - You keep the `expo-secure-store`, `aes-js` and `react-native-get-random-values` libraries up-to-date.
+  	* - Choose the correct [`SecureStoreOptions`](https://docs.expo.dev/versions/latest/sdk/securestore/#securestoreoptions) for your app's needs.
+  	*   E.g. [`SecureStore.WHEN_UNLOCKED`](https://docs.expo.dev/versions/latest/sdk/securestore/#securestorewhen_unlocked) regulates when the data can be accessed.
+  	* - Carefully consider optimizations or other modifications to the above example, as those can lead to introducing subtle security vulnerabilities.
+  	*
+  	* @example React Native options with Expo SecureStore
+  	* ```ts
+  	* import 'react-native-url-polyfill/auto'
+  	* import { createClient } from '@supabase/supabase-js'
+  	* import AsyncStorage from '@react-native-async-storage/async-storage';
+  	* import * as SecureStore from 'expo-secure-store';
+  	* import * as aesjs from 'aes-js';
+  	* import 'react-native-get-random-values';
+  	*
+  	* // As Expo's SecureStore does not support values larger than 2048
+  	* // bytes, an AES-256 key is generated and stored in SecureStore, while
+  	* // it is used to encrypt/decrypt values stored in AsyncStorage.
+  	* class LargeSecureStore {
+  	*   private async _encrypt(key: string, value: string) {
+  	*     const encryptionKey = crypto.getRandomValues(new Uint8Array(256 / 8));
+  	*
+  	*     const cipher = new aesjs.ModeOfOperation.ctr(encryptionKey, new aesjs.Counter(1));
+  	*     const encryptedBytes = cipher.encrypt(aesjs.utils.utf8.toBytes(value));
+  	*
+  	*     await SecureStore.setItemAsync(key, aesjs.utils.hex.fromBytes(encryptionKey));
+  	*
+  	*     return aesjs.utils.hex.fromBytes(encryptedBytes);
+  	*   }
+  	*
+  	*   private async _decrypt(key: string, value: string) {
+  	*     const encryptionKeyHex = await SecureStore.getItemAsync(key);
+  	*     if (!encryptionKeyHex) {
+  	*       return encryptionKeyHex;
+  	*     }
+  	*
+  	*     const cipher = new aesjs.ModeOfOperation.ctr(aesjs.utils.hex.toBytes(encryptionKeyHex), new aesjs.Counter(1));
+  	*     const decryptedBytes = cipher.decrypt(aesjs.utils.hex.toBytes(value));
+  	*
+  	*     return aesjs.utils.utf8.fromBytes(decryptedBytes);
+  	*   }
+  	*
+  	*   async getItem(key: string) {
+  	*     const encrypted = await AsyncStorage.getItem(key);
+  	*     if (!encrypted) { return encrypted; }
+  	*
+  	*     return await this._decrypt(key, encrypted);
+  	*   }
+  	*
+  	*   async removeItem(key: string) {
+  	*     await AsyncStorage.removeItem(key);
+  	*     await SecureStore.deleteItemAsync(key);
+  	*   }
+  	*
+  	*   async setItem(key: string, value: string) {
+  	*     const encrypted = await this._encrypt(key, value);
+  	*
+  	*     await AsyncStorage.setItem(key, encrypted);
+  	*   }
+  	* }
+  	*
+  	* const supabase = createClient("https://xyzcompany.supabase.co", "publishable-or-anon-key", {
+  	*   auth: {
+  	*     storage: new LargeSecureStore(),
+  	*     autoRefreshToken: true,
+  	*     persistSession: true,
+  	*     detectSessionInUrl: false,
+  	*   },
+  	* });
+  	* ```
+  	*
+  	* @example With a database query
   	* ```ts
   	* import { createClient } from '@supabase/supabase-js'
   	*
   	* const supabase = createClient('https://xyzcompany.supabase.co', 'public-anon-key')
+  	*
   	* const { data } = await supabase.from('profiles').select('*')
   	* ```
   	*/
@@ -15116,11 +16729,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   			headers: this.headers,
   			accessToken: this._getAccessToken.bind(this)
   		}, settings.realtime));
-  		if (this.accessToken) this.accessToken().then((token) => this.realtime.setAuth(token)).catch((e) => console.warn("Failed to set initial Realtime auth token:", e));
+  		if (this.accessToken) Promise.resolve(this.accessToken()).then((token) => this.realtime.setAuth(token)).catch((e) => console.warn("Failed to set initial Realtime auth token:", e));
   		this.rest = new PostgrestClient(new URL("rest/v1", baseUrl).href, {
   			headers: this.headers,
   			schema: settings.db.schema,
-  			fetch: this.fetch
+  			fetch: this.fetch,
+  			timeout: settings.db.timeout,
+  			urlLengthLimit: settings.db.urlLengthLimit
   		});
   		this.storage = new StorageClient(this.storageUrl.href, this.headers, this.fetch, options === null || options === void 0 ? void 0 : options.storage);
   		if (!settings.accessToken) this._listenForAuthEvents();
@@ -15280,8 +16895,10 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   };
   function shouldShowDeprecationWarning() {
   	if (typeof window !== "undefined") return false;
-  	if (typeof browser$1 === "undefined") return false;
-  	const processVersion = browser$1["version"];
+  	const _process = globalThis["process"];
+  	if (!_process) return false;
+  	const processVersion = _process["version"];
+  	if (processVersion === void 0 || processVersion === null) return false;
   	const versionMatch = processVersion.match(/^v(\d+)\./);
   	if (!versionMatch) return false;
   	return parseInt(versionMatch[1], 10) <= 18;

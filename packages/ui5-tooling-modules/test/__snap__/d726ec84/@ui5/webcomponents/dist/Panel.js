@@ -19,38 +19,38 @@ sap.ui.define(
           tag: "ui5-panel-mYsCoPeSuFfIx",
           interfaces: [],
           properties: {
-            headerText: {
+            accessibleName: {
               type: "string",
               mapping: "property"
-            },
-            fixed: {
-              type: "boolean",
-              mapping: "property",
-              defaultValue: false
-            },
-            collapsed: {
-              type: "boolean",
-              mapping: "property",
-              defaultValue: false
-            },
-            noAnimation: {
-              type: "boolean",
-              mapping: "property",
-              defaultValue: false
             },
             accessibleRole: {
               type: "@ui5.webcomponents.PanelAccessibleRole",
               mapping: "property",
               defaultValue: "Form"
             },
+            collapsed: {
+              type: "boolean",
+              mapping: "property",
+              defaultValue: false
+            },
+            fixed: {
+              type: "boolean",
+              mapping: "property",
+              defaultValue: false
+            },
             headerLevel: {
               type: "@ui5.webcomponents.TitleLevel",
               mapping: "property",
               defaultValue: "H2"
             },
-            accessibleName: {
+            headerText: {
               type: "string",
               mapping: "property"
+            },
+            noAnimation: {
+              type: "boolean",
+              mapping: "property",
+              defaultValue: false
             },
             stickyHeader: {
               type: "boolean",

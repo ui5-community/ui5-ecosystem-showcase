@@ -109,8 +109,9 @@ const generateStandardDocumentation = function (options) {
 			} else if (entityType === "association") {
 				text = `${typeInfo.multiple ? "Returns array of IDs of the elements which are the current targets" : "ID of the element which is the current target"} of the ${entityType} ${linkRef}.`;
 				returnValue = `@returns Reference the IDs of the associated controls`;
+			} else {
+				returnValue = `@returns The content of the ${entityType}`;
 			}
-			returnValue = `@returns The content of the ${entityType}`;
 			defaultValue = defaultValueDesc !== undefined ? `Default value is \`${defaultValueDesc}\`.` : "";
 			break;
 		case actions.Set:

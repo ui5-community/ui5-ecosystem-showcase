@@ -2170,30 +2170,30 @@ sap.ui.define((function () { 'use strict';
 
 		// utils is a library of generic helper functions non-specific to axios
 
-		const {toString} = Object.prototype;
-		const {getPrototypeOf} = Object;
-		const {iterator, toStringTag} = Symbol;
+		const { toString } = Object.prototype;
+		const { getPrototypeOf } = Object;
+		const { iterator, toStringTag } = Symbol;
 
-		const kindOf = (cache => thing => {
-		    const str = toString.call(thing);
-		    return cache[str] || (cache[str] = str.slice(8, -1).toLowerCase());
+		const kindOf = ((cache) => (thing) => {
+		  const str = toString.call(thing);
+		  return cache[str] || (cache[str] = str.slice(8, -1).toLowerCase());
 		})(Object.create(null));
 
 		const kindOfTest = (type) => {
 		  type = type.toLowerCase();
-		  return (thing) => kindOf(thing) === type
+		  return (thing) => kindOf(thing) === type;
 		};
 
-		const typeOfTest = type => thing => typeof thing === type;
+		const typeOfTest = (type) => (thing) => typeof thing === type;
 
 		/**
-		 * Determine if a value is an Array
+		 * Determine if a value is a non-null object
 		 *
 		 * @param {Object} val The value to test
 		 *
 		 * @returns {boolean} True if value is an Array, otherwise false
 		 */
-		const {isArray} = Array;
+		const { isArray } = Array;
 
 		/**
 		 * Determine if a value is undefined
@@ -2212,8 +2212,14 @@ sap.ui.define((function () { 'use strict';
 		 * @returns {boolean} True if value is a Buffer, otherwise false
 		 */
 		function isBuffer(val) {
-		  return val !== null && !isUndefined(val) && val.constructor !== null && !isUndefined(val.constructor)
-		    && isFunction$1(val.constructor.isBuffer) && val.constructor.isBuffer(val);
+		  return (
+		    val !== null &&
+		    !isUndefined(val) &&
+		    val.constructor !== null &&
+		    !isUndefined(val.constructor) &&
+		    isFunction$1(val.constructor.isBuffer) &&
+		    val.constructor.isBuffer(val)
+		  );
 		}
 
 		/**
@@ -2225,7 +2231,6 @@ sap.ui.define((function () { 'use strict';
 		 */
 		const isArrayBuffer = kindOfTest('ArrayBuffer');
 
-
 		/**
 		 * Determine if a value is a view on an ArrayBuffer
 		 *
@@ -2235,10 +2240,10 @@ sap.ui.define((function () { 'use strict';
 		 */
 		function isArrayBufferView(val) {
 		  let result;
-		  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
+		  if (typeof ArrayBuffer !== 'undefined' && ArrayBuffer.isView) {
 		    result = ArrayBuffer.isView(val);
 		  } else {
-		    result = (val) && (val.buffer) && (isArrayBuffer(val.buffer));
+		    result = val && val.buffer && isArrayBuffer(val.buffer);
 		  }
 		  return result;
 		}
@@ -2284,7 +2289,7 @@ sap.ui.define((function () { 'use strict';
 		 * @param {*} thing The value to test
 		 * @returns {boolean} True if value is a Boolean, otherwise false
 		 */
-		const isBoolean = thing => thing === true || thing === false;
+		const isBoolean = (thing) => thing === true || thing === false;
 
 		/**
 		 * Determine if a value is a plain Object
@@ -2299,7 +2304,13 @@ sap.ui.define((function () { 'use strict';
 		  }
 
 		  const prototype = getPrototypeOf(val);
-		  return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(toStringTag in val) && !(iterator in val);
+		  return (
+		    (prototype === null ||
+		      prototype === Object.prototype ||
+		      Object.getPrototypeOf(prototype) === null) &&
+		    !(toStringTag in val) &&
+		    !(iterator in val)
+		  );
 		};
 
 		/**
@@ -2342,6 +2353,31 @@ sap.ui.define((function () { 'use strict';
 		const isFile = kindOfTest('File');
 
 		/**
+		 * Determine if a value is a React Native Blob
+		 * React Native "blob": an object with a `uri` attribute. Optionally, it can
+		 * also have a `name` and `type` attribute to specify filename and content type
+		 *
+		 * @see https://github.com/facebook/react-native/blob/26684cf3adf4094eb6c405d345a75bf8c7c0bf88/Libraries/Network/FormData.js#L68-L71
+		 *
+		 * @param {*} value The value to test
+		 *
+		 * @returns {boolean} True if value is a React Native Blob, otherwise false
+		 */
+		const isReactNativeBlob = (value) => {
+		  return !!(value && typeof value.uri !== 'undefined');
+		};
+
+		/**
+		 * Determine if environment is React Native
+		 * ReactNative `FormData` has a non-standard `getParts()` method
+		 *
+		 * @param {*} formData The formData to test
+		 *
+		 * @returns {boolean} True if environment is React Native, otherwise false
+		 */
+		const isReactNative = (formData) => formData && typeof formData.getParts !== 'undefined';
+
+		/**
 		 * Determine if a value is a Blob
 		 *
 		 * @param {*} val The value to test
@@ -2375,17 +2411,28 @@ sap.ui.define((function () { 'use strict';
 		 *
 		 * @returns {boolean} True if value is an FormData, otherwise false
 		 */
+		function getGlobal() {
+		  if (typeof globalThis !== 'undefined') return globalThis;
+		  if (typeof self !== 'undefined') return self;
+		  if (typeof window !== 'undefined') return window;
+		  if (typeof commonjsGlobal !== 'undefined') return commonjsGlobal;
+		  return {};
+		}
+
+		const G = getGlobal();
+		const FormDataCtor = typeof G.FormData !== 'undefined' ? G.FormData : undefined;
+
 		const isFormData = (thing) => {
 		  let kind;
 		  return thing && (
-		    (typeof FormData === 'function' && thing instanceof FormData) || (
+		    (FormDataCtor && thing instanceof FormDataCtor) || (
 		      isFunction$1(thing.append) && (
 		        (kind = kindOf(thing)) === 'formdata' ||
 		        // detect form-data instance
 		        (kind === 'object' && isFunction$1(thing.toString) && thing.toString() === '[object FormData]')
 		      )
 		    )
-		  )
+		  );
 		};
 
 		/**
@@ -2397,7 +2444,12 @@ sap.ui.define((function () { 'use strict';
 		 */
 		const isURLSearchParams = kindOfTest('URLSearchParams');
 
-		const [isReadableStream, isRequest, isResponse, isHeaders] = ['ReadableStream', 'Request', 'Response', 'Headers'].map(kindOfTest);
+		const [isReadableStream, isRequest, isResponse, isHeaders] = [
+		  'ReadableStream',
+		  'Request',
+		  'Response',
+		  'Headers',
+		].map(kindOfTest);
 
 		/**
 		 * Trim excess whitespace off the beginning and end of a string
@@ -2406,9 +2458,9 @@ sap.ui.define((function () { 'use strict';
 		 *
 		 * @returns {String} The String freed of excess whitespace
 		 */
-		const trim = (str) => str.trim ?
-		  str.trim() : str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
-
+		const trim = (str) => {
+		  return str.trim ? str.trim() : str.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+		};
 		/**
 		 * Iterate over an Array or an Object invoking a function for each item.
 		 *
@@ -2418,13 +2470,14 @@ sap.ui.define((function () { 'use strict';
 		 * If 'obj' is an Object callback will be called passing
 		 * the value, key, and complete object for each property.
 		 *
-		 * @param {Object|Array} obj The object to iterate
+		 * @param {Object|Array<unknown>} obj The object to iterate
 		 * @param {Function} fn The callback to invoke for each item
 		 *
-		 * @param {Boolean} [allOwnKeys = false]
+		 * @param {Object} [options]
+		 * @param {Boolean} [options.allOwnKeys = false]
 		 * @returns {any}
 		 */
-		function forEach(obj, fn, {allOwnKeys = false} = {}) {
+		function forEach(obj, fn, { allOwnKeys = false } = {}) {
 		  // Don't bother if no value provided
 		  if (obj === null || typeof obj === 'undefined') {
 		    return;
@@ -2462,8 +2515,16 @@ sap.ui.define((function () { 'use strict';
 		  }
 		}
 
+		/**
+		 * Finds a key in an object, case-insensitive, returning the actual key name.
+		 * Returns null if the object is a Buffer or if no match is found.
+		 *
+		 * @param {Object} obj - The object to search.
+		 * @param {string} key - The key to find (case-insensitive).
+		 * @returns {?string} The actual key name if found, otherwise null.
+		 */
 		function findKey(obj, key) {
-		  if (isBuffer(obj)){
+		  if (isBuffer(obj)) {
 		    return null;
 		  }
 
@@ -2482,8 +2543,8 @@ sap.ui.define((function () { 'use strict';
 
 		const _global = (() => {
 		  /*eslint no-undef:0*/
-		  if (typeof globalThis !== "undefined") return globalThis;
-		  return typeof self !== "undefined" ? self : (typeof window !== 'undefined' ? window : commonjsGlobal)
+		  if (typeof globalThis !== 'undefined') return globalThis;
+		  return typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : commonjsGlobal;
 		})();
 
 		const isContextDefined = (context) => !isUndefined(context) && context !== _global;
@@ -2498,7 +2559,7 @@ sap.ui.define((function () { 'use strict';
 		 * Example:
 		 *
 		 * ```js
-		 * var result = merge({foo: 123}, {foo: 456});
+		 * const result = merge({foo: 123}, {foo: 456});
 		 * console.log(result.foo); // outputs 456
 		 * ```
 		 *
@@ -2507,10 +2568,15 @@ sap.ui.define((function () { 'use strict';
 		 * @returns {Object} Result of all merge properties
 		 */
 		function merge(/* obj1, obj2, obj3, ... */) {
-		  const {caseless, skipUndefined} = isContextDefined(this) && this || {};
+		  const { caseless, skipUndefined } = (isContextDefined(this) && this) || {};
 		  const result = {};
 		  const assignValue = (val, key) => {
-		    const targetKey = caseless && findKey(result, key) || key;
+		    // Skip dangerous property names to prevent prototype pollution
+		    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+		      return;
+		    }
+
+		    const targetKey = (caseless && findKey(result, key)) || key;
 		    if (isPlainObject(result[targetKey]) && isPlainObject(val)) {
 		      result[targetKey] = merge(result[targetKey], val);
 		    } else if (isPlainObject(val)) {
@@ -2535,17 +2601,32 @@ sap.ui.define((function () { 'use strict';
 		 * @param {Object} b The object to copy properties from
 		 * @param {Object} thisArg The object to bind function to
 		 *
-		 * @param {Boolean} [allOwnKeys]
+		 * @param {Object} [options]
+		 * @param {Boolean} [options.allOwnKeys]
 		 * @returns {Object} The resulting value of object a
 		 */
-		const extend = (a, b, thisArg, {allOwnKeys}= {}) => {
-		  forEach(b, (val, key) => {
-		    if (thisArg && isFunction$1(val)) {
-		      a[key] = bind(val, thisArg);
-		    } else {
-		      a[key] = val;
-		    }
-		  }, {allOwnKeys});
+		const extend = (a, b, thisArg, { allOwnKeys } = {}) => {
+		  forEach(
+		    b,
+		    (val, key) => {
+		      if (thisArg && isFunction$1(val)) {
+		        Object.defineProperty(a, key, {
+		          value: bind(val, thisArg),
+		          writable: true,
+		          enumerable: true,
+		          configurable: true,
+		        });
+		      } else {
+		        Object.defineProperty(a, key, {
+		          value: val,
+		          writable: true,
+		          enumerable: true,
+		          configurable: true,
+		        });
+		      }
+		    },
+		    { allOwnKeys }
+		  );
 		  return a;
 		};
 
@@ -2557,7 +2638,7 @@ sap.ui.define((function () { 'use strict';
 		 * @returns {string} content value without BOM
 		 */
 		const stripBOM = (content) => {
-		  if (content.charCodeAt(0) === 0xFEFF) {
+		  if (content.charCodeAt(0) === 0xfeff) {
 		    content = content.slice(1);
 		  }
 		  return content;
@@ -2574,9 +2655,14 @@ sap.ui.define((function () { 'use strict';
 		 */
 		const inherits = (constructor, superConstructor, props, descriptors) => {
 		  constructor.prototype = Object.create(superConstructor.prototype, descriptors);
-		  constructor.prototype.constructor = constructor;
+		  Object.defineProperty(constructor.prototype, 'constructor', {
+		    value: constructor,
+		    writable: true,
+		    enumerable: false,
+		    configurable: true,
+		  });
 		  Object.defineProperty(constructor, 'super', {
-		    value: superConstructor.prototype
+		    value: superConstructor.prototype,
 		  });
 		  props && Object.assign(constructor.prototype, props);
 		};
@@ -2635,7 +2721,6 @@ sap.ui.define((function () { 'use strict';
 		  return lastIndex !== -1 && lastIndex === position;
 		};
 
-
 		/**
 		 * Returns new array from array like object or null if failed
 		 *
@@ -2664,9 +2749,9 @@ sap.ui.define((function () { 'use strict';
 		 * @returns {Array}
 		 */
 		// eslint-disable-next-line func-names
-		const isTypedArray = (TypedArray => {
+		const isTypedArray = ((TypedArray) => {
 		  // eslint-disable-next-line func-names
-		  return thing => {
+		  return (thing) => {
 		    return TypedArray && thing instanceof TypedArray;
 		  };
 		})(typeof Uint8Array !== 'undefined' && getPrototypeOf(Uint8Array));
@@ -2714,16 +2799,18 @@ sap.ui.define((function () { 'use strict';
 		/* Checking if the kindOfTest function returns true when passed an HTMLFormElement. */
 		const isHTMLForm = kindOfTest('HTMLFormElement');
 
-		const toCamelCase = str => {
-		  return str.toLowerCase().replace(/[-_\s]([a-z\d])(\w*)/g,
-		    function replacer(m, p1, p2) {
-		      return p1.toUpperCase() + p2;
-		    }
-		  );
+		const toCamelCase = (str) => {
+		  return str.toLowerCase().replace(/[-_\s]([a-z\d])(\w*)/g, function replacer(m, p1, p2) {
+		    return p1.toUpperCase() + p2;
+		  });
 		};
 
 		/* Creating a function that will check if an object has a property. */
-		const hasOwnProperty = (({hasOwnProperty}) => (obj, prop) => hasOwnProperty.call(obj, prop))(Object.prototype);
+		const hasOwnProperty = (
+		  ({ hasOwnProperty }) =>
+		  (obj, prop) =>
+		    hasOwnProperty.call(obj, prop)
+		)(Object.prototype);
 
 		/**
 		 * Determine if a value is a RegExp object
@@ -2773,17 +2860,25 @@ sap.ui.define((function () { 'use strict';
 
 		    if (!descriptor.set) {
 		      descriptor.set = () => {
-		        throw Error('Can not rewrite read-only method \'' + name + '\'');
+		        throw Error("Can not rewrite read-only method '" + name + "'");
 		      };
 		    }
 		  });
 		};
 
+		/**
+		 * Converts an array or a delimited string into an object set with values as keys and true as values.
+		 * Useful for fast membership checks.
+		 *
+		 * @param {Array|string} arrayOrString - The array or string to convert.
+		 * @param {string} delimiter - The delimiter to use if input is a string.
+		 * @returns {Object} An object with keys from the array or string, values set to true.
+		 */
 		const toObjectSet = (arrayOrString, delimiter) => {
 		  const obj = {};
 
 		  const define = (arr) => {
-		    arr.forEach(value => {
+		    arr.forEach((value) => {
 		      obj[value] = true;
 		    });
 		  };
@@ -2796,10 +2891,8 @@ sap.ui.define((function () { 'use strict';
 		const noop = () => {};
 
 		const toFiniteNumber = (value, defaultValue) => {
-		  return value != null && Number.isFinite(value = +value) ? value : defaultValue;
+		  return value != null && Number.isFinite((value = +value)) ? value : defaultValue;
 		};
-
-
 
 		/**
 		 * If the thing is a FormData object, return true, otherwise return false.
@@ -2809,14 +2902,24 @@ sap.ui.define((function () { 'use strict';
 		 * @returns {boolean}
 		 */
 		function isSpecCompliantForm(thing) {
-		  return !!(thing && isFunction$1(thing.append) && thing[toStringTag] === 'FormData' && thing[iterator]);
+		  return !!(
+		    thing &&
+		    isFunction$1(thing.append) &&
+		    thing[toStringTag] === 'FormData' &&
+		    thing[iterator]
+		  );
 		}
 
+		/**
+		 * Recursively converts an object to a JSON-compatible object, handling circular references and Buffers.
+		 *
+		 * @param {Object} obj - The object to convert.
+		 * @returns {Object} The JSON-compatible object.
+		 */
 		const toJSONObject = (obj) => {
 		  const stack = new Array(10);
 
 		  const visit = (source, i) => {
-
 		    if (isObject(source)) {
 		      if (stack.indexOf(source) >= 0) {
 		        return;
@@ -2827,7 +2930,7 @@ sap.ui.define((function () { 'use strict';
 		        return source;
 		      }
 
-		      if(!('toJSON' in source)) {
+		      if (!('toJSON' in source)) {
 		        stack[i] = source;
 		        const target = isArray(source) ? [] : {};
 
@@ -2848,44 +2951,76 @@ sap.ui.define((function () { 'use strict';
 		  return visit(obj, 0);
 		};
 
+		/**
+		 * Determines if a value is an async function.
+		 *
+		 * @param {*} thing - The value to test.
+		 * @returns {boolean} True if value is an async function, otherwise false.
+		 */
 		const isAsyncFn = kindOfTest('AsyncFunction');
 
+		/**
+		 * Determines if a value is thenable (has then and catch methods).
+		 *
+		 * @param {*} thing - The value to test.
+		 * @returns {boolean} True if value is thenable, otherwise false.
+		 */
 		const isThenable = (thing) =>
-		  thing && (isObject(thing) || isFunction$1(thing)) && isFunction$1(thing.then) && isFunction$1(thing.catch);
+		  thing &&
+		  (isObject(thing) || isFunction$1(thing)) &&
+		  isFunction$1(thing.then) &&
+		  isFunction$1(thing.catch);
 
 		// original code
 		// https://github.com/DigitalBrainJS/AxiosPromise/blob/16deab13710ec09779922131f3fa5954320f83ab/lib/utils.js#L11-L34
 
+		/**
+		 * Provides a cross-platform setImmediate implementation.
+		 * Uses native setImmediate if available, otherwise falls back to postMessage or setTimeout.
+		 *
+		 * @param {boolean} setImmediateSupported - Whether setImmediate is supported.
+		 * @param {boolean} postMessageSupported - Whether postMessage is supported.
+		 * @returns {Function} A function to schedule a callback asynchronously.
+		 */
 		const _setImmediate = ((setImmediateSupported, postMessageSupported) => {
 		  if (setImmediateSupported) {
 		    return setImmediate;
 		  }
 
-		  return postMessageSupported ? ((token, callbacks) => {
-		    _global.addEventListener("message", ({source, data}) => {
-		      if (source === _global && data === token) {
-		        callbacks.length && callbacks.shift()();
-		      }
-		    }, false);
+		  return postMessageSupported
+		    ? ((token, callbacks) => {
+		        _global.addEventListener(
+		          'message',
+		          ({ source, data }) => {
+		            if (source === _global && data === token) {
+		              callbacks.length && callbacks.shift()();
+		            }
+		          },
+		          false
+		        );
 
-		    return (cb) => {
-		      callbacks.push(cb);
-		      _global.postMessage(token, "*");
-		    }
-		  })(`axios@${Math.random()}`, []) : (cb) => setTimeout(cb);
-		})(
-		  typeof setImmediate === 'function',
-		  isFunction$1(_global.postMessage)
-		);
+		        return (cb) => {
+		          callbacks.push(cb);
+		          _global.postMessage(token, '*');
+		        };
+		      })(`axios@${Math.random()}`, [])
+		    : (cb) => setTimeout(cb);
+		})(typeof setImmediate === 'function', isFunction$1(_global.postMessage));
 
-		const asap = typeof queueMicrotask !== 'undefined' ?
-		  queueMicrotask.bind(_global) : ( typeof browser$1 !== 'undefined' && browser$1.nextTick || _setImmediate);
+		/**
+		 * Schedules a microtask or asynchronous callback as soon as possible.
+		 * Uses queueMicrotask if available, otherwise falls back to process.nextTick or _setImmediate.
+		 *
+		 * @type {Function}
+		 */
+		const asap =
+		  typeof queueMicrotask !== 'undefined'
+		    ? queueMicrotask.bind(_global)
+		    : (typeof browser$1 !== 'undefined' && browser$1.nextTick) || _setImmediate;
 
 		// *********************
 
-
 		const isIterable = (thing) => thing != null && isFunction$1(thing[iterator]);
-
 
 		var utils$1 = {
 		  isArray,
@@ -2906,6 +3041,8 @@ sap.ui.define((function () { 'use strict';
 		  isUndefined,
 		  isDate,
 		  isFile,
+		  isReactNativeBlob,
+		  isReactNative,
 		  isBlob,
 		  isRegExp,
 		  isFunction: isFunction$1,
@@ -2944,42 +3081,60 @@ sap.ui.define((function () { 'use strict';
 		  isThenable,
 		  setImmediate: _setImmediate,
 		  asap,
-		  isIterable
+		  isIterable,
 		};
 
-		/**
-		 * Create an Error with the specified message, config, error code, request and response.
-		 *
-		 * @param {string} message The error message.
-		 * @param {string} [code] The error code (for example, 'ECONNABORTED').
-		 * @param {Object} [config] The config.
-		 * @param {Object} [request] The request.
-		 * @param {Object} [response] The response.
-		 *
-		 * @returns {Error} The created error.
-		 */
-		function AxiosError(message, code, config, request, response) {
-		  Error.call(this);
+		class AxiosError extends Error {
+		  static from(error, code, config, request, response, customProps) {
+		    const axiosError = new AxiosError(error.message, code || error.code, config, request, response);
+		    axiosError.cause = error;
+		    axiosError.name = error.name;
 
-		  if (Error.captureStackTrace) {
-		    Error.captureStackTrace(this, this.constructor);
-		  } else {
-		    this.stack = (new Error()).stack;
+		    // Preserve status from the original error if not already set from response
+		    if (error.status != null && axiosError.status == null) {
+		      axiosError.status = error.status;
+		    }
+
+		    customProps && Object.assign(axiosError, customProps);
+		    return axiosError;
 		  }
 
-		  this.message = message;
-		  this.name = 'AxiosError';
-		  code && (this.code = code);
-		  config && (this.config = config);
-		  request && (this.request = request);
-		  if (response) {
-		    this.response = response;
-		    this.status = response.status ? response.status : null;
-		  }
-		}
+		    /**
+		     * Create an Error with the specified message, config, error code, request and response.
+		     *
+		     * @param {string} message The error message.
+		     * @param {string} [code] The error code (for example, 'ECONNABORTED').
+		     * @param {Object} [config] The config.
+		     * @param {Object} [request] The request.
+		     * @param {Object} [response] The response.
+		     *
+		     * @returns {Error} The created error.
+		     */
+		    constructor(message, code, config, request, response) {
+		      super(message);
 
-		utils$1.inherits(AxiosError, Error, {
-		  toJSON: function toJSON() {
+		      // Make message enumerable to maintain backward compatibility
+		      // The native Error constructor sets message as non-enumerable,
+		      // but axios < v1.13.3 had it as enumerable
+		      Object.defineProperty(this, 'message', {
+		          value: message,
+		          enumerable: true,
+		          writable: true,
+		          configurable: true
+		      });
+
+		      this.name = 'AxiosError';
+		      this.isAxiosError = true;
+		      code && (this.code = code);
+		      config && (this.config = config);
+		      request && (this.request = request);
+		      if (response) {
+		          this.response = response;
+		          this.status = response.status;
+		      }
+		    }
+
+		  toJSON() {
 		    return {
 		      // Standard
 		      message: this.message,
@@ -2995,62 +3150,26 @@ sap.ui.define((function () { 'use strict';
 		      // Axios
 		      config: utils$1.toJSONObject(this.config),
 		      code: this.code,
-		      status: this.status
+		      status: this.status,
 		    };
 		  }
-		});
+		}
 
-		const prototype$1 = AxiosError.prototype;
-		const descriptors = {};
+		// This can be changed to static properties as soon as the parser options in .eslint.cjs are updated.
+		AxiosError.ERR_BAD_OPTION_VALUE = 'ERR_BAD_OPTION_VALUE';
+		AxiosError.ERR_BAD_OPTION = 'ERR_BAD_OPTION';
+		AxiosError.ECONNABORTED = 'ECONNABORTED';
+		AxiosError.ETIMEDOUT = 'ETIMEDOUT';
+		AxiosError.ERR_NETWORK = 'ERR_NETWORK';
+		AxiosError.ERR_FR_TOO_MANY_REDIRECTS = 'ERR_FR_TOO_MANY_REDIRECTS';
+		AxiosError.ERR_DEPRECATED = 'ERR_DEPRECATED';
+		AxiosError.ERR_BAD_RESPONSE = 'ERR_BAD_RESPONSE';
+		AxiosError.ERR_BAD_REQUEST = 'ERR_BAD_REQUEST';
+		AxiosError.ERR_CANCELED = 'ERR_CANCELED';
+		AxiosError.ERR_NOT_SUPPORT = 'ERR_NOT_SUPPORT';
+		AxiosError.ERR_INVALID_URL = 'ERR_INVALID_URL';
 
-		[
-		  'ERR_BAD_OPTION_VALUE',
-		  'ERR_BAD_OPTION',
-		  'ECONNABORTED',
-		  'ETIMEDOUT',
-		  'ERR_NETWORK',
-		  'ERR_FR_TOO_MANY_REDIRECTS',
-		  'ERR_DEPRECATED',
-		  'ERR_BAD_RESPONSE',
-		  'ERR_BAD_REQUEST',
-		  'ERR_CANCELED',
-		  'ERR_NOT_SUPPORT',
-		  'ERR_INVALID_URL'
-		// eslint-disable-next-line func-names
-		].forEach(code => {
-		  descriptors[code] = {value: code};
-		});
-
-		Object.defineProperties(AxiosError, descriptors);
-		Object.defineProperty(prototype$1, 'isAxiosError', {value: true});
-
-		// eslint-disable-next-line func-names
-		AxiosError.from = (error, code, config, request, response, customProps) => {
-		  const axiosError = Object.create(prototype$1);
-
-		  utils$1.toFlatObject(error, axiosError, function filter(obj) {
-		    return obj !== Error.prototype;
-		  }, prop => {
-		    return prop !== 'isAxiosError';
-		  });
-
-		  const msg = error && error.message ? error.message : 'Error';
-
-		  // Prefer explicit code; otherwise copy the low-level error's code (e.g. ECONNREFUSED)
-		  const errCode = code == null && error ? error.code : code;
-		  AxiosError.call(axiosError, msg, errCode, config, request, response);
-
-		  // Chain the original error on the standard field; non-enumerable to avoid JSON noise
-		  if (error && axiosError.cause == null) {
-		    Object.defineProperty(axiosError, 'cause', { value: error, configurable: true });
-		  }
-
-		  axiosError.name = (error && error.name) || 'Error';
-
-		  customProps && Object.assign(axiosError, customProps);
-
-		  return axiosError;
-		};
+		var AxiosError$1 = AxiosError;
 
 		// eslint-disable-next-line strict
 		var httpAdapter = null;
@@ -3088,11 +3207,14 @@ sap.ui.define((function () { 'use strict';
 		 */
 		function renderKey(path, key, dots) {
 		  if (!path) return key;
-		  return path.concat(key).map(function each(token, i) {
-		    // eslint-disable-next-line no-param-reassign
-		    token = removeBrackets(token);
-		    return !dots && i ? '[' + token + ']' : token;
-		  }).join(dots ? '.' : '');
+		  return path
+		    .concat(key)
+		    .map(function each(token, i) {
+		      // eslint-disable-next-line no-param-reassign
+		      token = removeBrackets(token);
+		      return !dots && i ? '[' + token + ']' : token;
+		    })
+		    .join(dots ? '.' : '');
 		}
 
 		/**
@@ -3142,21 +3264,26 @@ sap.ui.define((function () { 'use strict';
 		  formData = formData || new (FormData)();
 
 		  // eslint-disable-next-line no-param-reassign
-		  options = utils$1.toFlatObject(options, {
-		    metaTokens: true,
-		    dots: false,
-		    indexes: false
-		  }, false, function defined(option, source) {
-		    // eslint-disable-next-line no-eq-null,eqeqeq
-		    return !utils$1.isUndefined(source[option]);
-		  });
+		  options = utils$1.toFlatObject(
+		    options,
+		    {
+		      metaTokens: true,
+		      dots: false,
+		      indexes: false,
+		    },
+		    false,
+		    function defined(option, source) {
+		      // eslint-disable-next-line no-eq-null,eqeqeq
+		      return !utils$1.isUndefined(source[option]);
+		    }
+		  );
 
 		  const metaTokens = options.metaTokens;
 		  // eslint-disable-next-line no-use-before-define
 		  const visitor = options.visitor || defaultVisitor;
 		  const dots = options.dots;
 		  const indexes = options.indexes;
-		  const _Blob = options.Blob || typeof Blob !== 'undefined' && Blob;
+		  const _Blob = options.Blob || (typeof Blob !== 'undefined' && Blob);
 		  const useBlob = _Blob && utils$1.isSpecCompliantForm(formData);
 
 		  if (!utils$1.isFunction(visitor)) {
@@ -3175,7 +3302,7 @@ sap.ui.define((function () { 'use strict';
 		    }
 
 		    if (!useBlob && utils$1.isBlob(value)) {
-		      throw new AxiosError('Blob is not supported. Use a Buffer instead.');
+		      throw new AxiosError$1('Blob is not supported. Use a Buffer instead.');
 		    }
 
 		    if (utils$1.isArrayBuffer(value) || utils$1.isTypedArray(value)) {
@@ -3198,6 +3325,11 @@ sap.ui.define((function () { 'use strict';
 		  function defaultVisitor(value, key, path) {
 		    let arr = value;
 
+		    if (utils$1.isReactNative(formData) && utils$1.isReactNativeBlob(value)) {
+		      formData.append(renderKey(path, key, dots), convertValue(value));
+		      return false;
+		    }
+
 		    if (value && !path && typeof value === 'object') {
 		      if (utils$1.endsWith(key, '{}')) {
 		        // eslint-disable-next-line no-param-reassign
@@ -3206,17 +3338,22 @@ sap.ui.define((function () { 'use strict';
 		        value = JSON.stringify(value);
 		      } else if (
 		        (utils$1.isArray(value) && isFlatArray(value)) ||
-		        ((utils$1.isFileList(value) || utils$1.endsWith(key, '[]')) && (arr = utils$1.toArray(value))
-		        )) {
+		        ((utils$1.isFileList(value) || utils$1.endsWith(key, '[]')) && (arr = utils$1.toArray(value)))
+		      ) {
 		        // eslint-disable-next-line no-param-reassign
 		        key = removeBrackets(key);
 
 		        arr.forEach(function each(el, index) {
-		          !(utils$1.isUndefined(el) || el === null) && formData.append(
-		            // eslint-disable-next-line no-nested-ternary
-		            indexes === true ? renderKey([key], index, dots) : (indexes === null ? key : key + '[]'),
-		            convertValue(el)
-		          );
+		          !(utils$1.isUndefined(el) || el === null) &&
+		            formData.append(
+		              // eslint-disable-next-line no-nested-ternary
+		              indexes === true
+		                ? renderKey([key], index, dots)
+		                : indexes === null
+		                  ? key
+		                  : key + '[]',
+		              convertValue(el)
+		            );
 		        });
 		        return false;
 		      }
@@ -3236,7 +3373,7 @@ sap.ui.define((function () { 'use strict';
 		  const exposedHelpers = Object.assign(predicates, {
 		    defaultVisitor,
 		    convertValue,
-		    isVisitable
+		    isVisitable,
 		  });
 
 		  function build(value, path) {
@@ -3249,9 +3386,9 @@ sap.ui.define((function () { 'use strict';
 		    stack.push(value);
 
 		    utils$1.forEach(value, function each(el, key) {
-		      const result = !(utils$1.isUndefined(el) || el === null) && visitor.call(
-		        formData, el, utils$1.isString(key) ? key.trim() : key, path, exposedHelpers
-		      );
+		      const result =
+		        !(utils$1.isUndefined(el) || el === null) &&
+		        visitor.call(formData, el, utils$1.isString(key) ? key.trim() : key, path, exposedHelpers);
 
 		      if (result === true) {
 		        build(el, path ? path.concat(key) : [key]);
@@ -3286,7 +3423,7 @@ sap.ui.define((function () { 'use strict';
 		    ')': '%29',
 		    '~': '%7E',
 		    '%20': '+',
-		    '%00': '\x00'
+		    '%00': '\x00',
 		  };
 		  return encodeURIComponent(str).replace(/[!'()~]|%20|%00/g, function replacer(match) {
 		    return charMap[match];
@@ -3314,13 +3451,17 @@ sap.ui.define((function () { 'use strict';
 		};
 
 		prototype.toString = function toString(encoder) {
-		  const _encode = encoder ? function(value) {
-		    return encoder.call(this, value, encode$1);
-		  } : encode$1;
+		  const _encode = encoder
+		    ? function (value) {
+		        return encoder.call(this, value, encode$1);
+		      }
+		    : encode$1;
 
-		  return this._pairs.map(function each(pair) {
-		    return _encode(pair[0]) + '=' + _encode(pair[1]);
-		  }, '').join('&');
+		  return this._pairs
+		    .map(function each(pair) {
+		      return _encode(pair[0]) + '=' + _encode(pair[1]);
+		    }, '')
+		    .join('&');
 		};
 
 		/**
@@ -3332,11 +3473,11 @@ sap.ui.define((function () { 'use strict';
 		 * @returns {string} The encoded value.
 		 */
 		function encode(val) {
-		  return encodeURIComponent(val).
-		    replace(/%3A/gi, ':').
-		    replace(/%24/g, '$').
-		    replace(/%2C/gi, ',').
-		    replace(/%20/g, '+');
+		  return encodeURIComponent(val)
+		    .replace(/%3A/gi, ':')
+		    .replace(/%24/g, '$')
+		    .replace(/%2C/gi, ',')
+		    .replace(/%20/g, '+');
 		}
 
 		/**
@@ -3349,33 +3490,32 @@ sap.ui.define((function () { 'use strict';
 		 * @returns {string} The formatted url
 		 */
 		function buildURL(url, params, options) {
-		  /*eslint no-param-reassign:0*/
 		  if (!params) {
 		    return url;
 		  }
 
-		  const _encode = options && options.encode || encode;
+		  const _encode = (options && options.encode) || encode;
 
-		  if (utils$1.isFunction(options)) {
-		    options = {
-		      serialize: options
-		    };
-		  }
+		  const _options = utils$1.isFunction(options)
+		    ? {
+		        serialize: options,
+		      }
+		    : options;
 
-		  const serializeFn = options && options.serialize;
+		  const serializeFn = _options && _options.serialize;
 
 		  let serializedParams;
 
 		  if (serializeFn) {
-		    serializedParams = serializeFn(params, options);
+		    serializedParams = serializeFn(params, _options);
 		  } else {
-		    serializedParams = utils$1.isURLSearchParams(params) ?
-		      params.toString() :
-		      new AxiosURLSearchParams(params, options).toString(_encode);
+		    serializedParams = utils$1.isURLSearchParams(params)
+		      ? params.toString()
+		      : new AxiosURLSearchParams(params, _options).toString(_encode);
 		  }
 
 		  if (serializedParams) {
-		    const hashmarkIndex = url.indexOf("#");
+		    const hashmarkIndex = url.indexOf('#');
 
 		    if (hashmarkIndex !== -1) {
 		      url = url.slice(0, hashmarkIndex);
@@ -3396,6 +3536,7 @@ sap.ui.define((function () { 'use strict';
 		   *
 		   * @param {Function} fulfilled The function to handle `then` for a `Promise`
 		   * @param {Function} rejected The function to handle `reject` for a `Promise`
+		   * @param {Object} options The options for the interceptor, synchronous and runWhen
 		   *
 		   * @return {Number} An ID used to remove interceptor later
 		   */
@@ -3404,7 +3545,7 @@ sap.ui.define((function () { 'use strict';
 		      fulfilled,
 		      rejected,
 		      synchronous: options ? options.synchronous : false,
-		      runWhen: options ? options.runWhen : null
+		      runWhen: options ? options.runWhen : null,
 		    });
 		    return this.handlers.length - 1;
 		  }
@@ -3457,7 +3598,8 @@ sap.ui.define((function () { 'use strict';
 		var transitionalDefaults = {
 		  silentJSONParsing: true,
 		  forcedJSONParsing: true,
-		  clarifyTimeoutError: false
+		  clarifyTimeoutError: false,
+		  legacyInterceptorReqResOrdering: true,
 		};
 
 		var URLSearchParams$1 = typeof URLSearchParams !== 'undefined' ? URLSearchParams : AxiosURLSearchParams;
@@ -3471,14 +3613,14 @@ sap.ui.define((function () { 'use strict';
 		  classes: {
 		    URLSearchParams: URLSearchParams$1,
 		    FormData: FormData$1,
-		    Blob: Blob$1
+		    Blob: Blob$1,
 		  },
-		  protocols: ['http', 'https', 'file', 'blob', 'url', 'data']
+		  protocols: ['http', 'https', 'file', 'blob', 'url', 'data'],
 		};
 
 		const hasBrowserEnv = typeof window !== 'undefined' && typeof document !== 'undefined';
 
-		const _navigator = typeof navigator === 'object' && navigator || undefined;
+		const _navigator = (typeof navigator === 'object' && navigator) || undefined;
 
 		/**
 		 * Determine if we're running in a standard browser environment
@@ -3497,7 +3639,8 @@ sap.ui.define((function () { 'use strict';
 		 *
 		 * @returns {boolean}
 		 */
-		const hasStandardBrowserEnv = hasBrowserEnv &&
+		const hasStandardBrowserEnv =
+		  hasBrowserEnv &&
 		  (!_navigator || ['ReactNative', 'NativeScript', 'NS'].indexOf(_navigator.product) < 0);
 
 		/**
@@ -3518,7 +3661,7 @@ sap.ui.define((function () { 'use strict';
 		  );
 		})();
 
-		const origin = hasBrowserEnv && window.location.href || 'http://localhost';
+		const origin = (hasBrowserEnv && window.location.href) || 'http://localhost';
 
 		var utils = /*#__PURE__*/Object.freeze({
 		  __proto__: null,
@@ -3531,12 +3674,12 @@ sap.ui.define((function () { 'use strict';
 
 		var platform = {
 		  ...utils,
-		  ...platform$1
+		  ...platform$1,
 		};
 
 		function toURLEncodedForm(data, options) {
 		  return toFormData(data, new platform.classes.URLSearchParams(), {
-		    visitor: function(value, key, path, helpers) {
+		    visitor: function (value, key, path, helpers) {
 		      if (platform.isNode && utils$1.isBuffer(value)) {
 		        this.append(key, value.toString('base64'));
 		        return false;
@@ -3544,7 +3687,7 @@ sap.ui.define((function () { 'use strict';
 
 		      return helpers.defaultVisitor.apply(this, arguments);
 		    },
-		    ...options
+		    ...options,
 		  });
 		}
 
@@ -3560,7 +3703,7 @@ sap.ui.define((function () { 'use strict';
 		  // foo.x.y.z
 		  // foo-x-y-z
 		  // foo x y z
-		  return utils$1.matchAll(/\w+|\[(\w*)]/g, name).map(match => {
+		  return utils$1.matchAll(/\w+|\[(\w*)]/g, name).map((match) => {
 		    return match[0] === '[]' ? '' : match[1] || match[0];
 		  });
 		}
@@ -3664,96 +3807,107 @@ sap.ui.define((function () { 'use strict';
 		}
 
 		const defaults = {
-
 		  transitional: transitionalDefaults,
 
 		  adapter: ['xhr', 'http', 'fetch'],
 
-		  transformRequest: [function transformRequest(data, headers) {
-		    const contentType = headers.getContentType() || '';
-		    const hasJSONContentType = contentType.indexOf('application/json') > -1;
-		    const isObjectPayload = utils$1.isObject(data);
+		  transformRequest: [
+		    function transformRequest(data, headers) {
+		      const contentType = headers.getContentType() || '';
+		      const hasJSONContentType = contentType.indexOf('application/json') > -1;
+		      const isObjectPayload = utils$1.isObject(data);
 
-		    if (isObjectPayload && utils$1.isHTMLForm(data)) {
-		      data = new FormData(data);
-		    }
-
-		    const isFormData = utils$1.isFormData(data);
-
-		    if (isFormData) {
-		      return hasJSONContentType ? JSON.stringify(formDataToJSON(data)) : data;
-		    }
-
-		    if (utils$1.isArrayBuffer(data) ||
-		      utils$1.isBuffer(data) ||
-		      utils$1.isStream(data) ||
-		      utils$1.isFile(data) ||
-		      utils$1.isBlob(data) ||
-		      utils$1.isReadableStream(data)
-		    ) {
-		      return data;
-		    }
-		    if (utils$1.isArrayBufferView(data)) {
-		      return data.buffer;
-		    }
-		    if (utils$1.isURLSearchParams(data)) {
-		      headers.setContentType('application/x-www-form-urlencoded;charset=utf-8', false);
-		      return data.toString();
-		    }
-
-		    let isFileList;
-
-		    if (isObjectPayload) {
-		      if (contentType.indexOf('application/x-www-form-urlencoded') > -1) {
-		        return toURLEncodedForm(data, this.formSerializer).toString();
+		      if (isObjectPayload && utils$1.isHTMLForm(data)) {
+		        data = new FormData(data);
 		      }
 
-		      if ((isFileList = utils$1.isFileList(data)) || contentType.indexOf('multipart/form-data') > -1) {
-		        const _FormData = this.env && this.env.FormData;
+		      const isFormData = utils$1.isFormData(data);
 
-		        return toFormData(
-		          isFileList ? {'files[]': data} : data,
-		          _FormData && new _FormData(),
-		          this.formSerializer
-		        );
+		      if (isFormData) {
+		        return hasJSONContentType ? JSON.stringify(formDataToJSON(data)) : data;
 		      }
-		    }
 
-		    if (isObjectPayload || hasJSONContentType ) {
-		      headers.setContentType('application/json', false);
-		      return stringifySafely(data);
-		    }
+		      if (
+		        utils$1.isArrayBuffer(data) ||
+		        utils$1.isBuffer(data) ||
+		        utils$1.isStream(data) ||
+		        utils$1.isFile(data) ||
+		        utils$1.isBlob(data) ||
+		        utils$1.isReadableStream(data)
+		      ) {
+		        return data;
+		      }
+		      if (utils$1.isArrayBufferView(data)) {
+		        return data.buffer;
+		      }
+		      if (utils$1.isURLSearchParams(data)) {
+		        headers.setContentType('application/x-www-form-urlencoded;charset=utf-8', false);
+		        return data.toString();
+		      }
 
-		    return data;
-		  }],
+		      let isFileList;
 
-		  transformResponse: [function transformResponse(data) {
-		    const transitional = this.transitional || defaults.transitional;
-		    const forcedJSONParsing = transitional && transitional.forcedJSONParsing;
-		    const JSONRequested = this.responseType === 'json';
+		      if (isObjectPayload) {
+		        if (contentType.indexOf('application/x-www-form-urlencoded') > -1) {
+		          return toURLEncodedForm(data, this.formSerializer).toString();
+		        }
 
-		    if (utils$1.isResponse(data) || utils$1.isReadableStream(data)) {
-		      return data;
-		    }
+		        if (
+		          (isFileList = utils$1.isFileList(data)) ||
+		          contentType.indexOf('multipart/form-data') > -1
+		        ) {
+		          const _FormData = this.env && this.env.FormData;
 
-		    if (data && utils$1.isString(data) && ((forcedJSONParsing && !this.responseType) || JSONRequested)) {
-		      const silentJSONParsing = transitional && transitional.silentJSONParsing;
-		      const strictJSONParsing = !silentJSONParsing && JSONRequested;
-
-		      try {
-		        return JSON.parse(data, this.parseReviver);
-		      } catch (e) {
-		        if (strictJSONParsing) {
-		          if (e.name === 'SyntaxError') {
-		            throw AxiosError.from(e, AxiosError.ERR_BAD_RESPONSE, this, null, this.response);
-		          }
-		          throw e;
+		          return toFormData(
+		            isFileList ? { 'files[]': data } : data,
+		            _FormData && new _FormData(),
+		            this.formSerializer
+		          );
 		        }
 		      }
-		    }
 
-		    return data;
-		  }],
+		      if (isObjectPayload || hasJSONContentType) {
+		        headers.setContentType('application/json', false);
+		        return stringifySafely(data);
+		      }
+
+		      return data;
+		    },
+		  ],
+
+		  transformResponse: [
+		    function transformResponse(data) {
+		      const transitional = this.transitional || defaults.transitional;
+		      const forcedJSONParsing = transitional && transitional.forcedJSONParsing;
+		      const JSONRequested = this.responseType === 'json';
+
+		      if (utils$1.isResponse(data) || utils$1.isReadableStream(data)) {
+		        return data;
+		      }
+
+		      if (
+		        data &&
+		        utils$1.isString(data) &&
+		        ((forcedJSONParsing && !this.responseType) || JSONRequested)
+		      ) {
+		        const silentJSONParsing = transitional && transitional.silentJSONParsing;
+		        const strictJSONParsing = !silentJSONParsing && JSONRequested;
+
+		        try {
+		          return JSON.parse(data, this.parseReviver);
+		        } catch (e) {
+		          if (strictJSONParsing) {
+		            if (e.name === 'SyntaxError') {
+		              throw AxiosError$1.from(e, AxiosError$1.ERR_BAD_RESPONSE, this, null, this.response);
+		            }
+		            throw e;
+		          }
+		        }
+		      }
+
+		      return data;
+		    },
+		  ],
 
 		  /**
 		   * A timeout in milliseconds to abort a request. If set to 0 (default) a
@@ -3769,7 +3923,7 @@ sap.ui.define((function () { 'use strict';
 
 		  env: {
 		    FormData: platform.classes.FormData,
-		    Blob: platform.classes.Blob
+		    Blob: platform.classes.Blob,
 		  },
 
 		  validateStatus: function validateStatus(status) {
@@ -3778,10 +3932,10 @@ sap.ui.define((function () { 'use strict';
 
 		  headers: {
 		    common: {
-		      'Accept': 'application/json, text/plain, */*',
-		      'Content-Type': undefined
-		    }
-		  }
+		      Accept: 'application/json, text/plain, */*',
+		      'Content-Type': undefined,
+		    },
+		  },
 		};
 
 		utils$1.forEach(['delete', 'get', 'head', 'post', 'put', 'patch'], (method) => {
@@ -3793,10 +3947,23 @@ sap.ui.define((function () { 'use strict';
 		// RawAxiosHeaders whose duplicates are ignored by node
 		// c.f. https://nodejs.org/api/http.html#http_message_headers
 		const ignoreDuplicateOf = utils$1.toObjectSet([
-		  'age', 'authorization', 'content-length', 'content-type', 'etag',
-		  'expires', 'from', 'host', 'if-modified-since', 'if-unmodified-since',
-		  'last-modified', 'location', 'max-forwards', 'proxy-authorization',
-		  'referer', 'retry-after', 'user-agent'
+		  'age',
+		  'authorization',
+		  'content-length',
+		  'content-type',
+		  'etag',
+		  'expires',
+		  'from',
+		  'host',
+		  'if-modified-since',
+		  'if-unmodified-since',
+		  'last-modified',
+		  'location',
+		  'max-forwards',
+		  'proxy-authorization',
+		  'referer',
+		  'retry-after',
+		  'user-agent',
 		]);
 
 		/**
@@ -3813,31 +3980,32 @@ sap.ui.define((function () { 'use strict';
 		 *
 		 * @returns {Object} Headers parsed into an object
 		 */
-		var parseHeaders = rawHeaders => {
+		var parseHeaders = (rawHeaders) => {
 		  const parsed = {};
 		  let key;
 		  let val;
 		  let i;
 
-		  rawHeaders && rawHeaders.split('\n').forEach(function parser(line) {
-		    i = line.indexOf(':');
-		    key = line.substring(0, i).trim().toLowerCase();
-		    val = line.substring(i + 1).trim();
+		  rawHeaders &&
+		    rawHeaders.split('\n').forEach(function parser(line) {
+		      i = line.indexOf(':');
+		      key = line.substring(0, i).trim().toLowerCase();
+		      val = line.substring(i + 1).trim();
 
-		    if (!key || (parsed[key] && ignoreDuplicateOf[key])) {
-		      return;
-		    }
-
-		    if (key === 'set-cookie') {
-		      if (parsed[key]) {
-		        parsed[key].push(val);
-		      } else {
-		        parsed[key] = [val];
+		      if (!key || (parsed[key] && ignoreDuplicateOf[key])) {
+		        return;
 		      }
-		    } else {
-		      parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
-		    }
-		  });
+
+		      if (key === 'set-cookie') {
+		        if (parsed[key]) {
+		          parsed[key].push(val);
+		        } else {
+		          parsed[key] = [val];
+		        }
+		      } else {
+		        parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+		      }
+		    });
 
 		  return parsed;
 		};
@@ -3891,8 +4059,10 @@ sap.ui.define((function () { 'use strict';
 		}
 
 		function formatHeader(header) {
-		  return header.trim()
-		    .toLowerCase().replace(/([a-z\d])(\w*)/g, (w, char, str) => {
+		  return header
+		    .trim()
+		    .toLowerCase()
+		    .replace(/([a-z\d])(\w*)/g, (w, char, str) => {
 		      return char.toUpperCase() + str;
 		    });
 		}
@@ -3900,12 +4070,12 @@ sap.ui.define((function () { 'use strict';
 		function buildAccessors(obj, header) {
 		  const accessorName = utils$1.toCamelCase(' ' + header);
 
-		  ['get', 'set', 'has'].forEach(methodName => {
+		  ['get', 'set', 'has'].forEach((methodName) => {
 		    Object.defineProperty(obj, methodName + accessorName, {
-		      value: function(arg1, arg2, arg3) {
+		      value: function (arg1, arg2, arg3) {
 		        return this[methodName].call(this, header, arg1, arg2, arg3);
 		      },
-		      configurable: true
+		      configurable: true,
 		    });
 		  });
 		}
@@ -3927,7 +4097,12 @@ sap.ui.define((function () { 'use strict';
 
 		      const key = utils$1.findKey(self, lHeader);
 
-		      if(!key || self[key] === undefined || _rewrite === true || (_rewrite === undefined && self[key] !== false)) {
+		      if (
+		        !key ||
+		        self[key] === undefined ||
+		        _rewrite === true ||
+		        (_rewrite === undefined && self[key] !== false)
+		      ) {
 		        self[key || _header] = normalizeValue(_value);
 		      }
 		    }
@@ -3937,17 +4112,22 @@ sap.ui.define((function () { 'use strict';
 
 		    if (utils$1.isPlainObject(header) || header instanceof this.constructor) {
 		      setHeaders(header, valueOrRewrite);
-		    } else if(utils$1.isString(header) && (header = header.trim()) && !isValidHeaderName(header)) {
+		    } else if (utils$1.isString(header) && (header = header.trim()) && !isValidHeaderName(header)) {
 		      setHeaders(parseHeaders(header), valueOrRewrite);
 		    } else if (utils$1.isObject(header) && utils$1.isIterable(header)) {
-		      let obj = {}, dest, key;
+		      let obj = {},
+		        dest,
+		        key;
 		      for (const entry of header) {
 		        if (!utils$1.isArray(entry)) {
 		          throw TypeError('Object iterator must return a key-value pair');
 		        }
 
-		        obj[key = entry[0]] = (dest = obj[key]) ?
-		          (utils$1.isArray(dest) ? [...dest, entry[1]] : [dest, entry[1]]) : entry[1];
+		        obj[(key = entry[0])] = (dest = obj[key])
+		          ? utils$1.isArray(dest)
+		            ? [...dest, entry[1]]
+		            : [dest, entry[1]]
+		          : entry[1];
 		      }
 
 		      setHeaders(obj, valueOrRewrite);
@@ -3994,7 +4174,11 @@ sap.ui.define((function () { 'use strict';
 		    if (header) {
 		      const key = utils$1.findKey(this, header);
 
-		      return !!(key && this[key] !== undefined && (!matcher || matchHeaderValue(this, this[key], key, matcher)));
+		      return !!(
+		        key &&
+		        this[key] !== undefined &&
+		        (!matcher || matchHeaderValue(this, this[key], key, matcher))
+		      );
 		    }
 
 		    return false;
@@ -4034,7 +4218,7 @@ sap.ui.define((function () { 'use strict';
 
 		    while (i--) {
 		      const key = keys[i];
-		      if(!matcher || matchHeaderValue(this, this[key], key, matcher, true)) {
+		      if (!matcher || matchHeaderValue(this, this[key], key, matcher, true)) {
 		        delete this[key];
 		        deleted = true;
 		      }
@@ -4078,7 +4262,9 @@ sap.ui.define((function () { 'use strict';
 		    const obj = Object.create(null);
 
 		    utils$1.forEach(this, (value, header) => {
-		      value != null && value !== false && (obj[header] = asStrings && utils$1.isArray(value) ? value.join(', ') : value);
+		      value != null &&
+		        value !== false &&
+		        (obj[header] = asStrings && utils$1.isArray(value) ? value.join(', ') : value);
 		    });
 
 		    return obj;
@@ -4089,11 +4275,13 @@ sap.ui.define((function () { 'use strict';
 		  }
 
 		  toString() {
-		    return Object.entries(this.toJSON()).map(([header, value]) => header + ': ' + value).join('\n');
+		    return Object.entries(this.toJSON())
+		      .map(([header, value]) => header + ': ' + value)
+		      .join('\n');
 		  }
 
 		  getSetCookie() {
-		    return this.get("set-cookie") || [];
+		    return this.get('set-cookie') || [];
 		  }
 
 		  get [Symbol.toStringTag]() {
@@ -4113,9 +4301,12 @@ sap.ui.define((function () { 'use strict';
 		  }
 
 		  static accessor(header) {
-		    const internals = this[$internals] = (this[$internals] = {
-		      accessors: {}
-		    });
+		    const internals =
+		      (this[$internals] =
+		      this[$internals] =
+		        {
+		          accessors: {},
+		        });
 
 		    const accessors = internals.accessors;
 		    const prototype = this.prototype;
@@ -4135,17 +4326,24 @@ sap.ui.define((function () { 'use strict';
 		  }
 		}
 
-		AxiosHeaders.accessor(['Content-Type', 'Content-Length', 'Accept', 'Accept-Encoding', 'User-Agent', 'Authorization']);
+		AxiosHeaders.accessor([
+		  'Content-Type',
+		  'Content-Length',
+		  'Accept',
+		  'Accept-Encoding',
+		  'User-Agent',
+		  'Authorization',
+		]);
 
 		// reserved names hotfix
-		utils$1.reduceDescriptors(AxiosHeaders.prototype, ({value}, key) => {
+		utils$1.reduceDescriptors(AxiosHeaders.prototype, ({ value }, key) => {
 		  let mapped = key[0].toUpperCase() + key.slice(1); // map `set` => `Set`
 		  return {
 		    get: () => value,
 		    set(headerValue) {
 		      this[mapped] = headerValue;
-		    }
-		  }
+		    },
+		  };
 		});
 
 		utils$1.freezeMethods(AxiosHeaders);
@@ -4179,24 +4377,24 @@ sap.ui.define((function () { 'use strict';
 		  return !!(value && value.__CANCEL__);
 		}
 
-		/**
-		 * A `CanceledError` is an object that is thrown when an operation is canceled.
-		 *
-		 * @param {string=} message The message.
-		 * @param {Object=} config The config.
-		 * @param {Object=} request The request.
-		 *
-		 * @returns {CanceledError} The created error.
-		 */
-		function CanceledError(message, config, request) {
-		  // eslint-disable-next-line no-eq-null,eqeqeq
-		  AxiosError.call(this, message == null ? 'canceled' : message, AxiosError.ERR_CANCELED, config, request);
-		  this.name = 'CanceledError';
+		class CanceledError extends AxiosError$1 {
+		  /**
+		   * A `CanceledError` is an object that is thrown when an operation is canceled.
+		   *
+		   * @param {string=} message The message.
+		   * @param {Object=} config The config.
+		   * @param {Object=} request The request.
+		   *
+		   * @returns {CanceledError} The created error.
+		   */
+		  constructor(message, config, request) {
+		    super(message == null ? 'canceled' : message, AxiosError$1.ERR_CANCELED, config, request);
+		    this.name = 'CanceledError';
+		    this.__CANCEL__ = true;
+		  }
 		}
 
-		utils$1.inherits(CanceledError, AxiosError, {
-		  __CANCEL__: true
-		});
+		var CanceledError$1 = CanceledError;
 
 		/**
 		 * Resolve or reject a Promise based on response status.
@@ -4212,19 +4410,23 @@ sap.ui.define((function () { 'use strict';
 		  if (!response.status || !validateStatus || validateStatus(response.status)) {
 		    resolve(response);
 		  } else {
-		    reject(new AxiosError(
-		      'Request failed with status code ' + response.status,
-		      [AxiosError.ERR_BAD_REQUEST, AxiosError.ERR_BAD_RESPONSE][Math.floor(response.status / 100) - 4],
-		      response.config,
-		      response.request,
-		      response
-		    ));
+		    reject(
+		      new AxiosError$1(
+		        'Request failed with status code ' + response.status,
+		        [AxiosError$1.ERR_BAD_REQUEST, AxiosError$1.ERR_BAD_RESPONSE][
+		          Math.floor(response.status / 100) - 4
+		        ],
+		        response.config,
+		        response.request,
+		        response
+		      )
+		    );
 		  }
 		}
 
 		function parseProtocol(url) {
 		  const match = /^([-+\w]{1,25})(:?\/\/|:)/.exec(url);
-		  return match && match[1] || '';
+		  return (match && match[1]) || '';
 		}
 
 		/**
@@ -4275,7 +4477,7 @@ sap.ui.define((function () { 'use strict';
 
 		    const passed = startedAt && now - startedAt;
 
-		    return passed ? Math.round(bytesCount * 1000 / passed) : undefined;
+		    return passed ? Math.round((bytesCount * 1000) / passed) : undefined;
 		  };
 		}
 
@@ -4304,7 +4506,7 @@ sap.ui.define((function () { 'use strict';
 		  const throttled = (...args) => {
 		    const now = Date.now();
 		    const passed = now - timestamp;
-		    if ( passed >= threshold) {
+		    if (passed >= threshold) {
 		      invoke(args, now);
 		    } else {
 		      lastArgs = args;
@@ -4326,7 +4528,7 @@ sap.ui.define((function () { 'use strict';
 		  let bytesNotified = 0;
 		  const _speedometer = speedometer(50, 250);
 
-		  return throttle(e => {
+		  return throttle((e) => {
 		    const loaded = e.loaded;
 		    const total = e.lengthComputable ? e.total : undefined;
 		    const progressBytes = loaded - bytesNotified;
@@ -4338,13 +4540,13 @@ sap.ui.define((function () { 'use strict';
 		    const data = {
 		      loaded,
 		      total,
-		      progress: total ? (loaded / total) : undefined,
+		      progress: total ? loaded / total : undefined,
 		      bytes: progressBytes,
 		      rate: rate ? rate : undefined,
 		      estimated: rate && total && inRange ? (total - loaded) / rate : undefined,
 		      event: e,
 		      lengthComputable: total != null,
-		      [isDownloadStream ? 'download' : 'upload']: true
+		      [isDownloadStream ? 'download' : 'upload']: true,
 		    };
 
 		    listener(data);
@@ -4354,77 +4556,82 @@ sap.ui.define((function () { 'use strict';
 		const progressEventDecorator = (total, throttled) => {
 		  const lengthComputable = total != null;
 
-		  return [(loaded) => throttled[0]({
-		    lengthComputable,
-		    total,
-		    loaded
-		  }), throttled[1]];
+		  return [
+		    (loaded) =>
+		      throttled[0]({
+		        lengthComputable,
+		        total,
+		        loaded,
+		      }),
+		    throttled[1],
+		  ];
 		};
 
-		const asyncDecorator = (fn) => (...args) => utils$1.asap(() => fn(...args));
+		const asyncDecorator =
+		  (fn) =>
+		  (...args) =>
+		    utils$1.asap(() => fn(...args));
 
-		var isURLSameOrigin = platform.hasStandardBrowserEnv ? ((origin, isMSIE) => (url) => {
-		  url = new URL(url, platform.origin);
+		var isURLSameOrigin = platform.hasStandardBrowserEnv
+		  ? ((origin, isMSIE) => (url) => {
+		      url = new URL(url, platform.origin);
 
-		  return (
-		    origin.protocol === url.protocol &&
-		    origin.host === url.host &&
-		    (isMSIE || origin.port === url.port)
-		  );
-		})(
-		  new URL(platform.origin),
-		  platform.navigator && /(msie|trident)/i.test(platform.navigator.userAgent)
-		) : () => true;
+		      return (
+		        origin.protocol === url.protocol &&
+		        origin.host === url.host &&
+		        (isMSIE || origin.port === url.port)
+		      );
+		    })(
+		      new URL(platform.origin),
+		      platform.navigator && /(msie|trident)/i.test(platform.navigator.userAgent)
+		    )
+		  : () => true;
 
-		var cookies = platform.hasStandardBrowserEnv ?
+		var cookies = platform.hasStandardBrowserEnv
+		  ? // Standard browser envs support document.cookie
+		    {
+		      write(name, value, expires, path, domain, secure, sameSite) {
+		        if (typeof document === 'undefined') return;
 
-		  // Standard browser envs support document.cookie
-		  {
-		    write(name, value, expires, path, domain, secure, sameSite) {
-		      if (typeof document === 'undefined') return;
+		        const cookie = [`${name}=${encodeURIComponent(value)}`];
 
-		      const cookie = [`${name}=${encodeURIComponent(value)}`];
+		        if (utils$1.isNumber(expires)) {
+		          cookie.push(`expires=${new Date(expires).toUTCString()}`);
+		        }
+		        if (utils$1.isString(path)) {
+		          cookie.push(`path=${path}`);
+		        }
+		        if (utils$1.isString(domain)) {
+		          cookie.push(`domain=${domain}`);
+		        }
+		        if (secure === true) {
+		          cookie.push('secure');
+		        }
+		        if (utils$1.isString(sameSite)) {
+		          cookie.push(`SameSite=${sameSite}`);
+		        }
 
-		      if (utils$1.isNumber(expires)) {
-		        cookie.push(`expires=${new Date(expires).toUTCString()}`);
-		      }
-		      if (utils$1.isString(path)) {
-		        cookie.push(`path=${path}`);
-		      }
-		      if (utils$1.isString(domain)) {
-		        cookie.push(`domain=${domain}`);
-		      }
-		      if (secure === true) {
-		        cookie.push('secure');
-		      }
-		      if (utils$1.isString(sameSite)) {
-		        cookie.push(`SameSite=${sameSite}`);
-		      }
+		        document.cookie = cookie.join('; ');
+		      },
 
-		      document.cookie = cookie.join('; ');
-		    },
+		      read(name) {
+		        if (typeof document === 'undefined') return null;
+		        const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+		        return match ? decodeURIComponent(match[1]) : null;
+		      },
 
-		    read(name) {
-		      if (typeof document === 'undefined') return null;
-		      const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
-		      return match ? decodeURIComponent(match[1]) : null;
-		    },
-
-		    remove(name) {
-		      this.write(name, '', Date.now() - 86400000, '/');
+		      remove(name) {
+		        this.write(name, '', Date.now() - 86400000, '/');
+		      },
 		    }
-		  }
-
-		  :
-
-		  // Non-standard browser env (web workers, react-native) lack needed support.
-		  {
-		    write() {},
-		    read() {
-		      return null;
-		    },
-		    remove() {}
-		  };
+		  : // Non-standard browser env (web workers, react-native) lack needed support.
+		    {
+		      write() {},
+		      read() {
+		        return null;
+		      },
+		      remove() {},
+		    };
 
 		/**
 		 * Determines whether the specified URL is absolute
@@ -4437,6 +4644,10 @@ sap.ui.define((function () { 'use strict';
 		  // A URL is considered absolute if it begins with "<scheme>://" or "//" (protocol-relative URL).
 		  // RFC 3986 defines scheme name as a sequence of characters beginning with a letter and followed
 		  // by any combination of letters, digits, plus, period, or hyphen.
+		  if (typeof url !== 'string') {
+		    return false;
+		  }
+
 		  return /^([a-z][a-z\d+\-.]*:)?\/\//i.test(url);
 		}
 
@@ -4472,7 +4683,7 @@ sap.ui.define((function () { 'use strict';
 		  return requestedURL;
 		}
 
-		const headersToObject = (thing) => thing instanceof AxiosHeaders$1 ? { ...thing } : thing;
+		const headersToObject = (thing) => (thing instanceof AxiosHeaders$1 ? { ...thing } : thing);
 
 		/**
 		 * Config-specific merge-function which creates a new config-object
@@ -4490,7 +4701,7 @@ sap.ui.define((function () { 'use strict';
 
 		  function getMergedValue(target, source, prop, caseless) {
 		    if (utils$1.isPlainObject(target) && utils$1.isPlainObject(source)) {
-		      return utils$1.merge.call({caseless}, target, source);
+		      return utils$1.merge.call({ caseless }, target, source);
 		    } else if (utils$1.isPlainObject(source)) {
 		      return utils$1.merge({}, source);
 		    } else if (utils$1.isArray(source)) {
@@ -4499,7 +4710,6 @@ sap.ui.define((function () { 'use strict';
 		    return source;
 		  }
 
-		  // eslint-disable-next-line consistent-return
 		  function mergeDeepProperties(a, b, prop, caseless) {
 		    if (!utils$1.isUndefined(b)) {
 		      return getMergedValue(a, b, prop, caseless);
@@ -4562,11 +4772,13 @@ sap.ui.define((function () { 'use strict';
 		    socketPath: defaultToConfig2,
 		    responseEncoding: defaultToConfig2,
 		    validateStatus: mergeDirectKeys,
-		    headers: (a, b, prop) => mergeDeepProperties(headersToObject(a), headersToObject(b), prop, true)
+		    headers: (a, b, prop) =>
+		      mergeDeepProperties(headersToObject(a), headersToObject(b), prop, true),
 		  };
 
-		  utils$1.forEach(Object.keys({...config1, ...config2}), function computeConfigValue(prop) {
-		    const merge = mergeMap[prop] || mergeDeepProperties;
+		  utils$1.forEach(Object.keys({ ...config1, ...config2 }), function computeConfigValue(prop) {
+		    if (prop === '__proto__' || prop === 'constructor' || prop === 'prototype') return;
+		    const merge = utils$1.hasOwnProp(mergeMap, prop) ? mergeMap[prop] : mergeDeepProperties;
 		    const configValue = merge(config1[prop], config2[prop], prop);
 		    (utils$1.isUndefined(configValue) && merge !== mergeDirectKeys) || (config[prop] = configValue);
 		  });
@@ -4581,12 +4793,22 @@ sap.ui.define((function () { 'use strict';
 
 		  newConfig.headers = headers = AxiosHeaders$1.from(headers);
 
-		  newConfig.url = buildURL(buildFullPath(newConfig.baseURL, newConfig.url, newConfig.allowAbsoluteUrls), config.params, config.paramsSerializer);
+		  newConfig.url = buildURL(
+		    buildFullPath(newConfig.baseURL, newConfig.url, newConfig.allowAbsoluteUrls),
+		    config.params,
+		    config.paramsSerializer
+		  );
 
 		  // HTTP basic authentication
 		  if (auth) {
-		    headers.set('Authorization', 'Basic ' +
-		      btoa((auth.username || '') + ':' + (auth.password ? unescape(encodeURIComponent(auth.password)) : ''))
+		    headers.set(
+		      'Authorization',
+		      'Basic ' +
+		        btoa(
+		          (auth.username || '') +
+		            ':' +
+		            (auth.password ? unescape(encodeURIComponent(auth.password)) : '')
+		        )
 		    );
 		  }
 
@@ -4628,196 +4850,218 @@ sap.ui.define((function () { 'use strict';
 
 		const isXHRAdapterSupported = typeof XMLHttpRequest !== 'undefined';
 
-		var xhrAdapter = isXHRAdapterSupported && function (config) {
-		  return new Promise(function dispatchXhrRequest(resolve, reject) {
-		    const _config = resolveConfig(config);
-		    let requestData = _config.data;
-		    const requestHeaders = AxiosHeaders$1.from(_config.headers).normalize();
-		    let {responseType, onUploadProgress, onDownloadProgress} = _config;
-		    let onCanceled;
-		    let uploadThrottled, downloadThrottled;
-		    let flushUpload, flushDownload;
+		var xhrAdapter = isXHRAdapterSupported &&
+		  function (config) {
+		    return new Promise(function dispatchXhrRequest(resolve, reject) {
+		      const _config = resolveConfig(config);
+		      let requestData = _config.data;
+		      const requestHeaders = AxiosHeaders$1.from(_config.headers).normalize();
+		      let { responseType, onUploadProgress, onDownloadProgress } = _config;
+		      let onCanceled;
+		      let uploadThrottled, downloadThrottled;
+		      let flushUpload, flushDownload;
 
-		    function done() {
-		      flushUpload && flushUpload(); // flush events
-		      flushDownload && flushDownload(); // flush events
+		      function done() {
+		        flushUpload && flushUpload(); // flush events
+		        flushDownload && flushDownload(); // flush events
 
-		      _config.cancelToken && _config.cancelToken.unsubscribe(onCanceled);
+		        _config.cancelToken && _config.cancelToken.unsubscribe(onCanceled);
 
-		      _config.signal && _config.signal.removeEventListener('abort', onCanceled);
-		    }
-
-		    let request = new XMLHttpRequest();
-
-		    request.open(_config.method.toUpperCase(), _config.url, true);
-
-		    // Set the request timeout in MS
-		    request.timeout = _config.timeout;
-
-		    function onloadend() {
-		      if (!request) {
-		        return;
-		      }
-		      // Prepare the response
-		      const responseHeaders = AxiosHeaders$1.from(
-		        'getAllResponseHeaders' in request && request.getAllResponseHeaders()
-		      );
-		      const responseData = !responseType || responseType === 'text' || responseType === 'json' ?
-		        request.responseText : request.response;
-		      const response = {
-		        data: responseData,
-		        status: request.status,
-		        statusText: request.statusText,
-		        headers: responseHeaders,
-		        config,
-		        request
-		      };
-
-		      settle(function _resolve(value) {
-		        resolve(value);
-		        done();
-		      }, function _reject(err) {
-		        reject(err);
-		        done();
-		      }, response);
-
-		      // Clean up request
-		      request = null;
-		    }
-
-		    if ('onloadend' in request) {
-		      // Use onloadend if available
-		      request.onloadend = onloadend;
-		    } else {
-		      // Listen for ready state to emulate onloadend
-		      request.onreadystatechange = function handleLoad() {
-		        if (!request || request.readyState !== 4) {
-		          return;
-		        }
-
-		        // The request errored out and we didn't get a response, this will be
-		        // handled by onerror instead
-		        // With one exception: request that using file: protocol, most browsers
-		        // will return status as 0 even though it's a successful request
-		        if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
-		          return;
-		        }
-		        // readystate handler is calling before onerror or ontimeout handlers,
-		        // so we should call onloadend on the next 'tick'
-		        setTimeout(onloadend);
-		      };
-		    }
-
-		    // Handle browser request cancellation (as opposed to a manual cancellation)
-		    request.onabort = function handleAbort() {
-		      if (!request) {
-		        return;
+		        _config.signal && _config.signal.removeEventListener('abort', onCanceled);
 		      }
 
-		      reject(new AxiosError('Request aborted', AxiosError.ECONNABORTED, config, request));
+		      let request = new XMLHttpRequest();
 
-		      // Clean up request
-		      request = null;
-		    };
+		      request.open(_config.method.toUpperCase(), _config.url, true);
 
-		    // Handle low level network errors
-		  request.onerror = function handleError(event) {
-		       // Browsers deliver a ProgressEvent in XHR onerror
-		       // (message may be empty; when present, surface it)
-		       // See https://developer.mozilla.org/docs/Web/API/XMLHttpRequest/error_event
-		       const msg = event && event.message ? event.message : 'Network Error';
-		       const err = new AxiosError(msg, AxiosError.ERR_NETWORK, config, request);
-		       // attach the underlying event for consumers who want details
-		       err.event = event || null;
-		       reject(err);
-		       request = null;
-		    };
+		      // Set the request timeout in MS
+		      request.timeout = _config.timeout;
 
-		    // Handle timeout
-		    request.ontimeout = function handleTimeout() {
-		      let timeoutErrorMessage = _config.timeout ? 'timeout of ' + _config.timeout + 'ms exceeded' : 'timeout exceeded';
-		      const transitional = _config.transitional || transitionalDefaults;
-		      if (_config.timeoutErrorMessage) {
-		        timeoutErrorMessage = _config.timeoutErrorMessage;
-		      }
-		      reject(new AxiosError(
-		        timeoutErrorMessage,
-		        transitional.clarifyTimeoutError ? AxiosError.ETIMEDOUT : AxiosError.ECONNABORTED,
-		        config,
-		        request));
-
-		      // Clean up request
-		      request = null;
-		    };
-
-		    // Remove Content-Type if data is undefined
-		    requestData === undefined && requestHeaders.setContentType(null);
-
-		    // Add headers to the request
-		    if ('setRequestHeader' in request) {
-		      utils$1.forEach(requestHeaders.toJSON(), function setRequestHeader(val, key) {
-		        request.setRequestHeader(key, val);
-		      });
-		    }
-
-		    // Add withCredentials to request if needed
-		    if (!utils$1.isUndefined(_config.withCredentials)) {
-		      request.withCredentials = !!_config.withCredentials;
-		    }
-
-		    // Add responseType to request if needed
-		    if (responseType && responseType !== 'json') {
-		      request.responseType = _config.responseType;
-		    }
-
-		    // Handle progress if needed
-		    if (onDownloadProgress) {
-		      ([downloadThrottled, flushDownload] = progressEventReducer(onDownloadProgress, true));
-		      request.addEventListener('progress', downloadThrottled);
-		    }
-
-		    // Not all browsers support upload events
-		    if (onUploadProgress && request.upload) {
-		      ([uploadThrottled, flushUpload] = progressEventReducer(onUploadProgress));
-
-		      request.upload.addEventListener('progress', uploadThrottled);
-
-		      request.upload.addEventListener('loadend', flushUpload);
-		    }
-
-		    if (_config.cancelToken || _config.signal) {
-		      // Handle cancellation
-		      // eslint-disable-next-line func-names
-		      onCanceled = cancel => {
+		      function onloadend() {
 		        if (!request) {
 		          return;
 		        }
-		        reject(!cancel || cancel.type ? new CanceledError(null, config, request) : cancel);
-		        request.abort();
+		        // Prepare the response
+		        const responseHeaders = AxiosHeaders$1.from(
+		          'getAllResponseHeaders' in request && request.getAllResponseHeaders()
+		        );
+		        const responseData =
+		          !responseType || responseType === 'text' || responseType === 'json'
+		            ? request.responseText
+		            : request.response;
+		        const response = {
+		          data: responseData,
+		          status: request.status,
+		          statusText: request.statusText,
+		          headers: responseHeaders,
+		          config,
+		          request,
+		        };
+
+		        settle(
+		          function _resolve(value) {
+		            resolve(value);
+		            done();
+		          },
+		          function _reject(err) {
+		            reject(err);
+		            done();
+		          },
+		          response
+		        );
+
+		        // Clean up request
+		        request = null;
+		      }
+
+		      if ('onloadend' in request) {
+		        // Use onloadend if available
+		        request.onloadend = onloadend;
+		      } else {
+		        // Listen for ready state to emulate onloadend
+		        request.onreadystatechange = function handleLoad() {
+		          if (!request || request.readyState !== 4) {
+		            return;
+		          }
+
+		          // The request errored out and we didn't get a response, this will be
+		          // handled by onerror instead
+		          // With one exception: request that using file: protocol, most browsers
+		          // will return status as 0 even though it's a successful request
+		          if (
+		            request.status === 0 &&
+		            !(request.responseURL && request.responseURL.indexOf('file:') === 0)
+		          ) {
+		            return;
+		          }
+		          // readystate handler is calling before onerror or ontimeout handlers,
+		          // so we should call onloadend on the next 'tick'
+		          setTimeout(onloadend);
+		        };
+		      }
+
+		      // Handle browser request cancellation (as opposed to a manual cancellation)
+		      request.onabort = function handleAbort() {
+		        if (!request) {
+		          return;
+		        }
+
+		        reject(new AxiosError$1('Request aborted', AxiosError$1.ECONNABORTED, config, request));
+
+		        // Clean up request
 		        request = null;
 		      };
 
-		      _config.cancelToken && _config.cancelToken.subscribe(onCanceled);
-		      if (_config.signal) {
-		        _config.signal.aborted ? onCanceled() : _config.signal.addEventListener('abort', onCanceled);
+		      // Handle low level network errors
+		      request.onerror = function handleError(event) {
+		        // Browsers deliver a ProgressEvent in XHR onerror
+		        // (message may be empty; when present, surface it)
+		        // See https://developer.mozilla.org/docs/Web/API/XMLHttpRequest/error_event
+		        const msg = event && event.message ? event.message : 'Network Error';
+		        const err = new AxiosError$1(msg, AxiosError$1.ERR_NETWORK, config, request);
+		        // attach the underlying event for consumers who want details
+		        err.event = event || null;
+		        reject(err);
+		        request = null;
+		      };
+
+		      // Handle timeout
+		      request.ontimeout = function handleTimeout() {
+		        let timeoutErrorMessage = _config.timeout
+		          ? 'timeout of ' + _config.timeout + 'ms exceeded'
+		          : 'timeout exceeded';
+		        const transitional = _config.transitional || transitionalDefaults;
+		        if (_config.timeoutErrorMessage) {
+		          timeoutErrorMessage = _config.timeoutErrorMessage;
+		        }
+		        reject(
+		          new AxiosError$1(
+		            timeoutErrorMessage,
+		            transitional.clarifyTimeoutError ? AxiosError$1.ETIMEDOUT : AxiosError$1.ECONNABORTED,
+		            config,
+		            request
+		          )
+		        );
+
+		        // Clean up request
+		        request = null;
+		      };
+
+		      // Remove Content-Type if data is undefined
+		      requestData === undefined && requestHeaders.setContentType(null);
+
+		      // Add headers to the request
+		      if ('setRequestHeader' in request) {
+		        utils$1.forEach(requestHeaders.toJSON(), function setRequestHeader(val, key) {
+		          request.setRequestHeader(key, val);
+		        });
 		      }
-		    }
 
-		    const protocol = parseProtocol(_config.url);
+		      // Add withCredentials to request if needed
+		      if (!utils$1.isUndefined(_config.withCredentials)) {
+		        request.withCredentials = !!_config.withCredentials;
+		      }
 
-		    if (protocol && platform.protocols.indexOf(protocol) === -1) {
-		      reject(new AxiosError('Unsupported protocol ' + protocol + ':', AxiosError.ERR_BAD_REQUEST, config));
-		      return;
-		    }
+		      // Add responseType to request if needed
+		      if (responseType && responseType !== 'json') {
+		        request.responseType = _config.responseType;
+		      }
 
+		      // Handle progress if needed
+		      if (onDownloadProgress) {
+		        [downloadThrottled, flushDownload] = progressEventReducer(onDownloadProgress, true);
+		        request.addEventListener('progress', downloadThrottled);
+		      }
 
-		    // Send the request
-		    request.send(requestData || null);
-		  });
-		};
+		      // Not all browsers support upload events
+		      if (onUploadProgress && request.upload) {
+		        [uploadThrottled, flushUpload] = progressEventReducer(onUploadProgress);
+
+		        request.upload.addEventListener('progress', uploadThrottled);
+
+		        request.upload.addEventListener('loadend', flushUpload);
+		      }
+
+		      if (_config.cancelToken || _config.signal) {
+		        // Handle cancellation
+		        // eslint-disable-next-line func-names
+		        onCanceled = (cancel) => {
+		          if (!request) {
+		            return;
+		          }
+		          reject(!cancel || cancel.type ? new CanceledError$1(null, config, request) : cancel);
+		          request.abort();
+		          request = null;
+		        };
+
+		        _config.cancelToken && _config.cancelToken.subscribe(onCanceled);
+		        if (_config.signal) {
+		          _config.signal.aborted
+		            ? onCanceled()
+		            : _config.signal.addEventListener('abort', onCanceled);
+		        }
+		      }
+
+		      const protocol = parseProtocol(_config.url);
+
+		      if (protocol && platform.protocols.indexOf(protocol) === -1) {
+		        reject(
+		          new AxiosError$1(
+		            'Unsupported protocol ' + protocol + ':',
+		            AxiosError$1.ERR_BAD_REQUEST,
+		            config
+		          )
+		        );
+		        return;
+		      }
+
+		      // Send the request
+		      request.send(requestData || null);
+		    });
+		  };
 
 		const composeSignals = (signals, timeout) => {
-		  const {length} = (signals = signals ? signals.filter(Boolean) : []);
+		  const { length } = (signals = signals ? signals.filter(Boolean) : []);
 
 		  if (timeout || length) {
 		    let controller = new AbortController();
@@ -4829,21 +5073,29 @@ sap.ui.define((function () { 'use strict';
 		        aborted = true;
 		        unsubscribe();
 		        const err = reason instanceof Error ? reason : this.reason;
-		        controller.abort(err instanceof AxiosError ? err : new CanceledError(err instanceof Error ? err.message : err));
+		        controller.abort(
+		          err instanceof AxiosError$1
+		            ? err
+		            : new CanceledError$1(err instanceof Error ? err.message : err)
+		        );
 		      }
 		    };
 
-		    let timer = timeout && setTimeout(() => {
-		      timer = null;
-		      onabort(new AxiosError(`timeout ${timeout} of ms exceeded`, AxiosError.ETIMEDOUT));
-		    }, timeout);
+		    let timer =
+		      timeout &&
+		      setTimeout(() => {
+		        timer = null;
+		        onabort(new AxiosError$1(`timeout of ${timeout}ms exceeded`, AxiosError$1.ETIMEDOUT));
+		      }, timeout);
 
 		    const unsubscribe = () => {
 		      if (signals) {
 		        timer && clearTimeout(timer);
 		        timer = null;
-		        signals.forEach(signal => {
-		          signal.unsubscribe ? signal.unsubscribe(onabort) : signal.removeEventListener('abort', onabort);
+		        signals.forEach((signal) => {
+		          signal.unsubscribe
+		            ? signal.unsubscribe(onabort)
+		            : signal.removeEventListener('abort', onabort);
 		        });
 		        signals = null;
 		      }
@@ -4851,7 +5103,7 @@ sap.ui.define((function () { 'use strict';
 
 		    signals.forEach((signal) => signal.addEventListener('abort', onabort));
 
-		    const {signal} = controller;
+		    const { signal } = controller;
 
 		    signal.unsubscribe = () => utils$1.asap(unsubscribe);
 
@@ -4894,7 +5146,7 @@ sap.ui.define((function () { 'use strict';
 		  const reader = stream.getReader();
 		  try {
 		    for (;;) {
-		      const {done, value} = await reader.read();
+		      const { done, value } = await reader.read();
 		      if (done) {
 		        break;
 		      }
@@ -4917,64 +5169,69 @@ sap.ui.define((function () { 'use strict';
 		    }
 		  };
 
-		  return new ReadableStream({
-		    async pull(controller) {
-		      try {
-		        const {done, value} = await iterator.next();
+		  return new ReadableStream(
+		    {
+		      async pull(controller) {
+		        try {
+		          const { done, value } = await iterator.next();
 
-		        if (done) {
-		         _onFinish();
-		          controller.close();
-		          return;
-		        }
+		          if (done) {
+		            _onFinish();
+		            controller.close();
+		            return;
+		          }
 
-		        let len = value.byteLength;
-		        if (onProgress) {
-		          let loadedBytes = bytes += len;
-		          onProgress(loadedBytes);
+		          let len = value.byteLength;
+		          if (onProgress) {
+		            let loadedBytes = (bytes += len);
+		            onProgress(loadedBytes);
+		          }
+		          controller.enqueue(new Uint8Array(value));
+		        } catch (err) {
+		          _onFinish(err);
+		          throw err;
 		        }
-		        controller.enqueue(new Uint8Array(value));
-		      } catch (err) {
-		        _onFinish(err);
-		        throw err;
-		      }
+		      },
+		      cancel(reason) {
+		        _onFinish(reason);
+		        return iterator.return();
+		      },
 		    },
-		    cancel(reason) {
-		      _onFinish(reason);
-		      return iterator.return();
+		    {
+		      highWaterMark: 2,
 		    }
-		  }, {
-		    highWaterMark: 2
-		  })
+		  );
 		};
 
 		const DEFAULT_CHUNK_SIZE = 64 * 1024;
 
-		const {isFunction} = utils$1;
+		const { isFunction } = utils$1;
 
-		const globalFetchAPI = (({Request, Response}) => ({
-		  Request, Response
+		const globalFetchAPI = (({ Request, Response }) => ({
+		  Request,
+		  Response,
 		}))(utils$1.global);
 
-		const {
-		  ReadableStream: ReadableStream$1, TextEncoder
-		} = utils$1.global;
-
+		const { ReadableStream: ReadableStream$1, TextEncoder } = utils$1.global;
 
 		const test = (fn, ...args) => {
 		  try {
 		    return !!fn(...args);
 		  } catch (e) {
-		    return false
+		    return false;
 		  }
 		};
 
 		const factory = (env) => {
-		  env = utils$1.merge.call({
-		    skipUndefined: true
-		  }, globalFetchAPI, env);
+		  env = utils$1.merge.call(
+		    {
+		      skipUndefined: true,
+		    },
+		    globalFetchAPI,
+		    env
+		  );
 
-		  const {fetch: envFetch, Request, Response} = env;
+		  const { fetch: envFetch, Request, Response } = env;
 		  const isFetchSupported = envFetch ? isFunction(envFetch) : typeof fetch === 'function';
 		  const isRequestSupported = isFunction(Request);
 		  const isResponseSupported = isFunction(Response);
@@ -4985,46 +5242,61 @@ sap.ui.define((function () { 'use strict';
 
 		  const isReadableStreamSupported = isFetchSupported && isFunction(ReadableStream$1);
 
-		  const encodeText = isFetchSupported && (typeof TextEncoder === 'function' ?
-		      ((encoder) => (str) => encoder.encode(str))(new TextEncoder()) :
-		      async (str) => new Uint8Array(await new Request(str).arrayBuffer())
-		  );
+		  const encodeText =
+		    isFetchSupported &&
+		    (typeof TextEncoder === 'function'
+		      ? (
+		          (encoder) => (str) =>
+		            encoder.encode(str)
+		        )(new TextEncoder())
+		      : async (str) => new Uint8Array(await new Request(str).arrayBuffer()));
 
-		  const supportsRequestStream = isRequestSupported && isReadableStreamSupported && test(() => {
-		    let duplexAccessed = false;
+		  const supportsRequestStream =
+		    isRequestSupported &&
+		    isReadableStreamSupported &&
+		    test(() => {
+		      let duplexAccessed = false;
 
-		    const hasContentType = new Request(platform.origin, {
-		      body: new ReadableStream$1(),
-		      method: 'POST',
-		      get duplex() {
-		        duplexAccessed = true;
-		        return 'half';
-		      },
-		    }).headers.has('Content-Type');
+		      const hasContentType = new Request(platform.origin, {
+		        body: new ReadableStream$1(),
+		        method: 'POST',
+		        get duplex() {
+		          duplexAccessed = true;
+		          return 'half';
+		        },
+		      }).headers.has('Content-Type');
 
-		    return duplexAccessed && !hasContentType;
-		  });
+		      return duplexAccessed && !hasContentType;
+		    });
 
-		  const supportsResponseStream = isResponseSupported && isReadableStreamSupported &&
+		  const supportsResponseStream =
+		    isResponseSupported &&
+		    isReadableStreamSupported &&
 		    test(() => utils$1.isReadableStream(new Response('').body));
 
 		  const resolvers = {
-		    stream: supportsResponseStream && ((res) => res.body)
+		    stream: supportsResponseStream && ((res) => res.body),
 		  };
 
-		  isFetchSupported && ((() => {
-		    ['text', 'arrayBuffer', 'blob', 'formData', 'stream'].forEach(type => {
-		      !resolvers[type] && (resolvers[type] = (res, config) => {
-		        let method = res && res[type];
+		  isFetchSupported &&
+		    (() => {
+		      ['text', 'arrayBuffer', 'blob', 'formData', 'stream'].forEach((type) => {
+		        !resolvers[type] &&
+		          (resolvers[type] = (res, config) => {
+		            let method = res && res[type];
 
-		        if (method) {
-		          return method.call(res);
-		        }
+		            if (method) {
+		              return method.call(res);
+		            }
 
-		        throw new AxiosError(`Response type '${type}' is not supported`, AxiosError.ERR_NOT_SUPPORT, config);
+		            throw new AxiosError$1(
+		              `Response type '${type}' is not supported`,
+		              AxiosError$1.ERR_NOT_SUPPORT,
+		              config
+		            );
+		          });
 		      });
-		    });
-		  })());
+		    })();
 
 		  const getBodyLength = async (body) => {
 		    if (body == null) {
@@ -5075,32 +5347,41 @@ sap.ui.define((function () { 'use strict';
 		      responseType,
 		      headers,
 		      withCredentials = 'same-origin',
-		      fetchOptions
+		      fetchOptions,
 		    } = resolveConfig(config);
 
 		    let _fetch = envFetch || fetch;
 
 		    responseType = responseType ? (responseType + '').toLowerCase() : 'text';
 
-		    let composedSignal = composeSignals$1([signal, cancelToken && cancelToken.toAbortSignal()], timeout);
+		    let composedSignal = composeSignals$1(
+		      [signal, cancelToken && cancelToken.toAbortSignal()],
+		      timeout
+		    );
 
 		    let request = null;
 
-		    const unsubscribe = composedSignal && composedSignal.unsubscribe && (() => {
-		      composedSignal.unsubscribe();
-		    });
+		    const unsubscribe =
+		      composedSignal &&
+		      composedSignal.unsubscribe &&
+		      (() => {
+		        composedSignal.unsubscribe();
+		      });
 
 		    let requestContentLength;
 
 		    try {
 		      if (
-		        onUploadProgress && supportsRequestStream && method !== 'get' && method !== 'head' &&
+		        onUploadProgress &&
+		        supportsRequestStream &&
+		        method !== 'get' &&
+		        method !== 'head' &&
 		        (requestContentLength = await resolveBodyLength(headers, data)) !== 0
 		      ) {
 		        let _request = new Request(url, {
 		          method: 'POST',
 		          body: data,
-		          duplex: "half"
+		          duplex: 'half',
 		        });
 
 		        let contentTypeHeader;
@@ -5125,7 +5406,7 @@ sap.ui.define((function () { 'use strict';
 
 		      // Cloudflare Workers throws when credentials are defined
 		      // see https://github.com/cloudflare/workerd/issues/902
-		      const isCredentialsSupported = isRequestSupported && "credentials" in Request.prototype;
+		      const isCredentialsSupported = isRequestSupported && 'credentials' in Request.prototype;
 
 		      const resolvedOptions = {
 		        ...fetchOptions,
@@ -5133,29 +5414,35 @@ sap.ui.define((function () { 'use strict';
 		        method: method.toUpperCase(),
 		        headers: headers.normalize().toJSON(),
 		        body: data,
-		        duplex: "half",
-		        credentials: isCredentialsSupported ? withCredentials : undefined
+		        duplex: 'half',
+		        credentials: isCredentialsSupported ? withCredentials : undefined,
 		      };
 
 		      request = isRequestSupported && new Request(url, resolvedOptions);
 
-		      let response = await (isRequestSupported ? _fetch(request, fetchOptions) : _fetch(url, resolvedOptions));
+		      let response = await (isRequestSupported
+		        ? _fetch(request, fetchOptions)
+		        : _fetch(url, resolvedOptions));
 
-		      const isStreamResponse = supportsResponseStream && (responseType === 'stream' || responseType === 'response');
+		      const isStreamResponse =
+		        supportsResponseStream && (responseType === 'stream' || responseType === 'response');
 
 		      if (supportsResponseStream && (onDownloadProgress || (isStreamResponse && unsubscribe))) {
 		        const options = {};
 
-		        ['status', 'statusText', 'headers'].forEach(prop => {
+		        ['status', 'statusText', 'headers'].forEach((prop) => {
 		          options[prop] = response[prop];
 		        });
 
 		        const responseContentLength = utils$1.toFiniteNumber(response.headers.get('content-length'));
 
-		        const [onProgress, flush] = onDownloadProgress && progressEventDecorator(
-		          responseContentLength,
-		          progressEventReducer(asyncDecorator(onDownloadProgress), true)
-		        ) || [];
+		        const [onProgress, flush] =
+		          (onDownloadProgress &&
+		            progressEventDecorator(
+		              responseContentLength,
+		              progressEventReducer(asyncDecorator(onDownloadProgress), true)
+		            )) ||
+		          [];
 
 		        response = new Response(
 		          trackStream(response.body, DEFAULT_CHUNK_SIZE, onProgress, () => {
@@ -5168,7 +5455,10 @@ sap.ui.define((function () { 'use strict';
 
 		      responseType = responseType || 'text';
 
-		      let responseData = await resolvers[utils$1.findKey(resolvers, responseType) || 'text'](response, config);
+		      let responseData = await resolvers[utils$1.findKey(resolvers, responseType) || 'text'](
+		        response,
+		        config
+		      );
 
 		      !isStreamResponse && unsubscribe && unsubscribe();
 
@@ -5179,43 +5469,50 @@ sap.ui.define((function () { 'use strict';
 		          status: response.status,
 		          statusText: response.statusText,
 		          config,
-		          request
+		          request,
 		        });
-		      })
+		      });
 		    } catch (err) {
 		      unsubscribe && unsubscribe();
 
 		      if (err && err.name === 'TypeError' && /Load failed|fetch/i.test(err.message)) {
 		        throw Object.assign(
-		          new AxiosError('Network Error', AxiosError.ERR_NETWORK, config, request),
+		          new AxiosError$1(
+		            'Network Error',
+		            AxiosError$1.ERR_NETWORK,
+		            config,
+		            request,
+		            err && err.response
+		          ),
 		          {
-		            cause: err.cause || err
+		            cause: err.cause || err,
 		          }
-		        )
+		        );
 		      }
 
-		      throw AxiosError.from(err, err && err.code, config, request);
+		      throw AxiosError$1.from(err, err && err.code, config, request, err && err.response);
 		    }
-		  }
+		  };
 		};
 
 		const seedCache = new Map();
 
 		const getFetch = (config) => {
 		  let env = (config && config.env) || {};
-		  const {fetch, Request, Response} = env;
-		  const seeds = [
-		    Request, Response, fetch
-		  ];
+		  const { fetch, Request, Response } = env;
+		  const seeds = [Request, Response, fetch];
 
-		  let len = seeds.length, i = len,
-		    seed, target, map = seedCache;
+		  let len = seeds.length,
+		    i = len,
+		    seed,
+		    target,
+		    map = seedCache;
 
 		  while (i--) {
 		    seed = seeds[i];
 		    target = map.get(seed);
 
-		    target === undefined && map.set(seed, target = (i ? new Map() : factory(env)));
+		    target === undefined && map.set(seed, (target = i ? new Map() : factory(env)));
 
 		    map = target;
 		  }
@@ -5239,7 +5536,7 @@ sap.ui.define((function () { 'use strict';
 		  xhr: xhrAdapter,
 		  fetch: {
 		    get: getFetch,
-		  }
+		  },
 		};
 
 		// Assign adapter names for easier debugging and identification
@@ -5268,7 +5565,8 @@ sap.ui.define((function () { 'use strict';
 		 * @param {Function|null|false} adapter
 		 * @returns {boolean}
 		 */
-		const isResolvedHandle = (adapter) => utils$1.isFunction(adapter) || adapter === null || adapter === false;
+		const isResolvedHandle = (adapter) =>
+		  utils$1.isFunction(adapter) || adapter === null || adapter === false;
 
 		/**
 		 * Get the first suitable adapter from the provided list.
@@ -5299,7 +5597,7 @@ sap.ui.define((function () { 'use strict';
 		      adapter = knownAdapters[(id = String(nameOrAdapter)).toLowerCase()];
 
 		      if (adapter === undefined) {
-		        throw new AxiosError(`Unknown adapter '${id}'`);
+		        throw new AxiosError$1(`Unknown adapter '${id}'`);
 		      }
 		    }
 
@@ -5311,16 +5609,19 @@ sap.ui.define((function () { 'use strict';
 		  }
 
 		  if (!adapter) {
-		    const reasons = Object.entries(rejectedReasons)
-		      .map(([id, state]) => `adapter ${id} ` +
+		    const reasons = Object.entries(rejectedReasons).map(
+		      ([id, state]) =>
+		        `adapter ${id} ` +
 		        (state === false ? 'is not supported by the environment' : 'is not available in the build')
-		      );
+		    );
 
-		    let s = length ?
-		      (reasons.length > 1 ? 'since :\n' + reasons.map(renderReason).join('\n') : ' ' + renderReason(reasons[0])) :
-		      'as no adapter specified';
+		    let s = length
+		      ? reasons.length > 1
+		        ? 'since :\n' + reasons.map(renderReason).join('\n')
+		        : ' ' + renderReason(reasons[0])
+		      : 'as no adapter specified';
 
-		    throw new AxiosError(
+		    throw new AxiosError$1(
 		      `There is no suitable adapter to dispatch the request ` + s,
 		      'ERR_NOT_SUPPORT'
 		    );
@@ -5343,7 +5644,7 @@ sap.ui.define((function () { 'use strict';
 		   * Exposes all known adapters
 		   * @type {Object<string, Function|Object>}
 		   */
-		  adapters: knownAdapters
+		  adapters: knownAdapters,
 		};
 
 		/**
@@ -5359,7 +5660,7 @@ sap.ui.define((function () { 'use strict';
 		  }
 
 		  if (config.signal && config.signal.aborted) {
-		    throw new CanceledError(null, config);
+		    throw new CanceledError$1(null, config);
 		  }
 		}
 
@@ -5376,10 +5677,7 @@ sap.ui.define((function () { 'use strict';
 		  config.headers = AxiosHeaders$1.from(config.headers);
 
 		  // Transform request data
-		  config.data = transformData.call(
-		    config,
-		    config.transformRequest
-		  );
+		  config.data = transformData.call(config, config.transformRequest);
 
 		  if (['post', 'put', 'patch'].indexOf(config.method) !== -1) {
 		    config.headers.setContentType('application/x-www-form-urlencoded', false);
@@ -5387,39 +5685,38 @@ sap.ui.define((function () { 'use strict';
 
 		  const adapter = adapters.getAdapter(config.adapter || defaults$1.adapter, config);
 
-		  return adapter(config).then(function onAdapterResolution(response) {
-		    throwIfCancellationRequested(config);
-
-		    // Transform response data
-		    response.data = transformData.call(
-		      config,
-		      config.transformResponse,
-		      response
-		    );
-
-		    response.headers = AxiosHeaders$1.from(response.headers);
-
-		    return response;
-		  }, function onAdapterRejection(reason) {
-		    if (!isCancel(reason)) {
+		  return adapter(config).then(
+		    function onAdapterResolution(response) {
 		      throwIfCancellationRequested(config);
 
 		      // Transform response data
-		      if (reason && reason.response) {
-		        reason.response.data = transformData.call(
-		          config,
-		          config.transformResponse,
-		          reason.response
-		        );
-		        reason.response.headers = AxiosHeaders$1.from(reason.response.headers);
-		      }
-		    }
+		      response.data = transformData.call(config, config.transformResponse, response);
 
-		    return Promise.reject(reason);
-		  });
+		      response.headers = AxiosHeaders$1.from(response.headers);
+
+		      return response;
+		    },
+		    function onAdapterRejection(reason) {
+		      if (!isCancel(reason)) {
+		        throwIfCancellationRequested(config);
+
+		        // Transform response data
+		        if (reason && reason.response) {
+		          reason.response.data = transformData.call(
+		            config,
+		            config.transformResponse,
+		            reason.response
+		          );
+		          reason.response.headers = AxiosHeaders$1.from(reason.response.headers);
+		        }
+		      }
+
+		      return Promise.reject(reason);
+		    }
+		  );
 		}
 
-		const VERSION = "1.13.2";
+		const VERSION = "1.13.6";
 
 		const validators$1 = {};
 
@@ -5443,15 +5740,23 @@ sap.ui.define((function () { 'use strict';
 		 */
 		validators$1.transitional = function transitional(validator, version, message) {
 		  function formatMessage(opt, desc) {
-		    return '[Axios v' + VERSION + '] Transitional option \'' + opt + '\'' + desc + (message ? '. ' + message : '');
+		    return (
+		      '[Axios v' +
+		      VERSION +
+		      "] Transitional option '" +
+		      opt +
+		      "'" +
+		      desc +
+		      (message ? '. ' + message : '')
+		    );
 		  }
 
 		  // eslint-disable-next-line func-names
 		  return (value, opt, opts) => {
 		    if (validator === false) {
-		      throw new AxiosError(
+		      throw new AxiosError$1(
 		        formatMessage(opt, ' has been removed' + (version ? ' in ' + version : '')),
-		        AxiosError.ERR_DEPRECATED
+		        AxiosError$1.ERR_DEPRECATED
 		      );
 		    }
 
@@ -5475,7 +5780,7 @@ sap.ui.define((function () { 'use strict';
 		    // eslint-disable-next-line no-console
 		    console.warn(`${opt} is likely a misspelling of ${correctSpelling}`);
 		    return true;
-		  }
+		  };
 		};
 
 		/**
@@ -5490,7 +5795,7 @@ sap.ui.define((function () { 'use strict';
 
 		function assertOptions(options, schema, allowUnknown) {
 		  if (typeof options !== 'object') {
-		    throw new AxiosError('options must be an object', AxiosError.ERR_BAD_OPTION_VALUE);
+		    throw new AxiosError$1('options must be an object', AxiosError$1.ERR_BAD_OPTION_VALUE);
 		  }
 		  const keys = Object.keys(options);
 		  let i = keys.length;
@@ -5501,19 +5806,22 @@ sap.ui.define((function () { 'use strict';
 		      const value = options[opt];
 		      const result = value === undefined || validator(value, opt, options);
 		      if (result !== true) {
-		        throw new AxiosError('option ' + opt + ' must be ' + result, AxiosError.ERR_BAD_OPTION_VALUE);
+		        throw new AxiosError$1(
+		          'option ' + opt + ' must be ' + result,
+		          AxiosError$1.ERR_BAD_OPTION_VALUE
+		        );
 		      }
 		      continue;
 		    }
 		    if (allowUnknown !== true) {
-		      throw new AxiosError('Unknown option ' + opt, AxiosError.ERR_BAD_OPTION);
+		      throw new AxiosError$1('Unknown option ' + opt, AxiosError$1.ERR_BAD_OPTION);
 		    }
 		  }
 		}
 
 		var validator = {
 		  assertOptions,
-		  validators: validators$1
+		  validators: validators$1,
 		};
 
 		const validators = validator.validators;
@@ -5530,7 +5838,7 @@ sap.ui.define((function () { 'use strict';
 		    this.defaults = instanceConfig || {};
 		    this.interceptors = {
 		      request: new InterceptorManager$1(),
-		      response: new InterceptorManager$1()
+		      response: new InterceptorManager$1(),
 		    };
 		  }
 
@@ -5581,26 +5889,35 @@ sap.ui.define((function () { 'use strict';
 
 		    config = mergeConfig(this.defaults, config);
 
-		    const {transitional, paramsSerializer, headers} = config;
+		    const { transitional, paramsSerializer, headers } = config;
 
 		    if (transitional !== undefined) {
-		      validator.assertOptions(transitional, {
-		        silentJSONParsing: validators.transitional(validators.boolean),
-		        forcedJSONParsing: validators.transitional(validators.boolean),
-		        clarifyTimeoutError: validators.transitional(validators.boolean)
-		      }, false);
+		      validator.assertOptions(
+		        transitional,
+		        {
+		          silentJSONParsing: validators.transitional(validators.boolean),
+		          forcedJSONParsing: validators.transitional(validators.boolean),
+		          clarifyTimeoutError: validators.transitional(validators.boolean),
+		          legacyInterceptorReqResOrdering: validators.transitional(validators.boolean),
+		        },
+		        false
+		      );
 		    }
 
 		    if (paramsSerializer != null) {
 		      if (utils$1.isFunction(paramsSerializer)) {
 		        config.paramsSerializer = {
-		          serialize: paramsSerializer
+		          serialize: paramsSerializer,
 		        };
 		      } else {
-		        validator.assertOptions(paramsSerializer, {
-		          encode: validators.function,
-		          serialize: validators.function
-		        }, true);
+		        validator.assertOptions(
+		          paramsSerializer,
+		          {
+		            encode: validators.function,
+		            serialize: validators.function,
+		          },
+		          true
+		        );
 		      }
 		    }
 
@@ -5611,26 +5928,25 @@ sap.ui.define((function () { 'use strict';
 		      config.allowAbsoluteUrls = true;
 		    }
 
-		    validator.assertOptions(config, {
-		      baseUrl: validators.spelling('baseURL'),
-		      withXsrfToken: validators.spelling('withXSRFToken')
-		    }, true);
+		    validator.assertOptions(
+		      config,
+		      {
+		        baseUrl: validators.spelling('baseURL'),
+		        withXsrfToken: validators.spelling('withXSRFToken'),
+		      },
+		      true
+		    );
 
 		    // Set config.method
 		    config.method = (config.method || this.defaults.method || 'get').toLowerCase();
 
 		    // Flatten headers
-		    let contextHeaders = headers && utils$1.merge(
-		      headers.common,
-		      headers[config.method]
-		    );
+		    let contextHeaders = headers && utils$1.merge(headers.common, headers[config.method]);
 
-		    headers && utils$1.forEach(
-		      ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
-		      (method) => {
+		    headers &&
+		      utils$1.forEach(['delete', 'get', 'head', 'post', 'put', 'patch', 'common'], (method) => {
 		        delete headers[method];
-		      }
-		    );
+		      });
 
 		    config.headers = AxiosHeaders$1.concat(contextHeaders, headers);
 
@@ -5644,7 +5960,15 @@ sap.ui.define((function () { 'use strict';
 
 		      synchronousRequestInterceptors = synchronousRequestInterceptors && interceptor.synchronous;
 
-		      requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected);
+		      const transitional = config.transitional || transitionalDefaults;
+		      const legacyInterceptorReqResOrdering =
+		        transitional && transitional.legacyInterceptorReqResOrdering;
+
+		      if (legacyInterceptorReqResOrdering) {
+		        requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected);
+		      } else {
+		        requestInterceptorChain.push(interceptor.fulfilled, interceptor.rejected);
+		      }
 		    });
 
 		    const responseInterceptorChain = [];
@@ -5712,12 +6036,14 @@ sap.ui.define((function () { 'use strict';
 		// Provide aliases for supported request methods
 		utils$1.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
 		  /*eslint func-names:0*/
-		  Axios.prototype[method] = function(url, config) {
-		    return this.request(mergeConfig(config || {}, {
-		      method,
-		      url,
-		      data: (config || {}).data
-		    }));
+		  Axios.prototype[method] = function (url, config) {
+		    return this.request(
+		      mergeConfig(config || {}, {
+		        method,
+		        url,
+		        data: (config || {}).data,
+		      })
+		    );
 		  };
 		});
 
@@ -5726,14 +6052,18 @@ sap.ui.define((function () { 'use strict';
 
 		  function generateHTTPMethod(isForm) {
 		    return function httpMethod(url, data, config) {
-		      return this.request(mergeConfig(config || {}, {
-		        method,
-		        headers: isForm ? {
-		          'Content-Type': 'multipart/form-data'
-		        } : {},
-		        url,
-		        data
-		      }));
+		      return this.request(
+		        mergeConfig(config || {}, {
+		          method,
+		          headers: isForm
+		            ? {
+		                'Content-Type': 'multipart/form-data',
+		              }
+		            : {},
+		          url,
+		          data,
+		        })
+		      );
 		    };
 		  }
 
@@ -5766,7 +6096,7 @@ sap.ui.define((function () { 'use strict';
 		    const token = this;
 
 		    // eslint-disable-next-line func-names
-		    this.promise.then(cancel => {
+		    this.promise.then((cancel) => {
 		      if (!token._listeners) return;
 
 		      let i = token._listeners.length;
@@ -5778,10 +6108,10 @@ sap.ui.define((function () { 'use strict';
 		    });
 
 		    // eslint-disable-next-line func-names
-		    this.promise.then = onfulfilled => {
+		    this.promise.then = (onfulfilled) => {
 		      let _resolve;
 		      // eslint-disable-next-line func-names
-		      const promise = new Promise(resolve => {
+		      const promise = new Promise((resolve) => {
 		        token.subscribe(resolve);
 		        _resolve = resolve;
 		      }).then(onfulfilled);
@@ -5799,7 +6129,7 @@ sap.ui.define((function () { 'use strict';
 		        return;
 		      }
 
-		      token.reason = new CanceledError(message, config, request);
+		      token.reason = new CanceledError$1(message, config, request);
 		      resolvePromise(token.reason);
 		    });
 		  }
@@ -5869,7 +6199,7 @@ sap.ui.define((function () { 'use strict';
 		    });
 		    return {
 		      token,
-		      cancel
+		      cancel,
 		    };
 		  }
 		}
@@ -5883,7 +6213,7 @@ sap.ui.define((function () { 'use strict';
 		 *
 		 *  ```js
 		 *  function f(x, y, z) {}
-		 *  var args = [1, 2, 3];
+		 *  const args = [1, 2, 3];
 		 *  f.apply(null, args);
 		 *  ```
 		 *
@@ -5911,7 +6241,7 @@ sap.ui.define((function () { 'use strict';
 		 * @returns {boolean} True if the payload is an error thrown by Axios, otherwise false
 		 */
 		function isAxiosError(payload) {
-		  return utils$1.isObject(payload) && (payload.isAxiosError === true);
+		  return utils$1.isObject(payload) && payload.isAxiosError === true;
 		}
 
 		const HttpStatusCode = {
@@ -6004,10 +6334,10 @@ sap.ui.define((function () { 'use strict';
 		  const instance = bind(Axios$1.prototype.request, context);
 
 		  // Copy axios.prototype to instance
-		  utils$1.extend(instance, Axios$1.prototype, context, {allOwnKeys: true});
+		  utils$1.extend(instance, Axios$1.prototype, context, { allOwnKeys: true });
 
 		  // Copy context to instance
-		  utils$1.extend(instance, context, null, {allOwnKeys: true});
+		  utils$1.extend(instance, context, null, { allOwnKeys: true });
 
 		  // Factory for creating new instances
 		  instance.create = function create(instanceConfig) {
@@ -6024,14 +6354,14 @@ sap.ui.define((function () { 'use strict';
 		axios.Axios = Axios$1;
 
 		// Expose Cancel & CancelToken
-		axios.CanceledError = CanceledError;
+		axios.CanceledError = CanceledError$1;
 		axios.CancelToken = CancelToken$1;
 		axios.isCancel = isCancel;
 		axios.VERSION = VERSION;
 		axios.toFormData = toFormData;
 
 		// Expose AxiosError class
-		axios.AxiosError = AxiosError;
+		axios.AxiosError = AxiosError$1;
 
 		// alias for CanceledError for backward compatibility
 		axios.Cancel = axios.CanceledError;
@@ -6051,7 +6381,7 @@ sap.ui.define((function () { 'use strict';
 
 		axios.AxiosHeaders = AxiosHeaders$1;
 
-		axios.formToJSON = thing => formDataToJSON(utils$1.isHTMLForm(thing) ? new FormData(thing) : thing);
+		axios.formToJSON = (thing) => formDataToJSON(utils$1.isHTMLForm(thing) ? new FormData(thing) : thing);
 
 		axios.getAdapter = adapters.getAdapter;
 

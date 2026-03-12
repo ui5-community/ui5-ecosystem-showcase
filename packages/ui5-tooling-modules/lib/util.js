@@ -162,6 +162,7 @@ function resolve(moduleName, options) {
 	}
 	// if the module is a built-in module, we ignore it
 	if (modulePath === moduleName) {
+		/* eslint-disable-next-line no-useless-assignment */
 		modulePath = undefined;
 		const err = new Error(`Found built-in module "${moduleName}". Ignoring and trigger manual resolution to find custom modules!`);
 		err.code = "ERR_BUILTIN_MODULE";

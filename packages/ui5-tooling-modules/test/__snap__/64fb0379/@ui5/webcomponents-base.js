@@ -17,7 +17,7 @@ sap.ui.define(
     // export the UI5 metadata along with the package
     pkg["_ui5metadata"] = {
       name: "@ui5/webcomponents-base",
-      version: "2.17.1",
+      version: "2.20.0",
       dependencies: ["sap.ui.core"],
       types: [
         "@ui5.webcomponents-base.AnimationMode",
@@ -45,17 +45,17 @@ sap.ui.define(
      */
     pkg["AnimationMode"] = {
       /**
-       * Full
-       *
-       * @private
-       */
-      Full: "Full",
-      /**
        * Basic
        *
        * @private
        */
       Basic: "Basic",
+      /**
+       * Full
+       *
+       * @private
+       */
+      Full: "Full",
       /**
        * Minimal
        *
@@ -80,6 +80,12 @@ sap.ui.define(
      */
     pkg["CalendarType"] = {
       /**
+       * Buddhist
+       *
+       * @private
+       */
+      Buddhist: "Buddhist",
+      /**
        * Gregorian
        *
        * @private
@@ -98,12 +104,6 @@ sap.ui.define(
        */
       Japanese: "Japanese",
       /**
-       * Buddhist
-       *
-       * @private
-       */
-      Buddhist: "Buddhist",
-      /**
        * Persian
        *
        * @private
@@ -121,17 +121,17 @@ sap.ui.define(
      */
     pkg["ItemNavigationBehavior"] = {
       /**
-       * Static behavior: navigations stops at the first or last item.
-       *
-       * @private
-       */
-      Static: "Static",
-      /**
        * Cycling behavior: navigating past the last item continues with the first and vice versa.
        *
        * @private
        */
-      Cyclic: "Cyclic"
+      Cyclic: "Cyclic",
+      /**
+       * Static behavior: navigations stops at the first or last item.
+       *
+       * @private
+       */
+      Static: "Static"
     };
     registerEnum(
       "@ui5.webcomponents-base.ItemNavigationBehavior",
@@ -147,11 +147,11 @@ sap.ui.define(
      */
     pkg["MovePlacement"] = {
       /**
-       * On
+       * After
        *
        * @private
        */
-      On: "On",
+      After: "After",
       /**
        * Before
        *
@@ -159,11 +159,11 @@ sap.ui.define(
        */
       Before: "Before",
       /**
-       * After
+       * On
        *
        * @private
        */
-      After: "After"
+      On: "On"
     };
     registerEnum("@ui5.webcomponents-base.MovePlacement", pkg["MovePlacement"]);
     /**
@@ -182,12 +182,6 @@ sap.ui.define(
        */
       Auto: "Auto",
       /**
-       * Vertical
-       *
-       * @private
-       */
-      Vertical: "Vertical",
-      /**
        * Horizontal
        *
        * @private
@@ -198,7 +192,13 @@ sap.ui.define(
        *
        * @private
        */
-      Paging: "Paging"
+      Paging: "Paging",
+      /**
+       * Vertical
+       *
+       * @private
+       */
+      Vertical: "Vertical"
     };
     registerEnum(
       "@ui5.webcomponents-base.NavigationMode",
@@ -214,12 +214,6 @@ sap.ui.define(
      */
     pkg["SortOrder"] = {
       /**
-       * Sorting is not applied.
-       *
-       * @private
-       */
-      None: "None",
-      /**
        * Sorting is applied in ascending order.
        *
        * @private
@@ -230,7 +224,13 @@ sap.ui.define(
        *
        * @private
        */
-      Descending: "Descending"
+      Descending: "Descending",
+      /**
+       * Sorting is not applied.
+       *
+       * @private
+       */
+      None: "None"
     };
     registerEnum("@ui5.webcomponents-base.SortOrder", pkg["SortOrder"]);
     /**
@@ -243,6 +243,24 @@ sap.ui.define(
      */
     pkg["ValueState"] = {
       /**
+       * Critical
+       *
+       * @private
+       */
+      Critical: "Critical",
+      /**
+       * Information
+       *
+       * @private
+       */
+      Information: "Information",
+      /**
+       * Negative
+       *
+       * @private
+       */
+      Negative: "Negative",
+      /**
        * None
        *
        * @private
@@ -253,25 +271,7 @@ sap.ui.define(
        *
        * @private
        */
-      Positive: "Positive",
-      /**
-       * Critical
-       *
-       * @private
-       */
-      Critical: "Critical",
-      /**
-       * Negative
-       *
-       * @private
-       */
-      Negative: "Negative",
-      /**
-       * Information
-       *
-       * @private
-       */
-      Information: "Information"
+      Positive: "Positive"
     };
     registerEnum("@ui5.webcomponents-base.ValueState", pkg["ValueState"]);
 

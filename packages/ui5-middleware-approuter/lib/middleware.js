@@ -116,6 +116,7 @@ module.exports = async ({ log, options, middlewareUtil }) => {
 				try {
 					destinations = effectiveOptions.destinations = JSON.parse(process.env[destinationsEnvKey])
 				} catch (error) {
+					/* eslint-disable-next-line preserve-caught-error */
 					throw new Error(`No valid destinations JSON in .env file at '${destinationsEnvKey}': ${error}`)
 				}
 			} else {

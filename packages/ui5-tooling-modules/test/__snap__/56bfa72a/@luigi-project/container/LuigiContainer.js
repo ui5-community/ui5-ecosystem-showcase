@@ -198,6 +198,9 @@ sap.ui.define(
             },
             removeBackdropRequest: {
               parameters: {}
+            },
+            closeCurrentModalRequest: {
+              parameters: {}
             }
           },
           getters: [],

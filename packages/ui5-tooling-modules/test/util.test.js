@@ -40,10 +40,12 @@ async function runModule(resourceName, code, ctx) {
 						define: async function (name, deps, callback) {
 							if (typeof name === "function") {
 								callback = name;
+								/* eslint-disable-next-line no-useless-assignment */
 								name = undefined;
 							} else if (Array.isArray(name)) {
 								callback = deps;
 								deps = name;
+								/* eslint-disable-next-line no-useless-assignment */
 								name = undefined;
 							}
 							if (Array.isArray(deps)) {
@@ -571,6 +573,8 @@ test.serial("Verify generation of pdfMake", async (t) => {
 		log: t.context.log,
 		scope: {
 			navigator: {},
+			TextEncoder: function () {},
+			TextDecoder: function () {},
 		},
 	});
 	const module = await env.getModule("pdfmake/build/pdfmake");
@@ -635,6 +639,7 @@ const webcomponentsContext = {
 					setAttribute: function () {},
 				};
 			},
+			addEventListener: function () {},
 			querySelector: function () {},
 			createTreeWalker: function () {},
 			adoptedStyleSheets: [],

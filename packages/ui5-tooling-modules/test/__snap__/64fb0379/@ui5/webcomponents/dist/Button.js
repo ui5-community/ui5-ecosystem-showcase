@@ -20,6 +20,24 @@ sap.ui.define(
           tag: "ui5-button",
           interfaces: ["@ui5.webcomponents.IButton"],
           properties: {
+            accessibilityAttributes: {
+              type: "any",
+              mapping: "property",
+              defaultValue: "{}"
+            },
+            accessibleDescription: {
+              type: "string",
+              mapping: "property"
+            },
+            accessibleName: {
+              type: "string",
+              mapping: "property"
+            },
+            accessibleRole: {
+              type: "@ui5.webcomponents.ButtonAccessibleRole",
+              mapping: "property",
+              defaultValue: "Button"
+            },
             design: {
               type: "@ui5.webcomponents.ButtonDesign",
               mapping: "property",
@@ -34,41 +52,13 @@ sap.ui.define(
                 formatter: "_mapEnabled"
               }
             },
-            icon: {
-              type: "string",
-              mapping: "property"
-            },
             endIcon: {
               type: "string",
               mapping: "property"
             },
-            submits: {
-              type: "boolean",
-              mapping: "property",
-              defaultValue: false
-            },
-            accessibleName: {
+            icon: {
               type: "string",
               mapping: "property"
-            },
-            accessibilityAttributes: {
-              type: "any",
-              mapping: "property",
-              defaultValue: "{}"
-            },
-            accessibleDescription: {
-              type: "string",
-              mapping: "property"
-            },
-            type: {
-              type: "@ui5.webcomponents.ButtonType",
-              mapping: "property",
-              defaultValue: "Button"
-            },
-            accessibleRole: {
-              type: "@ui5.webcomponents.ButtonAccessibleRole",
-              mapping: "property",
-              defaultValue: "Button"
             },
             loading: {
               type: "boolean",
@@ -79,6 +69,16 @@ sap.ui.define(
               type: "float",
               mapping: "property",
               defaultValue: 1000
+            },
+            submits: {
+              type: "boolean",
+              mapping: "property",
+              defaultValue: false
+            },
+            type: {
+              type: "@ui5.webcomponents.ButtonType",
+              mapping: "property",
+              defaultValue: "Button"
             },
             text: {
               type: "string",
@@ -116,23 +116,6 @@ sap.ui.define(
               allowPreventDefault: true,
               enableEventBubbling: true,
               parameters: {
-                originalEvent: {
-                  type: "object",
-                  types: [
-                    {
-                      origType: "Event",
-                      multiple: false,
-                      dedicatedTypes: [
-                        {
-                          dtsType: "Event",
-                          ui5Type: "object"
-                        }
-                      ]
-                    }
-                  ],
-                  dtsParamDescription:
-                    "Returns original event that comes from user's **click** interaction"
-                },
                 altKey: {
                   type: "boolean",
                   types: [
@@ -183,6 +166,23 @@ sap.ui.define(
                   ],
                   dtsParamDescription:
                     'Returns whether the "META" key was pressed when the event was triggered.'
+                },
+                originalEvent: {
+                  type: "object",
+                  types: [
+                    {
+                      origType: "Event",
+                      multiple: false,
+                      dedicatedTypes: [
+                        {
+                          dtsType: "Event",
+                          ui5Type: "object"
+                        }
+                      ]
+                    }
+                  ],
+                  dtsParamDescription:
+                    "Returns original event that comes from user's **click** interaction"
                 },
                 shiftKey: {
                   type: "boolean",

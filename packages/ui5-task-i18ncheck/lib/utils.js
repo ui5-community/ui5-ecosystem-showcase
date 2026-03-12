@@ -54,6 +54,7 @@ let readI18nUsageFromXML = (file_content, file_path) => {
 let getUsageFromXMLAttribute = (file, attributeString) => {
 	let regex = RegExp("({i18n>[^}]*})", "g");
 	//let str1 = 'table {i18n>test}football, {i18n>test2}foosball';
+	/* eslint-disable-next-line no-useless-assignment */
 	let arrayTemp = [];
 	let resultArr = [];
 	while ((arrayTemp = regex.exec(attributeString)) !== null) {

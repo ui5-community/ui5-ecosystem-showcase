@@ -404,6 +404,11 @@ sap.ui.define((function () { 'use strict';
     };
     function pick(schema, mask) {
         const currDef = schema._zod.def;
+        const checks = currDef.checks;
+        const hasChecks = checks && checks.length > 0;
+        if (hasChecks) {
+            throw new Error(".pick() cannot be used on object schemas containing refinements");
+        }
         const def = mergeDefs(schema._zod.def, {
             get shape() {
                 const newShape = {};
@@ -424,6 +429,11 @@ sap.ui.define((function () { 'use strict';
     }
     function omit(schema, mask) {
         const currDef = schema._zod.def;
+        const checks = currDef.checks;
+        const hasChecks = checks && checks.length > 0;
+        if (hasChecks) {
+            throw new Error(".omit() cannot be used on object schemas containing refinements");
+        }
         const def = mergeDefs(schema._zod.def, {
             get shape() {
                 const newShape = { ...schema._zod.def.shape };
@@ -449,7 +459,14 @@ sap.ui.define((function () { 'use strict';
         const checks = schema._zod.def.checks;
         const hasChecks = checks && checks.length > 0;
         if (hasChecks) {
-            throw new Error("Object schemas containing refinements cannot be extended. Use `.safeExtend()` instead.");
+            // Only throw if new shape overlaps with existing shape
+            // Use getOwnPropertyDescriptor to check key existence without accessing values
+            const existingShape = schema._zod.def.shape;
+            for (const key in shape) {
+                if (Object.getOwnPropertyDescriptor(existingShape, key) !== undefined) {
+                    throw new Error("Cannot overwrite keys on object schemas containing refinements. Use `.safeExtend()` instead.");
+                }
+            }
         }
         const def = mergeDefs(schema._zod.def, {
             get shape() {
@@ -457,7 +474,6 @@ sap.ui.define((function () { 'use strict';
                 assignProp(this, "shape", _shape); // self-caching
                 return _shape;
             },
-            checks: [],
         });
         return clone(schema, def);
     }
@@ -465,15 +481,13 @@ sap.ui.define((function () { 'use strict';
         if (!isPlainObject(shape)) {
             throw new Error("Invalid input to safeExtend: expected a plain object");
         }
-        const def = {
-            ...schema._zod.def,
+        const def = mergeDefs(schema._zod.def, {
             get shape() {
                 const _shape = { ...schema._zod.def.shape, ...shape };
                 assignProp(this, "shape", _shape); // self-caching
                 return _shape;
             },
-            checks: schema._zod.def.checks,
-        };
+        });
         return clone(schema, def);
     }
     function merge(a, b) {
@@ -491,6 +505,12 @@ sap.ui.define((function () { 'use strict';
         return clone(a, def);
     }
     function partial(Class, schema, mask) {
+        const currDef = schema._zod.def;
+        const checks = currDef.checks;
+        const hasChecks = checks && checks.length > 0;
+        if (hasChecks) {
+            throw new Error(".partial() cannot be used on object schemas containing refinements");
+        }
         const def = mergeDefs(schema._zod.def, {
             get shape() {
                 const oldShape = schema._zod.def.shape;
@@ -560,7 +580,6 @@ sap.ui.define((function () { 'use strict';
                 assignProp(this, "shape", shape); // self-caching
                 return shape;
             },
-            checks: [],
         });
         return clone(schema, def);
     }
@@ -621,6 +640,27 @@ sap.ui.define((function () { 'use strict';
         if (typeof input === "string")
             return "string";
         return "unknown";
+    }
+    function parsedType(data) {
+        const t = typeof data;
+        switch (t) {
+            case "number": {
+                return Number.isNaN(data) ? "nan" : "number";
+            }
+            case "object": {
+                if (data === null) {
+                    return "null";
+                }
+                if (Array.isArray(data)) {
+                    return "array";
+                }
+                const obj = data;
+                if (obj && Object.getPrototypeOf(obj) !== Object.prototype && "constructor" in obj && obj.constructor) {
+                    return obj.constructor.name;
+                }
+            }
+        }
+        return t;
     }
     function issue(...args) {
         const [iss, input, inst] = args;
@@ -734,6 +774,7 @@ sap.ui.define((function () { 'use strict';
         objectClone: objectClone,
         omit: omit,
         optionalKeys: optionalKeys,
+        parsedType: parsedType,
         partial: partial,
         pick: pick,
         prefixIssues: prefixIssues,
@@ -1078,7 +1119,8 @@ sap.ui.define((function () { 'use strict';
     const hostname$1 = /^(?=.{1,253}\.?$)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[-0-9a-zA-Z]{0,61}[0-9a-zA-Z])?)*\.?$/;
     const domain = /^([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
     // https://blog.stevenlevithan.com/archives/validate-phone-number#r4-3 (regex sans spaces)
-    const e164$1 = /^\+(?:[0-9]){6,14}[0-9]$/;
+    // E.164: leading digit must be 1-9; total digits (excluding '+') between 7-15
+    const e164$1 = /^\+[1-9]\d{6,14}$/;
     // const dateSource = `((\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-((0[13578]|1[02])-(0[1-9]|[12]\\d|3[01])|(0[469]|11)-(0[1-9]|[12]\\d|30)|(02)-(0[1-9]|1\\d|2[0-8])))`;
     const dateSource = `(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))`;
     const date$3 = /*@__PURE__*/ new RegExp(`^${dateSource}$`);
@@ -1114,7 +1156,7 @@ sap.ui.define((function () { 'use strict';
     };
     const bigint$2 = /^-?\d+n?$/;
     const integer = /^-?\d+$/;
-    const number$2 = /^-?\d+(?:\.\d+)?/;
+    const number$2 = /^-?\d+(?:\.\d+)?$/;
     const boolean$2 = /^(?:true|false)$/i;
     const _null$2 = /^null$/i;
     const _undefined$2 = /^undefined$/i;
@@ -1248,7 +1290,7 @@ sap.ui.define((function () { 'use strict';
             payload.issues.push({
                 origin,
                 code: "too_big",
-                maximum: def.value,
+                maximum: typeof def.value === "object" ? def.value.getTime() : def.value,
                 input: payload.value,
                 inclusive: def.inclusive,
                 inst,
@@ -1276,7 +1318,7 @@ sap.ui.define((function () { 'use strict';
             payload.issues.push({
                 origin,
                 code: "too_small",
-                minimum: def.value,
+                minimum: typeof def.value === "object" ? def.value.getTime() : def.value,
                 input: payload.value,
                 inclusive: def.inclusive,
                 inst,
@@ -1364,6 +1406,7 @@ sap.ui.define((function () { 'use strict';
                             note: "Integers must be within the safe integer range.",
                             inst,
                             origin,
+                            inclusive: true,
                             continue: !def.abort,
                         });
                     }
@@ -1376,6 +1419,7 @@ sap.ui.define((function () { 'use strict';
                             note: "Integers must be within the safe integer range.",
                             inst,
                             origin,
+                            inclusive: true,
                             continue: !def.abort,
                         });
                     }
@@ -1399,7 +1443,9 @@ sap.ui.define((function () { 'use strict';
                     input,
                     code: "too_big",
                     maximum,
+                    inclusive: true,
                     inst,
+                    continue: !def.abort,
                 });
             }
         };
@@ -1432,7 +1478,9 @@ sap.ui.define((function () { 'use strict';
                     input,
                     code: "too_big",
                     maximum,
+                    inclusive: true,
                     inst,
+                    continue: !def.abort,
                 });
             }
         };
@@ -1821,8 +1869,8 @@ sap.ui.define((function () { 'use strict';
 
     const version = {
         major: 4,
-        minor: 2,
-        patch: 1,
+        minor: 3,
+        patch: 6,
     };
 
     const $ZodType = /*@__PURE__*/ $constructor("$ZodType", (inst, def) => {
@@ -1932,7 +1980,8 @@ sap.ui.define((function () { 'use strict';
                 return runChecks(result, checks, ctx);
             };
         }
-        inst["~standard"] = {
+        // Lazy initialize ~standard to avoid creating objects for every schema
+        defineLazy(inst, "~standard", () => ({
             validate: (value) => {
                 try {
                     const r = safeParse$1(inst, value);
@@ -1944,7 +1993,7 @@ sap.ui.define((function () { 'use strict';
             },
             vendor: "zod",
             version: 1,
-        };
+        }));
     });
     const $ZodString = /*@__PURE__*/ $constructor("$ZodString", (inst, def) => {
         $ZodType.init(inst, def);
@@ -2506,8 +2555,12 @@ sap.ui.define((function () { 'use strict';
             return payload; //handleArrayResultsAsync(parseResults, final);
         };
     });
-    function handlePropertyResult(result, final, key, input) {
+    function handlePropertyResult(result, final, key, input, isOptionalOut) {
         if (result.issues.length) {
+            // For optional-out schemas, ignore errors on absent keys
+            if (isOptionalOut && !(key in input)) {
+                return;
+            }
             final.issues.push(...prefixIssues(key, result.issues));
         }
         if (result.value === undefined) {
@@ -2541,6 +2594,7 @@ sap.ui.define((function () { 'use strict';
         const keySet = def.keySet;
         const _catchall = def.catchall._zod;
         const t = _catchall.def.type;
+        const isOptionalOut = _catchall.optout === "optional";
         for (const key in input) {
             if (keySet.has(key))
                 continue;
@@ -2550,10 +2604,10 @@ sap.ui.define((function () { 'use strict';
             }
             const r = _catchall.run({ value: input[key], issues: [] }, ctx);
             if (r instanceof Promise) {
-                proms.push(r.then((r) => handlePropertyResult(r, payload, key, input)));
+                proms.push(r.then((r) => handlePropertyResult(r, payload, key, input, isOptionalOut)));
             }
             else {
-                handlePropertyResult(r, payload, key, input);
+                handlePropertyResult(r, payload, key, input, isOptionalOut);
             }
         }
         if (unrecognized.length) {
@@ -2621,12 +2675,13 @@ sap.ui.define((function () { 'use strict';
             const shape = value.shape;
             for (const key of value.keys) {
                 const el = shape[key];
+                const isOptionalOut = el._zod.optout === "optional";
                 const r = el._zod.run({ value: input[key], issues: [] }, ctx);
                 if (r instanceof Promise) {
-                    proms.push(r.then((r) => handlePropertyResult(r, payload, key, input)));
+                    proms.push(r.then((r) => handlePropertyResult(r, payload, key, input, isOptionalOut)));
                 }
                 else {
-                    handlePropertyResult(r, payload, key, input);
+                    handlePropertyResult(r, payload, key, input, isOptionalOut);
                 }
             }
             if (!catchall) {
@@ -2658,15 +2713,20 @@ sap.ui.define((function () { 'use strict';
             for (const key of normalized.keys) {
                 const id = ids[key];
                 const k = esc(key);
+                const schema = shape[key];
+                const isOptionalOut = schema?._zod?.optout === "optional";
                 doc.write(`const ${id} = ${parseStr(key)};`);
-                doc.write(`
+                if (isOptionalOut) {
+                    // For optional-out schemas, ignore errors on absent keys
+                    doc.write(`
         if (${id}.issues.length) {
-          payload.issues = payload.issues.concat(${id}.issues.map(iss => ({
-            ...iss,
-            path: iss.path ? [${k}, ...iss.path] : [${k}]
-          })));
+          if (${k} in input) {
+            payload.issues = payload.issues.concat(${id}.issues.map(iss => ({
+              ...iss,
+              path: iss.path ? [${k}, ...iss.path] : [${k}]
+            })));
+          }
         }
-
 
         if (${id}.value === undefined) {
           if (${k} in input) {
@@ -2677,6 +2737,26 @@ sap.ui.define((function () { 'use strict';
         }
 
       `);
+                }
+                else {
+                    doc.write(`
+        if (${id}.issues.length) {
+          payload.issues = payload.issues.concat(${id}.issues.map(iss => ({
+            ...iss,
+            path: iss.path ? [${k}, ...iss.path] : [${k}]
+          })));
+        }
+
+        if (${id}.value === undefined) {
+          if (${k} in input) {
+            newResult[${k}] = undefined;
+          }
+        } else {
+          newResult[${k}] = ${id}.value;
+        }
+
+      `);
+                }
             }
             doc.write(`payload.value = newResult;`);
             doc.write(`return payload;`);
@@ -2970,11 +3050,38 @@ sap.ui.define((function () { 'use strict';
         return { valid: false, mergeErrorPath: [] };
     }
     function handleIntersectionResults(result, left, right) {
-        if (left.issues.length) {
-            result.issues.push(...left.issues);
+        // Track which side(s) report each key as unrecognized
+        const unrecKeys = new Map();
+        let unrecIssue;
+        for (const iss of left.issues) {
+            if (iss.code === "unrecognized_keys") {
+                unrecIssue ?? (unrecIssue = iss);
+                for (const k of iss.keys) {
+                    if (!unrecKeys.has(k))
+                        unrecKeys.set(k, {});
+                    unrecKeys.get(k).l = true;
+                }
+            }
+            else {
+                result.issues.push(iss);
+            }
         }
-        if (right.issues.length) {
-            result.issues.push(...right.issues);
+        for (const iss of right.issues) {
+            if (iss.code === "unrecognized_keys") {
+                for (const k of iss.keys) {
+                    if (!unrecKeys.has(k))
+                        unrecKeys.set(k, {});
+                    unrecKeys.get(k).r = true;
+                }
+            }
+            else {
+                result.issues.push(iss);
+            }
+        }
+        // Report only keys unrecognized by BOTH sides
+        const bothKeys = [...unrecKeys].filter(([, f]) => f.l && f.r).map(([k]) => k);
+        if (bothKeys.length && unrecIssue) {
+            result.issues.push({ ...unrecIssue, keys: bothKeys });
         }
         if (aborted(result))
             return result;
@@ -3008,7 +3115,9 @@ sap.ui.define((function () { 'use strict';
                 const tooSmall = input.length < optStart - 1;
                 if (tooBig || tooSmall) {
                     payload.issues.push({
-                        ...(tooBig ? { code: "too_big", maximum: items.length } : { code: "too_small", minimum: items.length }),
+                        ...(tooBig
+                            ? { code: "too_big", maximum: items.length, inclusive: true }
+                            : { code: "too_small", minimum: items.length }),
                         input,
                         inst,
                         origin: "array",
@@ -3119,9 +3228,21 @@ sap.ui.define((function () { 'use strict';
                 for (const key of Reflect.ownKeys(input)) {
                     if (key === "__proto__")
                         continue;
-                    const keyResult = def.keyType._zod.run({ value: key, issues: [] }, ctx);
+                    let keyResult = def.keyType._zod.run({ value: key, issues: [] }, ctx);
                     if (keyResult instanceof Promise) {
                         throw new Error("Async schemas not supported in object keys currently");
+                    }
+                    // Numeric string fallback: if key is a numeric string and failed, retry with Number(key)
+                    // This handles z.number(), z.literal([1, 2, 3]), and unions containing numeric literals
+                    const checkNumericKey = typeof key === "string" && number$2.test(key) && keyResult.issues.length;
+                    if (checkNumericKey) {
+                        const retryResult = def.keyType._zod.run({ value: Number(key), issues: [] }, ctx);
+                        if (retryResult instanceof Promise) {
+                            throw new Error("Async schemas not supported in object keys currently");
+                        }
+                        if (retryResult.issues.length === 0) {
+                            keyResult = retryResult;
+                        }
                     }
                     if (keyResult.issues.length) {
                         if (def.mode === "loose") {
@@ -3373,6 +3494,17 @@ sap.ui.define((function () { 'use strict';
             if (payload.value === undefined) {
                 return payload;
             }
+            return def.innerType._zod.run(payload, ctx);
+        };
+    });
+    const $ZodExactOptional = /*@__PURE__*/ $constructor("$ZodExactOptional", (inst, def) => {
+        // Call parent init - inherits optin/optout = "optional"
+        $ZodOptional.init(inst, def);
+        // Override values/pattern to NOT add undefined
+        defineLazy(inst._zod, "values", () => def.innerType._zod.values);
+        defineLazy(inst._zod, "pattern", () => def.innerType._zod.pattern);
+        // Override parse to just delegate (no undefined handling)
+        inst._zod.parse = (payload, ctx) => {
             return def.innerType._zod.run(payload, ctx);
         };
     });
@@ -3672,7 +3804,7 @@ sap.ui.define((function () { 'use strict';
                 payload.issues.push({
                     input: payload.value,
                     inst,
-                    expected: "template_literal",
+                    expected: "string",
                     code: "invalid_type",
                 });
                 return payload;
@@ -3827,7 +3959,7 @@ sap.ui.define((function () { 'use strict';
         }
     }
 
-    const error$I = () => {
+    const error$K = () => {
         const Sizable = {
             string: { unit: "حرف", verb: "أن يحوي" },
             file: { unit: "بايت", verb: "أن يحوي" },
@@ -3837,27 +3969,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "number";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "array";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "مدخل",
             email: "بريد إلكتروني",
             url: "رابط",
@@ -3887,10 +3999,20 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "مدخل",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `مدخلات غير مقبولة: يفترض إدخال ${issue.expected}، ولكن تم إدخال ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `مدخلات غير مقبولة: يفترض إدخال instanceof ${issue.expected}، ولكن تم إدخال ${received}`;
+                    }
+                    return `مدخلات غير مقبولة: يفترض إدخال ${expected}، ولكن تم إدخال ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `مدخلات غير مقبولة: يفترض إدخال ${stringifyPrimitive(issue.values[0])}`;
@@ -3920,7 +4042,7 @@ sap.ui.define((function () { 'use strict';
                         return `نَص غير مقبول: يجب أن يتضمَّن "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `نَص غير مقبول: يجب أن يطابق النمط ${_issue.pattern}`;
-                    return `${Nouns[_issue.format] ?? issue.format} غير مقبول`;
+                    return `${FormatDictionary[_issue.format] ?? issue.format} غير مقبول`;
                 }
                 case "not_multiple_of":
                     return `رقم غير مقبول: يجب أن يكون من مضاعفات ${issue.divisor}`;
@@ -3939,11 +4061,11 @@ sap.ui.define((function () { 'use strict';
     };
     function ar () {
         return {
-            localeError: error$I(),
+            localeError: error$K(),
         };
     }
 
-    const error$H = () => {
+    const error$J = () => {
         const Sizable = {
             string: { unit: "simvol", verb: "olmalıdır" },
             file: { unit: "bayt", verb: "olmalıdır" },
@@ -3953,27 +4075,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "number";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "array";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "input",
             email: "email address",
             url: "URL",
@@ -4003,10 +4105,20 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "input",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Yanlış dəyər: gözlənilən ${issue.expected}, daxil olan ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Yanlış dəyər: gözlənilən instanceof ${issue.expected}, daxil olan ${received}`;
+                    }
+                    return `Yanlış dəyər: gözlənilən ${expected}, daxil olan ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Yanlış dəyər: gözlənilən ${stringifyPrimitive(issue.values[0])}`;
@@ -4035,7 +4147,7 @@ sap.ui.define((function () { 'use strict';
                         return `Yanlış mətn: "${_issue.includes}" daxil olmalıdır`;
                     if (_issue.format === "regex")
                         return `Yanlış mətn: ${_issue.pattern} şablonuna uyğun olmalıdır`;
-                    return `Yanlış ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Yanlış ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Yanlış ədəd: ${issue.divisor} ilə bölünə bilən olmalıdır`;
@@ -4054,7 +4166,7 @@ sap.ui.define((function () { 'use strict';
     };
     function az () {
         return {
-            localeError: error$H(),
+            localeError: error$J(),
         };
     }
 
@@ -4073,7 +4185,7 @@ sap.ui.define((function () { 'use strict';
         }
         return many;
     }
-    const error$G = () => {
+    const error$I = () => {
         const Sizable = {
             string: {
                 unit: {
@@ -4111,27 +4223,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "лік";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "масіў";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "увод",
             email: "email адрас",
             url: "URL",
@@ -4161,10 +4253,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "увод",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "лік",
+            array: "масіў",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Няправільны ўвод: чакаўся ${issue.expected}, атрымана ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Няправільны ўвод: чакаўся instanceof ${issue.expected}, атрымана ${received}`;
+                    }
+                    return `Няправільны ўвод: чакаўся ${expected}, атрымана ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Няправільны ўвод: чакалася ${stringifyPrimitive(issue.values[0])}`;
@@ -4199,7 +4303,7 @@ sap.ui.define((function () { 'use strict';
                         return `Няправільны радок: павінен змяшчаць "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Няправільны радок: павінен адпавядаць шаблону ${_issue.pattern}`;
-                    return `Няправільны ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Няправільны ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Няправільны лік: павінен быць кратным ${issue.divisor}`;
@@ -4218,31 +4322,11 @@ sap.ui.define((function () { 'use strict';
     };
     function be () {
         return {
-            localeError: error$G(),
+            localeError: error$I(),
         };
     }
 
-    const parsedType$6 = (data) => {
-        const t = typeof data;
-        switch (t) {
-            case "number": {
-                return Number.isNaN(data) ? "NaN" : "число";
-            }
-            case "object": {
-                if (Array.isArray(data)) {
-                    return "масив";
-                }
-                if (data === null) {
-                    return "null";
-                }
-                if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                    return data.constructor.name;
-                }
-            }
-        }
-        return t;
-    };
-    const error$F = () => {
+    const error$H = () => {
         const Sizable = {
             string: { unit: "символа", verb: "да съдържа" },
             file: { unit: "байта", verb: "да съдържа" },
@@ -4252,7 +4336,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const Nouns = {
+        const FormatDictionary = {
             regex: "вход",
             email: "имейл адрес",
             url: "URL",
@@ -4282,10 +4366,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "вход",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "число",
+            array: "масив",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Невалиден вход: очакван ${issue.expected}, получен ${parsedType$6(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Невалиден вход: очакван instanceof ${issue.expected}, получен ${received}`;
+                    }
+                    return `Невалиден вход: очакван ${expected}, получен ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Невалиден вход: очакван ${stringifyPrimitive(issue.values[0])}`;
@@ -4327,7 +4423,7 @@ sap.ui.define((function () { 'use strict';
                         invalid_adj = "Невалидно";
                     if (_issue.format === "duration")
                         invalid_adj = "Невалидна";
-                    return `${invalid_adj} ${Nouns[_issue.format] ?? issue.format}`;
+                    return `${invalid_adj} ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Невалидно число: трябва да бъде кратно на ${issue.divisor}`;
@@ -4346,11 +4442,11 @@ sap.ui.define((function () { 'use strict';
     };
     function bg () {
         return {
-            localeError: error$F(),
+            localeError: error$H(),
         };
     }
 
-    const error$E = () => {
+    const error$G = () => {
         const Sizable = {
             string: { unit: "caràcters", verb: "contenir" },
             file: { unit: "bytes", verb: "contenir" },
@@ -4360,27 +4456,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "number";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "array";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "entrada",
             email: "adreça electrònica",
             url: "URL",
@@ -4410,11 +4486,20 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "entrada",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Tipus invàlid: s'esperava ${issue.expected}, s'ha rebut ${parsedType(issue.input)}`;
-                // return `Tipus invàlid: s'esperava ${issue.expected}, s'ha rebut ${util.getParsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Tipus invàlid: s'esperava instanceof ${issue.expected}, s'ha rebut ${received}`;
+                    }
+                    return `Tipus invàlid: s'esperava ${expected}, s'ha rebut ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Valor invàlid: s'esperava ${stringifyPrimitive(issue.values[0])}`;
@@ -4445,7 +4530,7 @@ sap.ui.define((function () { 'use strict';
                         return `Format invàlid: ha d'incloure "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Format invàlid: ha de coincidir amb el patró ${_issue.pattern}`;
-                    return `Format invàlid per a ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Format invàlid per a ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Número invàlid: ha de ser múltiple de ${issue.divisor}`;
@@ -4464,11 +4549,11 @@ sap.ui.define((function () { 'use strict';
     };
     function ca () {
         return {
-            localeError: error$E(),
+            localeError: error$G(),
         };
     }
 
-    const error$D = () => {
+    const error$F = () => {
         const Sizable = {
             string: { unit: "znaků", verb: "mít" },
             file: { unit: "bajtů", verb: "mít" },
@@ -4478,45 +4563,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "číslo";
-                }
-                case "string": {
-                    return "řetězec";
-                }
-                case "boolean": {
-                    return "boolean";
-                }
-                case "bigint": {
-                    return "bigint";
-                }
-                case "function": {
-                    return "funkce";
-                }
-                case "symbol": {
-                    return "symbol";
-                }
-                case "undefined": {
-                    return "undefined";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "pole";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "regulární výraz",
             email: "e-mailová adresa",
             url: "URL",
@@ -4546,10 +4593,24 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "vstup",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "číslo",
+            string: "řetězec",
+            function: "funkce",
+            array: "pole",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Neplatný vstup: očekáváno ${issue.expected}, obdrženo ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Neplatný vstup: očekáváno instanceof ${issue.expected}, obdrženo ${received}`;
+                    }
+                    return `Neplatný vstup: očekáváno ${expected}, obdrženo ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Neplatný vstup: očekáváno ${stringifyPrimitive(issue.values[0])}`;
@@ -4580,7 +4641,7 @@ sap.ui.define((function () { 'use strict';
                         return `Neplatný řetězec: musí obsahovat "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Neplatný řetězec: musí odpovídat vzoru ${_issue.pattern}`;
-                    return `Neplatný formát ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Neplatný formát ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Neplatné číslo: musí být násobkem ${issue.divisor}`;
@@ -4599,54 +4660,21 @@ sap.ui.define((function () { 'use strict';
     };
     function cs () {
         return {
-            localeError: error$D(),
+            localeError: error$F(),
         };
     }
 
-    const error$C = () => {
+    const error$E = () => {
         const Sizable = {
             string: { unit: "tegn", verb: "havde" },
             file: { unit: "bytes", verb: "havde" },
             array: { unit: "elementer", verb: "indeholdt" },
             set: { unit: "elementer", verb: "indeholdt" },
         };
-        const TypeNames = {
-            string: "streng",
-            number: "tal",
-            boolean: "boolean",
-            array: "liste",
-            object: "objekt",
-            set: "sæt",
-            file: "fil",
-        };
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        function getTypeName(type) {
-            return TypeNames[type] ?? type;
-        }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "tal";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "liste";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                    return "objekt";
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "input",
             email: "e-mailadresse",
             url: "URL",
@@ -4676,10 +4704,27 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "input",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            string: "streng",
+            number: "tal",
+            boolean: "boolean",
+            array: "liste",
+            object: "objekt",
+            set: "sæt",
+            file: "fil",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Ugyldigt input: forventede ${getTypeName(issue.expected)}, fik ${getTypeName(parsedType(issue.input))}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Ugyldigt input: forventede instanceof ${issue.expected}, fik ${received}`;
+                    }
+                    return `Ugyldigt input: forventede ${expected}, fik ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Ugyldig værdi: forventede ${stringifyPrimitive(issue.values[0])}`;
@@ -4687,7 +4732,7 @@ sap.ui.define((function () { 'use strict';
                 case "too_big": {
                     const adj = issue.inclusive ? "<=" : "<";
                     const sizing = getSizing(issue.origin);
-                    const origin = getTypeName(issue.origin);
+                    const origin = TypeDictionary[issue.origin] ?? issue.origin;
                     if (sizing)
                         return `For stor: forventede ${origin ?? "value"} ${sizing.verb} ${adj} ${issue.maximum.toString()} ${sizing.unit ?? "elementer"}`;
                     return `For stor: forventede ${origin ?? "value"} havde ${adj} ${issue.maximum.toString()}`;
@@ -4695,7 +4740,7 @@ sap.ui.define((function () { 'use strict';
                 case "too_small": {
                     const adj = issue.inclusive ? ">=" : ">";
                     const sizing = getSizing(issue.origin);
-                    const origin = getTypeName(issue.origin);
+                    const origin = TypeDictionary[issue.origin] ?? issue.origin;
                     if (sizing) {
                         return `For lille: forventede ${origin} ${sizing.verb} ${adj} ${issue.minimum.toString()} ${sizing.unit}`;
                     }
@@ -4711,7 +4756,7 @@ sap.ui.define((function () { 'use strict';
                         return `Ugyldig streng: skal indeholde "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Ugyldig streng: skal matche mønsteret ${_issue.pattern}`;
-                    return `Ugyldig ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Ugyldig ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Ugyldigt tal: skal være deleligt med ${issue.divisor}`;
@@ -4730,11 +4775,11 @@ sap.ui.define((function () { 'use strict';
     };
     function da () {
         return {
-            localeError: error$C(),
+            localeError: error$E(),
         };
     }
 
-    const error$B = () => {
+    const error$D = () => {
         const Sizable = {
             string: { unit: "Zeichen", verb: "zu haben" },
             file: { unit: "Bytes", verb: "zu haben" },
@@ -4744,27 +4789,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "Zahl";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "Array";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "Eingabe",
             email: "E-Mail-Adresse",
             url: "URL",
@@ -4794,10 +4819,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "Eingabe",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "Zahl",
+            array: "Array",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Ungültige Eingabe: erwartet ${issue.expected}, erhalten ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Ungültige Eingabe: erwartet instanceof ${issue.expected}, erhalten ${received}`;
+                    }
+                    return `Ungültige Eingabe: erwartet ${expected}, erhalten ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Ungültige Eingabe: erwartet ${stringifyPrimitive(issue.values[0])}`;
@@ -4827,7 +4864,7 @@ sap.ui.define((function () { 'use strict';
                         return `Ungültiger String: muss "${_issue.includes}" enthalten`;
                     if (_issue.format === "regex")
                         return `Ungültiger String: muss dem Muster ${_issue.pattern} entsprechen`;
-                    return `Ungültig: ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Ungültig: ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Ungültige Zahl: muss ein Vielfaches von ${issue.divisor} sein`;
@@ -4846,41 +4883,22 @@ sap.ui.define((function () { 'use strict';
     };
     function de () {
         return {
-            localeError: error$B(),
+            localeError: error$D(),
         };
     }
 
-    const parsedType$5 = (data) => {
-        const t = typeof data;
-        switch (t) {
-            case "number": {
-                return Number.isNaN(data) ? "NaN" : "number";
-            }
-            case "object": {
-                if (Array.isArray(data)) {
-                    return "array";
-                }
-                if (data === null) {
-                    return "null";
-                }
-                if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                    return data.constructor.name;
-                }
-            }
-        }
-        return t;
-    };
-    const error$A = () => {
+    const error$C = () => {
         const Sizable = {
             string: { unit: "characters", verb: "to have" },
             file: { unit: "bytes", verb: "to have" },
             array: { unit: "items", verb: "to have" },
             set: { unit: "items", verb: "to have" },
+            map: { unit: "entries", verb: "to have" },
         };
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const Nouns = {
+        const FormatDictionary = {
             regex: "input",
             email: "email address",
             url: "URL",
@@ -4911,10 +4929,20 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "input",
         };
+        // type names: missing keys = do not translate (use raw value via ?? fallback)
+        const TypeDictionary = {
+            // Compatibility: "nan" -> "NaN" for display
+            nan: "NaN",
+            // All other type names omitted - they fall back to raw values via ?? operator
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Invalid input: expected ${issue.expected}, received ${parsedType$5(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    return `Invalid input: expected ${expected}, received ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Invalid input: expected ${stringifyPrimitive(issue.values[0])}`;
@@ -4945,7 +4973,7 @@ sap.ui.define((function () { 'use strict';
                         return `Invalid string: must include "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Invalid string: must match pattern ${_issue.pattern}`;
-                    return `Invalid ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Invalid ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Invalid number: must be a multiple of ${issue.divisor}`;
@@ -4964,31 +4992,11 @@ sap.ui.define((function () { 'use strict';
     };
     function en () {
         return {
-            localeError: error$A(),
+            localeError: error$C(),
         };
     }
 
-    const parsedType$4 = (data) => {
-        const t = typeof data;
-        switch (t) {
-            case "number": {
-                return Number.isNaN(data) ? "NaN" : "nombro";
-            }
-            case "object": {
-                if (Array.isArray(data)) {
-                    return "tabelo";
-                }
-                if (data === null) {
-                    return "senvalora";
-                }
-                if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                    return data.constructor.name;
-                }
-            }
-        }
-        return t;
-    };
-    const error$z = () => {
+    const error$B = () => {
         const Sizable = {
             string: { unit: "karaktrojn", verb: "havi" },
             file: { unit: "bajtojn", verb: "havi" },
@@ -4998,7 +5006,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const Nouns = {
+        const FormatDictionary = {
             regex: "enigo",
             email: "retadreso",
             url: "URL",
@@ -5028,10 +5036,23 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "enigo",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "nombro",
+            array: "tabelo",
+            null: "senvalora",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Nevalida enigo: atendiĝis ${issue.expected}, riceviĝis ${parsedType$4(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Nevalida enigo: atendiĝis instanceof ${issue.expected}, riceviĝis ${received}`;
+                    }
+                    return `Nevalida enigo: atendiĝis ${expected}, riceviĝis ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Nevalida enigo: atendiĝis ${stringifyPrimitive(issue.values[0])}`;
@@ -5061,7 +5082,7 @@ sap.ui.define((function () { 'use strict';
                         return `Nevalida karaktraro: devas inkluzivi "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Nevalida karaktraro: devas kongrui kun la modelo ${_issue.pattern}`;
-                    return `Nevalida ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Nevalida ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Nevalida nombro: devas esti oblo de ${issue.divisor}`;
@@ -5080,71 +5101,21 @@ sap.ui.define((function () { 'use strict';
     };
     function eo () {
         return {
-            localeError: error$z(),
+            localeError: error$B(),
         };
     }
 
-    const error$y = () => {
+    const error$A = () => {
         const Sizable = {
             string: { unit: "caracteres", verb: "tener" },
             file: { unit: "bytes", verb: "tener" },
             array: { unit: "elementos", verb: "tener" },
             set: { unit: "elementos", verb: "tener" },
         };
-        const TypeNames = {
-            string: "texto",
-            number: "número",
-            boolean: "booleano",
-            array: "arreglo",
-            object: "objeto",
-            set: "conjunto",
-            file: "archivo",
-            date: "fecha",
-            bigint: "número grande",
-            symbol: "símbolo",
-            undefined: "indefinido",
-            null: "nulo",
-            function: "función",
-            map: "mapa",
-            record: "registro",
-            tuple: "tupla",
-            enum: "enumeración",
-            union: "unión",
-            literal: "literal",
-            promise: "promesa",
-            void: "vacío",
-            never: "nunca",
-            unknown: "desconocido",
-            any: "cualquiera",
-        };
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        function getTypeName(type) {
-            return TypeNames[type] ?? type;
-        }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "number";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "array";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype) {
-                        return data.constructor.name;
-                    }
-                    return "object";
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "entrada",
             email: "dirección de correo electrónico",
             url: "URL",
@@ -5174,11 +5145,44 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "entrada",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            string: "texto",
+            number: "número",
+            boolean: "booleano",
+            array: "arreglo",
+            object: "objeto",
+            set: "conjunto",
+            file: "archivo",
+            date: "fecha",
+            bigint: "número grande",
+            symbol: "símbolo",
+            undefined: "indefinido",
+            null: "nulo",
+            function: "función",
+            map: "mapa",
+            record: "registro",
+            tuple: "tupla",
+            enum: "enumeración",
+            union: "unión",
+            literal: "literal",
+            promise: "promesa",
+            void: "vacío",
+            never: "nunca",
+            unknown: "desconocido",
+            any: "cualquiera",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Entrada inválida: se esperaba ${getTypeName(issue.expected)}, recibido ${getTypeName(parsedType(issue.input))}`;
-                // return `Entrada inválida: se esperaba ${issue.expected}, recibido ${util.getParsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Entrada inválida: se esperaba instanceof ${issue.expected}, recibido ${received}`;
+                    }
+                    return `Entrada inválida: se esperaba ${expected}, recibido ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Entrada inválida: se esperaba ${stringifyPrimitive(issue.values[0])}`;
@@ -5186,7 +5190,7 @@ sap.ui.define((function () { 'use strict';
                 case "too_big": {
                     const adj = issue.inclusive ? "<=" : "<";
                     const sizing = getSizing(issue.origin);
-                    const origin = getTypeName(issue.origin);
+                    const origin = TypeDictionary[issue.origin] ?? issue.origin;
                     if (sizing)
                         return `Demasiado grande: se esperaba que ${origin ?? "valor"} tuviera ${adj}${issue.maximum.toString()} ${sizing.unit ?? "elementos"}`;
                     return `Demasiado grande: se esperaba que ${origin ?? "valor"} fuera ${adj}${issue.maximum.toString()}`;
@@ -5194,7 +5198,7 @@ sap.ui.define((function () { 'use strict';
                 case "too_small": {
                     const adj = issue.inclusive ? ">=" : ">";
                     const sizing = getSizing(issue.origin);
-                    const origin = getTypeName(issue.origin);
+                    const origin = TypeDictionary[issue.origin] ?? issue.origin;
                     if (sizing) {
                         return `Demasiado pequeño: se esperaba que ${origin} tuviera ${adj}${issue.minimum.toString()} ${sizing.unit}`;
                     }
@@ -5210,18 +5214,18 @@ sap.ui.define((function () { 'use strict';
                         return `Cadena inválida: debe incluir "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Cadena inválida: debe coincidir con el patrón ${_issue.pattern}`;
-                    return `Inválido ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Inválido ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Número inválido: debe ser múltiplo de ${issue.divisor}`;
                 case "unrecognized_keys":
                     return `Llave${issue.keys.length > 1 ? "s" : ""} desconocida${issue.keys.length > 1 ? "s" : ""}: ${joinValues(issue.keys, ", ")}`;
                 case "invalid_key":
-                    return `Llave inválida en ${getTypeName(issue.origin)}`;
+                    return `Llave inválida en ${TypeDictionary[issue.origin] ?? issue.origin}`;
                 case "invalid_union":
                     return "Entrada inválida";
                 case "invalid_element":
-                    return `Valor inválido en ${getTypeName(issue.origin)}`;
+                    return `Valor inválido en ${TypeDictionary[issue.origin] ?? issue.origin}`;
                 default:
                     return `Entrada inválida`;
             }
@@ -5229,11 +5233,11 @@ sap.ui.define((function () { 'use strict';
     };
     function es () {
         return {
-            localeError: error$y(),
+            localeError: error$A(),
         };
     }
 
-    const error$x = () => {
+    const error$z = () => {
         const Sizable = {
             string: { unit: "کاراکتر", verb: "داشته باشد" },
             file: { unit: "بایت", verb: "داشته باشد" },
@@ -5243,27 +5247,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "عدد";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "آرایه";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "ورودی",
             email: "آدرس ایمیل",
             url: "URL",
@@ -5293,10 +5277,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "ورودی",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "عدد",
+            array: "آرایه",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `ورودی نامعتبر: می‌بایست ${issue.expected} می‌بود، ${parsedType(issue.input)} دریافت شد`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `ورودی نامعتبر: می‌بایست instanceof ${issue.expected} می‌بود، ${received} دریافت شد`;
+                    }
+                    return `ورودی نامعتبر: می‌بایست ${expected} می‌بود، ${received} دریافت شد`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1) {
                         return `ورودی نامعتبر: می‌بایست ${stringifyPrimitive(issue.values[0])} می‌بود`;
@@ -5332,7 +5328,7 @@ sap.ui.define((function () { 'use strict';
                     if (_issue.format === "regex") {
                         return `رشته نامعتبر: باید با الگوی ${_issue.pattern} مطابقت داشته باشد`;
                     }
-                    return `${Nouns[_issue.format] ?? issue.format} نامعتبر`;
+                    return `${FormatDictionary[_issue.format] ?? issue.format} نامعتبر`;
                 }
                 case "not_multiple_of":
                     return `عدد نامعتبر: باید مضرب ${issue.divisor} باشد`;
@@ -5351,11 +5347,11 @@ sap.ui.define((function () { 'use strict';
     };
     function fa () {
         return {
-            localeError: error$x(),
+            localeError: error$z(),
         };
     }
 
-    const error$w = () => {
+    const error$y = () => {
         const Sizable = {
             string: { unit: "merkkiä", subject: "merkkijonon" },
             file: { unit: "tavua", subject: "tiedoston" },
@@ -5369,27 +5365,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "number";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "array";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "säännöllinen lauseke",
             email: "sähköpostiosoite",
             url: "URL-osoite",
@@ -5419,10 +5395,20 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "templaattimerkkijono",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Virheellinen tyyppi: odotettiin ${issue.expected}, oli ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Virheellinen tyyppi: odotettiin instanceof ${issue.expected}, oli ${received}`;
+                    }
+                    return `Virheellinen tyyppi: odotettiin ${expected}, oli ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Virheellinen syöte: täytyy olla ${stringifyPrimitive(issue.values[0])}`;
@@ -5454,7 +5440,7 @@ sap.ui.define((function () { 'use strict';
                     if (_issue.format === "regex") {
                         return `Virheellinen syöte: täytyy vastata säännöllistä lauseketta ${_issue.pattern}`;
                     }
-                    return `Virheellinen ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Virheellinen ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Virheellinen luku: täytyy olla luvun ${issue.divisor} monikerta`;
@@ -5473,11 +5459,11 @@ sap.ui.define((function () { 'use strict';
     };
     function fi () {
         return {
-            localeError: error$w(),
+            localeError: error$y(),
         };
     }
 
-    const error$v = () => {
+    const error$x = () => {
         const Sizable = {
             string: { unit: "caractères", verb: "avoir" },
             file: { unit: "octets", verb: "avoir" },
@@ -5487,27 +5473,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "nombre";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "tableau";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "entrée",
             email: "adresse e-mail",
             url: "URL",
@@ -5537,10 +5503,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "entrée",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "nombre",
+            array: "tableau",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Entrée invalide : ${issue.expected} attendu, ${parsedType(issue.input)} reçu`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Entrée invalide : instanceof ${issue.expected} attendu, ${received} reçu`;
+                    }
+                    return `Entrée invalide : ${expected} attendu, ${received} reçu`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Entrée invalide : ${stringifyPrimitive(issue.values[0])} attendu`;
@@ -5570,7 +5548,7 @@ sap.ui.define((function () { 'use strict';
                         return `Chaîne invalide : doit inclure "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Chaîne invalide : doit correspondre au modèle ${_issue.pattern}`;
-                    return `${Nouns[_issue.format] ?? issue.format} invalide`;
+                    return `${FormatDictionary[_issue.format] ?? issue.format} invalide`;
                 }
                 case "not_multiple_of":
                     return `Nombre invalide : doit être un multiple de ${issue.divisor}`;
@@ -5589,11 +5567,11 @@ sap.ui.define((function () { 'use strict';
     };
     function fr () {
         return {
-            localeError: error$v(),
+            localeError: error$x(),
         };
     }
 
-    const error$u = () => {
+    const error$w = () => {
         const Sizable = {
             string: { unit: "caractères", verb: "avoir" },
             file: { unit: "octets", verb: "avoir" },
@@ -5603,27 +5581,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "number";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "array";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "entrée",
             email: "adresse courriel",
             url: "URL",
@@ -5653,10 +5611,20 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "entrée",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Entrée invalide : attendu ${issue.expected}, reçu ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Entrée invalide : attendu instanceof ${issue.expected}, reçu ${received}`;
+                    }
+                    return `Entrée invalide : attendu ${expected}, reçu ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Entrée invalide : attendu ${stringifyPrimitive(issue.values[0])}`;
@@ -5687,7 +5655,7 @@ sap.ui.define((function () { 'use strict';
                         return `Chaîne invalide : doit inclure "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Chaîne invalide : doit correspondre au motif ${_issue.pattern}`;
-                    return `${Nouns[_issue.format] ?? issue.format} invalide`;
+                    return `${FormatDictionary[_issue.format] ?? issue.format} invalide`;
                 }
                 case "not_multiple_of":
                     return `Nombre invalide : doit être un multiple de ${issue.divisor}`;
@@ -5706,11 +5674,11 @@ sap.ui.define((function () { 'use strict';
     };
     function frCA () {
         return {
-            localeError: error$u(),
+            localeError: error$w(),
         };
     }
 
-    const error$t = () => {
+    const error$v = () => {
         // Hebrew labels + grammatical gender
         const TypeNames = {
             string: { label: "מחרוזת", gender: "f" },
@@ -5760,27 +5728,7 @@ sap.ui.define((function () { 'use strict';
                 return null;
             return Sizable[origin] ?? null;
         };
-        // Robust type parser for "received" — returns a key we understand or a constructor name
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number":
-                    return Number.isNaN(data) ? "NaN" : "number";
-                case "object": {
-                    if (Array.isArray(data))
-                        return "array";
-                    if (data === null)
-                        return "null";
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name; // keep as-is (e.g., "Date")
-                    }
-                    return "object";
-                }
-                default:
-                    return t;
-            }
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: { label: "קלט", gender: "m" },
             email: { label: "כתובת אימייל", gender: "f" },
             url: { label: "כתובת רשת", gender: "f" },
@@ -5812,15 +5760,21 @@ sap.ui.define((function () { 'use strict';
             starts_with: { label: "קלט", gender: "m" },
             uppercase: { label: "קלט", gender: "m" },
         };
+        const TypeDictionary = {
+            nan: "NaN",
+        };
         return (issue) => {
             switch (issue.code) {
                 case "invalid_type": {
                     // Expected type: show without definite article for clearer Hebrew
                     const expectedKey = issue.expected;
-                    const expected = typeLabel(expectedKey);
+                    const expected = TypeDictionary[expectedKey ?? ""] ?? typeLabel(expectedKey);
                     // Received: show localized label if known, otherwise constructor/raw
-                    const receivedKey = parsedType(issue.input);
-                    const received = TypeNames[receivedKey]?.label ?? receivedKey;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? TypeNames[receivedType]?.label ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `קלט לא תקין: צריך להיות instanceof ${issue.expected}, התקבל ${received}`;
+                    }
                     return `קלט לא תקין: צריך להיות ${expected}, התקבל ${received}`;
                 }
                 case "invalid_value": {
@@ -5908,7 +5862,7 @@ sap.ui.define((function () { 'use strict';
                     if (_issue.format === "regex")
                         return `המחרוזת חייבת להתאים לתבנית ${_issue.pattern}`;
                     // Handle gender agreement for formats
-                    const nounEntry = Nouns[_issue.format];
+                    const nounEntry = FormatDictionary[_issue.format];
                     const noun = nounEntry?.label ?? _issue.format;
                     const gender = nounEntry?.gender ?? "m";
                     const adjective = gender === "f" ? "תקינה" : "תקין";
@@ -5934,11 +5888,11 @@ sap.ui.define((function () { 'use strict';
     };
     function he () {
         return {
-            localeError: error$t(),
+            localeError: error$v(),
         };
     }
 
-    const error$s = () => {
+    const error$u = () => {
         const Sizable = {
             string: { unit: "karakter", verb: "legyen" },
             file: { unit: "byte", verb: "legyen" },
@@ -5948,27 +5902,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "szám";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "tömb";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "bemenet",
             email: "email cím",
             url: "URL",
@@ -5998,11 +5932,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "bemenet",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "szám",
+            array: "tömb",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Érvénytelen bemenet: a várt érték ${issue.expected}, a kapott érték ${parsedType(issue.input)}`;
-                // return `Invalid input: expected ${issue.expected}, received ${util.getParsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Érvénytelen bemenet: a várt érték instanceof ${issue.expected}, a kapott érték ${received}`;
+                    }
+                    return `Érvénytelen bemenet: a várt érték ${expected}, a kapott érték ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Érvénytelen bemenet: a várt érték ${stringifyPrimitive(issue.values[0])}`;
@@ -6032,7 +5977,7 @@ sap.ui.define((function () { 'use strict';
                         return `Érvénytelen string: "${_issue.includes}" értéket kell tartalmaznia`;
                     if (_issue.format === "regex")
                         return `Érvénytelen string: ${_issue.pattern} mintának kell megfelelnie`;
-                    return `Érvénytelen ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Érvénytelen ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Érvénytelen szám: ${issue.divisor} többszörösének kell lennie`;
@@ -6051,11 +5996,158 @@ sap.ui.define((function () { 'use strict';
     };
     function hu () {
         return {
-            localeError: error$s(),
+            localeError: error$u(),
         };
     }
 
-    const error$r = () => {
+    function getArmenianPlural(count, one, many) {
+        return Math.abs(count) === 1 ? one : many;
+    }
+    function withDefiniteArticle(word) {
+        if (!word)
+            return "";
+        const vowels = ["ա", "ե", "ը", "ի", "ո", "ու", "օ"];
+        const lastChar = word[word.length - 1];
+        return word + (vowels.includes(lastChar) ? "ն" : "ը");
+    }
+    const error$t = () => {
+        const Sizable = {
+            string: {
+                unit: {
+                    one: "նշան",
+                    many: "նշաններ",
+                },
+                verb: "ունենալ",
+            },
+            file: {
+                unit: {
+                    one: "բայթ",
+                    many: "բայթեր",
+                },
+                verb: "ունենալ",
+            },
+            array: {
+                unit: {
+                    one: "տարր",
+                    many: "տարրեր",
+                },
+                verb: "ունենալ",
+            },
+            set: {
+                unit: {
+                    one: "տարր",
+                    many: "տարրեր",
+                },
+                verb: "ունենալ",
+            },
+        };
+        function getSizing(origin) {
+            return Sizable[origin] ?? null;
+        }
+        const FormatDictionary = {
+            regex: "մուտք",
+            email: "էլ. հասցե",
+            url: "URL",
+            emoji: "էմոջի",
+            uuid: "UUID",
+            uuidv4: "UUIDv4",
+            uuidv6: "UUIDv6",
+            nanoid: "nanoid",
+            guid: "GUID",
+            cuid: "cuid",
+            cuid2: "cuid2",
+            ulid: "ULID",
+            xid: "XID",
+            ksuid: "KSUID",
+            datetime: "ISO ամսաթիվ և ժամ",
+            date: "ISO ամսաթիվ",
+            time: "ISO ժամ",
+            duration: "ISO տևողություն",
+            ipv4: "IPv4 հասցե",
+            ipv6: "IPv6 հասցե",
+            cidrv4: "IPv4 միջակայք",
+            cidrv6: "IPv6 միջակայք",
+            base64: "base64 ձևաչափով տող",
+            base64url: "base64url ձևաչափով տող",
+            json_string: "JSON տող",
+            e164: "E.164 համար",
+            jwt: "JWT",
+            template_literal: "մուտք",
+        };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "թիվ",
+            array: "զանգված",
+        };
+        return (issue) => {
+            switch (issue.code) {
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Սխալ մուտքագրում․ սպասվում էր instanceof ${issue.expected}, ստացվել է ${received}`;
+                    }
+                    return `Սխալ մուտքագրում․ սպասվում էր ${expected}, ստացվել է ${received}`;
+                }
+                case "invalid_value":
+                    if (issue.values.length === 1)
+                        return `Սխալ մուտքագրում․ սպասվում էր ${stringifyPrimitive(issue.values[1])}`;
+                    return `Սխալ տարբերակ․ սպասվում էր հետևյալներից մեկը՝ ${joinValues(issue.values, "|")}`;
+                case "too_big": {
+                    const adj = issue.inclusive ? "<=" : "<";
+                    const sizing = getSizing(issue.origin);
+                    if (sizing) {
+                        const maxValue = Number(issue.maximum);
+                        const unit = getArmenianPlural(maxValue, sizing.unit.one, sizing.unit.many);
+                        return `Չափազանց մեծ արժեք․ սպասվում է, որ ${withDefiniteArticle(issue.origin ?? "արժեք")} կունենա ${adj}${issue.maximum.toString()} ${unit}`;
+                    }
+                    return `Չափազանց մեծ արժեք․ սպասվում է, որ ${withDefiniteArticle(issue.origin ?? "արժեք")} լինի ${adj}${issue.maximum.toString()}`;
+                }
+                case "too_small": {
+                    const adj = issue.inclusive ? ">=" : ">";
+                    const sizing = getSizing(issue.origin);
+                    if (sizing) {
+                        const minValue = Number(issue.minimum);
+                        const unit = getArmenianPlural(minValue, sizing.unit.one, sizing.unit.many);
+                        return `Չափազանց փոքր արժեք․ սպասվում է, որ ${withDefiniteArticle(issue.origin)} կունենա ${adj}${issue.minimum.toString()} ${unit}`;
+                    }
+                    return `Չափազանց փոքր արժեք․ սպասվում է, որ ${withDefiniteArticle(issue.origin)} լինի ${adj}${issue.minimum.toString()}`;
+                }
+                case "invalid_format": {
+                    const _issue = issue;
+                    if (_issue.format === "starts_with")
+                        return `Սխալ տող․ պետք է սկսվի "${_issue.prefix}"-ով`;
+                    if (_issue.format === "ends_with")
+                        return `Սխալ տող․ պետք է ավարտվի "${_issue.suffix}"-ով`;
+                    if (_issue.format === "includes")
+                        return `Սխալ տող․ պետք է պարունակի "${_issue.includes}"`;
+                    if (_issue.format === "regex")
+                        return `Սխալ տող․ պետք է համապատասխանի ${_issue.pattern} ձևաչափին`;
+                    return `Սխալ ${FormatDictionary[_issue.format] ?? issue.format}`;
+                }
+                case "not_multiple_of":
+                    return `Սխալ թիվ․ պետք է բազմապատիկ լինի ${issue.divisor}-ի`;
+                case "unrecognized_keys":
+                    return `Չճանաչված բանալի${issue.keys.length > 1 ? "ներ" : ""}. ${joinValues(issue.keys, ", ")}`;
+                case "invalid_key":
+                    return `Սխալ բանալի ${withDefiniteArticle(issue.origin)}-ում`;
+                case "invalid_union":
+                    return "Սխալ մուտքագրում";
+                case "invalid_element":
+                    return `Սխալ արժեք ${withDefiniteArticle(issue.origin)}-ում`;
+                default:
+                    return `Սխալ մուտքագրում`;
+            }
+        };
+    };
+    function hy () {
+        return {
+            localeError: error$t(),
+        };
+    }
+
+    const error$s = () => {
         const Sizable = {
             string: { unit: "karakter", verb: "memiliki" },
             file: { unit: "byte", verb: "memiliki" },
@@ -6065,27 +6157,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "number";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "array";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "input",
             email: "alamat email",
             url: "URL",
@@ -6115,10 +6187,20 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "input",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Input tidak valid: diharapkan ${issue.expected}, diterima ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Input tidak valid: diharapkan instanceof ${issue.expected}, diterima ${received}`;
+                    }
+                    return `Input tidak valid: diharapkan ${expected}, diterima ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Input tidak valid: diharapkan ${stringifyPrimitive(issue.values[0])}`;
@@ -6148,7 +6230,7 @@ sap.ui.define((function () { 'use strict';
                         return `String tidak valid: harus menyertakan "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `String tidak valid: harus sesuai pola ${_issue.pattern}`;
-                    return `${Nouns[_issue.format] ?? issue.format} tidak valid`;
+                    return `${FormatDictionary[_issue.format] ?? issue.format} tidak valid`;
                 }
                 case "not_multiple_of":
                     return `Angka tidak valid: harus kelipatan dari ${issue.divisor}`;
@@ -6167,31 +6249,11 @@ sap.ui.define((function () { 'use strict';
     };
     function id () {
         return {
-            localeError: error$r(),
+            localeError: error$s(),
         };
     }
 
-    const parsedType$3 = (data) => {
-        const t = typeof data;
-        switch (t) {
-            case "number": {
-                return Number.isNaN(data) ? "NaN" : "númer";
-            }
-            case "object": {
-                if (Array.isArray(data)) {
-                    return "fylki";
-                }
-                if (data === null) {
-                    return "null";
-                }
-                if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                    return data.constructor.name;
-                }
-            }
-        }
-        return t;
-    };
-    const error$q = () => {
+    const error$r = () => {
         const Sizable = {
             string: { unit: "stafi", verb: "að hafa" },
             file: { unit: "bæti", verb: "að hafa" },
@@ -6201,7 +6263,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const Nouns = {
+        const FormatDictionary = {
             regex: "gildi",
             email: "netfang",
             url: "vefslóð",
@@ -6231,10 +6293,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "gildi",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "númer",
+            array: "fylki",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Rangt gildi: Þú slóst inn ${parsedType$3(issue.input)} þar sem á að vera ${issue.expected}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Rangt gildi: Þú slóst inn ${received} þar sem á að vera instanceof ${issue.expected}`;
+                    }
+                    return `Rangt gildi: Þú slóst inn ${received} þar sem á að vera ${expected}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Rangt gildi: gert ráð fyrir ${stringifyPrimitive(issue.values[0])}`;
@@ -6265,7 +6339,7 @@ sap.ui.define((function () { 'use strict';
                         return `Ógildur strengur: verður að innihalda "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Ógildur strengur: verður að fylgja mynstri ${_issue.pattern}`;
-                    return `Rangt ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Rangt ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Röng tala: verður að vera margfeldi af ${issue.divisor}`;
@@ -6284,11 +6358,11 @@ sap.ui.define((function () { 'use strict';
     };
     function is () {
         return {
-            localeError: error$q(),
+            localeError: error$r(),
         };
     }
 
-    const error$p = () => {
+    const error$q = () => {
         const Sizable = {
             string: { unit: "caratteri", verb: "avere" },
             file: { unit: "byte", verb: "avere" },
@@ -6298,27 +6372,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "numero";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "vettore";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "input",
             email: "indirizzo email",
             url: "URL",
@@ -6348,11 +6402,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "input",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "numero",
+            array: "vettore",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Input non valido: atteso ${issue.expected}, ricevuto ${parsedType(issue.input)}`;
-                // return `Input non valido: atteso ${issue.expected}, ricevuto ${util.getParsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Input non valido: atteso instanceof ${issue.expected}, ricevuto ${received}`;
+                    }
+                    return `Input non valido: atteso ${expected}, ricevuto ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Input non valido: atteso ${stringifyPrimitive(issue.values[0])}`;
@@ -6382,7 +6447,7 @@ sap.ui.define((function () { 'use strict';
                         return `Stringa non valida: deve includere "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Stringa non valida: deve corrispondere al pattern ${_issue.pattern}`;
-                    return `Invalid ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Invalid ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Numero non valido: deve essere un multiplo di ${issue.divisor}`;
@@ -6401,11 +6466,11 @@ sap.ui.define((function () { 'use strict';
     };
     function it () {
         return {
-            localeError: error$p(),
+            localeError: error$q(),
         };
     }
 
-    const error$o = () => {
+    const error$p = () => {
         const Sizable = {
             string: { unit: "文字", verb: "である" },
             file: { unit: "バイト", verb: "である" },
@@ -6415,27 +6480,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "数値";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "配列";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "入力値",
             email: "メールアドレス",
             url: "URL",
@@ -6465,10 +6510,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "入力値",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "数値",
+            array: "配列",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `無効な入力: ${issue.expected}が期待されましたが、${parsedType(issue.input)}が入力されました`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `無効な入力: instanceof ${issue.expected}が期待されましたが、${received}が入力されました`;
+                    }
+                    return `無効な入力: ${expected}が期待されましたが、${received}が入力されました`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `無効な入力: ${stringifyPrimitive(issue.values[0])}が期待されました`;
@@ -6497,7 +6554,7 @@ sap.ui.define((function () { 'use strict';
                         return `無効な文字列: "${_issue.includes}"を含む必要があります`;
                     if (_issue.format === "regex")
                         return `無効な文字列: パターン${_issue.pattern}に一致する必要があります`;
-                    return `無効な${Nouns[_issue.format] ?? issue.format}`;
+                    return `無効な${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `無効な数値: ${issue.divisor}の倍数である必要があります`;
@@ -6516,39 +6573,11 @@ sap.ui.define((function () { 'use strict';
     };
     function ja () {
         return {
-            localeError: error$o(),
+            localeError: error$p(),
         };
     }
 
-    const parsedType$2 = (data) => {
-        const t = typeof data;
-        switch (t) {
-            case "number": {
-                return Number.isNaN(data) ? "NaN" : "რიცხვი";
-            }
-            case "object": {
-                if (Array.isArray(data)) {
-                    return "მასივი";
-                }
-                if (data === null) {
-                    return "null";
-                }
-                if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                    return data.constructor.name;
-                }
-            }
-        }
-        const typeMap = {
-            string: "სტრინგი",
-            boolean: "ბულეანი",
-            undefined: "undefined",
-            bigint: "bigint",
-            symbol: "symbol",
-            function: "ფუნქცია",
-        };
-        return typeMap[t] ?? t;
-    };
-    const error$n = () => {
+    const error$o = () => {
         const Sizable = {
             string: { unit: "სიმბოლო", verb: "უნდა შეიცავდეს" },
             file: { unit: "ბაიტი", verb: "უნდა შეიცავდეს" },
@@ -6558,7 +6587,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const Nouns = {
+        const FormatDictionary = {
             regex: "შეყვანა",
             email: "ელ-ფოსტის მისამართი",
             url: "URL",
@@ -6588,10 +6617,25 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "შეყვანა",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "რიცხვი",
+            string: "სტრინგი",
+            boolean: "ბულეანი",
+            function: "ფუნქცია",
+            array: "მასივი",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `არასწორი შეყვანა: მოსალოდნელი ${issue.expected}, მიღებული ${parsedType$2(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `არასწორი შეყვანა: მოსალოდნელი instanceof ${issue.expected}, მიღებული ${received}`;
+                    }
+                    return `არასწორი შეყვანა: მოსალოდნელი ${expected}, მიღებული ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `არასწორი შეყვანა: მოსალოდნელი ${stringifyPrimitive(issue.values[0])}`;
@@ -6622,7 +6666,7 @@ sap.ui.define((function () { 'use strict';
                         return `არასწორი სტრინგი: უნდა შეიცავდეს "${_issue.includes}"-ს`;
                     if (_issue.format === "regex")
                         return `არასწორი სტრინგი: უნდა შეესაბამებოდეს შაბლონს ${_issue.pattern}`;
-                    return `არასწორი ${Nouns[_issue.format] ?? issue.format}`;
+                    return `არასწორი ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `არასწორი რიცხვი: უნდა იყოს ${issue.divisor}-ის ჯერადი`;
@@ -6641,11 +6685,11 @@ sap.ui.define((function () { 'use strict';
     };
     function ka () {
         return {
-            localeError: error$n(),
+            localeError: error$o(),
         };
     }
 
-    const error$m = () => {
+    const error$n = () => {
         const Sizable = {
             string: { unit: "តួអក្សរ", verb: "គួរមាន" },
             file: { unit: "បៃ", verb: "គួរមាន" },
@@ -6655,27 +6699,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "មិនមែនជាលេខ (NaN)" : "លេខ";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "អារេ (Array)";
-                    }
-                    if (data === null) {
-                        return "គ្មានតម្លៃ (null)";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "ទិន្នន័យបញ្ចូល",
             email: "អាសយដ្ឋានអ៊ីមែល",
             url: "URL",
@@ -6705,10 +6729,23 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "ទិន្នន័យបញ្ចូល",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "លេខ",
+            array: "អារេ (Array)",
+            null: "គ្មានតម្លៃ (null)",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `ទិន្នន័យបញ្ចូលមិនត្រឹមត្រូវ៖ ត្រូវការ ${issue.expected} ប៉ុន្តែទទួលបាន ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `ទិន្នន័យបញ្ចូលមិនត្រឹមត្រូវ៖ ត្រូវការ instanceof ${issue.expected} ប៉ុន្តែទទួលបាន ${received}`;
+                    }
+                    return `ទិន្នន័យបញ្ចូលមិនត្រឹមត្រូវ៖ ត្រូវការ ${expected} ប៉ុន្តែទទួលបាន ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `ទិន្នន័យបញ្ចូលមិនត្រឹមត្រូវ៖ ត្រូវការ ${stringifyPrimitive(issue.values[0])}`;
@@ -6739,7 +6776,7 @@ sap.ui.define((function () { 'use strict';
                         return `ខ្សែអក្សរមិនត្រឹមត្រូវ៖ ត្រូវមាន "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `ខ្សែអក្សរមិនត្រឹមត្រូវ៖ ត្រូវតែផ្គូផ្គងនឹងទម្រង់ដែលបានកំណត់ ${_issue.pattern}`;
-                    return `មិនត្រឹមត្រូវ៖ ${Nouns[_issue.format] ?? issue.format}`;
+                    return `មិនត្រឹមត្រូវ៖ ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `លេខមិនត្រឹមត្រូវ៖ ត្រូវតែជាពហុគុណនៃ ${issue.divisor}`;
@@ -6758,7 +6795,7 @@ sap.ui.define((function () { 'use strict';
     };
     function km () {
         return {
-            localeError: error$m(),
+            localeError: error$n(),
         };
     }
 
@@ -6767,7 +6804,7 @@ sap.ui.define((function () { 'use strict';
         return km();
     }
 
-    const error$l = () => {
+    const error$m = () => {
         const Sizable = {
             string: { unit: "문자", verb: "to have" },
             file: { unit: "바이트", verb: "to have" },
@@ -6777,27 +6814,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "number";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "array";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "입력",
             email: "이메일 주소",
             url: "URL",
@@ -6827,10 +6844,20 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "입력",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `잘못된 입력: 예상 타입은 ${issue.expected}, 받은 타입은 ${parsedType(issue.input)}입니다`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `잘못된 입력: 예상 타입은 instanceof ${issue.expected}, 받은 타입은 ${received}입니다`;
+                    }
+                    return `잘못된 입력: 예상 타입은 ${expected}, 받은 타입은 ${received}입니다`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `잘못된 입력: 값은 ${stringifyPrimitive(issue.values[0])} 이어야 합니다`;
@@ -6865,7 +6892,7 @@ sap.ui.define((function () { 'use strict';
                         return `잘못된 문자열: "${_issue.includes}"을(를) 포함해야 합니다`;
                     if (_issue.format === "regex")
                         return `잘못된 문자열: 정규식 ${_issue.pattern} 패턴과 일치해야 합니다`;
-                    return `잘못된 ${Nouns[_issue.format] ?? issue.format}`;
+                    return `잘못된 ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `잘못된 숫자: ${issue.divisor}의 배수여야 합니다`;
@@ -6884,57 +6911,10 @@ sap.ui.define((function () { 'use strict';
     };
     function ko () {
         return {
-            localeError: error$l(),
+            localeError: error$m(),
         };
     }
 
-    const parsedType$1 = (data) => {
-        const t = typeof data;
-        return parsedTypeFromType(t, data);
-    };
-    const parsedTypeFromType = (t, data = undefined) => {
-        switch (t) {
-            case "number": {
-                return Number.isNaN(data) ? "NaN" : "skaičius";
-            }
-            case "bigint": {
-                return "sveikasis skaičius";
-            }
-            case "string": {
-                return "eilutė";
-            }
-            case "boolean": {
-                return "loginė reikšmė";
-            }
-            case "undefined":
-            case "void": {
-                return "neapibrėžta reikšmė";
-            }
-            case "function": {
-                return "funkcija";
-            }
-            case "symbol": {
-                return "simbolis";
-            }
-            case "object": {
-                if (data === undefined)
-                    return "nežinomas objektas";
-                if (data === null)
-                    return "nulinė reikšmė";
-                if (Array.isArray(data))
-                    return "masyvas";
-                if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                    return data.constructor.name;
-                }
-                return "objektas";
-            }
-            //Zod types below
-            case "null": {
-                return "nulinė reikšmė";
-            }
-        }
-        return t;
-    };
     const capitalizeFirstCharacter = (text) => {
         return text.charAt(0).toUpperCase() + text.slice(1);
     };
@@ -6948,7 +6928,7 @@ sap.ui.define((function () { 'use strict';
             return "one";
         return "few";
     }
-    const error$k = () => {
+    const error$l = () => {
         const Sizable = {
             string: {
                 unit: {
@@ -7028,7 +7008,7 @@ sap.ui.define((function () { 'use strict';
                 verb: result.verb[targetShouldBe][inclusive ? "inclusive" : "notInclusive"],
             };
         }
-        const Nouns = {
+        const FormatDictionary = {
             regex: "įvestis",
             email: "el. pašto adresas",
             url: "URL",
@@ -7058,16 +7038,36 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "įvestis",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "skaičius",
+            bigint: "sveikasis skaičius",
+            string: "eilutė",
+            boolean: "loginė reikšmė",
+            undefined: "neapibrėžta reikšmė",
+            function: "funkcija",
+            symbol: "simbolis",
+            array: "masyvas",
+            object: "objektas",
+            null: "nulinė reikšmė",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Gautas tipas ${parsedType$1(issue.input)}, o tikėtasi - ${parsedTypeFromType(issue.expected)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Gautas tipas ${received}, o tikėtasi - instanceof ${issue.expected}`;
+                    }
+                    return `Gautas tipas ${received}, o tikėtasi - ${expected}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Privalo būti ${stringifyPrimitive(issue.values[0])}`;
                     return `Privalo būti vienas iš ${joinValues(issue.values, "|")} pasirinkimų`;
                 case "too_big": {
-                    const origin = parsedTypeFromType(issue.origin);
+                    const origin = TypeDictionary[issue.origin] ?? issue.origin;
                     const sizing = getSizing(issue.origin, getUnitTypeFromNumber(Number(issue.maximum)), issue.inclusive ?? false, "smaller");
                     if (sizing?.verb)
                         return `${capitalizeFirstCharacter(origin ?? issue.origin ?? "reikšmė")} ${sizing.verb} ${issue.maximum.toString()} ${sizing.unit ?? "elementų"}`;
@@ -7075,7 +7075,7 @@ sap.ui.define((function () { 'use strict';
                     return `${capitalizeFirstCharacter(origin ?? issue.origin ?? "reikšmė")} turi būti ${adj} ${issue.maximum.toString()} ${sizing?.unit}`;
                 }
                 case "too_small": {
-                    const origin = parsedTypeFromType(issue.origin);
+                    const origin = TypeDictionary[issue.origin] ?? issue.origin;
                     const sizing = getSizing(issue.origin, getUnitTypeFromNumber(Number(issue.minimum)), issue.inclusive ?? false, "bigger");
                     if (sizing?.verb)
                         return `${capitalizeFirstCharacter(origin ?? issue.origin ?? "reikšmė")} ${sizing.verb} ${issue.minimum.toString()} ${sizing.unit ?? "elementų"}`;
@@ -7093,7 +7093,7 @@ sap.ui.define((function () { 'use strict';
                         return `Eilutė privalo įtraukti "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Eilutė privalo atitikti ${_issue.pattern}`;
-                    return `Neteisingas ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Neteisingas ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Skaičius privalo būti ${issue.divisor} kartotinis.`;
@@ -7104,7 +7104,7 @@ sap.ui.define((function () { 'use strict';
                 case "invalid_union":
                     return "Klaidinga įvestis";
                 case "invalid_element": {
-                    const origin = parsedTypeFromType(issue.origin);
+                    const origin = TypeDictionary[issue.origin] ?? issue.origin;
                     return `${capitalizeFirstCharacter(origin ?? issue.origin ?? "reikšmė")} turi klaidingą įvestį`;
                 }
                 default:
@@ -7114,11 +7114,11 @@ sap.ui.define((function () { 'use strict';
     };
     function lt () {
         return {
-            localeError: error$k(),
+            localeError: error$l(),
         };
     }
 
-    const error$j = () => {
+    const error$k = () => {
         const Sizable = {
             string: { unit: "знаци", verb: "да имаат" },
             file: { unit: "бајти", verb: "да имаат" },
@@ -7128,27 +7128,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "број";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "низа";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "внес",
             email: "адреса на е-пошта",
             url: "URL",
@@ -7178,11 +7158,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "внес",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "број",
+            array: "низа",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Грешен внес: се очекува ${issue.expected}, примено ${parsedType(issue.input)}`;
-                // return `Invalid input: expected ${issue.expected}, received ${util.getParsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Грешен внес: се очекува instanceof ${issue.expected}, примено ${received}`;
+                    }
+                    return `Грешен внес: се очекува ${expected}, примено ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Invalid input: expected ${stringifyPrimitive(issue.values[0])}`;
@@ -7213,7 +7204,7 @@ sap.ui.define((function () { 'use strict';
                         return `Неважечка низа: мора да вклучува "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Неважечка низа: мора да одгоара на патернот ${_issue.pattern}`;
-                    return `Invalid ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Invalid ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Грешен број: мора да биде делив со ${issue.divisor}`;
@@ -7232,11 +7223,11 @@ sap.ui.define((function () { 'use strict';
     };
     function mk () {
         return {
-            localeError: error$j(),
+            localeError: error$k(),
         };
     }
 
-    const error$i = () => {
+    const error$j = () => {
         const Sizable = {
             string: { unit: "aksara", verb: "mempunyai" },
             file: { unit: "bait", verb: "mempunyai" },
@@ -7246,27 +7237,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "nombor";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "array";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "input",
             email: "alamat e-mel",
             url: "URL",
@@ -7296,10 +7267,21 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "input",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "nombor",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Input tidak sah: dijangka ${issue.expected}, diterima ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Input tidak sah: dijangka instanceof ${issue.expected}, diterima ${received}`;
+                    }
+                    return `Input tidak sah: dijangka ${expected}, diterima ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Input tidak sah: dijangka ${stringifyPrimitive(issue.values[0])}`;
@@ -7329,7 +7311,7 @@ sap.ui.define((function () { 'use strict';
                         return `String tidak sah: mesti mengandungi "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `String tidak sah: mesti sepadan dengan corak ${_issue.pattern}`;
-                    return `${Nouns[_issue.format] ?? issue.format} tidak sah`;
+                    return `${FormatDictionary[_issue.format] ?? issue.format} tidak sah`;
                 }
                 case "not_multiple_of":
                     return `Nombor tidak sah: perlu gandaan ${issue.divisor}`;
@@ -7348,41 +7330,21 @@ sap.ui.define((function () { 'use strict';
     };
     function ms () {
         return {
-            localeError: error$i(),
+            localeError: error$j(),
         };
     }
 
-    const error$h = () => {
+    const error$i = () => {
         const Sizable = {
-            string: { unit: "tekens", verb: "te hebben" },
-            file: { unit: "bytes", verb: "te hebben" },
-            array: { unit: "elementen", verb: "te hebben" },
-            set: { unit: "elementen", verb: "te hebben" },
+            string: { unit: "tekens", verb: "heeft" },
+            file: { unit: "bytes", verb: "heeft" },
+            array: { unit: "elementen", verb: "heeft" },
+            set: { unit: "elementen", verb: "heeft" },
         };
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "getal";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "array";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "invoer",
             email: "emailadres",
             url: "URL",
@@ -7412,10 +7374,21 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "invoer",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "getal",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Ongeldige invoer: verwacht ${issue.expected}, ontving ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Ongeldige invoer: verwacht instanceof ${issue.expected}, ontving ${received}`;
+                    }
+                    return `Ongeldige invoer: verwacht ${expected}, ontving ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Ongeldige invoer: verwacht ${stringifyPrimitive(issue.values[0])}`;
@@ -7423,17 +7396,19 @@ sap.ui.define((function () { 'use strict';
                 case "too_big": {
                     const adj = issue.inclusive ? "<=" : "<";
                     const sizing = getSizing(issue.origin);
+                    const longName = issue.origin === "date" ? "laat" : issue.origin === "string" ? "lang" : "groot";
                     if (sizing)
-                        return `Te groot: verwacht dat ${issue.origin ?? "waarde"} ${sizing.verb} ${adj}${issue.maximum.toString()} ${sizing.unit ?? "elementen"}`;
-                    return `Te groot: verwacht dat ${issue.origin ?? "waarde"} ${adj}${issue.maximum.toString()} is`;
+                        return `Te ${longName}: verwacht dat ${issue.origin ?? "waarde"} ${adj}${issue.maximum.toString()} ${sizing.unit ?? "elementen"} ${sizing.verb}`;
+                    return `Te ${longName}: verwacht dat ${issue.origin ?? "waarde"} ${adj}${issue.maximum.toString()} is`;
                 }
                 case "too_small": {
                     const adj = issue.inclusive ? ">=" : ">";
                     const sizing = getSizing(issue.origin);
+                    const shortName = issue.origin === "date" ? "vroeg" : issue.origin === "string" ? "kort" : "klein";
                     if (sizing) {
-                        return `Te klein: verwacht dat ${issue.origin} ${sizing.verb} ${adj}${issue.minimum.toString()} ${sizing.unit}`;
+                        return `Te ${shortName}: verwacht dat ${issue.origin} ${adj}${issue.minimum.toString()} ${sizing.unit} ${sizing.verb}`;
                     }
-                    return `Te klein: verwacht dat ${issue.origin} ${adj}${issue.minimum.toString()} is`;
+                    return `Te ${shortName}: verwacht dat ${issue.origin} ${adj}${issue.minimum.toString()} is`;
                 }
                 case "invalid_format": {
                     const _issue = issue;
@@ -7446,7 +7421,7 @@ sap.ui.define((function () { 'use strict';
                         return `Ongeldige tekst: moet "${_issue.includes}" bevatten`;
                     if (_issue.format === "regex")
                         return `Ongeldige tekst: moet overeenkomen met patroon ${_issue.pattern}`;
-                    return `Ongeldig: ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Ongeldig: ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Ongeldig getal: moet een veelvoud van ${issue.divisor} zijn`;
@@ -7465,11 +7440,11 @@ sap.ui.define((function () { 'use strict';
     };
     function nl () {
         return {
-            localeError: error$h(),
+            localeError: error$i(),
         };
     }
 
-    const error$g = () => {
+    const error$h = () => {
         const Sizable = {
             string: { unit: "tegn", verb: "å ha" },
             file: { unit: "bytes", verb: "å ha" },
@@ -7479,27 +7454,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "tall";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "liste";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "input",
             email: "e-postadresse",
             url: "URL",
@@ -7529,10 +7484,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "input",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "tall",
+            array: "liste",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Ugyldig input: forventet ${issue.expected}, fikk ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Ugyldig input: forventet instanceof ${issue.expected}, fikk ${received}`;
+                    }
+                    return `Ugyldig input: forventet ${expected}, fikk ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Ugyldig verdi: forventet ${stringifyPrimitive(issue.values[0])}`;
@@ -7562,7 +7529,7 @@ sap.ui.define((function () { 'use strict';
                         return `Ugyldig streng: må inneholde "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Ugyldig streng: må matche mønsteret ${_issue.pattern}`;
-                    return `Ugyldig ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Ugyldig ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Ugyldig tall: må være et multiplum av ${issue.divisor}`;
@@ -7581,11 +7548,11 @@ sap.ui.define((function () { 'use strict';
     };
     function no () {
         return {
-            localeError: error$g(),
+            localeError: error$h(),
         };
     }
 
-    const error$f = () => {
+    const error$g = () => {
         const Sizable = {
             string: { unit: "harf", verb: "olmalıdır" },
             file: { unit: "bayt", verb: "olmalıdır" },
@@ -7595,27 +7562,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "numara";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "saf";
-                    }
-                    if (data === null) {
-                        return "gayb";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "giren",
             email: "epostagâh",
             url: "URL",
@@ -7645,11 +7592,23 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "giren",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "numara",
+            array: "saf",
+            null: "gayb",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Fâsit giren: umulan ${issue.expected}, alınan ${parsedType(issue.input)}`;
-                // return `Fâsit giren: umulan ${issue.expected}, alınan ${util.getParsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Fâsit giren: umulan instanceof ${issue.expected}, alınan ${received}`;
+                    }
+                    return `Fâsit giren: umulan ${expected}, alınan ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Fâsit giren: umulan ${stringifyPrimitive(issue.values[0])}`;
@@ -7679,7 +7638,7 @@ sap.ui.define((function () { 'use strict';
                         return `Fâsit metin: "${_issue.includes}" ihtivâ etmeli.`;
                     if (_issue.format === "regex")
                         return `Fâsit metin: ${_issue.pattern} nakşına uymalı.`;
-                    return `Fâsit ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Fâsit ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Fâsit sayı: ${issue.divisor} katı olmalıydı.`;
@@ -7698,11 +7657,11 @@ sap.ui.define((function () { 'use strict';
     };
     function ota () {
         return {
-            localeError: error$f(),
+            localeError: error$g(),
         };
     }
 
-    const error$e = () => {
+    const error$f = () => {
         const Sizable = {
             string: { unit: "توکي", verb: "ولري" },
             file: { unit: "بایټس", verb: "ولري" },
@@ -7712,27 +7671,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "عدد";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "ارې";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "ورودي",
             email: "بریښنالیک",
             url: "یو آر ال",
@@ -7762,10 +7701,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "ورودي",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "عدد",
+            array: "ارې",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `ناسم ورودي: باید ${issue.expected} وای, مګر ${parsedType(issue.input)} ترلاسه شو`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `ناسم ورودي: باید instanceof ${issue.expected} وای, مګر ${received} ترلاسه شو`;
+                    }
+                    return `ناسم ورودي: باید ${expected} وای, مګر ${received} ترلاسه شو`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1) {
                         return `ناسم ورودي: باید ${stringifyPrimitive(issue.values[0])} وای`;
@@ -7801,7 +7752,7 @@ sap.ui.define((function () { 'use strict';
                     if (_issue.format === "regex") {
                         return `ناسم متن: باید د ${_issue.pattern} سره مطابقت ولري`;
                     }
-                    return `${Nouns[_issue.format] ?? issue.format} ناسم دی`;
+                    return `${FormatDictionary[_issue.format] ?? issue.format} ناسم دی`;
                 }
                 case "not_multiple_of":
                     return `ناسم عدد: باید د ${issue.divisor} مضرب وي`;
@@ -7820,11 +7771,11 @@ sap.ui.define((function () { 'use strict';
     };
     function ps () {
         return {
-            localeError: error$e(),
+            localeError: error$f(),
         };
     }
 
-    const error$d = () => {
+    const error$e = () => {
         const Sizable = {
             string: { unit: "znaków", verb: "mieć" },
             file: { unit: "bajtów", verb: "mieć" },
@@ -7834,27 +7785,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "liczba";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "tablica";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "wyrażenie",
             email: "adres email",
             url: "URL",
@@ -7884,10 +7815,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "wejście",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "liczba",
+            array: "tablica",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Nieprawidłowe dane wejściowe: oczekiwano ${issue.expected}, otrzymano ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Nieprawidłowe dane wejściowe: oczekiwano instanceof ${issue.expected}, otrzymano ${received}`;
+                    }
+                    return `Nieprawidłowe dane wejściowe: oczekiwano ${expected}, otrzymano ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Nieprawidłowe dane wejściowe: oczekiwano ${stringifyPrimitive(issue.values[0])}`;
@@ -7918,7 +7861,7 @@ sap.ui.define((function () { 'use strict';
                         return `Nieprawidłowy ciąg znaków: musi zawierać "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Nieprawidłowy ciąg znaków: musi odpowiadać wzorcowi ${_issue.pattern}`;
-                    return `Nieprawidłow(y/a/e) ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Nieprawidłow(y/a/e) ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Nieprawidłowa liczba: musi być wielokrotnością ${issue.divisor}`;
@@ -7937,11 +7880,11 @@ sap.ui.define((function () { 'use strict';
     };
     function pl () {
         return {
-            localeError: error$d(),
+            localeError: error$e(),
         };
     }
 
-    const error$c = () => {
+    const error$d = () => {
         const Sizable = {
             string: { unit: "caracteres", verb: "ter" },
             file: { unit: "bytes", verb: "ter" },
@@ -7951,27 +7894,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "número";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "array";
-                    }
-                    if (data === null) {
-                        return "nulo";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "padrão",
             email: "endereço de e-mail",
             url: "URL",
@@ -8001,10 +7924,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "entrada",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "número",
+            null: "nulo",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Tipo inválido: esperado ${issue.expected}, recebido ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Tipo inválido: esperado instanceof ${issue.expected}, recebido ${received}`;
+                    }
+                    return `Tipo inválido: esperado ${expected}, recebido ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Entrada inválida: esperado ${stringifyPrimitive(issue.values[0])}`;
@@ -8034,7 +7969,7 @@ sap.ui.define((function () { 'use strict';
                         return `Texto inválido: deve incluir "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Texto inválido: deve corresponder ao padrão ${_issue.pattern}`;
-                    return `${Nouns[_issue.format] ?? issue.format} inválido`;
+                    return `${FormatDictionary[_issue.format] ?? issue.format} inválido`;
                 }
                 case "not_multiple_of":
                     return `Número inválido: deve ser múltiplo de ${issue.divisor}`;
@@ -8053,7 +7988,7 @@ sap.ui.define((function () { 'use strict';
     };
     function pt () {
         return {
-            localeError: error$c(),
+            localeError: error$d(),
         };
     }
 
@@ -8072,7 +8007,7 @@ sap.ui.define((function () { 'use strict';
         }
         return many;
     }
-    const error$b = () => {
+    const error$c = () => {
         const Sizable = {
             string: {
                 unit: {
@@ -8110,27 +8045,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "число";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "массив";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "ввод",
             email: "email адрес",
             url: "URL",
@@ -8160,10 +8075,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "ввод",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "число",
+            array: "массив",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Неверный ввод: ожидалось ${issue.expected}, получено ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Неверный ввод: ожидалось instanceof ${issue.expected}, получено ${received}`;
+                    }
+                    return `Неверный ввод: ожидалось ${expected}, получено ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Неверный ввод: ожидалось ${stringifyPrimitive(issue.values[0])}`;
@@ -8198,7 +8125,7 @@ sap.ui.define((function () { 'use strict';
                         return `Неверная строка: должна содержать "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Неверная строка: должна соответствовать шаблону ${_issue.pattern}`;
-                    return `Неверный ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Неверный ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Неверное число: должно быть кратным ${issue.divisor}`;
@@ -8217,11 +8144,11 @@ sap.ui.define((function () { 'use strict';
     };
     function ru () {
         return {
-            localeError: error$b(),
+            localeError: error$c(),
         };
     }
 
-    const error$a = () => {
+    const error$b = () => {
         const Sizable = {
             string: { unit: "znakov", verb: "imeti" },
             file: { unit: "bajtov", verb: "imeti" },
@@ -8231,27 +8158,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "število";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "tabela";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "vnos",
             email: "e-poštni naslov",
             url: "URL",
@@ -8281,10 +8188,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "vnos",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "število",
+            array: "tabela",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Neveljaven vnos: pričakovano ${issue.expected}, prejeto ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Neveljaven vnos: pričakovano instanceof ${issue.expected}, prejeto ${received}`;
+                    }
+                    return `Neveljaven vnos: pričakovano ${expected}, prejeto ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Neveljaven vnos: pričakovano ${stringifyPrimitive(issue.values[0])}`;
@@ -8315,7 +8234,7 @@ sap.ui.define((function () { 'use strict';
                         return `Neveljaven niz: mora vsebovati "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Neveljaven niz: mora ustrezati vzorcu ${_issue.pattern}`;
-                    return `Neveljaven ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Neveljaven ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Neveljavno število: mora biti večkratnik ${issue.divisor}`;
@@ -8334,11 +8253,11 @@ sap.ui.define((function () { 'use strict';
     };
     function sl () {
         return {
-            localeError: error$a(),
+            localeError: error$b(),
         };
     }
 
-    const error$9 = () => {
+    const error$a = () => {
         const Sizable = {
             string: { unit: "tecken", verb: "att ha" },
             file: { unit: "bytes", verb: "att ha" },
@@ -8348,27 +8267,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "antal";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "lista";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "reguljärt uttryck",
             email: "e-postadress",
             url: "URL",
@@ -8398,10 +8297,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "mall-literal",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "antal",
+            array: "lista",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Ogiltig inmatning: förväntat ${issue.expected}, fick ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Ogiltig inmatning: förväntat instanceof ${issue.expected}, fick ${received}`;
+                    }
+                    return `Ogiltig inmatning: förväntat ${expected}, fick ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Ogiltig inmatning: förväntat ${stringifyPrimitive(issue.values[0])}`;
@@ -8433,7 +8344,7 @@ sap.ui.define((function () { 'use strict';
                         return `Ogiltig sträng: måste innehålla "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Ogiltig sträng: måste matcha mönstret "${_issue.pattern}"`;
-                    return `Ogiltig(t) ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Ogiltig(t) ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Ogiltigt tal: måste vara en multipel av ${issue.divisor}`;
@@ -8452,11 +8363,11 @@ sap.ui.define((function () { 'use strict';
     };
     function sv () {
         return {
-            localeError: error$9(),
+            localeError: error$a(),
         };
     }
 
-    const error$8 = () => {
+    const error$9 = () => {
         const Sizable = {
             string: { unit: "எழுத்துக்கள்", verb: "கொண்டிருக்க வேண்டும்" },
             file: { unit: "பைட்டுகள்", verb: "கொண்டிருக்க வேண்டும்" },
@@ -8466,27 +8377,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "எண் அல்லாதது" : "எண்";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "அணி";
-                    }
-                    if (data === null) {
-                        return "வெறுமை";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "உள்ளீடு",
             email: "மின்னஞ்சல் முகவரி",
             url: "URL",
@@ -8516,10 +8407,23 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "input",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "எண்",
+            array: "அணி",
+            null: "வெறுமை",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `தவறான உள்ளீடு: எதிர்பார்க்கப்பட்டது ${issue.expected}, பெறப்பட்டது ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `தவறான உள்ளீடு: எதிர்பார்க்கப்பட்டது instanceof ${issue.expected}, பெறப்பட்டது ${received}`;
+                    }
+                    return `தவறான உள்ளீடு: எதிர்பார்க்கப்பட்டது ${expected}, பெறப்பட்டது ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `தவறான உள்ளீடு: எதிர்பார்க்கப்பட்டது ${stringifyPrimitive(issue.values[0])}`;
@@ -8550,7 +8454,7 @@ sap.ui.define((function () { 'use strict';
                         return `தவறான சரம்: "${_issue.includes}" ஐ உள்ளடக்க வேண்டும்`;
                     if (_issue.format === "regex")
                         return `தவறான சரம்: ${_issue.pattern} முறைபாட்டுடன் பொருந்த வேண்டும்`;
-                    return `தவறான ${Nouns[_issue.format] ?? issue.format}`;
+                    return `தவறான ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `தவறான எண்: ${issue.divisor} இன் பலமாக இருக்க வேண்டும்`;
@@ -8569,11 +8473,11 @@ sap.ui.define((function () { 'use strict';
     };
     function ta () {
         return {
-            localeError: error$8(),
+            localeError: error$9(),
         };
     }
 
-    const error$7 = () => {
+    const error$8 = () => {
         const Sizable = {
             string: { unit: "ตัวอักษร", verb: "ควรมี" },
             file: { unit: "ไบต์", verb: "ควรมี" },
@@ -8583,27 +8487,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "ไม่ใช่ตัวเลข (NaN)" : "ตัวเลข";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "อาร์เรย์ (Array)";
-                    }
-                    if (data === null) {
-                        return "ไม่มีค่า (null)";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "ข้อมูลที่ป้อน",
             email: "ที่อยู่อีเมล",
             url: "URL",
@@ -8633,10 +8517,23 @@ sap.ui.define((function () { 'use strict';
             jwt: "โทเคน JWT",
             template_literal: "ข้อมูลที่ป้อน",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "ตัวเลข",
+            array: "อาร์เรย์ (Array)",
+            null: "ไม่มีค่า (null)",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `ประเภทข้อมูลไม่ถูกต้อง: ควรเป็น ${issue.expected} แต่ได้รับ ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `ประเภทข้อมูลไม่ถูกต้อง: ควรเป็น instanceof ${issue.expected} แต่ได้รับ ${received}`;
+                    }
+                    return `ประเภทข้อมูลไม่ถูกต้อง: ควรเป็น ${expected} แต่ได้รับ ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `ค่าไม่ถูกต้อง: ควรเป็น ${stringifyPrimitive(issue.values[0])}`;
@@ -8667,7 +8564,7 @@ sap.ui.define((function () { 'use strict';
                         return `รูปแบบไม่ถูกต้อง: ข้อความต้องมี "${_issue.includes}" อยู่ในข้อความ`;
                     if (_issue.format === "regex")
                         return `รูปแบบไม่ถูกต้อง: ต้องตรงกับรูปแบบที่กำหนด ${_issue.pattern}`;
-                    return `รูปแบบไม่ถูกต้อง: ${Nouns[_issue.format] ?? issue.format}`;
+                    return `รูปแบบไม่ถูกต้อง: ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `ตัวเลขไม่ถูกต้อง: ต้องเป็นจำนวนที่หารด้วย ${issue.divisor} ได้ลงตัว`;
@@ -8686,31 +8583,11 @@ sap.ui.define((function () { 'use strict';
     };
     function th () {
         return {
-            localeError: error$7(),
+            localeError: error$8(),
         };
     }
 
-    const parsedType = (data) => {
-        const t = typeof data;
-        switch (t) {
-            case "number": {
-                return Number.isNaN(data) ? "NaN" : "number";
-            }
-            case "object": {
-                if (Array.isArray(data)) {
-                    return "array";
-                }
-                if (data === null) {
-                    return "null";
-                }
-                if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                    return data.constructor.name;
-                }
-            }
-        }
-        return t;
-    };
-    const error$6 = () => {
+    const error$7 = () => {
         const Sizable = {
             string: { unit: "karakter", verb: "olmalı" },
             file: { unit: "bayt", verb: "olmalı" },
@@ -8720,7 +8597,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const Nouns = {
+        const FormatDictionary = {
             regex: "girdi",
             email: "e-posta adresi",
             url: "URL",
@@ -8750,10 +8627,20 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "Şablon dizesi",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Geçersiz değer: beklenen ${issue.expected}, alınan ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Geçersiz değer: beklenen instanceof ${issue.expected}, alınan ${received}`;
+                    }
+                    return `Geçersiz değer: beklenen ${expected}, alınan ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Geçersiz değer: beklenen ${stringifyPrimitive(issue.values[0])}`;
@@ -8782,7 +8669,7 @@ sap.ui.define((function () { 'use strict';
                         return `Geçersiz metin: "${_issue.includes}" içermeli`;
                     if (_issue.format === "regex")
                         return `Geçersiz metin: ${_issue.pattern} desenine uymalı`;
-                    return `Geçersiz ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Geçersiz ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Geçersiz sayı: ${issue.divisor} ile tam bölünebilmeli`;
@@ -8801,11 +8688,11 @@ sap.ui.define((function () { 'use strict';
     };
     function tr () {
         return {
-            localeError: error$6(),
+            localeError: error$7(),
         };
     }
 
-    const error$5 = () => {
+    const error$6 = () => {
         const Sizable = {
             string: { unit: "символів", verb: "матиме" },
             file: { unit: "байтів", verb: "матиме" },
@@ -8815,27 +8702,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "число";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "масив";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "вхідні дані",
             email: "адреса електронної пошти",
             url: "URL",
@@ -8865,11 +8732,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "вхідні дані",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "число",
+            array: "масив",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Неправильні вхідні дані: очікується ${issue.expected}, отримано ${parsedType(issue.input)}`;
-                // return `Неправильні вхідні дані: очікується ${issue.expected}, отримано ${util.getParsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Неправильні вхідні дані: очікується instanceof ${issue.expected}, отримано ${received}`;
+                    }
+                    return `Неправильні вхідні дані: очікується ${expected}, отримано ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Неправильні вхідні дані: очікується ${stringifyPrimitive(issue.values[0])}`;
@@ -8899,7 +8777,7 @@ sap.ui.define((function () { 'use strict';
                         return `Неправильний рядок: повинен містити "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Неправильний рядок: повинен відповідати шаблону ${_issue.pattern}`;
-                    return `Неправильний ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Неправильний ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Неправильне число: повинно бути кратним ${issue.divisor}`;
@@ -8918,7 +8796,7 @@ sap.ui.define((function () { 'use strict';
     };
     function uk () {
         return {
-            localeError: error$5(),
+            localeError: error$6(),
         };
     }
 
@@ -8927,7 +8805,7 @@ sap.ui.define((function () { 'use strict';
         return uk();
     }
 
-    const error$4 = () => {
+    const error$5 = () => {
         const Sizable = {
             string: { unit: "حروف", verb: "ہونا" },
             file: { unit: "بائٹس", verb: "ہونا" },
@@ -8937,27 +8815,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "نمبر";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "آرے";
-                    }
-                    if (data === null) {
-                        return "نل";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "ان پٹ",
             email: "ای میل ایڈریس",
             url: "یو آر ایل",
@@ -8987,10 +8845,23 @@ sap.ui.define((function () { 'use strict';
             jwt: "جے ڈبلیو ٹی",
             template_literal: "ان پٹ",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "نمبر",
+            array: "آرے",
+            null: "نل",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `غلط ان پٹ: ${issue.expected} متوقع تھا، ${parsedType(issue.input)} موصول ہوا`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `غلط ان پٹ: instanceof ${issue.expected} متوقع تھا، ${received} موصول ہوا`;
+                    }
+                    return `غلط ان پٹ: ${expected} متوقع تھا، ${received} موصول ہوا`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `غلط ان پٹ: ${stringifyPrimitive(issue.values[0])} متوقع تھا`;
@@ -9021,7 +8892,7 @@ sap.ui.define((function () { 'use strict';
                         return `غلط سٹرنگ: "${_issue.includes}" شامل ہونا چاہیے`;
                     if (_issue.format === "regex")
                         return `غلط سٹرنگ: پیٹرن ${_issue.pattern} سے میچ ہونا چاہیے`;
-                    return `غلط ${Nouns[_issue.format] ?? issue.format}`;
+                    return `غلط ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `غلط نمبر: ${issue.divisor} کا مضاعف ہونا چاہیے`;
@@ -9040,6 +8911,115 @@ sap.ui.define((function () { 'use strict';
     };
     function ur () {
         return {
+            localeError: error$5(),
+        };
+    }
+
+    const error$4 = () => {
+        const Sizable = {
+            string: { unit: "belgi", verb: "bo‘lishi kerak" },
+            file: { unit: "bayt", verb: "bo‘lishi kerak" },
+            array: { unit: "element", verb: "bo‘lishi kerak" },
+            set: { unit: "element", verb: "bo‘lishi kerak" },
+        };
+        function getSizing(origin) {
+            return Sizable[origin] ?? null;
+        }
+        const FormatDictionary = {
+            regex: "kirish",
+            email: "elektron pochta manzili",
+            url: "URL",
+            emoji: "emoji",
+            uuid: "UUID",
+            uuidv4: "UUIDv4",
+            uuidv6: "UUIDv6",
+            nanoid: "nanoid",
+            guid: "GUID",
+            cuid: "cuid",
+            cuid2: "cuid2",
+            ulid: "ULID",
+            xid: "XID",
+            ksuid: "KSUID",
+            datetime: "ISO sana va vaqti",
+            date: "ISO sana",
+            time: "ISO vaqt",
+            duration: "ISO davomiylik",
+            ipv4: "IPv4 manzil",
+            ipv6: "IPv6 manzil",
+            mac: "MAC manzil",
+            cidrv4: "IPv4 diapazon",
+            cidrv6: "IPv6 diapazon",
+            base64: "base64 kodlangan satr",
+            base64url: "base64url kodlangan satr",
+            json_string: "JSON satr",
+            e164: "E.164 raqam",
+            jwt: "JWT",
+            template_literal: "kirish",
+        };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "raqam",
+            array: "massiv",
+        };
+        return (issue) => {
+            switch (issue.code) {
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Noto‘g‘ri kirish: kutilgan instanceof ${issue.expected}, qabul qilingan ${received}`;
+                    }
+                    return `Noto‘g‘ri kirish: kutilgan ${expected}, qabul qilingan ${received}`;
+                }
+                case "invalid_value":
+                    if (issue.values.length === 1)
+                        return `Noto‘g‘ri kirish: kutilgan ${stringifyPrimitive(issue.values[0])}`;
+                    return `Noto‘g‘ri variant: quyidagilardan biri kutilgan ${joinValues(issue.values, "|")}`;
+                case "too_big": {
+                    const adj = issue.inclusive ? "<=" : "<";
+                    const sizing = getSizing(issue.origin);
+                    if (sizing)
+                        return `Juda katta: kutilgan ${issue.origin ?? "qiymat"} ${adj}${issue.maximum.toString()} ${sizing.unit} ${sizing.verb}`;
+                    return `Juda katta: kutilgan ${issue.origin ?? "qiymat"} ${adj}${issue.maximum.toString()}`;
+                }
+                case "too_small": {
+                    const adj = issue.inclusive ? ">=" : ">";
+                    const sizing = getSizing(issue.origin);
+                    if (sizing) {
+                        return `Juda kichik: kutilgan ${issue.origin} ${adj}${issue.minimum.toString()} ${sizing.unit} ${sizing.verb}`;
+                    }
+                    return `Juda kichik: kutilgan ${issue.origin} ${adj}${issue.minimum.toString()}`;
+                }
+                case "invalid_format": {
+                    const _issue = issue;
+                    if (_issue.format === "starts_with")
+                        return `Noto‘g‘ri satr: "${_issue.prefix}" bilan boshlanishi kerak`;
+                    if (_issue.format === "ends_with")
+                        return `Noto‘g‘ri satr: "${_issue.suffix}" bilan tugashi kerak`;
+                    if (_issue.format === "includes")
+                        return `Noto‘g‘ri satr: "${_issue.includes}" ni o‘z ichiga olishi kerak`;
+                    if (_issue.format === "regex")
+                        return `Noto‘g‘ri satr: ${_issue.pattern} shabloniga mos kelishi kerak`;
+                    return `Noto‘g‘ri ${FormatDictionary[_issue.format] ?? issue.format}`;
+                }
+                case "not_multiple_of":
+                    return `Noto‘g‘ri raqam: ${issue.divisor} ning karralisi bo‘lishi kerak`;
+                case "unrecognized_keys":
+                    return `Noma’lum kalit${issue.keys.length > 1 ? "lar" : ""}: ${joinValues(issue.keys, ", ")}`;
+                case "invalid_key":
+                    return `${issue.origin} dagi kalit noto‘g‘ri`;
+                case "invalid_union":
+                    return "Noto‘g‘ri kirish";
+                case "invalid_element":
+                    return `${issue.origin} da noto‘g‘ri qiymat`;
+                default:
+                    return `Noto‘g‘ri kirish`;
+            }
+        };
+    };
+    function uz () {
+        return {
             localeError: error$4(),
         };
     }
@@ -9054,27 +9034,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "số";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "mảng";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "đầu vào",
             email: "địa chỉ email",
             url: "URL",
@@ -9104,10 +9064,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "đầu vào",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "số",
+            array: "mảng",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Đầu vào không hợp lệ: mong đợi ${issue.expected}, nhận được ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Đầu vào không hợp lệ: mong đợi instanceof ${issue.expected}, nhận được ${received}`;
+                    }
+                    return `Đầu vào không hợp lệ: mong đợi ${expected}, nhận được ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Đầu vào không hợp lệ: mong đợi ${stringifyPrimitive(issue.values[0])}`;
@@ -9137,7 +9109,7 @@ sap.ui.define((function () { 'use strict';
                         return `Chuỗi không hợp lệ: phải bao gồm "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Chuỗi không hợp lệ: phải khớp với mẫu ${_issue.pattern}`;
-                    return `${Nouns[_issue.format] ?? issue.format} không hợp lệ`;
+                    return `${FormatDictionary[_issue.format] ?? issue.format} không hợp lệ`;
                 }
                 case "not_multiple_of":
                     return `Số không hợp lệ: phải là bội số của ${issue.divisor}`;
@@ -9170,27 +9142,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "非数字(NaN)" : "数字";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "数组";
-                    }
-                    if (data === null) {
-                        return "空值(null)";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "输入",
             email: "电子邮件",
             url: "URL",
@@ -9220,10 +9172,23 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "输入",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "数字",
+            array: "数组",
+            null: "空值(null)",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `无效输入：期望 ${issue.expected}，实际接收 ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `无效输入：期望 instanceof ${issue.expected}，实际接收 ${received}`;
+                    }
+                    return `无效输入：期望 ${expected}，实际接收 ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `无效输入：期望 ${stringifyPrimitive(issue.values[0])}`;
@@ -9253,7 +9218,7 @@ sap.ui.define((function () { 'use strict';
                         return `无效字符串：必须包含 "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `无效字符串：必须满足正则表达式 ${_issue.pattern}`;
-                    return `无效${Nouns[_issue.format] ?? issue.format}`;
+                    return `无效${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `无效数字：必须是 ${issue.divisor} 的倍数`;
@@ -9286,27 +9251,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "number";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "array";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "輸入",
             email: "郵件地址",
             url: "URL",
@@ -9336,10 +9281,20 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "輸入",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `無效的輸入值：預期為 ${issue.expected}，但收到 ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `無效的輸入值：預期為 instanceof ${issue.expected}，但收到 ${received}`;
+                    }
+                    return `無效的輸入值：預期為 ${expected}，但收到 ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `無效的輸入值：預期為 ${stringifyPrimitive(issue.values[0])}`;
@@ -9370,7 +9325,7 @@ sap.ui.define((function () { 'use strict';
                         return `無效的字串：必須包含 "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `無效的字串：必須符合格式 ${_issue.pattern}`;
-                    return `無效的 ${Nouns[_issue.format] ?? issue.format}`;
+                    return `無效的 ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `無效的數字：必須為 ${issue.divisor} 的倍數`;
@@ -9403,27 +9358,7 @@ sap.ui.define((function () { 'use strict';
         function getSizing(origin) {
             return Sizable[origin] ?? null;
         }
-        const parsedType = (data) => {
-            const t = typeof data;
-            switch (t) {
-                case "number": {
-                    return Number.isNaN(data) ? "NaN" : "nọ́mbà";
-                }
-                case "object": {
-                    if (Array.isArray(data)) {
-                        return "akopọ";
-                    }
-                    if (data === null) {
-                        return "null";
-                    }
-                    if (Object.getPrototypeOf(data) !== Object.prototype && data.constructor) {
-                        return data.constructor.name;
-                    }
-                }
-            }
-            return t;
-        };
-        const Nouns = {
+        const FormatDictionary = {
             regex: "ẹ̀rọ ìbáwọlé",
             email: "àdírẹ́sì ìmẹ́lì",
             url: "URL",
@@ -9453,10 +9388,22 @@ sap.ui.define((function () { 'use strict';
             jwt: "JWT",
             template_literal: "ẹ̀rọ ìbáwọlé",
         };
+        const TypeDictionary = {
+            nan: "NaN",
+            number: "nọ́mbà",
+            array: "akopọ",
+        };
         return (issue) => {
             switch (issue.code) {
-                case "invalid_type":
-                    return `Ìbáwọlé aṣìṣe: a ní láti fi ${issue.expected}, àmọ̀ a rí ${parsedType(issue.input)}`;
+                case "invalid_type": {
+                    const expected = TypeDictionary[issue.expected] ?? issue.expected;
+                    const receivedType = parsedType(issue.input);
+                    const received = TypeDictionary[receivedType] ?? receivedType;
+                    if (/^[A-Z]/.test(issue.expected)) {
+                        return `Ìbáwọlé aṣìṣe: a ní láti fi instanceof ${issue.expected}, àmọ̀ a rí ${received}`;
+                    }
+                    return `Ìbáwọlé aṣìṣe: a ní láti fi ${expected}, àmọ̀ a rí ${received}`;
+                }
                 case "invalid_value":
                     if (issue.values.length === 1)
                         return `Ìbáwọlé aṣìṣe: a ní láti fi ${stringifyPrimitive(issue.values[0])}`;
@@ -9485,7 +9432,7 @@ sap.ui.define((function () { 'use strict';
                         return `Ọ̀rọ̀ aṣìṣe: gbọ́dọ̀ ní "${_issue.includes}"`;
                     if (_issue.format === "regex")
                         return `Ọ̀rọ̀ aṣìṣe: gbọ́dọ̀ bá àpẹẹrẹ mu ${_issue.pattern}`;
-                    return `Aṣìṣe: ${Nouns[_issue.format] ?? issue.format}`;
+                    return `Aṣìṣe: ${FormatDictionary[_issue.format] ?? issue.format}`;
                 }
                 case "not_multiple_of":
                     return `Nọ́mbà aṣìṣe: gbọ́dọ̀ jẹ́ èyà pípín ti ${issue.divisor}`;
@@ -9527,6 +9474,7 @@ sap.ui.define((function () { 'use strict';
         frCA: frCA,
         he: he,
         hu: hu,
+        hy: hy,
         id: id,
         is: is,
         it: it,
@@ -9553,6 +9501,7 @@ sap.ui.define((function () { 'use strict';
         ua: ua,
         uk: uk,
         ur: ur,
+        uz: uz,
         vi: vi,
         yo: yo,
         zhCN: zhCN,
@@ -9571,9 +9520,6 @@ sap.ui.define((function () { 'use strict';
             const meta = _meta[0];
             this._map.set(schema, meta);
             if (meta && typeof meta === "object" && "id" in meta) {
-                if (this._idmap.has(meta.id)) {
-                    throw new Error(`ID ${meta.id} already exists in the registry`);
-                }
                 this._idmap.set(meta.id, schema);
             }
             return this;
@@ -9614,12 +9560,14 @@ sap.ui.define((function () { 'use strict';
     (_a = globalThis).__zod_globalRegistry ?? (_a.__zod_globalRegistry = registry());
     const globalRegistry = globalThis.__zod_globalRegistry;
 
+    // @__NO_SIDE_EFFECTS__
     function _string(Class, params) {
         return new Class({
             type: "string",
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _coercedString(Class, params) {
         return new Class({
             type: "string",
@@ -9627,6 +9575,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _email(Class, params) {
         return new Class({
             type: "string",
@@ -9636,6 +9585,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _guid(Class, params) {
         return new Class({
             type: "string",
@@ -9645,6 +9595,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _uuid(Class, params) {
         return new Class({
             type: "string",
@@ -9654,6 +9605,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _uuidv4(Class, params) {
         return new Class({
             type: "string",
@@ -9664,6 +9616,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _uuidv6(Class, params) {
         return new Class({
             type: "string",
@@ -9674,6 +9627,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _uuidv7(Class, params) {
         return new Class({
             type: "string",
@@ -9684,6 +9638,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _url(Class, params) {
         return new Class({
             type: "string",
@@ -9693,6 +9648,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _emoji(Class, params) {
         return new Class({
             type: "string",
@@ -9702,6 +9658,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _nanoid(Class, params) {
         return new Class({
             type: "string",
@@ -9711,6 +9668,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _cuid(Class, params) {
         return new Class({
             type: "string",
@@ -9720,6 +9678,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _cuid2(Class, params) {
         return new Class({
             type: "string",
@@ -9729,6 +9688,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _ulid(Class, params) {
         return new Class({
             type: "string",
@@ -9738,6 +9698,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _xid(Class, params) {
         return new Class({
             type: "string",
@@ -9747,6 +9708,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _ksuid(Class, params) {
         return new Class({
             type: "string",
@@ -9756,6 +9718,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _ipv4(Class, params) {
         return new Class({
             type: "string",
@@ -9765,6 +9728,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _ipv6(Class, params) {
         return new Class({
             type: "string",
@@ -9774,6 +9738,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _mac(Class, params) {
         return new Class({
             type: "string",
@@ -9783,6 +9748,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _cidrv4(Class, params) {
         return new Class({
             type: "string",
@@ -9792,6 +9758,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _cidrv6(Class, params) {
         return new Class({
             type: "string",
@@ -9801,6 +9768,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _base64(Class, params) {
         return new Class({
             type: "string",
@@ -9810,6 +9778,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _base64url(Class, params) {
         return new Class({
             type: "string",
@@ -9819,6 +9788,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _e164(Class, params) {
         return new Class({
             type: "string",
@@ -9828,6 +9798,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _jwt(Class, params) {
         return new Class({
             type: "string",
@@ -9844,6 +9815,7 @@ sap.ui.define((function () { 'use strict';
         Millisecond: 3,
         Microsecond: 6,
     };
+    // @__NO_SIDE_EFFECTS__
     function _isoDateTime(Class, params) {
         return new Class({
             type: "string",
@@ -9855,6 +9827,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _isoDate(Class, params) {
         return new Class({
             type: "string",
@@ -9863,6 +9836,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _isoTime(Class, params) {
         return new Class({
             type: "string",
@@ -9872,6 +9846,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _isoDuration(Class, params) {
         return new Class({
             type: "string",
@@ -9880,6 +9855,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _number(Class, params) {
         return new Class({
             type: "number",
@@ -9887,6 +9863,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _coercedNumber(Class, params) {
         return new Class({
             type: "number",
@@ -9895,6 +9872,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _int(Class, params) {
         return new Class({
             type: "number",
@@ -9904,6 +9882,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _float32(Class, params) {
         return new Class({
             type: "number",
@@ -9913,6 +9892,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _float64(Class, params) {
         return new Class({
             type: "number",
@@ -9922,6 +9902,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _int32(Class, params) {
         return new Class({
             type: "number",
@@ -9931,6 +9912,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _uint32(Class, params) {
         return new Class({
             type: "number",
@@ -9940,12 +9922,14 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _boolean(Class, params) {
         return new Class({
             type: "boolean",
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _coercedBoolean(Class, params) {
         return new Class({
             type: "boolean",
@@ -9953,12 +9937,14 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _bigint(Class, params) {
         return new Class({
             type: "bigint",
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _coercedBigint(Class, params) {
         return new Class({
             type: "bigint",
@@ -9966,6 +9952,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _int64(Class, params) {
         return new Class({
             type: "bigint",
@@ -9975,6 +9962,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _uint64(Class, params) {
         return new Class({
             type: "bigint",
@@ -9984,52 +9972,61 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _symbol(Class, params) {
         return new Class({
             type: "symbol",
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _undefined$1(Class, params) {
         return new Class({
             type: "undefined",
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _null$1(Class, params) {
         return new Class({
             type: "null",
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _any(Class) {
         return new Class({
             type: "any",
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _unknown(Class) {
         return new Class({
             type: "unknown",
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _never(Class, params) {
         return new Class({
             type: "never",
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _void$1(Class, params) {
         return new Class({
             type: "void",
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _date(Class, params) {
         return new Class({
             type: "date",
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _coercedDate(Class, params) {
         return new Class({
             type: "date",
@@ -10037,12 +10034,14 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _nan(Class, params) {
         return new Class({
             type: "nan",
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _lt(value, params) {
         return new $ZodCheckLessThan({
             check: "less_than",
@@ -10051,6 +10050,7 @@ sap.ui.define((function () { 'use strict';
             inclusive: false,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _lte(value, params) {
         return new $ZodCheckLessThan({
             check: "less_than",
@@ -10059,6 +10059,7 @@ sap.ui.define((function () { 'use strict';
             inclusive: true,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _gt(value, params) {
         return new $ZodCheckGreaterThan({
             check: "greater_than",
@@ -10067,6 +10068,7 @@ sap.ui.define((function () { 'use strict';
             inclusive: false,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _gte(value, params) {
         return new $ZodCheckGreaterThan({
             check: "greater_than",
@@ -10075,21 +10077,26 @@ sap.ui.define((function () { 'use strict';
             inclusive: true,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _positive(params) {
         return _gt(0, params);
     }
     // negative
+    // @__NO_SIDE_EFFECTS__
     function _negative(params) {
         return _lt(0, params);
     }
     // nonpositive
+    // @__NO_SIDE_EFFECTS__
     function _nonpositive(params) {
         return _lte(0, params);
     }
     // nonnegative
+    // @__NO_SIDE_EFFECTS__
     function _nonnegative(params) {
         return _gte(0, params);
     }
+    // @__NO_SIDE_EFFECTS__
     function _multipleOf(value, params) {
         return new $ZodCheckMultipleOf({
             check: "multiple_of",
@@ -10097,6 +10104,7 @@ sap.ui.define((function () { 'use strict';
             value,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _maxSize(maximum, params) {
         return new $ZodCheckMaxSize({
             check: "max_size",
@@ -10104,6 +10112,7 @@ sap.ui.define((function () { 'use strict';
             maximum,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _minSize(minimum, params) {
         return new $ZodCheckMinSize({
             check: "min_size",
@@ -10111,6 +10120,7 @@ sap.ui.define((function () { 'use strict';
             minimum,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _size(size, params) {
         return new $ZodCheckSizeEquals({
             check: "size_equals",
@@ -10118,6 +10128,7 @@ sap.ui.define((function () { 'use strict';
             size,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _maxLength(maximum, params) {
         const ch = new $ZodCheckMaxLength({
             check: "max_length",
@@ -10126,6 +10137,7 @@ sap.ui.define((function () { 'use strict';
         });
         return ch;
     }
+    // @__NO_SIDE_EFFECTS__
     function _minLength(minimum, params) {
         return new $ZodCheckMinLength({
             check: "min_length",
@@ -10133,6 +10145,7 @@ sap.ui.define((function () { 'use strict';
             minimum,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _length(length, params) {
         return new $ZodCheckLengthEquals({
             check: "length_equals",
@@ -10140,6 +10153,7 @@ sap.ui.define((function () { 'use strict';
             length,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _regex(pattern, params) {
         return new $ZodCheckRegex({
             check: "string_format",
@@ -10148,6 +10162,7 @@ sap.ui.define((function () { 'use strict';
             pattern,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _lowercase(params) {
         return new $ZodCheckLowerCase({
             check: "string_format",
@@ -10155,6 +10170,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _uppercase(params) {
         return new $ZodCheckUpperCase({
             check: "string_format",
@@ -10162,6 +10178,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _includes(includes, params) {
         return new $ZodCheckIncludes({
             check: "string_format",
@@ -10170,6 +10187,7 @@ sap.ui.define((function () { 'use strict';
             includes,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _startsWith(prefix, params) {
         return new $ZodCheckStartsWith({
             check: "string_format",
@@ -10178,6 +10196,7 @@ sap.ui.define((function () { 'use strict';
             prefix,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _endsWith(suffix, params) {
         return new $ZodCheckEndsWith({
             check: "string_format",
@@ -10186,6 +10205,7 @@ sap.ui.define((function () { 'use strict';
             suffix,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _property(property, schema, params) {
         return new $ZodCheckProperty({
             check: "property",
@@ -10194,6 +10214,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _mime(types, params) {
         return new $ZodCheckMimeType({
             check: "mime_type",
@@ -10201,6 +10222,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _overwrite(tx) {
         return new $ZodCheckOverwrite({
             check: "overwrite",
@@ -10208,25 +10230,31 @@ sap.ui.define((function () { 'use strict';
         });
     }
     // normalize
+    // @__NO_SIDE_EFFECTS__
     function _normalize(form) {
         return _overwrite((input) => input.normalize(form));
     }
     // trim
+    // @__NO_SIDE_EFFECTS__
     function _trim() {
         return _overwrite((input) => input.trim());
     }
     // toLowerCase
+    // @__NO_SIDE_EFFECTS__
     function _toLowerCase() {
         return _overwrite((input) => input.toLowerCase());
     }
     // toUpperCase
+    // @__NO_SIDE_EFFECTS__
     function _toUpperCase() {
         return _overwrite((input) => input.toUpperCase());
     }
     // slugify
+    // @__NO_SIDE_EFFECTS__
     function _slugify() {
         return _overwrite((input) => slugify(input));
     }
+    // @__NO_SIDE_EFFECTS__
     function _array(Class, element, params) {
         return new Class({
             type: "array",
@@ -10237,6 +10265,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _union(Class, options, params) {
         return new Class({
             type: "union",
@@ -10252,6 +10281,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _discriminatedUnion(Class, discriminator, options, params) {
         return new Class({
             type: "union",
@@ -10260,6 +10290,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _intersection(Class, left, right) {
         return new Class({
             type: "intersection",
@@ -10272,6 +10303,7 @@ sap.ui.define((function () { 'use strict';
     //   items: [],
     //   params?: string | $ZodTupleParams
     // ): schemas.$ZodTuple<[], null>;
+    // @__NO_SIDE_EFFECTS__
     function _tuple(Class, items, _paramsOrRest, _params) {
         const hasRest = _paramsOrRest instanceof $ZodType;
         const params = hasRest ? _params : _paramsOrRest;
@@ -10283,6 +10315,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _record(Class, keyType, valueType, params) {
         return new Class({
             type: "record",
@@ -10291,6 +10324,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _map(Class, keyType, valueType, params) {
         return new Class({
             type: "map",
@@ -10299,6 +10333,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _set(Class, valueType, params) {
         return new Class({
             type: "set",
@@ -10306,6 +10341,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _enum$1(Class, values, params) {
         const entries = Array.isArray(values) ? Object.fromEntries(values.map((v) => [v, v])) : values;
         // if (Array.isArray(values)) {
@@ -10325,6 +10361,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     /** @deprecated This API has been merged into `z.enum()`. Use `z.enum()` instead.
      *
      * ```ts
@@ -10339,6 +10376,7 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _literal(Class, value, params) {
         return new Class({
             type: "literal",
@@ -10346,30 +10384,35 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _file(Class, params) {
         return new Class({
             type: "file",
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _transform(Class, fn) {
         return new Class({
             type: "transform",
             transform: fn,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _optional(Class, innerType) {
         return new Class({
             type: "optional",
             innerType,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _nullable(Class, innerType) {
         return new Class({
             type: "nullable",
             innerType,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _default$1(Class, innerType, defaultValue) {
         return new Class({
             type: "default",
@@ -10379,6 +10422,7 @@ sap.ui.define((function () { 'use strict';
             },
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _nonoptional(Class, innerType, params) {
         return new Class({
             type: "nonoptional",
@@ -10386,12 +10430,14 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _success(Class, innerType) {
         return new Class({
             type: "success",
             innerType,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _catch$1(Class, innerType, catchValue) {
         return new Class({
             type: "catch",
@@ -10399,6 +10445,7 @@ sap.ui.define((function () { 'use strict';
             catchValue: (typeof catchValue === "function" ? catchValue : () => catchValue),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _pipe(Class, in_, out) {
         return new Class({
             type: "pipe",
@@ -10406,12 +10453,14 @@ sap.ui.define((function () { 'use strict';
             out,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _readonly(Class, innerType) {
         return new Class({
             type: "readonly",
             innerType,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _templateLiteral(Class, parts, params) {
         return new Class({
             type: "template_literal",
@@ -10419,18 +10468,21 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _lazy(Class, getter) {
         return new Class({
             type: "lazy",
             getter,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _promise(Class, innerType) {
         return new Class({
             type: "promise",
             innerType,
         });
     }
+    // @__NO_SIDE_EFFECTS__
     function _custom(Class, fn, _params) {
         const norm = normalizeParams(_params);
         norm.abort ?? (norm.abort = true); // default to abort:false
@@ -10443,6 +10495,7 @@ sap.ui.define((function () { 'use strict';
         return schema;
     }
     // same as _custom but defaults to abort:false
+    // @__NO_SIDE_EFFECTS__
     function _refine(Class, fn, _params) {
         const schema = new Class({
             type: "custom",
@@ -10452,6 +10505,7 @@ sap.ui.define((function () { 'use strict';
         });
         return schema;
     }
+    // @__NO_SIDE_EFFECTS__
     function _superRefine(fn) {
         const ch = _check((payload) => {
             payload.addIssue = (issue$1) => {
@@ -10474,6 +10528,7 @@ sap.ui.define((function () { 'use strict';
         });
         return ch;
     }
+    // @__NO_SIDE_EFFECTS__
     function _check(fn, params) {
         const ch = new $ZodCheck({
             check: "custom",
@@ -10482,6 +10537,7 @@ sap.ui.define((function () { 'use strict';
         ch._zod.check = fn;
         return ch;
     }
+    // @__NO_SIDE_EFFECTS__
     function describe$1(description) {
         const ch = new $ZodCheck({ check: "describe" });
         ch._zod.onattach = [
@@ -10493,6 +10549,7 @@ sap.ui.define((function () { 'use strict';
         ch._zod.check = () => { }; // no-op check
         return ch;
     }
+    // @__NO_SIDE_EFFECTS__
     function meta$1(metadata) {
         const ch = new $ZodCheck({ check: "meta" });
         ch._zod.onattach = [
@@ -10504,6 +10561,7 @@ sap.ui.define((function () { 'use strict';
         ch._zod.check = () => { }; // no-op check
         return ch;
     }
+    // @__NO_SIDE_EFFECTS__
     function _stringbool(Classes, _params) {
         const params = normalizeParams(_params);
         let truthyArray = params.truthy ?? ["true", "1", "yes", "on", "y", "enabled"];
@@ -10557,6 +10615,7 @@ sap.ui.define((function () { 'use strict';
         });
         return codec;
     }
+    // @__NO_SIDE_EFFECTS__
     function _stringFormat(Class, format, fnOrRegex, _params = {}) {
         const params = normalizeParams(_params);
         const def = {
@@ -10631,14 +10690,7 @@ sap.ui.define((function () { 'use strict';
                 schemaPath: [..._params.schemaPath, schema],
                 path: _params.path,
             };
-            const parent = schema._zod.parent;
-            if (parent) {
-                // schema was cloned from another schema
-                result.ref = parent;
-                process(parent, ctx, params);
-                ctx.seen.get(parent).isParent = true;
-            }
-            else if (schema._zod.processJSONSchema) {
+            if (schema._zod.processJSONSchema) {
                 schema._zod.processJSONSchema(ctx, result.schema, params);
             }
             else {
@@ -10648,6 +10700,14 @@ sap.ui.define((function () { 'use strict';
                     throw new Error(`[toJSONSchema]: Non-representable type encountered: ${def.type}`);
                 }
                 processor(schema, ctx, _json, params);
+            }
+            const parent = schema._zod.parent;
+            if (parent) {
+                // Also set ref if processor didn't (for inheritance)
+                if (!result.ref)
+                    result.ref = parent;
+                process(parent, ctx, params);
+                ctx.seen.get(parent).isParent = true;
             }
         }
         // metadata
@@ -10674,6 +10734,18 @@ sap.ui.define((function () { 'use strict';
         const root = ctx.seen.get(schema);
         if (!root)
             throw new Error("Unprocessed schema. This is a bug in Zod.");
+        // Track ids to detect duplicates across different schemas
+        const idToSchema = new Map();
+        for (const entry of ctx.seen.entries()) {
+            const id = ctx.metadataRegistry.get(entry[0])?.id;
+            if (id) {
+                const existing = idToSchema.get(id);
+                if (existing && existing !== entry[0]) {
+                    throw new Error(`Duplicate schema id "${id}" detected during JSON Schema conversion. Two different schemas cannot share the same id when converted together.`);
+                }
+                idToSchema.set(id, entry[0]);
+            }
+        }
         // returns a ref to the schema
         // defId will be empty if the ref points to an external schema (or #)
         const makeURI = (entry) => {
@@ -10775,43 +10847,84 @@ sap.ui.define((function () { 'use strict';
         }
     }
     function finalize(ctx, schema) {
-        //
-        // iterate over seen map;
         const root = ctx.seen.get(schema);
         if (!root)
             throw new Error("Unprocessed schema. This is a bug in Zod.");
-        // flatten _refs
+        // flatten refs - inherit properties from parent schemas
         const flattenRef = (zodSchema) => {
             const seen = ctx.seen.get(zodSchema);
+            // already processed
+            if (seen.ref === null)
+                return;
             const schema = seen.def ?? seen.schema;
             const _cached = { ...schema };
-            // already seen
-            if (seen.ref === null) {
-                return;
-            }
-            // flatten ref if defined
             const ref = seen.ref;
-            seen.ref = null; // prevent recursion
+            seen.ref = null; // prevent infinite recursion
             if (ref) {
                 flattenRef(ref);
+                const refSeen = ctx.seen.get(ref);
+                const refSchema = refSeen.schema;
                 // merge referenced schema into current
-                const refSchema = ctx.seen.get(ref).schema;
                 if (refSchema.$ref && (ctx.target === "draft-07" || ctx.target === "draft-04" || ctx.target === "openapi-3.0")) {
+                    // older drafts can't combine $ref with other properties
                     schema.allOf = schema.allOf ?? [];
                     schema.allOf.push(refSchema);
                 }
                 else {
                     Object.assign(schema, refSchema);
-                    Object.assign(schema, _cached); // prevent overwriting any fields in the original schema
+                }
+                // restore child's own properties (child wins)
+                Object.assign(schema, _cached);
+                const isParentRef = zodSchema._zod.parent === ref;
+                // For parent chain, child is a refinement - remove parent-only properties
+                if (isParentRef) {
+                    for (const key in schema) {
+                        if (key === "$ref" || key === "allOf")
+                            continue;
+                        if (!(key in _cached)) {
+                            delete schema[key];
+                        }
+                    }
+                }
+                // When ref was extracted to $defs, remove properties that match the definition
+                if (refSchema.$ref && refSeen.def) {
+                    for (const key in schema) {
+                        if (key === "$ref" || key === "allOf")
+                            continue;
+                        if (key in refSeen.def && JSON.stringify(schema[key]) === JSON.stringify(refSeen.def[key])) {
+                            delete schema[key];
+                        }
+                    }
+                }
+            }
+            // If parent was extracted (has $ref), propagate $ref to this schema
+            // This handles cases like: readonly().meta({id}).describe()
+            // where processor sets ref to innerType but parent should be referenced
+            const parent = zodSchema._zod.parent;
+            if (parent && parent !== ref) {
+                // Ensure parent is processed first so its def has inherited properties
+                flattenRef(parent);
+                const parentSeen = ctx.seen.get(parent);
+                if (parentSeen?.schema.$ref) {
+                    schema.$ref = parentSeen.schema.$ref;
+                    // De-duplicate with parent's definition
+                    if (parentSeen.def) {
+                        for (const key in schema) {
+                            if (key === "$ref" || key === "allOf")
+                                continue;
+                            if (key in parentSeen.def && JSON.stringify(schema[key]) === JSON.stringify(parentSeen.def[key])) {
+                                delete schema[key];
+                            }
+                        }
+                    }
                 }
             }
             // execute overrides
-            if (!seen.isParent)
-                ctx.override({
-                    zodSchema: zodSchema,
-                    jsonSchema: schema,
-                    path: seen.path ?? [],
-                });
+            ctx.override({
+                zodSchema: zodSchema,
+                jsonSchema: schema,
+                path: seen.path ?? [],
+            });
         };
         for (const entry of [...ctx.seen.entries()].reverse()) {
             flattenRef(entry[0]);
@@ -10864,8 +10977,8 @@ sap.ui.define((function () { 'use strict';
                 value: {
                     ...schema["~standard"],
                     jsonSchema: {
-                        input: createStandardJSONSchemaMethod(schema, "input"),
-                        output: createStandardJSONSchemaMethod(schema, "output"),
+                        input: createStandardJSONSchemaMethod(schema, "input", ctx.processors),
+                        output: createStandardJSONSchemaMethod(schema, "output", ctx.processors),
                     },
                 },
                 enumerable: false,
@@ -10944,9 +11057,9 @@ sap.ui.define((function () { 'use strict';
         extractDefs(ctx, schema);
         return finalize(ctx, schema);
     };
-    const createStandardJSONSchemaMethod = (schema, io) => (params) => {
+    const createStandardJSONSchemaMethod = (schema, io, processors = {}) => (params) => {
         const { libraryOptions, target } = params ?? {};
-        const ctx = initializeContext({ ...(libraryOptions ?? {}), target, io, processors: {} });
+        const ctx = initializeContext({ ...(libraryOptions ?? {}), target, io, processors });
         process(schema, ctx);
         extractDefs(ctx, schema);
         return finalize(ctx, schema);
@@ -10974,6 +11087,11 @@ sap.ui.define((function () { 'use strict';
             json.format = formatMap[format] ?? format;
             if (json.format === "")
                 delete json.format; // empty format is not valid
+            // JSON Schema format: "time" requires a full time with offset or Z
+            // z.iso.time() does not include timezone information, so format: "time" should never be used
+            if (format === "time") {
+                delete json.format;
+            }
         }
         if (contentEncoding)
             json.contentEncoding = contentEncoding;
@@ -11171,10 +11289,8 @@ sap.ui.define((function () { 'use strict';
                 Object.assign(_json, file);
             }
             else {
-                _json.anyOf = mime.map((m) => {
-                    const mFile = { ...file, contentMediaType: m };
-                    return mFile;
-                });
+                Object.assign(_json, file); // shared props at root
+                _json.anyOf = mime.map((m) => ({ contentMediaType: m })); // only contentMediaType differs
             }
         }
         else {
@@ -11348,16 +11464,44 @@ sap.ui.define((function () { 'use strict';
         const json = _json;
         const def = schema._zod.def;
         json.type = "object";
-        if (ctx.target === "draft-07" || ctx.target === "draft-2020-12") {
-            json.propertyNames = process(def.keyType, ctx, {
+        // For looseRecord with regex patterns, use patternProperties
+        // This correctly represents "only validate keys matching the pattern" semantics
+        // and composes well with allOf (intersections)
+        const keyType = def.keyType;
+        const keyBag = keyType._zod.bag;
+        const patterns = keyBag?.patterns;
+        if (def.mode === "loose" && patterns && patterns.size > 0) {
+            // Use patternProperties for looseRecord with regex patterns
+            const valueSchema = process(def.valueType, ctx, {
                 ...params,
-                path: [...params.path, "propertyNames"],
+                path: [...params.path, "patternProperties", "*"],
+            });
+            json.patternProperties = {};
+            for (const pattern of patterns) {
+                json.patternProperties[pattern.source] = valueSchema;
+            }
+        }
+        else {
+            // Default behavior: use propertyNames + additionalProperties
+            if (ctx.target === "draft-07" || ctx.target === "draft-2020-12") {
+                json.propertyNames = process(def.keyType, ctx, {
+                    ...params,
+                    path: [...params.path, "propertyNames"],
+                });
+            }
+            json.additionalProperties = process(def.valueType, ctx, {
+                ...params,
+                path: [...params.path, "additionalProperties"],
             });
         }
-        json.additionalProperties = process(def.valueType, ctx, {
-            ...params,
-            path: [...params.path, "additionalProperties"],
-        });
+        // Add required for keys with discrete values (enum, literal, etc.)
+        const keyValues = keyType._zod.values;
+        if (keyValues) {
+            const validKeyValues = [...keyValues].filter((v) => typeof v === "string" || typeof v === "number");
+            if (validKeyValues.length > 0) {
+                json.required = validKeyValues;
+            }
+        }
     };
     const nullableProcessor = (schema, ctx, json, params) => {
         const def = schema._zod.def;
@@ -11667,6 +11811,7 @@ sap.ui.define((function () { 'use strict';
         $ZodEncodeError: $ZodEncodeError,
         $ZodEnum: $ZodEnum,
         $ZodError: $ZodError,
+        $ZodExactOptional: $ZodExactOptional,
         $ZodFile: $ZodFile,
         $ZodFunction: $ZodFunction,
         $ZodGUID: $ZodGUID,
@@ -12047,8 +12192,11 @@ sap.ui.define((function () { 'use strict';
                     ...(def.checks ?? []),
                     ...checks.map((ch) => typeof ch === "function" ? { _zod: { check: ch, def: { check: "custom" }, onattach: [] } } : ch),
                 ],
-            }));
+            }), {
+                parent: true,
+            });
         };
+        inst.with = inst.check;
         inst.clone = (def, params) => clone(inst, def, params);
         inst.brand = () => inst;
         inst.register = ((reg, meta) => {
@@ -12076,6 +12224,7 @@ sap.ui.define((function () { 'use strict';
         inst.overwrite = (fn) => inst.check(_overwrite(fn));
         // wrappers
         inst.optional = () => optional(inst);
+        inst.exactOptional = () => exactOptional(inst);
         inst.nullable = () => nullable(inst);
         inst.nullish = () => optional(nullable(inst));
         inst.nonoptional = (params) => nonoptional(inst, params);
@@ -12112,6 +12261,7 @@ sap.ui.define((function () { 'use strict';
         // helpers
         inst.isOptional = () => inst.safeParse(undefined).success;
         inst.isNullable = () => inst.safeParse(null).success;
+        inst.apply = (fn) => fn(inst);
         return inst;
     });
     /** @internal */
@@ -12729,6 +12879,10 @@ sap.ui.define((function () { 'use strict';
         inst._zod.processJSONSchema = (ctx, json, params) => mapProcessor(inst, ctx);
         inst.keyType = def.keyType;
         inst.valueType = def.valueType;
+        inst.min = (...args) => inst.check(_minSize(...args));
+        inst.nonempty = (params) => inst.check(_minSize(1, params));
+        inst.max = (...args) => inst.check(_maxSize(...args));
+        inst.size = (...args) => inst.check(_size(...args));
     });
     function map(keyType, valueType, params) {
         return new ZodMap({
@@ -12897,6 +13051,18 @@ sap.ui.define((function () { 'use strict';
     });
     function optional(innerType) {
         return new ZodOptional({
+            type: "optional",
+            innerType: innerType,
+        });
+    }
+    const ZodExactOptional = /*@__PURE__*/ $constructor("ZodExactOptional", (inst, def) => {
+        $ZodExactOptional.init(inst, def);
+        ZodType.init(inst, def);
+        inst._zod.processJSONSchema = (ctx, json, params) => optionalProcessor(inst, ctx, json, params);
+        inst.unwrap = () => inst._zod.def.innerType;
+    });
+    function exactOptional(innerType) {
+        return new ZodExactOptional({
             type: "optional",
             innerType: innerType,
         });
@@ -13110,9 +13276,7 @@ sap.ui.define((function () { 'use strict';
     // Re-export describe and meta from core
     const describe = describe$1;
     const meta = meta$1;
-    function _instanceof(cls, params = {
-        error: `Input not instance of ${cls.name}`,
-    }) {
+    function _instanceof(cls, params = {}) {
         const inst = new ZodCustom({
             type: "custom",
             check: "custom",
@@ -13121,6 +13285,18 @@ sap.ui.define((function () { 'use strict';
             ...normalizeParams(params),
         });
         inst._zod.bag.Class = cls;
+        // Override check to emit invalid_type instead of custom
+        inst._zod.check = (payload) => {
+            if (!(payload.value instanceof cls)) {
+                payload.issues.push({
+                    code: "invalid_type",
+                    expected: cls.name,
+                    input: payload.value,
+                    inst,
+                    path: [...(inst._zod.def.path ?? [])],
+                });
+            }
+        };
         return inst;
     }
     // stringbool
@@ -13165,6 +13341,7 @@ sap.ui.define((function () { 'use strict';
         ZodEmail: ZodEmail,
         ZodEmoji: ZodEmoji,
         ZodEnum: ZodEnum,
+        ZodExactOptional: ZodExactOptional,
         ZodFile: ZodFile,
         ZodFunction: ZodFunction,
         ZodGUID: ZodGUID,
@@ -13234,6 +13411,7 @@ sap.ui.define((function () { 'use strict';
         email: email,
         emoji: emoji,
         enum: _enum,
+        exactOptional: exactOptional,
         file: file,
         float32: float32,
         float64: float64,
@@ -13343,6 +13521,78 @@ sap.ui.define((function () { 'use strict';
         ..._checks,
         iso: _iso,
     };
+    // Keys that are recognized and handled by the conversion logic
+    const RECOGNIZED_KEYS = new Set([
+        // Schema identification
+        "$schema",
+        "$ref",
+        "$defs",
+        "definitions",
+        // Core schema keywords
+        "$id",
+        "id",
+        "$comment",
+        "$anchor",
+        "$vocabulary",
+        "$dynamicRef",
+        "$dynamicAnchor",
+        // Type
+        "type",
+        "enum",
+        "const",
+        // Composition
+        "anyOf",
+        "oneOf",
+        "allOf",
+        "not",
+        // Object
+        "properties",
+        "required",
+        "additionalProperties",
+        "patternProperties",
+        "propertyNames",
+        "minProperties",
+        "maxProperties",
+        // Array
+        "items",
+        "prefixItems",
+        "additionalItems",
+        "minItems",
+        "maxItems",
+        "uniqueItems",
+        "contains",
+        "minContains",
+        "maxContains",
+        // String
+        "minLength",
+        "maxLength",
+        "pattern",
+        "format",
+        // Number
+        "minimum",
+        "maximum",
+        "exclusiveMinimum",
+        "exclusiveMaximum",
+        "multipleOf",
+        // Already handled metadata
+        "description",
+        "default",
+        // Content
+        "contentEncoding",
+        "contentMediaType",
+        "contentSchema",
+        // Unsupported (error-throwing)
+        "unevaluatedItems",
+        "unevaluatedProperties",
+        "if",
+        "then",
+        "else",
+        "dependentSchemas",
+        "dependentRequired",
+        // OpenAPI
+        "nullable",
+        "readOnly",
+    ]);
     function detectVersion(schema, defaultTarget) {
         const $schema = schema.$schema;
         if ($schema === "https://json-schema.org/draft/2020-12/schema") {
@@ -13799,6 +14049,31 @@ sap.ui.define((function () { 'use strict';
         if (schema.readOnly === true) {
             baseSchema = z$1.readonly(baseSchema);
         }
+        // Collect metadata: core schema keywords and unrecognized keys
+        const extraMeta = {};
+        // Core schema keywords that should be captured as metadata
+        const coreMetadataKeys = ["$id", "id", "$comment", "$anchor", "$vocabulary", "$dynamicRef", "$dynamicAnchor"];
+        for (const key of coreMetadataKeys) {
+            if (key in schema) {
+                extraMeta[key] = schema[key];
+            }
+        }
+        // Content keywords - store as metadata
+        const contentMetadataKeys = ["contentEncoding", "contentMediaType", "contentSchema"];
+        for (const key of contentMetadataKeys) {
+            if (key in schema) {
+                extraMeta[key] = schema[key];
+            }
+        }
+        // Unrecognized keys (custom metadata)
+        for (const key of Object.keys(schema)) {
+            if (!RECOGNIZED_KEYS.has(key)) {
+                extraMeta[key] = schema[key];
+            }
+        }
+        if (Object.keys(extraMeta).length > 0) {
+            ctx.registry.add(baseSchema, extraMeta);
+        }
         return baseSchema;
     }
     /**
@@ -13816,6 +14091,7 @@ sap.ui.define((function () { 'use strict';
             refs: new Map(),
             processing: new Set(),
             rootSchema: schema,
+            registry: params?.registry ?? globalRegistry,
         };
         return convertSchema(schema, ctx);
     }
@@ -13877,6 +14153,7 @@ sap.ui.define((function () { 'use strict';
         ZodEmoji: ZodEmoji,
         ZodEnum: ZodEnum,
         ZodError: ZodError,
+        ZodExactOptional: ZodExactOptional,
         ZodFile: ZodFile,
         get ZodFirstPartyTypeKind () { return ZodFirstPartyTypeKind; },
         ZodFunction: ZodFunction,
@@ -13962,6 +14239,7 @@ sap.ui.define((function () { 'use strict';
         encodeAsync: encodeAsync,
         endsWith: _endsWith,
         enum: _enum,
+        exactOptional: exactOptional,
         file: file,
         flattenError: flattenError,
         float32: float32,
@@ -14115,6 +14393,7 @@ sap.ui.define((function () { 'use strict';
         ZodEmoji: ZodEmoji,
         ZodEnum: ZodEnum,
         ZodError: ZodError,
+        ZodExactOptional: ZodExactOptional,
         ZodFile: ZodFile,
         get ZodFirstPartyTypeKind () { return ZodFirstPartyTypeKind; },
         ZodFunction: ZodFunction,
@@ -14201,6 +14480,7 @@ sap.ui.define((function () { 'use strict';
         encodeAsync: encodeAsync,
         endsWith: _endsWith,
         enum: _enum,
+        exactOptional: exactOptional,
         file: file,
         flattenError: flattenError,
         float32: float32,
