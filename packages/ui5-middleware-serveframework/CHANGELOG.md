@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.7.1...ui5-middleware-serveframework@3.8.0) (2026-03-12)
+
+
+### Features
+
+* update dependencies ([#1326](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1326)) ([6f16575](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/6f16575680b0c526261b84f83b22743806c8509b))
+
+
+
+
+
 ## [3.7.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-serveframework@3.7.0...ui5-middleware-serveframework@3.7.1) (2026-01-15)
 
 **Note:** Version bump only for package ui5-middleware-serveframework
