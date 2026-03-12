@@ -23,18 +23,18 @@
   "dependencies": {
     "async-prompt": "^1.0.1",
     "cookie": "^1.1.1",
-    "dotenv": "^17.2.3",
-    "playwright-chromium": "^1.57.0",
-    "playwright-core": "^1.57.0",
+    "dotenv": "^17.3.1",
+    "playwright-chromium": "^1.58.2",
+    "playwright-core": "^1.58.2",
     "sleep-promise": "^9.1.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.57.0",
+    "@playwright/test": "^1.58.2",
     "@types/cookie": "^1.0.0",
     "@types/express": "^5",
     "@types/prompt": "^1.1.9",
-    "eslint": "^9.39.1",
-    "globals": "^16.5.0",
-    "typescript-eslint": "^8.48.1"
+    "eslint": "^10.0.3",
+    "globals": "^17.4.0",
+    "typescript-eslint": "^8.57.0"
   }
 }

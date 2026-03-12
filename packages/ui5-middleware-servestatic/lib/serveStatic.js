@@ -56,6 +56,7 @@ module.exports = function ({ log, options }) {
 				const packageRoot = require.resolve(`${scope ? `${scope}/` : ""}${packageName}/package.json`);
 				rootPath = path.join(path.dirname(packageRoot), packagePath || "");
 			} catch (error) {
+				/* eslint-disable-next-line preserve-caught-error */
 				throw new Error(`Could not resolve npm package path ${npmPackagePath}`);
 			}
 		}

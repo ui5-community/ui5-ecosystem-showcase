@@ -1,5 +1,6 @@
 // based on "packages/cds-plugin-ui5/lib/rewriteHTML.js"
 
+/* eslint-disable-next-line no-unused-vars */
 const http = require("http");
 const HTMLParser = require("node-html-parser");
 

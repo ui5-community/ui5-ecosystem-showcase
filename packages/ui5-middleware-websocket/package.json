@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "ui5-utils-express": "workspace:^",
-    "ws": "^8.18.3"
+    "ws": "^8.19.0"
   },
   "scripts": {
     "lint": "eslint lib"

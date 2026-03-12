@@ -214,6 +214,7 @@ module.exports = async ({ log, options, middlewareUtil, resources }) => {
 				},
 			);
 
+			/* eslint-disable-next-line no-useless-assignment */
 			let libraries = [];
 
 			if (shouldUseLocalUI5Config && localUI5Depdendencies.length > 0) {

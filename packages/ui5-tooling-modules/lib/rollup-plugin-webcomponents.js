@@ -68,7 +68,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 	if (lt(framework?.version || "0.0.0", "1.128.0")) {
 		webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/RenderAttributeProperties.hbs")());
 	}
-	if (lt(framework?.version || "0.0.0", "1.143.0")) {
+	if (lt(framework?.version || "0.0.0", "1.145.0")) {
 		webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/RegisterAllEvents.hbs")());
 		webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/MapValueState.hbs")());
 	}
@@ -581,7 +581,7 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 					webcPackageModule: resolveModule(namespace)?.replace(/\\/g, "/"),
 				});
 				return code;
-			} else if (ui5Meta?.type === "module") {
+			} else if (ui5Meta?.type === "module" && ui5Meta?.package?.dependencies?.includes(WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE)) {
 				// prepend the import of the base package to ensure that scoping and other features are applied
 				// => before a Web Component is defined, the base package must be loaded!
 				const { absModulePath } = ui5Meta;

@@ -10,7 +10,7 @@ sap.ui.define(["../container"], function (WebCPackage) {
   // export the UI5 metadata along with the package
   pkg["_ui5metadata"] = {
     name: "@luigi-project/container",
-    version: "1.7.4",
+    version: "1.7.6",
     dependencies: ["sap.ui.core"],
     types: [],
     interfaces: [],

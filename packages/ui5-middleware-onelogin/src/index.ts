@@ -46,6 +46,7 @@ var firstTime: boolean = true;
 module.exports = function ({ log, options }: { log: any; options: Options }) {
 	// eslint-disable-next-line func-names
 	return async function (req: any, res: any, next: any) {
+		/* eslint-disable-next-line no-useless-assignment */
 		let cookies = [];
 		if (!process.env.UI5_MIDDLEWARE_ONELOGIN_LOGIN_URL && !process.env.UI5_MIDDLEWARE_SIMPLE_PROXY_BASEURI && !options.configuration.path) {
 			log.error("No login url provided");

@@ -16,7 +16,7 @@
   "dependencies": {
     "express": "^5",
     "js-yaml": "^4.1.1",
-    "node-html-parser": "^7.0.1",
+    "node-html-parser": "^7.1.0",
     "ui5-utils-express": "workspace:^"
   },
   "devDependencies": {

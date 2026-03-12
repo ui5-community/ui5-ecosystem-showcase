@@ -150,6 +150,7 @@ async function addCacheFirstSw(parameters) {
 	// We need to prefix the pattern with our rootDir
 	let globPattern = [];
 	for (let i = 0; i < parameters.preCache.length; i++) {
+		/* eslint-disable-next-line no-useless-assignment */
 		let pattern = undefined;
 		// Check for leading slash before concatenating paths
 		if (parameters.preCache[i][0] === "/") {
@@ -186,8 +187,10 @@ async function addCacheFirstSw(parameters) {
 async function addAdvancedCachingSw(parameters) {
 	// First collect the pre cache files
 	// We need to prefix the pattern with our rootDir
+	/* eslint-disable-next-line no-useless-assignment */
 	let globPattern = [];
 	for (let i = 0; i < parameters.preCache.length; i++) {
+		/* eslint-disable-next-line no-useless-assignment */
 		let pattern = undefined;
 		// Check for leading slash before concatenating paths
 		if (parameters.preCache[i][0] === "/") {

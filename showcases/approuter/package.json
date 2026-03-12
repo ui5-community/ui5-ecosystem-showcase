@@ -15,7 +15,7 @@
     "start": "node -e 'new require(`@sap/approuter`)().start()' _"
   },
   "dependencies": {
-    "@sap/approuter": "^20.8.3"
+    "@sap/approuter": "^21.0.0"
   },
   "devDependencies": {
     "cds-bookshop": "workspace:^",

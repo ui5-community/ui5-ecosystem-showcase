@@ -14,10 +14,10 @@
     "@ui5/fs": "^4",
     "@ui5/project": "^4",
     "@ui5/server": "^4",
-    "glob": "^13.0.0",
+    "glob": "^13.0.6",
     "js-yaml": "^4.1.1",
-    "node-html-parser": "^7.0.1",
-    "semver": "^7.7.3"
+    "node-html-parser": "^7.1.0",
+    "semver": "^7.7.4"
   },
   "devDependencies": {
     "@sap/cds": "*",

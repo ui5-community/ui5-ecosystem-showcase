@@ -24,6 +24,11 @@ sap.ui.define(
               type: "string",
               mapping: "property"
             },
+            checked: {
+              type: "boolean",
+              mapping: "property",
+              defaultValue: false
+            },
             enabled: {
               type: "boolean",
               defaultValue: "true",
@@ -33,17 +38,7 @@ sap.ui.define(
                 formatter: "_mapEnabled"
               }
             },
-            readonly: {
-              type: "boolean",
-              mapping: "property",
-              defaultValue: false
-            },
             displayOnly: {
-              type: "boolean",
-              mapping: "property",
-              defaultValue: false
-            },
-            required: {
               type: "boolean",
               mapping: "property",
               defaultValue: false
@@ -53,7 +48,16 @@ sap.ui.define(
               mapping: "property",
               defaultValue: false
             },
-            checked: {
+            name: {
+              type: "string",
+              mapping: "property"
+            },
+            readonly: {
+              type: "boolean",
+              mapping: "property",
+              defaultValue: false
+            },
+            required: {
               type: "boolean",
               mapping: "property",
               defaultValue: false
@@ -61,6 +65,11 @@ sap.ui.define(
             text: {
               type: "string",
               mapping: "property"
+            },
+            value: {
+              type: "string",
+              mapping: "property",
+              defaultValue: "on"
             },
             valueState: {
               type: "sap.ui.core.ValueState",
@@ -74,15 +83,6 @@ sap.ui.define(
               type: "@ui5.webcomponents.WrappingType",
               mapping: "property",
               defaultValue: "Normal"
-            },
-            name: {
-              type: "string",
-              mapping: "property"
-            },
-            value: {
-              type: "string",
-              mapping: "property",
-              defaultValue: "on"
             },
             width: {
               type: "sap.ui.core.CSSSize",

@@ -159,9 +159,11 @@ function normalizePresetOrPlugin(babelPresetOrPlugin, isPreset) {
 	} else if ((matches = new RegExp(`^@babel/(?!${type}-)([^/]+)$`).exec(moduleName))) {
 		// plugin-/preset- will be injected at the start of any @babel-scoped package that doesn't have it as a prefix.
 		moduleName = `@babel/${type}-${matches[1]}`;
+		/* eslint-disable-next-line no-useless-assignment */
 	} else if ((matches = /^@([^/]+)$/.exec(moduleName))) {
 		// babel-plugin/babel-preset will be injected as the package name if only the @-scope name is given.
 		moduleName = `${moduleName}/babel-${type}`;
+		/* eslint-disable-next-line no-useless-assignment */
 	} else if ((matches = new RegExp(`^(?!(@|babel-${type}-))([^/]+)$`).exec(moduleName))) {
 		// babel-plugin-/babel-preset- will be injected as a prefix any unscoped package that doesn't have it as a prefix
 		moduleName = `babel-${type}-${moduleName}`;

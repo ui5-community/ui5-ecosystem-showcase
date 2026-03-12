@@ -2,18 +2,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     const SUPPRESS_TRACING_KEY = traceApi.createContextKey('OpenTelemetry SDK Context Key SUPPRESS_TRACING');
     function suppressTracing(context) {
@@ -25,18 +14,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     const BAGGAGE_KEY_PAIR_SEPARATOR = '=';
     const BAGGAGE_PROPERTIES_SEPARATOR = ';';
@@ -52,18 +30,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     function serializeKeyPairs(keyPairs) {
         return keyPairs.reduce((hValue, current) => {
@@ -83,38 +50,40 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
         });
     }
     function parsePairKeyValue(entry) {
-        const valueProps = entry.split(BAGGAGE_PROPERTIES_SEPARATOR);
-        if (valueProps.length <= 0)
+        if (!entry)
             return;
-        const keyPairPart = valueProps.shift();
-        if (!keyPairPart)
-            return;
+        const metadataSeparatorIndex = entry.indexOf(BAGGAGE_PROPERTIES_SEPARATOR);
+        const keyPairPart = metadataSeparatorIndex === -1
+            ? entry
+            : entry.substring(0, metadataSeparatorIndex);
         const separatorIndex = keyPairPart.indexOf(BAGGAGE_KEY_PAIR_SEPARATOR);
         if (separatorIndex <= 0)
             return;
-        const key = decodeURIComponent(keyPairPart.substring(0, separatorIndex).trim());
-        const value = decodeURIComponent(keyPairPart.substring(separatorIndex + 1).trim());
+        const rawKey = keyPairPart.substring(0, separatorIndex).trim();
+        const rawValue = keyPairPart.substring(separatorIndex + 1).trim();
+        if (!rawKey || !rawValue)
+            return;
+        let key;
+        let value;
+        try {
+            key = decodeURIComponent(rawKey);
+            value = decodeURIComponent(rawValue);
+        }
+        catch {
+            return;
+        }
         let metadata;
-        if (valueProps.length > 0) {
-            metadata = traceApi.baggageEntryMetadataFromString(valueProps.join(BAGGAGE_PROPERTIES_SEPARATOR));
+        if (metadataSeparatorIndex !== -1 &&
+            metadataSeparatorIndex < entry.length - 1) {
+            const metadataString = entry.substring(metadataSeparatorIndex + 1);
+            metadata = traceApi.baggageEntryMetadataFromString(metadataString);
         }
         return { key, value, metadata };
     }
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /**
      * Propagates {@link Baggage} through Context format propagation.
@@ -171,18 +140,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     function sanitizeAttributes(attributes) {
         const out = {};
@@ -257,18 +215,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /**
      * Returns a function that logs an error using the provided logger, or a
@@ -315,18 +262,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /** The global error handler delegate */
     let delegateHandler = loggingErrorHandler();
@@ -343,18 +279,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     function getNumberFromEnv(_) {
         return undefined;
@@ -375,25 +300,8 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-    const otperformance = performance;
-
-    /*
-     * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     */
     // this is autogenerated file, see scripts/version-update.js
-    const VERSION$1 = '2.2.0';
+    const VERSION$2 = '2.6.0';
 
     /*
      * Copyright The OpenTelemetry Authors
@@ -477,18 +385,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /*
      * This file contains a copy of unstable semantic convention definitions
@@ -506,41 +403,28 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /** Constants describing the SDK in use */
     const SDK_INFO = {
         [ATTR_TELEMETRY_SDK_NAME]: 'opentelemetry',
         [ATTR_PROCESS_RUNTIME_NAME]: 'browser',
         [ATTR_TELEMETRY_SDK_LANGUAGE]: TELEMETRY_SDK_LANGUAGE_VALUE_WEBJS,
-        [ATTR_TELEMETRY_SDK_VERSION]: VERSION$1,
+        [ATTR_TELEMETRY_SDK_VERSION]: VERSION$2,
     };
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
+     */
+    /**
+     * @deprecated Use performance directly.
+     */
+    const otperformance = performance;
+
+    /*
+     * Copyright The OpenTelemetry Authors
+     * SPDX-License-Identifier: Apache-2.0
      */
     const NANOSECOND_DIGITS = 9;
     const NANOSECOND_DIGITS_IN_MILLIS = 6;
@@ -558,20 +442,12 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
         const nanos = Math.round((epochMillis % 1000) * MILLISECONDS_TO_NANOSECONDS);
         return [seconds, nanos];
     }
-    function getTimeOrigin() {
-        let timeOrigin = otperformance.timeOrigin;
-        if (typeof timeOrigin !== 'number') {
-            const perf = otperformance;
-            timeOrigin = perf.timing && perf.timing.fetchStart;
-        }
-        return timeOrigin;
-    }
     /**
      * Returns an hrtime calculated via performance component.
      * @param performanceNow
      */
     function hrTime(performanceNow) {
-        const timeOrigin = millisToHrTime(getTimeOrigin());
+        const timeOrigin = millisToHrTime(otperformance.timeOrigin);
         const now = millisToHrTime(typeof performanceNow === 'number' ? performanceNow : otperformance.now());
         return addHrTimes(timeOrigin, now);
     }
@@ -587,7 +463,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
         }
         else if (typeof time === 'number') {
             // Must be a performance.now() if it's smaller than process start time.
-            if (time < getTimeOrigin()) {
+            if (time < otperformance.timeOrigin) {
                 return hrTime(time);
             }
             else {
@@ -666,18 +542,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     var ExportResultCode;
     (function (ExportResultCode) {
@@ -687,18 +552,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /** Combines multiple propagators into a single propagator. */
     class CompositePropagator {
@@ -763,18 +617,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     const VALID_KEY_CHAR_RANGE = '[_0-9a-z-*/]';
     const VALID_KEY = `[a-z]${VALID_KEY_CHAR_RANGE}{0,255}`;
@@ -804,18 +647,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     const MAX_TRACE_STATE_ITEMS = 32;
     const MAX_TRACE_STATE_LEN = 512;
@@ -899,22 +731,11 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     const TRACE_PARENT_HEADER = 'traceparent';
     const TRACE_STATE_HEADER = 'tracestate';
-    const VERSION = '00';
+    const VERSION$1 = '00';
     const VERSION_PART = '(?!ff)[\\da-f]{2}';
     const TRACE_ID_PART = '(?![0]{32})[\\da-f]{32}';
     const PARENT_ID_PART = '(?![0]{16})[\\da-f]{16}';
@@ -958,7 +779,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
                 isTracingSuppressed(context) ||
                 !traceApi.isSpanContextValid(spanContext))
                 return;
-            const traceParent = `${VERSION}-${spanContext.traceId}-${spanContext.spanId}-0${Number(spanContext.traceFlags || traceApi.TraceFlags.NONE).toString(16)}`;
+            const traceParent = `${VERSION$1}-${spanContext.traceId}-${spanContext.spanId}-0${Number(spanContext.traceFlags || traceApi.TraceFlags.NONE).toString(16)}`;
             setter.set(carrier, TRACE_PARENT_HEADER, traceParent);
             if (spanContext.traceState) {
                 setter.set(carrier, TRACE_STATE_HEADER, spanContext.traceState.serialize());
@@ -995,18 +816,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     var RPCType;
     (function (RPCType) {
@@ -1015,18 +825,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /* eslint-disable @typescript-eslint/no-explicit-any */
     /**
@@ -1168,18 +967,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /* eslint-disable @typescript-eslint/no-explicit-any */
     const MAX_LEVEL = 20;
@@ -1325,18 +1113,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     function urlMatches(url, urlToMatch) {
         if (typeof urlToMatch === 'string') {
@@ -1349,18 +1126,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     class Deferred {
         _promise;
@@ -1385,30 +1151,19 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /**
      * Bind the callback and only invoke the callback once regardless how many times `BindOnceFuture.call` is invoked.
      */
     class BindOnceFuture {
-        _callback;
-        _that;
         _isCalled = false;
         _deferred = new Deferred();
-        constructor(_callback, _that) {
-            this._callback = _callback;
-            this._that = _that;
+        _callback;
+        _that;
+        constructor(callback, that) {
+            this._callback = callback;
+            this._that = that;
         }
         get isCalled() {
             return this._isCalled;
@@ -1432,18 +1187,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     ({
         ALL: traceApi.DiagLogLevel.ALL,
@@ -1457,18 +1201,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /**
      * @internal
@@ -1478,27 +1211,14 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
         return new Promise(resolve => {
             // prevent downstream exporter calls from generating spans
             traceApi.context.with(suppressTracing(traceApi.context.active()), () => {
-                exporter.export(arg, (result) => {
-                    resolve(result);
-                });
+                exporter.export(arg, resolve);
             });
         });
     }
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     const internal = {
         _export,
@@ -1506,37 +1226,30 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
+     */
+    let serviceName;
+    /**
+     * Returns the default service name for OpenTelemetry resources.
+     * In Node.js environments, returns "unknown_service:<process.argv0>".
+     * In browser/edge environments, returns "unknown_service".
      */
     function defaultServiceName() {
-        return 'unknown_service';
+        if (serviceName === undefined) {
+            try {
+                const argv0 = globalThis.process.argv0;
+                serviceName = argv0 ? `unknown_service:${argv0}` : 'unknown_service';
+            }
+            catch {
+                serviceName = 'unknown_service';
+            }
+        }
+        return serviceName;
     }
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     const isPromiseLike = (val) => {
         return (val !== null &&
@@ -1546,18 +1259,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     class ResourceImpl {
         _rawAttributes;
@@ -1695,36 +1397,14 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     // Event name definitions
     const ExceptionEventName = 'exception';
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /**
      * This class represents a span.
@@ -1744,6 +1424,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
         _droppedAttributesCount = 0;
         _droppedEventsCount = 0;
         _droppedLinksCount = 0;
+        _attributesCount = 0;
         name;
         status = {
             code: traceApi.SpanStatusCode.UNSET,
@@ -1754,6 +1435,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
         _spanProcessor;
         _spanLimits;
         _attributeValueLengthLimit;
+        _recordEndMetrics;
         _performanceStartTime;
         _performanceOffset;
         _startTimeProvided;
@@ -1765,7 +1447,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
             this._spanContext = opts.spanContext;
             this._performanceStartTime = otperformance.now();
             this._performanceOffset =
-                now - (this._performanceStartTime + getTimeOrigin());
+                now - (this._performanceStartTime + otperformance.timeOrigin);
             this._startTimeProvided = opts.startTime != null;
             this._spanLimits = opts.spanLimits;
             this._attributeValueLengthLimit =
@@ -1778,6 +1460,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
             this.startTime = this._getTime(opts.startTime ?? now);
             this.resource = opts.resource;
             this.instrumentationScope = opts.scope;
+            this._recordEndMetrics = opts.recordEndMetrics;
             if (opts.attributes != null) {
                 this.setAttributes(opts.attributes);
             }
@@ -1798,13 +1481,17 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
                 return this;
             }
             const { attributeCountLimit } = this._spanLimits;
+            const isNewKey = !Object.prototype.hasOwnProperty.call(this.attributes, key);
             if (attributeCountLimit !== undefined &&
-                Object.keys(this.attributes).length >= attributeCountLimit &&
-                !Object.prototype.hasOwnProperty.call(this.attributes, key)) {
+                this._attributesCount >= attributeCountLimit &&
+                isNewKey) {
                 this._droppedAttributesCount++;
                 return this;
             }
             this.attributes[key] = this._truncateToSize(value);
+            if (isNewKey) {
+                this._attributesCount++;
+            }
             return this;
         }
         setAttributes(attributes) {
@@ -1885,7 +1572,6 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
                 traceApi.diag.error(`${this.name} ${this._spanContext.traceId}-${this._spanContext.spanId} - You can only call end() on a span once.`);
                 return;
             }
-            this._ended = true;
             this.endTime = this._getTime(endTime);
             this._duration = hrTimeDuration(this.startTime, this.endTime);
             if (this._duration[0] < 0) {
@@ -1896,6 +1582,11 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
             if (this._droppedEventsCount > 0) {
                 traceApi.diag.warn(`Dropped ${this._droppedEventsCount} events because eventCountLimit reached`);
             }
+            if (this._spanProcessor.onEnding) {
+                this._spanProcessor.onEnding(this);
+            }
+            this._recordEndMetrics?.();
+            this._ended = true;
             this._spanProcessor.onEnd(this);
         }
         _getTime(inp) {
@@ -2017,18 +1708,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /**
      * A sampling decision that determines how a {@link Span} will be recorded
@@ -2055,18 +1735,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /** Sampler that samples no traces. */
     class AlwaysOffSampler {
@@ -2082,18 +1751,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /** Sampler that samples all traces. */
     class AlwaysOnSampler {
@@ -2109,18 +1767,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /**
      * A composite sampler that either respects the parent span's sampling decision
@@ -2170,26 +1817,14 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /** Sampler that samples a given fraction of traces based of trace id deterministically. */
     class TraceIdRatioBasedSampler {
         _ratio;
         _upperBound;
-        constructor(_ratio = 0) {
-            this._ratio = _ratio;
-            this._ratio = this._normalize(_ratio);
+        constructor(ratio = 0) {
+            this._ratio = this._normalize(ratio);
             this._upperBound = Math.floor(this._ratio * 0xffffffff);
         }
         shouldSample(context, traceId) {
@@ -2220,18 +1855,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     var TracesSamplerValues;
     (function (TracesSamplerValues) {
@@ -2309,18 +1933,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     const DEFAULT_ATTRIBUTE_COUNT_LIMIT = 128;
     const DEFAULT_ATTRIBUTE_VALUE_LENGTH_LIMIT = Infinity;
@@ -2368,36 +1981,25 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /**
      * Implementation of the {@link SpanProcessor} that batches spans exported by
      * the SDK then pushes them to the exporter pipeline.
      */
     class BatchSpanProcessorBase {
-        _exporter;
         _maxExportBatchSize;
         _maxQueueSize;
         _scheduledDelayMillis;
         _exportTimeoutMillis;
+        _exporter;
         _isExporting = false;
         _finishedSpans = [];
         _timer;
         _shutdownOnce;
         _droppedSpansCount = 0;
-        constructor(_exporter, config) {
-            this._exporter = _exporter;
+        constructor(exporter, config) {
+            this._exporter = exporter;
             this._maxExportBatchSize =
                 typeof config?.maxExportBatchSize === 'number'
                     ? config.maxExportBatchSize
@@ -2585,18 +2187,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     class BatchSpanProcessor extends BatchSpanProcessorBase {
         _visibilityChangeListener;
@@ -2639,45 +2230,144 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
-    const SPAN_ID_BYTES = 8;
     const TRACE_ID_BYTES = 16;
+    const SPAN_ID_BYTES = 8;
+    const TRACE_BUFFER = new Uint8Array(TRACE_ID_BYTES);
+    const SPAN_BUFFER = new Uint8Array(SPAN_ID_BYTES);
+    // Byte-to-hex lookup is faster than toString(16) in browsers
+    const HEX = Array.from({ length: 256 }, (_, i) => i.toString(16).padStart(2, '0'));
+    /**
+     * Fills buffer with random bytes, ensuring at least one is non-zero
+     * per W3C Trace Context spec.
+     */
+    function randomFill(buf) {
+        for (let i = 0; i < buf.length; i++) {
+            buf[i] = (Math.random() * 256) >>> 0;
+        }
+        // Ensure non-zero
+        for (let i = 0; i < buf.length; i++) {
+            if (buf[i] > 0)
+                return;
+        }
+        buf[buf.length - 1] = 1;
+    }
+    function toHex(buf) {
+        let hex = '';
+        for (let i = 0; i < buf.length; i++) {
+            hex += HEX[buf[i]];
+        }
+        return hex;
+    }
     class RandomIdGenerator {
         /**
          * Returns a random 16-byte trace ID formatted/encoded as a 32 lowercase hex
          * characters corresponding to 128 bits.
          */
-        generateTraceId = getIdGenerator(TRACE_ID_BYTES);
+        generateTraceId() {
+            randomFill(TRACE_BUFFER);
+            return toHex(TRACE_BUFFER);
+        }
         /**
          * Returns a random 8-byte span ID formatted/encoded as a 16 lowercase hex
          * characters corresponding to 64 bits.
          */
-        generateSpanId = getIdGenerator(SPAN_ID_BYTES);
+        generateSpanId() {
+            randomFill(SPAN_BUFFER);
+            return toHex(SPAN_BUFFER);
+        }
     }
-    const SHARED_CHAR_CODES_ARRAY = Array(32);
-    function getIdGenerator(bytes) {
-        return function generateId() {
-            for (let i = 0; i < bytes * 2; i++) {
-                SHARED_CHAR_CODES_ARRAY[i] = Math.floor(Math.random() * 16) + 48;
-                // valid hex characters in the range 48-57 and 97-102
-                if (SHARED_CHAR_CODES_ARRAY[i] >= 58) {
-                    SHARED_CHAR_CODES_ARRAY[i] += 39;
-                }
+
+    /*
+     * Copyright The OpenTelemetry Authors
+     * SPDX-License-Identifier: Apache-2.0
+     */
+    /*
+     * This file contains a copy of unstable semantic convention definitions
+     * used by this package.
+     * @see https://github.com/open-telemetry/opentelemetry-js/tree/main/semantic-conventions#unstable-semconv
+     */
+    /**
+     * Determines whether the span has a parent span, and if so, [whether it is a remote parent](https://opentelemetry.io/docs/specs/otel/trace/api/#isremote)
+     *
+     * @experimental This attribute is experimental and is subject to breaking changes in minor releases of `@opentelemetry/semantic-conventions`.
+     */
+    const ATTR_OTEL_SPAN_PARENT_ORIGIN = 'otel.span.parent.origin';
+    /**
+     * The result value of the sampler for this span
+     *
+     * @experimental This attribute is experimental and is subject to breaking changes in minor releases of `@opentelemetry/semantic-conventions`.
+     */
+    const ATTR_OTEL_SPAN_SAMPLING_RESULT = 'otel.span.sampling_result';
+    /**
+     * The number of created spans with `recording=true` for which the end operation has not been called yet.
+     *
+     * @experimental This metric is experimental and is subject to breaking changes in minor releases of `@opentelemetry/semantic-conventions`.
+     */
+    const METRIC_OTEL_SDK_SPAN_LIVE = 'otel.sdk.span.live';
+    /**
+     * The number of created spans.
+     *
+     * @note Implementations **MUST** record this metric for all spans, even for non-recording ones.
+     *
+     * @experimental This metric is experimental and is subject to breaking changes in minor releases of `@opentelemetry/semantic-conventions`.
+     */
+    const METRIC_OTEL_SDK_SPAN_STARTED = 'otel.sdk.span.started';
+
+    /**
+     * Generates `otel.sdk.span.*` metrics.
+     * https://opentelemetry.io/docs/specs/semconv/otel/sdk-metrics/#span-metrics
+     */
+    class TracerMetrics {
+        startedSpans;
+        liveSpans;
+        constructor(meter) {
+            this.startedSpans = meter.createCounter(METRIC_OTEL_SDK_SPAN_STARTED, {
+                unit: '{span}',
+                description: 'The number of created spans.',
+            });
+            this.liveSpans = meter.createUpDownCounter(METRIC_OTEL_SDK_SPAN_LIVE, {
+                unit: '{span}',
+                description: 'The number of currently live spans.',
+            });
+        }
+        startSpan(parentSpanCtx, samplingDecision) {
+            const samplingDecisionStr = samplingDecisionToString(samplingDecision);
+            this.startedSpans.add(1, {
+                [ATTR_OTEL_SPAN_PARENT_ORIGIN]: parentOrigin(parentSpanCtx),
+                [ATTR_OTEL_SPAN_SAMPLING_RESULT]: samplingDecisionStr,
+            });
+            if (samplingDecision === exports.SamplingDecision.NOT_RECORD) {
+                return () => { };
             }
-            return String.fromCharCode.apply(null, SHARED_CHAR_CODES_ARRAY.slice(0, bytes * 2));
-        };
+            const liveSpanAttributes = {
+                [ATTR_OTEL_SPAN_SAMPLING_RESULT]: samplingDecisionStr,
+            };
+            this.liveSpans.add(1, liveSpanAttributes);
+            return () => {
+                this.liveSpans.add(-1, liveSpanAttributes);
+            };
+        }
+    }
+    function parentOrigin(parentSpanContext) {
+        if (!parentSpanContext) {
+            return 'none';
+        }
+        if (parentSpanContext.isRemote) {
+            return 'remote';
+        }
+        return 'local';
+    }
+    function samplingDecisionToString(decision) {
+        switch (decision) {
+            case exports.SamplingDecision.RECORD_AND_SAMPLED:
+                return 'RECORD_AND_SAMPLE';
+            case exports.SamplingDecision.RECORD:
+                return 'RECORD_ONLY';
+            case exports.SamplingDecision.NOT_RECORD:
+                return 'DROP';
+        }
     }
 
     /*
@@ -2695,6 +2385,13 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
+    // this is autogenerated file, see scripts/version-update.js
+    const VERSION = '2.6.0';
+
+    /*
+     * Copyright The OpenTelemetry Authors
+     * SPDX-License-Identifier: Apache-2.0
+     */
     /**
      * This class represents a basic tracer.
      */
@@ -2706,6 +2403,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
         instrumentationScope;
         _resource;
         _spanProcessor;
+        _tracerMetrics;
         /**
          * Constructs a new Tracer instance.
          */
@@ -2718,6 +2416,10 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
             this._resource = resource;
             this._spanProcessor = spanProcessor;
             this.instrumentationScope = instrumentationScope;
+            const meter = localConfig.meterProvider
+                ? localConfig.meterProvider.getMeter('@opentelemetry/sdk-trace', VERSION)
+                : traceApi.createNoopMeter();
+            this._tracerMetrics = new TracerMetrics(meter);
         }
         /**
          * Starts a new Span or returns the default NoopSpan based on the sampling
@@ -2760,6 +2462,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
             const attributes = sanitizeAttributes(options.attributes);
             // make sampling decision
             const samplingResult = this._sampler.shouldSample(context, traceId, name, spanKind, attributes, links);
+            const recordEndMetrics = this._tracerMetrics.startSpan(parentSpanContext, samplingResult.decision);
             traceState = samplingResult.traceState ?? traceState;
             const traceFlags = samplingResult.decision === traceApi.SamplingDecision.RECORD_AND_SAMPLED
                 ? traceApi.TraceFlags.SAMPLED
@@ -2786,6 +2489,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
                 startTime: options.startTime,
                 spanProcessor: this._spanProcessor,
                 spanLimits: this._spanLimits,
+                recordEndMetrics,
             });
             return span;
         }
@@ -2825,18 +2529,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /**
      * Implementation of the {@link SpanProcessor} that simply forwards all
@@ -2844,8 +2537,8 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
      */
     class MultiSpanProcessor {
         _spanProcessors;
-        constructor(_spanProcessors) {
-            this._spanProcessors = _spanProcessors;
+        constructor(spanProcessors) {
+            this._spanProcessors = spanProcessors;
         }
         forceFlush() {
             const promises = [];
@@ -2868,6 +2561,13 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
                 spanProcessor.onStart(span, context);
             }
         }
+        onEnding(span) {
+            for (const spanProcessor of this._spanProcessors) {
+                if (spanProcessor.onEnding) {
+                    spanProcessor.onEnding(span);
+                }
+            }
+        }
         onEnd(span) {
             for (const spanProcessor of this._spanProcessors) {
                 spanProcessor.onEnd(span);
@@ -2888,18 +2588,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     var ForceFlushState;
     (function (ForceFlushState) {
@@ -2982,18 +2671,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /**
      * This is implementation of {@link SpanExporter} that prints spans to the
@@ -3065,18 +2743,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /**
      * This class can be used for testing purposes. It stores the exported spans
@@ -3120,18 +2787,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /**
      * An implementation of the {@link SpanProcessor} that converts the {@link Span}
@@ -3145,8 +2801,8 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
         _exporter;
         _shutdownOnce;
         _pendingExports;
-        constructor(_exporter) {
-            this._exporter = _exporter;
+        constructor(exporter) {
+            this._exporter = exporter;
             this._shutdownOnce = new BindOnceFuture(this._shutdown, this);
             this._pendingExports = new Set();
         }
@@ -3190,18 +2846,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /** No-op implementation of SpanProcessor */
     class NoopSpanProcessor {
@@ -3217,18 +2862,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /**
      * Stack Context Manager for managing the state in web
@@ -3325,18 +2959,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     function setupContextManager(contextManager) {
         // null means 'do not register'
@@ -3397,18 +3020,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     exports.PerformanceTimingNames = void 0;
     (function (PerformanceTimingNames) {
@@ -3439,18 +3051,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     /*
      * This file contains a copy of unstable semantic convention definitions
@@ -3480,18 +3081,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     // Used to normalize relative URLs
     let urlNormalizingAnchor;
@@ -3721,7 +3311,7 @@ sap.ui.define(['exports', '../trace-api'], (function (exports, traceApi) { 'use 
         }
         let xpath = '';
         if (target.parentNode) {
-            xpath += getElementXPath(target.parentNode, false);
+            xpath += getElementXPath(target.parentNode, optimised);
         }
         xpath += targetValue;
         return xpath;
