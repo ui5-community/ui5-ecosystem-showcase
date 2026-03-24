@@ -33,9 +33,13 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 	// derive information from the projectInfo
 	const { pkgJson, framework } = projectInfo;
 
+	// determine the framework version based on the yaml and fallback to package.json for OpenUI5 and SAPUI5 libraries
+	const isOpenUI5OrSAPUI5Lib = /^@(open|sap)ui5\//.test(pkgJson.name) && projectInfo.type === "library";
+	const frameworkVersion = framework?.version || (isOpenUI5OrSAPUI5Lib ? projectInfo.version : undefined);
+
 	// TODO: maybe we should derive the minimum version from the applications package.json
 	//       instead of the framework version (which might be a different version)
-	if (!force && !gte(framework?.version || "0.0.0", "1.120.0")) {
+	if (!force && !gte(frameworkVersion || "0.0.0", "1.120.0")) {
 		skip = true;
 		log.warn("Skipping Web Components transformation as UI5 version is < 1.120.0");
 	} else if (force) {
@@ -65,18 +69,18 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 	// handlebars templates for the Web Components monkey patches (load and run them)
 	const webcTmplMonkeyPatches = [];
 	webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/SetProperty.hbs")());
-	if (lt(framework?.version || "0.0.0", "1.128.0")) {
+	if (lt(frameworkVersion || "0.0.0", "1.128.0")) {
 		webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/RenderAttributeProperties.hbs")());
 	}
-	if (lt(framework?.version || "0.0.0", "1.145.0")) {
+	if (lt(frameworkVersion || "0.0.0", "1.145.0")) {
 		webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/RegisterAllEvents.hbs")());
 		webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/MapValueState.hbs")());
 	}
-	if (lt(framework?.version || "0.0.0", "1.140.0")) {
+	if (lt(frameworkVersion || "0.0.0", "1.140.0")) {
 		webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/MappingEvents.hbs")());
 	}
 	// no monkey patch for CustomData in 1.138.0 and later as it is supported natively
-	//if (lt(framework?.version || "0.0.0", "1.138.0")) {
+	//if (lt(frameworkVersion || "0.0.0", "1.138.0")) {
 	webcTmplMonkeyPatches.push(loadAndCompileTemplate("templates/monkey_patches/CustomData.hbs")());
 	//}
 
@@ -151,6 +155,8 @@ module.exports = function ({ log, resolveModule, projectInfo, getPackageJson, op
 							customElementsMetadata,
 							namespace: npmPackage,
 							library: projectInfo.type === "library" ? projectInfo.name : undefined,
+							libraryVersion: projectInfo.type === "library" ? projectInfo.version : undefined,
+							isOpenUI5OrSAPUI5Lib,
 							moduleBasePath,
 							removeScopePrefix,
 							scopeSuffix: ui5WebCScopeSuffix,
