@@ -19,9 +19,9 @@ npm install ui5-middleware-livereload --save-dev
 
 ## Configuration options (in `$yourapp/ui5.yaml`)
 
-- debug: true|false  
+- debug: true|false
   verbose logging
-- extraExts: `string`, default: `jsx,ts,tsx,xml,json,properties` 
+- extraExts: `string`, default: `jsx,ts,tsx,xml,json,properties`
   file extensions other than `js`, `html` and `css` to monitor for changes
 - port: `integer`, default: an free port choosen from `35729` onwards
   port the live reload server is started on
@@ -34,6 +34,7 @@ npm install ui5-middleware-livereload --save-dev
   Includes the framework dependencies into the `watchPath`
 - includeAppDeps: true|false, default: `false`
   Includes the application dependencies into the `watchPath`
+- host: `string`, default: `localhost`
 
 ## Usage
 
@@ -95,7 +96,7 @@ server:
       debug: true
       extraExts: "xml,json,properties"
       port: 35729
-      path: 
+      path:
             - "webapp"
             - "../my.reuse.library/src/my/reuse/library"
 ```

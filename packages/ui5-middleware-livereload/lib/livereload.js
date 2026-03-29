@@ -128,11 +128,13 @@ module.exports = async ({ log, resources, options, middlewareUtil }) => {
 	let extraExts = options?.configuration?.extraExts || "jsx,ts,tsx,xml,json,properties";
 	let debug = options?.configuration?.debug;
 	let usePolling = options?.configuration?.usePolling;
+	let host = options?.configuration?.host || "localhost";
 
 	let serverOptions = {
 		debug: debug,
 		extraExts: extraExts ? extraExts.split(",") : undefined,
 		port: port,
+		host: host,
 		exclusions: exclusions,
 		usePolling: usePolling,
 	};
