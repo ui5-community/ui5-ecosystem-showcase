@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.3.0](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@3.2.1...ui5-middleware-livereload@3.3.0) (2026-03-29)
+
+
+### Features
+
+* add host configuration option ([#1331](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1331)) ([d585c98](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/d585c98ca338f41fe44078ac26d2423d7a04562e))
+
+
+
+
+
 ## [3.2.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-middleware-livereload@3.2.0...ui5-middleware-livereload@3.2.1) (2026-01-15)
 
 **Note:** Version bump only for package ui5-middleware-livereload
