@@ -148,8 +148,21 @@ module.exports = async function ({ log, resources, options, middlewareUtil }) {
 	return async (req, res, next) => {
 		const pathname = req.url?.match("^[^?]*")[0];
 		if (pathname.endsWith(".js") && shouldHandlePath(pathname, config.excludes, config.includes)) {
-			const pathWithFilePattern = pathname.replace(".js", config.filePattern);
+			let pathWithFilePattern = pathname.replace(".js", config.filePattern);
 			config.debug && log.verbose(`Lookup resource ${pathWithFilePattern}`);
+
+			// allow alias patterns to be used in the path which can be rewritten using the
+			// configuration option "aliasPatterns" (key: alias pattern, value: replacement)
+			if (config.aliasPatterns || options?.configuration?.aliasPatterns) {
+				Object.entries(config.aliasPatterns).forEach(([aliasPattern, replacement]) => {
+					const re = new RegExp(aliasPattern, "g");
+					if (re.test(pathWithFilePattern)) {
+						config.debug &&
+							log.verbose(`  --> Replacing alias pattern ${aliasPattern} with ${replacement}`);
+						pathWithFilePattern = pathWithFilePattern.replace(re, replacement);
+					}
+				});
+			}
 
 			const matchedResources = await reader.byGlob(pathWithFilePattern);
 			config.debug && log.verbose(`  --> Found ${matchedResources?.length || 0} match(es)!`);
