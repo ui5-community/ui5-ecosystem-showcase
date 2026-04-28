@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.17.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.17.1...ui5-tsapp-webc@0.17.2) (2026-04-28)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** resolve XML namespaces defined inline on elements ([#1337](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1337)) ([871a34e](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/871a34e396af954da80afba70088ff8dd5ad3479))
+
+
+
+
+
 ## [0.17.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tsapp-webc@0.17.0...ui5-tsapp-webc@0.17.1) (2026-03-29)
 
 **Note:** Version bump only for package ui5-tsapp-webc
