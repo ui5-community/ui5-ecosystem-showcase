@@ -8,11 +8,12 @@
   xmlns:ca="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
   xmlns:webc="@ui5/webcomponents/dist"
   xmlns:fiori="@ui5/webcomponents-fiori/dist"
-  xmlns:ai="@ui5/webcomponents-ai/dist"
   core:require="{
     Formatter: 'ui5/ecosystem/demo/webctsapp/model/Formatter',
     iconUI5: '@ui5/webcomponents-icons/dist/sap-ui5',
     iconAI: '@ui5/webcomponents-icons/dist/ai',
+    iconStop: '@ui5/webcomponents-icons/dist/stop',
+    iconNavigationDownArrow: '@ui5/webcomponents-icons/dist/navigation-down-arrow',
     iconBiometric: '@ui5/webcomponents-icons/dist/biometric-face',
     iconBadge: '@ui5/webcomponents-icons/dist/badge',
     iconAccept: '@ui5/webcomponents-icons/dist/accept',
@@ -134,7 +135,7 @@
             </customData>
           </Button>
           <webc:Button text="webc Button" click="onBoo" class="buttonSpacing" />
-          <ai:Button id="myAiButton" state="generate">
+          <ai:Button id="myAiButton" state="generate" xmlns:ai="@ui5/webcomponents-ai/dist">
             <ai:ButtonState name="generate" text="Generate" icon="ai" />
             <ai:ButtonState name="generating" text="Stop Generating" icon="stop" />
             <ai:ButtonState name="revise" text="Revise" icon="ai" endIcon="navigation-down-arrow" />

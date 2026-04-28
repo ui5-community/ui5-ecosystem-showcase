@@ -735,7 +735,9 @@ module.exports = function (log, projectInfo) {
 									let module = nodeParts[2];
 									if (module !== "#text") {
 										// only add those dependencies whose namespace is known
-										let namespace = ns[nodeParts[1] || ""];
+										//  - in some cases the ns is defined directly at the element
+										//    this is handled by the OR case here to avoid recursive parsing
+										let namespace = ns[nodeParts[1] || ""] || (nodeParts[1] && child[`@_xmlns:${nodeParts[1]}`]);
 										if (typeof namespace === "string") {
 											namespace = namespace.replace(/\./g, "/");
 											addUniqueNamespace(namespace);
