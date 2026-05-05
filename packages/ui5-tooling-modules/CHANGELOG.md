@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.35.2](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.35.1...ui5-tooling-modules@3.35.2) (2026-05-05)
+
+
+### Bug Fixes
+
+* **ui5-tooling-modules:** version dependent interfaces for webc ([#1333](https://github.com/ui5-community/ui5-ecosystem-showcase/issues/1333)) ([0a72767](https://github.com/ui5-community/ui5-ecosystem-showcase/commit/0a727677b7968cdd3539ed74e73faf3d6d02025f))
+
+
+
+
+
 ## [3.35.1](https://github.com/ui5-community/ui5-ecosystem-showcase/compare/ui5-tooling-modules@3.35.0...ui5-tooling-modules@3.35.1) (2026-04-28)
 
 
