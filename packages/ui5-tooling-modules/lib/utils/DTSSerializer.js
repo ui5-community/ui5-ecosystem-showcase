@@ -335,10 +335,12 @@ const DTSSerializer = {
 			});
 		for (const clazz in registryEntry.classes) {
 			if (registryEntry.classes[clazz].superclass) {
+				const classDef = registryEntry.classes[clazz];
+				const safeFileName = clazz.replace(/\//g, ".").replace(/>>/g, ".");
 				prettier
 					.format(
 						Templates.class({
-							clazz: registryEntry.classes[clazz],
+							clazz: classDef,
 							BINDING_STRING_PLACEHOLDER: "`{${string}}`",
 						}),
 						{
@@ -351,7 +353,7 @@ const DTSSerializer = {
 					)
 					.then((prettifiedTypes) => {
 						if (prettifiedTypes) {
-							writeFileSync(join(cachePath, "types", `${registryEntry.qualifiedNamespace}.dist.${clazz}.gen.d.ts`), prettifiedTypes, { encoding: "utf-8" });
+							writeFileSync(join(cachePath, "types", `${registryEntry.qualifiedNamespace}.${safeFileName}.gen.d.ts`), prettifiedTypes, { encoding: "utf-8" });
 						}
 					});
 			}

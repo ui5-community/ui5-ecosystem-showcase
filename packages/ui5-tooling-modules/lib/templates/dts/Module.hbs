@@ -7,7 +7,7 @@ declare module "{{registryEntry.namespace}}" {
 	 */
 	{{/if}}
 		{{{generateApiDocumentation this.description}}}
-		export enum {{@key}} {
+		export enum {{this.name}} {
 			{{#each this.values}}
 				{{{generateApiDocumentation this.description}}}
 				{{{this.name}}} = "{{{this.name}}}",
@@ -22,7 +22,7 @@ declare module "{{registryEntry.namespace}}" {
 	 */
 	{{/if}}
 		{{{generateApiDocumentation this.description}}}
-		export interface {{@key}} {
+		export interface {{this.name}} {
 			{{{escapeInterfaceName @root.registryEntry.namespace this.name}}}
 		}
 	{{/each}}

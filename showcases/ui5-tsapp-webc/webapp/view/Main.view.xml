@@ -29,7 +29,7 @@
     </headerContent> -->
     <!-- playground-fold-end -->
 
-    <fiori:ShellBar id="shellbar" primaryTitle="{formatter: 'Formatter.formatValue', path: 'i18n>appTitle'}" profileClick=".onProfileClick">
+    <fiori:ShellBar id="shellbar" primaryTitle="{formatter: 'Formatter.formatValue', path: 'i18n>appTitle'}" showSearchField="true" profileClick=".onProfileClick">
       <fiori:customData>
         <core:CustomData key="help-id" value="shellbar" writeToDom="true" />
       </fiori:customData>
