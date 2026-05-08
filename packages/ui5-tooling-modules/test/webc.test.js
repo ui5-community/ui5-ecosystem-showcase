@@ -32,22 +32,25 @@ function writeFixtures(webcRegistryEntry) {
 
 	// create fixtures in the base folder per class
 	ensurePathExists(path.resolve(fixtureBase, "classes"));
-	Object.keys(webcRegistryEntry.classes).forEach((className) => {
-		const classJSON = JSON.stringify(webcRegistryEntry.classes[className]._ui5metadata);
+	Object.keys(webcRegistryEntry.classes).forEach((cacheKey) => {
+		const classJSON = JSON.stringify(webcRegistryEntry.classes[cacheKey]._ui5metadata);
 		if (classJSON) {
-			writeFileSync(path.join(fixtureBase, `classes/${className}.json`), classJSON, { encoding: "utf8" });
+			const safeKey = cacheKey.replace(/\//g, "_").replace(/>>/g, "__");
+			writeFileSync(path.join(fixtureBase, `classes/${safeKey}.json`), classJSON, { encoding: "utf8" });
 		}
 	});
 
 	// enums
 	ensurePathExists(path.resolve(fixtureBase, "enums"));
-	Object.keys(webcRegistryEntry.enums).forEach((enumName) => {
-		const enumJSON = JSON.stringify(webcRegistryEntry.enums[enumName]);
-		writeFileSync(path.join(fixtureBase, `enums/${enumName}.json`), enumJSON, { encoding: "utf8" });
+	Object.keys(webcRegistryEntry.enums).forEach((cacheKey) => {
+		const enumJSON = JSON.stringify(webcRegistryEntry.enums[cacheKey]);
+		const safeKey = cacheKey.replace(/\//g, "_").replace(/>>/g, "__");
+		writeFileSync(path.join(fixtureBase, `enums/${safeKey}.json`), enumJSON, { encoding: "utf8" });
 	});
 
 	// interfaces
 	const interfacesJson = JSON.stringify([...Object.keys(webcRegistryEntry.interfaces)]);
+	ensurePathExists(fixtureBase);
 	writeFileSync(path.join(fixtureBase, `interfaces.json`), interfacesJson, { encoding: "utf8" });
 }
 
@@ -91,25 +94,27 @@ test.serial("Verify ui5-metadata generation from 'custom-elements-internal.json'
 		}
 
 		// compare fixtures in the base folder per class
-		Object.keys(webcRegistryEntry.classes).forEach((className) => {
-			const classJSON = JSON.stringify(webcRegistryEntry.classes[className]._ui5metadata);
+		Object.keys(webcRegistryEntry.classes).forEach((cacheKey) => {
+			const classJSON = JSON.stringify(webcRegistryEntry.classes[cacheKey]._ui5metadata);
 			if (classJSON) {
-				const classFixtureForComparisonJSON = readFileSync(path.join(fixtureBase, `classes/${className}.json`), { encoding: "utf-8" });
-				t.is(classFixtureForComparisonJSON, classJSON, `Class ${webcRegistryEntry.namespace}.${className} JSON is equal to fixture`);
+				const safeKey = cacheKey.replace(/\//g, "_").replace(/>>/g, "__");
+				const classFixtureForComparisonJSON = readFileSync(path.join(fixtureBase, `classes/${safeKey}.json`), { encoding: "utf-8" });
+				t.is(classFixtureForComparisonJSON, classJSON, `Class ${webcRegistryEntry.namespace}.${cacheKey} JSON is equal to fixture`);
 			}
 		});
 
 		// compare enums
-		Object.keys(webcRegistryEntry.enums).forEach((enumName) => {
-			const enumJSON = JSON.stringify(webcRegistryEntry.enums[enumName]);
-			const enumFixtureForComparisonJSON = readFileSync(path.join(fixtureBase, `enums/${enumName}.json`), { encoding: "utf-8" });
-			t.is(enumFixtureForComparisonJSON, enumJSON, `Enum ${enumJSON} JSON is equal to fixture`);
+		Object.keys(webcRegistryEntry.enums).forEach((cacheKey) => {
+			const enumJSON = JSON.stringify(webcRegistryEntry.enums[cacheKey]);
+			const safeKey = cacheKey.replace(/\//g, "_").replace(/>>/g, "__");
+			const enumFixtureForComparisonJSON = readFileSync(path.join(fixtureBase, `enums/${safeKey}.json`), { encoding: "utf-8" });
+			t.is(enumFixtureForComparisonJSON, enumJSON, `Enum ${webcRegistryEntry.namespace}.${cacheKey} JSON is equal to fixture`);
 		});
 
 		// compare interfaces
 		const interfacesJson = JSON.stringify([...Object.keys(webcRegistryEntry.interfaces)]);
 		const interfacesFixtureForComparisonJSON = readFileSync(path.join(fixtureBase, `interfaces.json`), { encoding: "utf-8" });
-		t.is(interfacesFixtureForComparisonJSON, interfacesJson, `Interfaces JSON is equal to fixture`);
+		t.is(interfacesFixtureForComparisonJSON, interfacesJson, `Interfaces JSON for ${webcRegistryEntry.namespace} is equal to fixture`);
 	};
 
 	loadWebComponentPackage("@ui5/webcomponents-base", dist, appDir);

@@ -844,6 +844,21 @@
     },
     {
       "kind": "javascript-module",
+      "path": "dist/createReactComponent.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "createReactComponent",
+            "module": "dist/createReactComponent.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "dist/decorators.js",
       "declarations": [],
       "exports": []
@@ -1124,6 +1139,12 @@
     {
       "kind": "javascript-module",
       "path": "dist/config/ConfigurationReset.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/config/ConfigurationSync.js",
       "declarations": [],
       "exports": []
     },
@@ -2606,6 +2627,21 @@
           "declaration": {
             "name": "generateHighlightedMarkup",
             "module": "dist/util/generateHighlightedMarkup.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "dist/util/generateHighlightedMarkupFirstMatch.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "generateHighlightedMarkupFirstMatch",
+            "module": "dist/util/generateHighlightedMarkupFirstMatch.js"
           }
         }
       ]
