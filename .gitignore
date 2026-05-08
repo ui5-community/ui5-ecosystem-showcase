@@ -90,3 +90,5 @@ TODO.md
 # UI5 preload resources
 .ui5-middleware-serveframework
 .claude/sandbox-task.md
+
+.pnpm-store

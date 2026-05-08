@@ -61,12 +61,15 @@ function writeFixtures(webcRegistryEntry) {
  * @param {string} appDir the application directory
  */
 function loadWebComponentPackage(webcBaseNpmPackage, dist, appDir) {
-	const webcBasePath = require.resolve(`${webcBaseNpmPackage}${dist}/custom-elements-internal.json`, {
-		paths: [appDir],
-	});
+	let webcBasePath;
 	if (generateFixtures) {
+		webcBasePath = require.resolve(`${webcBaseNpmPackage}${dist}/custom-elements-internal.json`, {
+			paths: [appDir],
+		});
 		ensurePathExists(path.resolve(fixtureDir, webcBaseNpmPackage));
 		copyFileSync(webcBasePath, path.resolve(fixtureDir, webcBaseNpmPackage, "custom-elements-internal.json"));
+	} else {
+		webcBasePath = path.resolve(fixtureDir, webcBaseNpmPackage, "custom-elements-internal.json");
 	}
 	const webcBaseJson = JSON.parse(readFileSync(webcBasePath, { encoding: "utf-8" }));
 
