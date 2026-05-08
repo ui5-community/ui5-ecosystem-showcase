@@ -1141,9 +1141,6 @@ importers:
 
   showcases/ui5-tsapp-webc:
     dependencies:
-      '@sap-webcomponents/rich-text-editor':
-        specifier: file:../../../rich-text-editor
-        version: file:../rich-text-editor
       '@ui5/webcomponents':
         specifier: ^2.22.0
         version: 2.22.0(react@19.2.6)
@@ -3507,6 +3504,9 @@ packages:
   '@types/openui5@1.148.0':
     resolution: {integrity: sha512-fPQQfKMsOQjYgPothnvpfzMzFSsKh02UwNH++aXAikTshBGLIxu2OhrxjTtrMAdmce8hSvAmvwFFAehcM7kNxg==}
 
+  '@types/openui5@1.147.1':
+    resolution: {integrity: sha512-Mojpa+6xYrAY9hXlyzDnfjHouBOjXPugYlmc1kzei0lTXCKlOFCaTP8JUwmIcGJykP9VMSb5YnyVICIsVQqWKA==}
+
   '@types/pako@2.0.4':
     resolution: {integrity: sha512-VWDCbrLeVXJM9fihYodcLiIv0ku+AlOa/TQ1SvYOaBuyrSKgEcro95LJyIsJ4vSo6BXIxOKxiJAat04CmST9Fw==}
 
@@ -3879,8 +3879,8 @@ packages:
     resolution: {integrity: sha512-7evsyfH1cLOCdAzZAd43Cic04yKydNx0cF+7tiA19p1XnLLPU4dpCQOqpjqwokFe//vS0QqfqqjCS2JkiIs0cA==}
     engines: {node: '>=0.4.0'}
 
-  acorn-walk@8.3.5:
-    resolution: {integrity: sha512-HEHNfbars9v4pgpW6SO1KSPkfoS0xVOM/9UzkJltjlsHZmJasxg8aXkuZa7SMf8vKGIBhpUsPluQSqhJFCqebw==}
+  acorn-walk@8.3.4:
+    resolution: {integrity: sha512-ueEepnujpqee2o5aIYnvHU6C0A42MNdsIDeqy5BydrkuC5R1ZuUFnm27EeFJGoEHJQgn3uleRvmTXaJgfXbt4g==}
     engines: {node: '>=0.4.0'}
 
   acorn@6.4.2:
@@ -3890,6 +3890,11 @@ packages:
 
   acorn@7.4.1:
     resolution: {integrity: sha512-nQyp0o1/mNdbTO1PO6kHkwSrmgZ0MT/jCCpNiwbUjGoRN4dlBhqJtoQuCnEOKzgTVwg0ZWiCoQy6SxMebQVh8A==}
+    engines: {node: '>=0.4.0'}
+    hasBin: true
+
+  acorn@8.15.0:
+    resolution: {integrity: sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==}
     engines: {node: '>=0.4.0'}
     hasBin: true
 
@@ -4615,10 +4620,6 @@ packages:
 
   ci-info@4.3.1:
     resolution: {integrity: sha512-Wdy2Igu8OcBpI2pZePZ5oWjPC38tmDVx5WKUXKwlLYkA0ozo85sLsLvkBbBn/sZaSCMFOGZJ14fvW9t5/d7kdA==}
-    engines: {node: '>=8'}
-
-  ci-info@4.4.0:
-    resolution: {integrity: sha512-77PSwercCZU2Fc4sX94eF8k8Pxte6JAwL4/ICZLFjJLqegs7kCuAsqqj/70NQF6TvDpgFjkubQB2FW2ZZddvQg==}
     engines: {node: '>=8'}
 
   ci-parallel-vars@1.0.1:
@@ -5654,6 +5655,10 @@ packages:
     engines: {node: '>=4'}
     hasBin: true
 
+  esquery@1.6.0:
+    resolution: {integrity: sha512-ca9pw9fomFcKPvFLXhBKUK90ZvGibiGOvRJNbjljY7s7uq/5YO4BOzcYtJqExdx99rF6aAcnRxHmcUHcz6sQsg==}
+    engines: {node: '>=0.10'}
+
   esquery@1.7.0:
     resolution: {integrity: sha512-Ap6G0WQwcU/LHsvLwON1fAQX9Zp0A2Y6Y/cJBl9r/JbW90Zyg4/zbG6zzKa2OTALELarYHmKu0GhpM5EO+7T0g==}
     engines: {node: '>=0.10'}
@@ -5936,6 +5941,15 @@ packages:
 
   flatted@3.4.2:
     resolution: {integrity: sha512-PjDse7RzhcPkIJwy5t7KPWQSZ9cAbzQXcafsetQoD7sOJRQlGikNbx7yZp2OotDnJyrDcbyRq3Ttb18iYOqkxA==}
+
+  follow-redirects@1.16.0:
+    resolution: {integrity: sha512-y5rN/uOsadFT/JfYwhxRS5R7Qce+g3zG97+JrtFZlC9klX/W5hD7iiLzScI4nZqUS7DNUdhPgw4xI8W2LuXlUw==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
 
   follow-redirects@1.16.0:
     resolution: {integrity: sha512-y5rN/uOsadFT/JfYwhxRS5R7Qce+g3zG97+JrtFZlC9klX/W5hD7iiLzScI4nZqUS7DNUdhPgw4xI8W2LuXlUw==}
@@ -7039,6 +7053,9 @@ packages:
   js-md5@0.8.3:
     resolution: {integrity: sha512-qR0HB5uP6wCuRMrWPTrkMaev7MJZwJuuw4fnwAzRgP4J4/F8RwtodOKpGp4XpqsLBFzzgqIO42efFAyz2Et6KQ==}
 
+  js-md5@0.8.3:
+    resolution: {integrity: sha512-qR0HB5uP6wCuRMrWPTrkMaev7MJZwJuuw4fnwAzRgP4J4/F8RwtodOKpGp4XpqsLBFzzgqIO42efFAyz2Et6KQ==}
+
   js-string-escape@1.0.1:
     resolution: {integrity: sha512-Smw4xcfIQ5LVjAOuJCvN/zIodzA/BBSsluuoSykP+lUvScIi4U6RJLfwHet5cxFnCswUjISV8oAXaqaJDY3chg==}
     engines: {node: '>= 0.8'}
@@ -7414,6 +7431,9 @@ packages:
 
   lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+
+  lodash@4.18.1:
+    resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
 
   lodash@4.18.1:
     resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
@@ -8455,6 +8475,10 @@ packages:
   path-scurry@1.11.1:
     resolution: {integrity: sha512-Xa4Nw17FS9ApQFJ9umLiJS4orGjm7ZzwUrwamcGQuHSzDyth9boKDaycYdDcZDuqYATXw4HFXgaqWTctW/v1HA==}
     engines: {node: '>=16 || 14 >=14.18'}
+
+  path-scurry@2.0.1:
+    resolution: {integrity: sha512-oWyT4gICAu+kaA7QWk/jvCHWarMKNs6pXOGWKDTr7cw4IGcUbW+PeTfbaQiLGheFRpjo6O9J0PmyMfQPjH71oA==}
+    engines: {node: 20 || >=22}
 
   path-scurry@2.0.2:
     resolution: {integrity: sha512-3O/iVVsJAPsOnpwWIeD+d6z/7PmqApyQePUtCndjatj/9I5LylHvt5qluFaBT3I5h3r1ejfR056c+FCv+NnNXg==}
@@ -9785,6 +9809,10 @@ packages:
     resolution: {integrity: sha512-dAqSqE/RabpBKI8+h26GfLq6Vb3JVXs30XYQjdMjaj/c2tS8IYYMbIzP599KtRj7c57/wYApb3QjgRgXmrCukA==}
     engines: {node: '>=18'}
 
+  tinyexec@1.1.2:
+    resolution: {integrity: sha512-dAqSqE/RabpBKI8+h26GfLq6Vb3JVXs30XYQjdMjaj/c2tS8IYYMbIzP599KtRj7c57/wYApb3QjgRgXmrCukA==}
+    engines: {node: '>=18'}
+
   tinyglobby@0.2.12:
     resolution: {integrity: sha512-qkf4trmKSIiMTs/E63cxH+ojC2unam7rJ0WrauAzpT3ECNTxGRMlaXxVbfxMUC/w0LaYk6jQ4y/nGR9uBO3tww==}
     engines: {node: '>=12.0.0'}
@@ -10067,6 +10095,10 @@ packages:
 
   undici-types@7.24.6:
     resolution: {integrity: sha512-WRNW+sJgj5OBN4/0JpHFqtqzhpbnV0GuB+OozA9gCL7a993SmU+1JBZCzLNxYsbMfIeDL+lTsphD5jN5N+n0zg==}
+
+  undici@6.25.0:
+    resolution: {integrity: sha512-ZgpWDC5gmNiuY9CnLVXEH8rl50xhRCuLNA97fAUnKi8RRuV4E6KG31pDTsLVUKnohJE0I3XDrTeEydAXRw47xg==}
+    engines: {node: '>=18.17'}
 
   undici@6.25.0:
     resolution: {integrity: sha512-ZgpWDC5gmNiuY9CnLVXEH8rl50xhRCuLNA97fAUnKi8RRuV4E6KG31pDTsLVUKnohJE0I3XDrTeEydAXRw47xg==}
@@ -12060,7 +12092,7 @@ snapshots:
 
   '@isaacs/fs-minipass@4.0.1':
     dependencies:
-      minipass: 7.1.3
+      minipass: 7.1.2
 
   '@isaacs/string-locale-compare@1.1.0': {}
 
@@ -12313,7 +12345,7 @@ snapshots:
     dependencies:
       '@npmcli/map-workspaces': 3.0.6
       '@npmcli/package-json': 5.2.1
-      ci-info: 4.4.0
+      ci-info: 4.3.1
       ini: 4.1.3
       nopt: 7.2.1
       proc-log: 4.2.0
@@ -13365,7 +13397,10 @@ snapshots:
       '@types/jquery': 3.5.34
       '@types/qunit': 2.19.14
 
-  '@types/pako@2.0.4': {}
+  '@types/openui5@1.147.1':
+    dependencies:
+      '@types/jquery': 3.5.33
+      '@types/qunit': 2.19.13
 
   '@types/prompt@1.1.9':
     dependencies:
@@ -14115,9 +14150,13 @@ snapshots:
       acorn-walk: 6.2.0
     optional: true
 
-  acorn-import-attributes@1.9.5(acorn@8.16.0):
+  acorn-import-attributes@1.9.5(acorn@8.15.0):
     dependencies:
-      acorn: 8.16.0
+      acorn: 8.15.0
+
+  acorn-jsx@5.3.2(acorn@8.15.0):
+    dependencies:
+      acorn: 8.15.0
 
   acorn-jsx@5.3.2(acorn@8.16.0):
     dependencies:
@@ -14126,15 +14165,17 @@ snapshots:
   acorn-walk@6.2.0:
     optional: true
 
-  acorn-walk@8.3.5:
+  acorn-walk@8.3.4:
     dependencies:
-      acorn: 8.16.0
+      acorn: 8.15.0
 
   acorn@6.4.2:
     optional: true
 
   acorn@7.4.1:
     optional: true
+
+  acorn@8.15.0: {}
 
   acorn@8.16.0: {}
 
@@ -14145,6 +14186,7 @@ snapshots:
       debug: 4.4.3(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   agent-base@7.1.4: {}
 
@@ -14347,7 +14389,7 @@ snapshots:
       cbor2: 2.3.0
       chalk: 5.6.2
       chunkd: 2.0.1
-      ci-info: 4.4.0
+      ci-info: 4.3.1
       ci-parallel-vars: 1.0.1
       cli-truncate: 6.0.0
       code-excerpt: 4.0.0
@@ -14791,7 +14833,7 @@ snapshots:
       fs-minipass: 3.0.3
       glob: 10.5.0
       lru-cache: 10.4.3
-      minipass: 7.1.3
+      minipass: 7.1.2
       minipass-collect: 2.0.1
       minipass-flush: 1.0.7
       minipass-pipeline: 1.2.4
@@ -14806,7 +14848,7 @@ snapshots:
       fs-minipass: 3.0.3
       glob: 10.5.0
       lru-cache: 10.4.3
-      minipass: 7.1.3
+      minipass: 7.1.2
       minipass-collect: 2.0.1
       minipass-flush: 1.0.7
       minipass-pipeline: 1.2.4
@@ -15039,8 +15081,6 @@ snapshots:
   ci-info@3.9.0: {}
 
   ci-info@4.3.1: {}
-
-  ci-info@4.4.0: {}
 
   ci-parallel-vars@1.0.1: {}
 
@@ -16218,8 +16258,8 @@ snapshots:
 
   espree@10.4.0:
     dependencies:
-      acorn: 8.16.0
-      acorn-jsx: 5.3.2(acorn@8.16.0)
+      acorn: 8.15.0
+      acorn-jsx: 5.3.2(acorn@8.15.0)
       eslint-visitor-keys: 4.2.1
 
   espree@11.2.0:
@@ -16230,11 +16270,15 @@ snapshots:
 
   espree@9.6.1:
     dependencies:
-      acorn: 8.16.0
-      acorn-jsx: 5.3.2(acorn@8.16.0)
+      acorn: 8.15.0
+      acorn-jsx: 5.3.2(acorn@8.15.0)
       eslint-visitor-keys: 3.4.3
 
   esprima@4.0.1: {}
+
+  esquery@1.6.0:
+    dependencies:
+      estraverse: 5.3.0
 
   esquery@1.7.0:
     dependencies:
@@ -16707,6 +16751,8 @@ snapshots:
     optionalDependencies:
       debug: 4.4.3(supports-color@5.5.0)
 
+  follow-redirects@1.16.0: {}
+
   fontkit@2.0.4:
     dependencies:
       '@swc/helpers': 0.5.21
@@ -16803,7 +16849,7 @@ snapshots:
 
   fs-minipass@3.0.3:
     dependencies:
-      minipass: 7.1.3
+      minipass: 7.1.2
 
   fs.realpath@1.0.0: {}
 
@@ -17003,7 +17049,7 @@ snapshots:
       minimatch: 10.2.5
       minipass: 7.1.3
       package-json-from-dist: 1.0.1
-      path-scurry: 2.0.2
+      path-scurry: 2.0.1
 
   glob@13.0.6:
     dependencies:
@@ -17334,6 +17380,7 @@ snapshots:
       debug: 4.4.3(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   https-proxy-agent@7.0.6:
     dependencies:
@@ -17911,6 +17958,8 @@ snapshots:
 
   js-md5@0.8.3: {}
 
+  js-md5@0.8.3: {}
+
   js-string-escape@1.0.1: {}
 
   js-tokens@4.0.0: {}
@@ -18457,6 +18506,8 @@ snapshots:
 
   lodash@4.18.1: {}
 
+  lodash@4.18.1: {}
+
   log-symbols@4.1.0:
     dependencies:
       chalk: 4.1.2
@@ -18575,7 +18626,7 @@ snapshots:
       '@npmcli/agent': 4.0.0
       cacache: 20.0.4
       http-cache-semantics: 4.2.0
-      minipass: 7.1.3
+      minipass: 7.1.2
       minipass-fetch: 4.0.1
       minipass-flush: 1.0.7
       minipass-pipeline: 1.2.4
@@ -18773,11 +18824,11 @@ snapshots:
 
   minipass-collect@2.0.1:
     dependencies:
-      minipass: 7.1.3
+      minipass: 7.1.2
 
   minipass-fetch@3.0.5:
     dependencies:
-      minipass: 7.1.3
+      minipass: 7.1.2
       minipass-sized: 1.0.3
       minizlib: 2.1.2
     optionalDependencies:
@@ -18785,7 +18836,7 @@ snapshots:
 
   minipass-fetch@4.0.1:
     dependencies:
-      minipass: 7.1.3
+      minipass: 7.1.2
       minipass-sized: 1.0.3
       minizlib: 3.1.0
     optionalDependencies:
@@ -18830,7 +18881,7 @@ snapshots:
 
   minizlib@3.1.0:
     dependencies:
-      minipass: 7.1.3
+      minipass: 7.1.2
 
   mitt@1.2.0: {}
 
@@ -19158,7 +19209,7 @@ snapshots:
       '@npmcli/redact': 2.0.1
       jsonparse: 1.3.1
       make-fetch-happen: 13.0.1
-      minipass: 7.1.3
+      minipass: 7.1.2
       minipass-fetch: 3.0.5
       minizlib: 2.1.2
       npm-package-arg: 11.0.3
@@ -19171,7 +19222,7 @@ snapshots:
       '@npmcli/redact': 3.2.2
       jsonparse: 1.3.1
       make-fetch-happen: 14.0.3
-      minipass: 7.1.3
+      minipass: 7.1.2
       minipass-fetch: 4.0.1
       minizlib: 3.1.0
       npm-package-arg: 12.0.2
@@ -19621,7 +19672,7 @@ snapshots:
       '@npmcli/run-script': 9.1.0
       cacache: 19.0.1
       fs-minipass: 3.0.3
-      minipass: 7.1.3
+      minipass: 7.1.2
       npm-package-arg: 12.0.2
       npm-packlist: 9.0.0
       npm-pick-manifest: 10.0.0
@@ -19643,7 +19694,7 @@ snapshots:
       '@npmcli/run-script': 10.0.3
       cacache: 20.0.4
       fs-minipass: 3.0.3
-      minipass: 7.1.3
+      minipass: 7.1.2
       npm-package-arg: 13.0.1
       npm-packlist: 10.0.3
       npm-pick-manifest: 10.0.0
@@ -19666,7 +19717,7 @@ snapshots:
       '@npmcli/run-script': 10.0.3
       cacache: 20.0.4
       fs-minipass: 3.0.3
-      minipass: 7.1.3
+      minipass: 7.1.2
       npm-package-arg: 13.0.1
       npm-packlist: 10.0.3
       npm-pick-manifest: 11.0.3
@@ -19789,7 +19840,12 @@ snapshots:
   path-scurry@1.11.1:
     dependencies:
       lru-cache: 10.4.3
-      minipass: 7.1.3
+      minipass: 7.1.2
+
+  path-scurry@2.0.1:
+    dependencies:
+      lru-cache: 11.2.4
+      minipass: 7.1.2
 
   path-scurry@2.0.2:
     dependencies:
@@ -21026,15 +21082,15 @@ snapshots:
 
   ssri@10.0.6:
     dependencies:
-      minipass: 7.1.3
+      minipass: 7.1.2
 
   ssri@12.0.0:
     dependencies:
-      minipass: 7.1.3
+      minipass: 7.1.2
 
   ssri@13.0.1:
     dependencies:
-      minipass: 7.1.3
+      minipass: 7.1.2
 
   stack-utils@2.0.6:
     dependencies:
@@ -21308,7 +21364,7 @@ snapshots:
     dependencies:
       '@isaacs/fs-minipass': 4.0.1
       chownr: 3.0.0
-      minipass: 7.1.3
+      minipass: 7.1.2
       minizlib: 3.1.0
       yallist: 5.0.0
 
@@ -21332,7 +21388,7 @@ snapshots:
   terser@5.47.1:
     dependencies:
       '@jridgewell/source-map': 0.3.11
-      acorn: 8.16.0
+      acorn: 8.15.0
       commander: 2.20.3
       source-map-support: 0.5.21
 
@@ -21373,6 +21429,8 @@ snapshots:
   tiny-inflate@1.0.3: {}
 
   tinyexec@0.3.2: {}
+
+  tinyexec@1.1.2: {}
 
   tinyexec@1.1.2: {}
 
@@ -21657,6 +21715,8 @@ snapshots:
   undici-types@6.21.0: {}
 
   undici-types@7.24.6: {}
+
+  undici@6.25.0: {}
 
   undici@6.25.0: {}
 

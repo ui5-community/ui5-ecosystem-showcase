@@ -126,13 +126,16 @@ class RegistryEntry {
 				}
 			}
 
-			// TODO: store enums and interfaces like classes -> s.a. deriveCacheKey(...)
+			// store enums and interfaces like classes -> s.a. deriveCacheKey(...)
 			for (const enumName in moduleContent.enums) {
 				const enumDef = moduleContent.enums[enumName];
+				// enum definitions do not automatically track their module path in the custom-elements-metadata!
+				enumDef.module = module.path;
 				const cacheKey = WebComponentRegistryHelper.deriveCacheKey({ module: module.path, name: enumName });
 				this.enums[cacheKey] = enumDef;
 			}
 
+			// TODO Interfaces need deriveCacheKey(...)
 			Object.assign(this.interfaces, moduleContent.interfaces);
 		});
 
@@ -312,7 +315,7 @@ class RegistryEntry {
 			dtsType: typeInfo.name,
 			// TODO: enum/interfaces namespace currently cannot work with the "correct" fully qualified name.
 			//       the quick fix for now is to use the simplistic concatenated (and wrong) prefixed name :(
-			ui5Type: packageRef.prefixns(typeInfo.name), //ui5names._ui5QualifiedName
+			ui5Type: ui5names._ui5QualifiedName,
 			moduleType: ui5names._ui5QualifiedNameSlashes, //packageRef.prefixnsAsModule(type),
 			packageName: packageRef.namespace,
 		};
@@ -1224,13 +1227,16 @@ class RegistryEntry {
 				enumValues.push({ name: member.name, description: member.description || "" });
 			});
 
+			// derive correct names
+			const names = this.#deriveUi5ClassNames(enumDef);
+
 			// prepare enum info object for HBS template later
 			this.enums[enumCacheKey] = {
 				name: enumDef.name,
-				_ui5QualifiedName: this.prefixns(enumDef.name),
+				_ui5QualifiedName: names._ui5QualifiedName,
 				// TODO: Ideally not needed in the future once we have a solution for escaping in the UI5 JDSDoc build
 				//       Also remember to remove the "@ui5-module-override" directives in the HBS templates!
-				_ui5QualifiedNameSlashes: `${this.namespace}.${enumDef.name}`,
+				_ui5QualifiedNameSlashes: names._ui5QualifiedNameSlashes,
 				description: this.enums[enumCacheKey].description || "",
 				values: enumValues,
 			};

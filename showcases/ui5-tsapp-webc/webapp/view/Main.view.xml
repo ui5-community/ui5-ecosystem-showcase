@@ -30,7 +30,10 @@
     </headerContent> -->
     <!-- playground-fold-end -->
 
-    <fiori:ShellBar id="shellbar" primaryTitle="{formatter: 'Formatter.formatValue', path: 'i18n>appTitle'}" profileClick=".onProfileClick">
+    <fiori:ShellBar id="shellbar" primaryTitle="{formatter: 'Formatter.formatValue', path: 'i18n>appTitle'}" profileClick=".onProfileClick" showSearchField="true">
+      <fiori:searchField>
+        <fiori:ShellBarSearch />
+      </fiori:searchField>
       <fiori:customData>
         <core:CustomData key="help-id" value="shellbar" writeToDom="true" />
       </fiori:customData>
@@ -95,7 +98,7 @@
             <!-- scopes aggregation -->
             <fiori:scopes>
               <fiori:SearchScope text="All" />
-              <fiori:SearchScope text="Apps" selected="true" />
+              <fiori:SearchScope text="Apps" />
               <fiori:SearchScope text="Products" />
             </fiori:scopes>
 
@@ -125,14 +128,6 @@
           <webc:Button text="Form with Aria support" click=".onNavToForm" design="Attention" endIcon="slim-arrow-right" class="buttonSpacing" />
           <webc:Button text="Value/Data State" click=".onNavToValueState" design="Attention" endIcon="slim-arrow-right" class="buttonSpacing" />
         </VBox>
-      </webc:Panel>
-
-      <webc:Panel headerText="RTE Classic" class="panelSpacing">
-        <rte:RichTextEditor />
-      </webc:Panel>
-
-      <webc:Panel headerText="RTE AI" class="panelSpacing">
-        <rteAi:RichTextEditor />
       </webc:Panel>
 
       <webc:Panel headerText="Buttons" class="panelSpacing">
