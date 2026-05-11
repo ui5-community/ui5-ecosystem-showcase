@@ -7,7 +7,7 @@ const WebComponentRegistryHelper = require("./WebComponentRegistryHelper");
 
 // List of all supported primitive types including "integer"
 const primitiveTypes = ["object", "boolean", "number", "integer", "bigint", "string", "null"];
-// Known native browser elemts used as types in web components
+// Known native browser elements used as types in web components
 const nativeBrowserElements = ["DataTransfer", "Date", "Event", "File", "FileList"];
 
 const logger = SimpleLogger.create("🧬 WCR");
@@ -120,23 +120,30 @@ class RegistryEntry {
 					// calculate fully qualified class names
 					Object.assign(classDef, this.#deriveUi5ClassNames(classDef));
 					// store classes under their module + export key
-					this.classes[WebComponentRegistryHelper.deriveCacheKey(classDef)] = classDef;
+					const cacheKey = WebComponentRegistryHelper.deriveCacheKey(classDef);
+					this.classes[cacheKey] = classDef;
 				} else {
 					logger.warn(`class without module: ${classDef}`);
 				}
 			}
 
-			// store enums and interfaces like classes -> s.a. deriveCacheKey(...)
+			// store enums like classes -> s.a. deriveCacheKey(...)
 			for (const enumName in moduleContent.enums) {
 				const enumDef = moduleContent.enums[enumName];
 				// enum definitions do not automatically track their module path in the custom-elements-metadata!
 				enumDef.module = module.path;
-				const cacheKey = WebComponentRegistryHelper.deriveCacheKey({ module: module.path, name: enumName });
+				const cacheKey = WebComponentRegistryHelper.deriveCacheKey(enumDef);
 				this.enums[cacheKey] = enumDef;
 			}
 
-			// TODO Interfaces need deriveCacheKey(...)
-			Object.assign(this.interfaces, moduleContent.interfaces);
+			// store interfaces like classes -> s.a. deriveCacheKey(...)
+			for (const interfaceName in moduleContent.interfaces) {
+				const interfaceDef = moduleContent.interfaces[interfaceName];
+				// interface definitions do not automatically track their module path in the custom-elements-metadata!
+				interfaceDef.module = module.path;
+				const cacheKey = WebComponentRegistryHelper.deriveCacheKey(interfaceDef);
+				this.interfaces[cacheKey] = interfaceDef;
+			}
 		});
 
 		// [2] prepare enum objects
@@ -355,16 +362,17 @@ class RegistryEntry {
 
 		const deriveType = (type) => {
 			// we only respect 1 cache key, as UI5 only supports 1 type per property/aggregation -> first one wins
-			const typeCacheKey = WebComponentRegistryHelper.deriveCacheKey(typeInfo?.references?.[0]);
+			const typeInfoRef = typeInfo?.references?.[0] || { module: `dist/${type}.js`, name: type };
+			const typeCacheKey = WebComponentRegistryHelper.deriveCacheKey(typeInfoRef);
 			const hasCacheContent = this.classes[typeCacheKey] || this.enums[typeCacheKey] || this.interfaces[typeCacheKey];
 
 			// [Complex types]:
 			// we have a reference to something, or we find it directly in our own package's caches: classes, enums, interfaces
 			if (typeInfo?.references?.length > 0 || hasCacheContent) {
 				// Since the UI5 runtime only allows for 1 single type per property/aggregation, we take the first reference
-				type = typeInfo?.references?.[0]?.name || type;
+				type = typeInfoRef.name;
 
-				if (typeInfo.references?.[0].package === WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE) {
+				if (typeInfoRef.package === WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE) {
 					// case 0: we just have a reference to the UI5Element base class in the @ui5/webcomponent-base package
 					//         This means that the Web Component can only nest other Web Component subclasses in that slot.
 					if (type === WebComponentRegistryHelper.UI5_ELEMENT_CLASS_NAME) {
@@ -389,18 +397,18 @@ class RegistryEntry {
 				}
 
 				// case 1b: complex type is enum, interface or class
-				let complexType = this.#parseComplexType({ module: typeInfo.references[0].module, name: type }, this);
-				if (!complexType && this.namespace !== typeInfo.references[0].package) {
+				let complexType = this.#parseComplexType(typeInfoRef, this);
+				if (!complexType && this.namespace !== typeInfoRef.package) {
 					// case 1c: check for cross package type reference
-					const refPackage = WebComponentRegistry.getPackage(typeInfo.references[0].package);
+					const refPackage = WebComponentRegistry.getPackage(typeInfoRef.package);
 					if (refPackage) {
-						complexType = this.#parseComplexType({ module: typeInfo.references[0].module, name: type }, refPackage);
+						complexType = this.#parseComplexType(typeInfoRef, refPackage);
 					} else {
-						logger.log(`Reference package '${typeInfo.references[0].package}' for complex type '${type}' not found`);
+						logger.log(`Reference package '${typeInfoRef.package}' for complex type '${type}' not found`);
 					}
-				} else if (!complexType && typeInfo.references[0]) {
+				} else if (!complexType && typeInfoRef) {
 					// case 1d: not able to find the type but there is a reference ==> try to import original webc type from the importing module itself
-					const refClass = this.classes[typeCacheKey]; //typeInfo.references[0].module.match(/\/(.*).js$/)?.[1]
+					const refClass = this.classes[typeCacheKey]; //typeInfoRef.module.match(/\/(.*).js$/)?.[1]
 					if (refClass) {
 						return {
 							dtsType: type,
@@ -444,6 +452,18 @@ class RegistryEntry {
 					ui5Type: "object",
 				};
 			} else {
+				const aWebcomponentPackages = WebComponentRegistry.getPackages();
+				for (const sPackage in aWebcomponentPackages) {
+					if (!Object.hasOwn(aWebcomponentPackages, sPackage)) continue;
+
+					const refPackage = WebComponentRegistry.getPackage(aWebcomponentPackages[sPackage]);
+					const complexType = this.#parseComplexType(typeInfoRef, refPackage);
+
+					if (complexType) {
+						return complexType;
+					}
+				}
+
 				typeDef.isUnclear = true;
 				// case 6: Unclear
 				return {
@@ -457,16 +477,16 @@ class RegistryEntry {
 		// An original type can look like this: "Array<Foo|Bar>|string|undefined"
 		// we determine if we have a toplevel union type
 		// result will look like this: types = ["Array<Foo|Bar>", "string", "undefined"]
-		const types = typeInfo.text.match(/(?:Array<[^>]*>|[^|])+/g) || [];
+		const types = typeInfo.text.match(/(?:(?:Set|Promise|Array)<[^>]*>|[^|])+/g) || [];
 
 		for (let name of types) {
 			name = name.trim();
-			const arrayTypeMatch = name.match(/Array<(.*)>/i);
+			const arrayTypeMatch = name.match(/(?:Set|Promise|Array)<(.*)>/i);
 			const multiple = !!arrayTypeMatch;
 			const origType = arrayTypeMatch?.[1] || name;
 
 			if (origType !== "undefined") {
-				// multiple === true ==> is array type (Array<Foo>), but not necessarily a union type in the array (Array<Foo|Bar>)
+				// multiple === true ==> is array type (Set|Promise|Array<Foo>), but not necessarily a union type in the set|promise|array (Set|Promise|Array<Foo|Bar>)
 				// multiple === false ==> can be a union type, e.g. "Foo | Bar | ..."!
 				typeDef.types.push({
 					origType,
@@ -889,8 +909,9 @@ class RegistryEntry {
 		if (Array.isArray(classDef._ui5implements)) {
 			jsdocInterfaces ??= [];
 			classDef._ui5implements.forEach((interfaceDef) => {
-				if (this.interfaces[interfaceDef.name]) {
-					ui5metadata.interfaces.push(this.prefixns(interfaceDef.name));
+				if (this.interfaces[WebComponentRegistryHelper.deriveCacheKey(interfaceDef)]) {
+					interfaceDef = this.interfaces[WebComponentRegistryHelper.deriveCacheKey(interfaceDef)];
+					ui5metadata.interfaces.push(interfaceDef._ui5QualifiedName);
 					jsdocInterfaces.push(`module:${this.namespace}.${interfaceDef.name}`);
 				} else {
 					jsdocInterfaces.push(this.prefixns(interfaceDef.name));
@@ -1248,12 +1269,18 @@ class RegistryEntry {
 	 * Used in the respective HBS template.
 	 */
 	#prepareInterfaces() {
-		Object.keys(this.interfaces).forEach((interfaceName) => {
-			const interfaceDef = this.interfaces[interfaceName];
-			interfaceDef._ui5QualifiedName = this.prefixns(interfaceName);
-			// TODO: Ideally not needed in the future once we have a solution for escaping in the UI5 JDSDoc build
-			//       Also remember to remove the "@ui5-module-override" directives in the HBS templates!
-			interfaceDef._ui5QualifiedNameSlashes = `${this.namespace}.${interfaceName}`;
+		Object.keys(this.interfaces).forEach((interfaceCacheKey) => {
+			// derive correct names
+			const interfaceDef = this.interfaces[interfaceCacheKey];
+			const names = this.#deriveUi5ClassNames(interfaceDef);
+			this.interfaces[interfaceCacheKey] = {
+				name: interfaceDef.name,
+				_ui5QualifiedName: names._ui5QualifiedName,
+				// TODO: Ideally not needed in the future once we have a solution for escaping in the UI5 JDSDoc build
+				//       Also remember to remove the "@ui5-module-override" directives in the HBS templates!
+				_ui5QualifiedNameSlashes: names._ui5QualifiedNameSlashes,
+				description: this.interfaces[interfaceCacheKey].description || "",
+			};
 		});
 	}
 }

@@ -351,7 +351,7 @@ const DTSSerializer = {
 					)
 					.then((prettifiedTypes) => {
 						if (prettifiedTypes) {
-							writeFileSync(join(cachePath, "types", `${registryEntry.qualifiedNamespace}.dist.${clazz}.gen.d.ts`), prettifiedTypes, { encoding: "utf-8" });
+							writeFileSync(join(cachePath, "types", `${registryEntry.classes[clazz]._ui5QualifiedName}.gen.d.ts`), prettifiedTypes, { encoding: "utf-8" });
 						}
 					});
 			}
