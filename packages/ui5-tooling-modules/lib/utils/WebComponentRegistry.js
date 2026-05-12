@@ -90,7 +90,7 @@ class RegistryEntry {
 		// Calculate fully qualified class name based on the module name from the custom elements manifest
 		// e.g. dist/Avatar.js -> dist.Avatar
 		let convertedClassName = classDef.module.replace(/\//g, ".");
-		const _derivedUi5ClassName = convertedClassName.replace(/\.js$/, "");
+		const _derivedUi5ClassName = convertedClassName.replace(/\.(js|ts)$/, "");
 
 		const _ui5QualifiedName = `${this.qualifiedNamespace}.${_derivedUi5ClassName}`;
 
@@ -255,7 +255,11 @@ class RegistryEntry {
 			//const superclassQualifiedName = classDef.superclass._ui5QualifiedName ?? refPackage.#deriveUi5ClassNames(classDef.superclass)._ui5QualifiedName;
 			const superclassLookupName = WebComponentRegistryHelper.deriveCacheKey(classDef.superclass);
 
-			let superclassRef = refPackage.classes[superclassLookupName];
+			// Note: This sanitization is needed for some module where the metadata is not consistent
+			//       e.g. "media-chrome" references the module names sometimes with a leading slash.
+			const superclassLookupNameFallback = superclassLookupName.startsWith("/") ? superclassLookupName.substring(1).replace(".js", ".ts") : superclassLookupName;
+
+			let superclassRef = refPackage.classes[superclassLookupName] || refPackage.classes[superclassLookupNameFallback];
 			if (!superclassRef) {
 				logger.error(`The class '${classDef._ui5QualifiedName}' has an unknown superclass '${superclassLookupName}' using default '@ui5/webcomponents-base/UI5Element'!`);
 				const refPackage = WebComponentRegistry.getPackage(WebComponentRegistryHelper.UI5_ELEMENT_NAMESPACE);
@@ -538,7 +542,7 @@ class RegistryEntry {
 	}
 
 	#castDefaultValue(defaultValue, ui5TypeInfo) {
-		if (defaultValue === "undefined") {
+		if (defaultValue === "undefined" || !ui5TypeInfo) {
 			return undefined;
 		}
 
@@ -548,7 +552,12 @@ class RegistryEntry {
 			case "boolean":
 				return /true/.test(defaultValue);
 			case "object":
-				return JSON.parse(defaultValue);
+				try {
+					return JSON.parse(defaultValue);
+				} catch {
+					logger.error(`Could not parse default value of type 'object', falling back to {} - ${defaultValue}`);
+					return {};
+				}
 			default:
 				return defaultValue;
 		}
@@ -691,7 +700,7 @@ class RegistryEntry {
 					types: typeDef.types,
 				});
 			} else {
-				if (typeDef.ui5TypeInfo.isComplexType) {
+				if (typeDef.ui5TypeInfo?.isComplexType) {
 					logger.warn(`[interface or class type given for property] ${classDef.name} - property ${propDef.name}`);
 				}
 				let defaultValue = propDef.default;
@@ -704,7 +713,7 @@ class RegistryEntry {
 					defaultValue = this.#castDefaultValue(defaultValue, typeDef.ui5TypeInfo);
 				}
 				let mapping = "property";
-				if (typeDef.ui5TypeInfo.ui5Type === "sap.ui.core.ValueState") {
+				if (typeDef.ui5TypeInfo?.ui5Type === "sap.ui.core.ValueState") {
 					// the UI5 valueState needs the Core's enum typing and some special mapping to
 					// convert the "sap.ui.core.ValueState" to the web component's variant.
 					mapping = {
@@ -713,8 +722,15 @@ class RegistryEntry {
 					};
 				}
 
+				let typeString;
+				if (!typeDef.ui5Type) {
+					typeString = "any";
+				} else {
+					typeString = `${typeDef.ui5TypeInfo.ui5Type}${typeDef.ui5TypeInfo.multiple ? "[]" : ""}`;
+				}
+
 				ui5metadata.properties[propDef.name] = {
-					type: `${typeDef.ui5TypeInfo.ui5Type}${typeDef.ui5TypeInfo.multiple ? "[]" : ""}`,
+					type: typeString,
 					mapping,
 					defaultValue: defaultValue,
 				};
@@ -768,13 +784,13 @@ class RegistryEntry {
 		}
 
 		const typeDef = this.#extractUi5Type(slotDef._ui5type);
-		if (typeDef.ui5TypeInfo.isComplexType) {
+		if (typeDef.ui5TypeInfo?.isComplexType) {
 			//logger.log(`[interface/class type]: '${typeInfo.ui5Type}', multiple: ${typeInfo.multiple}`);
 			aggregationType = typeDef.ui5TypeInfo.ui5Type;
 		}
 
-		const leadingDtsType = typeDef.types[0].dedicatedTypes[0];
-		if (typeDef.ui5TypeInfo.ui5Type === "any" && leadingDtsType.dtsType !== "any") {
+		const leadingDtsType = typeDef.types[0]?.dedicatedTypes[0];
+		if (typeDef.ui5TypeInfo?.ui5Type === "any" && leadingDtsType?.dtsType !== "any") {
 			logger.log(
 				`🤔 unclear type - Detected DTS type '${leadingDtsType.dtsType}' for slot '${slotName}' in webcomponent '${classDef.name}' but did not detect a proper UI5 type. Missing interface? Fallback DTS type to 'any'.`,
 			);
@@ -879,7 +895,7 @@ class RegistryEntry {
 	#processEvents(classDef, ui5metadata, eventDef) {
 		// Same as with other entities we track the UI5 Metadata and the JSDoc separately
 		const { parsedParams, jsDocParams } = this.#parseEventParameters(classDef, eventDef);
-		const camelizedName = camelize(eventDef.name);
+		const camelizedName = camelize(eventDef.name || "");
 		const existsAsProperty = ui5metadata.properties[camelizedName];
 		const eventName = existsAsProperty ? camelize(`on-${eventDef.name}`) : camelizedName;
 
