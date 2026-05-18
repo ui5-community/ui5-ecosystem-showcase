@@ -2,71 +2,7 @@ sap.ui.define(['../trace-api'], (function (traceApi) { 'use strict';
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     */
-    const consoleMap = [
-        { n: 'error', c: 'error' },
-        { n: 'warn', c: 'warn' },
-        { n: 'info', c: 'info' },
-        { n: 'debug', c: 'debug' },
-        { n: 'verbose', c: 'trace' },
-    ];
-    /**
-     * A simple Immutable Console based diagnostic logger which will output any messages to the Console.
-     * If you want to limit the amount of logging to a specific level or lower use the
-     * {@link createLogLevelDiagLogger}
-     */
-    class DiagConsoleLogger {
-        constructor() {
-            function _consoleFunc(funcName) {
-                return function (...args) {
-                    if (console) {
-                        // Some environments only expose the console when the F12 developer console is open
-                        // eslint-disable-next-line no-console
-                        let theFunc = console[funcName];
-                        if (typeof theFunc !== 'function') {
-                            // Not all environments support all functions
-                            // eslint-disable-next-line no-console
-                            theFunc = console.log;
-                        }
-                        // One last final check
-                        if (typeof theFunc === 'function') {
-                            return theFunc.apply(console, args);
-                        }
-                    }
-                };
-            }
-            for (let i = 0; i < consoleMap.length; i++) {
-                this[consoleMap[i].n] = _consoleFunc(consoleMap[i].c);
-            }
-        }
-    }
-
-    /*
-     * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     const VALID_KEY_CHAR_RANGE = '[_0-9a-z-*/]';
     const VALID_KEY = `[a-z]${VALID_KEY_CHAR_RANGE}{0,255}`;
@@ -96,18 +32,7 @@ sap.ui.define(['../trace-api'], (function (traceApi) { 'use strict';
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     const MAX_TRACE_STATE_ITEMS = 32;
     const MAX_TRACE_STATE_LEN = 512;
@@ -147,20 +72,21 @@ sap.ui.define(['../trace-api'], (function (traceApi) { 'use strict';
             return this._internalState.get(key);
         }
         serialize() {
-            return this._keys()
-                .reduce((agg, key) => {
+            return (Array.from(this._internalState.keys())
+                // Use reduceRight() because keys are stored in reverse insertion order.
+                .reduceRight((agg, key) => {
                 agg.push(key + LIST_MEMBER_KEY_VALUE_SPLITTER + this.get(key));
                 return agg;
             }, [])
-                .join(LIST_MEMBERS_SEPARATOR);
+                .join(LIST_MEMBERS_SEPARATOR));
         }
         _parse(rawTraceState) {
             if (rawTraceState.length > MAX_TRACE_STATE_LEN)
                 return;
             this._internalState = rawTraceState
                 .split(LIST_MEMBERS_SEPARATOR)
-                .reverse() // Store in reverse so new keys (.set(...)) will be placed at the beginning
-                .reduce((agg, part) => {
+                // Use reduceRight() so new keys (.set(...)) will be placed at the beginning
+                .reduceRight((agg, part) => {
                 const listMember = part.trim(); // Optional Whitespace (OWS) handling
                 const i = listMember.indexOf(LIST_MEMBER_KEY_VALUE_SPLITTER);
                 if (i !== -1) {
@@ -179,6 +105,7 @@ sap.ui.define(['../trace-api'], (function (traceApi) { 'use strict';
                     .slice(0, MAX_TRACE_STATE_ITEMS));
             }
         }
+        // @ts-expect-error TS6133 Accessed in tests only.
         _keys() {
             return Array.from(this._internalState.keys()).reverse();
         }
@@ -191,18 +118,10 @@ sap.ui.define(['../trace-api'], (function (traceApi) { 'use strict';
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
+     */
+    /**
+     * @since 1.1.0
      */
     function createTraceState(rawTraceState) {
         return new TraceStateImpl(rawTraceState);
@@ -210,18 +129,7 @@ sap.ui.define(['../trace-api'], (function (traceApi) { 'use strict';
 
     /*
      * Copyright The OpenTelemetry Authors
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *      https://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
+     * SPDX-License-Identifier: Apache-2.0
      */
     // Default export.
     var defExp = {
@@ -234,7 +142,7 @@ sap.ui.define(['../trace-api'], (function (traceApi) { 'use strict';
 
     var namedExports = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        DiagConsoleLogger: DiagConsoleLogger,
+        DiagConsoleLogger: traceApi.DiagConsoleLogger,
         get DiagLogLevel () { return traceApi.DiagLogLevel; },
         INVALID_SPANID: traceApi.INVALID_SPANID,
         INVALID_SPAN_CONTEXT: traceApi.INVALID_SPAN_CONTEXT,

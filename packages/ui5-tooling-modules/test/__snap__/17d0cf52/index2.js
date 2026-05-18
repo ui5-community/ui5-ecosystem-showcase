@@ -561,7 +561,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 		react_production.useTransition = function () {
 		  return ReactSharedInternals.H.useTransition();
 		};
-		react_production.version = "19.2.4";
+		react_production.version = "19.2.6";
 		return react_production;
 	}
 
