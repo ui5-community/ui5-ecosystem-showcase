@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@types/luxon": "^3.7.1",
-    "@types/openui5": "1.145.0",
+    "@types/openui5": "1.148.0",
     "@ui5/cli": "^4.0.48",
     "eslint": "^10.0.3",
     "globals": "^17.4.0",

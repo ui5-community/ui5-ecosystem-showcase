@@ -94,8 +94,8 @@ importers:
         specifier: '>=21'
         version: 21.5.0(undici@6.25.0)
       '@sap/xsenv':
-        specifier: 6.1.0
-        version: 6.1.0
+        specifier: 6.2.1
+        version: 6.2.1
       cds-plugin-ui5:
         specifier: workspace:^
         version: link:../cds-plugin-ui5
@@ -1055,8 +1055,8 @@ importers:
         specifier: ^3.7.1
         version: 3.7.1
       '@types/openui5':
-        specifier: 1.145.0
-        version: 1.145.0
+        specifier: 1.148.0
+        version: 1.148.0
       '@ui5/cli':
         specifier: ^4.0.48
         version: 4.0.53
@@ -1109,14 +1109,14 @@ importers:
   showcases/ui5-tsapp-simple:
     devDependencies:
       '@types/openui5':
-        specifier: 1.145.0
-        version: 1.145.0
+        specifier: 1.148.0
+        version: 1.148.0
       '@ui5/cli':
         specifier: ^4.0.48
         version: 4.0.53
       '@ui5/ts-interface-generator':
-        specifier: ^0.10.5
-        version: 0.10.5(typescript@5.9.3)
+        specifier: ^0.11.0
+        version: 0.11.0(typescript@5.9.3)
       eslint:
         specifier: ^10.0.3
         version: 10.4.0(jiti@2.6.1)
@@ -1152,14 +1152,14 @@ importers:
         version: 2.22.0(react@19.2.6)
     devDependencies:
       '@types/openui5':
-        specifier: 1.145.0
-        version: 1.145.0
+        specifier: 1.148.0
+        version: 1.148.0
       '@ui5/cli':
         specifier: ^4.0.48
         version: 4.0.53
       '@ui5/ts-interface-generator':
-        specifier: ^0.10.5
-        version: 0.10.5(typescript@5.9.3)
+        specifier: ^0.11.0
+        version: 0.11.0(typescript@5.9.3)
       eslint:
         specifier: ^10.0.3
         version: 10.4.0(jiti@2.6.1)
@@ -1195,8 +1195,8 @@ importers:
         version: 2.1.0
     devDependencies:
       '@types/openui5':
-        specifier: 1.145.0
-        version: 1.145.0
+        specifier: 1.148.0
+        version: 1.148.0
       '@types/showdown':
         specifier: ^2.0.6
         version: 2.0.6
@@ -1204,8 +1204,8 @@ importers:
         specifier: ^4.0.48
         version: 4.0.53
       '@ui5/ts-interface-generator':
-        specifier: ^0.10.5
-        version: 0.10.5(typescript@5.9.3)
+        specifier: ^0.11.0
+        version: 0.11.0(typescript@5.9.3)
       eslint:
         specifier: ^10.0.3
         version: 10.4.0(jiti@2.6.1)
@@ -1255,8 +1255,8 @@ importers:
   showcases/ui5-tsmodule:
     devDependencies:
       '@types/openui5':
-        specifier: 1.145.0
-        version: 1.145.0
+        specifier: 1.148.0
+        version: 1.148.0
       eslint:
         specifier: ^10.0.3
         version: 10.4.0(jiti@2.6.1)
@@ -3222,8 +3222,8 @@ packages:
     resolution: {integrity: sha512-9bNpJXmxndWn5JbRCPPtbeMqldXOn2Od17ybS92PHd1rNkZ80IMmOURHNct5YSVQ1MKBIDAyC+ck6VL7cVAfUA==}
     engines: {node: ^20.0.0  || ^22.0.0 || ^24.0.0}
 
-  '@sap/xsenv@6.1.0':
-    resolution: {integrity: sha512-vlW4Zad3uiDqHtnYdQ0TsEIH8VIO4HmPGDowfBL5dIcHPmeKDISEQ9ibeHL5FkceqvYcXJEQAVZ5/hsHDqlXZg==}
+  '@sap/xsenv@6.2.1':
+    resolution: {integrity: sha512-R1p7VdD3N3jvdkL8av4vLqF+cTQihTz9mCqqF+oa9rVZvgLaCb4ODyZ1dln5/fBgg1OSuch0ESxu3AqZrXVknw==}
     engines: {node: ^20.0.0  || ^22.0.0 || ^24.0.0}
 
   '@sap/xssec@4.12.2':
@@ -3551,9 +3551,6 @@ packages:
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
 
-  '@types/openui5@1.145.0':
-    resolution: {integrity: sha512-SYE0fL5KWKmzmAS0HA8CFZ31fFgWpwqCOS2AtayZou1N/5bCtPfxq9csCm2oPLvv4rl9b0FfBLyJjZ6wzG7AXw==}
-
   '@types/openui5@1.148.0':
     resolution: {integrity: sha512-fPQQfKMsOQjYgPothnvpfzMzFSsKh02UwNH++aXAikTshBGLIxu2OhrxjTtrMAdmce8hSvAmvwFFAehcM7kNxg==}
 
@@ -3748,6 +3745,12 @@ packages:
     hasBin: true
     peerDependencies:
       typescript: '>=5.2.0'
+
+  '@ui5/ts-interface-generator@0.11.0':
+    resolution: {integrity: sha512-+4fJpnpSsZ/Jojid1fFwS9Dvm8OOxKeydBpZbMTPzZ/sA1Hd5hc7ITC5inhkh3MjxQt7Bx2LuIt6LQ1zXuMyBg==}
+    hasBin: true
+    peerDependencies:
+      typescript: '>=5.2.0 <7.0.0'
 
   '@ui5/webcomponents-ai@2.22.0':
     resolution: {integrity: sha512-CtVnIYpw9LcH9i6UYxUbvG2JBYHSdxgclY8blC8nnhe6X6uZ+KNszJnNXFRxk8h24Lz1hBs9vjWXA8N3J3ktjw==}
@@ -13206,7 +13209,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@sap/xsenv@6.1.0':
+  '@sap/xsenv@6.2.1':
     dependencies:
       debug: 4.4.3(supports-color@5.5.0)
       node-cache: 5.1.2
@@ -13543,11 +13546,6 @@ snapshots:
       undici-types: 7.24.6
 
   '@types/normalize-package-data@2.4.4': {}
-
-  '@types/openui5@1.145.0':
-    dependencies:
-      '@types/jquery': 3.5.34
-      '@types/qunit': 2.19.14
 
   '@types/openui5@1.148.0':
     dependencies:
@@ -13933,6 +13931,13 @@ snapshots:
       - supports-color
 
   '@ui5/ts-interface-generator@0.10.5(typescript@5.9.3)':
+    dependencies:
+      hjson: 3.2.2
+      loglevel: 1.9.2
+      typescript: 5.9.3
+      yargs: 18.0.0
+
+  '@ui5/ts-interface-generator@0.11.0(typescript@5.9.3)':
     dependencies:
       hjson: 3.2.2
       loglevel: 1.9.2
@@ -16707,7 +16712,7 @@ snapshots:
 
   extract-zip@2.0.1:
     dependencies:
-      debug: 4.3.4
+      debug: 4.4.3(supports-color@5.5.0)
       get-stream: 5.2.0
       yauzl: 2.10.0
     optionalDependencies:
@@ -17188,7 +17193,7 @@ snapshots:
     dependencies:
       basic-ftp: 5.3.1
       data-uri-to-buffer: 6.0.2
-      debug: 4.3.4
+      debug: 4.4.3(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -19818,7 +19823,7 @@ snapshots:
     dependencies:
       '@tootallnate/quickjs-emscripten': 0.23.0
       agent-base: 7.1.4
-      debug: 4.3.4
+      debug: 4.4.3(supports-color@5.5.0)
       get-uri: 6.0.5
       http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.6
@@ -20292,7 +20297,7 @@ snapshots:
   proxy-agent@6.3.1:
     dependencies:
       agent-base: 7.1.4
-      debug: 4.3.4
+      debug: 4.4.3(supports-color@5.5.0)
       http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.6
       lru-cache: 7.18.3

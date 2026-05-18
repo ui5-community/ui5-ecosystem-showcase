@@ -26,10 +26,10 @@
     "directory": "showcases/ui5-tslib"
   },
   "devDependencies": {
-    "@types/openui5": "1.145.0",
+    "@types/openui5": "1.148.0",
     "@types/showdown": "^2.0.6",
     "@ui5/cli": "^4.0.48",
-    "@ui5/ts-interface-generator": "^0.10.5",
+    "@ui5/ts-interface-generator": "^0.11.0",
     "eslint": "^10.0.3",
     "globals": "^17.4.0",
     "karma": "^6.4.4",
