@@ -317,8 +317,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.0
       minimatch:
-        specifier: ^7.4.6
-        version: 7.4.9
+        specifier: ^10.2.5
+        version: 10.2.5
       proxy-from-env:
         specifier: ^2.1.0
         version: 2.1.0
@@ -521,8 +521,8 @@ importers:
         specifier: ^4.1.1
         version: 4.1.1
       minimatch:
-        specifier: ^7.4.6
-        version: 7.4.9
+        specifier: ^10.2.5
+        version: 10.2.5
       prettier:
         specifier: ^3.8.3
         version: 3.8.3
@@ -558,8 +558,8 @@ importers:
         specifier: ^3.0.2
         version: 3.0.2
       minimatch:
-        specifier: ^7.4.6
-        version: 7.4.9
+        specifier: ^10.2.5
+        version: 10.2.5
       replacestream:
         specifier: ^4.0.3
         version: 4.0.3
@@ -7689,10 +7689,6 @@ packages:
 
   minimatch@5.1.9:
     resolution: {integrity: sha512-7o1wEA2RyMP7Iu7GNba9vc0RWWGACJOCZBJX2GJWip0ikV+wcOsgVuY9uE8CPiyQhkGFSlhuSkZPavN7u1c2Fw==}
-    engines: {node: '>=10'}
-
-  minimatch@7.4.9:
-    resolution: {integrity: sha512-Brg/fp/iAVDOQoHxkuN5bEYhyQlZhxddI78yWsCbeEwTHXQjlNLtiJDUsp1GIptVqMI7/gkJMz4vVAc01mpoBw==}
     engines: {node: '>=10'}
 
   minimatch@9.0.9:
@@ -17013,7 +17009,7 @@ snapshots:
       fs.realpath: 1.0.0
       inflight: 1.0.6
       inherits: 2.0.4
-      minimatch: 3.0.8
+      minimatch: 3.1.5
       once: 1.4.0
       path-is-absolute: 1.0.1
 
@@ -18747,10 +18743,6 @@ snapshots:
       brace-expansion: 1.1.14
 
   minimatch@5.1.9:
-    dependencies:
-      brace-expansion: 2.1.0
-
-  minimatch@7.4.9:
     dependencies:
       brace-expansion: 2.1.0
 
