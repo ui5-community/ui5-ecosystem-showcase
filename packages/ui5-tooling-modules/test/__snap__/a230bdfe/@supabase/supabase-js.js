@@ -1,4 +1,4 @@
-sap.ui.define(['exports'], (function (exports) { 'use strict';
+sap.ui.define(['require', 'exports'], (function (require, exports) { 'use strict';
 
   /******************************************************************************
   Copyright (c) Microsoft Corporation.
@@ -29,7 +29,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     return t;
   }
 
-  function __awaiter(thisArg, _arguments, P, generator) {
+  function __awaiter$1(thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -315,7 +315,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * ```
        */
       invoke(functionName_1) {
-          return __awaiter(this, arguments, void 0, function* (functionName, options = {}) {
+          return __awaiter$1(this, arguments, void 0, function* (functionName, options = {}) {
               var _a;
               let timeoutId;
               let timeoutController;
@@ -1817,6 +1817,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	}
   	/**
   	* Match only rows where `column` is not equal to `value`.
+  	*
+  	* This filter does not include rows where `column` is `NULL`. To match null
+  	* values, use `.is(column, null)` instead.
   	*
   	* @param column - The column to filter on
   	* @param value - The value to filter with
@@ -5065,7 +5068,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   };
 
   //#endregion
-  //#region \0@oxc-project+runtime@0.101.0/helpers/typeof.js
+  //#region \0@oxc-project+runtime@0.103.0/helpers/typeof.js
   function _typeof$2(o) {
   	"@babel/helpers - typeof";
   	return _typeof$2 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o$1) {
@@ -5076,7 +5079,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   //#endregion
-  //#region \0@oxc-project+runtime@0.101.0/helpers/toPrimitive.js
+  //#region \0@oxc-project+runtime@0.103.0/helpers/toPrimitive.js
   function toPrimitive$2(t, r) {
   	if ("object" != _typeof$2(t) || !t) return t;
   	var e = t[Symbol.toPrimitive];
@@ -5089,14 +5092,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   //#endregion
-  //#region \0@oxc-project+runtime@0.101.0/helpers/toPropertyKey.js
+  //#region \0@oxc-project+runtime@0.103.0/helpers/toPropertyKey.js
   function toPropertyKey$2(t) {
   	var i = toPrimitive$2(t, "string");
   	return "symbol" == _typeof$2(i) ? i : i + "";
   }
 
   //#endregion
-  //#region \0@oxc-project+runtime@0.101.0/helpers/defineProperty.js
+  //#region \0@oxc-project+runtime@0.103.0/helpers/defineProperty.js
   function _defineProperty$2(e, r, t) {
   	return (r = toPropertyKey$2(r)) in e ? Object.defineProperty(e, r, {
   		value: t,
@@ -5107,7 +5110,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   //#endregion
-  //#region \0@oxc-project+runtime@0.101.0/helpers/objectSpread2.js
+  //#region \0@oxc-project+runtime@0.103.0/helpers/objectSpread2.js
   function ownKeys$2(e, r) {
   	var t = Object.keys(e);
   	if (Object.getOwnPropertySymbols) {
@@ -5582,7 +5585,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   // - Debugging and support (identifying which version is running)
   // - Telemetry and logging (version reporting in errors/analytics)
   // - Ensuring build artifacts match the published package version
-  const version$3 = '2.105.4';
+  const version$3 = '2.106.0';
 
   const DEFAULT_VERSION = `realtime-js/${version$3}`;
   const VSN_1_0_0 = '1.0.0';
@@ -8487,6 +8490,8 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        * @remarks
        * - When using REST you don't need to subscribe to the channel
        * - REST calls are only available from 2.37.0 onwards
+       * - If you create a channel only to send a REST broadcast, remove it from
+       *   the client when the send completes
        *
        * @example Send a message via websocket
        * ```js
@@ -8510,9 +8515,13 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
        *
        * @example Send a message via REST
        * ```js
-       * supabase
-       *   .channel('room1')
-       *   .httpSend('cursor-pos', { x: Math.random(), y: Math.random() })
+       * const channel = supabase.channel('room1')
+       *
+       * try {
+       *   await channel.httpSend('cursor-pos', { x: Math.random(), y: Math.random() })
+       * } finally {
+       *   await supabase.removeChannel(channel)
+       * }
        * ```
        */
       async send(args, opts = {}) {
@@ -12056,7 +12065,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
     }
   };
 
-  //#region \0@oxc-project+runtime@0.101.0/helpers/typeof.js
+  //#region \0@oxc-project+runtime@0.103.0/helpers/typeof.js
   function _typeof$1(o) {
   	"@babel/helpers - typeof";
   	return _typeof$1 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o$1) {
@@ -12067,7 +12076,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   //#endregion
-  //#region \0@oxc-project+runtime@0.101.0/helpers/toPrimitive.js
+  //#region \0@oxc-project+runtime@0.103.0/helpers/toPrimitive.js
   function toPrimitive$1(t, r) {
   	if ("object" != _typeof$1(t) || !t) return t;
   	var e = t[Symbol.toPrimitive];
@@ -12080,14 +12089,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   //#endregion
-  //#region \0@oxc-project+runtime@0.101.0/helpers/toPropertyKey.js
+  //#region \0@oxc-project+runtime@0.103.0/helpers/toPropertyKey.js
   function toPropertyKey$1(t) {
   	var i = toPrimitive$1(t, "string");
   	return "symbol" == _typeof$1(i) ? i : i + "";
   }
 
   //#endregion
-  //#region \0@oxc-project+runtime@0.101.0/helpers/defineProperty.js
+  //#region \0@oxc-project+runtime@0.103.0/helpers/defineProperty.js
   function _defineProperty$1(e, r, t) {
   	return (r = toPropertyKey$1(r)) in e ? Object.defineProperty(e, r, {
   		value: t,
@@ -12098,7 +12107,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   //#endregion
-  //#region \0@oxc-project+runtime@0.101.0/helpers/objectSpread2.js
+  //#region \0@oxc-project+runtime@0.103.0/helpers/objectSpread2.js
   function ownKeys$1(e, r) {
   	var t = Object.keys(e);
   	if (Object.getOwnPropertySymbols) {
@@ -12490,13 +12499,27 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   //#endregion
   //#region src/packages/StreamDownloadBuilder.ts
+  let _Symbol$toStringTag$1;
+  _Symbol$toStringTag$1 = Symbol.toStringTag;
   var StreamDownloadBuilder = class {
   	constructor(downloadFn, shouldThrowOnError) {
   		this.downloadFn = downloadFn;
   		this.shouldThrowOnError = shouldThrowOnError;
+  		this[_Symbol$toStringTag$1] = "StreamDownloadBuilder";
+  		this.promise = null;
   	}
   	then(onfulfilled, onrejected) {
-  		return this.execute().then(onfulfilled, onrejected);
+  		return this.getPromise().then(onfulfilled, onrejected);
+  	}
+  	catch(onrejected) {
+  		return this.getPromise().catch(onrejected);
+  	}
+  	finally(onfinally) {
+  		return this.getPromise().finally(onfinally);
+  	}
+  	getPromise() {
+  		if (!this.promise) this.promise = this.execute();
+  		return this.promise;
   	}
   	async execute() {
   		var _this = this;
@@ -13517,7 +13540,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
 
   //#endregion
   //#region src/lib/version.ts
-  const version$2 = "2.105.4";
+  const version$2 = "2.106.0";
 
   //#endregion
   //#region src/lib/constants.ts
@@ -14982,7 +15005,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   // - Debugging and support (identifying which version is running)
   // - Telemetry and logging (version reporting in errors/analytics)
   // - Ensuring build artifacts match the published package version
-  const version$1 = '2.105.4';
+  const version$1 = '2.106.0';
 
   /** Current session will be checked for refresh at this interval. */
   const AUTO_REFRESH_TICK_DURATION_MS = 30 * 1000;
@@ -16011,7 +16034,9 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
               session.expires_at = expiresAt(data.expires_in);
           }
       }
-      const user = (_a = data.user) !== null && _a !== void 0 ? _a : data;
+      // Some /verify responses (e.g. secure email_change first-confirmation) return
+      // only `{ msg, code }` with no user and no session. Treat those as null user.
+      const user = (_a = data.user) !== null && _a !== void 0 ? _a : null;
       return { data: { session, user }, error: null };
   }
   function _sessionResponsePassword(data) {
@@ -23748,7 +23773,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   const AuthClient = GoTrueClient;
 
   //#region src/lib/version.ts
-  const version = "2.105.4";
+  const version = "2.106.0";
 
   //#endregion
   //#region src/lib/constants.ts
@@ -23767,9 +23792,228 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   	flowType: "implicit"
   };
   const DEFAULT_REALTIME_OPTIONS = {};
+  const DEFAULT_TRACE_PROPAGATION_OPTIONS = {
+  	enabled: false,
+  	respectSamplingDecision: true
+  };
 
   //#endregion
-  //#region \0@oxc-project+runtime@0.101.0/helpers/typeof.js
+  //#region ../../../node_modules/tslib/tslib.es6.mjs
+  function __awaiter(thisArg, _arguments, P, generator) {
+  	function adopt(value) {
+  		return value instanceof P ? value : new P(function(resolve) {
+  			resolve(value);
+  		});
+  	}
+  	return new (P || (P = Promise))(function(resolve, reject) {
+  		function fulfilled(value) {
+  			try {
+  				step(generator.next(value));
+  			} catch (e) {
+  				reject(e);
+  			}
+  		}
+  		function rejected(value) {
+  			try {
+  				step(generator["throw"](value));
+  			} catch (e) {
+  				reject(e);
+  			}
+  		}
+  		function step(result) {
+  			result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+  		}
+  		step((generator = generator.apply(thisArg, [])).next());
+  	});
+  }
+
+  //#endregion
+  //#region ../../shared/tracing/dist/module/extract.js
+  let otelModulePromise = null;
+  const OTEL_PKG = "@opentelemetry/api";
+  function loadOtel() {
+  	if (otelModulePromise === null) otelModulePromise = import(
+  		/* webpackIgnore: true */
+  		/* @vite-ignore */
+  		OTEL_PKG
+  ).catch(() => null);
+  	return otelModulePromise;
+  }
+  /**
+  * Extract trace context from the OpenTelemetry API.
+  *
+  * Returns null if `@opentelemetry/api` is not installed or there is no active
+  * trace context. The dynamic import is cached after the first call.
+  *
+  * @returns Trace context with traceparent, tracestate, and baggage headers, or null if unavailable
+  */
+  function extractTraceContext() {
+  	return __awaiter(this, void 0, void 0, function* () {
+  		try {
+  			const otel = yield loadOtel();
+  			if (!otel || !otel.propagation || !otel.context) return null;
+  			const carrier = {};
+  			otel.propagation.inject(otel.context.active(), carrier);
+  			const traceparent = carrier["traceparent"];
+  			if (!traceparent) return null;
+  			return {
+  				traceparent,
+  				tracestate: carrier["tracestate"],
+  				baggage: carrier["baggage"]
+  			};
+  		} catch (_a) {
+  			return null;
+  		}
+  	});
+  }
+
+  //#endregion
+  //#region ../../shared/tracing/dist/module/parse.js
+  /**
+  * Parse W3C traceparent header according to the specification.
+  *
+  * The traceparent header format is: version-traceid-parentid-traceflags
+  * - version: 2 hex digits (currently always "00")
+  * - traceid: 32 hex digits (128-bit trace identifier)
+  * - parentid: 16 hex digits (64-bit span/parent identifier)
+  * - traceflags: 2 hex digits (8-bit flags, bit 0 is sampled flag)
+  *
+  * @param traceparent - The traceparent header value
+  * @returns Parsed traceparent object, or null if invalid format
+  *
+  * @see https://www.w3.org/TR/trace-context/#traceparent-header
+  *
+  * @example
+  * ```typescript
+  * const parsed = parseTraceParent('00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01')
+  *
+  * console.log(parsed)
+  * // {
+  * //   version: '00',
+  * //   traceId: '0af7651916cd43dd8448eb211c80319c',
+  * //   parentId: 'b7ad6b7169203331',
+  * //   traceFlags: '01',
+  * //   isSampled: true
+  * // }
+  * ```
+  */
+  function parseTraceParent(traceparent) {
+  	if (!traceparent || typeof traceparent !== "string") return null;
+  	const parts = traceparent.split("-");
+  	if (parts.length !== 4) return null;
+  	const [version$1, traceId, parentId, traceFlags] = parts;
+  	if (version$1.length !== 2 || traceId.length !== 32 || parentId.length !== 16 || traceFlags.length !== 2) return null;
+  	const hexRegex = /^[0-9a-f]+$/i;
+  	if (!hexRegex.test(version$1) || !hexRegex.test(traceId) || !hexRegex.test(parentId) || !hexRegex.test(traceFlags)) return null;
+  	if (traceId === "00000000000000000000000000000000" || parentId === "0000000000000000") return null;
+  	return {
+  		version: version$1,
+  		traceId,
+  		parentId,
+  		traceFlags,
+  		isSampled: (parseInt(traceFlags, 16) & 1) === 1
+  	};
+  }
+
+  //#endregion
+  //#region ../../shared/tracing/dist/module/validate.js
+  /**
+  * Check if trace context should be propagated to the target URL.
+  *
+  * This function checks if the target URL matches any of the configured
+  * propagation targets. Targets can be:
+  * - String: Exact hostname match or wildcard domain (*.example.com)
+  * - RegExp: Pattern matching hostname
+  * - Function: Custom logic to determine if URL should receive trace context
+  *
+  * @param targetUrl - The URL to check
+  * @param targets - Array of propagation targets
+  * @returns True if trace context should be propagated, false otherwise
+  *
+  * @example
+  * ```typescript
+  * const targets = [
+  *   'myproject.supabase.co',           // Exact match
+  *   '*.supabase.co',                   // Wildcard domain
+  *   /.*\.supabase\.co$/,               // Regex pattern
+  *   (url) => url.hostname === 'localhost' // Custom function
+  * ]
+  *
+  * shouldPropagateToTarget('https://myproject.supabase.co/rest/v1/table', targets)
+  * // true
+  *
+  * shouldPropagateToTarget('https://evil.com/api', targets)
+  * // false
+  * ```
+  */
+  function shouldPropagateToTarget(targetUrl, targets) {
+  	if (!targetUrl || !targets || targets.length === 0) return false;
+  	let url;
+  	if (targetUrl instanceof URL) url = targetUrl;
+  	else try {
+  		url = new URL(targetUrl);
+  	} catch (error) {
+  		return false;
+  	}
+  	for (const target of targets) try {
+  		if (typeof target === "string") {
+  			if (matchStringTarget(url.hostname, target)) return true;
+  		} else if (target instanceof RegExp) {
+  			if (target.test(url.hostname)) return true;
+  		} else if (typeof target === "function") {
+  			if (target(url)) return true;
+  		}
+  	} catch (error) {
+  		continue;
+  	}
+  	return false;
+  }
+  /**
+  * Match hostname against string target (exact match or wildcard)
+  *
+  * @param hostname - The hostname to check
+  * @param target - The target pattern (exact or wildcard)
+  * @returns True if hostname matches target
+  */
+  function matchStringTarget(hostname, target) {
+  	if (target === hostname) return true;
+  	if (target.startsWith("*.")) {
+  		const domain = target.slice(2);
+  		if (hostname.endsWith(domain)) {
+  			if (hostname === domain || hostname.endsWith("." + domain)) return true;
+  		}
+  	}
+  	return false;
+  }
+
+  //#endregion
+  //#region ../../shared/tracing/dist/module/defaults.js
+  /**
+  * Generate default propagation targets based on the Supabase project URL.
+  *
+  * By default, trace context is only propagated to Supabase domains for
+  * security. This prevents leaking trace context to potentially malicious
+  * third-party services.
+  *
+  * Wildcard strings (e.g. `*.supabase.co`) are matched with linear string
+  * operations rather than regex, avoiding ReDoS risk.
+  *
+  * @param supabaseUrl - The Supabase project URL
+  * @returns Array of default propagation targets
+  */
+  function getDefaultPropagationTargets(supabaseUrl) {
+  	const targets = [];
+  	try {
+  		const url = new URL(supabaseUrl);
+  		targets.push(url.hostname);
+  	} catch (error) {}
+  	targets.push("*.supabase.co", "*.supabase.in");
+  	targets.push("localhost", "127.0.0.1", "[::1]");
+  	return targets;
+  }
+
+  //#endregion
+  //#region \0@oxc-project+runtime@0.103.0/helpers/typeof.js
   function _typeof(o) {
   	"@babel/helpers - typeof";
   	return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o$1) {
@@ -23780,7 +24024,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   //#endregion
-  //#region \0@oxc-project+runtime@0.101.0/helpers/toPrimitive.js
+  //#region \0@oxc-project+runtime@0.103.0/helpers/toPrimitive.js
   function toPrimitive(t, r) {
   	if ("object" != _typeof(t) || !t) return t;
   	var e = t[Symbol.toPrimitive];
@@ -23793,14 +24037,14 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   //#endregion
-  //#region \0@oxc-project+runtime@0.101.0/helpers/toPropertyKey.js
+  //#region \0@oxc-project+runtime@0.103.0/helpers/toPropertyKey.js
   function toPropertyKey(t) {
   	var i = toPrimitive(t, "string");
   	return "symbol" == _typeof(i) ? i : i + "";
   }
 
   //#endregion
-  //#region \0@oxc-project+runtime@0.101.0/helpers/defineProperty.js
+  //#region \0@oxc-project+runtime@0.103.0/helpers/defineProperty.js
   function _defineProperty(e, r, t) {
   	return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
   		value: t,
@@ -23811,7 +24055,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   }
 
   //#endregion
-  //#region \0@oxc-project+runtime@0.101.0/helpers/objectSpread2.js
+  //#region \0@oxc-project+runtime@0.103.0/helpers/objectSpread2.js
   function ownKeys(e, r) {
   	var t = Object.keys(e);
   	if (Object.getOwnPropertySymbols) {
@@ -23843,34 +24087,64 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   const resolveHeadersConstructor = () => {
   	return Headers;
   };
-  const fetchWithAuth = (supabaseKey, getAccessToken, customFetch) => {
+  const fetchWithAuth = (supabaseKey, supabaseUrl, getAccessToken, customFetch, tracePropagationOptions) => {
   	const fetch$1 = resolveFetch(customFetch);
   	const HeadersConstructor = resolveHeadersConstructor();
+  	const traceEnabled = (tracePropagationOptions === null || tracePropagationOptions === void 0 ? void 0 : tracePropagationOptions.enabled) === true;
+  	const respectSampling = (tracePropagationOptions === null || tracePropagationOptions === void 0 ? void 0 : tracePropagationOptions.respectSamplingDecision) !== false;
+  	const traceTargets = traceEnabled ? getDefaultPropagationTargets(supabaseUrl) : null;
   	return async (input, init) => {
   		var _await$getAccessToken;
   		const accessToken = (_await$getAccessToken = await getAccessToken()) !== null && _await$getAccessToken !== void 0 ? _await$getAccessToken : supabaseKey;
   		let headers = new HeadersConstructor(init === null || init === void 0 ? void 0 : init.headers);
   		if (!headers.has("apikey")) headers.set("apikey", supabaseKey);
   		if (!headers.has("Authorization")) headers.set("Authorization", `Bearer ${accessToken}`);
+  		if (traceTargets) {
+  			const traceHeaders = await getTraceHeaders(input, traceTargets, respectSampling);
+  			if (traceHeaders) {
+  				if (traceHeaders.traceparent && !headers.has("traceparent")) headers.set("traceparent", traceHeaders.traceparent);
+  				if (traceHeaders.tracestate && !headers.has("tracestate")) headers.set("tracestate", traceHeaders.tracestate);
+  				if (traceHeaders.baggage && !headers.has("baggage")) headers.set("baggage", traceHeaders.baggage);
+  			}
+  		}
   		return fetch$1(input, _objectSpread2(_objectSpread2({}, init), {}, { headers }));
   	};
   };
+  async function getTraceHeaders(input, targets, respectSampling) {
+  	if (!shouldPropagateToTarget(typeof input === "string" ? input : input instanceof URL ? input : input.url, targets)) return null;
+  	const traceContext = await extractTraceContext();
+  	if (!traceContext || !traceContext.traceparent) return null;
+  	if (respectSampling) {
+  		const parsed = parseTraceParent(traceContext.traceparent);
+  		if (parsed && !parsed.isSampled) return null;
+  	}
+  	return traceContext;
+  }
 
   //#endregion
   //#region src/lib/helpers.ts
+  function normalizeTracePropagation(value) {
+  	return typeof value === "boolean" ? { enabled: value } : value;
+  }
   function ensureTrailingSlash(url) {
   	return url.endsWith("/") ? url : url + "/";
   }
   function applySettingDefaults(options, defaults) {
-  	var _DEFAULT_GLOBAL_OPTIO, _globalOptions$header;
+  	var _DEFAULT_GLOBAL_OPTIO, _globalOptions$header, _ref, _tracePropagationOpti, _ref2, _tracePropagationOpti2;
   	const { db: dbOptions, auth: authOptions, realtime: realtimeOptions, global: globalOptions } = options;
   	const { db: DEFAULT_DB_OPTIONS$1, auth: DEFAULT_AUTH_OPTIONS$1, realtime: DEFAULT_REALTIME_OPTIONS$1, global: DEFAULT_GLOBAL_OPTIONS$1 } = defaults;
+  	const tracePropagationOptions = normalizeTracePropagation(options.tracePropagation);
+  	const DEFAULT_TRACE_PROPAGATION_OPTIONS$1 = normalizeTracePropagation(defaults.tracePropagation);
   	const result = {
   		db: _objectSpread2(_objectSpread2({}, DEFAULT_DB_OPTIONS$1), dbOptions),
   		auth: _objectSpread2(_objectSpread2({}, DEFAULT_AUTH_OPTIONS$1), authOptions),
   		realtime: _objectSpread2(_objectSpread2({}, DEFAULT_REALTIME_OPTIONS$1), realtimeOptions),
   		storage: {},
   		global: _objectSpread2(_objectSpread2(_objectSpread2({}, DEFAULT_GLOBAL_OPTIONS$1), globalOptions), {}, { headers: _objectSpread2(_objectSpread2({}, (_DEFAULT_GLOBAL_OPTIO = DEFAULT_GLOBAL_OPTIONS$1 === null || DEFAULT_GLOBAL_OPTIONS$1 === void 0 ? void 0 : DEFAULT_GLOBAL_OPTIONS$1.headers) !== null && _DEFAULT_GLOBAL_OPTIO !== void 0 ? _DEFAULT_GLOBAL_OPTIO : {}), (_globalOptions$header = globalOptions === null || globalOptions === void 0 ? void 0 : globalOptions.headers) !== null && _globalOptions$header !== void 0 ? _globalOptions$header : {}) }),
+  		tracePropagation: {
+  			enabled: (_ref = (_tracePropagationOpti = tracePropagationOptions === null || tracePropagationOptions === void 0 ? void 0 : tracePropagationOptions.enabled) !== null && _tracePropagationOpti !== void 0 ? _tracePropagationOpti : DEFAULT_TRACE_PROPAGATION_OPTIONS$1 === null || DEFAULT_TRACE_PROPAGATION_OPTIONS$1 === void 0 ? void 0 : DEFAULT_TRACE_PROPAGATION_OPTIONS$1.enabled) !== null && _ref !== void 0 ? _ref : false,
+  			respectSamplingDecision: (_ref2 = (_tracePropagationOpti2 = tracePropagationOptions === null || tracePropagationOptions === void 0 ? void 0 : tracePropagationOptions.respectSamplingDecision) !== null && _tracePropagationOpti2 !== void 0 ? _tracePropagationOpti2 : DEFAULT_TRACE_PROPAGATION_OPTIONS$1 === null || DEFAULT_TRACE_PROPAGATION_OPTIONS$1 === void 0 ? void 0 : DEFAULT_TRACE_PROPAGATION_OPTIONS$1.respectSamplingDecision) !== null && _ref2 !== void 0 ? _ref2 : true
+  		},
   		accessToken: async () => ""
   	};
   	if (options.accessToken) result.accessToken = options.accessToken;
@@ -24114,9 +24388,11 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   			db: DEFAULT_DB_OPTIONS,
   			realtime: DEFAULT_REALTIME_OPTIONS,
   			auth: _objectSpread2(_objectSpread2({}, DEFAULT_AUTH_OPTIONS), {}, { storageKey: defaultStorageKey }),
-  			global: DEFAULT_GLOBAL_OPTIONS
+  			global: DEFAULT_GLOBAL_OPTIONS,
+  			tracePropagation: DEFAULT_TRACE_PROPAGATION_OPTIONS
   		};
   		const settings = applySettingDefaults(options !== null && options !== void 0 ? options : {}, DEFAULTS);
+  		this.settings = settings;
   		this.storageKey = (_settings$auth$storag = settings.auth.storageKey) !== null && _settings$auth$storag !== void 0 ? _settings$auth$storag : "";
   		this.headers = (_settings$global$head = settings.global.headers) !== null && _settings$global$head !== void 0 ? _settings$global$head : {};
   		if (!settings.accessToken) {
@@ -24128,7 +24404,7 @@ sap.ui.define(['exports'], (function (exports) { 'use strict';
   				throw new Error(`@supabase/supabase-js: Supabase Client is configured with the accessToken option, accessing supabase.auth.${String(prop)} is not possible`);
   			} });
   		}
-  		this.fetch = fetchWithAuth(supabaseKey, this._getAccessToken.bind(this), settings.global.fetch);
+  		this.fetch = fetchWithAuth(supabaseKey, supabaseUrl, this._getAccessToken.bind(this), settings.global.fetch, settings.tracePropagation);
   		this.realtime = this._initRealtimeClient(_objectSpread2({
   			headers: this.headers,
   			accessToken: this._getAccessToken.bind(this),

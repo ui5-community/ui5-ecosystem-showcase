@@ -1,6 +1,6 @@
-const test = require("ava");
+const { default: test } = require("ava");
 const path = require("path");
-const { createHash, randomBytes } = require("crypto");
+const { createHash, randomBytes } = require("node:crypto");
 const { rmSync, readFileSync, writeFileSync, existsSync, mkdirSync } = require("fs");
 const { platform } = require("os");
 const { runInContext, createContext } = require("vm");
@@ -591,7 +591,6 @@ test.serial("Verify generation of pdfMake", async (t) => {
 		log: t.context.log,
 		scope: {
 			navigator: {},
-			JS_MD5_NO_NODE_JS: true,
 			TextEncoder: function () {},
 			TextDecoder: function () {},
 		},

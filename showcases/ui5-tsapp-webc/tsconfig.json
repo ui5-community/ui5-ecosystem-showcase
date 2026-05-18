@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es2023",
     "module": "es2022",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "skipLibCheck": true,
     "allowJs": true,
     "strict": true,
@@ -10,7 +10,8 @@
     "rootDir": "./webapp",
     "paths": {
       "ui5/ecosystem/demo/tsapp/*": ["./webapp/*"]
-    }
+    },
+    "types": ["@types/openui5"]
   },
   "include": ["./webapp/**/*", "./.ui5-tooling-modules/types/**/*"]
 }

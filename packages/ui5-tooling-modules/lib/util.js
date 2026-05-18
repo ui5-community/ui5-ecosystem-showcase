@@ -1120,6 +1120,7 @@ module.exports = function (log, projectInfo) {
 							"global.process.versions.node": JSON.stringify("false"), // in some cases, the global.process.versions.node is used to detect the existence of Node.js
 							"process.versions.node": JSON.stringify("18.15.0"), // needed for some modules to select features based on the Node.js version
 							"process.env.NODE_ENV": JSON.stringify("production"), // we always build in production mode
+							"root.JS_MD5_NO_NODE_JS": JSON.stringify(true), // pdfMake decides upon this property whether it's Node.js runtimg or not
 						},
 					}),
 					injectESModule(),

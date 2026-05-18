@@ -1,8 +1,7 @@
-const test = require("ava");
+const { default: test } = require("ava");
 const path = require("path");
 const fs = require("fs");
-// eslint-disable-next-line no-redeclare
-const crypto = require("crypto");
+const { randomBytes } = require("node:crypto");
 
 //const cwd = process.cwd();
 test.beforeEach(async (t) => {
@@ -248,7 +247,7 @@ test("usage of external babel config file", async (t) => {
 });
 
 test("generate babel config file", async (t) => {
-	const tmpDir = path.resolve(__dirname, `__dist__/${crypto.randomBytes(5).toString("hex")}`);
+	const tmpDir = path.resolve(__dirname, `__dist__/${randomBytes(5).toString("hex")}`);
 	const config = await t.context.util.createBabelConfig(
 		{
 			configuration: {
@@ -265,7 +264,7 @@ test("generate babel config file", async (t) => {
 });
 
 test("generate babel config file with a name", async (t) => {
-	const tmpDir = path.resolve(__dirname, `__dist__/${crypto.randomBytes(5).toString("hex")}`);
+	const tmpDir = path.resolve(__dirname, `__dist__/${randomBytes(5).toString("hex")}`);
 	const config = await t.context.util.createBabelConfig(
 		{
 			configuration: {

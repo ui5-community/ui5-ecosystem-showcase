@@ -22,23 +22,23 @@
     "timeout": "20s"
   },
   "dependencies": {
-    "dotenv": "^17.3.1",
-    "http-proxy-agent": "^8.0.0",
+    "dotenv": "^17.4.2",
+    "http-proxy-agent": "^9.0.0",
     "http-proxy-middleware": "^3.0.5",
-    "https-proxy-agent": "^8.0.0",
+    "https-proxy-agent": "^9.0.0",
     "minimatch": "^7.4.6",
-    "proxy-from-env": "^2.0.0",
+    "proxy-from-env": "^2.1.0",
     "ui5-utils-express": "workspace:^"
   },
   "devDependencies": {
     "@ui5/project": "^3",
     "@ui5/server": "^3",
-    "ava": "^6.4.1",
-    "get-port": "^7.1.0",
+    "ava": "^8.0.1",
+    "get-port": "^7.2.0",
     "nock": "^13.5.6",
     "node-tcp-proxy": "^0.0.28",
     "supertest": "^7.2.2",
-    "superwstest": "^2.1.1",
+    "superwstest": "^3.0.0",
     "ui5-middleware-websocket": "workspace:^"
   }
 }

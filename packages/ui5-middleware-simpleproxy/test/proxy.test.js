@@ -1,4 +1,4 @@
-const test = require("ava");
+const { default: test } = require("ava");
 
 const express = require("express");
 const { createProxyMiddleware, responseInterceptor } = require("http-proxy-middleware");

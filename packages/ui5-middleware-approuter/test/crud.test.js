@@ -3,7 +3,7 @@ const fs = require("fs-extra")
 const path = require("path")
 const request = require("supertest")
 const { spawn } = require("child_process")
-const test = require("ava")
+const { default: test } = require("ava")
 const waitOn = require("wait-on")
 
 const copyUI5app = require("./_fs_app_util")

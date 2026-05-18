@@ -1,10 +1,10 @@
 const path = require("path");
 const { rmSync, existsSync, readdirSync } = require("fs");
 const { spawnSync } = require("child_process");
-const crypto = require("crypto");
+const { randomBytes } = require("node:crypto");
 const yauzl = require("yauzl");
 
-const test = require("ava");
+const { default: test } = require("ava");
 
 /**
  * check whether a file ("needle") is contained inside the zip
@@ -59,7 +59,7 @@ async function promisifiedNeedleInHaystack(zip, needle, readFileContent = false)
 test.beforeEach(async (t) => {
   // copy ui5 app to a temp dir in test folder scope
   t.context.tmpDir = path.resolve(
-    `./test/__dist__/${crypto.randomBytes(5).toString("hex")}`
+    `./test/__dist__/${randomBytes(5).toString("hex")}`
   );
 });
 

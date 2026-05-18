@@ -31375,7 +31375,7 @@ end\
   		/***/ 1632
   		(module, exports, __webpack_require__) {
 
-  		/* provided dependency */ var process = __webpack_require__(9964);
+  		/* provided dependency */ __webpack_require__(9964);
   		var __WEBPACK_AMD_DEFINE_RESULT__;/**
   		 * [js-md5]{@link https://github.com/emn178/js-md5}
   		 *
@@ -31395,10 +31395,7 @@ end\
   		    WINDOW = false;
   		  }
   		  var WEB_WORKER = !WINDOW && typeof self === 'object';
-  		  var NODE_JS = !root.JS_MD5_NO_NODE_JS && typeof process === 'object' && process.versions && "18.15.0";
-  		  if (NODE_JS) {
-  		    root = __webpack_require__.g;
-  		  } else if (WEB_WORKER) {
+  		  if (WEB_WORKER) {
   		    root = self;
   		  }
   		  var COMMON_JS = !root.JS_MD5_NO_COMMON_JS && "object" === 'object' && module.exports;
@@ -31418,7 +31415,7 @@ end\
   		  }
 
   		  var isArray = Array.isArray;
-  		  if (root.JS_MD5_NO_NODE_JS || !isArray) {
+  		  {
   		    isArray = function (obj) {
   		      return Object.prototype.toString.call(obj) === '[object Array]';
   		    };
@@ -31534,9 +31531,6 @@ end\
   		   */
   		  var createMethod = function () {
   		    var method = createOutputMethod('hex');
-  		    if (NODE_JS) {
-  		      method = nodeWrap(method);
-  		    }
   		    method.create = function () {
   		      return new Md5();
   		    };
@@ -31548,37 +31542,6 @@ end\
   		      method[type] = createOutputMethod(type);
   		    }
   		    return method;
-  		  };
-
-  		  var nodeWrap = function (method) {
-  		    var crypto = __webpack_require__(8535);
-  		    var Buffer = (__webpack_require__(6274).Buffer);
-  		    var bufferFrom;
-  		    if (Buffer.from && !root.JS_MD5_NO_BUFFER_FROM) {
-  		      bufferFrom = Buffer.from;
-  		    } else {
-  		      bufferFrom = function (message) {
-  		        return new Buffer(message);
-  		      };
-  		    }
-  		    var nodeMethod = function (message) {
-  		      if (typeof message === 'string') {
-  		        return crypto.createHash('md5').update(message, 'utf8').digest('hex');
-  		      } else {
-  		        if (message === null || message === undefined) {
-  		          throw new Error(INPUT_ERROR);
-  		        } else if (message.constructor === ArrayBuffer) {
-  		          message = new Uint8Array(message);
-  		        }
-  		      }
-  		      if (isArray(message) || isView(message) ||
-  		        message.constructor === Buffer) {
-  		        return crypto.createHash('md5').update(bufferFrom(message)).digest('hex');
-  		      } else {
-  		        return method(message);
-  		      }
-  		    };
-  		    return nodeMethod;
   		  };
 
   		  /**
