@@ -10,7 +10,8 @@
     "rootDir": "./webapp",
     "paths": {
       "ui5/ecosystem/demo/tsapp/*": ["./webapp/*"]
-    }
+    },
+    "types": ["@types/openui5"]
   },
   "include": ["./webapp/**/*"]
 }

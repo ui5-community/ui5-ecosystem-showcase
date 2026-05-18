@@ -10,7 +10,8 @@
     "rootDir": "./",
     "paths": {
       "ui5/ecosystem/demo/tslib/*": ["./src/*"]
-    }
+    },
+    "types": ["@types/openui5", "@types/showdown"]
   },
   "include": ["./src/**/*", "./test/**/*"]
 }

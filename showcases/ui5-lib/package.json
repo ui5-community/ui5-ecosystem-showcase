@@ -23,10 +23,10 @@
     "directory": "showcases/ui5-lib"
   },
   "devDependencies": {
-    "@ui5/cli": "^4.0.48",
-    "eslint": "^10.0.3",
-    "eslint-plugin-jsdoc": "^62.8.0",
-    "globals": "^17.4.0",
+    "@ui5/cli": "^4.0.53",
+    "eslint": "^10.4.0",
+    "eslint-plugin-jsdoc": "^62.9.0",
+    "globals": "^17.6.0",
     "karma": "^6.4.4",
     "karma-chrome-launcher": "^3.2.0",
     "karma-coverage": "^2.2.1",

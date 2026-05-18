@@ -591,7 +591,6 @@ test.serial("Verify generation of pdfMake", async (t) => {
 		log: t.context.log,
 		scope: {
 			navigator: {},
-			JS_MD5_NO_NODE_JS: true,
 			TextEncoder: function () {},
 			TextDecoder: function () {},
 		},
