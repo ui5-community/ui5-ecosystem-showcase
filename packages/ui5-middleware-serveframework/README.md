@@ -65,6 +65,6 @@ If you want to contribute to `ui5-middleware-serveframework`, please use [`Prett
 
 ## License
 
-This work is [dual-licensed](../../LICENSE) under Apache 2.0 and the Derived Beer-ware License. The official license will be Apache 2.0 but finally you can choose between one of them if you use this work.
+This work is licensed under [Apache 2.0](../../LICENSE).
 
-When you like this stuff, you may buy [@pmuessig](https://twitter.com/pmuessig) a coke.
+Built with care (and a lot of caffeine). If this helped you build, test, or ship, the next coffee — or drink — is on you when you bump into a contributor.

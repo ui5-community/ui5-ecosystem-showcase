@@ -95,4 +95,6 @@ Use Cases:
 
 ## License
 
-This work is [licensed](../../LICENSE) under Apache 2.0.
+This work is licensed under [Apache 2.0](../../LICENSE).
+
+Built with care (and a lot of caffeine). If this helped you build, test, or ship, the next coffee — or drink — is on you when you bump into a contributor.
