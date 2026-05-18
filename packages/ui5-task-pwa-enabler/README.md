@@ -115,6 +115,6 @@ your own fancy PWA.
 
 ## License
 
-This work is [dual-licensed](../../LICENSE) under Apache 2.0 and the Derived Beer-ware License. The official license will be Apache 2.0 but finally you can choose between one of them if you use this work.
+This work is licensed under [Apache 2.0](../../LICENSE).
 
-When you like this stuff, buy [@maxmoehl](https://github.com/maxmoehl) or [@monakac](https://github.com/monakac) a beer when you see them.
+Built with care (and a lot of caffeine). If this helped you build, test, or ship, the next coffee — or drink — is on you when you bump into a contributor.
